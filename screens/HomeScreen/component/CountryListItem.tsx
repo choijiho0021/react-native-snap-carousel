@@ -8,6 +8,7 @@ import {getPromoFlagColor, RkbProduct} from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';
 import AppPrice from '@/components/AppPrice';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 
 const styles = StyleSheet.create({
   card: {
@@ -33,28 +34,27 @@ const styles = StyleSheet.create({
     lineHeight: isDeviceSize('medium') ? 22 : 24,
   },
   wonStyleCharge: {
-    fontSize: 14,
+    fontSize: isDeviceSize('medium') ? 22 : 24,
     fontWeight: '600',
     lineHeight: isDeviceSize('medium') ? 22 : 24,
     color: colors.black,
   },
+  disBalanceStyle: {
+    fontSize: isDeviceSize('medium') ? 16 : 18,
+    color: colors.greyish,
+    fontWeight: 'bold',
+    textAlign: 'right',
+    lineHeight: 20,
+  },
+  disWonStyleCharge: {
+    fontSize: isDeviceSize('medium') ? 16 : 18,
+    fontWeight: '600',
+    lineHeight: 20,
+    color: colors.greyish,
+  },
   textView: {
     flex: 1,
     alignItems: 'flex-start',
-  },
-  badge: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 8,
-    height: 20,
-    alignSelf: 'center',
-  },
-
-  badgeText: {
-    ...appStyles.extraBold12,
   },
   itemDivider: {
     marginHorizontal: 20,
@@ -75,6 +75,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  descRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 5,
+    width: '100%',
+  },
 });
 
 const toVolumeStr = (volume: number) => {
@@ -86,7 +92,7 @@ type CountryListItemProps = {
   item: RkbProduct;
   position?: string;
   onPress: () => void;
-  isCharge: boolean;
+  isCharge?: boolean;
 };
 
 const CountryListItem: React.FC<CountryListItemProps> = ({
@@ -165,30 +171,7 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
                 ]}>
                 {title}
               </AppText>
-              {!_.isEmpty(item.promoFlag) &&
-                item.promoFlag.map((elm) => {
-                  const badgeColor = getPromoFlagColor(elm);
-                  return (
-                    <View
-                      key={elm}
-                      style={[
-                        styles.badge,
-                        {
-                          backgroundColor: badgeColor.backgroundColor,
-                        },
-                      ]}>
-                      <AppText
-                        key="name"
-                        style={[
-                          styles.badgeText,
-
-                          {color: badgeColor.fontColor},
-                        ]}>
-                        {i18n.t(elm)}
-                      </AppText>
-                    </View>
-                  );
-                })}
+              {renderPromoFlag(item.promoFlag || [], false)}
             </View>
             <AppPrice
               price={item.price}
@@ -197,14 +180,48 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
             />
           </View>
 
-          <AppText
-            key="desc"
-            style={[
-              appStyles.normal13,
-              {marginTop: 5, fontSize: isDeviceSize('medium') ? 13 : 15},
-            ]}>
-            {item.field_description}
-          </AppText>
+          <View style={styles.descRow}>
+            <AppText
+              key="desc"
+              numberOfLines={2}
+              ellipsizeMode="tail"
+              style={[
+                appStyles.normal13,
+                {
+                  flex: 1,
+                  fontSize: isDeviceSize('medium') ? 13 : 15,
+                },
+              ]}>
+              {item.field_description}
+            </AppText>
+            {item.listPrice.value > item.price.value && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  marginLeft: 10,
+                }}>
+                <AppPrice
+                  price={item.listPrice}
+                  balanceStyle={styles.disBalanceStyle}
+                  currencyStyle={styles.disWonStyleCharge}
+                  isDiscounted
+                />
+                <AppText
+                  style={{
+                    ...appStyles.bold14Text,
+                    marginLeft: 4,
+                    color: colors.redError,
+                  }}>
+                  {Math.floor(
+                    ((item.listPrice.value - item.price.value) /
+                      item.listPrice.value) *
+                      100,
+                  )}
+                  %
+                </AppText>
+              </View>
+            )}
+          </View>
         </View>
       </View>
       {position !== 'tail' && position !== 'onlyOne' && !isCharge && (

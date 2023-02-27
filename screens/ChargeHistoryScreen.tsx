@@ -14,7 +14,8 @@ import {
   Pressable,
   Modal,
 } from 'react-native';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
@@ -29,16 +30,7 @@ import {getPromoFlagColor} from '@/redux/api/productApi';
 import SplitText from '@/components/SplitText';
 import Triangle from '@/components/Triangle';
 import AppSvgIcon from '@/components/AppSvgIcon';
-
-type ParamList = {
-  ChargeHistoryScreen: {
-    mainSubs: RkbSubscription;
-    chargedSubs: RkbSubscription[];
-    onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
-    chargeablePeriod: string;
-    isChargeable: boolean;
-  };
-};
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({
   chargeBtn: {
@@ -198,11 +190,20 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => (
 
 type OrderType = 'latest' | 'purchase';
 
-const ChargeHistoryScreen: React.FC = () => {
-  const navigation = useNavigation();
-  const route = useRoute<RouteProp<ParamList, 'ChargeHistoryScreen'>>();
-  const params = useMemo(() => route?.params, [route?.params]);
+type ChargeHistoryScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'ChargeHistory'
+>;
 
+type ChargeHistoryScreenProps = {
+  navigation: ChargeHistoryScreenNavigationProp;
+  route: RouteProp<HomeStackParamList, 'ChargeHistory'>;
+};
+
+const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
+  navigation,
+  route: {params},
+}) => {
   const {mainSubs, chargeablePeriod, chargedSubs, onPressUsage, isChargeable} =
     params || {};
   const [showModal, setShowModal] = useState(false);
@@ -216,7 +217,7 @@ const ChargeHistoryScreen: React.FC = () => {
   const [showTip, setShowTip] = useState(false);
   const data = useMemo(
     () =>
-      orderType === 'purchase' ? chargedSubs : chargedSubs.slice().reverse(),
+      orderType === 'purchase' ? chargedSubs : chargedSubs?.slice().reverse(),
     [chargedSubs, orderType],
   );
 
@@ -231,7 +232,7 @@ const ChargeHistoryScreen: React.FC = () => {
       title: null,
       headerLeft: () => <AppBackButton title={i18n.t('esim:chargeHistory')} />,
     });
-  }, [navigation, params.mainSubs.prodName]);
+  }, [navigation, params?.mainSubs?.prodName]);
 
   const renderTooltip = useCallback(() => {
     return (
@@ -268,17 +269,17 @@ const ChargeHistoryScreen: React.FC = () => {
       <View style={styles.topInfo}>
         <View style={styles.inactiveContainer}>
           <AppText style={styles.normal14Gray}>{i18n.t('esim:iccid')}</AppText>
-          <AppText style={styles.normal14Gray}>{mainSubs.subsIccid}</AppText>
+          <AppText style={styles.normal14Gray}>{mainSubs?.subsIccid}</AppText>
         </View>
         <View style={styles.inactiveContainer}>
           <AppText style={styles.normal14Gray}>
             {i18n.t('esim:usablePeriod')}
           </AppText>
           <AppText style={styles.normal14Gray}>{`${utils.toDateString(
-            mainSubs.purchaseDate,
+            mainSubs?.purchaseDate,
             'YYYY.MM.DD',
           )} - ${utils.toDateString(
-            chargedSubs[chargedSubs.length - 1].expireDate,
+            chargedSubs[chargedSubs?.length - 1].expireDate,
             'YYYY.MM.DD',
           )}`}</AppText>
         </View>
@@ -293,15 +294,17 @@ const ChargeHistoryScreen: React.FC = () => {
   }, [
     chargeablePeriod,
     chargedSubs,
-    mainSubs.purchaseDate,
-    mainSubs.subsIccid,
+    mainSubs?.purchaseDate,
+    mainSubs?.subsIccid,
   ]);
 
   const renderCard = useCallback(() => {
     const isDaily = chargedSubs[0].daily === 'daily';
     const dailyCardImg = require('../assets/images/esim/dailyCard.png');
     const totalCardImg = require('../assets/images/esim/totalCard.png');
-    const title = utils.removeBracketOfName(mainSubs.prodName?.split(' ')?.[0]);
+    const title = utils.removeBracketOfName(
+      mainSubs?.prodName?.split(' ')?.[0],
+    );
     return (
       <View key="card">
         <View key="card" style={{alignItems: 'center'}}>
@@ -310,7 +313,7 @@ const ChargeHistoryScreen: React.FC = () => {
             resizeMode="cover"
             style={styles.card}>
             <AppText style={[appStyles.bold14Text, {color: colors.white}]}>
-              {i18n.t(`esim:prodType:${mainSubs.daily}`)}
+              {i18n.t(`esim:prodType:${mainSubs?.daily}`)}
             </AppText>
             <AppText
               numberOfLines={1}
@@ -322,7 +325,7 @@ const ChargeHistoryScreen: React.FC = () => {
         </View>
         <View style={styles.cardTitle}>
           <AppText
-            key={mainSubs.key}
+            key={mainSubs?.key}
             style={appStyles.bold20Text}
             numberOfLines={2}
             ellipsizeMode="tail">

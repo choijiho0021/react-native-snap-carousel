@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {StyleSheet, SafeAreaView, View} from 'react-native';
 import Tooltip from 'react-native-walkthrough-tooltip';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {RouteProp} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {TabView} from 'react-native-tab-view';
 import {connect} from 'react-redux';
@@ -25,6 +25,8 @@ import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {retrieveData, storeData} from '@/utils/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({
   container: {
@@ -130,13 +132,6 @@ const styles = StyleSheet.create({
   },
 });
 
-type ParamList = {
-  ChargeScreen: {
-    mainSubs: RkbSubscription;
-    chargeablePeriod: string;
-  };
-};
-
 type ChargeTabRouteKey = 'daily' | 'total';
 type ChargeTabRoute = {
   key: ChargeTabRouteKey;
@@ -144,18 +139,27 @@ type ChargeTabRoute = {
   category: string;
 };
 
+type ChargeScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'Charge'
+>;
+
 type ChargeScreenProps = {
+  navigation: ChargeScreenNavigationProp;
+  route: RouteProp<HomeStackParamList, 'Charge'>;
   product: ProductModelState;
   action: {
     product: ProductAction;
   };
 };
 
-const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
+const ChargeScreen: React.FC<ChargeScreenProps> = ({
+  navigation,
+  route: {params},
+  product,
+  action,
+}) => {
   const {localOpList, prodByPartner} = product;
-  const navigation = useNavigation();
-  const route = useRoute<RouteProp<ParamList, 'ChargeScreen'>>();
-  const params = useMemo(() => route?.params, [route?.params]);
   const [index, setIndex] = useState(0);
   const [showTip, setTip] = useState(false);
 
@@ -166,7 +170,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
   const partnerIds = useMemo(() => {
     return product.prodByCountry.reduce((acc: string[], cur) => {
       const curArr = cur.country.split(',');
-      const mainCntryArr = params.mainSubs?.country || [];
+      const mainCntryArr = params?.mainSubs?.country || [];
 
       if (
         curArr.length === mainCntryArr.length &&
@@ -177,7 +181,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
 
       return acc;
     }, []);
-  }, [params.mainSubs.country, product.prodByCountry]);
+  }, [params?.mainSubs?.country, product.prodByCountry]);
 
   const prodData = useMemo(() => {
     if (partnerIds) {
@@ -284,7 +288,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
   );
   const renderScene = useCallback(
     ({route: sceneRoute}: {route: ChargeTabRoute}) => {
-      const prodDataC = prodData[sceneRoute.category === 'daily' ? 0 : 1].data;
+      const prodDataC = prodData[sceneRoute.category === 'daily' ? 0 : 1];
       return (
         <ScrollView>
           {prodDataC.length > 0 ? (
@@ -295,9 +299,9 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
                 onPress={() => {
                   navigation.navigate('ChargeDetail', {
                     data,
-                    prodname: params.mainSubs.prodName,
-                    chargeablePeriod: params.chargeablePeriod,
-                    subsIccid: params.mainSubs.subsIccid,
+                    prodname: params?.mainSubs?.prodName,
+                    chargeablePeriod: params?.chargeablePeriod,
+                    subsIccid: params?.mainSubs?.subsIccid,
                   });
                 }}
                 isCharge
@@ -320,9 +324,9 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({product, action}) => {
     },
     [
       navigation,
-      params.chargeablePeriod,
-      params.mainSubs.prodName,
-      params.mainSubs.subsIccid,
+      params?.chargeablePeriod,
+      params?.mainSubs?.prodName,
+      params?.mainSubs?.subsIccid,
       prodData,
     ],
   );

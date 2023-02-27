@@ -269,7 +269,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           const exp = moment(userDataBundles[0]?.expireTime).add(9, 'h');
           const now = moment();
 
-          const isExpired = statusCd === 'A' && exp < now;
+          const isExpired = statusCd === 'C' || (statusCd === 'A' && exp < now);
 
           const tempCmiStatus: StatusObj = {
             statusCd: isExpired ? 'U' : statusCd,
@@ -383,6 +383,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           break;
         case 'Quadcell':
           result = await checkQuadcellData(item);
+          break;
+        case 'BillionConnect': // 사용량 조회 미지원
+          setShowSnackBar(true);
+          result = {
+            status: {statusCd: undefined, endTime: undefined},
+            usage: {quota: undefined, used: undefined},
+          };
           break;
         default:
           result = await checkCmiData(item);
@@ -510,7 +517,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}
-        textMessage={i18n.t('usim:failSnackBar')}
+        textMessage={i18n.t('service:ready')}
+        bottom={10}
       />
     </SafeAreaView>
   );

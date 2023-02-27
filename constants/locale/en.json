@@ -911,5 +911,8 @@
   "local:modal:popup:notice": "(It takes 10~30 minutes on average)",
 
   "local:noticeBox:title": "What is a local network product?",
-  "local:noticeBox:body": "As a product that is directly connected to the local network of a local telecommunications company, you can use the data service more reliably."
+  "local:noticeBox:body1": "This product is directly connected to the local network of a local telecommunications company",
+  "local:noticeBox:body2": "You can use the data service more reliably.",
+
+  "service:ready": "This is a service in preparation."
 }

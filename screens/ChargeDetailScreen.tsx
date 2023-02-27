@@ -6,13 +6,12 @@ import {
   ImageBackground,
   ScrollView,
 } from 'react-native';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {RouteProp} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {colors} from '@/constants/Colors';
 import AppText from '@/components/AppText';
 import AppBackButton from '@/components/AppBackButton';
-import {RkbProduct} from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import AppStyledText from '@/components/AppStyledText';
@@ -23,6 +22,7 @@ import {AccountModelState} from '@/redux/modules/account';
 import {API} from '@/redux/api';
 import utils from '@/redux/api/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({
   paymentBtnFrame: {
@@ -111,16 +111,14 @@ const styles = StyleSheet.create({
   },
 });
 
-type ParamList = {
-  ChargeDetailScreen: {
-    data: RkbProduct;
-    prodname: string;
-    chargeablePeriod: string;
-    subsIccid: string;
-  };
-};
+type ChargeDetailScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'ChargeDetail'
+>;
 
 type ProductDetailScreenProps = {
+  navigation: ChargeDetailScreenNavigationProp;
+  route: RouteProp<HomeStackParamList, 'ChargeDetail'>;
   account: AccountModelState;
   action: {
     cart: CartAction;
@@ -128,17 +126,15 @@ type ProductDetailScreenProps = {
 };
 
 const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
+  navigation,
+  route: {params},
   account,
   action,
 }) => {
-  const route = useRoute<RouteProp<ParamList, 'ChargeDetailScreen'>>();
-  const params = useMemo(() => route?.params, [route?.params]);
   const purchaseItems = useMemo(
-    () => [API.Product.toPurchaseItem(params.data)],
-    [params.data],
+    () => [API.Product.toPurchaseItem(params?.data)],
+    [params?.data],
   );
-
-  const navigation = useNavigation();
 
   useEffect(() => {
     navigation.setOptions({
@@ -154,13 +150,13 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
     action.cart.purchase({
       purchaseItems,
       balance,
-      esimIccid: params.subsIccid,
+      esimIccid: params?.subsIccid,
     });
 
     navigation.navigate('PymMethod', {
       mode: 'roaming_product',
     });
-  }, [account, action.cart, navigation, params.subsIccid, purchaseItems]);
+  }, [account, action.cart, navigation, params?.subsIccid, purchaseItems]);
 
   const titleText = useCallback(
     (text: string, prodname: string, name: string) => (
@@ -190,7 +186,7 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
       <ScrollView style={{flex: 1}}>
         <ImageBackground
           source={
-            params.data.field_daily === 'daily'
+            params?.data.field_daily === 'daily'
               ? // eslint-disable-next-line global-require
                 require('../assets/images/esim/img_bg_1.png')
               : // eslint-disable-next-line global-require
@@ -200,15 +196,15 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
           <View style={styles.mainBodyFrame}>
             {titleText(
               i18n.t('esim:chargeDetail:body'),
-              params.prodname,
-              params.data.name,
+              params?.prodname,
+              params?.data.name,
             )}
           </View>
 
           <View>
             {tailText(
               i18n.t('esim:chargeDetail:body2'),
-              params.chargeablePeriod,
+              params?.chargeablePeriod,
             )}
           </View>
         </ImageBackground>
@@ -251,9 +247,9 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
           <AppText style={styles.amountText}>
             {i18n.t('esim:charge:amount')}
             <AppText style={styles.amount}>
-              {utils.currencyString(params.data.price.value)}
+              {utils.currencyString(params?.data.price.value)}
             </AppText>
-            {i18n.t(params.data.price.currency)}
+            {i18n.t(params?.data.price.currency)}
           </AppText>
         </View>
         <AppButton

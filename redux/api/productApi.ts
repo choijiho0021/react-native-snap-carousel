@@ -83,6 +83,7 @@ export type RkbProduct = {
   uuid: string;
   name: string;
   price: Currency;
+  listPrice: Currency;
   field_daily: string;
   volume: string;
   partnerId: string;
@@ -120,6 +121,7 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
           key: item.uuid,
           uuid: item.uuid,
           name: item.title,
+          listPrice: utils.stringToCurrency(item.list_price),
           price: utils.stringToCurrency(item.price),
           field_daily: item.field_daily,
           volume: item.field_data_volume,
@@ -302,6 +304,7 @@ export type RkbProdByCountry = {
   country: string;
   price: string;
   partner: string;
+  max_discount: string;
   search?: string;
 };
 const productByCountry = () => {

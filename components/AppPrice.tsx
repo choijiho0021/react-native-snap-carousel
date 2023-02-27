@@ -1,5 +1,12 @@
-import React, {Fragment, memo} from 'react';
-import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
+import React, {Fragment, memo, useMemo} from 'react';
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {Currency} from '@/redux/api/productApi';
@@ -27,45 +34,51 @@ const AppPrice = ({
   currencyStyle,
   showPlus = false,
   price,
+  isDiscounted = false,
 }: {
   style?: StyleProp<ViewStyle>;
   balanceStyle?: StyleProp<TextStyle>;
   currencyStyle?: StyleProp<TextStyle>;
   showPlus?: boolean;
   price: Currency;
+  isDiscounted?: boolean;
 }) => {
+  const textStyle: StyleProp<TextStyle> = useMemo(
+    () => ({
+      color: colors.black,
+      textDecorationLine: isDiscounted ? 'line-through' : 'none',
+    }),
+    [isDiscounted],
+  );
+
   return (
-    <View style={style || styles.container}>
+    <View>
       {esimGlobal || i18n.locale !== 'ko' ? (
-        <Fragment>
-          <AppText
-            key="won"
-            style={[{color: colors.black}, currencyStyle || styles.price]}>
+        <View style={style || styles.container}>
+          <AppText key="won" style={[textStyle, currencyStyle || styles.price]}>
             {showPlus && price.value > 0 ? '+' : ''}
             {`${i18n.t(price.currency)}`}
           </AppText>
 
           <AppText
             key="balance"
-            style={[{color: colors.black}, balanceStyle || styles.price]}>
+            style={[textStyle, balanceStyle || styles.price]}>
             {utils.currencyString(price.value)}
           </AppText>
-        </Fragment>
+        </View>
       ) : (
-        <Fragment>
+        <View style={style || styles.container}>
           <AppText
             key="balance"
-            style={[{color: colors.black}, balanceStyle || styles.price]}>
+            style={[textStyle, balanceStyle || styles.price]}>
             {showPlus && price.value > 0 ? '+' : ''}
             {utils.currencyString(price.value)}
           </AppText>
 
-          <AppText
-            key="won"
-            style={[{color: colors.black}, currencyStyle || styles.price]}>
+          <AppText key="won" style={[textStyle, currencyStyle || styles.price]}>
             {i18n.t(price.currency)}
           </AppText>
-        </Fragment>
+        </View>
       )}
     </View>
   );

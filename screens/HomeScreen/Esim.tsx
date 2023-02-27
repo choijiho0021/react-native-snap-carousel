@@ -33,8 +33,8 @@ import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
 import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import VersionCheck from 'react-native-version-check';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {isDeviceSize, isFolderOpen} from '@/constants/SliderEntry.style';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -74,7 +74,6 @@ import {useInterval} from '@/utils/useInterval';
 import NotiModal from './component/NotiModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
-import {isFolderOpen} from '@/constants/SliderEntry.style';
 import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
 
@@ -433,23 +432,28 @@ const Esim: React.FC<EsimProps> = ({
       setPopUp(popUpPromo);
       setCloseType(popUpPromo.rule ? 'redirect' : 'close');
       setPopUpVisible(true);
+    } else {
+      setPopUpVisible(false);
     }
   }, [promotion]);
+
+  const navToCountry = useCallback(
+    (info: RkbPriceInfo) => {
+      action.product.getProdOfPartner(info.partnerList);
+      navigation.navigate('Country', {
+        partner: info.partnerList,
+        maxDiscount: Number(info.max_discount),
+      });
+    },
+    [action.product, navigation],
+  );
 
   const okHandler = useCallback(
     (info: RkbPriceInfo) => {
       actions.modal.closeModal();
       navToCountry(info);
     },
-    [actions.modal],
-  );
-
-  const navToCountry = useCallback(
-    (info: RkbPriceInfo) => {
-      action.product.getProdOfPartner(info.partnerList);
-      navigation.navigate('Country', {partner: info.partnerList});
-    },
-    [action.product, navigation],
+    [actions.modal, navToCountry],
   );
 
   const localModal = useCallback(
@@ -551,7 +555,7 @@ const Esim: React.FC<EsimProps> = ({
         </SafeAreaView>
       );
     },
-    [actions.modal],
+    [actions.modal, okHandler],
   );
 
   const onPressItem = useCallback(
@@ -570,7 +574,13 @@ const Esim: React.FC<EsimProps> = ({
         navToCountry(info);
       }
     },
-    [showLocalModal, product.localOpList, actions.modal],
+    [
+      actions.modal,
+      localModal,
+      navToCountry,
+      product.localOpList,
+      showLocalModal,
+    ],
   );
 
   const onIndexChange = useCallback((idx: number) => setIndex(idx), []);
@@ -604,6 +614,7 @@ const Esim: React.FC<EsimProps> = ({
 
       switch (v) {
         case 'redirect':
+          setIsClosedPopUp(true);
           if (popUp?.rule?.navigate) {
             if (popUp?.rule?.navigate?.startsWith('http')) {
               Linking.openURL(popUp?.rule?.navigate);
