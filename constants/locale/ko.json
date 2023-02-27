@@ -58,6 +58,7 @@
   "copy": "복사",
   "close": "닫기",
   "close:week": "일주일간 보지 않기",
+  "close:day": "하루 동안 보지 않기",
   "redirect": "바로 가기",
   "KRW": "원",
   "USD": "$",
@@ -902,9 +903,12 @@
   "local:ok": "네! 확인했어요",
   "local:modal:title": "{{localOpName}} 상품 구매 전\n꼭 확인해주세요!",
   "local:modal:notice1:title": "상품 등록은 1번만 가능!",
-  "local:modal:notice1:body": "이용이 종료될 때까지 eSIM을 삭제하지 말아주세요.",
-  "local:modal:notice2:title": "실시간 사용량 확인 미지원",
-  "local:modal:notice2:body": "빠른 시간 내에 지원하도록 노력하겠습니다.",
+  "local:modal:notice1:body": "이용이 종료될 때까지 <b>eSIM을 삭제하지 말아주세요.</b>",
+  "local:modal:notice2:title": "국내에서 등록 하는 경우",
+  "local:modal:notice2:body": "활성화 실패 팝업이 나올 수 있어요.\n한국에 로컬망이 없기에 발생하는 현상으로,\n<b>정상입니다.</b>",
+  "local:modal:notice2:th:title": "상품 등록은 현지에서!",
+  "local:modal:notice2:th:body": "<b>상품 등록 일시부터 사용기간이 소진</b>되는 상품입니다. 국내에서 등록하지 말고, 현지에서 사용 전 등록해주세요.",
+  "local:modal:popup:notice": "(평균 10~30분 소요)",
 
   "local:noticeBox:title": "로컬망 상품이란?",
   "local:noticeBox:body": "현지 통신사의 로컬망과 직접 연결된 상품으로, 데이터 서비스를 보다 안정적으로 이용하실 수 있습니다."
