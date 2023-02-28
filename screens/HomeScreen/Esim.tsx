@@ -525,7 +525,9 @@ const Esim: React.FC<EsimProps> = ({
                 style={styles.bottom}
                 onPress={() => {
                   AsyncStorage.setItem(
-                    `esim.show.local.modal.${ccode[0]}`,
+                    `esim.show.local.modal.${ccode.find(
+                      (elm) => elm !== 'KG',
+                    )}`,
                     moment().format('YYYY-MM-DD HH:mm:ss'),
                   );
                   okHandler(info);
@@ -550,7 +552,7 @@ const Esim: React.FC<EsimProps> = ({
       const localOpName = API.Product.getTitle(localOp);
 
       const item = await AsyncStorage.getItem(
-        `esim.show.local.modal.${localOp?.ccode[0]}`,
+        `esim.show.local.modal.${localOp?.ccode.find((elm) => elm !== 'KG')}`,
       );
       const tm = moment(item, 'YYYY-MM-DD HH:mm:ss');
       const showLocalModal =
