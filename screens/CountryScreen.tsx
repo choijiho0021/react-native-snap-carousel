@@ -60,16 +60,12 @@ const styles = StyleSheet.create({
   },
   emptyData: {
     alignItems: 'center',
-    marginTop: '45%',
+    marginTop: '40%',
   },
-  emptyText1: {
-    ...appStyles.medium14,
-    color: colors.clearBlue,
+  emptyText: {
+    ...appStyles.medium16,
     lineHeight: 20,
-  },
-  emptyText2: {
-    ...appStyles.normal14Text,
-    lineHeight: 20,
+    color: colors.warmGrey,
   },
   toolTipBox: {
     backgroundColor: colors.backGrey,
@@ -293,11 +289,11 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
             <View style={styles.emptyData}>
               <AppSvgIcon name="threeDots" style={styles.emptyImage} />
 
-              <AppText style={styles.emptyText1}>
-                {i18n.t('esim:charge:noProd1')}
+              <AppText style={styles.emptyText}>
+                {i18n.t('country:noProd1')}
               </AppText>
-              <AppText style={styles.emptyText2}>
-                {i18n.t('esim:charge:noProd2')}
+              <AppText style={styles.emptyText}>
+                {i18n.t('country:noProd2')}
               </AppText>
             </View>
           )}

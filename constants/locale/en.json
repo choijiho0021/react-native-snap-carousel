@@ -113,7 +113,8 @@
   "country:addCart": "Added to the Cart",
   "country:total": "Volume Data Plan",
   "country:daily": "Unlimited Data Plan",
-
+  "country:noProd1": "No products.",
+  "country:noProd2": "Choose products in another tab!",
   "view:detail": "Detail Info",
 
   "reg:actCode": "Activation Code",

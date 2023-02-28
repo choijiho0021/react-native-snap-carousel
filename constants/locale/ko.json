@@ -113,7 +113,8 @@
   "country:addCart": "카트에 담겼습니다.",
   "country:total": "데이터 종량제",
   "country:daily": "데이터 무제한",
-
+  "country:noProd1": "관련 상품이 없습니다.",
+  "country:noProd2": "다른 탭에 있는 상품을 선택해주세요!",
   "view:detail": "상세보기",
 
   "reg:actCode": "Activation Code",
