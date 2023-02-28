@@ -45,12 +45,13 @@ const styles = StyleSheet.create({
   },
   tab: {
     backgroundColor: colors.white,
-    height: 84,
+    height: 90,
     paddingHorizontal: 25,
     paddingBottom: 24,
+    paddingTop: 16,
   },
   tabTitle: {
-    fontSize: 18,
+    ...appStyles.bold18Text,
     lineHeight: 20,
     color: colors.gray2,
   },
