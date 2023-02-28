@@ -2,14 +2,7 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState, useMemo, useRef} from 'react';
-import {
-  Animated,
-  Pressable,
-  SafeAreaView,
-  SectionList,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {Animated, SafeAreaView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {Map as ImmutableMap} from 'immutable';
 import {TabView} from 'react-native-tab-view';
@@ -194,7 +187,7 @@ type TabRoute = {
 };
 
 const CountryScreen: React.FC<CountryScreenProps> = (props) => {
-  const {navigation, route, product} = props;
+  const {navigation, route, product, pending} = props;
   const {localOpList, prodByLocalOp, prodList, prodByPartner} = product;
 
   const [prodData, setProdData] = useState<RkbProduct[][]>([[], []]);
@@ -213,20 +206,16 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const routes = useMemo(
     () =>
       [
-        prodData[0].length > 0
-          ? {
-              key: 'daily',
-              title: i18n.t('country:daily'),
-            }
-          : undefined,
-        prodData[1].length > 0
-          ? {
-              key: 'total',
-              title: i18n.t('country:total'),
-            }
-          : undefined,
-      ].filter((elm) => elm !== undefined) as TabRoute[],
-    [prodData],
+        {
+          key: 'daily',
+          title: i18n.t('country:daily'),
+        },
+        {
+          key: 'total',
+          title: i18n.t('country:total'),
+        },
+      ] as TabRoute[],
+    [],
   );
 
   useEffect(() => {
@@ -247,22 +236,17 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   useEffect(() => {
     if (route.params?.partner) {
       const partnerIds = route.params.partner;
-
       const localOp = localOpList.get(partnerIds[0]);
       setPartnerId(partnerIds[0]);
-
       setImageUrl(localOp?.imageUrl);
       setLocalOpDetails(localOp?.detail);
-
-      setProdData(makeProdData(prodByPartner, partnerIds));
+      if (partnerIds.every((elm) => prodByPartner.has(elm))) {
+        const data = makeProdData(prodByPartner, partnerIds);
+        setProdData(data);
+        if (data[0].length === 0) setIndex(1);
+      }
     }
-  }, [
-    localOpList,
-    prodByLocalOp,
-    prodByPartner,
-    prodList,
-    route.params.partner,
-  ]);
+  }, [localOpList, prodByPartner, route.params.partner]);
 
   const onIndexChange = useCallback((idx: number) => {
     setIndex(idx);
@@ -283,8 +267,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
               contentOffset: {y},
             },
           }) => {
-            // if (isTop && y > 150) setIsTop(false);
-            // else
             if (!isTop && y <= -5) setIsTop(true);
           }}>
           {prodDataC.length > 0 ? (
@@ -423,7 +405,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         onIndexChange={onIndexChange}
         renderTabBar={() => null}
       />
-      <AppActivityIndicator visible={props.pending} />
+      <AppActivityIndicator visible={pending} />
     </SafeAreaView>
   );
 };
