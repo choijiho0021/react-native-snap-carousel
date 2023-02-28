@@ -172,9 +172,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 2,
   },
-  localModal: {
-    backgroundColor: 'white',
-  },
   okBtnContainer: {
     backgroundColor: colors.white,
     marginBottom: 16,
@@ -358,7 +355,6 @@ const Esim: React.FC<EsimProps> = ({
   const initNoti = useRef(false);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const [bannerHeight, setBannerHeight] = useState<number>(150);
-  const [showLocalModal, setShowLocalModal] = useState(true);
 
   const isSupport = useMemo(() => account.isSupportDev, [account.isSupportDev]);
 
@@ -413,15 +409,6 @@ const Esim: React.FC<EsimProps> = ({
       useNativeDriver: false,
     }).start();
   }, [animatedValue, bannerHeight, isTop]);
-
-  useEffect(() => {
-    async function checkShowModal() {
-      const item = await AsyncStorage.getItem('esim.show.local.modal');
-      const tm = moment(item, 'YYYY-MM-DD HH:mm:ss');
-      setShowLocalModal(!tm.isValid() || tm.add(1, 'day').isBefore(moment()));
-    }
-    checkShowModal();
-  }, []);
 
   const setNotiModal = useCallback(() => {
     const popUpPromo = promotion?.find(
@@ -513,7 +500,7 @@ const Esim: React.FC<EsimProps> = ({
                         />
 
                         <View style={styles.localNoticePopupIcon}>
-                          <AppSvgIcon name={'localNoticePopup'} />
+                          <AppSvgIcon name="localNoticePopup" />
                         </View>
 
                         <AppText style={styles.localNoticePopupText}>
@@ -538,10 +525,9 @@ const Esim: React.FC<EsimProps> = ({
                 style={styles.bottom}
                 onPress={() => {
                   AsyncStorage.setItem(
-                    'esim.show.local.modal',
+                    `esim.show.local.modal.${ccode[0]}`,
                     moment().format('YYYY-MM-DD HH:mm:ss'),
                   );
-                  setShowLocalModal(false);
                   okHandler(info);
                 }}>
                 <View style={styles.underLine}>
@@ -559,9 +545,16 @@ const Esim: React.FC<EsimProps> = ({
   );
 
   const onPressItem = useCallback(
-    (info: RkbPriceInfo) => {
+    async (info: RkbPriceInfo) => {
       const localOp = product.localOpList.get(info?.partner || '');
       const localOpName = API.Product.getTitle(localOp);
+
+      const item = await AsyncStorage.getItem(
+        `esim.show.local.modal.${localOp?.ccode[0]}`,
+      );
+      const tm = moment(item, 'YYYY-MM-DD HH:mm:ss');
+      const showLocalModal =
+        !tm.isValid() || tm.add(1, 'day').isBefore(moment());
 
       if (
         showLocalModal &&
@@ -574,13 +567,7 @@ const Esim: React.FC<EsimProps> = ({
         navToCountry(info);
       }
     },
-    [
-      actions.modal,
-      localModal,
-      navToCountry,
-      product.localOpList,
-      showLocalModal,
-    ],
+    [actions.modal, localModal, navToCountry, product.localOpList],
   );
 
   const onIndexChange = useCallback((idx: number) => setIndex(idx), []);
