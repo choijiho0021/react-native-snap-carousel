@@ -33,14 +33,14 @@ const AppPrice = ({
   balanceStyle,
   currencyStyle,
   showPlus = false,
-  price,
+  price = {value: 0, currency: 'KRW'},
   isDiscounted = false,
 }: {
   style?: StyleProp<ViewStyle>;
   balanceStyle?: StyleProp<TextStyle>;
   currencyStyle?: StyleProp<TextStyle>;
   showPlus?: boolean;
-  price: Currency;
+  price?: Currency;
   isDiscounted?: boolean;
 }) => {
   const textStyle: StyleProp<TextStyle> = useMemo(
