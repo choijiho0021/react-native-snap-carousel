@@ -1,7 +1,7 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Video from 'react-native-video';
@@ -172,12 +172,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [consent, setConsent] = useState<boolean>();
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
   const [showChargeAlert, setShowChargeAlert] = useState(false);
-  const [inicisEnabled, setInicisEnabled] = useState<boolean | undefined>(
-    undefined,
-  );
+  const inicisEnabled = useRef<boolean>();
   const {pymPrice, deduct} = useMemo(() => cart, [cart]);
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
-  const [coupon, setCoupon] = useState('');
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -186,17 +183,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
     return unsubscribe;
   }, [cart.esimIccid, navigation, showChargeAlert]);
-
-  useEffect(() => {
-    if (!coupon) {
-      setCoupon('1-0000111101059119737');
-      action.cart.calculateTotal({
-        items: cart.purchaseItems,
-        coupons: ['1-0000111101059119737'],
-        token: account.token,
-      });
-    }
-  }, [account.token, action.cart, cart.purchaseItems, coupon]);
 
   useEffect(() => {
     if (!info.infoMap.has(infoKey)) {
@@ -221,12 +207,12 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
   useEffect(() => {
     const {token} = account;
-    if (inicisEnabled === undefined) {
+    if (inicisEnabled.current === undefined) {
       API.Payment.getRokebiPaymentRule({token}).then((rsp) => {
-        setInicisEnabled(rsp.inicis_enabled === '1');
+        inicisEnabled.current = rsp.inicis_enabled === '1';
       });
     }
-  }, [account, inicisEnabled]);
+  }, [account]);
 
   const onSubmit = useCallback(
     (passingAlert: boolean) => {
@@ -285,7 +271,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           pg: payMethod?.key,
           pay_method: payMethod?.method,
           merchant_uid: `${
-            inicisEnabled ? 'r_' : 'i_'
+            inicisEnabled.current ? 'r_' : 'i_'
           }${mobile}_${new Date().getTime()}`,
           name: i18n.t('appTitle'),
           amount: pymPrice?.value, // 실제 결제 금액 (로깨비캐시 제외)
@@ -301,7 +287,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         setClickable(true);
         navigation.navigate(
-          inicisEnabled ? 'PaymentGateway' : 'Payment',
+          inicisEnabled.current ? 'PaymentGateway' : 'Payment',
           params,
         );
       }
@@ -311,10 +297,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       action.cart,
       clickable,
       deduct,
-      inicisEnabled,
       mode,
       navigation,
-      pymPrice,
+      pymPrice?.value,
       selected,
     ],
   );
