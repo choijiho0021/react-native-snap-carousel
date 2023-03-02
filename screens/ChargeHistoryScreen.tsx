@@ -380,7 +380,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
               onPress={() => {
                 setPending(true);
                 setSelectedSubs(item);
-                onPressUsage(item).then((u) => {
+                onPressUsage(item)?.then((u) => {
                   setUsage(u.usage);
                   setStatus(u.status);
                   setPending(false);
