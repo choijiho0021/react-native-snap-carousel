@@ -2,7 +2,6 @@ import {Map as ImmutableMap} from 'immutable';
 import React, {memo, useCallback, useMemo, useState} from 'react';
 import {
   Animated,
-  Image,
   Keyboard,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -19,6 +18,7 @@ import i18n from '@/utils/i18n';
 import AppPrice from './AppPrice';
 import AppText from './AppText';
 import {RkbPriceInfo} from '@/redux/modules/product';
+import ProductImg from './ProductImg';
 
 const styles = StyleSheet.create({
   text: {

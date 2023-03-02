@@ -6,7 +6,6 @@ import {Animated, SafeAreaView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {Map as ImmutableMap} from 'immutable';
 import {TabView} from 'react-native-tab-view';
-import {ScrollView} from 'react-native-gesture-handler';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
@@ -20,12 +19,12 @@ import {RkbProduct} from '@/redux/api/productApi';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
-import CountryListItem from './HomeScreen/component/CountryListItem';
 import ProductImg from '@/components/ProductImg';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppTabHeader from '@/components/AppTabHeader';
 import AppButton from '@/components/AppButton';
 import {retrieveData, storeData} from '@/utils/utils';
+import ProdByType from './ProdByType';
 
 const styles = StyleSheet.create({
   container: {
@@ -45,27 +44,14 @@ const styles = StyleSheet.create({
   },
   tab: {
     backgroundColor: colors.white,
-    height: 90,
+    height: 84,
     paddingHorizontal: 25,
     paddingBottom: 24,
-    paddingTop: 16,
   },
   tabTitle: {
-    ...appStyles.bold18Text,
+    fontSize: 18,
     lineHeight: 20,
     color: colors.gray2,
-  },
-  emptyImage: {
-    marginBottom: 21,
-  },
-  emptyData: {
-    alignItems: 'center',
-    marginTop: '40%',
-  },
-  emptyText: {
-    ...appStyles.medium16,
-    lineHeight: 20,
-    color: colors.warmGrey,
   },
   toolTipBox: {
     backgroundColor: colors.backGrey,
@@ -151,15 +137,6 @@ export const makeProdData = (
   ];
 };
 
-const position = (idx: number, arr: RkbProduct[]) => {
-  if (arr.length > 1) {
-    if (idx === 0) return 'head';
-    if (idx === arr.length - 1) return 'tail';
-    return 'middle';
-  }
-  return 'onlyOne';
-};
-
 type CountryScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
   'Country'
@@ -184,7 +161,7 @@ type TabRoute = {
 };
 
 const CountryScreen: React.FC<CountryScreenProps> = (props) => {
-  const {navigation, route, product, pending} = props;
+  const {navigation, route, product} = props;
   const {localOpList, prodByLocalOp, prodList, prodByPartner} = product;
 
   const [prodData, setProdData] = useState<RkbProduct[][]>([[], []]);
@@ -199,7 +176,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     [localOpList, route.params?.partner],
   );
   const animatedValue = useRef(new Animated.Value(150)).current;
-
   const routes = useMemo(
     () =>
       [
@@ -233,8 +209,10 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   useEffect(() => {
     if (route.params?.partner) {
       const partnerIds = route.params.partner;
+
       const localOp = localOpList.get(partnerIds[0]);
       setPartnerId(partnerIds[0]);
+
       setImageUrl(localOp?.imageUrl);
       setLocalOpDetails(localOp?.detail);
       if (partnerIds.every((elm) => prodByPartner.has(elm))) {
@@ -243,64 +221,43 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         if (data[0].length === 0) setIndex(1);
       }
     }
-  }, [localOpList, prodByPartner, route.params.partner]);
+  }, [
+    localOpList,
+    prodByLocalOp,
+    prodByPartner,
+    prodList,
+    route.params.partner,
+  ]);
 
   const onIndexChange = useCallback((idx: number) => {
     setIndex(idx);
   }, []);
 
+  const onPress = useCallback(
+    (prod: RkbProduct) =>
+      navigation.navigate('ProductDetail', {
+        title: prod.name,
+        item: API.Product.toPurchaseItem(prod),
+        img: imageUrl,
+        uuid: prod.uuid,
+        desc: prod.desc,
+        localOpDetails,
+        partnerId,
+      }),
+    [imageUrl, localOpDetails, navigation, partnerId],
+  );
+
   const renderScene = useCallback(
-    ({route: sceneRoute}: {route: TabRoute}) => {
-      const prodDataC = prodData[sceneRoute.key === 'daily' ? 0 : 1];
-
+    ({route}: {route: TabRoute}) => {
       return (
-        <ScrollView
-          style={{backgroundColor: colors.white}}
-          onScrollBeginDrag={() => {
-            setIsTop(false);
-          }}
-          onScroll={({
-            nativeEvent: {
-              contentOffset: {y},
-            },
-          }) => {
-            if (!isTop && y <= -5) setIsTop(true);
-          }}>
-          {prodDataC.length > 0 ? (
-            prodDataC.map((data, idx) => (
-              <CountryListItem
-                key={data.sku}
-                item={data}
-                onPress={() =>
-                  navigation.navigate('ProductDetail', {
-                    title: data.name,
-                    item: API.Product.toPurchaseItem(data),
-                    img: imageUrl,
-                    uuid: data.uuid,
-                    desc: data.desc,
-                    localOpDetails,
-                    partnerId,
-                  })
-                }
-                position={position(idx, prodDataC)}
-              />
-            ))
-          ) : (
-            <View style={styles.emptyData}>
-              <AppSvgIcon name="threeDots" style={styles.emptyImage} />
-
-              <AppText style={styles.emptyText}>
-                {i18n.t('country:noProd1')}
-              </AppText>
-              <AppText style={styles.emptyText}>
-                {i18n.t('country:noProd2')}
-              </AppText>
-            </View>
-          )}
-        </ScrollView>
+        <ProdByType
+          prodData={prodData[route.key === 'daily' ? 0 : 1]}
+          onTop={setIsTop}
+          onPress={onPress}
+        />
       );
     },
-    [imageUrl, isTop, localOpDetails, navigation, partnerId, prodData],
+    [onPress, prodData],
   );
 
   const renderToolTip = useCallback(
@@ -402,7 +359,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         onIndexChange={onIndexChange}
         renderTabBar={() => null}
       />
-      <AppActivityIndicator visible={pending} />
+      <AppActivityIndicator visible={props.pending} />
     </SafeAreaView>
   );
 };
