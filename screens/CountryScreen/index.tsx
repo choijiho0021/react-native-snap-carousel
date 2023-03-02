@@ -54,9 +54,9 @@ const styles = StyleSheet.create({
     color: colors.gray2,
   },
   toolTipBox: {
-    backgroundColor: colors.backGrey,
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
+    backgroundColor: colors.black,
+    // borderWidth: 1,
+    // borderColor: colors.lightGrey,
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 20,
@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
   },
   toolTipTitleText: {
     ...appStyles.bold14Text,
+    color: colors.white,
     lineHeight: 20,
   },
   btnCancel: {
@@ -84,6 +85,7 @@ const styles = StyleSheet.create({
   },
   toolTipBodyText: {
     ...appStyles.normal14Text,
+    color: colors.white,
     lineHeight: 20,
   },
   cautionBtn: {
@@ -278,25 +280,14 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
               </AppText>
               <AppButton
                 style={styles.btnCancel}
-                iconName="btnCancel"
+                iconName="btnCancelWhite"
                 onPress={() => setTip(false)}
               />
             </View>
             <View style={styles.toolTipBody}>
-              {[1, 2].map((k) => (
-                <View key={k} style={{flexDirection: 'row'}}>
-                  <AppText
-                    style={[
-                      appStyles.normal14Text,
-                      {marginHorizontal: 5, marginTop: 3},
-                    ]}>
-                    •
-                  </AppText>
-                  <AppText style={styles.toolTipBodyText}>
-                    {i18n.t(`local:noticeBox:body${k}`)}
-                  </AppText>
-                </View>
-              ))}
+              <AppText style={styles.toolTipBodyText}>
+                {i18n.t(`local:noticeBox:body`)}
+              </AppText>
             </View>
           </View>
         }

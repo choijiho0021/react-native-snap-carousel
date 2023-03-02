@@ -80,9 +80,9 @@ const styles = StyleSheet.create({
     height: 0,
   },
   toolTipBox: {
-    backgroundColor: colors.backGrey,
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
+    backgroundColor: colors.black,
+    // borderWidth: 1,
+    // borderColor: colors.lightGrey,
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 20,
@@ -97,6 +97,7 @@ const styles = StyleSheet.create({
   },
   toolTipTitleText: {
     ...appStyles.bold14Text,
+    color: colors.white,
     lineHeight: 20,
   },
   btnCancel: {
@@ -111,6 +112,7 @@ const styles = StyleSheet.create({
 
   toolTipBodyText: {
     ...appStyles.normal14Text,
+    color: colors.white,
     lineHeight: 20,
   },
   emptyImage: {
@@ -215,7 +217,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
               <AppText style={styles.toolTipTitleText}>
                 {i18n.t('esim:chargeCaution')}
               </AppText>
-              <AppButton style={styles.btnCancel} iconName="btnCancel" />
+              <AppButton style={styles.btnCancel} iconName="btnCancelWhite" />
             </View>
             <View style={styles.toolTipBody}>
               {[1, 2, 3].map((k) => (
@@ -223,7 +225,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
                   <AppText
                     style={[
                       appStyles.normal14Text,
-                      {marginHorizontal: 5, marginTop: 3},
+                      {marginHorizontal: 5, marginTop: 3, color: colors.white},
                     ]}>
                     •
                   </AppText>
