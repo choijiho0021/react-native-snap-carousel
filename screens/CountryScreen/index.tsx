@@ -24,7 +24,7 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import AppTabHeader from '@/components/AppTabHeader';
 import AppButton from '@/components/AppButton';
 import {retrieveData, storeData} from '@/utils/utils';
-import ProdByType from './ProdByType';
+import ProdByType from '@/components/ProdByType';
 
 const styles = StyleSheet.create({
   container: {
@@ -343,22 +343,24 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         </Animated.View>
       )}
 
-      <AppTabHeader
-        index={index}
-        routes={routes}
-        onIndexChange={onIndexChange}
-        style={styles.tab}
-        tintColor={colors.black}
-        titleStyle={styles.tabTitle}
-      />
+      <View style={{backgroundColor: colors.white, flex: 1}}>
+        <AppTabHeader
+          index={index}
+          routes={routes}
+          onIndexChange={onIndexChange}
+          style={styles.tab}
+          tintColor={colors.black}
+          titleStyle={styles.tabTitle}
+        />
 
-      <TabView
-        sceneContainerStyle={{flex: 1}}
-        navigationState={{index, routes}}
-        renderScene={renderScene}
-        onIndexChange={onIndexChange}
-        renderTabBar={() => null}
-      />
+        <TabView
+          sceneContainerStyle={{flex: 1}}
+          navigationState={{index, routes}}
+          renderScene={renderScene}
+          onIndexChange={onIndexChange}
+          renderTabBar={() => null}
+        />
+      </View>
       <AppActivityIndicator visible={props.pending} />
     </SafeAreaView>
   );
