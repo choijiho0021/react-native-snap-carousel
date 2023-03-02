@@ -77,7 +77,7 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
       <input type="hidden" name="P_AMT" value="${info.amount}" />
       <input type="hidden" name="P_CHARSET" value="utf8" />
       <input type="hidden" name="P_GOODS" value="${info.name}" />
-      <input type="hidden" name="P_UMANE" value="${info.buyer_name}" />
+      <input type="hidden" name="P_UNAME" value="${info.buyer_name}" />
       <input type="hidden" name="P_MOBILE" value="${info.buyer_tel}" />
       <input type="hidden" name="P_EMAIL" value="${info.buyer_email}" />
       <input type="hidden" name="P_NOTI_URL" value="${
