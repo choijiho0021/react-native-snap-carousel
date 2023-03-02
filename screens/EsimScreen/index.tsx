@@ -382,7 +382,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           result = await checkCmiData(item);
           break;
         case 'Quadcell':
-          result = await checkQuadcellData(item);
+          if (item.daily === 'total') {
+            result = await checkQuadcellData(item);
+          } else {
+            setShowSnackBar(true);
+          }
           break;
         case 'BillionConnect': // 사용량 조회 미지원
           setShowSnackBar(true);

@@ -506,7 +506,7 @@
   "esim:chargeModal:body1": "You can recharge the previous purchase with new product.",
   "esim:chargeModal:body2": "Recharging is allowed for the products of same country. It shall be activated automatically when the previous one is expired.",
   "esim:chargeModal:body3": "Recharge is allowed during the recharge period. Check the recharge period in purchasing products!",
-  "esim:chargeDetail:body": "You are trying to recharge\n{prodname}\nwith <b>{name}</b>.",
+  "esim:chargeDetail:body": "You are trying to recharge\n{prodName}\nwith <b>{name}</b>.",
   "esim:chargeDetail:body2": "Recharge period is \n<b>{chargeablePeriod}</b>.",
   "esim:chargeDetail:body5": "Recharge period is ",
   "esim:chargeDetail:body6": "",
@@ -912,8 +912,7 @@
   "local:modal:popup:notice": "(It takes 10~30 minutes on average)",
 
   "local:noticeBox:title": "What is a local network product?",
-  "local:noticeBox:body1": "This product is directly connected to the local network of a local telecommunications company",
-  "local:noticeBox:body2": "You can use the data service more reliably.",
+  "local:noticeBox:body": "As a product that is directly connected to the local network of a local telecommunications company, you can use the data service more reliably.",
 
   "service:ready": "This is a service in preparation."
 }

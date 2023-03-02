@@ -126,9 +126,9 @@ export type HomeStackParamList = {
   };
   ChargeDetail: {
     data: RkbProduct;
-    prodname: string;
     chargeablePeriod: string;
-    subsIccid: string;
+    prodName?: string;
+    subsIccid?: string;
   };
   Charge: {
     mainSubs: RkbSubscription;

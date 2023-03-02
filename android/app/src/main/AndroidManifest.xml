@@ -100,8 +100,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:host="rokebi.page.link" android:scheme="https"/>
-                <data android:host="*" android:scheme="rokebiesim" />
-                <data android:host="*" android:scheme="com.uangel.rokebi-ESIM" />
+                <data android:host="app.adjust.com" android:scheme="https" />
             </intent-filter>
         </activity>
         <activity

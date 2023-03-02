@@ -24,7 +24,7 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import AppTabHeader from '@/components/AppTabHeader';
 import AppButton from '@/components/AppButton';
 import {retrieveData, storeData} from '@/utils/utils';
-import ProdByType from './ProdByType';
+import ProdByType from '@/components/ProdByType';
 
 const styles = StyleSheet.create({
   container: {
@@ -54,10 +54,7 @@ const styles = StyleSheet.create({
     color: colors.gray2,
   },
   toolTipBox: {
-    backgroundColor: colors.backGrey,
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
-    paddingHorizontal: 16,
+    backgroundColor: colors.black,
     paddingTop: 16,
     paddingBottom: 20,
     height: '100%',
@@ -71,7 +68,9 @@ const styles = StyleSheet.create({
   },
   toolTipTitleText: {
     ...appStyles.bold14Text,
+    color: colors.white,
     lineHeight: 20,
+    marginLeft: 16,
   },
   btnCancel: {
     width: 12,
@@ -80,10 +79,12 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   toolTipBody: {
+    marginLeft: 16,
     paddingRight: 30,
   },
   toolTipBodyText: {
     ...appStyles.normal14Text,
+    color: colors.white,
     lineHeight: 20,
   },
   cautionBtn: {
@@ -95,18 +96,18 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   arrowStyle: {
-    borderTopColor: colors.lightGrey,
+    borderTopColor: colors.black,
     zIndex: 10,
   },
   triangle: {
     position: 'absolute',
-    top: 32,
+    top: 33,
     backgroundColor: 'transparent',
-    borderBottomWidth: 8,
-    borderBottomColor: colors.backGrey,
-    borderRightWidth: 8,
+    borderBottomWidth: 10,
+    borderBottomColor: colors.black,
+    borderRightWidth: 10,
     borderRightColor: 'transparent',
-    borderLeftWidth: 8,
+    borderLeftWidth: 10,
     borderLeftColor: 'transparent',
     width: 0,
     height: 0,
@@ -254,6 +255,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           prodData={prodData[route.key === 'daily' ? 0 : 1]}
           onTop={setIsTop}
           onPress={onPress}
+          isCharge={false}
         />
       );
     },
@@ -269,7 +271,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         tooltipStyle={styles.toolTipStyle}
         arrowStyle={styles.arrowStyle}
         disableShadow
-        arrowSize={{width: 16, height: 8}}
+        arrowSize={{width: 20, height: 12}}
         content={
           <View>
             <View style={styles.toolTipTitleFrame}>
@@ -278,25 +280,14 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
               </AppText>
               <AppButton
                 style={styles.btnCancel}
-                iconName="btnCancel"
+                iconName="btnCancelWhite"
                 onPress={() => setTip(false)}
               />
             </View>
             <View style={styles.toolTipBody}>
-              {[1, 2].map((k) => (
-                <View key={k} style={{flexDirection: 'row'}}>
-                  <AppText
-                    style={[
-                      appStyles.normal14Text,
-                      {marginHorizontal: 5, marginTop: 3},
-                    ]}>
-                    •
-                  </AppText>
-                  <AppText style={styles.toolTipBodyText}>
-                    {i18n.t(`local:noticeBox:body${k}`)}
-                  </AppText>
-                </View>
-              ))}
+              <AppText style={styles.toolTipBodyText}>
+                {i18n.t(`local:noticeBox:body`)}
+              </AppText>
             </View>
           </View>
         }
@@ -312,7 +303,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           }}
           name="btnChargeCaution"
         />
-        {showTip && <View style={styles.triangle} />}
+        {/* {showTip && <View style={styles.triangle} />} */}
       </Tooltip>
     ),
     [showTip],
@@ -343,22 +334,24 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         </Animated.View>
       )}
 
-      <AppTabHeader
-        index={index}
-        routes={routes}
-        onIndexChange={onIndexChange}
-        style={styles.tab}
-        tintColor={colors.black}
-        titleStyle={styles.tabTitle}
-      />
+      <View style={{backgroundColor: colors.white, flex: 1}}>
+        <AppTabHeader
+          index={index}
+          routes={routes}
+          onIndexChange={onIndexChange}
+          style={styles.tab}
+          tintColor={colors.black}
+          titleStyle={styles.tabTitle}
+        />
 
-      <TabView
-        sceneContainerStyle={{flex: 1}}
-        navigationState={{index, routes}}
-        renderScene={renderScene}
-        onIndexChange={onIndexChange}
-        renderTabBar={() => null}
-      />
+        <TabView
+          sceneContainerStyle={{flex: 1}}
+          navigationState={{index, routes}}
+          renderScene={renderScene}
+          onIndexChange={onIndexChange}
+          renderTabBar={() => null}
+        />
+      </View>
       <AppActivityIndicator visible={props.pending} />
     </SafeAreaView>
   );
