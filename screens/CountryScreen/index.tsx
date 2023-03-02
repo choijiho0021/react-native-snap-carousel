@@ -256,6 +256,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           prodData={prodData[route.key === 'daily' ? 0 : 1]}
           onTop={setIsTop}
           onPress={onPress}
+          isCharge={false}
         />
       );
     },
