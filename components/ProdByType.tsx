@@ -72,11 +72,11 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
           item={item}
           onPress={() => onPress(item)}
           position={position(index, prodData)}
-          isCharge
+          isCharge={isCharge}
         />
       );
     },
-    [onPress, prodData],
+    [isCharge, onPress, prodData],
   );
 
   return (
