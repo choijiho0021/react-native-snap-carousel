@@ -506,7 +506,7 @@
   "esim:chargeModal:body1": "기존에 사용하던 eSIM에 필요한 상품을 충전할 수 있는 기능입니다.",
   "esim:chargeModal:body2": "기존에 구매한 eSIM과 같은 국가의 상품만 충전 가능하며, 기존 상품 사용이 종료되면 충전한 상품이 자동으로 이어서 사용됩니다.",
   "esim:chargeModal:body3": "충전 가능 기간 내에서만 상품 충전이 가능합니다. 상품 구매 시 충전 가능 기간에 유의해주세요!",
-  "esim:chargeDetail:body": "고객님께서는\n{prodname}에\n<b>{name}</b> 상품\n충전을 선택하셨습니다.",
+  "esim:chargeDetail:body": "고객님께서는\n{prodName}에\n<b>{name}</b> 상품\n충전을 선택하셨습니다.",
   "esim:chargeDetail:body2": "충전 가능 기간은\n<b>{chargeablePeriod}</b> 입니다.",
   "esim:chargeDetail:body5": "충전 가능 기간은",
   "esim:chargeDetail:body6": " 입니다.",
