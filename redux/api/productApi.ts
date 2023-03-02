@@ -91,7 +91,7 @@ export type RkbProduct = {
   days: number;
   variationId: string;
   field_description: string;
-  promoFlag: PromoFlag[];
+  promoFlag: string[];
   sku: string;
   idx: number;
   body: any;

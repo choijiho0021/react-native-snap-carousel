@@ -113,7 +113,8 @@
   "country:addCart": "카트에 담겼습니다.",
   "country:total": "데이터 종량제",
   "country:daily": "데이터 무제한",
-
+  "country:noProd1": "관련 상품이 없습니다.",
+  "country:noProd2": "다른 탭에 있는 상품을 선택해주세요!",
   "view:detail": "상세보기",
 
   "reg:actCode": "Activation Code",
@@ -379,7 +380,7 @@
   "contact:info": "잠깐!\n먼저 확인해주세요 : )",
   "contact:info2": "걱정 마세요\n로밍도깨비가 친절하게 도와드릴게요!",
   "contact:OpenChFail": "상담 채널에 연결할 수 없습니다.\n잠시 후 다시 시도해주세요",
-  "contact:workTimeDesc": "운영시간 / 평일 09:00–24:00(KST)\n점심시간 / 12:30–13:30(KST)",
+  "contact:workTimeDesc": "운영시간 / 평일 08:00–24:00(KST)\n점심시간 / 12:30–13:30(KST)",
 
   "faq:general": "사용방법",
   "faq:config": "설정",
