@@ -444,7 +444,12 @@ const Esim: React.FC<EsimProps> = ({
   );
 
   const localModal = useCallback(
-    (info: RkbPriceInfo, localOpName: string, ccode: string[]) => {
+    (
+      info: RkbPriceInfo,
+      localOpName: string,
+      ccode: string[],
+      localOpKey: string,
+    ) => {
       return (
         <SafeAreaView style={{flex: 1}}>
           <Pressable
@@ -525,9 +530,7 @@ const Esim: React.FC<EsimProps> = ({
                 style={styles.bottom}
                 onPress={() => {
                   AsyncStorage.setItem(
-                    `esim.show.local.modal.${ccode.find(
-                      (elm) => elm !== 'KG',
-                    )}`,
+                    `esim.show.local.modal.${localOpKey}`,
                     moment().format('YYYY-MM-DD HH:mm:ss'),
                   );
                   okHandler(info);
@@ -552,7 +555,7 @@ const Esim: React.FC<EsimProps> = ({
       const localOpName = API.Product.getTitle(localOp);
 
       const item = await AsyncStorage.getItem(
-        `esim.show.local.modal.${localOp?.ccode.find((elm) => elm !== 'KG')}`,
+        `esim.show.local.modal.${localOp?.key}`,
       );
       const tm = moment(item, 'YYYY-MM-DD HH:mm:ss');
       const showLocalModal =
@@ -563,7 +566,12 @@ const Esim: React.FC<EsimProps> = ({
         (localOpName.includes('(로컬망)') || localOpName.includes('(local)'))
       )
         actions.modal.showModal({
-          content: localModal(info, localOpName, localOp?.ccode || []),
+          content: localModal(
+            info,
+            localOpName,
+            localOp?.ccode || [],
+            localOp?.key || '',
+          ),
         });
       else {
         navToCountry(info);
