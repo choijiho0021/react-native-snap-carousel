@@ -69,10 +69,10 @@ const ProdByType: React.FC<ProdByTypeProps> = ({prodData, onPress, onTop}) => {
           <AppSvgIcon name="threeDots" style={styles.emptyImage} />
 
           <AppText style={styles.emptyText1}>
-            {i18n.t('esim:charge:noProd1')}
+            {i18n.t('country:noProd1')}
           </AppText>
           <AppText style={styles.emptyText2}>
-            {i18n.t('esim:charge:noProd2')}
+            {i18n.t('country:noProd2')}
           </AppText>
         </View>
       )}
