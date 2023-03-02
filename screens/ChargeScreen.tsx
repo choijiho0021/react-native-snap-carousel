@@ -63,12 +63,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   arrowStyle: {
-    borderTopColor: colors.lightGrey,
+    borderTopColor: colors.black,
     zIndex: 10,
   },
   triangle: {
     position: 'absolute',
-    top: 32,
+    top: 29,
     backgroundColor: 'transparent',
     borderBottomWidth: 10,
     borderBottomColor: colors.black,
@@ -250,7 +250,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
           }}
           name="btnChargeCaution"
         />
-        {showTip && <View style={styles.triangle} />}
+        {/* {showTip && <View style={styles.triangle} />} */}
       </Tooltip>
     ),
     [showTip],

@@ -55,8 +55,6 @@ const styles = StyleSheet.create({
   },
   toolTipBox: {
     backgroundColor: colors.black,
-    // borderWidth: 1,
-    // borderColor: colors.lightGrey,
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 20,
@@ -97,12 +95,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   arrowStyle: {
-    borderTopColor: colors.lightGrey,
+    borderTopColor: colors.black,
     zIndex: 10,
   },
   triangle: {
     position: 'absolute',
-    top: 32,
+    top: 33,
     backgroundColor: 'transparent',
     borderBottomWidth: 10,
     borderBottomColor: colors.black,
@@ -272,7 +270,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         tooltipStyle={styles.toolTipStyle}
         arrowStyle={styles.arrowStyle}
         disableShadow
-        arrowSize={{width: 16, height: 8}}
+        arrowSize={{width: 20, height: 12}}
         content={
           <View>
             <View style={styles.toolTipTitleFrame}>
@@ -304,7 +302,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           }}
           name="btnChargeCaution"
         />
-        {showTip && <View style={styles.triangle} />}
+        {/* {showTip && <View style={styles.triangle} />} */}
       </Tooltip>
     ),
     [showTip],
