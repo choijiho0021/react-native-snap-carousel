@@ -55,7 +55,6 @@ const styles = StyleSheet.create({
   },
   toolTipBox: {
     backgroundColor: colors.black,
-    paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 20,
     height: '100%',
@@ -71,6 +70,7 @@ const styles = StyleSheet.create({
     ...appStyles.bold14Text,
     color: colors.white,
     lineHeight: 20,
+    marginLeft: 16,
   },
   btnCancel: {
     width: 12,
@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   toolTipBody: {
+    marginLeft: 16,
     paddingRight: 30,
   },
   toolTipBodyText: {
