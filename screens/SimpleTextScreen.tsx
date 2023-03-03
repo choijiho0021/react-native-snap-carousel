@@ -4,6 +4,7 @@ import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Dimensions,
   Linking,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -135,6 +136,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
   const onMessage = useCallback(
     ({nativeEvent: {data}}) => {
       const cmd = parseJson(data);
+      let partnerList: string[] = [];
 
       switch (cmd.key) {
         // uuid를 받아서 해당 페이지로 이동 추가
@@ -171,11 +173,17 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
           }
           break;
         case 'moveToCountry':
-          if (cmd.value) {
-            const partnerList = cmd.value.split(',');
+          if (cmd.ios && Platform.OS === 'ios')
+            partnerList = cmd.ios.split(',');
+          else if (cmd.aos && Platform.OS === 'android')
+            partnerList = cmd.aos.split(',');
+          else if (cmd.value) partnerList = cmd.value.split(',');
+
+          if (cmd.value || cmd.ios || cmd.aos) {
             action.product.getProdOfPartner(partnerList);
             navigation.navigate('Country', {partner: partnerList});
           }
+
           break;
         default:
       }
