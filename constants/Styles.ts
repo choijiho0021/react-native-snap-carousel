@@ -629,7 +629,9 @@ function copy(CopyTxtNumber) {
 function go(key , className){
   var cmd = {
     key: key,
-    value: document.getElementsByClassName(className)[0].getAttribute('value')
+    value: document.getElementsByClassName(className)[0].getAttribute('value'),
+    ios: document.getElementsByClassName(className)[0].getAttribute('ios'),
+    aos: document.getElementsByClassName(className)[0].getAttribute('aos')
   };
   window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
 }
