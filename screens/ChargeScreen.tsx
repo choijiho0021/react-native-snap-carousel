@@ -6,6 +6,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 import {TabView} from 'react-native-tab-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {StackNavigationProp} from '@react-navigation/stack';
 import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
@@ -20,13 +21,14 @@ import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppTabHeader from '@/components/AppTabHeader';
 import {makeProdData} from './CountryScreen';
-import CountryListItem from './HomeScreen/component/CountryListItem';
+import CountryListItem from '@/components/CountryListItem';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {retrieveData, storeData} from '@/utils/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
+import {RkbProduct} from '@/redux/api/productApi';
+import ProdByType from '@/components/ProdByType';
 
 const styles = StyleSheet.create({
   container: {
@@ -61,26 +63,26 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   arrowStyle: {
-    borderTopColor: colors.lightGrey,
+    borderTopColor: colors.black,
     zIndex: 10,
   },
   triangle: {
     position: 'absolute',
-    top: 32,
+    top: 29,
     backgroundColor: 'transparent',
-    borderBottomWidth: 8,
-    borderBottomColor: colors.backGrey,
-    borderRightWidth: 8,
+    borderBottomWidth: 10,
+    borderBottomColor: colors.black,
+    borderRightWidth: 10,
     borderRightColor: 'transparent',
-    borderLeftWidth: 8,
+    borderLeftWidth: 10,
     borderLeftColor: 'transparent',
     width: 0,
     height: 0,
   },
   toolTipBox: {
-    backgroundColor: colors.backGrey,
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
+    backgroundColor: colors.black,
+    // borderWidth: 1,
+    // borderColor: colors.lightGrey,
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 20,
@@ -95,6 +97,7 @@ const styles = StyleSheet.create({
   },
   toolTipTitleText: {
     ...appStyles.bold14Text,
+    color: colors.white,
     lineHeight: 20,
   },
   btnCancel: {
@@ -109,6 +112,7 @@ const styles = StyleSheet.create({
 
   toolTipBodyText: {
     ...appStyles.normal14Text,
+    color: colors.white,
     lineHeight: 20,
   },
   emptyImage: {
@@ -213,7 +217,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
               <AppText style={styles.toolTipTitleText}>
                 {i18n.t('esim:chargeCaution')}
               </AppText>
-              <AppButton style={styles.btnCancel} iconName="btnCancel" />
+              <AppButton style={styles.btnCancel} iconName="btnCancelWhite" />
             </View>
             <View style={styles.toolTipBody}>
               {[1, 2, 3].map((k) => (
@@ -221,7 +225,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
                   <AppText
                     style={[
                       appStyles.normal14Text,
-                      {marginHorizontal: 5, marginTop: 3},
+                      {marginHorizontal: 5, marginTop: 3, color: colors.white},
                     ]}>
                     •
                   </AppText>
@@ -246,7 +250,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
           }}
           name="btnChargeCaution"
         />
-        {showTip && <View style={styles.triangle} />}
+        {/* {showTip && <View style={styles.triangle} />} */}
       </Tooltip>
     ),
     [showTip],
@@ -286,49 +290,34 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
       ] as ChargeTabRoute[],
     [],
   );
-  const renderScene = useCallback(
-    ({route: sceneRoute}: {route: ChargeTabRoute}) => {
-      const prodDataC = prodData[sceneRoute.category === 'daily' ? 0 : 1];
-      return (
-        <ScrollView>
-          {prodDataC.length > 0 ? (
-            prodDataC.map((data) => (
-              <CountryListItem
-                key={data.sku}
-                item={data}
-                onPress={() => {
-                  navigation.navigate('ChargeDetail', {
-                    data,
-                    prodname: params?.mainSubs?.prodName,
-                    chargeablePeriod: params?.chargeablePeriod,
-                    subsIccid: params?.mainSubs?.subsIccid,
-                  });
-                }}
-                isCharge
-              />
-            ))
-          ) : (
-            <View style={styles.emptyData}>
-              <AppSvgIcon name="threeDots" style={styles.emptyImage} />
 
-              <AppText style={styles.emptyText1}>
-                {i18n.t('esim:charge:noProd1')}
-              </AppText>
-              <AppText style={styles.emptyText2}>
-                {i18n.t('esim:charge:noProd2')}
-              </AppText>
-            </View>
-          )}
-        </ScrollView>
-      );
-    },
+  const onPress = useCallback(
+    (data: RkbProduct) =>
+      navigation.navigate('ChargeDetail', {
+        data,
+        prodName: params?.mainSubs?.prodName,
+        chargeablePeriod: params?.chargeablePeriod,
+        subsIccid: params?.mainSubs?.subsIccid,
+      }),
     [
       navigation,
       params?.chargeablePeriod,
       params?.mainSubs?.prodName,
       params?.mainSubs?.subsIccid,
-      prodData,
     ],
+  );
+
+  const renderScene = useCallback(
+    ({route: sceneRoute}: {route: ChargeTabRoute}) => {
+      return (
+        <ProdByType
+          prodData={prodData[sceneRoute.category === 'daily' ? 0 : 1]}
+          onPress={onPress}
+          isCharge
+        />
+      );
+    },
+    [onPress, prodData],
   );
 
   return (

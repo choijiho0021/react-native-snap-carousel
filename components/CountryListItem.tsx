@@ -154,7 +154,7 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
   }, [position]);
 
   return (
-    <Pressable onPress={onPress}>
+    <Pressable onPress={onPress} style={{backgroundColor: colors.white}}>
       <View
         key="product"
         style={isCharge ? styles.cardCharge : [styles.card, myStyle]}>
@@ -186,10 +186,10 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
               numberOfLines={2}
               ellipsizeMode="tail"
               style={[
-                appStyles.normal13,
+                appStyles.normal14Text,
                 {
                   flex: 1,
-                  fontSize: isDeviceSize('medium') ? 13 : 15,
+                  fontSize: isDeviceSize('medium') ? 14 : 16,
                 },
               ]}>
               {item.field_description}
@@ -208,8 +208,9 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
                 />
                 <AppText
                   style={{
-                    ...appStyles.bold14Text,
+                    ...appStyles.bold16Text,
                     marginLeft: 4,
+                    marginRight: 0,
                     color: colors.redError,
                   }}>
                   {Math.floor(

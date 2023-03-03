@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 8,
+    marginLeft: 8,
     height: 20,
     alignSelf: 'center',
     borderRadius: 3,
@@ -380,7 +380,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
               onPress={() => {
                 setPending(true);
                 setSelectedSubs(item);
-                onPressUsage(item).then((u) => {
+                onPressUsage(item)?.then((u) => {
                   setUsage(u.usage);
                   setStatus(u.status);
                   setPending(false);

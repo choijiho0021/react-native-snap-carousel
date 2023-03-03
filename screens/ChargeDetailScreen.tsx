@@ -159,12 +159,12 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
   }, [account, action.cart, navigation, params?.subsIccid, purchaseItems]);
 
   const titleText = useCallback(
-    (text: string, prodname: string, name: string) => (
+    (text: string, prodName: string, name: string) => (
       <AppStyledText
         text={text}
         textStyle={styles.mainBody}
         format={{b: styles.chargeItem}}
-        data={{prodname, name}}
+        data={{prodName, name}}
       />
     ),
     [],
@@ -196,7 +196,7 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
           <View style={styles.mainBodyFrame}>
             {titleText(
               i18n.t('esim:chargeDetail:body'),
-              params?.prodname,
+              params?.prodName,
               params?.data.name,
             )}
           </View>

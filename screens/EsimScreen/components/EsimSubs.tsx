@@ -537,7 +537,11 @@ const EsimSubs = ({
             if (isCharged) {
               onPressRecharge(mainSubs);
             } else {
-              if (!isBc) setShowModal(true);
+              if (
+                !isBc &&
+                !(mainSubs.partner === 'Quadcell' && mainSubs.daily !== 'total')
+              )
+                setShowModal(true);
               onPressUsage(mainSubs);
             }
           }}
