@@ -169,7 +169,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const [imageUrl, setImageUrl] = useState<string>();
   const [localOpDetails, setLocalOpDetails] = useState<string>();
   const [partnerId, setPartnerId] = useState<string>();
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState<number>();
   const [showTip, setTip] = useState(false);
   const [isTop, setIsTop] = useState(true);
   const headerTitle = useMemo(
@@ -220,6 +220,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         const data = makeProdData(prodByPartner, partnerIds);
         setProdData(data);
         if (data[0].length === 0) setIndex(1);
+        else setIndex(0);
       }
     }
   }, [
@@ -334,24 +335,26 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         </Animated.View>
       )}
 
-      <View style={{backgroundColor: colors.white, flex: 1}}>
-        <AppTabHeader
-          index={index}
-          routes={routes}
-          onIndexChange={onIndexChange}
-          style={styles.tab}
-          tintColor={colors.black}
-          titleStyle={styles.tabTitle}
-        />
+      {index !== undefined && (
+        <View style={{backgroundColor: colors.white, flex: 1}}>
+          <AppTabHeader
+            index={index}
+            routes={routes}
+            onIndexChange={onIndexChange}
+            style={styles.tab}
+            tintColor={colors.black}
+            titleStyle={styles.tabTitle}
+          />
 
-        <TabView
-          sceneContainerStyle={{flex: 1}}
-          navigationState={{index, routes}}
-          renderScene={renderScene}
-          onIndexChange={onIndexChange}
-          renderTabBar={() => null}
-        />
-      </View>
+          <TabView
+            sceneContainerStyle={{flex: 1}}
+            navigationState={{index, routes}}
+            renderScene={renderScene}
+            onIndexChange={onIndexChange}
+            renderTabBar={() => null}
+          />
+        </View>
+      )}
       <AppActivityIndicator visible={props.pending} />
     </SafeAreaView>
   );
