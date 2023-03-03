@@ -281,14 +281,25 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
               </AppText>
               <AppButton
                 style={styles.btnCancel}
-                iconName="btnCancelWhite"
+                iconName="btnCancel"
                 onPress={() => setTip(false)}
               />
             </View>
             <View style={styles.toolTipBody}>
-              <AppText style={styles.toolTipBodyText}>
-                {i18n.t(`local:noticeBox:body`)}
-              </AppText>
+              {[1, 2].map((k) => (
+                <View key={k} style={{flexDirection: 'row'}}>
+                  <AppText
+                    style={[
+                      appStyles.normal14Text,
+                      {marginHorizontal: 5, marginTop: 3, color: colors.white},
+                    ]}>
+                    •
+                  </AppText>
+                  <AppText style={styles.toolTipBodyText}>
+                    {i18n.t(`local:noticeBox:body${k}`)}
+                  </AppText>
+                </View>
+              ))}
             </View>
           </View>
         }
