@@ -196,7 +196,6 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
           renderItem={renderTutorial}
           onSnapToItem={setActiveSlide}
           sliderWidth={dimensions.width}
-          optimize={false}
         />
 
         <Pagination

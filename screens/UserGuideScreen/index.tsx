@@ -19,6 +19,7 @@ import {
   isDeviceSize,
   isFolderOpen,
   MAX_WIDTH,
+  sliderWidth,
 } from '@/constants/SliderEntry.style';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
@@ -330,7 +331,11 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
 
   const renderGuide = useCallback(
     ({item, index}: {item: GuideImage; index: number}) => (
-      <View style={[styles.container, {alignItems: 'center'}]}>
+      <View
+        style={[
+          styles.container,
+          {alignItems: 'center', width: sliderWidth, backgroundColor: 'white'},
+        ]}>
         {renderModalHeader(index)}
 
         <View style={{flex: 1, maxWidth: MAX_WIDTH, width: '100%'}}>
@@ -359,7 +364,6 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
         keyExtractor={(item) => item.key}
         onSnapToItem={setCarouselIdx}
         sliderWidth={dimensions.width}
-        optimize={false}
       />
     </SafeAreaView>
   );
