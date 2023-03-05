@@ -80,32 +80,25 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
     }
   }, playInterval);
 
-  const handleScroll = useCallback(
-    ({nativeEvent}: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const {contentOffset} = nativeEvent;
-      idx.current = Math.round(contentOffset.x / sliderWidth) - 1;
-      onSnapToItem?.(idx.current);
-    },
-    [onSnapToItem, sliderWidth],
-  );
-
   const onMomentumScrollEnd = useCallback(
     ({nativeEvent}: NativeSyntheticEvent<NativeScrollEvent>) => {
       const {contentOffset, contentSize} = nativeEvent;
       const viewSize = nativeEvent.layoutMeasurement;
       const maxOffset = contentSize.width - viewSize.width;
 
-      idx.current = Math.round(contentOffset.x / sliderWidth) - 1;
+      idx.current = Math.round(contentOffset.x / sliderWidth);
       if (loop) {
         if (contentOffset.x <= 0) {
           ref.current?.scrollToIndex({
             index: slides.length - 2,
             animated: false,
           });
-          idx.current = slides.length - 2;
+          idx.current = slides.length - 3;
         } else if (contentOffset.x >= maxOffset) {
           ref.current?.scrollToIndex({index: 1, animated: false});
           idx.current = 0;
+        } else {
+          idx.current -= 1;
         }
       }
       onSnapToItem?.(idx.current);
@@ -123,7 +116,6 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
       pagingEnabled
       snapToInterval={sliderWidth}
       showsHorizontalScrollIndicator={false}
-      onScroll={handleScroll}
       onMomentumScrollEnd={onMomentumScrollEnd}
       onMomentumScrollBegin={onMomentumScrollStart}
       scrollEventThrottle={16}
