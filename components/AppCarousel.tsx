@@ -6,7 +6,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {FlatList, NativeScrollEvent, NativeSyntheticEvent} from 'react-native';
+import {
+  FlatList,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Platform,
+} from 'react-native';
 import {useInterval} from '@/utils/useInterval';
 
 export type AppCarouselRef = {
@@ -66,42 +71,51 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
             index: idx.current,
             animated: true,
           });
+          if (Platform.OS === 'android') onSnapToItem?.(idx.current);
         },
       };
     }
-  }, [carouselRef, data.length, loop]);
+  }, [carouselRef, data.length, loop, onSnapToItem]);
 
   useInterval(() => {
     if (!onMomentum.current) {
       idx.current += 1;
+      if (Platform.OS === 'android') {
+        if (idx.current >= slides.length - 1) idx.current = 1;
+        onSnapToItem?.(idx.current - 1);
+      }
       ref.current?.scrollToIndex({index: idx.current, animated: true});
-      // if (Platform.OS === 'android')
-      // moveSlide((idx.current + 1) % slides.length);
     }
   }, playInterval);
 
   const onMomentumScrollEnd = useCallback(
     ({nativeEvent}: NativeSyntheticEvent<NativeScrollEvent>) => {
       const {contentOffset, contentSize} = nativeEvent;
+      const x = Math.round(contentOffset.x);
       const viewSize = nativeEvent.layoutMeasurement;
-      const maxOffset = contentSize.width - viewSize.width;
+      const maxOffset = Math.round(contentSize.width - viewSize.width);
 
-      idx.current = Math.round(contentOffset.x / sliderWidth);
+      const oldIdx = idx.current;
+      idx.current = Math.round(x / sliderWidth);
       if (loop) {
-        if (contentOffset.x <= 0) {
-          ref.current?.scrollToIndex({
-            index: slides.length - 2,
-            animated: false,
-          });
+        if (x <= 0) {
+          if (idx.current !== oldIdx) {
+            ref.current?.scrollToIndex({
+              index: slides.length - 2,
+              animated: false,
+            });
+          }
           idx.current = slides.length - 3;
-        } else if (contentOffset.x >= maxOffset) {
-          ref.current?.scrollToIndex({index: 1, animated: false});
+        } else if (x + 5 >= maxOffset) {
+          if (idx.current !== oldIdx) {
+            ref.current?.scrollToIndex({index: 1, animated: false});
+          }
           idx.current = 0;
         } else {
           idx.current -= 1;
         }
       }
-      onSnapToItem?.(idx.current);
+      if (idx.current !== oldIdx) onSnapToItem?.(idx.current);
       onMomentum.current = false;
       if (autoplay && loop) setPlayInterval(interval);
     },
