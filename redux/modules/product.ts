@@ -305,7 +305,11 @@ const slice = createSlice({
       state.ready = false;
     });
     builder.addCase(init.fulfilled, (state) => {
-      state.ready = true;
+      if (state.prodByCountry.length === 0) {
+        state.ready = false;
+      } else {
+        state.ready = true;
+      }
     });
   },
 });
