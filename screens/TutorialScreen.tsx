@@ -31,8 +31,8 @@ import {
 import {AccountModelState} from '@/redux/modules/account';
 import {LinkModelState} from '../redux/modules/link';
 import AppCarousel, {AppCarouselRef} from '@/components/AppCarousel';
-import {MAX_WIDTH} from '@/constants/SliderEntry.style';
-import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
+import {MAX_WIDTH, sliderWidth} from '@/constants/SliderEntry.style';
+import {ModalAction} from '@/redux/modules/modal';
 
 const {esimGlobal} = Env.get();
 
@@ -142,7 +142,7 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
 
   const renderTutorial = useCallback(
     ({item}: {item: CarouselIndex}) => (
-      <View style={{flex: 1, alignItems: 'center'}}>
+      <View style={{flex: 1, alignItems: 'center', width: sliderWidth}}>
         <Image
           style={styles.image}
           source={tutorialImages[item]}
@@ -196,7 +196,6 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
           renderItem={renderTutorial}
           onSnapToItem={setActiveSlide}
           sliderWidth={dimensions.width}
-          optimize={false}
         />
 
         <Pagination

@@ -48,7 +48,6 @@ import PymButtonList from '@/components/AppPaymentGateway/PymButtonList';
 import DropDownHeader from './DropDownHeader';
 
 const infoKey = 'pym:benefit';
-const loadingImg = require('../assets/images/loading_1.mp4');
 
 const styles = StyleSheet.create({
   container: {
@@ -74,13 +73,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     color: colors.warmGrey,
     textAlign: 'center',
-  },
-  backgroundVideo: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
   },
   spaceBetweenBox: {
     marginHorizontal: 20,
@@ -167,7 +159,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 }) => {
   const [selected, setSelected] = useState('pym:ccard');
   const [clickable, setClickable] = useState(true);
-  const [loading, setLoading] = useState(false);
   const [showModalMethod, setShowModalMethod] = useState(true);
   const [consent, setConsent] = useState<boolean>();
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
@@ -234,8 +225,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       // 로깨비캐시 결제
       if (pymPrice?.value === 0) {
         // if the payment amount is zero, call the old API payNorder
-        setLoading(true);
-
         const pymInfo = createPaymentInfoForRokebiCash({
           impId,
           mobile,
@@ -256,7 +245,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               mode,
             });
           } else {
-            setLoading(false);
             setClickable(true);
             if (resp.result === api.E_RESOURCE_NOT_FOUND) {
               AppAlert.info(i18n.t('cart:soldOut'));
@@ -472,19 +460,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         visible={showUnsupAlert || showChargeAlert}>
         {modalBody(showUnsupAlert)}
       </AppModal>
-
-      {
-        // 로깨비캐시 결제시 필요한 로딩처리
-        loading && (
-          <Video
-            source={loadingImg}
-            resizeMode="stretch"
-            repeat
-            style={styles.backgroundVideo}
-            mixWithOthers="mix"
-          />
-        )
-      }
     </SafeAreaView>
   );
 };

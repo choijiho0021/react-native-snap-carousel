@@ -2,14 +2,12 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {StyleSheet, SafeAreaView, View} from 'react-native';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import {RouteProp} from '@react-navigation/native';
-import {ScrollView} from 'react-native-gesture-handler';
 import {TabView} from 'react-native-tab-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {StackNavigationProp} from '@react-navigation/stack';
 import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
-import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {RootState} from '@/redux';
 import {
   actions as productActions,
@@ -18,10 +16,8 @@ import {
 } from '@/redux/modules/product';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppTabHeader from '@/components/AppTabHeader';
 import {makeProdData} from './CountryScreen';
-import CountryListItem from '@/components/CountryListItem';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {retrieveData, storeData} from '@/utils/utils';
@@ -66,19 +62,6 @@ const styles = StyleSheet.create({
     borderTopColor: colors.black,
     zIndex: 10,
   },
-  triangle: {
-    position: 'absolute',
-    top: 29,
-    backgroundColor: 'transparent',
-    borderBottomWidth: 10,
-    borderBottomColor: colors.black,
-    borderRightWidth: 10,
-    borderRightColor: 'transparent',
-    borderLeftWidth: 10,
-    borderLeftColor: 'transparent',
-    width: 0,
-    height: 0,
-  },
   toolTipBox: {
     backgroundColor: colors.black,
     // borderWidth: 1,
@@ -113,22 +96,6 @@ const styles = StyleSheet.create({
   toolTipBodyText: {
     ...appStyles.normal14Text,
     color: colors.white,
-    lineHeight: 20,
-  },
-  emptyImage: {
-    marginBottom: 21,
-  },
-  emptyData: {
-    alignItems: 'center',
-    marginTop: '45%',
-  },
-  emptyText1: {
-    ...appStyles.medium14,
-    color: colors.clearBlue,
-    lineHeight: 20,
-  },
-  emptyText2: {
-    ...appStyles.normal14Text,
     lineHeight: 20,
   },
   devider: {
