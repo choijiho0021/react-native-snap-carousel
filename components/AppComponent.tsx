@@ -16,6 +16,7 @@ import {Adjust, AdjustConfig} from 'react-native-adjust';
 import messaging from '@react-native-firebase/messaging';
 import codePush from 'react-native-code-push';
 import Config from 'react-native-config';
+import SystemSetting from 'react-native-system-setting';
 import {API} from '@/redux/api';
 import AppAlert from '@/components/AppAlert';
 import AppToast from '@/components/AppToast';
@@ -114,6 +115,17 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
   const [isCodepushRunning, setIsCodepushRunning] = useState(false);
   const [networkErr, setNetworkErr] = useState(false);
   const [loadingTextSec, setloadingTextSec] = useState(1);
+  const [muteMode, setMuteMode] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      SystemSetting.getVolume('ring').then((volume) => {
+        if (volume === 0) {
+          setMuteMode(true);
+        }
+      });
+    }
+  }, []);
 
   const login = useCallback(async () => {
     const iccid = await retrieveData(API.User.KEY_ICCID);
@@ -182,6 +194,7 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
             style={styles.backgroundVideo}
             resizeMode="contain"
             mixWithOthers="mix"
+            muted={muteMode}
           />
           {!showSplash && (
             <Video
@@ -194,6 +207,7 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
               style={styles.loadingVideo}
               resizeMode="contain"
               mixWithOthers="mix"
+              muted={muteMode}
             />
           )}
           {!showSplash && (
@@ -206,7 +220,7 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
     }
 
     return <AppNavigator store={store} />;
-  }, [loadingTextSec, networkErr, product.ready, showSplash]);
+  }, [loadingTextSec, muteMode, networkErr, product.ready, showSplash]);
 
   const loadResourcesAsync = useCallback(async () => {
     // clear caches

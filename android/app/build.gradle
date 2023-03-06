@@ -431,6 +431,7 @@ dependencies {
     implementation 'com.android.installreferrer:installreferrer:2.2'
     // Add the following if you are using the Adjust SDK inside web views on your app
     implementation 'com.adjust.sdk:adjust-android-webbridge:4.31.1'
+    implementation project(':react-native-system-setting')
 
      if (enableHermes) {
          def hermesPath = "../../node_modules/hermes-engine/android/";

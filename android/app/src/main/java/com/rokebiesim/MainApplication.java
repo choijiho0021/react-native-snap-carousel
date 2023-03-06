@@ -51,6 +51,7 @@ import com.reactnativecommunity.webview.RNCWebViewPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.zoontek.rnlocalize.RNLocalizePackage;
 import com.reactnativecommunity.clipboard.ClipboardPackage;
+import com.ninty.system.setting.SystemSettingPackage;
 
 import com.zoyi.channel.plugin.android.ChannelIO;
 import com.zoyi.channel.rn.RNChannelIOPackage;
@@ -164,6 +165,7 @@ public class MainApplication extends Application implements ReactApplication {
             new RNSharePackage(),
             new CameraRollPackage(),
             new RNViewShotPackage(),
+                            new SystemSettingPackage(),
                             new RNAppBadgePackage(),
                             new ReactNativeConfigPackage(),
                             new EuccidManagerAppPackage(),
