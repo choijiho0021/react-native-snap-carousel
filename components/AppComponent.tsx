@@ -183,7 +183,7 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
       );
 
     // 앱 시작 시 splash 화면 3초강 항상 출력
-    if (!product.ready || showSplash || true) {
+    if (!product.ready || showSplash) {
       return (
         <View style={{flex: 1}}>
           <Video
