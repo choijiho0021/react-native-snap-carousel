@@ -8,6 +8,7 @@ import {
   View,
   Dimensions,
   Modal,
+  Image,
 } from 'react-native';
 import Video from 'react-native-video';
 import {connect, DispatchProp} from 'react-redux';
@@ -67,11 +68,11 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   loadingVideo: {
-    width: 200,
-    height: 200,
+    width: 80,
+    height: 80,
     position: 'absolute',
-    top: windowHeight < 700 ? windowHeight - 300 : windowHeight - 400,
-    left: windowWidth / 2 - 100,
+    top: windowHeight < 700 ? windowHeight - 210 : windowHeight - 310,
+    left: windowWidth / 2 - 50,
   },
   loadingText: {
     ...appStyles.normal16Text,
@@ -196,14 +197,16 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
             mixWithOthers="mix"
             muted={muteMode}
           />
-          {!showSplash && (
+          {!showSplash && !esimGlobal && (
+            <Image
+              source={require('../assets/images/esim_loading.gif')}
+              style={styles.loadingVideo}
+            />
+          )}
+          {!showSplash && esimGlobal && (
             <Video
               repeat
-              source={
-                esimGlobal
-                  ? require('../assets/images/global_loading.mp4')
-                  : require('../assets/images/esim_loading.mp4')
-              }
+              source={require('../assets/images/global_loading.mp4')}
               style={styles.loadingVideo}
               resizeMode="contain"
               mixWithOthers="mix"
