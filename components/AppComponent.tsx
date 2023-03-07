@@ -183,7 +183,7 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
       );
 
     // 앱 시작 시 splash 화면 3초강 항상 출력
-    if (!product.ready || showSplash) {
+    if (!product.ready || showSplash || true) {
       return (
         <View style={{flex: 1}}>
           <Video
@@ -201,16 +201,6 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
             <Image
               source={require('../assets/images/esim_loading.gif')}
               style={styles.loadingVideo}
-            />
-          )}
-          {!showSplash && esimGlobal && (
-            <Video
-              repeat
-              source={require('../assets/images/global_loading.mp4')}
-              style={styles.loadingVideo}
-              resizeMode="contain"
-              mixWithOthers="mix"
-              muted={muteMode}
             />
           )}
           {!showSplash && (
