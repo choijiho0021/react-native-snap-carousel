@@ -1,14 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
-import React, {memo, useCallback, useState, useEffect, useMemo} from 'react';
-import {
-  Image,
-  Pressable,
-  View,
-  Dimensions,
-  StyleSheet,
-  Animated,
-} from 'react-native';
+import React, {memo, useCallback, useState, useMemo} from 'react';
+import {Image, Pressable, View, StyleSheet, Animated} from 'react-native';
 import {Pagination} from 'react-native-snap-carousel';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
@@ -26,6 +19,7 @@ import {
   INACTIVE_DOT_WIDTH,
 } from './PromotionCarousel';
 import utils from '@/redux/api/utils';
+import {sliderWidth} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   pagination: {
@@ -62,14 +56,14 @@ const NotiModal: React.FC<NotiModalProps> = ({
   onOkClose,
   onCancelClose,
 }) => {
-  const dimensions = useMemo(() => Dimensions.get('window'), []);
   const [checked, setChecked] = useState(false);
   const [closeType, setCloseType] = useState<'close' | 'exit' | 'redirect'>(
     'redirect',
   );
-  const [iamgeHight, setImageHeight] = useState(450);
+  const [imageHeight, setImageHeight] = useState(450);
   const [activeSlide, setActiveSlide] = useState(0);
   const [cur, setCur] = useState<RkbPromotion>(popUpList[0]);
+  const modalImageSize = useMemo(() => sliderWidth - 40, []);
 
   const setPopupDisabled = useCallback(() => {
     if (checked)
@@ -141,7 +135,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
       Image.getSize(
         API.default.httpImageUrl(item?.notice?.image?.noti),
         (width, height) => {
-          setImageHeight(Math.ceil(height * ((dimensions.width - 40) / width)));
+          setImageHeight(Math.ceil(height * (modalImageSize / width)));
         },
       );
       setCloseType(item.rule ? 'redirect' : 'close');
@@ -153,14 +147,18 @@ const NotiModal: React.FC<NotiModalProps> = ({
       return (
         <View style={{backgroundColor: 'transparent'}}>
           <Pressable
-            style={{width: '100%', height: iamgeHight, marginBottom: 18}}
+            style={{
+              width: modalImageSize,
+              height: imageHeight,
+              marginBottom: 18,
+            }}
             onPress={() => {
               if (closeType === 'redirect') {
                 onOkClose?.(closeType, item);
               }
             }}>
             <ProgressiveImage
-              style={{width: '100%', height: iamgeHight}}
+              style={{width: '100%', height: imageHeight}}
               thumbnailSource={{uri: thumbnail}}
               source={{uri}}
               resizeMode="contain"
@@ -169,13 +167,8 @@ const NotiModal: React.FC<NotiModalProps> = ({
         </View>
       );
     },
-    [closeType, dimensions.width, iamgeHight, onOkClose],
+    [closeType, imageHeight, modalImageSize, onOkClose],
   );
-
-  useEffect(() => {
-    console.log('@@@@ activeSlide', activeSlide);
-    console.log('@@@@ popUpList.length', popUpList.length);
-  }, [activeSlide, popUpList]);
 
   return (
     <AppModal
@@ -203,10 +196,10 @@ const NotiModal: React.FC<NotiModalProps> = ({
       <AppCarousel
         data={popUpList}
         renderItem={renderItem}
-        autoplay
-        loop
+        autoplay={popUpList.length > 1}
+        loop={popUpList.length > 1}
         onSnapToItem={setActiveSlide}
-        sliderWidth={dimensions.width - 40}
+        sliderWidth={modalImageSize}
       />
       <View style={styles.pagination}>
         <Pagination
