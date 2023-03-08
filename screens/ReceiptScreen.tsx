@@ -41,6 +41,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: colors.white,
   },
+  titleText: {
+    ...appStyles.bold24Text,
+    lineHeight: 24,
+    color: colors.black,
+    marginTop: 10,
+    marginBottom: 30,
+  },
   info: {
     paddingHorizontal: 10,
     marginHorizontal: 10,
@@ -75,6 +82,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#ffffff',
     flex: 1,
+  },
+  balance: {
+    ...appStyles.bold18Text,
+    lineHeight: 36,
+    letterSpacing: 0.22,
+  },
+  currency: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 36,
+    letterSpacing: 0.22,
   },
 });
 
@@ -162,24 +179,18 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
       <ScrollView style={{flex: 1}}>
         <ViewShot ref={ref} style={{backgroundColor: colors.whiteTwo}}>
           <View style={styles.title}>
-            <AppText style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
+            <AppText
+              style={[appStyles.semiBold14Text, {color: colors.warmGrey}]}>
               {utils.toDateString(order?.orderDate)}
             </AppText>
-            <AppText
-              style={[
-                appStyles.bold24Text,
-                {color: colors.black, marginTop: 10, marginBottom: 30},
-              ]}>
-              {receipt?.name}
-            </AppText>
+            <AppText style={styles.titleText}>{receipt?.name}</AppText>
           </View>
           <View style={styles.info}>
             <View style={styles.bar} />
             <LabelText
               style={{
-                marginTop: 20,
                 marginHorizontal: 10,
-                paddingBottom: 18,
+                marginVertical: 20,
               }}
               label={i18n.t('rcpt:buyer')}
               labelStyle={styles.label}
@@ -189,15 +200,17 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
             <View style={[styles.bar, {backgroundColor: colors.lightGrey}]} />
             <LabelText
               style={{
-                marginTop: 21,
+                marginTop: 20,
                 marginHorizontal: 10,
               }}
               label={i18n.t('his:pymAmount')}
               labelStyle={styles.label}
               // value={order?.totalPrice}
               value={receipt?.amount || 0}
-              valueStyle={styles.value}
+              // valueStyle={styles.value}
               color={colors.clearBlue}
+              balanceStyle={styles.balance}
+              currencyStyle={styles.currency}
               format="price"
             />
             {Object.entries({

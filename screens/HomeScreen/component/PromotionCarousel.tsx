@@ -17,11 +17,11 @@ import {actions as infoActions, InfoAction} from '@/redux/modules/info';
 import AppCarousel from '@/components/AppCarousel';
 import utils from '@/redux/api/utils';
 
-const DOT_MARGIN = 6;
-const INACTIVE_DOT_WIDTH = 6;
-const ACTIVE_DOT_WIDTH = 20;
+export const DOT_MARGIN = 6;
+export const INACTIVE_DOT_WIDTH = 6;
+export const ACTIVE_DOT_WIDTH = 20;
 
-const dotStyle = (
+export const dotStyle = (
   width: Animated.Value | Animated.AnimatedInterpolation,
   marginLeft: number | Animated.AnimatedInterpolation,
   backgroundColor: string = colors.clearBlue,
