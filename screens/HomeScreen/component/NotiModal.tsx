@@ -61,8 +61,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
     'redirect',
   );
   const [imageHeight, setImageHeight] = useState(450);
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [cur, setCur] = useState<RkbPromotion>(popUpList[0]);
+  const [activeSlide, setActiveSlide] = useState(-1);
   const modalImageSize = useMemo(() => sliderWidth - 40, []);
 
   const setPopupDisabled = useCallback(() => {
@@ -131,8 +130,6 @@ const NotiModal: React.FC<NotiModalProps> = ({
 
   const renderItem = useCallback(
     ({item}: {item: RkbPromotion}) => {
-      setCur(item);
-
       setCloseType(item.rule ? 'redirect' : 'close');
 
       const uri = API.default.httpImageUrl(item?.notice?.image?.noti);
@@ -166,6 +163,10 @@ const NotiModal: React.FC<NotiModalProps> = ({
   );
 
   useEffect(() => {
+    if (activeSlide < 0) setActiveSlide(popUpList.length - 1);
+  }, [activeSlide, popUpList.length]);
+
+  useEffect(() => {
     Image.getSize(
       API.default.httpImageUrl(popUpList[0]?.notice?.image?.noti),
       (width, height) => {
@@ -189,7 +190,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
       okButtonTitle={i18n.t(closeType || 'close')}
       type={closeType === 'redirect' ? closeType : 'close'}
       onOkClose={() => {
-        onOkClose?.(closeType, cur);
+        onOkClose?.(closeType, popUpList[activeSlide]);
         setPopupDisabled();
       }}
       onCancelClose={() => {
