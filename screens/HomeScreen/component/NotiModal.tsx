@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
-import React, {memo, useCallback, useState, useMemo} from 'react';
+import React, {memo, useCallback, useState, useMemo, useEffect} from 'react';
 import {Image, Pressable, View, StyleSheet, Animated} from 'react-native';
 import {Pagination} from 'react-native-snap-carousel';
 import AppButton from '@/components/AppButton';
@@ -132,12 +132,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
   const renderItem = useCallback(
     ({item}: {item: RkbPromotion}) => {
       setCur(item);
-      Image.getSize(
-        API.default.httpImageUrl(item?.notice?.image?.noti),
-        (width, height) => {
-          setImageHeight(Math.ceil(height * (modalImageSize / width)));
-        },
-      );
+
       setCloseType(item.rule ? 'redirect' : 'close');
 
       const uri = API.default.httpImageUrl(item?.notice?.image?.noti);
@@ -170,6 +165,15 @@ const NotiModal: React.FC<NotiModalProps> = ({
     [closeType, imageHeight, modalImageSize, onOkClose],
   );
 
+  useEffect(() => {
+    Image.getSize(
+      API.default.httpImageUrl(popUpList[0]?.notice?.image?.noti),
+      (width, height) => {
+        setImageHeight(Math.ceil(height * (modalImageSize / width)));
+      },
+    );
+  }, [modalImageSize, popUpList]);
+
   return (
     <AppModal
       // titleStyle={styles.infoModalTitle}
@@ -201,14 +205,16 @@ const NotiModal: React.FC<NotiModalProps> = ({
         onSnapToItem={setActiveSlide}
         sliderWidth={modalImageSize}
       />
-      <View style={styles.pagination}>
-        <Pagination
-          dotsLength={popUpList.length}
-          activeDotIndex={activeSlide}
-          containerStyle={styles.paginationContainer}
-          renderDots={renderDots}
-        />
-      </View>
+      {popUpList.length > 1 && (
+        <View style={styles.pagination}>
+          <Pagination
+            dotsLength={popUpList.length}
+            activeDotIndex={activeSlide}
+            containerStyle={styles.paginationContainer}
+            renderDots={renderDots}
+          />
+        </View>
+      )}
 
       <Pressable
         style={{

@@ -109,6 +109,8 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
             // +5 is margin value for Android
             ref.current?.scrollToIndex({index: 1, animated: false});
             idx.current = 1;
+          } else {
+            ref.current?.scrollToIndex({index: idx.current, animated: true});
           }
         }
         onSnapToItem?.(idx.current - 1);
