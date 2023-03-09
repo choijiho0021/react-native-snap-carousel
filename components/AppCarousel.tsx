@@ -61,12 +61,13 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
       carouselRef.current = {
         snapToNext: () => {
           idx.current += 1;
-          if (idx.current >= slides.length - 1) idx.current = loop ? 1 : 0;
+          if (idx.current === slides.length - 1 && loop) idx.current = 1;
+          if (idx.current > slides.length - 1) idx.current -= 1;
           ref.current?.scrollToIndex({
             index: idx.current,
             animated: true,
           });
-          if (Platform.OS === 'android') onSnapToItem?.(idx.current);
+          onSnapToItem?.(idx.current);
         },
       };
     }
@@ -75,12 +76,11 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
   useInterval(() => {
     if (!onMomentum.current) {
       idx.current += 1;
-      if (idx.current >= slides.length - 1) {
-        if (loop) {
-          ref.current?.scrollToIndex({index: 0, animated: false});
-        }
-        idx.current = loop ? 1 : 0;
+      if (idx.current === slides.length - 1 && loop) {
+        ref.current?.scrollToIndex({index: 0, animated: false});
+        idx.current = 1;
       }
+      if (idx.current > slides.length - 1) idx.current -= 1;
 
       onSnapToItem?.(idx.current - 1);
       ref.current?.scrollToIndex({index: idx.current, animated: true});
@@ -112,8 +112,11 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
           } else {
             ref.current?.scrollToIndex({index: idx.current, animated: true});
           }
+          onSnapToItem?.(idx.current - 1);
+        } else {
+          onSnapToItem?.(idx.current);
         }
-        onSnapToItem?.(idx.current - 1);
+
         onMomentum.current = false;
         if (autoplay && loop) setPlayInterval(interval);
       }
