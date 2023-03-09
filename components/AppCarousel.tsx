@@ -44,17 +44,12 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
     () => (loop ? data.slice(-1).concat(data, data.slice(0, 1)) : data),
     [data, loop],
   );
-  const idx = useRef(loop ? 1 : 0);
+  const idx = useRef(0);
   const ref = useRef<FlatList>(null);
   const onMomentum = useRef(false);
   const [playInterval, setPlayInterval] = useState<number | null>(
     autoplay && loop ? interval : null,
   );
-
-  useEffect(() => {
-    // initial position
-    ref.current?.scrollToOffset({offset: sliderWidth, animated: false});
-  }, [sliderWidth]);
 
   const onMomentumScrollStart = useCallback(() => {
     onMomentum.current = true;
@@ -66,24 +61,28 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
       carouselRef.current = {
         snapToNext: () => {
           idx.current += 1;
-          if (loop) idx.current %= data.length;
+          if (idx.current === slides.length - 1 && loop) idx.current = 1;
+          if (idx.current > slides.length - 1) idx.current -= 1;
           ref.current?.scrollToIndex({
             index: idx.current,
             animated: true,
           });
-          if (Platform.OS === 'android') onSnapToItem?.(idx.current);
+          onSnapToItem?.(idx.current);
         },
       };
     }
-  }, [carouselRef, data.length, loop, onSnapToItem]);
+  }, [carouselRef, loop, onSnapToItem, slides.length]);
 
   useInterval(() => {
     if (!onMomentum.current) {
       idx.current += 1;
-      if (Platform.OS === 'android') {
-        if (idx.current >= slides.length - 1) idx.current = 1;
-        onSnapToItem?.(idx.current - 1);
+      if (idx.current === slides.length - 1 && loop) {
+        ref.current?.scrollToIndex({index: 0, animated: false});
+        idx.current = 1;
       }
+      if (idx.current > slides.length - 1) idx.current -= 1;
+
+      onSnapToItem?.(idx.current - 1);
       ref.current?.scrollToIndex({index: idx.current, animated: true});
     }
   }, playInterval);
@@ -97,27 +96,30 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
 
       const oldIdx = idx.current;
       idx.current = Math.round(x / sliderWidth);
-      if (loop) {
-        if (x <= 0) {
-          if (idx.current !== oldIdx) {
+      if (oldIdx !== idx.current) {
+        // oldIdx == idx.current 이면 slide는 움직이지 않음
+        if (loop) {
+          if (x <= 0) {
             ref.current?.scrollToIndex({
               index: slides.length - 2,
               animated: false,
             });
-          }
-          idx.current = slides.length - 3;
-        } else if (x + 5 >= maxOffset) {
-          if (idx.current !== oldIdx) {
+            idx.current = slides.length - 2;
+          } else if (x + 5 >= maxOffset) {
+            // +5 is margin value for Android
             ref.current?.scrollToIndex({index: 1, animated: false});
+            idx.current = 1;
+          } else {
+            ref.current?.scrollToIndex({index: idx.current, animated: true});
           }
-          idx.current = 0;
+          onSnapToItem?.(idx.current - 1);
         } else {
-          idx.current -= 1;
+          onSnapToItem?.(idx.current);
         }
+
+        onMomentum.current = false;
+        if (autoplay && loop) setPlayInterval(interval);
       }
-      if (idx.current !== oldIdx) onSnapToItem?.(idx.current);
-      onMomentum.current = false;
-      if (autoplay && loop) setPlayInterval(interval);
     },
     [autoplay, interval, loop, onSnapToItem, sliderWidth, slides.length],
   );

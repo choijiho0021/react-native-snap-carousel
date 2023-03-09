@@ -29,6 +29,7 @@ export type RkbPromotion = {
   };
   langcode?: Langcode;
   popUpDisabled?: boolean;
+  isPopup?: boolean;
 };
 
 // Promotion 참여 상품에 대한 정보
@@ -65,6 +66,7 @@ const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
           title: item.title,
           imageUrl: item.field_image,
           product_uuid: item.field_product_uuid, // product variation id
+          isPopup: item.field_ispopup === 'On',
           rule,
           notice: item.field_ref_content
             ? {

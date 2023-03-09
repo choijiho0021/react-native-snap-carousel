@@ -347,8 +347,7 @@ const Esim: React.FC<EsimProps> = ({
   const [popupDisabled, setPopupDisabled] = useState(true);
   const [appUpdate, setAppUpdate] = useState('');
   const [appUpdateVisible, setAppUpdateVisible] = useState<boolean>();
-  const [popUp, setPopUp] = useState<RkbPromotion>();
-  const [closeType, setCloseType] = useState<'close' | 'exit' | 'redirect'>();
+  const [popUpList, setPopUpList] = useState<RkbPromotion[]>();
   const [deviceList, setDeviceList] = useState<string[]>([]);
   const [isTop, setIsTop] = useState<boolean>(true);
   const initialized = useRef(false);
@@ -411,13 +410,15 @@ const Esim: React.FC<EsimProps> = ({
   }, [animatedValue, bannerHeight, isTop]);
 
   const setNotiModal = useCallback(() => {
-    const popUpPromo = promotion?.find(
-      (v) => v.rule?.display?.routeName === 'Home' && v?.notice?.image?.noti,
+    const popUpPromoList = promotion?.filter(
+      (v) =>
+        v.rule?.display?.routeName === 'Home' &&
+        v?.notice?.image?.noti &&
+        v.isPopup,
     );
 
-    if (popUpPromo) {
-      setPopUp(popUpPromo);
-      setCloseType(popUpPromo.rule ? 'redirect' : 'close');
+    if ((popUpPromoList.length || 0) > 0) {
+      setPopUpList(popUpPromoList);
       setPopUpVisible(true);
     } else {
       setPopUpVisible(false);
@@ -605,33 +606,32 @@ const Esim: React.FC<EsimProps> = ({
   }, [index, navigation, savedIndex]);
 
   const exitApp = useCallback(
-    (v?: string) => {
+    (v?: string, item?: RkbPromotion) => {
       setPopUpVisible(false);
-      setCloseType(undefined);
 
       switch (v) {
         case 'redirect':
           setIsClosedPopUp(true);
-          if (popUp?.rule?.navigate) {
-            if (popUp?.rule?.navigate?.startsWith('http')) {
-              Linking.openURL(popUp?.rule?.navigate);
-            } else if (popUp?.rule?.stack) {
-              navigation.navigate(popUp?.rule?.stack, {
-                screen: popUp.rule.navigate,
+          if (item?.rule?.navigate) {
+            if (item?.rule?.navigate?.startsWith('http')) {
+              Linking.openURL(item?.rule?.navigate);
+            } else if (item?.rule?.stack) {
+              navigation.navigate(item?.rule?.stack, {
+                screen: item.rule.navigate,
                 initial: false,
               });
             } else {
-              navigation.navigate(popUp.rule.navigate);
+              navigation.navigate(item.rule.navigate);
             }
-          } else if (popUp?.notice) {
+          } else if (item?.notice) {
             navigation.navigate('SimpleText', {
               key: 'noti',
               title: i18n.t('set:noti'),
-              bodyTitle: popUp.notice.title,
-              body: popUp.notice.body,
-              rule: popUp.rule,
-              nid: popUp.notice.nid,
-              image: popUp.notice.image,
+              bodyTitle: item.notice.title,
+              body: item.notice.body,
+              rule: item.rule,
+              nid: item.notice.nid,
+              image: item.notice.image,
               mode: 'noti',
             });
           }
@@ -647,16 +647,18 @@ const Esim: React.FC<EsimProps> = ({
         default:
       }
     },
-    [navigation, popUp?.notice, popUp?.rule],
+    [navigation],
   );
 
   useEffect(() => {
     if (route.params?.clickPromotion) exitApp('redirect');
   }, [exitApp, route.params?.clickPromotion]);
 
-  useFocusEffect(() => {
-    if (!isClosedPopUp && promotion) setNotiModal();
-  });
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!isClosedPopUp && promotion) setNotiModal();
+    }, [isClosedPopUp, promotion, setNotiModal]),
+  );
 
   const folderOpened = useMemo(
     () => isFolderOpen(dimensions.width),
@@ -972,7 +974,7 @@ const Esim: React.FC<EsimProps> = ({
       }
     }
     getDevList();
-  }, [action.account, isSupport, navigation, promotion, setNotiModal]);
+  }, [isSupport]);
 
   useEffect(() => {
     if (isSupport && !initialized.current) {
@@ -1037,9 +1039,8 @@ const Esim: React.FC<EsimProps> = ({
       <>
         <NotiModal
           visible={modalType === 'promotion'}
-          popUp={popUp}
-          closeType={closeType}
-          onOkClose={() => exitApp(closeType)}
+          popUpList={popUpList || []}
+          onOkClose={exitApp}
           onCancelClose={() => {
             setIsClosedPopUp(true);
             setPopUpVisible(false);
@@ -1061,7 +1062,7 @@ const Esim: React.FC<EsimProps> = ({
         />
       </>
     ),
-    [appUpdate, closeType, exitApp, modalBody, modalType, popUp],
+    [appUpdate, exitApp, modalBody, modalType, popUpList],
   );
 
   return (

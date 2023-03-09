@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
-import React, {memo, useCallback, useState, useEffect, useMemo} from 'react';
-import {Image, Pressable, View, Dimensions} from 'react-native';
+import React, {memo, useCallback, useState, useMemo, useEffect} from 'react';
+import {Image, Pressable, View, StyleSheet, Animated} from 'react-native';
+import {Pagination} from 'react-native-snap-carousel';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -10,24 +11,60 @@ import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {API} from '@/redux/api';
 import ProgressiveImage from '../../../components/ProgressiveImage';
+import AppCarousel from '@/components/AppCarousel';
+import {
+  ACTIVE_DOT_WIDTH,
+  dotStyle,
+  DOT_MARGIN,
+  INACTIVE_DOT_WIDTH,
+} from './PromotionCarousel';
+import utils from '@/redux/api/utils';
+import {sliderWidth} from '@/constants/SliderEntry.style';
+
+const styles = StyleSheet.create({
+  pagination: {
+    marginBottom: 15,
+    alignSelf: 'center',
+  },
+  paginationContainer: {
+    paddingBottom: 0,
+    paddingTop: 2,
+    paddingHorizontal: 0,
+  },
+  inactiveDot: {
+    width: INACTIVE_DOT_WIDTH,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.lightGrey,
+    marginLeft: DOT_MARGIN,
+  },
+});
 
 type NotiModalProps = {
-  onOkClose?: () => void;
+  onOkClose?: (v: string, item: RkbPromotion) => void;
   onCancelClose?: () => void;
   visible: boolean;
-  closeType?: 'redirect' | 'close' | 'exit';
-  popUp?: RkbPromotion;
+  // closeType?: 'redirect' | 'close' | 'exit';
+  // popUp?: RkbPromotion;
+  popUpList: RkbPromotion[];
 };
 const NotiModal: React.FC<NotiModalProps> = ({
-  popUp,
-  closeType,
+  popUpList,
+  // popUp,
+  // closeType,
   visible,
   onOkClose,
   onCancelClose,
 }) => {
-  const dimensions = useMemo(() => Dimensions.get('window'), []);
   const [checked, setChecked] = useState(false);
-  const [iamgeHight, setImageHeight] = useState(450);
+  const [closeType, setCloseType] = useState<'close' | 'exit' | 'redirect'>(
+    'redirect',
+  );
+  const [imageHeight, setImageHeight] = useState(450);
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [cur, setCur] = useState<RkbPromotion>(popUpList[0]);
+  const modalImageSize = useMemo(() => sliderWidth - 40, []);
+
   const setPopupDisabled = useCallback(() => {
     if (checked)
       AsyncStorage.setItem(
@@ -36,15 +73,106 @@ const NotiModal: React.FC<NotiModalProps> = ({
       );
   }, [checked]);
 
-  useEffect(() => {
-    if (popUp?.notice?.image?.noti)
-      Image.getSize(
-        API.default.httpImageUrl(popUp?.notice?.image?.noti),
-        (width, height) => {
-          setImageHeight(Math.ceil(height * ((dimensions.width - 40) / width)));
-        },
+  const renderDots = useCallback(
+    (activeIndex: number) => {
+      const duration = 200;
+      const aniMationWidth = new Animated.Value(INACTIVE_DOT_WIDTH);
+      const margin = aniMationWidth.interpolate({
+        inputRange: [INACTIVE_DOT_WIDTH, ACTIVE_DOT_WIDTH],
+        outputRange: [ACTIVE_DOT_WIDTH, INACTIVE_DOT_WIDTH],
+      });
+
+      Animated.timing(aniMationWidth, {
+        toValue: ACTIVE_DOT_WIDTH,
+        duration,
+        useNativeDriver: false,
+      }).start();
+
+      if (activeIndex === 0) {
+        return popUpList.map((elm, idx) =>
+          idx === 0 ? (
+            <Animated.View
+              key={elm.uuid + idx.toString()}
+              style={dotStyle(aniMationWidth, margin)}
+            />
+          ) : (
+            <View
+              key={utils.generateKey(idx.toString())}
+              style={styles.inactiveDot}
+            />
+          ),
+        );
+      }
+
+      return popUpList.map((_elm, idx) => {
+        if (activeIndex === idx)
+          return (
+            <Animated.View
+              key={utils.generateKey(idx.toString())}
+              style={dotStyle(aniMationWidth, DOT_MARGIN, colors.clearBlue)}
+            />
+          );
+
+        return activeIndex === (idx + 1) % popUpList.length ? (
+          <Animated.View
+            key={utils.generateKey(idx.toString())}
+            style={dotStyle(margin, DOT_MARGIN, colors.lightGrey)}
+          />
+        ) : (
+          <View
+            key={utils.generateKey(idx.toString())}
+            style={styles.inactiveDot}
+          />
+        );
+      });
+    },
+    [popUpList],
+  );
+
+  const renderItem = useCallback(
+    ({item}: {item: RkbPromotion}) => {
+      setCur(item);
+
+      setCloseType(item.rule ? 'redirect' : 'close');
+
+      const uri = API.default.httpImageUrl(item?.notice?.image?.noti);
+      const thumbnail = API.default.httpImageUrl(
+        item?.notice?.image?.thumbnail,
       );
-  }, [dimensions.width, popUp?.notice?.image?.noti]);
+      return (
+        <View style={{backgroundColor: 'transparent'}}>
+          <Pressable
+            style={{
+              width: modalImageSize,
+              height: imageHeight,
+              marginBottom: 18,
+            }}
+            onPress={() => {
+              if (closeType === 'redirect') {
+                onOkClose?.(closeType, item);
+              }
+            }}>
+            <ProgressiveImage
+              style={{width: '100%', height: imageHeight}}
+              thumbnailSource={{uri: thumbnail}}
+              source={{uri}}
+              resizeMode="contain"
+            />
+          </Pressable>
+        </View>
+      );
+    },
+    [closeType, imageHeight, modalImageSize, onOkClose],
+  );
+
+  useEffect(() => {
+    Image.getSize(
+      API.default.httpImageUrl(popUpList[0]?.notice?.image?.noti),
+      (width, height) => {
+        setImageHeight(Math.ceil(height * (modalImageSize / width)));
+      },
+    );
+  }, [modalImageSize, popUpList]);
 
   return (
     <AppModal
@@ -61,7 +189,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
       okButtonTitle={i18n.t(closeType || 'close')}
       type={closeType === 'redirect' ? closeType : 'close'}
       onOkClose={() => {
-        onOkClose?.();
+        onOkClose?.(closeType, cur);
         setPopupDisabled();
       }}
       onCancelClose={() => {
@@ -69,41 +197,42 @@ const NotiModal: React.FC<NotiModalProps> = ({
         setPopupDisabled();
       }}
       visible={visible}>
-      <View style={{backgroundColor: 'transparent'}}>
-        <Pressable
-          style={{width: '100%', height: iamgeHight, marginBottom: 18}}
-          onPress={() => {
-            if (closeType === 'redirect') {
-              onOkClose?.();
-            }
-          }}>
-          <ProgressiveImage
-            style={{width: '100%', height: iamgeHight}}
-            thumbnailSource={{
-              uri: API.default.httpImageUrl(popUp?.notice?.image?.thumbnail),
-            }}
-            source={{uri: API.default.httpImageUrl(popUp?.notice?.image?.noti)}}
-            resizeMode="contain"
+      <AppCarousel
+        data={popUpList}
+        renderItem={renderItem}
+        autoplay={popUpList.length > 1}
+        loop={popUpList.length > 1}
+        onSnapToItem={setActiveSlide}
+        sliderWidth={modalImageSize}
+      />
+      {popUpList.length > 1 && (
+        <View style={styles.pagination}>
+          <Pagination
+            dotsLength={popUpList.length}
+            activeDotIndex={activeSlide}
+            containerStyle={styles.paginationContainer}
+            renderDots={renderDots}
           />
-        </Pressable>
+        </View>
+      )}
 
-        <Pressable
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginHorizontal: 20,
-            backgroundColor: 'white',
-          }}
-          onPress={() => setChecked((prev) => !prev)}>
-          <AppButton
-            iconName="btnCheck"
-            style={{marginRight: 10}}
-            checked={checked}
-            onPress={() => setChecked((prev) => !prev)}
-          />
-          <AppText>{i18n.t('close:week')}</AppText>
-        </Pressable>
-      </View>
+      <Pressable
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginHorizontal: 20,
+          backgroundColor: 'white',
+          height: 24,
+        }}
+        onPress={() => setChecked((prev) => !prev)}>
+        <AppButton
+          iconName="btnCheck"
+          style={{marginRight: 10}}
+          checked={checked}
+          onPress={() => setChecked((prev) => !prev)}
+        />
+        <AppText>{i18n.t('close:week')}</AppText>
+      </Pressable>
     </AppModal>
   );
 };
