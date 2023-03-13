@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
 
 type UserGuideScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
-  'ContactBoard'
+  'GuideHome'
 >;
 
 type GuideHomeScreenProps = {
@@ -164,14 +164,144 @@ type GuideHomeScreenProps = {
   };
 };
 
-type guideOption = 'esimReg' | 'checkSetting';
+export type GuideOption = 'esimReg' | 'checkSetting';
+
+export const renderHeader = (onPress: () => void) => (
+  <View style={styles.header}>
+    <AppBackButton style={styles.headerTitle} />
+    <AppSvgIcon
+      key="closeModal"
+      onPress={onPress}
+      name="closeModal"
+      style={{marginRight: 16}}
+    />
+  </View>
+);
+
+export const renderTitle = (title: string) => (
+  <View style={styles.title}>
+    <AppText style={styles.titleText}>{title}</AppText>
+  </View>
+);
+
+export const renderBtn = (item: string, onPress: () => void, isHome = true) => (
+  <Pressable
+    key={item}
+    style={[
+      styles.btn,
+      item === 'checkSetting' && {backgroundColor: colors.backGrey},
+    ]}
+    onPress={onPress}>
+    <View>
+      <AppText style={styles.btnTitle}>
+        {isHome
+          ? i18n.t(`userGuide:${item}:title`)
+          : i18n.t(`userGuide:selectRegion:${item}`)}
+      </AppText>
+      {isHome && (
+        <AppText style={styles.btnBody}>
+          {i18n.t(`userGuide:${item}:body`)}
+        </AppText>
+      )}
+    </View>
+    <AppSvgIcon name="rightArrow20" />
+  </Pressable>
+);
+
+const renderNoticeText = (idx: number) => (
+  <View
+    key={idx}
+    style={[
+      styles.noticeTextContainer,
+      {
+        marginRight: 36,
+      },
+    ]}>
+    <AppText key="centerDot" style={styles.dot}>
+      {i18n.t('centerDot')}
+    </AppText>
+
+    <AppStyledText
+      text={i18n.t(`userGuide:modal:notice:list${idx}`)}
+      textStyle={styles.noticeText}
+      format={{b: {color: colors.redError, fontWeight: 'bold'}}}
+    />
+  </View>
+);
+
+export const guideModal = (
+  actions: {
+    modal: ModalAction;
+  },
+  navigation: UserGuideScreenNavigationProp,
+  guideOption,
+) => (
+  <SafeAreaView style={{flex: 1}}>
+    <Pressable
+      style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}
+      onPress={() => actions.modal.closeModal()}>
+      <Pressable
+        onPress={() => {}}
+        style={{
+          marginTop: 'auto',
+          paddingTop: 32,
+          paddingHorizontal: 20,
+          backgroundColor: 'white',
+          borderTopLeftRadius: 8,
+          borderTopRightRadius: 8,
+        }}>
+        <AppIcon
+          name="guideModalIcon"
+          style={{alignSelf: 'flex-start', marginBottom: 6}}
+        />
+        <AppText style={styles.modalTitleText}>
+          {i18n.t('userGuide:modal:title')}
+        </AppText>
+
+        <AppStyledText
+          text={i18n.t('userGuide:modal:body')}
+          textStyle={styles.modalBodyText}
+          format={{
+            b: {color: colors.clearBlue},
+            s: {fontWeight: '500', color: colors.black},
+          }}
+        />
+
+        <View style={styles.noticeBox}>
+          <View style={[styles.row, {alignItems: 'center', marginBottom: 10}]}>
+            <AppSvgIcon name="notice" />
+            <AppText style={styles.noticeTitle}>
+              {i18n.t('userGuide:modal:notice:title')}
+            </AppText>
+          </View>
+          <AppText style={styles.noticeBody}>
+            {i18n.t('userGuide:modal:notice:body')}
+          </AppText>
+          <View style={styles.listBox}>
+            {[1, 2].map((v) => renderNoticeText(v))}
+          </View>
+        </View>
+        <View style={styles.okBtnContainer}>
+          <AppButton
+            style={styles.okButton}
+            title={i18n.t('local:ok')}
+            type="primary"
+            onPress={() => {
+              actions.modal.closeModal();
+              navigation.navigate('UserGuideSelectRegion', {guideOption});
+            }}
+          />
+        </View>
+      </Pressable>
+    </Pressable>
+  </SafeAreaView>
+);
 
 const GuideHomeScreen: React.FC<GuideHomeScreenProps> = ({
   navigation,
   actions,
 }) => {
-  const [option, setOption] = useState<guideOption>('esimReg');
-  const [modalVisible, setModalVisible] = useState(false);
+  const [guideOption, setGuideOption] = useState<GuideOption>('esimReg');
 
   useEffect(() => {
     navigation.setOptions({
@@ -180,147 +310,29 @@ const GuideHomeScreen: React.FC<GuideHomeScreenProps> = ({
     });
   }, [navigation]);
 
-  const renderHeader = useCallback(
-    () => (
-      <View style={styles.header}>
-        <AppBackButton style={styles.headerTitle} />
-        <AppSvgIcon
-          key="closeModal"
-          onPress={() => navigation.goBack()}
-          name="closeModal"
-          style={{marginRight: 16}}
-        />
-      </View>
-    ),
-    [navigation],
-  );
-
-  const renderNoticeText = useCallback(
-    (idx: number) => (
-      <View
-        key={idx}
-        style={[
-          styles.noticeTextContainer,
-          {
-            marginRight: 36,
-          },
-        ]}>
-        <AppText key="centerDot" style={styles.dot}>
-          {i18n.t('centerDot')}
-        </AppText>
-
-        <AppStyledText
-          text={i18n.t(`userGuide:modal:notice:list${idx}`)}
-          textStyle={styles.noticeText}
-          format={{b: {color: colors.redError, fontWeight: 'bold'}}}
-        />
-      </View>
-    ),
-    [],
-  );
-
-  const guideModal = useCallback(
-    () => (
-      <SafeAreaView style={{flex: 1}}>
-        <Pressable
-          style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}
-          onPress={() => actions.modal.closeModal()}>
-          <Pressable
-            onPress={() => {}}
-            style={{
-              marginTop: 'auto',
-              paddingTop: 32,
-              paddingHorizontal: 20,
-              backgroundColor: 'white',
-              borderTopLeftRadius: 8,
-              borderTopRightRadius: 8,
-            }}>
-            <AppIcon
-              name="guideModalIcon"
-              style={{alignSelf: 'flex-start', marginBottom: 6}}
-            />
-            <AppText style={styles.modalTitleText}>
-              {i18n.t('userGuide:modal:title')}
-            </AppText>
-
-            <AppStyledText
-              text={i18n.t('userGuide:modal:body')}
-              textStyle={styles.modalBodyText}
-              format={{
-                b: {color: colors.clearBlue},
-                s: {fontWeight: '500', color: colors.black},
-              }}
-            />
-
-            <View style={styles.noticeBox}>
-              <View
-                style={[styles.row, {alignItems: 'center', marginBottom: 10}]}>
-                <AppSvgIcon name="notice" />
-                <AppText style={styles.noticeTitle}>
-                  {i18n.t('userGuide:modal:notice:title')}
-                </AppText>
-              </View>
-              <AppText style={styles.noticeBody}>
-                {i18n.t('userGuide:modal:notice:body')}
-              </AppText>
-              <View style={styles.listBox}>
-                {[1, 2].map((v) => renderNoticeText(v))}
-              </View>
-            </View>
-            <View style={styles.okBtnContainer}>
-              <AppButton
-                style={styles.okButton}
-                title={i18n.t('local:ok')}
-                type="primary"
-                onPress={() => {}}
-              />
-            </View>
-          </Pressable>
-        </Pressable>
-      </SafeAreaView>
-    ),
-    [actions.modal, renderNoticeText],
-  );
-
-  const renderBtn = useCallback(
-    (item: string) => (
-      <Pressable
-        style={[
-          styles.btn,
-          item === 'checkSetting' && {backgroundColor: colors.backGrey},
-        ]}
-        onPress={() => {
-          setOption(item);
-          if (item === 'esimReg')
-            actions.modal.showModal({
-              content: guideModal(),
-            });
-        }}>
-        <View>
-          <AppText style={styles.btnTitle}>
-            {i18n.t(`userGuide:${item}:title`)}
-          </AppText>
-          <AppText style={styles.btnBody}>
-            {i18n.t(`userGuide:${item}:body`)}
-          </AppText>
-        </View>
-        <AppSvgIcon name="rightArrow20" />
-      </Pressable>
-    ),
-    [actions.modal, guideModal],
-  );
-
   return (
     <SafeAreaView style={styles.container}>
-      {renderHeader()}
-      <View style={styles.title}>
-        <AppText style={styles.titleText}>
-          {i18n.t('userGuide:home:title')}
-        </AppText>
-      </View>
+      {renderHeader(() => navigation.goBack())}
+
+      {renderTitle(i18n.t('userGuide:home:title'))}
       <AppIcon name="guideHomeLogo" style={styles.logo} />
 
-      {['esimReg', 'checkSetting'].map((v) => renderBtn(v))}
+      {['esimReg', 'checkSetting'].map((v) =>
+        renderBtn(
+          v,
+          () => {
+            setGuideOption(v);
+            if (v === 'esimReg')
+              actions.modal.showModal({
+                content: guideModal(actions, navigation, guideOption),
+              });
+            else {
+              navigation.navigate('UserGuideSelectRegion', {guideOption: v});
+            }
+          },
+          true,
+        ),
+      )}
     </SafeAreaView>
   );
 };

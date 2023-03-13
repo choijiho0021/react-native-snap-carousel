@@ -795,6 +795,13 @@
   "userGuide:modal:notice:list1": "The product above <b>when you register the product in Korea</b> immediately <b>use begins, and the period of use may be exhausted.</b>",
   "userGuide:modal:notice:list2": "After arriving at the site, register the product on the device.",
 
+  "userGuide:selectRegion:esimReg:title": "Where are you\nregistering your product?",
+  "userGuide:selectRegion:checkSetting:title": "You have completed product registration!\nWhere are you setting up the product?",
+  "userGuide:selectRegion:esimReg:notice:title": "The recommended country for registration is different for each product!",
+  "userGuide:selectRegion:esimReg:notice:body": "Check it out on the product details screen.",
+  "userGuide:selectRegion:korea": "Korea",
+  "userGuide:selectRegion:local": "Local Country",
+
   "userGuide:checkInfo": "Lists to check before you go ahead:",
   "userGuide:checkInfo1": "Register you eSIM only when <b>network connection is available</b>",
   "userGuide:checkInfo2": "You can check your eSIM details in your <b>email inbox</b> or <b>Purchased eSIM List</b> below",

@@ -796,6 +796,13 @@
   "userGuide:modal:notice:list1": "위 상품은 <b>국내에서 상품 등록 시</b> 즉시 사용 시작되어 <b>사용 기간이 소진될 수 있습니다.</b>",
   "userGuide:modal:notice:list2": "현지 도착 후 상품을 단말에 등록해주세요.",
 
+  "userGuide:selectRegion:esimReg:title": "어디에서 상품을\n등록하고 계신가요?",
+  "userGuide:selectRegion:checkSetting:title": "상품 등록을 완료하셨군요!\n어디에서 상품을\n설정하고 계신가요?",
+  "userGuide:selectRegion:esimReg:notice:title": "상품마다 등록 권고 국가가 달라요!",
+  "userGuide:selectRegion:esimReg:notice:body": "상품 상세 화면에서 확인해보세요.",
+  "userGuide:selectRegion:korea": "한국",
+  "userGuide:selectRegion:local": "현지국가",
+
   "userGuide:checkInfo": "잠깐! 먼저 확인해주세요",
   "userGuide:checkInfo1": "반드시 <b>네트워크가 연결된 곳</b>에서 eSIM을 등록해주세요.",
   "userGuide:checkInfo2": "등록하신 <b>이메일</b> 또는 하단 탭의 <b>구매 eSIM 목록</b>을 통해 구매하신 eSIM 정보를 확인하실 수 있어요.",

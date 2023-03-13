@@ -13,6 +13,7 @@ import {
   Platform,
 } from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {RouteProp} from '@react-navigation/native';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {
@@ -104,18 +105,25 @@ const styles = StyleSheet.create({
 
 type UserGuideScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
-  'ContactBoard'
+  'ContactBoard',
+  'GuideHome'
 >;
 
 type UserGuideScreenProps = {
   navigation: UserGuideScreenNavigationProp;
+  route: RouteProp<HomeStackParamList, 'GuideHome'>;
 };
 
-const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
+const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
+  navigation,
+  route: {params},
+}) => {
   const [carouselIdx, setCarouselIdx] = useState(0);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   // const deviceModel = useMemo(() => DeviceInfo.getModel(), []);
   const isGalaxy = useMemo(() => DeviceInfo.getModel().startsWith('SM'), []);
+  const guideOption = useMemo(() => params?.guideOption, [params?.guideOption]);
+  const region = useMemo(() => params?.region, [params?.region]);
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {
