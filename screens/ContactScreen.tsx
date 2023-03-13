@@ -287,7 +287,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
           });
           break;
         case 'Guide':
-          navigation.navigate('UserGuide');
+          navigation.navigate('UserGuideHome');
           break;
 
         case 'FB':

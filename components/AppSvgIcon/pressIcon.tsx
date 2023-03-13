@@ -1095,6 +1095,46 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  rightArrow20: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="m8 4 5.657 5.657L8 15.314"
+        stroke="#2C2C2C"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
+  notice: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#y161wjysma)">
+        <Path
+          d="M9.122 1.442a1 1 0 0 1 1.756 0l8.315 15.245a1 1 0 0 1-.878 1.48H1.686a1 1 0 0 1-.878-1.48L9.122 1.443z"
+          fill="#FFC82D"
+        />
+        <Path
+          d="M11 15a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM8.545 6.542A.5.5 0 0 1 9.043 6h1.914a.5.5 0 0 1 .498.542l-.417 5a.5.5 0 0 1-.498.458H9.46a.5.5 0 0 1-.498-.459l-.417-5z"
+          fill="#2C2C2C"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="y161wjysma">
+          <Path fill="#fff" d="M0 0h20v20H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

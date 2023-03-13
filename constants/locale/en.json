@@ -781,6 +781,20 @@
   "socialLogin:google": "Sign in with Google",
   "socialLogin:facebook": "Sign in with Facebook",
 
+  "userGuide:home:title": "Using eSIM is not difficult!\nPlease check the guide\n in order",
+  "userGuide:esimReg:title": "Register eSIM",
+  "userGuide:esimReg:body": "Registering the eSIM product in the device",
+  "userGuide:checkSetting:title": "Check settings",
+  "userGuide:checkSetting:body": "My settings now, are they correct?\nCheck your SIM settings",
+
+  "userGuide:modal:title": "Can I pre-register the eSIM product\n in Korea?",
+  "userGuide:modal:body": "Yes, of course!\nExcept for some products below,\n<b>Registration is available in Korea</b>.",
+
+  "userGuide:modal:notice:title": "Recommended products for local registration",
+  "userGuide:modal:notice:body": "146 global countries, 147 global countries, Mongolia, India, Turkey, Saudi Arabia, Uzbekistan, Brazil, Mexico, Argentina, Thailand (local)",
+  "userGuide:modal:notice:list1": "The product above <b>when you register the product in Korea</b> immediately <b>use begins, and the period of use may be exhausted.</b>",
+  "userGuide:modal:notice:list2": "After arriving at the site, register the product on the device.",
+
   "userGuide:checkInfo": "Lists to check before you go ahead:",
   "userGuide:checkInfo1": "Register you eSIM only when <b>network connection is available</b>",
   "userGuide:checkInfo2": "You can check your eSIM details in your <b>email inbox</b> or <b>Purchased eSIM List</b> below",

@@ -118,6 +118,8 @@ const images: Record<string, any[]> = {
   lpay: [require(`${paymentPath}logoLpay.png`)],
   paypal: [require(`${paymentPath}logo_paypal.png`)],
   specialTip: [require(`${guidePath}iconHoney.png`)],
+  guideHomeLogo: [require(`${guidePath}logoHomeGuide.png`)],
+  guideModalIcon: [require(`${guidePath}iconGuideModal.png`)],
   imgAlarm: [require(`${esimPath}imgAlarm.png`)],
   btnPen: [require(`${esimPath}btnPen.png`)],
   naverIcon: [require(`${esimPath}naverIcon.png`)],
