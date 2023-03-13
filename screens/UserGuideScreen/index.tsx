@@ -26,7 +26,7 @@ import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import i18n from '@/utils/i18n';
-import {GuideImage, guideImages, imageList} from './model';
+import {getImageList, GuideImage, getGuideImages} from './model';
 import AppStyledText from '@/components/AppStyledText';
 import {getImage} from '@/utils/utils';
 import AppCarousel from '@/components/AppCarousel';
@@ -152,7 +152,9 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         ]}>
         <AppText style={[appStyles.bold16Text, {color: colors.clearBlue}]}>
           {index + 1}
-          <AppText style={appStyles.bold16Text}>/{guideImages.length}</AppText>
+          <AppText style={appStyles.bold16Text}>
+            /{getGuideImages(guideOption, region).length}
+          </AppText>
         </AppText>
         <AppSvgIcon
           key="closeModal"
@@ -161,10 +163,10 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         />
       </View>
     ),
-    [isGalaxy, navigation],
+    [guideOption, isGalaxy, navigation, region],
   );
 
-  const renderHeadPage = useCallback(
+  const renderRegKorea = useCallback(
     (data: GuideImage) => {
       return (
         <ScrollView
@@ -190,7 +192,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
 
           <View style={{marginTop: 20}}>
             <Image
-              source={getImage(imageList, data.key)}
+              source={getImage(getImageList(guideOption, region), data.key)}
               resizeMode="contain"
             />
           </View>
@@ -228,12 +230,81 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         </ScrollView>
       );
     },
-    [isGalaxy],
+    [guideOption, isGalaxy, region],
+  );
+
+  const renderHeadPage = useCallback(
+    (data: GuideImage) => {
+      if (guideOption === 'esimReg' && region === 'korea')
+        return renderRegKorea(data);
+      return (
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={{alignItems: 'center'}}>
+          <AppSvgIcon key="esimLogo" style={styles.logo} name="esimLogo" />
+
+          <View style={{alignItems: 'center', marginTop: 23}}>
+            {data?.title}
+            <AppText style={[appStyles.medium14, {marginTop: 20}]}>
+              {
+                // eslint-disable-next-line no-nested-ternary
+                Platform.OS === 'android'
+                  ? i18n.t(
+                      `userGuide:stepsTitle0:${isGalaxy ? 'galaxy' : 'pixel'}`,
+                    )
+                  : Platform.Version >= '16.0' && i18n.locale === 'ko'
+                  ? 'iOS 16 ver.'
+                  : ''
+              }
+            </AppText>
+          </View>
+
+          <View style={{marginTop: 20}}>
+            <Image
+              source={getImage(getImageList(guideOption, region), data.key)}
+              resizeMode="contain"
+            />
+          </View>
+
+          <View style={styles.checkInfo}>
+            <AppText style={appStyles.bold18Text}>
+              {i18n.t('userGuide:checkInfo')}
+            </AppText>
+            <View style={{marginTop: 8}}>
+              {[1, 2, 3, 4].map((k) => (
+                <View key={k} style={{flexDirection: 'row'}}>
+                  <AppText
+                    style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
+                    •
+                  </AppText>
+                  <View style={{flex: 1}}>
+                    <AppStyledText
+                      textStyle={styles.checkInfoText}
+                      text={i18n.t(`userGuide:checkInfo${k}`)}
+                      format={{b: {color: colors.clearBlue}}}
+                    />
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
+          <View style={styles.slideGuide}>
+            <View style={styles.slideGuideBox}>
+              <AppSvgIcon key="leftArrow" name="leftArrow" />
+              <AppText style={{marginLeft: 8}}>
+                {i18n.t('userGuide:slideLeft')}
+              </AppText>
+            </View>
+          </View>
+        </ScrollView>
+      );
+    },
+    [guideOption, isGalaxy, region, renderRegKorea],
   );
 
   const renderStepPage = useCallback(
     (data: GuideImage) => {
-      const image = getImage(imageList, data.key);
+      const image = getImage(getImageList(guideOption, region), data.key);
       const imageSource = Image.resolveAssetSource(image);
 
       return (
@@ -285,7 +356,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         </ScrollView>
       );
     },
-    [dimensions.width, isGalaxy],
+    [dimensions.width, guideOption, isGalaxy, region],
   );
 
   const renderTailPage = useCallback(
@@ -315,26 +386,27 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
             marginBottom: 16,
           }}>
           <Image
-            source={getImage(imageList, 'pageLast')}
+            source={getImage(getImageList(guideOption, region), 'pageLast')}
             resizeMode="contain"
           />
           <Image
-            source={getImage(imageList, 'pageLast2')}
+            source={getImage(getImageList(guideOption, region), 'pageLast2')}
             resizeMode="contain"
           />
         </View>
       </ScrollView>
     ),
-    [isGalaxy],
+    [guideOption, isGalaxy, region],
   );
 
   const renderBody = useCallback(
     (item: GuideImage, index: number) => {
       if (index === 0) return renderHeadPage(item);
-      if (index < guideImages.length - 1) return renderStepPage(item);
+      if (index < getGuideImages(guideOption, region).length - 1)
+        return renderStepPage(item);
       return renderTailPage(item);
     },
-    [renderHeadPage, renderStepPage, renderTailPage],
+    [guideOption, region, renderHeadPage, renderStepPage, renderTailPage],
   );
 
   const renderGuide = useCallback(
@@ -367,7 +439,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         backgroundColor: carouselIdx === 0 ? colors.white : colors.paleGreyTwo,
       }}>
       <AppCarousel
-        data={guideImages}
+        data={getGuideImages(guideOption, region)}
         renderItem={renderGuide}
         keyExtractor={(item) => item.key}
         onSnapToItem={setCarouselIdx}
