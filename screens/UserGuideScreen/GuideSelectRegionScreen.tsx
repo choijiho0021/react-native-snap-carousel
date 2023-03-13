@@ -6,15 +6,22 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {StyleSheet, SafeAreaView, View, Pressable} from 'react-native';
 
 import {RouteProp} from '@react-navigation/native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import {HomeStackParamList} from '@/navigation/navigation';
 
 import {colors} from '@/constants/Colors';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
-import AppBackButton from '@/components/AppBackButton';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {renderBtn, renderHeader, renderTitle} from './GuideHomeScreen';
+import {
+  guideModal,
+  renderBtn,
+  renderHeader,
+  renderTitle,
+} from './GuideHomeScreen';
 import {appStyles} from '@/constants/Styles';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 
 const styles = StyleSheet.create({
   container: {
@@ -51,6 +58,9 @@ type UserGuideScreenNavigationProp = StackNavigationProp<
 type GuideSelectRegionScreenProps = {
   navigation: UserGuideScreenNavigationProp;
   route: RouteProp<HomeStackParamList, 'GuideHome'>;
+  actions: {
+    modal: ModalAction;
+  };
 };
 
 export type GuideRegion = 'korea' | 'local';
@@ -58,6 +68,7 @@ export type GuideRegion = 'korea' | 'local';
 const GuideSelectRegionScreen: React.FC<GuideSelectRegionScreenProps> = ({
   navigation,
   route: {params},
+  actions,
 }) => {
   const [region, setRegion] = useState<GuideRegion>('korea');
   const guideOption = useMemo(() => params?.guideOption, [params?.guideOption]);
@@ -75,7 +86,13 @@ const GuideSelectRegionScreen: React.FC<GuideSelectRegionScreenProps> = ({
       {renderTitle(i18n.t(`userGuide:selectRegion:${guideOption}:title`))}
       <View style={{height: 6}} />
       {guideOption === 'esimReg' ? (
-        <Pressable style={styles.box}>
+        <Pressable
+          style={styles.box}
+          onPress={() =>
+            actions.modal.showModal({
+              content: guideModal(actions, guideOption, false),
+            })
+          }>
           <AppSvgIcon name="noticeFlag" style={{marginRight: 8}} />
           <View>
             <AppText style={styles.boxTitle}>
@@ -107,4 +124,12 @@ const GuideSelectRegionScreen: React.FC<GuideSelectRegionScreenProps> = ({
   );
 };
 
-export default GuideSelectRegionScreen;
+export default connect(
+  // eslint-disable-next-line no-empty-pattern
+  ({}) => ({}),
+  (dispatch) => ({
+    actions: {
+      modal: bindActionCreators(modalActions, dispatch),
+    },
+  }),
+)(GuideSelectRegionScreen);

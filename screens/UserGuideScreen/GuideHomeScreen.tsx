@@ -233,8 +233,9 @@ export const guideModal = (
   actions: {
     modal: ModalAction;
   },
-  navigation: UserGuideScreenNavigationProp,
-  guideOption,
+  guideOption: GuideOption,
+  isHome = true,
+  navigation?: UserGuideScreenNavigationProp,
 ) => (
   <SafeAreaView style={{flex: 1}}>
     <Pressable
@@ -288,7 +289,8 @@ export const guideModal = (
             type="primary"
             onPress={() => {
               actions.modal.closeModal();
-              navigation.navigate('UserGuideSelectRegion', {guideOption});
+              if (isHome && navigation)
+                navigation.navigate('UserGuideSelectRegion', {guideOption});
             }}
           />
         </View>
@@ -324,7 +326,7 @@ const GuideHomeScreen: React.FC<GuideHomeScreenProps> = ({
             setGuideOption(v);
             if (v === 'esimReg')
               actions.modal.showModal({
-                content: guideModal(actions, navigation, guideOption),
+                content: guideModal(actions, guideOption, true, navigation),
               });
             else {
               navigation.navigate('UserGuideSelectRegion', {guideOption: v});
