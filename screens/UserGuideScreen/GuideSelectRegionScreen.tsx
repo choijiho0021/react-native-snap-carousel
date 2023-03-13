@@ -70,7 +70,6 @@ const GuideSelectRegionScreen: React.FC<GuideSelectRegionScreenProps> = ({
   route: {params},
   actions,
 }) => {
-  const [region, setRegion] = useState<GuideRegion>('korea');
   const guideOption = useMemo(() => params?.guideOption, [params?.guideOption]);
 
   useEffect(() => {
@@ -111,7 +110,6 @@ const GuideSelectRegionScreen: React.FC<GuideSelectRegionScreenProps> = ({
         renderBtn(
           v,
           () => {
-            setRegion(v);
             navigation.navigate('UserGuide', {
               guideOption,
               region: v,
