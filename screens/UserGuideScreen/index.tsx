@@ -57,24 +57,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     alignSelf: 'flex-start',
     paddingHorizontal: 20,
-    marginTop: 77,
+    marginTop: 40,
     width: '100%',
   },
   slideGuide: {
     flex: 2,
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'flex-end',
     justifyContent: 'center',
-    marginRight: 20,
-    marginVertical: 40,
+    marginVertical: 42,
   },
   slideGuideBox: {
     flexDirection: 'row',
-    width: 141,
-    height: 39,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     borderRadius: 20,
-    borderColor: colors.black,
+    borderColor: colors.lightGrey,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
@@ -98,6 +96,15 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     textAlign: 'center',
     letterSpacing: -0.5,
+  },
+  koreaFlag: {
+    marginVertical: 64,
+  },
+  slideText: {
+    ...appStyles.bold14Text,
+    lineHeight: 20,
+    color: colors.black,
+    marginLeft: 8,
   },
 });
 
@@ -166,72 +173,47 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
     [guideOption, isGalaxy, navigation, region],
   );
 
-  const renderRegKorea = useCallback(
-    (data: GuideImage) => {
-      return (
-        <ScrollView
-          style={styles.container}
-          contentContainerStyle={{alignItems: 'center'}}>
-          <AppSvgIcon key="esimLogo" style={styles.logo} name="esimLogo" />
+  const renderRegKorea = useCallback((data: GuideImage) => {
+    return (
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{alignItems: 'center'}}>
+        <View style={{alignItems: 'center', marginTop: 40}}>{data?.title}</View>
+        <AppSvgIcon key="koreaFlag" style={styles.koreaFlag} name="koreaFlag" />
 
-          <View style={{alignItems: 'center', marginTop: 23}}>
-            {data?.title}
-            <AppText style={[appStyles.medium14, {marginTop: 20}]}>
-              {
-                // eslint-disable-next-line no-nested-ternary
-                Platform.OS === 'android'
-                  ? i18n.t(
-                      `userGuide:stepsTitle0:${isGalaxy ? 'galaxy' : 'pixel'}`,
-                    )
-                  : Platform.Version >= '16.0' && i18n.locale === 'ko'
-                  ? 'iOS 16 ver.'
-                  : ''
-              }
-            </AppText>
-          </View>
-
-          <View style={{marginTop: 20}}>
-            <Image
-              source={getImage(getImageList(guideOption, region), data.key)}
-              resizeMode="contain"
-            />
-          </View>
-
-          <View style={styles.checkInfo}>
-            <AppText style={appStyles.bold18Text}>
-              {i18n.t('userGuide:checkInfo')}
-            </AppText>
-            <View style={{marginTop: 8}}>
-              {[1, 2, 3, 4].map((k) => (
-                <View key={k} style={{flexDirection: 'row'}}>
-                  <AppText
-                    style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
-                    •
-                  </AppText>
-                  <View style={{flex: 1}}>
-                    <AppStyledText
-                      textStyle={styles.checkInfoText}
-                      text={i18n.t(`userGuide:checkInfo${k}`)}
-                      format={{b: {color: colors.clearBlue}}}
-                    />
-                  </View>
+        <View style={styles.checkInfo}>
+          <AppText style={appStyles.bold18Text}>
+            {i18n.t('userGuide:checkInfo')}
+          </AppText>
+          <View style={{marginTop: 8}}>
+            {[1, 2, 3].map((k) => (
+              <View key={k} style={{flexDirection: 'row'}}>
+                <AppText
+                  style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
+                  •
+                </AppText>
+                <View style={{flex: 1}}>
+                  <AppStyledText
+                    textStyle={styles.checkInfoText}
+                    text={i18n.t(`userGuide:checkInfo${k}`)}
+                    format={{b: {color: colors.clearBlue}}}
+                  />
                 </View>
-              ))}
-            </View>
+              </View>
+            ))}
           </View>
-          <View style={styles.slideGuide}>
-            <View style={styles.slideGuideBox}>
-              <AppSvgIcon key="leftArrow" name="leftArrow" />
-              <AppText style={{marginLeft: 8}}>
-                {i18n.t('userGuide:slideLeft')}
-              </AppText>
-            </View>
+        </View>
+        <View style={styles.slideGuide}>
+          <View style={styles.slideGuideBox}>
+            <AppSvgIcon key="threeArrows" name="threeArrows" />
+            <AppText style={styles.slideText}>
+              {i18n.t('userGuide:slideLeft')}
+            </AppText>
           </View>
-        </ScrollView>
-      );
-    },
-    [guideOption, isGalaxy, region],
-  );
+        </View>
+      </ScrollView>
+    );
+  }, []);
 
   const renderHeadPage = useCallback(
     (data: GuideImage) => {
@@ -271,7 +253,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
               {i18n.t('userGuide:checkInfo')}
             </AppText>
             <View style={{marginTop: 8}}>
-              {[1, 2, 3, 4].map((k) => (
+              {[1, 2, 3].map((k) => (
                 <View key={k} style={{flexDirection: 'row'}}>
                   <AppText
                     style={[appStyles.normal16Text, {marginHorizontal: 5}]}>

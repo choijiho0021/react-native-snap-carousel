@@ -804,10 +804,10 @@
 
   "userGuide:checkInfo": "Lists to check before you go ahead:",
   "userGuide:checkInfo1": "Register you eSIM only when <b>network connection is available</b>",
-  "userGuide:checkInfo2": "You can check your eSIM details in your <b>email inbox</b> or <b>Purchased eSIM List</b> below",
-  "userGuide:checkInfo3": "For detailed information about each product, such as when to start using according to product registration, please check the product details screen.",
-  "userGuide:checkInfo4": "Follow the guide thoroughly and you will be set in 5 minutes!",
+  "userGuide:checkInfo2": "After registering the product, <b>device cannot be changed</b>.\nPlease go on a trip and register the product on the device you will use!",
+  "userGuide:checkInfo3": "You can check your eSIM details in your <b>email inbox</b> or <b>Purchased eSIM List</b> below",
   "userGuide:slideLeft": "Slide to Left",
+  "userGuide:ios:esimReg:korea:stepTitle0": "<b>Registration in Korea</b> Guide",
   "userGuide:stepsTitle0": "How to Use\n<b>ROKEBI eSIM</b>",
   "userGuide:stepsTitle0:galaxy": "Galaxy ver.",
   "userGuide:stepsTitle0:pixel": "Pixel ver.",

@@ -1192,6 +1192,21 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  threeArrows: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M6 13 2 8l4-5m4 10L6 8l4-5m4 10-4-5 4-5"
+        stroke="#2C2C2C"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

@@ -21,9 +21,8 @@ const dir = '../../assets/images/esim/userGuide';
 
 const styles = StyleSheet.create({
   titleText: {
-    ...appStyles.bold22Text,
-    top: isIOS ? 10 : 0,
-    letterSpacing: !isIOS ? -1 : 0,
+    ...appStyles.bold24Text,
+    lineHeight: 32,
   },
   step: {
     width: 25,
@@ -82,16 +81,10 @@ const renderOneText = (text: string, idx: number) => {
     <AppTextJoin
       key={idx}
       textStyle={styles.titleText}
-      style={{bottom: idx > 0 ? 6 : 0}}
-      data={formatText(
-        'b',
-        {
-          text,
-          viewStyle: isIOS ? appStyles.underline : undefined,
-          textStyle: isIOS ? undefined : styles.blueText,
-        },
-        isIOS ? {paddingBottom: 10} : undefined,
-      )}
+      data={formatText('b', {
+        text,
+        textStyle: styles.blueText,
+      })}
     />
   );
 };
@@ -440,7 +433,9 @@ export const getGuideImages = (
         guideImages = [
           {
             key: 'page1',
-            title: renderText('userGuide:stepsTitle0'),
+            title: renderText(
+              `userGuide:ios:${guideOption}:${region}:stepTitle0`,
+            ),
             step: 0,
           },
           {
