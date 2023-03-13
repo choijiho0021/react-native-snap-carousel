@@ -156,7 +156,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         </AppText>
         <AppSvgIcon
           key="closeModal"
-          onPress={() => navigation.goBack()}
+          onPress={() => [1, 2, 3].forEach(() => navigation.goBack())}
           name="closeModal"
         />
       </View>
