@@ -277,8 +277,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           };
 
           const tempCmiUsage = {
-            quota: Number(subscriberQuota?.qtavalue) || 0, // Mb
-            used: Number(subscriberQuota?.qtaconsumption) || 0, // Mb
+            quota: Number(subscriberQuota?.qtabalance) || 0, // Mb
+            used: Number(subscriberQuota?.qtaconsumptionTotal) || 0, // Mb
           };
 
           return {status: tempCmiStatus, usage: tempCmiUsage};
