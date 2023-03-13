@@ -6,6 +6,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {StyleSheet, SafeAreaView, View, Pressable} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import AsyncStorage from '@react-native-community/async-storage';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppBackButton from '@/components/AppBackButton';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -322,13 +323,18 @@ const GuideHomeScreen: React.FC<GuideHomeScreenProps> = ({
       {['esimReg', 'checkSetting'].map((v) =>
         renderBtn(
           v,
-          () => {
+          async () => {
             setGuideOption(v);
-            if (v === 'esimReg')
+            const checked = await AsyncStorage.getItem(
+              'esim.guide.modal.check',
+            );
+
+            if (v === 'esimReg' && checked !== 'checked') {
+              AsyncStorage.setItem('esim.guide.modal.check', 'checked');
               actions.modal.showModal({
                 content: guideModal(actions, guideOption, true, navigation),
               });
-            else {
+            } else {
               navigation.navigate('UserGuideSelectRegion', {guideOption: v});
             }
           },
