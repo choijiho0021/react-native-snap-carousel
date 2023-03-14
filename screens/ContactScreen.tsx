@@ -1,6 +1,6 @@
 import Analytics from 'appcenter-analytics';
-import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {Pressable, StyleSheet, View, ScrollView} from 'react-native';
+import React, {memo, useCallback, useEffect, useState} from 'react';
+import {Pressable, StyleSheet, View, ScrollView, ViewStyle} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
@@ -23,13 +23,11 @@ import {actions as notiActions, NotiModelState} from '@/redux/modules/noti';
 import {actions as toastActions} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import {navigate} from '@/navigation/navigation';
-import AppSnackBar from '@/components/AppSnackBar';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
-import {AccountModelState} from '../redux/modules/account';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
+import ChatTalk from './UserGuideScreen/ChatTalk';
 
-const {appId, esimGlobal, talkPluginKey} = Env.get();
+const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -106,10 +104,11 @@ const styles = StyleSheet.create({
   },
   contactListItem: {
     backgroundColor: colors.white,
-    marginVertical: 8,
+    marginVertical: 9,
     borderRadius: 3,
     borderWidth: 1,
     borderColor: colors.whiteTwo,
+    justifyContent: 'center',
 
     shadowColor: colors.shadow1,
     shadowOpacity: 0.3,
@@ -134,27 +133,29 @@ type MenuItem = {
 const ContactListItem0 = ({
   item,
   onPress,
+  style,
 }: {
   item: MenuItem;
   onPress?: (k: string) => void;
+  style?: ViewStyle;
 }) => {
   return (
     <Pressable
-      style={styles.contactListItem}
+      style={[styles.contactListItem, style]}
       onPress={() => {
         if (onPress) onPress(item.key);
       }}>
       <View style={styles.contactListItemRow}>
         <View style={{flexDirection: 'row'}}>
           <AppSvgIcon
-            style={{alignSelf: 'center', marginHorizontal: 20}}
+            style={{alignSelf: 'center', marginHorizontal: 30}}
             name={item.icon}
           />
           <AppText style={styles.itemTitle}>{item.title}</AppText>
         </View>
         {onPress && (
           <AppIcon
-            style={{alignSelf: 'center', marginRight: 20}}
+            style={{alignSelf: 'center', marginRight: 30}}
             name="iconArrowRight"
           />
         )}
@@ -163,59 +164,34 @@ const ContactListItem0 = ({
   );
 };
 
-const ContactListItem = memo(ContactListItem0);
+export const ContactListItem = memo(ContactListItem0);
 
 type ContactScreenProps = {
   navigation: NavigationProp<any>;
   route: RouteProp<ParamListBase, string>;
 
   noti: NotiModelState;
-  account: AccountModelState;
 };
 
+export const contactData = [
+  {
+    key: 'Board',
+    title: i18n.t('contact:boardTitle'),
+    icon: 'imgBoard',
+    page: 'Contact Board',
+  },
+  {
+    key: 'ChatTalk',
+    title: i18n.t('contact:chatTalkTitle'),
+    icon: 'chatTalk',
+    page: 'Open Kakao Talk',
+  },
+];
+
 const ContactScreen: React.FC<ContactScreenProps> = (props) => {
-  const {navigation, route, noti, account} = props;
-
-  const data = useMemo(
-    () => [
-      {
-        key: 'Board',
-        title: i18n.t('contact:boardTitle'),
-        icon: 'imgBoard',
-        page: 'Contact Board',
-      },
-      {
-        key: 'ChatTalk',
-        title: i18n.t('contact:chatTalkTitle'),
-        icon: 'chatTalk',
-        page: 'Open Kakao Talk',
-      },
-    ],
-    [],
-  );
-  const talkSettings = useMemo(
-    () => ({
-      pluginKey: talkPluginKey,
-      channelButtonOption: {
-        xMargin: 16,
-        yMargin: 100,
-        position: 'right',
-      },
-      profile: {
-        mobileNumber: account.mobile,
-        name: `global ${account.mobile}`,
-        email: account.email,
-      },
-    }),
-    [account.email, account.mobile],
-  );
+  const {navigation, route, noti} = props;
   const [showModal, setShowModal] = useState(false);
-  const [showSnackBar, setShowSnackbar] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (esimGlobal) ChannelIO.boot(talkSettings);
-  }, [talkSettings]);
+  const [chatTalkClicked, setChatTalkClicked] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
@@ -242,37 +218,6 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
   useEffect(() => {
     if (noti.result) setShowModal(true);
   }, [noti.result]);
-
-  const openChannelTalk = useCallback(async () => {
-    setLoading(true);
-    const settings = {
-      pluginKey: talkPluginKey,
-      profile: account.loggedIn
-        ? {
-            id: account.userId,
-            name: `${appId} - ${account.mobile}`,
-            mobileNumber: account.mobile,
-            email: account.email,
-            mobileStr: account.mobile,
-            orderUrl: `https://esim.rokebi.com/ko/admin/op/order/search?title=${account.mobile}&mail=&items_per_page=10`,
-          }
-        : undefined,
-    };
-
-    if (await ChannelIO.isBooted()) {
-      ChannelIO.showMessenger();
-      setLoading(false);
-    } else {
-      ChannelIO.boot(settings).then((result) => {
-        if (result.status === 'SUCCESS') {
-          ChannelIO.showMessenger();
-        } else {
-          setShowSnackbar(true);
-        }
-        setLoading(false);
-      });
-    }
-  }, [account.email, account.loggedIn, account.mobile, account.userId]);
 
   const onPress = useCallback(
     (key: string) => {
@@ -302,18 +247,22 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
           break;
 
         case 'ChatTalk':
-          openChannelTalk();
+          setChatTalkClicked(true);
           break;
         default:
           break;
       }
     },
-    [navigation, openChannelTalk, route],
+    [navigation, route],
   );
 
   return (
     <ScrollView style={styles.container}>
-      <AppActivityIndicator visible={loading} />
+      <ChatTalk
+        isClicked={chatTalkClicked}
+        setChatTalkClicked={setChatTalkClicked}
+      />
+
       <View style={styles.infoContainer}>
         <AppText style={styles.contactInfo}>{i18n.t('contact:info')}</AppText>
         <AppIcon name="imgNotiDokebi" style={{marginRight: 12}} />
@@ -338,7 +287,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
         <AppText style={styles.contactInfoTime}>
           {i18n.t('contact:workTimeDesc')}
         </AppText>
-        {data.map((item) => (
+        {contactData.map((item) => (
           <ContactListItem key={item.key} item={item} onPress={onPress} />
         ))}
       </View>
@@ -353,18 +302,12 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
         onOkClose={() => setShowModal(false)}
         visible={showModal}
       />
-      <AppSnackBar
-        visible={showSnackBar}
-        onClose={() => setShowSnackbar(false)}
-        textMessage={i18n.t('contact:OpenChFail')}
-      />
     </ScrollView>
   );
 };
 
 export default connect(
-  ({account, noti, status}: RootState) => ({
-    account,
+  ({noti, status}: RootState) => ({
     noti,
     pending: status.pending[notiActions.sendAlimTalk.typePrefix] || false,
   }),

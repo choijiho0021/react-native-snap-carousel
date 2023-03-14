@@ -304,7 +304,6 @@ export const appStyles = StyleSheet.create({
     color: colors.black,
     padding: 0,
     margin: 0,
-    marginRight: 8,
   },
   semiBold16Text: {
     //        fontFamily: "AppleSDGothicNeo",
@@ -437,6 +436,14 @@ export const appStyles = StyleSheet.create({
   semiBold20Text: {
     // fontFamily: "AppleSDGothicNeo",
     fontSize: 20,
+    fontWeight: '600',
+    fontStyle: 'normal',
+    lineHeight: 24,
+    letterSpacing: 0,
+  },
+  semiBold22Text: {
+    // fontFamily: "AppleSDGothicNeo",
+    fontSize: 22,
     fontWeight: '600',
     fontStyle: 'normal',
     lineHeight: 24,

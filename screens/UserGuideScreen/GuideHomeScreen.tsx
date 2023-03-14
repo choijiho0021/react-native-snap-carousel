@@ -77,13 +77,13 @@ const styles = StyleSheet.create({
   btnTitle: {
     ...appStyles.bold18Text,
     lineHeight: 22,
-    marginBottom: 4,
     color: colors.black,
   },
   btnBody: {
     ...appStyles.semiBold16Text,
     lineHeight: 24,
     color: colors.warmGrey,
+    margionTop: 4,
   },
   okBtnContainer: {
     backgroundColor: colors.white,

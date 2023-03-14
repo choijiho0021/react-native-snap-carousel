@@ -11,6 +11,7 @@ import {
   ScrollView,
   Dimensions,
   Platform,
+  Pressable,
 } from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
@@ -30,10 +31,16 @@ import {getImageList, GuideImage, getGuideImages} from './model';
 import AppStyledText from '@/components/AppStyledText';
 import {getImage} from '@/utils/utils';
 import AppCarousel from '@/components/AppCarousel';
+import {contactData, ContactListItem} from '../ContactScreen';
+import ChatTalk from './ChatTalk';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
   },
   stepPage: {
     alignItems: 'center',
@@ -81,21 +88,21 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     lineHeight: 22,
   },
+
   step: {
-    width: 76,
-    height: 25,
+    paddingHorizontal: 16,
+    paddingVertical: 2,
     borderRadius: 20,
     backgroundColor: colors.black,
-    marginBottom: 4,
+    marginBottom: 14,
+    marginTop: 20,
   },
   stepText: {
     ...appStyles.bold16Text,
-    flex: 1,
+    lineHeight: 21,
     color: 'white',
-    justifyContent: 'center',
-    alignSelf: 'center',
     textAlign: 'center',
-    letterSpacing: -0.5,
+    // letterSpacing: -0.5,
   },
   koreaFlag: {
     marginVertical: 64,
@@ -105,6 +112,64 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: colors.black,
     marginLeft: 8,
+  },
+  tailPageTitle: {
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 48,
+  },
+  tailNoticeText: {
+    ...appStyles.bold16Text,
+    lineHeight: 24,
+    color: colors.clearBlue,
+  },
+  btn: {
+    padding: 30,
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
+    marginHorizontal: 20,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.white,
+    width: Dimensions.get('window').width - 40,
+    marginBottom: 48,
+
+    elevation: 12,
+    shadowColor: 'rgb(166, 168, 172)',
+    shadowRadius: 12,
+    shadowOpacity: 0.16,
+    shadowOffset: {
+      height: 4,
+      width: 0,
+    },
+  },
+  btnTitle: {
+    ...appStyles.bold18Text,
+    lineHeight: 22,
+    color: colors.black,
+  },
+  btnBody: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 24,
+    margionTop: 4,
+    color: colors.warmGrey,
+  },
+  contactFrame: {
+    width: '100%',
+    paddingHorizontal: 20,
+    paddingTop: 40,
+    paddingBottom: 64,
+    backgroundColor: colors.backGrey,
+  },
+  contact: {
+    width: '100%',
+  },
+  contactTitle: {
+    ...appStyles.bold20Text,
+    lineHeight: 28,
+    marginBottom: 16,
   },
 });
 
@@ -127,6 +192,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
 }) => {
   const [carouselIdx, setCarouselIdx] = useState(0);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
+  const [chatTalkClicked, setChatTalkClicked] = useState(false);
   // const deviceModel = useMemo(() => DeviceInfo.getModel(), []);
   const isGalaxy = useMemo(() => DeviceInfo.getModel().startsWith('SM'), []);
   const guideOption = useMemo(() => params?.guideOption, [params?.guideOption]);
@@ -284,11 +350,26 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
     [guideOption, isGalaxy, region, renderRegKorea],
   );
 
+  const renderArrowBtn = (
+    title: string,
+    onPress: () => void,
+    body?: string,
+  ) => (
+    <Pressable key={title} style={styles.btn} onPress={onPress}>
+      <View>
+        <AppText style={styles.btnTitle}>{i18n.t(title)}</AppText>
+        {body && <AppText style={styles.btnBody}>{i18n.t(body)}</AppText>}
+      </View>
+      <AppSvgIcon name="rightArrow20" />
+    </Pressable>
+  );
+
   const renderStepPage = useCallback(
     (data: GuideImage) => {
       const image = getImage(getImageList(guideOption, region), data.key);
       const imageSource = Image.resolveAssetSource(image);
-
+      // console.log('@@@@ data.noticeBox', data.noticeBox);
+      // console.log('@@@@ data.noticeBox()', data.noticeBox());
       return (
         <ScrollView
           style={{
@@ -299,14 +380,25 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
             styles.stepPage,
             isDeviceSize('large') ? undefined : {flex: 1},
           ]}>
-          <View style={{alignItems: 'center'}}>
-            <View style={[styles.step, {marginTop: 20}]}>
+          <View style={{alignItems: 'center', marginBottom: 21}}>
+            <View style={styles.step}>
               <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
             </View>
             {data.title}
           </View>
 
-          <View style={{marginVertical: 22}}>{data.tip && data.tip()}</View>
+          {data.tip ? (
+            <View
+              style={data.noticeBox ? {marginBottom: 12} : {marginBottom: 21}}>
+              {data.tip()}
+            </View>
+          ) : (
+            <View style={{height: 28}} />
+          )}
+
+          {data.noticeBox && (
+            <View style={{marginBottom: 9}}>{data.noticeBox()}</View>
+          )}
 
           <View
             style={{
@@ -319,7 +411,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
               <AppText
                 style={[
                   appStyles.semiBold13Text,
-                  {color: colors.warmGrey, marginBottom: 12},
+                  {color: colors.warmGrey, marginBottom: 12, marginTop: 18},
                 ]}>
                 {data.caption}
               </AppText>
@@ -348,37 +440,64 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
           flex: 1,
           backgroundColor: isGalaxy ? colors.whiteSeven : colors.white,
         }}
-        contentContainerStyle={{alignItems: 'center'}}>
-        <View style={{alignItems: 'center'}}>
-          <View style={[styles.step, {marginTop: 20}]}>
-            <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
-          </View>
+        contentContainerStyle={styles.tailPageTitle}>
+        <View style={{alignItems: 'center', marginTop: 20, marginBottom: 48}}>
           {data?.title}
         </View>
 
-        <View style={{marginTop: 22, marginBottom: 10}}>
-          {data.tip && data.tip()}
-        </View>
-
+        <Image
+          source={getImage(getImageList(guideOption, region), 'pageLast')}
+          resizeMode="contain"
+        />
         <View
-          style={{
-            width: '100%',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            marginBottom: 16,
-          }}>
-          <Image
-            source={getImage(getImageList(guideOption, region), 'pageLast')}
-            resizeMode="contain"
+          style={[
+            styles.row,
+            {
+              marginTop: 56,
+              alignSelf: 'flex-start',
+              marginHorizontal: 20,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 8,
+            },
+          ]}>
+          <AppSvgIcon
+            name="noticeFlag"
+            style={{marginRight: 8, marginTop: 2}}
           />
-          <Image
-            source={getImage(getImageList(guideOption, region), 'pageLast2')}
-            resizeMode="contain"
-          />
+          <AppText style={styles.tailNoticeText}>
+            {i18n.t('userGuide:tail:notice')}
+          </AppText>
+        </View>
+        {renderArrowBtn('userGuide:checkSetting:title', () => {
+          navigation.goBack();
+          navigation.navigate('UserGuide', {
+            guideOption: 'checkSetting',
+            region,
+          });
+        })}
+        <View style={styles.contactFrame}>
+          <AppText style={styles.contactTitle}>
+            {i18n.t('userGuide:tail:contact:title')}
+          </AppText>
+          {contactData.map((item) => (
+            <ContactListItem
+              key={item.key}
+              item={item}
+              onPress={() => {
+                if (item.key === 'Board') {
+                  navigation.navigate('ContactBoard');
+                } else {
+                  setChatTalkClicked(true);
+                }
+              }}
+              style={styles.contact}
+            />
+          ))}
         </View>
       </ScrollView>
     ),
-    [guideOption, isGalaxy, region],
+    [guideOption, isGalaxy, navigation, region],
   );
 
   const renderBody = useCallback(
@@ -420,6 +539,10 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         ...styles.container,
         backgroundColor: carouselIdx === 0 ? colors.white : colors.paleGreyTwo,
       }}>
+      <ChatTalk
+        isClicked={chatTalkClicked}
+        setChatTalkClicked={setChatTalkClicked}
+      />
       <AppCarousel
         data={getGuideImages(guideOption, region)}
         renderItem={renderGuide}
