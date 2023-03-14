@@ -239,7 +239,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
     [guideOption, isGalaxy, navigation, region],
   );
 
-  const renderRegKorea = useCallback((data: GuideImage) => {
+  const renderHeadPage = useCallback((data: GuideImage) => {
     return (
       <ScrollView
         style={styles.container}
@@ -280,75 +280,6 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
       </ScrollView>
     );
   }, []);
-
-  const renderHeadPage = useCallback(
-    (data: GuideImage) => {
-      if (guideOption === 'esimReg' && region === 'korea')
-        return renderRegKorea(data);
-      return (
-        <ScrollView
-          style={styles.container}
-          contentContainerStyle={{alignItems: 'center'}}>
-          <AppSvgIcon key="esimLogo" style={styles.logo} name="esimLogo" />
-
-          <View style={{alignItems: 'center', marginTop: 23}}>
-            {data?.title}
-            <AppText style={[appStyles.medium14, {marginTop: 20}]}>
-              {
-                // eslint-disable-next-line no-nested-ternary
-                Platform.OS === 'android'
-                  ? i18n.t(
-                      `userGuide:stepsTitle0:${isGalaxy ? 'galaxy' : 'pixel'}`,
-                    )
-                  : Platform.Version >= '16.0' && i18n.locale === 'ko'
-                  ? 'iOS 16 ver.'
-                  : ''
-              }
-            </AppText>
-          </View>
-
-          <View style={{marginTop: 20}}>
-            <Image
-              source={getImage(getImageList(guideOption, region), data.key)}
-              resizeMode="contain"
-            />
-          </View>
-
-          <View style={styles.checkInfo}>
-            <AppText style={appStyles.bold18Text}>
-              {i18n.t('userGuide:checkInfo')}
-            </AppText>
-            <View style={{marginTop: 8}}>
-              {[1, 2, 3].map((k) => (
-                <View key={k} style={{flexDirection: 'row'}}>
-                  <AppText
-                    style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
-                    •
-                  </AppText>
-                  <View style={{flex: 1}}>
-                    <AppStyledText
-                      textStyle={styles.checkInfoText}
-                      text={i18n.t(`userGuide:checkInfo${k}`)}
-                      format={{b: {color: colors.clearBlue}}}
-                    />
-                  </View>
-                </View>
-              ))}
-            </View>
-          </View>
-          <View style={styles.slideGuide}>
-            <View style={styles.slideGuideBox}>
-              <AppSvgIcon key="leftArrow" name="leftArrow" />
-              <AppText style={{marginLeft: 8}}>
-                {i18n.t('userGuide:slideLeft')}
-              </AppText>
-            </View>
-          </View>
-        </ScrollView>
-      );
-    },
-    [guideOption, isGalaxy, region, renderRegKorea],
-  );
 
   const renderArrowBtn = (
     title: string,
