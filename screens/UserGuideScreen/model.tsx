@@ -205,7 +205,7 @@ export const getImageList = (
     if (guideOption === 'esimReg') {
       if (region === 'korea') {
         imageList = {
-          page1: [require(`${dir}/guide1.png`)],
+          page1: [require(`${dir}/ios/esimReg/korea/img_0.png`)],
           page2: [
             require(`${dir}/ios/esimReg/korea/img_1.png`),
             require(`${dir}/ios/esimReg/korea/en/img_1.png`),
@@ -247,33 +247,56 @@ export const getImageList = (
             require(`${dir}/ios/esimReg/korea/en/img_10.png`),
           ],
           pageLast: [
-            require(`${dir}/ios/esimReg/korea/img_12.png`),
-            require(`${dir}/ios/esimReg/korea/en/img_12.png`),
+            require(`${dir}/ios/esimReg/korea/img_11.png`),
+            require(`${dir}/ios/esimReg/korea/en/img_11.png`),
           ],
         };
       } else {
         imageList = {
-          page1: [require(`${dir}/guide1.png`)],
-          page2: [require(`${dir}/img_1.png`), require(`${dir}/en/img_1.png`)],
-          page3: [require(`${dir}/img_2.png`), require(`${dir}/en/img_2.png`)],
-          page4: [require(`${dir}/img_3.png`), require(`${dir}/en/img_3.png`)],
-          page5: [require(`${dir}/img_4.png`), require(`${dir}/en/img_4.png`)],
-          page6: [require(`${dir}/img_5.png`), require(`${dir}/en/img_5.png`)],
-          page7: [require(`${dir}/img_6.png`), require(`${dir}/en/img_6.png`)],
-          page8: [require(`${dir}/img_7.png`), require(`${dir}/en/img_7.png`)],
-          page9: [require(`${dir}/img_8.png`), require(`${dir}/en/img_8.png`)],
-          page10: [require(`${dir}/img_9.png`), require(`${dir}/en/img_9.png`)],
+          page1: [require(`${dir}/ios/esimReg/local/img_0.png`)],
+          page2: [
+            require(`${dir}/ios/esimReg/local/img_1.png`),
+            require(`${dir}/ios/esimReg/local/en/img_1.png`),
+          ],
+          page3: [
+            require(`${dir}/ios/esimReg/local/img_2.png`),
+            require(`${dir}/ios/esimReg/local/en/img_2.png`),
+          ],
+          page4: [
+            require(`${dir}/ios/esimReg/local/img_3.png`),
+            require(`${dir}/ios/esimReg/local/en/img_3.png`),
+          ],
+          page5: [
+            require(`${dir}/ios/esimReg/local/img_4.png`),
+            require(`${dir}/ios/esimReg/local/en/img_4.png`),
+          ],
+          page6: [
+            require(`${dir}/ios/esimReg/local/img_5.png`),
+            require(`${dir}/ios/esimReg/local/en/img_5.png`),
+          ],
+          page7: [
+            require(`${dir}/ios/esimReg/local/img_6.png`),
+            require(`${dir}/ios/esimReg/local/en/img_6.png`),
+          ],
+          page8: [
+            require(`${dir}/ios/esimReg/local/img_7.png`),
+            require(`${dir}/ios/esimReg/local/en/img_7.png`),
+          ],
+          page9: [
+            require(`${dir}/ios/esimReg/local/img_8.png`),
+            require(`${dir}/ios/esimReg/local/en/img_8.png`),
+          ],
+          page10: [
+            require(`${dir}/ios/esimReg/local/img_9.png`),
+            require(`${dir}/ios/esimReg/local/en/img_9.png`),
+          ],
           page11: [
-            require(`${dir}/img_10.png`),
-            require(`${dir}/en/img_10.png`),
+            require(`${dir}/ios/esimReg/local/img_10.png`),
+            require(`${dir}/ios/esimReg/local/en/img_10.png`),
           ],
           pageLast: [
-            require(`${dir}/img_11.png`),
-            require(`${dir}/en/img_11.png`),
-          ],
-          pageLast2: [
-            require(`${dir}/img_12.png`),
-            require(`${dir}/en/img_12.png`),
+            require(`${dir}/ios/esimReg/local/img_11.png`),
+            require(`${dir}/ios/esimReg/local/en/img_11.png`),
           ],
         };
       }
