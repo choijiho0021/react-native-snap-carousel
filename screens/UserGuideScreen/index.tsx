@@ -153,7 +153,6 @@ const styles = StyleSheet.create({
   btnBody: {
     ...appStyles.semiBold16Text,
     lineHeight: 24,
-    margionTop: 4,
     color: colors.warmGrey,
   },
   contactFrame: {
@@ -298,7 +297,11 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
     <Pressable key={title} style={styles.btn} onPress={onPress}>
       <View>
         <AppText style={styles.btnTitle}>{i18n.t(title)}</AppText>
-        {body && <AppText style={styles.btnBody}>{i18n.t(body)}</AppText>}
+        {body && (
+          <View style={{marginTop: 4}}>
+            <AppText style={styles.btnBody}>{i18n.t(body)}</AppText>
+          </View>
+        )}
       </View>
       <AppSvgIcon name="rightArrow20" />
     </Pressable>
@@ -389,33 +392,40 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
           source={getImage(getImageList(guideOption, region), 'pageLast')}
           resizeMode="contain"
         />
-        <View
-          style={[
-            styles.row,
-            {
-              marginTop: 56,
-              alignSelf: 'flex-start',
-              marginHorizontal: 20,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: 8,
-            },
-          ]}>
-          <AppSvgIcon
-            name="noticeFlag"
-            style={{marginRight: 8, marginTop: 2}}
-          />
-          <AppText style={styles.tailNoticeText}>
-            {i18n.t('userGuide:tail:notice')}
-          </AppText>
-        </View>
-        {renderArrowBtn('userGuide:checkSetting:title', () => {
-          navigation.goBack();
-          navigation.navigate('UserGuide', {
-            guideOption: 'checkSetting',
-            region,
-          });
-        })}
+        {region === 'korea' ? (
+          <View>
+            <View
+              style={[
+                styles.row,
+                {
+                  marginTop: 56,
+                  alignSelf: 'flex-start',
+                  marginHorizontal: 20,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 8,
+                },
+              ]}>
+              <AppSvgIcon
+                name="noticeFlag"
+                style={{marginRight: 8, marginTop: 2}}
+              />
+              <AppText style={styles.tailNoticeText}>
+                {i18n.t('userGuide:tail:notice')}
+              </AppText>
+            </View>
+            {renderArrowBtn('userGuide:checkSetting:title', () => {
+              navigation.goBack();
+              navigation.navigate('UserGuide', {
+                guideOption: 'checkSetting',
+                region,
+              });
+            })}
+          </View>
+        ) : (
+          <View style={{height: 80}} />
+        )}
+
         <View style={styles.contactFrame}>
           <AppText style={styles.contactTitle}>
             {i18n.t('userGuide:tail:contact:title')}

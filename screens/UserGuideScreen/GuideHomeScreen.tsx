@@ -83,7 +83,6 @@ const styles = StyleSheet.create({
     ...appStyles.semiBold16Text,
     lineHeight: 24,
     color: colors.warmGrey,
-    margionTop: 4,
   },
   okBtnContainer: {
     backgroundColor: colors.white,
@@ -200,9 +199,11 @@ export const renderBtn = (item: string, onPress: () => void, isHome = true) => (
           : i18n.t(`userGuide:selectRegion:${item}`)}
       </AppText>
       {isHome && (
-        <AppText style={styles.btnBody}>
-          {i18n.t(`userGuide:${item}:body`)}
-        </AppText>
+        <View style={{marginTop: 4}}>
+          <AppText style={styles.btnBody}>
+            {i18n.t(`userGuide:${item}:body`)}
+          </AppText>
+        </View>
       )}
     </View>
     <AppSvgIcon name="rightArrow20" />

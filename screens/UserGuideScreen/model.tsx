@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 8,
   },
   stepText: {
     ...appStyles.bold13Text,
@@ -601,7 +602,10 @@ export const getGuideImages = (
         guideImages = [
           {
             key: 'page1',
-            title: renderText('userGuide:stepsTitle0'),
+            title: renderText(
+              `userGuide:ios:${guideOption}:${region}:stepTitle0`,
+              true,
+            ),
             step: 0,
           },
           {
@@ -637,35 +641,40 @@ export const getGuideImages = (
             key: 'page7',
             title: renderText('userGuide:stepsTitle6:ios'),
             step: 5,
+            tip: () => tipView({id: 'userGuide:tipPage7_1'}, false),
           },
           {
             key: 'page8',
-            title: renderText('userGuide:stepsTitle6:ios'),
-            step: 5,
+            title: renderText('userGuide:stepsTitle8:ios'),
+            tip: () => tipView({id: 'userGuide:tipPage7_1'}, false),
+            step: 6,
           },
           {
             key: 'page9',
-            title: renderText('userGuide:stepsTitle6:ios'),
-            step: 5,
-            tip: () => tipView({id: 'userGuide:tipPage9_1'}),
+            title: renderText('userGuide:stepsTitle9:ios'),
+            step: 7,
+            tip: () => renderTipList('userGuide:tipPage9', 'dot'),
           },
           {
             key: 'page10',
             title: renderText('userGuide:stepsTitle10:ios'),
-            step: 6,
+            step: 8,
             tip: () => tipView({id: 'userGuide:tipPage10_1'}),
           },
           {
             key: 'page11',
-            title: renderText('userGuide:stepsTitle10:ios'),
-            step: 6,
-            tip: () => tipView({id: 'userGuide:tipPage11_1'}),
+            title: renderText('userGuide:stepsTitle11:ios:local'),
+            step: 9,
+            noticeBox: () =>
+              renderNoticeBox(
+                'userGuide:noticeBox:local:title',
+                'userGuide:noticeBox:local:body3',
+              ),
           },
           {
             key: 'page12',
-            title: renderText('userGuide:stepsTitle12:ios'),
-            step: 7,
-            tip: () => renderTipList('userGuide:tipPageLast', 'dot'),
+            title: renderText('userGuide:stepsTitle12:ios:local'),
+            step: 99,
           },
         ];
       }
