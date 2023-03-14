@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     // letterSpacing: -0.5,
   },
-  koreaFlag: {
+  headerLogo: {
     marginVertical: 64,
   },
   slideText: {
@@ -239,47 +239,56 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
     [guideOption, isGalaxy, navigation, region],
   );
 
-  const renderHeadPage = useCallback((data: GuideImage) => {
-    return (
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={{alignItems: 'center'}}>
-        <View style={{alignItems: 'center', marginTop: 40}}>{data?.title}</View>
-        <AppSvgIcon key="koreaFlag" style={styles.koreaFlag} name="koreaFlag" />
-
-        <View style={styles.checkInfo}>
-          <AppText style={appStyles.bold18Text}>
-            {i18n.t('userGuide:checkInfo')}
-          </AppText>
-          <View style={{marginTop: 8}}>
-            {[1, 2, 3].map((k) => (
-              <View key={k} style={{flexDirection: 'row'}}>
-                <AppText
-                  style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
-                  •
-                </AppText>
-                <View style={{flex: 1}}>
-                  <AppStyledText
-                    textStyle={styles.checkInfoText}
-                    text={i18n.t(`userGuide:checkInfo${k}`)}
-                    format={{b: {color: colors.clearBlue}}}
-                  />
-                </View>
-              </View>
-            ))}
+  const renderHeadPage = useCallback(
+    (data: GuideImage) => {
+      return (
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={{alignItems: 'center'}}>
+          <View style={{alignItems: 'center', marginTop: 40}}>
+            {data?.title}
           </View>
-        </View>
-        <View style={styles.slideGuide}>
-          <View style={styles.slideGuideBox}>
-            <AppSvgIcon key="threeArrows" name="threeArrows" />
-            <AppText style={styles.slideText}>
-              {i18n.t('userGuide:slideLeft')}
+          <View style={styles.headerLogo}>
+            <Image
+              source={getImage(getImageList(guideOption, region), data.key)}
+              resizeMode="contain"
+            />
+          </View>
+          <View style={styles.checkInfo}>
+            <AppText style={appStyles.bold18Text}>
+              {i18n.t('userGuide:checkInfo')}
             </AppText>
+            <View style={{marginTop: 8}}>
+              {[1, 2, 3].map((k) => (
+                <View key={k} style={{flexDirection: 'row'}}>
+                  <AppText
+                    style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
+                    •
+                  </AppText>
+                  <View style={{flex: 1}}>
+                    <AppStyledText
+                      textStyle={styles.checkInfoText}
+                      text={i18n.t(`userGuide:checkInfo${k}`)}
+                      format={{b: {color: colors.clearBlue}}}
+                    />
+                  </View>
+                </View>
+              ))}
+            </View>
           </View>
-        </View>
-      </ScrollView>
-    );
-  }, []);
+          <View style={styles.slideGuide}>
+            <View style={styles.slideGuideBox}>
+              <AppSvgIcon key="threeArrows" name="threeArrows" />
+              <AppText style={styles.slideText}>
+                {i18n.t('userGuide:slideLeft')}
+              </AppText>
+            </View>
+          </View>
+        </ScrollView>
+      );
+    },
+    [guideOption, region],
+  );
 
   const renderArrowBtn = (
     title: string,
