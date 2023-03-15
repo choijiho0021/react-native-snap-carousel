@@ -332,7 +332,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           status.result === 0 &&
           quota.result === 0 &&
           status.objects?.retCode === '000000' &&
-          quota.objects?.retCode === '000000'
+          quota.objects?.retCode === '000000' &&
+          quota?.objects?.packQuotaList?.length
         ) {
           const statusCd =
             !_.isUndefined(status?.objects?.lifeCycle) &&
@@ -356,7 +357,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               : {
                   quota:
                     Number(quota?.objects?.packQuotaList[0]?.totalQuota) || 0, // Mb
-                  used: Number(quota?.objects?.packQuotaList[0]?.consumedQuota), // Mb
+                  used:
+                    Number(quota?.objects?.packQuotaList[0]?.consumedQuota) ||
+                    0, // Mb
                 };
 
           return {status: quadcellStatus, usage: quadcellUsage};
