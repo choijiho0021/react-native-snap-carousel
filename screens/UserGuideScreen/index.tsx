@@ -381,20 +381,18 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
             <View
               style={[
                 styles.step,
-                data.stepPreText === 'korea'
-                  ? {backgroundColor: colors.dodgerBlue}
-                  : {backgroundColor: colors.purplyBlue},
+                data.stepPreText === 'korea' && {
+                  backgroundColor: colors.dodgerBlue,
+                },
+                data.stepPreText === 'local' && {
+                  backgroundColor: colors.purplyBlue,
+                },
               ]}>
               <AppText style={styles.stepText}>
                 {/* eslint-disable-next-line react-native/no-raw-text */}
                 {`${data.stepPreText ? i18n.t(data.stepPreText) : 'Step.'}${
                   data.stepPreText ? '_' : ' '
-                }${data.step}${
-                  isCheckLocal ||
-                  (guideOption === 'checkSetting' && region === 'local')
-                    ? i18n.t('localNet')
-                    : ''
-                }`}
+                }${data.step}${isCheckLocal ? i18n.t('localNet') : ''}`}
               </AppText>
             </View>
             {isCheckLocal && data.localTitle ? data.localTitle : data.title}
@@ -530,7 +528,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         </View>
       </ScrollView>
     ),
-    [guideOption, isGalaxy, navigation, region],
+    [contactData, guideOption, isGalaxy, navigation, region],
   );
 
   const renderBody = useCallback(
@@ -567,13 +565,13 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
   );
 
   useEffect(() => {
-    if (
-      carouselIdx < 4 &&
-      guideOption === 'checkSetting' &&
-      region === 'korea'
-    ) {
-      setIsCheckLocal(false);
-    }
+    if (guideOption === 'checkSetting')
+      if (
+        (carouselIdx < 4 && region === 'korea') ||
+        (carouselIdx < 1 && region === 'local')
+      ) {
+        setIsCheckLocal(false);
+      }
   }, [carouselIdx, guideOption, region]);
 
   return (

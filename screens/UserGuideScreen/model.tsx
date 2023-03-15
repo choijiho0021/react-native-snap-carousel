@@ -381,7 +381,7 @@ export const getImageList = (
         ],
         page5Local: [
           require(`${dir}/ios/checkSetting/korea/localNet/img_4.png`),
-          require(`${dir}/ios/checkSetting/korea/localNet/en/img_4.png`),
+          require(`${dir}/ios/checkSetting/korea/en/localNet/img_4.png`),
         ],
         page6: [
           require(`${dir}/ios/checkSetting/korea/img_5.png`),
@@ -406,6 +406,10 @@ export const getImageList = (
         page2: [
           require(`${dir}/ios/checkSetting/local/img_1.png`),
           require(`${dir}/ios/checkSetting/local/en/img_1.png`),
+        ],
+        page2Local: [
+          require(`${dir}/ios/checkSetting/local/localNet/img_1.png`),
+          require(`${dir}/ios/checkSetting/local/en/localNet/img_1.png`),
         ],
         page3: [
           require(`${dir}/ios/checkSetting/local/img_2.png`),
@@ -827,10 +831,14 @@ export const getGuideImages = (
           key: 'page1',
           title: renderText('userGuide:ios:checkSetting:local:stepTitle0'),
           step: 0,
+          isLocalBox: () => renderIsLocalBox(),
         },
         {
           key: 'page2',
-          title: renderText('userGuide:stepsTitle4:ios:checkSetting:local'),
+          title: renderText('userGuide:stepsTitle4:ios:checkSetting'),
+          localTitle: renderText(
+            'userGuide:stepsTitle4:ios:checkSetting:local',
+          ),
           step: 1,
           stepPreText: 'local',
         },
