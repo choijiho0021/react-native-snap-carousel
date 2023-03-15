@@ -311,8 +311,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     ): Promise<{status: StatusObj; usage: UsageObj}> => {
       if (item?.imsi) {
         const status = await API.Subscription.quadcellGetData({
-          // imsi: item.imsi,
-          imsi: '454070042394701',
+          imsi: item.imsi,
           key: 'info',
         });
 
@@ -324,8 +323,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             : undefined;
 
         const quota = await API.Subscription.quadcellGetData({
-          // imsi: item.imsi,
-          imsi: '454070042394701',
+          imsi: item.imsi,
           key: 'quota',
           query,
         });
