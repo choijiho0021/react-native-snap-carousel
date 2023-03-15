@@ -10,7 +10,6 @@ import {
   View,
   ScrollView,
   Dimensions,
-  Platform,
   Pressable,
 } from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -31,7 +30,7 @@ import {getImageList, GuideImage, getGuideImages} from './model';
 import AppStyledText from '@/components/AppStyledText';
 import {getImage} from '@/utils/utils';
 import AppCarousel, {AppCarouselRef} from '@/components/AppCarousel';
-import {contactData, ContactListItem} from '../ContactScreen';
+import {ContactListItem} from '../ContactScreen';
 import ChatTalk from './ChatTalk';
 
 const styles = StyleSheet.create({
@@ -198,6 +197,23 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
   const isGalaxy = useMemo(() => DeviceInfo.getModel().startsWith('SM'), []);
   const guideOption = useMemo(() => params?.guideOption, [params?.guideOption]);
   const region = useMemo(() => params?.region, [params?.region]);
+  const contactData = useMemo(
+    () => [
+      {
+        key: 'Board',
+        title: i18n.t('contact:boardTitle'),
+        icon: 'imgBoard',
+        page: 'Contact Board',
+      },
+      {
+        key: 'ChatTalk',
+        title: i18n.t('contact:chatTalkTitle'),
+        icon: 'chatTalk',
+        page: 'Open Kakao Talk',
+      },
+    ],
+    [],
+  );
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {

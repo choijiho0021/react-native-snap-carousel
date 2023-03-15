@@ -1,5 +1,5 @@
 import Analytics from 'appcenter-analytics';
-import React, {memo, useCallback, useEffect, useState} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {Pressable, StyleSheet, View, ScrollView, ViewStyle} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -173,25 +173,28 @@ type ContactScreenProps = {
   noti: NotiModelState;
 };
 
-export const contactData = [
-  {
-    key: 'Board',
-    title: i18n.t('contact:boardTitle'),
-    icon: 'imgBoard',
-    page: 'Contact Board',
-  },
-  {
-    key: 'ChatTalk',
-    title: i18n.t('contact:chatTalkTitle'),
-    icon: 'chatTalk',
-    page: 'Open Kakao Talk',
-  },
-];
-
 const ContactScreen: React.FC<ContactScreenProps> = (props) => {
   const {navigation, route, noti} = props;
   const [showModal, setShowModal] = useState(false);
   const [chatTalkClicked, setChatTalkClicked] = useState(false);
+
+  const data = useMemo(
+    () => [
+      {
+        key: 'Board',
+        title: i18n.t('contact:boardTitle'),
+        icon: 'imgBoard',
+        page: 'Contact Board',
+      },
+      {
+        key: 'ChatTalk',
+        title: i18n.t('contact:chatTalkTitle'),
+        icon: 'chatTalk',
+        page: 'Open Kakao Talk',
+      },
+    ],
+    [],
+  );
 
   useEffect(() => {
     navigation.setOptions({
@@ -287,7 +290,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
         <AppText style={styles.contactInfoTime}>
           {i18n.t('contact:workTimeDesc')}
         </AppText>
-        {contactData.map((item) => (
+        {data.map((item) => (
           <ContactListItem key={item.key} item={item} onPress={onPress} />
         ))}
       </View>
