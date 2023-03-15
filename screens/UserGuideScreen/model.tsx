@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     color: colors.clearBlue,
   },
   noticeBoxBody: {
-    ...appStyles.medium14,
+    ...appStyles.normal14Text,
     lineHeight: 18,
     letterSpacing: -0.28,
     color: colors.deepDarkBlue,
@@ -472,39 +472,40 @@ export const getImageList = (
       };
     } else {
       imageList = {
-        page1: [require(`${dir}/guide1.png`)],
+        page1: [require(`${dir}/iconLocalSmall.png`)],
         page2: [
-          require(`${dir}/galaxy/img_1.png`),
-          require(`${dir}/galaxy/en/img_1.png`),
+          require(`${dir}/android/esimReg/local/img_1.png`),
+          require(`${dir}/android/esimReg/local/en/img_1.png`),
         ],
         page3: [
-          require(`${dir}/galaxy/img_2.png`),
-          require(`${dir}/galaxy/en/img_2.png`),
+          require(`${dir}/android/esimReg/local/img_2.png`),
+          require(`${dir}/android/esimReg/local/en/img_2.png`),
         ],
         page4: [
-          require(`${dir}/galaxy/img_3.png`),
-          require(`${dir}/galaxy/en/img_3.png`),
+          require(`${dir}/android/esimReg/local/img_3.png`),
+          require(`${dir}/android/esimReg/local/en/img_3.png`),
         ],
         page5: [
-          require(`${dir}/galaxy/img_4.png`),
-          require(`${dir}/galaxy/en/img_4.png`),
+          require(`${dir}/android/esimReg/local/img_4.png`),
+          require(`${dir}/android/esimReg/local/en/img_4.png`),
         ],
         page6: [
-          require(`${dir}/galaxy/img_5.png`),
-          require(`${dir}/galaxy/en/img_5.png`),
+          require(`${dir}/android/esimReg/local/img_5.png`),
+          require(`${dir}/android/esimReg/local/en/img_5.png`),
         ],
         page7: [
-          require(`${dir}/galaxy/img_6.png`),
-          require(`${dir}/galaxy/en/img_6.png`),
+          require(`${dir}/android/esimReg/local/img_6.png`),
+          require(`${dir}/android/esimReg/local/en/img_6.png`),
         ],
-        pageLast: [
-          require(`${dir}/galaxy/img_7.png`),
-          require(`${dir}/galaxy/en/img_7.png`),
+        page8: [
+          require(`${dir}/android/esimReg/local/img_7.png`),
+          require(`${dir}/android/esimReg/local/en/img_7.png`),
         ],
-        pageLast2: [
-          require(`${dir}/img_12.png`),
-          require(`${dir}/en/img_12.png`),
+        page9: [
+          require(`${dir}/android/esimReg/local/img_8.png`),
+          require(`${dir}/android/esimReg/local/en/img_8.png`),
         ],
+        pageLast: [require(`${dir}/iconRokebiLast.png`)],
       };
     }
   } else if (region === 'korea') {
@@ -935,7 +936,7 @@ export const getGuideImages = (
         },
         {
           key: 'page11',
-          title: renderText(`userGuide:stepsTitle7:galaxy`),
+          title: renderText(`userGuide:stepsTitle12:ios`),
           step: 6,
         },
       ];
@@ -972,7 +973,6 @@ export const getGuideImages = (
           key: 'page6',
           title: renderText(`userGuide:stepsTitle5:galaxy`),
           step: 4,
-          tip: () => renderTipList('userGuide:tipPage5:galaxy', 'dot'),
         },
         {
           key: 'page7',
@@ -982,6 +982,28 @@ export const getGuideImages = (
         {
           key: 'page8',
           title: renderText(`userGuide:stepsTitle7:galaxy`),
+          step: 6,
+          tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}, true),
+          noticeBox: () =>
+            renderNoticeBox(
+              'userGuide:noticeBox:local:title',
+              'userGuide:noticeBox:local:body4',
+            ),
+        },
+        {
+          key: 'page9',
+          title: renderText(`userGuide:stepsTitle8:galaxy`),
+          step: 7,
+          tip: () => tipView({id: 'userGuide:tipPage10_1'}),
+          noticeBox: () =>
+            renderNoticeBox(
+              'userGuide:noticeBox:local:title',
+              'userGuide:noticeBox:local:body1',
+            ),
+        },
+        {
+          key: 'page10',
+          title: renderText(`userGuide:stepsTitle10:galaxy:local`),
           step: 6,
           tip: () => renderTipList('userGuide:tipPageLast', 'dot'),
         },

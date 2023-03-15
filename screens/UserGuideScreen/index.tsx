@@ -490,9 +490,8 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
             })}
           </View>
         ) : (
-          <View style={{height: 80}} />
+          <View style={isIOS ? {height: 80} : {height: 166}} />
         )}
-
         <View style={styles.contactFrame}>
           <AppText style={styles.contactTitle}>
             {i18n.t(
