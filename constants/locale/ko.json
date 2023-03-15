@@ -825,6 +825,7 @@
   "userGuide:ios:esimReg:local:stepTitle0": "<b>현지 등록</b> 가이드",
   "userGuide:ios:checkSetting:korea:stepTitle0": "고객님의 기존 유심 요금제를\n<b>한국</b>에서 사용하기 위해서는\n<b>설정이 잘 되어있는지 확인</b>해야해요.\n\n\n다음 가이드를 확인해보세요!",
   "userGuide:ios:checkSetting:local:stepTitle0": "<b>여행지에 도착</b>하셨군요!\n\n\n설레는 여행을 시작하기 전,\n<b>eSIM 설정을 확인</b>해보세요.",
+  "userGuide:galaxy:checkSetting:local:stepTitle0": "<b>여행지에 도착</b>하셨군요!\n\n설레는 여행을 시작하기 전,\n<b>eSIM 설정을 확인</b>해보세요.",
   "userGuide:stepsTitle0": "<b>로밍도깨비 eSIM</b>\n사용가이드",
   "userGuide:stepsTitle0:galaxy": "갤럭시 ver.",
   "userGuide:stepsTitle0:pixel": "픽셀 ver.",

@@ -540,39 +540,28 @@ export const getImageList = (
     };
   } else {
     imageList = {
-      page1: [require(`${dir}/guide1.png`)],
+      page1: [require(`${dir}/iconLocalCheck.png`)],
       page2: [
-        require(`${dir}/galaxy/img_1.png`),
-        require(`${dir}/galaxy/en/img_1.png`),
+        require(`${dir}/android/checkSetting/local/img_1.png`),
+        require(`${dir}/android/checkSetting/local/en/img_1.png`),
       ],
       page3: [
-        require(`${dir}/galaxy/img_2.png`),
-        require(`${dir}/galaxy/en/img_2.png`),
+        require(`${dir}/android/checkSetting/local/img_2.png`),
+        require(`${dir}/android/checkSetting/local/en/img_2.png`),
       ],
       page4: [
-        require(`${dir}/galaxy/img_3.png`),
-        require(`${dir}/galaxy/en/img_3.png`),
+        require(`${dir}/android/checkSetting/local/img_3.png`),
+        require(`${dir}/android/checkSetting/local/en/img_3.png`),
+      ],
+      page4Local: [
+        require(`${dir}/android/checkSetting/local/localNet/img_3.png`),
+        require(`${dir}/android/checkSetting/local/en/localNet/img_3.png`),
       ],
       page5: [
-        require(`${dir}/galaxy/img_4.png`),
-        require(`${dir}/galaxy/en/img_4.png`),
+        require(`${dir}/android/checkSetting/local/img_4.png`),
+        require(`${dir}/android/checkSetting/local/en/img_4.png`),
       ],
-      page6: [
-        require(`${dir}/galaxy/img_5.png`),
-        require(`${dir}/galaxy/en/img_5.png`),
-      ],
-      page7: [
-        require(`${dir}/galaxy/img_6.png`),
-        require(`${dir}/galaxy/en/img_6.png`),
-      ],
-      pageLast: [
-        require(`${dir}/galaxy/img_7.png`),
-        require(`${dir}/galaxy/en/img_7.png`),
-      ],
-      pageLast2: [
-        require(`${dir}/img_12.png`),
-        require(`${dir}/en/img_12.png`),
-      ],
+      pageLast: [require(`${dir}/iconRokebiLast.png`)],
     };
   }
   return imageList;
@@ -1022,7 +1011,6 @@ export const getGuideImages = (
         step: 2,
         tip: () => renderTipList('userGuide:tipPage2:galaxy'),
         isLocalBox: () => renderIsLocalBox(),
-
         isHeader: true,
       },
       {
@@ -1063,47 +1051,42 @@ export const getGuideImages = (
     guideImages = [
       {
         key: 'page1',
-        title: renderText('userGuide:stepsTitle0'),
+        title: renderText('userGuide:galaxy:checkSetting:local:stepTitle0'),
         step: 0,
+        isLocalBox: () => renderIsLocalBox(),
       },
       {
         key: 'page2',
-        title: renderText(`userGuide:stepsTitle1:galaxy`),
+        title: renderText(`userGuide:stepsTitle4:galaxy:checkSetting`),
         step: 1,
+        stepPreText: 'local',
       },
       {
         key: 'page3',
-        title: renderText(`userGuide:stepsTitle2:galaxy`),
+        title: renderText(`userGuide:stepsTitle5:galaxy:checkSetting`),
         step: 2,
-        tip: () => renderTipList('userGuide:tipPage2:galaxy'),
+        stepPreText: 'local',
       },
       {
         key: 'page4',
-        title: renderText(`userGuide:stepsTitle3:galaxy`),
-        step: 2,
-        tip: () => tipView({id: 'userGuide:tipPage3:galaxy'}),
+        title: renderText(`userGuide:stepsTitle7:galaxy`),
+        localTitle: renderText(`userGuide:stepsTitle7:galaxy:localNet`),
+
+        step: 3,
+        stepPreText: 'local',
+        tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}),
+        localTip: () => tipView({id: 'userGuide:tipPage7:galaxy:localNet'}),
       },
       {
         key: 'page5',
-        title: renderText(`userGuide:stepsTitle4:galaxy`),
-        step: 3,
+        title: renderText(`userGuide:stepsTitle6:galaxy:checkSetting`),
+        step: 4,
+        stepPreText: 'local',
       },
       {
         key: 'page6',
-        title: renderText(`userGuide:stepsTitle5:galaxy`),
-        step: 4,
-        tip: () => renderTipList('userGuide:tipPage5:galaxy', 'dot'),
-      },
-      {
-        key: 'page7',
-        title: renderText(`userGuide:stepsTitle6:galaxy`),
-        step: 5,
-      },
-      {
-        key: 'page8',
-        title: renderText(`userGuide:stepsTitle7:galaxy`),
+        title: renderText(`userGuide:stepsTitle10:galaxy:local`),
         step: 6,
-        tip: () => renderTipList('userGuide:tipPageLast', 'dot'),
       },
     ];
   }

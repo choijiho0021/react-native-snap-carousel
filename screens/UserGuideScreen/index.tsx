@@ -558,7 +558,8 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
       if (
         (isIOS && carouselIdx < 4 && region === 'korea') ||
         (isIOS && carouselIdx < 1 && region === 'local') ||
-        (!isIOS && carouselIdx < 3 && region === 'korea')
+        (!isIOS && carouselIdx < 3 && region === 'korea') ||
+        (!isIOS && carouselIdx < 1 && region === 'local')
       )
         setIsCheckLocal(false);
   }, [carouselIdx, guideOption, region]);
