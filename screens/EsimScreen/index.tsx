@@ -328,7 +328,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           query,
         });
 
-        console.log('aaaaa quota', quota);
         if (
           status.result === 0 &&
           quota.result === 0 &&
@@ -360,8 +359,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
                   used: Number(quota?.objects?.packQuotaList[0]?.consumedQuota), // Mb
                 };
 
-          console.log('aaaaa quadcellStatus', quadcellStatus);
-          console.log('aaaaa quadcellUsage', quadcellUsage);
           return {status: quadcellStatus, usage: quadcellUsage};
         }
       }
