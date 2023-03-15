@@ -344,7 +344,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           const exp = moment(expTime, 'YYYYMMDDHHmmss').add(1, 'h');
 
           const quadcellStatus: StatusObj = {
-            statusCd,
+            statusCd: statusCd === 'A' && moment() > exp ? 'U' : statusCd,
             endTime: exp.format('YYYY.MM.DD HH:mm:ss'),
           };
 
