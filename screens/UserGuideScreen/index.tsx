@@ -2,7 +2,6 @@
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import DeviceInfo from 'react-native-device-info';
 import {
   StyleSheet,
   Image,
@@ -16,6 +15,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
+import Env from '@/environment';
 import {
   isDeviceSize,
   isFolderOpen,
@@ -32,6 +32,8 @@ import {getImage} from '@/utils/utils';
 import AppCarousel, {AppCarouselRef} from '@/components/AppCarousel';
 import {ContactListItem} from '../ContactScreen';
 import ChatTalk from './ChatTalk';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -53,11 +55,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     height: 56,
-  },
-  logo: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 40,
   },
   checkInfo: {
     backgroundColor: colors.white,
@@ -194,7 +191,6 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
   const [isCheckLocal, setIsCheckLocal] = useState(false);
   // const deviceModel = useMemo(() => DeviceInfo.getModel(), []);
   const carouselRef = useRef<AppCarouselRef>(null);
-  const isGalaxy = useMemo(() => DeviceInfo.getModel().startsWith('SM'), []);
   const guideOption = useMemo(() => params?.guideOption, [params?.guideOption]);
   const region = useMemo(() => params?.region, [params?.region]);
   const contactData = useMemo(
@@ -236,12 +232,12 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         style={[
           styles.modalHeader,
           {
-            backgroundColor:
-              isGalaxy && index !== 1 ? colors.whiteSeven : colors.white,
+            backgroundColor: index !== 1 ? colors.whiteSeven : colors.white,
           },
         ]}>
         <AppText style={[appStyles.bold16Text, {color: colors.clearBlue}]}>
           {index + 1}
+          {/* eslint-disable-next-line react-native/no-raw-text */}
           <AppText style={appStyles.bold16Text}>
             /{getGuideImages(guideOption, region).length}
           </AppText>
@@ -253,7 +249,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         />
       </View>
     ),
-    [guideOption, isGalaxy, navigation, region],
+    [guideOption, navigation, region],
   );
 
   const renderHeadPage = useCallback(
@@ -268,6 +264,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
           <View
             style={[
               styles.headerLogo,
+              !isIOS && {marginVertical: 80},
               guideOption === 'checkSetting' && {
                 marginTop: 48,
                 marginBottom: 42,
@@ -371,7 +368,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         <ScrollView
           style={{
             flex: 1,
-            backgroundColor: isGalaxy ? colors.whiteSeven : colors.white,
+            backgroundColor: colors.white,
           }}
           contentContainerStyle={[
             styles.stepPage,
@@ -443,14 +440,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         </ScrollView>
       );
     },
-    [
-      dimensions.width,
-      guideOption,
-      isCheckLocal,
-      isGalaxy,
-      region,
-      renderHeadPage,
-    ],
+    [dimensions.width, guideOption, isCheckLocal, region, renderHeadPage],
   );
 
   const renderTailPage = useCallback(
@@ -458,7 +448,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
       <ScrollView
         style={{
           flex: 1,
-          backgroundColor: isGalaxy ? colors.whiteSeven : colors.white,
+          backgroundColor: colors.white,
         }}
         contentContainerStyle={styles.tailPageTitle}>
         <View style={{alignItems: 'center', marginTop: 20, marginBottom: 48}}>
@@ -528,7 +518,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         </View>
       </ScrollView>
     ),
-    [contactData, guideOption, isGalaxy, navigation, region],
+    [contactData, guideOption, navigation, region],
   );
 
   const renderBody = useCallback(

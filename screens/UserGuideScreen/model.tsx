@@ -2,15 +2,7 @@
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
 import React from 'react';
-import {
-  Dimensions,
-  Platform,
-  StyleSheet,
-  Text,
-  TextStyle,
-  View,
-} from 'react-native';
-import DeviceInfo from 'react-native-device-info';
+import {Dimensions, StyleSheet, TextStyle, View} from 'react-native';
 import {colors} from '@/constants/Colors';
 import {appStyles, formatText} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
@@ -41,6 +33,7 @@ const styles = StyleSheet.create({
     ...appStyles.semiBold22Text,
     lineHeight: 28,
     letterSpacing: -0.44,
+    color: colors.black,
   },
   step: {
     borderRadius: 20,
@@ -62,10 +55,17 @@ const styles = StyleSheet.create({
   tipText: {
     ...appStyles.normal15Text,
     fontSize: isDeviceSize('medium') ? 13 : 15,
+    color: colors.black,
   },
   tipBoldText: {
     ...appStyles.bold15Text,
     fontSize: isDeviceSize('medium') ? 13 : 15,
+    color: colors.black,
+  },
+  tipBoldRedText: {
+    ...appStyles.bold15Text,
+    fontSize: isDeviceSize('medium') ? 13 : 15,
+    color: colors.redError,
   },
   tipContainer: {
     alignItems: 'center',
@@ -86,6 +86,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     marginHorizontal: 40,
+    width: Dimensions.get('window').width - 80,
   },
   noticeBoxTitle: {
     ...appStyles.bold14Text,
@@ -168,12 +169,16 @@ const renderText = (key: string, isBold = false) => {
   return renderOneText(text[0], 0);
 };
 
-const renderTipText = (key: string, style: TextStyle = styles.tipText) => (
+const renderTipText = (
+  key: string,
+  style: TextStyle = styles.tipText,
+  boldRed = false,
+) => (
   <AppStyledText
     text={i18n.t(key)}
     textStyle={style}
     format={{
-      b: styles.tipBoldText,
+      b: boldRed ? styles.tipBoldRedText : styles.tipBoldText,
       s: {...styles.tipBoldText, color: colors.tomato},
     }}
   />
@@ -200,15 +205,23 @@ const renderTip = ({id, marginBottom, style}: RenderTipParams) => (
   </View>
 );
 
-const tipView = (params: RenderTipParams, renderTitle = true) => (
+const tipView = (
+  params: RenderTipParams,
+  renderTitle = true,
+  marginBottom = true,
+) => (
   <View style={styles.tipContainer}>
     {renderTitle && renderTips()}
     {renderTip(params)}
-    {!renderTitle && <View style={{marginBottom: 36}} />}
+    {!renderTitle && marginBottom && <View style={{marginBottom: 36}} />}
   </View>
 );
 
-const renderTipList = (id: string, list: 'dot' | 'num' = 'num') => (
+const renderTipList = (
+  id: string,
+  list: 'dot' | 'num' = 'num',
+  boldRed = false,
+) => (
   <View style={styles.tipContainer}>
     {renderTips()}
     <View style={{alignItems: 'flex-start'}}>
@@ -223,7 +236,7 @@ const renderTipList = (id: string, list: 'dot' | 'num' = 'num') => (
               {i18n.t('centerDot')}
             </AppText>
           )}
-          {renderTipText(`${id}_${k}`)}
+          {renderTipText(`${id}_${k}`, styles.tipText, boldRed)}
         </View>
       ))}
     </View>
@@ -236,7 +249,7 @@ const renderNoticeBox = (title: string, body: string) => (
     <AppStyledText
       text={i18n.t(body)}
       textStyle={styles.noticeBoxBody}
-      format={{b: {fontWeight: '600'}}}
+      format={{b: {fontWeight: '600', color: colors.deepDarkBlue}}}
     />
   </View>
 );
@@ -265,7 +278,7 @@ export const getImageList = (
     if (guideOption === 'esimReg') {
       if (region === 'korea') {
         imageList = {
-          page1: [require(`${dir}/ios/esimReg/korea/img_0.png`)],
+          page1: [require(`${dir}/iconKoreaSmall.png`)],
           page2: [
             require(`${dir}/ios/esimReg/korea/img_1.png`),
             require(`${dir}/ios/esimReg/korea/en/img_1.png`),
@@ -306,14 +319,11 @@ export const getImageList = (
             require(`${dir}/ios/esimReg/korea/img_10.png`),
             require(`${dir}/ios/esimReg/korea/en/img_10.png`),
           ],
-          pageLast: [
-            require(`${dir}/ios/esimReg/korea/img_11.png`),
-            require(`${dir}/ios/esimReg/korea/en/img_11.png`),
-          ],
+          pageLast: [require(`${dir}/iconRokebiLast.png`)],
         };
       } else {
         imageList = {
-          page1: [require(`${dir}/ios/esimReg/local/img_0.png`)],
+          page1: [require(`${dir}/iconLocalSmall.png`)],
           page2: [
             require(`${dir}/ios/esimReg/local/img_1.png`),
             require(`${dir}/ios/esimReg/local/en/img_1.png`),
@@ -354,15 +364,12 @@ export const getImageList = (
             require(`${dir}/ios/esimReg/local/img_10.png`),
             require(`${dir}/ios/esimReg/local/en/img_10.png`),
           ],
-          pageLast: [
-            require(`${dir}/ios/esimReg/local/img_11.png`),
-            require(`${dir}/ios/esimReg/local/en/img_11.png`),
-          ],
+          pageLast: [require(`${dir}/iconRokebiLast.png`)],
         };
       }
     } else if (region === 'korea') {
       imageList = {
-        page1: [require(`${dir}/ios/checkSetting/korea/img_0.png`)],
+        page1: [require(`${dir}/iconKoreaCheck.png`)],
         page2: [
           require(`${dir}/ios/checkSetting/korea/img_1.png`),
           require(`${dir}/ios/checkSetting/korea/en/img_1.png`),
@@ -371,10 +378,7 @@ export const getImageList = (
           require(`${dir}/ios/checkSetting/korea/img_2.png`),
           require(`${dir}/ios/checkSetting/korea/en/img_2.png`),
         ],
-        page4: [
-          require(`${dir}/ios/checkSetting/korea/img_3.png`),
-          require(`${dir}/ios/checkSetting/korea/en/img_3.png`),
-        ],
+        page4: [require(`${dir}/iconLocalCheck.png`)],
         page5: [
           require(`${dir}/ios/checkSetting/korea/img_4.png`),
           require(`${dir}/ios/checkSetting/korea/en/img_4.png`),
@@ -395,14 +399,11 @@ export const getImageList = (
           require(`${dir}/ios/checkSetting/korea/img_7.png`),
           require(`${dir}/ios/checkSetting/korea/en/img_7.png`),
         ],
-        pageLast: [
-          require(`${dir}/ios/checkSetting/korea/img_8.png`),
-          require(`${dir}/ios/checkSetting/korea/en/img_8.png`),
-        ],
+        pageLast: [require(`${dir}/iconRokebiLast.png`)],
       };
     } else {
       imageList = {
-        page1: [require(`${dir}/ios/checkSetting/local/img_0.png`)],
+        page1: [require(`${dir}/iconLocalCheck.png`)],
         page2: [
           require(`${dir}/ios/checkSetting/local/img_1.png`),
           require(`${dir}/ios/checkSetting/local/en/img_1.png`),
@@ -424,48 +425,50 @@ export const getImageList = (
           require(`${dir}/ios/checkSetting/local/en/img_4.png`),
         ],
 
-        pageLast: [
-          require(`${dir}/ios/checkSetting/local/img_5.png`),
-          require(`${dir}/ios/checkSetting/local/en/img_5.png`),
-        ],
+        pageLast: [require(`${dir}/iconRokebiLast.png`)],
       };
     }
   } else if (guideOption === 'esimReg') {
     if (region === 'korea') {
       imageList = {
-        page1: [require(`${dir}/guide1.png`)],
+        page1: [require(`${dir}/iconKoreaSmall.png`)],
         page2: [
-          require(`${dir}/galaxy/img_1.png`),
-          require(`${dir}/galaxy/en/img_1.png`),
+          require(`${dir}/android/esimReg/korea/img_1.png`),
+          require(`${dir}/android/esimReg/korea/en/img_1.png`),
         ],
         page3: [
-          require(`${dir}/galaxy/img_2.png`),
-          require(`${dir}/galaxy/en/img_2.png`),
+          require(`${dir}/android/esimReg/korea/img_2.png`),
+          require(`${dir}/android/esimReg/korea/en/img_2.png`),
         ],
         page4: [
-          require(`${dir}/galaxy/img_3.png`),
-          require(`${dir}/galaxy/en/img_3.png`),
+          require(`${dir}/android/esimReg/korea/img_3.png`),
+          require(`${dir}/android/esimReg/korea/en/img_3.png`),
         ],
         page5: [
-          require(`${dir}/galaxy/img_4.png`),
-          require(`${dir}/galaxy/en/img_4.png`),
+          require(`${dir}/android/esimReg/korea/img_4.png`),
+          require(`${dir}/android/esimReg/korea/en/img_4.png`),
         ],
         page6: [
-          require(`${dir}/galaxy/img_5.png`),
-          require(`${dir}/galaxy/en/img_5.png`),
+          require(`${dir}/android/esimReg/korea/img_5.png`),
+          require(`${dir}/android/esimReg/korea/en/img_5.png`),
         ],
         page7: [
-          require(`${dir}/galaxy/img_6.png`),
-          require(`${dir}/galaxy/en/img_6.png`),
+          require(`${dir}/android/esimReg/korea/img_6.png`),
+          require(`${dir}/android/esimReg/korea/en/img_6.png`),
         ],
-        pageLast: [
-          require(`${dir}/galaxy/img_7.png`),
-          require(`${dir}/galaxy/en/img_7.png`),
+        page8: [
+          require(`${dir}/android/esimReg/korea/img_7.png`),
+          require(`${dir}/android/esimReg/korea/en/img_7.png`),
         ],
-        pageLast2: [
-          require(`${dir}/img_12.png`),
-          require(`${dir}/en/img_12.png`),
+        page9: [
+          require(`${dir}/android/esimReg/korea/img_8.png`),
+          require(`${dir}/android/esimReg/korea/en/img_8.png`),
         ],
+        page10: [
+          require(`${dir}/android/esimReg/korea/img_9.png`),
+          require(`${dir}/android/esimReg/korea/en/img_9.png`),
+        ],
+        pageLast: [require(`${dir}/iconRokebiLast.png`)],
       };
     } else {
       imageList = {
@@ -872,7 +875,7 @@ export const getGuideImages = (
       guideImages = [
         {
           key: 'page1',
-          title: renderText('userGuide:stepsTitle0'),
+          title: renderText('userGuide:ios:esimReg:korea:stepTitle0'),
           step: 0,
         },
         {
@@ -901,7 +904,6 @@ export const getGuideImages = (
           key: 'page6',
           title: renderText(`userGuide:stepsTitle5:galaxy`),
           step: 4,
-          tip: () => renderTipList('userGuide:tipPage5:galaxy', 'dot'),
         },
         {
           key: 'page7',
@@ -912,7 +914,29 @@ export const getGuideImages = (
           key: 'page8',
           title: renderText(`userGuide:stepsTitle7:galaxy`),
           step: 6,
-          tip: () => renderTipList('userGuide:tipPageLast', 'dot'),
+          tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}, true),
+          noticeBox: () =>
+            renderNoticeBox(
+              'userGuide:noticeBox:local:title',
+              'userGuide:noticeBox:local:body4',
+            ),
+        },
+        {
+          key: 'page9',
+          title: renderText(`userGuide:stepsTitle8:galaxy`),
+          step: 7,
+          tip: () => tipView({id: 'userGuide:tipPage10_1'}),
+        },
+        {
+          key: 'page10',
+          title: renderText(`userGuide:stepsTitle9:galaxy`),
+          step: 8,
+          tip: () => renderTipList('userGuide:tipPage10:galaxy', 'dot', true),
+        },
+        {
+          key: 'page11',
+          title: renderText(`userGuide:stepsTitle7:galaxy`),
+          step: 6,
         },
       ];
     } else {
