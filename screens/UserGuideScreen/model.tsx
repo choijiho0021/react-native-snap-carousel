@@ -2,7 +2,14 @@
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
 import React from 'react';
-import {Platform, StyleSheet, Text, TextStyle, View} from 'react-native';
+import {
+  Dimensions,
+  Platform,
+  StyleSheet,
+  Text,
+  TextStyle,
+  View,
+} from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {colors} from '@/constants/Colors';
 import {appStyles, formatText} from '@/constants/Styles';
@@ -14,12 +21,18 @@ import AppStyledText from '@/components/AppStyledText';
 import Env from '@/environment';
 import {GuideOption} from './GuideHomeScreen';
 import {GuideRegion} from './GuideSelectRegionScreen';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const {isIOS} = Env.get();
 
 const dir = '../../assets/images/esim/userGuide';
 
 const styles = StyleSheet.create({
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   titleBoldText: {
     ...appStyles.bold24Text,
     lineHeight: 32,
@@ -84,6 +97,38 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     letterSpacing: -0.28,
     color: colors.deepDarkBlue,
+  },
+  isLocalBox: {
+    paddingVertical: 26,
+    paddingHorizontal: 30,
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
+    marginHorizontal: 20,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.white,
+    width: Dimensions.get('window').width - 40,
+
+    elevation: 12,
+    shadowColor: 'rgb(166, 168, 172)',
+    shadowRadius: 12,
+    shadowOpacity: 0.16,
+    shadowOffset: {
+      height: 4,
+      width: 0,
+    },
+  },
+  isLocalBoxTitle: {
+    ...appStyles.bold16Text,
+    lineHeight: 24,
+    color: colors.clearBlue,
+  },
+  isLocalBoxBody: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 20,
+    color: colors.black,
   },
 });
 
@@ -196,6 +241,20 @@ const renderNoticeBox = (title: string, body: string) => (
   </View>
 );
 
+const renderIsLocalBox = () => (
+  <View style={styles.isLocalBox}>
+    <AppText style={styles.isLocalBoxTitle}>
+      {i18n.t('userGuide:isLocal')}
+    </AppText>
+    <View style={styles.row}>
+      <AppText style={styles.isLocalBoxBody}>
+        {i18n.t('userGuide:checkSetting:title')}
+      </AppText>
+      <AppSvgIcon name="rightArrow20" />
+    </View>
+  </View>
+);
+
 export const getImageList = (
   guideOption: GuideOption,
   region: GuideRegion,
@@ -303,24 +362,42 @@ export const getImageList = (
       }
     } else if (region === 'korea') {
       imageList = {
-        page1: [require(`${dir}/guide1.png`)],
-        page2: [require(`${dir}/img_1.png`), require(`${dir}/en/img_1.png`)],
-        page3: [require(`${dir}/img_2.png`), require(`${dir}/en/img_2.png`)],
-        page4: [require(`${dir}/img_3.png`), require(`${dir}/en/img_3.png`)],
-        page5: [require(`${dir}/img_4.png`), require(`${dir}/en/img_4.png`)],
-        page6: [require(`${dir}/img_5.png`), require(`${dir}/en/img_5.png`)],
-        page7: [require(`${dir}/img_6.png`), require(`${dir}/en/img_6.png`)],
-        page8: [require(`${dir}/img_7.png`), require(`${dir}/en/img_7.png`)],
-        page9: [require(`${dir}/img_8.png`), require(`${dir}/en/img_8.png`)],
-        page10: [require(`${dir}/img_9.png`), require(`${dir}/en/img_9.png`)],
-        page11: [require(`${dir}/img_10.png`), require(`${dir}/en/img_10.png`)],
-        pageLast: [
-          require(`${dir}/img_11.png`),
-          require(`${dir}/en/img_11.png`),
+        page1: [require(`${dir}/ios/checkSetting/korea/img_0.png`)],
+        page2: [
+          require(`${dir}/ios/checkSetting/korea/img_1.png`),
+          require(`${dir}/ios/checkSetting/korea/en/img_1.png`),
         ],
-        pageLast2: [
-          require(`${dir}/img_12.png`),
-          require(`${dir}/en/img_12.png`),
+        page3: [
+          require(`${dir}/ios/checkSetting/korea/img_2.png`),
+          require(`${dir}/ios/checkSetting/korea/en/img_2.png`),
+        ],
+        page4: [
+          require(`${dir}/ios/checkSetting/korea/img_3.png`),
+          require(`${dir}/ios/checkSetting/korea/en/img_3.png`),
+        ],
+        page5: [
+          require(`${dir}/ios/checkSetting/korea/img_4.png`),
+          require(`${dir}/ios/checkSetting/korea/en/img_4.png`),
+        ],
+        page5Local: [
+          require(`${dir}/ios/checkSetting/korea/localNet/img_4.png`),
+          require(`${dir}/ios/checkSetting/korea/localNet/en/img_4.png`),
+        ],
+        page6: [
+          require(`${dir}/ios/checkSetting/korea/img_5.png`),
+          require(`${dir}/ios/checkSetting/korea/en/img_5.png`),
+        ],
+        page7: [
+          require(`${dir}/ios/checkSetting/korea/img_6.png`),
+          require(`${dir}/ios/checkSetting/korea/en/img_6.png`),
+        ],
+        page8: [
+          require(`${dir}/ios/checkSetting/korea/img_7.png`),
+          require(`${dir}/ios/checkSetting/korea/en/img_7.png`),
+        ],
+        pageLast: [
+          require(`${dir}/ios/checkSetting/korea/img_8.png`),
+          require(`${dir}/ios/checkSetting/korea/en/img_8.png`),
         ],
       };
     } else {
@@ -500,9 +577,13 @@ export type GuideImage = {
   key: string;
   title: JSX.Element;
   step: number;
+  isHeader?: boolean;
+  stepPreText?: string;
   tip?: () => JSX.Element | null;
   noticeBox?: () => JSX.Element | null;
+  isLocalBox?: () => JSX.Element | null;
   caption?: string;
+  localTitle?: JSX.Element;
 };
 
 export const getGuideImages = (
@@ -682,71 +763,59 @@ export const getGuideImages = (
       guideImages = [
         {
           key: 'page1',
-          title: renderText('userGuide:stepsTitle0'),
+          title: renderText('userGuide:ios:checkSetting:korea:stepTitle0'),
           step: 0,
         },
         {
           key: 'page2',
-          title: renderText(`userGuide:stepsTitle1:ios`),
+          title: renderText('userGuide:stepsTitle1:ios:checkSetting'),
           step: 1,
+          stepPreText: 'korea',
         },
         {
           key: 'page3',
-          title: renderText(`userGuide:stepsTitle2:ios`),
+          title: renderText('userGuide:stepsTitle2:ios:checkSetting'),
           step: 2,
-          tip: () => renderTipList('userGuide:tipPage3'),
+          stepPreText: 'korea',
         },
         {
           key: 'page4',
-          title: renderText('userGuide:stepsTitle3:ios'),
+          title: renderText('userGuide:stepsTitle3:ios:checkSetting'),
           step: 2,
-          tip: () => tipView({id: 'userGuide:tipPage4_1'}),
-          caption: i18n.t('userGuide:step3:caption'),
+          isHeader: true,
+          isLocalBox: () => renderIsLocalBox(),
         },
         {
           key: 'page5',
-          title: renderText('userGuide:stepsTitle4:ios'),
-          step: 3,
+          title: renderText('userGuide:stepsTitle4:ios:checkSetting'),
+          localTitle: renderText(
+            'userGuide:stepsTitle4:ios:checkSetting:local',
+          ),
+          step: 1,
+          stepPreText: 'local',
         },
         {
           key: 'page6',
-          title: renderText('userGuide:stepsTitle5:ios'),
-          step: 4,
-          tip: () => renderTipList('userGuide:tipPage5', 'dot'),
+          title: renderText('userGuide:stepsTitle5:ios:checkSetting'),
+          step: 2,
+          stepPreText: 'local',
         },
         {
           key: 'page7',
-          title: renderText('userGuide:stepsTitle6:ios'),
-          step: 5,
+          title: renderText('userGuide:stepsTitle6:ios:checkSetting'),
+          step: 3,
+          stepPreText: 'local',
         },
         {
           key: 'page8',
-          title: renderText('userGuide:stepsTitle6:ios'),
-          step: 5,
+          title: renderText('userGuide:stepsTitle7:ios:checkSetting'),
+          step: 4,
+          stepPreText: 'local',
         },
         {
           key: 'page9',
-          title: renderText('userGuide:stepsTitle6:ios'),
-          step: 5,
-          tip: () => tipView({id: 'userGuide:tipPage9_1'}),
-        },
-        {
-          key: 'page10',
-          title: renderText('userGuide:stepsTitle10:ios'),
-          step: 6,
-          tip: () => tipView({id: 'userGuide:tipPage10_1'}),
-        },
-        {
-          key: 'page11',
-          title: renderText('userGuide:stepsTitle11:ios'),
-          step: 6,
-          tip: () => tipView({id: 'userGuide:tipPage11_1'}),
-        },
-        {
-          key: 'page12',
-          title: renderText('userGuide:stepsTitle12:ios'),
-          step: 7,
-          tip: () => renderTipList('userGuide:tipPageLast', 'dot'),
+          title: renderText('userGuide:stepsTitle8:ios:checkSetting'),
+          step: 99,
         },
       ];
     } else {

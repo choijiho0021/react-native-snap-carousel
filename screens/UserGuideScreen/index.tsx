@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import DeviceInfo from 'react-native-device-info';
 import {
   StyleSheet,
@@ -30,7 +30,7 @@ import i18n from '@/utils/i18n';
 import {getImageList, GuideImage, getGuideImages} from './model';
 import AppStyledText from '@/components/AppStyledText';
 import {getImage} from '@/utils/utils';
-import AppCarousel from '@/components/AppCarousel';
+import AppCarousel, {AppCarouselRef} from '@/components/AppCarousel';
 import {contactData, ContactListItem} from '../ContactScreen';
 import ChatTalk from './ChatTalk';
 
@@ -192,7 +192,9 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
   const [carouselIdx, setCarouselIdx] = useState(0);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const [chatTalkClicked, setChatTalkClicked] = useState(false);
+  const [isCheckLocal, setIsCheckLocal] = useState(false);
   // const deviceModel = useMemo(() => DeviceInfo.getModel(), []);
+  const carouselRef = useRef<AppCarouselRef>(null);
   const isGalaxy = useMemo(() => DeviceInfo.getModel().startsWith('SM'), []);
   const guideOption = useMemo(() => params?.guideOption, [params?.guideOption]);
   const region = useMemo(() => params?.region, [params?.region]);
@@ -247,35 +249,50 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
           <View style={{alignItems: 'center', marginTop: 40}}>
             {data?.title}
           </View>
-          <View style={styles.headerLogo}>
+          <View
+            style={[
+              styles.headerLogo,
+              guideOption === 'checkSetting' && {
+                marginTop: 48,
+                marginBottom: 42,
+              },
+            ]}>
             <Image
               source={getImage(getImageList(guideOption, region), data.key)}
               resizeMode="contain"
             />
           </View>
-          <View style={styles.checkInfo}>
-            <AppText style={appStyles.bold18Text}>
-              {i18n.t('userGuide:checkInfo')}
-            </AppText>
-            <View style={{marginTop: 8}}>
-              {[1, 2, 3].map((k) => (
-                <View key={k} style={{flexDirection: 'row'}}>
-                  <AppText
-                    style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
-                    •
-                  </AppText>
-                  <View style={{flex: 1}}>
-                    <AppStyledText
-                      textStyle={styles.checkInfoText}
-                      text={i18n.t(`userGuide:checkInfo${k}`)}
-                      format={{b: {color: colors.clearBlue}}}
-                    />
+
+          {guideOption === 'esimReg' && (
+            <View style={styles.checkInfo}>
+              <AppText style={appStyles.bold18Text}>
+                {i18n.t('userGuide:checkInfo')}
+              </AppText>
+              <View style={{marginTop: 8}}>
+                {[1, 2, 3].map((k) => (
+                  <View key={k} style={{flexDirection: 'row'}}>
+                    <AppText
+                      style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
+                      •
+                    </AppText>
+                    <View style={{flex: 1}}>
+                      <AppStyledText
+                        textStyle={styles.checkInfoText}
+                        text={i18n.t(`userGuide:checkInfo${k}`)}
+                        format={{b: {color: colors.clearBlue}}}
+                      />
+                    </View>
                   </View>
-                </View>
-              ))}
+                ))}
+              </View>
             </View>
-          </View>
-          <View style={styles.slideGuide}>
+          )}
+
+          <View
+            style={[
+              styles.slideGuide,
+              guideOption === 'checkSetting' && {marginTop: 0},
+            ]}>
             <View style={styles.slideGuideBox}>
               <AppSvgIcon key="threeArrows" name="threeArrows" />
               <AppText style={styles.slideText}>
@@ -283,6 +300,17 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
               </AppText>
             </View>
           </View>
+
+          {data.isLocalBox && (
+            <Pressable
+              style={{marginTop: 34}}
+              onPress={() => {
+                setIsCheckLocal(true);
+                carouselRef.current?.snapToNext();
+              }}>
+              {data.isLocalBox()}
+            </Pressable>
+          )}
         </ScrollView>
       );
     },
@@ -309,10 +337,20 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
 
   const renderStepPage = useCallback(
     (data: GuideImage) => {
-      const image = getImage(getImageList(guideOption, region), data.key);
-      const imageSource = Image.resolveAssetSource(image);
-      // console.log('@@@@ data.noticeBox', data.noticeBox);
-      // console.log('@@@@ data.noticeBox()', data.noticeBox());
+      let image;
+      let imageSource;
+      const imageList = getImageList(guideOption, region);
+
+      if (isCheckLocal) {
+        image = getImage(imageList, data.key.concat('Local'));
+      }
+      if (image) {
+        imageSource = Image.resolveAssetSource(image);
+      } else {
+        image = getImage(imageList, data.key);
+        imageSource = Image.resolveAssetSource(image);
+      }
+      if (data.isHeader) return renderHeadPage(data);
       return (
         <ScrollView
           style={{
@@ -324,10 +362,21 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
             isDeviceSize('large') ? undefined : {flex: 1},
           ]}>
           <View style={{alignItems: 'center', marginBottom: 21}}>
-            <View style={styles.step}>
-              <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
+            <View
+              style={[
+                styles.step,
+                data.stepPreText === 'korea'
+                  ? {backgroundColor: colors.dodgerBlue}
+                  : {backgroundColor: colors.purplyBlue},
+              ]}>
+              <AppText style={styles.stepText}>
+                {/* eslint-disable-next-line react-native/no-raw-text */}
+                {`${data.stepPreText ? i18n.t(data.stepPreText) : 'Step.'}${
+                  data.stepPreText ? '_' : ' '
+                }${data.step}${isCheckLocal ? i18n.t('localNet') : ''}`}
+              </AppText>
             </View>
-            {data.title}
+            {isCheckLocal && data.localTitle ? data.localTitle : data.title}
           </View>
 
           {data.tip ? (
@@ -336,7 +385,9 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
               {data.tip()}
             </View>
           ) : (
-            <View style={{height: 28}} />
+            <View
+              style={guideOption === 'esimReg' ? {height: 28} : {height: 76}}
+            />
           )}
 
           {data.noticeBox && (
@@ -373,7 +424,14 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         </ScrollView>
       );
     },
-    [dimensions.width, guideOption, isGalaxy, region],
+    [
+      dimensions.width,
+      guideOption,
+      isCheckLocal,
+      isGalaxy,
+      region,
+      renderHeadPage,
+    ],
   );
 
   const renderTailPage = useCallback(
@@ -392,7 +450,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
           source={getImage(getImageList(guideOption, region), 'pageLast')}
           resizeMode="contain"
         />
-        {region === 'korea' ? (
+        {region === 'korea' && guideOption === 'esimReg' ? (
           <View>
             <View
               style={[
@@ -428,7 +486,11 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
 
         <View style={styles.contactFrame}>
           <AppText style={styles.contactTitle}>
-            {i18n.t('userGuide:tail:contact:title')}
+            {i18n.t(
+              `userGuide:tail:contact:title${
+                guideOption === 'esimReg' ? '' : ':checkSetting'
+              }`,
+            )}
           </AppText>
           {contactData.map((item) => (
             <ContactListItem
@@ -483,6 +545,16 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
     [dimensions.width, renderBody, renderModalHeader],
   );
 
+  useEffect(() => {
+    if (
+      carouselIdx < 4 &&
+      guideOption === 'checkSetting' &&
+      region === 'korea'
+    ) {
+      setIsCheckLocal(false);
+    }
+  }, [carouselIdx, guideOption, region]);
+
   return (
     <SafeAreaView
       style={{
@@ -495,6 +567,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
       />
       <AppCarousel
         data={getGuideImages(guideOption, region)}
+        carouselRef={carouselRef}
         renderItem={renderGuide}
         keyExtractor={(item) => item.key}
         onSnapToItem={setCarouselIdx}
