@@ -255,7 +255,7 @@ const renderNoticeBox = (title: string, body: string) => (
 );
 
 const renderIsLocalBox = () => (
-  <View style={styles.isLocalBox}>
+  <View style={[styles.isLocalBox, !isIOS && {paddingHorizontal: 24}]}>
     <AppText style={styles.isLocalBoxTitle}>
       {i18n.t('userGuide:isLocal')}
     </AppText>
