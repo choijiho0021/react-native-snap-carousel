@@ -310,60 +310,62 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       item: RkbSubscription,
     ): Promise<{status: StatusObj; usage: UsageObj}> => {
       if (item?.imsi) {
-        const quadcellStatus: StatusObj =
-          await API.Subscription.quadcellGetData({
-            imsi: item.imsi,
-            key: 'hlrstate',
-          }).then(async (state) => {
-            if (state.result === 0) {
-              const tempCmiStatus: StatusObj =
-                await API.Subscription.quadcellGetData({
-                  imsi: item.imsi,
-                  key: 'info',
-                }).then((rsp) => {
-                  if (rsp.result === 0) {
-                    const statusCd =
-                      !_.isUndefined(state?.objects?.hlrState) &&
-                      quadcellStatusCd[state?.objects?.hlrState];
-
-                    const end = moment(rsp?.objects?.effTime, 'YYYYMMDDHHmmss')
-                      .add(1, 'h')
-                      .format('YYYY-MM-DD HH:mm:ss');
-                    const exp = moment(
-                      rsp?.objects?.expTime,
-                      'YYYYMMDDHHmmss',
-                    ).add(1, 'h');
-
-                    const isReserved =
-                      statusCd === 'A' && exp > moment().add(1, 'y');
-                    const isExpired = statusCd === 'A' && exp < moment();
-
-                    return {
-                      statusCd: isReserved ? 'R' : isExpired ? 'U' : statusCd,
-                      endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
-                    };
-                  }
-                  return {statusCd: undefined, endTime: undefined};
-                });
-              return tempCmiStatus;
-            }
-            return {statusCd: undefined, endTime: undefined};
-          });
-
-        const quadcellUsage: UsageObj = await API.Subscription.quadcellGetData({
-          imsi: item.imsi,
-          key: 'quota',
-        }).then(async (rsp) => {
-          if (rsp.result === 0) {
-            return {
-              quota: Number(rsp?.objects?.packQuotaList[0]?.totalQuota) || 0, // Mb
-              used: Number(rsp?.objects?.packQuotaList[0]?.consumedQuota), // Mb
-            };
-          }
-          return {quota: undefined, used: undefined};
+        const status = await API.Subscription.quadcellGetData({
+          // imsi: item.imsi,
+          imsi: '454070042394701',
+          key: 'info',
         });
 
-        return {status: quadcellStatus, usage: quadcellUsage};
+        const query =
+          item.daily === 'daily'
+            ? {
+                startTime: status?.objects?.effTime,
+              }
+            : undefined;
+
+        const quota = await API.Subscription.quadcellGetData({
+          // imsi: item.imsi,
+          imsi: '454070042394701',
+          key: 'quota',
+          query,
+        });
+
+        console.log('aaaaa quota', quota);
+        if (
+          status.result === 0 &&
+          quota.result === 0 &&
+          status.objects?.retCode === '000000' &&
+          quota.objects?.retCode === '000000'
+        ) {
+          const statusCd =
+            !_.isUndefined(status?.objects?.lifeCycle) &&
+            quadcellStatusCd[status?.objects?.lifeCycle];
+
+          const expTime = quota?.objects?.packQuotaList[0].expTime;
+
+          const exp = moment(expTime, 'YYYYMMDDHHmmss').add(1, 'h');
+
+          const quadcellStatus: StatusObj = {
+            statusCd,
+            endTime: exp.format('YYYY.MM.DD HH:mm:ss'),
+          };
+
+          const quadcellUsage: UsageObj =
+            item.daily === 'daily'
+              ? {
+                  quota: Number(item.dataVolume) || 0, // Mb
+                  used: Number(quota?.objects?.dailyUsage) || 0, // Mb
+                }
+              : {
+                  quota:
+                    Number(quota?.objects?.packQuotaList[0]?.totalQuota) || 0, // Mb
+                  used: Number(quota?.objects?.packQuotaList[0]?.consumedQuota), // Mb
+                };
+
+          console.log('aaaaa quadcellStatus', quadcellStatus);
+          console.log('aaaaa quadcellUsage', quadcellUsage);
+          return {status: quadcellStatus, usage: quadcellUsage};
+        }
       }
       return {
         status: {statusCd: undefined, endTime: undefined},
@@ -384,11 +386,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           result = await checkCmiData(item);
           break;
         case 'Quadcell':
-          if (item.daily === 'total') {
-            result = await checkQuadcellData(item);
-          } else {
-            setShowSnackBar(true);
-          }
+          result = await checkQuadcellData(item);
           break;
         case 'BillionConnect': // 사용량 조회 미지원
           setShowSnackBar(true);
