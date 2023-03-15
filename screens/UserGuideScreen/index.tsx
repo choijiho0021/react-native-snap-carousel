@@ -398,7 +398,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
           {data.tip ? (
             <View
               style={data.noticeBox ? {marginBottom: 12} : {marginBottom: 21}}>
-              {data.tip()}
+              {isCheckLocal && data.localTip ? data.localTip() : data.tip()}
             </View>
           ) : (
             <View
@@ -556,11 +556,11 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
   useEffect(() => {
     if (guideOption === 'checkSetting')
       if (
-        (carouselIdx < 4 && region === 'korea') ||
-        (carouselIdx < 1 && region === 'local')
-      ) {
+        (isIOS && carouselIdx < 4 && region === 'korea') ||
+        (isIOS && carouselIdx < 1 && region === 'local') ||
+        (!isIOS && carouselIdx < 3 && region === 'korea')
+      )
         setIsCheckLocal(false);
-      }
   }, [carouselIdx, guideOption, region]);
 
   return (

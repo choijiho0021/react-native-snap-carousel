@@ -213,7 +213,7 @@ const tipView = (
   <View style={styles.tipContainer}>
     {renderTitle && renderTips()}
     {renderTip(params)}
-    {!renderTitle && marginBottom && <View style={{marginBottom: 36}} />}
+    {(!renderTitle || marginBottom) && <View style={{marginBottom: 36}} />}
   </View>
 );
 
@@ -510,39 +510,33 @@ export const getImageList = (
     }
   } else if (region === 'korea') {
     imageList = {
-      page1: [require(`${dir}/guide1.png`)],
+      page1: [require(`${dir}/iconKoreaCheck.png`)],
       page2: [
-        require(`${dir}/galaxy/img_1.png`),
-        require(`${dir}/galaxy/en/img_1.png`),
+        require(`${dir}/android/checkSetting/korea/img_1.png`),
+        require(`${dir}/android/checkSetting/korea/en/img_1.png`),
       ],
-      page3: [
-        require(`${dir}/galaxy/img_2.png`),
-        require(`${dir}/galaxy/en/img_2.png`),
-      ],
+      page3: [require(`${dir}/iconLocalCheck.png`)],
       page4: [
-        require(`${dir}/galaxy/img_3.png`),
-        require(`${dir}/galaxy/en/img_3.png`),
+        require(`${dir}/android/checkSetting/korea/img_3.png`),
+        require(`${dir}/android/checkSetting/korea/en/img_3.png`),
       ],
       page5: [
-        require(`${dir}/galaxy/img_4.png`),
-        require(`${dir}/galaxy/en/img_4.png`),
+        require(`${dir}/android/checkSetting/korea/img_4.png`),
+        require(`${dir}/android/checkSetting/korea/en/img_4.png`),
       ],
       page6: [
-        require(`${dir}/galaxy/img_5.png`),
-        require(`${dir}/galaxy/en/img_5.png`),
+        require(`${dir}/android/checkSetting/korea/img_5.png`),
+        require(`${dir}/android/checkSetting/korea/en/img_5.png`),
+      ],
+      page6Local: [
+        require(`${dir}/android/checkSetting/korea/localNet/img_5.png`),
+        require(`${dir}/android/checkSetting/korea/en/localNet/img_5.png`),
       ],
       page7: [
-        require(`${dir}/galaxy/img_6.png`),
-        require(`${dir}/galaxy/en/img_6.png`),
+        require(`${dir}/android/checkSetting/korea/img_6.png`),
+        require(`${dir}/android/checkSetting/korea/en/img_6.png`),
       ],
-      pageLast: [
-        require(`${dir}/galaxy/img_7.png`),
-        require(`${dir}/galaxy/en/img_7.png`),
-      ],
-      pageLast2: [
-        require(`${dir}/img_12.png`),
-        require(`${dir}/en/img_12.png`),
-      ],
+      pageLast: [require(`${dir}/iconRokebiLast.png`)],
     };
   } else {
     imageList = {
@@ -595,6 +589,7 @@ export type GuideImage = {
   isLocalBox?: () => JSX.Element | null;
   caption?: string;
   localTitle?: JSX.Element;
+  localTip?: () => JSX.Element | null;
 };
 
 export const getGuideImages = (
@@ -1013,47 +1008,55 @@ export const getGuideImages = (
     guideImages = [
       {
         key: 'page1',
-        title: renderText('userGuide:stepsTitle0'),
+        title: renderText('userGuide:ios:checkSetting:korea:stepTitle0'),
         step: 0,
       },
       {
         key: 'page2',
-        title: renderText(`userGuide:stepsTitle1:galaxy`),
+        title: renderText(`userGuide:stepsTitle1:galaxy:checkSetting`),
         step: 1,
       },
       {
         key: 'page3',
-        title: renderText(`userGuide:stepsTitle2:galaxy`),
+        title: renderText(`userGuide:stepsTitle3:galaxy:checkSetting`),
         step: 2,
         tip: () => renderTipList('userGuide:tipPage2:galaxy'),
+        isLocalBox: () => renderIsLocalBox(),
+
+        isHeader: true,
       },
       {
         key: 'page4',
-        title: renderText(`userGuide:stepsTitle3:galaxy`),
-        step: 2,
-        tip: () => tipView({id: 'userGuide:tipPage3:galaxy'}),
+        title: renderText(`userGuide:stepsTitle4:galaxy:checkSetting`),
+        step: 1,
+        stepPreText: 'local',
       },
       {
         key: 'page5',
-        title: renderText(`userGuide:stepsTitle4:galaxy`),
-        step: 3,
+        title: renderText(`userGuide:stepsTitle5:galaxy:checkSetting`),
+        step: 2,
+        stepPreText: 'local',
       },
       {
         key: 'page6',
-        title: renderText(`userGuide:stepsTitle5:galaxy`),
-        step: 4,
-        tip: () => renderTipList('userGuide:tipPage5:galaxy', 'dot'),
+        title: renderText(`userGuide:stepsTitle7:galaxy`),
+        localTitle: renderText(`userGuide:stepsTitle7:galaxy:localNet`),
+
+        step: 3,
+        stepPreText: 'local',
+        tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}),
+        localTip: () => tipView({id: 'userGuide:tipPage7:galaxy:localNet'}),
       },
       {
         key: 'page7',
-        title: renderText(`userGuide:stepsTitle6:galaxy`),
-        step: 5,
+        title: renderText(`userGuide:stepsTitle6:galaxy:checkSetting`),
+        step: 4,
+        stepPreText: 'local',
       },
       {
         key: 'page8',
-        title: renderText(`userGuide:stepsTitle7:galaxy`),
+        title: renderText(`userGuide:stepsTitle10:galaxy:local`),
         step: 6,
-        tip: () => renderTipList('userGuide:tipPageLast', 'dot'),
       },
     ];
   } else {
