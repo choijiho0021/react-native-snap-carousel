@@ -402,24 +402,27 @@ export const getImageList = (
       };
     } else {
       imageList = {
-        page1: [require(`${dir}/guide1.png`)],
-        page2: [require(`${dir}/img_1.png`), require(`${dir}/en/img_1.png`)],
-        page3: [require(`${dir}/img_2.png`), require(`${dir}/en/img_2.png`)],
-        page4: [require(`${dir}/img_3.png`), require(`${dir}/en/img_3.png`)],
-        page5: [require(`${dir}/img_4.png`), require(`${dir}/en/img_4.png`)],
-        page6: [require(`${dir}/img_5.png`), require(`${dir}/en/img_5.png`)],
-        page7: [require(`${dir}/img_6.png`), require(`${dir}/en/img_6.png`)],
-        page8: [require(`${dir}/img_7.png`), require(`${dir}/en/img_7.png`)],
-        page9: [require(`${dir}/img_8.png`), require(`${dir}/en/img_8.png`)],
-        page10: [require(`${dir}/img_9.png`), require(`${dir}/en/img_9.png`)],
-        page11: [require(`${dir}/img_10.png`), require(`${dir}/en/img_10.png`)],
-        pageLast: [
-          require(`${dir}/img_11.png`),
-          require(`${dir}/en/img_11.png`),
+        page1: [require(`${dir}/ios/checkSetting/local/img_0.png`)],
+        page2: [
+          require(`${dir}/ios/checkSetting/local/img_1.png`),
+          require(`${dir}/ios/checkSetting/local/en/img_1.png`),
         ],
-        pageLast2: [
-          require(`${dir}/img_12.png`),
-          require(`${dir}/en/img_12.png`),
+        page3: [
+          require(`${dir}/ios/checkSetting/local/img_2.png`),
+          require(`${dir}/ios/checkSetting/local/en/img_2.png`),
+        ],
+        page4: [
+          require(`${dir}/ios/checkSetting/local/img_3.png`),
+          require(`${dir}/ios/checkSetting/local/en/img_3.png`),
+        ],
+        page5: [
+          require(`${dir}/ios/checkSetting/local/img_4.png`),
+          require(`${dir}/ios/checkSetting/local/en/img_4.png`),
+        ],
+
+        pageLast: [
+          require(`${dir}/ios/checkSetting/local/img_5.png`),
+          require(`${dir}/ios/checkSetting/local/en/img_5.png`),
         ],
       };
     }
@@ -822,71 +825,37 @@ export const getGuideImages = (
       guideImages = [
         {
           key: 'page1',
-          title: renderText('userGuide:stepsTitle0'),
+          title: renderText('userGuide:ios:checkSetting:local:stepTitle0'),
           step: 0,
         },
         {
           key: 'page2',
-          title: renderText(`userGuide:stepsTitle1:ios`),
+          title: renderText('userGuide:stepsTitle4:ios:checkSetting:local'),
           step: 1,
+          stepPreText: 'local',
         },
         {
           key: 'page3',
-          title: renderText(`userGuide:stepsTitle2:ios`),
+          title: renderText('userGuide:stepsTitle5:ios:checkSetting'),
           step: 2,
-          tip: () => renderTipList('userGuide:tipPage3'),
+          stepPreText: 'local',
         },
         {
           key: 'page4',
-          title: renderText('userGuide:stepsTitle3:ios'),
-          step: 2,
-          tip: () => tipView({id: 'userGuide:tipPage4_1'}),
-          caption: i18n.t('userGuide:step3:caption'),
+          title: renderText('userGuide:stepsTitle6:ios:checkSetting'),
+          step: 3,
+          stepPreText: 'local',
         },
         {
           key: 'page5',
-          title: renderText('userGuide:stepsTitle4:ios'),
-          step: 3,
+          title: renderText('userGuide:stepsTitle7:ios:checkSetting'),
+          step: 4,
+          stepPreText: 'local',
         },
         {
           key: 'page6',
-          title: renderText('userGuide:stepsTitle5:ios'),
-          step: 4,
-          tip: () => renderTipList('userGuide:tipPage5', 'dot'),
-        },
-        {
-          key: 'page7',
-          title: renderText('userGuide:stepsTitle6:ios'),
-          step: 5,
-        },
-        {
-          key: 'page8',
-          title: renderText('userGuide:stepsTitle6:ios'),
-          step: 5,
-        },
-        {
-          key: 'page9',
-          title: renderText('userGuide:stepsTitle6:ios'),
-          step: 5,
-          tip: () => tipView({id: 'userGuide:tipPage9_1'}),
-        },
-        {
-          key: 'page10',
-          title: renderText('userGuide:stepsTitle10:ios'),
-          step: 6,
-          tip: () => tipView({id: 'userGuide:tipPage10_1'}),
-        },
-        {
-          key: 'page11',
-          title: renderText('userGuide:stepsTitle10:ios'),
-          step: 6,
-          tip: () => tipView({id: 'userGuide:tipPage11_1'}),
-        },
-        {
-          key: 'page12',
-          title: renderText('userGuide:stepsTitle12:ios'),
-          step: 7,
-          tip: () => renderTipList('userGuide:tipPageLast', 'dot'),
+          title: renderText('userGuide:stepsTitle8:ios:checkSetting'),
+          step: 99,
         },
       ];
     }

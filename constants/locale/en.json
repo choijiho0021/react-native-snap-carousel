@@ -822,6 +822,7 @@
   "userGuide:ios:esimReg:korea:stepTitle0": "<b>Registration in Korea</b> Guide",
   "userGuide:ios:esimReg:local:stepTitle0": "<b>Registration in Local</b> Guide",
   "userGuide:ios:checkSetting:korea:stepTitle0": "In order to use your\nexisting SIM rate plan in <b>Korea</b>\nyou need to <b>make sure that the settings are well made.</b>\n\n\nCheck out these guides!!",
+  "userGuide:ios:checkSetting:local:stepTitle0": "You have <b>arrived at your destination!</b>\n\n\nBefore embarking on an exciting journey,\n<b>Check your eSIM settings.</b>",
   "userGuide:stepsTitle0": "How to Use\n<b>ROKEBI eSIM</b>",
   "userGuide:stepsTitle0:galaxy": "Galaxy ver.",
   "userGuide:stepsTitle0:pixel": "Pixel ver.",

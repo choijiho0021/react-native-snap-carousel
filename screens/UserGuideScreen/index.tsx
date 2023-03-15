@@ -373,7 +373,12 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
                 {/* eslint-disable-next-line react-native/no-raw-text */}
                 {`${data.stepPreText ? i18n.t(data.stepPreText) : 'Step.'}${
                   data.stepPreText ? '_' : ' '
-                }${data.step}${isCheckLocal ? i18n.t('localNet') : ''}`}
+                }${data.step}${
+                  isCheckLocal ||
+                  (guideOption === 'checkSetting' && region === 'local')
+                    ? i18n.t('localNet')
+                    : ''
+                }`}
               </AppText>
             </View>
             {isCheckLocal && data.localTitle ? data.localTitle : data.title}
