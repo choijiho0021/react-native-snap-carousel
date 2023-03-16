@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     alignSelf: 'flex-start',
     paddingHorizontal: 20,
-    marginTop: 40,
+    marginTop: isIOS ? 40 : 60,
     width: '100%',
   },
   slideGuide: {
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 42,
+    marginVertical: isIOS ? 42 : 72,
   },
   slideGuideBox: {
     flexDirection: 'row',
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     // letterSpacing: -0.5,
   },
   headerLogo: {
-    marginVertical: 64,
+    marginVertical: isIOS ? 64 : 80,
   },
   slideText: {
     ...appStyles.bold14Text,
@@ -264,7 +264,6 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
           <View
             style={[
               styles.headerLogo,
-              !isIOS && {marginVertical: 80},
               guideOption === 'checkSetting' && {
                 marginTop: 48,
                 marginBottom: 42,
