@@ -33,6 +33,7 @@ import PurchaseDetailScreen from '@/screens/PurchaseDetailScreen';
 import ContactScreen from '@/screens/ContactScreen';
 import ContactBoardScreen from '@/screens/ContactBoardScreen';
 import PymMethodScreen from '@/screens/PymMethodScreen';
+import SelectCardScreen from '@/screens/SelectCardScreen';
 import StoreSearchScreen from '@/screens/StoreSearch';
 import BoardMsgRespScreen from '@/screens/BoardMsgRespScreen';
 import SimpleTextScreen from '@/screens/SimpleTextScreen';
@@ -154,6 +155,11 @@ function HomeStackComponent() {
         component={PaymentGatewayScreen}
       />
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
+      <HomeStack.Screen
+        name="SelectCard"
+        component={SelectCardScreen}
+        options={{animationEnabled: true}}
+      />
       <HomeStack.Screen name="PaymentResult" component={PaymentResultScreen} />
       <HomeStack.Screen
         name="PurchaseDetail"
@@ -173,6 +179,7 @@ function CartStackComponent() {
         component={PaymentGatewayScreen}
       />
       <CartStack.Screen name="PymMethod" component={PymMethodScreen} />
+      <HomeStack.Screen name="SelectCard" component={SelectCardScreen} />
       <CartStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <CartStack.Screen name="PaymentResult" component={PaymentResultScreen} />
     </CartStack.Navigator>
@@ -196,6 +203,7 @@ function EsimStackComponent() {
         component={PaymentGatewayScreen}
       />
       <EsimStack.Screen name="PymMethod" component={PymMethodScreen} />
+      <HomeStack.Screen name="SelectCard" component={SelectCardScreen} />
       <EsimStack.Screen name="PaymentResult" component={PaymentResultScreen} />
     </EsimStack.Navigator>
   );
@@ -219,6 +227,7 @@ function MyPageStackComponent() {
         component={PaymentGatewayScreen}
       />
       <MyPageStack.Screen name="PymMethod" component={PymMethodScreen} />
+      <HomeStack.Screen name="SelectCard" component={SelectCardScreen} />
       <MyPageStack.Screen
         name="PaymentResult"
         component={PaymentResultScreen}

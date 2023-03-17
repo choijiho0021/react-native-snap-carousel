@@ -4,7 +4,6 @@ import Analytics from 'appcenter-analytics';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import Video from 'react-native-video';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppAlert from '@/components/AppAlert';
@@ -163,7 +162,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [consent, setConsent] = useState<boolean>();
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
   const [showChargeAlert, setShowChargeAlert] = useState(false);
-  const inicisEnabled = useRef<boolean>();
+  const paymentRule = useRef<Record<string, string>>();
   const {pymPrice, deduct} = useMemo(() => cart, [cart]);
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
 
@@ -198,9 +197,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
   useEffect(() => {
     const {token} = account;
-    if (inicisEnabled.current === undefined) {
+    if (paymentRule.current === undefined) {
       API.Payment.getRokebiPaymentRule({token}).then((rsp) => {
-        inicisEnabled.current = rsp.inicis_enabled === '1';
+        paymentRule.current = rsp;
       });
     }
   }, [account]);
@@ -259,7 +258,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           pg: payMethod?.key,
           pay_method: payMethod?.method,
           merchant_uid: `${
-            inicisEnabled.current ? 'r_' : 'i_'
+            paymentRule.current?.inicis_enabled ? 'r_' : 'i_'
           }${mobile}_${new Date().getTime()}`,
           name: i18n.t('appTitle'),
           amount: pymPrice?.value, // 실제 결제 금액 (로깨비캐시 제외)
@@ -271,11 +270,16 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           app_scheme: scheme,
           language: payMethod?.language || i18n.locale,
           digital: true,
+          paymentRule: paymentRule.current,
         } as PaymentParams;
 
         setClickable(true);
         navigation.navigate(
-          inicisEnabled.current ? 'PaymentGateway' : 'Payment',
+          paymentRule.current?.inicis_enabled
+            ? payMethod?.method === 'card'
+              ? 'SelectCard'
+              : 'PaymentGateway'
+            : 'Payment',
           params,
         );
       }

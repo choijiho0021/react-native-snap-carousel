@@ -173,13 +173,21 @@ const toPayCheck = (data) => {
   }));
 };
 
-const getRokebiPayment = ({key, token}: {key: string; token: string}) => {
+const getRokebiPayment = ({
+  key,
+  pg,
+  token,
+}: {
+  key: string;
+  pg?: string;
+  token: string;
+}) => {
   return api.callHttp(
     `${api.httpUrl(api.path.rokApi.rokebi.payment, '')}?_format=json`,
     {
       method: 'POST',
       headers: api.withToken(token, 'json'),
-      body: JSON.stringify({pym_id: key}),
+      body: JSON.stringify({pym_id: key, pg}),
     },
   );
 };
