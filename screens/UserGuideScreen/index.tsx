@@ -1,8 +1,7 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import DeviceInfo from 'react-native-device-info';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   StyleSheet,
   Image,
@@ -10,11 +9,13 @@ import {
   View,
   ScrollView,
   Dimensions,
-  Platform,
+  Pressable,
 } from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {RouteProp} from '@react-navigation/native';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
+import Env from '@/environment';
 import {
   isDeviceSize,
   isFolderOpen,
@@ -25,14 +26,22 @@ import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import i18n from '@/utils/i18n';
-import {GuideImage, guideImages, imageList} from './model';
+import {getImageList, GuideImage, getGuideImages} from './model';
 import AppStyledText from '@/components/AppStyledText';
 import {getImage} from '@/utils/utils';
-import AppCarousel from '@/components/AppCarousel';
+import AppCarousel, {AppCarouselRef} from '@/components/AppCarousel';
+import {ContactListItem} from '../ContactScreen';
+import ChatTalk from './ChatTalk';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
   },
   stepPage: {
     alignItems: 'center',
@@ -47,33 +56,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     height: 56,
   },
-  logo: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 40,
-  },
   checkInfo: {
     backgroundColor: colors.white,
     alignSelf: 'flex-start',
     paddingHorizontal: 20,
-    marginTop: 77,
+    marginTop: isIOS ? 40 : 60,
     width: '100%',
   },
   slideGuide: {
     flex: 2,
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'flex-end',
     justifyContent: 'center',
-    marginRight: 20,
-    marginVertical: 40,
+    marginVertical: isIOS ? 42 : 72,
   },
   slideGuideBox: {
     flexDirection: 'row',
-    width: 141,
-    height: 39,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     borderRadius: 20,
-    borderColor: colors.black,
+    borderColor: colors.lightGrey,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
@@ -82,21 +84,87 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     lineHeight: 22,
   },
+
   step: {
-    width: 76,
-    height: 25,
+    paddingHorizontal: 16,
+    paddingVertical: 2,
     borderRadius: 20,
     backgroundColor: colors.black,
-    marginBottom: 4,
+    marginBottom: 14,
+    marginTop: 20,
   },
   stepText: {
     ...appStyles.bold16Text,
-    flex: 1,
+    lineHeight: 21,
     color: 'white',
-    justifyContent: 'center',
-    alignSelf: 'center',
     textAlign: 'center',
-    letterSpacing: -0.5,
+    // letterSpacing: -0.5,
+  },
+  headerLogo: {
+    marginVertical: isIOS ? 64 : 80,
+  },
+  slideText: {
+    ...appStyles.bold14Text,
+    lineHeight: 20,
+    color: colors.black,
+    marginLeft: 8,
+  },
+  tailPageTitle: {
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 48,
+  },
+  tailNoticeText: {
+    ...appStyles.bold16Text,
+    lineHeight: 24,
+    color: colors.clearBlue,
+  },
+  btn: {
+    padding: 30,
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
+    marginHorizontal: 20,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.white,
+    width: Dimensions.get('window').width - 40,
+    marginBottom: 48,
+
+    elevation: 12,
+    shadowColor: 'rgb(166, 168, 172)',
+    shadowRadius: 12,
+    shadowOpacity: 0.16,
+    shadowOffset: {
+      height: 4,
+      width: 0,
+    },
+  },
+  btnTitle: {
+    ...appStyles.bold18Text,
+    lineHeight: 22,
+    color: colors.black,
+  },
+  btnBody: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 24,
+    color: colors.warmGrey,
+  },
+  contactFrame: {
+    width: '100%',
+    paddingHorizontal: 20,
+    paddingTop: 40,
+    paddingBottom: 64,
+    backgroundColor: colors.backGrey,
+  },
+  contact: {
+    width: '100%',
+  },
+  contactTitle: {
+    ...appStyles.bold20Text,
+    lineHeight: 28,
+    marginBottom: 16,
   },
 });
 
@@ -104,18 +172,44 @@ const styles = StyleSheet.create({
 
 type UserGuideScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
-  'ContactBoard'
+  'ContactBoard',
+  'GuideHome'
 >;
 
 type UserGuideScreenProps = {
   navigation: UserGuideScreenNavigationProp;
+  route: RouteProp<HomeStackParamList, 'GuideHome'>;
 };
 
-const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
+const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
+  navigation,
+  route: {params},
+}) => {
   const [carouselIdx, setCarouselIdx] = useState(0);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
+  const [chatTalkClicked, setChatTalkClicked] = useState(false);
+  const [isCheckLocal, setIsCheckLocal] = useState(false);
   // const deviceModel = useMemo(() => DeviceInfo.getModel(), []);
-  const isGalaxy = useMemo(() => DeviceInfo.getModel().startsWith('SM'), []);
+  const carouselRef = useRef<AppCarouselRef>(null);
+  const guideOption = useMemo(() => params?.guideOption, [params?.guideOption]);
+  const region = useMemo(() => params?.region, [params?.region]);
+  const contactData = useMemo(
+    () => [
+      {
+        key: 'Board',
+        title: i18n.t('contact:boardTitle'),
+        icon: 'imgBoard',
+        page: 'Contact Board',
+      },
+      {
+        key: 'ChatTalk',
+        title: i18n.t('contact:chatTalkTitle'),
+        icon: 'chatTalk',
+        page: 'Open Kakao Talk',
+      },
+    ],
+    [],
+  );
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {
@@ -138,22 +232,24 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
         style={[
           styles.modalHeader,
           {
-            backgroundColor:
-              isGalaxy && index !== 1 ? colors.whiteSeven : colors.white,
+            backgroundColor: index !== 1 ? colors.whiteSeven : colors.white,
           },
         ]}>
         <AppText style={[appStyles.bold16Text, {color: colors.clearBlue}]}>
           {index + 1}
-          <AppText style={appStyles.bold16Text}>/{guideImages.length}</AppText>
+          {/* eslint-disable-next-line react-native/no-raw-text */}
+          <AppText style={appStyles.bold16Text}>
+            /{getGuideImages(guideOption, region).length}
+          </AppText>
         </AppText>
         <AppSvgIcon
           key="closeModal"
-          onPress={() => navigation.goBack()}
+          onPress={() => [1, 2, 3].forEach(() => navigation.goBack())}
           name="closeModal"
         />
       </View>
     ),
-    [isGalaxy, navigation],
+    [guideOption, navigation, region],
   );
 
   const renderHeadPage = useCallback(
@@ -162,90 +258,163 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
         <ScrollView
           style={styles.container}
           contentContainerStyle={{alignItems: 'center'}}>
-          <AppSvgIcon key="esimLogo" style={styles.logo} name="esimLogo" />
-
-          <View style={{alignItems: 'center', marginTop: 23}}>
+          <View style={{alignItems: 'center', marginTop: 40}}>
             {data?.title}
-            <AppText style={[appStyles.medium14, {marginTop: 20}]}>
-              {
-                // eslint-disable-next-line no-nested-ternary
-                Platform.OS === 'android'
-                  ? i18n.t(
-                      `userGuide:stepsTitle0:${isGalaxy ? 'galaxy' : 'pixel'}`,
-                    )
-                  : Platform.Version >= '16.0' && i18n.locale === 'ko'
-                  ? 'iOS 16 ver.'
-                  : ''
-              }
-            </AppText>
           </View>
-
-          <View style={{marginTop: 20}}>
+          <View
+            style={[
+              styles.headerLogo,
+              guideOption === 'checkSetting' && {
+                marginTop: isIOS ? 48 : 80,
+                marginBottom: isIOS ? 42 : 64,
+              },
+            ]}>
             <Image
-              source={getImage(imageList, data.key)}
+              source={getImage(getImageList(guideOption, region), data.key)}
               resizeMode="contain"
             />
           </View>
 
-          <View style={styles.checkInfo}>
-            <AppText style={appStyles.bold18Text}>
-              {i18n.t('userGuide:checkInfo')}
-            </AppText>
-            <View style={{marginTop: 8}}>
-              {[1, 2, 3, 4].map((k) => (
-                <View key={k} style={{flexDirection: 'row'}}>
-                  <AppText
-                    style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
-                    •
-                  </AppText>
-                  <View style={{flex: 1}}>
-                    <AppStyledText
-                      textStyle={styles.checkInfoText}
-                      text={i18n.t(`userGuide:checkInfo${k}`)}
-                      format={{b: {color: colors.clearBlue}}}
-                    />
+          {guideOption === 'esimReg' && (
+            <View style={styles.checkInfo}>
+              <AppText style={appStyles.bold18Text}>
+                {i18n.t('userGuide:checkInfo')}
+              </AppText>
+              <View style={{marginTop: 8}}>
+                {[1, 2, 3].map((k) => (
+                  <View key={k} style={{flexDirection: 'row'}}>
+                    <AppText
+                      style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
+                      •
+                    </AppText>
+                    <View style={{flex: 1}}>
+                      <AppStyledText
+                        textStyle={styles.checkInfoText}
+                        text={i18n.t(`userGuide:checkInfo${k}`)}
+                        format={{b: {color: colors.clearBlue}}}
+                      />
+                    </View>
                   </View>
-                </View>
-              ))}
+                ))}
+              </View>
             </View>
-          </View>
-          <View style={styles.slideGuide}>
+          )}
+
+          <View
+            style={[
+              styles.slideGuide,
+              guideOption === 'checkSetting' && {
+                marginTop: 0,
+                marginBottom: isIOS ? 42 : 83,
+              },
+            ]}>
             <View style={styles.slideGuideBox}>
-              <AppSvgIcon key="leftArrow" name="leftArrow" />
-              <AppText style={{marginLeft: 8}}>
+              <AppSvgIcon key="threeArrows" name="threeArrows" />
+              <AppText style={styles.slideText}>
                 {i18n.t('userGuide:slideLeft')}
               </AppText>
             </View>
           </View>
+
+          {data.isLocalBox && (
+            <Pressable
+              style={{marginTop: 34}}
+              onPress={() => {
+                setIsCheckLocal(true);
+                carouselRef.current?.snapToNext();
+              }}>
+              {data.isLocalBox()}
+            </Pressable>
+          )}
         </ScrollView>
       );
     },
-    [isGalaxy],
+    [guideOption, region],
+  );
+
+  const renderArrowBtn = (
+    title: string,
+    onPress: () => void,
+    body?: string,
+  ) => (
+    <Pressable key={title} style={styles.btn} onPress={onPress}>
+      <View>
+        <AppText style={styles.btnTitle}>{i18n.t(title)}</AppText>
+        {body && (
+          <View style={{marginTop: 4}}>
+            <AppText style={styles.btnBody}>{i18n.t(body)}</AppText>
+          </View>
+        )}
+      </View>
+      <AppSvgIcon name="rightArrow20" />
+    </Pressable>
   );
 
   const renderStepPage = useCallback(
     (data: GuideImage) => {
-      const image = getImage(imageList, data.key);
-      const imageSource = Image.resolveAssetSource(image);
+      let image;
+      let imageSource;
+      const imageList = getImageList(guideOption, region);
 
+      if (isCheckLocal) {
+        image = getImage(imageList, data.key.concat('Local'));
+      }
+      if (image) {
+        imageSource = Image.resolveAssetSource(image);
+      } else {
+        image = getImage(imageList, data.key);
+        imageSource = Image.resolveAssetSource(image);
+      }
+      if (data.isHeader) return renderHeadPage(data);
       return (
         <ScrollView
           style={{
             flex: 1,
-            backgroundColor: isGalaxy ? colors.whiteSeven : colors.white,
+            backgroundColor: colors.white,
           }}
           contentContainerStyle={[
             styles.stepPage,
             isDeviceSize('large') ? undefined : {flex: 1},
           ]}>
-          <View style={{alignItems: 'center'}}>
-            <View style={[styles.step, {marginTop: 20}]}>
-              <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
+          <View style={{alignItems: 'center', marginBottom: 21}}>
+            <View
+              style={[
+                styles.step,
+                data.stepPreText === 'korea' && {
+                  backgroundColor: colors.dodgerBlue,
+                },
+                data.stepPreText === 'local' && {
+                  backgroundColor: colors.purplyBlue,
+                },
+              ]}>
+              <AppText style={styles.stepText}>
+                {/* eslint-disable-next-line react-native/no-raw-text */}
+                {`${data.stepPreText ? i18n.t(data.stepPreText) : 'Step.'}${
+                  data.stepPreText ? '_' : ' '
+                }${data.step}${isCheckLocal ? i18n.t('localNet') : ''}`}
+              </AppText>
             </View>
-            {data.title}
+            {isCheckLocal && data.localTitle ? data.localTitle : data.title}
           </View>
 
-          <View style={{marginVertical: 22}}>{data.tip && data.tip()}</View>
+          {data.tip ? (
+            <View
+              style={
+                data.noticeBox
+                  ? {marginBottom: 12}
+                  : {marginBottom: isIOS ? 21 : 38}
+              }>
+              {isCheckLocal && data.localTip ? data.localTip() : data.tip()}
+            </View>
+          ) : !isIOS ? (
+            <View style={{height: 23}} />
+          ) : (
+            guideOption === 'checkSetting' && <View style={{height: 79}} />
+          )}
+
+          {data.noticeBox && (
+            <View style={{marginBottom: 9}}>{data.noticeBox()}</View>
+          )}
 
           <View
             style={{
@@ -258,7 +427,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
               <AppText
                 style={[
                   appStyles.semiBold13Text,
-                  {color: colors.warmGrey, marginBottom: 12},
+                  {color: colors.warmGrey, marginBottom: 12, marginTop: 18},
                 ]}>
                 {data.caption}
               </AppText>
@@ -277,7 +446,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
         </ScrollView>
       );
     },
-    [dimensions.width, isGalaxy],
+    [dimensions.width, guideOption, isCheckLocal, region, renderHeadPage],
   );
 
   const renderTailPage = useCallback(
@@ -285,48 +454,86 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
       <ScrollView
         style={{
           flex: 1,
-          backgroundColor: isGalaxy ? colors.whiteSeven : colors.white,
+          backgroundColor: colors.white,
         }}
-        contentContainerStyle={{alignItems: 'center'}}>
-        <View style={{alignItems: 'center'}}>
-          <View style={[styles.step, {marginTop: 20}]}>
-            <AppText style={styles.stepText}>{`Step. ${data.step}`}</AppText>
-          </View>
+        contentContainerStyle={styles.tailPageTitle}>
+        <View style={{alignItems: 'center', marginTop: 20, marginBottom: 48}}>
           {data?.title}
         </View>
 
-        <View style={{marginTop: 22, marginBottom: 10}}>
-          {data.tip && data.tip()}
-        </View>
-
-        <View
-          style={{
-            width: '100%',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            marginBottom: 16,
-          }}>
-          <Image
-            source={getImage(imageList, 'pageLast')}
-            resizeMode="contain"
-          />
-          <Image
-            source={getImage(imageList, 'pageLast2')}
-            resizeMode="contain"
-          />
+        <Image
+          source={getImage(getImageList(guideOption, region), 'pageLast')}
+          resizeMode="contain"
+        />
+        {region === 'korea' && guideOption === 'esimReg' ? (
+          <View>
+            <View
+              style={[
+                styles.row,
+                {
+                  marginTop: 56,
+                  alignSelf: 'flex-start',
+                  marginHorizontal: 20,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 8,
+                },
+              ]}>
+              <AppSvgIcon
+                name="noticeFlag"
+                style={{marginRight: 8, marginTop: 2}}
+              />
+              <AppText style={styles.tailNoticeText}>
+                {i18n.t('userGuide:tail:notice')}
+              </AppText>
+            </View>
+            {renderArrowBtn('userGuide:checkSetting:title', () => {
+              navigation.goBack();
+              navigation.navigate('UserGuide', {
+                guideOption: 'checkSetting',
+                region,
+              });
+            })}
+          </View>
+        ) : (
+          <View style={isIOS ? {height: 80} : {height: 166}} />
+        )}
+        <View style={styles.contactFrame}>
+          <AppText style={styles.contactTitle}>
+            {i18n.t(
+              `userGuide:tail:contact:title${
+                guideOption === 'esimReg' ? '' : ':checkSetting'
+              }`,
+            )}
+          </AppText>
+          {contactData.map((item) => (
+            <ContactListItem
+              key={item.key}
+              item={item}
+              onPress={() => {
+                if (item.key === 'Board') {
+                  navigation.navigate('ContactBoard');
+                } else {
+                  setChatTalkClicked(true);
+                }
+              }}
+              style={styles.contact}
+            />
+          ))}
         </View>
       </ScrollView>
     ),
-    [isGalaxy],
+    [contactData, guideOption, navigation, region],
   );
 
   const renderBody = useCallback(
     (item: GuideImage, index: number) => {
       if (index === 0) return renderHeadPage(item);
-      if (index < guideImages.length - 1) return renderStepPage(item);
+      if (index < getGuideImages(guideOption, region).length - 1)
+        return renderStepPage(item);
       return renderTailPage(item);
     },
-    [renderHeadPage, renderStepPage, renderTailPage],
+    [guideOption, region, renderHeadPage, renderStepPage, renderTailPage],
   );
 
   const renderGuide = useCallback(
@@ -352,14 +559,30 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({navigation}) => {
     [dimensions.width, renderBody, renderModalHeader],
   );
 
+  useEffect(() => {
+    if (guideOption === 'checkSetting')
+      if (
+        (isIOS && carouselIdx < 4 && region === 'korea') ||
+        (isIOS && carouselIdx < 1 && region === 'local') ||
+        (!isIOS && carouselIdx < 3 && region === 'korea') ||
+        (!isIOS && carouselIdx < 1 && region === 'local')
+      )
+        setIsCheckLocal(false);
+  }, [carouselIdx, guideOption, region]);
+
   return (
     <SafeAreaView
       style={{
         ...styles.container,
         backgroundColor: carouselIdx === 0 ? colors.white : colors.paleGreyTwo,
       }}>
+      <ChatTalk
+        isClicked={chatTalkClicked}
+        setChatTalkClicked={setChatTalkClicked}
+      />
       <AppCarousel
-        data={guideImages}
+        data={getGuideImages(guideOption, region)}
+        carouselRef={carouselRef}
         renderItem={renderGuide}
         keyExtractor={(item) => item.key}
         onSnapToItem={setCarouselIdx}

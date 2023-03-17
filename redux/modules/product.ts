@@ -271,33 +271,8 @@ const slice = createSlice({
           objects[0].partnerId,
           prodListbyPartner,
         );
-
-        // const list: RkbProduct[][] = [objects[0].partnerId]
-        //   .map((p) =>
-        //     state.prodByLocalOp.get(p)?.map((p2) => state.prodList.get(p2)),
-        //   )
-        //   .reduce(
-        //     (acc, cur) => (cur ? acc.concat(cur.filter((c) => !!c)) : acc),
-        //     [],
-        //   )
-        //   .reduce(
-        //     (acc, cur) =>
-        //       cur?.field_daily === 'daily'
-        //         ? [acc[0].concat(cur), acc[1]]
-        //         : [acc[0], acc[1].concat(cur)],
-        //     [[], []],
-        //   ) || [[], []];
-
-        // state.prodByPartner = state.prodByPartner.set(objects[0].partnerId, [
-        //   {
-        //     title: 'daily',
-        //     data: list[0].sort((a, b) => b.weight - a.weight) || [],
-        //   },
-        //   {
-        //     title: 'total',
-        //     data: list[1].sort((a, b) => b.weight - a.weight) || [],
-        //   },
-        // ]);
+      } else {
+        state.prodByPartner = state.prodByPartner.set(action.meta.arg, []);
       }
     });
 
@@ -305,7 +280,11 @@ const slice = createSlice({
       state.ready = false;
     });
     builder.addCase(init.fulfilled, (state) => {
-      state.ready = true;
+      if (state.prodByCountry.length === 0) {
+        state.ready = false;
+      } else {
+        state.ready = true;
+      }
     });
   },
 });

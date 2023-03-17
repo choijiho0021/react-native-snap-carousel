@@ -113,7 +113,7 @@ const toPurchaseItem = (prod?: RkbProduct) => {
 const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
   const testProductReg = /test/;
 
-  if (_.isArray(data)) {
+  if (_.isArray(data) && data.length > 0) {
     return api.success(
       data
         .filter((elm) => !testProductReg.test(elm.sku))

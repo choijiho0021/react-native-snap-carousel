@@ -54,6 +54,8 @@ import UserGuideScreen from '@/screens/UserGuideScreen';
 import PaymentGatewayScreen from '@/screens/PaymentGatewayScreen';
 import {CartModelState} from '@/redux/modules/cart';
 import AppText from '@/components/AppText';
+import GuideHomeScreen from '@/screens/UserGuideScreen/GuideHomeScreen';
+import GuideSelectRegionScreen from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
 
 const styles = StyleSheet.create({
   tabBarIcon: {
@@ -133,6 +135,21 @@ function HomeStackComponent() {
       <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <HomeStack.Screen name="Contact" component={ContactScreen} />
       <HomeStack.Screen name="ContactBoard" component={ContactBoardScreen} />
+      <HomeStack.Screen
+        name="UserGuide"
+        component={UserGuideScreen}
+        options={{animationEnabled: true}}
+      />
+      <HomeStack.Screen
+        name="UserGuideHome"
+        component={GuideHomeScreen}
+        options={{animationEnabled: true}}
+      />
+      <HomeStack.Screen
+        name="UserGuideSelectRegion"
+        component={GuideSelectRegionScreen}
+        options={{animationEnabled: true}}
+      />
       <HomeStack.Screen name="GiftGuide" component={GiftGuideScreen} />
       <HomeStack.Screen name="Invite" component={InviteScreen} />
       <HomeStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />
