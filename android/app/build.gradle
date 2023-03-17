@@ -181,7 +181,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
         versionCode 51
-        versionName "1.2.8"
+        versionName "1.2.9"
         multiDexEnabled true
         resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
@@ -431,6 +431,7 @@ dependencies {
     implementation 'com.android.installreferrer:installreferrer:2.2'
     // Add the following if you are using the Adjust SDK inside web views on your app
     implementation 'com.adjust.sdk:adjust-android-webbridge:4.31.1'
+    implementation project(':react-native-system-setting')
 
      if (enableHermes) {
          def hermesPath = "../../node_modules/hermes-engine/android/";

@@ -10,6 +10,8 @@ import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {RkbProduct} from '@/redux/api/productApi';
 import {RkbReceipt} from '../screens/ReceiptScreen';
+import {GuideOption} from '@/screens/UserGuideScreen/GuideHomeScreen';
+import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti';
 export type PymMethodScreenMode =
@@ -143,6 +145,10 @@ export type HomeStackParamList = {
     orderNo: string;
     uuid: string;
     imsi: string;
+  };
+  GuideHome: {
+    guideOption: GuideOption;
+    region: GuideRegion;
   };
 };
 

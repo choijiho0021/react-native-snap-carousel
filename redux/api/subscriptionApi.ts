@@ -48,9 +48,14 @@ export const cmiStatusCd = {
 };
 
 export const quadcellStatusCd = {
-  '01': 'A', // Normal
-  '02': 'R', // Suspend
-  '03': 'C', // Deleted
+  '0': 'R', // Inactivate - Ready to use
+  '1': 'A', // Activated
+  '2': 'U', // In “top-up-awaiting” window
+  '3': 'U', // Locked
+  '4': 'U', // Expired
+
+  // '2': 'W', // In “top-up-awaiting” window
+  // '3': 'L', // Locked
 };
 
 export const isDisabled = (item: RkbSubscription) => {
@@ -111,6 +116,7 @@ export type RkbSubscription = {
   cautionList?: string[];
   noticeOption: string[];
   daily?: string;
+  dataVolume?: string;
 };
 
 const toSubscription =
@@ -154,6 +160,7 @@ const toSubscription =
           cautionList: item.field_caution_list || [],
           noticeOption: item.field_notice_option || [],
           daily: item.field_daily,
+          dataVolume: item.field_data_volume,
         })),
         // .sort(sortSubs),
       );
@@ -542,18 +549,20 @@ const cmiGetSubsStatus = ({iccid}: {iccid: string}) => {
 const quadcellGetData = ({
   imsi,
   key,
+  query,
 }: {
   imsi: string;
   key: 'quota' | 'info' | 'packlist' | 'hlrstate';
+  query?: Record<string, string | number>;
 }) => {
   if (!imsi)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
 
   return api.callHttpGet(
-    api.rokHttpUrl(
+    `${api.rokHttpUrl(
       `${api.path.rokApi.pv.quadcell}/imsi/${imsi}/${key}`,
       isProduction ? undefined : 5000,
-    ),
+    )}${query && `&${api.queryString(query)}`}`,
     (data) => {
       if (data?.result?.code === 0) {
         return api.success(data?.objects);

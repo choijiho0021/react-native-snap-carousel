@@ -8,6 +8,7 @@ import {
   View,
   Dimensions,
   Modal,
+  Image,
 } from 'react-native';
 import Video from 'react-native-video';
 import {connect, DispatchProp} from 'react-redux';
@@ -16,6 +17,7 @@ import {Adjust, AdjustConfig} from 'react-native-adjust';
 import messaging from '@react-native-firebase/messaging';
 import codePush from 'react-native-code-push';
 import Config from 'react-native-config';
+import SystemSetting from 'react-native-system-setting';
 import {API} from '@/redux/api';
 import AppAlert from '@/components/AppAlert';
 import AppToast from '@/components/AppToast';
@@ -66,11 +68,11 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   loadingVideo: {
-    width: 200,
-    height: 200,
+    width: 80,
+    height: 80,
     position: 'absolute',
-    top: windowHeight < 700 ? windowHeight - 300 : windowHeight - 400,
-    left: windowWidth / 2 - 100,
+    top: windowHeight < 700 ? windowHeight - 210 : windowHeight - 310,
+    left: windowWidth / 2 - 50,
   },
   loadingText: {
     ...appStyles.normal16Text,
@@ -114,6 +116,17 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
   const [isCodepushRunning, setIsCodepushRunning] = useState(false);
   const [networkErr, setNetworkErr] = useState(false);
   const [loadingTextSec, setloadingTextSec] = useState(1);
+  const [muteMode, setMuteMode] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      SystemSetting.getVolume('ring').then((volume) => {
+        if (volume === 0) {
+          setMuteMode(true);
+        }
+      });
+    }
+  }, []);
 
   const login = useCallback(async () => {
     const iccid = await retrieveData(API.User.KEY_ICCID);
@@ -182,18 +195,12 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
             style={styles.backgroundVideo}
             resizeMode="contain"
             mixWithOthers="mix"
+            muted={muteMode}
           />
-          {!showSplash && (
-            <Video
-              repeat
-              source={
-                esimGlobal
-                  ? require('../assets/images/global_loading.mp4')
-                  : require('../assets/images/esim_loading.mp4')
-              }
+          {!showSplash && !esimGlobal && (
+            <Image
+              source={require('../assets/images/esim_loading.gif')}
               style={styles.loadingVideo}
-              resizeMode="contain"
-              mixWithOthers="mix"
             />
           )}
           {!showSplash && (
@@ -206,7 +213,7 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
     }
 
     return <AppNavigator store={store} />;
-  }, [loadingTextSec, networkErr, product.ready, showSplash]);
+  }, [loadingTextSec, muteMode, networkErr, product.ready, showSplash]);
 
   const loadResourcesAsync = useCallback(async () => {
     // clear caches

@@ -198,7 +198,10 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     if (rule && isProdEvent && eventStatus === 'open') {
       if (!loggedIn) {
         // 로그인 화면으로 이동
-        navigation.navigate('Auth');
+        navigation.navigate('Auth', {
+          screen: 'RegisterMobile',
+          params: rule?.skuNavigate,
+        });
       } else {
         setPromoResult('promo:join:ing');
         const resp = await API.Promotion.join({rule, iccid, token});
@@ -214,7 +217,10 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
       Linking.openURL(rule.openLink);
     } else if (eventStatus === 'unknown' && !loggedIn) {
       // 로그인 화면으로 이동
-      navigation.navigate('Auth');
+      navigation.navigate('Auth', {
+        screen: 'RegisterMobile',
+        params: rule?.skuNavigate,
+      });
     } else {
       navigation.goBack();
     }
