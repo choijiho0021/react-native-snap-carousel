@@ -135,21 +135,6 @@ function HomeStackComponent() {
       <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <HomeStack.Screen name="Contact" component={ContactScreen} />
       <HomeStack.Screen name="ContactBoard" component={ContactBoardScreen} />
-      <HomeStack.Screen
-        name="UserGuide"
-        component={UserGuideScreen}
-        options={{animationEnabled: true}}
-      />
-      <HomeStack.Screen
-        name="UserGuideHome"
-        component={GuideHomeScreen}
-        options={{animationEnabled: true}}
-      />
-      <HomeStack.Screen
-        name="UserGuideSelectRegion"
-        component={GuideSelectRegionScreen}
-        options={{animationEnabled: true}}
-      />
       <HomeStack.Screen name="GiftGuide" component={GiftGuideScreen} />
       <HomeStack.Screen name="Invite" component={InviteScreen} />
       <HomeStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />
@@ -165,6 +150,11 @@ function HomeStackComponent() {
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
       <HomeStack.Group screenOptions={{animationEnabled: true}}>
         <HomeStack.Screen name="UserGuide" component={UserGuideScreen} />
+        <HomeStack.Screen name="UserGuideHome" component={GuideHomeScreen} />
+        <HomeStack.Screen
+          name="UserGuideSelectRegion"
+          component={GuideSelectRegionScreen}
+        />
         <HomeStack.Screen
           name="PaymentGateway"
           component={PaymentGatewayScreen}
