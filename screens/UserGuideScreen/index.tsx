@@ -396,13 +396,15 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
 
           {data.tip ? (
             <View
-              style={data.noticeBox ? {marginBottom: 12} : {marginBottom: 21}}>
+              style={
+                data.noticeBox
+                  ? {marginBottom: 12}
+                  : {marginBottom: isIOS ? 21 : 38}
+              }>
               {isCheckLocal && data.localTip ? data.localTip() : data.tip()}
             </View>
           ) : (
-            <View
-              style={guideOption === 'esimReg' ? {height: 28} : {height: 76}}
-            />
+            !isIOS && <View style={{height: 23}} />
           )}
 
           {data.noticeBox && (

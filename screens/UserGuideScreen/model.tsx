@@ -208,7 +208,7 @@ const renderTip = ({id, marginBottom, style}: RenderTipParams) => (
 const tipView = (
   params: RenderTipParams,
   renderTitle = true,
-  marginBottom = true,
+  marginBottom = false,
 ) => (
   <View style={styles.tipContainer}>
     {renderTitle && renderTips()}
