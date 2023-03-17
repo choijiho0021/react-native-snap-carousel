@@ -146,6 +146,7 @@ export type HomeStackParamList = {
     uuid: string;
     imsi: string;
   };
+  SelectCard: {};
 };
 
 export const navigate = (

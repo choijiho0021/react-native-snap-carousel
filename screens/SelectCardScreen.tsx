@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {colors} from '@/constants/Colors';
@@ -36,6 +36,7 @@ const SelectCard = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const [selected, setSelected] = useState('pym:card01');
+  const goingBack = useRef(false);
 
   const onSubmit = useCallback(() => {
     navigation.navigate('PaymentGateway', {
@@ -46,7 +47,19 @@ const SelectCard = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView
+        style={{flex: 1}}
+        onScroll={({
+          nativeEvent: {
+            contentOffset: {y},
+          },
+        }) => {
+          if (!goingBack.current && y < -100) {
+            goingBack.current = true;
+            navigation.goBack();
+          }
+        }}
+        scrollEventThrottle={16}>
         {CARD_CODE.map((r, i) => (
           <View key={i} style={styles.buttonRow}>
             {r.map((c, j) => (
