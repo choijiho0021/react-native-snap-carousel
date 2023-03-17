@@ -265,8 +265,8 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
             style={[
               styles.headerLogo,
               guideOption === 'checkSetting' && {
-                marginTop: 48,
-                marginBottom: 42,
+                marginTop: isIOS ? 48 : 80,
+                marginBottom: isIOS ? 42 : 64,
               },
             ]}>
             <Image
@@ -303,7 +303,10 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
           <View
             style={[
               styles.slideGuide,
-              guideOption === 'checkSetting' && {marginTop: 0},
+              guideOption === 'checkSetting' && {
+                marginTop: 0,
+                marginBottom: isIOS ? 42 : 83,
+              },
             ]}>
             <View style={styles.slideGuideBox}>
               <AppSvgIcon key="threeArrows" name="threeArrows" />
@@ -403,8 +406,10 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
               }>
               {isCheckLocal && data.localTip ? data.localTip() : data.tip()}
             </View>
+          ) : !isIOS ? (
+            <View style={{height: 23}} />
           ) : (
-            !isIOS && <View style={{height: 23}} />
+            guideOption === 'checkSetting' && <View style={{height: 79}} />
           )}
 
           {data.noticeBox && (
