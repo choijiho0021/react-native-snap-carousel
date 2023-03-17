@@ -928,7 +928,7 @@ export const getGuideImages = (
       guideImages = [
         {
           key: 'page1',
-          title: renderText('userGuide:stepsTitle0'),
+          title: renderText('userGuide:ios:esimReg:local:stepTitle0'),
           step: 0,
         },
         {

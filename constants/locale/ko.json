@@ -869,7 +869,7 @@
   "userGuide:stepsTitle2:galaxy": "<b>QR 코드 스캔</b> 또는 <b>활성화 코드 입력</b>을\n눌러 요금제를 추가해주세요.",
   "userGuide:stepsTitle3:galaxy": "<b>활성화 코드 입력</b>을 선택한 경우,\n코드를 앱에서 <b>복사·붙여넣기</b> 해주세요.",
   "userGuide:stepsTitle4:galaxy": "요금제 추가를 완료해주세요.\n\n",
-  "userGuide:stepsTitle4:galaxy:checkSetting": "설정 > 연결 > SIM 카드 관리자 >\n<b>모바일 데이터</b> 화면에서\n<b>eSIM 1을 선택</b>해주세요.",
+  "userGuide:stepsTitle4:galaxy:checkSetting": "설정 > 연결 > SIM 카드 관리자 >\n<b>모바일 데이터</b> 화면에서\n<b>eSIM 1을 선택</b>해주세요.\n",
   "userGuide:stepsTitle5:galaxy": "설정 > 연결 > <b>SIM 카드 관리자</b>\n화면에서 새로 추가된\n<b>eSIM 1을 확인</b>해주세요.",
   "userGuide:stepsTitle5:galaxy:checkSetting": "설정 > 연결 > SIM 카드 관리자 화면이\n아래처럼 <b>설정되어 있는지</b>\n<b>확인</b>해주세요.",
   "userGuide:stepsTitle6:galaxy": "<b>모바일 데이터</b>를 <b>eSIM 1</b>으로\n변경해주세요.\n",
