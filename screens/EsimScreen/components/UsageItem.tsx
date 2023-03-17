@@ -368,7 +368,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
                     <View style={styles.divider} />
                   </View>
                 )}
-                {item.partner !== 'Quadcell' ? (
+                {item.partner !== 'BillionConnect' ? (
                   <View style={styles.bottomOfActiveContainer}>{expire()}</View>
                 ) : (
                   <View>

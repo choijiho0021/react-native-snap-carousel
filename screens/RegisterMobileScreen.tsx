@@ -305,7 +305,16 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
   useEffect(() => {
     if (loggedIn) {
-      if (!link.url && isNewUser) {
+      const {stack, screen, params, goBack} = route?.params || {};
+
+      if (goBack) {
+        navigation.goBack();
+      } else if (stack && screen) {
+        navigation.navigate(stack, {
+          screen: screen,
+          params,
+        });
+      } else if (!link.url && isNewUser) {
         navigation.navigate('Main', {
           screen: 'MyPageStack',
           params: {
@@ -317,7 +326,15 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       }
       setAuthorized(true);
     }
-  }, [isNewUser, link.url, loggedIn, navigation, newUser]);
+  }, [
+    isNewUser,
+    link.url,
+    loggedIn,
+    navigation,
+    newUser,
+    route?.params,
+    route?.params?.rule,
+  ]);
 
   useEffect(() => {
     const {current} = controller;

@@ -145,7 +145,9 @@ const rokHttpUrl = (path0: string, port?: number) => {
   }`;
 };
 
-const queryString = (obj: Record<string, string | number>) => {
+const queryString = (obj?: Record<string, string | number>) => {
+  if (!obj) return '';
+
   return Object.keys(obj)
     .map((k) => `${encodeURIComponent(k)}=${encodeURIComponent(obj[k])}`)
     .join('&');
