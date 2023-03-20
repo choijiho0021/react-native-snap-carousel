@@ -24,8 +24,10 @@ import {
   View,
   StyleSheet,
   Linking,
+  Platform,
 } from 'react-native';
 import {Adjust} from 'react-native-adjust';
+import {ChannelIO} from 'react-native-channel-plugin';
 import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {actions as promotionActions} from '@/redux/modules/promotion';
@@ -49,9 +51,9 @@ import {API} from '@/redux/api';
 import ProgressiveImage from '@/components/ProgressiveImage';
 import i18n from '@/utils/i18n';
 import {PromotionModelState} from '../redux/modules/promotion';
-import {Platform} from 'react-native';
+import {AccountModelState} from '../redux/modules/account';
 
-const {isIOS, esimGlobal} = Env.get();
+const {isIOS, esimGlobal, appId, talkPluginKey} = Env.get();
 const MainStack = createStackNavigator();
 
 const styles = StyleSheet.create({
@@ -107,6 +109,7 @@ function mainStack() {
 
 type RegisterMobileScreenProps = {
   store: EnhancedStore;
+  account: AccountModelState;
   link: LinkModelState;
   promotion: PromotionModelState;
   actions: {
@@ -116,6 +119,7 @@ type RegisterMobileScreenProps = {
 
 const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   store,
+  account,
   link,
   promotion,
   actions,
@@ -582,13 +586,49 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     // return () => Linking.removeAllListeners('url');
   }, [deepLinkHandler]);
 
+  const showChannelBtn = useCallback(async () => {
+    const settings = {
+      pluginKey: talkPluginKey,
+      channelButtonOption: {
+        xMargin: 16,
+        yMargin: 100,
+        position: 'right',
+      },
+      profile: account.loggedIn
+        ? {
+            id: account.userId,
+            name: `${appId} - ${account.mobile}`,
+            mobileNumber: account.mobile,
+            email: account.email,
+            mobileStr: account.mobile,
+            orderUrl: `https://esim.rokebi.com/ko/admin/op/order/search?title=${account.mobile}&mail=&items_per_page=10`,
+          }
+        : undefined,
+    };
+
+    ChannelIO.boot(settings).then((result) => {
+      if (result.status === 'SUCCESS') {
+        ChannelIO.showChannelButton();
+      }
+    });
+  }, [account.email, account.loggedIn, account.mobile, account.userId]);
+
+  useEffect(() => {
+    showChannelBtn();
+  }, [showChannelBtn]);
+
   return (
     <NavigationContainer
       ref={navigationRef}
       onStateChange={(state) => {
         const lastTab = getActiveRouteName(state);
         setLastRouteName(lastTab);
-        if (lastRouteName !== lastTab && lastTab !== 'Home') showPopUp(lastTab);
+        if (lastRouteName !== lastTab && lastTab !== 'Home') {
+          showPopUp(lastTab);
+          ChannelIO.hideChannelButton();
+        }
+        if (lastRouteName !== lastTab && lastTab === 'Home')
+          ChannelIO.showChannelButton();
         Analytics.trackEvent('Page_View_Count', {page: lastTab});
         store.dispatch(cartActions.pushLastTab(lastTab));
       }}>
