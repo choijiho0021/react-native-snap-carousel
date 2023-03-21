@@ -183,7 +183,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
               style={[appStyles.semiBold14Text, {color: colors.warmGrey}]}>
               {utils.toDateString(order?.orderDate)}
             </AppText>
-            <AppText style={styles.titleText}>{receipt?.name}</AppText>
+            <AppText style={styles.titleText}>{i18n.t('appTitle')}</AppText>
           </View>
           <View style={styles.info}>
             <View style={styles.bar} />

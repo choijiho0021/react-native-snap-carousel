@@ -163,8 +163,8 @@ type DrupalLocalOp = {
 };
 
 type DrupalProdCountry = {
-  name: string;
-  description__value: string;
+  key?: string;
+  description__value?: string;
 };
 
 export type RkbLocalOp = {
@@ -180,7 +180,6 @@ export type RkbLocalOp = {
 };
 
 export type RkbProdCountry = {
-  name: string;
   keyword: string;
 };
 
@@ -211,8 +210,7 @@ const toProdCountry = (
   if (_.isArray(data)) {
     return api.success(
       data.map((item) => ({
-        name: item.name.replace(/<[^>]*>?/g, ''),
-        keyword: item.description__value.replace(/<[^>]*>?/g, ''),
+        keyword: item.key || item.description__value || '',
       })),
     );
   }
