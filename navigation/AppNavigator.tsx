@@ -24,11 +24,15 @@ import {
   View,
   StyleSheet,
   Linking,
+  Platform,
 } from 'react-native';
 import {Adjust} from 'react-native-adjust';
 import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
-import {actions as promotionActions} from '@/redux/modules/promotion';
+import {
+  actions as promotionActions,
+  PromotionModelState,
+} from '@/redux/modules/promotion';
 import {actions as accountActions} from '@/redux/modules/account';
 import {actions as linkActions, urlParamObj} from '@/redux/modules/link';
 import AuthStackNavigator from './AuthStackNavigator';
@@ -48,8 +52,6 @@ import {colors} from '@/constants/Colors';
 import {API} from '@/redux/api';
 import ProgressiveImage from '@/components/ProgressiveImage';
 import i18n from '@/utils/i18n';
-import {PromotionModelState} from '../redux/modules/promotion';
-import {Platform} from 'react-native';
 
 const {isIOS, esimGlobal} = Env.get();
 const MainStack = createStackNavigator();
