@@ -834,7 +834,7 @@
   "userGuide:stepsTitle2:ios:checkSetting": "Make sure Settings > Cellular Screen\nis set to<b>as shown below</b>.",
   "userGuide:stepsTitle3:ios": "<b>Copy and Paste</b> the information\nfrom ROKEBI App to <b>enter</b>\n<b>details manually.</b>",
   "userGuide:stepsTitle3:ios:checkSetting": "When you <b>arrive at your destination</b>\nYou need to <b>change settings.</b>\n\n\nIt's very simple!\nFollow the instructions\n after arriving at the local airport.",
-  "userGuide:stepsTitle3:galaxy:checkSetting": "<b>여행지에 도착</b>하면\n설정을 변경해야해요.\n\n아주 간단해요!\n현지 공항 도착 후 따라하세요.",
+  "userGuide:stepsTitle3:galaxy:checkSetting": "<b>여행지에 도착</b>하면\n<b>설정을 변경</b>해야해요.\n\n아주 간단해요!\n현지 공항 도착 후 따라하세요.",
   "userGuide:step3:caption": "[ Enter Details Manually ]",
   "userGuide:stepsTitle4:ios": "Complete the Cellular settings.\n",
   "userGuide:stepsTitle4:ios:checkSetting": "Settings > Cellular > Select “For Travel”\nChange this <b>line ON to ON.</b>\nAlso <b>turn data roaming ON.</b>",
