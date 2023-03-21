@@ -28,13 +28,14 @@ const styles = StyleSheet.create({
   },
 
   balanceStyle: {
-    fontSize: isDeviceSize('medium') ? 22 : 24,
+    fontSize: isDeviceSize('medium') ? 20 : 22,
     fontWeight: 'bold',
     textAlign: 'right',
     lineHeight: isDeviceSize('medium') ? 22 : 24,
+    top: 1,
   },
   wonStyleCharge: {
-    fontSize: isDeviceSize('medium') ? 22 : 24,
+    fontSize: isDeviceSize('medium') ? 18 : 20,
     fontWeight: '600',
     lineHeight: isDeviceSize('medium') ? 22 : 24,
     color: colors.black,
@@ -44,12 +45,12 @@ const styles = StyleSheet.create({
     color: colors.greyish,
     fontWeight: 'bold',
     textAlign: 'right',
-    lineHeight: 20,
+    lineHeight: 22,
   },
   disWonStyleCharge: {
-    fontSize: isDeviceSize('medium') ? 16 : 18,
+    fontSize: isDeviceSize('medium') ? 14 : 16,
     fontWeight: '600',
-    lineHeight: 20,
+    lineHeight: 22,
     color: colors.greyish,
   },
   textView: {
@@ -190,6 +191,7 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
                 {
                   flex: 1,
                   fontSize: isDeviceSize('medium') ? 14 : 16,
+                  lineHeight: 22,
                 },
               ]}>
               {item.field_description}
@@ -211,6 +213,7 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
                     ...appStyles.bold16Text,
                     marginLeft: 4,
                     marginRight: 0,
+                    lineHeight: 22,
                     color: colors.redError,
                   }}>
                   {Math.floor(
