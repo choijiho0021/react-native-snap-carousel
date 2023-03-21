@@ -14,6 +14,9 @@ const E_INVALID_STATUS = -1003;
 const E_STATUS_EXPIRED = -1004;
 const E_INVALID_ARGUMENT = -1005;
 const E_RESOURCE_NOT_FOUND = -1006;
+const E_REQUEST_FAILED = -1007;
+const E_ABORTED = -1008;
+const E_DECODING_FAILED = -1009;
 const API_STATUS_PREFAILED = 412;
 const API_STATUS_INIT = 0;
 const API_STATUS_TRYING = 1;
@@ -275,7 +278,7 @@ const callHttp = async <T>(
   try {
     const response: Response = await fetch(url, config);
     if (option.abortController && option.abortController.signal.aborted) {
-      return failure(FAILED, 'cancelled', 499);
+      return failure(E_ABORTED, 'cancelled', 499);
     }
 
     if (response.ok) {
@@ -292,7 +295,7 @@ const callHttp = async <T>(
             return callback(js, response.headers.get('set-cookie'));
           } catch (ex) {
             return failure(
-              FAILED,
+              E_DECODING_FAILED,
               `Failed to decode json:${ex.message}`,
               response.status,
             );
@@ -310,7 +313,7 @@ const callHttp = async <T>(
         })
         .catch((err) => {
           return failure(
-            FAILED,
+            E_DECODING_FAILED,
             `Failed to decode json:${err.message}`,
             response.status,
           );
@@ -318,8 +321,8 @@ const callHttp = async <T>(
     }
     return failure(FAILED, response.statusText, response.status);
   } catch (err) {
-    console.log('API failed', err, url);
-    return failure(FAILED, 'API failed', 498);
+    console.log('@@@ fetch failed', err, url);
+    return failure(E_REQUEST_FAILED, 'API failed', 498);
   }
 };
 
@@ -357,6 +360,9 @@ export default {
   E_STATUS_EXPIRED,
   E_INVALID_ARGUMENT,
   E_RESOURCE_NOT_FOUND,
+  E_REQUEST_FAILED,
+  E_ABORTED,
+  E_DECODING_FAILED,
   API_STATUS_PREFAILED,
   API_STATUS_INIT,
   API_STATUS_TRYING,
