@@ -10,23 +10,24 @@ import {
   RkbPromotion,
 } from '@/redux/api/promotionApi';
 import {API} from '@/redux/api';
-import {RkbSubscription} from '../api/subscriptionApi';
-import AsyncStorage from '@react-native-community/async-storage';
-import {retrieveData} from '@/utils/utils';
+import {RkbSubscription} from '@/redux/api/subscriptionApi';
 
 const getPromotion = createAsyncThunk(
   'promotion/getPromotion',
-  API.Promotion.getPromotion,
+  API.default.reloadOrCallApi('cache.promotion', API.Promotion.getPromotion),
 );
 
 const getPromotionStat = createAsyncThunk(
   'promotion/getPromotionStat',
-  API.Promotion.getStat,
+  API.default.reloadOrCallApi('cache.promotionStat', API.Promotion.getStat),
 );
 
 const getGiftBgImages = createAsyncThunk(
   'promotion/getGiftBgImages',
-  API.Promotion.getGiftBgImages,
+  API.default.reloadOrCallApi(
+    'cache.giftBgImages',
+    API.Promotion.getGiftBgImages,
+  ),
 );
 
 const createContent = createAsyncThunk(

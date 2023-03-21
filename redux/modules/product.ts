@@ -16,12 +16,12 @@ import utils from '@/redux/api/utils';
 
 const getLocalOp = createAsyncThunk(
   'product/getLocalOp',
-  API.Product.getLocalOp,
+  API.default.reloadOrCallApi('cache.localOp', API.Product.getLocalOp),
 );
 
 const getProdCountry = createAsyncThunk(
   'product/getProdCountry',
-  API.Product.getProdCountry,
+  API.default.reloadOrCallApi('cache.prodCountry', API.Product.getProdCountry),
 );
 const getProdDetailCommon = createAsyncThunk(
   'product/getProdDetailCommon',
@@ -35,7 +35,10 @@ const getProdDetailInfo = createAsyncThunk(
 
 const getProductByCountry = createAsyncThunk(
   'product/getProdByCountry',
-  API.Product.productByCountry,
+  API.default.reloadOrCallApi(
+    'cache.prodByCountry',
+    API.Product.productByCountry,
+  ),
 );
 
 const getProd = createAsyncThunk('product/getProd', API.Product.getProduct);
@@ -54,36 +57,21 @@ const getProductByLocalOp = createAsyncThunk(
   API.Product.getProductByLocalOp,
 );
 
-const init = createAsyncThunk(
-  'product/init',
-  async (_, {dispatch, fulfillWithValue}) => {
-    const cache: Record<string, string | null> = {};
+const init = createAsyncThunk('product/init', async (_, {dispatch}) => {
+  const time = await AsyncStorage.getItem('cache.time');
+  const reload = !time || Date.now() - parseInt(time, 10) > 24 * 3600 * 1000;
+  // const reload = true;
 
-    const time = await AsyncStorage.getItem('cache.time');
-    let result = API.default.E_REQUEST_FAILED;
-    if (!time || Date.now() - parseInt(time, 10) > 24 * 3600 * 1000) {
-      // it's called for the first time or 1 day after the last call
-      const localOp = await dispatch(getLocalOp()).unwrap();
-      result = localOp.result;
-    }
-    if (result === API.default.E_REQUEST_FAILED) {
-      // 인터넷이 끊기거나, 최종 호출 후 24시간이 안 지난 경우에는 캐시 데이터를 활용한다.
-      cache.localOp = await AsyncStorage.getItem('cache.localOp');
-      cache.prodCountry = await AsyncStorage.getItem('cache.prodCountry');
-      cache.prodByCountry = await AsyncStorage.getItem('cache.prodByCountry');
-    } else {
-      // 그외에는 새로 읽는다.
-      await dispatch(getProdCountry());
-      await dispatch(getProductByCountry());
-    }
+  if (reload) AsyncStorage.setItem('cache.time', Date.now().toString());
 
-    await dispatch(PromotionActions.getPromotion());
-    await dispatch(PromotionActions.getPromotionStat());
-    await dispatch(PromotionActions.getGiftBgImages());
+  await dispatch(getLocalOp(reload));
+  await dispatch(getProdCountry(reload));
+  await dispatch(getProductByCountry(reload));
 
-    return fulfillWithValue(cache);
-  },
-);
+  await dispatch(PromotionActions.getPromotion(reload));
+  await dispatch(PromotionActions.getPromotionStat(reload));
+  await dispatch(PromotionActions.getGiftBgImages(reload));
+});
 
 const getProdOfPartner = createAsyncThunk(
   'product/getProdOfPartner',
@@ -241,11 +229,6 @@ const slice = createSlice({
             state.prodCountry.push(item.keyword);
           }
         });
-
-        AsyncStorage.setItem(
-          'cache.prodCountry',
-          JSON.stringify(state.prodCountry),
-        );
       }
     });
 
@@ -256,12 +239,6 @@ const slice = createSlice({
         state.localOpList = ImmutableMap(
           objects.map((item) => [item.key, item]),
         );
-
-        AsyncStorage.setItem(
-          'cache.localOp',
-          JSON.stringify(state.localOpList.toJS()),
-        );
-        AsyncStorage.setItem('cache.time', Date.now().toString());
       }
     });
 
@@ -281,11 +258,6 @@ const slice = createSlice({
             maxDiscount: Number(o.max_discount),
           };
         });
-
-        AsyncStorage.setItem(
-          'cache.prodByCountry',
-          JSON.stringify(state.prodByCountry),
-        );
       }
     });
 
@@ -317,17 +289,17 @@ const slice = createSlice({
     builder.addCase(init.rejected, (state) => {
       state.ready = false;
     });
-    builder.addCase(init.fulfilled, (state, action) => {
-      const {prodByCountry, prodCountry, localOp} = action.payload;
-      if (prodByCountry) {
-        state.prodByCountry = JSON.parse(prodByCountry);
-      }
-      if (prodCountry) {
-        state.prodCountry = JSON.parse(prodCountry);
-      }
-      if (localOp) {
-        state.localOpList = ImmutableMap(JSON.parse(localOp));
-      }
+    builder.addCase(init.fulfilled, (state) => {
+      // const {prodByCountry, prodCountry, localOp} = action.payload;
+      // if (prodByCountry) {
+      //   state.prodByCountry = JSON.parse(prodByCountry);
+      // }
+      // if (prodCountry) {
+      //   state.prodCountry = JSON.parse(prodCountry);
+      // }
+      // if (localOp) {
+      //   state.localOpList = ImmutableMap(JSON.parse(localOp));
+      // }
 
       if (state.prodByCountry.length === 0) {
         state.ready = false;

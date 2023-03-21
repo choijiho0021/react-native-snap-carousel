@@ -2,6 +2,7 @@
 /* eslint-disable eqeqeq */
 import {Buffer} from 'buffer';
 import _ from 'underscore';
+import AsyncStorage from '@react-native-community/async-storage';
 import Env from '@/environment';
 
 export type Langcode = 'ko' | 'en';
@@ -256,6 +257,20 @@ const basicAuth = (
 type CallHttpCallback<T> = (js: any, cookie?: string | null) => ApiResult<T>;
 type CallHttpOption = {isJson?: boolean; abortController?: AbortController};
 
+export const reloadOrCallApi =
+  <T>(key: string, apiToCall: () => Promise<T>) =>
+  async (reload: boolean, {fulfillWithValue}) => {
+    if (!reload) {
+      const cache = await AsyncStorage.getItem(key);
+      if (cache) return fulfillWithValue(JSON.parse(cache));
+    }
+    const rsp = await apiToCall();
+    if (rsp.result === 0) {
+      AsyncStorage.setItem(key, JSON.stringify(rsp));
+    }
+    return fulfillWithValue(rsp);
+  };
+
 const callHttp = async <T>(
   url: string,
   param: object,
@@ -386,4 +401,5 @@ export default {
   callHttp,
   missingParameters,
   toLangcode,
+  reloadOrCallApi,
 };
