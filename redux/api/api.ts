@@ -2,7 +2,11 @@
 /* eslint-disable eqeqeq */
 import {Buffer} from 'buffer';
 import _ from 'underscore';
+import CookieManager from '@react-native-cookies/cookies';
 import Env from '@/environment';
+import userApi from './userApi';
+import {API} from '@/redux/api';
+import {retrieveData} from '@/utils/utils';
 
 export type Langcode = 'ko' | 'en';
 const {scheme, apiUrl, esimGlobal, rokApiUrl} = Env.get();
@@ -253,11 +257,13 @@ const basicAuth = (
 type CallHttpCallback<T> = (js: any, cookie?: string | null) => ApiResult<T>;
 type CallHttpOption = {isJson?: boolean; abortController?: AbortController};
 
+let isRetryLogin = false;
 const callHttp = async <T>(
   url: string,
   param: object,
   callback: CallHttpCallback<T> = (a) => a,
   option: CallHttpOption = {isJson: true},
+  retry: boolean = true,
 ): Promise<ApiResult<T>> => {
   const config: RequestInit = {
     ...param,
@@ -316,10 +322,33 @@ const callHttp = async <T>(
           );
         });
     }
+
+    // 403, 401에러의 경우 기존의 로그인 정보를 이용하여 재로그인 시도 후 재시도
+    if (
+      (response.status === 403 || response.status === 401) &&
+      retry &&
+      !isRetryLogin
+    ) {
+      CookieManager.clearAll();
+      const user = await retrieveData(API.User.KEY_MOBILE);
+      const pass = await retrieveData(API.User.KEY_PIN);
+
+      isRetryLogin = true;
+      const isLoggedIn = await userApi.logIn({
+        user,
+        pass,
+      });
+      if (isLoggedIn.result === 0) {
+        return await callHttp(url, param, callback, option, false);
+      }
+    }
+
     return failure(FAILED, response.statusText, response.status);
   } catch (err) {
     console.log('API failed', err, url);
     return failure(FAILED, 'API failed', 498);
+  } finally {
+    isRetryLogin = false;
   }
 };
 
