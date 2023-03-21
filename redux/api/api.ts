@@ -267,6 +267,9 @@ export const reloadOrCallApi =
     const rsp = await apiToCall();
     if (rsp.result === 0) {
       AsyncStorage.setItem(key, JSON.stringify(rsp));
+    } else if (rsp.result === E_REQUEST_FAILED) {
+      const cache = await AsyncStorage.getItem(key);
+      if (cache) return fulfillWithValue(JSON.parse(cache));
     }
     return fulfillWithValue(rsp);
   };
