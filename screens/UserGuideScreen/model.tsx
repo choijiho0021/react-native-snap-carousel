@@ -739,6 +739,11 @@ export const getGuideImages = (
           title: renderText(`userGuide:stepsTitle8:galaxy`),
           step: 7,
           tip: () => tipView({id: 'userGuide:tipPage10_1'}),
+          noticeBox: () =>
+            renderNoticeBox(
+              'userGuide:noticeBox:local:title',
+              'userGuide:noticeBox:local:body1',
+            ),
         },
         {
           key: 'page10',
@@ -807,11 +812,6 @@ export const getGuideImages = (
           title: renderText(`userGuide:stepsTitle8:galaxy`),
           step: 7,
           tip: () => tipView({id: 'userGuide:tipPage10_1'}),
-          noticeBox: () =>
-            renderNoticeBox(
-              'userGuide:noticeBox:local:title',
-              'userGuide:noticeBox:local:body1',
-            ),
         },
         {
           key: 'page10',
