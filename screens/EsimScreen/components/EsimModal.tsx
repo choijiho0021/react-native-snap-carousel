@@ -1,21 +1,13 @@
-import {bindActionCreators} from 'redux';
 import React, {memo, useCallback, useState} from 'react';
 import {StyleSheet} from 'react-native';
-import {connect} from 'react-redux';
 import _ from 'underscore';
 import AppModal from '@/components/AppModal';
 import {colors} from '@/constants/Colors';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
-import {} from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';
 import UsageItem from '@/screens/EsimScreen/components/UsageItem';
-import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppSnackBar from '@/components/AppSnackBar';
 import {MAX_WIDTH} from '@/constants/SliderEntry.style';
-import {
-  actions as productActions,
-  ProductAction,
-} from '@/redux/modules/product';
 
 const styles = StyleSheet.create({
   titleStyle: {
@@ -32,10 +24,6 @@ type EsimModalProps = {
   cmiUsage: any;
   cmiStatus: any;
   cmiPending: boolean;
-  action: {
-    toast: ToastAction;
-    product: ProductAction;
-  };
 };
 const EsimModal: React.FC<EsimModalProps> = ({
   visible,
@@ -122,9 +110,4 @@ const EsimModal: React.FC<EsimModalProps> = ({
   );
 };
 
-export default connect((dispatch) => ({
-  action: {
-    toast: bindActionCreators(toastActions, dispatch),
-    product: bindActionCreators(productActions, dispatch),
-  },
-}))(memo(EsimModal));
+export default memo(EsimModal);

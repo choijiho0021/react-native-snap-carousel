@@ -24,7 +24,10 @@ const ProductImg = ({
 }) => {
   return (
     <View style={style}>
-      <Image style={imageStyle} source={source} />
+      <Image
+        style={imageStyle}
+        source={{uri: source.uri, cache: 'force-cache'}}
+      />
       {maxDiscount > 1 && (
         <View
           style={{

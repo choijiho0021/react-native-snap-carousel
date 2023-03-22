@@ -40,7 +40,6 @@ import {
   OrderAction,
   OrderModelState,
 } from '@/redux/modules/order';
-import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import Info from './components/Info';
 import OrderItem from './components/OrderItem';
@@ -130,7 +129,6 @@ type MyPageScreenProps = {
   pending: boolean;
 
   action: {
-    toast: ToastAction;
     order: OrderAction;
     account: AccountAction;
   };
@@ -448,7 +446,6 @@ export default connect(
     action: {
       order: bindActionCreators(orderActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
-      toast: bindActionCreators(toastActions, dispatch),
     },
   }),
 )(MyPageScreen);
