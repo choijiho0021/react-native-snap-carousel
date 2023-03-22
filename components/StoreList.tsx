@@ -1,14 +1,16 @@
 import {Map as ImmutableMap} from 'immutable';
 import React, {memo, useCallback, useMemo, useState} from 'react';
 import {
-  Animated,
+  FlatList,
   Keyboard,
   NativeScrollEvent,
   NativeSyntheticEvent,
   Pressable,
+  RefreshControl,
   StyleSheet,
   View,
 } from 'react-native';
+import {useDispatch} from 'react-redux';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize, isFolderOpen} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
@@ -17,7 +19,7 @@ import {Currency, RkbLocalOp} from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';
 import AppPrice from './AppPrice';
 import AppText from './AppText';
-import {RkbPriceInfo} from '@/redux/modules/product';
+import {actions as productActions, RkbPriceInfo} from '@/redux/modules/product';
 import ProductImg from './ProductImg';
 
 const styles = StyleSheet.create({
@@ -172,6 +174,8 @@ const StoreList = ({
   scrollEnabled = true,
   width,
 }: StoreListProps) => {
+  const dispatch = useDispatch();
+  const [refreshing, setRefreshing] = useState(false);
   const [showImage, setShowImage] = useState(false);
   const isFolder = useMemo(() => isFolderOpen(width), [width]);
   const renderItem = useCallback(
@@ -211,12 +215,22 @@ const StoreList = ({
     [data, isFolder],
   );
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    dispatch(productActions.init(true))
+      .then(() => {
+        setRefreshing(false);
+      })
+      .catch(() => {
+        setRefreshing(false);
+      });
+  }, [dispatch]);
+
   return (
     <View style={appStyles.container}>
-      <Animated.FlatList
+      <FlatList
         data={list}
         onScroll={onScroll}
-        bounces={false}
         renderItem={renderItem}
         onEndReached={onEndReached}
         scrollEnabled={scrollEnabled}
@@ -225,6 +239,14 @@ const StoreList = ({
           setShowImage(true);
           Keyboard.dismiss();
         }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[colors.clearBlue]} // android 전용
+            tintColor={colors.clearBlue} // ios 전용
+          />
+        }
       />
     </View>
   );
