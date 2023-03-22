@@ -12,6 +12,7 @@ import {
   RkbProduct,
 } from '@/redux/api/productApi';
 import {actions as PromotionActions} from './promotion';
+import {actions as ToastActions, Toast} from './toast';
 import utils from '@/redux/api/utils';
 
 const getLocalOp = createAsyncThunk(
@@ -54,24 +55,40 @@ const getProdByUuid = createAsyncThunk(
 
 const getProductByLocalOp = createAsyncThunk(
   'product/getProductByLocalOp',
-  API.Product.getProductByLocalOp,
+  async (partnerId: string, {dispatch, fulfillWithValue}) => {
+    const key = `cache.prod.${partnerId}`;
+    const rsp = await API.Product.getProductByLocalOp(partnerId);
+    if (rsp.result === 0) {
+      AsyncStorage.setItem(key, JSON.stringify(rsp));
+    } else if (rsp.result === API.default.E_REQUEST_FAILED) {
+      const cache = await AsyncStorage.getItem(key);
+      if (cache) return fulfillWithValue(JSON.parse(cache));
+      console.log('@@@ not loaded');
+      dispatch(ToastActions.push(Toast.NOT_LOADED));
+    }
+    return fulfillWithValue(rsp);
+  },
 );
 
-const init = createAsyncThunk('product/init', async (_, {dispatch}) => {
-  const time = await AsyncStorage.getItem('cache.time');
-  const reload = !time || Date.now() - parseInt(time, 10) > 24 * 3600 * 1000;
-  // const reload = true;
+const init = createAsyncThunk(
+  'product/init',
+  async (reloadAll: boolean, {dispatch}) => {
+    const time = await AsyncStorage.getItem('cache.time');
+    const reload =
+      reloadAll || !time || Date.now() - parseInt(time, 10) > 3 * 3600 * 1000;
+    // const reload = true;
 
-  if (reload) AsyncStorage.setItem('cache.time', Date.now().toString());
+    if (reload) AsyncStorage.setItem('cache.time', Date.now().toString());
 
-  await dispatch(getLocalOp(reload));
-  await dispatch(getProdCountry(reload));
-  await dispatch(getProductByCountry(reload));
+    await dispatch(getLocalOp(reload));
+    await dispatch(getProdCountry(reload));
+    await dispatch(getProductByCountry(reload));
 
-  await dispatch(PromotionActions.getPromotion(reload));
-  await dispatch(PromotionActions.getPromotionStat(reload));
-  await dispatch(PromotionActions.getGiftBgImages(reload));
-});
+    await dispatch(PromotionActions.getPromotion(reload));
+    await dispatch(PromotionActions.getPromotionStat(reload));
+    await dispatch(PromotionActions.getGiftBgImages(reload));
+  },
+);
 
 const getProdOfPartner = createAsyncThunk(
   'product/getProdOfPartner',
