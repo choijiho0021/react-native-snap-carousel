@@ -4,6 +4,8 @@ import {Buffer} from 'buffer';
 import _ from 'underscore';
 import AsyncStorage from '@react-native-community/async-storage';
 import Env from '@/environment';
+import store from '@/store';
+import {actions as ToastActions, Toast} from '../modules/toast';
 
 export type Langcode = 'ko' | 'en';
 const {scheme, apiUrl, esimGlobal, rokApiUrl} = Env.get();
@@ -339,7 +341,7 @@ const callHttp = async <T>(
     }
     return failure(FAILED, response.statusText, response.status);
   } catch (err) {
-    console.log('@@@ fetch failed', err, url);
+    store.dispatch(ToastActions.push(Toast.NOT_LOADED));
     return failure(E_REQUEST_FAILED, 'API failed', 498);
   }
 };

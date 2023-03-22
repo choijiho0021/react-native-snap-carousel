@@ -12,7 +12,6 @@ import {
   RkbProduct,
 } from '@/redux/api/productApi';
 import {actions as PromotionActions} from './promotion';
-import {actions as ToastActions, Toast} from './toast';
 import utils from '@/redux/api/utils';
 
 const getLocalOp = createAsyncThunk(
@@ -63,8 +62,6 @@ const getProductByLocalOp = createAsyncThunk(
     } else if (rsp.result === API.default.E_REQUEST_FAILED) {
       const cache = await AsyncStorage.getItem(key);
       if (cache) return fulfillWithValue(JSON.parse(cache));
-      console.log('@@@ not loaded');
-      dispatch(ToastActions.push(Toast.NOT_LOADED));
     }
     return fulfillWithValue(rsp);
   },
