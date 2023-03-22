@@ -23,7 +23,6 @@ import SplitText from '@/components/SplitText';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 import AppStyledText from '@/components/AppStyledText';
 import AppModal from '@/components/AppModal';
-import AppSnackBar from '@/components/AppSnackBar';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -34,12 +33,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  rowCenter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    flex: 0.8,
   },
   activeBottomBox: {
     flexDirection: 'row',
@@ -68,13 +61,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     backgroundColor: colors.white,
     borderColor: colors.whiteThree,
-  },
-  chargeButtonDis: {
-    flex: 1,
-    flexDirection: 'row',
-    height: 52,
-    backgroundColor: '#2a7ff6',
-    opacity: 0.6,
   },
   chargeButton: {
     flex: 1,
@@ -106,10 +92,6 @@ const styles = StyleSheet.create({
     fontSize: isDeviceSize('small') ? 16 : 18,
     fontWeight: 'bold',
   },
-  normal12WarmGrey: {
-    ...appStyles.normal12Text,
-    color: colors.warmGrey,
-  },
   expiredBg: {
     backgroundColor: colors.whiteThree,
     borderRadius: 3,
@@ -118,15 +100,6 @@ const styles = StyleSheet.create({
     paddingLeft: 6,
     paddingRight: 6,
     justifyContent: 'center',
-  },
-  checkUsage: {
-    ...appStyles.bold14Text,
-    color: colors.clearBlue,
-  },
-  normal14White: {
-    ...appStyles.normal14Text,
-    color: 'white',
-    fontSize: isDeviceSize('small') ? 12 : 14,
   },
   normal14Gray: {
     ...appStyles.normal14Text,
@@ -155,12 +128,6 @@ const styles = StyleSheet.create({
   },
   colorblack: {
     color: '#2c2c2c',
-  },
-  sendable: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   btnMove: {
     flex: 1,
@@ -205,21 +172,6 @@ const styles = StyleSheet.create({
       width: 0,
     },
   },
-  lessInfo: {
-    height: 40,
-    backgroundColor: 'gray',
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  moreInfo: {
-    height: 40,
-    backgroundColor: 'gray',
-    borderBottomLeftRadius: 3,
-    borderBottomRightRadius: 3,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   moreInfoContent: {
     backgroundColor: 'white',
     paddingBottom: 20,
@@ -230,14 +182,6 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 3,
     borderBottomRightRadius: 3,
   },
-  line: {
-    height: 1,
-    backgroundColor: 'white',
-    marginTop: 10,
-    paddingLeft: 10,
-    paddingRight: 10,
-    width: '100%',
-  },
   topInfo: {
     marginTop: 24,
   },
@@ -246,16 +190,6 @@ const styles = StyleSheet.create({
     height: 26,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  badge: {
-    paddingHorizontal: 8,
-    borderRadius: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 8,
-  },
-  badgeText: {
-    ...appStyles.bold13Text,
   },
   cautionBox: {
     justifyContent: 'center',
@@ -282,13 +216,6 @@ const styles = StyleSheet.create({
     right: 24,
     top: 5,
   },
-  expiredModal: {
-    backgroundColor: colors.white,
-    alignSelf: 'center',
-    paddingTop: 25,
-    paddingLeft: 30,
-    paddingBottom: 9,
-  },
   expiredModalTextFrame: {
     marginLeft: 30,
     marginBottom: 24,
@@ -302,24 +229,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     lineHeight: 26,
     color: 'rgb(238, 68, 35)',
-  },
-  forModalClose: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-  },
-  closeBtn: {
-    backgroundColor: colors.white,
-    width: 88,
-    height: 58,
-    alignSelf: 'flex-end',
-  },
-  closeBtnText: {
-    ...appStyles.normal16Text,
-    color: 'rgb(119, 119, 119)',
-    lineHeight: 19,
-    letterSpacing: -0.03,
   },
   btnStyle: {
     marginTop: 0,
