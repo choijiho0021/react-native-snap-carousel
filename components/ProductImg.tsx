@@ -3,21 +3,13 @@ import {
   Image,
   ImageSourcePropType,
   StyleProp,
-  StyleSheet,
   View,
   ViewStyle,
+  ImageStyle,
 } from 'react-native';
-import {ImageStyle} from 'react-native';
-import Env from '@/environment';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 const ProductImg = ({
   style,
