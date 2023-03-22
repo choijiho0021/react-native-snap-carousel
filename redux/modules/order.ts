@@ -10,6 +10,7 @@ import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData} from '@/utils/utils';
 import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
+import {cachedApi} from '../api/api';
 
 const init = createAsyncThunk('order/init', async () => {
   const oldData = await retrieveData(API.Order.KEY_INIT_ORDER);
@@ -27,11 +28,11 @@ const cancelOrder = createAsyncThunk(
 );
 const getSubs = createAsyncThunk(
   'order/getSubs',
-  API.Subscription.getSubscription,
+  cachedApi('cache.subs', API.Subscription.getSubscription),
 );
 const getStoreSubs = createAsyncThunk(
   'order/getStoreSubs',
-  API.Subscription.getStoreSubscription,
+  cachedApi('cache.store', API.Subscription.getStoreSubscription),
 );
 const getSubsUsage = createAsyncThunk(
   'order/getSubsUsage',
@@ -319,6 +320,7 @@ export const actions = {
   getStoreSubsWithToast,
   init,
   getSubs,
+  getStoreSubs,
   getOrders,
   updateSubsStatus,
   updateSubsAndOrderTag,

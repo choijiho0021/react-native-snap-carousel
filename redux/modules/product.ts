@@ -13,6 +13,7 @@ import {
 } from '@/redux/api/productApi';
 import {actions as PromotionActions} from './promotion';
 import utils from '@/redux/api/utils';
+import {cachedApi} from '@/redux/api/api';
 
 const getLocalOp = createAsyncThunk(
   'product/getLocalOp',
@@ -54,16 +55,11 @@ const getProdByUuid = createAsyncThunk(
 
 const getProductByLocalOp = createAsyncThunk(
   'product/getProductByLocalOp',
-  async (partnerId: string, {dispatch, fulfillWithValue}) => {
-    const key = `cache.prod.${partnerId}`;
-    const rsp = await API.Product.getProductByLocalOp(partnerId);
-    if (rsp.result === 0) {
-      AsyncStorage.setItem(key, JSON.stringify(rsp));
-    } else if (rsp.result === API.default.E_REQUEST_FAILED) {
-      const cache = await AsyncStorage.getItem(key);
-      if (cache) return fulfillWithValue(JSON.parse(cache));
-    }
-    return fulfillWithValue(rsp);
+  async (partnerId: string, {fulfillWithValue}) => {
+    return cachedApi(
+      `cache.prod.${partnerId}`,
+      API.Product.getProductByLocalOp,
+    )(partnerId, {fulfillWithValue});
   },
 );
 
