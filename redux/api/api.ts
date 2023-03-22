@@ -259,14 +259,10 @@ const basicAuth = (
 type CallHttpCallback<T> = (js: any, cookie?: string | null) => ApiResult<T>;
 type CallHttpOption = {isJson?: boolean; abortController?: AbortController};
 
-export const reloadOrCallApi =
-  <T>(key: string, apiToCall: () => Promise<T>) =>
-  async (reload: boolean, {fulfillWithValue}) => {
-    if (!reload) {
-      const cache = await AsyncStorage.getItem(key);
-      if (cache) return fulfillWithValue(JSON.parse(cache));
-    }
-    const rsp = await apiToCall();
+export const cachedApi =
+  <A, T>(key: string, apiToCall: (p: A) => Promise<T>) =>
+  async (param: A, {fulfillWithValue}) => {
+    const rsp = await apiToCall(param);
     if (rsp.result === 0) {
       AsyncStorage.setItem(key, JSON.stringify(rsp));
     } else if (rsp.result === E_REQUEST_FAILED) {
@@ -274,6 +270,16 @@ export const reloadOrCallApi =
       if (cache) return fulfillWithValue(JSON.parse(cache));
     }
     return fulfillWithValue(rsp);
+  };
+
+export const reloadOrCallApi =
+  <T>(key: string, apiToCall: () => Promise<T>) =>
+  async (reload: boolean, {fulfillWithValue}) => {
+    if (!reload) {
+      const cache = await AsyncStorage.getItem(key);
+      if (cache) return fulfillWithValue(JSON.parse(cache));
+    }
+    return cachedApi(key, apiToCall)(reload, {fulfillWithValue});
   };
 
 const callHttp = async <T>(
