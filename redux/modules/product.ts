@@ -3,6 +3,7 @@ import {Reducer} from 'redux-actions';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
+import AsyncStorage from '@react-native-community/async-storage';
 import {API, Country} from '@/redux/api';
 import {
   Currency,
@@ -15,12 +16,12 @@ import utils from '@/redux/api/utils';
 
 const getLocalOp = createAsyncThunk(
   'product/getLocalOp',
-  API.Product.getLocalOp,
+  API.default.reloadOrCallApi('cache.localOp', API.Product.getLocalOp),
 );
 
 const getProdCountry = createAsyncThunk(
   'product/getProdCountry',
-  API.Product.getProdCountry,
+  API.default.reloadOrCallApi('cache.prodCountry', API.Product.getProdCountry),
 );
 const getProdDetailCommon = createAsyncThunk(
   'product/getProdDetailCommon',
@@ -34,7 +35,10 @@ const getProdDetailInfo = createAsyncThunk(
 
 const getProductByCountry = createAsyncThunk(
   'product/getProdByCountry',
-  API.Product.productByCountry,
+  API.default.reloadOrCallApi(
+    'cache.prodByCountry',
+    API.Product.productByCountry,
+  ),
 );
 
 const getProd = createAsyncThunk('product/getProd', API.Product.getProduct);
@@ -54,13 +58,19 @@ const getProductByLocalOp = createAsyncThunk(
 );
 
 const init = createAsyncThunk('product/init', async (_, {dispatch}) => {
-  await dispatch(getLocalOp());
-  await dispatch(getProdCountry());
-  await dispatch(getProductByCountry());
+  const time = await AsyncStorage.getItem('cache.time');
+  const reload = !time || Date.now() - parseInt(time, 10) > 24 * 3600 * 1000;
+  // const reload = true;
 
-  await dispatch(PromotionActions.getPromotion());
-  await dispatch(PromotionActions.getPromotionStat());
-  await dispatch(PromotionActions.getGiftBgImages());
+  if (reload) AsyncStorage.setItem('cache.time', Date.now().toString());
+
+  await dispatch(getLocalOp(reload));
+  await dispatch(getProdCountry(reload));
+  await dispatch(getProductByCountry(reload));
+
+  await dispatch(PromotionActions.getPromotion(reload));
+  await dispatch(PromotionActions.getPromotionStat(reload));
+  await dispatch(PromotionActions.getGiftBgImages(reload));
 });
 
 const getProdOfPartner = createAsyncThunk(
@@ -280,6 +290,17 @@ const slice = createSlice({
       state.ready = false;
     });
     builder.addCase(init.fulfilled, (state) => {
+      // const {prodByCountry, prodCountry, localOp} = action.payload;
+      // if (prodByCountry) {
+      //   state.prodByCountry = JSON.parse(prodByCountry);
+      // }
+      // if (prodCountry) {
+      //   state.prodCountry = JSON.parse(prodCountry);
+      // }
+      // if (localOp) {
+      //   state.localOpList = ImmutableMap(JSON.parse(localOp));
+      // }
+
       if (state.prodByCountry.length === 0) {
         state.ready = false;
       } else {

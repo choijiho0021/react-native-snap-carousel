@@ -3,6 +3,7 @@
 import {Buffer} from 'buffer';
 import _ from 'underscore';
 import CookieManager from '@react-native-cookies/cookies';
+import AsyncStorage from '@react-native-community/async-storage';
 import Env from '@/environment';
 import userApi from './userApi';
 import {API} from '@/redux/api';
@@ -18,6 +19,9 @@ const E_INVALID_STATUS = -1003;
 const E_STATUS_EXPIRED = -1004;
 const E_INVALID_ARGUMENT = -1005;
 const E_RESOURCE_NOT_FOUND = -1006;
+const E_REQUEST_FAILED = -1007;
+const E_ABORTED = -1008;
+const E_DECODING_FAILED = -1009;
 const API_STATUS_PREFAILED = 412;
 const API_STATUS_INIT = 0;
 const API_STATUS_TRYING = 1;
@@ -258,6 +262,24 @@ type CallHttpCallback<T> = (js: any, cookie?: string | null) => ApiResult<T>;
 type CallHttpOption = {isJson?: boolean; abortController?: AbortController};
 
 let isRetryLogin = false;
+
+export const reloadOrCallApi =
+  <T>(key: string, apiToCall: () => Promise<T>) =>
+  async (reload: boolean, {fulfillWithValue}) => {
+    if (!reload) {
+      const cache = await AsyncStorage.getItem(key);
+      if (cache) return fulfillWithValue(JSON.parse(cache));
+    }
+    const rsp = await apiToCall();
+    if (rsp.result === 0) {
+      AsyncStorage.setItem(key, JSON.stringify(rsp));
+    } else if (rsp.result === E_REQUEST_FAILED) {
+      const cache = await AsyncStorage.getItem(key);
+      if (cache) return fulfillWithValue(JSON.parse(cache));
+    }
+    return fulfillWithValue(rsp);
+  };
+
 const callHttp = async <T>(
   url: string,
   param: object,
@@ -281,46 +303,7 @@ const callHttp = async <T>(
   try {
     const response: Response = await fetch(url, config);
     if (option.abortController && option.abortController.signal.aborted) {
-      return failure(FAILED, 'cancelled', 499);
-    }
-
-    if (response.ok) {
-      if (_.isFunction(callback)) {
-        if (option.isJson) {
-          if (response.status === 204) {
-            // 204 -> no content
-            return callback(response);
-          }
-
-          try {
-            const js = await response.json();
-            console.log('API response', url, response.status, js);
-            return callback(js, response.headers.get('set-cookie'));
-          } catch (ex) {
-            return failure(
-              FAILED,
-              `Failed to decode json:${ex.message}`,
-              response.status,
-            );
-          }
-        }
-      }
-
-      return await response.text();
-    }
-    if (option.isJson) {
-      response
-        .json()
-        .then((json) => {
-          console.log('response:', url, JSON.stringify(json));
-        })
-        .catch((err) => {
-          return failure(
-            FAILED,
-            `Failed to decode json:${err.message}`,
-            response.status,
-          );
-        });
+      return failure(E_ABORTED, 'cancelled', 499);
     }
 
     // 403, 401에러의 경우 기존의 로그인 정보를 이용하여 재로그인 시도 후 재시도
@@ -341,6 +324,46 @@ const callHttp = async <T>(
       if (isLoggedIn.result === 0) {
         return await callHttp(url, param, callback, option, false);
       }
+    }
+
+    if (response.ok) {
+      if (_.isFunction(callback)) {
+        if (option.isJson) {
+          if (response.status === 204) {
+            // 204 -> no content
+            return callback(response);
+          }
+
+          try {
+            const js = await response.json();
+            console.log('API response', url, response.status, js);
+            return callback(js, response.headers.get('set-cookie'));
+          } catch (ex) {
+            return failure(
+              E_DECODING_FAILED,
+              `Failed to decode json:${ex.message}`,
+              response.status,
+            );
+          }
+        }
+      }
+
+      return await response.text();
+    }
+
+    if (option.isJson) {
+      response
+        .json()
+        .then((json) => {
+          console.log('response:', url, JSON.stringify(json));
+        })
+        .catch((err) => {
+          return failure(
+            E_DECODING_FAILED,
+            `Failed to decode json:${err.message}`,
+            response.status,
+          );
+        });
     }
 
     return failure(FAILED, response.statusText, response.status);
@@ -386,6 +409,9 @@ export default {
   E_STATUS_EXPIRED,
   E_INVALID_ARGUMENT,
   E_RESOURCE_NOT_FOUND,
+  E_REQUEST_FAILED,
+  E_ABORTED,
+  E_DECODING_FAILED,
   API_STATUS_PREFAILED,
   API_STATUS_INIT,
   API_STATUS_TRYING,
@@ -409,4 +435,5 @@ export default {
   callHttp,
   missingParameters,
   toLangcode,
+  reloadOrCallApi,
 };

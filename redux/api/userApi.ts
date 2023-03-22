@@ -122,6 +122,31 @@ const getByMail = ({mail}: {mail: string}) => {
   );
 };
 
+const logInOnce = ({
+  token,
+  user,
+  pass,
+}: {
+  token: string;
+  user: string;
+  pass: string;
+}) => {
+  return api.callHttp(
+    `${api.httpUrl(api.path.login)}?_format=json`,
+    {
+      method: 'POST',
+      headers: api.headers('json', {
+        'X-CSRF-Token': token,
+      }),
+      body: JSON.stringify({
+        name: user,
+        pass,
+      }),
+    },
+    toLogin(pass),
+  );
+};
+
 const logIn = async ({user, pass}: {user: string; pass: string}) => {
   if (!user)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
@@ -177,29 +202,13 @@ const logIn = async ({user, pass}: {user: string; pass: string}) => {
 
   token = await getToken();
 
-  const login = () =>
-    api.callHttp(
-      `${api.httpUrl(api.path.login)}?_format=json`,
-      {
-        method: 'POST',
-        headers: api.headers('json', {
-          'X-CSRF-Token': token,
-        }),
-        body: JSON.stringify({
-          name: user,
-          pass,
-        }),
-      },
-      toLogin(pass),
-    );
-
-  const rsp = await login();
+  const rsp = await logInOnce({token, user, pass});
   if (rsp.result == 0) return Promise.resolve(rsp);
 
   // 실패한 경우
   console.log('@@@ logout and try again');
   await logOut(token);
-  return login();
+  return logInOnce({token, user, pass});
 };
 
 const update = ({

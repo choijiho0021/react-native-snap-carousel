@@ -230,23 +230,27 @@ const toDateString = (
 const convertURLtoRkbImage = async (url: string) => {
   if (!url) return Promise.reject(new Error('invalid URL'));
 
-  const response = await RNFetchBlob.fetch('GET', url);
-  const data = response.base64();
-  return new Promise<RkbImage>((resolve, reject) => {
-    if (data) {
-      Image.getSize(url, (width, height) => {
-        const rkbImage: RkbImage = {
-          mime: 'image/jpeg',
-          data,
-          height,
-          width,
-        };
-        resolve(rkbImage);
-      });
-    } else {
-      reject(new Error('convertURLtoRkbImage failed'));
-    }
-  });
+  try {
+    const response = await RNFetchBlob.fetch('GET', url);
+    const data = response.base64();
+    return await new Promise<RkbImage>((resolve, reject) => {
+      if (data) {
+        Image.getSize(url, (width, height) => {
+          const rkbImage: RkbImage = {
+            mime: 'image/jpeg',
+            data,
+            height,
+            width,
+          };
+          resolve(rkbImage);
+        });
+      } else {
+        reject(new Error('convertURLtoRkbImage failed'));
+      }
+    });
+  } catch (err) {
+    return Promise.reject(new Error('convertURLtoRkbImage failed'));
+  }
 };
 
 const adjustEventadd = (key: string, pymAmount?: number, currency?: string) => {
