@@ -1,10 +1,9 @@
 import React, {useMemo} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
-import _ from 'underscore';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {getPromoFlagColor, RkbProduct} from '@/redux/api/productApi';
+import {RkbProduct} from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';
 import AppPrice from '@/components/AppPrice';
 import {isDeviceSize} from '@/constants/SliderEntry.style';

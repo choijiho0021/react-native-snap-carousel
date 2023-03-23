@@ -8,6 +8,8 @@ import Env from '@/environment';
 import userApi from './userApi';
 import {API} from '@/redux/api';
 import {retrieveData} from '@/utils/utils';
+import store from '@/store';
+import {actions as ToastActions, Toast} from '../modules/toast';
 
 export type Langcode = 'ko' | 'en';
 const {scheme, apiUrl, esimGlobal, rokApiUrl} = Env.get();
@@ -261,6 +263,19 @@ const basicAuth = (
 type CallHttpCallback<T> = (js: any, cookie?: string | null) => ApiResult<T>;
 type CallHttpOption = {isJson?: boolean; abortController?: AbortController};
 
+export const cachedApi =
+  <A, T>(key: string, apiToCall: (p: A) => Promise<T>) =>
+  async (param: A, {fulfillWithValue}) => {
+    const rsp = await apiToCall(param);
+    if (rsp.result === 0) {
+      AsyncStorage.setItem(key, JSON.stringify(rsp));
+    } else if (rsp.result === E_REQUEST_FAILED) {
+      const cache = await AsyncStorage.getItem(key);
+      if (cache) return fulfillWithValue(JSON.parse(cache));
+    }
+    return fulfillWithValue(rsp);
+  };
+
 let isRetryLogin = false;
 
 export const reloadOrCallApi =
@@ -270,14 +285,7 @@ export const reloadOrCallApi =
       const cache = await AsyncStorage.getItem(key);
       if (cache) return fulfillWithValue(JSON.parse(cache));
     }
-    const rsp = await apiToCall();
-    if (rsp.result === 0) {
-      AsyncStorage.setItem(key, JSON.stringify(rsp));
-    } else if (rsp.result === E_REQUEST_FAILED) {
-      const cache = await AsyncStorage.getItem(key);
-      if (cache) return fulfillWithValue(JSON.parse(cache));
-    }
-    return fulfillWithValue(rsp);
+    return cachedApi(key, apiToCall)(reload, {fulfillWithValue});
   };
 
 const callHttp = async <T>(
@@ -368,8 +376,8 @@ const callHttp = async <T>(
 
     return failure(FAILED, response.statusText, response.status);
   } catch (err) {
-    console.log('API failed', err, url);
-    return failure(FAILED, 'API failed', 498);
+    store.dispatch(ToastActions.push(Toast.NOT_LOADED));
+    return failure(E_REQUEST_FAILED, 'API failed', 498);
   } finally {
     isRetryLogin = false;
   }

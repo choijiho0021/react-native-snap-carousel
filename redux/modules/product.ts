@@ -13,6 +13,7 @@ import {
 } from '@/redux/api/productApi';
 import {actions as PromotionActions} from './promotion';
 import utils from '@/redux/api/utils';
+import {cachedApi} from '@/redux/api/api';
 
 const getLocalOp = createAsyncThunk(
   'product/getLocalOp',
@@ -54,24 +55,33 @@ const getProdByUuid = createAsyncThunk(
 
 const getProductByLocalOp = createAsyncThunk(
   'product/getProductByLocalOp',
-  API.Product.getProductByLocalOp,
+  async (partnerId: string, {fulfillWithValue}) => {
+    return cachedApi(
+      `cache.prod.${partnerId}`,
+      API.Product.getProductByLocalOp,
+    )(partnerId, {fulfillWithValue});
+  },
 );
 
-const init = createAsyncThunk('product/init', async (_, {dispatch}) => {
-  const time = await AsyncStorage.getItem('cache.time');
-  const reload = !time || Date.now() - parseInt(time, 10) > 24 * 3600 * 1000;
-  // const reload = true;
+const init = createAsyncThunk(
+  'product/init',
+  async (reloadAll: boolean, {dispatch}) => {
+    const time = await AsyncStorage.getItem('cache.time');
+    const reload =
+      reloadAll || !time || Date.now() - parseInt(time, 10) > 3 * 3600 * 1000;
+    // const reload = true;
 
-  if (reload) AsyncStorage.setItem('cache.time', Date.now().toString());
+    if (reload) AsyncStorage.setItem('cache.time', Date.now().toString());
 
-  await dispatch(getLocalOp(reload));
-  await dispatch(getProdCountry(reload));
-  await dispatch(getProductByCountry(reload));
+    await dispatch(getLocalOp(reload));
+    await dispatch(getProdCountry(reload));
+    await dispatch(getProductByCountry(reload));
 
-  await dispatch(PromotionActions.getPromotion(reload));
-  await dispatch(PromotionActions.getPromotionStat(reload));
-  await dispatch(PromotionActions.getGiftBgImages(reload));
-});
+    await dispatch(PromotionActions.getPromotion(reload));
+    await dispatch(PromotionActions.getPromotionStat(reload));
+    await dispatch(PromotionActions.getGiftBgImages(reload));
+  },
+);
 
 const getProdOfPartner = createAsyncThunk(
   'product/getProdOfPartner',

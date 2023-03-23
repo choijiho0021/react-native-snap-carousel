@@ -99,19 +99,6 @@ const styles = StyleSheet.create({
     borderTopColor: colors.black,
     zIndex: 10,
   },
-  triangle: {
-    position: 'absolute',
-    top: 33,
-    backgroundColor: 'transparent',
-    borderBottomWidth: 10,
-    borderBottomColor: colors.black,
-    borderRightWidth: 10,
-    borderRightColor: 'transparent',
-    borderLeftWidth: 10,
-    borderLeftColor: 'transparent',
-    width: 0,
-    height: 0,
-  },
 });
 
 export const makeProdData = (

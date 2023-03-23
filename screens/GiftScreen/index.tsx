@@ -31,7 +31,6 @@ import {
   PromotionAction,
   PromotionModelState,
 } from '@/redux/modules/promotion';
-import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import Env from '@/environment';
@@ -164,7 +163,6 @@ type GiftScreenProps = {
 
   action: {
     promotion: PromotionAction;
-    toast: ToastAction;
     order: OrderAction;
   };
 };
@@ -483,7 +481,6 @@ export default connect(
   (dispatch) => ({
     action: {
       promotion: bindActionCreators(promotionActions, dispatch),
-      toast: bindActionCreators(toastActions, dispatch),
       order: bindActionCreators(orderActions, dispatch),
     },
   }),

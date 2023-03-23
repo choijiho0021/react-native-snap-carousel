@@ -555,28 +555,25 @@ const Esim: React.FC<EsimProps> = ({
       const localOp = product.localOpList.get(info?.partner || '');
       const localOpName = API.Product.getTitle(localOp);
 
-      const item = await AsyncStorage.getItem(
-        `esim.show.local.modal.${localOp?.key}`,
-      );
-      const tm = moment(item, 'YYYY-MM-DD HH:mm:ss');
-      const showLocalModal =
-        !tm.isValid() || tm.add(1, 'day').isBefore(moment());
+      if (localOpName.includes('(로컬망)') || localOpName.includes('(local)')) {
+        const item = await AsyncStorage.getItem(
+          `esim.show.local.modal.${localOp?.key}`,
+        );
+        const tm = moment(item, 'YYYY-MM-DD HH:mm:ss');
 
-      if (
-        showLocalModal &&
-        (localOpName.includes('(로컬망)') || localOpName.includes('(local)'))
-      )
-        actions.modal.showModal({
-          content: localModal(
-            info,
-            localOpName,
-            localOp?.ccode || [],
-            localOp?.key || '',
-          ),
-        });
-      else {
-        navToCountry(info);
+        if (!tm.isValid() || tm.add(1, 'day').isBefore(moment())) {
+          return actions.modal.showModal({
+            content: localModal(
+              info,
+              localOpName,
+              localOp?.ccode || [],
+              localOp?.key || '',
+            ),
+          });
+        }
       }
+
+      navToCountry(info);
     },
     [actions.modal, localModal, navToCountry, product.localOpList],
   );

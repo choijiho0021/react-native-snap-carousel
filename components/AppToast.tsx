@@ -164,8 +164,8 @@ class AppToast extends PureComponent<AppToastProps, AppToastState> {
         style={[styles.container, style]}
         activeOpacity={0.5}
         onPress={this.onPress}>
-        <Animated.View style={[styles.content]}>
-          <AppText style={[styles.text]}> {text} </AppText>
+        <Animated.View style={styles.content}>
+          <AppText style={styles.text}> {text} </AppText>
         </Animated.View>
       </TouchableOpacity>
     ) : null;
