@@ -17,12 +17,20 @@ import {cachedApi} from '@/redux/api/api';
 
 const getLocalOp = createAsyncThunk(
   'product/getLocalOp',
-  API.default.reloadOrCallApi('cache.localOp', API.Product.getLocalOp),
+  API.default.reloadOrCallApi(
+    'cache.localOp',
+    undefined,
+    API.Product.getLocalOp,
+  ),
 );
 
 const getProdCountry = createAsyncThunk(
   'product/getProdCountry',
-  API.default.reloadOrCallApi('cache.prodCountry', API.Product.getProdCountry),
+  API.default.reloadOrCallApi(
+    'cache.prodCountry',
+    undefined,
+    API.Product.getProdCountry,
+  ),
 );
 const getProdDetailCommon = createAsyncThunk(
   'product/getProdDetailCommon',
@@ -38,6 +46,7 @@ const getProductByCountry = createAsyncThunk(
   'product/getProdByCountry',
   API.default.reloadOrCallApi(
     'cache.prodByCountry',
+    undefined,
     API.Product.productByCountry,
   ),
 );
@@ -66,12 +75,7 @@ const getProductByLocalOp = createAsyncThunk(
 const init = createAsyncThunk(
   'product/init',
   async (reloadAll: boolean, {dispatch}) => {
-    const time = await AsyncStorage.getItem('cache.time');
-    const reload =
-      reloadAll || !time || Date.now() - parseInt(time, 10) > 3 * 3600 * 1000;
-    // const reload = true;
-
-    if (reload) AsyncStorage.setItem('cache.time', Date.now().toString());
+    const reload = true;
 
     await dispatch(getLocalOp(reload));
     await dispatch(getProdCountry(reload));

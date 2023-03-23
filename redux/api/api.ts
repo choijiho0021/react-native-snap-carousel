@@ -279,13 +279,13 @@ export const cachedApi =
 let isRetryLogin = false;
 
 export const reloadOrCallApi =
-  <T>(key: string, apiToCall: () => Promise<T>) =>
+  <A, T>(key: string, param: A, apiToCall: () => Promise<T>) =>
   async (reload: boolean, {fulfillWithValue}) => {
     if (!reload) {
       const cache = await AsyncStorage.getItem(key);
       if (cache) return fulfillWithValue(JSON.parse(cache));
     }
-    return cachedApi(key, apiToCall)(reload, {fulfillWithValue});
+    return cachedApi(key, apiToCall)(param, {fulfillWithValue});
   };
 
 const callHttp = async <T>(

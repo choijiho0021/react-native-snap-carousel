@@ -14,18 +14,27 @@ import {RkbSubscription} from '@/redux/api/subscriptionApi';
 
 const getPromotion = createAsyncThunk(
   'promotion/getPromotion',
-  API.default.reloadOrCallApi('cache.promotion', API.Promotion.getPromotion),
+  API.default.reloadOrCallApi(
+    'cache.promotion',
+    undefined,
+    API.Promotion.getPromotion,
+  ),
 );
 
 const getPromotionStat = createAsyncThunk(
   'promotion/getPromotionStat',
-  API.default.reloadOrCallApi('cache.promotionStat', API.Promotion.getStat),
+  API.default.reloadOrCallApi(
+    'cache.promotionStat',
+    undefined,
+    API.Promotion.getStat,
+  ),
 );
 
 const getGiftBgImages = createAsyncThunk(
   'promotion/getGiftBgImages',
   API.default.reloadOrCallApi(
     'cache.giftBgImages',
+    undefined,
     API.Promotion.getGiftBgImages,
   ),
 );
