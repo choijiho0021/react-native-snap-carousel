@@ -354,14 +354,14 @@ export const getImageList = (
     } else {
       imageList = {
         page1: [require(`${dir}/iconLocalSmall.png`)],
-        page2: [require(`${dir}/android/esimReg/local/img_1.png`)],
-        page3: [require(`${dir}/android/esimReg/local/img_2.png`)],
-        page4: [require(`${dir}/android/esimReg/local/img_3.png`)],
-        page5: [require(`${dir}/android/esimReg/local/img_4.png`)],
-        page6: [require(`${dir}/android/esimReg/local/img_5.png`)],
-        page7: [require(`${dir}/android/esimReg/local/img_6.png`)],
-        page8: [require(`${dir}/android/esimReg/local/img_7.png`)],
-        page9: [require(`${dir}/android/esimReg/local/img_8.png`)],
+        page2: [require(`${dir}/android/esimReg/korea/img_1.png`)],
+        page3: [require(`${dir}/android/esimReg/korea/img_2.png`)],
+        page4: [require(`${dir}/android/esimReg/korea/img_3.png`)],
+        page5: [require(`${dir}/android/esimReg/korea/img_4.png`)],
+        page6: [require(`${dir}/android/esimReg/korea/img_5.png`)],
+        page7: [require(`${dir}/android/esimReg/korea/img_6.png`)],
+        page8: [require(`${dir}/android/esimReg/korea/img_7.png`)],
+        page9: [require(`${dir}/android/esimReg/korea/img_8.png`)],
         pageLast: [require(`${dir}/iconRokebiLast.png`)],
       };
     }
@@ -382,13 +382,13 @@ export const getImageList = (
   } else {
     imageList = {
       page1: [require(`${dir}/iconLocalCheck.png`)],
-      page2: [require(`${dir}/android/checkSetting/local/img_1.png`)],
-      page3: [require(`${dir}/android/checkSetting/local/img_2.png`)],
-      page4: [require(`${dir}/android/checkSetting/local/img_3.png`)],
+      page2: [require(`${dir}/android/checkSetting/korea/img_3.png`)],
+      page3: [require(`${dir}/android/checkSetting/korea/img_4.png`)],
+      page4: [require(`${dir}/android/checkSetting/korea/img_5.png`)],
       page4Local: [
-        require(`${dir}/android/checkSetting/local/localNet/img_3.png`),
+        require(`${dir}/android/checkSetting/korea/localNet/img_5.png`),
       ],
-      page5: [require(`${dir}/android/checkSetting/local/img_4.png`)],
+      page5: [require(`${dir}/android/checkSetting/korea/img_6.png`)],
       pageLast: [require(`${dir}/iconRokebiLast.png`)],
     };
   }
