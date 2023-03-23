@@ -310,29 +310,24 @@ export const getImageList = (
     } else if (region === 'korea') {
       imageList = {
         page1: [require(`${dir}/iconKoreaCheck.png`)],
-        page2: [require(`${dir}/ios/checkSetting/korea/img_1.png`)],
-        page3: [require(`${dir}/ios/checkSetting/korea/img_2.png`)],
+        page2: [require(`${dir}/ios/checkSetting/img_1.png`)],
+        page3: [require(`${dir}/ios/checkSetting/img_2.png`)],
         page4: [require(`${dir}/iconLocalCheck.png`)],
-        page5: [require(`${dir}/ios/checkSetting/korea/img_4.png`)],
-        page5Local: [
-          require(`${dir}/ios/checkSetting/korea/localNet/img_4.png`),
-        ],
-        page6: [require(`${dir}/ios/checkSetting/korea/img_5.png`)],
-        page7: [require(`${dir}/ios/checkSetting/korea/img_6.png`)],
-        page8: [require(`${dir}/ios/checkSetting/korea/img_7.png`)],
+        page5: [require(`${dir}/ios/checkSetting/img_4.png`)],
+        page5Local: [require(`${dir}/ios/checkSetting/localNet/img_4.png`)],
+        page6: [require(`${dir}/ios/checkSetting/img_5.png`)],
+        page7: [require(`${dir}/ios/checkSetting/img_6.png`)],
+        page8: [require(`${dir}/ios/checkSetting/img_7.png`)],
         pageLast: [require(`${dir}/iconRokebiLast.png`)],
       };
     } else {
       imageList = {
         page1: [require(`${dir}/iconLocalCheck.png`)],
-        page2: [require(`${dir}/ios/checkSetting/local/img_1.png`)],
-        page2Local: [
-          require(`${dir}/ios/checkSetting/local/localNet/img_1.png`),
-        ],
-        page3: [require(`${dir}/ios/checkSetting/local/img_2.png`)],
-        page4: [require(`${dir}/ios/checkSetting/local/img_3.png`)],
-        page5: [require(`${dir}/ios/checkSetting/local/img_4.png`)],
-
+        page2: [require(`${dir}/ios/checkSetting/img_4.png`)],
+        page2Local: [require(`${dir}/ios/checkSetting/localNet/img_4.png`)],
+        page3: [require(`${dir}/ios/checkSetting/img_5.png`)],
+        page4: [require(`${dir}/ios/checkSetting/img_6.png`)],
+        page5: [require(`${dir}/ios/checkSetting/img_7.png`)],
         pageLast: [require(`${dir}/iconRokebiLast.png`)],
       };
     }
