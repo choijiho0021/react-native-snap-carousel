@@ -332,19 +332,27 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           status.result === 0 &&
           quota.result === 0 &&
           status.objects?.retCode === '000000' &&
-          quota.objects?.retCode === '000000' &&
-          quota?.objects?.packQuotaList?.length
+          quota.objects?.retCode === '000000'
+          // quota?.objects?.packQuotaList?.length
         ) {
+          const packQuotaList =
+            quota?.objects?.packQuotaList.length > 0
+              ? quota?.objects?.packQuotaList
+              : [{}];
           const statusCd =
             !_.isUndefined(status?.objects?.lifeCycle) &&
             quadcellStatusCd[status?.objects?.lifeCycle];
 
-          const expTime = quota?.objects?.packQuotaList[0].expTime;
+          const expTime = packQuotaList[0].expTime;
 
           const exp = moment(expTime, 'YYYYMMDDHHmmss').add(1, 'h');
 
           const quadcellStatus: StatusObj = {
-            statusCd: statusCd === 'A' && moment() > exp ? 'U' : statusCd,
+            statusCd:
+              statusCd === 'A' &&
+              (moment() > exp || quota?.objects?.packQuotaList?.length === 0)
+                ? 'U'
+                : statusCd,
             endTime: exp.format('YYYY.MM.DD HH:mm:ss'),
           };
 
@@ -355,11 +363,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
                   used: Number(quota?.objects?.dailyUsage) || 0, // Mb
                 }
               : {
-                  quota:
-                    Number(quota?.objects?.packQuotaList[0]?.totalQuota) || 0, // Mb
-                  used:
-                    Number(quota?.objects?.packQuotaList[0]?.consumedQuota) ||
-                    0, // Mb
+                  quota: Number(packQuotaList[0]?.totalQuota) || 0, // Mb
+                  used: Number(packQuotaList[0]?.consumedQuota) || 0, // Mb
                 };
 
           return {status: quadcellStatus, usage: quadcellUsage};
