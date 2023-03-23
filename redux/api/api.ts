@@ -278,7 +278,10 @@ export const cachedApi =
         retrieveData(API.User.KEY_PIN),
         retrieveData(API.User.KEY_TOKEN),
       ]);
-      store.dispatch(AccountActions.setCacheMode({iccid, mobile, pin, token}));
+      if (iccid && mobile && pin && token)
+        store.dispatch(
+          AccountActions.setCacheMode({iccid, mobile, pin, token}),
+        );
       if (cache) return fulfillWithValue(JSON.parse(cache));
     }
     return fulfillWithValue(rsp);
