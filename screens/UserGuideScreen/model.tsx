@@ -279,30 +279,30 @@ export const getImageList = (
       if (region === 'korea') {
         imageList = {
           page1: [require(`${dir}/iconKoreaSmall.png`)],
-          page2: [require(`${dir}/ios/esimReg/korea/img_1.png`)],
-          page3: [require(`${dir}/ios/esimReg/korea/img_2.png`)],
-          page4: [require(`${dir}/ios/esimReg/korea/img_3.png`)],
-          page5: [require(`${dir}/ios/esimReg/korea/img_4.png`)],
-          page6: [require(`${dir}/ios/esimReg/korea/img_5.png`)],
-          page7: [require(`${dir}/ios/esimReg/korea/img_6.png`)],
-          page8: [require(`${dir}/ios/esimReg/korea/img_7.png`)],
-          page9: [require(`${dir}/ios/esimReg/korea/img_8.png`)],
-          page10: [require(`${dir}/ios/esimReg/korea/img_9.png`)],
+          page2: [require(`${dir}/ios/esimReg/img_1.png`)],
+          page3: [require(`${dir}/ios/esimReg/img_2.png`)],
+          page4: [require(`${dir}/ios/esimReg/img_3.png`)],
+          page5: [require(`${dir}/ios/esimReg/img_4.png`)],
+          page6: [require(`${dir}/ios/esimReg/img_5.png`)],
+          page7: [require(`${dir}/ios/esimReg/img_6.png`)],
+          page8: [require(`${dir}/ios/esimReg/img_7.png`)],
+          page9: [require(`${dir}/ios/esimReg/img_8.png`)],
+          page10: [require(`${dir}/ios/esimReg/img_9.png`)],
           page11: [require(`${dir}/ios/esimReg/korea/img_10.png`)],
           pageLast: [require(`${dir}/iconRokebiLast.png`)],
         };
       } else {
         imageList = {
           page1: [require(`${dir}/iconLocalSmall.png`)],
-          page2: [require(`${dir}/ios/esimReg/local/img_1.png`)],
-          page3: [require(`${dir}/ios/esimReg/local/img_2.png`)],
-          page4: [require(`${dir}/ios/esimReg/local/img_3.png`)],
-          page5: [require(`${dir}/ios/esimReg/local/img_4.png`)],
-          page6: [require(`${dir}/ios/esimReg/local/img_5.png`)],
-          page7: [require(`${dir}/ios/esimReg/local/img_6.png`)],
-          page8: [require(`${dir}/ios/esimReg/local/img_7.png`)],
-          page9: [require(`${dir}/ios/esimReg/local/img_8.png`)],
-          page10: [require(`${dir}/ios/esimReg/local/img_9.png`)],
+          page2: [require(`${dir}/ios/esimReg/img_1.png`)],
+          page3: [require(`${dir}/ios/esimReg/img_2.png`)],
+          page4: [require(`${dir}/ios/esimReg/img_3.png`)],
+          page5: [require(`${dir}/ios/esimReg/img_4.png`)],
+          page6: [require(`${dir}/ios/esimReg/img_5.png`)],
+          page7: [require(`${dir}/ios/esimReg/img_6.png`)],
+          page8: [require(`${dir}/ios/esimReg/img_7.png`)],
+          page9: [require(`${dir}/ios/esimReg/img_8.png`)],
+          page10: [require(`${dir}/ios/esimReg/img_9.png`)],
           page11: [require(`${dir}/ios/esimReg/local/img_10.png`)],
           pageLast: [require(`${dir}/iconRokebiLast.png`)],
         };
@@ -310,29 +310,24 @@ export const getImageList = (
     } else if (region === 'korea') {
       imageList = {
         page1: [require(`${dir}/iconKoreaCheck.png`)],
-        page2: [require(`${dir}/ios/checkSetting/korea/img_1.png`)],
-        page3: [require(`${dir}/ios/checkSetting/korea/img_2.png`)],
+        page2: [require(`${dir}/ios/checkSetting/img_1.png`)],
+        page3: [require(`${dir}/ios/checkSetting/img_2.png`)],
         page4: [require(`${dir}/iconLocalCheck.png`)],
-        page5: [require(`${dir}/ios/checkSetting/korea/img_4.png`)],
-        page5Local: [
-          require(`${dir}/ios/checkSetting/korea/localNet/img_4.png`),
-        ],
-        page6: [require(`${dir}/ios/checkSetting/korea/img_5.png`)],
-        page7: [require(`${dir}/ios/checkSetting/korea/img_6.png`)],
-        page8: [require(`${dir}/ios/checkSetting/korea/img_7.png`)],
+        page5: [require(`${dir}/ios/checkSetting/img_4.png`)],
+        page5Local: [require(`${dir}/ios/checkSetting/localNet/img_4.png`)],
+        page6: [require(`${dir}/ios/checkSetting/img_5.png`)],
+        page7: [require(`${dir}/ios/checkSetting/img_6.png`)],
+        page8: [require(`${dir}/ios/checkSetting/img_7.png`)],
         pageLast: [require(`${dir}/iconRokebiLast.png`)],
       };
     } else {
       imageList = {
         page1: [require(`${dir}/iconLocalCheck.png`)],
-        page2: [require(`${dir}/ios/checkSetting/local/img_1.png`)],
-        page2Local: [
-          require(`${dir}/ios/checkSetting/local/localNet/img_1.png`),
-        ],
-        page3: [require(`${dir}/ios/checkSetting/local/img_2.png`)],
-        page4: [require(`${dir}/ios/checkSetting/local/img_3.png`)],
-        page5: [require(`${dir}/ios/checkSetting/local/img_4.png`)],
-
+        page2: [require(`${dir}/ios/checkSetting/img_4.png`)],
+        page2Local: [require(`${dir}/ios/checkSetting/localNet/img_4.png`)],
+        page3: [require(`${dir}/ios/checkSetting/img_5.png`)],
+        page4: [require(`${dir}/ios/checkSetting/img_6.png`)],
+        page5: [require(`${dir}/ios/checkSetting/img_7.png`)],
         pageLast: [require(`${dir}/iconRokebiLast.png`)],
       };
     }
@@ -340,55 +335,51 @@ export const getImageList = (
     if (region === 'korea') {
       imageList = {
         page1: [require(`${dir}/iconKoreaSmall.png`)],
-        page2: [require(`${dir}/android/esimReg/korea/img_1.png`)],
-        page3: [require(`${dir}/android/esimReg/korea/img_2.png`)],
-        page4: [require(`${dir}/android/esimReg/korea/img_3.png`)],
-        page5: [require(`${dir}/android/esimReg/korea/img_4.png`)],
-        page6: [require(`${dir}/android/esimReg/korea/img_5.png`)],
-        page7: [require(`${dir}/android/esimReg/korea/img_6.png`)],
-        page8: [require(`${dir}/android/esimReg/korea/img_7.png`)],
-        page9: [require(`${dir}/android/esimReg/korea/img_8.png`)],
-        page10: [require(`${dir}/android/esimReg/korea/img_9.png`)],
+        page2: [require(`${dir}/android/esimReg/img_1.png`)],
+        page3: [require(`${dir}/android/esimReg/img_2.png`)],
+        page4: [require(`${dir}/android/esimReg/img_3.png`)],
+        page5: [require(`${dir}/android/esimReg/img_4.png`)],
+        page6: [require(`${dir}/android/esimReg/img_5.png`)],
+        page7: [require(`${dir}/android/esimReg/img_6.png`)],
+        page8: [require(`${dir}/android/esimReg/img_7.png`)],
+        page9: [require(`${dir}/android/esimReg/img_8.png`)],
+        page10: [require(`${dir}/android/esimReg/img_9.png`)],
         pageLast: [require(`${dir}/iconRokebiLast.png`)],
       };
     } else {
       imageList = {
         page1: [require(`${dir}/iconLocalSmall.png`)],
-        page2: [require(`${dir}/android/esimReg/local/img_1.png`)],
-        page3: [require(`${dir}/android/esimReg/local/img_2.png`)],
-        page4: [require(`${dir}/android/esimReg/local/img_3.png`)],
-        page5: [require(`${dir}/android/esimReg/local/img_4.png`)],
-        page6: [require(`${dir}/android/esimReg/local/img_5.png`)],
-        page7: [require(`${dir}/android/esimReg/local/img_6.png`)],
-        page8: [require(`${dir}/android/esimReg/local/img_7.png`)],
-        page9: [require(`${dir}/android/esimReg/local/img_8.png`)],
+        page2: [require(`${dir}/android/esimReg/img_1.png`)],
+        page3: [require(`${dir}/android/esimReg/img_2.png`)],
+        page4: [require(`${dir}/android/esimReg/img_3.png`)],
+        page5: [require(`${dir}/android/esimReg/img_4.png`)],
+        page6: [require(`${dir}/android/esimReg/img_5.png`)],
+        page7: [require(`${dir}/android/esimReg/img_6.png`)],
+        page8: [require(`${dir}/android/esimReg/img_7.png`)],
+        page9: [require(`${dir}/android/esimReg/img_8.png`)],
         pageLast: [require(`${dir}/iconRokebiLast.png`)],
       };
     }
   } else if (region === 'korea') {
     imageList = {
       page1: [require(`${dir}/iconKoreaCheck.png`)],
-      page2: [require(`${dir}/android/checkSetting/korea/img_1.png`)],
+      page2: [require(`${dir}/android/checkSetting/img_1.png`)],
       page3: [require(`${dir}/iconLocalCheck.png`)],
-      page4: [require(`${dir}/android/checkSetting/korea/img_3.png`)],
-      page5: [require(`${dir}/android/checkSetting/korea/img_4.png`)],
-      page6: [require(`${dir}/android/checkSetting/korea/img_5.png`)],
-      page6Local: [
-        require(`${dir}/android/checkSetting/korea/localNet/img_5.png`),
-      ],
-      page7: [require(`${dir}/android/checkSetting/korea/img_6.png`)],
+      page4: [require(`${dir}/android/checkSetting/img_3.png`)],
+      page5: [require(`${dir}/android/checkSetting/img_4.png`)],
+      page6: [require(`${dir}/android/checkSetting/img_5.png`)],
+      page6Local: [require(`${dir}/android/checkSetting/localNet/img_5.png`)],
+      page7: [require(`${dir}/android/checkSetting/img_6.png`)],
       pageLast: [require(`${dir}/iconRokebiLast.png`)],
     };
   } else {
     imageList = {
       page1: [require(`${dir}/iconLocalCheck.png`)],
-      page2: [require(`${dir}/android/checkSetting/local/img_1.png`)],
-      page3: [require(`${dir}/android/checkSetting/local/img_2.png`)],
-      page4: [require(`${dir}/android/checkSetting/local/img_3.png`)],
-      page4Local: [
-        require(`${dir}/android/checkSetting/local/localNet/img_3.png`),
-      ],
-      page5: [require(`${dir}/android/checkSetting/local/img_4.png`)],
+      page2: [require(`${dir}/android/checkSetting/img_3.png`)],
+      page3: [require(`${dir}/android/checkSetting/img_4.png`)],
+      page4: [require(`${dir}/android/checkSetting/img_5.png`)],
+      page4Local: [require(`${dir}/android/checkSetting/localNet/img_5.png`)],
+      page5: [require(`${dir}/android/checkSetting/img_6.png`)],
       pageLast: [require(`${dir}/iconRokebiLast.png`)],
     };
   }
@@ -739,6 +730,11 @@ export const getGuideImages = (
           title: renderText(`userGuide:stepsTitle8:galaxy`),
           step: 7,
           tip: () => tipView({id: 'userGuide:tipPage10_1'}),
+          noticeBox: () =>
+            renderNoticeBox(
+              'userGuide:noticeBox:local:title',
+              'userGuide:noticeBox:local:body1',
+            ),
         },
         {
           key: 'page10',
@@ -807,11 +803,6 @@ export const getGuideImages = (
           title: renderText(`userGuide:stepsTitle8:galaxy`),
           step: 7,
           tip: () => tipView({id: 'userGuide:tipPage10_1'}),
-          noticeBox: () =>
-            renderNoticeBox(
-              'userGuide:noticeBox:local:title',
-              'userGuide:noticeBox:local:body1',
-            ),
         },
         {
           key: 'page10',
