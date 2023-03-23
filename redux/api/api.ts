@@ -10,6 +10,7 @@ import {API} from '@/redux/api';
 import {retrieveData} from '@/utils/utils';
 import store from '@/store';
 import {actions as ToastActions, Toast} from '../modules/toast';
+import {actions as AccountActions} from '@/redux/modules/account';
 
 export type Langcode = 'ko' | 'en';
 const {scheme, apiUrl, esimGlobal, rokApiUrl} = Env.get();
@@ -271,6 +272,13 @@ export const cachedApi =
       AsyncStorage.setItem(key, JSON.stringify(rsp));
     } else if (rsp.result === E_REQUEST_FAILED) {
       const cache = await AsyncStorage.getItem(key);
+      const [iccid, mobile, pin, token] = await Promise.all([
+        retrieveData(API.User.KEY_ICCID),
+        retrieveData(API.User.KEY_MOBILE),
+        retrieveData(API.User.KEY_PIN),
+        retrieveData(API.User.KEY_TOKEN),
+      ]);
+      store.dispatch(AccountActions.setCacheMode({iccid, mobile, pin, token}));
       if (cache) return fulfillWithValue(JSON.parse(cache));
     }
     return fulfillWithValue(rsp);

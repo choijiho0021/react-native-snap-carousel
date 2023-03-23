@@ -399,6 +399,10 @@ const slice = createSlice({
       ...initialState,
       isSupportDev: state.isSupportDev,
     }),
+    setCacheMode: (state, action: PayloadAction<AccountModelState>) => {
+      const {iccid, mobile, pin, token} = action?.payload;
+      return {...state, loggedIn: true, iccid, mobile, pin, token};
+    },
     clearAccount: (state) => ({
       ...state,
       expDate: undefined,
