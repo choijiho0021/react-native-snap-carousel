@@ -430,7 +430,6 @@ const Esim: React.FC<EsimProps> = ({
       action.product.getProdOfPartner(info.partnerList);
       navigation.navigate('Country', {
         partner: info.partnerList,
-        maxDiscount: Number(info.max_discount),
       });
     },
     [action.product, navigation],

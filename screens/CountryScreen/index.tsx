@@ -328,7 +328,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           <ProductImg
             imageStyle={styles.box}
             source={{uri: API.default.httpImageUrl(imageUrl)}}
-            // maxDiscount={} 상품 리스트 화면의 이미지에는 일단 할인 태그 붙이지 않음 추후 반영 예정
           />
         </Animated.View>
       )}
