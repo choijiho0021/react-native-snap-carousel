@@ -14,7 +14,6 @@ import {
   getTrackingStatus,
   TrackingStatus,
 } from 'react-native-tracking-transparency';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
@@ -24,11 +23,6 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {actions as infoActions, InfoAction} from '@/redux/modules/info';
 import {AccountModelState} from '@/redux/modules/account';
-import {
-  actions as productActions,
-  ProductAction,
-  ProductModelState,
-} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppButton from '@/components/AppButton';
@@ -106,12 +100,9 @@ type ProductDetailScreenProps = {
   navigation: ProductDetailScreenNavigationProp;
   route: ProductDetailScreenRouteProp;
 
-  pending: boolean;
-  product: ProductModelState;
   account: AccountModelState;
 
   action: {
-    product: ProductAction;
     cart: CartAction;
     info: InfoAction;
   };
@@ -120,8 +111,6 @@ type ProductDetailScreenProps = {
 const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   navigation,
   route,
-  pending,
-  product,
   action,
   account,
 }) => {
@@ -134,16 +123,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [purchaseItems, setPurchaseItems] = useState<PurchaseItem[]>([]);
 
   useEffect(() => {
-    const {partnerId} = product;
-    const {params = {}} = route;
-
-    if (partnerId !== route.params?.partnerId) {
-      action.product.getProdDetailInfo(params?.partnerId || '');
-    }
-
-    setPurchaseItems(params.item ? [params.item] : []);
+    setPurchaseItems(route.params.item ? [route.params.item] : []);
     getTrackingStatus().then((elm) => setStatus(elm));
-  }, [action.product, navigation, product, route]);
+  }, [route.params.item]);
 
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
@@ -334,7 +316,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             style={styles.btnCart}
             title={i18n.t('cart:toCart')}
             titleStyle={styles.btnCartText}
-            disabled={pending || disabled}
+            disabled={disabled}
             disableColor={colors.black}
             disableBackgroundColor={colors.whiteTwo}
             onPress={onPressBtnCart}
@@ -359,23 +341,14 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           />
         </View>
       )}
-      <AppActivityIndicator visible={pending} />
     </SafeAreaView>
   );
 };
 
 export default connect(
-  ({product, account, status}: RootState) => ({
-    product,
-    account,
-    pending:
-      status.pending[productActions.getProdDetailCommon.typePrefix] ||
-      status.pending[productActions.getProdDetailInfo.typePrefix] ||
-      false,
-  }),
+  ({account}: RootState) => ({account}),
   (dispatch) => ({
     action: {
-      product: bindActionCreators(productActions, dispatch),
       info: bindActionCreators(infoActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
     },
