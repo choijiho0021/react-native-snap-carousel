@@ -69,12 +69,10 @@ const getPageByTitle = (title: string) => {
   );
 };
 
-const getProdDetailCommon = (abortController?: AbortController) => {
+const getProdDetailCommon = () => {
   return api.callHttpGet(
     `${api.httpUrl(api.path.productDetails)}?_format=json`,
     toProductDetails,
-    undefined,
-    {abortController},
   );
 };
 
