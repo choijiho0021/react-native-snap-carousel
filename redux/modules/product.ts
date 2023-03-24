@@ -14,6 +14,7 @@ import {
 import {actions as PromotionActions} from './promotion';
 import utils from '@/redux/api/utils';
 import {retrieveData, storeData} from '@/utils/utils';
+import {cachedApi} from '@/redux/api/api';
 
 const getPaymentRule = createAsyncThunk(
   'product/getPaymentRule',
@@ -72,6 +73,11 @@ const getProductByLocalOp = createAsyncThunk(
   API.Product.getProductByLocalOp,
 );
 
+const getAllProduct = createAsyncThunk(
+  'product/getAllProduct',
+  cachedApi('cache.allProd', API.Product.getProductByLocalOp),
+);
+
 const getProdOfPartner = createAsyncThunk(
   'product/getProdOfPartner',
   (partnerId: string[], {dispatch, getState}) => {
@@ -80,7 +86,9 @@ const getProdOfPartner = createAsyncThunk(
     } = getState() as RootState;
 
     for (let i = 0; i < partnerId.length; i++) {
+      console.log('@@@ check partner', partnerId[i]);
       if (!prodByLocalOp.has(partnerId[i])) {
+        console.log('@@@ load partner', partnerId[i]);
         dispatch(getProductByLocalOp(partnerId[i]));
       }
     }
@@ -163,6 +171,32 @@ const initialState: ProductModelState = {
   cmiProdByPartner: ImmutableMap(),
   prodCountry: [],
   rule: {},
+};
+
+const reduceProdByLocalOp = (state, action) => {
+  const {result, objects} = action.payload;
+
+  if (result === 0 && objects.length > 0) {
+    const group = objects.reduce(
+      (acc, cur) =>
+        acc.update(cur.partnerId, (prev) =>
+          prev ? prev.concat(cur.key) : [cur.key],
+        ),
+      ImmutableMap<string, string[]>(),
+    );
+
+    state.prodByLocalOp = state.prodByLocalOp.merge(group);
+    state.prodList = state.prodList.merge(
+      ImmutableMap(objects.map((o) => [o.key, o])),
+    );
+
+    const prodListbyPartner = group.map((v) =>
+      v.map((k) => state.prodList.get(k)),
+    );
+    state.prodByPartner = state.prodByPartner.merge(prodListbyPartner);
+  } else if (action.meta.arg !== 'all') {
+    state.prodByPartner = state.prodByPartner.set(action.meta.arg, []);
+  }
 };
 
 const slice = createSlice({
@@ -299,46 +333,15 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(getProductByLocalOp.fulfilled, (state, action) => {
-      const {result, objects} = action.payload;
+    builder.addCase(getProductByLocalOp.fulfilled, reduceProdByLocalOp);
 
-      if (result === 0 && objects.length > 0) {
-        state.prodByLocalOp = state.prodByLocalOp.set(
-          objects[0].partnerId,
-          objects.map((o) => o.key),
-        );
-        state.prodList = state.prodList.merge(
-          ImmutableMap(objects.map((o) => [o.key, o])),
-        );
-
-        const prodListbyPartner = state.prodByLocalOp
-          .get(objects[0].partnerId)
-          ?.map((p2) => state.prodList.get(p2));
-
-        state.prodByPartner = state.prodByPartner.set(
-          objects[0].partnerId,
-          prodListbyPartner,
-        );
-      } else {
-        state.prodByPartner = state.prodByPartner.set(action.meta.arg, []);
-      }
-    });
+    builder.addCase(getAllProduct.fulfilled, reduceProdByLocalOp);
 
     builder.addCase(init.rejected, (state) => {
       state.ready = false;
     });
-    builder.addCase(init.fulfilled, (state) => {
-      // const {prodByCountry, prodCountry, localOp} = action.payload;
-      // if (prodByCountry) {
-      //   state.prodByCountry = JSON.parse(prodByCountry);
-      // }
-      // if (prodCountry) {
-      //   state.prodCountry = JSON.parse(prodCountry);
-      // }
-      // if (localOp) {
-      //   state.localOpList = ImmutableMap(JSON.parse(localOp));
-      // }
 
+    builder.addCase(init.fulfilled, (state) => {
       if (state.prodByCountry.length === 0) {
         state.ready = false;
       } else {
@@ -364,6 +367,7 @@ export const actions = {
   init,
   getProdOfPartner,
   getProdByUuid,
+  getAllProduct,
 };
 export type ProductAction = typeof actions;
 

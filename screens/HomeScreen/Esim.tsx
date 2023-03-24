@@ -70,12 +70,12 @@ import {
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
 import PromotionCarousel from './component/PromotionCarousel';
-import {useInterval} from '@/utils/useInterval';
 import NotiModal from './component/NotiModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
 import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
+import {retrieveData, storeData} from '@/utils/utils';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -994,10 +994,18 @@ const Esim: React.FC<EsimProps> = ({
     product.prodByCountry.length,
   ]);
 
-  useInterval(() => {
-    // update product for every 1 hour
-    if (navigation.isFocused()) action.product.getProd();
-  }, 3600 * 1000);
+  useEffect(() => {
+    // check timestamp
+    const checkTimestamp = async () => {
+      const tm = await retrieveData('cache.prod.timestamp');
+      if (product.rule.timestamp_prod > tm) {
+        // reload data
+        action.product.getAllProduct('all');
+        storeData('cache.prod.timestamp', moment().zone(-540).format());
+      }
+    };
+    checkTimestamp();
+  }, [action.product, product.rule.timestamp_prod]);
 
   useEffect(() => {
     const {mobile, loggedIn, iccid} = account;
