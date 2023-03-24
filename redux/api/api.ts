@@ -2,7 +2,6 @@
 /* eslint-disable eqeqeq */
 import {Buffer} from 'buffer';
 import _ from 'underscore';
-import CookieManager from '@react-native-cookies/cookies';
 import AsyncStorage from '@react-native-community/async-storage';
 import Env from '@/environment';
 import userApi from './userApi';
@@ -10,7 +9,6 @@ import {API} from '@/redux/api';
 import {retrieveData} from '@/utils/utils';
 import store from '@/store';
 import {actions as ToastActions, Toast} from '../modules/toast';
-import {actions as AccountActions} from '@/redux/modules/account';
 
 export type Langcode = 'ko' | 'en';
 const {scheme, apiUrl, esimGlobal, rokApiUrl} = Env.get();
@@ -272,22 +270,10 @@ export const cachedApi =
       AsyncStorage.setItem(key, JSON.stringify(rsp));
     } else if (rsp.result === E_REQUEST_FAILED) {
       const cache = await AsyncStorage.getItem(key);
-      const [iccid, mobile, pin, token] = await Promise.all([
-        retrieveData(API.User.KEY_ICCID),
-        retrieveData(API.User.KEY_MOBILE),
-        retrieveData(API.User.KEY_PIN),
-        retrieveData(API.User.KEY_TOKEN),
-      ]);
-      if (iccid && mobile && pin && token)
-        store.dispatch(
-          AccountActions.setCacheMode({iccid, mobile, pin, token}),
-        );
       if (cache) return fulfillWithValue(JSON.parse(cache));
     }
     return fulfillWithValue(rsp);
   };
-
-let isRetryLogin = false;
 
 export const reloadOrCallApi =
   <A, T>(key: string, param: A, apiToCall: () => Promise<T>) =>
@@ -304,7 +290,7 @@ const callHttp = async <T>(
   param: object,
   callback: CallHttpCallback<T> = (a) => a,
   option: CallHttpOption = {isJson: true},
-  retry: boolean = true,
+  retry: number = 0,
 ): Promise<ApiResult<T>> => {
   const config: RequestInit = {
     ...param,
@@ -322,26 +308,21 @@ const callHttp = async <T>(
   try {
     const response: Response = await fetch(url, config);
     if (option.abortController && option.abortController.signal.aborted) {
+      console.log('@@@ aborted');
       return failure(E_ABORTED, 'cancelled', 499);
     }
 
     // 403, 401에러의 경우 기존의 로그인 정보를 이용하여 재로그인 시도 후 재시도
-    if (
-      (response.status === 403 || response.status === 401) &&
-      retry &&
-      !isRetryLogin
-    ) {
-      CookieManager.clearAll();
+    if ((response.status === 403 || response.status === 401) && retry === 0) {
       const user = await retrieveData(API.User.KEY_MOBILE);
       const pass = await retrieveData(API.User.KEY_PIN);
 
-      isRetryLogin = true;
       const isLoggedIn = await userApi.logIn({
         user,
         pass,
       });
       if (isLoggedIn.result === 0) {
-        return await callHttp(url, param, callback, option, false);
+        return await callHttp(url, param, callback, option, retry + 1);
       }
     }
 
@@ -387,10 +368,9 @@ const callHttp = async <T>(
 
     return failure(FAILED, response.statusText, response.status);
   } catch (err) {
+    console.log('@@@ request failed', err);
     store.dispatch(ToastActions.push(Toast.NOT_LOADED));
     return failure(E_REQUEST_FAILED, 'API failed', 498);
-  } finally {
-    isRetryLogin = false;
   }
 };
 
