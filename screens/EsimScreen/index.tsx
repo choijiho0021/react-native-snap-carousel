@@ -139,7 +139,7 @@ type UsageObj = {
 export const renderInfo = (navigation) => (
   <Pressable
     style={styles.usrGuideBtn}
-    onPress={() => navigation.navigate('UserGuideHome')}>
+    onPress={() => navigation.navigate('UserGuide')}>
     <View style={styles.rowCenter}>
       <AppSvgIcon name="newFlag" style={{marginRight: 8}} />
       <AppText style={styles.ifFirstText}>{i18n.t('esim:ifFirst')}</AppText>

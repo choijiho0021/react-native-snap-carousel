@@ -135,12 +135,12 @@ function HomeStackComponent() {
       <HomeStack.Screen name="Contact" component={ContactScreen} />
       <HomeStack.Screen name="ContactBoard" component={ContactBoardScreen} />
       <HomeStack.Screen
-        name="UserGuide"
+        name="UserGuideStep"
         component={UserGuideScreen}
         options={{animationEnabled: true}}
       />
       <HomeStack.Screen
-        name="UserGuideHome"
+        name="UserGuide"
         component={GuideHomeScreen}
         options={{animationEnabled: true}}
       />

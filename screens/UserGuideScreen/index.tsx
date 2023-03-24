@@ -489,7 +489,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
             </View>
             {renderArrowBtn('userGuide:checkSetting:title', () => {
               navigation.goBack();
-              navigation.navigate('UserGuide', {
+              navigation.navigate('UserGuideStep', {
                 guideOption: 'checkSetting',
                 region,
               });
