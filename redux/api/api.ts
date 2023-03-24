@@ -298,21 +298,27 @@ const callHttp = async <T>(
     // mode: 'no-cors',
   };
 
-  if (option.abortController) {
-    config.signal = option.abortController.signal;
-  }
   if (typeof option.isJson === 'undefined') {
     option.isJson = true;
   }
 
   try {
-    const response: Response = await fetch(url, config);
+    const {timeout = 8000} = option;
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+
+    const response: Response = await fetch(url, {
+      ...config,
+      signal: controller.signal,
+    });
+    clearTimeout(id);
     if (option.abortController && option.abortController.signal.aborted) {
       console.log('@@@ aborted');
       return failure(E_ABORTED, 'cancelled', 499);
     }
 
     // 403, 401에러의 경우 기존의 로그인 정보를 이용하여 재로그인 시도 후 재시도
+    /*
     if ((response.status === 403 || response.status === 401) && retry === 0) {
       const user = await retrieveData(API.User.KEY_MOBILE);
       const pass = await retrieveData(API.User.KEY_PIN);
@@ -325,6 +331,7 @@ const callHttp = async <T>(
         return await callHttp(url, param, callback, option, retry + 1);
       }
     }
+    */
 
     if (response.ok) {
       if (_.isFunction(callback)) {
