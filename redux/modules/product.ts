@@ -3,6 +3,7 @@ import {Reducer} from 'redux-actions';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
+import AsyncStorage from '@react-native-community/async-storage';
 import {API, Country} from '@/redux/api';
 import {
   Currency,
@@ -12,15 +13,24 @@ import {
 } from '@/redux/api/productApi';
 import {actions as PromotionActions} from './promotion';
 import utils from '@/redux/api/utils';
+import {cachedApi} from '@/redux/api/api';
 
 const getLocalOp = createAsyncThunk(
   'product/getLocalOp',
-  API.Product.getLocalOp,
+  API.default.reloadOrCallApi(
+    'cache.localOp',
+    undefined,
+    API.Product.getLocalOp,
+  ),
 );
 
 const getProdCountry = createAsyncThunk(
   'product/getProdCountry',
-  API.Product.getProdCountry,
+  API.default.reloadOrCallApi(
+    'cache.prodCountry',
+    undefined,
+    API.Product.getProdCountry,
+  ),
 );
 const getProdDetailCommon = createAsyncThunk(
   'product/getProdDetailCommon',
@@ -34,7 +44,11 @@ const getProdDetailInfo = createAsyncThunk(
 
 const getProductByCountry = createAsyncThunk(
   'product/getProdByCountry',
-  API.Product.productByCountry,
+  API.default.reloadOrCallApi(
+    'cache.prodByCountry',
+    undefined,
+    API.Product.productByCountry,
+  ),
 );
 
 const getProd = createAsyncThunk('product/getProd', API.Product.getProduct);
@@ -50,18 +64,28 @@ const getProdByUuid = createAsyncThunk(
 
 const getProductByLocalOp = createAsyncThunk(
   'product/getProductByLocalOp',
-  API.Product.getProductByLocalOp,
+  async (partnerId: string, {fulfillWithValue}) => {
+    return cachedApi(
+      `cache.prod.${partnerId}`,
+      API.Product.getProductByLocalOp,
+    )(partnerId, {fulfillWithValue});
+  },
 );
 
-const init = createAsyncThunk('product/init', async (_, {dispatch}) => {
-  await dispatch(getLocalOp());
-  await dispatch(getProdCountry());
-  await dispatch(getProductByCountry());
+const init = createAsyncThunk(
+  'product/init',
+  async (reloadAll: boolean, {dispatch}) => {
+    const reload = true;
 
-  await dispatch(PromotionActions.getPromotion());
-  await dispatch(PromotionActions.getPromotionStat());
-  await dispatch(PromotionActions.getGiftBgImages());
-});
+    await dispatch(getLocalOp(reload));
+    await dispatch(getProdCountry(reload));
+    await dispatch(getProductByCountry(reload));
+
+    await dispatch(PromotionActions.getPromotion(reload));
+    await dispatch(PromotionActions.getPromotionStat(reload));
+    await dispatch(PromotionActions.getGiftBgImages(reload));
+  },
+);
 
 const getProdOfPartner = createAsyncThunk(
   'product/getProdOfPartner',
@@ -280,6 +304,17 @@ const slice = createSlice({
       state.ready = false;
     });
     builder.addCase(init.fulfilled, (state) => {
+      // const {prodByCountry, prodCountry, localOp} = action.payload;
+      // if (prodByCountry) {
+      //   state.prodByCountry = JSON.parse(prodByCountry);
+      // }
+      // if (prodCountry) {
+      //   state.prodCountry = JSON.parse(prodCountry);
+      // }
+      // if (localOp) {
+      //   state.localOpList = ImmutableMap(JSON.parse(localOp));
+      // }
+
       if (state.prodByCountry.length === 0) {
         state.ready = false;
       } else {

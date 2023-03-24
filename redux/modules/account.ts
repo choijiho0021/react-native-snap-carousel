@@ -234,9 +234,9 @@ const logInAndGetAccount = createAsyncThunk(
       },
     } = getState() as RootState;
 
-    return dispatch(logIn({user: mobile, pass: pin})).then(
-      async ({payload}) => {
-        const {result, objects} = payload || {};
+    return dispatch(logIn({user: mobile, pass: pin}))
+      .unwrap()
+      .then(async ({result, objects}) => {
         if (result === 0 && objects && objects.length > 0) {
           const obj = objects[0];
           const token = obj.csrf_token;
@@ -296,14 +296,13 @@ const logInAndGetAccount = createAsyncThunk(
           dispatch(notiActions.getNotiList({mobile: obj.current_user.name}));
           return api.success([]);
         }
-        return payload;
-      },
-      (err) => {
-        console.log('login failed', err);
+        return {result, objects};
+      })
+      .catch((err) => {
+        console.log('@@@ login failed', err);
         dispatch(toastActions.push('reg:failedToLogIn'));
         return api.reject(api.E_INVALID_STATUS, 'failed to login');
-      },
-    );
+      });
   },
 );
 
@@ -400,6 +399,10 @@ const slice = createSlice({
       ...initialState,
       isSupportDev: state.isSupportDev,
     }),
+    setCacheMode: (state, action: PayloadAction<AccountModelState>) => {
+      const {iccid, mobile, pin, token} = action?.payload;
+      return {...state, loggedIn: true, iccid, mobile, pin, token};
+    },
     clearAccount: (state) => ({
       ...state,
       expDate: undefined,

@@ -2,7 +2,15 @@
 /* eslint-disable eqeqeq */
 import {Buffer} from 'buffer';
 import _ from 'underscore';
+import CookieManager from '@react-native-cookies/cookies';
+import AsyncStorage from '@react-native-community/async-storage';
 import Env from '@/environment';
+import userApi from './userApi';
+import {API} from '@/redux/api';
+import {retrieveData} from '@/utils/utils';
+import store from '@/store';
+import {actions as ToastActions, Toast} from '../modules/toast';
+import {actions as AccountActions} from '@/redux/modules/account';
 
 export type Langcode = 'ko' | 'en';
 const {scheme, apiUrl, esimGlobal, rokApiUrl} = Env.get();
@@ -14,6 +22,9 @@ const E_INVALID_STATUS = -1003;
 const E_STATUS_EXPIRED = -1004;
 const E_INVALID_ARGUMENT = -1005;
 const E_RESOURCE_NOT_FOUND = -1006;
+const E_REQUEST_FAILED = -1007;
+const E_ABORTED = -1008;
+const E_DECODING_FAILED = -1009;
 const API_STATUS_PREFAILED = 412;
 const API_STATUS_INIT = 0;
 const API_STATUS_TRYING = 1;
@@ -253,11 +264,47 @@ const basicAuth = (
 type CallHttpCallback<T> = (js: any, cookie?: string | null) => ApiResult<T>;
 type CallHttpOption = {isJson?: boolean; abortController?: AbortController};
 
+export const cachedApi =
+  <A, T>(key: string, apiToCall: (p: A) => Promise<T>) =>
+  async (param: A, {fulfillWithValue}) => {
+    const rsp = await apiToCall(param);
+    if (rsp.result === 0) {
+      AsyncStorage.setItem(key, JSON.stringify(rsp));
+    } else if (rsp.result === E_REQUEST_FAILED) {
+      const cache = await AsyncStorage.getItem(key);
+      const [iccid, mobile, pin, token] = await Promise.all([
+        retrieveData(API.User.KEY_ICCID),
+        retrieveData(API.User.KEY_MOBILE),
+        retrieveData(API.User.KEY_PIN),
+        retrieveData(API.User.KEY_TOKEN),
+      ]);
+      if (iccid && mobile && pin && token)
+        store.dispatch(
+          AccountActions.setCacheMode({iccid, mobile, pin, token}),
+        );
+      if (cache) return fulfillWithValue(JSON.parse(cache));
+    }
+    return fulfillWithValue(rsp);
+  };
+
+let isRetryLogin = false;
+
+export const reloadOrCallApi =
+  <A, T>(key: string, param: A, apiToCall: () => Promise<T>) =>
+  async (reload: boolean, {fulfillWithValue}) => {
+    if (!reload) {
+      const cache = await AsyncStorage.getItem(key);
+      if (cache) return fulfillWithValue(JSON.parse(cache));
+    }
+    return cachedApi(key, apiToCall)(param, {fulfillWithValue});
+  };
+
 const callHttp = async <T>(
   url: string,
   param: object,
   callback: CallHttpCallback<T> = (a) => a,
   option: CallHttpOption = {isJson: true},
+  retry: boolean = true,
 ): Promise<ApiResult<T>> => {
   const config: RequestInit = {
     ...param,
@@ -275,7 +322,27 @@ const callHttp = async <T>(
   try {
     const response: Response = await fetch(url, config);
     if (option.abortController && option.abortController.signal.aborted) {
-      return failure(FAILED, 'cancelled', 499);
+      return failure(E_ABORTED, 'cancelled', 499);
+    }
+
+    // 403, 401에러의 경우 기존의 로그인 정보를 이용하여 재로그인 시도 후 재시도
+    if (
+      (response.status === 403 || response.status === 401) &&
+      retry &&
+      !isRetryLogin
+    ) {
+      CookieManager.clearAll();
+      const user = await retrieveData(API.User.KEY_MOBILE);
+      const pass = await retrieveData(API.User.KEY_PIN);
+
+      isRetryLogin = true;
+      const isLoggedIn = await userApi.logIn({
+        user,
+        pass,
+      });
+      if (isLoggedIn.result === 0) {
+        return await callHttp(url, param, callback, option, false);
+      }
     }
 
     if (response.ok) {
@@ -292,7 +359,7 @@ const callHttp = async <T>(
             return callback(js, response.headers.get('set-cookie'));
           } catch (ex) {
             return failure(
-              FAILED,
+              E_DECODING_FAILED,
               `Failed to decode json:${ex.message}`,
               response.status,
             );
@@ -302,6 +369,7 @@ const callHttp = async <T>(
 
       return await response.text();
     }
+
     if (option.isJson) {
       response
         .json()
@@ -310,16 +378,19 @@ const callHttp = async <T>(
         })
         .catch((err) => {
           return failure(
-            FAILED,
+            E_DECODING_FAILED,
             `Failed to decode json:${err.message}`,
             response.status,
           );
         });
     }
+
     return failure(FAILED, response.statusText, response.status);
   } catch (err) {
-    console.log('API failed', err, url);
-    return failure(FAILED, 'API failed', 498);
+    store.dispatch(ToastActions.push(Toast.NOT_LOADED));
+    return failure(E_REQUEST_FAILED, 'API failed', 498);
+  } finally {
+    isRetryLogin = false;
   }
 };
 
@@ -357,6 +428,9 @@ export default {
   E_STATUS_EXPIRED,
   E_INVALID_ARGUMENT,
   E_RESOURCE_NOT_FOUND,
+  E_REQUEST_FAILED,
+  E_ABORTED,
+  E_DECODING_FAILED,
   API_STATUS_PREFAILED,
   API_STATUS_INIT,
   API_STATUS_TRYING,
@@ -380,4 +454,5 @@ export default {
   callHttp,
   missingParameters,
   toLangcode,
+  reloadOrCallApi,
 };

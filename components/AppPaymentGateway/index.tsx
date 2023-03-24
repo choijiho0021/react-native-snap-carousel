@@ -3,15 +3,22 @@ import {Linking, StyleSheet, View} from 'react-native';
 import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
 import Video from 'react-native-video';
-import {inicisScript, inicisWebviewHtml, pgWebViewConfig} from './ConfigInicis';
+import {inicisWebviewHtml} from './ConfigInicis';
 import {colors} from '@/constants/Colors';
 import AppText from '../AppText';
 import i18n from '@/utils/i18n';
 import {PaymentParams} from '@/navigation/navigation';
 import utils from '@/redux/api/utils';
 import AppAlert from '@/components/AppAlert';
+import {hectoWebViewHtml} from './ConfigHecto';
 
 export type PaymentResultCallbackParam = 'next' | 'cancel' | 'check';
+
+export const pgWebViewConfig = {
+  cancelUrl: 'https://localhost/canc',
+
+  nextUrl: 'https://localhost/next',
+};
 
 type PaymentGatewayScreenProps = {
   info: PaymentParams;
@@ -21,6 +28,8 @@ type PaymentGatewayScreenProps = {
 const loadingImg = require('../../assets/images/loading_1.mp4');
 
 const pgWebViewHtml = (info: PaymentParams) => {
+  const pg = info.card ? info.paymentRule?.[info.card] : '';
+  if (pg === 'H') return hectoWebViewHtml(info);
   return inicisWebviewHtml(info);
 };
 
@@ -134,7 +143,7 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
     // );
     setLoading(false);
     if (url.startsWith('about') && !injected.current) {
-      ref.current?.injectJavaScript(inicisScript());
+      ref.current?.injectJavaScript('start_script();');
       injected.current = true;
     }
   }, []);

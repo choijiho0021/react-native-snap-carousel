@@ -41,6 +41,8 @@ export type PaymentParams = {
 
   isPaid?: boolean;
   mode?: string;
+  card?: string;
+  paymentRule?: Record<string, string>;
 };
 
 type SimpleTextParams = {
@@ -146,6 +148,7 @@ export type HomeStackParamList = {
     uuid: string;
     imsi: string;
   };
+  SelectCard: {};
   GuideHome: {
     guideOption: GuideOption;
     region: GuideRegion;

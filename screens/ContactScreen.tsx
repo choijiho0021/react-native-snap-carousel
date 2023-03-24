@@ -2,7 +2,6 @@ import Analytics from 'appcenter-analytics';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {Pressable, StyleSheet, View, ScrollView, ViewStyle} from 'react-native';
 import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import {
   NavigationProp,
@@ -20,7 +19,6 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {RootState} from '@/redux';
 import {actions as notiActions, NotiModelState} from '@/redux/modules/noti';
-import {actions as toastActions} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import {navigate} from '@/navigation/navigation';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
@@ -309,14 +307,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
   );
 };
 
-export default connect(
-  ({noti, status}: RootState) => ({
-    noti,
-    pending: status.pending[notiActions.sendAlimTalk.typePrefix] || false,
-  }),
-  (dispatch) => ({
-    action: {
-      toast: bindActionCreators(toastActions, dispatch),
-    },
-  }),
-)(ContactScreen);
+export default connect(({noti, status}: RootState) => ({
+  noti,
+  pending: status.pending[notiActions.sendAlimTalk.typePrefix] || false,
+}))(ContactScreen);

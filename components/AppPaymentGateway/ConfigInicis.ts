@@ -4,17 +4,20 @@ import {PaymentParams} from '@/navigation/navigation';
 
 const {payment, isProduction, scheme, apiUrl} = Env.get();
 
-export const pgWebViewConfig = {
-  cancelUrl: 'https://localhost/canc',
-
-  nextUrl: 'https://localhost/next',
-
-  confirmUrl: `${scheme}://${apiUrl}/rokebi/payment/inicis`,
-
-  notiUrl: `${scheme}://${apiUrl}/rokebi/payment/inicis?noti`,
-};
+export const debugScript = isProduction
+  ? ''
+  : `const consoleLog = (type, log) => window.ReactNativeWebView.postMessage(JSON.stringify({'type': 'Console', 'data': {'type': type, 'log': log}}));
+    console = {
+        log: (log) => consoleLog('log', log),
+        debug: (log) => consoleLog('debug', log),
+        info: (log) => consoleLog('info', log),
+        warn: (log) => consoleLog('warn', log),
+        error: (log) => consoleLog('error', log),
+      };`;
 
 export const configInicis = {
+  confirmUrl: `${scheme}://${apiUrl}/rokebi/payment/inicis`,
+  notiUrl: `${scheme}://${apiUrl}/rokebi/payment/inicis?noti`,
   WEBVIEW_ENDPOINT: 'https://mobile.inicis.com/smart/payment/',
 };
 
@@ -35,22 +38,14 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
         MID: 'INIpayTest', // inicis test key
         HASHKEY: '3CB8183A4BE283555ACC8363C0360223',
       };
-  const reserved = opt[info.pay_method] || '';
+  let reserved = opt[info.pay_method] || '';
+  if (info.card) {
+    reserved += `&d_card=${info.card}&d_quota=0&cardshowopt=${info.card}:3`;
+  }
   const timestamp = Date.now();
   const hash = CryptoJS.SHA512(
     info.amount.toString() + info.merchant_uid + timestamp + inicis.HASHKEY,
   ).toString(CryptoJS.enc.Base64);
-
-  const debugScript = isProduction
-    ? ''
-    : `const consoleLog = (type, log) => window.ReactNativeWebView.postMessage(JSON.stringify({'type': 'Console', 'data': {'type': type, 'log': log}}));
-    console = {
-        log: (log) => consoleLog('log', log),
-        debug: (log) => consoleLog('debug', log),
-        info: (log) => consoleLog('info', log),
-        warn: (log) => consoleLog('warn', log),
-        error: (log) => consoleLog('error', log),
-      };`;
 
   return `<html>
   <head>
@@ -58,7 +53,7 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <script type='text/javascript'>
     ${debugScript}
-    function goto_inicis() {
+    function start_script() {
       const myform = document.mobileweb;
       myform.action = "https://mobile.inicis.com/smart/payment/";
       myform.target = "_self";
@@ -79,11 +74,9 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
       <input type="hidden" name="P_UNAME" value="${info.buyer_name}" />
       <input type="hidden" name="P_MOBILE" value="${info.buyer_tel}" />
       <input type="hidden" name="P_EMAIL" value="${info.buyer_email}" />
-      <input type="hidden" name="P_NOTI_URL" value="${
-        pgWebViewConfig.notiUrl
-      }" />
+      <input type="hidden" name="P_NOTI_URL" value="${configInicis.notiUrl}" />
       <input type="hidden" name="P_NEXT_URL" value="${
-        pgWebViewConfig.confirmUrl
+        configInicis.confirmUrl
       }" />
       <input type="hidden" name="P_CHARSET" value="utf8" />
       <input type="hidden" name="P_TIMESTAMP" value="${timestamp}" />
@@ -94,8 +87,4 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
     </form>
   </body>
 </html>`;
-};
-
-export const inicisScript = () => {
-  return 'goto_inicis();';
 };

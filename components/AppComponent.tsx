@@ -254,7 +254,7 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
     }, 3000);
     setTimeout(() => {
       setNetworkErr(true);
-    }, 60000);
+    }, 30000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

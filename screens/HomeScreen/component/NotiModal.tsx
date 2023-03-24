@@ -210,7 +210,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
         <View style={styles.pagination}>
           <Pagination
             dotsLength={popUpList.length}
-            activeDotIndex={activeSlide}
+            activeDotIndex={(activeSlide + 1) % popUpList.length}
             containerStyle={styles.paginationContainer}
             renderDots={renderDots}
           />

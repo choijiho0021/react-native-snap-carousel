@@ -191,4 +191,5 @@ const PymButtonList: React.FC<PymButtonListParams> = ({selected, onPress}) => {
   );
 };
 
+export {PymButton};
 export default PymButtonList;

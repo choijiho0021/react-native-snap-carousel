@@ -33,6 +33,7 @@ import PurchaseDetailScreen from '@/screens/PurchaseDetailScreen';
 import ContactScreen from '@/screens/ContactScreen';
 import ContactBoardScreen from '@/screens/ContactBoardScreen';
 import PymMethodScreen from '@/screens/PymMethodScreen';
+import SelectCardScreen from '@/screens/SelectCardScreen';
 import StoreSearchScreen from '@/screens/StoreSearch';
 import BoardMsgRespScreen from '@/screens/BoardMsgRespScreen';
 import SimpleTextScreen from '@/screens/SimpleTextScreen';
@@ -161,11 +162,20 @@ function HomeStackComponent() {
         })}
       />
       <HomeStack.Screen name="Payment" component={PaymentScreen} />
-      <HomeStack.Screen
-        name="PaymentGateway"
-        component={PaymentGatewayScreen}
-      />
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
+      <HomeStack.Group screenOptions={{animationEnabled: true}}>
+        <HomeStack.Screen name="UserGuide" component={UserGuideScreen} />
+        <HomeStack.Screen name="UserGuideHome" component={GuideHomeScreen} />
+        <HomeStack.Screen
+          name="UserGuideSelectRegion"
+          component={GuideSelectRegionScreen}
+        />
+        <HomeStack.Screen
+          name="PaymentGateway"
+          component={PaymentGatewayScreen}
+        />
+        <HomeStack.Screen name="SelectCard" component={SelectCardScreen} />
+      </HomeStack.Group>
       <HomeStack.Screen name="PaymentResult" component={PaymentResultScreen} />
       <HomeStack.Screen
         name="PurchaseDetail"
@@ -180,13 +190,16 @@ function CartStackComponent() {
     <CartStack.Navigator screenOptions={screenOptions}>
       <CartStack.Screen name="Cart" component={CartScreen} />
       <CartStack.Screen name="Payment" component={PaymentScreen} />
-      <CartStack.Screen
-        name="PaymentGateway"
-        component={PaymentGatewayScreen}
-      />
       <CartStack.Screen name="PymMethod" component={PymMethodScreen} />
       <CartStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <CartStack.Screen name="PaymentResult" component={PaymentResultScreen} />
+      <CartStack.Group screenOptions={{animationEnabled: true}}>
+        <CartStack.Screen
+          name="PaymentGateway"
+          component={PaymentGatewayScreen}
+        />
+        <CartStack.Screen name="SelectCard" component={SelectCardScreen} />
+      </CartStack.Group>
     </CartStack.Navigator>
   );
 }
@@ -203,12 +216,15 @@ function EsimStackComponent() {
       <EsimStack.Screen name="QrInfo" component={QrInfoScreen} />
       <EsimStack.Screen name="UserGuide" component={UserGuideScreen} />
       <EsimStack.Screen name="Payment" component={PaymentScreen} />
-      <EsimStack.Screen
-        name="PaymentGateway"
-        component={PaymentGatewayScreen}
-      />
       <EsimStack.Screen name="PymMethod" component={PymMethodScreen} />
       <EsimStack.Screen name="PaymentResult" component={PaymentResultScreen} />
+      <EsimStack.Group screenOptions={{animationEnabled: true}}>
+        <EsimStack.Screen
+          name="PaymentGateway"
+          component={PaymentGatewayScreen}
+        />
+        <EsimStack.Screen name="SelectCard" component={SelectCardScreen} />
+      </EsimStack.Group>
     </EsimStack.Navigator>
   );
 }
@@ -226,10 +242,6 @@ function MyPageStackComponent() {
       {/* <MyPageStack.Screen name="Pedometer" component={PedometerScreen} /> */}
       <MyPageStack.Screen name="Invite" component={InviteScreen} />
       <MyPageStack.Screen name="Payment" component={PaymentScreen} />
-      <MyPageStack.Screen
-        name="PaymentGateway"
-        component={PaymentGatewayScreen}
-      />
       <MyPageStack.Screen name="PymMethod" component={PymMethodScreen} />
       <MyPageStack.Screen
         name="PaymentResult"
@@ -250,6 +262,13 @@ function MyPageStackComponent() {
           headerShown: false,
         })}
       />
+      <MyPageStack.Group screenOptions={{animationEnabled: true}}>
+        <MyPageStack.Screen
+          name="PaymentGateway"
+          component={PaymentGatewayScreen}
+        />
+        <MyPageStack.Screen name="SelectCard" component={SelectCardScreen} />
+      </MyPageStack.Group>
     </MyPageStack.Navigator>
   );
 }
