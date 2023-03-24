@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     marginBottom: 64,
   },
   headerTitle: {
@@ -168,7 +168,6 @@ export type GuideOption = 'esimReg' | 'checkSetting';
 
 export const renderHeader = (onPress: () => void) => (
   <View style={styles.header}>
-    <AppBackButton style={styles.headerTitle} />
     <AppSvgIcon
       key="closeModal"
       onPress={onPress}
