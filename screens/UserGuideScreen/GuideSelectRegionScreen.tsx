@@ -110,7 +110,7 @@ const GuideSelectRegionScreen: React.FC<GuideSelectRegionScreenProps> = ({
         renderBtn(
           v,
           () => {
-            navigation.navigate('UserGuide', {
+            navigation.navigate('UserGuideStep', {
               guideOption,
               region: v,
             });

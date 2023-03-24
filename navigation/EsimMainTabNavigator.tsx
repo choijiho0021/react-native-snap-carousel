@@ -135,6 +135,21 @@ function HomeStackComponent() {
       <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <HomeStack.Screen name="Contact" component={ContactScreen} />
       <HomeStack.Screen name="ContactBoard" component={ContactBoardScreen} />
+      <HomeStack.Screen
+        name="UserGuideStep"
+        component={UserGuideScreen}
+        options={{animationEnabled: true}}
+      />
+      <HomeStack.Screen
+        name="UserGuide"
+        component={GuideHomeScreen}
+        options={{animationEnabled: true}}
+      />
+      <HomeStack.Screen
+        name="UserGuideSelectRegion"
+        component={GuideSelectRegionScreen}
+        options={{animationEnabled: true}}
+      />
       <HomeStack.Screen name="GiftGuide" component={GiftGuideScreen} />
       <HomeStack.Screen name="Invite" component={InviteScreen} />
       <HomeStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />
