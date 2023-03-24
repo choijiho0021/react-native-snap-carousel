@@ -3,7 +3,7 @@ import {Reducer} from 'redux-actions';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import AsyncStorage from '@react-native-community/async-storage';
+import moment from 'moment';
 import {API, Country} from '@/redux/api';
 import {
   Currency,
@@ -13,7 +13,12 @@ import {
 } from '@/redux/api/productApi';
 import {actions as PromotionActions} from './promotion';
 import utils from '@/redux/api/utils';
-import {cachedApi} from '@/redux/api/api';
+import {retrieveData, storeData} from '@/utils/utils';
+
+const getPaymentRule = createAsyncThunk(
+  'product/getPaymentRule',
+  API.Payment.getRokebiPaymentRule,
+);
 
 const getLocalOp = createAsyncThunk(
   'product/getLocalOp',
@@ -64,27 +69,7 @@ const getProdByUuid = createAsyncThunk(
 
 const getProductByLocalOp = createAsyncThunk(
   'product/getProductByLocalOp',
-  async (partnerId: string, {fulfillWithValue}) => {
-    return cachedApi(
-      `cache.prod.${partnerId}`,
-      API.Product.getProductByLocalOp,
-    )(partnerId, {fulfillWithValue});
-  },
-);
-
-const init = createAsyncThunk(
-  'product/init',
-  async (reloadAll: boolean, {dispatch}) => {
-    const reload = true;
-
-    await dispatch(getLocalOp(reload));
-    await dispatch(getProdCountry(reload));
-    await dispatch(getProductByCountry(reload));
-
-    await dispatch(PromotionActions.getPromotion(reload));
-    await dispatch(PromotionActions.getPromotionStat(reload));
-    await dispatch(PromotionActions.getGiftBgImages(reload));
-  },
+  API.Product.getProductByLocalOp,
 );
 
 const getProdOfPartner = createAsyncThunk(
@@ -99,6 +84,40 @@ const getProdOfPartner = createAsyncThunk(
         dispatch(getProductByLocalOp(partnerId[i]));
       }
     }
+  },
+);
+
+const init = createAsyncThunk(
+  'product/init',
+  async (reloadAll: boolean, {dispatch}) => {
+    let reload = reloadAll || false;
+
+    if (!reload) {
+      const timestamp = await retrieveData('cache.timestamp');
+      if (!timestamp) reload = true;
+      else {
+        const rsp = await dispatch(getPaymentRule()).unwrap();
+        if (rsp?.timestamp_prod > timestamp) reload = true;
+        console.log(
+          '@@@ check timestamp',
+          reload,
+          rsp?.timestamp_prod,
+          timestamp,
+        );
+      }
+    }
+
+    if (reload) {
+      storeData('cache.timestamp', moment().zone(-540).format());
+    }
+
+    await dispatch(getLocalOp(reload));
+    await dispatch(getProdCountry(reload));
+    await dispatch(getProductByCountry(reload));
+
+    await dispatch(PromotionActions.getPromotion(reload));
+    await dispatch(PromotionActions.getPromotionStat(reload));
+    await dispatch(PromotionActions.getGiftBgImages(reload));
   },
 );
 
@@ -124,6 +143,10 @@ export interface ProductModelState {
   prodByPartner: ImmutableMap<string, RkbProduct[]>;
   cmiProdByPartner: ImmutableMap<string, RkbProduct[]>;
   prodCountry: string[];
+  rule: Record<string, string> & {
+    timestamp_prod?: string;
+    inicis_enabled?: string;
+  };
 }
 
 const initialState: ProductModelState = {
@@ -139,6 +162,7 @@ const initialState: ProductModelState = {
   prodByPartner: ImmutableMap(),
   cmiProdByPartner: ImmutableMap(),
   prodCountry: [],
+  rule: {},
 };
 
 const slice = createSlice({
@@ -256,8 +280,8 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(getProductByCountry.fulfilled, (state, action) => {
-      const {result, objects} = action.payload;
+    builder.addCase(getProductByCountry.fulfilled, (state, {payload}) => {
+      const {result, objects} = payload;
 
       if (result === 0) {
         state.prodByCountry = objects.map((o) => {
@@ -320,6 +344,10 @@ const slice = createSlice({
       } else {
         state.ready = true;
       }
+    });
+
+    builder.addCase(getPaymentRule.fulfilled, (state, {payload}) => {
+      state.rule = payload;
     });
   },
 });

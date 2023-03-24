@@ -192,11 +192,9 @@ const getRokebiPayment = ({
   );
 };
 
-const getRokebiPaymentRule = ({token}: {token: string}) => {
+const getRokebiPaymentRule = () => {
   return api.callHttpGet(
     `${api.httpUrl(api.path.rokApi.rokebi.paymentRule, '')}?_format=json`,
-    (v) => v,
-    api.withToken(token, 'json'),
   );
 };
 

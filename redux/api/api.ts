@@ -2,11 +2,8 @@
 /* eslint-disable eqeqeq */
 import {Buffer} from 'buffer';
 import _ from 'underscore';
-import AsyncStorage from '@react-native-community/async-storage';
 import Env from '@/environment';
-import userApi from './userApi';
-import {API} from '@/redux/api';
-import {retrieveData} from '@/utils/utils';
+import {retrieveData, storeData} from '@/utils/utils';
 import store from '@/store';
 import {actions as ToastActions, Toast} from '../modules/toast';
 
@@ -267,19 +264,21 @@ export const cachedApi =
   async (param: A, {fulfillWithValue}) => {
     const rsp = await apiToCall(param);
     if (rsp.result === 0) {
-      AsyncStorage.setItem(key, JSON.stringify(rsp));
+      console.log('@@@ store', key);
+      storeData(key, JSON.stringify(rsp));
     } else if (rsp.result === E_REQUEST_FAILED) {
-      const cache = await AsyncStorage.getItem(key);
+      const cache = await retrieveData(key);
       if (cache) return fulfillWithValue(JSON.parse(cache));
     }
     return fulfillWithValue(rsp);
   };
 
 export const reloadOrCallApi =
-  <A, T>(key: string, param: A, apiToCall: () => Promise<T>) =>
+  <A, T>(key: string, param: A, apiToCall: (p: A) => Promise<T>) =>
   async (reload: boolean, {fulfillWithValue}) => {
     if (!reload) {
-      const cache = await AsyncStorage.getItem(key);
+      console.log('@@@ reload', key);
+      const cache = await retrieveData(key);
       if (cache) return fulfillWithValue(JSON.parse(cache));
     }
     return cachedApi(key, apiToCall)(param, {fulfillWithValue});
