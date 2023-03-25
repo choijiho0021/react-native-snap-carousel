@@ -35,16 +35,12 @@ import {
   InfoAction,
   InfoModelState,
 } from '@/redux/modules/info';
-import {
-  actions as profileActions,
-  ProfileAction,
-  ProfileModelState,
-} from '@/redux/modules/profile';
 import i18n from '@/utils/i18n';
 import AppModal from '@/components/AppModal';
 import AppStyledText from '@/components/AppStyledText';
 import PymButtonList from '@/components/AppPaymentGateway/PymButtonList';
 import DropDownHeader from './DropDownHeader';
+import {ProductModelState} from '@/redux/modules/product';
 
 const infoKey = 'pym:benefit';
 
@@ -136,11 +132,10 @@ type PymMethodScreenProps = {
 
   account: AccountModelState;
   cart: CartModelState;
-  profile: ProfileModelState;
   info: InfoModelState;
+  product: ProductModelState;
 
   action: {
-    profile: ProfileAction;
     cart: CartAction;
     info: InfoAction;
   };
@@ -153,8 +148,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   route,
   account,
   cart,
-  action,
   info,
+  product,
+  action,
 }) => {
   const [selected, setSelected] = useState('pym:ccard');
   const [clickable, setClickable] = useState(true);
@@ -162,7 +158,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [consent, setConsent] = useState<boolean>();
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
   const [showChargeAlert, setShowChargeAlert] = useState(false);
-  const paymentRule = useRef<Record<string, string>>();
   const {pymPrice, deduct} = useMemo(() => cart, [cart]);
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
 
@@ -194,15 +189,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       page: `Payment - ${route.params?.mode}`,
     });
   }, [navigation, route.params]);
-
-  useEffect(() => {
-    const {token} = account;
-    if (paymentRule.current === undefined) {
-      API.Payment.getRokebiPaymentRule({token}).then((rsp) => {
-        paymentRule.current = rsp;
-      });
-    }
-  }, [account]);
 
   const onSubmit = useCallback(
     (passingAlert: boolean) => {
@@ -258,7 +244,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           pg: payMethod?.key,
           pay_method: payMethod?.method,
           merchant_uid: `${
-            paymentRule.current?.inicis_enabled ? 'r_' : 'i_'
+            product.rule.inicis_enabled === '1' ? 'r_' : 'i_'
           }${mobile}_${new Date().getTime()}`,
           name: i18n.t('appTitle'),
           amount: pymPrice?.value, // 실제 결제 금액 (로깨비캐시 제외)
@@ -270,17 +256,17 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           app_scheme: scheme,
           language: payMethod?.language || i18n.locale,
           digital: true,
-          paymentRule: paymentRule.current,
+          paymentRule: product.rule,
         } as PaymentParams;
 
         setClickable(true);
         navigation.navigate(
-          paymentRule.current?.inicis_enabled ? 'PaymentGateway' : 'Payment',
-          // paymentRule.current?.inicis_enabled
-          //   ? payMethod?.method === 'card'
-          //     ? 'SelectCard'
-          //     : 'PaymentGateway'
-          //   : 'Payment',
+          // product.rule.inicis_enabled === '1' ? 'PaymentGateway' : 'Payment',
+          product.rule.inicis_enabled === '1'
+            ? payMethod?.method === 'card'
+              ? 'SelectCard'
+              : 'PaymentGateway'
+            : 'Payment',
           params,
         );
       }
@@ -292,6 +278,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       deduct,
       mode,
       navigation,
+      product.rule,
       pymPrice?.value,
       selected,
     ],
@@ -470,17 +457,16 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 };
 
 export default connect(
-  ({account, cart, profile, info}: RootState) => ({
+  ({account, cart, info, product}: RootState) => ({
     account,
     cart,
-    profile,
     info,
+    product,
   }),
   (dispatch) => ({
     action: {
       account: bindActionCreators(accountActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
-      profile: bindActionCreators(profileActions, dispatch),
       info: bindActionCreators(infoActions, dispatch),
     },
   }),
