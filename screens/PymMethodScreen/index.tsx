@@ -261,12 +261,12 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         setClickable(true);
         navigation.navigate(
-          // product.rule.inicis_enabled === '1' ? 'PaymentGateway' : 'Payment',
-          product.rule.inicis_enabled === '1'
-            ? payMethod?.method === 'card'
-              ? 'SelectCard'
-              : 'PaymentGateway'
-            : 'Payment',
+          product.rule.inicis_enabled === '1' ? 'PaymentGateway' : 'Payment',
+          // product.rule.inicis_enabled === '1'
+          //   ? payMethod?.method === 'card'
+          //     ? 'SelectCard'
+          //     : 'PaymentGateway'
+          //   : 'Payment',
           params,
         );
       }
