@@ -14,7 +14,12 @@ import {
 import {actions as PromotionActions} from './promotion';
 import utils from '@/redux/api/utils';
 import {retrieveData, storeData} from '@/utils/utils';
-import {cachedApi} from '@/redux/api/api';
+import {reloadOrCallApi} from '@/redux/api/api';
+
+const getDevList = createAsyncThunk(
+  'product/getDevList',
+  reloadOrCallApi('cache.devList', undefined, API.Device.getDevList),
+);
 
 const getPaymentRule = createAsyncThunk(
   'product/getPaymentRule',
@@ -23,20 +28,12 @@ const getPaymentRule = createAsyncThunk(
 
 const getLocalOp = createAsyncThunk(
   'product/getLocalOp',
-  API.default.reloadOrCallApi(
-    'cache.localOp',
-    undefined,
-    API.Product.getLocalOp,
-  ),
+  reloadOrCallApi('cache.localOp', undefined, API.Product.getLocalOp),
 );
 
 const getProdCountry = createAsyncThunk(
   'product/getProdCountry',
-  API.default.reloadOrCallApi(
-    'cache.prodCountry',
-    undefined,
-    API.Product.getProdCountry,
-  ),
+  reloadOrCallApi('cache.prodCountry', undefined, API.Product.getProdCountry),
 );
 const getProdDetailCommon = createAsyncThunk(
   'product/getProdDetailCommon',
@@ -50,7 +47,7 @@ const getProdDetailInfo = createAsyncThunk(
 
 const getProductByCountry = createAsyncThunk(
   'product/getProdByCountry',
-  API.default.reloadOrCallApi(
+  reloadOrCallApi(
     'cache.prodByCountry',
     undefined,
     API.Product.productByCountry,
@@ -75,7 +72,7 @@ const getProductByLocalOp = createAsyncThunk(
 
 const getAllProduct = createAsyncThunk(
   'product/getAllProduct',
-  cachedApi('cache.allProd', API.Product.getProductByLocalOp),
+  reloadOrCallApi('cache.allProd', 'all', API.Product.getProductByLocalOp),
 );
 
 const getProdOfPartner = createAsyncThunk(
@@ -86,9 +83,7 @@ const getProdOfPartner = createAsyncThunk(
     } = getState() as RootState;
 
     for (let i = 0; i < partnerId.length; i++) {
-      console.log('@@@ check partner', partnerId[i]);
       if (!prodByLocalOp.has(partnerId[i])) {
-        console.log('@@@ load partner', partnerId[i]);
         dispatch(getProductByLocalOp(partnerId[i]));
       }
     }
@@ -106,12 +101,6 @@ const init = createAsyncThunk(
       else {
         const rsp = await dispatch(getPaymentRule()).unwrap();
         if (rsp?.timestamp_prod > timestamp) reload = true;
-        console.log(
-          '@@@ check timestamp',
-          reload,
-          rsp?.timestamp_prod,
-          timestamp,
-        );
       }
     }
 
@@ -152,9 +141,11 @@ export interface ProductModelState {
   cmiProdByPartner: ImmutableMap<string, RkbProduct[]>;
   prodCountry: string[];
   rule: Record<string, string> & {
-    timestamp_prod?: string;
-    inicis_enabled?: string;
+    timestamp_prod: string;
+    timestamp_dev: string;
+    inicis_enabled: string;
   };
+  devList: string[];
 }
 
 const initialState: ProductModelState = {
@@ -170,7 +161,12 @@ const initialState: ProductModelState = {
   prodByPartner: ImmutableMap(),
   cmiProdByPartner: ImmutableMap(),
   prodCountry: [],
-  rule: {},
+  rule: {
+    timestamp_dev: '',
+    timestamp_prod: '',
+    inicis_enabled: '1',
+  },
+  devList: [],
 };
 
 const reduceProdByLocalOp = (state, action) => {
@@ -342,15 +338,18 @@ const slice = createSlice({
     });
 
     builder.addCase(init.fulfilled, (state) => {
-      if (state.prodByCountry.length === 0) {
-        state.ready = false;
-      } else {
-        state.ready = true;
-      }
+      state.ready = state.prodByCountry.length !== 0;
     });
 
     builder.addCase(getPaymentRule.fulfilled, (state, {payload}) => {
       state.rule = payload;
+    });
+
+    builder.addCase(getDevList.fulfilled, (state, {payload}) => {
+      const {result, objects} = payload;
+      if (result === 0) {
+        state.devList = objects;
+      }
     });
   },
 });
@@ -368,6 +367,7 @@ export const actions = {
   getProdOfPartner,
   getProdByUuid,
   getAllProduct,
+  getDevList,
 };
 export type ProductAction = typeof actions;
 

@@ -237,7 +237,6 @@ const Esim: React.FC<EsimProps> = ({
   const [appUpdate, setAppUpdate] = useState('');
   const [appUpdateVisible, setAppUpdateVisible] = useState<boolean>();
   const [popUpList, setPopUpList] = useState<RkbPromotion[]>();
-  const [deviceList, setDeviceList] = useState<string[]>([]);
   const [isTop, setIsTop] = useState<boolean>(true);
   const initialized = useRef(false);
   const initNoti = useRef(false);
@@ -586,7 +585,7 @@ const Esim: React.FC<EsimProps> = ({
               style={styles.deviceScrollView}
               showsVerticalScrollIndicator={false}>
               <AppText style={[appStyles.normal16Text, {lineHeight: 24}]}>
-                {deviceList && deviceList.join(', ')}
+                {product.devList?.join(', ')}
                 {i18n.t('home:supportedDeviceBody')}
               </AppText>
             </ScrollView>
@@ -618,7 +617,7 @@ const Esim: React.FC<EsimProps> = ({
         )}
       </View>
     ),
-    [deviceList],
+    [product.devList],
   );
 
   useEffect(() => {
@@ -722,10 +721,11 @@ const Esim: React.FC<EsimProps> = ({
   useEffect(() => {
     async function getDevList() {
       if (isIOS) {
-        const resp = await API.Device.getDevList();
-        if (resp.result === 0) {
-          setDeviceList(resp.objects);
-        }
+        const tm = await retrieveData('cache.timestamp.dev');
+        const reload = product.rule.timestamp_dev > tm;
+        action.product.getDevList(reload);
+        if (reload)
+          storeData('cache.timestamp.dev', moment().zone(-540).format());
       }
 
       const deviceModel = DeviceInfo.getModel();
@@ -774,12 +774,12 @@ const Esim: React.FC<EsimProps> = ({
   useEffect(() => {
     // check timestamp
     const checkTimestamp = async () => {
-      const tm = await retrieveData('cache.prod.timestamp');
-      if (product.rule.timestamp_prod > tm) {
-        // reload data
-        action.product.getAllProduct('all');
-        storeData('cache.prod.timestamp', moment().zone(-540).format());
-      }
+      const tm = await retrieveData('cache.timestamp.prod');
+      const reload = product.rule.timestamp_prod > tm;
+      // reload data
+      action.product.getAllProduct(reload);
+      if (reload)
+        storeData('cache.timestamp.prod', moment().zone(-540).format());
     };
     checkTimestamp();
   }, [action.product, product.rule.timestamp_prod]);
