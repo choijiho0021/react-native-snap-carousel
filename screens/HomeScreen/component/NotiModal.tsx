@@ -167,12 +167,13 @@ const NotiModal: React.FC<NotiModalProps> = ({
   }, [activeSlide, popUpList.length]);
 
   useEffect(() => {
-    Image.getSize(
-      API.default.httpImageUrl(popUpList[0]?.notice?.image?.noti),
-      (width, height) => {
-        setImageHeight(Math.ceil(height * (modalImageSize / width)));
-      },
-    );
+    if (popUpList[0]?.notice?.image?.noti)
+      Image.getSize(
+        API.default.httpImageUrl(popUpList[0]?.notice?.image?.noti),
+        (width, height) => {
+          setImageHeight(Math.ceil(height * (modalImageSize / width)));
+        },
+      );
   }, [modalImageSize, popUpList]);
 
   return (
