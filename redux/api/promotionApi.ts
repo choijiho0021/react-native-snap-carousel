@@ -337,8 +337,9 @@ const invite = async (
 
 export type RkbExtraCoupon = {
   title: string;
-  field_image: string;
-  field_link: string;
+  image: string;
+  download: string;
+  uuid: string;
 };
 const toExtraCoupon = (data: RkbExtraCoupon[]): ApiResult<RkbExtraCoupon> => {
   if (_.isArray(data)) {
