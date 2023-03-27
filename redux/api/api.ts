@@ -3,7 +3,9 @@
 import {Buffer} from 'buffer';
 import _ from 'underscore';
 import Env from '@/environment';
-import {retrieveData, storeData} from '@/utils/utils';
+import userApi from './userApi';
+import {API} from '@/redux/api';
+import {removeData, retrieveData, storeData} from '@/utils/utils';
 import store from '@/store';
 import {actions as ToastActions, Toast} from '../modules/toast';
 
@@ -317,10 +319,15 @@ const callHttp = async <T>(
     }
 
     // 403, 401에러의 경우 기존의 로그인 정보를 이용하여 재로그인 시도 후 재시도
-    /*
-    if ((response.status === 403 || response.status === 401) && retry === 0) {
+    if (
+      (response.status === 403 || response.status === 401) &&
+      retry === 0 &&
+      !url.includes('user/login') &&
+      !url.includes('user/logout')
+    ) {
       const user = await retrieveData(API.User.KEY_MOBILE);
       const pass = await retrieveData(API.User.KEY_PIN);
+      await removeData(API.User.KEY_TOKEN);
 
       const isLoggedIn = await userApi.logIn({
         user,
@@ -330,7 +337,6 @@ const callHttp = async <T>(
         return await callHttp(url, param, callback, option, retry + 1);
       }
     }
-    */
 
     if (response.ok) {
       if (_.isFunction(callback)) {

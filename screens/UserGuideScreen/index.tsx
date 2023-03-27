@@ -244,7 +244,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
         </AppText>
         <AppSvgIcon
           key="closeModal"
-          onPress={() => [1, 2, 3].forEach(() => navigation.goBack())}
+          onPress={() => navigation.goBack()}
           name="closeModal"
         />
       </View>
@@ -465,7 +465,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
           source={getImage(getImageList(guideOption, region), 'pageLast')}
           resizeMode="contain"
         />
-        {region === 'korea' && guideOption === 'esimReg' ? (
+        {region === 'korea' ? (
           <View>
             <View
               style={[
@@ -489,9 +489,9 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
             </View>
             {renderArrowBtn('userGuide:checkSetting:title', () => {
               navigation.goBack();
-              navigation.navigate('UserGuide', {
+              navigation.navigate('UserGuideStep', {
                 guideOption: 'checkSetting',
-                region,
+                region: 'local',
               });
             })}
           </View>

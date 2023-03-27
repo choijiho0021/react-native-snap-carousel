@@ -149,8 +149,8 @@ function HomeStackComponent() {
       <HomeStack.Screen name="Payment" component={PaymentScreen} />
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
       <HomeStack.Group screenOptions={{animationEnabled: true}}>
-        <HomeStack.Screen name="UserGuide" component={UserGuideScreen} />
-        <HomeStack.Screen name="UserGuideHome" component={GuideHomeScreen} />
+        <HomeStack.Screen name="UserGuideStep" component={UserGuideScreen} />
+        <HomeStack.Screen name="UserGuide" component={GuideHomeScreen} />
         <HomeStack.Screen
           name="UserGuideSelectRegion"
           component={GuideSelectRegionScreen}
@@ -199,7 +199,7 @@ function EsimStackComponent() {
       <EsimStack.Screen name="ChargeHistory" component={ChargeHistoryScreen} />
       <EsimStack.Screen name="ChargeDetail" component={ChargeDetailScreen} />
       <EsimStack.Screen name="QrInfo" component={QrInfoScreen} />
-      <EsimStack.Screen name="UserGuide" component={UserGuideScreen} />
+      <EsimStack.Screen name="UserGuideStep" component={UserGuideScreen} />
       <EsimStack.Screen name="Payment" component={PaymentScreen} />
       <EsimStack.Screen name="PymMethod" component={PymMethodScreen} />
       <EsimStack.Screen name="PaymentResult" component={PaymentResultScreen} />
