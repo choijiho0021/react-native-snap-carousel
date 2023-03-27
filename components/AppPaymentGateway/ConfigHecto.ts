@@ -116,7 +116,7 @@ const pymMethod: Record<string, string[]> = {
   card: ['card', '', 'nxca_jt_il'],
   payco: ['corp', 'PAC', 'nxca_payco'],
   kakaopay: ['corp', 'KKP', 'nxca_kakao'],
-  naverpay: ['corp', 'NVP', 'hecto_test'],
+  naverpay: ['corp', 'NVP', 'hecto_test', 'CARD'],
 };
 
 export const hectoWebViewHtml = (info: PaymentParams) => {
@@ -124,11 +124,12 @@ export const hectoWebViewHtml = (info: PaymentParams) => {
   const pym = pymMethod[info.pay_method];
   if (!pym) return '';
 
-  const [method, corpPayCode, mchtId] = pym;
+  const [method, corpPayCode, mchtId, corpPayType] = pym;
   const data = {
     env: configHecto.PAYMENT_SERVER,
     method,
     corpPayCode,
+    corpPayType,
     mchtId,
     trdDt: now.format('YYYYMMDD'),
     trdTm: now.format('HHmmss'),
