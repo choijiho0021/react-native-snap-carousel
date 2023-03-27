@@ -81,7 +81,7 @@ const GuideSelectRegionScreen: React.FC<GuideSelectRegionScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      {renderHeader(() => [1, 2].forEach(() => navigation.goBack()))}
+      {renderHeader(() => navigation.goBack())}
       {renderTitle(i18n.t(`userGuide:selectRegion:${guideOption}:title`))}
       <View style={{height: 6}} />
       {guideOption === 'esimReg' ? (
@@ -110,7 +110,7 @@ const GuideSelectRegionScreen: React.FC<GuideSelectRegionScreenProps> = ({
         renderBtn(
           v,
           () => {
-            navigation.navigate('UserGuide', {
+            navigation.navigate('UserGuideStep', {
               guideOption,
               region: v,
             });
