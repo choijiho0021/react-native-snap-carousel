@@ -77,6 +77,7 @@ const path = {
   storeSubs: 'json/store',
   rkbtalk: 'json/rkbtalk',
   profile: 'json/profile',
+  extraCoupon: 'json/coupon/extra',
 
   gift: {
     content: 'rokebi/gift',
@@ -277,7 +278,6 @@ export const reloadOrCallApi =
   <A, T>(key: string, param: A, apiToCall: (p: A) => Promise<T>) =>
   async (reload: boolean, {fulfillWithValue}) => {
     if (!reload) {
-      console.log('@@@ reload', key);
       const cache = await retrieveData(key);
       if (cache) return fulfillWithValue(JSON.parse(cache));
     }

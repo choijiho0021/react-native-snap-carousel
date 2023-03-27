@@ -335,6 +335,25 @@ const invite = async (
   }
 };
 
+export type RkbExtraCoupon = {
+  title: string;
+  field_image: string;
+  field_link: string;
+};
+const toExtraCoupon = (data: RkbExtraCoupon[]): ApiResult<RkbExtraCoupon> => {
+  if (_.isArray(data)) {
+    return api.success(data);
+  }
+  return api.failure(api.E_NOT_FOUND);
+};
+
+const getExtraCoupon = () => {
+  return api.callHttpGet<RkbExtraCoupon>(
+    `${api.httpUrl(api.path.extraCoupon)}?_format=json`,
+    toExtraCoupon,
+  );
+};
+
 export default {
   getPromotion,
   getStat,
@@ -344,4 +363,5 @@ export default {
   check,
   invite,
   buildLink,
+  getExtraCoupon,
 };
