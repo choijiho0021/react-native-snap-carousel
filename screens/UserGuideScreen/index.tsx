@@ -465,7 +465,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
           source={getImage(getImageList(guideOption, region), 'pageLast')}
           resizeMode="contain"
         />
-        {region === 'korea' && guideOption === 'esimReg' ? (
+        {region === 'korea' ? (
           <View>
             <View
               style={[
@@ -491,7 +491,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
               navigation.goBack();
               navigation.navigate('UserGuideStep', {
                 guideOption: 'checkSetting',
-                region,
+                region: 'local',
               });
             })}
           </View>

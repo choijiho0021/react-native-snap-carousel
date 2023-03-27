@@ -594,41 +594,7 @@ export const getGuideImages = (
         },
         {
           key: 'page4',
-          title: renderText('userGuide:stepsTitle3:ios:checkSetting'),
-          step: 2,
-          isHeader: true,
-          isLocalBox: () => renderIsLocalBox(),
-        },
-        {
-          key: 'page5',
-          title: renderText('userGuide:stepsTitle4:ios:checkSetting'),
-          localTitle: renderText(
-            'userGuide:stepsTitle4:ios:checkSetting:local',
-          ),
-          step: 1,
-          stepPreText: 'local',
-        },
-        {
-          key: 'page6',
-          title: renderText('userGuide:stepsTitle5:ios:checkSetting'),
-          step: 2,
-          stepPreText: 'local',
-        },
-        {
-          key: 'page7',
-          title: renderText('userGuide:stepsTitle6:ios:checkSetting'),
-          step: 3,
-          stepPreText: 'local',
-        },
-        {
-          key: 'page8',
-          title: renderText('userGuide:stepsTitle7:ios:checkSetting'),
-          step: 4,
-          stepPreText: 'local',
-        },
-        {
-          key: 'page9',
-          title: renderText('userGuide:stepsTitle8:ios:checkSetting'),
+          title: renderText('userGuide:stepsTitle4:ios:checkSetting:new'),
           step: 99,
         },
       ];
