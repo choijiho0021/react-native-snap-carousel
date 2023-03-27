@@ -3,7 +3,7 @@ import {Reducer} from 'redux-actions';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import AsyncStorage from '@react-native-community/async-storage';
+import moment from 'moment';
 import {API, Country} from '@/redux/api';
 import {
   Currency,
@@ -13,24 +13,27 @@ import {
 } from '@/redux/api/productApi';
 import {actions as PromotionActions} from './promotion';
 import utils from '@/redux/api/utils';
-import {cachedApi} from '@/redux/api/api';
+import {retrieveData, storeData} from '@/utils/utils';
+import {reloadOrCallApi} from '@/redux/api/api';
+
+const getDevList = createAsyncThunk(
+  'product/getDevList',
+  reloadOrCallApi('cache.devList', undefined, API.Device.getDevList),
+);
+
+const getPaymentRule = createAsyncThunk(
+  'product/getPaymentRule',
+  API.Payment.getRokebiPaymentRule,
+);
 
 const getLocalOp = createAsyncThunk(
   'product/getLocalOp',
-  API.default.reloadOrCallApi(
-    'cache.localOp',
-    undefined,
-    API.Product.getLocalOp,
-  ),
+  reloadOrCallApi('cache.localOp', undefined, API.Product.getLocalOp),
 );
 
 const getProdCountry = createAsyncThunk(
   'product/getProdCountry',
-  API.default.reloadOrCallApi(
-    'cache.prodCountry',
-    undefined,
-    API.Product.getProdCountry,
-  ),
+  reloadOrCallApi('cache.prodCountry', undefined, API.Product.getProdCountry),
 );
 const getProdDetailCommon = createAsyncThunk(
   'product/getProdDetailCommon',
@@ -44,7 +47,7 @@ const getProdDetailInfo = createAsyncThunk(
 
 const getProductByCountry = createAsyncThunk(
   'product/getProdByCountry',
-  API.default.reloadOrCallApi(
+  reloadOrCallApi(
     'cache.prodByCountry',
     undefined,
     API.Product.productByCountry,
@@ -64,27 +67,12 @@ const getProdByUuid = createAsyncThunk(
 
 const getProductByLocalOp = createAsyncThunk(
   'product/getProductByLocalOp',
-  async (partnerId: string, {fulfillWithValue}) => {
-    return cachedApi(
-      `cache.prod.${partnerId}`,
-      API.Product.getProductByLocalOp,
-    )(partnerId, {fulfillWithValue});
-  },
+  API.Product.getProductByLocalOp,
 );
 
-const init = createAsyncThunk(
-  'product/init',
-  async (reloadAll: boolean, {dispatch}) => {
-    const reload = true;
-
-    await dispatch(getLocalOp(reload));
-    await dispatch(getProdCountry(reload));
-    await dispatch(getProductByCountry(reload));
-
-    await dispatch(PromotionActions.getPromotion(reload));
-    await dispatch(PromotionActions.getPromotionStat(reload));
-    await dispatch(PromotionActions.getGiftBgImages(reload));
-  },
+const getAllProduct = createAsyncThunk(
+  'product/getAllProduct',
+  reloadOrCallApi('cache.allProd', 'all', API.Product.getProductByLocalOp),
 );
 
 const getProdOfPartner = createAsyncThunk(
@@ -99,6 +87,34 @@ const getProdOfPartner = createAsyncThunk(
         dispatch(getProductByLocalOp(partnerId[i]));
       }
     }
+  },
+);
+
+const init = createAsyncThunk(
+  'product/init',
+  async (reloadAll: boolean, {dispatch}) => {
+    let reload = reloadAll || false;
+
+    if (!reload) {
+      const timestamp = await retrieveData('cache.timestamp');
+      if (!timestamp) reload = true;
+      else {
+        const rsp = await dispatch(getPaymentRule()).unwrap();
+        if (rsp?.timestamp_prod > timestamp) reload = true;
+      }
+    }
+
+    if (reload) {
+      storeData('cache.timestamp', moment().zone(-540).format());
+    }
+
+    await dispatch(getLocalOp(reload));
+    await dispatch(getProdCountry(reload));
+    await dispatch(getProductByCountry(reload));
+
+    await dispatch(PromotionActions.getPromotion(reload));
+    await dispatch(PromotionActions.getPromotionStat(reload));
+    await dispatch(PromotionActions.getGiftBgImages(reload));
   },
 );
 
@@ -124,6 +140,12 @@ export interface ProductModelState {
   prodByPartner: ImmutableMap<string, RkbProduct[]>;
   cmiProdByPartner: ImmutableMap<string, RkbProduct[]>;
   prodCountry: string[];
+  rule: Record<string, string> & {
+    timestamp_prod: string;
+    timestamp_dev: string;
+    inicis_enabled: string;
+  };
+  devList: string[];
 }
 
 const initialState: ProductModelState = {
@@ -139,6 +161,38 @@ const initialState: ProductModelState = {
   prodByPartner: ImmutableMap(),
   cmiProdByPartner: ImmutableMap(),
   prodCountry: [],
+  rule: {
+    timestamp_dev: '',
+    timestamp_prod: '',
+    inicis_enabled: '1',
+  },
+  devList: [],
+};
+
+const reduceProdByLocalOp = (state, action) => {
+  const {result, objects} = action.payload;
+
+  if (result === 0 && objects.length > 0) {
+    const group = objects.reduce(
+      (acc, cur) =>
+        acc.update(cur.partnerId, (prev) =>
+          prev ? prev.concat(cur.key) : [cur.key],
+        ),
+      ImmutableMap<string, string[]>(),
+    );
+
+    state.prodByLocalOp = state.prodByLocalOp.merge(group);
+    state.prodList = state.prodList.merge(
+      ImmutableMap(objects.map((o) => [o.key, o])),
+    );
+
+    const prodListbyPartner = group.map((v) =>
+      v.map((k) => state.prodList.get(k)),
+    );
+    state.prodByPartner = state.prodByPartner.merge(prodListbyPartner);
+  } else if (action.meta.arg !== 'all') {
+    state.prodByPartner = state.prodByPartner.set(action.meta.arg, []);
+  }
 };
 
 const slice = createSlice({
@@ -256,8 +310,8 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(getProductByCountry.fulfilled, (state, action) => {
-      const {result, objects} = action.payload;
+    builder.addCase(getProductByCountry.fulfilled, (state, {payload}) => {
+      const {result, objects} = payload;
 
       if (result === 0) {
         state.prodByCountry = objects.map((o) => {
@@ -275,50 +329,26 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(getProductByLocalOp.fulfilled, (state, action) => {
-      const {result, objects} = action.payload;
+    builder.addCase(getProductByLocalOp.fulfilled, reduceProdByLocalOp);
 
-      if (result === 0 && objects.length > 0) {
-        state.prodByLocalOp = state.prodByLocalOp.set(
-          objects[0].partnerId,
-          objects.map((o) => o.key),
-        );
-        state.prodList = state.prodList.merge(
-          ImmutableMap(objects.map((o) => [o.key, o])),
-        );
-
-        const prodListbyPartner = state.prodByLocalOp
-          .get(objects[0].partnerId)
-          ?.map((p2) => state.prodList.get(p2));
-
-        state.prodByPartner = state.prodByPartner.set(
-          objects[0].partnerId,
-          prodListbyPartner,
-        );
-      } else {
-        state.prodByPartner = state.prodByPartner.set(action.meta.arg, []);
-      }
-    });
+    builder.addCase(getAllProduct.fulfilled, reduceProdByLocalOp);
 
     builder.addCase(init.rejected, (state) => {
       state.ready = false;
     });
-    builder.addCase(init.fulfilled, (state) => {
-      // const {prodByCountry, prodCountry, localOp} = action.payload;
-      // if (prodByCountry) {
-      //   state.prodByCountry = JSON.parse(prodByCountry);
-      // }
-      // if (prodCountry) {
-      //   state.prodCountry = JSON.parse(prodCountry);
-      // }
-      // if (localOp) {
-      //   state.localOpList = ImmutableMap(JSON.parse(localOp));
-      // }
 
-      if (state.prodByCountry.length === 0) {
-        state.ready = false;
-      } else {
-        state.ready = true;
+    builder.addCase(init.fulfilled, (state) => {
+      state.ready = state.prodByCountry.length !== 0;
+    });
+
+    builder.addCase(getPaymentRule.fulfilled, (state, {payload}) => {
+      state.rule = payload;
+    });
+
+    builder.addCase(getDevList.fulfilled, (state, {payload}) => {
+      const {result, objects} = payload;
+      if (result === 0) {
+        state.devList = objects;
       }
     });
   },
@@ -336,6 +366,8 @@ export const actions = {
   init,
   getProdOfPartner,
   getProdByUuid,
+  getAllProduct,
+  getDevList,
 };
 export type ProductAction = typeof actions;
 

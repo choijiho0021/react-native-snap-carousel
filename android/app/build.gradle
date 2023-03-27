@@ -180,7 +180,7 @@ android {
         multiDexEnabled true
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
-        versionCode 54
+        versionCode 60
         versionName "1.2.9"
         multiDexEnabled true
         resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
@@ -432,6 +432,7 @@ dependencies {
     // Add the following if you are using the Adjust SDK inside web views on your app
     implementation 'com.adjust.sdk:adjust-android-webbridge:4.31.1'
     implementation project(':react-native-system-setting')
+    implementation 'com.facebook.fresco:animated-gif:2.5.0'
 
      if (enableHermes) {
          def hermesPath = "../../node_modules/hermes-engine/android/";

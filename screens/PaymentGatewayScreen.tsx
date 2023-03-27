@@ -77,7 +77,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       if (status !== 'cancel') {
         const resp = await API.Payment.getRokebiPayment({
           key: pymInfo.merchant_uid,
-          pg: params.card ? params.paymentRule?.[params.card] : '',
+          pg: params.paymentRule?.[params.card || params.pay_method] || '',
           token: account.token,
         });
 
@@ -100,6 +100,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       action.cart,
       navigation,
       params.card,
+      params.pay_method,
       params.paymentRule,
       pymInfo,
     ],

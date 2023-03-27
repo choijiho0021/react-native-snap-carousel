@@ -34,7 +34,7 @@ import ShortcutBadge from 'react-native-app-badge';
 import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import VersionCheck from 'react-native-version-check';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {isDeviceSize, isFolderOpen} from '@/constants/SliderEntry.style';
+import {isFolderOpen} from '@/constants/SliderEntry.style';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -70,12 +70,13 @@ import {
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
 import PromotionCarousel from './component/PromotionCarousel';
-import {useInterval} from '@/utils/useInterval';
 import NotiModal from './component/NotiModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
 import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
+import {retrieveData, storeData} from '@/utils/utils';
+import LocalModal from './component/LocalModal';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -83,10 +84,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-  },
-  row: {
-    display: 'flex',
-    flexDirection: 'row',
   },
   title: {
     ...appStyles.title,
@@ -172,111 +169,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 2,
   },
-  okBtnContainer: {
-    backgroundColor: colors.white,
-    marginBottom: 16,
-    marginTop: 12,
-  },
-  okButton: {
-    ...appStyles.normal16Text,
-    height: 52,
-    backgroundColor: colors.clearBlue,
-    textAlign: 'center',
-    color: '#ffffff',
-  },
-  localModalTitle: {
-    marginBottom: 24,
-  },
-  localModalTitleText: {
-    ...appStyles.bold24Text,
-    lineHeight: 34,
-  },
-  localModalBody: {
-    padding: 20,
-    backgroundColor: colors.backGrey,
-    marginBottom: 12,
-    flexDirection: 'row',
-    borderRadius: 3,
-  },
-  localModalBodyIcon: {
-    marginRight: 6,
-    marginTop: 2,
-  },
-  localModalBodyTitle: {
-    ...appStyles.bold20Text,
-    color: colors.clearBlue,
-    lineHeight: 24,
-    marginBottom: 4,
-  },
-  localModalBodyText: {
-    ...appStyles.medium16,
-    fontSize: isDeviceSize('medium', true) ? 14 : 16,
-    letterSpacing: isDeviceSize('medium', true) ? 0 : -0.48,
-    lineHeight: isDeviceSize('medium', true) ? 20 : 22,
-    color: colors.black,
-  },
-  localModalBodyTextBold: {
-    ...appStyles.medium16,
-    fontSize: isDeviceSize('medium', true) ? 14 : 16,
-    letterSpacing: isDeviceSize('medium', true) ? 0 : -0.48,
-    lineHeight: isDeviceSize('medium', true) ? 20 : 22,
-    color: colors.black,
-    fontWeight: 'bold',
-  },
-  bottom: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingBottom: 10,
-  },
-  underLine: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.lightGrey,
-  },
-  bottomText: {
-    ...appStyles.medium14,
-    lineHeight: 20,
-    color: colors.warmGrey,
-  },
-  popupNotice: {
-    marginTop: 16,
-  },
-  popupNoticeTitle: {
-    ...appStyles.bold16Text,
-    lineHeight: 24,
-    color: colors.darkBlue,
-    marginBottom: 2,
-  },
-  localNoticePopupIcon: {
-    alignSelf: 'center',
-    marginTop: 6,
-    marginBottom: 5,
-    borderWidth: 1,
-    borderColor: colors.whiteFive,
-    borderRadius: 10,
-
-    ...Platform.select({
-      ios: {
-        shadowColor: 'rgb(52, 62, 95)',
-        shadowOpacity: 0.2,
-        shadowRadius: 2,
-        shadowOffset: {
-          height: 1,
-          width: 1,
-        },
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
-  },
-  localNoticePopupText: {
-    ...appStyles.semiBold14Text,
-    lineHeight: 20,
-    color: colors.warmGrey,
-    alignSelf: 'center',
-    marginBottom: 2,
-  },
 });
 
 type EsimScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Esim'>;
@@ -296,8 +188,6 @@ type EsimProps = {
     order: OrderAction;
     noti: NotiAction;
     cart: CartAction;
-  };
-  actions: {
     modal: ModalAction;
   };
 };
@@ -311,7 +201,6 @@ const Esim: React.FC<EsimProps> = ({
   product,
   account,
   noti,
-  actions,
 }) => {
   const [isDevModalVisible, setIsDevModalVisible] = useState<boolean>(true);
   const [index, setIndex] = useState(0);
@@ -348,7 +237,6 @@ const Esim: React.FC<EsimProps> = ({
   const [appUpdate, setAppUpdate] = useState('');
   const [appUpdateVisible, setAppUpdateVisible] = useState<boolean>();
   const [popUpList, setPopUpList] = useState<RkbPromotion[]>();
-  const [deviceList, setDeviceList] = useState<string[]>([]);
   const [isTop, setIsTop] = useState<boolean>(true);
   const initialized = useRef(false);
   const initNoti = useRef(false);
@@ -430,124 +318,9 @@ const Esim: React.FC<EsimProps> = ({
       action.product.getProdOfPartner(info.partnerList);
       navigation.navigate('Country', {
         partner: info.partnerList,
-        maxDiscount: Number(info.max_discount),
       });
     },
     [action.product, navigation],
-  );
-
-  const okHandler = useCallback(
-    (info: RkbPriceInfo) => {
-      actions.modal.closeModal();
-      navToCountry(info);
-    },
-    [actions.modal, navToCountry],
-  );
-
-  const localModal = useCallback(
-    (
-      info: RkbPriceInfo,
-      localOpName: string,
-      ccode: string[],
-      localOpKey: string,
-    ) => {
-      return (
-        <SafeAreaView style={{flex: 1}}>
-          <Pressable
-            style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}
-            onPress={() => actions.modal.closeModal()}>
-            <Pressable
-              onPress={() => {}}
-              style={{
-                marginTop: 'auto',
-                paddingTop: 32,
-                paddingHorizontal: 20,
-                backgroundColor: 'white',
-                borderTopLeftRadius: 8,
-                borderTopRightRadius: 8,
-              }}>
-              <View style={styles.localModalTitle}>
-                <AppText style={styles.localModalTitleText}>
-                  {i18n.t('local:modal:title', {
-                    localOpName,
-                  })}
-                </AppText>
-              </View>
-              {(ccode.includes('TH') ? [1, 2] : [1]).map((k) => (
-                <View style={styles.localModalBody} key={k}>
-                  <View style={{flex: 1}}>
-                    <View style={styles.row}>
-                      <AppSvgIcon
-                        style={styles.localModalBodyIcon}
-                        name={k === 1 ? 'localNotice1' : 'localNotice2'}
-                      />
-                      <AppText style={styles.localModalBodyTitle}>
-                        {i18n.t(
-                          `local:modal:notice${k}${k === 2 ? ':th' : ''}:title`,
-                        )}
-                      </AppText>
-                    </View>
-                    <AppStyledText
-                      text={i18n.t(
-                        `local:modal:notice${k}${k === 2 ? ':th' : ''}:body`,
-                      )}
-                      textStyle={styles.localModalBodyText}
-                      format={{b: styles.localModalBodyTextBold}}
-                    />
-                    {!ccode.includes('TH') && (
-                      <View style={styles.popupNotice}>
-                        <AppText style={styles.popupNoticeTitle}>
-                          {i18n.t('local:modal:notice2:title')}
-                        </AppText>
-                        <AppStyledText
-                          text={i18n.t('local:modal:notice2:body')}
-                          textStyle={styles.localModalBodyText}
-                          format={{b: styles.localModalBodyTextBold}}
-                        />
-
-                        <View style={styles.localNoticePopupIcon}>
-                          <AppSvgIcon name="localNoticePopup" />
-                        </View>
-
-                        <AppText style={styles.localNoticePopupText}>
-                          {i18n.t('local:modal:popup:notice')}
-                        </AppText>
-                      </View>
-                    )}
-                  </View>
-                </View>
-              ))}
-              <View style={styles.okBtnContainer}>
-                <AppButton
-                  style={styles.okButton}
-                  title={i18n.t('local:ok')}
-                  type="primary"
-                  onPress={() => {
-                    okHandler(info);
-                  }}
-                />
-              </View>
-              <Pressable
-                style={styles.bottom}
-                onPress={() => {
-                  AsyncStorage.setItem(
-                    `esim.show.local.modal.${localOpKey}`,
-                    moment().format('YYYY-MM-DD HH:mm:ss'),
-                  );
-                  okHandler(info);
-                }}>
-                <View style={styles.underLine}>
-                  <AppText style={styles.bottomText}>
-                    {i18n.t('close:day')}
-                  </AppText>
-                </View>
-              </Pressable>
-            </Pressable>
-          </Pressable>
-        </SafeAreaView>
-      );
-    },
-    [actions.modal, okHandler],
   );
 
   const onPressItem = useCallback(
@@ -562,12 +335,14 @@ const Esim: React.FC<EsimProps> = ({
         const tm = moment(item, 'YYYY-MM-DD HH:mm:ss');
 
         if (!tm.isValid() || tm.add(1, 'day').isBefore(moment())) {
-          return actions.modal.showModal({
-            content: localModal(
-              info,
-              localOpName,
-              localOp?.ccode || [],
-              localOp?.key || '',
+          return action.modal.showModal({
+            content: (
+              <LocalModal
+                onPress={() => navToCountry(info)}
+                localOpName={localOpName}
+                ccode={localOp?.ccode || []}
+                localOpKey={localOp?.key || ''}
+              />
             ),
           });
         }
@@ -575,7 +350,7 @@ const Esim: React.FC<EsimProps> = ({
 
       navToCountry(info);
     },
-    [actions.modal, localModal, navToCountry, product.localOpList],
+    [action.modal, navToCountry, product.localOpList],
   );
 
   const onIndexChange = useCallback((idx: number) => setIndex(idx), []);
@@ -810,7 +585,7 @@ const Esim: React.FC<EsimProps> = ({
               style={styles.deviceScrollView}
               showsVerticalScrollIndicator={false}>
               <AppText style={[appStyles.normal16Text, {lineHeight: 24}]}>
-                {deviceList && deviceList.join(', ')}
+                {product.devList?.join(', ')}
                 {i18n.t('home:supportedDeviceBody')}
               </AppText>
             </ScrollView>
@@ -842,7 +617,7 @@ const Esim: React.FC<EsimProps> = ({
         )}
       </View>
     ),
-    [deviceList],
+    [product.devList],
   );
 
   useEffect(() => {
@@ -946,10 +721,11 @@ const Esim: React.FC<EsimProps> = ({
   useEffect(() => {
     async function getDevList() {
       if (isIOS) {
-        const resp = await API.Device.getDevList();
-        if (resp.result === 0) {
-          setDeviceList(resp.objects);
-        }
+        const tm = await retrieveData('cache.timestamp.dev');
+        const reload = product.rule.timestamp_dev > tm;
+        action.product.getDevList(reload);
+        if (reload)
+          storeData('cache.timestamp.dev', moment().zone(-540).format());
       }
 
       const deviceModel = DeviceInfo.getModel();
@@ -995,10 +771,18 @@ const Esim: React.FC<EsimProps> = ({
     product.prodByCountry.length,
   ]);
 
-  useInterval(() => {
-    // update product for every 1 hour
-    if (navigation.isFocused()) action.product.getProd();
-  }, 3600 * 1000);
+  useEffect(() => {
+    // check timestamp
+    const checkTimestamp = async () => {
+      const tm = await retrieveData('cache.timestamp.prod');
+      const reload = product.rule.timestamp_prod > tm;
+      // reload data
+      action.product.getAllProduct(reload);
+      if (reload)
+        storeData('cache.timestamp.prod', moment().zone(-540).format());
+    };
+    checkTimestamp();
+  }, [action.product, product.rule.timestamp_prod]);
 
   useEffect(() => {
     const {mobile, loggedIn, iccid} = account;
@@ -1104,8 +888,6 @@ export default connect(
       noti: bindActionCreators(notiActions, dispatch),
       order: bindActionCreators(orderActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
-    },
-    actions: {
       modal: bindActionCreators(modalActions, dispatch),
     },
   }),
