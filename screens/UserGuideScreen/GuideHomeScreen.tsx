@@ -179,7 +179,11 @@ export const renderHeader = (onPress: () => void) => (
 
 export const renderTitle = (title: string) => (
   <View style={styles.title}>
-    <AppText style={styles.titleText}>{title}</AppText>
+    <AppStyledText
+      text={title}
+      textStyle={styles.titleText}
+      format={{b: [styles.titleText, {color: colors.clearBlue}]}}
+    />
   </View>
 );
 
