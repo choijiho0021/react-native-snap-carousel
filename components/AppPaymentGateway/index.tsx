@@ -28,7 +28,7 @@ type PaymentGatewayScreenProps = {
 const loadingImg = require('../../assets/images/loading_1.mp4');
 
 const pgWebViewHtml = (info: PaymentParams) => {
-  const pg = info.card ? info.paymentRule?.[info.card] : '';
+  const pg = info.paymentRule?.[info.card || info.pay_method] || '';
   if (pg === 'H') return hectoWebViewHtml(info);
   return inicisWebviewHtml(info);
 };

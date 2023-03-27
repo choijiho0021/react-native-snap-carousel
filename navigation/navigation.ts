@@ -9,7 +9,7 @@ import {BoardMsgStatus} from '@/redux/api/boardApi';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {RkbProduct} from '@/redux/api/productApi';
-import {RkbReceipt} from '../screens/ReceiptScreen';
+import {RkbReceipt} from '@/screens/ReceiptScreen';
 import {GuideOption} from '@/screens/UserGuideScreen/GuideHomeScreen';
 import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
 
@@ -98,7 +98,7 @@ export type HomeStackParamList = {
   BoardMsgAdd: {key: string; status: BoardMsgStatus};
   Faq: FaqRouteParam;
   Guide: undefined;
-  Country: {partner: string[]; maxDiscount: number};
+  Country: {partner: string[]};
   Payment: PaymentParams;
   PaymentGateway: PaymentParams;
   PymMethod: {isPaid?: boolean; pymPrice?: number; mode?: PymMethodScreenMode};
