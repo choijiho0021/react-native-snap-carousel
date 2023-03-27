@@ -609,10 +609,11 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     };
 
     ChannelIO.boot(settings).then((result) => {
-      if (result.status === 'SUCCESS') {
+      if (result.status === 'SUCCESS' && lastRouteName === 'Home') {
         ChannelIO.showChannelButton();
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account.email, account.loggedIn, account.mobile, account.userId]);
 
   useEffect(() => {
