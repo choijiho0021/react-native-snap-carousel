@@ -77,6 +77,7 @@ import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
 import {retrieveData, storeData} from '@/utils/utils';
 import LocalModal from './component/LocalModal';
+import ChatTalk from '../UserGuideScreen/ChatTalk';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -869,6 +870,7 @@ const Esim: React.FC<EsimProps> = ({
         />
       )}
 
+      <ChatTalk visible />
       {renderModal()}
     </SafeAreaView>
   );

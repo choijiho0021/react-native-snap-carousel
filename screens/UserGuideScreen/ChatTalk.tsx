@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {View} from 'react-native';
+import {Image, Pressable, View} from 'react-native';
 import {ChannelIO} from 'react-native-channel-plugin';
 import {RootState} from '@reduxjs/toolkit';
 import {connect} from 'react-redux';
@@ -9,39 +9,23 @@ import i18n from '@/utils/i18n';
 import Env from '@/environment';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 
-const {appId, esimGlobal, talkPluginKey} = Env.get();
+const {appId, talkPluginKey} = Env.get();
 
 const ChatTalk = ({
   account,
-  isClicked,
+  visible = false,
+  isClicked = false,
   setChatTalkClicked,
 }: {
   account: AccountModelState;
-  isClicked: boolean;
-  setChatTalkClicked: (v: boolean) => void;
+  visible?: boolean;
+  isClicked?: boolean;
+  setChatTalkClicked?: (v: boolean) => void;
 }) => {
   const [loading, setLoading] = useState(false);
   const [showSnackBar, setShowSnackbar] = useState(false);
-  const talkSettings = useMemo(
+  const settings = useMemo(
     () => ({
-      pluginKey: talkPluginKey,
-      channelButtonOption: {
-        xMargin: 16,
-        yMargin: 100,
-        position: 'right',
-      },
-      profile: {
-        mobileNumber: account.mobile,
-        name: `global ${account.mobile}`,
-        email: account.email,
-      },
-    }),
-    [account.email, account.mobile],
-  );
-
-  const openChannelTalk = useCallback(async () => {
-    setLoading(true);
-    const settings = {
       pluginKey: talkPluginKey,
       profile: account.loggedIn
         ? {
@@ -50,32 +34,28 @@ const ChatTalk = ({
             mobileNumber: account.mobile,
             email: account.email,
             mobileStr: account.mobile,
-            orderUrl: `https://esim.rokebi.com/ko/admin/op/order/search?title=${account.mobile}&mail=&items_per_page=10`,
+            orderUrl: `https://${appId}.rokebi.com/ko/admin/op/order/search?title=${account.mobile}&mail=&items_per_page=10`,
           }
         : undefined,
-    };
+    }),
+    [account.email, account.loggedIn, account.mobile, account.userId],
+  );
 
-    if (await ChannelIO.isBooted()) {
-      ChannelIO.showMessenger();
+  const openChannelTalk = useCallback(async () => {
+    setLoading(true);
+
+    ChannelIO.boot(settings).then((result) => {
+      if (result.status === 'SUCCESS') {
+        ChannelIO.showMessenger();
+      } else {
+        setShowSnackbar(true);
+      }
       setLoading(false);
-    } else {
-      ChannelIO.boot(settings).then((result) => {
-        if (result.status === 'SUCCESS') {
-          ChannelIO.showMessenger();
-        } else {
-          setShowSnackbar(true);
-        }
-        setLoading(false);
-      });
-    }
-  }, [account.email, account.loggedIn, account.mobile, account.userId]);
+    });
+  }, [settings]);
 
   useEffect(() => {
-    if (esimGlobal) ChannelIO.boot(talkSettings);
-  }, [talkSettings]);
-
-  useEffect(() => {
-    if (isClicked) {
+    if (isClicked && setChatTalkClicked !== undefined) {
       openChannelTalk();
       setChatTalkClicked(false);
     }
@@ -89,6 +69,17 @@ const ChatTalk = ({
         onClose={() => setShowSnackbar(false)}
         textMessage={i18n.t('contact:OpenChFail')}
       />
+      {visible && (
+        <Pressable
+          style={{position: 'absolute', right: 0, bottom: 100}}
+          onPress={() => openChannelTalk()}>
+          <Image
+            style={{width: 60, height: 60}}
+            source={require('../assets/images/esim/channelTalk.png')}
+            resizeMode="stretch"
+          />
+        </Pressable>
+      )}
     </View>
   );
 };

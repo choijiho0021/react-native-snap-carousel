@@ -27,7 +27,6 @@ import {
   Platform,
 } from 'react-native';
 import {Adjust} from 'react-native-adjust';
-import {ChannelIO} from 'react-native-channel-plugin';
 import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {
@@ -588,38 +587,6 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     // return () => Linking.removeAllListeners('url');
   }, [deepLinkHandler]);
 
-  const showChannelBtn = useCallback(async () => {
-    const settings = {
-      pluginKey: talkPluginKey,
-      channelButtonOption: {
-        xMargin: 16,
-        yMargin: 100,
-        position: 'right',
-      },
-      profile: account.loggedIn
-        ? {
-            id: account.userId,
-            name: `${appId} - ${account.mobile}`,
-            mobileNumber: account.mobile,
-            email: account.email,
-            mobileStr: account.mobile,
-            orderUrl: `https://esim.rokebi.com/ko/admin/op/order/search?title=${account.mobile}&mail=&items_per_page=10`,
-          }
-        : undefined,
-    };
-
-    ChannelIO.boot(settings).then((result) => {
-      if (result.status === 'SUCCESS' && lastRouteName === 'Home') {
-        ChannelIO.showChannelButton();
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account.email, account.loggedIn, account.mobile, account.userId]);
-
-  useEffect(() => {
-    showChannelBtn();
-  }, [showChannelBtn]);
-
   return (
     <NavigationContainer
       ref={navigationRef}
@@ -628,10 +595,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         setLastRouteName(lastTab);
         if (lastRouteName !== lastTab && lastTab !== 'Home') {
           showPopUp(lastTab);
-          ChannelIO.hideChannelButton();
         }
-        if (lastRouteName !== lastTab && lastTab === 'Home')
-          ChannelIO.showChannelButton();
         Analytics.trackEvent('Page_View_Count', {page: lastTab});
         store.dispatch(cartActions.pushLastTab(lastTab));
       }}>
