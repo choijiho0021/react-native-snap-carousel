@@ -1207,6 +1207,51 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  btnHeaderCart: [
+    <Svg
+      width="26"
+      height="26"
+      viewBox="0 0 26 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M1 3h3.18l2.84 14.196A1 1 0 0 0 8 18h12a1 1 0 0 0 .94-.658l4-11A1 1 0 0 0 24 5H6.62l-.64-3.196A1 1 0 0 0 5 1H1v2zm7.82 13-1.8-9h15.552L19.3 16H8.82zM10 21a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-3 1A3 3 0 1 1 13 22 3 3 0 0 1 7 22zm11-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-3 1A3 3 0 1 1 21 22 3 3 0 0 1 15 22z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
+  iconArrowRight: [
+    <Svg
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M5 .5 9.5 5 5 9.5"
+        stroke="#979797"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
+  iconArrowUp: [
+    <Svg
+      width="12"
+      height="11"
+      viewBox="0 0 12 11"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M1.5 5.83 6 1.4l4.5 4.43"
+        stroke="#979797"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

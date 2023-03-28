@@ -14,14 +14,6 @@ const giftPath = '../assets/images/gift/';
 const mypagePath = '../assets/images/mypage/';
 
 const images: Record<string, any[]> = {
-  btnCheck2: [
-    require(`${mainPath}btnCheck2.png`),
-    require(`${mainPath}btnCheck2Sel.png`),
-  ],
-  btnHeaderCart: [require(`${mainPath}btnHeaderCart.png`)],
-  btnArrowRight2Blue: [require(`${mainPath}btnArrowRight2Blue.png`)],
-  iconArrowRight: [require(`${mainPath}iconArrowRight.png`)],
-  iconArrowUp: [require(`${mainPath}iconArrowUp.png`)],
   iconArrowDown: [require(`${mainPath}iconArrowDown.png`)],
   iconArrowRightWhite: [require(`${mainPath}iconArrowRightWhite.png`)],
   iconArrowRightBlack: [require(`${mainPath}iconArrowRightBlack.png`)],
@@ -45,8 +37,6 @@ const images: Record<string, any[]> = {
   imgPeoplePlus: [require(`${mainPath}imgPeoplePlus.png`)],
   btnCancel: [require(`${mainPath}btnCancel.png`)],
   btnCancelWhite: [require(`${mainPath}btnCancelWhite.png`)],
-  iconCamera: [require(`${mainPath}iconCamera.png`)],
-  iconCameraCancel: [require(`${mainPath}iconCameraCancel.png`)],
   iconRefresh: [require(`${mainPath}iconRefresh.png`)],
   btnBoxCancel: [require(`${mainPath}btnBoxCancel.png`)],
   btnPhotoPlus: [require(`${mainPath}btnPhotoPlus.png`)],
