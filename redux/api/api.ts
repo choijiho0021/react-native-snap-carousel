@@ -304,7 +304,7 @@ const callHttp = async <T>(
   }
 
   try {
-    const {timeout = 8000} = option;
+    const {timeout = 40000} = option;
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
 
