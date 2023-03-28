@@ -71,7 +71,7 @@ const ChatTalk = ({
       />
       {visible && (
         <Pressable
-          style={{position: 'absolute', right: 0, bottom: 100}}
+          style={{position: 'absolute', right: 10, bottom: 20}}
           onPress={() => openChannelTalk()}>
           <Image
             style={{width: 60, height: 60}}
