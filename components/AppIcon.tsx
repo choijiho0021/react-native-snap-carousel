@@ -5,46 +5,15 @@ import {View, Image, ViewStyle, StyleProp} from 'react-native';
 import _ from 'underscore';
 import AppSvgIcon from './AppSvgIcon';
 
-const tabbarPath = '../assets/images/tabbar/';
 const mainPath = '../assets/images/main/';
 const headerPath = '../assets/images/header/';
 const paymentPath = '../assets/images/payment/';
 const esimPath = '../assets/images/esim/';
-const guidePath = '../assets/images/guide/';
 const invitePath = '../assets/images/invite/';
 const giftPath = '../assets/images/gift/';
 const mypagePath = '../assets/images/mypage/';
 
 const images: Record<string, any[]> = {
-  btnHome: [
-    require(`${tabbarPath}btnHome.png`),
-    require(`${tabbarPath}btnHomeSel.png`),
-  ],
-  btnStore: [
-    // eslint-disable-next-line import/no-dynamic-require
-    require(`${tabbarPath}btnStore.png`),
-    require(`${tabbarPath}btnStoreSel.png`),
-  ],
-  btnCart: [
-    require(`${tabbarPath}btnCart.png`),
-    require(`${tabbarPath}btnCartSel.png`),
-  ],
-  btnUsim: [
-    require(`${tabbarPath}btnUsim.png`),
-    require(`${tabbarPath}btnUsimSel.png`),
-  ],
-  btnEsim: [
-    require(`${tabbarPath}btnEsim.png`),
-    require(`${tabbarPath}btnEsimSel.png`),
-  ],
-  btnMypage: [
-    require(`${tabbarPath}btnMypage.png`),
-    require(`${tabbarPath}btnMypageSel.png`),
-  ],
-  btnSetup: [
-    require(`${tabbarPath}btnSetup.png`),
-    require(`${tabbarPath}btnSetupSel.png`),
-  ],
   btnCheck2: [
     require(`${mainPath}btnCheck2.png`),
     require(`${mainPath}btnCheck2Sel.png`),
@@ -117,9 +86,8 @@ const images: Record<string, any[]> = {
   toss: [require(`${paymentPath}logoToss.png`)],
   lpay: [require(`${paymentPath}logoLpay.png`)],
   paypal: [require(`${paymentPath}logo_paypal.png`)],
-  specialTip: [require(`${guidePath}iconHoney.png`)],
-  guideHomeLogo: [require(`${guidePath}logoHomeGuide.png`)],
-  guideModalIcon: [require(`${guidePath}iconGuideModal.png`)],
+  guideHomeLogo: [require(`${esimPath}logoHomeGuide.png`)],
+  guideModalIcon: [require(`${esimPath}iconGuideModal.png`)],
   imgAlarm: [require(`${esimPath}imgAlarm.png`)],
   btnPen: [require(`${esimPath}btnPen.png`)],
   naverIcon: [require(`${esimPath}naverIcon.png`)],
