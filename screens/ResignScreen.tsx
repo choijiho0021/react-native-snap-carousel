@@ -300,7 +300,7 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
                 onPress={() => setReasonIdx(idx)}>
                 <AppIcon
                   style={{marginRight: 6}}
-                  name="radioBtn"
+                  name="btnCheck"
                   focused={idx === reasonIdx}
                 />
                 <AppText style={appStyles.normal16Text}>

@@ -14,29 +14,9 @@ const mypagePath = '../assets/images/mypage/';
 
 const images: Record<string, any[]> = {
   imgMark: [require(`${mainPath}imgMark.png`)],
-
   updateImg: [require(`${mainPath}update.png`)],
-  btnCheck: [
-    require(`${mainPath}btnCheckNon.png`),
-    require(`${mainPath}btnCheckSel.png`),
-  ],
-  iconCheckSmall: [require(`${mainPath}iconCheckSmall.png`)],
   openKakao: [require(`${mainPath}imgKakao.png`)],
-  openKakaoEng: [require(`${mainPath}imgKakaoEng.png`)],
-  openFacebook: [require(`${mainPath}imgFacebook.png`)],
-  openFacebookEng: [require(`${mainPath}imgFacebookEng.png`)],
-  textLogo: [require(`${mainPath}rokebiLogoText1ColorEn.png`)],
-  kakaoLogin: [require(`${mainPath}img_kakao.png`)],
-  appleLogin: [require(`${mainPath}img_apple.png`)],
-  naverLogin: [require(`${mainPath}LoginImgNaver.png`)],
-  facebookLogin: [require(`${mainPath}LoginImgFacebook.png`)],
-  googleLogin: [require(`${mainPath}LoginImgGoogle.png`)],
-  imgRokebiChar: [require(`${mainPath}imgRokebiChar.png`)],
-  imgQuestion: [require(`${mainPath}imgQuestion.png`)],
-  radioBtn: [
-    require(`${mainPath}radioBtn.png`),
-    require(`${mainPath}radioBtnCheck.png`),
-  ],
+
   kakao: [require(`${paymentPath}logoKakao.png`)],
   naver: [require(`${paymentPath}logoNaver.png`)],
   payco: [require(`${paymentPath}logoPayco.png`)],

@@ -224,5 +224,24 @@ const toggleIcons: Record<string, React.ReactElement[]> = {
       </G>
     </Svg>,
   ],
+  btnCheck: [
+    <Svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="11" cy="11" r="11" fill="#2A7FF6" />
+      <Path d="M5 10.5 9.696 15 17 8" stroke="#fff" strokeLinecap="round" />
+    </Svg>,
+    <Svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="11" cy="11" r="10.5" stroke="#D8D8D8" />
+    </Svg>,
+  ],
 };
 export default toggleIcons;

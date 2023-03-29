@@ -338,7 +338,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
               key={v}
               style={[styles.kakao, {marginRight: idx === 0 ? 25 : 0}]}
               onPress={() => setChecked(v)}>
-              <AppSvgIcon name="radioBtn" focused={checked === v} />
+              <AppSvgIcon name="btnCheck" focused={checked === v} />
               <AppText
                 style={[
                   appStyles.bold16Text,
