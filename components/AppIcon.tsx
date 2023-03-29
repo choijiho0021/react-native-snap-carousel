@@ -25,11 +25,6 @@ const images: Record<string, any[]> = {
 
   guideHomeLogo: [require(`${esimPath}logoHomeGuide.png`)],
   guideModalIcon: [require(`${esimPath}iconGuideModal.png`)],
-  imgAlarm: [require(`${esimPath}imgAlarm.png`)],
-  btnPen: [require(`${esimPath}btnPen.png`)],
-  naverIcon: [require(`${esimPath}naverIcon.png`)],
-  btnReload: [require(`${esimPath}btnReload.png`)],
-  imgNotiDokebi: [require(`${esimPath}imgNotiDokebi.png`)],
   rokIcon: [require(`${esimPath}icon.png`)],
   emptyCart: [require(`${esimPath}imgCart.png`)],
   emptyESIM: [require(`${esimPath}img_airplane.png`)],
