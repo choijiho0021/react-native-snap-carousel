@@ -6,7 +6,6 @@ import _ from 'underscore';
 import AppSvgIcon from './AppSvgIcon';
 
 const mainPath = '../assets/images/main/';
-const headerPath = '../assets/images/header/';
 const paymentPath = '../assets/images/payment/';
 const esimPath = '../assets/images/esim/';
 const invitePath = '../assets/images/invite/';
@@ -14,15 +13,7 @@ const giftPath = '../assets/images/gift/';
 const mypagePath = '../assets/images/mypage/';
 
 const images: Record<string, any[]> = {
-  btnCancelWhite: [require(`${mainPath}btnCancelWhite.png`)],
-  iconRefresh: [require(`${mainPath}iconRefresh.png`)],
-  btnBoxCancel: [require(`${mainPath}btnBoxCancel.png`)],
-  btnPhotoPlus: [require(`${mainPath}btnPhotoPlus.png`)],
   imgMark: [require(`${mainPath}imgMark.png`)],
-  btnReply: [require(`${mainPath}btnReply.png`)],
-  btnId: [require(`${mainPath}btnId.png`)],
-  btnAlarm: [require(`${headerPath}btnAlarm.png`)],
-  btnSearchTop: [require(`${headerPath}btnSearchTop.png`)],
 
   updateImg: [require(`${mainPath}update.png`)],
   btnCheck: [

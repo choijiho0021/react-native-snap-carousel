@@ -266,7 +266,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
               </AppText>
               <AppButton
                 style={styles.btnCancel}
-                iconName="btnCancel"
+                iconName="btnCancelWhite"
                 onPress={() => setTip(false)}
               />
             </View>

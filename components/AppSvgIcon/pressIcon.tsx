@@ -1440,6 +1440,33 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         height="14"
         rx=".5"
         transform="rotate(45 10.596 .697)"
+        fill="#2C2C2C"
+      />
+      <Rect
+        x=".697"
+        y="1.404"
+        width="1"
+        height="14"
+        rx=".5"
+        transform="rotate(-45 .697 1.404)"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
+  btnCancelWhite: [
+    <Svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect
+        x="10.596"
+        y=".697"
+        width="1"
+        height="14"
+        rx=".5"
+        transform="rotate(45 10.596 .697)"
         fill="#fff"
       />
       <Rect
@@ -1450,6 +1477,81 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         rx=".5"
         transform="rotate(-45 .697 1.404)"
         fill="#fff"
+      />
+    </Svg>,
+  ],
+  btnBoxCancel: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path d="M0 0h17a3 3 0 0 1 3 3v17H0V0z" fill="#000" fillOpacity=".4" />
+      <Path
+        d="M3.99 3.282 16.716 16.01l-.707.707L3.282 3.99l.708-.707z"
+        fill="#fff"
+      />
+      <Path
+        d="M16.718 3.99 3.99 16.716l-.708-.707L16.01 3.282l.707.707z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
+  btnPhotoPlus: [
+    <Svg
+      width="19"
+      height="19"
+      viewBox="0 0 19 19"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path fill="#2C2C2C" d="M0 9h19v1H0z" />
+      <Path fill="#2C2C2C" d="M10 0v19H9V0z" />
+    </Svg>,
+  ],
+  btnReply: [
+    <Svg
+      width="30"
+      height="10"
+      viewBox="0 0 30 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M0 .5a.5.5 0 0 1 1 0V9h27.293l-4.94-4.94a.5.5 0 1 1 .708-.706l5.657 5.656a.5.5 0 0 1 .061.075.5.5 0 0 1-.279.915H0V.5z"
+        fill="#2A7FF6"
+      />
+    </Svg>,
+  ],
+  btnAlarm: [
+    <Svg
+      width="26"
+      height="26"
+      viewBox="0 0 26 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12 2a1 1 0 1 1 2 0v1c0 .02 0 .038-.002.057C18.5 3.572 22 7.529 22 12.334V20h2a1 1 0 1 1 0 2H2a1 1 0 1 1 0-2h2v-7.666c0-4.805 3.5-8.762 8.002-9.277A.972.972 0 0 1 12 3V2zM6 20h14v-7.666C20 8.214 16.798 5 13 5s-7 3.214-7 7.334V20zm7 5a2 2 0 0 1-2-2h4a2 2 0 0 1-2 2z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
+  btnBack: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="m10 21-9-9 9-9"
+        stroke="#2C2C2C"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </Svg>,
   ],
