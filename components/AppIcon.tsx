@@ -23,7 +23,7 @@ const images: Record<string, any[]> = {
   toss: [require(`${paymentPath}logoToss.png`)],
   lpay: [require(`${paymentPath}logoLpay.png`)],
 
-  guideHomeLogo: [require(`${esimPath}logoHomeGuide.png`)],
+  guideHomeLogo: [require(`${esimPath}logoHomeGuide.png`)], // filter element를 사용하고 있어서 SVG로 대체 불가
   guideModalIcon: [require(`${esimPath}iconGuideModal.png`)],
 
   inviteRokebi1: [require(`${invitePath}inviteRokebi1.png`)],
