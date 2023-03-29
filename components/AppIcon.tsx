@@ -26,8 +26,6 @@ const images: Record<string, any[]> = {
   guideHomeLogo: [require(`${esimPath}logoHomeGuide.png`)], // filter element를 사용하고 있어서 SVG로 대체 불가
   guideModalIcon: [require(`${esimPath}iconGuideModal.png`)],
 
-  inviteRokebi1: [require(`${invitePath}inviteRokebi1.png`)],
-  inviteRokebi2: [require(`${invitePath}inviteRokebi2.png`)],
   iconShare: [require(`${invitePath}iconShare.png`)],
   iconCopy: [require(`${invitePath}iconCopy.png`)],
   coin: [require(`${invitePath}coin.png`)],
