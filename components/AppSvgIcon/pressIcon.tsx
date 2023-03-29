@@ -2108,6 +2108,580 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  emptyCart: [
+    <Svg
+      width="176"
+      height="176"
+      viewBox="0 0 176 176"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="88" cy="88" r="88" fill="url(#g5bj5ieg9a)" />
+      <Rect
+        x="58.957"
+        y="55.416"
+        width="49.35"
+        height="49.35"
+        rx="5"
+        transform="rotate(-30 58.957 55.416)"
+        fill="url(#naevvbmtxb)"
+      />
+      <Rect
+        x="23"
+        y="88"
+        width="20"
+        height="20"
+        rx="5"
+        fill="url(#owptfq9yzc)"
+      />
+      <Rect
+        x="37"
+        y="99"
+        width="12"
+        height="12"
+        rx="3"
+        fill="url(#00ewmdbard)"
+      />
+      <Rect x="60" y="24" width="6" height="6" rx="3" fill="url(#l6mfz93zve)" />
+      <Rect
+        x="124"
+        y="46"
+        width="9"
+        height="9"
+        rx="4.5"
+        fill="url(#uafrkpwdtf)"
+      />
+      <Rect
+        x="51"
+        y="138"
+        width="10"
+        height="10"
+        rx="5"
+        fill="url(#6q8t6jwm2g)"
+      />
+      <Rect
+        x="111"
+        y="105"
+        width="26"
+        height="26"
+        rx="5"
+        fill="url(#z950c6hdph)"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M97.918 60.276a1.264 1.264 0 1 0-1.788-1.787l-3.825 3.825-4.022-4.022a1.264 1.264 0 1 0-1.788 1.788l4.022 4.022-4.219 4.219a1.264 1.264 0 0 0 1.788 1.787l4.219-4.218 4.022 4.022a1.264 1.264 0 0 0 1.788-1.788l-4.022-4.022 3.825-3.826z"
+        fill="url(#j6s4t2pxei)"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M46.3 54.209a1.5 1.5 0 0 1 1.98-.762l9.19 4.084a1.5 1.5 0 0 1 .851 1.031l4.59 19.739h58.894a2 2 0 0 1 1.961 2.392l-6.347 31.734a2 2 0 0 1-1.961 1.608H68.575c-2.593.306-4.6 2.797-4.6 5.615 0 2.861 2.148 5.133 5.13 5.137h46.972a1.5 1.5 0 1 1 0 3H69.112c-4.694 0-8.136-3.669-8.136-8.137 0-3.191 1.803-6.385 4.692-7.837l-5.344-31.174a2.024 2.024 0 0 1-.03-.346l-4.726-20.324-8.506-3.78a1.5 1.5 0 0 1-.762-1.98z"
+        fill="url(#qyg1osfzdj)"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M92 78.3v35.735h23.251a2 2 0 0 0 1.959-1.595l6.553-31.735a2 2 0 0 0-1.959-2.404H92zm0 46.487h23.826c.855 0 1.549.671 1.549 1.5 0 .828-.694 1.5-1.549 1.5H92v-3z"
+        fill="url(#qcn3d6f1kk)"
+      />
+      <Path
+        d="M78.6 133.823a2.924 2.924 0 1 1-5.849 0 2.924 2.924 0 0 1 5.849 0z"
+        stroke="url(#h9j5vl6jbl)"
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      <Circle
+        cx="107.277"
+        cy="133.823"
+        r="2.924"
+        stroke="url(#q5szyvk5km)"
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M75.238 90.553h33.692M75.238 101.783h33.692"
+        stroke="#fff"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Defs>
+        <LinearGradient
+          id="g5bj5ieg9a"
+          x1="60.952"
+          y1="48"
+          x2="144"
+          y2="180.571"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#E1EDFF" />
+          <Stop offset="1" stopColor="#F8FAFE" />
+        </LinearGradient>
+        <LinearGradient
+          id="naevvbmtxb"
+          x1="105.702"
+          y1="56.988"
+          x2="52.967"
+          y2="115.694"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#fff" />
+          <Stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="owptfq9yzc"
+          x1="26.5"
+          y1="88"
+          x2="43"
+          y2="110"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#fff" />
+          <Stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="00ewmdbard"
+          x1="37"
+          y1="99"
+          x2="55.5"
+          y2="119.5"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#fff" />
+          <Stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="l6mfz93zve"
+          x1="60"
+          y1="23.192"
+          x2="65.077"
+          y2="30"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#fff" />
+          <Stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="uafrkpwdtf"
+          x1="133"
+          y1="43"
+          x2="121"
+          y2="58.5"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#fff" />
+          <Stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="6q8t6jwm2g"
+          x1="58.5"
+          y1="140"
+          x2="46"
+          y2="155"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#fff" />
+          <Stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="z950c6hdph"
+          x1="134"
+          y1="107"
+          x2="97"
+          y2="147"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#fff" />
+          <Stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="j6s4t2pxei"
+          x1="92.108"
+          y1="57.662"
+          x2="88.948"
+          y2="82.944"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#2A7FF6" />
+          <Stop offset="1" stopColor="#2A7FF6" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="qyg1osfzdj"
+          x1="66.5"
+          y1="74"
+          x2="101"
+          y2="141"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#1D77F6" />
+          <Stop offset="1" stopColor="#fff" stopOpacity=".75" />
+        </LinearGradient>
+        <LinearGradient
+          id="qcn3d6f1kk"
+          x1="114.5"
+          y1="71"
+          x2="92"
+          y2="155.5"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#1D77F6" />
+          <Stop offset="1" stopColor="#fff" stopOpacity=".33" />
+        </LinearGradient>
+        <LinearGradient
+          id="h9j5vl6jbl"
+          x1="66.898"
+          y1="138"
+          x2="82.898"
+          y2="130"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#1D77F6" />
+          <Stop offset="1" stopColor="#1D77F6" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="q5szyvk5km"
+          x1="98.5"
+          y1="138"
+          x2="114.5"
+          y2="130"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#1D77F6" />
+          <Stop offset="1" stopColor="#1D77F6" stopOpacity="0" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
+  emptyESIM: [
+    <Svg
+      width="176"
+      height="176"
+      viewBox="0 0 176 176"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="88" cy="88" r="88" fill="url(#ishf0r8cha)" />
+      <Ellipse
+        cx="70.952"
+        cy="31.268"
+        rx="6.952"
+        ry="7.268"
+        fill="url(#o7qo61bhsb)"
+      />
+      <Circle cx="104.476" cy="151.476" fill="url(#cmq3rsy1nc)" r="3.476" />
+      <Circle cx="132.74" cy="57.74" r="4.74" fill="url(#dk0r9r97sd)" />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M150.351 92.838c0 .552-.065 1.09-.189 1.604a7.462 7.462 0 0 1 5.162 7.099 7.459 7.459 0 0 1-7.459 7.459H130.459a7.46 7.46 0 0 1-1.242-14.816l-.001-.103a5.595 5.595 0 0 1 8.46-4.806 6.838 6.838 0 0 1 12.675 3.563z"
+        fill="url(#rcshoz816e)"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M64.649 130.162c0 .336-.04.663-.115.976A4.54 4.54 0 0 1 63.136 140H52.54a4.54 4.54 0 0 1-.757-9.018v-.063a3.405 3.405 0 0 1 5.15-2.926 4.162 4.162 0 0 1 7.715 2.169z"
+        fill="url(#xtpt1a8ovf)"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M76.421 68.739c0 .544-.064 1.073-.186 1.58a7.351 7.351 0 0 1-2.264 14.348H56.818a7.351 7.351 0 0 1-1.224-14.602l-.001-.101a5.513 5.513 0 0 1 8.337-4.737 6.739 6.739 0 0 1 12.491 3.511z"
+        fill="url(#wlonrxeqlg)"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M56.441 74.467c0 .736-.087 1.451-.252 2.136 3.991 1.29 6.878 5.038 6.878 9.459 0 5.488-4.45 9.938-9.939 9.938h-23.19C24.45 96 20 91.55 20 86.062c0-4.925 3.582-9.014 8.284-9.802l-.002-.137a7.454 7.454 0 0 1 11.271-6.403 9.11 9.11 0 0 1 16.888 4.747z"
+        fill="url(#ktik39j5mh)"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M99.867 58.2a20.031 20.031 0 0 1 7.704-7.717c4.014-2.247 8.971.698 8.943 5.298a20.06 20.06 0 0 1-2.833 10.156l-10.146 16.975 13.227 31.878a9.985 9.985 0 0 1-2.879 11.538 1 1 0 0 1-1.484-.246L94.77 97.575l-7.814 13.072 2.917 5.052a9.09 9.09 0 0 1-3.328 12.418.91.91 0 0 1-1.242-.333l-5.003-8.666-3.674 1.914c-2.596 1.354-5.719-.449-5.845-3.374l-.177-4.113H60.64a.91.91 0 0 1-.91-.909 9.09 9.09 0 0 1 9.092-9.091h5.772l7.45-13.366-33.592-1.016A.999.999 0 0 1 47.5 88a9.986 9.986 0 0 1 8.552-8.263l34.319-4.496L99.867 58.2z"
+        fill="url(#imu9s3efmi)"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="m72.916 121.026 40.671-70.445c1.722 1.034 2.941 2.912 2.927 5.2a20.06 20.06 0 0 1-2.833 10.155l-10.146 16.975 13.227 31.878a9.984 9.984 0 0 1-2.879 11.538.998.998 0 0 1-1.484-.245L94.77 97.575l-7.814 13.072 2.917 5.051a9.092 9.092 0 0 1-3.328 12.419.91.91 0 0 1-1.242-.333l-5.003-8.666-3.674 1.914a3.967 3.967 0 0 1-3.71-.006z"
+        fill="url(#uulo9zs3hj)"
+      />
+      <Rect
+        x="84.532"
+        y="99"
+        width="1.896"
+        height="17.065"
+        rx=".948"
+        transform="rotate(30 84.532 99)"
+        fill="#1D77F6"
+      />
+      <Defs>
+        <LinearGradient
+          id="ishf0r8cha"
+          x1="60.952"
+          y1="48"
+          x2="144"
+          y2="180.571"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#E1EDFF" />
+          <Stop offset="1" stopColor="#F8FAFE" />
+        </LinearGradient>
+        <LinearGradient
+          id="o7qo61bhsb"
+          x1="70.952"
+          y1="24"
+          x2="78.794"
+          y2="45.589"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#fff" />
+          <Stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="cmq3rsy1nc"
+          x1="108.099"
+          y1="148"
+          x2="101.147"
+          y2="159.377"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#fff" />
+          <Stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="dk0r9r97sd"
+          x1="137.681"
+          y1="53"
+          x2="128.2"
+          y2="68.514"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#fff" />
+          <Stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="rcshoz816e"
+          x1="139.224"
+          y1="92.325"
+          x2="127.724"
+          y2="111.875"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#fff" />
+          <Stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="xtpt1a8ovf"
+          x1="57.876"
+          y1="129.85"
+          x2="50.876"
+          y2="141.75"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#fff" />
+          <Stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="wlonrxeqlg"
+          x1="65.456"
+          y1="68.233"
+          x2="54.123"
+          y2="87.5"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#fff" />
+          <Stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="ktik39j5mh"
+          x1="41.616"
+          y1="73.783"
+          x2="26.294"
+          y2="99.831"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#fff" />
+          <Stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="imu9s3efmi"
+          x1="73.5"
+          y1="48"
+          x2="82"
+          y2="147"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#1D77F7" />
+          <Stop offset="1" stopColor="#2A7FF6" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="uulo9zs3hj"
+          x1="93"
+          y1="58"
+          x2="113.5"
+          y2="139.5"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#1D77F6" />
+          <Stop offset="1" stopColor="#fff" stopOpacity=".88" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
+  usageR: [
+    <Svg
+      width="118"
+      height="107"
+      viewBox="0 0 118 107"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M52 104c28.719 0 52-23.281 52-52S80.719 0 52 0 0 23.281 0 52s23.281 52 52 52zm0-21.667c16.753 0 30.334-13.58 30.334-30.333S68.752 21.667 52 21.667c-16.752 0-30.333 13.58-30.333 30.333 0 16.752 13.58 30.333 30.333 30.333z"
+        fill="url(#4a1izlrlya)"
+      />
+      <Path
+        d="M61 97a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v6a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4v-6z"
+        fill="url(#yijsyfm20b)"
+      />
+      <Path
+        d="M76 90a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v13a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V90z"
+        fill="url(#fvr19lbqec)"
+      />
+      <Path
+        d="M91 80a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v23a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V80z"
+        fill="url(#jxi0li08yd)"
+      />
+      <Path
+        d="M106 67a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v36a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V67z"
+        fill="url(#bk7oq7s8ce)"
+      />
+      <Path
+        d="M45 52a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H46a1 1 0 0 1-1-1z"
+        fill="#CED2D8"
+      />
+      <Path
+        d="M52 45a1 1 0 0 1 1 1v12a1 1 0 1 1-2 0V46a1 1 0 0 1 1-1z"
+        fill="#CED2D8"
+      />
+      <Defs>
+        <LinearGradient
+          id="4a1izlrlya"
+          x1="39"
+          y1="33"
+          x2="125"
+          y2="113"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#D5DDE8" />
+          <Stop offset="1" stopColor="#F5F5F5" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="yijsyfm20b"
+          x1="93"
+          y1="91"
+          x2="119.5"
+          y2="116.5"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#CED2D8" />
+          <Stop offset="1" stopColor="#BCC2CC" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="fvr19lbqec"
+          x1="93"
+          y1="91"
+          x2="119.5"
+          y2="116.5"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#CED2D8" />
+          <Stop offset="1" stopColor="#BCC2CC" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="jxi0li08yd"
+          x1="93"
+          y1="91"
+          x2="119.5"
+          y2="116.5"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#CED2D8" />
+          <Stop offset="1" stopColor="#BCC2CC" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="bk7oq7s8ce"
+          x1="93"
+          y1="91"
+          x2="119.5"
+          y2="116.5"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#CED2D8" />
+          <Stop offset="1" stopColor="#BCC2CC" stopOpacity="0" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
+  usageU: [
+    <Svg
+      width="113"
+      height="107"
+      viewBox="0 0 113 107"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M0 101a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4v-2z"
+        fill="url(#u1k7p4gmfa)"
+      />
+      <Path
+        d="M15 89a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V89z"
+        fill="url(#5huohz1z3b)"
+      />
+      <Path
+        d="M30 75a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V75z"
+        fill="url(#g69omc46ic)"
+      />
+      <Path
+        d="M45 4a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v99a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V4z"
+        fill="url(#xm9umy4dzd)"
+      />
+      <Circle cx="82" cy="76" r="31" fill="#E5F0FF" />
+      <Circle cx="82" cy="76" r="24" fill="url(#fzliybsise)" />
+      <Path
+        d="m72 76.8 7.664 8.2L92 69"
+        stroke="#fff"
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Defs>
+        <LinearGradient
+          id="u1k7p4gmfa"
+          x1="28.5"
+          y1="12"
+          x2="28.5"
+          y2="107"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#2A7FF6" />
+          <Stop offset="1" stopColor="#CED2D8" stopOpacity=".34" />
+        </LinearGradient>
+        <LinearGradient
+          id="5huohz1z3b"
+          x1="28.5"
+          y1="12"
+          x2="28.5"
+          y2="107"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#2A7FF6" />
+          <Stop offset="1" stopColor="#CED2D8" stopOpacity=".34" />
+        </LinearGradient>
+        <LinearGradient
+          id="g69omc46ic"
+          x1="28.5"
+          y1="12"
+          x2="28.5"
+          y2="107"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#2A7FF6" />
+          <Stop offset="1" stopColor="#CED2D8" stopOpacity=".34" />
+        </LinearGradient>
+        <LinearGradient
+          id="xm9umy4dzd"
+          x1="28.5"
+          y1="12"
+          x2="28.5"
+          y2="107"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#2A7FF6" />
+          <Stop offset="1" stopColor="#CED2D8" stopOpacity=".34" />
+        </LinearGradient>
+        <LinearGradient
+          id="fzliybsise"
+          x1="75.053"
+          y1="50.105"
+          x2="92.5"
+          y2="114"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#2A7FF6" />
+          <Stop offset="1" stopColor="#CED2D8" stopOpacity="0" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
 };
 
 export default pressIcons;
