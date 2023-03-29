@@ -15,16 +15,14 @@ const mypagePath = '../assets/images/mypage/';
 const images: Record<string, any[]> = {
   imgMark: [require(`${mainPath}imgMark.png`)],
   updateImg: [require(`${mainPath}update.png`)],
-  openKakao: [require(`${mainPath}imgKakao.png`)],
 
   kakao: [require(`${paymentPath}logoKakao.png`)],
   naver: [require(`${paymentPath}logoNaver.png`)],
   payco: [require(`${paymentPath}logoPayco.png`)],
-  samsung: [require(`${paymentPath}logoSamsung.png`)],
   ssgpay: [require(`${paymentPath}logoSsg.png`)],
   toss: [require(`${paymentPath}logoToss.png`)],
   lpay: [require(`${paymentPath}logoLpay.png`)],
-  paypal: [require(`${paymentPath}logo_paypal.png`)],
+
   guideHomeLogo: [require(`${esimPath}logoHomeGuide.png`)],
   guideModalIcon: [require(`${esimPath}iconGuideModal.png`)],
   imgAlarm: [require(`${esimPath}imgAlarm.png`)],
