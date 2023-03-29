@@ -535,6 +535,15 @@ export const appStyles = StyleSheet.create({
     letterSpacing: 0.29,
     lineHeight: 40,
   },
+  robotoSemiBold22Text: {
+    fontFamily: 'Roboto',
+    fontSize: 22,
+    fontWeight: '600',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'left',
+    color: colors.clearBlue,
+  },
   robotoBold16Text: {
     fontFamily: 'Roboto',
     fontSize: 16,
@@ -543,6 +552,14 @@ export const appStyles = StyleSheet.create({
     letterSpacing: 0,
     textAlign: 'left',
     color: colors.clearBlue,
+  },
+  robotoBold28Text: {
+    fontFamily: 'Roboto',
+    fontSize: 28,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'left',
   },
   robotoBold32Text: {
     fontFamily: 'Roboto',

@@ -1,7 +1,7 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {RootState} from '@reduxjs/toolkit';
 import React, {memo} from 'react';
-import {ImageBackground, Pressable, StyleSheet, View} from 'react-native';
+import {Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
@@ -16,6 +16,7 @@ import {navigate} from '@/navigation/navigation';
 import AppIcon from '@/components/AppIcon';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppStyledText from '@/components/AppStyledText';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const {esimCurrency, esimGlobal} = Env.get();
 
@@ -66,12 +67,9 @@ const styles = StyleSheet.create({
   rechargeBox: {
     marginHorizontal: 20,
     marginBottom: 20,
-    height: 108,
-    flex: 1,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
+    backgroundColor: colors.clearBlue,
+    height: 94,
+    borderRadius: 3,
   },
   rechargeText: {
     margin: 27,
@@ -79,13 +77,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    color: 'white',
   },
   rchBtn: {
     marginLeft: 10,
     width: 80,
     height: 40,
     borderRadius: 3,
-    backgroundColor: colors.clearBlue,
+    backgroundColor: colors.white,
   },
   rowBtn: {
     flex: 1,
@@ -97,6 +96,21 @@ const styles = StyleSheet.create({
   inviteText: {
     ...appStyles.normal17,
     color: 'white',
+  },
+  currenty: {
+    // fontFamily: 'AppleSDGothicNeo',
+    fontSize: 20,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    lineHeight: 24,
+    letterSpacing: 0,
+    textAlign: 'right',
+    color: 'white',
+  },
+  currencyBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 8,
   },
 });
 
@@ -119,31 +133,33 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
             ? navigation.navigate('Recharge')
             : navigation.navigate('CashHistory')
         }>
-        <ImageBackground
-          source={require('../../../assets/images/esim/card.png')}
-          style={styles.image}>
-          <View style={styles.rechargeText}>
-            <View style={{flexDirection: 'column', flex: 9}}>
-              <AppText style={appStyles.normal14Text}>
-                {i18n.t('acc:remain')}
-              </AppText>
-              <AppText style={[appStyles.bold30Text, {paddingTop: 4}]}>
+        <View style={styles.rechargeText}>
+          <View>
+            <AppText style={[appStyles.normal14Text, {color: 'white'}]}>
+              {i18n.t('acc:remain')}
+            </AppText>
+            <View style={styles.currencyBox}>
+              <AppText
+                style={[
+                  appStyles.robotoSemiBold22Text,
+                  {color: 'white', letterSpacing: 0, marginRight: 4},
+                ]}>
                 {utils.numberToCommaString(balance || 0)}
-                <AppText
-                  style={[appStyles.normal20Text, {fontWeight: 'normal'}]}>
+                <AppText style={styles.currenty}>
                   {i18n.t(esimCurrency)}
                 </AppText>
               </AppText>
+              <AppSvgIcon name="arrowRight" />
             </View>
-            <AppButton
-              title={i18n.t('acc:goRecharge')}
-              titleStyle={[appStyles.normal14Text, {color: colors.white}]}
-              style={styles.rchBtn}
-              onPress={() => navigation.navigate('Recharge')}
-              type="primary"
-            />
           </View>
-        </ImageBackground>
+          <AppButton
+            title={i18n.t('acc:goRecharge')}
+            titleStyle={[appStyles.normal14Text, {color: colors.black}]}
+            style={styles.rchBtn}
+            onPress={() => navigation.navigate('Recharge')}
+            type="primary"
+          />
+        </View>
       </Pressable>
 
       <View style={styles.rowBtn}>

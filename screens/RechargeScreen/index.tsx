@@ -1,7 +1,6 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState} from 'react';
 import {
-  ImageBackground,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -13,7 +12,6 @@ import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
-import AppIcon from '@/components/AppIcon';
 import AppPrice from '@/components/AppPrice';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -42,7 +40,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   divider: {
-    marginTop: 30,
+    marginTop: 32,
     marginBottom: 5,
     height: 10,
     backgroundColor: '#f5f5f5',
@@ -72,25 +70,9 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     color: colors.warmGrey,
   },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
   rechargeBox: {
-    marginTop: 15,
+    marginTop: 24,
     marginHorizontal: 20,
-    height: 108,
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconWithText: {
-    marginHorizontal: 28,
-    marginVertical: 22,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
   },
   priceButtonText: {
     ...appStyles.normal14Text,
@@ -216,37 +198,25 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.rechargeBox}>
-          <ImageBackground
-            source={require('../../assets/images/esim/card.png')}
-            style={styles.image}>
-            <View style={styles.iconWithText}>
-              <View>
-                <AppIcon
-                  style={{width: '100%', justifyContent: 'flex-end'}}
-                  name="rokIcon"
-                />
-                <AppText
-                  style={[
-                    appStyles.normal14Text,
-                    {textAlign: 'left', marginTop: 12},
-                  ]}>
-                  {i18n.t('acc:remain')}
-                </AppText>
-              </View>
-              <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
-                <AppText style={appStyles.bold30Text}>
-                  {utils.numberToCommaString(balance || 0)}
-                  <AppText
-                    style={[appStyles.normal20Text, {fontWeight: 'normal'}]}>
-                    {i18n.t(esimCurrency)}
-                  </AppText>
-                </AppText>
-              </View>
-            </View>
-          </ImageBackground>
+          <AppText
+            key="label"
+            style={[appStyles.normal14Text, {textAlign: 'left'}]}>
+            {i18n.t('cashHistory:myBalance')}
+          </AppText>
+          <AppText
+            key="balance"
+            style={[
+              appStyles.robotoBold28Text,
+              {marginTop: 4, color: colors.black, lineHeight: 40},
+            ]}>
+            {utils.numberToCommaString(balance || 0)}
+            <AppText style={appStyles.bold26Text}>
+              {i18n.t(esimCurrency)}
+            </AppText>
+          </AppText>
         </View>
 
-        <View style={[styles.divider, esimApp && {marginTop: 20}]} />
+        <View style={styles.divider} />
         <View style={{flex: 1}} />
         <AppText
           style={[appStyles.normal16Text, {marginTop: 30, marginLeft: 20}]}>
