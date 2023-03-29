@@ -260,7 +260,12 @@ const basicAuth = (
 };
 
 type CallHttpCallback<T> = (js: any, cookie?: string | null) => ApiResult<T>;
-type CallHttpOption = {isJson?: boolean; abortController?: AbortController};
+type CallHttpOption = {
+  isJson?: boolean;
+  abortController?: AbortController;
+  ignoreError?: boolean;
+  timeout?: number;
+};
 
 export const cachedApi =
   <A, T>(key: string, apiToCall: (p: A) => Promise<T>) =>
@@ -290,7 +295,7 @@ const callHttp = async <T>(
   url: string,
   param: object,
   callback: CallHttpCallback<T> = (a) => a,
-  option: CallHttpOption = {isJson: true},
+  option: CallHttpOption = {isJson: true, ignoreError: false, timeout: 40000},
   retry: number = 0,
 ): Promise<ApiResult<T>> => {
   const config: RequestInit = {
@@ -298,13 +303,9 @@ const callHttp = async <T>(
     credentials: 'same-origin',
     // mode: 'no-cors',
   };
-
-  if (typeof option.isJson === 'undefined') {
-    option.isJson = true;
-  }
+  const {timeout = 40000, ignoreError = false, isJson = true} = option;
 
   try {
-    const {timeout = 8000} = option;
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
 
@@ -340,7 +341,7 @@ const callHttp = async <T>(
 
     if (response.ok) {
       if (_.isFunction(callback)) {
-        if (option.isJson) {
+        if (isJson) {
           if (response.status === 204) {
             // 204 -> no content
             return callback(response);
@@ -363,7 +364,7 @@ const callHttp = async <T>(
       return await response.text();
     }
 
-    if (option.isJson) {
+    if (isJson) {
       response
         .json()
         .then((json) => {
@@ -381,7 +382,7 @@ const callHttp = async <T>(
     return failure(FAILED, response.statusText, response.status);
   } catch (err) {
     console.log('@@@ request failed', err);
-    store.dispatch(ToastActions.push(Toast.NOT_LOADED));
+    if (!ignoreError) store.dispatch(ToastActions.push(Toast.NOT_LOADED));
     return failure(E_REQUEST_FAILED, 'API failed', 498);
   }
 };

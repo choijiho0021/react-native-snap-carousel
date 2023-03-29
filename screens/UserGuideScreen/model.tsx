@@ -829,7 +829,7 @@ export const getGuideImages = (
       },
       {
         key: 'page6',
-        title: renderText(`userGuide:stepsTitle10:galaxy:local`),
+        title: renderText(`userGuide:stepsTitle10:galaxy:checkSetting`),
         step: 6,
       },
     ];

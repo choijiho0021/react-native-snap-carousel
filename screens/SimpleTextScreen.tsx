@@ -385,7 +385,9 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
         const {nid, rule} = props.route.params;
         if (rule?.sku) {
           setIsProdEvent(true);
-          if (rule?.sku.includes('cpn-')) {
+          if (!props?.account?.loggedIn) {
+            setEventStatus('unknown');
+          } else if (rule?.sku.includes('cpn-')) {
             setEventStatus('open');
           } else {
             const resp = await API.Promotion.check(nid);
@@ -401,7 +403,7 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
         }
       };
       getPromo();
-    }, [props.route.params]),
+    }, [props?.account?.loggedIn, props.route.params]),
   );
 
   return (
