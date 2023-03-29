@@ -261,7 +261,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         setClickable(true);
         navigation.navigate(
-          product.rule.inicis_enabled === '1' ? 'PaymentGateway' : 'Payment',
+          esimGlobal || product.rule.inicis_enabled === '1'
+            ? 'Payment'
+            : 'PaymentGateway',
           // product.rule.inicis_enabled === '1'
           //   ? payMethod?.method === 'card'
           //     ? 'SelectCard'
