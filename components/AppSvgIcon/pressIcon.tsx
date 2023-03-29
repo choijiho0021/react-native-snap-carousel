@@ -2682,6 +2682,56 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  iconShare: [
+    <Svg
+      width="21"
+      height="20"
+      viewBox="0 0 21 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M5.293 6.207a1 1 0 0 1 0-1.414l4.5-4.5a1 1 0 0 1 1.414 0l4.5 4.5a1 1 0 1 1-1.414 1.414L11.5 3.414V14a1 1 0 1 1-2 0V3.414L6.707 6.207a1 1 0 0 1-1.414 0zM5.5 20a4 4 0 0 1-4-4v-3a4 4 0 0 1 4-4h1a1 1 0 1 1 0 2h-1a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2h-1a1 1 0 1 1 0-2h1a4 4 0 0 1 4 4v3a4 4 0 0 1-4 4h-10z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
+  iconCopy: [
+    <Svg
+      width="21"
+      height="20"
+      viewBox="0 0 21 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.5 0a4 4 0 0 0-4 4h-1a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h5a4 4 0 0 0 4-4h1a4 4 0 0 0 4-4V4a4 4 0 0 0-4-4h-5zm4 14h1a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-5a2 2 0 0 0-2 2h2a4 4 0 0 1 4 4v6zm-11-6a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2V8z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
+  arrowLeft: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path d="m16 20-8-8 8-8" stroke="#2C2C2C" strokeLinecap="round" />
+    </Svg>,
+  ],
+  arrowRight24: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path d="m8 20 8-8-8-8" stroke="#2C2C2C" strokeLinecap="round" />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

@@ -10,7 +10,6 @@ const paymentPath = '../assets/images/payment/';
 const esimPath = '../assets/images/esim/';
 const invitePath = '../assets/images/invite/';
 const giftPath = '../assets/images/gift/';
-const mypagePath = '../assets/images/mypage/';
 
 const images: Record<string, any[]> = {
   imgMark: [require(`${mainPath}imgMark.png`)],
@@ -26,18 +25,15 @@ const images: Record<string, any[]> = {
   guideHomeLogo: [require(`${esimPath}logoHomeGuide.png`)], // filter element를 사용하고 있어서 SVG로 대체 불가
   guideModalIcon: [require(`${esimPath}iconGuideModal.png`)],
 
-  iconShare: [require(`${invitePath}iconShare.png`)],
-  iconCopy: [require(`${invitePath}iconCopy.png`)],
-  coin: [require(`${invitePath}coin.png`)],
-  arrowLeft: [require(`${giftPath}arrowLeft.png`)],
+  coin: [require(`${invitePath}coin.png`)], // filter element included
   inviteBanner: [require(`${invitePath}banner_img.png`)],
+
   giftModalBg: [require(`${giftPath}img_bg.png`)],
   giftGuideTop: [require(`${giftPath}img_top.png`)],
   giftGuideStep1: [require(`${giftPath}img_step1.png`)],
   giftGuideStep2: [require(`${giftPath}img_step2.png`)],
   giftGuideStep3: [require(`${giftPath}img_step3.png`)],
   giftCoin: [require(`${giftPath}coin.png`)],
-  profileImg: [require(`${mypagePath}img_rokebi_profile_2.png`)],
 };
 
 interface AppIconProps {
