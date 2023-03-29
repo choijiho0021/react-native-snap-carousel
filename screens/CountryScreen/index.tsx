@@ -73,8 +73,6 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   btnCancel: {
-    width: 12,
-    height: 12,
     padding: 8,
     marginRight: 8,
   },
