@@ -97,9 +97,14 @@ const logOut = async (token: string) => {
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
-  return api.callHttp(`${api.httpUrl(api.path.logout)}?token=${token}`, {
-    method: 'POST',
-  });
+  return api.callHttp(
+    `${api.httpUrl(api.path.logout)}?token=${token}`,
+    {
+      method: 'POST',
+    },
+    (a) => a,
+    {ignoreError: true},
+  );
 };
 
 const getByName = ({name}: {name?: string}) => {
