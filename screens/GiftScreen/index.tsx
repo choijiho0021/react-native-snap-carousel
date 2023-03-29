@@ -408,7 +408,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
           {num < bgImages.length - 1 && (
             <AppButton
               style={styles.arrowRight}
-              iconName="arrowRight"
+              iconName="arrowRight24"
               onPress={() => setNum(num + 1)}
             />
           )}
