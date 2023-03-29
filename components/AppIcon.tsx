@@ -14,15 +14,6 @@ const giftPath = '../assets/images/gift/';
 const mypagePath = '../assets/images/mypage/';
 
 const images: Record<string, any[]> = {
-  iconArrowDown: [require(`${mainPath}iconArrowDown.png`)],
-  iconArrowRightBlack: [require(`${mainPath}iconArrowRightBlack.png`)],
-  imgCheck: [require(`${mainPath}imgCheck.png`)],
-  iconTrash: [require(`${mainPath}iconTrash.png`)],
-  btnSearchOn: [require(`${mainPath}btnSearchOn.png`)],
-  btnSearchCancel: [require(`${mainPath}btnSearchCancel.png`)],
-  btnSearchOff: [require(`${mainPath}btnSearchOff.png`)],
-  btnSearchBlue: [require(`${mainPath}btnSearchBlue.png`)],
-  btnCancel: [require(`${mainPath}btnCancel.png`)],
   btnCancelWhite: [require(`${mainPath}btnCancelWhite.png`)],
   iconRefresh: [require(`${mainPath}iconRefresh.png`)],
   btnBoxCancel: [require(`${mainPath}btnBoxCancel.png`)],

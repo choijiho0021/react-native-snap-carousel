@@ -1294,6 +1294,165 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  iconTrash: [
+    <Svg
+      width="19"
+      height="19"
+      viewBox="0 0 19 19"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M15.5 3.502V14.27c0 1.784-1.465 3.23-3.273 3.23H6.773c-1.808 0-3.273-1.446-3.273-3.23V3.477M1 3.5h17"
+        stroke="#2C2C2C"
+      />
+      <Rect x="7" y="1.5" width="5" height="2" rx="1" stroke="#2C2C2C" />
+      <Path d="M6.5 7v6M9.5 7v6M12.5 7v6" stroke="#2C2C2C" />
+    </Svg>,
+  ],
+  iconArrowDown: [
+    <Svg
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M.5 3 5 7.5 9.5 3"
+        stroke="#979797"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
+  iconArrowRightBlack: [
+    <Svg
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M4.5.5 9 5 4.5 9.5"
+        stroke="#2C2C2C"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
+  imgCheck: [
+    <Svg
+      width="50"
+      height="50"
+      viewBox="0 0 50 50"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M50 25c0 13.807-11.193 25-25 25S0 38.807 0 25 11.193 0 25 0s25 11.193 25 25z"
+        fill="#F8F8F8"
+      />
+      <Path
+        d="m15 24 9 9 11-16"
+        stroke="#2A7FF6"
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
+  btnSearchOn: [
+    <Svg
+      width="15"
+      height="16"
+      viewBox="0 0 15 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="6.5" cy="6.5" r="6" stroke="#2C2C2C" />
+      <Path
+        d="M10.126 11.126a.432.432 0 0 1 .61 0l4.138 4.137a.432.432 0 0 1-.61.61l-4.138-4.136a.432.432 0 0 1 0-.61z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
+  btnSearchCancel: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="8" cy="8" r="8" fill="#D8D8D8" />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4 4.727 4.727 4 12 11.273l-.727.727L4 4.727z"
+        fill="#fff"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="m11.273 4 .727.727L4.727 12 4 11.273 11.273 4z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
+  btnSearchOff: [
+    <Svg
+      width="15"
+      height="16"
+      viewBox="0 0 15 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="6.5" cy="6.5" r="6" stroke="#979797" />
+      <Path
+        d="M10.126 11.126a.432.432 0 0 1 .61 0l4.138 4.137a.432.432 0 0 1-.61.61l-4.138-4.136a.432.432 0 0 1 0-.61z"
+        fill="#979797"
+      />
+    </Svg>,
+  ],
+  btnSearchBlue: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.923 6.77a4.154 4.154 0 1 1-8.307 0 4.154 4.154 0 0 1 8.307 0zm-.567 5a6.154 6.154 0 1 1 1.414-1.414l3.706 3.706a1 1 0 1 1-1.414 1.414l-3.706-3.706z"
+        fill="#2A7FF6"
+      />
+    </Svg>,
+  ],
+  btnCancel: [
+    <Svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect
+        x="10.596"
+        y=".697"
+        width="1"
+        height="14"
+        rx=".5"
+        transform="rotate(45 10.596 .697)"
+        fill="#fff"
+      />
+      <Rect
+        x=".697"
+        y="1.404"
+        width="1"
+        height="14"
+        rx=".5"
+        transform="rotate(-45 .697 1.404)"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;
