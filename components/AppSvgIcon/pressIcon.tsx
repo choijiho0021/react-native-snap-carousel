@@ -2732,6 +2732,98 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Path d="m8 20 8-8-8-8" stroke="#2C2C2C" strokeLinecap="round" />
     </Svg>,
   ],
+  imgFaq: [
+    <Svg
+      width="59"
+      height="46"
+      viewBox="0 0 59 46"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M18 44c8.837 0 16-6.044 16-13.5S26.837 17 18 17 2 23.044 2 30.5c0 3.465 1.547 6.625 4.09 9.015l-.399 4.462c-.068.764.73 1.322 1.433 1.001l4.549-2.075C13.613 43.61 15.753 44 18 44z"
+        fill="url(#bb4h3ikfwa)"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M33.5 39C21.626 39 12 30.493 12 20S21.626 1 33.5 1 55 9.507 55 20c0 4.61-1.858 8.836-4.947 12.126l.62 7.216a.989.989 0 0 1-1.408.988l-6.607-3.135A23.796 23.796 0 0 1 33.5 39z"
+        fill="url(#onrbflxgxb)"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M31.466 15.818c.119-.547.339-.818.574-.98.265-.182.717-.338 1.46-.338.68 0 1.16.228 1.465.534.306.305.535.784.535 1.466 0 .73-.217 1.284-.55 1.675-.33.389-.863.717-1.678.842A1.5 1.5 0 0 0 32 20.5V24a1.5 1.5 0 1 0 3 0v-2.343a5.325 5.325 0 0 0 2.234-1.536c.855-1.005 1.266-2.277 1.266-3.621 0-1.391-.487-2.662-1.415-3.589-.927-.926-2.198-1.411-3.585-1.411-1.128 0-2.239.232-3.162.868-.954.657-1.548 1.636-1.804 2.814a1.5 1.5 0 1 0 2.932.636zM33.5 30a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"
+        fill="#fff"
+      />
+      <Defs>
+        <LinearGradient
+          id="bb4h3ikfwa"
+          x1="9.816"
+          y1="14.722"
+          x2="-16.948"
+          y2="59.591"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#0029FF" />
+          <Stop offset="1" stopColor="#0029FF" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="onrbflxgxb"
+          x1="38.231"
+          y1="20.714"
+          x2="10.938"
+          y2="51.522"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#BDD9FF" />
+          <Stop offset="1" stopColor="#C8DFFF" stopOpacity=".24" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
+  imgGuide: [
+    <Svg
+      width="59"
+      height="46"
+      viewBox="0 0 59 46"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M31.157 21.766c-.263-.775.487-1.513 1.275-1.254L55.5 28.074c.915.3.92 1.57.01 1.879L44.997 33.51a1 1 0 0 0-.625.615l-3.617 10.337c-.313.897-1.605.89-1.91-.009l-7.69-22.687z"
+        fill="url(#4sbc9pb8ha)"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M3.39 3.975a.913.913 0 0 0-.39.764V41a2 2 0 1 0 4 0V30.629a17.903 17.903 0 0 1 6.25-1.14c3.738 0 6.994 1.627 10.25 3.255C26.756 34.372 30.012 36 33.75 36c5.038 0 8.7-2.185 9.86-2.975a.913.913 0 0 0 .39-.764V6.327c0-.837-1.013-1.367-1.75-.972-1.76.945-4.749 2.157-8.5 2.157-3.738 0-6.994-1.628-10.25-3.256C20.244 2.628 16.988 1 13.25 1c-5.038 0-8.7 2.185-9.86 2.975z"
+        fill="url(#562e3loqtb)"
+      />
+      <Circle cx="22.5" cy="24.5" r="1.5" fill="#fff" />
+      <Rect x="21" y="10" width="3" height="12" rx="1.5" fill="#fff" />
+      <Defs>
+        <LinearGradient
+          id="4sbc9pb8ha"
+          x1="24.068"
+          y1="22.95"
+          x2="32.6"
+          y2="68.737"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#0029FF" />
+          <Stop offset="1" stopColor="#0029FF" stopOpacity="0" />
+        </LinearGradient>
+        <LinearGradient
+          id="562e3loqtb"
+          x1="26.476"
+          y1="11.58"
+          x2="65.834"
+          y2="58.324"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#BDD9FF" />
+          <Stop offset="1" stopColor="#C8DFFF" stopOpacity=".24" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
 };
 
 export default pressIcons;
