@@ -38,15 +38,15 @@ const {esimGlobal} = Env.get();
 
 const tutorialImages = esimGlobal
   ? {
-      step1: require(`../assets/images/esim/tutorial/step1/t1.png`),
-      step2: require(`../assets/images/esim/tutorial/step2/t2.png`),
-      step3: require(`../assets/images/esim/tutorial/step3/t3.png`),
+      step1: require(`../assets/images/en/esim/t1.png`),
+      step2: require(`../assets/images/en/esim/t2.png`),
+      step3: require(`../assets/images/en/esim/t3.png`),
     }
   : {
-      step1: require(`../assets/images/esim/tutorial/step1/esimTutorial1.png`),
-      step2: require(`../assets/images/esim/tutorial/step2/esimTutorial2.png`),
-      step3: require(`../assets/images/esim/tutorial/step3/esimTutorial3.png`),
-      step4: require(`../assets/images/esim/tutorial/step4/esimTutorial4.png`),
+      step1: require(`../assets/images/esim/tutorial/esimTutorial1.png`),
+      step2: require(`../assets/images/esim/tutorial/esimTutorial2.png`),
+      step3: require(`../assets/images/esim/tutorial/esimTutorial3.png`),
+      step4: require(`../assets/images/esim/tutorial/esimTutorial4.png`),
     };
 
 const styles = StyleSheet.create({

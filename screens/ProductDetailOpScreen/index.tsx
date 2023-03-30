@@ -315,12 +315,7 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
             <View style={styles.searchDivider} />
           </Fragment>
         )}
-        <AppIcon
-          name="btnSearchOn"
-          style={{
-            marginRight: 15,
-          }}
-        />
+        <AppIcon name="btnSearchOn" style={{marginRight: 15}} />
       </View>
 
       <View style={styles.divider} />

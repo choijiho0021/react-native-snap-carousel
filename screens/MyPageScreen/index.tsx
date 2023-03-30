@@ -1,11 +1,9 @@
-import Clipboard from '@react-native-community/clipboard';
 import {useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   FlatList,
   Platform,
-  Pressable,
   RefreshControl,
   StyleSheet,
   View,
@@ -21,10 +19,6 @@ import {bindActionCreators} from 'redux';
 import ImagePicker from 'react-native-image-crop-picker';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
-import AppButton from '@/components/AppButton';
-import AppColorText from '@/components/AppColorText';
-import AppIcon from '@/components/AppIcon';
-import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -65,54 +59,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     backgroundColor: colors.white,
   },
-  titleAndStatus: {
-    flexDirection: 'row',
-    marginBottom: 10,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.whiteTwo,
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-  },
-  btnCopy: {
-    backgroundColor: colors.white,
-    width: 62,
-    height: 40,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    marginLeft: 20,
-  },
-  titleStyle: {
-    marginHorizontal: 20,
-    fontSize: 20,
-  },
-  keyTitle: {
-    ...appStyles.normal18Text,
-    marginBottom: 10,
-    color: colors.warmGrey,
-  },
-  modalBody: {
-    marginVertical: 20,
-    marginHorizontal: 20,
-  },
-  openRokebiTalk: {
-    flexDirection: 'row',
-    height: 70,
-    marginBottom: 10,
-    marginTop: 5,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.white,
-    borderRadius: 1,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
-  },
-  openRokebiTalkText: {
-    ...appStyles.normal16Text,
-    color: colors.clearBlue,
-    marginLeft: 20,
-  },
 });
 
 type MyPageScreenNavigationProp = StackNavigationProp<
@@ -144,9 +90,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
   const {uid} = account;
   const flatListRef = useRef<FlatList>(null);
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
-  const [showIdModal, setShowIdModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [copyString, setCopyString] = useState('');
   const [showSnackBar, setShowSnackbar] = useState(false);
 
   const checkPhotoPermission = useCallback(async () => {
@@ -246,86 +190,6 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
     [navigation, order],
   );
 
-  const copyToClipboard = useCallback((value?: string) => {
-    if (value) {
-      Clipboard.setString(value);
-      setCopyString(value);
-      setShowSnackbar(true);
-    }
-  }, []);
-
-  const modalBody = useCallback(() => {
-    const {iccid, pin} = account;
-
-    return (
-      <View style={styles.modalBody}>
-        <AppColorText
-          style={[appStyles.normal16Text, {marginBottom: 20}]}
-          text={i18n.t('mypage:manualInput:body')}
-        />
-        <View style={styles.titleAndStatus}>
-          <View style={{flex: 9}}>
-            <AppText style={styles.keyTitle}>{i18n.t('mypage:iccid')}</AppText>
-            <AppText style={appStyles.normal18Text}>{iccid}</AppText>
-          </View>
-          <AppButton
-            title={i18n.t('copy')}
-            titleStyle={[
-              appStyles.normal14Text,
-              {color: copyString === iccid ? colors.clearBlue : colors.black},
-            ]}
-            style={[
-              styles.btnCopy,
-              {
-                borderColor:
-                  copyString === iccid ? colors.clearBlue : colors.whiteTwo,
-              },
-            ]}
-            onPress={() => copyToClipboard(iccid)}
-          />
-        </View>
-        <View style={styles.titleAndStatus}>
-          <View style={{flex: 9}}>
-            <AppText style={styles.keyTitle}>
-              {i18n.t('mypage:activationCode')}
-            </AppText>
-            <AppText style={appStyles.normal18Text}>{pin}</AppText>
-          </View>
-          <AppButton
-            title={i18n.t('copy')}
-            titleStyle={[
-              appStyles.normal14Text,
-              {color: copyString === pin ? colors.clearBlue : colors.black},
-            ]}
-            style={[
-              styles.btnCopy,
-              {
-                borderColor:
-                  copyString === pin ? colors.clearBlue : colors.whiteTwo,
-              },
-            ]}
-            onPress={() => copyToClipboard(pin)}
-          />
-        </View>
-        <Pressable
-          style={styles.openRokebiTalk}
-          // onPress={() => this.openRokebiTalk} // 로깨비톡으로 이동 X
-        >
-          <View>
-            <AppText
-              style={[styles.openRokebiTalkText, {color: colors.warmGrey}]}>
-              {i18n.t('mypage:openRokebiTalk')}
-            </AppText>
-            <AppText style={[styles.openRokebiTalkText, {fontWeight: 'bold'}]}>
-              {i18n.t('mypage:preparing')}
-            </AppText>
-          </View>
-          <AppIcon name="imgDokebi2" style={{marginRight: 20}} />
-        </Pressable>
-      </View>
-    );
-  }, [account, copyString, copyToClipboard]);
-
   const changePhoto = useCallback(async () => {
     const checkNewPermission = await checkPhotoPermission();
 
@@ -411,17 +275,6 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
 
       <AppActivityIndicator visible={!refreshing && pending} />
 
-      <AppModal
-        type="close"
-        title={i18n.t('mypage:idCheckTitle')}
-        titleStyle={styles.titleStyle}
-        titleIcon="btnId"
-        onOkClose={() => {
-          setShowIdModal(false);
-        }}
-        visible={showIdModal}>
-        {modalBody()}
-      </AppModal>
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackbar(false)}

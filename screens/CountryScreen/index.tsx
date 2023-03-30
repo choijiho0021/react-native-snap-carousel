@@ -73,8 +73,6 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   btnCancel: {
-    width: 12,
-    height: 12,
     padding: 8,
     marginRight: 8,
   },
@@ -268,7 +266,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
               </AppText>
               <AppButton
                 style={styles.btnCancel}
-                iconName="btnCancel"
+                iconName="btnCancelWhite"
                 onPress={() => setTip(false)}
               />
             </View>

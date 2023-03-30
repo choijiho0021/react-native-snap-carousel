@@ -286,11 +286,7 @@ const ProductDetailGlobalScreen: React.FC<ProductDetailScreenProps> = ({
           )}
         </AppText>
         <AppButton
-          iconName={
-            esimGlobal
-              ? `openFacebook${esimGlobal ? 'Eng' : ''}`
-              : `openKakao${esimGlobal ? 'Eng' : ''}`
-          }
+          iconName={esimGlobal ? 'openFacebookEng' : 'openKakao'}
           onPress={openKTalk}
           style={{flex: 1}}
         />

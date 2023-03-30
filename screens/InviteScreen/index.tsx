@@ -23,6 +23,7 @@ import {utils} from '@/utils/utils';
 import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppStyledText from '@/components/AppStyledText';
+import {InviteRokebi1, InviteRokebi2} from './Img';
 
 const styles = StyleSheet.create({
   container: {
@@ -324,7 +325,7 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
           <AppText style={styles.blueBgDetailText2}>
             {i18n.t('inv:upper5')}
           </AppText>
-          <AppIcon name="inviteRokebi1" />
+          <InviteRokebi1 />
         </View>
 
         <View style={styles.shareBg}>
@@ -374,7 +375,7 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
                 {i18n.t('inv:statInv')}
               </AppText>
             </View>
-            <AppIcon name="inviteRokebi2" />
+            <InviteRokebi2 />
           </View>
           {statBox()}
           <AppText style={styles.withdrawal}>

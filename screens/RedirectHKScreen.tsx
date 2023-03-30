@@ -11,9 +11,10 @@ import {
   Pressable,
 } from 'react-native';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {RouteProp} from '@react-navigation/native';
 import {bindActionCreators, RootState} from 'redux';
 import {connect} from 'react-redux';
+import {StackNavigationProp} from '@react-navigation/stack';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -31,7 +32,6 @@ import {AccountModelState} from '@/redux/modules/account';
 import {API} from '@/redux/api';
 import HkStatusLottie from './EsimScreen/components/HkStatusLottie';
 import AppModal from '@/components/AppModal';
-import {StackNavigationProp} from '@react-navigation/stack';
 
 const {width} = Dimensions.get('window');
 

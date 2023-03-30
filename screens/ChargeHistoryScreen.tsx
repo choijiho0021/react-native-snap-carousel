@@ -200,6 +200,10 @@ type ChargeHistoryScreenProps = {
   route: RouteProp<HomeStackParamList, 'ChargeHistory'>;
 };
 
+// SVG 파일로 대체 불가. SVG는 이미지가 깨져보임
+const dailyCardImg = require('../assets/images/esim/dailyCard.png');
+const totalCardImg = require('../assets/images/esim/totalCard.png');
+
 const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   navigation,
   route: {params},
@@ -300,8 +304,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
 
   const renderCard = useCallback(() => {
     const isDaily = chargedSubs[0].daily === 'daily';
-    const dailyCardImg = require('../assets/images/esim/dailyCard.png');
-    const totalCardImg = require('../assets/images/esim/totalCard.png');
+
     const title = utils.removeBracketOfName(
       mainSubs?.prodName?.split(' ')?.[0],
     );
