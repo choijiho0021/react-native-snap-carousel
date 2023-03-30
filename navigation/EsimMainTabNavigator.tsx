@@ -20,6 +20,7 @@ import AccountSettingsScreen from '@/screens/AccountSettingsScreen';
 import ResignScreen from '@/screens/ResignScreen';
 import ChangeEmailScreen from '@/screens/ChangeEmailScreen';
 import ReceiptScreen from '@/screens/ReceiptScreen';
+import ExtraCouponScreen from '@/screens/ExtraCouponScreen';
 import CashHistoryScreen from '@/screens/CashHistoryScreen';
 import i18n from '@/utils/i18n';
 import RechargeScreen from '@/screens/RechargeScreen';
@@ -51,11 +52,15 @@ import ChargeHistoryScreen from '@/screens/ChargeHistoryScreen';
 import ChargeDetailScreen from '@/screens/ChargeDetailScreen';
 import QrInfoScreen from '@/screens/QrInfoScreen';
 import UserGuideScreen from '@/screens/UserGuideScreen';
+import GlobalGuideScreen from '@/screens/UserGuideScreen/global/GlobalGuide';
 import PaymentGatewayScreen from '@/screens/PaymentGatewayScreen';
 import {CartModelState} from '@/redux/modules/cart';
 import AppText from '@/components/AppText';
 import GuideHomeScreen from '@/screens/UserGuideScreen/GuideHomeScreen';
 import GuideSelectRegionScreen from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
+import Env from '@/environment';
+
+const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   tabBarIcon: {
@@ -150,7 +155,10 @@ function HomeStackComponent() {
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
       <HomeStack.Group screenOptions={{animationEnabled: true}}>
         <HomeStack.Screen name="UserGuideStep" component={UserGuideScreen} />
-        <HomeStack.Screen name="UserGuide" component={GuideHomeScreen} />
+        <HomeStack.Screen
+          name="UserGuide"
+          component={esimGlobal ? GlobalGuideScreen : GuideHomeScreen}
+        />
         <HomeStack.Screen
           name="UserGuideSelectRegion"
           component={GuideSelectRegionScreen}
@@ -240,6 +248,7 @@ function MyPageStackComponent() {
       <MyPageStack.Screen name="Resign" component={ResignScreen} />
       <MyPageStack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
       <MyPageStack.Screen name="Receipt" component={ReceiptScreen} />
+      <MyPageStack.Screen name="ExtraCoupon" component={ExtraCouponScreen} />
       <MyPageStack.Screen
         name="CashHistory"
         component={CashHistoryScreen}
