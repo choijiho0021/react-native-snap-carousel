@@ -16,12 +16,7 @@ import Svg, {
 // normal, pressed, disabled
 const pressIcons: Record<string, React.ReactElement[]> = {
   btnSetup: [
-    <Svg
-      width="26"
-      height="26"
-      viewBox="0 0 26 26"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="26" height="26" viewBox="0 0 26 26" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -54,12 +49,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   rightArrow: [
-    <Svg
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="10" height="10" viewBox="0 0 10 10" fill="none">
       <Path
         d="M4.5.5 9 5 4.5 9.5"
         stroke="#2C2C2C"
@@ -69,12 +59,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   arrowRight: [
-    <Svg
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="10" height="10" viewBox="0 0 10 10" fill="none">
       <Path
         d="M4.5.5 9 5 4.5 9.5"
         stroke="#fff"
@@ -84,12 +69,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   pin: [
-    <Svg
-      width="10"
-      height="16"
-      viewBox="0 0 10 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="10" height="16" viewBox="0 0 10 16" fill="none">
       <Path
         d="M4 6.5h2V14l-.553 1.106a.5.5 0 0 1-.894 0L4 14V6.5z"
         fill="#777"
@@ -103,12 +83,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnCnter: [
-    <Svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -117,28 +92,8 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
-  callCenter: [
-    <Svg
-      width="26"
-      height="26"
-      viewBox="0 0 26 26"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
-      <Path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M4 10.503v.913A5.001 5.001 0 0 0 6 21a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1v-.497c0-3.429 3.008-6.429 7-6.429s7 3 7 6.429V11a1 1 0 0 0-1 1v11h-6a1 1 0 1 0 0 2h7a1 1 0 0 0 1-1v-3.1a5.002 5.002 0 0 0 1-9.484v-.913c0-4.655-4.03-8.429-9-8.429s-9 3.774-9 8.429zM3 16c0-1.306.835-2.418 2-2.83v5.66A3.001 3.001 0 0 1 3 16zm20 0a3.001 3.001 0 0 0-2-2.83v5.66A3.001 3.001 0 0 0 23 16z"
-        fill="#2C2C2C"
-      />
-    </Svg>,
-  ],
   closeModal: [
-    <Svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Rect
         x="2.101"
         y="3.515"
@@ -159,78 +114,8 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
-  esimLogo: [
-    <Svg
-      width="43"
-      height="38"
-      viewBox="0 0 43 38"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
-      <Path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M36 28.278C34.52 6.595 21.75 1.487 21.75 1.487S8.98 6.595 7.5 28.278c0 0 2.452 3.857 14.25 3.857S36 28.278 36 28.278z"
-        fill="#FFD300"
-      />
-      <Path
-        clipRule="evenodd"
-        d="M21.75 32.135c11.798 0 14.25-3.857 14.25-3.857C34.52 6.595 21.75 1.487 21.75 1.487S8.98 6.595 7.5 28.278c0 0 2.452 3.857 14.25 3.857z"
-        stroke="#FFD300"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-      <Path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M21.5 36.514c24.877 0 21.727-13.837 19.577-16.58-2.15-2.744-5.765-2.592-8.107-1.396-2.342 1.196-4.014.585-5.727-2.784-1.92-3.773-5.743-3.563-5.743-3.563s-3.823-.21-5.742 3.563c-1.714 3.369-3.386 3.98-5.728 2.784-2.341-1.196-5.956-1.348-8.107 1.396-2.15 2.743-5.3 16.58 19.577 16.58z"
-        fill="#2A7FF6"
-      />
-      <Path
-        clipRule="evenodd"
-        d="M21.5 36.514c24.877 0 21.727-13.837 19.577-16.58-2.15-2.744-5.765-2.592-8.107-1.396-2.342 1.196-4.014.585-5.727-2.784-1.92-3.773-5.743-3.563-5.743-3.563s-3.823-.21-5.742 3.563c-1.714 3.369-3.386 3.98-5.728 2.784-2.341-1.196-5.956-1.348-8.107 1.396-2.15 2.743-5.3 16.58 19.577 16.58z"
-        stroke="#2A7FF6"
-      />
-    </Svg>,
-  ],
-  leftArrow: [
-    <Svg
-      width="14"
-      height="15"
-      viewBox="0 0 14 15"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
-      <Path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M4.646 12.354a.5.5 0 0 0 .708-.708L1.707 8H13a.5.5 0 0 0 0-1H1.707l3.647-3.646a.5.5 0 1 0-.708-.708l-4.5 4.5a.5.5 0 0 0 0 .708l4.5 4.5z"
-        fill="#2C2C2C"
-      />
-    </Svg>,
-  ],
-  flag: [
-    <Svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
-      <Path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M1.372 2.586A.881.881 0 0 0 1 3.324V21.5a1.5 1.5 0 0 0 3 0v-3.862a8.965 8.965 0 0 1 2.5-.359c2.006 0 3.753.93 5.5 1.86 1.747.93 3.494 1.861 5.5 1.861 2.5 0 4.369-1.068 5.128-1.585a.882.882 0 0 0 .372-.74V5.016c0-.85-1.073-1.408-1.854-1.068a9.138 9.138 0 0 1-3.646.774c-2.006 0-3.753-.93-5.5-1.86C10.253 1.93 8.506 1 6.5 1 4 1 2.131 2.068 1.372 2.586z"
-        fill="#0029FF"
-      />
-      <Circle cx="12" cy="14.8" r="1" fill="#fff" />
-      <Rect x="11" y="6" width="2" height="7" rx="1" fill="#fff" />
-    </Svg>,
-  ],
   newFlag: [
-    <Svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -241,14 +126,8 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Rect x="11" y="5" width="2" height="7" rx="1" fill="#fff" />
     </Svg>,
   ],
-
   closeSnackBar: [
-    <Svg
-      width="12"
-      height="13"
-      viewBox="0 0 12 13"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="12" height="13" viewBox="0 0 12 13" fill="none">
       <Rect
         x="10.596"
         y="1.197"
@@ -270,12 +149,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   removeSearchHist: [
-    <Svg
-      width="12"
-      height="12"
-      viewBox="0 0 12 12"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="12" height="12" viewBox="0 0 12 12" fill="none">
       <Rect
         x="10.596"
         y=".697"
@@ -297,12 +171,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   plus: [
-    <Svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Path
         d="M8 12a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 8 12z"
         fill="#2C2C2C"
@@ -313,12 +182,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
     null,
-    <Svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Path
         d="M8 12a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 8 12z"
         fill="#D8D8D8"
@@ -330,31 +194,16 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   minus: [
-    <Svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Rect x="8" y="11.5" width="8" height="1" rx=".5" fill="#2C2C2C" />
     </Svg>,
     null,
-    <Svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Rect x="8" y="11.5" width="8" height="1" rx=".5" fill="#D8D8D8" />
     </Svg>,
   ],
   bottomArrow: [
-    <Svg
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="10" height="10" viewBox="0 0 10 10" fill="none">
       <Path
         d="M9.5 3 5 7.5.5 3"
         stroke="#2C2C2C"
@@ -364,12 +213,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   topArrow: [
-    <Svg
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="10" height="10" viewBox="0 0 10 10" fill="none">
       <Path
         d="M.5 5 5 .5 9.5 5"
         stroke="#2C2C2C"
@@ -378,28 +222,8 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
-  checkedBlue: [
-    <Svg
-      width="22"
-      height="22"
-      viewBox="0 0 22 22"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
-      <Path
-        d="M5 10.5 9.696 15 17 8"
-        stroke="#2A7FF6"
-        strokeWidth="4"
-        strokeLinecap="round"
-      />
-    </Svg>,
-  ],
   qrInfo: [
-    <Svg
-      width="26"
-      height="26"
-      viewBox="0 0 26 26"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="26" height="26" viewBox="0 0 26 26" fill="none">
       <G
         clipPath="url(#33gk6x5uqa)"
         fillRule="evenodd"
@@ -415,14 +239,9 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnUsage: [
-    <Svg
-      width="26"
-      height="26"
-      viewBox="0 0 26 26"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="26" height="26" viewBox="0 0 26 26" fill="none">
       <G
-        clip-path="url(#1utqpdok7a)"
+        clipPath="url(#1utqpdok7a)"
         fillRule="evenodd"
         clipRule="evenodd"
         fill="#2C2C2C">
@@ -437,12 +256,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnChargeable: [
-    <Svg
-      width="26"
-      height="26"
-      viewBox="0 0 26 26"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="26" height="26" viewBox="0 0 26 26" fill="none">
       <G
         clipPath="url(#w0ansbqfpa)"
         fillRule="evenodd"
@@ -459,12 +273,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnChargeExpired: [
-    <Svg
-      width="26"
-      height="26"
-      viewBox="0 0 26 26"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="26" height="26" viewBox="0 0 26 26" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -487,12 +296,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnNonChargeable: [
-    <Svg
-      width="26"
-      height="26"
-      viewBox="0 0 26 26"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="26" height="26" viewBox="0 0 26 26" fill="none">
       <G
         clipPath="url(#9wp35m2fxa)"
         fillRule="evenodd"
@@ -510,12 +314,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnChargeCaution: [
-    <Svg
-      width="26"
-      height="26"
-      viewBox="0 0 26 26"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="26" height="26" viewBox="0 0 26 26" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -525,12 +324,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   cautionIcon: [
-    <Svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Circle cx="12" cy="12" r="11" fill="#FFE3DD" />
       <Path
         d="M13 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM11 8a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V8z"
@@ -539,12 +333,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   hkIcon: [
-    <Svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <Mask
         id="mask0_3149_14491"
         // style="mask-type:alpha"
@@ -570,12 +359,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   naverIcon: [
-    <Svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <G clipPath="url(#a5avg8trsa)">
         <Rect
           x="1"
@@ -626,12 +410,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   sortTriangle: [
-    <Svg
-      width="6"
-      height="4"
-      viewBox="0 0 6 4"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="6" height="4" viewBox="0 0 6 4" fill="none">
       <Path
         d="M3.4 3.467a.5.5 0 0 1-.8 0L.6.8A.5.5 0 0 1 1 0h4a.5.5 0 0 1 .4.8l-2 2.667z"
         fill="#2C2C2C"
@@ -639,12 +418,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   selected: [
-    <Svg
-      width="22"
-      height="22"
-      viewBox="0 0 22 22"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="22" height="22" viewBox="0 0 22 22" fill="none">
       <Circle cx="11" cy="11" r="11" fill="#fff" />
       <Path
         d="M5 10.5 9.696 15 17 8"
@@ -655,12 +429,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   threeDots: [
-    <Svg
-      width="62"
-      height="62"
-      viewBox="0 0 62 62"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="62" height="62" viewBox="0 0 62 62" fill="none">
       <Circle cx="31" cy="31" r="30" fill="url(#y2wbnymkxa)" />
       <Circle cx="17" cy="31" r="3" fill="#4F99FF" />
       <Circle cx="31" cy="31" r="3" fill="#4F99FF" />
@@ -680,12 +449,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   clear: [
-    <Svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <Circle cx="8" cy="8" r="8" fill="#D8D8D8" />
       <Path
         fillRule="evenodd"
@@ -702,12 +466,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   checkedBlueSmall: [
-    <Svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -717,12 +476,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   hkCheck: [
-    <Svg
-      width="96"
-      height="110"
-      viewBox="0 0 96 110"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="96" height="110" viewBox="0 0 96 110" fill="none">
       <Circle cx="48" cy="49" r="45" fill="url(#vide1vqrca)" />
       <Mask
         id="q2ye1kc1tb"
@@ -909,12 +663,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   cashHistoryPlus: [
-    <Svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -924,27 +673,17 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   rightAngleBracket: [
-    <Svg
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="10" height="10" viewBox="0 0 10 10" fill="none">
       <Path
         d="M4.5.5 9 5 4.5 9.5"
         stroke="#2C2C2C"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </Svg>,
   ],
   imgBoard: [
-    <Svg
-      width="26"
-      height="26"
-      viewBox="0 0 26 26"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="26" height="26" viewBox="0 0 26 26" fill="none">
       <Path
         d="M2 10a8 8 0 0 1 8-8h6a8 8 0 0 1 8 8v6a8 8 0 0 1-8 8H3a1 1 0 0 1-1-1V10z"
         stroke="#2C2C2C"
@@ -958,49 +697,8 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
-  fbMsg: [
-    <Svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
-      <G clipPath="url(#810bj2rxba)">
-        <Path
-          d="M12 0C5.241 0 0 4.953 0 11.64c0 3.498 1.434 6.522 3.768 8.61.195.174.315.42.321.684l.066 2.136a.96.96 0 0 0 1.347.849l2.382-1.05a.964.964 0 0 1 .642-.048c1.095.3 2.259.462 3.474.462 6.759 0 12-4.953 12-11.64S18.759 0 12 0z"
-          fill="url(#6baev6dpdb)"
-        />
-        <Path
-          d="m4.794 15.045 3.525-5.592a1.8 1.8 0 0 1 2.604-.48l2.805 2.103a.72.72 0 0 0 .867-.003L18.38 8.2c.504-.384 1.164.222.828.76l-3.528 5.588a1.8 1.8 0 0 1-2.604.48l-2.805-2.103a.72.72 0 0 0-.867.003l-3.786 2.874c-.504.384-1.164-.219-.825-.756z"
-          fill="#fff"
-        />
-      </G>
-      <Defs>
-        <RadialGradient
-          id="6baev6dpdb"
-          cx="0"
-          cy="0"
-          r="1"
-          gradientUnits="userSpaceOnUse"
-          gradientTransform="matrix(26.4 0 0 26.4 4.02 24)">
-          <Stop stop-color="#09F" />
-          <Stop offset=".6" stop-color="#A033FF" />
-          <Stop offset=".9" stop-color="#FF5280" />
-          <Stop offset="1" stop-color="#FF7061" />
-        </RadialGradient>
-        <ClipPath id="810bj2rxba">
-          <Path fill="#fff" d="M0 0h24v24H0z" />
-        </ClipPath>
-      </Defs>
-    </Svg>,
-  ],
   chatTalk: [
-    <Svg
-      width="26"
-      height="26"
-      viewBox="0 0 26 26"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="26" height="26" viewBox="0 0 26 26" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -1010,12 +708,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   localNotice1: [
-    <Svg
-      width="18"
-      height="18"
-      viewBox="0 0 18 18"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="18" height="18" viewBox="0 0 18 18" fill="none">
       <Path
         d="M8.11621 1.66938C8.49182 0.959892 9.50818 0.959894 9.88379 1.66938L17.2229 15.5321C17.5755 16.1981 17.0927 17 16.3391 17H1.66091C0.90733 17 0.424529 16.1981 0.777117 15.5321L8.11621 1.66938Z"
         fill="#2A7FF6"
@@ -1031,12 +724,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   localNotice2: [
-    <Svg
-      width="18"
-      height="18"
-      viewBox="0 0 18 18"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="18" height="18" viewBox="0 0 18 18" fill="none">
       <Path
         d="M17 7.412c0 3.56-4.631 7.832-6.846 9.672a1.792 1.792 0 0 1-2.308 0C5.631 15.244 1 10.97 1 7.412 1 2.734 4.582 0 9 0s8 2.734 8 7.412z"
         fill="#2A7FF6"
@@ -1045,12 +733,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   localNoticePopup: [
-    <Svg
-      width="214"
-      height="74"
-      viewBox="0 0 214 74"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="214" height="74" viewBox="0 0 214 74" fill="none">
       <Path
         d="M0 10C0 4.477 4.477 0 10 0h194c5.523 0 10 4.477 10 10v54c0 5.523-4.477 10-10 10H10C4.477 74 0 69.523 0 64V10z"
         fill="#fff"
@@ -1065,43 +748,8 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
-  downArrow: [
-    <Svg
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
-      <Path
-        d="M9.5 3 5 7.5.5 3"
-        stroke="#2C2C2C"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>,
-  ],
-  upArrow: [
-    <Svg
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
-      <Path
-        d="M.5 5 5 .5 9.5 5"
-        stroke="#2C2C2C"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>,
-  ],
   rightArrow20: [
-    <Svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <Path
         d="m8 4 5.657 5.657L8 15.314"
         stroke="#2C2C2C"
@@ -1112,12 +760,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   notice: [
-    <Svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <G clipPath="url(#y161wjysma)">
         <Path
           d="M9.122 1.442a1 1 0 0 1 1.756 0l8.315 15.245a1 1 0 0 1-.878 1.48H1.686a1 1 0 0 1-.878-1.48L9.122 1.443z"
@@ -1136,12 +779,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   noticeFlag: [
-    <Svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -1152,53 +790,8 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Rect x="11" y="5" width="2" height="7" rx="1" fill="#fff" />
     </Svg>,
   ],
-  koreaFlag: [
-    <Svg
-      width="100"
-      height="100"
-      viewBox="0 0 100 100"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
-      <Circle
-        cx="50"
-        cy="49.911"
-        r="44.078"
-        fill="url(#1fb1oli7qa)"
-        stroke="#EEE"
-      />
-      <Path
-        d="M64.524 54.554a8.053 8.053 0 0 1-.596 3.048 15.994 15.994 0 0 1-2.09 2.96 15.827 15.827 0 0 1-11.754 5.305c-8.711.046-15.884-7.033-15.95-15.745-.02-2.57.574-5.003 1.641-7.157a8.063 8.063 0 0 0 14.536 6.727c.523-.852 1.217-1.593 2.078-2.1a8.063 8.063 0 0 1 12.132 6.96l.003.002z"
-        fill="#194C94"
-      />
-      <Path
-        d="M63.928 57.6a8.063 8.063 0 0 0-11.537-10.008c-.86.505-1.555 1.248-2.078 2.1a8.09 8.09 0 0 1-1.172 1.484 8.063 8.063 0 0 1-13.363-8.21 15.91 15.91 0 0 1 2.601-3.766 15.823 15.823 0 0 1 11.684-5.066c8.676.033 15.769 7.127 15.803 15.803.01 2.777-.692 5.39-1.936 7.664h-.002z"
-        fill="#F1694F"
-      />
-      <Path
-        d="m26.176 24.746-8.697 12.991 2.122 1.421 8.697-12.991-2.122-1.421zM29.407 26.909 20.709 39.9l2.123 1.421L31.53 28.33l-2.122-1.421zM32.636 29.072 23.94 42.063l2.123 1.421 8.697-12.991-2.123-1.421zM19.599 60.844l-2.123 1.42 8.697 12.992 2.123-1.42-8.697-12.992zM22.835 58.674l-2.123 1.42 3.97 5.932 2.123-1.42-3.97-5.932zM27.556 65.742l-2.123 1.42 3.968 5.933 2.123-1.42-3.968-5.933zM26.06 56.517l-2.123 1.421 8.697 12.992 2.123-1.421-8.697-12.992zM75.657 67.93l-3.954 5.906 2.122 1.421 3.955-5.905-2.123-1.421zM80.402 60.845 76.414 66.8l2.124 1.422 3.987-5.955-2.123-1.422zM72.443 65.742l-3.971 5.93 2.122 1.422 3.972-5.93-2.123-1.422zM77.17 58.682l-3.97 5.93 2.123 1.421 3.97-5.929-2.123-1.422zM69.197 63.603l-3.957 5.904 2.123 1.423 3.957-5.904-2.123-1.423zM76.061 57.937l-3.986 5.956-2.124-1.424 3.988-5.954 2.122 1.422zM73.822 24.746 71.7 26.167l3.971 5.93 2.123-1.421-3.972-5.93zM78.55 31.804l-2.122 1.422 3.971 5.93 2.123-1.421-3.972-5.93zM70.595 26.916l-2.123 1.42 8.697 12.992 2.123-1.42-8.697-12.992zM67.363 29.07l-2.124 1.422 3.947 5.894 2.124-1.422-3.947-5.894zM76.061 42.065l-2.123 1.422-3.995-5.968 2.124-1.42 3.994 5.966z"
-        fill="#2C2C2C"
-      />
-      <Defs>
-        <LinearGradient
-          id="1fb1oli7qa"
-          x1="23"
-          y1="11"
-          x2="56.999"
-          y2="76"
-          gradientUnits="userSpaceOnUse">
-          <Stop stopColor="#fff" />
-          <Stop offset="1" stopColor="#F3F3F3" />
-        </LinearGradient>
-      </Defs>
-    </Svg>,
-  ],
   threeArrows: [
-    <Svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <Path
         d="M6 13 2 8l4-5m4 10L6 8l4-5m4 10-4-5 4-5"
         stroke="#2C2C2C"
@@ -1208,12 +801,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnHeaderCart: [
-    <Svg
-      width="26"
-      height="26"
-      viewBox="0 0 26 26"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="26" height="26" viewBox="0 0 26 26" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -1223,12 +811,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   iconArrowRight: [
-    <Svg
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="10" height="10" viewBox="0 0 10 10" fill="none">
       <Path
         d="M5 .5 9.5 5 5 9.5"
         stroke="#979797"
@@ -1238,12 +821,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   iconArrowUp: [
-    <Svg
-      width="12"
-      height="11"
-      viewBox="0 0 12 11"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="12" height="11" viewBox="0 0 12 11" fill="none">
       <Path
         d="M1.5 5.83 6 1.4l4.5 4.43"
         stroke="#979797"
@@ -1253,12 +831,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnNotice: [
-    <Svg
-      width="26"
-      height="26"
-      viewBox="0 0 26 26"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="26" height="26" viewBox="0 0 26 26" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -1274,12 +847,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   imgFail: [
-    <Svg
-      width="50"
-      height="50"
-      viewBox="0 0 50 50"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="50" height="50" viewBox="0 0 50 50" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -1295,12 +863,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   iconTrash: [
-    <Svg
-      width="19"
-      height="19"
-      viewBox="0 0 19 19"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="19" height="19" viewBox="0 0 19 19" fill="none">
       <Path
         d="M15.5 3.502V14.27c0 1.784-1.465 3.23-3.273 3.23H6.773c-1.808 0-3.273-1.446-3.273-3.23V3.477M1 3.5h17"
         stroke="#2C2C2C"
@@ -1310,12 +873,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   iconArrowDown: [
-    <Svg
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="10" height="10" viewBox="0 0 10 10" fill="none">
       <Path
         d="M.5 3 5 7.5 9.5 3"
         stroke="#979797"
@@ -1325,12 +883,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   iconArrowRightBlack: [
-    <Svg
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="10" height="10" viewBox="0 0 10 10" fill="none">
       <Path
         d="M4.5.5 9 5 4.5 9.5"
         stroke="#2C2C2C"
@@ -1340,12 +893,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   imgCheck: [
-    <Svg
-      width="50"
-      height="50"
-      viewBox="0 0 50 50"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="50" height="50" viewBox="0 0 50 50" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -1362,12 +910,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnSearchOn: [
-    <Svg
-      width="15"
-      height="16"
-      viewBox="0 0 15 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="15" height="16" viewBox="0 0 15 16" fill="none">
       <Circle cx="6.5" cy="6.5" r="6" stroke="#2C2C2C" />
       <Path
         d="M10.126 11.126a.432.432 0 0 1 .61 0l4.138 4.137a.432.432 0 0 1-.61.61l-4.138-4.136a.432.432 0 0 1 0-.61z"
@@ -1376,12 +919,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnSearchCancel: [
-    <Svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <Circle cx="8" cy="8" r="8" fill="#D8D8D8" />
       <Path
         fillRule="evenodd"
@@ -1398,12 +936,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnSearchOff: [
-    <Svg
-      width="15"
-      height="16"
-      viewBox="0 0 15 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="15" height="16" viewBox="0 0 15 16" fill="none">
       <Circle cx="6.5" cy="6.5" r="6" stroke="#979797" />
       <Path
         d="M10.126 11.126a.432.432 0 0 1 .61 0l4.138 4.137a.432.432 0 0 1-.61.61l-4.138-4.136a.432.432 0 0 1 0-.61z"
@@ -1412,12 +945,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnSearchBlue: [
-    <Svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -1427,12 +955,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnCancel: [
-    <Svg
-      width="12"
-      height="12"
-      viewBox="0 0 12 12"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="12" height="12" viewBox="0 0 12 12" fill="none">
       <Rect
         x="10.596"
         y=".697"
@@ -1454,12 +977,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnCancelWhite: [
-    <Svg
-      width="12"
-      height="12"
-      viewBox="0 0 12 12"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="12" height="12" viewBox="0 0 12 12" fill="none">
       <Rect
         x="10.596"
         y=".697"
@@ -1481,12 +999,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnBoxCancel: [
-    <Svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <Path d="M0 0h17a3 3 0 0 1 3 3v17H0V0z" fill="#000" fillOpacity=".4" />
       <Path
         d="M3.99 3.282 16.716 16.01l-.707.707L3.282 3.99l.708-.707z"
@@ -1499,23 +1012,13 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnPhotoPlus: [
-    <Svg
-      width="19"
-      height="19"
-      viewBox="0 0 19 19"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="19" height="19" viewBox="0 0 19 19" fill="none">
       <Path fill="#2C2C2C" d="M0 9h19v1H0z" />
       <Path fill="#2C2C2C" d="M10 0v19H9V0z" />
     </Svg>,
   ],
   btnReply: [
-    <Svg
-      width="30"
-      height="10"
-      viewBox="0 0 30 10"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="30" height="10" viewBox="0 0 30 10" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -1525,12 +1028,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnAlarm: [
-    <Svg
-      width="26"
-      height="26"
-      viewBox="0 0 26 26"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="26" height="26" viewBox="0 0 26 26" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -1540,12 +1038,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   btnBack: [
-    <Svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Path
         d="m10 21-9-9 9-9"
         stroke="#2C2C2C"
@@ -1556,12 +1049,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   openFaceBookEng: [
-    <Svg
-      width="198"
-      height="52"
-      viewBox="0 0 198 52"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="198" height="52" viewBox="0 0 198 52" fill="none">
       <G clipPath="url(#u2hpsi98ta)">
         <Rect width="198" height="52" rx="26" fill="#fff" />
         <G clipPath="url(#thej7yl1eb)">
@@ -1602,12 +1090,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   textLogo: [
-    <Svg
-      width="98"
-      height="24"
-      viewBox="0 0 98 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="98" height="24" viewBox="0 0 98 24" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -1641,12 +1124,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   appleLogin: [
-    <Svg
-      width="25"
-      height="44"
-      viewBox="0 0 25 44"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="25" height="44" viewBox="0 0 25 44" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -1656,12 +1134,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   facebookLogin: [
-    <Svg
-      width="24"
-      height="44"
-      viewBox="0 0 24 44"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="24" height="44" viewBox="0 0 24 44" fill="none">
       <Mask
         id="7mwptlp82a"
         style="mask-type:alpha"
@@ -1681,12 +1154,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   googleLogin: [
-    <Svg
-      width="24"
-      height="44"
-      viewBox="0 0 24 44"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="24" height="44" viewBox="0 0 24 44" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -1714,12 +1182,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   imgQuestion: [
-    <Svg
-      width="50"
-      height="50"
-      viewBox="0 0 50 50"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="50" height="50" viewBox="0 0 50 50" fill="none">
       <Circle cx="25" cy="25" r="25" fill="#fff" />
       <Path
         d="M25.026 31v-3.135c0-1.417.904-2.654 2.236-3.18 2.332-.921 3.894-2.934 3.726-5.603-.186-2.965-2.576-4.883-5.577-5.067C21.908 13.8 19 15.969 19 19.384"
@@ -1732,12 +1195,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   samsung: [
-    <Svg
-      width="98"
-      height="24"
-      viewBox="0 0 98 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="98" height="24" viewBox="0 0 98 24" fill="none">
       <G clipPath="url(#xvh6dxrh8a)" fill="#000">
         <Path d="M72.57 8.395v2.95h1.27c1.003 0 1.671-.658 1.671-1.475 0-.817-.668-1.475-1.67-1.475h-1.27zM70.9 7.02h3.074c1.85 0 3.23 1.275 3.23 2.85 0 1.594-1.38 2.87-3.252 2.87H72.57v2.29H70.9V7.02zM83.465 11.803c0-1.097-.914-1.973-2.139-1.973-1.225 0-2.183.877-2.183 1.973 0 1.115.936 1.992 2.183 1.992 1.225 0 2.139-.877 2.139-1.992zm-5.949.02c0-2.133 1.738-3.348 3.565-3.348.936 0 1.782.358 2.317.896v-.757h1.649v6.417h-1.649v-.837c-.535.598-1.381.976-2.34.976-1.737 0-3.542-1.255-3.542-3.348zM88.522 14.712l-2.94-6.098h1.782l1.982 4.324 1.894-4.324H93L88.7 18h-1.67l1.492-3.288zM53.433 7.24l.134 5.878H53.5l-1.916-5.879h-3.119v7.413h2.072l-.111-6.078h.044l2.072 6.078h2.986V7.24h-2.095zM13.978 7.24l-1.56 7.492h2.273l1.136-6.795h.045l1.136 6.795h2.25l-1.56-7.493h-3.72zM26.655 7.24l-1.047 5.738h-.045L24.538 7.24h-3.43l-.179 7.493h2.094l.045-6.735h.044l1.404 6.735h2.139l1.403-6.735h.045l.044 6.735h2.095l-.179-7.493h-3.408zM8.899 12.62c.089.179.067.418.022.558-.067.259-.267.498-.824.498-.535 0-.847-.28-.847-.678v-.717H5v.578c0 1.674 1.47 2.172 3.052 2.172 1.515 0 2.763-.459 2.963-1.714.112-.638.022-1.076 0-1.236-.356-1.554-3.542-2.032-3.787-2.909a.787.787 0 0 1 0-.398c.067-.24.245-.499.757-.499.49 0 .78.28.78.678v.458h2.094v-.518C10.86 7.26 9.211 7 8.03 7c-1.492 0-2.717.438-2.94 1.674-.067.339-.067.638.022 1.016.38 1.515 3.342 1.953 3.788 2.93zM36.145 12.6c.09.18.045.418.023.558-.067.239-.245.498-.802.498-.513 0-.825-.26-.825-.678v-.717h-2.228v.578c0 1.654 1.448 2.152 3.008 2.152 1.493 0 2.74-.458 2.94-1.694.112-.637.023-1.056 0-1.215-.356-1.555-3.497-2.013-3.742-2.89a.794.794 0 0 1 0-.398c.067-.24.245-.499.758-.499.49 0 .78.26.78.678v.458h2.071v-.518c0-1.614-1.626-1.873-2.807-1.873-1.47 0-2.673.438-2.896 1.654-.067.339-.067.618.022.996.334 1.515 3.275 1.953 3.698 2.91zM43.185 13.616c.58 0 .758-.359.802-.538.023-.08.023-.2.023-.279v-5.56h2.116v5.38c0 .14-.022.42-.022.499-.156 1.395-1.382 1.853-2.919 1.853-1.537 0-2.785-.458-2.918-1.853 0-.08-.022-.359-.022-.498V7.24h2.116v5.54c0 .099 0 .198.022.278.045.2.223.558.802.558zM60.674 13.536c.601 0 .824-.338.846-.538.023-.08.023-.199.023-.279v-1.096h-.847v-1.096h2.963v2.013c0 .14 0 .24-.022.498-.134 1.375-1.47 1.854-2.94 1.854-1.494 0-2.808-.499-2.942-1.854-.022-.259-.022-.358-.022-.498V9.391c0-.139.022-.358.045-.498.178-1.395 1.448-1.853 2.94-1.853 1.493 0 2.785.438 2.941 1.853.023.24.023.498.023.498v.26h-2.117v-.419s0-.18-.022-.279c-.045-.16-.2-.538-.847-.538-.601 0-.78.359-.846.538-.023.1-.045.24-.045.359v3.427c0 .1 0 .2.022.28.023.179.245.517.847.517z" />
       </G>
@@ -1749,12 +1207,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   paypal: [
-    <Svg
-      width="98"
-      height="24"
-      viewBox="0 0 98 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="98" height="24" viewBox="0 0 98 24" fill="none">
       <G clipPath="url(#r0rup0juba)">
         <Path
           fillRule="evenodd"
@@ -1823,12 +1276,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   openKakao: [
-    <Svg
-      width="198"
-      height="52"
-      viewBox="0 0 198 52"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="198" height="52" viewBox="0 0 198 52" fill="none">
       <Rect width="198" height="52" rx="26" fill="#FEE900" />
       <Path
         d="M88.147 22.936V21.4h-2.032v-3.392h-1.888v8.336h1.888v-3.408h2.032zm-4.8 1.296c-1.68-.544-3.328-2.144-3.328-4.352v-1.232h-1.92v1.344c0 2.144-1.376 3.84-3.456 4.576l1.136 1.488c1.328-.464 2.864-1.792 3.296-3.248.624 1.312 2.096 2.464 3.2 2.88l1.072-1.456zm2.928 5.152c0-1.792-1.792-2.896-4.896-2.896-3.072 0-4.864 1.104-4.864 2.896 0 1.744 1.792 2.88 4.864 2.88 3.104 0 4.896-1.136 4.896-2.88zm-4.896-1.408c1.888 0 2.992.544 2.992 1.408 0 .848-1.104 1.376-2.992 1.376-1.856 0-2.944-.528-2.944-1.376 0-.864 1.088-1.408 2.944-1.408zm18.854 4.096v-4.704h-3.888v-1.04h5.536v-1.504h-12.88v1.504h5.456v1.04h-3.824v4.704h9.6zm.304-8.16V22.44h-1.936l.416-1.856a70.889 70.889 0 0 1-1.824-.224l-.352 2.08h-2.864c-.08-.688-.208-1.376-.304-2.096-.592.08-1.2.176-1.792.24.096.64.24 1.232.352 1.856h-1.968v1.472h10.272zm.048-4.016v-1.472H90.233v1.472h10.352zm-2.192 10.72h-5.904v-1.808h5.904v1.808zm15.814-12.064h-9.472v5.152h9.472v-5.152zm-3.664 10.592V26.52h5.376v-1.488h-12.88v1.488h5.632v2.624h1.872zm3.888 2.736v-1.472h-7.872V27.8h-1.872v4.08h9.744zm-2.096-9.664h-5.712V20.04h5.712v2.176zm7.222.112c0-1.008.768-1.824 2.048-1.824 1.296 0 2.064.816 2.064 1.824 0 1.056-.768 1.872-2.064 1.872-1.28 0-2.048-.816-2.048-1.872zm9.552-4.32h-1.856v14.256h1.856V18.008zm-11.472 4.336c0 1.984 1.568 3.424 3.968 3.424 2.416 0 3.952-1.44 3.952-3.424 0-2-1.536-3.424-3.952-3.424-2.4 0-3.968 1.424-3.968 3.424zm9.024 6.272-.16-1.504c-1.264.16-2.992.288-4.768.352-1.616.064-2.992.08-4.64.08l.272 1.6c1.2.016 2.896-.048 4.48-.112 1.52-.08 3.456-.24 4.816-.416zm12.662-5.728V21.4h-8.272v1.488h8.272zm-6.272-2.48h4.4v-1.472h-4.4v1.472zm9.216-2.4h-1.888v14.256h1.888v-6.928h1.984v-1.552h-1.984v-5.776zm-10.512 8.448c0 1.808 1.392 3.072 3.44 3.072s3.44-1.328 3.44-3.072c0-1.792-1.392-3.072-3.44-3.072s-3.44 1.328-3.44 3.072zm1.824 0c0-.944.688-1.568 1.616-1.568.928 0 1.616.624 1.616 1.568 0 .928-.576 1.552-1.616 1.552-.944 0-1.616-.624-1.616-1.552zm23.367 5.808V18.008h-1.872v14.256h1.872zm-4.384-12.768h-6.656v1.552h4.64c-.256 2.832-2.384 5.808-5.504 7.232l1.152 1.408c4.352-2.368 6.256-5.888 6.368-10.192z"
@@ -1841,12 +1289,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   imgNotiDokebi: [
-    <Svg
-      width="78"
-      height="112"
-      viewBox="0 0 78 112"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="78" height="112" viewBox="0 0 78 112" fill="none">
       <G clipPath="url(#iuwasjm6ja)">
         <Path
           d="M38.847 56.96H66.2s-2.145 25.716-8.121 50.742c0 0 2.298.998 2.298 3.915-3.524 0-14.251.076-15.4 0-1.15-.077-2.682-6.832-3.678-14.74-.383-2.532-1.38-3.3-2.452-3.3-1.073 0-2.069.767-2.452 3.3-.996 7.908-2.529 14.74-3.678 14.74h-15.4c0-2.994 2.298-3.915 2.298-3.915-5.976-25.026-8.122-50.742-8.122-50.742h27.354z"
@@ -2109,12 +1552,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   emptyCart: [
-    <Svg
-      width="176"
-      height="176"
-      viewBox="0 0 176 176"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="176" height="176" viewBox="0 0 176 176" fill="none">
       <Circle cx="88" cy="88" r="88" fill="url(#g5bj5ieg9a)" />
       <Rect
         x="58.957"
@@ -2340,12 +1778,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   emptyESIM: [
-    <Svg
-      width="176"
-      height="176"
-      viewBox="0 0 176 176"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="176" height="176" viewBox="0 0 176 176" fill="none">
       <Circle cx="88" cy="88" r="88" fill="url(#ishf0r8cha)" />
       <Ellipse
         cx="70.952"
@@ -2506,12 +1939,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   usageR: [
-    <Svg
-      width="118"
-      height="107"
-      viewBox="0 0 118 107"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="118" height="107" viewBox="0 0 118 107" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -2597,12 +2025,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   usageU: [
-    <Svg
-      width="113"
-      height="107"
-      viewBox="0 0 113 107"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="113" height="107" viewBox="0 0 113 107" fill="none">
       <Path
         d="M0 101a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4v-2z"
         fill="url(#u1k7p4gmfa)"
@@ -2683,12 +2106,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   iconShare: [
-    <Svg
-      width="21"
-      height="20"
-      viewBox="0 0 21 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="21" height="20" viewBox="0 0 21 20" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -2698,12 +2116,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   iconCopy: [
-    <Svg
-      width="21"
-      height="20"
-      viewBox="0 0 21 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="21" height="20" viewBox="0 0 21 20" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -2713,32 +2126,17 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   arrowLeft: [
-    <Svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Path d="m16 20-8-8 8-8" stroke="#2C2C2C" strokeLinecap="round" />
     </Svg>,
   ],
   arrowRight24: [
-    <Svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Path d="m8 20 8-8-8-8" stroke="#2C2C2C" strokeLinecap="round" />
     </Svg>,
   ],
   imgFaq: [
-    <Svg
-      width="59"
-      height="46"
-      viewBox="0 0 59 46"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="59" height="46" viewBox="0 0 59 46" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -2782,12 +2180,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
   imgGuide: [
-    <Svg
-      width="59"
-      height="46"
-      viewBox="0 0 59 46"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+    <Svg width="59" height="46" viewBox="0 0 59 46" fill="none">
       <Path
         d="M31.157 21.766c-.263-.775.487-1.513 1.275-1.254L55.5 28.074c.915.3.92 1.57.01 1.879L44.997 33.51a1 1 0 0 0-.625.615l-3.617 10.337c-.313.897-1.605.89-1.91-.009l-7.69-22.687z"
         fill="url(#4sbc9pb8ha)"
@@ -2821,6 +2214,40 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           <Stop stopColor="#BDD9FF" />
           <Stop offset="1" stopColor="#C8DFFF" stopOpacity=".24" />
         </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
+  imgMark: [
+    <Svg width="50" height="50" viewBox="0 0 50 50" fill="none">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M50 25c0 13.807-11.193 25-25 25S0 38.807 0 25 11.193 0 25 0s25 11.193 25 25z"
+        fill="#F8F8F8"
+      />
+      <Rect x="23" y="10" width="4" height="22" rx="2" fill="#2A7FF6" />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M27 38a2 2 0 1 1-4.001-.001A2 2 0 0 1 27 38z"
+        fill="#2A7FF6"
+      />
+    </Svg>,
+  ],
+  kakaoLogin: [
+    <Svg width="24" height="44" viewBox="0 0 24 44" fill="none">
+      <G clipPath="url(#1dajot839a)">
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M12 27c4.418 0 8-2.91 8-6.5S16.418 14 12 14s-8 2.91-8 6.5c0 2.178 1.319 4.106 3.343 5.286l-.735 3.676a.2.2 0 0 0 .32.195l3.482-2.785A9.84 9.84 0 0 0 12 27z"
+          fill="#171717"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="1dajot839a">
+          <Path fill="#fff" d="M0 0h24v44H0z" />
+        </ClipPath>
       </Defs>
     </Svg>,
   ],

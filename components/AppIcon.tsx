@@ -12,7 +12,6 @@ const invitePath = '../assets/images/invite/';
 const giftPath = '../assets/images/gift/';
 
 const images: Record<string, any[]> = {
-  imgMark: [require(`${mainPath}imgMark.png`)],
   updateImg: [require(`${mainPath}update.png`)],
 
   kakao: [require(`${paymentPath}logoKakao.png`)],
