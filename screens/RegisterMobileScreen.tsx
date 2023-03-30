@@ -747,8 +747,11 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       {esimGlobal && (
         <View
           key="imgRokebi"
-          style={{justifyContent: 'flex-end', paddingBottom: 52}}>
-          <AppIcon name="textLogo" />
+          style={{
+            justifyContent: 'center',
+            paddingBottom: 52,
+          }}>
+          <AppIcon name="textLogo" style={{alignItems: 'center'}} />
         </View>
       )}
       {newUser && authorized && (
