@@ -194,7 +194,7 @@ const GlobalUserGuideScreen: React.FC<UserGuideScreenProps> = ({
               {i18n.t('userGuide:checkInfo')}
             </AppText>
             <View style={{marginTop: 8}}>
-              {[1, 2, 3, 4].map((k) => (
+              {[1, 2, 3].map((k) => (
                 <View key={k} style={{flexDirection: 'row'}}>
                   <AppText
                     style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
