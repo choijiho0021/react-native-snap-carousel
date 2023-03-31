@@ -119,8 +119,17 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
             .toArray();
           navigation.navigate('Country', {prodOfCountry});
         }
-      } else if (item.rule?.navigate) {
-        navigation.navigate(item.rule.navigate);
+      } else if (item?.rule?.navigate) {
+        if (item?.rule?.navigate?.startsWith('http')) {
+          Linking.openURL(item?.rule?.navigate);
+        } else if (item?.rule?.stack) {
+          navigation.navigate(item?.rule?.stack, {
+            screen: item.rule.navigate,
+            initial: false,
+          });
+        } else {
+          navigation.navigate(item.rule.navigate);
+        }
       } else if (item.notice) {
         action.info.getInfoList('info');
         navigation.navigate('SimpleText', {
