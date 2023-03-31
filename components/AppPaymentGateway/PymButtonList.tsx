@@ -83,12 +83,12 @@ const PymButtonList: React.FC<PymButtonListParams> = ({selected, onPress}) => {
   if (esimGlobal)
     return (
       <View style={styles.buttonRow}>
-        <PymButton
+        {/* <PymButton
           selected={selected}
           btnKey="pym:ccard"
           bottom
           onPress={onPress}
-        />
+        /> */}
         <PymButton
           selected={selected}
           btnKey="pym:paypal"
