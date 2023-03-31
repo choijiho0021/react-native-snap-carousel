@@ -29,6 +29,7 @@ import {navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {
+  bcStatusCd,
   cmiStatusCd,
   quadcellStatusCd,
   RkbSubscription,
@@ -379,6 +380,51 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [],
   );
 
+  const checkBcData = useCallback(
+    async (
+      item: RkbSubscription,
+    ): Promise<{status: StatusObj; usage: UsageObj}> => {
+      if (item?.subsIccid) {
+        const resp = await API.Subscription.bcGetSubsUsage({
+          subsIccid: item.subsIccid,
+        });
+
+        if (
+          resp?.result === 0 &&
+          resp?.objects?.tradeCode === '1000' &&
+          resp?.objects?.tradeData.length > 0 &&
+          resp?.objects?.tradeData[0].subOrderList.length > 0
+        ) {
+          const planInfo =
+            resp.objects.tradeData[0].subOrderList.find(
+              (elm) => elm.subOrderId === item.subsOrderNo,
+            ) || resp.objects.tradeData[0].subOrderList[0];
+
+          const bcStatus: StatusObj = {
+            statusCd: bcStatusCd[planInfo.planStatus],
+            endTime: moment(planInfo.planEndTime, 'YYYY-MM-DD HH:mm:ss')
+              .add(1, 'h')
+              .format('YYYY.MM.DD HH:mm:ss'),
+          };
+
+          const bcUsage: UsageObj = {
+            quota: Number(planInfo.totalTraffic) || 0, // Mb
+            used:
+              Number(planInfo.totalTraffic) -
+                Number(planInfo?.remainingTraffic) || 0, // Mb
+          };
+
+          return {status: bcStatus, usage: bcUsage};
+        }
+      }
+      return {
+        status: {statusCd: undefined, endTime: undefined},
+        usage: {quota: undefined, used: undefined},
+      };
+    },
+    [],
+  );
+
   const onPressUsage = useCallback(
     async (item: RkbSubscription) => {
       setCmiPending(true);
@@ -392,13 +438,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         case 'Quadcell':
           result = await checkQuadcellData(item);
           break;
-        case 'BillionConnect': // 사용량 조회 미지원
-          setShowSnackBar(true);
-          result = {
-            status: {statusCd: undefined, endTime: undefined},
-            usage: {quota: undefined, used: undefined},
-          };
+        case 'BillionConnect':
+          result = await checkBcData(item);
           break;
+        // setShowSnackBar(true);
+        // result = {
+        //   status: {statusCd: undefined, endTime: undefined},
+        //   usage: {quota: undefined, used: undefined},
+        // };
+        // break;
         default:
           result = await checkCmiData(item);
           break;
@@ -408,7 +456,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       setCmiPending(false);
       return result;
     },
-    [checkCmiData, checkQuadcellData],
+    [checkBcData, checkCmiData, checkQuadcellData],
   );
 
   const renderSubs = useCallback(

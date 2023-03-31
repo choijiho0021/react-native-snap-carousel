@@ -58,6 +58,13 @@ export const quadcellStatusCd = {
   // '3': 'L', // Locked
 };
 
+export const bcStatusCd = {
+  0: 'R', // not used
+  1: 'A', // in use
+  2: 'U', // used
+  3: 'C', // cancelled
+};
+
 export const isDisabled = (item: RkbSubscription) => {
   return item.giftStatusCd === 'S' || new Date(item.expireDate) <= new Date();
 };
@@ -573,6 +580,26 @@ const quadcellGetData = ({
   );
 };
 
+// get usage bc data from svc server
+const bcGetSubsUsage = ({subsIccid}: {subsIccid: string}) => {
+  if (!subsIccid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
+
+  return api.callHttpGet(
+    `${api.rokHttpUrl(
+      `${api.path.rokApi.pv.bc}/usage`,
+      isProduction ? undefined : 5000,
+    )}&${api.queryString({iccid: subsIccid})}`,
+    (data) => {
+      if (data?.result?.code === 0) {
+        return api.success(data?.objects);
+      }
+      return data;
+    },
+    new Headers({'Content-Type': 'application/json'}),
+  );
+};
+
 const getHkRegStatus = ({iccid, imsi}: {iccid: string; imsi: string}) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
@@ -736,4 +763,5 @@ export default {
   cmiGetSubsStatus,
   quadcellGetData,
   getHkRegStatus,
+  bcGetSubsUsage,
 };
