@@ -118,6 +118,26 @@ const init = createAsyncThunk(
   },
 );
 
+const refresh = createAsyncThunk(
+  'product/refresh',
+  async (param, {dispatch}) => {
+    let reload = false;
+
+    const timestamp = await retrieveData('cache.timestamp');
+    if (!timestamp) reload = true;
+    else {
+      const rsp = await dispatch(getPaymentRule()).unwrap();
+      if (rsp?.timestamp_prod > timestamp) reload = true;
+    }
+
+    if (reload) {
+      dispatch(init(true));
+    } else {
+      console.log('@@@ cache is up to date');
+    }
+  },
+);
+
 export type RkbPriceInfo = Partial<RkbProdByCountry> & {
   minPrice: Currency;
   partnerList: string[];
@@ -364,6 +384,7 @@ export const actions = {
   getProdBySku,
   getProductByCountry,
   init,
+  refresh,
   getProdOfPartner,
   getProdByUuid,
   getAllProduct,
