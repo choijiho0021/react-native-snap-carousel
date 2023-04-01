@@ -776,11 +776,13 @@ const Esim: React.FC<EsimProps> = ({
     // check timestamp
     const checkTimestamp = async () => {
       const tm = await retrieveData('cache.timestamp.prod');
-      const reload = product.rule.timestamp_prod > tm;
+      const reload = !tm || product.rule.timestamp_prod > tm;
+      // console.log('@@@ reload all prod', reload, tm);
       // reload data
       action.product.getAllProduct(reload);
-      if (reload)
+      if (reload) {
         storeData('cache.timestamp.prod', moment().zone(-540).format());
+      }
     };
     checkTimestamp();
   }, [action.product, product.rule.timestamp_prod]);
