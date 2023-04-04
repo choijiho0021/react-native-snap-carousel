@@ -23,6 +23,7 @@ import {
   SafeAreaView,
   Image,
   Pressable,
+  AppState,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {Settings} from 'react-native-fbsdk-next';
@@ -243,6 +244,7 @@ const Esim: React.FC<EsimProps> = ({
   const initNoti = useRef(false);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const [bannerHeight, setBannerHeight] = useState<number>(150);
+  const appState = useRef('unknown');
 
   const isSupport = useMemo(() => account.isSupportDev, [account.isSupportDev]);
 
@@ -776,14 +778,39 @@ const Esim: React.FC<EsimProps> = ({
     // check timestamp
     const checkTimestamp = async () => {
       const tm = await retrieveData('cache.timestamp.prod');
-      const reload = product.rule.timestamp_prod > tm;
+      const reload = !tm || product.rule.timestamp_prod > tm;
+      // console.log('@@@ reload all prod', reload, tm);
       // reload data
       action.product.getAllProduct(reload);
-      if (reload)
+      if (reload) {
         storeData('cache.timestamp.prod', moment().zone(-540).format());
+      }
     };
     checkTimestamp();
   }, [action.product, product.rule.timestamp_prod]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        // 동작 순서용 notice model flag 변수
+        console.log(
+          'App has come to the active!',
+          appState.current,
+          nextAppState,
+        );
+        action.product.refresh();
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [action.product]);
 
   useEffect(() => {
     const {mobile, loggedIn, iccid} = account;
