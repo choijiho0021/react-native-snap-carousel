@@ -31,6 +31,10 @@ import {RkbIssue} from '@/redux/api/boardApi';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import {actions as boardActions, BoardAction} from '@/redux/modules/board';
+import {
+  actions as eventBoardActions,
+  EventBoardAction,
+} from '@/redux/modules/eventBoard';
 import i18n from '@/utils/i18n';
 import validationUtil, {
   ValidationResult,
@@ -168,6 +172,8 @@ type BoardMsgAddProps = {
   account: AccountModelState;
   success: boolean;
   pending: boolean;
+  successEvent: boolean;
+  pendingEvent: boolean;
 
   jumpTo: (v: string) => void;
   isEvent?: boolean;
@@ -175,6 +181,7 @@ type BoardMsgAddProps = {
 
   action: {
     board: BoardAction;
+    eventBoard: EventBoardAction;
   };
 };
 
@@ -195,11 +202,13 @@ const inputAccessoryViewID = 'doneKbd';
 const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   account,
   success,
+  successEvent,
   isEvent = false,
   eventList = [],
   jumpTo,
   action,
   pending,
+  pendingEvent,
 }) => {
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
   const [mobile, setMobile] = useState('');
@@ -247,11 +256,11 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   }, [account]);
 
   useEffect(() => {
-    if (success) {
+    if (success || successEvent) {
       // post가 완료되면 list 텝으로 전환한다.
       jumpTo('list');
     }
-  }, [jumpTo, success]);
+  }, [jumpTo, success, successEvent]);
 
   const validate = useCallback((key: string, value: string) => {
     const valid = validationUtil.validate(key, value, validationRule);
@@ -262,38 +271,73 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     }));
   }, []);
 
+  useEffect(() => {
+    if (isEvent) setTitle(selectedEvent.title);
+  }, [isEvent, selectedEvent.title]);
+
   const onPress = useCallback(async () => {
-    if (!title || !msg) {
-      console.log('@@@ invalid issue', title, msg);
-      return;
+    if (isEvent) {
+      const issue = {
+        title,
+        msg,
+        mobile,
+        pin,
+        images: attachment
+          .map(
+            ({mime, size, width, height, data}) =>
+              ({
+                mime,
+                size,
+                width,
+                height,
+                data,
+              } as RkbImage),
+          )
+          .toArray(),
+      } as RkbIssue;
+
+      await action.eventBoard.postAndGetList(issue);
+    } else {
+      if (!title || !msg) {
+        console.log('@@@ invalid issue', title, msg);
+        return;
+      }
+
+      const issue = {
+        title,
+        msg,
+        mobile,
+        pin,
+        images: attachment
+          .map(
+            ({mime, size, width, height, data}) =>
+              ({
+                mime,
+                size,
+                width,
+                height,
+                data,
+              } as RkbImage),
+          )
+          .toArray(),
+      } as RkbIssue;
+      await action.board.postAndGetList(issue);
     }
-
-    const issue = {
-      title,
-      msg,
-      mobile,
-      pin,
-      images: attachment
-        .map(
-          ({mime, size, width, height, data}) =>
-            ({
-              mime,
-              size,
-              width,
-              height,
-              data,
-            } as RkbImage),
-        )
-        .toArray(),
-    } as RkbIssue;
-
-    await action.board.postAndGetList(issue);
 
     setMsg(undefined);
     setTitle(undefined);
     setPin(undefined);
     setAttachment((a) => a.clear());
-  }, [action.board, attachment, mobile, msg, pin, title]);
+  }, [
+    action.board,
+    action.eventBoard,
+    attachment,
+    isEvent,
+    mobile,
+    msg,
+    pin,
+    title,
+  ]);
 
   const error = useCallback(
     (key: string) => {
@@ -449,7 +493,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppActivityIndicator visible={pending} />
+      <AppActivityIndicator visible={pending || pendingEvent} />
 
       <KeyboardAwareScrollView
         enableOnAndroid
@@ -469,12 +513,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
           </View>
           {isEvent ? (
             <Pressable
-              style={[
-                styles.inputBox,
-                title ? {borderColor: colors.black} : undefined,
-                styles.eventTitle,
-                {marginBottom: 15},
-              ]}
+              style={[styles.inputBox, styles.eventTitle, {marginBottom: 15}]}
               onPress={({nativeEvent: {pageY, locationY}}) => {
                 setShowModal(true);
                 setPosY(pageY - locationY);
@@ -564,7 +603,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
       <AppButton
         style={styles.confirm}
         title={i18n.t(`${isEvent ? 'event:new2' : 'board:new'}`)}
-        disabled={hasError}
+        // disabled={hasError}
         onPress={onPress}
         type="primary"
       />
@@ -594,14 +633,20 @@ export default connect(
   ({account, status}: RootState) => ({
     account,
     success: status.fulfilled[boardActions.postIssue.typePrefix],
+    successEvent: status.fulfilled[eventBoardActions.postIssue.typePrefix],
     pending:
       status.pending[boardActions.postIssue.typePrefix] ||
       status.pending[boardActions.postAttach.typePrefix] ||
+      false,
+    pendingEvent:
+      status.pending[eventBoardActions.postIssue.typePrefix] ||
+      status.pending[eventBoardActions.postAttach.typePrefix] ||
       false,
   }),
   (dispatch) => ({
     action: {
       board: bindActionCreators(boardActions, dispatch),
+      eventBoard: bindActionCreators(eventBoardActions, dispatch),
     },
   }),
 )(BoardMsgAdd);

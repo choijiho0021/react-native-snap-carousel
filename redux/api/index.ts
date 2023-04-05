@@ -1,6 +1,7 @@
 import Account from './accountApi';
 import Address from './addressApi';
 import Board from './boardApi';
+import EventBoard from './eventBoardApi';
 import Cart from './cartApi';
 import Noti from './notiApi';
 import Device from './DeviceApi';
@@ -27,6 +28,9 @@ const API = {
   },
   get Address() {
     return Address;
+  },
+  get EventBoard() {
+    return EventBoard;
   },
   get Board() {
     return Board;

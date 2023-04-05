@@ -9,6 +9,7 @@ import order from './modules/order';
 import profile from './modules/profile';
 import cart from './modules/cart';
 import board from './modules/board';
+import eventBoard from './modules/eventBoard';
 import info from './modules/info';
 import sync from './modules/sync';
 import toast from './modules/toast';
@@ -24,6 +25,7 @@ const reducers = {
   profile,
   cart,
   noti,
+  eventBoard,
   board,
   info,
   sync,
