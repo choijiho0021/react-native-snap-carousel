@@ -403,7 +403,16 @@ const UsageItem: React.FC<UsageItemProps> = ({
         </View>
       );
     },
-    [checkUsageButton, expire, isShowUsage, item, usageRender],
+    [
+      checkUsageButton,
+      expire,
+      isShowUsage,
+      item.key,
+      item.prodName,
+      item.type,
+      showExpire,
+      usageRender,
+    ],
   );
 
   const [status, statusCd] = esimApp
@@ -419,7 +428,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           <AppText key={i18n.t('esim:checkUsage')} style={appStyles.bold18Text}>
             {i18n.t('esim:checkUsage')}
           </AppText>
-          {!cmiPending && item.partner !== 'Quadcell' && (
+          {!cmiPending && (
             <AppText
               key={item.nid}
               style={[styles.usageStatus, {color: statusColor}]}>
