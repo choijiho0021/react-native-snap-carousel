@@ -4,6 +4,7 @@ import {Reducer} from 'redux-actions';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
 import {RkbBoard, RkbIssue} from '@/redux/api/boardApi';
+import {BoardModelState} from './board';
 
 const postIssue = createAsyncThunk('eventBoard/postIssue', API.EventBoard.post);
 const postAttach = createAsyncThunk(
@@ -48,12 +49,6 @@ const postAndGetList = createAsyncThunk(
     });
   },
 );
-export interface BoardModelState {
-  next: boolean;
-  page: number;
-  list: RkbBoard[];
-  comment?: string;
-}
 
 const initialState: BoardModelState = {
   next: true,
