@@ -96,7 +96,7 @@ const PymButtonList: React.FC<PymButtonListParams> = ({selected, onPress}) => {
           right
           bottom
           onPress={onPress}
-          leftColor={selected === 'pym:ccard'}
+          // leftColor={selected === 'pym:ccard'}
         />
       </View>
     );
