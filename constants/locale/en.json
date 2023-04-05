@@ -376,6 +376,7 @@
   "contact:faq": "Frequently Asked Questions",
   "contact:board": "1:1 Support",
   "contact:boardTitle": "1:1 Support",
+  "contact:event": "Event Auth",
   "contact:chatTalkTitle": "Live Chat Support",
   "contact:callTitle": "Help Center +82-31-710-3969",
   "contact:fbMsg": "FB Messenger Support",
@@ -415,6 +416,10 @@
   "board:loading": "Loading",
   "board:Closed": "Answered",
   "board:Open": "Waiting",
+
+  "event:title": "Event Auth",
+  "event:new": "Apply Certification",
+  "event:list": "Verification History",
 
   "cart:totalCnt": "Total Quantity",
   "cart:totalPrice": "Price",

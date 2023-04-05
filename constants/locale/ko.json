@@ -376,6 +376,7 @@
   "contact:faq": "자주하는 질문",
   "contact:board": "1:1 문의",
   "contact:boardTitle": "1:1 문의하기",
+  "contact:event": "이벤트 인증",
   "contact:chatTalkTitle": "채팅 상담하기",
   "contact:callTitle": "고객센터 031-710-3969",
   "contact:fbMsg": "1:1 페이스북 메신저 상담",
@@ -415,6 +416,10 @@
   "board:loading": "문의내역을 불러오고 있습니다.",
   "board:Closed": "답변 완료",
   "board:Open": "답변 대기",
+
+  "event:title": "이벤트 인증",
+  "event:new": "인증 신청하기",
+  "event:list": "내 인증내역",
 
   "cart:totalCnt": "총 상품 수",
   "cart:totalPrice": "상품 금액 합계",

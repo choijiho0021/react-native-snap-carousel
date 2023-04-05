@@ -59,6 +59,7 @@ import AppText from '@/components/AppText';
 import GuideHomeScreen from '@/screens/UserGuideScreen/GuideHomeScreen';
 import GuideSelectRegionScreen from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
 import Env from '@/environment';
+import EventBoardScreen from '@/screens/EventBoardScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -140,6 +141,7 @@ function HomeStackComponent() {
       <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <HomeStack.Screen name="Contact" component={ContactScreen} />
       <HomeStack.Screen name="ContactBoard" component={ContactBoardScreen} />
+      <HomeStack.Screen name="EventBoard" component={EventBoardScreen} />
       <HomeStack.Screen name="GiftGuide" component={GiftGuideScreen} />
       <HomeStack.Screen name="Invite" component={InviteScreen} />
       <HomeStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />
