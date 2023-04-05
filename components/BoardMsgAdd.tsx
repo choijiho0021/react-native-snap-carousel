@@ -1,6 +1,7 @@
 import {List} from 'immutable';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
+  Dimensions,
   findNodeHandle,
   Image,
   InputAccessoryView,
@@ -41,6 +42,8 @@ import AppButton from './AppButton';
 import AppIcon from './AppIcon';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
+import {RkbEvent} from '@/redux/api/promotionApi';
+import AppModalDropDown from './AppModalDropDown';
 
 const styles = StyleSheet.create({
   passwordInput: {
@@ -117,6 +120,12 @@ const styles = StyleSheet.create({
     color: colors.black,
     paddingHorizontal: 10,
   },
+  eventTitle: {
+    justifyContent: 'space-between',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   notiView: {
     flexDirection: 'row',
     marginBottom: 30,
@@ -161,6 +170,8 @@ type BoardMsgAddProps = {
   pending: boolean;
 
   jumpTo: (v: string) => void;
+  isEvent?: boolean;
+  eventList?: RkbEvent[];
 
   action: {
     board: BoardAction;
@@ -184,6 +195,8 @@ const inputAccessoryViewID = 'doneKbd';
 const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   account,
   success,
+  isEvent = false,
+  eventList = [],
   jumpTo,
   action,
   pending,
@@ -196,8 +209,24 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   const [pin, setPin] = useState<string>();
   const [attachment, setAttachment] = useState(List<CropImage>());
   const [extraHeight, setExtraHeight] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [posY, setPosY] = useState(0);
+  const [selectedEvent, setSelectedEvent] = useState<RkbEvent>(
+    eventList[0] || {},
+  );
+
+  const eventTitleList = useMemo(() => {
+    if (eventList?.length > 0) {
+      return eventList.map((e) => ({value: e.title, label: e.title}));
+    }
+    return [];
+  }, [eventList]);
   const scrollRef = useRef();
   const keybd = useRef();
+
+  useEffect(() => {
+    console.log('@@@@ eventTitleList', eventTitleList);
+  }, [eventTitleList]);
 
   useEffect(() => {
     const checkPermission = async () => {
@@ -434,30 +463,49 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         {!account.loggedIn && renderContact()}
         <View style={{flex: 1}}>
           <View style={styles.notiView}>
-            <AppText style={styles.noti}>{i18n.t('board:noti')}</AppText>
+            <AppText style={styles.noti}>
+              {i18n.t(`${isEvent ? 'event:noti' : 'board:noti'}`)}
+            </AppText>
           </View>
-          <AppTextInput
-            style={[
-              styles.inputBox,
-              title ? {borderColor: colors.black} : undefined,
-              {marginBottom: 15},
-            ]}
-            placeholder={i18n.t('title')}
-            placeholderTextColor={colors.greyish}
-            returnKeyType="next"
-            enablesReturnKeyAutomatically
-            clearTextOnFocus={false}
-            maxLength={25}
-            onChangeText={(v) => {
-              setTitle(v);
-              validate('title', v);
-            }}
-            onFocus={() => setExtraHeight(20)}
-            error={error('title')}
-            autoCapitalize="none"
-            autoCorrect={false}
-            value={title}
-          />
+          {isEvent ? (
+            <Pressable
+              style={[
+                styles.inputBox,
+                title ? {borderColor: colors.black} : undefined,
+                styles.eventTitle,
+                {marginBottom: 15},
+              ]}
+              onPress={({nativeEvent: {pageY, locationY}}) => {
+                setShowModal(true);
+                setPosY(pageY - locationY);
+              }}>
+              <AppText style={{lineHeight: 50}}>{selectedEvent.title}</AppText>
+              <AppIcon name={showModal ? 'dropDownOpen50' : 'dropDown50'} />
+            </Pressable>
+          ) : (
+            <AppTextInput
+              style={[
+                styles.inputBox,
+                title ? {borderColor: colors.black} : undefined,
+                {marginBottom: 15},
+              ]}
+              placeholder={i18n.t('title')}
+              placeholderTextColor={colors.greyish}
+              returnKeyType="next"
+              enablesReturnKeyAutomatically
+              clearTextOnFocus={false}
+              maxLength={25}
+              onChangeText={(v) => {
+                setTitle(v);
+                validate('title', v);
+              }}
+              onFocus={() => setExtraHeight(20)}
+              error={error('title')}
+              autoCapitalize="none"
+              autoCorrect={false}
+              value={title}
+            />
+          )}
 
           <AppTextInput
             style={[
@@ -515,10 +563,28 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
 
       <AppButton
         style={styles.confirm}
-        title={i18n.t('board:new')}
+        title={i18n.t(`${isEvent ? 'event:new2' : 'board:new'}`)}
         disabled={hasError}
         onPress={onPress}
         type="primary"
+      />
+
+      <AppModalDropDown
+        key="appDropDown"
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        posX={20}
+        posY={posY}
+        buttonHeight={52}
+        data={eventTitleList}
+        onPress={(value) => {
+          setSelectedEvent(
+            eventList.find((e) => e.title === value) || eventList[0],
+          );
+          setShowModal(false);
+        }}
+        value={selectedEvent.title}
+        fixedWidth={Dimensions.get('window').width - 20 * 2 - 2}
       />
     </SafeAreaView>
   );

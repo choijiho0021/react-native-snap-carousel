@@ -1,11 +1,12 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {StyleSheet, View, Dimensions} from 'react-native';
 import {TabView, TabBar} from 'react-native-tab-view';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
+import {connect} from 'react-redux';
 import i18n from '@/utils/i18n';
 import AppBackButton from '@/components/AppBackButton';
 import BoardMsgAdd from '@/components/BoardMsgAdd';
@@ -14,6 +15,8 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {Utils} from '@/redux/api';
+import {RootState} from '@/redux';
+import {PromotionModelState} from '@/redux/modules/promotion';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,6 +35,7 @@ type EventBoardScreenRouteProp = RouteProp<HomeStackParamList, 'EventBoard'>;
 type EventBoardScreenProps = {
   navigation: EventBoardScreenNavigationProp;
   route: EventBoardScreenRouteProp;
+  promotion: PromotionModelState;
 };
 
 type TabRoute = {key: string; title: string};
@@ -39,6 +43,7 @@ type TabRoute = {key: string; title: string};
 const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
   route: {params},
   navigation,
+  promotion,
 }) => {
   const [index, setIndex] = useState(params?.index ? params.index : 0);
   const routes = useRef([
@@ -46,6 +51,7 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
     {key: 'list', title: i18n.t('event:list')},
   ]).current;
   const [fontSize, setFontSize] = useState(16);
+  const eventList = useMemo(() => promotion.event || [], [promotion.event]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -59,7 +65,7 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
   const renderScene = useCallback(
     ({route, jumpTo}: {route: TabRoute; jumpTo: (v: string) => void}) => {
       if (route.key === 'new') {
-        return <BoardMsgAdd jumpTo={jumpTo} />;
+        return <BoardMsgAdd jumpTo={jumpTo} isEvent eventList={eventList} />;
       }
       if (route.key === 'list') {
         return (
@@ -75,7 +81,7 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
       }
       return null;
     },
-    [navigation],
+    [eventList, navigation],
   );
 
   const renderTabBar = useCallback(
@@ -111,4 +117,6 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
   );
 };
 
-export default EventBoardScreen;
+export default connect(({promotion}: RootState) => ({
+  promotion,
+}))(EventBoardScreen);

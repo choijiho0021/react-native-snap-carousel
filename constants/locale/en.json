@@ -420,6 +420,8 @@
   "event:title": "Event Auth",
   "event:new": "Apply Certification",
   "event:list": "Verification History",
+  "event:noti": "You will be notified by push notification!",
+  "event:new2": "Apply Certification",
 
   "cart:totalCnt": "Total Quantity",
   "cart:totalPrice": "Price",

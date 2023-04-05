@@ -2704,6 +2704,47 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  check20: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M8.536 12.9 5.707 10.07a1 1 0 0 1 1.415-1.414l2.12 2.121 4.244-4.242A1 1 0 1 1 14.9 7.95L9.95 12.9a1 1 0 0 1-1.414 0z"
+        fill="#2c2c2c"
+      />
+    </Svg>,
+  ],
+  dropDownOpen50: [
+    <Svg
+      width="24"
+      height="50"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M11.194 8.097a1 1 0 0 1 1.612 0l4.086 5.56a1 1 0 0 1-.806 1.593H7.914a1 1 0 0 1-.806-1.592l4.086-5.561z"
+        fill="#252525"
+      />
+    </Svg>,
+  ],
+  dropDown50: [
+    <Svg
+      width="24"
+      height="50"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M12.806 15.903a1 1 0 0 1-1.612 0l-4.086-5.56a1 1 0 0 1 .806-1.593h8.172a1 1 0 0 1 .806 1.592l-4.086 5.561z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;
