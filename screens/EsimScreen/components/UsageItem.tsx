@@ -1,5 +1,5 @@
 import Analytics from 'appcenter-analytics';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState, useMemo} from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import {connect} from 'react-redux';
@@ -196,6 +196,8 @@ const UsageItem: React.FC<UsageItemProps> = ({
   const [used, setUsed] = useState<number | undefined>(usage?.used);
   const circularProgress = useRef();
 
+  const showExpire = useMemo(() => item.partner !== undefined, [item.partner]); // partner별로 만료기하니 정해지지 않았을 때 조정 필요
+
   useEffect(() => {
     if (disableBtn) {
       setTimeout(() => setDisableBtn(false), 5000);
@@ -350,12 +352,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
               // || usage
               <View>
                 <View style={styles.titleAndStatus}>
-                  <AppText
-                    key={item.key}
-                    style={[
-                      styles.usageTitleBold,
-                      // {fontWeight: isActive ? 'bold' : 'normal'},
-                    ]}>
+                  <AppText key={item.key} style={styles.usageTitleBold}>
                     {item.prodName}
                   </AppText>
                 </View>
@@ -368,7 +365,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
                     <View style={styles.divider} />
                   </View>
                 )}
-                {item.partner !== 'BillionConnect' ? (
+                {showExpire ? (
                   <View style={styles.bottomOfActiveContainer}>{expire()}</View>
                 ) : (
                   <View>

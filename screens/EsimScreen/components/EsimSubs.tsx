@@ -441,17 +441,17 @@ const EsimSubs = ({
         />
 
         <AppSvgIcon
-          style={[styles.btn, {opacity: isBc ? 0.3 : 1}]}
+          style={[styles.btn, {opacity: 1}]}
           onPress={() => {
             if (isCharged) {
               onPressRecharge(mainSubs);
             } else {
-              if (!isBc) setShowModal(true);
+              setShowModal(true);
               onPressUsage(mainSubs);
             }
           }}
           title={i18n.t('esim:checkUsage')}
-          titleStyle={[styles.btnTitle, {opacity: isBc ? 0.6 : 1}]}
+          titleStyle={[styles.btnTitle, {opacity: 1}]}
           name="btnUsage"
         />
 
