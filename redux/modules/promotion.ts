@@ -21,6 +21,11 @@ const getPromotion = createAsyncThunk(
   ),
 );
 
+const getEvent = createAsyncThunk(
+  'event/getEvent',
+  API.default.reloadOrCallApi('cache.event', undefined, API.Promotion.getEvent),
+);
+
 const getPromotionStat = createAsyncThunk(
   'promotion/getPromotionStat',
   API.default.reloadOrCallApi(
@@ -219,6 +224,7 @@ const removeGiftAndRecommender = createAsyncThunk(
 // const {actions} = slice;
 export const actions = {
   ...slice.actions,
+  getEvent,
   getPromotion,
   getPromotionStat,
   getGiftBgImages,

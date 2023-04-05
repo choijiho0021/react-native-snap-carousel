@@ -53,6 +53,11 @@ export type RkbGiftImages = {
   uuid: string;
 };
 
+export type RkbEvent = {
+  title: string;
+  rule?: Record<string, any>;
+};
+
 const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
   if (_.isArray(data)) {
     return api.success(
@@ -144,6 +149,24 @@ const toGiftBgImages = (data: []): ApiResult<RkbGiftImages> => {
   // return api.failure(api.FAILED, data.result?.error);
 };
 
+const toEvent = (data: DrupalNode[]): ApiResult<RkbEvent> => {
+  if (_.isArray(data)) {
+    return api.success(
+      data.map((item) => {
+        const rule =
+          item.field_promotion_rule &&
+          parseJson(item.field_promotion_rule?.replace(/&quot;/g, '"'));
+
+        return {
+          title: item.title,
+          rule,
+        };
+      }),
+    );
+  }
+  return api.failure(api.E_NOT_FOUND);
+};
+
 const getPromotion = async () => {
   const now = moment();
 
@@ -177,6 +200,15 @@ const getGiftBgImages = () => {
   return api.callHttpGet<RkbGiftImages>(
     `${api.httpUrl(api.path.gift.images)}?_format=hal_json`,
     toGiftBgImages,
+  );
+};
+
+const getEvent = async () => {
+  const now = moment();
+
+  return await api.callHttpGet<RkbEvent>(
+    `${api.httpUrl(api.path.event)}?_format=hal_json`,
+    toEvent,
   );
 };
 
@@ -356,6 +388,7 @@ const getExtraCoupon = () => {
 };
 
 export default {
+  getEvent,
   getPromotion,
   getStat,
   getGiftBgImages,

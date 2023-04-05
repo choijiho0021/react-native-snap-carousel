@@ -60,6 +60,7 @@ const path = {
   userByName: 'json/user/name',
   userByEmail: 'json/user/email',
   promotion: 'json/promotion/list',
+  event: 'json/event/list',
   productDetails: 'json/product/details',
   localopBody: 'json/localop',
   esimDev: 'json/esim/dev/list',
