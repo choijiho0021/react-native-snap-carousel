@@ -5,6 +5,7 @@ import {AnyAction} from 'redux';
 import _ from 'underscore';
 import {Map as ImmutableMap} from 'immutable';
 import {
+  RkbEvent,
   RkbGiftImages,
   RkbInviteStatInfo,
   RkbPromotion,
@@ -22,7 +23,7 @@ const getPromotion = createAsyncThunk(
 );
 
 const getEvent = createAsyncThunk(
-  'event/getEvent',
+  'promotion/getEvent',
   API.default.reloadOrCallApi('cache.event', undefined, API.Promotion.getEvent),
 );
 
@@ -113,6 +114,7 @@ export interface PromotionModelState {
     sender?: string;
     gift?: string;
   };
+  event: RkbEvent[];
 }
 
 const initialState: PromotionModelState = {
@@ -134,6 +136,7 @@ const initialState: PromotionModelState = {
     sender: undefined,
     gift: undefined,
   },
+  event: [],
 };
 
 const slice = createSlice({
@@ -178,6 +181,14 @@ const slice = createSlice({
         state.popUpPromotionMap = ImmutableMap(popUpPromotionMap);
         state.invite = invite;
         state.gift.imageUrl = giftImage || '';
+      }
+    });
+
+    builder.addCase(getEvent.fulfilled, (state, {payload}) => {
+      const {result, objects} = payload;
+
+      if (result === 0) {
+        state.event = objects || [];
       }
     });
 

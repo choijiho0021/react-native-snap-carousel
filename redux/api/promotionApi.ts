@@ -204,8 +204,6 @@ const getGiftBgImages = () => {
 };
 
 const getEvent = async () => {
-  const now = moment();
-
   return await api.callHttpGet<RkbEvent>(
     `${api.httpUrl(api.path.event)}?_format=hal_json`,
     toEvent,
