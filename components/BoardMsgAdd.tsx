@@ -34,6 +34,7 @@ import {actions as boardActions, BoardAction} from '@/redux/modules/board';
 import {
   actions as eventBoardActions,
   EventBoardAction,
+  EventBoardModelState,
 } from '@/redux/modules/eventBoard';
 import i18n from '@/utils/i18n';
 import validationUtil, {
@@ -176,6 +177,8 @@ type BoardMsgAddProps = {
   successEvent: boolean;
   pendingEvent: boolean;
 
+  eventBoard: EventBoardModelState;
+
   jumpTo: (v: string) => void;
   isEvent?: boolean;
   eventList?: RkbEvent[];
@@ -210,6 +213,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   action,
   pending,
   pendingEvent,
+  eventBoard,
 }) => {
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
   const [mobile, setMobile] = useState('');
@@ -273,6 +277,10 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   }, [isEvent, selectedEvent.title]);
 
   const onPress = useCallback(async () => {
+    if (!title || !msg) {
+      console.log('@@@ invalid issue', title, msg);
+      return;
+    }
     if (isEvent) {
       const issue = {
         title,
@@ -295,11 +303,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
 
       await action.eventBoard.postAndGetList(issue);
     } else {
-      if (!title || !msg) {
-        console.log('@@@ invalid issue', title, msg);
-        return;
-      }
-
       const issue = {
         title,
         msg,
@@ -627,7 +630,8 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
 };
 
 export default connect(
-  ({account, status}: RootState) => ({
+  ({eventBoard, account, status}: RootState) => ({
+    eventBoard,
     account,
     success: status.fulfilled[boardActions.postIssue.typePrefix],
     successEvent: status.fulfilled[eventBoardActions.postIssue.typePrefix],
