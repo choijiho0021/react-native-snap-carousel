@@ -418,10 +418,11 @@
   "board:Open": "Waiting",
 
   "event:title": "Event Auth",
-  "event:new": "Apply Certification",
+  "event:new": "Apply Auth",
   "event:list": "Verification History",
   "event:noti": "You will be notified by push notification!",
-  "event:new2": "Apply Certification",
+  "event:new2": "Apply Auth",
+  "event:mylist": "My Auth",
 
   "cart:totalCnt": "Total Quantity",
   "cart:totalPrice": "Price",

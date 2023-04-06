@@ -3,8 +3,7 @@ import {AnyAction} from 'redux';
 import {Reducer} from 'redux-actions';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
-import {RkbBoard, RkbIssue} from '@/redux/api/boardApi';
-import {BoardModelState} from './board';
+import {RkbEventBoard, RkbEventIssue} from '../api/eventBoardApi';
 
 const postIssue = createAsyncThunk('eventBoard/postIssue', API.EventBoard.post);
 const postAttach = createAsyncThunk(
@@ -20,13 +19,20 @@ const getIssueResp = createAsyncThunk(
   API.EventBoard.getComments,
 );
 
+export interface EventBoardModelState {
+  next: boolean;
+  page: number;
+  list: RkbEventBoard[];
+  comment?: string;
+}
+
 // 10 items per page
 const PAGE_LIMIT = 10;
 const PAGE_UPDATE = 0;
 
 const postAndGetList = createAsyncThunk(
   'eventBoard/postAndGetList',
-  (issue: RkbIssue, {dispatch, getState}) => {
+  (issue: RkbEventIssue, {dispatch, getState}) => {
     const {
       account: {uid, mobile, token},
     } = getState() as RootState;
@@ -50,7 +56,7 @@ const postAndGetList = createAsyncThunk(
   },
 );
 
-const initialState: BoardModelState = {
+const initialState: EventBoardModelState = {
   next: true,
   page: 0,
   list: [],
@@ -120,7 +126,7 @@ const slice = createSlice({
 const getIssueList = createAsyncThunk(
   'eventBoard/getIssueList',
   (reloadAlways = true, {dispatch, getState}) => {
-    const {account, board} = getState() as RootState;
+    const {account, eventBoard} = getState() as RootState;
     const {uid, token} = account;
 
     if (reloadAlways) {
@@ -129,7 +135,7 @@ const getIssueList = createAsyncThunk(
     }
 
     // reloadAlways == false 이면 list가 비어있는 경우에만 다시 읽는다.
-    if (board.list.length === 0)
+    if (eventBoard.list.length === 0)
       return dispatch(fetchIssueList({uid, token, page: 0}));
 
     return Promise.resolve();
@@ -139,9 +145,9 @@ const getIssueList = createAsyncThunk(
 const getNextIssueList = createAsyncThunk(
   'eventBoard/getNextIssueList',
   (param, {dispatch, getState}) => {
-    const {account, board, status} = getState() as RootState;
+    const {account, eventBoard, status} = getState() as RootState;
     const {uid, token} = account;
-    const {next, page} = board;
+    const {next, page} = eventBoard;
 
     if (next && !status.pending[fetchIssueList.typePrefix]) {
       dispatch(slice.actions.nextIssueList());
@@ -166,4 +172,4 @@ export const actions = {
 
 export type EventBoardAction = typeof actions;
 
-export default slice.reducer as Reducer<BoardModelState, AnyAction>;
+export default slice.reducer as Reducer<EventBoardModelState, AnyAction>;

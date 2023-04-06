@@ -422,6 +422,7 @@
   "event:list": "내 인증내역",
   "event:noti": "- 인증 신청결과를 앱 알림으로 알려드려요!",
   "event:new2": "이벤트 인증 신청하기",
+  "event:mylist": "이벤트 인증 내역",
 
   "cart:totalCnt": "총 상품 수",
   "cart:totalPrice": "상품 금액 합계",

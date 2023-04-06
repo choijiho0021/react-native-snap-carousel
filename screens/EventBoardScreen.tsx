@@ -70,6 +70,7 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
       if (route.key === 'list') {
         return (
           <BoardMsgList
+            isEvent
             onPress={(uuid: string, status: string) =>
               navigation.navigate('BoardMsgResp', {
                 uuid,

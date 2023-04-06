@@ -29,7 +29,7 @@ type DrupalBoard = {
   [key: string]: string;
 };
 
-export type RkbBoard = {
+export type RkbEventBoard = {
   key: string;
   uuid: string;
   title: string;
@@ -44,9 +44,9 @@ export type RkbBoard = {
   replyImages: string[];
 };
 
-const toBoard = (data: DrupalBoard[]): ApiResult<RkbBoard> => {
+const toBoard = (data: DrupalBoard[]): ApiResult<RkbEventBoard> => {
   if (_.isArray(data)) {
-    return api.success<RkbBoard>(
+    return api.success<RkbEventBoard>(
       data.map((item) => ({
         key: item.uuid,
         uuid: item.uuid,
@@ -134,7 +134,7 @@ const toFile = (data): ApiResult<RkbFile> => {
 };
 
 // anonymous user 도 post 할 수 있으므로, token 값을 확인하지 않는다.
-export type RkbIssue = {
+export type RkbEventIssue = {
   title: string;
   msg: string;
   mobile: string;
@@ -149,7 +149,7 @@ const post = ({
   pin,
   images,
   token,
-}: RkbIssue & {
+}: RkbEventIssue & {
   token?: string;
 }) => {
   if (!title || !msg || !token)

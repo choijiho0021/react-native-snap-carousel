@@ -176,7 +176,7 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
             })
           }
         />
-        <AppButton
+        {/* <AppButton
           style={styles.btnIdCheck}
           onPress={() =>
             navigate(navigation, route, 'MyPageStack', {
@@ -187,6 +187,19 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
           titleStyle={appStyles.normal16Text}
           title={i18n.t('contact:title')}
           type="secondary"
+        /> */}
+        <AppButton
+          title={i18n.t('contact:event')}
+          style={styles.btnContactBoard}
+          titleStyle={appStyles.normal16Text}
+          type="secondary"
+          onPress={() =>
+            navigate(navigation, route, 'MyPageStack', {
+              tab: 'HomeStack',
+              screen: 'EventBoard',
+              params: {index: 0},
+            })
+          }
         />
       </View>
       {!esimGlobal && (

@@ -48,6 +48,7 @@ import AppText from './AppText';
 import AppTextInput from './AppTextInput';
 import {RkbEvent} from '@/redux/api/promotionApi';
 import AppModalDropDown from './AppModalDropDown';
+import {RkbEventIssue} from '@/redux/api/eventBoardApi';
 
 const styles = StyleSheet.create({
   passwordInput: {
@@ -234,10 +235,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   const keybd = useRef();
 
   useEffect(() => {
-    console.log('@@@@ eventTitleList', eventTitleList);
-  }, [eventTitleList]);
-
-  useEffect(() => {
     const checkPermission = async () => {
       const permission =
         Platform.OS === 'ios'
@@ -294,7 +291,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
               } as RkbImage),
           )
           .toArray(),
-      } as RkbIssue;
+      } as RkbEventIssue;
 
       await action.eventBoard.postAndGetList(issue);
     } else {
