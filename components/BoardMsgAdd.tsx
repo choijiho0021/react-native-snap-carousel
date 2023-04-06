@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderStyle: 'solid',
     borderWidth: 1,
-    borderColor: colors.lightGrey,
+    borderColor: colors.black,
     paddingHorizontal: 10,
     height: 120,
     marginTop: 15,
@@ -542,7 +542,13 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
           </View>
           {isEvent ? (
             <Pressable
-              style={[styles.inputBox, styles.eventTitle]}
+              style={[
+                styles.inputBox,
+                styles.eventTitle,
+                selectedEvent.title !== ''
+                  ? {borderColor: colors.black}
+                  : undefined,
+              ]}
               onPress={({nativeEvent: {pageY, locationY}}) => {
                 setShowModal(true);
                 setPosY(pageY - locationY);
@@ -646,6 +652,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
               <AppTextInput
                 style={[
                   styles.inputBox,
+                  link ? {borderColor: colors.black} : undefined,
                   {
                     height: 50,
                     paddingHorizontal: 15,
@@ -654,8 +661,15 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
                 maxLength={1000}
                 onChangeText={(v) => {
                   setLink(v);
+                  validate('link', v);
                 }}
                 value={link}
+                enablesReturnKeyAutomatically
+                clearTextOnFocus={false}
+                onFocus={() => setExtraHeight(20)}
+                error={error('title')}
+                autoCapitalize="none"
+                autoCorrect={false}
               />
             </View>
           )}
