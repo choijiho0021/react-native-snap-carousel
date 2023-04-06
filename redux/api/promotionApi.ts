@@ -53,9 +53,14 @@ export type RkbGiftImages = {
   uuid: string;
 };
 
+export type RkbEventRule = {
+  link: boolean;
+  image: boolean;
+};
+
 export type RkbEvent = {
   title: string;
-  rule?: Record<string, any>;
+  rule?: RkbEventRule;
 };
 
 const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
@@ -86,6 +91,24 @@ const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
                 },
               }
             : undefined,
+        };
+      }),
+    );
+  }
+  return api.failure(api.E_NOT_FOUND);
+};
+
+const toEvent = (data: DrupalNode[]): ApiResult<RkbEvent> => {
+  if (_.isArray(data)) {
+    return api.success(
+      data.map((item) => {
+        const rule = item.field_promotion_rule
+          ? JSON.parse(item.field_promotion_rule)
+          : {};
+
+        return {
+          title: item.title,
+          rule,
         };
       }),
     );
@@ -149,24 +172,6 @@ const toGiftBgImages = (data: []): ApiResult<RkbGiftImages> => {
   // return api.failure(api.FAILED, data.result?.error);
 };
 
-const toEvent = (data: DrupalNode[]): ApiResult<RkbEvent> => {
-  if (_.isArray(data)) {
-    return api.success(
-      data.map((item) => {
-        const rule =
-          item.field_promotion_rule &&
-          parseJson(item.field_promotion_rule?.replace(/&quot;/g, '"'));
-
-        return {
-          title: item.title,
-          rule,
-        };
-      }),
-    );
-  }
-  return api.failure(api.E_NOT_FOUND);
-};
-
 const getPromotion = async () => {
   const now = moment();
 
@@ -204,7 +209,7 @@ const getGiftBgImages = () => {
 };
 
 const getEvent = async () => {
-  return await api.callHttpGet<RkbEvent>(
+  return api.callHttpGet<RkbEvent>(
     `${api.httpUrl(api.path.event)}?_format=hal_json`,
     toEvent,
   );
