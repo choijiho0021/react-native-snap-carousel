@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
     paddingHorizontal: 10,
     height: 120,
-    marginBottom: 15,
+    marginTop: 15,
     overflow: 'scroll',
     paddingVertical: 10,
   },
@@ -235,6 +235,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   const [errors, setErrors] = useState<ValidationResult>({});
   const [title, setTitle] = useState<string>();
   const [msg, setMsg] = useState<string>();
+  const [link, setLink] = useState<string>();
   const [pin, setPin] = useState<string>();
   const [attachment, setAttachment] = useState(List<CropImage>());
   const [extraHeight, setExtraHeight] = useState(0);
@@ -541,7 +542,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
           </View>
           {isEvent ? (
             <Pressable
-              style={[styles.inputBox, styles.eventTitle, {marginBottom: 15}]}
+              style={[styles.inputBox, styles.eventTitle]}
               onPress={({nativeEvent: {pageY, locationY}}) => {
                 setShowModal(true);
                 setPosY(pageY - locationY);
@@ -599,6 +600,10 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
             </View>
           )}
 
+          {isEvent && (
+            <AppText style={styles.attachTitle}>{i18n.t('content')}</AppText>
+          )}
+
           <AppTextInput
             style={[
               styles.inputBox,
@@ -634,6 +639,26 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
             }
             value={msg}
           />
+
+          {isEvent && (
+            <View>
+              <AppText style={styles.attachTitle}>{i18n.t('link')}</AppText>
+              <AppTextInput
+                style={[
+                  styles.inputBox,
+                  {
+                    height: 50,
+                    paddingHorizontal: 15,
+                  },
+                ]}
+                maxLength={1000}
+                onChangeText={(v) => {
+                  setLink(v);
+                }}
+                value={link}
+              />
+            </View>
+          )}
 
           {account.loggedIn ? renderAttachment() : renderPass()}
         </View>
