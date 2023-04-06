@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   },
   tabScroll: {
     marginTop: 16,
-    marginBottom: 24,
+    marginBottom: 6,
     paddingLeft: 20,
   },
   image: {
@@ -134,7 +134,7 @@ const ExtraCouponScreen = () => {
     [],
   );
 
-  const renderBannerImg = useCallback(
+  const renderGroup = useCallback(
     () => (
       <ScrollView
         horizontal
@@ -179,7 +179,7 @@ const ExtraCouponScreen = () => {
       <FlatList
         data={data}
         renderItem={renderItem}
-        ListHeaderComponent={renderBannerImg()}
+        ListHeaderComponent={renderGroup()}
       />
 
       {showItem && (
