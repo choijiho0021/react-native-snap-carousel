@@ -5,6 +5,7 @@ import {appStyles} from '@/constants/Styles';
 import {RkbBoard} from '@/redux/api/boardApi';
 import utils from '@/redux/api/utils';
 import AppText from './AppText';
+import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 
 const styles = StyleSheet.create({
   list: {
@@ -31,9 +32,10 @@ const styles = StyleSheet.create({
 });
 
 type BoardMsgProps = {
-  item: RkbBoard;
+  item: RkbBoard | RkbEventBoard;
   uid: number;
   onPress: (uuid: string, status: string) => void;
+  isEvent?: boolean;
 };
 class BoardMsg extends Component<BoardMsgProps> {
   shouldComponentUpdate(nextProps: BoardMsgProps) {

@@ -75,6 +75,7 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
               navigation.navigate('BoardMsgResp', {
                 uuid,
                 status,
+                isEvent: true,
               })
             }
           />

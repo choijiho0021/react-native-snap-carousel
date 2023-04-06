@@ -96,7 +96,7 @@ export type HomeStackParamList = {
   ContactBoard: ContactBoardRouteParam;
   EventBoard: EventBoardRouteParam;
   UserGuide: undefined;
-  BoardMsgResp: {uuid: string; status?: BoardMsgStatus};
+  BoardMsgResp: {uuid: string; status?: BoardMsgStatus; isEvent?: boolean};
   BoardMsgAdd: {key: string; status: BoardMsgStatus};
   Faq: FaqRouteParam;
   Guide: undefined;

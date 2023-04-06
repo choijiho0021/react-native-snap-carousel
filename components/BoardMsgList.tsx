@@ -87,6 +87,7 @@ type BoardMsgListProps = {
   eventBoard: EventBoardModelState;
   account: AccountModelState;
   pending: boolean;
+  pendingEvent: boolean;
   uid: number;
   isEvent?: boolean;
   onPress: (uuid: string, status: string) => void;
@@ -105,6 +106,7 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   account,
   uid,
   pending,
+  pendingEvent,
   onPress,
 }) => {
   const [data, setData] = useState<RkbBoard[]>([]);
@@ -278,7 +280,9 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
         }
       />
 
-      <AppActivityIndicator visible={pending && !refreshing} />
+      <AppActivityIndicator
+        visible={(pending || pendingEvent) && !refreshing}
+      />
       <AppModalForm
         visible={showModal}
         title={i18n.t('board:inputPass')}

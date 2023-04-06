@@ -30,6 +30,11 @@ import {
   BoardAction,
   BoardModelState,
 } from '@/redux/modules/board';
+import {
+  actions as eventBoardActions,
+  EventBoardAction,
+  EventBoardModelState,
+} from '@/redux/modules/eventBoard';
 import i18n from '@/utils/i18n';
 import {AccountModelState} from '@/redux/modules/account';
 import ImgWithIndicator from './MyPageScreen/components/ImgWithIndicator';
@@ -127,12 +132,15 @@ type BoardMsgRespScreenProps = {
   route: BoardMsgRespScreenRouteProp;
 
   board: BoardModelState;
+  eventBoard: EventBoardModelState;
   pending: boolean;
+  pendingEvent: boolean;
 
   account: AccountModelState;
 
   action: {
     board: BoardAction;
+    eventBoard: EventBoardAction;
   };
 };
 
@@ -140,8 +148,10 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
   route: {params},
   navigation,
   board,
+  eventBoard,
   account,
   pending,
+  pendingEvent,
   action,
 }) => {
   const [idx, setIdx] = useState<number>();
@@ -157,27 +167,53 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const {uuid, status} = params || {};
+    const {uuid, status, isEvent = false} = params || {};
 
     navigation.setOptions({
       title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('board:title')} />,
+      headerLeft: () => (
+        <AppBackButton
+          title={i18n.t(`${isEvent ? 'event:list' : 'board:title'}`)}
+        />
+      ),
     });
 
     if (uuid) {
       // issue list를 아직 가져오지 않은 경우에는, 먼저 가져와서 처리한다.
-      action.board.getIssueList(false).then(() => {
-        setIdx(board.list.findIndex((item) => item.uuid === uuid));
 
-        if (status === 'Closed') {
-          const {token} = account;
-          action.board.getIssueResp({uuid, token});
-        } else {
-          action.board.resetIssueComment();
-        }
-      });
+      if (isEvent) {
+        action.eventBoard.getIssueList(false).then(() => {
+          setIdx(eventBoard.list.findIndex((item) => item.uuid === uuid));
+
+          if (status === 'Closed') {
+            const {token} = account;
+            action.eventBoard.getIssueResp({uuid, token});
+          } else {
+            action.eventBoard.resetIssueComment();
+          }
+        });
+      } else {
+        action.board.getIssueList(false).then(() => {
+          setIdx(board.list.findIndex((item) => item.uuid === uuid));
+
+          if (status === 'Closed') {
+            const {token} = account;
+            action.board.getIssueResp({uuid, token});
+          } else {
+            action.board.resetIssueComment();
+          }
+        });
+      }
     }
-  }, [account, action.board, board.list, navigation, params]);
+  }, [
+    account,
+    action.board,
+    action.eventBoard,
+    board.list,
+    eventBoard.list,
+    navigation,
+    params,
+  ]);
 
   const renderImages = useCallback(
     (images?: string[]) => (
@@ -279,14 +315,18 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
 };
 
 export default connect(
-  ({board, account, status}: RootState) => ({
+  ({eventBoard, board, account, status}: RootState) => ({
+    eventBoard,
     board,
     account,
     pending: status.pending[boardActions.getIssueResp.typePrefix] || false,
+    pendingEvent:
+      status.pending[eventBoardActions.fetchIssueList.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {
       board: bindActionCreators(boardActions, dispatch),
+      eventBoard: bindActionCreators(eventBoardActions, dispatch),
     },
   }),
 )(BoardMsgRespScreen);
