@@ -424,6 +424,7 @@
   "event:new2": "Apply Auth",
   "event:mylist": "My Auth",
   "event:placeholder": "Choose Event.",
+  "event:content": "이벤트 참여 방법 확인 후 형식에 맞게 url이나 캡쳐 화면을 첨부하여 인증해주세요.\n확인 후 순자적으로 리워드 지급 예정입니다.",
 
   "cart:totalCnt": "Total Quantity",
   "cart:totalPrice": "Price",

@@ -611,7 +611,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
               msg ? {borderColor: colors.black} : undefined,
             ]}
             ref={keybd}
-            placeholder={i18n.t('content')}
+            placeholder={i18n.t(`${isEvent ? 'event:content' : 'content'}`)}
             placeholderTextColor={colors.greyish}
             multiline
             numberOfLines={8}
