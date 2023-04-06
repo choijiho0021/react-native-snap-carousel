@@ -54,13 +54,17 @@ export type RkbGiftImages = {
 };
 
 export type RkbEventRule = {
-  link: boolean;
-  image: boolean;
+  link?: boolean;
+  image?: boolean;
 };
 
 export type RkbEvent = {
   title: string;
   rule?: RkbEventRule;
+  notice?: {
+    title?: string;
+    body?: string;
+  };
 };
 
 const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
@@ -70,7 +74,6 @@ const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
         const rule =
           item.field_promotion_rule &&
           parseJson(item.field_promotion_rule?.replace(/&quot;/g, '"'));
-
         return {
           uuid: item.uuid,
           title: item.title,
@@ -109,6 +112,10 @@ const toEvent = (data: DrupalNode[]): ApiResult<RkbEvent> => {
         return {
           title: item.title,
           rule,
+          notice: {
+            title: item.field_notice_title || '',
+            body: item.field_notice_body || '',
+          },
         };
       }),
     );

@@ -22,6 +22,8 @@ import {
 import {connect} from 'react-redux';
 import _ from 'underscore';
 import {bindActionCreators} from 'redux';
+import WebView from 'react-native-webview';
+import {ScrollView} from 'react-native-gesture-handler';
 import {colors} from '@/constants/Colors';
 import {attachmentSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
@@ -126,6 +128,19 @@ const styles = StyleSheet.create({
     color: colors.black,
     paddingHorizontal: 10,
   },
+  notice: {
+    marginHorizontal: 20,
+    borderRadius: 3,
+    backgroundColor: colors.white,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    paddingHorizontal: 10,
+    height: 120,
+    marginBottom: 15,
+    overflow: 'scroll',
+    paddingVertical: 10,
+  },
   eventTitle: {
     justifyContent: 'space-between',
     display: 'flex',
@@ -226,6 +241,8 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   const [showModal, setShowModal] = useState(false);
   const [posY, setPosY] = useState(0);
   const [selectedEvent, setSelectedEvent] = useState<RkbEvent>({title: ''});
+  const [webViewHeight, setWebViewHeight] = useState(0);
+  const webViewRef = useRef(null);
 
   const eventTitleList = useMemo(() => {
     if (eventList?.length > 0) {
@@ -281,6 +298,17 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     }
 
     if (isEvent) {
+      // 링크 필수 인경우
+      // if(selectedEvent.rule?.link && ){
+      //   console.log('@@@ invalid issue', title, msg);
+      //   return;
+      // }
+
+      // 이미지 필수 인경우
+      if (selectedEvent.rule?.image && attachment.size < 1) {
+        console.log('@@@@ 이미지 필수', attachment.size);
+        return;
+      }
       const issue = {
         title,
         msg,
@@ -335,6 +363,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     mobile,
     msg,
     pin,
+    selectedEvent.rule?.image,
     title,
   ]);
 
@@ -551,6 +580,23 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
               autoCorrect={false}
               value={title}
             />
+          )}
+
+          {isEvent && selectedEvent.title !== '' && (
+            <View style={styles.notice}>
+              <WebView
+                source={{
+                  html: `<style>
+              body {
+                font-size: 40px;
+              }
+            </style>`.concat(selectedEvent.notice?.body || ''),
+                }}
+                originWhitelist={['*']}
+                javaScriptEnabled
+                domStorageEnabled
+              />
+            </View>
           )}
 
           <AppTextInput
