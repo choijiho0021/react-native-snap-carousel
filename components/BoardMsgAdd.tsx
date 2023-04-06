@@ -225,9 +225,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   const [extraHeight, setExtraHeight] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [posY, setPosY] = useState(0);
-  const [selectedEvent, setSelectedEvent] = useState<RkbEvent>(
-    eventList[0] || {},
-  );
+  const [selectedEvent, setSelectedEvent] = useState<RkbEvent>({title: ''});
 
   const eventTitleList = useMemo(() => {
     if (eventList?.length > 0) {
@@ -281,6 +279,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
       console.log('@@@ invalid issue', title, msg);
       return;
     }
+
     if (isEvent) {
       const issue = {
         title,
@@ -518,7 +517,15 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
                 setShowModal(true);
                 setPosY(pageY - locationY);
               }}>
-              <AppText style={{lineHeight: 50}}>{selectedEvent.title}</AppText>
+              <AppText
+                style={[
+                  {lineHeight: 50},
+                  selectedEvent.title === '' && {color: colors.greyish},
+                ]}>
+                {selectedEvent.title === ''
+                  ? i18n.t('event:placeholder')
+                  : selectedEvent.title}
+              </AppText>
               <AppIcon name={showModal ? 'dropDownOpen50' : 'dropDown50'} />
             </Pressable>
           ) : (

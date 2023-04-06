@@ -423,6 +423,7 @@
   "event:noti": "You will be notified by push notification!",
   "event:new2": "Apply Auth",
   "event:mylist": "My Auth",
+  "event:placeholder": "Choose Event.",
 
   "cart:totalCnt": "Total Quantity",
   "cart:totalPrice": "Price",
