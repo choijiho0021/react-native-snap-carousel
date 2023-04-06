@@ -35,7 +35,6 @@ type BoardMsgProps = {
   item: RkbBoard | RkbEventBoard;
   uid: number;
   onPress: (uuid: string, status: string) => void;
-  isEvent?: boolean;
 };
 class BoardMsg extends Component<BoardMsgProps> {
   shouldComponentUpdate(nextProps: BoardMsgProps) {
