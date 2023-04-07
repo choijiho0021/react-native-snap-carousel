@@ -79,6 +79,19 @@ const styles = StyleSheet.create({
     marginLeft: 0,
     textAlign: 'left',
   },
+  balance: {
+    ...appStyles.robotoBold28Text,
+    marginTop: 4,
+    color: colors.black,
+    lineHeight: 40,
+  },
+  currency: {
+    ...appStyles.bold26Text,
+    color: colors.black,
+    lineHeight: 40,
+    marginRight: 4,
+    marginTop: 4,
+  },
 });
 
 type RechargeScreenNavigationProp = StackNavigationProp<
@@ -97,7 +110,7 @@ type RechargeScreenProps = {
   };
 };
 
-const {esimApp, esimCurrency} = Env.get();
+const {esimCurrency} = Env.get();
 const rechargeChoice =
   esimCurrency === 'KRW'
     ? [
@@ -203,17 +216,11 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
             style={[appStyles.normal14Text, {textAlign: 'left'}]}>
             {i18n.t('cashHistory:myBalance')}
           </AppText>
-          <AppText
-            key="balance"
-            style={[
-              appStyles.robotoBold28Text,
-              {marginTop: 4, color: colors.black, lineHeight: 40},
-            ]}>
-            {utils.numberToCommaString(balance || 0)}
-            <AppText style={appStyles.bold26Text}>
-              {i18n.t(esimCurrency)}
-            </AppText>
-          </AppText>
+          <AppPrice
+            price={{value: balance || 0, currency: esimCurrency}}
+            balanceStyle={styles.balance}
+            currencyStyle={styles.currency}
+          />
         </View>
 
         <View style={styles.divider} />

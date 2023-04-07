@@ -88,6 +88,7 @@ type Env = {
   payment: {
     inicis: Record<string, string>;
   };
+  cachePrefix: string;
 };
 
 const env: Env = {
@@ -119,6 +120,7 @@ const env: Env = {
     },
   },
   specialCategories,
+  cachePrefix: `${esimGlobal ? 'g' : 'e'}.${isProduction ? 'p' : 'd'}.`,
 };
 
 function get() {

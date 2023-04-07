@@ -10,7 +10,7 @@ import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData} from '@/utils/utils';
 import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
-import {cachedApi} from '../api/api';
+import {cachedApi} from '@/redux/api/api';
 
 const init = createAsyncThunk('order/init', async () => {
   const oldData = await retrieveData(API.Order.KEY_INIT_ORDER);
