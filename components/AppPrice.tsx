@@ -1,12 +1,5 @@
-import React, {Fragment, memo, useMemo} from 'react';
-import {
-  StyleProp,
-  StyleSheet,
-  Text,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
+import React, {memo, useMemo} from 'react';
+import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {Currency} from '@/redux/api/productApi';

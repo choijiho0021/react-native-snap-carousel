@@ -17,6 +17,7 @@ import AppIcon from '@/components/AppIcon';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppStyledText from '@/components/AppStyledText';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import AppPrice from '@/components/AppPrice';
 
 const {esimCurrency, esimGlobal} = Env.get();
 
@@ -97,7 +98,7 @@ const styles = StyleSheet.create({
     ...appStyles.normal17,
     color: 'white',
   },
-  currenty: {
+  currency: {
     // fontFamily: 'AppleSDGothicNeo',
     fontSize: 20,
     fontWeight: 'bold',
@@ -106,11 +107,18 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     textAlign: 'right',
     color: 'white',
+    marginRight: 4,
   },
   currencyBox: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingTop: 8,
+  },
+  balanceStyle: {
+    ...appStyles.robotoSemiBold22Text,
+    color: 'white',
+    letterSpacing: 0,
+    marginRight: 4,
   },
 });
 
@@ -129,9 +137,7 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
       <Pressable
         style={styles.rechargeBox}
         onPress={() =>
-          esimGlobal
-            ? navigation.navigate('Recharge')
-            : navigation.navigate('CashHistory')
+          navigation.navigate(esimGlobal ? 'Recharge' : 'CashHistory')
         }>
         <View style={styles.rechargeText}>
           <View>
@@ -139,16 +145,11 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
               {i18n.t('acc:remain')}
             </AppText>
             <View style={styles.currencyBox}>
-              <AppText
-                style={[
-                  appStyles.robotoSemiBold22Text,
-                  {color: 'white', letterSpacing: 0, marginRight: 4},
-                ]}>
-                {utils.numberToCommaString(balance || 0)}
-                <AppText style={styles.currenty}>
-                  {i18n.t(esimCurrency)}
-                </AppText>
-              </AppText>
+              <AppPrice
+                price={{value: balance || 0, currency: esimCurrency}}
+                balanceStyle={styles.balanceStyle}
+                currencyStyle={styles.currency}
+              />
               <AppSvgIcon name="arrowRight" />
             </View>
           </View>
