@@ -14,7 +14,10 @@
 
 #import "RNSplashScreen.h"  // here
 #import <CodePush/CodePush.h>
-#import <FBSDKCoreKit/FBSDKCoreKit.h>
+
+#ifdef TARGET_GLOBAL  // RokebiGlobal
+#import <FBSDKCoreKit/FBSDKCoreKit-swift.h>
+#endif
 
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
@@ -123,8 +126,10 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   [AppCenterReactNative register];
   [AppCenterReactNativeAnalytics registerWithInitiallyEnabled:true];
   [AppCenterReactNativeCrashes registerWithAutomaticProcessing];
-  [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
 
+#ifdef TARGET_GLOBAL
+  [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
+#endif
 
   if (@available(iOS 13.0, *)) {
     rootView.backgroundColor = [UIColor systemBackgroundColor];
