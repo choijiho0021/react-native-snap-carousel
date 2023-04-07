@@ -80,7 +80,7 @@ import {retrieveData, storeData} from '@/utils/utils';
 import LocalModal from './component/LocalModal';
 import ChatTalk from '../UserGuideScreen/ChatTalk';
 
-const {esimGlobal, isIOS} = Env.get();
+const {esimGlobal, isIOS, cachePrefix} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -724,11 +724,14 @@ const Esim: React.FC<EsimProps> = ({
   useEffect(() => {
     async function getDevList() {
       if (isIOS) {
-        const tm = await retrieveData('cache.timestamp.dev');
+        const tm = await retrieveData(`${cachePrefix}cache.timestamp.dev`);
         const reload = product.rule.timestamp_dev > tm;
         action.product.getDevList(reload);
         if (reload)
-          storeData('cache.timestamp.dev', moment().zone(-540).format());
+          storeData(
+            `${cachePrefix}cache.timestamp.dev`,
+            moment().zone(-540).format(),
+          );
       }
 
       const deviceModel = DeviceInfo.getModel();
@@ -777,13 +780,16 @@ const Esim: React.FC<EsimProps> = ({
   useEffect(() => {
     // check timestamp
     const checkTimestamp = async () => {
-      const tm = await retrieveData('cache.timestamp.prod');
+      const tm = await retrieveData(`${cachePrefix}cache.timestamp.prod`);
       const reload = !tm || product.rule.timestamp_prod > tm;
       // console.log('@@@ reload all prod', reload, tm);
       // reload data
       action.product.getAllProduct(reload);
       if (reload) {
-        storeData('cache.timestamp.prod', moment().zone(-540).format());
+        storeData(
+          `${cachePrefix}cache.timestamp.prod`,
+          moment().zone(-540).format(),
+        );
       }
     };
     checkTimestamp();
