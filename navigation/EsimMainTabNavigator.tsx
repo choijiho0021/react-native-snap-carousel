@@ -248,7 +248,13 @@ function MyPageStackComponent() {
       <MyPageStack.Screen name="Resign" component={ResignScreen} />
       <MyPageStack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
       <MyPageStack.Screen name="Receipt" component={ReceiptScreen} />
-      <MyPageStack.Screen name="ExtraCoupon" component={ExtraCouponScreen} />
+      <MyPageStack.Screen
+        name="ExtraCoupon"
+        component={ExtraCouponScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <MyPageStack.Screen
         name="CashHistory"
         component={CashHistoryScreen}

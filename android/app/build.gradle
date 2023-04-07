@@ -84,12 +84,6 @@ project.ext.envConfigFiles = [
         globaldebug: ".env.global.debug",
         globalstaging: ".env.global.staging",
         globalrelease: ".env.global.release",
-//        usimdebug: ".env",
-//        usimstaging: ".env.staging",
-//        usimrelease: ".env.production",
-//        talkdebug: ".env",
-//        talkstaging: ".env.staging",
-//        talkrelease: ".env.production",
 ]
 
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
@@ -185,6 +179,7 @@ android {
         multiDexEnabled true
         resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+        resValue "string", "build_config_package", "com.rokebiesim"
 
         if (isNewArchitectureEnabled()) {
             // We configure the NDK build only if you decide to opt-in for the New Architecture.
@@ -265,7 +260,7 @@ android {
             resValue "string", "app_name", "로깨비ESIM"
         }
         global {
-            applicationIdSuffix "global"
+            applicationId 'com.rokebiglobal'
             resValue "string", "app_name", "로깨비GLOBAL"
         }
 //        usim {
@@ -409,7 +404,7 @@ dependencies {
     implementation "com.google.android.gms:play-services-auth:${safeExtGet('googlePlayServicesAuthVersion', '19.2.0')}"
     implementation "com.google.android.gms:play-services-fitness:21.1.0"
     implementation "androidx.annotation:annotation:1.1.0"
-    implementation 'com.facebook.android:facebook-android-sdk:14.1.1'
+    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
     implementation project(':@react-native-community-clipboard')
     implementation platform('com.google.firebase:firebase-bom:31.1.1')
     implementation project(path: ":@react-native-firebase_dynamic-links")
@@ -433,6 +428,7 @@ dependencies {
     implementation 'com.adjust.sdk:adjust-android-webbridge:4.31.1'
     implementation project(':react-native-system-setting')
     implementation 'com.facebook.fresco:animated-gif:2.5.0'
+    implementation project(':react-native-config')
 
      if (enableHermes) {
          def hermesPath = "../../node_modules/hermes-engine/android/";

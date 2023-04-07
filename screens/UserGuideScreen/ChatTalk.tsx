@@ -9,7 +9,7 @@ import i18n from '@/utils/i18n';
 import Env from '@/environment';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 
-const {appId, talkPluginKey} = Env.get();
+const {appId, talkPluginKey, esimGlobal} = Env.get();
 
 const ChatTalk = ({
   account,
@@ -30,13 +30,16 @@ const ChatTalk = ({
       profile: account.loggedIn
         ? {
             id: account.userId,
+            language: esimGlobal ? 'en' : 'ko',
             name: `${appId} - ${account.mobile}`,
             mobileNumber: account.mobile,
             email: account.email,
             mobileStr: account.mobile,
             orderUrl: `https://${appId}.rokebi.com/ko/admin/op/order/search?title=${account.mobile}&mail=&items_per_page=10`,
           }
-        : undefined,
+        : {
+            language: esimGlobal ? 'en' : 'ko',
+          },
     }),
     [account.email, account.loggedIn, account.mobile, account.userId],
   );
