@@ -1,4 +1,6 @@
 rootProject.name = 'RokebiESIM'
+include ':@react-native-google-signin_google-signin'
+project(':@react-native-google-signin_google-signin').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-google-signin/google-signin/android')
 include ':react-native-fbsdk-next'
 project(':react-native-fbsdk-next').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fbsdk-next/android')
 include ':react-native-config'
@@ -27,8 +29,6 @@ include ':react-native-app-badge'
 project(':react-native-app-badge').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-app-badge/android')
 include ':@react-native-picker_picker'
 project(':@react-native-picker_picker').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-picker/picker/android')
-include ':@react-native-google-signin_google-signin'
-project(':@react-native-google-signin_google-signin').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-google-signin/google-signin/android')
 include ':@react-native-firebase_analytics'
 project(':@react-native-firebase_analytics').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/analytics/android')
 include ':@react-native-firebase_messaging'

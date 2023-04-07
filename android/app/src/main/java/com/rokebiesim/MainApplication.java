@@ -14,6 +14,7 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
+import com.reactnativegooglesignin.RNGoogleSigninPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.lugg.RNCConfig.RNCConfigPackage;
 import com.swmansion.gesturehandler.RNGestureHandlerPackage;
@@ -74,7 +75,6 @@ import com.facebook.flipper.reactnative.FlipperPackage;
 //import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 import com.reactnativecommunity.picker.RNCPickerPackage;
-import com.reactnativegooglesignin.RNGoogleSigninPackage;
 import com.reactnativecommunity.cookies.CookieManagerPackage;
 import com.reactnativecommunity.cameraroll.CameraRollPackage;
 import fr.greweb.reactnativeviewshot.RNViewShotPackage;
@@ -159,6 +159,7 @@ public class MainApplication extends Application implements ReactApplication {
                 protected List<ReactPackage> getPackages() {
                     return Arrays.<ReactPackage>asList(
                             new MainReactPackage(),
+            new RNGoogleSigninPackage(),
             new FBSDKPackage(),
             new RNCConfigPackage(),
             new LottiePackage(),
@@ -198,7 +199,6 @@ public class MainApplication extends Application implements ReactApplication {
                             new FlipperPackage(),
                             new PagerViewPackage(),
                             new RNCPickerPackage(),
-                            new RNGoogleSigninPackage(),
                             new ReactNativeFirebaseAnalyticsPackage(),
                             new CookieManagerPackage()
 

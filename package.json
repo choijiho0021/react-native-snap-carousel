@@ -43,7 +43,7 @@
     "@react-native-firebase/app": "^12.9.3",
     "@react-native-firebase/dynamic-links": "^12.9.3",
     "@react-native-firebase/messaging": "^12.9.3",
-    "@react-native-google-signin/google-signin": "7.0.1",
+    "@react-native-google-signin/google-signin": "^9.0.2",
     "@react-native-picker/picker": "^2.1.0",
     "@react-native/normalize-color": "^2.0.0",
     "@react-navigation/bottom-tabs": "^6.3.3",
