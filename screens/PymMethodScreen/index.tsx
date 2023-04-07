@@ -1,7 +1,7 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
@@ -360,7 +360,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
   const consentBox = useCallback(() => {
     return (
-      <View style={{backgroundColor: colors.whiteTwo, paddingBottom: 45}}>
+      <View
+        style={{backgroundColor: colors.whiteTwo, paddingBottom: 45, flex: 1}}>
         <Pressable
           style={styles.rowCenter}
           onPress={() => setConsent((prev) => !prev)}>
@@ -404,6 +405,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
+        contentContainerStyle={{flex: 1}}
         enableOnAndroid
         enableResetScrollToCoords={false}>
         <PaymentItemInfo
@@ -417,7 +419,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         {pymPrice?.value !== 0 ? (
           method()
         ) : (
-          <View style={styles.result}>
+          <View style={styles.result} key="result">
             <AppText style={styles.resultText}>
               {i18n.t('pym:balPurchase')}
             </AppText>
