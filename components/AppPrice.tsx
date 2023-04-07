@@ -50,7 +50,7 @@ const AppPrice = ({
         <View style={style || styles.container}>
           <AppText key="won" style={[textStyle, currencyStyle || styles.price]}>
             {showPlus && price.value > 0 ? '+' : ''}
-            {`${i18n.t(price.currency)}`}
+            {i18n.t(price.currency)}
           </AppText>
 
           <AppText
