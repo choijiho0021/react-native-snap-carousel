@@ -14,6 +14,8 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
+import com.facebook.reactnative.androidsdk.FBSDKPackage;
+import com.lugg.RNCConfig.RNCConfigPackage;
 import com.swmansion.gesturehandler.RNGestureHandlerPackage;
 import com.airbnb.android.react.lottie.LottiePackage;
 // import com.horcrux.svg.SvgPackage;
@@ -25,7 +27,6 @@ import com.adjust.nativemodule.AdjustPackage;
 import com.reactnativesimcardsmanager.SimCardsManagerPackage;
 import com.github.amarcruz.rnshortcutbadge.RNAppBadgePackage;
 import com.facebook.react.modules.network.OkHttpClientProvider;
-import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.rokebiesim.generated.EuccidManagerAppPackage;
 import com.rokebiesim.generated.FetchApiClientFactory;
 import com.zoontek.rnpermissions.RNPermissionsPackage;
@@ -158,6 +159,8 @@ public class MainApplication extends Application implements ReactApplication {
                 protected List<ReactPackage> getPackages() {
                     return Arrays.<ReactPackage>asList(
                             new MainReactPackage(),
+            new FBSDKPackage(),
+            new RNCConfigPackage(),
             new LottiePackage(),
             new RNChannelIOPackage(),
             // new GoogleFitPackage(BuildConfig.APPLICATION_ID),
@@ -167,7 +170,6 @@ public class MainApplication extends Application implements ReactApplication {
             new RNViewShotPackage(),
                             new SystemSettingPackage(),
                             new RNAppBadgePackage(),
-                            new ReactNativeConfigPackage(),
                             new EuccidManagerAppPackage(),
                             new ReactNativeFirebaseAppPackage(),
                             new ReactNativeFirebaseDynamicLinksPackage(),
