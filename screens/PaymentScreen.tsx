@@ -97,6 +97,7 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
 
   useEffect(() => {
     navigation.setOptions({
+      headerShown: params.pg !== 'eximbay',
       title: null,
       headerLeft: () => (
         <AppBackButton
@@ -105,7 +106,7 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
         />
       ),
     });
-  }, [navigation, params.isPaid]);
+  }, [navigation, params]);
 
   const callback = useCallback(
     (response) => {
