@@ -17,6 +17,7 @@ import {windowWidth} from '@/constants/SliderEntry.style';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
 import {appStyles} from '../constants/Styles';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
   container: {
@@ -62,6 +63,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  modalClose: {
+    justifyContent: 'center',
+    height: 56,
+    alignItems: 'flex-end',
+    paddingRight: 20,
+  },
+  contentStyle: {
+    backgroundColor: 'transparent',
+    width: '100%',
+    height: '100%',
   },
 });
 
@@ -186,19 +198,25 @@ const ExtraCouponScreen = () => {
         <AppModal
           type="close"
           titleViewStyle={{backgroundColor: 'red'}}
-          contentStyle={{
-            backgroundColor: 'transparent',
-            width: '100%',
-            height: '100%',
-          }}
+          contentStyle={styles.contentStyle}
           justifyContent="flex-end"
+          safeAreaColor={colors.white}
           visible={showItem !== undefined}
           onOkClose={() => setShowItem(undefined)}>
-          <Image
-            style={styles.downloadStyle}
-            // resizeMode="contain"
-            source={{uri: API.default.httpImageUrl(showItem.download)}}
-          />
+          <View style={{flex: 1}}>
+            <View style={styles.modalClose}>
+              <AppSvgIcon
+                name="closeModal"
+                onPress={() => setShowItem(undefined)}
+              />
+            </View>
+            <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
+              <Image
+                style={styles.downloadStyle}
+                source={{uri: API.default.httpImageUrl(showItem.download)}}
+              />
+            </ScrollView>
+          </View>
         </AppModal>
       )}
     </SafeAreaView>
