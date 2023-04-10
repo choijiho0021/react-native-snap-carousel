@@ -471,6 +471,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           expired={moment(item[item.length - 1].expireDate).isBefore(moment())}
           isChargeExpired={moment(item[0].expireDate).isBefore(moment())}
           isCharged={item.length > 1}
+          showDetail={
+            index === 0 &&
+            moment(item[item.length - 1].purchaseDate).isAfter(
+              moment().subtract(14, 'days'),
+            )
+          }
           onPressUsage={(subscription: RkbSubscription) =>
             onPressUsage(subscription)
           }

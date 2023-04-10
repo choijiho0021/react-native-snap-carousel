@@ -257,6 +257,7 @@ const EsimSubs = ({
   expired,
   isChargeExpired,
   isCharged,
+  showDetail = false,
   onPressUsage,
   setShowModal,
 }: {
@@ -267,6 +268,7 @@ const EsimSubs = ({
   expired: boolean;
   isChargeExpired: boolean;
   isCharged: boolean;
+  showDetail: boolean;
   onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
   setShowModal: (visible: boolean) => void;
 }) => {
@@ -275,7 +277,7 @@ const EsimSubs = ({
     () => !expired && !mainSubs.giftStatusCd && !isCharged,
     [expired, mainSubs.giftStatusCd, isCharged],
   );
-  const [isMoreInfo, setIsMoreInfo] = useState(false);
+  const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
   const isBc = useMemo(
     () => mainSubs.partner === 'BillionConnect',
@@ -300,12 +302,12 @@ const EsimSubs = ({
   );
 
   useEffect(() => {
-    if (isMoreInfo)
+    if (showMoreInfo)
       flatListRef?.current?.scrollToIndex({index, animated: true});
-  }, [flatListRef, index, isMoreInfo]);
+  }, [flatListRef, index, showMoreInfo]);
 
   useEffect(() => {
-    if (!notCardInfo) setIsMoreInfo(false);
+    if (!notCardInfo) setShowMoreInfo(false);
   }, [notCardInfo]);
 
   const onPressRecharge = useCallback(
@@ -342,7 +344,7 @@ const EsimSubs = ({
       <Pressable
         style={styles.prodTitle}
         onPress={() => {
-          if (notCardInfo) setIsMoreInfo((prev) => !prev);
+          if (notCardInfo) setShowMoreInfo((prev) => !prev);
         }}>
         <SplitText
           key={mainSubs.key}
@@ -380,12 +382,12 @@ const EsimSubs = ({
           </View>
         ) : (
           <View style={styles.arrow}>
-            <AppSvgIcon name={isMoreInfo ? 'topArrow' : 'bottomArrow'} />
+            <AppSvgIcon name={showMoreInfo ? 'topArrow' : 'bottomArrow'} />
           </View>
         )}
       </Pressable>
     );
-  }, [mainSubs, expired, isCharged, isMoreInfo, notCardInfo]);
+  }, [mainSubs, expired, isCharged, showMoreInfo, notCardInfo]);
 
   const topInfo = useCallback(() => {
     return (
@@ -624,8 +626,8 @@ const EsimSubs = ({
 
         {notCardInfo ? QRnCopyInfo() : topInfo()}
       </View>
-      {isMoreInfo && (
-        <View style={isMoreInfo && styles.moreInfoContent}>
+      {showMoreInfo && (
+        <View style={showMoreInfo && styles.moreInfoContent}>
           {topInfo()}
 
           {!!mainSubs.caution || (mainSubs.cautionList?.length || 0) > 0 ? (
