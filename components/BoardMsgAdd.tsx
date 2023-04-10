@@ -242,8 +242,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   const [showModal, setShowModal] = useState(false);
   const [posY, setPosY] = useState(0);
   const [selectedEvent, setSelectedEvent] = useState<RkbEvent>({title: ''});
-  const [webViewHeight, setWebViewHeight] = useState(0);
-  const webViewRef = useRef(null);
 
   const eventTitleList = useMemo(() => {
     if (eventList?.length > 0) {
@@ -316,6 +314,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         mobile,
         pin,
         link,
+        eventUuid: selectedEvent.uuid,
         images: attachment
           .map(
             ({mime, size, width, height, data}) =>

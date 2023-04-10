@@ -141,6 +141,7 @@ export type RkbEventIssue = {
   mobile: string;
   pin: string;
   images: RkbImage[];
+  eventUuid: string;
 };
 
 const post = ({
@@ -150,6 +151,7 @@ const post = ({
   pin,
   images,
   link,
+  eventUuid,
   token,
 }: RkbEventIssue & {
   token?: string;
@@ -182,8 +184,21 @@ const post = ({
                   },
                 })),
               },
+              field_ref_event: {
+                data: {
+                  type: 'node--event',
+                  id: eventUuid,
+                },
+              },
             }
-          : undefined,
+          : {
+              field_ref_event: {
+                data: {
+                  type: 'node--roaming_product',
+                  id: eventUuid,
+                },
+              },
+            },
     },
   };
 

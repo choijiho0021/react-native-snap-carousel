@@ -65,6 +65,7 @@ export type RkbEvent = {
     title?: string;
     body?: string;
   };
+  uuid?: string;
 };
 
 const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
@@ -116,6 +117,7 @@ const toEvent = (data: DrupalNode[]): ApiResult<RkbEvent> => {
             title: item.field_notice_title || '',
             body: item.field_notice_body || '',
           },
+          uuid: item.uuid || '',
         };
       }),
     );
