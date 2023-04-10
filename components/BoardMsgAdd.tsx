@@ -300,14 +300,14 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
 
     if (isEvent) {
       // 링크 필수 인경우
-      // if(selectedEvent.rule?.link && ){
-      //   console.log('@@@ invalid issue', title, msg);
-      //   return;
-      // }
+      if (selectedEvent.rule?.link && !link) {
+        console.log('@@@ invalid link', link);
+        return;
+      }
 
       // 이미지 필수 인경우
       if (selectedEvent.rule?.image && attachment.size < 1) {
-        console.log('@@@@ 이미지 필수', attachment.size);
+        console.log('@@@@ invalid image', attachment.size);
         return;
       }
       const issue = {
@@ -315,6 +315,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         msg,
         mobile,
         pin,
+        link,
         images: attachment
           .map(
             ({mime, size, width, height, data}) =>
@@ -361,10 +362,12 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     action.eventBoard,
     attachment,
     isEvent,
+    link,
     mobile,
     msg,
     pin,
     selectedEvent.rule?.image,
+    selectedEvent.rule?.link,
     title,
   ]);
 

@@ -5,16 +5,16 @@ import api, {ApiResult} from './api';
 import {RkbFile, RkbImage} from './accountApi';
 import utils from '@/redux/api/utils';
 
-export type BoardMsgStatus = 'Open' | 'Closed' | 'Processing';
+export type EventBoardMsgStatus = 'Open' | 'Success' | 'Fail';
 
-const statusToString = (status: BoardMsgStatus) => {
+const statusToString = (status: EventBoardMsgStatus) => {
   switch (status) {
     case 'Open':
-      return i18n.t('board:open');
-    case 'Closed':
-      return i18n.t('board:closed');
-    case 'Processing':
-      return i18n.t('board:processing');
+      return i18n.t('event:open');
+    case 'Success':
+      return i18n.t('event:success');
+    case 'Fail':
+      return i18n.t('event:fail');
     default:
       return status;
   }
@@ -44,7 +44,7 @@ export type RkbEventBoard = {
   replyImages: string[];
 };
 
-const toBoard = (data: DrupalBoard[]): ApiResult<RkbEventBoard> => {
+const toEventBoard = (data: DrupalBoard[]): ApiResult<RkbEventBoard> => {
   if (_.isArray(data)) {
     return api.success<RkbEventBoard>(
       data.map((item) => ({
@@ -56,8 +56,8 @@ const toBoard = (data: DrupalBoard[]): ApiResult<RkbEventBoard> => {
         changed: item.changed,
         mobile: item.field_mobile || '',
         pin: item.field_pin || '',
-        statusCode: item.field_issue_status || 'O',
-        status: statusToString(item.field_issue_status || 'O'), // pin, status, statusCode
+        statusCode: item.field_event_status || 'O',
+        status: statusToString(item.field_event_status || 'O'), // pin, status, statusCode
         images: item.field_images.split(', ') || [],
         replyImages: item.field_reply_images.split(', ') || [],
       })),
@@ -137,6 +137,7 @@ const toFile = (data): ApiResult<RkbFile> => {
 export type RkbEventIssue = {
   title: string;
   msg: string;
+  link: string;
   mobile: string;
   pin: string;
   images: RkbImage[];
@@ -148,6 +149,7 @@ const post = ({
   mobile,
   pin,
   images,
+  link,
   token,
 }: RkbEventIssue & {
   token?: string;
@@ -165,6 +167,7 @@ const post = ({
         body: {value: msg},
         field_mobile: {value: mobile.replace(/-/g, '')},
         field_pin: {value: pin},
+        field_text_link: {value: link},
       },
       relationships:
         images && images.length > 0
@@ -191,7 +194,7 @@ const post = ({
       headers,
       body: JSON.stringify(body),
     },
-    toBoard,
+    toEventBoard,
   );
 };
 
@@ -209,7 +212,7 @@ const getIssueList = ({
 
   return api.callHttpGet(
     `${api.httpUrl(api.path.eventBoard)}/${uid}?_format=hal_json&page=${page}`,
-    toBoard,
+    toEventBoard,
     api.withToken(token, 'vnd.api+json'),
   );
 };
