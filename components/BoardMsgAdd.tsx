@@ -236,6 +236,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   const [title, setTitle] = useState<string>();
   const [msg, setMsg] = useState<string>();
   const [link, setLink] = useState<string>();
+  const [linkCount, setLinkCount] = useState(1);
   const [pin, setPin] = useState<string>();
   const [attachment, setAttachment] = useState(List<CropImage>());
   const [extraHeight, setExtraHeight] = useState(0);
@@ -313,7 +314,10 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         msg,
         mobile,
         pin,
-        link,
+        link: [
+          {value: 'https://www.naver.com'},
+          {value: 'https://www.google.com'},
+        ],
         eventUuid: selectedEvent.uuid,
         images: attachment
           .map(
@@ -367,6 +371,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     pin,
     selectedEvent.rule?.image,
     selectedEvent.rule?.link,
+    selectedEvent.uuid,
     title,
   ]);
 

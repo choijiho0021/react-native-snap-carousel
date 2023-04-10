@@ -137,11 +137,12 @@ const toFile = (data): ApiResult<RkbFile> => {
 export type RkbEventIssue = {
   title: string;
   msg: string;
-  link: string;
+  link: {value: string}[];
   mobile: string;
   pin: string;
   images: RkbImage[];
   eventUuid: string;
+  // userUuid: string;
 };
 
 const post = ({
@@ -152,6 +153,7 @@ const post = ({
   images,
   link,
   eventUuid,
+  // userUuid,
   token,
 }: RkbEventIssue & {
   token?: string;
@@ -169,7 +171,7 @@ const post = ({
         body: {value: msg},
         field_mobile: {value: mobile.replace(/-/g, '')},
         field_pin: {value: pin},
-        field_text_link: {value: link},
+        field_text_link: link,
       },
       relationships:
         images && images.length > 0
@@ -190,14 +192,26 @@ const post = ({
                   id: eventUuid,
                 },
               },
+              // field_ref_user_account: {
+              //   data: {
+              //     type: 'node--user_account',
+              //     id: userUuid,
+              //   },
+              // },
             }
           : {
               field_ref_event: {
                 data: {
-                  type: 'node--roaming_product',
+                  type: 'node--event',
                   id: eventUuid,
                 },
               },
+              // field_ref_user_account: {
+              //   data: {
+              //     type: 'node--user_account',
+              //     id: userUuid,
+              //   },
+              // },
             },
     },
   };
