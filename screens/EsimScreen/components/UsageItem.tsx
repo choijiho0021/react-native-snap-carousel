@@ -392,7 +392,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
             return (
               statusCd === v && (
                 <View key={v}>
-                  <AppIcon name={`usage${v}`} />
+                  <AppIcon style={{alignItems: 'center'}} name={`usage${v}`} />
                   <AppText style={styles.inactiveIcon}>
                     {i18n.t(`esim:${code[v]}Info`)}
                   </AppText>
