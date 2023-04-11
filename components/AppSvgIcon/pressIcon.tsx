@@ -286,6 +286,36 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  plusBlue: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M9 4a1 1 0 0 0-2 0v3H4a1 1 0 1 0 0 2h3v3a1 1 0 1 0 2 0V9h3a1 1 0 1 0 0-2H9V4z"
+        fill="#2A7FF6"
+      />
+    </Svg>,
+  ],
+  minus16: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M13 8H3"
+        stroke="#2C2C2C"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </Svg>,
+  ],
   minus: [
     <Svg
       width="24"
@@ -2719,29 +2749,29 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
-  dropDownOpen50: [
+  dropDownOpen: [
     <Svg
-      width="24"
-      height="50"
-      viewBox="0 0 24 24"
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Path
-        d="M11.194 8.097a1 1 0 0 1 1.612 0l4.086 5.56a1 1 0 0 1-.806 1.593H7.914a1 1 0 0 1-.806-1.592l4.086-5.561z"
-        fill="#252525"
+        d="M10.564 7.24a.784.784 0 0 0-1.128 0L5.16 11.963C4.78 12.38 5.118 13 5.724 13h8.552c.606 0 .943-.62.564-1.037L10.564 7.24z"
+        fill="#2C2C2C"
       />
     </Svg>,
   ],
-  dropDown50: [
+  dropDown: [
     <Svg
-      width="24"
-      height="50"
-      viewBox="0 0 24 24"
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Path
-        d="M12.806 15.903a1 1 0 0 1-1.612 0l-4.086-5.56a1 1 0 0 1 .806-1.593h8.172a1 1 0 0 1 .806 1.592l-4.086 5.561z"
-        fill="#2C2C2C"
+        d="M10.564 12.76a.784.784 0 0 1-1.128 0L5.16 8.037C4.78 7.62 5.118 7 5.724 7h8.552c.606 0 .943.62.564 1.037l-4.276 4.723z"
+        fill="#979797"
       />
     </Svg>,
   ],
