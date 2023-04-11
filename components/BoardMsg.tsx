@@ -10,21 +10,22 @@ import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 const styles = StyleSheet.create({
   list: {
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingVertical: 18,
     borderBottomColor: colors.whiteTwo,
     borderBottomWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',
   },
   title: {
-    ...appStyles.normal16Text,
+    ...appStyles.semiBold16Text,
+    lineHeight: 20,
     color: colors.black,
-    marginBottom: 8,
   },
   date: {
-    ...appStyles.normal12Text,
+    ...appStyles.medium14,
+    lineHeight: 20,
     color: colors.warmGrey,
-    textAlign: 'left',
+    marginBottom: 8,
   },
   status: {
     ...appStyles.normal14Text,
@@ -55,15 +56,15 @@ class BoardMsg extends Component<BoardMsgProps> {
       <Pressable onPress={() => this.props.onPress(uuid, statusCode)}>
         <View style={styles.list} key="info">
           <View style={{flex: 1}}>
+            <AppText key="date" style={styles.date}>
+              {date}
+            </AppText>
             <AppText
               key="title"
               ellipsizeMode="tail"
               numberOfLines={2}
               style={styles.title}>
               {titleOrMobile || ''}
-            </AppText>
-            <AppText key="date" style={styles.date}>
-              {date}
             </AppText>
           </View>
           <View style={{width: '30%', alignItems: 'flex-end'}}>
@@ -73,7 +74,11 @@ class BoardMsg extends Component<BoardMsgProps> {
                 styles.status,
                 {
                   color:
-                    statusCode === 'Closed'
+                    statusCode === 'Fail'
+                      ? colors.redError
+                      : statusCode === 'Success'
+                      ? colors.shamrock
+                      : statusCode === 'Closed'
                       ? colors.clearBlue
                       : colors.warmGrey,
                 },
