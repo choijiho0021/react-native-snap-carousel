@@ -453,7 +453,7 @@
 
   "sim:until": "까지",
 
-  "esim:R": "등록 대기 중",
+  "esim:R": "미사용",
   "esim:A": "사용중",
   "esim:U": "사용 완료",
   "esim:sendGift": "선물하기",
@@ -494,6 +494,7 @@
   "esim:moveToGuide": "가이드 보기",
   "esim:copyMsg": "수동 입력정보가 복사되었습니다.",
   "esim:checkUsage": "사용량 확인",
+  "esim:notShowUsage": "본 상품은 사용량 조회를 제공하지 않습니다.",
   "esim:charge": "충전하기",
   "esim:charge:cautionExpired": "<r>충전 가능 기간이 만료</r>되어\n충전 기능을 사용하실 수 없는 상품입니다.",
   "esim:charge:noProd1": "충전 가능한 상품이 없습니다.",

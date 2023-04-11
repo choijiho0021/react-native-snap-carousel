@@ -453,7 +453,7 @@
 
   "sim:until": " ",
 
-  "esim:R": "Waiting for Activation",
+  "esim:R": "Non-use",
   "esim:A": "Activated",
   "esim:U": "Used up",
   "esim:sendGift": "Gift this Item",
@@ -494,6 +494,7 @@
   "esim:moveToGuide": "Go to Guide",
   "esim:copyMsg": "Copied the information",
   "esim:checkUsage": "Check Usage",
+  "esim:notShowUsage": "This product does not provide usage inquiry",
   "esim:charge": "Recharge",
   "esim:charge:cautionExpired": "<r>Recharge period was expired.</r>\nYou cannot register it anymore.",
   "esim:charge:noProd1": "No rechargable products.",
