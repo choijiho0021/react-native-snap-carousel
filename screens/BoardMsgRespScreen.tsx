@@ -41,6 +41,8 @@ import {AccountModelState} from '@/redux/modules/account';
 import ImgWithIndicator from './MyPageScreen/components/ImgWithIndicator';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
+import {RkbBoard} from '@/redux/api/boardApi';
+import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 
 const styles = StyleSheet.create({
   row: {
@@ -70,8 +72,7 @@ const styles = StyleSheet.create({
   attachBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // width: windowWidth - 20,
-    marginTop: 15,
+    marginBottom: 56,
   },
   reply: {
     ...appStyles.normal14Text,
@@ -88,14 +89,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   inputBox: {
-    ...appStyles.normal14Text,
+    ...appStyles.medium16,
     borderRadius: 3,
     backgroundColor: colors.whiteTwo,
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: colors.lightGrey,
-    color: colors.greyish,
-    padding: 15,
+    color: colors.black,
+    lineHeight: 24,
+    padding: 16,
   },
   resp: {
     flexDirection: 'row',
@@ -141,6 +143,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.lightGrey,
     borderRadius: 3,
+  },
+  label: {
+    marginTop: 32,
+    ...appStyles.semiBold14Text,
+    lineHeight: 20,
+    marginBottom: 6,
   },
 });
 
@@ -251,30 +259,33 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
 
   const renderImages = useCallback(
     (images?: string[]) => (
-      <View style={styles.attachBox}>
-        {images &&
-          images
-            .filter((item) => !_.isEmpty(item))
-            .map((url, i) => (
-              <Pressable
-                style={styles.imgFrame}
-                key={utils.generateKey(`${url}${i}`)}
-                onPress={() => {
-                  setShowImgModal(true);
-                  setLoading(true);
-                  setImgUrl(url);
-                  Image.getSize(
-                    API.default.httpImageUrl(url).toString(),
-                    (w, h) => {
-                      setHeight(h * ((width * 0.8) / w));
-                    },
-                  );
-                }}>
-                <ImgWithIndicator
-                  uri={API.default.httpImageUrl(url).toString()}
-                />
-              </Pressable>
-            ))}
+      <View>
+        <AppText style={styles.label}>{i18n.t('board:attach')}</AppText>
+        <View style={styles.attachBox}>
+          {images &&
+            images
+              .filter((item) => !_.isEmpty(item))
+              .map((url, i) => (
+                <Pressable
+                  style={styles.imgFrame}
+                  key={utils.generateKey(`${url}${i}`)}
+                  onPress={() => {
+                    setShowImgModal(true);
+                    setLoading(true);
+                    setImgUrl(url);
+                    Image.getSize(
+                      API.default.httpImageUrl(url).toString(),
+                      (w, h) => {
+                        setHeight(h * ((width * 0.8) / w));
+                      },
+                    );
+                  }}>
+                  <ImgWithIndicator
+                    uri={API.default.httpImageUrl(url).toString()}
+                  />
+                </Pressable>
+              ))}
+        </View>
       </View>
     ),
     [width],
@@ -335,6 +346,23 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
     return <AppText style={styles.date}>{formattedDate}</AppText>;
   }, [issue?.created]);
 
+  const renderLink = useCallback(() => {
+    const linkList = issue?.link || [];
+    if (linkList.length > 0) {
+      return (
+        <View>
+          <AppText style={styles.label}>{i18n.t('link')}</AppText>
+          {linkList.map((l, idx) => (
+            <AppText style={[styles.inputBox, idx > 0 && {marginTop: 8}]}>
+              {l}
+            </AppText>
+          ))}
+        </View>
+      );
+    }
+    return null;
+  }, [issue?.link]);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container}>
@@ -346,9 +374,14 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
             {issue?.title}
           </AppText>
           <AppText
-            style={[styles.inputBox, {marginTop: 15, paddingBottom: 72}]}>
+            style={[
+              styles.inputBox,
+              {marginTop: 8, padding: 16, minHeight: 120},
+            ]}>
             {utils.htmlToString(issue?.msg)}
           </AppText>
+
+          {isEvent && issue?.link && renderLink()}
 
           {renderImages(issue?.images)}
 
