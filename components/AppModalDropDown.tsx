@@ -24,6 +24,8 @@ const styles = StyleSheet.create({
     padding: 20,
     flexDirection: 'row',
     alignItems: 'center',
+    display: 'flex',
+    justifyContent: 'space-between',
   },
   storeName: {
     ...appStyles.medium18,
