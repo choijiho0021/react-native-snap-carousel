@@ -14,6 +14,7 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import moment from 'moment';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -38,8 +39,34 @@ import {
 import i18n from '@/utils/i18n';
 import {AccountModelState} from '@/redux/modules/account';
 import ImgWithIndicator from './MyPageScreen/components/ImgWithIndicator';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  statusBox: {
+    marginTop: 12,
+    borderColor: colors.clearBlue,
+    borderRadius: 3,
+    width: '100%',
+    borderWidth: 1,
+    padding: 16,
+  },
+  boxText: {
+    ...appStyles.medium14,
+    lineHeight: 20,
+    color: colors.black,
+  },
+  date: {
+    ...appStyles.medium14,
+    lineHeight: 20,
+    color: colors.warmGrey,
+    marginTop: 24,
+  },
   attachBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -154,20 +181,26 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
   pendingEvent,
   action,
 }) => {
+  const {isEvent = false} = params;
   const [idx, setIdx] = useState<number>();
   const [showImgModal, setShowImgModal] = useState(false);
   const [imgUrl, setImgUrl] = useState('');
-  const issue = useMemo(
-    () => (idx !== undefined && idx >= 0 ? board?.list[idx] : undefined),
-    [board?.list, idx],
-  );
+  const issue = useMemo(() => {
+    if (isEvent)
+      return idx !== undefined && idx >= 0 ? eventBoard?.list[idx] : undefined;
+    return idx !== undefined && idx >= 0 ? board?.list[idx] : undefined;
+  }, [board?.list, eventBoard?.list, idx, isEvent]);
   const resp = useMemo(() => board?.comment?.[0] || {}, [board?.comment]);
   const {width} = Dimensions.get('window');
   const [height, setHeight] = useState(0);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const {uuid, status, isEvent = false} = params || {};
+    console.log('@@@@ issue', issue);
+  }, [issue]);
+
+  useEffect(() => {
+    const {uuid, status} = params || {};
 
     navigation.setOptions({
       title: null,
@@ -211,6 +244,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
     action.eventBoard,
     board.list,
     eventBoard.list,
+    isEvent,
     navigation,
     params,
   ]);
@@ -246,11 +280,69 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
     [width],
   );
 
+  const renderStatusBox = useCallback(
+    () => (
+      <View
+        style={[
+          styles.row,
+          styles.statusBox,
+          {
+            borderColor:
+              issue?.statusCode === 'Fail'
+                ? colors.redError
+                : issue?.statusCode === 'Success'
+                ? colors.shamrock
+                : colors.clearBlue,
+          },
+        ]}>
+        <AppSvgIcon
+          name={
+            issue?.statusCode === 'Fail'
+              ? 'cautionRed'
+              : issue?.statusCode === 'Success'
+              ? 'checkGreen'
+              : 'cautionBlue'
+          }
+          style={{marginRight: 8}}
+        />
+        <AppStyledText
+          text={i18n.t(`event:status:${issue?.statusCode}`)}
+          textStyle={styles.boxText}
+          format={{
+            b: {
+              fontWeight: 'bold',
+              color:
+                issue?.statusCode === 'Fail'
+                  ? colors.redError
+                  : issue?.statusCode === 'Success'
+                  ? colors.shamrock
+                  : colors.clearBlue,
+            },
+          }}
+        />
+      </View>
+    ),
+    [issue?.statusCode],
+  );
+
+  const renderTime = useCallback(() => {
+    const date = moment(issue?.created, moment.ISO_8601);
+
+    const formattedDate = date
+      .format('YYYY년 MM월DD일 A hh:mm')
+      .replace('AM', '오전')
+      .replace('PM', '오후');
+    return <AppText style={styles.date}>{formattedDate}</AppText>;
+  }, [issue?.created]);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container}>
         <View style={{flex: 1, paddingHorizontal: 20}}>
-          <AppText style={[styles.inputBox, {marginTop: 30}]}>
+          {isEvent && issue?.statusCode && renderStatusBox()}
+          {issue?.created && renderTime()}
+
+          <AppText style={[styles.inputBox, {marginTop: 8}]}>
             {issue?.title}
           </AppText>
           <AppText
@@ -279,7 +371,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
           )}
         </View>
 
-        <AppActivityIndicator visible={pending} />
+        <AppActivityIndicator visible={pending || pendingEvent} />
       </ScrollView>
 
       <AppButton

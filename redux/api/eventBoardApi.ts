@@ -42,6 +42,7 @@ export type RkbEventBoard = {
   status: string;
   images: string[];
   replyImages: string[];
+  link: string[];
 };
 
 const toEventBoard = (data: DrupalBoard[]): ApiResult<RkbEventBoard> => {
@@ -60,6 +61,7 @@ const toEventBoard = (data: DrupalBoard[]): ApiResult<RkbEventBoard> => {
         status: statusToString(item.field_event_status || 'O'), // pin, status, statusCode
         images: item.field_images.split(', ') || [],
         replyImages: item.field_reply_images.split(', ') || [],
+        link: item.field_text_link.split(', ') || [],
       })),
     );
   }
