@@ -18,6 +18,7 @@ import {
   RouteProp,
   useIsFocused,
 } from '@react-navigation/native';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
@@ -51,6 +52,7 @@ import EsimSubs from './components/EsimSubs';
 import EsimModal from './components/EsimModal';
 import GiftModal from './components/GiftModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import ChatTalk from '@/components/ChatTalk';
 
 const {esimGlobal} = Env.get();
 
@@ -177,6 +179,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const isFocused = useIsFocused();
   const flatListRef = useRef<FlatList>();
   const [subsList, setSubsList] = useState<RkbSubscription[][]>();
+  const tabBarHeight = useBottomTabBarHeight();
 
   const init = useCallback(
     (initInfo: {iccid?: string; mobile?: string; token?: string}) => {
@@ -587,6 +590,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         textMessage={i18n.t('service:ready')}
         bottom={10}
       />
+      <ChatTalk visible bottom={100 - tabBarHeight} />
     </SafeAreaView>
   );
 };

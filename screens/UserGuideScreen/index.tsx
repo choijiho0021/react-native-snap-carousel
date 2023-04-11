@@ -31,7 +31,7 @@ import AppStyledText from '@/components/AppStyledText';
 import {getImage} from '@/utils/utils';
 import AppCarousel, {AppCarouselRef} from '@/components/AppCarousel';
 import {ContactListItem} from '../ContactScreen';
-import ChatTalk from './ChatTalk';
+import ChatTalk from '@/components/ChatTalk';
 
 const {isIOS} = Env.get();
 

@@ -35,6 +35,7 @@ import ShortcutBadge from 'react-native-app-badge';
 import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import VersionCheck from 'react-native-version-check';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {isFolderOpen} from '@/constants/SliderEntry.style';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
@@ -78,7 +79,7 @@ import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
 import {retrieveData, storeData} from '@/utils/utils';
 import LocalModal from './component/LocalModal';
-import ChatTalk from '../UserGuideScreen/ChatTalk';
+import ChatTalk from '@/components/ChatTalk';
 
 const {esimGlobal, isIOS, cachePrefix} = Env.get();
 
@@ -245,6 +246,7 @@ const Esim: React.FC<EsimProps> = ({
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const [bannerHeight, setBannerHeight] = useState<number>(150);
   const appState = useRef('unknown');
+  const tabBarHeight = useBottomTabBarHeight();
 
   const isSupport = useMemo(() => account.isSupportDev, [account.isSupportDev]);
 
@@ -903,7 +905,7 @@ const Esim: React.FC<EsimProps> = ({
         />
       )}
 
-      <ChatTalk visible />
+      {tabBarHeight > 0 && <ChatTalk visible bottom={100 - tabBarHeight} />}
       {renderModal()}
     </SafeAreaView>
   );

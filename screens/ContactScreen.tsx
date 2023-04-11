@@ -23,7 +23,7 @@ import i18n from '@/utils/i18n';
 import {navigate} from '@/navigation/navigation';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import ChatTalk from './UserGuideScreen/ChatTalk';
+import ChatTalk from '@/components/ChatTalk';
 
 const {esimGlobal} = Env.get();
 

@@ -36,6 +36,7 @@ import {
 import i18n from '@/utils/i18n';
 import {retrieveData, storeData, utils} from '@/utils/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import ChatTalk from '@/components/ChatTalk';
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -484,6 +485,8 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
           {renderSearchWord()}
         </ScrollView>
       )}
+
+      <ChatTalk visible bottom={100} />
     </SafeAreaView>
   );
 };
