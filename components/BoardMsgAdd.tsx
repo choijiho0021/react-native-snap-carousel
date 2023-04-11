@@ -690,6 +690,9 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
             <Pressable
               style={styles.minusBtn}
               onPress={() => {
+                const focusedLink = [...focusedItem.link];
+                focusedLink[idx] = false;
+                setFocusedItem({...focusedItem, link: focusedLink});
                 setLinkCount(linkCount - 1);
                 setLinkParam(linkParam.filter((l, index) => index !== idx));
               }}>
@@ -700,10 +703,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
       ) : undefined,
     );
   }, [error, focusedItem, linkCount, linkParam, validate]);
-
-  useEffect(() => {
-    console.log('@@@@ webviewHeight', webviewHeight);
-  }, [webviewHeight]);
 
   return (
     <SafeAreaView style={styles.container}>
