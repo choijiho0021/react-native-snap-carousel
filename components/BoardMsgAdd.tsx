@@ -91,6 +91,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     flexDirection: 'row',
   },
+  link: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   attachTitle: {
     ...appStyles.normal14Text,
     marginTop: 30,
@@ -235,7 +240,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   const [errors, setErrors] = useState<ValidationResult>({});
   const [title, setTitle] = useState<string>();
   const [msg, setMsg] = useState<string>();
-  const [link, setLink] = useState<string>();
+  const [linkParam, setLinkParam] = useState([{value: ''}]);
   const [linkCount, setLinkCount] = useState(1);
   const [pin, setPin] = useState<string>();
   const [attachment, setAttachment] = useState(List<CropImage>());
@@ -299,9 +304,11 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
 
     if (isEvent) {
       // 링크 필수 인경우
-      if (selectedEvent.rule?.link && !link) {
-        console.log('@@@ invalid link', link);
-        return;
+      if (selectedEvent.rule?.link) {
+        if (linkParam.find((l) => l.value === '')) {
+          console.log('@@@ invalid link', linkParam[l].value);
+          return;
+        }
       }
 
       // 이미지 필수 인경우
@@ -314,10 +321,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         msg,
         mobile,
         pin,
-        link: [
-          {value: 'https://www.naver.com'},
-          {value: 'https://www.google.com'},
-        ],
+        link: linkParam,
         eventUuid: selectedEvent.uuid,
         images: attachment
           .map(
@@ -355,7 +359,9 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
       } as RkbIssue;
       await action.board.postAndGetList(issue);
     }
-
+    setSelectedEvent({title: ''});
+    setLinkParam([{value: ''}]);
+    setLinkCount(1);
     setMsg(undefined);
     setTitle(undefined);
     setPin(undefined);
@@ -365,7 +371,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     action.eventBoard,
     attachment,
     isEvent,
-    link,
+    linkParam,
     mobile,
     msg,
     pin,
@@ -527,6 +533,38 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     [account.loggedIn, errors, mobile, msg, pin, title],
   );
 
+  const renderLinkInput = useCallback(() => {
+    const arr = new Array(linkCount).fill(0);
+    return arr.map((cur, idx) =>
+      linkParam[idx] ? (
+        <AppTextInput
+          style={[
+            styles.inputBox,
+            linkParam[idx].value ? {borderColor: colors.black} : undefined,
+            {
+              height: 50,
+              paddingHorizontal: 15,
+            },
+          ]}
+          maxLength={1000}
+          onChangeText={(v) => {
+            const newArr = [...linkParam];
+            newArr[idx] = {value: v};
+            setLinkParam(newArr);
+            validate(`link${idx}`, v);
+          }}
+          value={linkParam[idx].value}
+          enablesReturnKeyAutomatically
+          clearTextOnFocus={false}
+          onFocus={() => setExtraHeight(20)}
+          error={error('title')}
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
+      ) : undefined,
+    );
+  }, [error, linkCount, linkParam, validate]);
+
   return (
     <SafeAreaView style={styles.container}>
       <AppActivityIndicator visible={pending || pendingEvent} />
@@ -654,32 +692,20 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
           />
 
           {isEvent && (
-            <View>
-              <AppText style={styles.attachTitle}>{i18n.t('link')}</AppText>
-              <AppTextInput
-                style={[
-                  styles.inputBox,
-                  link ? {borderColor: colors.black} : undefined,
-                  {
-                    height: 50,
-                    paddingHorizontal: 15,
-                  },
-                ]}
-                maxLength={1000}
-                onChangeText={(v) => {
-                  setLink(v);
-                  validate('link', v);
+            <View style={[styles.link, styles.attachTitle]}>
+              <AppText>{i18n.t('link')}</AppText>
+              <AppButton
+                iconName="plus"
+                style={{backgroundColor: 'none'}}
+                viewStyle={{}}
+                onPress={() => {
+                  setLinkParam(linkParam.concat({value: ''}));
+                  setLinkCount(linkCount + 1);
                 }}
-                value={link}
-                enablesReturnKeyAutomatically
-                clearTextOnFocus={false}
-                onFocus={() => setExtraHeight(20)}
-                error={error('title')}
-                autoCapitalize="none"
-                autoCorrect={false}
               />
             </View>
           )}
+          {isEvent && renderLinkInput()}
 
           {account.loggedIn ? renderAttachment() : renderPass()}
         </View>
