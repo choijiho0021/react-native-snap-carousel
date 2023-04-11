@@ -229,7 +229,8 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
       <SafeAreaView
         style={[
           appStyles.modal,
-          {justifyContent, backgroundColor: safeAreaColor},
+          justifyContent ? {justifyContent} : undefined,
+          {backgroundColor: safeAreaColor},
         ]}>
         <View
           style={{
