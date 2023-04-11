@@ -569,7 +569,7 @@ const quadcellGetData = ({
     `${api.rokHttpUrl(
       `${api.path.rokApi.pv.quadcell}/imsi/${imsi}/${key}`,
       isProduction ? undefined : 5000,
-    )}${query && `&${api.queryString(query)}`}`,
+    )}${query ? `&${api.queryString(query)}` : ''}`,
     (data) => {
       if (data?.result?.code === 0) {
         return api.success(data?.objects);
