@@ -311,7 +311,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   const [attachment, setAttachment] = useState(List<CropImage>());
   const [extraHeight, setExtraHeight] = useState(0);
   const [showModal, setShowModal] = useState(false);
-  const [posY, setPosY] = useState(0);
   const [selectedEvent, setSelectedEvent] = useState<RkbEvent>({title: ''});
   const [isEventSelected, setIsEventSelected] = useState(false);
   const [showWebView, setShowWebView] = useState(false);
@@ -735,10 +734,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
                 showModal && {borderColor: colors.clearBlue},
                 {marginBottom: 8},
               ]}
-              onPress={({nativeEvent: {pageY, locationY}}) => {
-                setShowModal(true);
-                setPosY(pageY - locationY);
-              }}>
+              onPress={() => setShowModal(true)}>
               <AppText
                 style={[
                   styles.eventTitleText,
@@ -946,9 +942,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         key="appDropDown"
         visible={showModal}
         onClose={() => setShowModal(false)}
-        posX={20}
-        posY={posY}
-        buttonHeight={52}
         data={eventTitleList}
         onPress={(value) => {
           setSelectedEvent(
@@ -959,7 +952,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
           setWebviewHeight(0);
         }}
         value={selectedEvent.title}
-        fixedWidth={Dimensions.get('window').width - 20 * 2 - 2}
       />
     </SafeAreaView>
   );
