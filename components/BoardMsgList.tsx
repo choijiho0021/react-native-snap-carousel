@@ -190,8 +190,10 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
     }
   }, [action.board, action.eventBoard, isEvent]);
 
-  const header = useCallback(
-    () => (
+  const header = useCallback(() => {
+    if (isEvent) return <View style={{height: 6}} />;
+
+    return (
       <View>
         {uid === 0 && (
           <View>
@@ -221,14 +223,11 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
         )}
 
         <AppText style={styles.mylist}>
-          {uid === 0
-            ? i18n.t('board:list')
-            : i18n.t(`${isEvent ? 'event' : 'board'}:mylist`)}
+          {uid === 0 ? i18n.t('board:list') : i18n.t('board:mylist')}
         </AppText>
       </View>
-    ),
-    [isEvent, mobile, onSubmit, uid],
-  );
+    );
+  }, [isEvent, mobile, onSubmit, uid]);
 
   const empty = useCallback(
     () => (

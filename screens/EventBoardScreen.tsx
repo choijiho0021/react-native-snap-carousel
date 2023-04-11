@@ -95,10 +95,14 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
         activeColor={colors.black}
         inactiveColor={colors.warmGrey}
         indicatorStyle={{
-          borderBottomColor: colors.clearBlue,
+          borderBottomColor: colors.black,
           borderBottomWidth: 2,
         }}
-        style={{paddingBottom: 2, backgroundColor: colors.white}}
+        style={{
+          paddingBottom: 2,
+          backgroundColor: colors.white,
+          marginHorizontal: 20,
+        }}
         getLabelText={(scene) => scene.route.title}
       />
     ),
