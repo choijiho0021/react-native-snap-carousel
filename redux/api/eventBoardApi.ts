@@ -5,12 +5,14 @@ import api, {ApiResult} from './api';
 import {RkbFile, RkbImage} from './accountApi';
 import utils from '@/redux/api/utils';
 
-export type EventBoardMsgStatus = 'Open' | 'Success' | 'Fail';
+export type EventBoardMsgStatus = 'Open' | 'ReOpen' | 'Success' | 'Fail';
 
 const statusToString = (status: EventBoardMsgStatus) => {
   switch (status) {
     case 'Open':
       return i18n.t('event:open');
+    case 'ReOpen':
+      return i18n.t('event:reOpen');
     case 'Success':
       return i18n.t('event:success');
     case 'Fail':

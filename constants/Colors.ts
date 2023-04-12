@@ -17,6 +17,7 @@ export const colors = {
   deepDarkBlue: '#113362',
   line: '#e0e0e0',
   black8: 'rgba(0, 0, 0, 0.08)',
+  boldBlue: '#2266c5',
 
   primary01: '#47559d',
   gray02: '#acacac',

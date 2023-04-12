@@ -197,7 +197,7 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
             navigate(navigation, route, 'MyPageStack', {
               tab: 'HomeStack',
               screen: 'EventBoard',
-              params: {index: 0},
+              params: {index: 1},
             })
           }
         />

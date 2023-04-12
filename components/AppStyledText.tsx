@@ -9,11 +9,13 @@ const AppStyledText = ({
   textStyle,
   format,
   data,
+  numberOfLines,
 }: {
   text: string;
   textStyle: TextStyle;
   format: Record<string, TextStyle>;
   data?: Record<string, string>;
+  numberOfLines?: number;
 }) => {
   const replaceData = useCallback(
     (txt: string) =>
@@ -31,7 +33,9 @@ const AppStyledText = ({
       if (list.length > 0) {
         const str = replaceData(list[0].text);
         return (
-          <AppText style={list[0].textStyle || textStyle}>
+          <AppText
+            style={list[0].textStyle || textStyle}
+            numberOfLines={numberOfLines}>
             {fmt.length > 0 && str.includes(`<${fmt[0][0]}>`) ? (
               <AppStyledText
                 text={str}
@@ -48,7 +52,7 @@ const AppStyledText = ({
       }
       return null;
     },
-    [data, replaceData, textStyle],
+    [data, numberOfLines, replaceData, textStyle],
   );
 
   const fmt = useMemo(() => Object.entries(format), [format]);

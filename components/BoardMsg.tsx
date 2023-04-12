@@ -6,6 +6,8 @@ import {RkbBoard} from '@/redux/api/boardApi';
 import utils from '@/redux/api/utils';
 import AppText from './AppText';
 import {RkbEventBoard} from '@/redux/api/eventBoardApi';
+import i18n from '@/utils/i18n';
+import AppStyledText from './AppStyledText';
 
 const styles = StyleSheet.create({
   list: {
@@ -29,6 +31,12 @@ const styles = StyleSheet.create({
   },
   status: {
     ...appStyles.normal14Text,
+  },
+  reopenText: {
+    ...appStyles.bold16Text,
+    lineHeight: 20,
+    color: colors.boldBlue,
+    marginRight: 3,
   },
 });
 
@@ -59,13 +67,19 @@ class BoardMsg extends Component<BoardMsgProps> {
             <AppText key="date" style={styles.date}>
               {date}
             </AppText>
-            <AppText
-              key="title"
-              ellipsizeMode="tail"
+            <AppStyledText
+              text={
+                statusCode === 'ReOpen'
+                  ? i18n.t('event:reOpenTitle')
+                  : titleOrMobile || ''
+              }
+              textStyle={styles.title}
+              format={{b: styles.reopenText}}
+              data={{
+                title: titleOrMobile || '',
+              }}
               numberOfLines={2}
-              style={styles.title}>
-              {titleOrMobile || ''}
-            </AppText>
+            />
           </View>
           <View style={{width: '30%', alignItems: 'flex-end'}}>
             <AppText
@@ -83,7 +97,7 @@ class BoardMsg extends Component<BoardMsgProps> {
                       : colors.warmGrey,
                 },
               ]}>
-              {status}
+              {statusCode === 'ReOpen' ? i18n.t('event:open') : status}
             </AppText>
           </View>
         </View>
