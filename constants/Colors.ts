@@ -18,6 +18,7 @@ export const colors = {
   line: '#e0e0e0',
   black8: 'rgba(0, 0, 0, 0.08)',
   boldBlue: '#2266c5',
+  backRed: '#fff5f3',
 
   primary01: '#47559d',
   gray02: '#acacac',

@@ -4,6 +4,7 @@ import i18n from '@/utils/i18n';
 import api, {ApiResult} from './api';
 import {RkbFile, RkbImage} from './accountApi';
 import utils from '@/redux/api/utils';
+import {EventParamImagesType} from '@/components/BoardMsgAdd';
 
 export type EventBoardMsgStatus = 'Open' | 'ReOpen' | 'Success' | 'Fail';
 
@@ -31,6 +32,12 @@ type DrupalBoard = {
   [key: string]: string;
 };
 
+export type EventImagesInfo = {
+  uuid: string;
+  width: string;
+  height: string;
+};
+
 export type RkbEventBoard = {
   key: string;
   uuid: string;
@@ -45,26 +52,55 @@ export type RkbEventBoard = {
   images: string[];
   replyImages: string[];
   link: string[];
+  imagesInfo: EventImagesInfo[];
+  rejectReason: string[];
+  otherReason: string;
 };
 
 const toEventBoard = (data: DrupalBoard[]): ApiResult<RkbEventBoard> => {
   if (_.isArray(data)) {
     return api.success<RkbEventBoard>(
-      data.map((item) => ({
-        key: item.uuid,
-        uuid: item.uuid,
-        title: item.title || '',
-        msg: item.body || '',
-        created: item.created,
-        changed: item.changed,
-        mobile: item.field_mobile || '',
-        pin: item.field_pin || '',
-        statusCode: item.field_event_status || 'O',
-        status: statusToString(item.field_event_status || 'O'), // pin, status, statusCode
-        images: item.field_images.split(', ') || [],
-        replyImages: item.field_reply_images.split(', ') || [],
-        link: item.field_text_link.split(', ') || [],
-      })),
+      data.map((item) => {
+        let info: EventImagesInfo[] = [];
+        if (
+          !!item.field_images_info &&
+          item.field_images_info.split(', ').length > 0
+        ) {
+          info = item.field_images_info.split(', ').map((info) => {
+            const obj = {};
+            info
+              .replace(/[{}]/g, '')
+              .split(',')
+              .forEach((i) => {
+                const [key, value] = i.split(':');
+                obj[key] = value;
+              });
+
+            // JavaScript 객체를 JSON 형식으로 변환
+            return obj;
+          });
+        }
+        return {
+          key: item.uuid,
+          uuid: item.uuid,
+          title: item.title || '',
+          msg: item.body || '',
+          created: item.created,
+          changed: item.changed,
+          mobile: item.field_mobile || '',
+          pin: item.field_pin || '',
+          statusCode: item.field_event_status || 'O',
+          status: statusToString(item.field_event_status || 'O'), // pin, status, statusCode
+          images: item.field_images ? item.field_images.split(', ') : [],
+          replyImages: item.field_reply_images.split(', ') || [],
+          link: item.field_text_link ? item.field_text_link.split(', ') : [],
+          imagesInfo: info,
+          rejectReason: item.field_event_reject_reason
+            ? item.field_event_reject_reason.split(', ')
+            : [],
+          otherReason: item.field_other_reason || '',
+        };
+      }),
     );
   }
 
@@ -147,6 +183,7 @@ export type RkbEventIssue = {
   images: RkbImage[];
   eventUuid: string;
   eventStatus: string;
+  paramImages: EventParamImagesType[];
   // userUuid: string;
 };
 
@@ -161,6 +198,7 @@ const post = ({
   // userUuid,
   token,
   eventStatus,
+  paramImages,
 }: RkbEventIssue & {
   token?: string;
 }) => {
@@ -192,6 +230,16 @@ const post = ({
                     height: item.height,
                   },
                 })),
+                // .concat(
+                //   paramImages.map((item) => ({
+                //     type: 'file--image',
+                //     id: {target_id: Number(item.imagesInfo.uuid)},
+                //     meta: {
+                //       width: Number(item.imagesInfo.width),
+                //       height: Number(item.imagesInfo.height),
+                //     },
+                //   })),
+                // ),
               },
               field_ref_event: {
                 data: {
