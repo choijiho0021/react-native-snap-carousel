@@ -50,8 +50,7 @@ const PolicyChecker = ({onPress}: {onPress?: (v: boolean) => void}) => {
   );
 
   return (
-    <View
-      style={{backgroundColor: colors.whiteTwo, paddingBottom: 45, flex: 1}}>
+    <View style={{backgroundColor: colors.whiteTwo, paddingBottom: 45}}>
       <Pressable
         style={styles.rowCenter}
         onPress={() => {
