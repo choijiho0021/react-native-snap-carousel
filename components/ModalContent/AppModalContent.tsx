@@ -18,7 +18,7 @@ import {MAX_WIDTH} from '@/constants/SliderEntry.style';
 const styles = StyleSheet.create({
   button: {
     backgroundColor: colors.white,
-    marginBottom: 20,
+    marginBottom: 17,
     width: 65,
     height: 36,
   },
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   row: {
-    marginTop: 40,
+    marginTop: 32,
     marginHorizontal: 30,
     flexDirection: 'row',
     justifyContent: 'flex-end',

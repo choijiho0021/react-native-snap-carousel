@@ -146,6 +146,7 @@ export type RkbEventIssue = {
   pin: string;
   images: RkbImage[];
   eventUuid: string;
+  eventStatus: string;
   // userUuid: string;
 };
 
@@ -159,6 +160,7 @@ const post = ({
   eventUuid,
   // userUuid,
   token,
+  eventStatus,
 }: RkbEventIssue & {
   token?: string;
 }) => {
@@ -176,6 +178,7 @@ const post = ({
         field_mobile: {value: mobile.replace(/-/g, '')},
         field_pin: {value: pin},
         field_text_link: link,
+        field_event_status: {value: eventStatus},
       },
       relationships:
         images && images.length > 0

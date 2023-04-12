@@ -34,6 +34,7 @@ import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import {actions as boardActions, BoardAction} from '@/redux/modules/board';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import {
   actions as eventBoardActions,
   EventBoardAction,
@@ -54,6 +55,8 @@ import {RkbEvent} from '@/redux/api/promotionApi';
 import AppModalDropDown from './AppModalDropDown';
 import {RkbEventIssue} from '@/redux/api/eventBoardApi';
 import AppSvgIcon from './AppSvgIcon';
+import AppModalContent from './ModalContent/AppModalContent';
+import AppStyledText from './AppStyledText';
 
 const styles = StyleSheet.create({
   passwordInput: {
@@ -246,6 +249,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 20,
   },
+  modalText: {
+    ...appStyles.normal16Text,
+    lineHeight: 26,
+    letterSpacing: -0.32,
+    color: colors.warmGrey,
+  },
+  modalBoldText: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 26,
+    letterSpacing: -0.32,
+    color: colors.black,
+  },
 });
 
 type BoardMsgAddProps = {
@@ -265,6 +280,7 @@ type BoardMsgAddProps = {
     board: BoardAction;
     eventBoard: EventBoardAction;
     toast: ToastAction;
+    modal: ModalAction;
   };
 };
 
@@ -379,6 +395,12 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
 
   const onPress = useCallback(async () => {
     if (isEvent) {
+      const isDuplicated = !!eventBoard.list.find(
+        (l) => l.title === selectedEvent.title && l.statusCode !== 'Fail',
+      );
+      const isReapply = !!eventBoard.list.find(
+        (l) => l.title === selectedEvent.title && l.statusCode === 'Fail',
+      );
       if (!title) {
         action.toast.push('event:empty:title');
         return;
@@ -398,6 +420,27 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         action.toast.push('event:empty:image');
         return;
       }
+
+      if (isDuplicated) {
+        action.modal.showModal({
+          content: (
+            <AppModalContent
+              type="info"
+              onOkClose={() => {
+                action.modal.closeModal();
+              }}>
+              <View style={{marginLeft: 30}}>
+                <AppStyledText
+                  text={i18n.t('event:alert:duplication')}
+                  textStyle={styles.modalText}
+                  format={{b: styles.modalBoldText}}
+                />
+              </View>
+            </AppModalContent>
+          ),
+        });
+        return;
+      }
       const issue = {
         title,
         msg,
@@ -405,6 +448,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         pin,
         link: linkParam,
         eventUuid: selectedEvent.uuid,
+        eventStatus: isReapply ? 'R' : 'O',
         images: attachment
           .map(
             ({mime, size, width, height, data}) =>
@@ -420,6 +464,24 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
       } as RkbEventIssue;
 
       await action.eventBoard.postAndGetList(issue);
+
+      action.modal.showModal({
+        content: (
+          <AppModalContent
+            type="info"
+            onOkClose={() => {
+              action.modal.closeModal();
+            }}>
+            <View style={{marginLeft: 30}}>
+              <AppStyledText
+                text={i18n.t(`event:alert:${isReapply ? 'reOpen' : 'open'}`)}
+                textStyle={styles.modalText}
+                format={{b: styles.modalBoldText}}
+              />
+            </View>
+          </AppModalContent>
+        ),
+      });
     } else {
       if (!title || !msg) {
         console.log('@@@ invalid issue', title, msg);
@@ -455,6 +517,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   }, [
     action,
     attachment,
+    eventBoard.list,
     isEvent,
     linkParam,
     mobile,
@@ -650,7 +713,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     const arr = new Array(linkCount).fill(0);
     return arr.map((cur, idx) =>
       linkParam[idx] ? (
-        <View style={{display: 'flex', flexDirection: 'row'}}>
+        <View style={{display: 'flex', flexDirection: 'row'}} key={idx}>
           <AppTextInput
             style={[
               styles.inputBox,
@@ -976,6 +1039,7 @@ export default connect(
       board: bindActionCreators(boardActions, dispatch),
       eventBoard: bindActionCreators(eventBoardActions, dispatch),
       toast: bindActionCreators(toastActions, dispatch),
+      modal: bindActionCreators(modalActions, dispatch),
     },
   }),
 )(BoardMsgAdd);
