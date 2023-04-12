@@ -304,7 +304,7 @@ export default connect(
     uid: account.uid || 0,
     pending: status.pending[boardActions.fetchIssueList.typePrefix] || false,
     pendingEvent:
-      status.pending[eventBoardActions.fetchIssueList.typePrefix] || false,
+      status.pending[eventBoardActions.fetchEventIssueList.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {

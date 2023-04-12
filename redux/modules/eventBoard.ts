@@ -3,28 +3,25 @@ import {AnyAction} from 'redux';
 import {Reducer} from 'redux-actions';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
-import {RkbEventBoard, RkbEventIssue} from '../api/eventBoardApi';
+import {RkbEventIssue} from '../api/eventBoardApi';
+import {BoardModelState} from './board';
 
-const postIssue = createAsyncThunk('eventBoard/postIssue', API.EventBoard.post);
-const postAttach = createAsyncThunk(
+const postEventIssue = createAsyncThunk(
+  'eventBoard/postIssue',
+  API.EventBoard.post,
+);
+const postEventAttach = createAsyncThunk(
   'eventBoard/postAttach',
   API.EventBoard.uploadAttachment,
 );
-const fetchIssueList = createAsyncThunk(
+const fetchEventIssueList = createAsyncThunk(
   'eventBoard/fetchIssueList',
   API.EventBoard.getIssueList,
 );
-const getIssueResp = createAsyncThunk(
+const getEventIssueResp = createAsyncThunk(
   'eventBoard/getIssueResp',
   API.Board.getComments,
 );
-
-export interface EventBoardModelState {
-  next: boolean;
-  page: number;
-  list: RkbEventBoard[];
-  comment?: string;
-}
 
 // 10 items per page
 const PAGE_LIMIT = 10;
@@ -38,13 +35,13 @@ const postAndGetList = createAsyncThunk(
     } = getState() as RootState;
 
     return dispatch(
-      postAttach({images: issue.images, user: mobile, token}),
+      postEventAttach({images: issue.images, user: mobile, token}),
     ).then(({payload}) => {
       const images = payload ? payload.map((item) => item.objects[0]) : [];
-      return dispatch(postIssue({...issue, images, token})).then(
+      return dispatch(postEventIssue({...issue, images, token})).then(
         ({payload: resp}) => {
           if (resp.result === 0 && resp.objects.length > 0) {
-            return dispatch(fetchIssueList({uid, token}));
+            return dispatch(fetchEventIssueList({uid, token}));
           }
           return Promise.reject(new Error('failed to post issue'));
         },
@@ -56,7 +53,7 @@ const postAndGetList = createAsyncThunk(
   },
 );
 
-const initialState: EventBoardModelState = {
+const initialState: BoardModelState = {
   next: true,
   page: 0,
   list: [],
@@ -85,7 +82,7 @@ const slice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchIssueList.fulfilled, (state, action) => {
+    builder.addCase(fetchEventIssueList.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
       const {list} = state;
 
@@ -113,7 +110,7 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(getIssueResp.fulfilled, (state, action) => {
+    builder.addCase(getEventIssueResp.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
       if (result === 0) {
         // object.length == 0인 경우에도 comment를 overwrite 한다.
@@ -131,12 +128,12 @@ const getIssueList = createAsyncThunk(
 
     if (reloadAlways) {
       dispatch(slice.actions.resetIssueList());
-      return dispatch(fetchIssueList({uid, token, page: 0}));
+      return dispatch(fetchEventIssueList({uid, token, page: 0}));
     }
 
     // reloadAlways == false 이면 list가 비어있는 경우에만 다시 읽는다.
     if (eventBoard.list.length === 0)
-      return dispatch(fetchIssueList({uid, token, page: 0}));
+      return dispatch(fetchEventIssueList({uid, token, page: 0}));
 
     return Promise.resolve();
   },
@@ -149,9 +146,9 @@ const getNextIssueList = createAsyncThunk(
     const {uid, token} = account;
     const {next, page} = eventBoard;
 
-    if (next && !status.pending[fetchIssueList.typePrefix]) {
+    if (next && !status.pending[fetchEventIssueList.typePrefix]) {
       dispatch(slice.actions.nextIssueList());
-      return dispatch(fetchIssueList({uid, token, page: page + 1}));
+      return dispatch(fetchEventIssueList({uid, token, page: page + 1}));
     }
 
     // no more list
@@ -164,12 +161,12 @@ export const actions = {
   getIssueList,
   getNextIssueList,
   postAndGetList,
-  postIssue,
-  postAttach,
-  fetchIssueList,
-  getIssueResp,
+  postEventIssue,
+  postEventAttach,
+  fetchEventIssueList,
+  getEventIssueResp,
 };
 
 export type EventBoardAction = typeof actions;
 
-export default slice.reducer as Reducer<EventBoardModelState, AnyAction>;
+export default slice.reducer as Reducer<BoardModelState, AnyAction>;

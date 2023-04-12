@@ -1114,14 +1114,14 @@ export default connect(
     eventBoard,
     account,
     success: status.fulfilled[boardActions.postIssue.typePrefix],
-    successEvent: status.fulfilled[eventBoardActions.postIssue.typePrefix],
+    successEvent: status.fulfilled[eventBoardActions.postEventIssue.typePrefix],
     pending:
       status.pending[boardActions.postIssue.typePrefix] ||
       status.pending[boardActions.postAttach.typePrefix] ||
       false,
     pendingEvent:
-      status.pending[eventBoardActions.postIssue.typePrefix] ||
-      status.pending[eventBoardActions.postAttach.typePrefix] ||
+      status.pending[eventBoardActions.postEventIssue.typePrefix] ||
+      status.pending[eventBoardActions.postEventAttach.typePrefix] ||
       false,
   }),
   (dispatch) => ({

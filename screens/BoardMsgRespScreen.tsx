@@ -210,7 +210,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
 
           if (status === 'Closed') {
             const {token} = account;
-            action.eventBoard.getIssueResp({uuid, token});
+            action.eventBoard.getEventIssueResp({uuid, token});
           } else {
             action.eventBoard.resetIssueComment();
           }
@@ -418,7 +418,7 @@ export default connect(
     account,
     pending: status.pending[boardActions.getIssueResp.typePrefix] || false,
     pendingEvent:
-      status.pending[eventBoardActions.fetchIssueList.typePrefix] || false,
+      status.pending[eventBoardActions.getEventIssueResp.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {
