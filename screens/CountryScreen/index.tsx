@@ -236,16 +236,14 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   );
 
   const renderScene = useCallback(
-    ({route}: {route: TabRoute}) => {
-      return (
-        <ProdByType
-          prodData={prodData[route.key === 'daily' ? 0 : 1]}
-          onTop={setIsTop}
-          onPress={onPress}
-          isCharge={false}
-        />
-      );
-    },
+    ({route}: {route: TabRoute}) => (
+      <ProdByType
+        prodData={prodData[route.key === 'daily' ? 0 : 1]}
+        onTop={setIsTop}
+        onPress={onPress}
+        isCharge={false}
+      />
+    ),
     [onPress, prodData],
   );
 

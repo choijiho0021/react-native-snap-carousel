@@ -332,7 +332,7 @@ const Esim: React.FC<EsimProps> = ({
     async (info: RkbPriceInfo) => {
       const localOp = product.localOpList.get(info?.partner || '');
 
-      if (localOp?.warning) {
+      if (localOp?.notice) {
         const item = await AsyncStorage.getItem(
           `esim.show.local.modal.${localOp?.key}`,
         );
@@ -344,7 +344,7 @@ const Esim: React.FC<EsimProps> = ({
               <LocalModal
                 onPress={() => navToCountry(info)}
                 localOpKey={localOp?.key || ''}
-                html={decodeURIComponent(localOp.warning)}
+                html={decodeURIComponent(localOp.notice)}
               />
             ),
           });

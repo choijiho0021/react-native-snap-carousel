@@ -141,14 +141,14 @@ type ProductDetailOpScreenProps = {
   route: ProductDetailOpScreenRouteProp;
 };
 
-type detailOp = {country: string; operator: string; apn?: string[]};
+type DetailOp = {country: string; operator: string; apn?: string[]};
 
 const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
   navigation,
   route,
 }) => {
   const [copyBtnKey, setCopyBtnKey] = useState('');
-  const [data, setData] = useState<detailOp[]>([]);
+  const [data, setData] = useState<DetailOp[]>([]);
   const [searchWord, setSearchWord] = useState<string>('');
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
   const [toggledList, setToggledList] = useState<Set<number>>(new Set([]));
