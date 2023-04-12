@@ -67,7 +67,12 @@ const toLogin =
   };
 
 const getToken = () => {
-  return api.callHttpGet(api.httpUrl(api.path.token, ''));
+  return api.callHttpGet(
+    api.httpUrl(api.path.token, ''),
+    undefined,
+    undefined,
+    {isJson: false},
+  );
 };
 
 const clearCookies = () => {
@@ -206,6 +211,7 @@ const logIn = async ({user, pass}: {user: string; pass: string}) => {
   */
 
   token = await getToken();
+  console.log('@@@ try login', token);
 
   const rsp = await logInOnce({token, user, pass});
   if (rsp.result == 0) return Promise.resolve(rsp);
