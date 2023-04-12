@@ -16,7 +16,7 @@ const fetchIssueList = createAsyncThunk(
 );
 const getIssueResp = createAsyncThunk(
   'eventBoard/getIssueResp',
-  API.EventBoard.getComments,
+  API.Board.getComments,
 );
 
 export interface EventBoardModelState {

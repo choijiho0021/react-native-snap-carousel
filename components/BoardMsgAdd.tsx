@@ -575,6 +575,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     linkParam,
     mobile,
     msg,
+    paramImages,
     pin,
     selectedEvent,
     title,
