@@ -19,6 +19,11 @@ import {
   BoardAction,
   BoardModelState,
 } from '@/redux/modules/board';
+import {
+  actions as eventBoardActions,
+  EventBoardAction,
+  EventBoardModelState,
+} from '@/redux/modules/eventBoard';
 import i18n from '@/utils/i18n';
 import {ValidationResult} from '@/utils/validationUtil';
 import AppActivityIndicator from './AppActivityIndicator';
@@ -79,22 +84,29 @@ const styles = StyleSheet.create({
 
 type BoardMsgListProps = {
   board: BoardModelState;
+  eventBoard: EventBoardModelState;
   account: AccountModelState;
   pending: boolean;
+  pendingEvent: boolean;
   uid: number;
+  isEvent?: boolean;
   onPress: (uuid: string, status: string) => void;
 
   action: {
     board: BoardAction;
+    eventBoard: EventBoardAction;
   };
 };
 
 const BoardMsgList: React.FC<BoardMsgListProps> = ({
   board,
+  eventBoard,
+  isEvent = false,
   action,
   account,
   uid,
   pending,
+  pendingEvent,
   onPress,
 }) => {
   const [data, setData] = useState<RkbBoard[]>([]);
@@ -105,22 +117,28 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   const [mobile, setMobile] = useState('');
 
   useEffect(() => {
-    action.board.getIssueList();
-
+    if (isEvent) {
+      action.eventBoard.getIssueList();
+    } else {
+      action.board.getIssueList();
+    }
     setMobile(utils.toPhoneNumber(account?.mobile));
-  }, [account?.mobile, action.board, uid]);
+  }, [account?.mobile, action.board, action.eventBoard, isEvent, uid]);
 
   useEffect(() => {
-    if (board?.list.length > 0) setData(board?.list);
-  }, [board.list]);
+    if (isEvent && eventBoard?.list.length > 0) setData(eventBoard?.list);
+    else if (board?.list.length > 0) setData(board?.list);
+  }, [board?.list, eventBoard?.list, eventBoard?.list.length, isEvent]);
 
   const onSubmit = useCallback(() => {
     if (mobile) {
       const number = mobile.replace(/-/g, '');
 
-      setData(board.list.filter((item) => item.mobile.includes(number)));
+      if (isEvent)
+        setData(eventBoard.list.filter((item) => item.mobile.includes(number)));
+      else setData(board.list.filter((item) => item.mobile.includes(number)));
     }
-  }, [board.list, mobile]);
+  }, [board.list, eventBoard.list, isEvent, mobile]);
 
   // 응답 메시지 화면으로 이동한다.
   const onSubmitPin = useCallback(() => {
@@ -157,17 +175,25 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   );
 
   const onEndReached = useCallback(() => {
-    action.board.getNextIssueList();
-  }, [action.board]);
+    if (isEvent) action.eventBoard.getNextIssueList();
+    else action.board.getNextIssueList();
+  }, [action.board, action.eventBoard, isEvent]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    const res = await action.board.getIssueList();
-    if (res) setRefreshing(false);
-  }, [action.board]);
+    if (isEvent) {
+      const res = await action.eventBoard.getIssueList();
+      if (res) setRefreshing(false);
+    } else {
+      const res = await action.board.getIssueList();
+      if (res) setRefreshing(false);
+    }
+  }, [action.board, action.eventBoard, isEvent]);
 
-  const header = useCallback(
-    () => (
+  const header = useCallback(() => {
+    if (isEvent) return <View style={{height: 6}} />;
+
+    return (
       <View>
         {uid === 0 && (
           <View>
@@ -200,9 +226,8 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
           {uid === 0 ? i18n.t('board:list') : i18n.t('board:mylist')}
         </AppText>
       </View>
-    ),
-    [mobile, onSubmit, uid],
-  );
+    );
+  }, [isEvent, mobile, onSubmit, uid]);
 
   const empty = useCallback(
     () => (
@@ -254,7 +279,9 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
         }
       />
 
-      <AppActivityIndicator visible={pending && !refreshing} />
+      <AppActivityIndicator
+        visible={(pending || pendingEvent) && !refreshing}
+      />
       <AppModalForm
         visible={showModal}
         title={i18n.t('board:inputPass')}
@@ -270,15 +297,19 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
 };
 
 export default connect(
-  ({board, account, status}: RootState) => ({
+  ({eventBoard, board, account, status}: RootState) => ({
+    eventBoard,
     board,
     account,
     uid: account.uid || 0,
     pending: status.pending[boardActions.fetchIssueList.typePrefix] || false,
+    pendingEvent:
+      status.pending[eventBoardActions.fetchIssueList.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {
       board: bindActionCreators(boardActions, dispatch),
+      eventBoard: bindActionCreators(eventBoardActions, dispatch),
     },
   }),
 )(BoardMsgList);

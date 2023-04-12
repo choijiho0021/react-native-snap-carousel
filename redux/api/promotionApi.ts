@@ -53,6 +53,21 @@ export type RkbGiftImages = {
   uuid: string;
 };
 
+export type RkbEventRule = {
+  link?: boolean;
+  image?: boolean;
+};
+
+export type RkbEvent = {
+  title: string;
+  rule?: RkbEventRule;
+  notice?: {
+    title?: string;
+    body?: string;
+  };
+  uuid?: string;
+};
+
 const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
   if (_.isArray(data)) {
     return api.success(
@@ -60,7 +75,6 @@ const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
         const rule =
           item.field_promotion_rule &&
           parseJson(item.field_promotion_rule?.replace(/&quot;/g, '"'));
-
         return {
           uuid: item.uuid,
           title: item.title,
@@ -81,6 +95,29 @@ const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
                 },
               }
             : undefined,
+        };
+      }),
+    );
+  }
+  return api.failure(api.E_NOT_FOUND);
+};
+
+const toEvent = (data: DrupalNode[]): ApiResult<RkbEvent> => {
+  if (_.isArray(data)) {
+    return api.success(
+      data.map((item) => {
+        const rule = item.field_promotion_rule
+          ? JSON.parse(item.field_promotion_rule)
+          : {};
+
+        return {
+          title: item.title,
+          rule,
+          notice: {
+            title: item.field_notice_title || '',
+            body: item.field_notice_body || '',
+          },
+          uuid: item.uuid || '',
         };
       }),
     );
@@ -177,6 +214,13 @@ const getGiftBgImages = () => {
   return api.callHttpGet<RkbGiftImages>(
     `${api.httpUrl(api.path.gift.images)}?_format=hal_json`,
     toGiftBgImages,
+  );
+};
+
+const getEvent = async () => {
+  return api.callHttpGet<RkbEvent>(
+    `${api.httpUrl(api.path.event)}?_format=hal_json`,
+    toEvent,
   );
 };
 
@@ -357,6 +401,7 @@ const getExtraCoupon = () => {
 };
 
 export default {
+  getEvent,
   getPromotion,
   getStat,
   getGiftBgImages,

@@ -327,7 +327,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
-        contentContainerStyle={{flex: 1}}
+        contentContainerStyle={{minHeight: '100%'}}
+        showsVerticalScrollIndicator={false}
         enableOnAndroid
         enableResetScrollToCoords={false}>
         <PaymentItemInfo
@@ -347,6 +348,10 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
             </AppText>
           </View>
         )}
+
+        {/* 가변영역 설정 */}
+        <View style={{flex: 1}} />
+
         <PolicyChecker onPress={setPolicyChecked} />
         <AppButton
           title={i18n.t('payment')}

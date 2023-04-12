@@ -1,5 +1,12 @@
 import Analytics from 'appcenter-analytics';
-import React, {useCallback, useEffect, useRef, useState, useMemo} from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  Fragment,
+} from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import {connect} from 'react-redux';
@@ -347,52 +354,64 @@ const UsageItem: React.FC<UsageItemProps> = ({
       const isCallProduct = item.type === API.Subscription.CALL_PRODUCT;
       return (
         <View>
-          {
-            statusCd === 'A' && (
-              // || usage
-              <View>
-                <View style={styles.titleAndStatus}>
-                  <AppText key={item.key} style={styles.usageTitleBold}>
-                    {item.prodName}
+          {statusCd === 'A' && (
+            <View>
+              <View style={styles.titleAndStatus}>
+                <AppText key={item.key} style={styles.usageTitleBold}>
+                  {item.prodName}
+                </AppText>
+              </View>
+              {!isCallProduct && item.partner !== 'BillionConnect' ? (
+                <View style={styles.topOfActiveContainer}>
+                  {isShowUsage ? usageRender() : checkUsageButton()}
+                  <AppText style={styles.warning}>
+                    {i18n.t('usim:warning')}
+                  </AppText>
+                  <View style={styles.divider} />
+                </View>
+              ) : (
+                <Fragment>
+                  <View
+                    style={{
+                      width: '100%',
+                      height: 100,
+                      marginVertical: 10,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: 20,
+                    }}>
+                    <AppText
+                      style={{...appStyles.medium16, color: colors.warmGrey}}>
+                      {i18n.t('esim:notShowUsage')}
+                    </AppText>
+                  </View>
+                  <View style={styles.divider} />
+                </Fragment>
+              )}
+              {showExpire ? (
+                <View style={styles.bottomOfActiveContainer}>{expire()}</View>
+              ) : (
+                <View>
+                  <AppText
+                    style={{
+                      ...appStyles.medium14,
+                      color: colors.clearBlue,
+                      marginTop: 15,
+                    }}>
+                    <AppText style={appStyles.medium14}>
+                      {i18n.t(`centerDot`)}
+                    </AppText>
+                    {i18n.t(`quadcell:usageInfo2`)}
                   </AppText>
                 </View>
-                {!isCallProduct && (
-                  <View style={styles.topOfActiveContainer}>
-                    {isShowUsage ? usageRender() : checkUsageButton()}
-                    <AppText style={styles.warning}>
-                      {i18n.t('usim:warning')}
-                    </AppText>
-                    <View style={styles.divider} />
-                  </View>
-                )}
-                {showExpire ? (
-                  <View style={styles.bottomOfActiveContainer}>{expire()}</View>
-                ) : (
-                  <View>
-                    <AppText
-                      style={{
-                        ...appStyles.medium14,
-                        color: colors.clearBlue,
-                        marginTop: 15,
-                      }}>
-                      <AppText style={appStyles.medium14}>
-                        {i18n.t(`centerDot`)}
-                      </AppText>
-                      {i18n.t(`quadcell:usageInfo2`)}
-                    </AppText>
-                  </View>
-                )}
-              </View>
-            )
-            // : (
-            //   expireBeforeUse()
-            // )
-          }
+              )}
+            </View>
+          )}
           {['R', 'U'].map((v) => {
             return (
               statusCd === v && (
                 <View key={v}>
-                  <AppIcon name={`usage${v}`} />
+                  <AppIcon style={{alignItems: 'center'}} name={`usage${v}`} />
                   <AppText style={styles.inactiveIcon}>
                     {i18n.t(`esim:${code[v]}Info`)}
                   </AppText>

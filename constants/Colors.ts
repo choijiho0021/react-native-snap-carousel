@@ -15,7 +15,12 @@ export const colors = {
   background1: '#B721FF',
   background2: '#21D4FD',
   deepDarkBlue: '#113362',
+  line: '#e0e0e0',
+  black8: 'rgba(0, 0, 0, 0.08)',
+  boldBlue: '#2266c5',
 
+  primary01: '#47559d',
+  gray02: '#acacac',
   black: '#2c2c2c',
   clearBlue: '#2a7ff6',
   dodgerBlue: '#4f99ff',

@@ -1,4 +1,10 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {Image, Pressable, View} from 'react-native';
 import {ChannelIO} from 'react-native-channel-plugin';
 import {RootState} from '@reduxjs/toolkit';
@@ -15,11 +21,13 @@ const ChatTalk = ({
   account,
   visible = false,
   isClicked = false,
+  bottom = 20,
   setChatTalkClicked,
 }: {
   account: AccountModelState;
   visible?: boolean;
   isClicked?: boolean;
+  bottom?: number;
   setChatTalkClicked?: (v: boolean) => void;
 }) => {
   const [loading, setLoading] = useState(false);
@@ -65,7 +73,7 @@ const ChatTalk = ({
   }, [isClicked, openChannelTalk, setChatTalkClicked]);
 
   return (
-    <View>
+    <Fragment>
       <AppActivityIndicator visible={loading} />
       <AppSnackBar
         visible={showSnackBar}
@@ -74,7 +82,11 @@ const ChatTalk = ({
       />
       {visible && (
         <Pressable
-          style={{position: 'absolute', right: 10, bottom: 20}}
+          style={{
+            position: 'absolute',
+            right: 10,
+            bottom,
+          }}
           onPress={() => openChannelTalk()}>
           <Image
             style={{width: 60, height: 60}}
@@ -83,7 +95,7 @@ const ChatTalk = ({
           />
         </Pressable>
       )}
-    </View>
+    </Fragment>
   );
 };
 

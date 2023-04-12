@@ -20,6 +20,7 @@ export type PymMethodScreenMode =
   | 'new_sim'
   | 'recharge';
 type ContactBoardRouteParam = {index?: number} | undefined;
+type EventBoardRouteParam = {index?: number; title?: string} | undefined;
 type FaqRouteParam = {key?: string; num?: string} | undefined;
 
 export type PaymentParams = {
@@ -93,8 +94,9 @@ export type HomeStackParamList = {
   SimpleText: SimpleTextParams;
   Contact: undefined;
   ContactBoard: ContactBoardRouteParam;
+  EventBoard: EventBoardRouteParam;
   UserGuide: undefined;
-  BoardMsgResp: {uuid: string; status?: BoardMsgStatus};
+  BoardMsgResp: {uuid: string; status?: BoardMsgStatus; isEvent?: boolean};
   BoardMsgAdd: {key: string; status: BoardMsgStatus};
   Faq: FaqRouteParam;
   Guide: undefined;

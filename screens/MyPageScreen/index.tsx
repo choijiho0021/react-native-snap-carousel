@@ -39,6 +39,8 @@ import Info from './components/Info';
 import OrderItem from './components/OrderItem';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppSnackBar from '@/components/AppSnackBar';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import ChatTalk from '@/components/ChatTalk';
 
 const styles = StyleSheet.create({
   title: {
@@ -92,6 +94,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [showSnackBar, setShowSnackbar] = useState(false);
+  const tabBarHeight = useBottomTabBarHeight();
 
   const checkPhotoPermission = useCallback(async () => {
     if (!hasPhotoPermission) {
@@ -280,6 +283,8 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
         onClose={() => setShowSnackbar(false)}
         textMessage={i18n.t('copyMsg')}
       />
+
+      <ChatTalk visible bottom={100 - tabBarHeight} />
     </View>
   );
 };

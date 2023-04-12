@@ -18,6 +18,7 @@ import {
   RouteProp,
   useIsFocused,
 } from '@react-navigation/native';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
@@ -51,6 +52,7 @@ import EsimSubs from './components/EsimSubs';
 import EsimModal from './components/EsimModal';
 import GiftModal from './components/GiftModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import ChatTalk from '@/components/ChatTalk';
 
 const {esimGlobal} = Env.get();
 
@@ -177,6 +179,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const isFocused = useIsFocused();
   const flatListRef = useRef<FlatList>();
   const [subsList, setSubsList] = useState<RkbSubscription[][]>();
+  const tabBarHeight = useBottomTabBarHeight();
 
   const init = useCallback(
     (initInfo: {iccid?: string; mobile?: string; token?: string}) => {
@@ -307,6 +310,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [],
   );
 
+  const getQuadcellStatus = useCallback((dataPack, exp: moment.Moment) => {
+    if (!dataPack) return 'U';
+    if (dataPack?.effTime) {
+      return moment().isAfter(exp) ? 'U' : 'A';
+    }
+    return 'R';
+  }, []);
+
   const checkQuadcellData = useCallback(
     async (
       item: RkbSubscription,
@@ -314,13 +325,18 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       if (item?.imsi) {
         const status = await API.Subscription.quadcellGetData({
           imsi: item.imsi,
-          key: 'info',
+          key: 'packlist',
         });
+
+        const dataPack = status.objects?.packList?.find(
+          (elm) =>
+            elm?.packOrderSn !== undefined && Number(elm?.packCode) <= 900000,
+        );
 
         const query =
           item.daily === 'daily'
             ? {
-                startTime: status?.objects?.effTime,
+                startTime: dataPack?.effTime,
               }
             : undefined;
 
@@ -335,26 +351,18 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           quota.result === 0 &&
           status.objects?.retCode === '000000' &&
           quota.objects?.retCode === '000000'
-          // quota?.objects?.packQuotaList?.length
         ) {
           const packQuotaList =
             quota?.objects?.packQuotaList.length > 0
               ? quota?.objects?.packQuotaList
               : [{}];
-          const statusCd =
-            !_.isUndefined(status?.objects?.lifeCycle) &&
-            quadcellStatusCd[status?.objects?.lifeCycle];
 
-          const expTime = packQuotaList[0].expTime;
+          const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss').add(1, 'h');
 
-          const exp = moment(expTime, 'YYYYMMDDHHmmss').add(1, 'h');
+          const statusCd = getQuadcellStatus(dataPack, exp);
 
           const quadcellStatus: StatusObj = {
-            statusCd:
-              statusCd === 'A' &&
-              (moment() > exp || quota?.objects?.packQuotaList?.length === 0)
-                ? 'U'
-                : statusCd,
+            statusCd,
             endTime: exp.format('YYYY.MM.DD HH:mm:ss'),
           };
 
@@ -377,7 +385,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         usage: {quota: undefined, used: undefined},
       };
     },
-    [],
+    [getQuadcellStatus],
   );
 
   const checkBcData = useCallback(
@@ -471,6 +479,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           expired={moment(item[item.length - 1].expireDate).isBefore(moment())}
           isChargeExpired={moment(item[0].expireDate).isBefore(moment())}
           isCharged={item.length > 1}
+          showDetail={
+            index === 0 &&
+            moment(item[item.length - 1].purchaseDate).isAfter(
+              moment().subtract(14, 'days'),
+            )
+          }
           onPressUsage={(subscription: RkbSubscription) =>
             onPressUsage(subscription)
           }
@@ -576,6 +590,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         textMessage={i18n.t('service:ready')}
         bottom={10}
       />
+      <ChatTalk visible bottom={100 - tabBarHeight} />
     </SafeAreaView>
   );
 };

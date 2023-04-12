@@ -286,6 +286,36 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  plusBlue: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M9 4a1 1 0 0 0-2 0v3H4a1 1 0 1 0 0 2h3v3a1 1 0 1 0 2 0V9h3a1 1 0 1 0 0-2H9V4z"
+        fill="#2A7FF6"
+      />
+    </Svg>,
+  ],
+  minus16: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M13 8H3"
+        stroke="#2C2C2C"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </Svg>,
+  ],
   minus: [
     <Svg
       width="24"
@@ -477,6 +507,50 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Path
         d="M13 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM11 8a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V8z"
         fill="#ED4847"
+      />
+    </Svg>,
+  ],
+  cautionBlue: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="12" cy="12" r="11" fill="#2A7FF6" />
+      <Path
+        d="M13 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM11 8a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V8z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
+  cautionRed: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="12" cy="12" r="11" fill="#ED4847" />
+      <Path
+        d="M13 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM11 8a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V8z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
+  checkGreen: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="12" cy="12" r="11" fill="#00AD50" />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M15.909 9.247a1 1 0 0 1 .095 1.41l-3.82 4.377a1 1 0 0 1-1.467.043l-2.43-2.47a1 1 0 1 1 1.426-1.402l1.673 1.7 3.112-3.563a1 1 0 0 1 1.41-.095z"
+        fill="#fff"
       />
     </Svg>,
   ],
@@ -2702,6 +2776,47 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           <Path fill="#fff" d="M0 0h24v44H0z" />
         </ClipPath>
       </Defs>
+    </Svg>,
+  ],
+  check20: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M8.536 12.9 5.707 10.07a1 1 0 0 1 1.415-1.414l2.12 2.121 4.244-4.242A1 1 0 1 1 14.9 7.95L9.95 12.9a1 1 0 0 1-1.414 0z"
+        fill="#2c2c2c"
+      />
+    </Svg>,
+  ],
+  dropDownOpen: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M10.564 7.24a.784.784 0 0 0-1.128 0L5.16 11.963C4.78 12.38 5.118 13 5.724 13h8.552c.606 0 .943-.62.564-1.037L10.564 7.24z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
+  dropDown: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M10.564 12.76a.784.784 0 0 1-1.128 0L5.16 8.037C4.78 7.62 5.118 7 5.724 7h8.552c.606 0 .943.62.564 1.037l-4.276 4.723z"
+        fill="#979797"
+      />
     </Svg>,
   ],
 };

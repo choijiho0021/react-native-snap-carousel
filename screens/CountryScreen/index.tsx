@@ -25,6 +25,7 @@ import AppTabHeader from '@/components/AppTabHeader';
 import AppButton from '@/components/AppButton';
 import {retrieveData, storeData} from '@/utils/utils';
 import ProdByType from '@/components/ProdByType';
+import ChatTalk from '@/components/ChatTalk';
 
 const styles = StyleSheet.create({
   container: {
@@ -349,6 +350,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         </View>
       )}
       <AppActivityIndicator visible={props.pending} />
+      <ChatTalk visible bottom={100} />
     </SafeAreaView>
   );
 };
