@@ -1,15 +1,14 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
-import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import PaymentItemInfo from '@/components/PaymentItemInfo';
 import {colors} from '@/constants/Colors';
@@ -41,6 +40,7 @@ import AppStyledText from '@/components/AppStyledText';
 import PymButtonList from '@/components/AppPaymentGateway/PymButtonList';
 import DropDownHeader from './DropDownHeader';
 import {ProductModelState} from '@/redux/modules/product';
+import PolicyChecker from './PolicyChecker';
 
 const infoKey = 'pym:benefit';
 
@@ -50,11 +50,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'stretch',
     backgroundColor: colors.white,
-  },
-  rowCenter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    margin: 20,
   },
   divider: {
     height: 10,
@@ -69,11 +64,6 @@ const styles = StyleSheet.create({
     color: colors.warmGrey,
     textAlign: 'center',
   },
-  spaceBetweenBox: {
-    marginHorizontal: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
   thickBar: {
     borderBottomColor: colors.black,
     borderBottomWidth: 1,
@@ -85,11 +75,6 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     lineHeight: 14,
     textAlignVertical: 'center',
-  },
-  underlinedClearBlue: {
-    color: colors.clearBlue,
-    textDecorationLine: 'underline',
-    alignSelf: 'center',
   },
   beforeDrop: {
     marginHorizontal: 20,
@@ -155,7 +140,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [selected, setSelected] = useState('pym:ccard');
   const [clickable, setClickable] = useState(true);
   const [showModalMethod, setShowModalMethod] = useState(true);
-  const [consent, setConsent] = useState<boolean>();
+  const [policyChecked, setPolicyChecked] = useState(false);
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
   const [showChargeAlert, setShowChargeAlert] = useState(false);
   const {pymPrice, deduct} = useMemo(() => cart, [cart]);
@@ -323,25 +308,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     );
   }, [info.infoMap, selected, showModalMethod]);
 
-  const move = useCallback(
-    (key: '1' | '2') => {
-      const param =
-        key === '1'
-          ? {
-              key: 'setting:privacy',
-              title: i18n.t('pym:privacy'),
-            }
-          : {
-              key: 'pym:agreement',
-              title: i18n.t('pym:paymentAgency'),
-            };
-
-      Analytics.trackEvent('Page_View_Count', {page: param.key});
-      navigation.navigate('SimpleText', param);
-    },
-    [navigation],
-  );
-
   const modalBody = useCallback((isSupported: boolean) => {
     return (
       <View style={styles.modalBodyStyle}>
@@ -358,52 +324,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     );
   }, []);
 
-  const consentBox = useCallback(() => {
-    return (
-      <View style={{backgroundColor: colors.whiteTwo, paddingBottom: 45}}>
-        <Pressable
-          style={styles.rowCenter}
-          onPress={() => setConsent((prev) => !prev)}>
-          <AppIcon name="btnCheck2" checked={consent} size={22} />
-          <AppText
-            style={[
-              appStyles.bold16Text,
-              {color: colors.black, marginLeft: 12},
-            ]}>
-            {i18n.t('pym:consentEssential')}
-          </AppText>
-        </Pressable>
-        <Pressable style={styles.spaceBetweenBox} onPress={() => move('1')}>
-          <AppText
-            style={[
-              appStyles.normal14Text,
-              {color: colors.warmGrey, lineHeight: 22},
-            ]}>
-            {i18n.t('pym:privacy')}
-          </AppText>
-          <AppText style={styles.underlinedClearBlue}>
-            {i18n.t('pym:detail')}
-          </AppText>
-        </Pressable>
-        <Pressable style={styles.spaceBetweenBox} onPress={() => move('2')}>
-          <AppText
-            style={[
-              appStyles.normal14Text,
-              {color: colors.warmGrey, lineHeight: 22},
-            ]}>
-            {i18n.t('pym:paymentAgency')}
-          </AppText>
-          <AppText style={styles.underlinedClearBlue}>
-            {i18n.t('pym:detail')}
-          </AppText>
-        </Pressable>
-      </View>
-    );
-  }, [consent, move]);
-
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
+        contentContainerStyle={{minHeight: '100%'}}
+        showsVerticalScrollIndicator={false}
         enableOnAndroid
         enableResetScrollToCoords={false}>
         <PaymentItemInfo
@@ -417,17 +342,21 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         {pymPrice?.value !== 0 ? (
           method()
         ) : (
-          <View style={styles.result}>
+          <View style={styles.result} key="result">
             <AppText style={styles.resultText}>
               {i18n.t('pym:balPurchase')}
             </AppText>
           </View>
         )}
-        {consentBox()}
+
+        {/* 가변영역 설정 */}
+        <View style={{flex: 1}} />
+
+        <PolicyChecker onPress={setPolicyChecked} />
         <AppButton
           title={i18n.t('payment')}
           titleStyle={appStyles.medium18}
-          disabled={(pymPrice?.value !== 0 && !selected) || !consent}
+          disabled={(pymPrice?.value !== 0 && !selected) || !policyChecked}
           key={i18n.t('payment')}
           onPress={() => onSubmit(false)}
           style={appStyles.confirm}

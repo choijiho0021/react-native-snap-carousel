@@ -14,6 +14,9 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
+import com.reactnativegooglesignin.RNGoogleSigninPackage;
+import com.facebook.reactnative.androidsdk.FBSDKPackage;
+import com.lugg.RNCConfig.RNCConfigPackage;
 import com.swmansion.gesturehandler.RNGestureHandlerPackage;
 import com.airbnb.android.react.lottie.LottiePackage;
 // import com.horcrux.svg.SvgPackage;
@@ -25,7 +28,6 @@ import com.adjust.nativemodule.AdjustPackage;
 import com.reactnativesimcardsmanager.SimCardsManagerPackage;
 import com.github.amarcruz.rnshortcutbadge.RNAppBadgePackage;
 import com.facebook.react.modules.network.OkHttpClientProvider;
-import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.rokebiesim.generated.EuccidManagerAppPackage;
 import com.rokebiesim.generated.FetchApiClientFactory;
 import com.zoontek.rnpermissions.RNPermissionsPackage;
@@ -73,7 +75,6 @@ import com.facebook.flipper.reactnative.FlipperPackage;
 //import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 import com.reactnativecommunity.picker.RNCPickerPackage;
-import com.reactnativegooglesignin.RNGoogleSigninPackage;
 import com.reactnativecommunity.cookies.CookieManagerPackage;
 import com.reactnativecommunity.cameraroll.CameraRollPackage;
 import fr.greweb.reactnativeviewshot.RNViewShotPackage;
@@ -158,6 +159,9 @@ public class MainApplication extends Application implements ReactApplication {
                 protected List<ReactPackage> getPackages() {
                     return Arrays.<ReactPackage>asList(
                             new MainReactPackage(),
+            new RNGoogleSigninPackage(),
+            new FBSDKPackage(),
+            new RNCConfigPackage(),
             new LottiePackage(),
             new RNChannelIOPackage(),
             // new GoogleFitPackage(BuildConfig.APPLICATION_ID),
@@ -167,7 +171,6 @@ public class MainApplication extends Application implements ReactApplication {
             new RNViewShotPackage(),
                             new SystemSettingPackage(),
                             new RNAppBadgePackage(),
-                            new ReactNativeConfigPackage(),
                             new EuccidManagerAppPackage(),
                             new ReactNativeFirebaseAppPackage(),
                             new ReactNativeFirebaseDynamicLinksPackage(),
@@ -196,7 +199,6 @@ public class MainApplication extends Application implements ReactApplication {
                             new FlipperPackage(),
                             new PagerViewPackage(),
                             new RNCPickerPackage(),
-                            new RNGoogleSigninPackage(),
                             new ReactNativeFirebaseAnalyticsPackage(),
                             new CookieManagerPackage()
 

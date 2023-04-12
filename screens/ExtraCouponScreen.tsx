@@ -1,6 +1,13 @@
 import React, {memo, useCallback, useEffect, useState} from 'react';
-import {FlatList, Pressable, StyleSheet, View, Image} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  View,
+  Image,
+  SafeAreaView,
+  ScrollView,
+} from 'react-native';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import i18n from '@/utils/i18n';
@@ -8,12 +15,23 @@ import {API} from '@/redux/api';
 import {RkbExtraCoupon} from '@/redux/api/promotionApi';
 import {windowWidth} from '@/constants/SliderEntry.style';
 import AppModal from '@/components/AppModal';
+import AppText from '@/components/AppText';
+import {appStyles} from '../constants/Styles';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'stretch',
     backgroundColor: colors.white,
+  },
+  header: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    backgroundColor: colors.white,
+    alignItems: 'center',
+    height: 56,
   },
   row: {
     flexDirection: 'row',
@@ -29,6 +47,33 @@ const styles = StyleSheet.create({
   },
   downloadStyle: {
     height: windowWidth * 1.83,
+  },
+  tabScroll: {
+    marginTop: 16,
+    marginBottom: 6,
+    paddingLeft: 20,
+  },
+  image: {
+    paddingVertical: 5,
+    paddingHorizontal: 14,
+    marginRight: 8,
+    borderRadius: 30,
+    borderColor: colors.gray,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalClose: {
+    justifyContent: 'center',
+    height: 56,
+    alignItems: 'flex-end',
+    paddingRight: 20,
+  },
+  contentStyle: {
+    backgroundColor: 'transparent',
+    width: '100%',
+    height: '100%',
   },
 });
 
@@ -61,31 +106,38 @@ const ExtraCouponListItem0 = ({
 const ExtraCouponListItem = memo(ExtraCouponListItem0);
 
 const ExtraCouponScreen = () => {
-  const navigation = useNavigation();
   const [data, setData] = useState<RkbExtraCoupon[][]>();
+  const [coupons, setCoupons] = useState<RkbExtraCoupon[]>([]);
+  const [couponGrp, setCouponGrp] = useState<string[]>([]);
+  const [selectedGrp, setSelectedGrp] = useState<string>('All');
   const [showItem, setShowItem] = useState<RkbExtraCoupon>();
 
   useEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => <AppBackButton title={i18n.t('settings')} />,
-    });
-  }, [navigation]);
+    if (coupons.length > 0)
+      setData(
+        coupons
+          .filter((elm) => elm.group === selectedGrp || selectedGrp === 'All')
+          .reduce((acc, cur, idx) => {
+            if (idx % 2 === 0) return acc.concat([[cur]]);
+            acc[acc.length - 1].push(cur);
+            return acc;
+          }, [] as RkbExtraCoupon[][]),
+      );
+  }, [coupons, selectedGrp]);
 
   useEffect(() => {
     if (data === undefined) {
       API.Promotion.getExtraCoupon().then((rsp) => {
-        if (rsp.result === 0)
-          setData(
-            rsp.objects.reduce((acc, cur, idx) => {
-              if (idx % 2 === 0) return acc.concat([[cur]]);
-              acc[acc.length - 1].push(cur);
-              return acc;
-            }, [] as RkbExtraCoupon[][]),
-          );
-        else setData([]);
+        if (rsp.result === 0) {
+          setCoupons(rsp.objects as RkbExtraCoupon[]);
+          setCouponGrp([
+            'All',
+            ...new Set(rsp.objects.map((elm) => elm.group || 'All')),
+          ]);
+        } else setData([]);
       });
     }
-  }, [data]);
+  }, [couponGrp, data]);
 
   const renderItem = useCallback(
     ({item}: {item: RkbExtraCoupon[]}) => (
@@ -94,23 +146,80 @@ const ExtraCouponScreen = () => {
     [],
   );
 
+  const renderGroup = useCallback(
+    () => (
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.tabScroll}>
+        {couponGrp.map((grp) => {
+          const isSelected = grp === selectedGrp;
+          return (
+            <Pressable
+              style={[
+                styles.image,
+                {backgroundColor: isSelected ? colors.clearBlue : colors.white},
+              ]}
+              onPress={() => setSelectedGrp(grp)}>
+              <AppText
+                style={[
+                  appStyles.medium14,
+                  {color: isSelected ? colors.white : colors.warmGrey},
+                ]}>
+                {grp}
+              </AppText>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+    ),
+    [couponGrp, selectedGrp],
+  );
+
   return (
-    <View style={styles.container}>
-      <FlatList data={data} renderItem={renderItem} />
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <AppBackButton
+          title={i18n.t('extraCoupon')}
+          style={{width: '70%', height: 56}}
+        />
+      </View>
+      <Image
+        source={require('../assets/images/esim/couponBanner.png')}
+        style={{width: '100%'}}
+      />
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        ListHeaderComponent={renderGroup()}
+      />
+
       {showItem && (
         <AppModal
           type="close"
-          contentStyle={{backgroundColor: 'transparent', width: '100%'}}
+          titleViewStyle={{backgroundColor: 'red'}}
+          contentStyle={styles.contentStyle}
+          justifyContent="flex-end"
+          safeAreaColor={colors.white}
           visible={showItem !== undefined}
           onOkClose={() => setShowItem(undefined)}>
-          <Image
-            style={styles.downloadStyle}
-            // resizeMode="contain"
-            source={{uri: API.default.httpImageUrl(showItem.download)}}
-          />
+          <View style={{flex: 1}}>
+            <View style={styles.modalClose}>
+              <AppSvgIcon
+                name="closeModal"
+                onPress={() => setShowItem(undefined)}
+              />
+            </View>
+            <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
+              <Image
+                style={styles.downloadStyle}
+                source={{uri: API.default.httpImageUrl(showItem.download)}}
+              />
+            </ScrollView>
+          </View>
         </AppModal>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

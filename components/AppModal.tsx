@@ -77,6 +77,7 @@ export interface AppModalProps {
   buttonBackgroundColor?: ColorValue;
   buttonTitleColor?: ColorValue;
   disableOkButton?: boolean;
+  safeAreaColor?: ColorValue;
   onOkClose?: (v?: string) => void;
   onCancelClose?: () => void;
   bottom?: () => React.ReactNode;
@@ -100,6 +101,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   justifyContent,
   visible,
   disableOkButton,
+  safeAreaColor = 'rgba(0,0,0,0.5)',
   onOkClose = () => {},
   onCancelClose = () => {},
   bottom,
@@ -228,6 +230,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
         style={[
           appStyles.modal,
           justifyContent ? {justifyContent} : undefined,
+          {backgroundColor: safeAreaColor},
         ]}>
         <View
           style={{

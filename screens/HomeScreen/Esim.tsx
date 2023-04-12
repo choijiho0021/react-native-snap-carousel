@@ -35,6 +35,7 @@ import ShortcutBadge from 'react-native-app-badge';
 import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import VersionCheck from 'react-native-version-check';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {isFolderOpen} from '@/constants/SliderEntry.style';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
@@ -78,9 +79,9 @@ import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
 import {retrieveData, storeData} from '@/utils/utils';
 import LocalModal from './component/LocalModal';
-import ChatTalk from '../UserGuideScreen/ChatTalk';
+import ChatTalk from '@/components/ChatTalk';
 
-const {esimGlobal, isIOS} = Env.get();
+const {esimGlobal, isIOS, cachePrefix} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -245,6 +246,7 @@ const Esim: React.FC<EsimProps> = ({
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const [bannerHeight, setBannerHeight] = useState<number>(150);
   const appState = useRef('unknown');
+  const tabBarHeight = useBottomTabBarHeight();
 
   const isSupport = useMemo(() => account.isSupportDev, [account.isSupportDev]);
 
@@ -329,9 +331,8 @@ const Esim: React.FC<EsimProps> = ({
   const onPressItem = useCallback(
     async (info: RkbPriceInfo) => {
       const localOp = product.localOpList.get(info?.partner || '');
-      const localOpName = API.Product.getTitle(localOp);
 
-      if (localOpName.includes('(로컬망)') || localOpName.includes('(local)')) {
+      if (localOp?.notice) {
         const item = await AsyncStorage.getItem(
           `esim.show.local.modal.${localOp?.key}`,
         );
@@ -342,16 +343,15 @@ const Esim: React.FC<EsimProps> = ({
             content: (
               <LocalModal
                 onPress={() => navToCountry(info)}
-                localOpName={localOpName}
-                ccode={localOp?.ccode || []}
                 localOpKey={localOp?.key || ''}
+                html={decodeURIComponent(localOp.notice)}
               />
             ),
           });
         }
       }
 
-      navToCountry(info);
+      return navToCountry(info);
     },
     [action.modal, navToCountry, product.localOpList],
   );
@@ -441,25 +441,20 @@ const Esim: React.FC<EsimProps> = ({
   );
 
   const renderScene = useCallback(
-    ({route: sceneRoute}: {route: TabViewRoute}) => {
-      return (
-        <StoreList
-          key={sceneRoute.key}
-          data={product.priceInfo.get(sceneRoute.key, [] as RkbPriceInfo[][])}
-          onPress={onPressItem}
-          localOpList={product.localOpList}
-          width={dimensions.width}
-          onScroll={({
-            nativeEvent: {
-              contentOffset: {y},
-            },
-          }) => {
-            if (isTop && y > bannerHeight) setIsTop(false);
-            else if (!isTop && y <= 0) setIsTop(true);
-          }}
-        />
-      );
-    },
+    ({route: sceneRoute}: {route: TabViewRoute}) => (
+      <StoreList
+        key={sceneRoute.key}
+        data={product.priceInfo.get(sceneRoute.key, [] as RkbPriceInfo[][])}
+        onPress={onPressItem}
+        localOpList={product.localOpList}
+        width={dimensions.width}
+        onScroll={({nativeEvent}) => {
+          const {y} = nativeEvent.contentOffset;
+          if (isTop && y > bannerHeight) setIsTop(false);
+          else if (!isTop && y <= 0) setIsTop(true);
+        }}
+      />
+    ),
     [
       bannerHeight,
       dimensions.width,
@@ -724,11 +719,14 @@ const Esim: React.FC<EsimProps> = ({
   useEffect(() => {
     async function getDevList() {
       if (isIOS) {
-        const tm = await retrieveData('cache.timestamp.dev');
+        const tm = await retrieveData(`${cachePrefix}cache.timestamp.dev`);
         const reload = product.rule.timestamp_dev > tm;
         action.product.getDevList(reload);
         if (reload)
-          storeData('cache.timestamp.dev', moment().zone(-540).format());
+          storeData(
+            `${cachePrefix}cache.timestamp.dev`,
+            moment().zone(-540).format(),
+          );
       }
 
       const deviceModel = DeviceInfo.getModel();
@@ -750,7 +748,7 @@ const Esim: React.FC<EsimProps> = ({
       }
     }
     getDevList();
-  }, [isSupport]);
+  }, [action.product, isSupport, product.rule.timestamp_dev]);
 
   useEffect(() => {
     if (isSupport && !initialized.current) {
@@ -765,7 +763,7 @@ const Esim: React.FC<EsimProps> = ({
       product.prodByCountry.length > 0 &&
       product.priceInfo.size === 0
     ) {
-      action.product.updatePriceInfo({});
+      action.product.updatePriceInfo();
     }
   }, [
     action.product,
@@ -777,13 +775,16 @@ const Esim: React.FC<EsimProps> = ({
   useEffect(() => {
     // check timestamp
     const checkTimestamp = async () => {
-      const tm = await retrieveData('cache.timestamp.prod');
+      const tm = await retrieveData(`${cachePrefix}cache.timestamp.prod`);
       const reload = !tm || product.rule.timestamp_prod > tm;
       // console.log('@@@ reload all prod', reload, tm);
       // reload data
       action.product.getAllProduct(reload);
       if (reload) {
-        storeData('cache.timestamp.prod', moment().zone(-540).format());
+        storeData(
+          `${cachePrefix}cache.timestamp.prod`,
+          moment().zone(-540).format(),
+        );
       }
     };
     checkTimestamp();
@@ -897,7 +898,7 @@ const Esim: React.FC<EsimProps> = ({
         />
       )}
 
-      <ChatTalk visible />
+      {tabBarHeight > 0 && <ChatTalk visible bottom={100 - tabBarHeight} />}
       {renderModal()}
     </SafeAreaView>
   );

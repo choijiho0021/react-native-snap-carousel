@@ -15,6 +15,9 @@ import {actions as PromotionActions} from './promotion';
 import utils from '@/redux/api/utils';
 import {retrieveData, storeData} from '@/utils/utils';
 import {reloadOrCallApi} from '@/redux/api/api';
+import Env from '@/environment';
+
+const {cachePrefix} = Env.get();
 
 const getDevList = createAsyncThunk(
   'product/getDevList',
@@ -96,7 +99,7 @@ const init = createAsyncThunk(
     let reload = reloadAll || false;
 
     if (!reload) {
-      const timestamp = await retrieveData('cache.timestamp');
+      const timestamp = await retrieveData(`${cachePrefix}cache.timestamp`);
       if (!timestamp) reload = true;
       else {
         const rsp = await dispatch(getPaymentRule()).unwrap();
@@ -105,7 +108,7 @@ const init = createAsyncThunk(
     }
 
     if (reload) {
-      storeData('cache.timestamp', moment().zone(-540).format());
+      storeData(`${cachePrefix}cache.timestamp`, moment().zone(-540).format());
     }
 
     await dispatch(getLocalOp(reload));
@@ -124,7 +127,7 @@ const refresh = createAsyncThunk(
   async (param, {dispatch}) => {
     let reload = false;
 
-    const timestamp = await retrieveData('cache.timestamp');
+    const timestamp = await retrieveData(`${cachePrefix}cache.timestamp`);
     if (!timestamp) reload = true;
     else {
       const rsp = await dispatch(getPaymentRule()).unwrap();

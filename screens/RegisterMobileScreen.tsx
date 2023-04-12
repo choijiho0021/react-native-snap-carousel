@@ -312,6 +312,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       } else if (stack && screen) {
         navigation.navigate(stack, {
           screen: screen,
+          initial: false,
           params,
         });
       } else if (!link.url && isNewUser) {

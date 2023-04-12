@@ -10,7 +10,7 @@ import store from '@/store';
 import {actions as ToastActions, Toast} from '../modules/toast';
 
 export type Langcode = 'ko' | 'en';
-const {scheme, apiUrl, esimGlobal, rokApiUrl} = Env.get();
+const {scheme, apiUrl, esimGlobal, rokApiUrl, cachePrefix} = Env.get();
 
 const FAILED = -1000;
 const E_NOT_FOUND = -1001;
@@ -276,10 +276,9 @@ export const cachedApi =
   async (param: A, {fulfillWithValue}) => {
     const rsp = await apiToCall(param);
     if (rsp.result === 0) {
-      console.log('@@@ store', key);
-      storeData(key, JSON.stringify(rsp));
+      storeData(cachePrefix + key, JSON.stringify(rsp));
     } else if (rsp.result === E_REQUEST_FAILED) {
-      const cache = await retrieveData(key);
+      const cache = await retrieveData(cachePrefix + key);
       if (cache) return fulfillWithValue(JSON.parse(cache));
     }
     return fulfillWithValue(rsp);
@@ -289,7 +288,7 @@ export const reloadOrCallApi =
   <A, T>(key: string, param: A, apiToCall: (p: A) => Promise<T>) =>
   async (reload: boolean, {fulfillWithValue}) => {
     if (!reload) {
-      const cache = await retrieveData(key);
+      const cache = await retrieveData(cachePrefix + key);
       if (cache) return fulfillWithValue(JSON.parse(cache));
     }
     return cachedApi(key, apiToCall)(param, {fulfillWithValue});

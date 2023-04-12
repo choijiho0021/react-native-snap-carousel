@@ -1,4 +1,10 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {Image, Pressable, View} from 'react-native';
 import {ChannelIO} from 'react-native-channel-plugin';
 import {RootState} from '@reduxjs/toolkit';
@@ -9,17 +15,19 @@ import i18n from '@/utils/i18n';
 import Env from '@/environment';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 
-const {appId, talkPluginKey} = Env.get();
+const {appId, talkPluginKey, esimGlobal} = Env.get();
 
 const ChatTalk = ({
   account,
   visible = false,
   isClicked = false,
+  bottom = 20,
   setChatTalkClicked,
 }: {
   account: AccountModelState;
   visible?: boolean;
   isClicked?: boolean;
+  bottom?: number;
   setChatTalkClicked?: (v: boolean) => void;
 }) => {
   const [loading, setLoading] = useState(false);
@@ -30,13 +38,16 @@ const ChatTalk = ({
       profile: account.loggedIn
         ? {
             id: account.userId,
+            language: esimGlobal ? 'en' : 'ko',
             name: `${appId} - ${account.mobile}`,
             mobileNumber: account.mobile,
             email: account.email,
             mobileStr: account.mobile,
             orderUrl: `https://${appId}.rokebi.com/ko/admin/op/order/search?title=${account.mobile}&mail=&items_per_page=10`,
           }
-        : undefined,
+        : {
+            language: esimGlobal ? 'en' : 'ko',
+          },
     }),
     [account.email, account.loggedIn, account.mobile, account.userId],
   );
@@ -62,7 +73,7 @@ const ChatTalk = ({
   }, [isClicked, openChannelTalk, setChatTalkClicked]);
 
   return (
-    <View>
+    <Fragment>
       <AppActivityIndicator visible={loading} />
       <AppSnackBar
         visible={showSnackBar}
@@ -71,7 +82,11 @@ const ChatTalk = ({
       />
       {visible && (
         <Pressable
-          style={{position: 'absolute', right: 10, bottom: 20}}
+          style={{
+            position: 'absolute',
+            right: 10,
+            bottom,
+          }}
           onPress={() => openChannelTalk()}>
           <Image
             style={{width: 60, height: 60}}
@@ -80,7 +95,7 @@ const ChatTalk = ({
           />
         </Pressable>
       )}
-    </View>
+    </Fragment>
   );
 };
 

@@ -30,6 +30,7 @@ import api, {ApiResult} from '@/redux/api/api';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
+import ChatTalk from '@/components/ChatTalk';
 
 const {esimGlobal, webViewHost} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -341,6 +342,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           />
         </View>
       )}
+      <ChatTalk visible bottom={100} />
     </SafeAreaView>
   );
 };
