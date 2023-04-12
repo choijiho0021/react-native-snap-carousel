@@ -331,9 +331,8 @@ const Esim: React.FC<EsimProps> = ({
   const onPressItem = useCallback(
     async (info: RkbPriceInfo) => {
       const localOp = product.localOpList.get(info?.partner || '');
-      const localOpName = API.Product.getTitle(localOp);
 
-      if (localOpName.includes('(로컬망)') || localOpName.includes('(local)')) {
+      if (localOp?.warning) {
         const item = await AsyncStorage.getItem(
           `esim.show.local.modal.${localOp?.key}`,
         );
@@ -344,16 +343,15 @@ const Esim: React.FC<EsimProps> = ({
             content: (
               <LocalModal
                 onPress={() => navToCountry(info)}
-                localOpName={localOpName}
-                ccode={localOp?.ccode || []}
                 localOpKey={localOp?.key || ''}
+                html={decodeURIComponent(localOp.warning)}
               />
             ),
           });
         }
       }
 
-      navToCountry(info);
+      return navToCountry(info);
     },
     [action.modal, navToCountry, product.localOpList],
   );
@@ -443,25 +441,20 @@ const Esim: React.FC<EsimProps> = ({
   );
 
   const renderScene = useCallback(
-    ({route: sceneRoute}: {route: TabViewRoute}) => {
-      return (
-        <StoreList
-          key={sceneRoute.key}
-          data={product.priceInfo.get(sceneRoute.key, [] as RkbPriceInfo[][])}
-          onPress={onPressItem}
-          localOpList={product.localOpList}
-          width={dimensions.width}
-          onScroll={({
-            nativeEvent: {
-              contentOffset: {y},
-            },
-          }) => {
-            if (isTop && y > bannerHeight) setIsTop(false);
-            else if (!isTop && y <= 0) setIsTop(true);
-          }}
-        />
-      );
-    },
+    ({route: sceneRoute}: {route: TabViewRoute}) => (
+      <StoreList
+        key={sceneRoute.key}
+        data={product.priceInfo.get(sceneRoute.key, [] as RkbPriceInfo[][])}
+        onPress={onPressItem}
+        localOpList={product.localOpList}
+        width={dimensions.width}
+        onScroll={({nativeEvent}) => {
+          const {y} = nativeEvent.contentOffset;
+          if (isTop && y > bannerHeight) setIsTop(false);
+          else if (!isTop && y <= 0) setIsTop(true);
+        }}
+      />
+    ),
     [
       bannerHeight,
       dimensions.width,
@@ -755,7 +748,7 @@ const Esim: React.FC<EsimProps> = ({
       }
     }
     getDevList();
-  }, [isSupport]);
+  }, [action.product, isSupport, product.rule.timestamp_dev]);
 
   useEffect(() => {
     if (isSupport && !initialized.current) {
@@ -770,7 +763,7 @@ const Esim: React.FC<EsimProps> = ({
       product.prodByCountry.length > 0 &&
       product.priceInfo.size === 0
     ) {
-      action.product.updatePriceInfo({});
+      action.product.updatePriceInfo();
     }
   }, [
     action.product,

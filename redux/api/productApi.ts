@@ -160,6 +160,7 @@ type DrupalLocalOp = {
   field_apn_setting: string;
   field_weight: string;
   field_ref_partner: string;
+  field_warning?: string;
 };
 
 type DrupalProdCountry = {
@@ -177,6 +178,7 @@ export type RkbLocalOp = {
   weight: number;
   detail: string;
   partner: string;
+  warning?: string;
 };
 
 export type RkbProdCountry = {
@@ -197,6 +199,7 @@ const toLocalOp = (data: DrupalLocalOp[]): ApiResult<RkbLocalOp> => {
         weight: utils.stringToNumber(item.field_weight) || 0,
         detail: item.body,
         partner: item.field_ref_partner,
+        warning: item.field_warning,
       })),
     );
   }
