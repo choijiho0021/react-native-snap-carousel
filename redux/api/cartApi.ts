@@ -4,6 +4,7 @@ import {utils} from '@/utils/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import api, {ApiResult, DrupalNode} from './api';
 import {Currency, CurrencyCode} from './productApi';
+import {API} from '.';
 
 const KEY_INIT_CART = 'cart.initList';
 
@@ -140,21 +141,14 @@ const add = ({
   );
 };
 
-const checkStock = ({
-  purchaseItems,
-  token,
-}: {
-  purchaseItems: PurchaseItem[];
-  token?: string;
-}) => {
+const checkStock = async ({purchaseItems}: {purchaseItems: PurchaseItem[]}) => {
   if (!purchaseItems)
     return api.reject(
       api.E_INVALID_ARGUMENT,
       'missing parameter: purchaseItems',
     );
 
-  if (!token)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
+  const token = await API.User.getToken();
 
   return api.callHttp(
     `${api.httpUrl(api.path.cart, '')}/stock?_format=json`,
