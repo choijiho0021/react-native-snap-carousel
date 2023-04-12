@@ -20,7 +20,7 @@ export type PymMethodScreenMode =
   | 'new_sim'
   | 'recharge';
 type ContactBoardRouteParam = {index?: number} | undefined;
-type EventBoardRouteParam = {index?: number} | undefined;
+type EventBoardRouteParam = {index?: number; title?: string} | undefined;
 type FaqRouteParam = {key?: string; num?: string} | undefined;
 
 export type PaymentParams = {

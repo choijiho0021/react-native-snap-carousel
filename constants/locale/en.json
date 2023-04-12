@@ -420,6 +420,7 @@
 
   "event:title": "Event Auth",
   "event:new": "Apply Auth",
+  "event:reapply": "Reapply Auth",
   "event:list": "Verification History",
   "event:noti": "You will be notified by push notification!",
   "event:new2": "Apply Auth",

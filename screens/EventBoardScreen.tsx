@@ -52,6 +52,10 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
   ]).current;
   const [fontSize, setFontSize] = useState(16);
   const eventList = useMemo(() => promotion.event || [], [promotion.event]);
+  const title = useMemo(
+    () => (params?.title ? params.title : ''),
+    [params?.title],
+  );
 
   useEffect(() => {
     navigation.setOptions({
@@ -65,7 +69,14 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
   const renderScene = useCallback(
     ({route, jumpTo}: {route: TabRoute; jumpTo: (v: string) => void}) => {
       if (route.key === 'new') {
-        return <BoardMsgAdd jumpTo={jumpTo} isEvent eventList={eventList} />;
+        return (
+          <BoardMsgAdd
+            jumpTo={jumpTo}
+            isEvent
+            eventList={eventList}
+            paramTitle={title}
+          />
+        );
       }
       if (route.key === 'list') {
         return (

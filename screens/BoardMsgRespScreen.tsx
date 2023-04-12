@@ -1,4 +1,4 @@
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
@@ -22,7 +22,7 @@ import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {HomeStackParamList} from '@/navigation/navigation';
+import {HomeStackParamList, navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import utils from '@/redux/api/utils';
@@ -122,6 +122,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
     color: '#ffffff',
+    flex: 1,
+  },
+  buttonText: {
+    ...appStyles.medium18,
+    lineHeight: 26,
+    color: colors.white,
   },
   imgModalFrame: {
     flex: 1,
@@ -202,10 +208,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
   const {width} = Dimensions.get('window');
   const [height, setHeight] = useState(0);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    console.log('@@@@ issue', issue);
-  }, [issue]);
+  const route = useRoute();
 
   useEffect(() => {
     const {uuid, status} = params || {};
@@ -407,12 +410,41 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
         <AppActivityIndicator visible={pending || pendingEvent} />
       </ScrollView>
 
-      <AppButton
-        style={styles.button}
-        title={i18n.t('ok')}
-        type="primary"
-        onPress={() => navigation.goBack()}
-      />
+      <View style={{flexDirection: 'row'}}>
+        <AppButton
+          style={[
+            styles.button,
+            issue?.statusCode === 'Fail' && {
+              backgroundColor: colors.white,
+              borderTopWidth: 1,
+              borderTopColor: colors.line,
+            },
+          ]}
+          title={i18n.t('ok')}
+          titleStyle={[
+            styles.buttonText,
+            issue?.statusCode === 'Fail' && {color: colors.black},
+          ]}
+          type={issue?.statusCode === 'Fail' ? 'secondary' : 'primary'}
+          onPress={() => navigation.goBack()}
+        />
+        {issue?.statusCode === 'Fail' && (
+          <AppButton
+            style={styles.button}
+            title={i18n.t('event:reapply')}
+            titleStyle={styles.buttonText}
+            type="primary"
+            onPress={() => {
+              [1, 2].forEach(() => navigation.goBack());
+              navigate(navigation, route, 'MyPageStack', {
+                tab: 'HomeStack',
+                screen: 'EventBoard',
+                params: {index: 0, title: issue.title},
+              });
+            }}
+          />
+        )}
+      </View>
 
       <Modal visible={showImgModal} transparent>
         <SafeAreaView style={styles.imgModalFrame}>

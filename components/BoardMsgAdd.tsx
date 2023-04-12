@@ -275,6 +275,7 @@ type BoardMsgAddProps = {
   jumpTo: (v: string) => void;
   isEvent?: boolean;
   eventList?: RkbEvent[];
+  paramTitle?: string;
 
   action: {
     board: BoardAction;
@@ -310,6 +311,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   successEvent,
   isEvent = false,
   eventList = [],
+  paramTitle = '',
   jumpTo,
   action,
   pending,
@@ -350,6 +352,15 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   }, [eventList]);
   const scrollRef = useRef();
   const keybd = useRef();
+
+  useEffect(() => {
+    if (paramTitle) {
+      setTitle(paramTitle);
+      setSelectedEvent(
+        eventList.find((e) => e.title === paramTitle) || {title: ''},
+      );
+    }
+  }, [eventList, paramTitle]);
 
   useEffect(() => {
     const checkPermission = async () => {
