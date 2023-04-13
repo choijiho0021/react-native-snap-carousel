@@ -37,17 +37,18 @@ import {
 import {
   actions as productActions,
   ProductAction,
-  ProductModelState,
-  RkbPriceInfo,
 } from '@/redux/modules/product';
 import {
   actions as infoActions,
   InfoAction,
   InfoModelState,
 } from '@/redux/modules/info';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import i18n from '@/utils/i18n';
 import AppAlert from '@/components/AppAlert';
 import {parseJson} from '@/utils/utils';
+import AppModalContent from '@/components/ModalContent/AppModalContent';
+import AppStyledText from '@/components/AppStyledText';
 
 const {scheme, apiUrl} = Env.get();
 const {width} = Dimensions.get('window');
@@ -107,6 +108,7 @@ type SimpleTextScreenProps = {
     info: InfoAction;
     account: AccountAction;
     product: ProductAction;
+    modal: ModalAction;
   };
 };
 
@@ -186,12 +188,33 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
 
           break;
         case 'moveToEvent':
-          navigation.navigate('EventBoard', {index: 0, nid: cmd.value});
+          if (!account.loggedIn) {
+            // 로그인 화면으로 이동
+            action.modal.showModal({
+              content: (
+                <AppModalContent
+                  title={i18n.t('event:login')}
+                  type="normal"
+                  onOkClose={() => {
+                    navigation.navigate('Auth', {
+                      screen: 'RegisterMobile',
+                    });
+                    action.modal.closeModal();
+                  }}
+                  onCancelClose={() => {
+                    action.modal.closeModal();
+                  }}
+                />
+              ),
+            });
+          } else {
+            navigation.navigate('EventBoard', {index: 0, nid: cmd.value});
+          }
           break;
         default:
       }
     },
-    [action.info, action.product, navigation],
+    [account.loggedIn, action.info, action.modal, action.product, navigation],
   );
 
   const onPress = useCallback(async () => {
@@ -204,6 +227,11 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
         navigation.navigate('Auth', {
           screen: 'RegisterMobile',
           params: rule?.skuNavigate,
+        });
+      } else if (rule?.sku.includes('event')) {
+        navigation.navigate('EventBoard', {
+          index: 0,
+          nid: rule?.sku.split('-')[1],
         });
       } else {
         setPromoResult('promo:join:ing');
@@ -322,6 +350,10 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     return 'ok';
   }, [eventStatus, isProdEvent, loggedIn]);
 
+  useEffect(() => {
+    console.log('@@@@ route.params?.rule?.sku.', route.params?.rule?.sku);
+  }, [route.params?.rule?.sku]);
+
   return (
     <SafeAreaView style={styles.screen}>
       <View style={appStyles.header}>
@@ -329,13 +361,18 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
       </View>
       {defineSource(mode)}
       <AppActivityIndicator visible={pending || loading} />
-      <AppButton
-        style={styles.button}
-        type="primary"
-        title={route.params?.rule?.btnTitle || i18n.t(title)}
-        disabled={eventStatus === 'joined' || promoResult === 'promo:join:ing'}
-        onPress={onPress}
-      />
+      {!route.params?.rule?.sku.startsWith('event-multi') && (
+        <AppButton
+          style={styles.button}
+          type="primary"
+          title={route.params?.rule?.btnTitle || i18n.t(title)}
+          disabled={
+            eventStatus === 'joined' || promoResult === 'promo:join:ing'
+          }
+          onPress={onPress}
+        />
+      )}
+
       <AppModal
         type="close"
         visible={!!promoResult && promoResult !== 'promo:join:ing'}
@@ -392,6 +429,8 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
             setEventStatus('unknown');
           } else if (rule?.sku.includes('cpn-')) {
             setEventStatus('open');
+          } else if (rule?.sku.includes('event')) {
+            setEventStatus('open');
           } else {
             const resp = await API.Promotion.check(nid);
             // available 값이 0보다 크면 프로모션 참여 가능하다.
@@ -433,6 +472,7 @@ export default connect(
       info: bindActionCreators(infoActions, dispatch),
       product: bindActionCreators(productActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
+      modal: bindActionCreators(modalActions, dispatch),
     },
   }),
 )(memo(SimpleTextScreen0));
