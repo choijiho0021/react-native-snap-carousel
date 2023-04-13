@@ -36,15 +36,16 @@ export interface RkbBoardBase {
   msg: string;
   created: string;
   changed: string;
-  mobile: string;
-  pin: string;
   statusCode: string;
   status: string;
   images: string[];
-  replyImages: string[];
 }
 
-export type RkbBoard = RkbBoardBase;
+export type RkbBoard = RkbBoardBase & {
+  mobile: string;
+  pin: string;
+  replyImages: string[];
+};
 
 const toBoard = (data: DrupalBoard[]): ApiResult<RkbBoard> => {
   if (_.isArray(data)) {

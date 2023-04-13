@@ -51,14 +51,11 @@ const toEventBoard = (data: DrupalBoard[]): ApiResult<RkbEventBoard> => {
           msg: item.body || '',
           created: item.created,
           changed: item.changed,
-          mobile: item.field_mobile || '',
-          pin: item.field_pin || '',
           statusCode: item.field_event_status || 'O',
           status: item.field_event_status
             ? i18n.t(`event:${item.field_event_status.toLowerCase()}`)
             : 'O', // pin, status, statusCode
           images: item.field_images ? item.field_images.split(', ') : [],
-          replyImages: item.field_reply_images.split(', ') || [],
           link: item.field_text_link ? item.field_text_link.split(', ') : [],
           imagesInfo: info,
           rejectReason: item.field_event_reject_reason
