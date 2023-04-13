@@ -5,7 +5,7 @@ import api, {ApiResult} from './api';
 import {RkbImage} from './accountApi';
 import {DrupalBoard, RkbBoardBase, RkbIssueBase, toFile} from './boardApi';
 
-export type EventBoardMsgStatus = 'Open' | 'ReOpen' | 'Success' | 'Fail';
+export type EventBoardMsgStatus = 'o' | 'r' | 's' | 'f';
 
 export type EventImagesInfo = {
   uuid: string;
@@ -50,10 +50,10 @@ const toEventBoard = (data: DrupalBoard[]): ApiResult<RkbEventBoard> => {
           msg: item.body || '',
           created: item.created,
           changed: item.changed,
-          statusCode: item.field_event_status || 'O',
+          statusCode: item.field_event_status.toLowerCase() || 'o',
           status: item.field_event_status
             ? i18n.t(`event:${item.field_event_status.toLowerCase()}`)
-            : 'O', // pin, status, statusCode
+            : '',
           images: item.field_images ? item.field_images.split(', ') : [],
           link: item.field_text_link ? item.field_text_link.split(', ') : [],
           imagesInfo: info,

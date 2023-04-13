@@ -353,7 +353,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
         <AppButton
           style={[
             styles.button,
-            issue?.statusCode === 'Fail' && {
+            issue?.statusCode === 'f' && {
               backgroundColor: colors.white,
               borderTopWidth: 1,
               borderTopColor: colors.line,
@@ -362,12 +362,12 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
           title={i18n.t('ok')}
           titleStyle={[
             styles.buttonText,
-            issue?.statusCode === 'Fail' && {color: colors.black},
+            issue?.statusCode === 'f' && {color: colors.black},
           ]}
-          type={issue?.statusCode === 'Fail' ? 'secondary' : 'primary'}
+          type={issue?.statusCode === 'f' ? 'secondary' : 'primary'}
           onPress={() => navigation.goBack()}
         />
-        {issue?.statusCode === 'Fail' && (
+        {issue?.statusCode === 'f' && (
           <AppButton
             style={styles.button}
             title={i18n.t('event:reapply')}

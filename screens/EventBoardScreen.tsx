@@ -138,15 +138,11 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
       }
 
       const isDuplicated = !!eventBoard.list.find(
-        (l) =>
-          l.title === selectedEvent?.title &&
-          l.statusCode.toLowerCase() !== 'f',
+        (l) => l.title === selectedEvent?.title && l.statusCode !== 'f',
       );
 
       const isreOpenDuplicated = !!eventBoard.list.find(
-        (l) =>
-          l.title === selectedEvent?.title &&
-          l.statusCode.toLowerCase() === 'r',
+        (l) => l.title === selectedEvent?.title && l.statusCode === 'r',
       );
 
       if (isDuplicated || isreOpenDuplicated) {
@@ -175,9 +171,7 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
       }
 
       const isReapply = !!eventBoard.list.find(
-        (l) =>
-          l.title === selectedEvent?.title &&
-          l.statusCode.toLowerCase() === 'f',
+        (l) => l.title === selectedEvent?.title && l.statusCode === 'f',
       );
 
       const issue = {

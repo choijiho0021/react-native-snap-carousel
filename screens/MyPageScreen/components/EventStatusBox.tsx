@@ -70,9 +70,9 @@ const EventStatusBox: React.FC<EventStatusBoxProps> = ({
         styles.statusBox,
         {
           borderColor:
-            statusCode === 'Fail'
+            statusCode === 'f'
               ? colors.redError
-              : statusCode === 'Success'
+              : statusCode === 's'
               ? colors.shamrock
               : colors.clearBlue,
         },
@@ -80,9 +80,9 @@ const EventStatusBox: React.FC<EventStatusBoxProps> = ({
       <View style={styles.row}>
         <AppSvgIcon
           name={
-            statusCode === 'Fail'
+            statusCode === 'f'
               ? 'cautionRed'
-              : statusCode === 'Success'
+              : statusCode === 's'
               ? 'checkGreen'
               : 'cautionBlue'
           }
@@ -95,16 +95,16 @@ const EventStatusBox: React.FC<EventStatusBoxProps> = ({
             b: {
               fontWeight: 'bold',
               color:
-                statusCode === 'Fail'
+                statusCode === 'f'
                   ? colors.redError
-                  : statusCode === 'Success'
+                  : statusCode === 's'
                   ? colors.shamrock
                   : colors.clearBlue,
             },
           }}
         />
       </View>
-      {statusCode === 'Fail' && (rejectReason.length > 0 || !!otherReason) && (
+      {statusCode === 'f' && (rejectReason.length > 0 || !!otherReason) && (
         <View style={styles.reasonBox}>
           {rejectReason.length > 0 && rejectReason.map((r) => renderReason(r))}
           {!!otherReason && renderReason(otherReason)}

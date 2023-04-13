@@ -88,9 +88,9 @@ class BoardMsg extends Component<BoardMsgProps> {
                 styles.status,
                 {
                   color:
-                    statusCode === 'Fail'
+                    statusCode === 'f'
                       ? colors.redError
-                      : statusCode === 'Success'
+                      : statusCode === 's'
                       ? colors.shamrock
                       : statusCode === 'Closed'
                       ? colors.clearBlue
