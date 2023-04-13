@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   },
   attachBox: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     marginBottom: 56,
   },
   reply: {
@@ -248,7 +248,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
               .filter((item) => !_.isEmpty(item))
               .map((url, i) => (
                 <Pressable
-                  style={styles.imgFrame}
+                  style={[styles.imgFrame, i < 2 && {marginRight: 33}]}
                   key={utils.generateKey(`${url}${i}`)}
                   onPress={() => {
                     setShowImgModal(true);
