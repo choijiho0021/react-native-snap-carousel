@@ -189,7 +189,6 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
           break;
         case 'moveToEvent':
           if (!account.loggedIn) {
-            // 로그인 화면으로 이동
             action.modal.showModal({
               content: (
                 <AppModalContent
