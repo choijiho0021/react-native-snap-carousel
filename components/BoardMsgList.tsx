@@ -25,7 +25,6 @@ import {
 } from '@/redux/modules/eventBoard';
 import i18n from '@/utils/i18n';
 import {ValidationResult} from '@/utils/validationUtil';
-import AppActivityIndicator from './AppActivityIndicator';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';
 import AppModalForm from './AppModalForm';
@@ -82,11 +81,9 @@ const styles = StyleSheet.create({
 });
 
 type BoardMsgListProps = {
-  board: BoardModelState;
-  eventBoard: BoardModelState;
+  board?: BoardModelState;
+  eventBoard?: BoardModelState;
   account: AccountModelState;
-  pending: boolean;
-  pendingEvent: boolean;
   uid: number;
   isEvent?: boolean;
   onPress: (uuid: string, status: string) => void;
@@ -104,8 +101,6 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   action,
   account,
   uid,
-  pending,
-  pendingEvent,
   onPress,
 }) => {
   const [data, setData] = useState<RkbBoard[]>([]);
@@ -116,17 +111,13 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   const [mobile, setMobile] = useState('');
 
   useEffect(() => {
-    if (isEvent) {
-      action.eventBoard.getIssueList();
-    } else {
-      action.board.getIssueList();
-    }
     setMobile(utils.toPhoneNumber(account?.mobile));
-  }, [account?.mobile, action.board, action.eventBoard, isEvent]);
+  }, [account?.mobile]);
 
   useEffect(() => {
-    if (isEvent && eventBoard?.list.length > 0) setData(eventBoard?.list);
-    else if (board?.list.length > 0) setData(board?.list);
+    if (isEvent && (eventBoard?.list.length || 0) > 0)
+      setData(eventBoard?.list || []);
+    else if ((board?.list.length || 0) > 0) setData(board?.list || []);
   }, [board?.list, eventBoard?.list, eventBoard?.list.length, isEvent]);
 
   const onSubmit = useCallback(() => {
@@ -134,10 +125,15 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
       const number = mobile.replace(/-/g, '');
 
       if (isEvent)
-        setData(eventBoard.list.filter((item) => item.mobile.includes(number)));
-      else setData(board.list.filter((item) => item.mobile.includes(number)));
+        setData(
+          eventBoard?.list.filter((item) => item.mobile.includes(number)) || [],
+        );
+      else
+        setData(
+          board?.list.filter((item) => item.mobile.includes(number)) || [],
+        );
     }
-  }, [board.list, eventBoard.list, isEvent, mobile]);
+  }, [board?.list, eventBoard?.list, isEvent, mobile]);
 
   // 응답 메시지 화면으로 이동한다.
   const onSubmitPin = useCallback(() => {
@@ -278,9 +274,6 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
         }
       />
 
-      <AppActivityIndicator
-        visible={(pending || pendingEvent) && !refreshing}
-      />
       <AppModalForm
         visible={showModal}
         title={i18n.t('board:inputPass')}
@@ -296,14 +289,9 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
 };
 
 export default connect(
-  ({eventBoard, board, account, status}: RootState) => ({
-    eventBoard,
-    board,
+  ({account}: RootState) => ({
     account,
     uid: account.uid || 0,
-    pending: status.pending[boardActions.fetchIssueList.typePrefix] || false,
-    pendingEvent:
-      status.pending[eventBoardActions.fetchEventIssueList.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {

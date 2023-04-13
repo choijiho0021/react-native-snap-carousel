@@ -115,6 +115,14 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
   }, [navigation]);
 
   useEffect(() => {
+    action.eventBoard.getIssueList();
+  }, [action.eventBoard]);
+
+  useEffect(() => {
+    if (successEvent) action.eventBoard.getIssueList();
+  }, [action.eventBoard, successEvent]);
+
+  useEffect(() => {
     if (successEvent) setIndex(1);
   }, [successEvent]);
 
@@ -260,12 +268,13 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
                 isEvent: true,
               })
             }
+            eventBoard={eventBoard}
           />
         );
       }
       return null;
     },
-    [eventList, navigation, onPress, paramIssue, paramNid],
+    [eventBoard, eventList, navigation, onPress, paramIssue, paramNid],
   );
 
   const renderTabBar = useCallback(
@@ -313,6 +322,7 @@ export default connect(
     pendingEvent:
       status.pending[eventBoardActions.postEventIssue.typePrefix] ||
       status.pending[eventBoardActions.postEventAttach.typePrefix] ||
+      status.pending[eventBoardActions.fetchEventIssueList.typePrefix] ||
       false,
     successEvent: status.fulfilled[eventBoardActions.postEventIssue.typePrefix],
   }),

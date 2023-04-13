@@ -20,7 +20,11 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import {Utils} from '@/redux/api';
 import {RkbImage} from '@/redux/api/accountApi';
 import {RkbIssue} from '@/redux/api/boardApi';
-import {actions as boardActions, BoardAction} from '@/redux/modules/board';
+import {
+  actions as boardActions,
+  BoardAction,
+  BoardModelState,
+} from '@/redux/modules/board';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 
 const styles = StyleSheet.create({
@@ -43,6 +47,7 @@ type ContactBoardScreenRouteProp = RouteProp<
 type ContactBoardScreenProps = {
   navigation: ContactBoardScreenNavigationProp;
   route: ContactBoardScreenRouteProp;
+  board: BoardModelState;
 
   success: boolean;
   pending: boolean;
@@ -68,6 +73,7 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
   action,
   pending,
   success,
+  board,
 }) => {
   const [index, setIndex] = useState(params?.index ? params.index : 0);
   const routes = useRef([
@@ -75,6 +81,10 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
     {key: 'list', title: i18n.t('board:list')},
   ]).current;
   const [fontSize, setFontSize] = useState(16);
+
+  useEffect(() => {
+    action.board.getIssueList();
+  }, [action.board]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -133,12 +143,13 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
                 status,
               })
             }
+            board={board}
           />
         );
       }
       return null;
     },
-    [navigation, onPress],
+    [board, navigation, onPress],
   );
 
   const renderTabBar = useCallback(
@@ -176,10 +187,12 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
 };
 
 export default connect(
-  ({status}: RootState) => ({
+  ({board, status}: RootState) => ({
+    board,
     pending:
       status.pending[boardActions.postIssue.typePrefix] ||
       status.pending[boardActions.postAttach.typePrefix] ||
+      status.pending[boardActions.fetchIssueList.typePrefix] ||
       false,
     success: status.fulfilled[boardActions.postIssue.typePrefix],
   }),
