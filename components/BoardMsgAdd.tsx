@@ -254,8 +254,8 @@ type BoardMsgAddProps = {
   eventList?: RkbEvent[];
   paramIssue?: RkbEventBoard;
   paramNid?: string;
-  onPressEvent?: (v: OnPressEventParams) => void;
-  onPressContact?: (v: OnPressContactParams) => void;
+  onPressEvent?: (v: OnPressEventParams) => boolean;
+  onPressContact?: (v: OnPressContactParams) => boolean;
 };
 
 const validationRule: ValidationRule = {
@@ -923,23 +923,28 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         disabled={!isEvent && hasError}
         onPress={() => {
           if (isEvent && onPressEvent)
-            onPressEvent({
-              title,
-              msg,
-              selectedEvent,
-              linkParam,
-              attachment,
-            });
-          else if (onPressContact) {
-            onPressContact({
-              title,
-              msg,
-              mobile,
-              pin,
-              attachment,
-            });
-          }
-          setInitial();
+            if (
+              onPressEvent({
+                title,
+                msg,
+                selectedEvent,
+                linkParam,
+                attachment,
+              })
+            )
+              setInitial();
+            else if (onPressContact) {
+              if (
+                onPressContact({
+                  title,
+                  msg,
+                  mobile,
+                  pin,
+                  attachment,
+                })
+              )
+                setInitial();
+            }
         }}
         type="primary"
       />

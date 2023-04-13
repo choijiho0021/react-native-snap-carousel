@@ -83,7 +83,7 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
     ({title, msg, mobile, pin, attachment}: OnPressContactParams) => {
       if (!title || !msg) {
         console.log('@@@ invalid issue', title, msg);
-        return;
+        return false;
       }
       const issue = {
         title,
@@ -104,6 +104,7 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
           .toArray(),
       } as RkbIssue;
       action.board.postAndGetList(issue);
+      return true;
     },
     [action.board],
   );

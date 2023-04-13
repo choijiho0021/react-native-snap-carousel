@@ -119,22 +119,22 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
     }: OnPressEventParams) => {
       if (!title) {
         action.toast.push('event:empty:title');
-        return;
+        return false;
       }
       if (!msg) {
         action.toast.push('event:empty:msg');
-        return;
+        return false;
       }
       // 링크 필수 인경우
       if (selectedEvent?.rule?.link && linkParam?.find((l) => l.value === '')) {
         action.toast.push('event:empty:link');
-        return;
+        return false;
       }
 
       // 이미지 필수 인경우
       if (selectedEvent?.rule?.image && attachment.size < 1) {
         action.toast.push('event:empty:image');
-        return;
+        return false;
       }
 
       const isDuplicated = !!eventBoard.list.find(
@@ -167,7 +167,7 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
             </AppModalContent>
           ),
         });
-        return;
+        return false;
       }
 
       const isReapply = !!eventBoard.list.find(
@@ -214,6 +214,7 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
           </AppModalContent>
         ),
       });
+      return true;
     },
     [action, eventBoard],
   );
