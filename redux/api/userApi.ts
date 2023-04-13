@@ -1,6 +1,6 @@
 /* eslint-disable eqeqeq */
 import _ from 'underscore';
-import {retrieveData} from '@/utils/utils';
+import {retrieveData, storeData, removeData} from '@/utils/utils';
 import {AccountAuth} from '@/redux/modules/account';
 import api, {ApiResult} from './api';
 import {RkbFile} from './accountApi';
@@ -13,6 +13,8 @@ const KEY_MOBILE = 'account.mobile';
 const KEY_PIN = 'account.pin';
 
 const KEY_TOKEN = 'account.token';
+
+const LOGOUT_TOKEN = 'logout.token';
 
 export type RkbUser = {
   id?: string;
@@ -59,6 +61,8 @@ export type RkbLogin = {
 const toLogin =
   (pass: string) =>
   (login: RkbLogin): ApiResult<RkbLogin> => {
+    storeData(LOGOUT_TOKEN, login.logout_token);
+
     if (login.current_user) {
       return api.success([{...login, pass}]);
     }
@@ -72,7 +76,7 @@ const getToken = () => {
     undefined,
     undefined,
     {isJson: false},
-  );
+  ) as unknown as Promise<string>;
 };
 
 const clearCookies = () => {
@@ -98,9 +102,11 @@ const resetPw = ({user, pass}: AccountAuth) => {
   );
 };
 
-const logOut = async (token: string) => {
-  if (!token)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
+const logOut = async () => {
+  const token = (await retrieveData(LOGOUT_TOKEN)) || '';
+  if (token) {
+    removeData(LOGOUT_TOKEN);
+  }
 
   return api.callHttp(
     `${api.httpUrl(api.path.logout)}?token=${token}`,
@@ -157,68 +163,34 @@ const logInOnce = ({
   );
 };
 
-const logIn = async ({user, pass}: {user: string; pass: string}) => {
+const logIn = async ({
+  user,
+  pass,
+  xcsrftoken,
+}: {
+  user: string;
+  pass: string;
+  xcsrftoken?: string;
+}) => {
   if (!user)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
   if (!pass)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: pass');
 
-  let token = await retrieveData(KEY_TOKEN);
-  if (token) {
-    /*  bhtak 2021/07/17
-    기존 login token을 다시 사용하는 경우, 실제 단말에서는 제대로 동작하지 않는 경우가 많아서 아래 루틴은 사용하지 않도록 처리함
-    항상 로그아웃 후 다시 로그인 하도록 처리 
-    const res = await getByName({name: user, token});
-    if (
-      res.result === 0 &&
-      res.objects.length > 0 &&
-      res.objects[0].drupal_internal__uid
-    ) {
-      console.log('@@@ reuse token', token);
-      // x-csrf-token은 새로운 값으로 갱신한다.
-      token = await getToken();
+  await logOut();
 
-      // 로그인 세션이 남아 있는 경우, 기존 정보를 가지고 로그인 처리
-      const uid = res.objects[0]?.drupal_internal__uid;
-      const login: ApiResult<RkbLogin> = {
-        result: 0,
-        objects: [
-          {
-            csrf_token: token,
-            current_user: {
-              name: user,
-              uid,
-            },
-            pass,
-            logout_token: '',
-          },
-        ],
-      };
-      return Promise.resolve(login);
-    }
-    */
-    // 기존 token을 데이터 조회에 실패한 경우에는 로그아웃 후 다시 로그인
-    console.log('@@@ logout token', token);
-    await logOut(token);
+  let token = xcsrftoken;
+  if (!token) {
+    token = await getToken();
+    console.log('@@@ try login', token);
   }
-
-  // 로그인 token이 없는 경우
-  /* bhtak 2021/07/21 clearCookie()는 제대로 동작을 안해서, login 실패하면 logout 후에 다시 시도하는 것으로 변경함
-  await clearCookies();
-
-  const cookies = await CookieManager.getAll();
-  console.log('@@@ cookie', cookies);
-  */
-
-  token = await getToken();
-  console.log('@@@ try login', token);
 
   const rsp = await logInOnce({token, user, pass});
   if (rsp.result == 0) return Promise.resolve(rsp);
 
   // 실패한 경우
   console.log('@@@ logout and try again');
-  await logOut(token);
+  await logOut();
   return logInOnce({token, user, pass});
 };
 
@@ -513,6 +485,7 @@ export default {
   resetPw,
   logOut,
   logIn,
+  logInOnce,
   getByName,
   getByMail,
   update,
