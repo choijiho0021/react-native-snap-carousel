@@ -12,6 +12,7 @@ import {RkbProduct} from '@/redux/api/productApi';
 import {RkbReceipt} from '@/screens/ReceiptScreen';
 import {GuideOption} from '@/screens/UserGuideScreen/GuideHomeScreen';
 import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
+import {RkbEventBoard, RkbEventIssue} from '@/redux/api/eventBoardApi';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti';
 export type PymMethodScreenMode =
@@ -20,7 +21,7 @@ export type PymMethodScreenMode =
   | 'new_sim'
   | 'recharge';
 type ContactBoardRouteParam = {index?: number} | undefined;
-type EventBoardRouteParam = {index?: number; title?: string} | undefined;
+type EventBoardRouteParam = {index?: number; issue?: RkbEventIssue} | undefined;
 type FaqRouteParam = {key?: string; num?: string} | undefined;
 
 export type PaymentParams = {

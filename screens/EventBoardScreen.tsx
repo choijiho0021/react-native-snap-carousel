@@ -52,10 +52,7 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
   ]).current;
   const [fontSize, setFontSize] = useState(16);
   const eventList = useMemo(() => promotion.event || [], [promotion.event]);
-  const title = useMemo(
-    () => (params?.title ? params.title : ''),
-    [params?.title],
-  );
+  const paramIssue = useMemo(() => params?.issue, [params?.issue]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -74,7 +71,7 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
             jumpTo={jumpTo}
             isEvent
             eventList={eventList}
-            paramTitle={title}
+            paramIssue={paramIssue}
           />
         );
       }
@@ -94,7 +91,7 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
       }
       return null;
     },
-    [eventList, navigation],
+    [eventList, navigation, paramIssue],
   );
 
   const renderTabBar = useCallback(
