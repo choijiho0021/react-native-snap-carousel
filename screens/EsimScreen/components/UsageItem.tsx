@@ -427,6 +427,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
       expire,
       isShowUsage,
       item.key,
+      item.partner,
       item.prodName,
       item.type,
       showExpire,
