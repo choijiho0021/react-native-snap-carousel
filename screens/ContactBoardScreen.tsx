@@ -1,11 +1,15 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
+import {List} from 'immutable';
+import {Image as CropImage} from 'react-native-image-crop-picker';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {StyleSheet, View, Dimensions} from 'react-native';
 import {TabView, TabBar} from 'react-native-tab-view';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import i18n from '@/utils/i18n';
 import AppBackButton from '@/components/AppBackButton';
 import BoardMsgAdd from '@/components/BoardMsgAdd';
@@ -14,6 +18,9 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {Utils} from '@/redux/api';
+import {RkbImage} from '@/redux/api/accountApi';
+import {RkbIssue} from '@/redux/api/boardApi';
+import {actions as boardActions, BoardAction} from '@/redux/modules/board';
 
 const styles = StyleSheet.create({
   container: {
@@ -35,13 +42,26 @@ type ContactBoardScreenRouteProp = RouteProp<
 type ContactBoardScreenProps = {
   navigation: ContactBoardScreenNavigationProp;
   route: ContactBoardScreenRouteProp;
+
+  action: {
+    board: BoardAction;
+  };
 };
 
 type TabRoute = {key: string; title: string};
 
+export type OnPressContactParams = {
+  title?: string;
+  msg?: string;
+  mobile?: string;
+  pin?: string;
+  attachment: List<CropImage>;
+};
+
 const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
   route: {params},
   navigation,
+  action,
 }) => {
   const [index, setIndex] = useState(params?.index ? params.index : 0);
   const routes = useRef([
@@ -59,10 +79,39 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
     Utils.fontScaling(16).then(setFontSize);
   }, [navigation]);
 
+  const onPress = useCallback(
+    ({title, msg, mobile, pin, attachment}: OnPressContactParams) => {
+      if (!title || !msg) {
+        console.log('@@@ invalid issue', title, msg);
+        return;
+      }
+      const issue = {
+        title,
+        msg,
+        mobile,
+        pin,
+        images: attachment
+          .map(
+            ({mime, size, width, height, data}) =>
+              ({
+                mime,
+                size,
+                width,
+                height,
+                data,
+              } as RkbImage),
+          )
+          .toArray(),
+      } as RkbIssue;
+      action.board.postAndGetList(issue);
+    },
+    [action.board],
+  );
+
   const renderScene = useCallback(
     ({route, jumpTo}: {route: TabRoute; jumpTo: (v: string) => void}) => {
       if (route.key === 'new') {
-        return <BoardMsgAdd jumpTo={jumpTo} />;
+        return <BoardMsgAdd jumpTo={jumpTo} onPressContact={onPress} />;
       }
       if (route.key === 'list') {
         return (
@@ -78,7 +127,7 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
       }
       return null;
     },
-    [navigation],
+    [navigation, onPress],
   );
 
   const renderTabBar = useCallback(
@@ -114,4 +163,11 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
   );
 };
 
-export default ContactBoardScreen;
+export default connect(
+  () => ({}),
+  (dispatch) => ({
+    action: {
+      board: bindActionCreators(boardActions, dispatch),
+    },
+  }),
+)(ContactBoardScreen);

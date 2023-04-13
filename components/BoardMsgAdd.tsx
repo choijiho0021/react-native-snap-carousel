@@ -26,8 +26,6 @@ import {colors} from '@/constants/Colors';
 import {attachmentSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
-import {RkbImage} from '@/redux/api/accountApi';
-import {RkbIssue} from '@/redux/api/boardApi';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import {
@@ -54,17 +52,11 @@ import AppText from './AppText';
 import AppTextInput from './AppTextInput';
 import {RkbEvent} from '@/redux/api/promotionApi';
 import AppModalDropDown from './AppModalDropDown';
-import {
-  EventImagesInfo,
-  RkbEventBoard,
-  RkbEventIssue,
-} from '@/redux/api/eventBoardApi';
+import {EventImagesInfo, RkbEventBoard} from '@/redux/api/eventBoardApi';
 import AppSvgIcon from './AppSvgIcon';
-import AppModalContent from './ModalContent/AppModalContent';
-import AppStyledText from './AppStyledText';
 import EventStatusBox from '@/screens/MyPageScreen/components/EventStatusBox';
-import {API} from '@/redux/api';
-import ImgWithIndicator from '@/screens/MyPageScreen/components/ImgWithIndicator';
+import {OnPressEventParams} from '@/screens/EventBoardScreen';
+import {OnPressContactParams} from '@/screens/ContactBoardScreen';
 
 const styles = StyleSheet.create({
   passwordInput: {
@@ -258,18 +250,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 20,
   },
-  modalText: {
-    ...appStyles.normal16Text,
-    lineHeight: 26,
-    letterSpacing: -0.32,
-    color: colors.warmGrey,
-  },
-  modalBoldText: {
-    ...appStyles.semiBold16Text,
-    lineHeight: 26,
-    letterSpacing: -0.32,
-    color: colors.black,
-  },
 });
 
 type BoardMsgAddProps = {
@@ -286,6 +266,8 @@ type BoardMsgAddProps = {
   eventList?: RkbEvent[];
   paramIssue?: RkbEventBoard;
   paramNid?: string;
+  onPressEvent?: (v: OnPressEventParams) => void;
+  onPressContact?: (v: OnPressContactParams) => void;
 
   action: {
     board: BoardAction;
@@ -320,6 +302,10 @@ export type EventParamImagesType = {
   imagesInfo: EventImagesInfo;
 };
 
+export type EventLinkType = {
+  value: string;
+};
+
 const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   account,
   success,
@@ -333,13 +319,15 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   pending,
   pendingEvent,
   eventBoard,
+  onPressEvent,
+  onPressContact,
 }) => {
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
   const [mobile, setMobile] = useState('');
   const [errors, setErrors] = useState<ValidationResult>({});
   const [title, setTitle] = useState<string>();
   const [msg, setMsg] = useState<string>();
-  const [linkParam, setLinkParam] = useState([{value: ''}]);
+  const [linkParam, setLinkParam] = useState<EventLinkType[]>([{value: ''}]);
   const [linkCount, setLinkCount] = useState(1);
   const [pin, setPin] = useState<string>();
   const [attachment, setAttachment] = useState(List<CropImage>());
@@ -439,132 +427,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     if (isEvent) setTitle(selectedEvent.title);
   }, [isEvent, selectedEvent.title]);
 
-  const onPress = useCallback(async () => {
-    if (isEvent) {
-      if (!title) {
-        action.toast.push('event:empty:title');
-        return;
-      }
-      if (!msg) {
-        action.toast.push('event:empty:msg');
-        return;
-      }
-      // 링크 필수 인경우
-      if (selectedEvent.rule?.link && linkParam.find((l) => l.value === '')) {
-        action.toast.push('event:empty:link');
-        return;
-      }
-
-      // 이미지 필수 인경우
-      if (selectedEvent.rule?.image && attachment.size < 1) {
-        action.toast.push('event:empty:image');
-        return;
-      }
-
-      const isDuplicated = !!eventBoard.list.find(
-        (l) => l.title === selectedEvent.title && l.statusCode !== 'Fail',
-      );
-
-      const isreOpenDuplicated = !!eventBoard.list.find(
-        (l) => l.title === selectedEvent.title && l.statusCode === 'ReOpen',
-      );
-
-      if (isDuplicated || isreOpenDuplicated) {
-        action.modal.showModal({
-          content: (
-            <AppModalContent
-              type="info"
-              onOkClose={() => {
-                action.modal.closeModal();
-              }}>
-              <View style={{marginLeft: 30}}>
-                <AppStyledText
-                  text={i18n.t(
-                    `event:alert:duplication${
-                      isreOpenDuplicated ? ':reopen' : ''
-                    }`,
-                  )}
-                  textStyle={styles.modalText}
-                  format={{b: styles.modalBoldText}}
-                />
-              </View>
-            </AppModalContent>
-          ),
-        });
-        return;
-      }
-
-      const isReapply = !!eventBoard.list.find(
-        (l) => l.title === selectedEvent.title && l.statusCode === 'Fail',
-      );
-
-      const issue = {
-        title,
-        msg,
-        mobile,
-        pin,
-        link: linkParam,
-        eventUuid: selectedEvent.uuid,
-        eventStatus: isReapply ? 'R' : 'O',
-        paramImages,
-        images: attachment
-          .map(
-            ({mime, size, width, height, data}) =>
-              ({
-                mime,
-                size,
-                width,
-                height,
-                data,
-              } as RkbImage),
-          )
-          .toArray(),
-      } as RkbEventIssue;
-
-      await action.eventBoard.postAndGetList(issue);
-
-      action.modal.showModal({
-        content: (
-          <AppModalContent
-            type="info"
-            onOkClose={() => {
-              action.modal.closeModal();
-            }}>
-            <View style={{marginLeft: 30}}>
-              <AppStyledText
-                text={i18n.t(`event:alert:${isReapply ? 'reOpen' : 'open'}`)}
-                textStyle={styles.modalText}
-                format={{b: styles.modalBoldText}}
-              />
-            </View>
-          </AppModalContent>
-        ),
-      });
-    } else {
-      if (!title || !msg) {
-        console.log('@@@ invalid issue', title, msg);
-        return;
-      }
-      const issue = {
-        title,
-        msg,
-        mobile,
-        pin,
-        images: attachment
-          .map(
-            ({mime, size, width, height, data}) =>
-              ({
-                mime,
-                size,
-                width,
-                height,
-                data,
-              } as RkbImage),
-          )
-          .toArray(),
-      } as RkbIssue;
-      await action.board.postAndGetList(issue);
-    }
+  const setInitial = useCallback(async () => {
     setSelectedEvent({title: ''});
     setLinkParam([{value: ''}]);
     setLinkCount(1);
@@ -572,19 +435,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     setTitle(undefined);
     setPin(undefined);
     setAttachment((a) => a.clear());
-  }, [
-    action,
-    attachment,
-    eventBoard.list,
-    isEvent,
-    linkParam,
-    mobile,
-    msg,
-    paramImages,
-    pin,
-    selectedEvent,
-    title,
-  ]);
+  }, []);
 
   const error = useCallback(
     (key: string) => {
@@ -1091,7 +942,26 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         }
         title={i18n.t(`${isEvent ? 'event:new2' : 'board:new'}`)}
         disabled={!isEvent && hasError}
-        onPress={onPress}
+        onPress={() => {
+          if (isEvent && onPressEvent)
+            onPressEvent({
+              title,
+              msg,
+              selectedEvent,
+              linkParam,
+              attachment,
+            });
+          else if (onPressContact) {
+            onPressContact({
+              title,
+              msg,
+              mobile,
+              pin,
+              attachment,
+            });
+          }
+          setInitial();
+        }}
         type="primary"
       />
 

@@ -3,7 +3,6 @@ import {Buffer} from 'buffer';
 import i18n from '@/utils/i18n';
 import api, {ApiResult} from './api';
 import {RkbImage} from './accountApi';
-import {EventParamImagesType} from '@/components/BoardMsgAdd';
 import {DrupalBoard, RkbBoardBase, RkbIssueBase, toFile} from './boardApi';
 
 export type EventBoardMsgStatus = 'Open' | 'ReOpen' | 'Success' | 'Fail';
@@ -75,21 +74,19 @@ export type RkbEventIssue = RkbIssueBase & {
   link: {value: string}[];
   eventUuid: string;
   eventStatus: string;
-  paramImages: EventParamImagesType[];
+  // paramImages: EventParamImagesType[];
 };
 
 const post = ({
   title,
   msg,
-  mobile,
-  pin,
   images,
   link,
   eventUuid,
   token,
   eventStatus,
-  paramImages,
-}: RkbEventIssue & {
+}: // paramImages,
+RkbEventIssue & {
   token?: string;
 }) => {
   if (!title || !msg || !token)
@@ -103,8 +100,6 @@ const post = ({
       attributes: {
         title: {value: title},
         body: {value: msg},
-        field_mobile: {value: mobile.replace(/-/g, '')},
-        field_pin: {value: pin},
         field_text_link: link,
         field_event_status: {value: eventStatus},
       },
