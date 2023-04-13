@@ -22,7 +22,6 @@ import {
 import {
   actions as eventBoardActions,
   EventBoardAction,
-  EventBoardModelState,
 } from '@/redux/modules/eventBoard';
 import i18n from '@/utils/i18n';
 import {ValidationResult} from '@/utils/validationUtil';
@@ -84,7 +83,7 @@ const styles = StyleSheet.create({
 
 type BoardMsgListProps = {
   board: BoardModelState;
-  eventBoard: EventBoardModelState;
+  eventBoard: BoardModelState;
   account: AccountModelState;
   pending: boolean;
   pendingEvent: boolean;

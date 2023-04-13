@@ -30,13 +30,16 @@ import {RkbImage} from '@/redux/api/accountApi';
 import {RkbIssue} from '@/redux/api/boardApi';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
-import {actions as boardActions, BoardAction} from '@/redux/modules/board';
+import {
+  actions as boardActions,
+  BoardAction,
+  BoardModelState,
+} from '@/redux/modules/board';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import {
   actions as eventBoardActions,
   EventBoardAction,
-  EventBoardModelState,
 } from '@/redux/modules/eventBoard';
 import i18n from '@/utils/i18n';
 import validationUtil, {
@@ -276,7 +279,7 @@ type BoardMsgAddProps = {
   successEvent: boolean;
   pendingEvent: boolean;
 
-  eventBoard: EventBoardModelState;
+  eventBoard: BoardModelState;
 
   jumpTo: (v: string) => void;
   isEvent?: boolean;
