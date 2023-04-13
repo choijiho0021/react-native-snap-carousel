@@ -1,15 +1,15 @@
 import _ from 'underscore';
 import {Buffer} from 'buffer';
 import i18n from '@/utils/i18n';
-import api, {ApiResult} from './api';
+import api, {ApiResult, DrupalNode} from './api';
 import {RkbImage} from './accountApi';
-import {EventParamImagesType} from '@/components/BoardMsgAdd';
 import {DrupalBoard, RkbBoardBase, RkbIssueBase, toFile} from './boardApi';
+import {EventParamImagesType} from '@/components/BoardMsgAdd';
 
-export type EventBoardMsgStatus = 'Open' | 'ReOpen' | 'Success' | 'Fail';
+export type EventBoardMsgStatus = 'o' | 'r' | 's' | 'f';
 
 export type EventImagesInfo = {
-  uuid: string;
+  target_id: string;
   width: string;
   height: string;
 };
@@ -51,14 +51,11 @@ const toEventBoard = (data: DrupalBoard[]): ApiResult<RkbEventBoard> => {
           msg: item.body || '',
           created: item.created,
           changed: item.changed,
-          mobile: item.field_mobile || '',
-          pin: item.field_pin || '',
-          statusCode: item.field_event_status || 'O',
+          statusCode: item.field_event_status.toLowerCase() || 'o',
           status: item.field_event_status
             ? i18n.t(`event:${item.field_event_status.toLowerCase()}`)
-            : 'O', // pin, status, statusCode
+            : '',
           images: item.field_images ? item.field_images.split(', ') : [],
-          replyImages: item.field_reply_images.split(', ') || [],
           link: item.field_text_link ? item.field_text_link.split(', ') : [],
           imagesInfo: info,
           rejectReason: item.field_event_reject_reason
@@ -78,14 +75,46 @@ export type RkbEventIssue = RkbIssueBase & {
   link: {value: string}[];
   eventUuid: string;
   eventStatus: string;
-  paramImages: EventParamImagesType[];
+  paramImages?: EventParamImagesType[];
 };
 
-const post = ({
+type DrupalImageFile = {
+  filename: string;
+  uuid: string;
+  fid: string;
+};
+
+const toParamImg = (data: DrupalImageFile[]): ApiResult<string[]> => {
+  if (_.isArray(data)) {
+    return api.success<string[]>(data.map((d) => d.uuid));
+  }
+};
+
+const getImgUuid = ({
+  targetIdList,
+  token,
+}: {
+  targetIdList: string[];
+  token: string;
+}) => {
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.file)}/${targetIdList.join(', ')}?_format=hal_json`,
+    toParamImg,
+    api.withToken(token, 'vnd.api+json'),
+  );
+};
+
+type EventImagesDataType = {
+  type: string;
+  id?: string;
+  meta?: {
+    width?: number;
+    height?: number;
+  };
+};
+const post = async ({
   title,
   msg,
-  mobile,
-  pin,
   images,
   link,
   eventUuid,
@@ -98,6 +127,39 @@ const post = ({
   if (!title || !msg || !token)
     return api.reject(api.E_INVALID_ARGUMENT, 'empty title, body or token');
 
+  let field_images_data: EventImagesDataType[] = [];
+
+  if (paramImages && paramImages.length > 0) {
+    const targetIdList = paramImages.map((p) => p.imagesInfo.target_id);
+    const {objects} = await getImgUuid({targetIdList, token});
+
+    field_images_data = field_images_data.concat(
+      paramImages.map((item, idx) => ({
+        type: 'file--image',
+        id: objects[idx].toString(),
+        meta: {
+          width: Number(item.imagesInfo.width),
+          height: Number(item.imagesInfo.height),
+        },
+      })),
+    );
+  }
+
+  if (images && images.length > 0) {
+    field_images_data = field_images_data.concat(
+      images.map((item) => ({
+        type: 'file--image',
+        id: item.uuid,
+        meta: {
+          width: item.width,
+          height: item.height,
+        },
+      })),
+    );
+  }
+
+  console.log('@@@@ field_images_data', field_images_data);
+
   const url = `${api.httpUrl(api.path.jsonapi.eventBoard)}`;
   const headers = api.withToken(token, 'vnd.api+json');
   const body = {
@@ -106,33 +168,14 @@ const post = ({
       attributes: {
         title: {value: title},
         body: {value: msg},
-        field_mobile: {value: mobile.replace(/-/g, '')},
-        field_pin: {value: pin},
         field_text_link: link,
         field_event_status: {value: eventStatus},
       },
       relationships:
-        images && images.length > 0
+        field_images_data.length > 0
           ? {
               field_images: {
-                data: images.map((item) => ({
-                  type: 'file--image',
-                  id: item.uuid,
-                  meta: {
-                    width: item.width,
-                    height: item.height,
-                  },
-                })),
-                // .concat(
-                //   paramImages.map((item) => ({
-                //     type: 'file--image',
-                //     id: {target_id: Number(item.imagesInfo.uuid)},
-                //     meta: {
-                //       width: Number(item.imagesInfo.width),
-                //       height: Number(item.imagesInfo.height),
-                //     },
-                //   })),
-                // ),
+                data: field_images_data,
               },
               field_ref_event: {
                 data: {
