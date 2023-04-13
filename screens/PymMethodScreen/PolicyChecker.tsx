@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useState} from 'react';
+import React, {memo, useCallback, useState, useMemo} from 'react';
 import Analytics from 'appcenter-analytics';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
@@ -26,27 +26,31 @@ const styles = StyleSheet.create({
   },
 });
 
-const navParam = {
-  '1': {
-    key: 'setting:privacy',
-    title: i18n.t('pym:privacy'),
-  },
-  '2': {
-    key: 'pym:agreement',
-    title: i18n.t('pym:paymentAgency'),
-  },
-};
-
 const PolicyChecker = ({onPress}: {onPress?: (v: boolean) => void}) => {
   const navigation = useNavigation();
   const [checked, setChecked] = useState(false);
+
+  const navParam = useMemo(
+    () => ({
+      '1': {
+        key: 'setting:privacy',
+        title: i18n.t('pym:privacy'),
+      },
+      '2': {
+        key: 'pym:agreement',
+        title: i18n.t('pym:paymentAgency'),
+      },
+    }),
+    [],
+  );
+
   const move = useCallback(
     (key: '1' | '2') => {
       const param = navParam[key];
       Analytics.trackEvent('Page_View_Count', {page: param.key});
       navigation.navigate('SimpleText', param);
     },
-    [navigation],
+    [navParam, navigation],
   );
 
   return (
