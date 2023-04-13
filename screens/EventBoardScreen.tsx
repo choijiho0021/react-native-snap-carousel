@@ -32,6 +32,7 @@ import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
 import {RkbImage} from '@/redux/api/accountApi';
 import {RkbEventIssue} from '@/redux/api/eventBoardApi';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 
 const styles = StyleSheet.create({
   container: {
@@ -64,6 +65,8 @@ type EventBoardScreenProps = {
   route: EventBoardScreenRouteProp;
   promotion: PromotionModelState;
 
+  pendingEvent: boolean;
+  successEvent: boolean;
   eventBoard: BoardModelState;
 
   action: {
@@ -89,6 +92,8 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
   promotion,
   action,
   eventBoard,
+  pendingEvent,
+  successEvent,
 }) => {
   const [index, setIndex] = useState(params?.index ? params.index : 0);
   const routes = useRef([
@@ -108,6 +113,10 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
 
     Utils.fontScaling(16).then(setFontSize);
   }, [navigation]);
+
+  useEffect(() => {
+    if (successEvent) setIndex(1);
+  }, [successEvent]);
 
   const onPress = useCallback(
     ({
@@ -197,26 +206,33 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
 
       action.eventBoard.postAndGetList(issue);
 
-      action.modal.showModal({
-        content: (
-          <AppModalContent
-            type="info"
-            onOkClose={() => {
-              action.modal.closeModal();
-            }}>
-            <View style={{marginLeft: 30}}>
-              <AppStyledText
-                text={i18n.t(`event:alert:${isReapply ? 'reOpen' : 'open'}`)}
-                textStyle={styles.modalText}
-                format={{b: styles.modalBoldText}}
-              />
-            </View>
-          </AppModalContent>
-        ),
-      });
+      if (successEvent)
+        action.modal.showModal({
+          content: (
+            <AppModalContent
+              type="info"
+              onOkClose={() => {
+                action.modal.closeModal();
+              }}>
+              <View style={{marginLeft: 30}}>
+                <AppStyledText
+                  text={i18n.t(`event:alert:${isReapply ? 'reOpen' : 'open'}`)}
+                  textStyle={styles.modalText}
+                  format={{b: styles.modalBoldText}}
+                />
+              </View>
+            </AppModalContent>
+          ),
+        });
       return true;
     },
-    [action, eventBoard],
+    [
+      action.eventBoard,
+      action.modal,
+      action.toast,
+      eventBoard.list,
+      successEvent,
+    ],
   );
 
   const renderScene = useCallback(
@@ -277,6 +293,7 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
 
   return (
     <View style={styles.container}>
+      <AppActivityIndicator visible={pendingEvent} />
       <TabView
         style={styles.container}
         navigationState={{index, routes}}
@@ -290,9 +307,14 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
 };
 
 export default connect(
-  ({eventBoard, promotion}: RootState) => ({
+  ({eventBoard, promotion, status}: RootState) => ({
     eventBoard,
     promotion,
+    pendingEvent:
+      status.pending[eventBoardActions.postEventIssue.typePrefix] ||
+      status.pending[eventBoardActions.postEventAttach.typePrefix] ||
+      false,
+    successEvent: status.fulfilled[eventBoardActions.postEventIssue.typePrefix],
   }),
   (dispatch) => ({
     action: {

@@ -27,14 +27,11 @@ import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
-import {actions as boardActions} from '@/redux/modules/board';
-import {actions as eventBoardActions} from '@/redux/modules/eventBoard';
 import i18n from '@/utils/i18n';
 import validationUtil, {
   ValidationResult,
   ValidationRule,
 } from '@/utils/validationUtil';
-import AppActivityIndicator from './AppActivityIndicator';
 import AppAlert from './AppAlert';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';
@@ -244,11 +241,6 @@ const styles = StyleSheet.create({
 
 type BoardMsgAddProps = {
   account: AccountModelState;
-  success: boolean;
-  pending: boolean;
-  successEvent: boolean;
-  pendingEvent: boolean;
-
   jumpTo: (v: string) => void;
   isEvent?: boolean;
   eventList?: RkbEvent[];
@@ -289,15 +281,10 @@ export type EventLinkType = {
 
 const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   account,
-  success,
-  successEvent,
   isEvent = false,
   eventList = [],
   paramIssue,
   paramNid,
-  jumpTo,
-  pending,
-  pendingEvent,
   onPressEvent,
   onPressContact,
 }) => {
@@ -381,13 +368,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
 
     setErrors(validationUtil.validate('mobile', number));
   }, [account]);
-
-  useEffect(() => {
-    if (success || successEvent) {
-      // post가 완료되면 list 텝으로 전환한다.
-      jumpTo('list');
-    }
-  }, [jumpTo, success, successEvent]);
 
   const validate = useCallback((key: string, value: string) => {
     const valid = validationUtil.validate(key, value, validationRule);
@@ -682,8 +662,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppActivityIndicator visible={pending || pendingEvent} />
-
       <KeyboardAwareScrollView
         enableOnAndroid
         enableResetScrollToCoords={false}
@@ -922,7 +900,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         title={i18n.t(`${isEvent ? 'event:new2' : 'board:new'}`)}
         disabled={!isEvent && hasError}
         onPress={() => {
-          if (isEvent && onPressEvent)
+          if (isEvent && onPressEvent) {
             if (
               onPressEvent({
                 title,
@@ -933,18 +911,18 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
               })
             )
               setInitial();
-            else if (onPressContact) {
-              if (
-                onPressContact({
-                  title,
-                  msg,
-                  mobile,
-                  pin,
-                  attachment,
-                })
-              )
-                setInitial();
-            }
+          } else if (onPressContact) {
+            if (
+              onPressContact({
+                title,
+                msg,
+                mobile,
+                pin,
+                attachment,
+              })
+            )
+              setInitial();
+          }
         }}
         type="primary"
       />
@@ -968,16 +946,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   );
 };
 
-export default connect(({account, status}: RootState) => ({
+export default connect(({account}: RootState) => ({
   account,
-  success: status.fulfilled[boardActions.postIssue.typePrefix],
-  successEvent: status.fulfilled[eventBoardActions.postEventIssue.typePrefix],
-  pending:
-    status.pending[boardActions.postIssue.typePrefix] ||
-    status.pending[boardActions.postAttach.typePrefix] ||
-    false,
-  pendingEvent:
-    status.pending[eventBoardActions.postEventIssue.typePrefix] ||
-    status.pending[eventBoardActions.postEventAttach.typePrefix] ||
-    false,
 }))(BoardMsgAdd);

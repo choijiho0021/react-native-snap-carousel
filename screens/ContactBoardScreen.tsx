@@ -9,7 +9,7 @@ import {TabView, TabBar} from 'react-native-tab-view';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import {RootState, bindActionCreators} from 'redux';
 import i18n from '@/utils/i18n';
 import AppBackButton from '@/components/AppBackButton';
 import BoardMsgAdd from '@/components/BoardMsgAdd';
@@ -21,6 +21,7 @@ import {Utils} from '@/redux/api';
 import {RkbImage} from '@/redux/api/accountApi';
 import {RkbIssue} from '@/redux/api/boardApi';
 import {actions as boardActions, BoardAction} from '@/redux/modules/board';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 
 const styles = StyleSheet.create({
   container: {
@@ -43,6 +44,9 @@ type ContactBoardScreenProps = {
   navigation: ContactBoardScreenNavigationProp;
   route: ContactBoardScreenRouteProp;
 
+  success: boolean;
+  pending: boolean;
+
   action: {
     board: BoardAction;
   };
@@ -62,6 +66,8 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
   route: {params},
   navigation,
   action,
+  pending,
+  success,
 }) => {
   const [index, setIndex] = useState(params?.index ? params.index : 0);
   const routes = useRef([
@@ -78,6 +84,10 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
 
     Utils.fontScaling(16).then(setFontSize);
   }, [navigation]);
+
+  useEffect(() => {
+    if (success) setIndex(1);
+  }, [success]);
 
   const onPress = useCallback(
     ({title, msg, mobile, pin, attachment}: OnPressContactParams) => {
@@ -152,6 +162,7 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
 
   return (
     <View style={styles.container}>
+      <AppActivityIndicator visible={pending} />
       <TabView
         style={styles.container}
         navigationState={{index, routes}}
@@ -165,7 +176,13 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
 };
 
 export default connect(
-  () => ({}),
+  ({status}: RootState) => ({
+    pending:
+      status.pending[boardActions.postIssue.typePrefix] ||
+      status.pending[boardActions.postAttach.typePrefix] ||
+      false,
+    success: status.fulfilled[boardActions.postIssue.typePrefix],
+  }),
   (dispatch) => ({
     action: {
       board: bindActionCreators(boardActions, dispatch),
