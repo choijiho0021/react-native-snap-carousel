@@ -20,7 +20,6 @@ import {
 } from 'react-native-permissions';
 import {connect} from 'react-redux';
 import _ from 'underscore';
-import {bindActionCreators} from 'redux';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {colors} from '@/constants/Colors';
 import {attachmentSize} from '@/constants/SliderEntry.style';
@@ -28,17 +27,8 @@ import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
-import {
-  actions as boardActions,
-  BoardAction,
-  BoardModelState,
-} from '@/redux/modules/board';
-import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
-import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
-import {
-  actions as eventBoardActions,
-  EventBoardAction,
-} from '@/redux/modules/eventBoard';
+import {actions as boardActions} from '@/redux/modules/board';
+import {actions as eventBoardActions} from '@/redux/modules/eventBoard';
 import i18n from '@/utils/i18n';
 import validationUtil, {
   ValidationResult,
@@ -259,8 +249,6 @@ type BoardMsgAddProps = {
   successEvent: boolean;
   pendingEvent: boolean;
 
-  eventBoard: BoardModelState;
-
   jumpTo: (v: string) => void;
   isEvent?: boolean;
   eventList?: RkbEvent[];
@@ -268,13 +256,6 @@ type BoardMsgAddProps = {
   paramNid?: string;
   onPressEvent?: (v: OnPressEventParams) => void;
   onPressContact?: (v: OnPressContactParams) => void;
-
-  action: {
-    board: BoardAction;
-    eventBoard: EventBoardAction;
-    toast: ToastAction;
-    modal: ModalAction;
-  };
 };
 
 const validationRule: ValidationRule = {
@@ -315,10 +296,8 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   paramIssue,
   paramNid,
   jumpTo,
-  action,
   pending,
   pendingEvent,
-  eventBoard,
   onPressEvent,
   onPressContact,
 }) => {
@@ -984,27 +963,16 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   );
 };
 
-export default connect(
-  ({eventBoard, account, status}: RootState) => ({
-    eventBoard,
-    account,
-    success: status.fulfilled[boardActions.postIssue.typePrefix],
-    successEvent: status.fulfilled[eventBoardActions.postEventIssue.typePrefix],
-    pending:
-      status.pending[boardActions.postIssue.typePrefix] ||
-      status.pending[boardActions.postAttach.typePrefix] ||
-      false,
-    pendingEvent:
-      status.pending[eventBoardActions.postEventIssue.typePrefix] ||
-      status.pending[eventBoardActions.postEventAttach.typePrefix] ||
-      false,
-  }),
-  (dispatch) => ({
-    action: {
-      board: bindActionCreators(boardActions, dispatch),
-      eventBoard: bindActionCreators(eventBoardActions, dispatch),
-      toast: bindActionCreators(toastActions, dispatch),
-      modal: bindActionCreators(modalActions, dispatch),
-    },
-  }),
-)(BoardMsgAdd);
+export default connect(({account, status}: RootState) => ({
+  account,
+  success: status.fulfilled[boardActions.postIssue.typePrefix],
+  successEvent: status.fulfilled[eventBoardActions.postEventIssue.typePrefix],
+  pending:
+    status.pending[boardActions.postIssue.typePrefix] ||
+    status.pending[boardActions.postAttach.typePrefix] ||
+    false,
+  pendingEvent:
+    status.pending[eventBoardActions.postEventIssue.typePrefix] ||
+    status.pending[eventBoardActions.postEventAttach.typePrefix] ||
+    false,
+}))(BoardMsgAdd);
