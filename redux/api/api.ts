@@ -333,9 +333,9 @@ const callHttp = async <T>(
       const key = {
         user: await retrieveData(API.User.KEY_MOBILE),
         pass: await retrieveData(API.User.KEY_PIN),
-        token: await API.User.getToken(),
+        // token: await API.User.getToken(),
       };
-      const isLoggedIn = await userApi.logInOnce(key);
+      const isLoggedIn = await userApi.logIn(key);
       if (isLoggedIn.result === 0) {
         // get new x-csrf-token
         const {headers} = param;
