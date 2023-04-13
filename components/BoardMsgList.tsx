@@ -122,7 +122,7 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
       action.board.getIssueList();
     }
     setMobile(utils.toPhoneNumber(account?.mobile));
-  }, [account?.mobile, action.board, action.eventBoard, isEvent, uid]);
+  }, [account?.mobile, action.board, action.eventBoard, isEvent]);
 
   useEffect(() => {
     if (isEvent && eventBoard?.list.length > 0) setData(eventBoard?.list);
