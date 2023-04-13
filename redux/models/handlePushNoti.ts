@@ -3,9 +3,22 @@ import _ from 'underscore';
 // import {API} from '@/redux/api';
 
 class HandlePushNoti {
+  private navigation: any;
+  private payload: any;
+  private isForeground: boolean;
+  private isRegister: boolean;
+  private isNoticed: boolean;
+  private updateAccount: any;
+  private clearCurrentAccount: any;
+  private checkAndGetOrderById: any;
+  private order: any;
+  private auth: any;
+  private mobile: any;
+  private iccid: any;
+
   constructor(
-    navigation,
-    payload,
+    navigation: any, // replace 'any' with the actual type of 'navigation'
+    payload: any, // replace 'any' with the actual type of 'payload'
     {
       mobile,
       iccid,
@@ -16,6 +29,16 @@ class HandlePushNoti {
       checkAndGetOrderById,
       auth,
       order,
+    }: {
+      mobile: any;
+      iccid: any;
+      isForeground: boolean;
+      isRegister: boolean;
+      updateAccount: any;
+      clearCurrentAccount: any;
+      checkAndGetOrderById: any;
+      auth: any;
+      order: any;
     },
   ) {
     this.navigation = navigation;

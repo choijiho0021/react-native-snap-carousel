@@ -15,6 +15,7 @@ const NOTI_TYPE_INVITE = 'invite';
 const NOTI_TYPE_PYM = 'pym';
 const NOTI_TYPE_ACCOUNT = 'account';
 const NOTI_TYPE_PROVISION = 'provision';
+const NOTI_TYPE_EVENT = 'event';
 const NOTI_TYPE_USIM = 'usim';
 const NOTI_TYPE_NOTI = 'noti';
 
@@ -178,6 +179,7 @@ export const actions = {
   NOTI_TYPE_REPLY,
   NOTI_TYPE_INVITE,
   NOTI_TYPE_USIM,
+  NOTI_TYPE_EVENT,
   sendLog,
   getNotiList,
   readNoti,

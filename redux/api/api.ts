@@ -330,16 +330,26 @@ const callHttp = async <T>(
       !url.includes('user/login') &&
       !url.includes('user/logout')
     ) {
-      const user = await retrieveData(API.User.KEY_MOBILE);
-      const pass = await retrieveData(API.User.KEY_PIN);
-      await removeData(API.User.KEY_TOKEN);
-
-      const isLoggedIn = await userApi.logIn({
-        user,
-        pass,
-      });
+      const key = {
+        user: await retrieveData(API.User.KEY_MOBILE),
+        pass: await retrieveData(API.User.KEY_PIN),
+        token: await API.User.getToken(),
+      };
+      const isLoggedIn = await userApi.logInOnce(key);
       if (isLoggedIn.result === 0) {
-        return await callHttp(url, param, callback, option, retry + 1);
+        // get new x-csrf-token
+        const {headers} = param;
+        if (headers.has('X-CSRF-Token')) {
+          const xcsrftoken = await API.User.getToken();
+          headers.set('X-CSRF-Token', xcsrftoken);
+        }
+        return await callHttp(
+          url,
+          {...param, headers},
+          callback,
+          option,
+          retry + 1,
+        );
       }
     }
 
