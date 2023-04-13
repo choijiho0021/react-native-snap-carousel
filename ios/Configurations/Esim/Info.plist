@@ -175,16 +175,12 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSCalendarsUsageDescription</key>
-	<string>캘린더 접근을 허용해 주세요</string>
 	<key>NSCameraUsageDescription</key>
 	<string>사진 또는 동영상을 촬영, 메세지로 전송하여 더욱 원활한 채팅 상담을 진행하기 위해 카메라에 접근하도록 허용합니다.</string>
-	<key>NSContactsUsageDescription</key>
-	<string>연락처 접근을 허용해 주세요</string>
 	<key>NSMainNibFile</key>
 	<string>LaunchScreen</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow esim to access your microphone</string>
+	<string>동영상을 촬영 시 소리를 수집하여 더욱 원활한 채팅 상담을 진행하기 위해 마이크에 접근하도록 허용합니다.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>프로필 등록 및 1:1 문의 게시판에 사진 업로드를 위해 사진 앨범 접근을 허용해 주세요.</string>
 	<key>NSUserTrackingUsageDescription</key>
