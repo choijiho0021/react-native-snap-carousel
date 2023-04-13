@@ -64,10 +64,6 @@ const EventStatusBox: React.FC<EventStatusBoxProps> = ({
     [],
   );
 
-  useEffect(() => {
-    console.log('@@@@ rejectReason', rejectReason);
-    console.log('@@@@ otherReason', otherReason);
-  }, [otherReason, rejectReason]);
   return (
     <View
       style={[

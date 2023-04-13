@@ -185,6 +185,9 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
           }
 
           break;
+        case 'moveToEvent':
+          navigation.navigate('EventBoard', {index: 0, nid: cmd.value});
+          break;
         default:
       }
     },

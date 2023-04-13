@@ -285,6 +285,7 @@ type BoardMsgAddProps = {
   isEvent?: boolean;
   eventList?: RkbEvent[];
   paramIssue?: RkbEventBoard;
+  paramNid?: string;
 
   action: {
     board: BoardAction;
@@ -326,6 +327,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   isEvent = false,
   eventList = [],
   paramIssue,
+  paramNid,
   jumpTo,
   action,
   pending,
@@ -367,6 +369,14 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   }, [eventList]);
   const scrollRef = useRef();
   const keybd = useRef();
+
+  useEffect(() => {
+    if (paramNid) {
+      const ev = eventList.find((e) => e.nid === paramNid) || {title: ''};
+      setSelectedEvent(ev);
+      setTitle(ev.title);
+    }
+  }, [eventList, paramNid]);
 
   useEffect(() => {
     if (paramIssue) {
@@ -428,22 +438,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   useEffect(() => {
     if (isEvent) setTitle(selectedEvent.title);
   }, [isEvent, selectedEvent.title]);
-
-  useEffect(() => {
-    const temp = attachment
-      .map(
-        ({mime, size, width, height, data}) =>
-          ({
-            mime,
-            size,
-            width,
-            height,
-            data,
-          } as RkbImage),
-      )
-      .toArray();
-    console.log('@@@@ input images', temp);
-  }, [attachment]);
 
   const onPress = useCallback(async () => {
     if (isEvent) {
