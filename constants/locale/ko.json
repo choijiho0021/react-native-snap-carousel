@@ -428,7 +428,7 @@
   "event:placeholder": "이벤트를 선택해주세요.",
   "event:content": "이벤트 참여 방법 확인 후 형식에 맞게 url이나 캡쳐 화면을 첨부하여 인증해주세요.\n확인 후 순자적으로 리워드 지급 예정입니다.",
   "event:open": "접수중",
-  "event:reOpen": "재신청",
+  "event:reopen": "재신청",
   "event:success": "인증성공",
   "event:fail": "인증실패",
   "event:empty:title": "이벤트를 선택해주세요",

@@ -1,7 +1,6 @@
 import {List} from 'immutable';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
-  Dimensions,
   findNodeHandle,
   Image,
   InputAccessoryView,
@@ -20,10 +19,9 @@ import {
   RESULTS,
 } from 'react-native-permissions';
 import {connect} from 'react-redux';
-import _, {initial} from 'underscore';
+import _ from 'underscore';
 import {bindActionCreators} from 'redux';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
-import {ScrollView} from 'react-native-gesture-handler';
 import {colors} from '@/constants/Colors';
 import {attachmentSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
@@ -32,13 +30,16 @@ import {RkbImage} from '@/redux/api/accountApi';
 import {RkbIssue} from '@/redux/api/boardApi';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
-import {actions as boardActions, BoardAction} from '@/redux/modules/board';
+import {
+  actions as boardActions,
+  BoardAction,
+  BoardModelState,
+} from '@/redux/modules/board';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import {
   actions as eventBoardActions,
   EventBoardAction,
-  EventBoardModelState,
 } from '@/redux/modules/eventBoard';
 import i18n from '@/utils/i18n';
 import validationUtil, {
@@ -53,10 +54,17 @@ import AppText from './AppText';
 import AppTextInput from './AppTextInput';
 import {RkbEvent} from '@/redux/api/promotionApi';
 import AppModalDropDown from './AppModalDropDown';
-import {RkbEventIssue} from '@/redux/api/eventBoardApi';
+import {
+  EventImagesInfo,
+  RkbEventBoard,
+  RkbEventIssue,
+} from '@/redux/api/eventBoardApi';
 import AppSvgIcon from './AppSvgIcon';
 import AppModalContent from './ModalContent/AppModalContent';
 import AppStyledText from './AppStyledText';
+import EventStatusBox from '@/screens/MyPageScreen/components/EventStatusBox';
+import {API} from '@/redux/api';
+import ImgWithIndicator from '@/screens/MyPageScreen/components/ImgWithIndicator';
 
 const styles = StyleSheet.create({
   passwordInput: {
@@ -91,6 +99,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
+    zIndex: 1,
   },
   attachBox: {
     marginHorizontal: 20,
@@ -270,12 +279,12 @@ type BoardMsgAddProps = {
   successEvent: boolean;
   pendingEvent: boolean;
 
-  eventBoard: EventBoardModelState;
+  eventBoard: BoardModelState;
 
   jumpTo: (v: string) => void;
   isEvent?: boolean;
   eventList?: RkbEvent[];
-  paramTitle?: string;
+  paramIssue?: RkbEventBoard;
 
   action: {
     board: BoardAction;
@@ -305,13 +314,18 @@ window.ReactNativeWebView.postMessage(
   document.body.scrollHeight.toString()
 );`;
 
+export type EventParamImagesType = {
+  url: string;
+  imagesInfo: EventImagesInfo;
+};
+
 const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   account,
   success,
   successEvent,
   isEvent = false,
   eventList = [],
-  paramTitle = '',
+  paramIssue,
   jumpTo,
   action,
   pending,
@@ -338,6 +352,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     link: [false, false, false, false, false, false],
   });
   const [webviewHeight, setWebviewHeight] = useState(0);
+  const [paramImages, setParamImages] = useState<EventParamImagesType[]>([]);
 
   const onMessage = useCallback((event: WebViewMessageEvent) => {
     const height = parseInt(event.nativeEvent.data, 10);
@@ -354,13 +369,23 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   const keybd = useRef();
 
   useEffect(() => {
-    if (paramTitle) {
-      setTitle(paramTitle);
+    if (paramIssue) {
+      setTitle(paramIssue.title);
       setSelectedEvent(
-        eventList.find((e) => e.title === paramTitle) || {title: ''},
+        eventList.find((e) => e.title === paramIssue.title) || {title: ''},
       );
+      setLinkParam(paramIssue.link.map((l: string) => ({value: l})));
+      setLinkCount(paramIssue.link.length);
+      // setParamImages(
+      //   paramIssue.images.map((url, idx) => ({
+      //     url,
+      //     imagesInfo: paramIssue.imagesInfo[idx],
+      //   })),
+      // );
+      setMsg(paramIssue.msg || '');
+      setShowWebView(true);
     }
-  }, [eventList, paramTitle]);
+  }, [eventList, paramIssue]);
 
   useEffect(() => {
     const checkPermission = async () => {
@@ -404,14 +429,24 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     if (isEvent) setTitle(selectedEvent.title);
   }, [isEvent, selectedEvent.title]);
 
+  useEffect(() => {
+    const temp = attachment
+      .map(
+        ({mime, size, width, height, data}) =>
+          ({
+            mime,
+            size,
+            width,
+            height,
+            data,
+          } as RkbImage),
+      )
+      .toArray();
+    console.log('@@@@ input images', temp);
+  }, [attachment]);
+
   const onPress = useCallback(async () => {
     if (isEvent) {
-      const isDuplicated = !!eventBoard.list.find(
-        (l) => l.title === selectedEvent.title && l.statusCode !== 'Fail',
-      );
-      const isReapply = !!eventBoard.list.find(
-        (l) => l.title === selectedEvent.title && l.statusCode === 'Fail',
-      );
       if (!title) {
         action.toast.push('event:empty:title');
         return;
@@ -431,6 +466,10 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         action.toast.push('event:empty:image');
         return;
       }
+
+      const isDuplicated = !!eventBoard.list.find(
+        (l) => l.title === selectedEvent.title && l.statusCode !== 'Fail',
+      );
 
       if (isDuplicated) {
         action.modal.showModal({
@@ -452,6 +491,11 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         });
         return;
       }
+
+      const isReapply = !!eventBoard.list.find(
+        (l) => l.title === selectedEvent.title && l.statusCode === 'Fail',
+      );
+
       const issue = {
         title,
         msg,
@@ -460,6 +504,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         link: linkParam,
         eventUuid: selectedEvent.uuid,
         eventStatus: isReapply ? 'R' : 'O',
+        paramImages,
         images: attachment
           .map(
             ({mime, size, width, height, data}) =>
@@ -533,6 +578,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     linkParam,
     mobile,
     msg,
+    paramImages,
     pin,
     selectedEvent,
     title,
@@ -635,6 +681,24 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
           )}
         </View>
         <View style={styles.attachBox}>
+          {/* {paramImages.length > 0 &&
+            paramImages
+              .filter((item) => !_.isEmpty(item))
+              .map((image, i) => (
+                <Pressable
+                  style={[styles.attach, i < 2 && {marginRight: 33}]}
+                  key={utils.generateKey(`${image.url}${i}`)}
+                  onPress={() => {
+                    setParamImages(
+                      paramImages.filter((p) => p.url !== image.url),
+                    );
+                  }}>
+                  <AppIcon name="btnBoxCancel" style={styles.attachCancel} />
+                  <ImgWithIndicator
+                    uri={API.default.httpImageUrl(image.url).toString()}
+                  />
+                </Pressable>
+              ))} */}
           {attachment.map((image, idx) => (
             <Pressable
               key={image.filename}
@@ -647,7 +711,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
               <AppIcon name="btnBoxCancel" style={styles.attachCancel} />
             </Pressable>
           ))}
-          {attachment.size < 3 && (
+          {paramImages.length + attachment.size < 3 && (
             <Pressable
               key="add"
               style={[styles.attach, styles.plusButton]}
@@ -658,7 +722,13 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         </View>
       </View>
     ),
-    [addAttachment, attachment, isEvent, selectedEvent.rule?.image],
+    [
+      addAttachment,
+      attachment,
+      isEvent,
+      paramImages,
+      selectedEvent.rule?.image,
+    ],
   );
 
   const renderContact = useCallback(
@@ -793,11 +863,21 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         }}>
         {!account.loggedIn && renderContact()}
         <View style={{flex: 1}}>
-          <View style={[styles.notiView, isEvent && styles.eventNotiView]}>
-            <AppText style={isEvent ? styles.eventNoti : styles.noti}>
-              {i18n.t(`${isEvent ? 'event:noti' : 'board:noti'}`)}
-            </AppText>
-          </View>
+          {paramIssue ? (
+            <View style={{marginHorizontal: 20, marginBottom: 24}}>
+              <EventStatusBox
+                statusCode={paramIssue.statusCode}
+                rejectReason={paramIssue.rejectReason}
+                otherReason={paramIssue.otherReason}
+              />
+            </View>
+          ) : (
+            <View style={[styles.notiView, isEvent && styles.eventNotiView]}>
+              <AppText style={isEvent ? styles.eventNoti : styles.noti}>
+                {i18n.t(`${isEvent ? 'event:noti' : 'board:noti'}`)}
+              </AppText>
+            </View>
+          )}
           {isEvent ? (
             <Pressable
               style={[
@@ -805,9 +885,11 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
                 styles.eventTitle,
                 // isEventSelected ? {borderColor: colors.black} : undefined,
                 showModal && {borderColor: colors.clearBlue},
+                paramIssue && {backgroundColor: colors.backGrey},
                 {marginBottom: 8},
               ]}
-              onPress={() => setShowModal(true)}>
+              onPress={() => setShowModal(true)}
+              disabled={!!paramIssue}>
               <AppText
                 style={[
                   styles.eventTitleText,
@@ -1035,14 +1117,14 @@ export default connect(
     eventBoard,
     account,
     success: status.fulfilled[boardActions.postIssue.typePrefix],
-    successEvent: status.fulfilled[eventBoardActions.postIssue.typePrefix],
+    successEvent: status.fulfilled[eventBoardActions.postEventIssue.typePrefix],
     pending:
       status.pending[boardActions.postIssue.typePrefix] ||
       status.pending[boardActions.postAttach.typePrefix] ||
       false,
     pendingEvent:
-      status.pending[eventBoardActions.postIssue.typePrefix] ||
-      status.pending[eventBoardActions.postAttach.typePrefix] ||
+      status.pending[eventBoardActions.postEventIssue.typePrefix] ||
+      status.pending[eventBoardActions.postEventAttach.typePrefix] ||
       false,
   }),
   (dispatch) => ({
