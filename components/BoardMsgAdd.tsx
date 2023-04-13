@@ -465,7 +465,11 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         (l) => l.title === selectedEvent.title && l.statusCode !== 'Fail',
       );
 
-      if (isDuplicated) {
+      const isreOpenDuplicated = !!eventBoard.list.find(
+        (l) => l.title === selectedEvent.title && l.statusCode === 'ReOpen',
+      );
+
+      if (isDuplicated || isreOpenDuplicated) {
         action.modal.showModal({
           content: (
             <AppModalContent
@@ -475,7 +479,11 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
               }}>
               <View style={{marginLeft: 30}}>
                 <AppStyledText
-                  text={i18n.t('event:alert:duplication')}
+                  text={i18n.t(
+                    `event:alert:duplication${
+                      isreOpenDuplicated ? ':reopen' : ''
+                    }`,
+                  )}
                   textStyle={styles.modalText}
                   format={{b: styles.modalBoldText}}
                 />
