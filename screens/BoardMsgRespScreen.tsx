@@ -34,35 +34,13 @@ import {
 import {
   actions as eventBoardActions,
   EventBoardAction,
-  EventBoardModelState,
 } from '@/redux/modules/eventBoard';
 import i18n from '@/utils/i18n';
 import {AccountModelState} from '@/redux/modules/account';
 import ImgWithIndicator from './MyPageScreen/components/ImgWithIndicator';
-import AppSvgIcon from '@/components/AppSvgIcon';
-import AppStyledText from '@/components/AppStyledText';
-import {RkbBoard} from '@/redux/api/boardApi';
-import {RkbEventBoard} from '@/redux/api/eventBoardApi';
+import EventStatusBox from './MyPageScreen/components/EventStatusBox';
 
 const styles = StyleSheet.create({
-  row: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  statusBox: {
-    marginTop: 12,
-    borderColor: colors.clearBlue,
-    borderRadius: 3,
-    width: '100%',
-    borderWidth: 1,
-    padding: 16,
-  },
-  boxText: {
-    ...appStyles.medium14,
-    lineHeight: 20,
-    color: colors.black,
-  },
   date: {
     ...appStyles.medium14,
     lineHeight: 20,
@@ -173,7 +151,7 @@ type BoardMsgRespScreenProps = {
   route: BoardMsgRespScreenRouteProp;
 
   board: BoardModelState;
-  eventBoard: EventBoardModelState;
+  eventBoard: BoardModelState;
   pending: boolean;
   pendingEvent: boolean;
 
@@ -231,7 +209,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
 
           if (status === 'Closed') {
             const {token} = account;
-            action.eventBoard.getIssueResp({uuid, token});
+            action.eventBoard.getEventIssueResp({uuid, token});
           } else {
             action.eventBoard.resetIssueComment();
           }
@@ -294,51 +272,6 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
     [width],
   );
 
-  const renderStatusBox = useCallback(
-    () => (
-      <View
-        style={[
-          styles.row,
-          styles.statusBox,
-          {
-            borderColor:
-              issue?.statusCode === 'Fail'
-                ? colors.redError
-                : issue?.statusCode === 'Success'
-                ? colors.shamrock
-                : colors.clearBlue,
-          },
-        ]}>
-        <AppSvgIcon
-          name={
-            issue?.statusCode === 'Fail'
-              ? 'cautionRed'
-              : issue?.statusCode === 'Success'
-              ? 'checkGreen'
-              : 'cautionBlue'
-          }
-          style={{marginRight: 8}}
-        />
-        <AppStyledText
-          text={i18n.t(`event:status:${issue?.statusCode}`)}
-          textStyle={styles.boxText}
-          format={{
-            b: {
-              fontWeight: 'bold',
-              color:
-                issue?.statusCode === 'Fail'
-                  ? colors.redError
-                  : issue?.statusCode === 'Success'
-                  ? colors.shamrock
-                  : colors.clearBlue,
-            },
-          }}
-        />
-      </View>
-    ),
-    [issue?.statusCode],
-  );
-
   const renderTime = useCallback(() => {
     const date = moment(issue?.created, moment.ISO_8601);
 
@@ -370,7 +303,13 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container}>
         <View style={{flex: 1, paddingHorizontal: 20}}>
-          {isEvent && issue?.statusCode && renderStatusBox()}
+          {isEvent && issue?.statusCode && (
+            <EventStatusBox
+              statusCode={issue.statusCode}
+              rejectReason={issue.rejectReason}
+              otherReason={issue.otherReason}
+            />
+          )}
           {issue?.created && renderTime()}
 
           <AppText style={[styles.inputBox, {marginTop: 8}]}>
@@ -439,7 +378,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
               navigate(navigation, route, 'MyPageStack', {
                 tab: 'HomeStack',
                 screen: 'EventBoard',
-                params: {index: 0, title: issue.title},
+                params: {index: 0, issue},
               });
             }}
           />
@@ -478,7 +417,7 @@ export default connect(
     account,
     pending: status.pending[boardActions.getIssueResp.typePrefix] || false,
     pendingEvent:
-      status.pending[eventBoardActions.fetchIssueList.typePrefix] || false,
+      status.pending[eventBoardActions.getEventIssueResp.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {
