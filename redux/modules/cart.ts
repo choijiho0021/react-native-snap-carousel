@@ -36,17 +36,12 @@ const makeOrder = createAsyncThunk('cart/makeOrder', API.Cart.makeOrder);
 
 const checkStock = createAsyncThunk(
   'cart/checkStock',
-  (
-    {purchaseItems, token}: {purchaseItems: PurchaseItem[]; token?: string},
-    {dispatch},
-  ) => {
+  ({purchaseItems}: {purchaseItems: PurchaseItem[]}, {dispatch}) => {
     return esimApp && purchaseItems[0].type !== 'rch'
-      ? dispatch(cartCheckStock({purchaseItems, token})).then(
-          ({payload: resp}) => {
-            if (resp.result === 0) return resp;
-            return dispatch(getOutOfStockTitle(resp));
-          },
-        )
+      ? dispatch(cartCheckStock({purchaseItems})).then(({payload: resp}) => {
+          if (resp.result === 0) return resp;
+          return dispatch(getOutOfStockTitle(resp));
+        })
       : Promise.resolve({result: 0});
   },
 );
@@ -58,7 +53,7 @@ const cartAddAndGet = createAsyncThunk(
       account: {token},
     } = getState() as RootState;
 
-    return dispatch(checkStock({purchaseItems, token}))
+    return dispatch(checkStock({purchaseItems}))
       .then(({payload: resp}) => {
         if (resp.result === 0) {
           return dispatch(cartAdd({purchaseItems, token}));
@@ -290,7 +285,7 @@ const checkStockAndMakeOrder = createAsyncThunk(
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
-    return dispatch(checkStock({purchaseItems, token}))
+    return dispatch(checkStock({purchaseItems}))
       .then(({payload: res}) => {
         if (res.result === 0) {
           // 충전, 구매 모두 order 생성
@@ -392,22 +387,16 @@ const checkStockAndPurchase = createAsyncThunk(
       balance,
       dlvCost = false,
     }: {purchaseItems: PurchaseItem[]; balance?: number; dlvCost?: boolean},
-    {dispatch, getState},
+    {dispatch},
   ) => {
-    const {
-      account: {token},
-    } = getState() as RootState;
-
-    return dispatch(checkStock({purchaseItems, token})).then(
-      ({payload: resp}) => {
-        console.log('@@@ check', resp);
-        if (resp.result === 0) {
-          dispatch(slice.actions.purchase({purchaseItems, dlvCost, balance}));
-        }
-        // 처리 결과는 reducer에 보내서 처리하지만, 결과는 resp를 반환한다.
-        return resp;
-      },
-    );
+    return dispatch(checkStock({purchaseItems})).then(({payload: resp}) => {
+      console.log('@@@ check', resp);
+      if (resp.result === 0) {
+        dispatch(slice.actions.purchase({purchaseItems, dlvCost, balance}));
+      }
+      // 처리 결과는 reducer에 보내서 처리하지만, 결과는 resp를 반환한다.
+      return resp;
+    });
   },
 );
 /*
