@@ -69,7 +69,7 @@ class BoardMsg extends Component<BoardMsgProps> {
             </AppText>
             <AppStyledText
               text={
-                statusCode === 'ReOpen'
+                statusCode === 'r'
                   ? i18n.t('event:reOpenTitle')
                   : titleOrMobile || ''
               }
@@ -97,7 +97,7 @@ class BoardMsg extends Component<BoardMsgProps> {
                       : colors.warmGrey,
                 },
               ]}>
-              {statusCode === 'ReOpen' ? i18n.t('event:open') : status}
+              {statusCode === 'r' ? i18n.t('event:o') : status}
             </AppText>
           </View>
         </View>
