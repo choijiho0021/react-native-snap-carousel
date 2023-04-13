@@ -12,7 +12,10 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import i18n from '@/utils/i18n';
 import AppBackButton from '@/components/AppBackButton';
-import BoardMsgAdd, {EventLinkType} from '@/components/BoardMsgAdd';
+import BoardMsgAdd, {
+  EventLinkType,
+  EventParamImagesType,
+} from '@/components/BoardMsgAdd';
 import BoardMsgList from '@/components/BoardMsgList';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -83,6 +86,7 @@ export type OnPressEventParams = {
   msg?: string;
   selectedEvent?: RkbEvent;
   linkParam?: EventLinkType[];
+  paramImages?: EventParamImagesType[];
   attachment: List<CropImage>;
 };
 
@@ -133,6 +137,7 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
       selectedEvent,
       linkParam,
       attachment,
+      paramImages,
     }: OnPressEventParams) => {
       if (!title) {
         action.toast.push('event:empty:title');
@@ -149,7 +154,11 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
       }
 
       // 이미지 필수 인경우
-      if (selectedEvent?.rule?.image && attachment.size < 1) {
+      if (
+        selectedEvent?.rule?.image &&
+        attachment.size < 1 &&
+        (paramImages?.length || 0) < 1
+      ) {
         action.toast.push('event:empty:image');
         return false;
       }
@@ -197,7 +206,7 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
         link: linkParam,
         eventUuid: selectedEvent?.uuid,
         eventStatus: isReapply ? 'R' : 'O',
-        // paramImages,
+        paramImages,
         images: attachment
           .map(
             ({mime, size, width, height, data}) =>

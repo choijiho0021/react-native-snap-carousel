@@ -1,14 +1,15 @@
 import _ from 'underscore';
 import {Buffer} from 'buffer';
 import i18n from '@/utils/i18n';
-import api, {ApiResult} from './api';
+import api, {ApiResult, DrupalNode} from './api';
 import {RkbImage} from './accountApi';
 import {DrupalBoard, RkbBoardBase, RkbIssueBase, toFile} from './boardApi';
+import {EventParamImagesType} from '@/components/BoardMsgAdd';
 
 export type EventBoardMsgStatus = 'o' | 'r' | 's' | 'f';
 
 export type EventImagesInfo = {
-  uuid: string;
+  target_id: string;
   width: string;
   height: string;
 };
@@ -74,10 +75,44 @@ export type RkbEventIssue = RkbIssueBase & {
   link: {value: string}[];
   eventUuid: string;
   eventStatus: string;
-  // paramImages: EventParamImagesType[];
+  paramImages?: EventParamImagesType[];
 };
 
-const post = ({
+type DrupalImageFile = {
+  filename: string;
+  uuid: string;
+  fid: string;
+};
+
+const toParamImg = (data: DrupalImageFile[]): ApiResult<string[]> => {
+  if (_.isArray(data)) {
+    return api.success<string[]>(data.map((d) => d.uuid));
+  }
+};
+
+const getImgUuid = ({
+  targetIdList,
+  token,
+}: {
+  targetIdList: string[];
+  token: string;
+}) => {
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.file)}/${targetIdList.join(', ')}?_format=hal_json`,
+    toParamImg,
+    api.withToken(token, 'vnd.api+json'),
+  );
+};
+
+type EventImagesDataType = {
+  type: string;
+  id?: string;
+  meta?: {
+    width?: number;
+    height?: number;
+  };
+};
+const post = async ({
   title,
   msg,
   images,
@@ -85,12 +120,45 @@ const post = ({
   eventUuid,
   token,
   eventStatus,
-}: // paramImages,
-RkbEventIssue & {
+  paramImages,
+}: RkbEventIssue & {
   token?: string;
 }) => {
   if (!title || !msg || !token)
     return api.reject(api.E_INVALID_ARGUMENT, 'empty title, body or token');
+
+  let field_images_data: EventImagesDataType[] = [];
+
+  if (paramImages && paramImages.length > 0) {
+    const targetIdList = paramImages.map((p) => p.imagesInfo.target_id);
+    const {objects} = await getImgUuid({targetIdList, token});
+
+    field_images_data = field_images_data.concat(
+      paramImages.map((item, idx) => ({
+        type: 'file--image',
+        id: objects[idx].toString(),
+        meta: {
+          width: Number(item.imagesInfo.width),
+          height: Number(item.imagesInfo.height),
+        },
+      })),
+    );
+  }
+
+  if (images && images.length > 0) {
+    field_images_data = field_images_data.concat(
+      images.map((item) => ({
+        type: 'file--image',
+        id: item.uuid,
+        meta: {
+          width: item.width,
+          height: item.height,
+        },
+      })),
+    );
+  }
+
+  console.log('@@@@ field_images_data', field_images_data);
 
   const url = `${api.httpUrl(api.path.jsonapi.eventBoard)}`;
   const headers = api.withToken(token, 'vnd.api+json');
@@ -104,27 +172,10 @@ RkbEventIssue & {
         field_event_status: {value: eventStatus},
       },
       relationships:
-        images && images.length > 0
+        field_images_data.length > 0
           ? {
               field_images: {
-                data: images.map((item) => ({
-                  type: 'file--image',
-                  id: item.uuid,
-                  meta: {
-                    width: item.width,
-                    height: item.height,
-                  },
-                })),
-                // .concat(
-                //   paramImages.map((item) => ({
-                //     type: 'file--image',
-                //     id: {target_id: Number(item.imagesInfo.uuid)},
-                //     meta: {
-                //       width: Number(item.imagesInfo.width),
-                //       height: Number(item.imagesInfo.height),
-                //     },
-                //   })),
-                // ),
+                data: field_images_data,
               },
               field_ref_event: {
                 data: {

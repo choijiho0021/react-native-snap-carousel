@@ -65,6 +65,7 @@ const path = {
   productDetails: 'json/product/details',
   localopBody: 'json/localop',
   esimDev: 'json/esim/dev/list',
+  file: 'json/file',
 
   recharge: 'rokebi/rch',
   resetPw: 'rokebi/user/pw',

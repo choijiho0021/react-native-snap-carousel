@@ -44,6 +44,8 @@ import AppSvgIcon from './AppSvgIcon';
 import EventStatusBox from '@/screens/MyPageScreen/components/EventStatusBox';
 import {OnPressEventParams} from '@/screens/EventBoardScreen';
 import {OnPressContactParams} from '@/screens/ContactBoardScreen';
+import ImgWithIndicator from '@/screens/MyPageScreen/components/ImgWithIndicator';
+import {API} from '@/redux/api';
 
 const styles = StyleSheet.create({
   passwordInput: {
@@ -340,12 +342,12 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
       );
       setLinkParam(paramIssue.link.map((l: string) => ({value: l})));
       setLinkCount(paramIssue.link.length);
-      // setParamImages(
-      //   paramIssue.images.map((url, idx) => ({
-      //     url,
-      //     imagesInfo: paramIssue.imagesInfo[idx],
-      //   })),
-      // );
+      setParamImages(
+        paramIssue.images.map((url, idx) => ({
+          url,
+          imagesInfo: paramIssue.imagesInfo[idx],
+        })),
+      );
       setMsg(paramIssue.msg || '');
       setShowWebView(true);
     }
@@ -493,7 +495,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
           )}
         </View>
         <View style={styles.attachBox}>
-          {/* {paramImages.length > 0 &&
+          {paramImages.length > 0 &&
             paramImages
               .filter((item) => !_.isEmpty(item))
               .map((image, i) => (
@@ -510,7 +512,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
                     uri={API.default.httpImageUrl(image.url).toString()}
                   />
                 </Pressable>
-              ))} */}
+              ))}
           {attachment.map((image, idx) => (
             <Pressable
               key={image.filename}
@@ -908,6 +910,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
                 selectedEvent,
                 linkParam,
                 attachment,
+                paramImages,
               })
             )
               setInitial();
