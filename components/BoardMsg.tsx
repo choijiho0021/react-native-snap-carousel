@@ -58,7 +58,7 @@ class BoardMsg extends Component<BoardMsgProps> {
     const date = utils.toDateString(created);
     const titleOrMobile = this.props.uid
       ? title
-      : `${mobile.substr(0, 3)}-****-${mobile.substr(7)}`;
+      : `${mobile?.substr(0, 3)}-****-${mobile?.substr(7)}`;
 
     return (
       <Pressable onPress={() => this.props.onPress(uuid, statusCode)}>
