@@ -1,26 +1,13 @@
-/* eslint-disable class-methods-use-this */
-/* eslint-disable react/sort-comp */
-/* eslint-disable react/no-unused-state */
-import {List} from 'immutable';
-import {Image as CropImage} from 'react-native-image-crop-picker';
-import React, {useCallback, useEffect, useState} from 'react';
-import {StyleSheet, View, Dimensions} from 'react-native';
+import React, {memo, useCallback, useEffect, useState} from 'react';
+import {StyleSheet, View} from 'react-native';
 import {TabView, TabBar} from 'react-native-tab-view';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {RouteProp} from '@react-navigation/native';
-import {connect} from 'react-redux';
-import {RootState, bindActionCreators} from 'redux';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {HomeStackParamList} from '@/navigation/navigation';
 import {Utils} from '@/redux/api';
-import {
-  actions as boardActions,
-  BoardAction,
-  BoardModelState,
-} from '@/redux/modules/board';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
+import {windowWidth} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   container: {
@@ -29,19 +16,9 @@ const styles = StyleSheet.create({
   },
 });
 
-type BoardScreenNavigationProp = StackNavigationProp<
-  HomeStackParamList,
-  'Board'
->;
-
-type BoardScreenRouteProp = RouteProp<HomeStackParamList, 'Board'>;
 type TabRoute = {key: string; title: string};
 
 type BoardScreenProps = {
-  navigation: BoardScreenNavigationProp;
-  route: BoardScreenRouteProp;
-  board: BoardModelState;
-
   title: string;
   routes: (TabRoute & {
     render: (jumpto: (v: string) => void) => React.ReactElement;
@@ -49,35 +26,18 @@ type BoardScreenProps = {
 
   success: boolean;
   pending: boolean;
-
-  action: {
-    board: BoardAction;
-  };
-};
-
-export type OnPressContactParams = {
-  title?: string;
-  msg?: string;
-  mobile?: string;
-  pin?: string;
-  attachment: List<CropImage>;
 };
 
 const BoardScreen: React.FC<BoardScreenProps> = ({
-  route: {params},
-  navigation,
-  action,
   pending,
   success,
   title,
   routes,
 }) => {
-  const [index, setIndex] = useState(params?.index ? params.index : 0);
+  const navigation = useNavigation();
+  const route = useRoute();
+  const [index, setIndex] = useState(route?.params?.index || 0);
   const [fontSize, setFontSize] = useState(16);
-
-  useEffect(() => {
-    action.board.getIssueList();
-  }, [action.board]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -126,26 +86,11 @@ const BoardScreen: React.FC<BoardScreenProps> = ({
         navigationState={{index, routes}}
         renderScene={renderScene}
         onIndexChange={setIndex}
-        initialLayout={{width: Dimensions.get('window').width}}
+        initialLayout={{width: windowWidth}}
         renderTabBar={renderTabBar}
       />
     </View>
   );
 };
 
-export default connect(
-  ({board, status}: RootState) => ({
-    board,
-    pending:
-      status.pending[boardActions.postIssue.typePrefix] ||
-      status.pending[boardActions.postAttach.typePrefix] ||
-      status.pending[boardActions.fetchIssueList.typePrefix] ||
-      false,
-    success: status.fulfilled[boardActions.postIssue.typePrefix],
-  }),
-  (dispatch) => ({
-    action: {
-      board: bindActionCreators(boardActions, dispatch),
-    },
-  }),
-)(BoardScreen);
+export default memo(BoardScreen);

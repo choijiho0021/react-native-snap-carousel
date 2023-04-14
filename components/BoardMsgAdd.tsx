@@ -17,7 +17,6 @@ import {bindActionCreators} from 'redux';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
-import {RkbImage} from '@/redux/api/accountApi';
 import {RkbIssue} from '@/redux/api/boardApi';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
@@ -191,16 +190,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
       mobile,
       pin,
       images: attachment
-        .map(
-          ({mime, size, width, height, data}) =>
-            ({
-              mime,
-              size,
-              width,
-              height,
-              data,
-            } as RkbImage),
-        )
+        .map((a) => utils.convertCropImageToRkbImage(a))
         .toArray(),
     } as RkbIssue;
 

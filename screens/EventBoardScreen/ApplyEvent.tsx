@@ -42,14 +42,13 @@ import {
 } from '@/redux/api/eventBoardApi';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import EventStatusBox from '@/screens/MyPageScreen/components/EventStatusBox';
-import {OnPressContactParams} from '@/screens/ContactBoardScreen';
 import {PromotionModelState} from '@/redux/modules/promotion';
 import {BoardModelState} from '@/redux/modules/board';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
-import {RkbImage} from '@/redux/api/accountApi';
 import AttachmentBox from '@/screens/BoardScreen/AttachmentBox';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
+import {utils} from '@/utils/utils';
 
 const styles = StyleSheet.create({
   inputAccessoryText: {
@@ -205,7 +204,6 @@ type ApplyEventProps = {
   eventList?: RkbEvent[];
   paramIssue?: RkbEventBoard;
   paramNid?: string;
-  onPressContact?: (v: OnPressContactParams) => boolean;
   action: {
     eventBoard: EventBoardAction;
     toast: ToastAction;
@@ -429,11 +427,14 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
               <Pressable
                 style={styles.minusBtn}
                 onPress={() => {
-                  const focusedLink = [...focusedItem.link];
-                  focusedLink[idx] = false;
-                  setFocusedItem({...focusedItem, link: focusedLink});
-                  setLinkCount(linkCount - 1);
-                  setLinkParam(linkParam.filter((l, index) => index !== idx));
+                  setFocusedItem((prev) => ({
+                    ...prev,
+                    link: prev.link.map((l, i) => (i === idx ? false : l)),
+                  }));
+                  setLinkCount((prev) => prev - 1);
+                  setLinkParam((prev) =>
+                    prev.filter((l, index) => index !== idx),
+                  );
                 }}>
                 <AppSvgIcon name="minus16" />
               </Pressable>
@@ -469,14 +470,11 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       return;
     }
 
-    const history = eventBoard.list.find(
-      (l) => l.title === selectedEvent?.title,
-    );
+    const statusCode =
+      eventBoard.list.find((l) => l.title === selectedEvent?.title)
+        ?.statusCode || '';
 
-    if (
-      history &&
-      (history.statusCode === 'r' || history?.statusCode !== 'f')
-    ) {
+    if (statusCode && (statusCode === 'r' || statusCode !== 'f')) {
       action.modal.showModal({
         content: (
           <AppModalContent
@@ -488,7 +486,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
               <AppStyledText
                 text={i18n.t(
                   `event:alert:duplication${
-                    history.statusCode === 'r' ? ':reopen' : ''
+                    statusCode === 'r' ? ':reopen' : ''
                   }`,
                 )}
                 textStyle={styles.modalText}
@@ -498,32 +496,22 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
           </AppModalContent>
         ),
       });
-      return;
+    } else {
+      const issue = {
+        title,
+        msg,
+        link: linkParam,
+        eventUuid: selectedEvent?.uuid,
+        eventStatus: statusCode === 'f' ? 'R' : 'O',
+        paramImages,
+        images: attachment
+          .map((a) => utils.convertCropImageToRkbImage(a))
+          .toArray(),
+      } as RkbEventIssue;
+
+      action.eventBoard.postAndGetList(issue);
+      setPressed(true);
     }
-
-    const issue = {
-      title,
-      msg,
-      link: linkParam,
-      eventUuid: selectedEvent?.uuid,
-      eventStatus: history && history.statusCode === 'f' ? 'R' : 'O',
-      paramImages,
-      images: attachment
-        .map(
-          ({mime, size, width, height, data}) =>
-            ({
-              mime,
-              size,
-              width,
-              height,
-              data,
-            } as RkbImage),
-        )
-        .toArray(),
-    } as RkbEventIssue;
-
-    action.eventBoard.postAndGetList(issue);
-    setPressed(true);
   }, [
     action.eventBoard,
     action.modal,
@@ -533,10 +521,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     linkParam,
     msg,
     paramImages,
-    selectedEvent?.rule?.image,
-    selectedEvent?.rule?.link,
-    selectedEvent?.title,
-    selectedEvent?.uuid,
+    selectedEvent,
     title,
   ]);
 
@@ -549,9 +534,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         // resetScrollToCoords={{x: 0, y: 0}}
         contentContainerStyle={styles.modalInner}
         extraScrollHeight={extraHeight}
-        innerRef={(ref) => {
-          scrollRef.current = ref;
-        }}>
+        innerRef={(ref) => (scrollRef.current = ref)}>
         <View style={{flex: 1}}>
           {paramIssue ? (
             <View style={{marginHorizontal: 20, marginBottom: 24}}>
@@ -614,9 +597,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
               {showWebView && (
                 <View style={{height: webviewHeight}}>
                   <WebView
-                    style={{
-                      flex: 1,
-                    }}
+                    style={{flex: 1}}
                     source={{html: selectedEvent.notice?.body || ''}}
                     originWhitelist={['*']}
                     onMessage={onMessage}

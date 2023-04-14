@@ -4,6 +4,7 @@ import {getFontScale} from 'react-native-device-info';
 import RNFetchBlob from 'rn-fetch-blob';
 import _ from 'underscore';
 import {Adjust, AdjustEvent} from 'react-native-adjust';
+import {Image as CropImage} from 'react-native-image-crop-picker';
 import i18n from '@/utils/i18n';
 import Env from '@/environment';
 import {RkbImage} from './accountApi';
@@ -253,6 +254,21 @@ const convertURLtoRkbImage = async (url: string) => {
   }
 };
 
+const convertCropImageToRkbImage = ({
+  mime,
+  size,
+  width,
+  height,
+  data,
+}: CropImage) =>
+  ({
+    mime,
+    size,
+    width,
+    height,
+    data,
+  } as RkbImage);
+
 const adjustEventadd = (key: string, pymAmount?: number, currency?: string) => {
   const adjustEvent = new AdjustEvent(key);
   if (pymAmount && currency) {
@@ -331,6 +347,7 @@ export default {
   addCurrency,
   currencyString,
   convertURLtoRkbImage,
+  convertCropImageToRkbImage,
   adjustEventadd,
   removeBracketOfName,
   generateKey,
