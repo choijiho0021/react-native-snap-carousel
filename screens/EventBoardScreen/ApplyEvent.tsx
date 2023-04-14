@@ -260,7 +260,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   const [extraHeight, setExtraHeight] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<RkbEvent | undefined>();
-  const [showWebView, setShowWebView] = useState(false);
+  const [showWebView, setShowWebView] = useState(true);
   const [focusedItem, setFocusedItem] = useState({
     title: false,
     msg: false,
@@ -303,7 +303,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         })),
       );
       setMsg(paramIssue.msg || '');
-      setShowWebView(true);
     }
   }, [eventList, paramIssue]);
 
@@ -763,7 +762,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         onPress={(value) => {
           setSelectedEvent(eventList.find((e) => e.title === value));
           setShowModal(false);
-          setShowWebView(false);
           setWebviewHeight(0);
         }}
         value={selectedEvent?.title}
