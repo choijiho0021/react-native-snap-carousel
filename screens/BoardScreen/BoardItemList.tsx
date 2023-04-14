@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {memo, useCallback, useState} from 'react';
 import {
   FlatList,
   RefreshControl,
@@ -6,31 +6,17 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {RootState} from '@/redux';
 import {RkbBoard} from '@/redux/api/boardApi';
-import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
-import {
-  actions as boardActions,
-  BoardAction,
-  BoardModelState,
-} from '@/redux/modules/board';
-import {
-  actions as eventBoardActions,
-  EventBoardAction,
-} from '@/redux/modules/eventBoard';
+import {BoardModelState} from '@/redux/modules/board';
 import i18n from '@/utils/i18n';
 import {ValidationResult} from '@/utils/validationUtil';
-import AppButton from './AppButton';
-import AppIcon from './AppIcon';
-import AppModalForm from './AppModalForm';
-import AppText from './AppText';
-import AppTextInput from './AppTextInput';
-import BoardMsg from './BoardMsg';
+import AppText from '@/components/AppText';
+import AppIcon from '@/components/AppIcon';
+import AppModalForm from '@/components/AppModalForm';
+import BoardMsg from '@/components/BoardMsg';
 
 const styles = StyleSheet.create({
   noList: {
@@ -41,75 +27,36 @@ const styles = StyleSheet.create({
   mark: {
     marginTop: 80,
   },
-  mylist: {
-    ...appStyles.bold18Text,
-    marginTop: 30,
-    marginBottom: 20,
-    marginHorizontal: 20,
-  },
-  divider: {
-    marginTop: 40,
-    height: 10,
-    backgroundColor: colors.whiteTwo,
-  },
-  button: {
-    width: 40,
-    height: 40,
-  },
-  label: {
-    ...appStyles.normal14Text,
-    marginLeft: 20,
-    marginTop: 20,
-  },
-  inputBox: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    borderBottomColor: colors.warmGrey,
-    borderBottomWidth: 1,
-    marginTop: 10,
-    marginHorizontal: 20,
-  },
-  inputMobile: {
-    ...appStyles.normal16Text,
-    height: 40,
-    color: colors.black,
-    flex: 1,
-  },
   container: {
     flex: 1,
   },
 });
 
-type BoardMsgListProps = {
+type BoardItemListProps = {
+  data: RkbBoard[];
   board?: BoardModelState;
   eventBoard?: BoardModelState;
   account: AccountModelState;
   uid: number;
-  isEvent?: boolean;
   onPress: (uuid: string, status: string) => void;
 
-  action: {
-    board: BoardAction;
-    eventBoard: EventBoardAction;
-  };
+  onScrollEndDrag: () => void;
+  onRefresh: () => void;
 };
 
-const BoardMsgList: React.FC<BoardMsgListProps> = ({
-  board,
-  eventBoard,
-  isEvent = false,
-  action,
-  account,
+const BoardItemList: React.FC<BoardItemListProps> = ({
+  data,
   uid,
   onPress,
+  onScrollEndDrag,
+  onRefresh,
 }) => {
-  const [data, setData] = useState<RkbBoard[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [status, setStatus] = useState('');
   const [selected, setSelected] = useState('');
   const [mobile, setMobile] = useState('');
 
+  /*
   useEffect(() => {
     setMobile(utils.toPhoneNumber(account?.mobile));
   }, [account?.mobile]);
@@ -141,20 +88,13 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
 
     if (selected) onPress(selected, status);
   }, [onPress, selected, status]);
+  */
 
   const onPressItem = useCallback(
     (uuid: string, st: string) => () => {
-      if (uid === 0) {
-        // anonymous인 경우에는 비밀 번호를 입력받아서 일치하면 보여준다.
-        setShowModal(true);
-        setSelected(uuid);
-        setStatus(st);
-      } else {
-        // login 한 경우에는 곧바로 응답 결과를 보여준다.
-        onPress(uuid, st);
-      }
+      onPress(uuid, st);
     },
-    [onPress, uid],
+    [onPress],
   );
 
   // 입력된 PIN이 일치하는지 확인한다.
@@ -169,13 +109,17 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
     [data, selected],
   );
 
+  /*
   const onEndReached = useCallback(() => {
     if (isEvent) action.eventBoard.getNextIssueList();
     else action.board.getNextIssueList();
   }, [action.board, action.eventBoard, isEvent]);
+  */
 
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
+  const onRefreshCallback = useCallback(async () => {
+    // setRefreshing(true);
+    onRefresh();
+    /*
     if (isEvent) {
       const res = await action.eventBoard.getIssueList();
       if (res) setRefreshing(false);
@@ -183,8 +127,10 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
       const res = await action.board.getIssueList();
       if (res) setRefreshing(false);
     }
-  }, [action.board, action.eventBoard, isEvent]);
+    */
+  }, [onRefresh]);
 
+  /*
   const header = useCallback(() => {
     if (isEvent) return <View style={{height: 6}} />;
 
@@ -223,6 +169,7 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
       </View>
     );
   }, [isEvent, mobile, onSubmit, uid]);
+  */
 
   const empty = useCallback(
     () => (
@@ -255,19 +202,17 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
     <SafeAreaView style={styles.container}>
       <FlatList
         data={data}
-        ListHeaderComponent={header}
+        // ListHeaderComponent={header}
         ListEmptyComponent={empty}
-        // onEndReached={this._onEndReached}
         // onEndReachedThreshold={0.5}
-        onScrollEndDrag={onEndReached} // 검색 시 onEndReached가 발생하는 버그가 Flatlist에 있어 끝까지 스크롤한 경우 list를 더 가져오도록 변경
-        // onRefresh={this._onRefresh}
+        onScrollEndDrag={onScrollEndDrag} // 검색 시 onEndReached가 발생하는 버그가 Flatlist에 있어 끝까지 스크롤한 경우 list를 더 가져오도록 변경
         // refreshing={refreshing}
         extraData={mobile}
         renderItem={renderItem}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={onRefresh}
+            onRefresh={onRefreshCallback}
             colors={[colors.clearBlue]} // android 전용
             tintColor={colors.clearBlue} // ios 전용
           />
@@ -280,7 +225,7 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
         maxLength={4}
         valueType="pin"
         keyboardType="numeric"
-        onOkClose={onSubmitPin}
+        // onOkClose={onSubmitPin}
         onCancelClose={() => setShowModal(false)}
         validate={onValidate}
       />
@@ -288,15 +233,4 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   );
 };
 
-export default connect(
-  ({account}: RootState) => ({
-    account,
-    uid: account.uid || 0,
-  }),
-  (dispatch) => ({
-    action: {
-      board: bindActionCreators(boardActions, dispatch),
-      eventBoard: bindActionCreators(eventBoardActions, dispatch),
-    },
-  }),
-)(BoardMsgList);
+export default memo(BoardItemList);

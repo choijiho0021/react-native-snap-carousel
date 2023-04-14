@@ -58,7 +58,7 @@ class BoardMsg extends Component<BoardMsgProps> {
     const date = utils.toDateString(created);
     const titleOrMobile = this.props.uid
       ? title
-      : `${mobile.substr(0, 3)}-****-${mobile.substr(7)}`;
+      : `${mobile?.substr(0, 3)}-****-${mobile?.substr(7)}`;
 
     return (
       <Pressable onPress={() => this.props.onPress(uuid, statusCode)}>
@@ -69,7 +69,7 @@ class BoardMsg extends Component<BoardMsgProps> {
             </AppText>
             <AppStyledText
               text={
-                statusCode === 'ReOpen'
+                statusCode === 'r'
                   ? i18n.t('event:reOpenTitle')
                   : titleOrMobile || ''
               }
@@ -88,16 +88,16 @@ class BoardMsg extends Component<BoardMsgProps> {
                 styles.status,
                 {
                   color:
-                    statusCode === 'Fail'
+                    statusCode === 'f'
                       ? colors.redError
-                      : statusCode === 'Success'
+                      : statusCode === 's'
                       ? colors.shamrock
                       : statusCode === 'Closed'
                       ? colors.clearBlue
                       : colors.warmGrey,
                 },
               ]}>
-              {statusCode === 'ReOpen' ? i18n.t('event:open') : status}
+              {statusCode === 'r' ? i18n.t('event:o') : status}
             </AppText>
           </View>
         </View>

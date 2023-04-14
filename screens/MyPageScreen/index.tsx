@@ -17,6 +17,7 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import ImagePicker from 'react-native-image-crop-picker';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppText from '@/components/AppText';
@@ -39,7 +40,6 @@ import Info from './components/Info';
 import OrderItem from './components/OrderItem';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppSnackBar from '@/components/AppSnackBar';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import ChatTalk from '@/components/ChatTalk';
 
 const styles = StyleSheet.create({

@@ -9,7 +9,6 @@ import Profile from '@/components/Profile';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import {navigate} from '@/navigation/navigation';
@@ -55,15 +54,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.clearBlue,
     overflow: 'hidden',
     borderRadius: 3,
-  },
-  btnIdCheck: {
-    marginHorizontal: 7.5,
-    flex: 1,
-    borderColor: colors.lightGrey,
-    borderWidth: 1,
-    borderRadius: 3,
-    height: 40,
-    justifyContent: 'center',
   },
   rechargeBox: {
     marginHorizontal: 20,
@@ -177,18 +167,6 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
             })
           }
         />
-        {/* <AppButton
-          style={styles.btnIdCheck}
-          onPress={() =>
-            navigate(navigation, route, 'MyPageStack', {
-              tab: 'HomeStack',
-              screen: 'Contact',
-            })
-          }
-          titleStyle={appStyles.normal16Text}
-          title={i18n.t('contact:title')}
-          type="secondary"
-        /> */}
         <AppButton
           title={i18n.t('contact:event')}
           style={styles.btnContactBoard}

@@ -21,7 +21,9 @@ export type PymMethodScreenMode =
   | 'new_sim'
   | 'recharge';
 type ContactBoardRouteParam = {index?: number} | undefined;
-type EventBoardRouteParam = {index?: number; issue?: RkbEventIssue} | undefined;
+type EventBoardRouteParam =
+  | {index?: number; issue?: RkbEventBoard; nid?: string}
+  | undefined;
 type FaqRouteParam = {key?: string; num?: string} | undefined;
 
 export type PaymentParams = {

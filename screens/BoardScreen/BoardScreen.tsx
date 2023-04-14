@@ -3,14 +3,13 @@
 /* eslint-disable react/no-unused-state */
 import {List} from 'immutable';
 import {Image as CropImage} from 'react-native-image-crop-picker';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {StyleSheet, View, Dimensions} from 'react-native';
 import {TabView, TabBar} from 'react-native-tab-view';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {RootState, bindActionCreators} from 'redux';
-import i18n from '@/utils/i18n';
 import AppBackButton from '@/components/AppBackButton';
 import BoardMsgAdd from '@/components/BoardMsgAdd';
 import BoardMsgList from '@/components/BoardMsgList';
@@ -34,20 +33,21 @@ const styles = StyleSheet.create({
   },
 });
 
-type ContactBoardScreenNavigationProp = StackNavigationProp<
+type BoardScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
-  'ContactBoard'
+  'Board'
 >;
 
-type ContactBoardScreenRouteProp = RouteProp<
-  HomeStackParamList,
-  'ContactBoard'
->;
+type BoardScreenRouteProp = RouteProp<HomeStackParamList, 'Board'>;
+type TabRoute = {key: string; title: string};
 
-type ContactBoardScreenProps = {
-  navigation: ContactBoardScreenNavigationProp;
-  route: ContactBoardScreenRouteProp;
+type BoardScreenProps = {
+  navigation: BoardScreenNavigationProp;
+  route: BoardScreenRouteProp;
   board: BoardModelState;
+
+  title: string;
+  routes: (TabRoute & {render: () => React.ReactElement})[];
 
   success: boolean;
   pending: boolean;
@@ -57,8 +57,6 @@ type ContactBoardScreenProps = {
   };
 };
 
-type TabRoute = {key: string; title: string};
-
 export type OnPressContactParams = {
   title?: string;
   msg?: string;
@@ -67,19 +65,17 @@ export type OnPressContactParams = {
   attachment: List<CropImage>;
 };
 
-const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
+const BoardScreen: React.FC<BoardScreenProps> = ({
   route: {params},
   navigation,
   action,
   pending,
   success,
   board,
+  title,
+  routes,
 }) => {
   const [index, setIndex] = useState(params?.index ? params.index : 0);
-  const routes = useRef([
-    {key: 'new', title: i18n.t('board:new')},
-    {key: 'list', title: i18n.t('board:list')},
-  ]).current;
   const [fontSize, setFontSize] = useState(16);
 
   useEffect(() => {
@@ -89,11 +85,11 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
   useEffect(() => {
     navigation.setOptions({
       title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('board:title')} />,
+      headerLeft: () => <AppBackButton title={title} />,
     });
 
     Utils.fontScaling(16).then(setFontSize);
-  }, [navigation]);
+  }, [navigation, title]);
 
   useEffect(() => {
     if (success) setIndex(1);
@@ -131,25 +127,9 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
 
   const renderScene = useCallback(
     ({route, jumpTo}: {route: TabRoute; jumpTo: (v: string) => void}) => {
-      if (route.key === 'new') {
-        return <BoardMsgAdd jumpTo={jumpTo} onPressContact={onPress} />;
-      }
-      if (route.key === 'list') {
-        return (
-          <BoardMsgList
-            onPress={(uuid: string, status: string) =>
-              navigation.navigate('BoardMsgResp', {
-                uuid,
-                status,
-              })
-            }
-            board={board}
-          />
-        );
-      }
-      return null;
+      return routes.find((r) => r.key === route.key)?.render() || null;
     },
-    [board, navigation, onPress],
+    [routes],
   );
 
   const renderTabBar = useCallback(
@@ -201,4 +181,4 @@ export default connect(
       board: bindActionCreators(boardActions, dispatch),
     },
   }),
-)(ContactBoardScreen);
+)(BoardScreen);
