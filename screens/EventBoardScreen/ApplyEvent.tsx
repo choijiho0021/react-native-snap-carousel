@@ -689,9 +689,27 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
                   },
                 ]}
                 onPress={() => {
-                  if (linkCount < 6) {
+                  if (linkCount < 3) {
                     setLinkParam(linkParam.concat({value: ''}));
                     setLinkCount(linkCount + 1);
+                  } else {
+                    action.modal.showModal({
+                      content: (
+                        <AppModalContent
+                          type="info"
+                          onOkClose={() => {
+                            action.modal.closeModal();
+                          }}>
+                          <View style={{marginLeft: 30}}>
+                            <AppStyledText
+                              text={i18n.t('event:alert:link')}
+                              textStyle={styles.modalText}
+                              format={{b: styles.modalBoldText}}
+                            />
+                          </View>
+                        </AppModalContent>
+                      ),
+                    });
                   }
                 }}>
                 <AppSvgIcon name="plusBlue" />
@@ -732,7 +750,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             ? {backgroundColor: colors.warmGrey}
             : {backgroundColor: colors.dodgerBlue}
         }
-        title={i18n.t('event:new2')}
+        title={i18n.t(`event:new2${paramIssue ? ':re' : ''}`)}
         onPress={onPress}
         type="primary"
       />
