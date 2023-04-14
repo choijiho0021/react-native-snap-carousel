@@ -285,18 +285,15 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
 
   useEffect(() => {
     if (paramNid) {
-      const ev = eventList.find((e) => e.nid === paramNid) || {title: ''};
-      setSelectedEvent(ev);
-      setTitle(ev.title);
+      setSelectedEvent(eventList.find((e) => e.nid === paramNid));
+      setTitle(eventList.find((e) => e.nid === paramNid)?.title);
     }
   }, [eventList, paramNid]);
 
   useEffect(() => {
     if (paramIssue) {
       setTitle(paramIssue.title);
-      setSelectedEvent(
-        eventList.find((e) => e.title === paramIssue.title) || {title: ''},
-      );
+      setSelectedEvent(eventList.find((e) => e.title === paramIssue.title));
       setLinkParam(paramIssue.link.map((l: string) => ({value: l})));
       setLinkCount(paramIssue.link.length);
       setParamImages(
@@ -324,7 +321,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   }, [selectedEvent]);
 
   const setInitial = useCallback(async () => {
-    setSelectedEvent({title: ''});
+    setSelectedEvent(undefined);
     setLinkParam([{value: ''}]);
     setLinkCount(1);
     setMsg(undefined);
@@ -747,9 +744,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         onClose={() => setShowModal(false)}
         data={eventTitleList}
         onPress={(value) => {
-          setSelectedEvent(
-            eventList.find((e) => e.title === value) || eventList[0],
-          );
+          setSelectedEvent(eventList.find((e) => e.title === value));
           setShowModal(false);
           setShowWebView(false);
           setWebviewHeight(0);
