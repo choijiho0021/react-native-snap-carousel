@@ -45,20 +45,6 @@ const BoardItemList: React.FC<BoardItemListProps> = ({
   onRefresh,
   refreshing = false,
 }) => {
-  const onRefreshCallback = useCallback(async () => {
-    // setRefreshing(true);
-    onRefresh();
-    /*
-    if (isEvent) {
-      const res = await action.eventBoard.getIssueList();
-      if (res) setRefreshing(false);
-    } else {
-      const res = await action.board.getIssueList();
-      if (res) setRefreshing(false);
-    }
-    */
-  }, [onRefresh]);
-
   const empty = useCallback(
     () => (
       <View style={{alignItems: 'center'}}>
@@ -91,7 +77,7 @@ const BoardItemList: React.FC<BoardItemListProps> = ({
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={onRefreshCallback}
+            onRefresh={onRefresh}
             colors={[colors.clearBlue]} // android 전용
             tintColor={colors.clearBlue} // ios 전용
           />
