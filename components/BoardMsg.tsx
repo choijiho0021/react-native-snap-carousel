@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {memo, useMemo} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -40,70 +40,62 @@ const styles = StyleSheet.create({
   },
 });
 
+const statusCode2Color: Record<string, string> = {
+  f: colors.redError,
+  s: colors.shamrock,
+  Closed: colors.clearBlue,
+};
+
 type BoardMsgProps = {
   item: RkbBoard | RkbEventBoard;
   uid: number;
   onPress: (uuid: string, status: string) => void;
 };
-class BoardMsg extends Component<BoardMsgProps> {
-  shouldComponentUpdate(nextProps: BoardMsgProps) {
-    return (
-      this.props.item.uuid !== nextProps.item.uuid ||
-      this.props.item.statusCode !== nextProps.item.statusCode
-    );
-  }
+const BoardMsg: React.FC<BoardMsgProps> = ({item, uid, onPress}) => {
+  const {title, created, status, statusCode, uuid, mobile} = item;
+  const date = useMemo(() => utils.toDateString(created), [created]);
+  const titleOrMobile = useMemo(
+    () =>
+      uid
+        ? title
+        : mobile
+        ? `${mobile.substr(0, 3)}-****-${mobile.substr(7)}`
+        : '',
+    [mobile, title, uid],
+  );
 
-  render() {
-    const {title, created, status, statusCode, uuid, mobile} = this.props.item;
-    const date = utils.toDateString(created);
-    const titleOrMobile = this.props.uid
-      ? title
-      : `${mobile?.substr(0, 3)}-****-${mobile?.substr(7)}`;
-
-    return (
-      <Pressable onPress={() => this.props.onPress(uuid, statusCode)}>
-        <View style={styles.list} key="info">
-          <View style={{flex: 1}}>
-            <AppText key="date" style={styles.date}>
-              {date}
-            </AppText>
-            <AppStyledText
-              text={
-                statusCode === 'r'
-                  ? i18n.t('event:reOpenTitle')
-                  : titleOrMobile || ''
-              }
-              textStyle={styles.title}
-              format={{b: styles.reopenText}}
-              data={{
-                title: titleOrMobile || '',
-              }}
-              numberOfLines={2}
-            />
-          </View>
-          <View style={{width: '30%', alignItems: 'flex-end'}}>
-            <AppText
-              key="status"
-              style={[
-                styles.status,
-                {
-                  color:
-                    statusCode === 'f'
-                      ? colors.redError
-                      : statusCode === 's'
-                      ? colors.shamrock
-                      : statusCode === 'Closed'
-                      ? colors.clearBlue
-                      : colors.warmGrey,
-                },
-              ]}>
-              {statusCode === 'r' ? i18n.t('event:o') : status}
-            </AppText>
-          </View>
+  return (
+    <Pressable onPress={() => onPress(uuid, statusCode)}>
+      <View style={styles.list} key="info">
+        <View style={{flex: 1}}>
+          <AppText key="date" style={styles.date}>
+            {date}
+          </AppText>
+          <AppStyledText
+            text={
+              statusCode === 'r' ? i18n.t('event:reOpenTitle') : titleOrMobile
+            }
+            textStyle={styles.title}
+            format={{b: styles.reopenText}}
+            data={{title: titleOrMobile}}
+            numberOfLines={2}
+          />
         </View>
-      </Pressable>
-    );
-  }
-}
+        <View style={{width: '30%', alignItems: 'flex-end'}}>
+          <AppText
+            key="status"
+            style={[
+              styles.status,
+              {
+                color: statusCode2Color[statusCode] || colors.warmGrey,
+              },
+            ]}>
+            {statusCode === 'r' ? i18n.t('event:o') : status}
+          </AppText>
+        </View>
+      </View>
+    </Pressable>
+  );
+};
 
-export default BoardMsg;
+export default memo(BoardMsg);
