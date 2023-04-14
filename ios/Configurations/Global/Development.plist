@@ -188,20 +188,16 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSCalendarsUsageDescription</key>
-	<string>캘린더 접근을 허용해 주세요</string>
 	<key>NSCameraUsageDescription</key>
-	<string>사진 또는 동영상을 촬영, 메세지로 전송하여 더욱 원활한 채팅 상담을 진행하기 위해 카메라에 접근하도록 허용합니다.</string>
-	<key>NSContactsUsageDescription</key>
-	<string>연락처 접근을 허용해 주세요</string>
+	<string>Please allow access to the camera for capturing and sending photos or videos, in order to facilitate smoother chat consultations.</string>
 	<key>NSMainNibFile</key>
 	<string>GlobalLaunchScreen</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow esim to access your microphone</string>
+	<string>Please allow access to the microphone in order to collect audio for smoother chat consultations during video recording.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>프로필 등록을 위해 사진 앨범 접근을 허용해 주세요</string>
+	<string>Please allow access to the photo album for profile registration</string>
 	<key>NSUserTrackingUsageDescription</key>
-	<string>맞춤 상품 추천을 위해 허용해 주세요</string>
+	<string>Please allow personalized product recommendations</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>fonts/Roboto-Bold.ttf</string>
