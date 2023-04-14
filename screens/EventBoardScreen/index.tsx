@@ -3,8 +3,7 @@ import {connect} from 'react-redux';
 import {RootState} from '@/redux';
 import i18n from '@/utils/i18n';
 import {actions as eventBoardActions} from '@/redux/modules/eventBoard';
-import BoardItemList from '@/screens/BoardScreen/BoardItemList';
-import BoardScreen from '@/screens/BoardScreen/BoardScreen';
+import BoardScreen from '@/screens/BoardScreen';
 import ApplyEvent from './ApplyEvent';
 import MyEventList from './MyEventList';
 
