@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {
   FlatList,
   RefreshControl,
@@ -19,10 +19,6 @@ import {
   BoardAction,
   BoardModelState,
 } from '@/redux/modules/board';
-import {
-  actions as eventBoardActions,
-  EventBoardAction,
-} from '@/redux/modules/eventBoard';
 import i18n from '@/utils/i18n';
 import {ValidationResult} from '@/utils/validationUtil';
 import AppButton from './AppButton';
@@ -80,32 +76,73 @@ const styles = StyleSheet.create({
   },
 });
 
+const InputMobile0 = ({
+  uid,
+  onSubmit,
+}: {
+  uid: number;
+  onSubmit: (v: string) => void;
+}) => {
+  const [value, setValue] = useState('');
+  return (
+    <View>
+      {uid === 0 && (
+        <View>
+          <AppText style={styles.label}>{i18n.t('board:contact')}</AppText>
+          <View style={styles.inputBox}>
+            <AppTextInput
+              style={styles.inputMobile}
+              placeholder={i18n.t('board:noMobile')}
+              placeholderTextColor={colors.greyish}
+              keyboardType="numeric"
+              returnKeyType="done"
+              maxLength={13}
+              value={value}
+              onSubmitEditing={() => onSubmit(value)}
+              onChangeText={setValue}
+            />
+
+            <AppButton
+              iconName="btnSearchOn"
+              onPress={() => onSubmit(value)}
+              style={styles.button}
+            />
+          </View>
+
+          <View style={styles.divider} />
+        </View>
+      )}
+
+      <AppText style={styles.mylist}>
+        {uid === 0 ? i18n.t('board:list') : i18n.t('board:mylist')}
+      </AppText>
+    </View>
+  );
+};
+const InputMobile = memo(InputMobile0);
+
 type BoardMsgListProps = {
   board?: BoardModelState;
-  eventBoard?: BoardModelState;
   account: AccountModelState;
   uid: number;
-  isEvent?: boolean;
   onPress: (uuid: string, status: string) => void;
+  pending: boolean;
 
   action: {
     board: BoardAction;
-    eventBoard: EventBoardAction;
   };
 };
 
 const BoardMsgList: React.FC<BoardMsgListProps> = ({
   board,
-  eventBoard,
-  isEvent = false,
   action,
   account,
+  pending,
   uid,
   onPress,
 }) => {
   const [data, setData] = useState<RkbBoard[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
   const [status, setStatus] = useState('');
   const [selected, setSelected] = useState('');
   const [mobile, setMobile] = useState('');
@@ -115,25 +152,22 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   }, [account?.mobile]);
 
   useEffect(() => {
-    if (isEvent && (eventBoard?.list.length || 0) > 0)
-      setData(eventBoard?.list || []);
-    else if ((board?.list.length || 0) > 0) setData(board?.list || []);
-  }, [board?.list, eventBoard?.list, eventBoard?.list.length, isEvent]);
+    if ((board?.list.length || 0) > 0) setData(board?.list || []);
+  }, [board?.list]);
 
-  const onSubmit = useCallback(() => {
-    if (mobile) {
-      const number = mobile.replace(/-/g, '');
+  const onSubmit = useCallback(
+    (value: string) => {
+      if (value) {
+        const number = value.replace(/-/g, '');
 
-      if (isEvent)
-        setData(
-          eventBoard?.list.filter((item) => item.mobile.includes(number)) || [],
-        );
-      else
         setData(
           board?.list.filter((item) => item.mobile.includes(number)) || [],
         );
-    }
-  }, [board?.list, eventBoard?.list, isEvent, mobile]);
+        setMobile(number);
+      }
+    },
+    [board?.list],
+  );
 
   // 응답 메시지 화면으로 이동한다.
   const onSubmitPin = useCallback(() => {
@@ -170,103 +204,48 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   );
 
   const onEndReached = useCallback(() => {
-    if (isEvent) action.eventBoard.getNextIssueList();
-    else action.board.getNextIssueList();
-  }, [action.board, action.eventBoard, isEvent]);
+    action.board.getNextIssueList();
+  }, [action.board]);
 
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    if (isEvent) {
-      const res = await action.eventBoard.getIssueList();
-      if (res) setRefreshing(false);
-    } else {
-      const res = await action.board.getIssueList();
-      if (res) setRefreshing(false);
-    }
-  }, [action.board, action.eventBoard, isEvent]);
-
-  const header = useCallback(() => {
-    if (isEvent) return <View style={{height: 6}} />;
-
-    return (
-      <View>
-        {uid === 0 && (
-          <View>
-            <AppText style={styles.label}>{i18n.t('board:contact')}</AppText>
-            <View style={styles.inputBox}>
-              <AppTextInput
-                style={styles.inputMobile}
-                placeholder={i18n.t('board:noMobile')}
-                placeholderTextColor={colors.greyish}
-                keyboardType="numeric"
-                returnKeyType="done"
-                maxLength={13}
-                value={mobile}
-                onSubmitEditing={onSubmit}
-                onChangeText={setMobile}
-              />
-
-              <AppButton
-                iconName="btnSearchOn"
-                onPress={onSubmit}
-                style={styles.button}
-              />
-            </View>
-
-            <View style={styles.divider} />
-          </View>
-        )}
-
-        <AppText style={styles.mylist}>
-          {uid === 0 ? i18n.t('board:list') : i18n.t('board:mylist')}
-        </AppText>
-      </View>
-    );
-  }, [isEvent, mobile, onSubmit, uid]);
+  const onRefresh = useCallback(() => {
+    action.board.getIssueList();
+  }, [action.board]);
 
   const empty = useCallback(
     () => (
       <View style={{alignItems: 'center'}}>
         <AppIcon style={styles.mark} name="imgMark" />
         <AppText style={styles.noList}>
-          {refreshing ? i18n.t('board:loading') : i18n.t('board:nolist')}
+          {pending ? i18n.t('board:loading') : i18n.t('board:nolist')}
         </AppText>
       </View>
     ),
-    [refreshing],
+    [pending],
   );
 
   const renderItem = useCallback(
-    ({item}: {item: RkbBoard}) => {
-      return (
-        <BoardMsg
-          onPress={onPressItem(item.uuid, item.statusCode)}
-          item={item}
-          uid={uid}
-        />
-      );
-    },
+    ({item}: {item: RkbBoard}) => (
+      <BoardMsg
+        onPress={onPressItem(item.uuid, item.statusCode)}
+        item={item}
+        uid={uid}
+      />
+    ),
     [onPressItem, uid],
   );
-
-  // const {mobile, data, showModal, refreshing} = this.state;
 
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
         data={data}
-        ListHeaderComponent={header}
+        ListHeaderComponent={<InputMobile uid={uid} onSubmit={onSubmit} />}
         ListEmptyComponent={empty}
-        // onEndReached={this._onEndReached}
-        // onEndReachedThreshold={0.5}
         onScrollEndDrag={onEndReached} // 검색 시 onEndReached가 발생하는 버그가 Flatlist에 있어 끝까지 스크롤한 경우 list를 더 가져오도록 변경
-        // onRefresh={this._onRefresh}
-        // refreshing={refreshing}
         extraData={mobile}
         renderItem={renderItem}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing}
+            refreshing={pending}
             onRefresh={onRefresh}
             colors={[colors.clearBlue]} // android 전용
             tintColor={colors.clearBlue} // ios 전용
@@ -289,14 +268,14 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
 };
 
 export default connect(
-  ({account}: RootState) => ({
+  ({account, status}: RootState) => ({
     account,
     uid: account.uid || 0,
+    pending: status.pending[boardActions.getIssueList.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {
       board: bindActionCreators(boardActions, dispatch),
-      eventBoard: bindActionCreators(eventBoardActions, dispatch),
     },
   }),
 )(BoardMsgList);
