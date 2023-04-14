@@ -796,7 +796,6 @@ export default connect(
     pending:
       status.pending[eventBoardActions.postEventIssue.typePrefix] ||
       status.pending[eventBoardActions.postEventAttach.typePrefix] ||
-      status.pending[eventBoardActions.fetchEventIssueList.typePrefix] ||
       false,
   }),
   (dispatch) => ({
