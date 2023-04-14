@@ -3,7 +3,6 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {bindActionCreators} from 'redux';
 import {
   findNodeHandle,
-  Image,
   InputAccessoryView,
   Platform,
   Pressable,
@@ -32,8 +31,6 @@ import {colors} from '@/constants/Colors';
 import {attachmentSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
-import utils from '@/redux/api/utils';
-import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import validationUtil, {
   ValidationResult,
@@ -53,29 +50,15 @@ import {
 import AppSvgIcon from '@/components/AppSvgIcon';
 import EventStatusBox from '@/screens/MyPageScreen/components/EventStatusBox';
 import {OnPressContactParams} from '@/screens/ContactBoardScreen';
-import ImgWithIndicator from '@/screens/MyPageScreen/components/ImgWithIndicator';
-import {API} from '@/redux/api';
 import AppAlert from '@/components/AppAlert';
 import {PromotionModelState} from '@/redux/modules/promotion';
 import {BoardModelState} from '@/redux/modules/board';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
 import {RkbImage} from '@/redux/api/accountApi';
+import AttachMentBox from '../BoardScreen/AttachMentBox';
 
 const styles = StyleSheet.create({
-  passwordInput: {
-    borderBottomColor: colors.warmGrey,
-    borderBottomWidth: 1,
-    marginLeft: 15,
-    paddingBottom: 10,
-    color: colors.black,
-    flex: 1,
-  },
-  passwordBox: {
-    flexDirection: 'row',
-    marginTop: 30,
-    marginHorizontal: 20,
-  },
   inputAccessoryText: {
     ...appStyles.normal18Text,
     textAlign: 'center',
@@ -86,20 +69,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     backgroundColor: colors.lightGrey,
     padding: 5,
-  },
-  plusButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  attachCancel: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    zIndex: 1,
-  },
-  attachBox: {
-    marginHorizontal: 20,
-    flexDirection: 'row',
   },
   link: {
     display: 'flex',
@@ -126,20 +95,6 @@ const styles = StyleSheet.create({
   attachTitleText: {
     ...appStyles.semiBold14Text,
     lineHeight: 20,
-  },
-  imgSize: {
-    width: attachmentSize,
-    height: attachmentSize,
-    borderRadius: 3,
-  },
-  attach: {
-    width: attachmentSize + 2,
-    height: attachmentSize + 2,
-    borderRadius: 3,
-    backgroundColor: colors.white,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
   },
   confirm: {
     ...appStyles.normal18Text,
@@ -212,30 +167,9 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: colors.warmGrey,
   },
-  noti: {
-    ...appStyles.normal12Text,
-    textAlign: 'left',
-  },
   container: {
     flex: 1,
   },
-  label: {
-    ...appStyles.normal14Text,
-    marginLeft: 20,
-    marginTop: 30,
-  },
-  button: {
-    ...appStyles.normal16Text,
-    height: 40,
-    paddingLeft: 20,
-    marginTop: 15,
-    marginBottom: 20,
-    marginHorizontal: 20,
-    color: colors.black,
-    borderBottomColor: colors.warmGrey,
-    borderBottomWidth: 1,
-  },
-
   modalInner: {
     justifyContent: 'space-between',
     flexGrow: 1,
@@ -269,7 +203,6 @@ const styles = StyleSheet.create({
 });
 
 type ApplyEventProps = {
-  account: AccountModelState;
   promotion: PromotionModelState;
   eventBoard: BoardModelState;
 
@@ -279,7 +212,6 @@ type ApplyEventProps = {
   eventList?: RkbEvent[];
   paramIssue?: RkbEventBoard;
   paramNid?: string;
-  onPressEvent?: (v: OnPressEventParams) => boolean;
   onPressContact?: (v: OnPressContactParams) => boolean;
   action: {
     eventBoard: EventBoardAction;
@@ -318,7 +250,6 @@ export type EventLinkType = {
 };
 
 const ApplyEvent: React.FC<ApplyEventProps> = ({
-  account,
   promotion,
   eventBoard,
   paramIssue,
@@ -327,14 +258,11 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   successEvent,
 }) => {
   const eventList = useMemo(() => promotion.event || [], [promotion.event]);
-  const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
-  const [mobile, setMobile] = useState('');
   const [errors, setErrors] = useState<ValidationResult>({});
   const [title, setTitle] = useState<string>();
   const [msg, setMsg] = useState<string>();
   const [linkParam, setLinkParam] = useState<EventLinkType[]>([{value: ''}]);
   const [linkCount, setLinkCount] = useState(1);
-  const [pin, setPin] = useState<string>();
   const [attachment, setAttachment] = useState(List<CropImage>());
   const [extraHeight, setExtraHeight] = useState(0);
   const [showModal, setShowModal] = useState(false);
@@ -390,24 +318,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     }
   }, [eventList, paramIssue]);
 
-  useEffect(() => {
-    const checkPermission = async () => {
-      const permission =
-        Platform.OS === 'ios'
-          ? PERMISSIONS.IOS.PHOTO_LIBRARY
-          : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
-      const result = await check(permission);
-      setHasPhotoPermission(result === RESULTS.GRANTED);
-    };
-
-    checkPermission();
-
-    const number = utils.toPhoneNumber(account.mobile);
-    setMobile(number);
-
-    setErrors(validationUtil.validate('mobile', number));
-  }, [account]);
-
   const validate = useCallback((key: string, value: string) => {
     const valid = validationUtil.validate(key, value, validationRule);
 
@@ -431,7 +341,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     setLinkCount(1);
     setMsg(undefined);
     setTitle(undefined);
-    setPin(undefined);
     setAttachment((a) => a.clear());
   }, []);
 
@@ -440,166 +349,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       return errors && errors[key] ? errors[key][0] : '';
     },
     [errors],
-  );
-
-  const addAttachment = useCallback(async () => {
-    let checkNewPermission = false;
-
-    if (!hasPhotoPermission) {
-      const permission =
-        Platform.OS === 'ios'
-          ? PERMISSIONS.IOS.PHOTO_LIBRARY
-          : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
-      const result = await check(permission);
-
-      checkNewPermission = result === RESULTS.GRANTED;
-    }
-
-    if (hasPhotoPermission || checkNewPermission) {
-      if (ImagePicker) {
-        try {
-          const image = await ImagePicker.openPicker({
-            // width: 750,
-            // height: 1334, // iphone 8 size
-            // cropping: true,
-            includeBase64: true,
-            writeTempFile: false,
-            mediaType: 'photo',
-            forceJpb: true,
-            // cropperChooseText: i18n.t('select'),
-            // cropperCancelText: i18n.t('cancel'),
-          });
-
-          setAttachment((a) => a.push(image));
-        } catch (err) {
-          console.log('failed to select', err);
-        }
-      }
-    } else {
-      // 사진 앨범 조회 권한을 요청한다.
-      AppAlert.confirm(i18n.t('settings'), i18n.t('acc:permPhoto'), {
-        ok: () => openSettings(),
-      });
-    }
-  }, [hasPhotoPermission]);
-
-  const renderPass = useCallback(
-    () => (
-      <View style={styles.passwordBox}>
-        <AppText
-          style={[
-            appStyles.normal14Text,
-            {color: colors.tomato, marginRight: 5, textAlignVertical: 'center'},
-          ]}>
-          *
-        </AppText>
-        <AppText
-          style={[appStyles.normal14Text, {textAlignVertical: 'center'}]}>
-          {i18n.t('board:pass')}
-        </AppText>
-        <AppTextInput
-          style={styles.passwordInput}
-          placeholder={i18n.t('board:inputPass')}
-          placeholderTextColor={colors.greyish}
-          keyboardType="numeric"
-          returnKeyType="done"
-          enablesReturnKeyAutomatically
-          maxLength={4}
-          secureTextEntry
-          onChangeText={(v) => {
-            setPin(v);
-            validate('pin', v);
-          }}
-          value={pin}
-          onFocus={() => setExtraHeight(20)}
-        />
-      </View>
-    ),
-    [pin, validate],
-  );
-
-  const renderAttachment = useCallback(
-    () => (
-      <View>
-        <View style={styles.attachTitle}>
-          <AppText style={styles.attachTitleText}>
-            {i18n.t('board:attach')}
-          </AppText>
-          {selectedEvent.rule?.image && (
-            <AppText style={styles.essentialText}>
-              {i18n.t('event:essential')}
-            </AppText>
-          )}
-        </View>
-        <View style={styles.attachBox}>
-          {paramImages.length > 0 &&
-            paramImages
-              .filter((item) => !_.isEmpty(item))
-              .map((image, i) => (
-                <Pressable
-                  style={[styles.attach, i < 2 && {marginRight: 33}]}
-                  key={utils.generateKey(`${image.url}${i}`)}
-                  onPress={() => {
-                    setParamImages(
-                      paramImages.filter((p) => p.url !== image.url),
-                    );
-                  }}>
-                  <AppIcon name="btnBoxCancel" style={styles.attachCancel} />
-                  <ImgWithIndicator
-                    uri={API.default.httpImageUrl(image.url).toString()}
-                  />
-                </Pressable>
-              ))}
-          {attachment.map((image, idx) => (
-            <Pressable
-              key={image.filename}
-              style={[styles.attach, idx < 2 && {marginRight: 33}]}
-              onPress={() => setAttachment((a) => a.delete(idx))}>
-              <Image
-                style={styles.imgSize}
-                source={{uri: `data:${image.mime};base64,${image.data}`}}
-              />
-              <AppIcon name="btnBoxCancel" style={styles.attachCancel} />
-            </Pressable>
-          ))}
-          {paramImages.length + attachment.size < 3 && (
-            <Pressable
-              key="add"
-              style={[styles.attach, styles.plusButton]}
-              onPress={addAttachment}>
-              <AppIcon name="btnPhotoPlus" />
-            </Pressable>
-          )}
-        </View>
-      </View>
-    ),
-    [addAttachment, attachment, paramImages, selectedEvent.rule?.image],
-  );
-
-  const renderContact = useCallback(
-    () => (
-      <View>
-        <AppText style={styles.label}>{i18n.t('board:contact')}</AppText>
-        <AppTextInput
-          style={styles.button}
-          placeholder={i18n.t('board:noMobile')}
-          placeholderTextColor={colors.greyish}
-          keyboardType="numeric"
-          returnKeyType="next"
-          enablesReturnKeyAutomatically
-          maxLength={13}
-          onChangeText={(v) => {
-            const value = utils.toPhoneNumber(v);
-            setMobile(value);
-            validate('mobile', value);
-          }}
-          onFocus={() => setExtraHeight(20)}
-          error={error('mobile')}
-          value={mobile}
-        />
-      </View>
-    ),
-    [error, mobile, validate],
   );
 
   // errors object의 모든 value 값들이 undefined인지 확인한다.
@@ -677,127 +426,123 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     );
   }, [error, focusedItem, linkCount, linkParam, validate]);
 
-  const onPress = useCallback(
-    ({
+  const onPress = useCallback(() => {
+    if (!title) {
+      action.toast.push('event:empty:title');
+      return;
+    }
+    if (!msg) {
+      action.toast.push('event:empty:msg');
+      return;
+    }
+    // 링크 필수 인경우
+    if (selectedEvent?.rule?.link && linkParam?.find((l) => l.value === '')) {
+      action.toast.push('event:empty:link');
+      return;
+    }
+
+    // 이미지 필수 인경우
+    if (
+      selectedEvent?.rule?.image &&
+      attachment.size < 1 &&
+      (paramImages?.length || 0) < 1
+    ) {
+      action.toast.push('event:empty:image');
+      return;
+    }
+
+    const isDuplicated = !!eventBoard.list.find(
+      (l) => l.title === selectedEvent?.title && l.statusCode !== 'f',
+    );
+
+    const isreOpenDuplicated = !!eventBoard.list.find(
+      (l) => l.title === selectedEvent?.title && l.statusCode === 'r',
+    );
+
+    if (isDuplicated || isreOpenDuplicated) {
+      action.modal.showModal({
+        content: (
+          <AppModalContent
+            type="info"
+            onOkClose={() => {
+              action.modal.closeModal();
+            }}>
+            <View style={{marginLeft: 30}}>
+              <AppStyledText
+                text={i18n.t(
+                  `event:alert:duplication${
+                    isreOpenDuplicated ? ':reopen' : ''
+                  }`,
+                )}
+                textStyle={styles.modalText}
+                format={{b: styles.modalBoldText}}
+              />
+            </View>
+          </AppModalContent>
+        ),
+      });
+      return;
+    }
+
+    const isReapply = !!eventBoard.list.find(
+      (l) => l.title === selectedEvent?.title && l.statusCode === 'f',
+    );
+
+    const issue = {
       title,
       msg,
-      selectedEvent,
-      linkParam,
-      attachment,
+      link: linkParam,
+      eventUuid: selectedEvent?.uuid,
+      eventStatus: isReapply ? 'R' : 'O',
       paramImages,
-    }: OnPressEventParams) => {
-      if (!title) {
-        action.toast.push('event:empty:title');
-        return false;
-      }
-      if (!msg) {
-        action.toast.push('event:empty:msg');
-        return false;
-      }
-      // 링크 필수 인경우
-      if (selectedEvent?.rule?.link && linkParam?.find((l) => l.value === '')) {
-        action.toast.push('event:empty:link');
-        return false;
-      }
+      images: attachment
+        .map(
+          ({mime, size, width, height, data}) =>
+            ({
+              mime,
+              size,
+              width,
+              height,
+              data,
+            } as RkbImage),
+        )
+        .toArray(),
+    } as RkbEventIssue;
 
-      // 이미지 필수 인경우
-      if (
-        selectedEvent?.rule?.image &&
-        attachment.size < 1 &&
-        (paramImages?.length || 0) < 1
-      ) {
-        action.toast.push('event:empty:image');
-        return false;
-      }
+    action.eventBoard.postAndGetList(issue);
 
-      const isDuplicated = !!eventBoard.list.find(
-        (l) => l.title === selectedEvent?.title && l.statusCode !== 'f',
-      );
+    if (successEvent)
+      action.modal.showModal({
+        content: (
+          <AppModalContent
+            type="info"
+            onOkClose={() => {
+              action.modal.closeModal();
+            }}>
+            <View style={{marginLeft: 30}}>
+              <AppStyledText
+                text={i18n.t(`event:alert:${isReapply ? 'reOpen' : 'open'}`)}
+                textStyle={styles.modalText}
+                format={{b: styles.modalBoldText}}
+              />
+            </View>
+          </AppModalContent>
+        ),
+      });
 
-      const isreOpenDuplicated = !!eventBoard.list.find(
-        (l) => l.title === selectedEvent?.title && l.statusCode === 'r',
-      );
-
-      if (isDuplicated || isreOpenDuplicated) {
-        action.modal.showModal({
-          content: (
-            <AppModalContent
-              type="info"
-              onOkClose={() => {
-                action.modal.closeModal();
-              }}>
-              <View style={{marginLeft: 30}}>
-                <AppStyledText
-                  text={i18n.t(
-                    `event:alert:duplication${
-                      isreOpenDuplicated ? ':reopen' : ''
-                    }`,
-                  )}
-                  textStyle={styles.modalText}
-                  format={{b: styles.modalBoldText}}
-                />
-              </View>
-            </AppModalContent>
-          ),
-        });
-        return false;
-      }
-
-      const isReapply = !!eventBoard.list.find(
-        (l) => l.title === selectedEvent?.title && l.statusCode === 'f',
-      );
-
-      const issue = {
-        title,
-        msg,
-        link: linkParam,
-        eventUuid: selectedEvent?.uuid,
-        eventStatus: isReapply ? 'R' : 'O',
-        paramImages,
-        images: attachment
-          .map(
-            ({mime, size, width, height, data}) =>
-              ({
-                mime,
-                size,
-                width,
-                height,
-                data,
-              } as RkbImage),
-          )
-          .toArray(),
-      } as RkbEventIssue;
-
-      action.eventBoard.postAndGetList(issue);
-
-      if (successEvent)
-        action.modal.showModal({
-          content: (
-            <AppModalContent
-              type="info"
-              onOkClose={() => {
-                action.modal.closeModal();
-              }}>
-              <View style={{marginLeft: 30}}>
-                <AppStyledText
-                  text={i18n.t(`event:alert:${isReapply ? 'reOpen' : 'open'}`)}
-                  textStyle={styles.modalText}
-                  format={{b: styles.modalBoldText}}
-                />
-              </View>
-            </AppModalContent>
-          ),
-        });
-      return true;
-    },
-    [
-      action.eventBoard,
-      action.modal,
-      action.toast,
-      eventBoard.list,
-      successEvent,
-    ],
-  );
+    setInitial();
+  }, [
+    action,
+    attachment,
+    eventBoard.list,
+    linkParam,
+    msg,
+    paramImages,
+    selectedEvent,
+    setInitial,
+    successEvent,
+    title,
+  ]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -810,7 +555,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         innerRef={(ref) => {
           scrollRef.current = ref;
         }}>
-        {!account.loggedIn && renderContact()}
         <View style={{flex: 1}}>
           {paramIssue ? (
             <View style={{marginHorizontal: 20, marginBottom: 24}}>
@@ -977,7 +721,13 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
           )}
           {isEventSelected && renderLinkInput()}
 
-          {account.loggedIn ? renderAttachment() : renderPass()}
+          <AttachMentBox
+            selectedEvent={selectedEvent}
+            paramImages={paramImages}
+            setParamImages={setParamImages}
+            attachment={attachment}
+            setAttachment={setAttachment}
+          />
         </View>
       </KeyboardAwareScrollView>
 
@@ -1003,19 +753,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             : {backgroundColor: colors.dodgerBlue}
         }
         title={i18n.t('event:new2')}
-        onPress={() => {
-          if (
-            onPress({
-              title,
-              msg,
-              selectedEvent,
-              linkParam,
-              attachment,
-              paramImages,
-            })
-          )
-            setInitial();
-        }}
+        onPress={onPress}
         type="primary"
       />
 
@@ -1039,8 +777,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
 };
 
 export default connect(
-  ({account, promotion, eventBoard, status}: RootState) => ({
-    account,
+  ({promotion, eventBoard, status}: RootState) => ({
     promotion,
     eventBoard,
     successEvent: status.fulfilled[eventBoardActions.postEventIssue.typePrefix],
