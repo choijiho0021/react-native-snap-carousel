@@ -243,7 +243,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({pending}) => {
 
           {issue?.link && renderLink()}
 
-          {renderImages(issue?.images)}
+          {issue?.images.length > 0 && renderImages(issue?.images)}
 
           {resp && (
             <View style={styles.respBox}>

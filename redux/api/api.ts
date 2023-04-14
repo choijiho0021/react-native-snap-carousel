@@ -78,7 +78,7 @@ const path = {
   order: 'json/orders',
   uploadFile: 'file/upload',
   board: 'json/contactboard',
-  eventBoard: 'json/eventboard',
+  eventBoard: 'json/event/board',
   subscription: 'json/subs',
   storeSubs: 'json/store',
   rkbtalk: 'json/rkbtalk',

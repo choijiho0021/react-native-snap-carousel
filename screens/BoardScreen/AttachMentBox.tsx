@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type AttachMentProps = {
+type AttachmentBoxProps = {
   selectedEvent?: RkbEvent;
   paramImages?: EventParamImagesType[];
   setParamImages?: (v: EventParamImagesType[]) => void;
@@ -79,7 +79,7 @@ type AttachMentProps = {
   setAttachment: (v: List<CropImage>) => void;
 };
 
-const AttachMentBox: React.FC<AttachMentProps> = ({
+const AttachmentBox: React.FC<AttachmentBoxProps> = ({
   selectedEvent,
   paramImages,
   setParamImages,
@@ -195,4 +195,4 @@ const AttachMentBox: React.FC<AttachMentProps> = ({
   );
 };
 
-export default AttachMentBox;
+export default AttachmentBox;

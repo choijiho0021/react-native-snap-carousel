@@ -10,14 +10,8 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import ImagePicker, {Image as CropImage} from 'react-native-image-crop-picker';
+import {Image as CropImage} from 'react-native-image-crop-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {
-  check,
-  openSettings,
-  PERMISSIONS,
-  RESULTS,
-} from 'react-native-permissions';
 import {connect} from 'react-redux';
 import _ from 'underscore';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
@@ -28,7 +22,6 @@ import {
   EventBoardAction,
 } from '@/redux/modules/eventBoard';
 import {colors} from '@/constants/Colors';
-import {attachmentSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
 import i18n from '@/utils/i18n';
@@ -50,13 +43,13 @@ import {
 import AppSvgIcon from '@/components/AppSvgIcon';
 import EventStatusBox from '@/screens/MyPageScreen/components/EventStatusBox';
 import {OnPressContactParams} from '@/screens/ContactBoardScreen';
-import AppAlert from '@/components/AppAlert';
 import {PromotionModelState} from '@/redux/modules/promotion';
 import {BoardModelState} from '@/redux/modules/board';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
 import {RkbImage} from '@/redux/api/accountApi';
-import AttachMentBox from '../BoardScreen/AttachMentBox';
+import AttachmentBox from '@/screens/BoardScreen/AttachmentBox';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 
 const styles = StyleSheet.create({
   inputAccessoryText: {
@@ -206,8 +199,8 @@ type ApplyEventProps = {
   promotion: PromotionModelState;
   eventBoard: BoardModelState;
 
-  successEvent: boolean;
-
+  pending: boolean;
+  success: boolean;
   jumpTo: (v: string) => void;
   eventList?: RkbEvent[];
   paramIssue?: RkbEventBoard;
@@ -255,7 +248,9 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   paramIssue,
   paramNid,
   action,
-  successEvent,
+  pending,
+  success,
+  jumpTo,
 }) => {
   const eventList = useMemo(() => promotion.event || [], [promotion.event]);
   const [errors, setErrors] = useState<ValidationResult>({});
@@ -266,9 +261,8 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   const [attachment, setAttachment] = useState(List<CropImage>());
   const [extraHeight, setExtraHeight] = useState(0);
   const [showModal, setShowModal] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<RkbEvent>({title: ''});
-  const [isEventSelected, setIsEventSelected] = useState(false);
-  const [showWebView, setShowWebView] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<RkbEvent | undefined>();
+  const [showWebView, setShowWebView] = useState(true);
   const [focusedItem, setFocusedItem] = useState({
     title: false,
     msg: false,
@@ -276,6 +270,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   });
   const [webviewHeight, setWebviewHeight] = useState(0);
   const [paramImages, setParamImages] = useState<EventParamImagesType[]>([]);
+  const [pressed, setPressed] = useState(false);
 
   const onMessage = useCallback((event: WebViewMessageEvent) => {
     const height = parseInt(event.nativeEvent.data, 10);
@@ -293,18 +288,15 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
 
   useEffect(() => {
     if (paramNid) {
-      const ev = eventList.find((e) => e.nid === paramNid) || {title: ''};
-      setSelectedEvent(ev);
-      setTitle(ev.title);
+      setSelectedEvent(eventList.find((e) => e.nid === paramNid));
+      setTitle(eventList.find((e) => e.nid === paramNid)?.title);
     }
   }, [eventList, paramNid]);
 
   useEffect(() => {
     if (paramIssue) {
       setTitle(paramIssue.title);
-      setSelectedEvent(
-        eventList.find((e) => e.title === paramIssue.title) || {title: ''},
-      );
+      setSelectedEvent(eventList.find((e) => e.title === paramIssue.title));
       setLinkParam(paramIssue.link.map((l: string) => ({value: l})));
       setLinkCount(paramIssue.link.length);
       setParamImages(
@@ -314,7 +306,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         })),
       );
       setMsg(paramIssue.msg || '');
-      setShowWebView(true);
     }
   }, [eventList, paramIssue]);
 
@@ -328,21 +319,52 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   }, []);
 
   useEffect(() => {
-    if (selectedEvent.title !== '') setIsEventSelected(true);
-  }, [selectedEvent.title]);
-
-  useEffect(() => {
-    setTitle(selectedEvent.title);
-  }, [selectedEvent.title]);
+    if (selectedEvent) setTitle(selectedEvent.title);
+  }, [selectedEvent]);
 
   const setInitial = useCallback(async () => {
-    setSelectedEvent({title: ''});
+    setSelectedEvent(undefined);
     setLinkParam([{value: ''}]);
     setLinkCount(1);
     setMsg(undefined);
     setTitle(undefined);
     setAttachment((a) => a.clear());
   }, []);
+
+  useEffect(() => {
+    if (pressed && !pending && success) {
+      action.modal.showModal({
+        content: (
+          <AppModalContent
+            type="info"
+            onOkClose={() => {
+              action.modal.closeModal();
+              setInitial();
+              action.eventBoard.getIssueList();
+              setPressed(false);
+              jumpTo('list');
+            }}>
+            <View style={{marginLeft: 30}}>
+              <AppStyledText
+                text={i18n.t(`event:alert:${paramIssue ? 'reOpen' : 'open'}`)}
+                textStyle={styles.modalText}
+                format={{b: styles.modalBoldText}}
+              />
+            </View>
+          </AppModalContent>
+        ),
+      });
+    }
+  }, [
+    action.eventBoard,
+    action.modal,
+    jumpTo,
+    paramIssue,
+    pending,
+    pressed,
+    setInitial,
+    success,
+  ]);
 
   const error = useCallback(
     (key: string) => {
@@ -354,74 +376,70 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   // errors object의 모든 value 값들이 undefined인지 확인한다.
   const hasError = useMemo(() => {
     return (
-      !isEventSelected ||
+      !selectedEvent ||
       _.isEmpty(msg) ||
-      (selectedEvent.rule?.image && attachment.size < 1) ||
-      (selectedEvent.rule?.link && linkParam.find((l) => l.value === ''))
+      (selectedEvent?.rule?.image && attachment.size < 1) ||
+      (selectedEvent?.rule?.link && linkParam.find((l) => l.value === ''))
     );
-  }, [
-    attachment.size,
-    isEventSelected,
-    linkParam,
-    msg,
-    selectedEvent.rule?.image,
-    selectedEvent.rule?.link,
-  ]);
+  }, [attachment.size, linkParam, msg, selectedEvent]);
 
   const renderLinkInput = useCallback(() => {
-    const arr = new Array(linkCount).fill(0);
-    return arr.map((cur, idx) =>
-      linkParam[idx] ? (
-        <View style={{display: 'flex', flexDirection: 'row'}} key={idx}>
-          <AppTextInput
-            style={[
-              styles.inputBox,
-              idx < arr.length - 1 && {marginBottom: 8},
-              idx > 0 && {marginRight: 8},
-              {flex: 1},
-              focusedItem.link[idx] && {
-                borderColor: colors.clearBlue,
-              },
-            ]}
-            maxLength={1000}
-            onChangeText={(v) => {
-              const newArr = [...linkParam];
-              newArr[idx] = {value: v};
-              setLinkParam(newArr);
-              validate(`link${idx}`, v);
-            }}
-            value={linkParam[idx].value}
-            enablesReturnKeyAutomatically
-            clearTextOnFocus={false}
-            onFocus={() => {
-              setExtraHeight(20);
-              const focusedLink = [...focusedItem.link];
-              focusedLink[idx] = true;
-              setFocusedItem({...focusedItem, link: focusedLink});
-            }}
-            onBlur={() => {
-              const focusedLink = [...focusedItem.link];
-              focusedLink[idx] = false;
-              setFocusedItem({...focusedItem, link: focusedLink});
-            }}
-            error={error('title')}
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-          {idx > 0 && (
-            <Pressable
-              style={styles.minusBtn}
-              onPress={() => {
-                const focusedLink = [...focusedItem.link];
-                focusedLink[idx] = false;
-                setFocusedItem({...focusedItem, link: focusedLink});
-                setLinkCount(linkCount - 1);
-                setLinkParam(linkParam.filter((l, index) => index !== idx));
-              }}>
-              <AppSvgIcon name="minus16" />
-            </Pressable>
-          )}
-        </View>
+    return linkParam.map((cur, idx) =>
+      idx < linkCount ? (
+        cur ? (
+          <View style={{display: 'flex', flexDirection: 'row'}} key={idx}>
+            <AppTextInput
+              style={[
+                styles.inputBox,
+                idx < linkCount - 1 && {marginBottom: 8},
+                idx > 0 && {marginRight: 8},
+                {flex: 1},
+                focusedItem.link[idx] && {
+                  borderColor: colors.clearBlue,
+                },
+              ]}
+              maxLength={1000}
+              onChangeText={(v) => {
+                setLinkParam((prev) =>
+                  prev.map((p, i) => (i === idx ? {value: v} : p)),
+                );
+                validate(`link${idx}`, v);
+              }}
+              value={linkParam[idx].value}
+              enablesReturnKeyAutomatically
+              clearTextOnFocus={false}
+              onFocus={() => {
+                setExtraHeight(20);
+                setFocusedItem((prev) => ({
+                  ...prev,
+                  link: prev.link.map((l, i) => (i === idx ? true : l)),
+                }));
+              }}
+              onBlur={() => {
+                setFocusedItem((prev) => ({
+                  ...prev,
+                  link: prev.link.map((l, i) => (i === idx ? false : l)),
+                }));
+              }}
+              error={error('title')}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            {idx > 0 && (
+              <Pressable
+                style={styles.minusBtn}
+                onPress={() => {
+                  const focusedLink = [...focusedItem.link];
+                  focusedLink[idx] = false;
+                  setFocusedItem({...focusedItem, link: focusedLink});
+                  setLinkCount(linkCount - 1);
+                  setLinkParam(linkParam.filter((l, index) => index !== idx));
+                }}>
+                <AppSvgIcon name="minus16" />
+              </Pressable>
+            )}
+          </View>
+        ) : undefined
       ) : undefined,
     );
   }, [error, focusedItem, linkCount, linkParam, validate]);
@@ -451,15 +469,14 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       return;
     }
 
-    const isDuplicated = !!eventBoard.list.find(
-      (l) => l.title === selectedEvent?.title && l.statusCode !== 'f',
+    const history = eventBoard.list.find(
+      (l) => l.title === selectedEvent?.title,
     );
 
-    const isreOpenDuplicated = !!eventBoard.list.find(
-      (l) => l.title === selectedEvent?.title && l.statusCode === 'r',
-    );
-
-    if (isDuplicated || isreOpenDuplicated) {
+    if (
+      history &&
+      (history.statusCode === 'r' || history?.statusCode !== 'f')
+    ) {
       action.modal.showModal({
         content: (
           <AppModalContent
@@ -471,7 +488,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
               <AppStyledText
                 text={i18n.t(
                   `event:alert:duplication${
-                    isreOpenDuplicated ? ':reopen' : ''
+                    history.statusCode === 'r' ? ':reopen' : ''
                   }`,
                 )}
                 textStyle={styles.modalText}
@@ -484,16 +501,12 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       return;
     }
 
-    const isReapply = !!eventBoard.list.find(
-      (l) => l.title === selectedEvent?.title && l.statusCode === 'f',
-    );
-
     const issue = {
       title,
       msg,
       link: linkParam,
       eventUuid: selectedEvent?.uuid,
-      eventStatus: isReapply ? 'R' : 'O',
+      eventStatus: history && history.statusCode === 'f' ? 'R' : 'O',
       paramImages,
       images: attachment
         .map(
@@ -510,42 +523,26 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     } as RkbEventIssue;
 
     action.eventBoard.postAndGetList(issue);
-
-    if (successEvent)
-      action.modal.showModal({
-        content: (
-          <AppModalContent
-            type="info"
-            onOkClose={() => {
-              action.modal.closeModal();
-            }}>
-            <View style={{marginLeft: 30}}>
-              <AppStyledText
-                text={i18n.t(`event:alert:${isReapply ? 'reOpen' : 'open'}`)}
-                textStyle={styles.modalText}
-                format={{b: styles.modalBoldText}}
-              />
-            </View>
-          </AppModalContent>
-        ),
-      });
-
-    setInitial();
+    setPressed(true);
   }, [
-    action,
+    action.eventBoard,
+    action.modal,
+    action.toast,
     attachment,
     eventBoard.list,
     linkParam,
     msg,
     paramImages,
-    selectedEvent,
-    setInitial,
-    successEvent,
+    selectedEvent?.rule?.image,
+    selectedEvent?.rule?.link,
+    selectedEvent?.title,
+    selectedEvent?.uuid,
     title,
   ]);
 
   return (
     <SafeAreaView style={styles.container}>
+      <AppActivityIndicator visible={pending} />
       <KeyboardAwareScrollView
         enableOnAndroid
         enableResetScrollToCoords={false}
@@ -573,7 +570,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             style={[
               styles.inputBox,
               styles.eventTitle,
-              // isEventSelected ? {borderColor: colors.black} : undefined,
+              // selectedEvent ? {borderColor: colors.black} : undefined,
               showModal && {borderColor: colors.clearBlue},
               paramIssue && {backgroundColor: colors.backGrey},
               {marginBottom: 8},
@@ -583,16 +580,16 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             <AppText
               style={[
                 styles.eventTitleText,
-                selectedEvent.title === '' && {color: colors.greyish},
+                !selectedEvent && {color: colors.greyish},
               ]}>
-              {selectedEvent.title === ''
+              {!selectedEvent
                 ? i18n.t('event:placeholder')
-                : selectedEvent.title}
+                : selectedEvent?.title}
             </AppText>
             <AppIcon name={showModal ? 'dropDownOpen' : 'dropDown'} />
           </Pressable>
 
-          {isEventSelected && (
+          {selectedEvent && (
             <View
               style={[
                 styles.notice,
@@ -630,7 +627,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             </View>
           )}
 
-          {isEventSelected && (
+          {selectedEvent && (
             <View style={styles.attachTitle}>
               <AppText style={styles.attachTitleText}>
                 {i18n.t('content')}
@@ -681,7 +678,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             value={msg}
           />
 
-          {isEventSelected && (
+          {selectedEvent && (
             <View style={styles.link}>
               <View
                 style={[
@@ -709,9 +706,27 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
                   },
                 ]}
                 onPress={() => {
-                  if (linkCount < 6) {
+                  if (linkCount < 3) {
                     setLinkParam(linkParam.concat({value: ''}));
                     setLinkCount(linkCount + 1);
+                  } else {
+                    action.modal.showModal({
+                      content: (
+                        <AppModalContent
+                          type="info"
+                          onOkClose={() => {
+                            action.modal.closeModal();
+                          }}>
+                          <View style={{marginLeft: 30}}>
+                            <AppStyledText
+                              text={i18n.t('event:alert:link')}
+                              textStyle={styles.modalText}
+                              format={{b: styles.modalBoldText}}
+                            />
+                          </View>
+                        </AppModalContent>
+                      ),
+                    });
                   }
                 }}>
                 <AppSvgIcon name="plusBlue" />
@@ -719,9 +734,9 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
               </Pressable>
             </View>
           )}
-          {isEventSelected && renderLinkInput()}
+          {selectedEvent && renderLinkInput()}
 
-          <AttachMentBox
+          <AttachmentBox
             selectedEvent={selectedEvent}
             paramImages={paramImages}
             setParamImages={setParamImages}
@@ -752,7 +767,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             ? {backgroundColor: colors.warmGrey}
             : {backgroundColor: colors.dodgerBlue}
         }
-        title={i18n.t('event:new2')}
+        title={i18n.t(`event:new2${paramIssue ? ':re' : ''}`)}
         onPress={onPress}
         type="primary"
       />
@@ -763,14 +778,11 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         onClose={() => setShowModal(false)}
         data={eventTitleList}
         onPress={(value) => {
-          setSelectedEvent(
-            eventList.find((e) => e.title === value) || eventList[0],
-          );
+          setSelectedEvent(eventList.find((e) => e.title === value));
           setShowModal(false);
-          setShowWebView(false);
           setWebviewHeight(0);
         }}
-        value={selectedEvent.title}
+        value={selectedEvent?.title}
       />
     </SafeAreaView>
   );
@@ -780,7 +792,11 @@ export default connect(
   ({promotion, eventBoard, status}: RootState) => ({
     promotion,
     eventBoard,
-    successEvent: status.fulfilled[eventBoardActions.postEventIssue.typePrefix],
+    success: status.fulfilled[eventBoardActions.postEventIssue.typePrefix],
+    pending:
+      status.pending[eventBoardActions.postEventIssue.typePrefix] ||
+      status.pending[eventBoardActions.postEventAttach.typePrefix] ||
+      false,
   }),
   (dispatch) => ({
     action: {
