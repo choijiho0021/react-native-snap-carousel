@@ -302,7 +302,6 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
         style={{
           paddingBottom: 2,
           backgroundColor: colors.white,
-          marginHorizontal: 20,
         }}
         getLabelText={(scene) => scene.route.title}
       />
