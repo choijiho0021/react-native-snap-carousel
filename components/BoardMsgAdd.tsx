@@ -31,7 +31,7 @@ import AppActivityIndicator from './AppActivityIndicator';
 import AppButton from './AppButton';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
-import AttachMentBox from '@/screens/BoardScreen/AttachMentBox';
+import AttachmentBox from '@/screens/BoardScreen/AttachmentBox';
 
 const styles = StyleSheet.create({
   passwordInput: {
@@ -370,7 +370,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
           />
 
           {account.loggedIn ? (
-            <AttachMentBox
+            <AttachmentBox
               attachment={attachment}
               setAttachment={setAttachment}
             />
