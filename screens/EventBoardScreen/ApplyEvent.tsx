@@ -432,15 +432,14 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       return;
     }
 
-    const isDuplicated = !!eventBoard.list.find(
-      (l) => l.title === selectedEvent?.title && l.statusCode !== 'f',
+    const history = eventBoard.list.find(
+      (l) => l.title === selectedEvent?.title,
     );
 
-    const isreOpenDuplicated = !!eventBoard.list.find(
-      (l) => l.title === selectedEvent?.title && l.statusCode === 'r',
-    );
-
-    if (isDuplicated || isreOpenDuplicated) {
+    if (
+      history &&
+      (history.statusCode === 'r' || history?.statusCode !== 'f')
+    ) {
       action.modal.showModal({
         content: (
           <AppModalContent
@@ -452,7 +451,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
               <AppStyledText
                 text={i18n.t(
                   `event:alert:duplication${
-                    isreOpenDuplicated ? ':reopen' : ''
+                    history.statusCode === 'r' ? ':reopen' : ''
                   }`,
                 )}
                 textStyle={styles.modalText}
@@ -465,16 +464,12 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       return;
     }
 
-    const isReapply = !!eventBoard.list.find(
-      (l) => l.title === selectedEvent?.title && l.statusCode === 'f',
-    );
-
     const issue = {
       title,
       msg,
       link: linkParam,
       eventUuid: selectedEvent?.uuid,
-      eventStatus: isReapply ? 'R' : 'O',
+      eventStatus: history && history.statusCode === 'f' ? 'R' : 'O',
       paramImages,
       images: attachment
         .map(
@@ -502,7 +497,11 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             }}>
             <View style={{marginLeft: 30}}>
               <AppStyledText
-                text={i18n.t(`event:alert:${isReapply ? 'reOpen' : 'open'}`)}
+                text={i18n.t(
+                  `event:alert:${
+                    history && history.statusCode === 'f' ? 'reOpen' : 'open'
+                  }`,
+                )}
                 textStyle={styles.modalText}
                 format={{b: styles.modalBoldText}}
               />
