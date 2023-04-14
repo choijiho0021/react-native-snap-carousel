@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import {Image as CropImage} from 'react-native-image-crop-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-
 import {connect} from 'react-redux';
 import _ from 'underscore';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
@@ -49,7 +48,8 @@ import {BoardModelState} from '@/redux/modules/board';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
 import {RkbImage} from '@/redux/api/accountApi';
-import AttachmentBox from '../BoardScreen/AttachmentBox';
+import AttachmentBox from '@/screens/BoardScreen/AttachmentBox';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 
 const styles = StyleSheet.create({
   inputAccessoryText: {
@@ -199,8 +199,8 @@ type ApplyEventProps = {
   promotion: PromotionModelState;
   eventBoard: BoardModelState;
 
-  successEvent: boolean;
-
+  pending: boolean;
+  success: boolean;
   jumpTo: (v: string) => void;
   eventList?: RkbEvent[];
   paramIssue?: RkbEventBoard;
@@ -248,7 +248,9 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   paramIssue,
   paramNid,
   action,
-  successEvent,
+  pending,
+  success,
+  jumpTo,
 }) => {
   const eventList = useMemo(() => promotion.event || [], [promotion.event]);
   const [errors, setErrors] = useState<ValidationResult>({});
@@ -268,6 +270,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   });
   const [webviewHeight, setWebviewHeight] = useState(0);
   const [paramImages, setParamImages] = useState<EventParamImagesType[]>([]);
+  const [pressed, setPressed] = useState(false);
 
   const onMessage = useCallback((event: WebViewMessageEvent) => {
     const height = parseInt(event.nativeEvent.data, 10);
@@ -328,6 +331,41 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     setAttachment((a) => a.clear());
   }, []);
 
+  useEffect(() => {
+    if (pressed && !pending && success) {
+      action.modal.showModal({
+        content: (
+          <AppModalContent
+            type="info"
+            onOkClose={() => {
+              action.modal.closeModal();
+              setInitial();
+              action.eventBoard.getIssueList();
+              setPressed(false);
+              jumpTo('list');
+            }}>
+            <View style={{marginLeft: 30}}>
+              <AppStyledText
+                text={i18n.t(`event:alert:${paramIssue ? 'reOpen' : 'open'}`)}
+                textStyle={styles.modalText}
+                format={{b: styles.modalBoldText}}
+              />
+            </View>
+          </AppModalContent>
+        ),
+      });
+    }
+  }, [
+    action.eventBoard,
+    action.modal,
+    jumpTo,
+    paramIssue,
+    pending,
+    pressed,
+    setInitial,
+    success,
+  ]);
+
   const error = useCallback(
     (key: string) => {
       return errors && errors[key] ? errors[key][0] : '';
@@ -355,7 +393,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
                 styles.inputBox,
                 idx < linkCount - 1 && {marginBottom: 8},
                 idx > 0 && {marginRight: 8},
-                {flex: 1, borderWidth: 2},
+                {flex: 1},
                 focusedItem.link[idx] && {
                   borderColor: colors.clearBlue,
                 },
@@ -485,46 +523,26 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     } as RkbEventIssue;
 
     action.eventBoard.postAndGetList(issue);
-
-    if (successEvent)
-      action.modal.showModal({
-        content: (
-          <AppModalContent
-            type="info"
-            onOkClose={() => {
-              action.modal.closeModal();
-            }}>
-            <View style={{marginLeft: 30}}>
-              <AppStyledText
-                text={i18n.t(
-                  `event:alert:${
-                    history && history.statusCode === 'f' ? 'reOpen' : 'open'
-                  }`,
-                )}
-                textStyle={styles.modalText}
-                format={{b: styles.modalBoldText}}
-              />
-            </View>
-          </AppModalContent>
-        ),
-      });
-
-    setInitial();
+    setPressed(true);
   }, [
-    action,
+    action.eventBoard,
+    action.modal,
+    action.toast,
     attachment,
     eventBoard.list,
     linkParam,
     msg,
     paramImages,
-    selectedEvent,
-    setInitial,
-    successEvent,
+    selectedEvent?.rule?.image,
+    selectedEvent?.rule?.link,
+    selectedEvent?.title,
+    selectedEvent?.uuid,
     title,
   ]);
 
   return (
     <SafeAreaView style={styles.container}>
+      <AppActivityIndicator visible={pending} />
       <KeyboardAwareScrollView
         enableOnAndroid
         enableResetScrollToCoords={false}
@@ -774,7 +792,12 @@ export default connect(
   ({promotion, eventBoard, status}: RootState) => ({
     promotion,
     eventBoard,
-    successEvent: status.fulfilled[eventBoardActions.postEventIssue.typePrefix],
+    success: status.fulfilled[eventBoardActions.postEventIssue.typePrefix],
+    pending:
+      status.pending[eventBoardActions.postEventIssue.typePrefix] ||
+      status.pending[eventBoardActions.postEventAttach.typePrefix] ||
+      status.pending[eventBoardActions.fetchEventIssueList.typePrefix] ||
+      false,
   }),
   (dispatch) => ({
     action: {

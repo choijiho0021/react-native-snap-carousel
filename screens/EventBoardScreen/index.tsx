@@ -16,10 +16,11 @@ const EventBoardScreen = (props) => {
         {
           key: 'new',
           title: i18n.t('event:new'),
-          render: () => (
+          render: (jumpTo) => (
             <ApplyEvent
               paramIssue={props.route.params?.issue}
               paramNid={props.route.params?.nid}
+              jumpTo={jumpTo}
             />
           ),
         },

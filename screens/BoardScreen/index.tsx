@@ -43,7 +43,9 @@ type BoardScreenProps = {
   board: BoardModelState;
 
   title: string;
-  routes: (TabRoute & {render: () => React.ReactElement})[];
+  routes: (TabRoute & {
+    render: (jumpto: (v: string) => void) => React.ReactElement;
+  })[];
 
   success: boolean;
   pending: boolean;
@@ -92,7 +94,7 @@ const BoardScreen: React.FC<BoardScreenProps> = ({
 
   const renderScene = useCallback(
     ({route, jumpTo}: {route: TabRoute; jumpTo: (v: string) => void}) => {
-      return routes.find((r) => r.key === route.key)?.render() || null;
+      return routes.find((r) => r.key === route.key)?.render(jumpTo) || null;
     },
     [routes],
   );
