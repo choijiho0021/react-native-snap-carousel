@@ -420,6 +420,7 @@
 
   "event:title": "이벤트 인증",
   "event:new": "인증 신청하기",
+  "event:login": "로그인 후 참여하실 수 있어요.",
   "event:reapply": "인증 재신청하기",
   "event:list": "내 인증내역",
   "event:noti": "· 인증 신청결과를 앱 알림으로 알려드려요!",

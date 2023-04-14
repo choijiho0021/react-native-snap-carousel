@@ -1,6 +1,3 @@
-/* eslint-disable class-methods-use-this */
-/* eslint-disable react/sort-comp */
-/* eslint-disable react/no-unused-state */
 import {List} from 'immutable';
 import {Image as CropImage} from 'react-native-image-crop-picker';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
@@ -18,8 +15,6 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {Utils} from '@/redux/api';
-import {RkbImage} from '@/redux/api/accountApi';
-import {RkbIssue} from '@/redux/api/boardApi';
 import {
   actions as boardActions,
   BoardAction,
@@ -99,40 +94,10 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
     if (success) setIndex(1);
   }, [success]);
 
-  const onPress = useCallback(
-    ({title, msg, mobile, pin, attachment}: OnPressContactParams) => {
-      if (!title || !msg) {
-        console.log('@@@ invalid issue', title, msg);
-        return false;
-      }
-      const issue = {
-        title,
-        msg,
-        mobile,
-        pin,
-        images: attachment
-          .map(
-            ({mime, size, width, height, data}) =>
-              ({
-                mime,
-                size,
-                width,
-                height,
-                data,
-              } as RkbImage),
-          )
-          .toArray(),
-      } as RkbIssue;
-      action.board.postAndGetList(issue);
-      return true;
-    },
-    [action.board],
-  );
-
   const renderScene = useCallback(
     ({route, jumpTo}: {route: TabRoute; jumpTo: (v: string) => void}) => {
       if (route.key === 'new') {
-        return <BoardMsgAdd jumpTo={jumpTo} onPressContact={onPress} />;
+        return <BoardMsgAdd jumpTo={jumpTo} />;
       }
       if (route.key === 'list') {
         return (
@@ -149,7 +114,7 @@ const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
       }
       return null;
     },
-    [board, navigation, onPress],
+    [board, navigation],
   );
 
   const renderTabBar = useCallback(

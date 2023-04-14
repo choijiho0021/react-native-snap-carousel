@@ -2,27 +2,19 @@ import {List} from 'immutable';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   findNodeHandle,
-  Image,
   InputAccessoryView,
   Platform,
-  Pressable,
   SafeAreaView,
   StyleSheet,
   View,
 } from 'react-native';
-import ImagePicker, {Image as CropImage} from 'react-native-image-crop-picker';
+import {Image as CropImage} from 'react-native-image-crop-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {
-  check,
-  openSettings,
-  PERMISSIONS,
-  RESULTS,
-} from 'react-native-permissions';
+
 import {connect} from 'react-redux';
 import _ from 'underscore';
 import {bindActionCreators} from 'redux';
 import {colors} from '@/constants/Colors';
-import {attachmentSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
 import {RkbImage} from '@/redux/api/accountApi';
@@ -36,11 +28,10 @@ import validationUtil, {
   ValidationRule,
 } from '@/utils/validationUtil';
 import AppActivityIndicator from './AppActivityIndicator';
-import AppAlert from './AppAlert';
 import AppButton from './AppButton';
-import AppIcon from './AppIcon';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
+import AttachMentBox from '@/screens/BoardScreen/AttachMentBox';
 
 const styles = StyleSheet.create({
   passwordInput: {
@@ -66,39 +57,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     backgroundColor: colors.lightGrey,
     padding: 5,
-  },
-  plusButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  attachCancel: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-  },
-  attachBox: {
-    marginHorizontal: 20,
-    flexDirection: 'row',
-  },
-  attachTitle: {
-    ...appStyles.normal14Text,
-    marginTop: 30,
-    marginBottom: 10,
-    marginHorizontal: 20,
-  },
-  imgSize: {
-    width: attachmentSize,
-    height: attachmentSize,
-    borderRadius: 3,
-  },
-  attach: {
-    width: attachmentSize + 2,
-    height: attachmentSize + 2,
-    borderRadius: 3,
-    backgroundColor: colors.white,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
   },
   confirm: {
     ...appStyles.normal18Text,
@@ -188,7 +146,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   action,
   pending,
 }) => {
-  const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
   const [mobile, setMobile] = useState('');
   const [errors, setErrors] = useState<ValidationResult>({});
   const [title, setTitle] = useState<string>();
@@ -200,17 +157,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   const keybd = useRef();
 
   useEffect(() => {
-    const checkPermission = async () => {
-      const permission =
-        Platform.OS === 'ios'
-          ? PERMISSIONS.IOS.PHOTO_LIBRARY
-          : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
-      const result = await check(permission);
-      setHasPhotoPermission(result === RESULTS.GRANTED);
-    };
-
-    checkPermission();
-
     const number = utils.toPhoneNumber(account.mobile);
     setMobile(number);
 
@@ -273,47 +219,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     [errors],
   );
 
-  const addAttachment = useCallback(async () => {
-    let checkNewPermission = false;
-
-    if (!hasPhotoPermission) {
-      const permission =
-        Platform.OS === 'ios'
-          ? PERMISSIONS.IOS.PHOTO_LIBRARY
-          : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
-      const result = await check(permission);
-
-      checkNewPermission = result === RESULTS.GRANTED;
-    }
-
-    if (hasPhotoPermission || checkNewPermission) {
-      if (ImagePicker) {
-        try {
-          const image = await ImagePicker.openPicker({
-            // width: 750,
-            // height: 1334, // iphone 8 size
-            // cropping: true,
-            includeBase64: true,
-            writeTempFile: false,
-            mediaType: 'photo',
-            forceJpb: true,
-            // cropperChooseText: i18n.t('select'),
-            // cropperCancelText: i18n.t('cancel'),
-          });
-
-          setAttachment((a) => a.push(image));
-        } catch (err) {
-          console.log('failed to select', err);
-        }
-      }
-    } else {
-      // 사진 앨범 조회 권한을 요청한다.
-      AppAlert.confirm(i18n.t('settings'), i18n.t('acc:permPhoto'), {
-        ok: () => openSettings(),
-      });
-    }
-  }, [hasPhotoPermission]);
-
   const renderPass = useCallback(
     () => (
       <View style={styles.passwordBox}>
@@ -347,37 +252,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
       </View>
     ),
     [pin, validate],
-  );
-
-  const renderAttachment = useCallback(
-    () => (
-      <View>
-        <AppText style={styles.attachTitle}>{i18n.t('board:attach')}</AppText>
-        <View style={styles.attachBox}>
-          {attachment.map((image, idx) => (
-            <Pressable
-              key={image.filename}
-              style={[styles.attach, idx < 2 && {marginRight: 33}]}
-              onPress={() => setAttachment((a) => a.delete(idx))}>
-              <Image
-                style={styles.imgSize}
-                source={{uri: `data:${image.mime};base64,${image.data}`}}
-              />
-              <AppIcon name="btnBoxCancel" style={styles.attachCancel} />
-            </Pressable>
-          ))}
-          {attachment.size < 3 && (
-            <Pressable
-              key="add"
-              style={[styles.attach, styles.plusButton]}
-              onPress={addAttachment}>
-              <AppIcon name="btnPhotoPlus" />
-            </Pressable>
-          )}
-        </View>
-      </View>
-    ),
-    [addAttachment, attachment],
   );
 
   const renderContact = useCallback(
@@ -495,7 +369,14 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
             value={msg}
           />
 
-          {account.loggedIn ? renderAttachment() : renderPass()}
+          {account.loggedIn ? (
+            <AttachMentBox
+              attachment={attachment}
+              setAttachment={setAttachment}
+            />
+          ) : (
+            renderPass()
+          )}
         </View>
       </KeyboardAwareScrollView>
 
