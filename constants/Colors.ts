@@ -60,4 +60,5 @@ export const colors = {
   shadow1: '#a6a8ac',
   gray2: '#979797',
   darkBlue: '#194c94',
+  red: '#F1694F',
 };

@@ -127,6 +127,7 @@ const CountryItem0 = ({
                     style={{flex: 1}}
                     imageStyle={{flex: 1}}
                     maxDiscount={Math.floor(Number(elm.maxDiscount) * 100)}
+                    tags={elm.tags}
                   />
                 )}
               </View>
