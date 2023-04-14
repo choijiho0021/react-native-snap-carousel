@@ -11,14 +11,10 @@ import {RouteProp} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {RootState, bindActionCreators} from 'redux';
 import AppBackButton from '@/components/AppBackButton';
-import BoardMsgAdd from '@/components/BoardMsgAdd';
-import BoardMsgList from '@/components/BoardMsgList';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {Utils} from '@/redux/api';
-import {RkbImage} from '@/redux/api/accountApi';
-import {RkbIssue} from '@/redux/api/boardApi';
 import {
   actions as boardActions,
   BoardAction,
@@ -71,7 +67,6 @@ const BoardScreen: React.FC<BoardScreenProps> = ({
   action,
   pending,
   success,
-  board,
   title,
   routes,
 }) => {
@@ -94,36 +89,6 @@ const BoardScreen: React.FC<BoardScreenProps> = ({
   useEffect(() => {
     if (success) setIndex(1);
   }, [success]);
-
-  const onPress = useCallback(
-    ({title, msg, mobile, pin, attachment}: OnPressContactParams) => {
-      if (!title || !msg) {
-        console.log('@@@ invalid issue', title, msg);
-        return false;
-      }
-      const issue = {
-        title,
-        msg,
-        mobile,
-        pin,
-        images: attachment
-          .map(
-            ({mime, size, width, height, data}) =>
-              ({
-                mime,
-                size,
-                width,
-                height,
-                data,
-              } as RkbImage),
-          )
-          .toArray(),
-      } as RkbIssue;
-      action.board.postAndGetList(issue);
-      return true;
-    },
-    [action.board],
-  );
 
   const renderScene = useCallback(
     ({route, jumpTo}: {route: TabRoute; jumpTo: (v: string) => void}) => {

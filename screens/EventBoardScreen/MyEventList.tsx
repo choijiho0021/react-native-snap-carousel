@@ -2,20 +2,21 @@ import React, {useEffect} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
+import {useNavigation} from '@react-navigation/native';
 import {
   EventBoardAction,
   actions as eventBoardActions,
 } from '@/redux/modules/eventBoard';
 import BoardItemList from '@/screens/BoardScreen/BoardItemList';
 import {BoardModelState} from '@/redux/modules/board';
-import {AccountModelState} from '@/redux/modules/account';
+import {RkbBoard} from '@/redux/api/boardApi';
+import i18n from '@/utils/i18n';
 
 type MyEventListProps = {
   eventBoard: BoardModelState;
-  account: AccountModelState;
   uid: number;
   isEvent?: boolean;
-  onPress: (uuid: string, status: string) => void;
+  pending: boolean;
 
   action: {
     eventBoard: EventBoardAction;
@@ -23,12 +24,12 @@ type MyEventListProps = {
 };
 
 const MyEventList: React.FC<MyEventListProps> = ({
-  navigation,
   eventBoard,
+  pending,
   uid,
   action,
 }) => {
-  console.log('@@@ my event list');
+  const navigation = useNavigation();
 
   useEffect(() => {
     action.eventBoard.getIssueList();
@@ -40,11 +41,12 @@ const MyEventList: React.FC<MyEventListProps> = ({
       uid={uid}
       onScrollEndDrag={() => action.eventBoard.getNextIssueList()}
       onRefresh={() => action.eventBoard.getIssueList()}
-      onPress={(uuid: string, status: string) =>
-        navigation.navigate('BoardMsgResp', {
-          uuid,
-          status,
-          isEvent: true,
+      refreshing={pending}
+      onPress={(issue: RkbBoard) =>
+        navigation.navigate('EventResult', {
+          issue,
+          title: i18n.t('event:list'),
+          showStatus: true,
         })
       }
     />
@@ -52,10 +54,10 @@ const MyEventList: React.FC<MyEventListProps> = ({
 };
 
 export default connect(
-  ({account, eventBoard}: RootState) => ({
-    account,
+  ({account, eventBoard, status}: RootState) => ({
     eventBoard,
     uid: account.uid || 0,
+    pending: status.pending[eventBoardActions.getIssueList.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {
