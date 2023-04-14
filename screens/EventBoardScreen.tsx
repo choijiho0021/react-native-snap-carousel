@@ -178,6 +178,7 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
               type="info"
               onOkClose={() => {
                 action.modal.closeModal();
+                setIndex(1);
               }}>
               <View style={{marginLeft: 30}}>
                 <AppStyledText
@@ -193,7 +194,7 @@ const EventBoardScreen: React.FC<EventBoardScreenProps> = ({
             </AppModalContent>
           ),
         });
-        return false;
+        return true;
       }
 
       const isReapply = !!eventBoard.list.find(
