@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import {Buffer} from 'buffer';
 import i18n from '@/utils/i18n';
-import api, {ApiResult, DrupalNode} from './api';
+import api, {ApiResult} from './api';
 import {RkbImage} from './accountApi';
 import {DrupalBoard, RkbBoardBase, RkbIssueBase, toFile} from './boardApi';
 import {EventParamImagesType} from '@/components/BoardMsgAdd';
@@ -157,8 +157,6 @@ const post = async ({
       })),
     );
   }
-
-  console.log('@@@@ field_images_data', field_images_data);
 
   const url = `${api.httpUrl(api.path.jsonapi.eventBoard)}`;
   const headers = api.withToken(token, 'vnd.api+json');
