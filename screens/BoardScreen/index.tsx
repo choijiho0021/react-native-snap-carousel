@@ -48,10 +48,6 @@ const BoardScreen: React.FC<BoardScreenProps> = ({
     Utils.fontScaling(16).then(setFontSize);
   }, [navigation, title]);
 
-  useEffect(() => {
-    if (success) setIndex(1);
-  }, [success]);
-
   const renderScene = useCallback(
     ({route, jumpTo}: {route: TabRoute; jumpTo: (v: string) => void}) => {
       return routes.find((r) => r.key === route.key)?.render(jumpTo) || null;
