@@ -2834,6 +2834,50 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  x: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="m6 6 8 8M14 6l-8 8"
+        stroke="#2C2C2C"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </Svg>,
+  ],
+  circleX: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#hz0pplis7a)">
+        <Circle cx="10" cy="10" r="8" fill="#D8D8D8" />
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M6 6.727 6.727 6 14 13.273l-.727.727L6 6.727z"
+          fill="#fff"
+        />
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="m13.273 6 .727.727L6.727 14 6 13.273 13.273 6z"
+          fill="#fff"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="hz0pplis7a">
+          <Path fill="#fff" transform="translate(2 2)" d="M0 0h16v16H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

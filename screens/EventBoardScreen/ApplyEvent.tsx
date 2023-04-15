@@ -105,6 +105,13 @@ const styles = StyleSheet.create({
     color: colors.black,
     paddingHorizontal: 16,
   },
+  linkInputBox: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   notice: {
     borderRadius: 3,
     backgroundColor: colors.backGrey,
@@ -386,43 +393,55 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       idx < linkCount ? (
         cur ? (
           <View style={{display: 'flex', flexDirection: 'row'}} key={idx}>
-            <AppTextInput
+            <View
               style={[
                 styles.inputBox,
+                styles.linkInputBox,
                 idx < linkCount - 1 && {marginBottom: 8},
                 idx > 0 && {marginRight: 8},
-                {flex: 1},
                 focusedItem.link[idx] && {
                   borderColor: colors.clearBlue,
                 },
-              ]}
-              maxLength={1000}
-              onChangeText={(v) => {
-                setLinkParam((prev) =>
-                  prev.map((p, i) => (i === idx ? {value: v} : p)),
-                );
-                validate(`link${idx}`, v);
-              }}
-              value={linkParam[idx].value}
-              enablesReturnKeyAutomatically
-              clearTextOnFocus={false}
-              onFocus={() => {
-                setExtraHeight(20);
-                setFocusedItem((prev) => ({
-                  ...prev,
-                  link: prev.link.map((l, i) => (i === idx ? true : l)),
-                }));
-              }}
-              onBlur={() => {
-                setFocusedItem((prev) => ({
-                  ...prev,
-                  link: prev.link.map((l, i) => (i === idx ? false : l)),
-                }));
-              }}
-              error={error('title')}
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
+              ]}>
+              <AppTextInput
+                style={{flex: 1, height: 56}}
+                maxLength={1000}
+                onChangeText={(v) => {
+                  setLinkParam((prev) =>
+                    prev.map((p, i) => (i === idx ? {value: v} : p)),
+                  );
+                  validate(`link${idx}`, v);
+                }}
+                value={linkParam[idx].value}
+                enablesReturnKeyAutomatically
+                clearTextOnFocus={false}
+                onFocus={() => {
+                  setExtraHeight(20);
+                  setFocusedItem((prev) => ({
+                    ...prev,
+                    link: prev.link.map((l, i) => (i === idx ? true : l)),
+                  }));
+                }}
+                onBlur={() => {
+                  setFocusedItem((prev) => ({
+                    ...prev,
+                    link: prev.link.map((l, i) => (i === idx ? false : l)),
+                  }));
+                }}
+                error={error('title')}
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              <AppSvgIcon
+                style={{marginLeft: 10}}
+                name={idx === 0 ? 'x' : 'circleX'}
+                onPress={() =>
+                  setLinkParam((prev) =>
+                    prev.map((p, i) => (i === idx ? {value: ''} : p)),
+                  )
+                }
+              />
+            </View>
             {idx > 0 && (
               <Pressable
                 style={styles.minusBtn}
