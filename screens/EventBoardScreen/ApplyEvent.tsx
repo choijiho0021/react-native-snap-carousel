@@ -334,6 +334,11 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     setMsg(undefined);
     setTitle(undefined);
     setAttachment((a) => a.clear());
+    setFocusedItem({
+      title: false,
+      msg: false,
+      link: [false, false, false, false, false, false],
+    });
   }, []);
 
   useEffect(() => {
