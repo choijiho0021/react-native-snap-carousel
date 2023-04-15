@@ -558,7 +558,10 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
               paramIssue && {backgroundColor: colors.backGrey},
               {marginBottom: 8},
             ]}
-            onPress={() => setShowModal(true)}
+            onPress={() => {
+              if (eventBoard.list.length > 0) setShowModal(true);
+              else action.toast.push('event:empty');
+            }}
             disabled={!!paramIssue}>
             <AppText
               style={[

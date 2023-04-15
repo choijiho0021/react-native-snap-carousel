@@ -429,6 +429,7 @@
   "event:mylist": "My Auth",
   "event:placeholder": "Select Event.",
   "event:content": "After confirming how to participate in the event, please authenticate by attaching the url or screenshot according to the format.\nRewards will be given sequentially after confirmation.",
+  "event:empty": "There are currently no events.",
   "event:o": "Waiting",
   "event:r": "reapply",
   "event:s": "Success",
