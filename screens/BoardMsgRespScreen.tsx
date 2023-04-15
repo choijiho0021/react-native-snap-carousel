@@ -325,7 +325,9 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
 
           {isEvent && issue?.link && renderLink()}
 
-          {(issue?.images.length || 0) > 0 && renderImages(issue?.images)}
+          {(issue?.images.length || 0) > 0 &&
+            !!issue?.images[0] &&
+            renderImages(issue?.images)}
 
           {!_.isEmpty(resp) && (
             <View style={styles.respBox}>
