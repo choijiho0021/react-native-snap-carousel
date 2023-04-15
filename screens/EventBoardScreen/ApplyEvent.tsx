@@ -388,10 +388,12 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     return (
       !selectedEvent ||
       _.isEmpty(msg) ||
-      (selectedEvent?.rule?.image && attachment.size < 1) ||
+      (selectedEvent?.rule?.image &&
+        attachment.size < 1 &&
+        paramImages.length < 1) ||
       (selectedEvent?.rule?.link && linkParam.find((l) => l.value === ''))
     );
-  }, [attachment.size, linkParam, msg, selectedEvent]);
+  }, [attachment.size, linkParam, msg, paramImages.length, selectedEvent]);
 
   const renderLinkInput = useCallback(() => {
     return linkParam.map((cur, idx) =>
