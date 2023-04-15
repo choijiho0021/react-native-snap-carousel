@@ -276,6 +276,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   const [webviewHeight, setWebviewHeight] = useState(0);
   const [paramImages, setParamImages] = useState<EventParamImagesType[]>([]);
   const [pressed, setPressed] = useState(false);
+  const [pIssue, setPIssue] = useState<RkbEventBoard>();
 
   const onMessage = useCallback((event: WebViewMessageEvent) => {
     const height = parseInt(event.nativeEvent.data, 10);
@@ -300,6 +301,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
 
   useEffect(() => {
     if (paramIssue) {
+      setPIssue(paramIssue);
       setTitle(paramIssue.title);
       setSelectedEvent(eventList.find((e) => e.title === paramIssue.title));
       setLinkParam(paramIssue.link.map((l: string) => ({value: l})));
@@ -339,6 +341,8 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       msg: false,
       link: [false, false, false, false, false, false],
     });
+    setPIssue(undefined);
+    setParamImages([]);
   }, []);
 
   useEffect(() => {
@@ -356,7 +360,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             }}>
             <View style={{marginLeft: 30}}>
               <AppStyledText
-                text={i18n.t(`event:alert:${paramIssue ? 'reOpen' : 'open'}`)}
+                text={i18n.t(`event:alert:${pIssue ? 'reOpen' : 'open'}`)}
                 textStyle={styles.modalText}
                 format={{b: styles.modalBoldText}}
               />
@@ -369,7 +373,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     action.eventBoard,
     action.modal,
     jumpTo,
-    paramIssue,
+    pIssue,
     pending,
     pressed,
     setInitial,
@@ -562,12 +566,12 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         extraScrollHeight={extraHeight}
         innerRef={(ref) => (scrollRef.current = ref)}>
         <View style={{flex: 1}}>
-          {paramIssue ? (
+          {pIssue ? (
             <View style={{marginHorizontal: 20, marginBottom: 24}}>
               <EventStatusBox
-                statusCode={paramIssue.statusCode}
-                rejectReason={paramIssue.rejectReason}
-                otherReason={paramIssue.otherReason}
+                statusCode={pIssue.statusCode}
+                rejectReason={pIssue.rejectReason}
+                otherReason={pIssue.otherReason}
               />
             </View>
           ) : (
@@ -581,14 +585,14 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
               styles.eventTitle,
               // selectedEvent ? {borderColor: colors.black} : undefined,
               showModal && {borderColor: colors.clearBlue},
-              paramIssue && {backgroundColor: colors.backGrey},
+              pIssue && {backgroundColor: colors.backGrey},
               {marginBottom: 8},
             ]}
             onPress={() => {
               if (eventBoard.list.length > 0) setShowModal(true);
               else action.toast.push('event:empty');
             }}
-            disabled={!!paramIssue}>
+            disabled={!!pIssue}>
             <AppText
               style={[
                 styles.eventTitleText,
@@ -777,7 +781,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             ? {backgroundColor: colors.warmGrey}
             : {backgroundColor: colors.dodgerBlue}
         }
-        title={i18n.t(`event:new2${paramIssue ? ':re' : ''}`)}
+        title={i18n.t(`event:new2${pIssue ? ':re' : ''}`)}
         onPress={onPress}
         type="primary"
       />
