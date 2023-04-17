@@ -253,6 +253,14 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             navigation.navigate('EsimStack', {screen: 'Esim'});
             break;
 
+          case notiActions.NOTI_TYPE_EVENT:
+            navigation.navigate('BoardMsgResp', {
+              uuid: orderId,
+              status: 'Closed',
+              isEvent: true,
+            });
+            break;
+
           case notiActions.NOTI_TYPE_USIM:
             navigation.navigate('Usim');
             break;
