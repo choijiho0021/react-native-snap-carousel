@@ -52,7 +52,7 @@ const BoardItemList: React.FC<BoardItemListProps> = ({
       <View style={{alignItems: 'center'}}>
         <AppIcon style={styles.mark} name="imgMark" />
         <AppText style={styles.noList}>
-          {refreshing ? i18n.t('board:loading') : i18n.t('board:nolist')}
+          {refreshing ? i18n.t('board:loading') : i18n.t('event:nolist')}
         </AppText>
       </View>
     ),
