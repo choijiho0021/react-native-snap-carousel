@@ -28,9 +28,9 @@ import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import {
   actions as eventBoardActions,
   EventBoardAction,
+  EventBoardModelState,
 } from '@/redux/modules/eventBoard';
 import {RkbEvent} from '@/redux/api/promotionApi';
-import {BoardModelState} from '@/redux/modules/board';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
 import {RkbImage} from '@/redux/api/accountApi';
@@ -70,7 +70,7 @@ type EventBoardScreenProps = {
 
   pendingEvent: boolean;
   successEvent: boolean;
-  eventBoard: BoardModelState;
+  eventBoard: EventBoardModelState;
 
   action: {
     eventBoard: EventBoardAction;

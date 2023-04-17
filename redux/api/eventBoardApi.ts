@@ -19,6 +19,8 @@ export type RkbEventBoard = RkbBoardBase & {
   imagesInfo: EventImagesInfo[];
   rejectReason: string[];
   otherReason: string;
+  prevId: string;
+  id: string;
 };
 
 const toEventBoard = (data: DrupalBoard[]): ApiResult<RkbEventBoard> => {
@@ -62,6 +64,8 @@ const toEventBoard = (data: DrupalBoard[]): ApiResult<RkbEventBoard> => {
             ? item.field_event_reject_reason.split(', ')
             : [],
           otherReason: item.field_other_reason || '',
+          prevId: item.field_prev_id || '',
+          id: item.nid || '',
         };
       }),
     );
@@ -76,6 +80,7 @@ export type RkbEventIssue = RkbIssueBase & {
   eventUuid: string;
   eventStatus: string;
   paramImages?: EventParamImagesType[];
+  prevId: string;
 };
 
 type DrupalImageFile = {
@@ -121,6 +126,7 @@ const post = async ({
   token,
   eventStatus,
   paramImages,
+  prevId,
 }: RkbEventIssue & {
   token?: string;
 }) => {
@@ -168,6 +174,7 @@ const post = async ({
         body: {value: msg},
         field_text_link: link,
         field_event_status: {value: eventStatus},
+        field_prev_id: {value: prevId},
       },
       relationships:
         field_images_data.length > 0

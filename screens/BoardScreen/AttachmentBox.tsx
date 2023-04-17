@@ -9,6 +9,7 @@ import {
 import ImagePicker, {Image as CropImage} from 'react-native-image-crop-picker';
 import _ from 'underscore';
 import {List} from 'immutable';
+import {useDispatch} from 'react-redux';
 import {colors} from '@/constants/Colors';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
@@ -21,6 +22,8 @@ import {EventParamImagesType} from '../EventBoardScreen/ApplyEvent';
 import AppIcon from '@/components/AppIcon';
 import ImgWithIndicator from '../MyPageScreen/components/ImgWithIndicator';
 import {API} from '@/redux/api';
+import {actions as modalActions} from '@/redux/modules/modal';
+import PreviewImageModal from './PreviewImagesModal';
 
 const styles = StyleSheet.create({
   attachTitle: {
@@ -87,6 +90,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
   setAttachment,
 }) => {
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const checkPermission = async () => {
@@ -137,6 +141,17 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
     }
   }, [hasPhotoPermission, setAttachment]);
 
+  const renderModal = useCallback(
+    ({imgUrl, att}: {imgUrl?: string; att?: CropImage}) => {
+      dispatch(
+        modalActions.showModal({
+          content: <PreviewImageModal imgUrl={imgUrl} attachment={att} />,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
   return (
     <View>
       <View style={styles.attachTitle}>
@@ -158,13 +173,17 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
               <Pressable
                 style={[styles.attach, i < 2 && {marginRight: 33}]}
                 key={utils.generateKey(`${image.url}${i}`)}
-                onPress={() => {
-                  if (setParamImages)
-                    setParamImages(
-                      paramImages.filter((p) => p.url !== image.url),
-                    );
-                }}>
-                <AppIcon name="btnBoxCancel" style={styles.attachCancel} />
+                onPress={() => renderModal({imgUrl: image.url})}>
+                <Pressable
+                  style={styles.attachCancel}
+                  onPress={() => {
+                    if (setParamImages)
+                      setParamImages(
+                        paramImages.filter((p) => p.url !== image.url),
+                      );
+                  }}>
+                  <AppIcon name="btnBoxCancel" />
+                </Pressable>
                 <ImgWithIndicator
                   uri={API.default.httpImageUrl(image.url).toString()}
                 />
@@ -174,12 +193,16 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
           <Pressable
             key={image.filename}
             style={[styles.attach, idx < 2 && {marginRight: 33}]}
-            onPress={() => setAttachment((a) => a.delete(idx))}>
+            onPress={() => renderModal({att: image})}>
             <Image
               style={styles.imgSize}
               source={{uri: `data:${image.mime};base64,${image.data}`}}
             />
-            <AppIcon name="btnBoxCancel" style={styles.attachCancel} />
+            <Pressable
+              style={styles.attachCancel}
+              onPress={() => setAttachment((a) => a.delete(idx))}>
+              <AppIcon name="btnBoxCancel" />
+            </Pressable>
           </Pressable>
         ))}
         {(paramImages ? paramImages.length : 0) + attachment.size < 3 && (

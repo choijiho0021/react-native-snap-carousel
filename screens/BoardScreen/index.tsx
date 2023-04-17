@@ -1,18 +1,28 @@
 import React, {memo, useCallback, useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {TabView, TabBar} from 'react-native-tab-view';
+import {TabView} from 'react-native-tab-view';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {Utils} from '@/redux/api';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {windowWidth} from '@/constants/SliderEntry.style';
+import AppTabHeader from '@/components/AppTabHeader';
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.white,
     flex: 1,
+  },
+  tab: {
+    backgroundColor: colors.white,
+    height: 50,
+    paddingHorizontal: 20,
+  },
+  tabTitle: {
+    ...appStyles.medium18,
+    lineHeight: 26,
+    color: colors.gray2,
   },
 });
 
@@ -37,15 +47,12 @@ const BoardScreen: React.FC<BoardScreenProps> = ({
   const navigation = useNavigation();
   const route = useRoute();
   const [index, setIndex] = useState(route?.params?.index || 0);
-  const [fontSize, setFontSize] = useState(16);
 
   useEffect(() => {
     navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={title} />,
     });
-
-    Utils.fontScaling(16).then(setFontSize);
   }, [navigation, title]);
 
   const renderScene = useCallback(
@@ -55,35 +62,25 @@ const BoardScreen: React.FC<BoardScreenProps> = ({
     [routes],
   );
 
-  const renderTabBar = useCallback(
-    (props) => (
-      <TabBar
-        {...props}
-        tabStyle={{paddingVertical: 15}}
-        labelStyle={[appStyles.normal16Text, {fontSize}]}
-        activeColor={colors.black}
-        inactiveColor={colors.warmGrey}
-        indicatorStyle={{
-          borderBottomColor: colors.clearBlue,
-          borderBottomWidth: 2,
-        }}
-        style={{paddingBottom: 2, backgroundColor: colors.white}}
-        getLabelText={(scene) => scene.route.title}
-      />
-    ),
-    [fontSize],
-  );
-
   return (
     <View style={styles.container}>
       <AppActivityIndicator visible={pending} />
+
+      <AppTabHeader
+        index={index}
+        routes={routes}
+        onIndexChange={(idx) => setIndex(idx)}
+        style={styles.tab}
+        tintColor={colors.black}
+        titleStyle={styles.tabTitle}
+      />
       <TabView
         style={styles.container}
         navigationState={{index, routes}}
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={{width: windowWidth}}
-        renderTabBar={renderTabBar}
+        renderTabBar={() => null}
       />
     </View>
   );

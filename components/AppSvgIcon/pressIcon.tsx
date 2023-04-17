@@ -2647,6 +2647,16 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Path d="m16 20-8-8 8-8" stroke="#2C2C2C" strokeLinecap="round" />
     </Svg>,
   ],
+  arrowLeftWhite: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path d="m16 20-8-8 8-8" stroke="#fff" strokeLinecap="round" />
+    </Svg>,
+  ],
   arrowRight24: [
     <Svg
       width="24"
@@ -2655,6 +2665,16 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Path d="m8 20 8-8-8-8" stroke="#2C2C2C" strokeLinecap="round" />
+    </Svg>,
+  ],
+  arrowRightWhite: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path d="m8 20 8-8-8-8" stroke="#fff" strokeLinecap="round" />
     </Svg>,
   ],
   imgFaq: [
@@ -2831,6 +2851,33 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Path
         d="M10.564 12.76a.784.784 0 0 1-1.128 0L5.16 8.037C4.78 7.62 5.118 7 5.724 7h8.552c.606 0 .943.62.564 1.037l-4.276 4.723z"
         fill="#979797"
+      />
+    </Svg>,
+  ],
+  xWhite26: [
+    <Svg
+      width="26"
+      height="26"
+      viewBox="0 0 26 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect
+        x="2"
+        y="3.571"
+        width="2"
+        height="29"
+        rx="1"
+        transform="rotate(-45 2 3.571)"
+        fill="#fff"
+      />
+      <Rect
+        x="22.429"
+        y="2"
+        width="2"
+        height="29"
+        rx="1"
+        transform="rotate(45 22.429 2)"
+        fill="#fff"
       />
     </Svg>,
   ],
