@@ -537,20 +537,20 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         images: attachment
           .map((a) => utils.convertCropImageToRkbImage(a))
           .toArray(),
+        prevId: pIssue?.id || '',
       } as RkbEventIssue;
 
       action.eventBoard.postAndGetList(issue);
       setPressed(true);
     }
   }, [
-    action.eventBoard,
-    action.modal,
-    action.toast,
+    action,
     attachment,
     eventBoard.list,
     linkParam,
     msg,
     paramImages,
+    pIssue?.id,
     selectedEvent,
     title,
   ]);
