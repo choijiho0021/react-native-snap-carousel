@@ -589,7 +589,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
               {marginBottom: 8},
             ]}
             onPress={() => {
-              if (eventBoard.list.length > 0) setShowModal(true);
+              if (eventList.length > 0) setShowModal(true);
               else action.toast.push('event:empty');
             }}
             disabled={!!pIssue}>

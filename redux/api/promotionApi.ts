@@ -64,6 +64,8 @@ export type RkbEvent = {
   notice?: string;
   uuid?: string;
   nid?: string;
+  activationDate?: string;
+  expirationDate?: string;
 };
 
 const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
@@ -102,20 +104,30 @@ const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
 
 const toEvent = (data: DrupalNode[]): ApiResult<RkbEvent> => {
   if (_.isArray(data)) {
+    const today = moment();
     return api.success(
-      data.map((item) => {
-        const rule = item.field_promotion_rule
-          ? JSON.parse(item.field_promotion_rule)
-          : {};
+      data
+        .map((item) => {
+          const rule = item.field_promotion_rule
+            ? JSON.parse(item.field_promotion_rule)
+            : {};
 
-        return {
-          title: item.title,
-          rule,
-          notice: item.field_notice || '',
-          uuid: item.uuid || '',
-          nid: item.nid || '',
-        };
-      }),
+          return {
+            title: item.title,
+            rule,
+            notice: item.field_notice || '',
+            uuid: item.uuid || '',
+            nid: item.nid || '',
+            activationDate: item.field_activation_date || '',
+            expirationDate: item.field_expiration_date || '',
+          };
+        })
+        .filter((event) =>
+          today.isBetween(
+            moment(event.activationDate),
+            moment(event.expirationDate),
+          ),
+        ),
     );
   }
   return api.failure(api.E_NOT_FOUND);
