@@ -631,7 +631,9 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
                 <View style={{height: webviewHeight}}>
                   <WebView
                     style={{flex: 1}}
-                    source={{html: selectedEvent.notice?.body || ''}}
+                    source={{
+                      html: decodeURIComponent(selectedEvent.notice || ''),
+                    }}
                     originWhitelist={['*']}
                     onMessage={onMessage}
                     injectedJavaScript={injectedJavaScript}

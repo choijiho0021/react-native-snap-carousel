@@ -61,10 +61,7 @@ export type RkbEventRule = {
 export type RkbEvent = {
   title: string;
   rule?: RkbEventRule;
-  notice?: {
-    title?: string;
-    body?: string;
-  };
+  notice?: string;
   uuid?: string;
   nid?: string;
 };
@@ -114,10 +111,7 @@ const toEvent = (data: DrupalNode[]): ApiResult<RkbEvent> => {
         return {
           title: item.title,
           rule,
-          notice: {
-            title: item.field_notice_title || '',
-            body: item.field_notice_body || '',
-          },
+          notice: item.field_notice || '',
           uuid: item.uuid || '',
           nid: item.nid || '',
         };
