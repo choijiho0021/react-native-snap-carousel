@@ -29,7 +29,12 @@ import i18n from '@/utils/i18n';
 import ImgWithIndicator from '../MyPageScreen/components/ImgWithIndicator';
 import EventStatusBox from '../MyPageScreen/components/EventStatusBox';
 import {RkbBoard} from '@/redux/api/boardApi';
-import {windowWidth} from '@/constants/SliderEntry.style';
+import {
+  sliderWidth,
+  windowHeight,
+  windowWidth,
+} from '@/constants/SliderEntry.style';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
   date: {
@@ -104,15 +109,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  closeBtn: {
+    position: 'absolute',
+    top: (windowHeight - ((sliderWidth - 40) / 9) * 16) / 2 - 29,
+    width: '100%',
+    alignItems: 'flex-end',
+    paddingRight: 20,
+  },
   forModalClose: {
     position: 'absolute',
     width: '100%',
     height: '100%',
   },
   modalImg: {
-    width: '80%',
-    alignSelf: 'center',
+    width: sliderWidth - 40,
+    height: ((sliderWidth - 40) / 9) * 16,
+    backgroundColor: colors.black,
+    alignItems: 'center',
     justifyContent: 'center',
+  },
+  imageFile: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
   imgFrame: {
     borderWidth: 1,
@@ -305,23 +324,23 @@ const ResultScreen: React.FC<ResultScreenProps> = ({pending}) => {
 
       <Modal visible={showImgModal} transparent>
         <SafeAreaView style={styles.imgModalFrame}>
+          <View style={styles.closeBtn}>
+            <AppSvgIcon
+              name="xWhite26"
+              onPress={() => setShowImgModal(false)}
+            />
+          </View>
+          <View style={styles.modalImg}>
+            <Image
+              style={styles.imageFile}
+              source={{
+                uri: API.default.httpImageUrl(imgUrl).toString(),
+                height,
+              }}
+              onLoadEnd={() => setLoading(false)}
+            />
+          </View>
           <AppActivityIndicator visible={loading} />
-          <Pressable
-            style={styles.forModalClose}
-            onPress={() => {
-              setShowImgModal(false);
-            }}
-          />
-          <Image
-            style={styles.modalImg}
-            source={{
-              uri: API.default.httpImageUrl(imgUrl).toString(),
-              height,
-            }}
-            onLoadEnd={() => {
-              setLoading(false);
-            }}
-          />
         </SafeAreaView>
       </Modal>
     </SafeAreaView>
