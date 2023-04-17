@@ -181,6 +181,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
             {i18n.t('cart:empty2')}
           </AppText>
         </View>
+        <ChatTalk visible bottom={100} />
       </View>
     ),
     [],
