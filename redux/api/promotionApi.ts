@@ -380,7 +380,7 @@ export type RkbExtraCoupon = {
   image: string;
   download: string;
   uuid: string;
-  group?: string;
+  group: string;
 };
 const toExtraCoupon = (data: RkbExtraCoupon[]): ApiResult<RkbExtraCoupon> => {
   if (_.isArray(data)) {
