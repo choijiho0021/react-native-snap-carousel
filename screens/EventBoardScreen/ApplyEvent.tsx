@@ -20,6 +20,7 @@ import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {
   actions as eventBoardActions,
   EventBoardAction,
+  EventBoardModelState,
 } from '@/redux/modules/eventBoard';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -43,7 +44,6 @@ import {
 import AppSvgIcon from '@/components/AppSvgIcon';
 import EventStatusBox from '@/screens/MyPageScreen/components/EventStatusBox';
 import {PromotionModelState} from '@/redux/modules/promotion';
-import {BoardModelState} from '@/redux/modules/board';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
 import AttachmentBox from '@/screens/BoardScreen/AttachmentBox';
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
 
 type ApplyEventProps = {
   promotion: PromotionModelState;
-  eventBoard: BoardModelState;
+  eventBoard: EventBoardModelState;
 
   pending: boolean;
   success: boolean;

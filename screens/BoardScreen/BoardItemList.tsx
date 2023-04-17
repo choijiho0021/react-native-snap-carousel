@@ -1,4 +1,4 @@
-import React, {memo, useCallback} from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {
   FlatList,
   RefreshControl,
@@ -13,6 +13,7 @@ import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
 import AppIcon from '@/components/AppIcon';
 import BoardMsg from '@/components/BoardMsg';
+import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 
 const styles = StyleSheet.create({
   noList: {
@@ -29,10 +30,10 @@ const styles = StyleSheet.create({
 });
 
 type BoardItemListProps = {
-  data: RkbBoard[];
+  data: RkbBoard[] | RkbEventBoard[];
   uid: number;
   refreshing?: boolean;
-  onPress: (item: RkbBoard) => void;
+  onPress: (item: RkbBoard | RkbEventBoard) => void;
   onScrollEndDrag: () => void;
   onRefresh: () => void;
 };
@@ -58,7 +59,7 @@ const BoardItemList: React.FC<BoardItemListProps> = ({
   );
 
   const renderItem = useCallback(
-    ({item}: {item: RkbBoard}) => (
+    ({item}: {item: RkbBoard | RkbEventBoard}) => (
       <BoardMsg onPress={() => onPress(item)} item={item} uid={uid} />
     ),
     [onPress, uid],

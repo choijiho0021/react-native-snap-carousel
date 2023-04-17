@@ -34,6 +34,7 @@ import {
 import {
   actions as eventBoardActions,
   EventBoardAction,
+  EventBoardModelState,
 } from '@/redux/modules/eventBoard';
 import i18n from '@/utils/i18n';
 import {AccountModelState} from '@/redux/modules/account';
@@ -151,7 +152,7 @@ type BoardMsgRespScreenProps = {
   route: BoardMsgRespScreenRouteProp;
 
   board: BoardModelState;
-  eventBoard: BoardModelState;
+  eventBoard: EventBoardModelState;
   pending: boolean;
   pendingEvent: boolean;
 
