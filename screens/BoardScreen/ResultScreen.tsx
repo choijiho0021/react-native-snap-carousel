@@ -2,6 +2,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Image,
+  Linking,
   Modal,
   Pressable,
   SafeAreaView,
@@ -35,6 +36,7 @@ import {
   windowWidth,
 } from '@/constants/SliderEntry.style';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 
 const styles = StyleSheet.create({
   date: {
@@ -171,7 +173,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({pending}) => {
     title,
     showStatus = false,
   } = useMemo<{
-    issue: RkbBoard;
+    issue: RkbBoard | RkbEventBoard;
     title: string;
     showStatus: boolean;
   }>(() => route.params, [route?.params]);
@@ -240,8 +242,11 @@ const ResultScreen: React.FC<ResultScreenProps> = ({pending}) => {
       return (
         <View>
           <AppText style={styles.label}>{i18n.t('link')}</AppText>
-          {linkList.map((l, idx) => (
-            <AppText style={[styles.inputBox, idx > 0 && {marginTop: 8}]}>
+          {linkList.map((l: string, idx: number) => (
+            <AppText
+              key={l}
+              style={[styles.inputBox, idx > 0 && {marginTop: 8}]}
+              onPress={() => Linking.openURL(l)}>
               {l}
             </AppText>
           ))}
