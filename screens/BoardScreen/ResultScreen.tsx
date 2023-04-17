@@ -116,10 +116,23 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     paddingRight: 20,
   },
-  forModalClose: {
+  arrowLeft: {
     position: 'absolute',
-    width: '100%',
-    height: '100%',
+    width: (sliderWidth - 40) / 2,
+    height: ((sliderWidth - 40) / 9) * 16,
+    alignItems: 'flex-start',
+    left: 25,
+    zIndex: 1,
+    justifyContent: 'center',
+  },
+  arrowRight: {
+    position: 'absolute',
+    width: (sliderWidth - 40) / 2,
+    height: ((sliderWidth - 40) / 9) * 16,
+    alignItems: 'flex-end',
+    right: 25,
+    zIndex: 1,
+    justifyContent: 'center',
   },
   modalImg: {
     width: sliderWidth - 40,
@@ -166,6 +179,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({pending}) => {
   const [imgUrl, setImgUrl] = useState('');
   const [height, setHeight] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [imgIndex, setImgIndex] = useState(0);
   const resp = undefined;
 
   useEffect(() => {
@@ -190,6 +204,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({pending}) => {
                   onPress={() => {
                     setShowImgModal(true);
                     setLoading(true);
+                    setImgIndex(i);
                     setImgUrl(url);
                     Image.getSize(
                       API.default.httpImageUrl(url).toString(),
@@ -340,6 +355,34 @@ const ResultScreen: React.FC<ResultScreenProps> = ({pending}) => {
               onLoadEnd={() => setLoading(false)}
             />
           </View>
+          {issue?.images.length > 1 && (
+            <Pressable
+              style={styles.arrowLeft}
+              onPress={() => {
+                if (imgIndex > -1) {
+                  setLoading(true);
+                  setImgUrl(issue?.images[imgIndex - 1]);
+                  setImgIndex(imgIndex - 1);
+                }
+              }}>
+              <AppSvgIcon name="arrowLeftWhite" />
+            </Pressable>
+          )}
+
+          {issue?.images.length > 1 && (
+            <Pressable
+              style={styles.arrowRight}
+              onPress={() => {
+                if (imgIndex < issue?.images.length - 1) {
+                  setLoading(true);
+                  setImgUrl(issue?.images[imgIndex + 1]);
+                  setImgIndex(imgIndex + 1);
+                }
+              }}>
+              <AppSvgIcon name="arrowRightWhite" />
+            </Pressable>
+          )}
+
           <AppActivityIndicator visible={loading} />
         </SafeAreaView>
       </Modal>
