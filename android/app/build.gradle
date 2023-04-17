@@ -425,6 +425,7 @@ dependencies {
     implementation 'com.adjust.sdk:adjust-android-webbridge:4.31.1'
     implementation project(':react-native-system-setting')
     implementation 'com.facebook.fresco:animated-gif:2.5.0'
+    implementation project(':react-native-linear-gradient')
     implementation project(':react-native-config')
 
      if (enableHermes) {
