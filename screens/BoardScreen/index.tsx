@@ -1,5 +1,5 @@
 import React, {memo, useCallback, useEffect, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, SafeAreaView} from 'react-native';
 import {TabView} from 'react-native-tab-view';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import AppBackButton from '@/components/AppBackButton';
@@ -57,7 +57,7 @@ const BoardScreen: React.FC<BoardScreenProps> = ({pending, title, routes}) => {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <AppActivityIndicator visible={pending} />
 
       <AppTabHeader
@@ -76,7 +76,7 @@ const BoardScreen: React.FC<BoardScreenProps> = ({pending, title, routes}) => {
         initialLayout={{width: windowWidth}}
         renderTabBar={() => null}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

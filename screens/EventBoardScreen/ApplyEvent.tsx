@@ -91,7 +91,6 @@ const styles = StyleSheet.create({
   confirm: {
     ...appStyles.normal18Text,
     ...appStyles.confirm,
-    marginTop: 30,
   },
   inputBox: {
     ...appStyles.normal14Text,

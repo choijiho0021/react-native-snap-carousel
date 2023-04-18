@@ -116,7 +116,11 @@ const ExtraCouponScreen = () => {
     if (coupons.length > 0)
       setData(
         coupons
-          .filter((elm) => elm.group === selectedGrp || selectedGrp === 'All')
+          .filter(
+            (elm) =>
+              elm.group.split(',').includes(selectedGrp) ||
+              selectedGrp === 'All',
+          )
           .reduce((acc, cur, idx) => {
             if (idx % 2 === 0) return acc.concat([[cur]]);
             acc[acc.length - 1].push(cur);
@@ -132,7 +136,9 @@ const ExtraCouponScreen = () => {
           setCoupons(rsp.objects as RkbExtraCoupon[]);
           setCouponGrp([
             'All',
-            ...new Set(rsp.objects.map((elm) => elm.group || 'All')),
+            ...new Set(
+              rsp.objects.flatMap((elm) => elm.group?.split(',') || []),
+            ),
           ]);
         } else setData([]);
       });
