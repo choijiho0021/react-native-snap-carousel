@@ -68,7 +68,7 @@ const ImageListModal = ({
 }: {
   visible: boolean;
   height: number;
-  images: string[];
+  images?: string[];
   defaultImgIndex?: number;
   onPress: () => void;
 }) => {
@@ -92,7 +92,7 @@ const ImageListModal = ({
             onLoadEnd={() => setLoading(false)}
           />
         </View>
-        {images.length > 1 && (
+        {images && images.length > 1 && (
           <Pressable
             style={styles.arrowLeft}
             onPress={() => {
@@ -106,7 +106,7 @@ const ImageListModal = ({
           </Pressable>
         )}
 
-        {images.length > 1 && (
+        {images && images.length > 1 && (
           <Pressable
             style={styles.arrowRight}
             onPress={() => {
