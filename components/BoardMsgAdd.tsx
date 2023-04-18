@@ -366,6 +366,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
             <AttachmentBox
               attachment={attachment}
               setAttachment={setAttachment}
+              imageQuality={0.5}
             />
           ) : (
             renderPass()
