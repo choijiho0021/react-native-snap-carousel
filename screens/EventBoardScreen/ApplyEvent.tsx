@@ -756,6 +756,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             setParamImages={setParamImages}
             attachment={attachment}
             setAttachment={setAttachment}
+            imageQuality={selectedEvent?.rule?.imageQuality}
           />
         </View>
       </KeyboardAwareScrollView>

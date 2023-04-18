@@ -56,6 +56,7 @@ export type RkbGiftImages = {
 export type RkbEventRule = {
   link?: boolean;
   image?: boolean;
+  imageQuality?: number;
 };
 
 export type RkbEvent = {
