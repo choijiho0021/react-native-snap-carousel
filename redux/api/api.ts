@@ -5,7 +5,7 @@ import _ from 'underscore';
 import Env from '@/environment';
 import userApi from './userApi';
 import {API} from '@/redux/api';
-import {removeData, retrieveData, storeData} from '@/utils/utils';
+import {retrieveData, storeData} from '@/utils/utils';
 import store from '@/store';
 import {actions as ToastActions, Toast} from '../modules/toast';
 
@@ -382,7 +382,8 @@ const callHttp = async <T>(
       response
         .json()
         .then((json) => {
-          console.log('response:', url, JSON.stringify(json));
+          console.log('failed. error:', url, JSON.stringify(json));
+          return callback(json);
         })
         .catch((err) => {
           return failure(
