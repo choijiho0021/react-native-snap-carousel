@@ -1,27 +1,17 @@
-/* eslint-disable class-methods-use-this */
-/* eslint-disable react/sort-comp */
-/* eslint-disable react/no-unused-state */
-import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {memo, useEffect, useMemo} from 'react';
 import {StyleSheet, SafeAreaView, View, Pressable} from 'react-native';
-
-import {RouteProp} from '@react-navigation/native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {HomeStackParamList} from '@/navigation/navigation';
-
+import {useNavigation, useRoute} from '@react-navigation/native';
+import {useDispatch} from 'react-redux';
 import {colors} from '@/constants/Colors';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {
-  guideModal,
-  renderBtn,
-  renderHeader,
-  renderTitle,
-} from './GuideHomeScreen';
 import {appStyles} from '@/constants/Styles';
-import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
+import {actions as modalActions} from '@/redux/modules/modal';
+import GuideModal from './GuideModal';
+import GuideHeader from './GuideHeader';
+import GuideTitle from './GuideTitle';
+import GuideButton from './GuideButton';
 
 const styles = StyleSheet.create({
   container: {
@@ -50,30 +40,19 @@ const styles = StyleSheet.create({
   },
 });
 
-type UserGuideScreenNavigationProp = StackNavigationProp<
-  HomeStackParamList,
-  'ContactBoard'
->;
-
-type GuideSelectRegionScreenProps = {
-  navigation: UserGuideScreenNavigationProp;
-  route: RouteProp<HomeStackParamList, 'GuideHome'>;
-  actions: {
-    modal: ModalAction;
-  };
-};
-
 export type GuideRegion = 'korea' | 'local';
 
-const GuideSelectRegionScreen: React.FC<GuideSelectRegionScreenProps> = ({
-  navigation,
-  route: {params},
-  actions,
-}) => {
-  const guideOption = useMemo(() => params?.guideOption, [params?.guideOption]);
+const GuideSelectRegionScreen = () => {
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+  const route = useRoute();
+  const guideOption = useMemo(
+    () => route.params?.guideOption,
+    [route.params?.guideOption],
+  );
 
   useEffect(() => {
-    navigation.setOptions({
+    navigation?.setOptions({
       title: null,
       headerShown: false,
     });
@@ -81,16 +60,22 @@ const GuideSelectRegionScreen: React.FC<GuideSelectRegionScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      {renderHeader(() => navigation.goBack())}
-      {renderTitle(i18n.t(`userGuide:selectRegion:${guideOption}:title`))}
+      <GuideHeader onPress={() => navigation?.goBack()} />
+      <GuideTitle
+        title={i18n.t(`userGuide:selectRegion:${guideOption}:title`)}
+      />
       <View style={{height: 6}} />
       {guideOption === 'esimReg' ? (
         <Pressable
           style={styles.box}
           onPress={() =>
-            actions.modal.showModal({
-              content: guideModal(actions, guideOption, false),
-            })
+            dispatch(
+              modalActions.showModal({
+                content: (
+                  <GuideModal guideOption={guideOption} isHome={false} />
+                ),
+              }),
+            )
           }>
           <AppSvgIcon name="noticeFlag" style={{marginRight: 8}} />
           <View>
@@ -106,28 +91,21 @@ const GuideSelectRegionScreen: React.FC<GuideSelectRegionScreenProps> = ({
       ) : (
         <View style={{height: 40}} />
       )}
-      {['korea', 'local'].map((v) =>
-        renderBtn(
-          v,
-          () => {
-            navigation.navigate('UserGuideStep', {
+      {['korea', 'local'].map((v) => (
+        <GuideButton
+          key={v}
+          item={v}
+          onPress={() => {
+            navigation?.navigate('UserGuideStep', {
               guideOption,
               region: v,
             });
-          },
-          false,
-        ),
-      )}
+          }}
+          isHome={false}
+        />
+      ))}
     </SafeAreaView>
   );
 };
 
-export default connect(
-  // eslint-disable-next-line no-empty-pattern
-  ({}) => ({}),
-  (dispatch) => ({
-    actions: {
-      modal: bindActionCreators(modalActions, dispatch),
-    },
-  }),
-)(GuideSelectRegionScreen);
+export default memo(GuideSelectRegionScreen);

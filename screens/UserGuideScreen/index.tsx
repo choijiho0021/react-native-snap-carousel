@@ -1,7 +1,11 @@
-/* eslint-disable class-methods-use-this */
-/* eslint-disable react/sort-comp */
-/* eslint-disable react/no-unused-state */
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   StyleSheet,
   Image,
@@ -11,10 +15,8 @@ import {
   Dimensions,
   Pressable,
 } from 'react-native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {RouteProp} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {colors} from '@/constants/Colors';
-import {HomeStackParamList} from '@/navigation/navigation';
 import Env from '@/environment';
 import {
   isDeviceSize,
@@ -168,31 +170,18 @@ const styles = StyleSheet.create({
   },
 });
 
-// type CarouselIndex = keyof typeof guideImages;
-
-type UserGuideScreenNavigationProp = StackNavigationProp<
-  HomeStackParamList,
-  'ContactBoard',
-  'GuideHome'
->;
-
-type UserGuideScreenProps = {
-  navigation: UserGuideScreenNavigationProp;
-  route: RouteProp<HomeStackParamList, 'GuideHome'>;
-};
-
-const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
-  navigation,
-  route: {params},
-}) => {
+const UserGuideScreen = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
   const [carouselIdx, setCarouselIdx] = useState(0);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const [chatTalkClicked, setChatTalkClicked] = useState(false);
   const [isCheckLocal, setIsCheckLocal] = useState(false);
-  // const deviceModel = useMemo(() => DeviceInfo.getModel(), []);
   const carouselRef = useRef<AppCarouselRef>(null);
-  const guideOption = useMemo(() => params?.guideOption, [params?.guideOption]);
-  const region = useMemo(() => params?.region, [params?.region]);
+  const {guideOption, region} = useMemo(
+    () => route?.params || {},
+    [route?.params],
+  );
   const contactData = useMemo(
     () => [
       {
@@ -592,4 +581,4 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({
   );
 };
 
-export default UserGuideScreen;
+export default memo(UserGuideScreen);
