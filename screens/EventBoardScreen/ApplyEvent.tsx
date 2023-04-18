@@ -570,8 +570,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             <View style={{marginHorizontal: 20, marginBottom: 24}}>
               <EventStatusBox
                 statusCode={pIssue.statusCode}
-                rejectReason={pIssue.rejectReason}
-                otherReason={pIssue.otherReason}
+                reason={pIssue.rejectReason.concat(pIssue.otherReason)}
               />
             </View>
           ) : (
