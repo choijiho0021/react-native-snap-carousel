@@ -169,6 +169,10 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     }
   }, [jumpTo, success]);
 
+  useEffect(() => {
+    action.board.getIssueList();
+  }, [action.board]);
+
   const validate = useCallback((key: string, value: string) => {
     const valid = validationUtil.validate(key, value, validationRule);
 
@@ -180,7 +184,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
 
   const onPress = useCallback(async () => {
     if (!title || !msg) {
-      console.log('@@@ invalid issue', title, msg);
       return;
     }
 

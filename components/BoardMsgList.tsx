@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {useNavigation} from '@react-navigation/native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
@@ -122,10 +123,9 @@ const InputMobile0 = ({
 const InputMobile = memo(InputMobile0);
 
 type BoardMsgListProps = {
-  board?: BoardModelState;
+  board: BoardModelState;
   account: AccountModelState;
   uid: number;
-  onPress: (uuid: string, status: string) => void;
   pending: boolean;
 
   action: {
@@ -139,8 +139,8 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   account,
   pending,
   uid,
-  onPress,
 }) => {
+  const navigation = useNavigation();
   const [data, setData] = useState<RkbBoard[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [status, setStatus] = useState('');
@@ -152,8 +152,18 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   }, [account?.mobile]);
 
   useEffect(() => {
-    if ((board?.list.length || 0) > 0) setData(board?.list || []);
-  }, [board?.list]);
+    if ((board.list.length || 0) > 0) setData(board.list || []);
+  }, [board.list]);
+
+  const onPress = useCallback(
+    (uuid: string, st: string) => {
+      navigation.navigate('BoardMsgResp', {
+        uuid,
+        status: st,
+      });
+    },
+    [navigation],
+  );
 
   const onSubmit = useCallback(
     (value: string) => {
@@ -161,12 +171,12 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
         const number = value.replace(/-/g, '');
 
         setData(
-          board?.list.filter((item) => item.mobile.includes(number)) || [],
+          board.list.filter((item) => item.mobile.includes(number)) || [],
         );
         setMobile(number);
       }
     },
-    [board?.list],
+    [board.list],
   );
 
   // 응답 메시지 화면으로 이동한다.
@@ -268,8 +278,9 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
 };
 
 export default connect(
-  ({account, status}: RootState) => ({
+  ({account, board, status}: RootState) => ({
     account,
+    board,
     uid: account.uid || 0,
     pending: status.pending[boardActions.getIssueList.typePrefix] || false,
   }),
