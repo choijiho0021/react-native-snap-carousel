@@ -34,16 +34,10 @@ type BoardScreenProps = {
     render: (jumpto: (v: string) => void) => React.ReactElement;
   })[];
 
-  success: boolean;
   pending: boolean;
 };
 
-const BoardScreen: React.FC<BoardScreenProps> = ({
-  pending,
-  success,
-  title,
-  routes,
-}) => {
+const BoardScreen: React.FC<BoardScreenProps> = ({pending, title, routes}) => {
   const navigation = useNavigation();
   const route = useRoute();
   const [index, setIndex] = useState(route?.params?.index || 0);

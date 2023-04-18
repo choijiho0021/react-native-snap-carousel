@@ -7,10 +7,10 @@ import BoardScreen from '@/screens/BoardScreen';
 import ApplyEvent from './ApplyEvent';
 import MyEventList from './MyEventList';
 
-const EventBoardScreen = (props) => {
+const EventBoardScreen = ({pending}: {pending: boolean}) => {
   return (
     <BoardScreen
-      {...props}
+      pending={pending}
       title={i18n.t('event:title')}
       routes={[
         {
@@ -34,10 +34,7 @@ const EventBoardScreen = (props) => {
   );
 };
 
-export default connect(({promotion, eventBoard, status}: RootState) => ({
-  promotion,
-  eventBoard,
+export default connect(({status}: RootState) => ({
   pending:
     status.pending[eventBoardActions.fetchEventIssueList.typePrefix] || false,
-  success: status.fulfilled[eventBoardActions.postEventIssue.typePrefix],
 }))(EventBoardScreen);
