@@ -334,7 +334,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         );
 
         const query =
-          item.daily === 'daily'
+          item.daily === 'daily' && dataPack
             ? {
                 startTime: dataPack?.effTime,
               }
