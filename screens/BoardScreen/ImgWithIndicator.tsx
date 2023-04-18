@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {memo, useState} from 'react';
 import {Image, StyleSheet, View} from 'react-native';
 import {attachmentSize} from '@/constants/SliderEntry.style';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
@@ -29,4 +29,4 @@ const ImgWithIndicator: React.FC<ImgWithIndicatorProps> = ({uri}) => {
   );
 };
 
-export default ImgWithIndicator;
+export default memo(ImgWithIndicator);

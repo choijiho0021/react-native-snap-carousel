@@ -1,7 +1,6 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
-  Image,
   Linking,
   Pressable,
   SafeAreaView,
@@ -10,7 +9,6 @@ import {
   View,
 } from 'react-native';
 import {connect} from 'react-redux';
-import _ from 'underscore';
 import moment from 'moment';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
@@ -26,10 +24,9 @@ import utils from '@/redux/api/utils';
 import {actions as boardActions} from '@/redux/modules/board';
 import {actions as eventBoardActions} from '@/redux/modules/eventBoard';
 import i18n from '@/utils/i18n';
-import ImgWithIndicator from '../MyPageScreen/components/ImgWithIndicator';
-import EventStatusBox from '../MyPageScreen/components/EventStatusBox';
+import ImgWithIndicator from './ImgWithIndicator';
+import EventStatusBox from './EventStatusBox';
 import {RkbBoardBase} from '@/redux/api/boardApi';
-import {windowWidth} from '@/constants/SliderEntry.style';
 import ImageListModal from './ImageListModal';
 
 const styles = StyleSheet.create({
@@ -41,8 +38,8 @@ const styles = StyleSheet.create({
   },
   attachBox: {
     flexDirection: 'row',
-    // justifyContent: 'space-between',
     marginBottom: 56,
+    justifyContent: 'space-between',
   },
   reply: {
     ...appStyles.normal14Text,
@@ -137,9 +134,8 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
     ],
     [ip, route.params, sp, tp],
   );
-  const [showImgModal, setShowImgModal] = useState(false);
-  const [height, setHeight] = useState(0);
   const [imgIndex, setImgIndex] = useState(0);
+  const [modalImgList, setModalImgList] = useState<string[]>([]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -154,27 +150,22 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
         <AppText style={styles.label}>{i18n.t('board:attach')}</AppText>
         <View style={styles.attachBox}>
           {images &&
-            images
-              .filter((item) => !_.isEmpty(item))
-              .map((url, i) => (
+            images.map((url, i) =>
+              url ? (
                 <Pressable
-                  style={[styles.imgFrame, i < 2 && {marginRight: 33}]}
-                  key={utils.generateKey(`${url}${i}`)}
+                  style={styles.imgFrame}
+                  key={i}
                   onPress={() => {
-                    setShowImgModal(true);
+                    setModalImgList(images);
                     setImgIndex(i);
-                    Image.getSize(
-                      API.default.httpImageUrl(url).toString(),
-                      (w, h) => {
-                        setHeight(h * ((windowWidth * 0.8) / w));
-                      },
-                    );
                   }}>
                   <ImgWithIndicator
                     uri={API.default.httpImageUrl(url).toString()}
                   />
                 </Pressable>
-              ))}
+              ) : null,
+            )}
+          {images?.length === 2 && <View style={{width: 100}} />}
         </View>
       </View>
     ),
@@ -297,11 +288,10 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
       </View>
 
       <ImageListModal
-        visible={showImgModal}
-        images={issue?.images}
+        visible={modalImgList.length > 0}
+        images={modalImgList}
         defaultImgIndex={imgIndex}
-        height={height}
-        onPress={() => setShowImgModal(false)}
+        onPress={() => setModalImgList([])}
       />
     </SafeAreaView>
   );

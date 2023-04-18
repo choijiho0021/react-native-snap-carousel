@@ -100,7 +100,7 @@ const AppSvgIcon: React.FC<AppSvgIconProps> = ({
           {icon2[idx] || icon2[0]}
         </Pressable>
         {title && (
-          <AppText style={[titleStyle || styles.text]}>
+          <AppText style={titleStyle || styles.text}>
             {title || i18n.t('select')}
           </AppText>
         )}

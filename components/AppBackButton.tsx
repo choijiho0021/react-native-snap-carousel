@@ -4,7 +4,7 @@ import {Pressable, View, ViewStyle, TextProps, ImageStyle} from 'react-native';
 import {appStyles} from '@/constants/Styles';
 import AppText from './AppText';
 import {goBack} from '@/navigation/navigation';
-import pressIcons from './AppSvgIcon/pressIcon';
+import AppSvgIcon from './AppSvgIcon';
 
 const AppBackButton = ({
   title,
@@ -37,7 +37,7 @@ const AppBackButton = ({
         style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
         {!isPaid ? (
           <View key="icon" style={{marginLeft: 20, ...imageStyle}}>
-            {pressIcons.btnBack}
+            <AppSvgIcon name="btnBack" />
           </View>
         ) : (
           <View key="empty" style={{marginLeft: 15}} />

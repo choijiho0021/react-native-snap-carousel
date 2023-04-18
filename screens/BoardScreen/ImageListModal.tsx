@@ -6,11 +6,15 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import React, {memo, useState} from 'react';
+import React, {memo, useEffect, useState} from 'react';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {colors} from '@/constants/Colors';
-import {sliderWidth, windowHeight} from '@/constants/SliderEntry.style';
+import {
+  sliderWidth,
+  windowHeight,
+  windowWidth,
+} from '@/constants/SliderEntry.style';
 import {API} from '@/redux/api';
 
 const styles = StyleSheet.create({
@@ -64,17 +68,33 @@ const ImageListModal = ({
   onPress,
   images,
   defaultImgIndex,
-  height,
 }: {
   visible: boolean;
-  height: number;
-  images: string[];
+  images?: string[];
   defaultImgIndex?: number;
   onPress: () => void;
 }) => {
-  const [imgUrl, setImgUrl] = useState('');
   const [imgIndex, setImgIndex] = useState(defaultImgIndex || 0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [height, setHeight] = useState(0);
+
+  useEffect(() => {
+    if (defaultImgIndex !== undefined) {
+      setLoading(true);
+      setImgIndex(defaultImgIndex);
+    }
+  }, [defaultImgIndex]);
+
+  useEffect(() => {
+    if (images) {
+      const url = images[imgIndex];
+      if (url) {
+        Image.getSize(API.default.httpImageUrl(url).toString(), (w, h) => {
+          setHeight(h * ((windowWidth * 0.8) / w));
+        });
+      }
+    }
+  }, [images, imgIndex]);
 
   return (
     <Modal visible={visible} transparent>
@@ -83,38 +103,34 @@ const ImageListModal = ({
           <AppSvgIcon name="xWhite26" onPress={onPress} />
         </View>
         <View style={styles.modalImg}>
-          <Image
-            style={styles.imageFile}
-            source={{
-              uri: API.default.httpImageUrl(imgUrl).toString(),
-              height,
-            }}
-            onLoadEnd={() => setLoading(false)}
-          />
+          {images?.[imgIndex] ? (
+            <Image
+              style={styles.imageFile}
+              source={{
+                uri: API.default.httpImageUrl(images?.[imgIndex]).toString(),
+                height,
+              }}
+              onLoadEnd={() => setLoading(false)}
+            />
+          ) : null}
         </View>
-        {images.length > 1 && (
+        {images && images.length > 1 && imgIndex > 0 && (
           <Pressable
             style={styles.arrowLeft}
             onPress={() => {
-              if (imgIndex > -1) {
-                setLoading(true);
-                setImgUrl(images[imgIndex - 1]);
-                setImgIndex(imgIndex - 1);
-              }
+              setLoading(true);
+              setImgIndex((prev) => prev - 1);
             }}>
             <AppSvgIcon name="arrowLeftWhite" />
           </Pressable>
         )}
 
-        {images.length > 1 && (
+        {images && images.length > 1 && imgIndex < images.length - 1 && (
           <Pressable
             style={styles.arrowRight}
             onPress={() => {
-              if (imgIndex < images.length - 1) {
-                setLoading(true);
-                setImgUrl(images[imgIndex + 1]);
-                setImgIndex(imgIndex + 1);
-              }
+              setLoading(true);
+              setImgIndex((prev) => prev + 1);
             }}>
             <AppSvgIcon name="arrowRightWhite" />
           </Pressable>

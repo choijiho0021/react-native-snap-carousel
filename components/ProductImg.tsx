@@ -45,7 +45,9 @@ const ProductImg = ({
         {tags &&
           tags.length > 0 &&
           tags.map((elm) => (
-            <View style={[styles.tagBox, {backgroundColor: colors.purplyBlue}]}>
+            <View
+              style={[styles.tagBox, {backgroundColor: colors.purplyBlue}]}
+              key={elm}>
               <AppText style={{...appStyles.bold14Text, color: colors.white}}>
                 {i18n.t(`localOp:tag:${elm}`)}
               </AppText>

@@ -20,7 +20,7 @@ import AppAlert from '@/components/AppAlert';
 import {RkbEvent} from '@/redux/api/promotionApi';
 import {EventParamImagesType} from '../EventBoardScreen/ApplyEvent';
 import AppIcon from '@/components/AppIcon';
-import ImgWithIndicator from '../MyPageScreen/components/ImgWithIndicator';
+import ImgWithIndicator from './ImgWithIndicator';
 import {API} from '@/redux/api';
 import {actions as modalActions} from '@/redux/modules/modal';
 import PreviewImageModal from './PreviewImagesModal';

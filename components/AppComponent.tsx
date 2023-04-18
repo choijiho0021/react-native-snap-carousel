@@ -7,7 +7,6 @@ import {
   Text,
   View,
   Dimensions,
-  Modal,
   Image,
 } from 'react-native';
 import Video from 'react-native-video';
@@ -37,7 +36,6 @@ import {RootState} from '@/redux';
 import AppModal from './AppModal';
 import {appStyles} from '@/constants/Styles';
 import CodePushScreen from '@/screens/CodePushScreen';
-import {ModalModelState} from '@/redux/modules/modal';
 
 const {width: viewportWidth, height: viewportHeight} = Dimensions.get('window');
 const windowHeight = viewportHeight;
@@ -102,13 +100,11 @@ function handleLoadingError(error) {
 type AppComponentProps = {
   skipLoadingScreen: boolean;
   product: ProductModelState;
-  modal: ModalModelState;
 };
 
 const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
   skipLoadingScreen,
   product,
-  modal,
   dispatch,
 }) => {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
@@ -275,14 +271,10 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
       {isCodepushRunning ? <CodePushScreen /> : renderMain()}
       {/* {!showSplash && !isCodepushRunning && <CodePushModal />} */}
       <AppToast />
-      <Modal animationType="fade" transparent visible={modal.visible}>
-        {modal.content}
-      </Modal>
     </View>
   );
 };
 
-export default connect(({product, modal}: RootState) => ({
+export default connect(({product}: RootState) => ({
   product,
-  modal,
 }))(memo(AppComponent));

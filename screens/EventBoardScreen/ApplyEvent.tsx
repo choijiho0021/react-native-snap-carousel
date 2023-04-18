@@ -42,7 +42,7 @@ import {
   RkbEventIssue,
 } from '@/redux/api/eventBoardApi';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import EventStatusBox from '@/screens/MyPageScreen/components/EventStatusBox';
+import EventStatusBox from '@/screens/BoardScreen/EventStatusBox';
 import {PromotionModelState} from '@/redux/modules/promotion';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
