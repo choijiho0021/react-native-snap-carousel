@@ -3,7 +3,6 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Image,
   Linking,
-  Modal,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -29,14 +28,9 @@ import {actions as eventBoardActions} from '@/redux/modules/eventBoard';
 import i18n from '@/utils/i18n';
 import ImgWithIndicator from '../MyPageScreen/components/ImgWithIndicator';
 import EventStatusBox from '../MyPageScreen/components/EventStatusBox';
-import {RkbBoard} from '@/redux/api/boardApi';
-import {
-  sliderWidth,
-  windowHeight,
-  windowWidth,
-} from '@/constants/SliderEntry.style';
-import AppSvgIcon from '@/components/AppSvgIcon';
-import {RkbEventBoard} from '@/redux/api/eventBoardApi';
+import {RkbBoardBase} from '@/redux/api/boardApi';
+import {windowWidth} from '@/constants/SliderEntry.style';
+import ImageListModal from './ImageListModal';
 
 const styles = StyleSheet.create({
   date: {
@@ -105,49 +99,6 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     color: colors.white,
   },
-  imgModalFrame: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  closeBtn: {
-    position: 'absolute',
-    top: (windowHeight - ((sliderWidth - 40) / 9) * 16) / 2 - 29,
-    width: '100%',
-    alignItems: 'flex-end',
-    paddingRight: 20,
-  },
-  arrowLeft: {
-    position: 'absolute',
-    width: (sliderWidth - 40) / 2,
-    height: ((sliderWidth - 40) / 9) * 16,
-    alignItems: 'flex-start',
-    left: 25,
-    zIndex: 1,
-    justifyContent: 'center',
-  },
-  arrowRight: {
-    position: 'absolute',
-    width: (sliderWidth - 40) / 2,
-    height: ((sliderWidth - 40) / 9) * 16,
-    alignItems: 'flex-end',
-    right: 25,
-    zIndex: 1,
-    justifyContent: 'center',
-  },
-  modalImg: {
-    width: sliderWidth - 40,
-    height: ((sliderWidth - 40) / 9) * 16,
-    backgroundColor: colors.black,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  imageFile: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
-  },
   imgFrame: {
     borderWidth: 1,
     borderColor: colors.lightGrey,
@@ -163,26 +114,32 @@ const styles = StyleSheet.create({
 
 type ResultScreenProps = {
   pending: boolean;
+  issue: RkbBoardBase;
+  title: string;
+  showStatus: boolean;
+  resp?: string;
 };
 
-const ResultScreen: React.FC<ResultScreenProps> = ({pending}) => {
+const ResultScreen: React.FC<ResultScreenProps> = ({
+  issue: ip,
+  title: tp,
+  showStatus: sp,
+  pending,
+  resp,
+}) => {
   const navigation = useNavigation();
   const route = useRoute();
-  const {
-    issue,
-    title,
-    showStatus = false,
-  } = useMemo<{
-    issue: RkbBoard | RkbEventBoard;
-    title: string;
-    showStatus: boolean;
-  }>(() => route.params, [route?.params]);
+  const [issue, title, showStatus = false] = useMemo(
+    () => [
+      ip || route.params?.issue,
+      tp || route.params?.title,
+      sp || route.params?.showStatus,
+    ],
+    [ip, route.params, sp, tp],
+  );
   const [showImgModal, setShowImgModal] = useState(false);
-  const [imgUrl, setImgUrl] = useState('');
   const [height, setHeight] = useState(0);
-  const [loading, setLoading] = useState(false);
   const [imgIndex, setImgIndex] = useState(0);
-  const resp = undefined;
 
   useEffect(() => {
     navigation.setOptions({
@@ -205,9 +162,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({pending}) => {
                   key={utils.generateKey(`${url}${i}`)}
                   onPress={() => {
                     setShowImgModal(true);
-                    setLoading(true);
                     setImgIndex(i);
-                    setImgUrl(url);
                     Image.getSize(
                       API.default.httpImageUrl(url).toString(),
                       (w, h) => {
@@ -263,8 +218,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({pending}) => {
           {showStatus && issue?.statusCode && (
             <EventStatusBox
               statusCode={issue.statusCode}
-              rejectReason={issue.rejectReason}
-              otherReason={issue.otherReason}
+              reason={issue?.rejectReason?.concat(issue?.otherReason)}
             />
           )}
           {issue?.created && renderTime()}
@@ -295,7 +249,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({pending}) => {
                   <AppText style={styles.replyTitle}>
                     {i18n.t('board:resp')}
                   </AppText>
-                  <AppText style={styles.reply}>{resp.body}</AppText>
+                  <AppText style={styles.reply}>{resp}</AppText>
                 </View>
               </View>
               {renderImages(issue?.replyImages)}
@@ -342,55 +296,13 @@ const ResultScreen: React.FC<ResultScreenProps> = ({pending}) => {
         )}
       </View>
 
-      <Modal visible={showImgModal} transparent>
-        <SafeAreaView style={styles.imgModalFrame}>
-          <View style={styles.closeBtn}>
-            <AppSvgIcon
-              name="xWhite26"
-              onPress={() => setShowImgModal(false)}
-            />
-          </View>
-          <View style={styles.modalImg}>
-            <Image
-              style={styles.imageFile}
-              source={{
-                uri: API.default.httpImageUrl(imgUrl).toString(),
-                height,
-              }}
-              onLoadEnd={() => setLoading(false)}
-            />
-          </View>
-          {issue?.images.length > 1 && (
-            <Pressable
-              style={styles.arrowLeft}
-              onPress={() => {
-                if (imgIndex > -1) {
-                  setLoading(true);
-                  setImgUrl(issue?.images[imgIndex - 1]);
-                  setImgIndex(imgIndex - 1);
-                }
-              }}>
-              <AppSvgIcon name="arrowLeftWhite" />
-            </Pressable>
-          )}
-
-          {issue?.images.length > 1 && (
-            <Pressable
-              style={styles.arrowRight}
-              onPress={() => {
-                if (imgIndex < issue?.images.length - 1) {
-                  setLoading(true);
-                  setImgUrl(issue?.images[imgIndex + 1]);
-                  setImgIndex(imgIndex + 1);
-                }
-              }}>
-              <AppSvgIcon name="arrowRightWhite" />
-            </Pressable>
-          )}
-
-          <AppActivityIndicator visible={loading} />
-        </SafeAreaView>
-      </Modal>
+      <ImageListModal
+        visible={showImgModal}
+        images={issue?.images}
+        defaultImgIndex={imgIndex}
+        height={height}
+        onPress={() => setShowImgModal(false)}
+      />
     </SafeAreaView>
   );
 };
