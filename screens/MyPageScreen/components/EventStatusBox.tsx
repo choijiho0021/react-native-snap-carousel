@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {memo} from 'react';
 import {Dimensions, StyleSheet, View} from 'react-native';
 import {colors} from '@/constants/Colors';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -45,25 +45,13 @@ const styles = StyleSheet.create({
 
 type EventStatusBoxProps = {
   statusCode: string;
-  rejectReason?: string[];
-  otherReason?: string;
+  reason?: string[];
 };
 
 const EventStatusBox: React.FC<EventStatusBoxProps> = ({
   statusCode,
-  rejectReason = [],
-  otherReason = '',
+  reason = [],
 }) => {
-  const renderReason = useCallback(
-    (text: string) => (
-      <View style={[styles.row, {alignItems: 'flex-start'}]}>
-        <AppSvgIcon name="checkRedSmall" style={{marginRight: 10}} />
-        <AppText style={styles.reasonBoxText}>{text}</AppText>
-      </View>
-    ),
-    [],
-  );
-
   return (
     <View
       style={[
@@ -77,7 +65,7 @@ const EventStatusBox: React.FC<EventStatusBoxProps> = ({
               : colors.clearBlue,
         },
       ]}>
-      <View style={styles.row}>
+      <View style={styles.row} key="status">
         <AppSvgIcon
           name={
             statusCode === 'f'
@@ -104,14 +92,20 @@ const EventStatusBox: React.FC<EventStatusBoxProps> = ({
           }}
         />
       </View>
-      {statusCode === 'f' && (rejectReason.length > 0 || !!otherReason) && (
-        <View style={styles.reasonBox}>
-          {rejectReason.length > 0 && rejectReason.map((r) => renderReason(r))}
-          {!!otherReason && renderReason(otherReason)}
+      {statusCode === 'f' && reason.length > 0 && (
+        <View style={styles.reasonBox} key="reason">
+          {reason.map((r, idx) =>
+            r ? (
+              <View style={[styles.row, {alignItems: 'flex-start'}]} key={idx}>
+                <AppSvgIcon name="checkRedSmall" style={{marginRight: 10}} />
+                <AppText style={styles.reasonBoxText}>{r}</AppText>
+              </View>
+            ) : null,
+          )}
         </View>
       )}
     </View>
   );
 };
 
-export default EventStatusBox;
+export default memo(EventStatusBox);
