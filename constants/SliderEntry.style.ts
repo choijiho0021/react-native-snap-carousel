@@ -17,7 +17,7 @@ const itemHorizontalMargin = wp(2);
 export const windowHeight = viewportHeight;
 export const windowWidth = viewportWidth;
 export const sliderWidth = viewportWidth;
-export const attachmentSize = (sliderWidth - 20 * 2 - 33 * 2) / 3;
+export const attachmentSize = (sliderWidth - 20 * 2 - 33 * 2) / 3 - 2;
 export const itemWidth = slideWidth + itemHorizontalMargin * 2;
 export const MAX_WIDTH = 414;
 
