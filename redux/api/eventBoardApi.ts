@@ -4,7 +4,7 @@ import i18n from '@/utils/i18n';
 import api, {ApiResult} from './api';
 import {RkbImage} from './accountApi';
 import {DrupalBoard, RkbBoardBase, RkbIssueBase, toFile} from './boardApi';
-import {EventParamImagesType} from '@/components/BoardMsgAdd';
+import {EventParamImagesType} from '@/screens/EventBoardScreen/ApplyEvent';
 
 export type EventBoardMsgStatus = 'o' | 'r' | 's' | 'f';
 

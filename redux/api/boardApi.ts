@@ -133,7 +133,7 @@ export const toFile = (data): ApiResult<RkbFile> => {
       },
     ]);
   }
-  return api.failure(api.E_NOT_FOUND);
+  return api.failure(api.E_NOT_FOUND, data.message);
 };
 
 // anonymous user 도 post 할 수 있으므로, token 값을 확인하지 않는다.

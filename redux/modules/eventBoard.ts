@@ -4,7 +4,7 @@ import {Reducer} from 'redux-actions';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
 import {RkbEventBoard, RkbEventIssue} from '../api/eventBoardApi';
-import {BoardModelState} from './board';
+import {actions as ToastActions} from './toast';
 
 const postEventIssue = createAsyncThunk(
   'eventBoard/postIssue',
@@ -37,6 +37,10 @@ const postAndGetList = createAsyncThunk(
     return dispatch(
       postEventAttach({images: issue.images, user: mobile, token}),
     ).then(({payload}) => {
+      if (payload?.find((p) => p.result !== 0)) {
+        dispatch(ToastActions.push('event:fail:loading'));
+        return Promise.reject(new Error('failed to post images'));
+      }
       const images = payload ? payload.map((item) => item.objects[0]) : [];
       return dispatch(postEventIssue({...issue, images, token})).then(
         ({payload: resp}) => {
