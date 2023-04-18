@@ -12,7 +12,7 @@ import {RkbProduct} from '@/redux/api/productApi';
 import {RkbReceipt} from '@/screens/ReceiptScreen';
 import {GuideOption} from '@/screens/UserGuideScreen/GuideHomeScreen';
 import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
-import {RkbEventBoard, RkbEventIssue} from '@/redux/api/eventBoardApi';
+import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti';
 export type PymMethodScreenMode =

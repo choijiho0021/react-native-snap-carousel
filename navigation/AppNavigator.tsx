@@ -25,6 +25,7 @@ import {
   StyleSheet,
   Linking,
   Platform,
+  Modal,
 } from 'react-native';
 import {Adjust} from 'react-native-adjust';
 import Env from '@/environment';
@@ -33,7 +34,10 @@ import {
   actions as promotionActions,
   PromotionModelState,
 } from '@/redux/modules/promotion';
-import {actions as accountActions} from '@/redux/modules/account';
+import {
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import {actions as linkActions, urlParamObj} from '@/redux/modules/link';
 import AuthStackNavigator from './AuthStackNavigator';
 import EsimMainTabNavigator from './EsimMainTabNavigator';
@@ -42,7 +46,11 @@ import {
   checkFistLaunch,
 } from '@/navigation/component/permission';
 import utils from '@/redux/api/utils';
-import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
+import {
+  actions as modalActions,
+  ModalAction,
+  ModalModelState,
+} from '@/redux/modules/modal';
 import {RootState} from '@/redux';
 import {RkbPromotion} from '@/redux/api/promotionApi';
 import {LinkModelState} from '../redux/modules/link';
@@ -52,9 +60,8 @@ import {colors} from '@/constants/Colors';
 import {API} from '@/redux/api';
 import ProgressiveImage from '@/components/ProgressiveImage';
 import i18n from '@/utils/i18n';
-import {AccountModelState} from '../redux/modules/account';
 
-const {isIOS, esimGlobal, appId, talkPluginKey} = Env.get();
+const {isIOS, esimGlobal} = Env.get();
 const MainStack = createStackNavigator();
 
 const styles = StyleSheet.create({
@@ -113,6 +120,7 @@ type RegisterMobileScreenProps = {
   account: AccountModelState;
   link: LinkModelState;
   promotion: PromotionModelState;
+  modal: ModalModelState;
   actions: {
     modal: ModalAction;
   };
@@ -120,7 +128,7 @@ type RegisterMobileScreenProps = {
 
 const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   store,
-  account,
+  modal,
   link,
   promotion,
   actions,
@@ -600,15 +608,19 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         store.dispatch(cartActions.pushLastTab(lastTab));
       }}>
       {mainStack()}
+      <Modal animationType="fade" transparent visible={modal.visible}>
+        {modal.content}
+      </Modal>
     </NavigationContainer>
   );
 };
 
 export default connect(
-  ({account, link, promotion}: RootState) => ({
+  ({account, link, promotion, modal}: RootState) => ({
     account,
     promotion,
     link,
+    modal,
   }),
   (dispatch) => ({
     actions: {
