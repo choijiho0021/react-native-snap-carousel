@@ -150,7 +150,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
 
   const capture = useCallback(async () => {
     if (Platform.OS === 'android' && !(await hasAndroidPermission())) {
-      action.toast.push('갤러리 접근 권한이 없어요');
+      action.toast.push('toast:perm:gallery');
       return;
     }
 
