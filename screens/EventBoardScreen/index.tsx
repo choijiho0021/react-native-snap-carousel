@@ -7,10 +7,10 @@ import BoardScreen from '@/screens/BoardScreen';
 import ApplyEvent from './ApplyEvent';
 import MyEventList from './MyEventList';
 
-const EventBoardScreen = ({pending}: {pending: boolean}) => {
+const EventBoardScreen = (props) => {
   return (
     <BoardScreen
-      pending={pending}
+      pending={props.pending}
       title={i18n.t('event:title')}
       routes={[
         {
