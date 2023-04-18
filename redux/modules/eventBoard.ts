@@ -3,7 +3,7 @@ import {AnyAction} from 'redux';
 import {Reducer} from 'redux-actions';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
-import {RkbEventIssue} from '../api/eventBoardApi';
+import {RkbEventBoard, RkbEventIssue} from '../api/eventBoardApi';
 import {BoardModelState} from './board';
 
 const postEventIssue = createAsyncThunk(
@@ -53,7 +53,14 @@ const postAndGetList = createAsyncThunk(
   },
 );
 
-const initialState: BoardModelState = {
+export interface EventBoardModelState {
+  next: boolean;
+  page: number;
+  list: RkbEventBoard[];
+  comment?: string;
+}
+
+const initialState: EventBoardModelState = {
   next: true,
   page: 0,
   list: [],
@@ -169,4 +176,4 @@ export const actions = {
 
 export type EventBoardAction = typeof actions;
 
-export default slice.reducer as Reducer<BoardModelState, AnyAction>;
+export default slice.reducer as Reducer<EventBoardModelState, AnyAction>;

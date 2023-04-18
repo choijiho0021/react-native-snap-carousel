@@ -429,6 +429,7 @@
   "event:mylist": "이벤트 인증 내역",
   "event:placeholder": "이벤트를 선택해주세요.",
   "event:content": "이벤트 참여 방법 확인 후 형식에 맞게 url이나 캡쳐 화면을 첨부하여 인증해주세요.\n확인 후 순자적으로 리워드 지급 예정입니다.",
+  "event:empty": "진행 중인 이벤트가 없습니다.",
   "event:o": "접수중",
   "event:r": "재신청",
   "event:s": "인증성공",
@@ -450,6 +451,7 @@
   "event:alert:reOpen": "<b>인증 재신청이 완료되었습니다.</b>\n확인 후 순차적으로 리워드 지급 예정입니다.\n조금만 기다려주세요!",
   "event:alert:open": "<b>인증 신청이 완료되었습니다.</b>\n확인 후 순차적으로 리워드 지급 예정입니다.",
   "event:alert:link": "<b>링크는 최대 3개까지만 가능합니다.</b>",
+  "event:nolist": "인증 내역이 없습니다",
 
   "cart:totalCnt": "총 상품 수",
   "cart:totalPrice": "상품 금액 합계",

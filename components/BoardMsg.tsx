@@ -52,7 +52,7 @@ type BoardMsgProps = {
   onPress: (uuid: string, status: string) => void;
 };
 const BoardMsg: React.FC<BoardMsgProps> = ({item, uid, onPress}) => {
-  const {title, created, status, statusCode, uuid, mobile} = item;
+  const {title, created, status, statusCode, uuid, mobile, prevId} = item;
   const date = useMemo(() => utils.toDateString(created), [created]);
   const titleOrMobile = useMemo(
     () =>
@@ -72,9 +72,7 @@ const BoardMsg: React.FC<BoardMsgProps> = ({item, uid, onPress}) => {
             {date}
           </AppText>
           <AppStyledText
-            text={
-              statusCode === 'r' ? i18n.t('event:reOpenTitle') : titleOrMobile
-            }
+            text={prevId ? i18n.t('event:reOpenTitle') : titleOrMobile}
             textStyle={styles.title}
             format={{b: styles.reopenText}}
             data={{title: titleOrMobile}}

@@ -34,6 +34,7 @@ import {
 import {
   actions as eventBoardActions,
   EventBoardAction,
+  EventBoardModelState,
 } from '@/redux/modules/eventBoard';
 import i18n from '@/utils/i18n';
 import {AccountModelState} from '@/redux/modules/account';
@@ -151,7 +152,7 @@ type BoardMsgRespScreenProps = {
   route: BoardMsgRespScreenRouteProp;
 
   board: BoardModelState;
-  eventBoard: BoardModelState;
+  eventBoard: EventBoardModelState;
   pending: boolean;
   pendingEvent: boolean;
 
@@ -325,7 +326,9 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
 
           {isEvent && issue?.link && renderLink()}
 
-          {(issue?.images.length || 0) > 0 && renderImages(issue?.images)}
+          {(issue?.images.length || 0) > 0 &&
+            !!issue?.images[0] &&
+            renderImages(issue?.images)}
 
           {!_.isEmpty(resp) && (
             <View style={styles.respBox}>

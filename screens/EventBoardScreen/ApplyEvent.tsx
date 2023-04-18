@@ -20,6 +20,7 @@ import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {
   actions as eventBoardActions,
   EventBoardAction,
+  EventBoardModelState,
 } from '@/redux/modules/eventBoard';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -43,7 +44,6 @@ import {
 import AppSvgIcon from '@/components/AppSvgIcon';
 import EventStatusBox from '@/screens/MyPageScreen/components/EventStatusBox';
 import {PromotionModelState} from '@/redux/modules/promotion';
-import {BoardModelState} from '@/redux/modules/board';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
 import AttachmentBox from '@/screens/BoardScreen/AttachmentBox';
@@ -104,6 +104,13 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
     color: colors.black,
     paddingHorizontal: 16,
+  },
+  linkInputBox: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   notice: {
     borderRadius: 3,
@@ -196,7 +203,7 @@ const styles = StyleSheet.create({
 
 type ApplyEventProps = {
   promotion: PromotionModelState;
-  eventBoard: BoardModelState;
+  eventBoard: EventBoardModelState;
 
   pending: boolean;
   success: boolean;
@@ -269,6 +276,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   const [webviewHeight, setWebviewHeight] = useState(0);
   const [paramImages, setParamImages] = useState<EventParamImagesType[]>([]);
   const [pressed, setPressed] = useState(false);
+  const [pIssue, setPIssue] = useState<RkbEventBoard>();
 
   const onMessage = useCallback((event: WebViewMessageEvent) => {
     const height = parseInt(event.nativeEvent.data, 10);
@@ -293,6 +301,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
 
   useEffect(() => {
     if (paramIssue) {
+      setPIssue(paramIssue);
       setTitle(paramIssue.title);
       setSelectedEvent(eventList.find((e) => e.title === paramIssue.title));
       setLinkParam(paramIssue.link.map((l: string) => ({value: l})));
@@ -327,6 +336,13 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     setMsg(undefined);
     setTitle(undefined);
     setAttachment((a) => a.clear());
+    setFocusedItem({
+      title: false,
+      msg: false,
+      link: [false, false, false, false, false, false],
+    });
+    setPIssue(undefined);
+    setParamImages([]);
   }, []);
 
   useEffect(() => {
@@ -344,7 +360,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             }}>
             <View style={{marginLeft: 30}}>
               <AppStyledText
-                text={i18n.t(`event:alert:${paramIssue ? 'reOpen' : 'open'}`)}
+                text={i18n.t(`event:alert:${pIssue ? 'reOpen' : 'open'}`)}
                 textStyle={styles.modalText}
                 format={{b: styles.modalBoldText}}
               />
@@ -357,7 +373,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     action.eventBoard,
     action.modal,
     jumpTo,
-    paramIssue,
+    pIssue,
     pending,
     pressed,
     setInitial,
@@ -376,53 +392,67 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     return (
       !selectedEvent ||
       _.isEmpty(msg) ||
-      (selectedEvent?.rule?.image && attachment.size < 1) ||
+      (selectedEvent?.rule?.image &&
+        attachment.size < 1 &&
+        paramImages.length < 1) ||
       (selectedEvent?.rule?.link && linkParam.find((l) => l.value === ''))
     );
-  }, [attachment.size, linkParam, msg, selectedEvent]);
+  }, [attachment.size, linkParam, msg, paramImages.length, selectedEvent]);
 
   const renderLinkInput = useCallback(() => {
     return linkParam.map((cur, idx) =>
       idx < linkCount ? (
         cur ? (
           <View style={{display: 'flex', flexDirection: 'row'}} key={idx}>
-            <AppTextInput
+            <View
               style={[
                 styles.inputBox,
+                styles.linkInputBox,
                 idx < linkCount - 1 && {marginBottom: 8},
                 idx > 0 && {marginRight: 8},
-                {flex: 1},
                 focusedItem.link[idx] && {
                   borderColor: colors.clearBlue,
                 },
-              ]}
-              maxLength={1000}
-              onChangeText={(v) => {
-                setLinkParam((prev) =>
-                  prev.map((p, i) => (i === idx ? {value: v} : p)),
-                );
-                validate(`link${idx}`, v);
-              }}
-              value={linkParam[idx].value}
-              enablesReturnKeyAutomatically
-              clearTextOnFocus={false}
-              onFocus={() => {
-                setExtraHeight(20);
-                setFocusedItem((prev) => ({
-                  ...prev,
-                  link: prev.link.map((l, i) => (i === idx ? true : l)),
-                }));
-              }}
-              onBlur={() => {
-                setFocusedItem((prev) => ({
-                  ...prev,
-                  link: prev.link.map((l, i) => (i === idx ? false : l)),
-                }));
-              }}
-              error={error('title')}
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
+              ]}>
+              <AppTextInput
+                style={{flex: 1, height: 56}}
+                maxLength={1000}
+                onChangeText={(v) => {
+                  setLinkParam((prev) =>
+                    prev.map((p, i) => (i === idx ? {value: v} : p)),
+                  );
+                  validate(`link${idx}`, v);
+                }}
+                value={linkParam[idx].value}
+                enablesReturnKeyAutomatically
+                clearTextOnFocus={false}
+                onFocus={() => {
+                  setExtraHeight(20);
+                  setFocusedItem((prev) => ({
+                    ...prev,
+                    link: prev.link.map((l, i) => (i === idx ? true : l)),
+                  }));
+                }}
+                onBlur={() => {
+                  setFocusedItem((prev) => ({
+                    ...prev,
+                    link: prev.link.map((l, i) => (i === idx ? false : l)),
+                  }));
+                }}
+                error={error('title')}
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              <AppSvgIcon
+                style={{marginLeft: 10}}
+                name={idx === 0 ? 'x' : 'circleX'}
+                onPress={() =>
+                  setLinkParam((prev) =>
+                    prev.map((p, i) => (i === idx ? {value: ''} : p)),
+                  )
+                }
+              />
+            </View>
             {idx > 0 && (
               <Pressable
                 style={styles.minusBtn}
@@ -507,20 +537,20 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         images: attachment
           .map((a) => utils.convertCropImageToRkbImage(a))
           .toArray(),
+        prevId: pIssue?.id || '',
       } as RkbEventIssue;
 
       action.eventBoard.postAndGetList(issue);
       setPressed(true);
     }
   }, [
-    action.eventBoard,
-    action.modal,
-    action.toast,
+    action,
     attachment,
     eventBoard.list,
     linkParam,
     msg,
     paramImages,
+    pIssue?.id,
     selectedEvent,
     title,
   ]);
@@ -536,12 +566,12 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         extraScrollHeight={extraHeight}
         innerRef={(ref) => (scrollRef.current = ref)}>
         <View style={{flex: 1}}>
-          {paramIssue ? (
+          {pIssue ? (
             <View style={{marginHorizontal: 20, marginBottom: 24}}>
               <EventStatusBox
-                statusCode={paramIssue.statusCode}
-                rejectReason={paramIssue.rejectReason}
-                otherReason={paramIssue.otherReason}
+                statusCode={pIssue.statusCode}
+                rejectReason={pIssue.rejectReason}
+                otherReason={pIssue.otherReason}
               />
             </View>
           ) : (
@@ -555,11 +585,14 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
               styles.eventTitle,
               // selectedEvent ? {borderColor: colors.black} : undefined,
               showModal && {borderColor: colors.clearBlue},
-              paramIssue && {backgroundColor: colors.backGrey},
+              pIssue && {backgroundColor: colors.backGrey},
               {marginBottom: 8},
             ]}
-            onPress={() => setShowModal(true)}
-            disabled={!!paramIssue}>
+            onPress={() => {
+              if (eventList.length > 0) setShowModal(true);
+              else action.toast.push('event:empty');
+            }}
+            disabled={!!pIssue}>
             <AppText
               style={[
                 styles.eventTitleText,
@@ -598,7 +631,9 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
                 <View style={{height: webviewHeight}}>
                   <WebView
                     style={{flex: 1}}
-                    source={{html: selectedEvent.notice?.body || ''}}
+                    source={{
+                      html: decodeURIComponent(selectedEvent.notice || ''),
+                    }}
                     originWhitelist={['*']}
                     onMessage={onMessage}
                     injectedJavaScript={injectedJavaScript}
@@ -748,7 +783,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             ? {backgroundColor: colors.warmGrey}
             : {backgroundColor: colors.dodgerBlue}
         }
-        title={i18n.t(`event:new2${paramIssue ? ':re' : ''}`)}
+        title={i18n.t(`event:new2${pIssue ? ':re' : ''}`)}
         onPress={onPress}
         type="primary"
       />

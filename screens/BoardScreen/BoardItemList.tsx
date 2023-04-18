@@ -1,4 +1,4 @@
-import React, {memo, useCallback} from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {
   FlatList,
   RefreshControl,
@@ -13,6 +13,7 @@ import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
 import AppIcon from '@/components/AppIcon';
 import BoardMsg from '@/components/BoardMsg';
+import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 
 const styles = StyleSheet.create({
   noList: {
@@ -25,14 +26,15 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    paddingTop: 6,
   },
 });
 
 type BoardItemListProps = {
-  data: RkbBoard[];
+  data: RkbBoard[] | RkbEventBoard[];
   uid: number;
   refreshing?: boolean;
-  onPress: (item: RkbBoard) => void;
+  onPress: (item: RkbBoard | RkbEventBoard) => void;
   onScrollEndDrag: () => void;
   onRefresh: () => void;
 };
@@ -50,7 +52,7 @@ const BoardItemList: React.FC<BoardItemListProps> = ({
       <View style={{alignItems: 'center'}}>
         <AppIcon style={styles.mark} name="imgMark" />
         <AppText style={styles.noList}>
-          {refreshing ? i18n.t('board:loading') : i18n.t('board:nolist')}
+          {refreshing ? i18n.t('board:loading') : i18n.t('event:nolist')}
         </AppText>
       </View>
     ),
@@ -58,7 +60,7 @@ const BoardItemList: React.FC<BoardItemListProps> = ({
   );
 
   const renderItem = useCallback(
-    ({item}: {item: RkbBoard}) => (
+    ({item}: {item: RkbBoard | RkbEventBoard}) => (
       <BoardMsg onPress={() => onPress(item)} item={item} uid={uid} />
     ),
     [onPress, uid],

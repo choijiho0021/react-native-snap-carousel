@@ -5,15 +5,15 @@ import {RootState} from '@reduxjs/toolkit';
 import {useNavigation} from '@react-navigation/native';
 import {
   EventBoardAction,
+  EventBoardModelState,
   actions as eventBoardActions,
 } from '@/redux/modules/eventBoard';
 import BoardItemList from '@/screens/BoardScreen/BoardItemList';
-import {BoardModelState} from '@/redux/modules/board';
-import {RkbBoard} from '@/redux/api/boardApi';
 import i18n from '@/utils/i18n';
+import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 
 type MyEventListProps = {
-  eventBoard: BoardModelState;
+  eventBoard: EventBoardModelState;
   uid: number;
   isEvent?: boolean;
   pending: boolean;
@@ -42,7 +42,7 @@ const MyEventList: React.FC<MyEventListProps> = ({
       onScrollEndDrag={() => action.eventBoard.getNextIssueList()}
       onRefresh={() => action.eventBoard.getIssueList()}
       refreshing={pending}
-      onPress={(issue: RkbBoard) =>
+      onPress={(issue: RkbEventBoard) =>
         navigation.navigate('EventResult', {
           issue,
           title: i18n.t('event:list'),
