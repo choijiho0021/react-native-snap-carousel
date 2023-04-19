@@ -32,7 +32,6 @@ import {API} from '@/redux/api';
 import {
   bcStatusCd,
   cmiStatusCd,
-  quadcellStatusCd,
   RkbSubscription,
   sortSubs,
 } from '@/redux/api/subscriptionApi';
@@ -54,7 +53,7 @@ import GiftModal from './components/GiftModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import ChatTalk from '@/components/ChatTalk';
 
-const {esimGlobal} = Env.get();
+const {esimGlobal, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -590,7 +589,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         textMessage={i18n.t('service:ready')}
         bottom={10}
       />
-      <ChatTalk visible bottom={100 - tabBarHeight} />
+      <ChatTalk visible bottom={(isIOS ? 100 : 70) - tabBarHeight} />
     </SafeAreaView>
   );
 };

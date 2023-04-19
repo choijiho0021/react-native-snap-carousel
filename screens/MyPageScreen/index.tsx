@@ -41,6 +41,9 @@ import OrderItem from './components/OrderItem';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppSnackBar from '@/components/AppSnackBar';
 import ChatTalk from '@/components/ChatTalk';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   title: {
@@ -284,7 +287,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
         textMessage={i18n.t('copyMsg')}
       />
 
-      <ChatTalk visible bottom={100 - tabBarHeight} />
+      <ChatTalk visible bottom={(isIOS ? 100 : 70) - tabBarHeight} />
     </View>
   );
 };

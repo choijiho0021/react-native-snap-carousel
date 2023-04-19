@@ -37,6 +37,9 @@ import i18n from '@/utils/i18n';
 import {retrieveData, storeData, utils} from '@/utils/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import ChatTalk from '@/components/ChatTalk';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -486,7 +489,7 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
         </ScrollView>
       )}
 
-      <ChatTalk visible bottom={100} />
+      <ChatTalk visible bottom={isIOS ? 100 : 70} />
     </SafeAreaView>
   );
 };

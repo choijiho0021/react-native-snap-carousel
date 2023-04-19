@@ -32,7 +32,7 @@ import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
 import ChatTalk from '@/components/ChatTalk';
 
-const {esimGlobal, webViewHost} = Env.get();
+const {esimGlobal, webViewHost, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
 
 const styles = StyleSheet.create({
@@ -342,7 +342,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           />
         </View>
       )}
-      <ChatTalk visible bottom={100} />
+      <ChatTalk visible bottom={isIOS ? 100 : 70} />
     </SafeAreaView>
   );
 };
