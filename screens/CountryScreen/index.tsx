@@ -26,6 +26,9 @@ import AppButton from '@/components/AppButton';
 import {retrieveData, storeData} from '@/utils/utils';
 import ProdByType from '@/components/ProdByType';
 import ChatTalk from '@/components/ChatTalk';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -350,7 +353,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         </View>
       )}
       <AppActivityIndicator visible={props.pending} />
-      <ChatTalk visible bottom={100} />
+      <ChatTalk visible bottom={isIOS ? 100 : 70} />
     </SafeAreaView>
   );
 };
