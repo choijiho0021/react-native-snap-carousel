@@ -21,6 +21,7 @@ export type RkbEventBoard = RkbBoardBase & {
   otherReason: string;
   prevId: string;
   id: string;
+  eventId: string;
 };
 
 const toEventBoard = (data: DrupalBoard[]): ApiResult<RkbEventBoard> => {
@@ -66,6 +67,7 @@ const toEventBoard = (data: DrupalBoard[]): ApiResult<RkbEventBoard> => {
           otherReason: item.field_other_reason || '',
           prevId: item.field_prev_id || '',
           id: item.nid || '',
+          eventId: item.field_ref_event || '',
         };
       }),
     );

@@ -302,7 +302,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     if (paramIssue) {
       setPIssue(paramIssue);
       setTitle(paramIssue.title);
-      setSelectedEvent(eventList.find((e) => e.title === paramIssue.title));
+      setSelectedEvent(eventList.find((e) => e.nid === paramIssue.eventId));
       setLinkParam(paramIssue.link.map((l: string) => ({value: l})));
       setLinkCount(paramIssue.link.length);
       setParamImages(
@@ -521,7 +521,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     }
 
     const statusCode =
-      eventBoard.list.find((l) => l.title === selectedEvent?.title)
+      eventBoard.list.find((l) => l.eventId === selectedEvent?.nid)
         ?.statusCode || '';
 
     if (statusCode && (statusCode === 'r' || statusCode !== 'f')) {
@@ -566,17 +566,12 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   }, [
     title,
     msg,
-    selectedEvent?.rule?.link,
-    selectedEvent?.rule?.image,
-    selectedEvent?.title,
-    selectedEvent?.uuid,
+    selectedEvent,
     linkParam,
     attachment,
     paramImages,
     eventBoard.list,
-    action.toast,
-    action.modal,
-    action.eventBoard,
+    action,
     isUrl,
     pIssue?.id,
   ]);
