@@ -454,6 +454,7 @@
   "event:invalidLink": "올바르지 않은 링크입니다. 다시 입력해주세요.",
   "event:nolist": "인증 내역이 없습니다",
   "event:fail:loading": "이미지 파일을 업로드 할 수 없습니다.",
+  "event:ended": "이미 종료된 이벤트입니다.",
 
   "cart:totalCnt": "총 상품 수",
   "cart:totalPrice": "상품 금액 합계",

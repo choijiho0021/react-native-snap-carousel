@@ -453,6 +453,7 @@
   "event:alert:link": "<b>링크는 최대 3개까지만 가능합니다.</b>",
   "event:invalidLink": "올바르지 않은 링크입니다. 다시 입력해주세요.",
   "event:nolist": "No history",
+  "event:ended": "이미 종료된 이벤트입니다.",
 
   "cart:totalCnt": "Total Quantity",
   "cart:totalPrice": "Price",
