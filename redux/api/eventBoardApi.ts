@@ -60,8 +60,8 @@ const toEventBoard = (data: DrupalBoard[]): ApiResult<RkbEventBoard> => {
           images: item.field_images ? item.field_images.split(', ') : [],
           link: item.field_text_link ? item.field_text_link.split(', ') : [],
           imagesInfo: info,
-          rejectReason: item.field_event_reject_reason
-            ? item.field_event_reject_reason.split(', ')
+          rejectReason: item.event_reject_reason
+            ? item.event_reject_reason.split(', ')
             : [],
           otherReason: item.field_other_reason || '',
           prevId: item.field_prev_id || '',

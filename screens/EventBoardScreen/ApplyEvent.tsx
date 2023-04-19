@@ -338,7 +338,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     setFocusedItem({
       title: false,
       msg: false,
-      link: [false, false, false, false, false, false],
+      link: [false, false, false],
     });
     setPIssue(undefined);
     setParamImages([]);
@@ -414,6 +414,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
                 },
               ]}>
               <AppTextInput
+                autoFocus
                 style={{flex: 1, height: 56}}
                 maxLength={1000}
                 onChangeText={(v) => {
@@ -426,7 +427,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
                 enablesReturnKeyAutomatically
                 clearTextOnFocus={false}
                 onFocus={() => {
-                  setExtraHeight(20);
+                  setExtraHeight(100);
                   setFocusedItem((prev) => ({
                     ...prev,
                     link: prev.link.map((l, i) => (i === idx ? true : l)),
@@ -442,15 +443,17 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
                 autoCapitalize="none"
                 autoCorrect={false}
               />
-              <AppSvgIcon
-                style={{marginLeft: 10}}
-                name={idx === 0 ? 'x' : 'circleX'}
-                onPress={() =>
-                  setLinkParam((prev) =>
-                    prev.map((p, i) => (i === idx ? {value: ''} : p)),
-                  )
-                }
-              />
+              {linkParam[idx].value.length > 0 && (
+                <AppSvgIcon
+                  style={{marginLeft: 10}}
+                  name={idx === 0 ? 'x' : 'circleX'}
+                  onPress={() =>
+                    setLinkParam((prev) =>
+                      prev.map((p, i) => (i === idx ? {value: ''} : p)),
+                    )
+                  }
+                />
+              )}
             </View>
             {idx > 0 && (
               <Pressable
@@ -556,14 +559,13 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppActivityIndicator visible={pending} />
       <KeyboardAwareScrollView
         enableOnAndroid
         enableResetScrollToCoords={false}
-        // resetScrollToCoords={{x: 0, y: 0}}
         contentContainerStyle={styles.modalInner}
         extraScrollHeight={extraHeight}
-        innerRef={(ref) => (scrollRef.current = ref)}>
+        innerRef={(ref) => (scrollRef.current = ref)}
+        keyboardShouldPersistTaps="handled">
         <View style={{flex: 1}}>
           {pIssue ? (
             <View style={{marginHorizontal: 20, marginBottom: 24}}>
@@ -722,6 +724,10 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
                 onPress={() => {
                   if (linkCount < 3) {
                     setLinkParam(linkParam.concat({value: ''}));
+                    setFocusedItem((prev) => ({
+                      ...prev,
+                      link: prev.link.map((l, i) => i === linkCount),
+                    }));
                     setLinkCount(linkCount + 1);
                   } else {
                     action.modal.showModal({
@@ -756,6 +762,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             setParamImages={setParamImages}
             attachment={attachment}
             setAttachment={setAttachment}
+            imageQuality={selectedEvent?.rule?.imageQuality}
           />
         </View>
       </KeyboardAwareScrollView>
@@ -798,6 +805,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         }}
         value={selectedEvent?.title}
       />
+      <AppActivityIndicator visible={pending} />
     </SafeAreaView>
   );
 };

@@ -76,7 +76,6 @@ const ImageListModal = ({
 }) => {
   const [imgIndex, setImgIndex] = useState(defaultImgIndex || 0);
   const [loading, setLoading] = useState(true);
-  const [height, setHeight] = useState(0);
 
   useEffect(() => {
     if (defaultImgIndex !== undefined) {
@@ -84,17 +83,6 @@ const ImageListModal = ({
       setImgIndex(defaultImgIndex);
     }
   }, [defaultImgIndex]);
-
-  useEffect(() => {
-    if (images) {
-      const url = images[imgIndex];
-      if (url) {
-        Image.getSize(API.default.httpImageUrl(url).toString(), (w, h) => {
-          setHeight(h * ((windowWidth * 0.8) / w));
-        });
-      }
-    }
-  }, [images, imgIndex]);
 
   return (
     <Modal visible={visible} transparent>
@@ -108,7 +96,6 @@ const ImageListModal = ({
               style={styles.imageFile}
               source={{
                 uri: API.default.httpImageUrl(images?.[imgIndex]).toString(),
-                height,
               }}
               onLoadEnd={() => setLoading(false)}
             />

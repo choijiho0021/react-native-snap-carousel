@@ -344,7 +344,7 @@ const Esim: React.FC<EsimProps> = ({
               <LocalModal
                 onPress={() => navToCountry(info)}
                 localOpKey={localOp?.key || ''}
-                html={decodeURIComponent(localOp.notice)}
+                html={localOp.notice}
               />
             ),
           });
@@ -898,7 +898,9 @@ const Esim: React.FC<EsimProps> = ({
         />
       )}
 
-      {tabBarHeight > 0 && <ChatTalk visible bottom={100 - tabBarHeight} />}
+      {tabBarHeight > 0 && (
+        <ChatTalk visible bottom={(isIOS ? 100 : 70) - tabBarHeight} />
+      )}
       {renderModal()}
     </SafeAreaView>
   );

@@ -80,6 +80,7 @@ type AttachmentBoxProps = {
   setParamImages?: (v: EventParamImagesType[]) => void;
   attachment: List<CropImage>;
   setAttachment: (v: List<CropImage>) => void;
+  imageQuality?: number;
 };
 
 const AttachmentBox: React.FC<AttachmentBoxProps> = ({
@@ -88,6 +89,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
   setParamImages,
   attachment,
   setAttachment,
+  imageQuality,
 }) => {
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
   const dispatch = useDispatch();
@@ -126,6 +128,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
             writeTempFile: false,
             mediaType: 'photo',
             forceJpb: true,
+            compressImageQuality: imageQuality || 0.1,
           });
 
           setAttachment((a) => a.push(image));
@@ -139,7 +142,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
         ok: () => openSettings(),
       });
     }
-  }, [hasPhotoPermission, setAttachment]);
+  }, [hasPhotoPermission, imageQuality, setAttachment]);
 
   const renderModal = useCallback(
     ({imgUrl, att}: {imgUrl?: string; att?: CropImage}) => {
