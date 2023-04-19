@@ -26,7 +26,6 @@ import validationUtil, {
   ValidationResult,
   ValidationRule,
 } from '@/utils/validationUtil';
-import AppActivityIndicator from './AppActivityIndicator';
 import AppButton from './AppButton';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
@@ -115,7 +114,6 @@ const styles = StyleSheet.create({
 type BoardMsgAddProps = {
   account: AccountModelState;
   success: boolean;
-  pending: boolean;
 
   jumpTo: (v: string) => void;
 
@@ -143,7 +141,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   success,
   jumpTo,
   action,
-  pending,
 }) => {
   const [mobile, setMobile] = useState('');
   const [errors, setErrors] = useState<ValidationResult>({});
@@ -287,8 +284,6 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppActivityIndicator visible={pending} />
-
       <KeyboardAwareScrollView
         enableOnAndroid
         enableResetScrollToCoords={false}
@@ -403,10 +398,6 @@ export default connect(
   ({account, status}: RootState) => ({
     account,
     success: status.fulfilled[boardActions.postIssue.typePrefix],
-    pending:
-      status.pending[boardActions.postIssue.typePrefix] ||
-      status.pending[boardActions.postAttach.typePrefix] ||
-      false,
   }),
   (dispatch) => ({
     action: {
