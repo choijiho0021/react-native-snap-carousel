@@ -356,7 +356,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
       </View>
       {defineSource(mode)}
       <AppActivityIndicator visible={pending || loading} />
-      {!route.params?.rule?.sku.startsWith('event-multi') && (
+      {!route.params?.rule?.sku?.startsWith('event-multi') && (
         <AppButton
           style={styles.button}
           type="primary"
