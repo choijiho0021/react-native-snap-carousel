@@ -338,7 +338,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     setFocusedItem({
       title: false,
       msg: false,
-      link: [false, false, false, false, false, false],
+      link: [false, false, false],
     });
     setPIssue(undefined);
     setParamImages([]);
@@ -414,6 +414,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
                 },
               ]}>
               <AppTextInput
+                autoFocus
                 style={{flex: 1, height: 56}}
                 maxLength={1000}
                 onChangeText={(v) => {
@@ -723,6 +724,10 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
                 onPress={() => {
                   if (linkCount < 3) {
                     setLinkParam(linkParam.concat({value: ''}));
+                    setFocusedItem((prev) => ({
+                      ...prev,
+                      link: prev.link.map((l, i) => i === linkCount),
+                    }));
                     setLinkCount(linkCount + 1);
                   } else {
                     action.modal.showModal({
