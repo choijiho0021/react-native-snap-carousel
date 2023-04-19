@@ -303,8 +303,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       setPIssue(paramIssue);
       setTitle(paramIssue.title);
       setSelectedEvent(eventList.find((e) => e.nid === paramIssue.eventId));
-      setLinkParam(paramIssue.link.map((l: string) => ({value: l})));
-      setLinkCount(paramIssue.link.length);
       setParamImages(
         paramIssue.images.map((url, idx) => ({
           url,
@@ -312,6 +310,10 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         })),
       );
       setMsg(paramIssue.msg || '');
+      if (paramIssue.link.length > 0) {
+        setLinkParam(paramIssue.link.map((l: string) => ({value: l})));
+        setLinkCount(paramIssue.link.length);
+      }
     }
   }, [eventList, paramIssue]);
 
