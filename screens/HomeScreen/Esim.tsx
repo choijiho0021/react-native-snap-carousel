@@ -344,7 +344,7 @@ const Esim: React.FC<EsimProps> = ({
               <LocalModal
                 onPress={() => navToCountry(info)}
                 localOpKey={localOp?.key || ''}
-                html={decodeURIComponent(localOp.notice)}
+                html={localOp.notice}
               />
             ),
           });
