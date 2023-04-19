@@ -783,6 +783,8 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             setAttachment={setAttachment}
             imageQuality={selectedEvent?.rule?.imageQuality}
           />
+
+          <View style={{height: 56}} />
         </View>
       </KeyboardAwareScrollView>
 
