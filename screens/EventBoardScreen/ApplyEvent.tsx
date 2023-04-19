@@ -386,6 +386,11 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     [errors],
   );
 
+  const isUrl = useCallback((str: string) => {
+    const urlPattern = /^(?:\w+:)?\/\/([^\s.]+\.\S{2}|localhost[\:?\d]*)\S*$/;
+    return urlPattern.test(str);
+  }, []);
+
   // errors object의 모든 value 값들이 undefined인지 확인한다.
   const hasError = useMemo(() => {
     return (
@@ -394,9 +399,17 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       (selectedEvent?.rule?.image &&
         attachment.size < 1 &&
         paramImages.length < 1) ||
-      (selectedEvent?.rule?.link && linkParam.find((l) => l.value === ''))
+      (selectedEvent?.rule?.link && linkParam.find((l) => l.value === '')) ||
+      linkParam.find((l) => l.value !== '' && !isUrl(l.value))
     );
-  }, [attachment.size, linkParam, msg, paramImages.length, selectedEvent]);
+  }, [
+    attachment.size,
+    isUrl,
+    linkParam,
+    msg,
+    paramImages.length,
+    selectedEvent,
+  ]);
 
   const renderLinkInput = useCallback(() => {
     return linkParam.map((cur, idx) =>
@@ -502,6 +515,11 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       return;
     }
 
+    if (linkParam.find((l) => !isUrl(l.value))) {
+      action.toast.push('event:invalidLink');
+      return;
+    }
+
     const statusCode =
       eventBoard.list.find((l) => l.title === selectedEvent?.title)
         ?.statusCode || '';
@@ -546,15 +564,21 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       setPressed(true);
     }
   }, [
-    action,
-    attachment,
-    eventBoard.list,
-    linkParam,
-    msg,
-    paramImages,
-    pIssue?.id,
-    selectedEvent,
     title,
+    msg,
+    selectedEvent?.rule?.link,
+    selectedEvent?.rule?.image,
+    selectedEvent?.title,
+    selectedEvent?.uuid,
+    linkParam,
+    attachment,
+    paramImages,
+    eventBoard.list,
+    action.toast,
+    action.modal,
+    action.eventBoard,
+    isUrl,
+    pIssue?.id,
   ]);
 
   return (
