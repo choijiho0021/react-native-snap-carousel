@@ -515,7 +515,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       return;
     }
 
-    if (linkParam.find((l) => !isUrl(l.value))) {
+    if (linkParam.find((l) => l.value !== '' && !isUrl(l.value))) {
       action.toast.push('event:invalidLink');
       return;
     }
