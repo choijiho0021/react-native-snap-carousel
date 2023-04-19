@@ -426,7 +426,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
                 enablesReturnKeyAutomatically
                 clearTextOnFocus={false}
                 onFocus={() => {
-                  setExtraHeight(20);
+                  setExtraHeight(100);
                   setFocusedItem((prev) => ({
                     ...prev,
                     link: prev.link.map((l, i) => (i === idx ? true : l)),
@@ -561,7 +561,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       <KeyboardAwareScrollView
         enableOnAndroid
         enableResetScrollToCoords={false}
-        // resetScrollToCoords={{x: 0, y: 0}}
         contentContainerStyle={styles.modalInner}
         extraScrollHeight={extraHeight}
         innerRef={(ref) => (scrollRef.current = ref)}
