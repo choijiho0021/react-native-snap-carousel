@@ -349,10 +349,6 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     return 'ok';
   }, [eventStatus, isProdEvent, loggedIn]);
 
-  useEffect(() => {
-    console.log('@@@@ route.params?.rule?.sku.', route.params?.rule?.sku);
-  }, [route.params?.rule?.sku]);
-
   return (
     <SafeAreaView style={styles.screen}>
       <View style={appStyles.header}>

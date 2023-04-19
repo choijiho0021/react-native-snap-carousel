@@ -92,7 +92,7 @@ const EventStatusBox: React.FC<EventStatusBoxProps> = ({
           }}
         />
       </View>
-      {statusCode === 'f' && reason.length > 0 && (
+      {statusCode === 'f' && reason.length > 0 && !!reason[0] && (
         <View style={styles.reasonBox} key="reason">
           {reason.map((r, idx) =>
             r ? (
