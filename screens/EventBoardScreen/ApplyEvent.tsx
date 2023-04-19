@@ -442,15 +442,17 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
                 autoCapitalize="none"
                 autoCorrect={false}
               />
-              <AppSvgIcon
-                style={{marginLeft: 10}}
-                name={idx === 0 ? 'x' : 'circleX'}
-                onPress={() =>
-                  setLinkParam((prev) =>
-                    prev.map((p, i) => (i === idx ? {value: ''} : p)),
-                  )
-                }
-              />
+              {linkParam[idx].value.length > 0 && (
+                <AppSvgIcon
+                  style={{marginLeft: 10}}
+                  name={idx === 0 ? 'x' : 'circleX'}
+                  onPress={() =>
+                    setLinkParam((prev) =>
+                      prev.map((p, i) => (i === idx ? {value: ''} : p)),
+                    )
+                  }
+                />
+              )}
             </View>
             {idx > 0 && (
               <Pressable
@@ -556,14 +558,14 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppActivityIndicator visible={pending} />
       <KeyboardAwareScrollView
         enableOnAndroid
         enableResetScrollToCoords={false}
         // resetScrollToCoords={{x: 0, y: 0}}
         contentContainerStyle={styles.modalInner}
         extraScrollHeight={extraHeight}
-        innerRef={(ref) => (scrollRef.current = ref)}>
+        innerRef={(ref) => (scrollRef.current = ref)}
+        keyboardShouldPersistTaps="handled">
         <View style={{flex: 1}}>
           {pIssue ? (
             <View style={{marginHorizontal: 20, marginBottom: 24}}>
@@ -799,6 +801,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         }}
         value={selectedEvent?.title}
       />
+      <AppActivityIndicator visible={pending} />
     </SafeAreaView>
   );
 };
