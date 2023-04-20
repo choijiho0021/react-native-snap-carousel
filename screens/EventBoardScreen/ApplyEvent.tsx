@@ -260,7 +260,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   const [paramImages, setParamImages] = useState<EventParamImagesType[]>([]);
   const [pressed, setPressed] = useState(false);
   const [pIssue, setPIssue] = useState<RkbEventBoard>();
-  const linkRef = useRef<LinkInputRef>(null);
   const onMessage = useCallback((event: WebViewMessageEvent) => {
     const height = parseInt(event.nativeEvent.data, 10);
     setWebviewHeight(height);
@@ -384,14 +383,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         linkParam.findIndex((l) => l === '') !== -1) ||
       linkParam?.find((l) => l !== '' && !isUrl(l))
     );
-  }, [
-    attachment.size,
-    isUrl,
-    linkParam,
-    msg,
-    paramImages.length,
-    selectedEvent,
-  ]);
+  }, [attachment.size, linkParam, msg, paramImages.length, selectedEvent]);
 
   const onPress = useCallback(() => {
     if (!title) {
@@ -631,7 +623,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
                 setLinkParam(v);
               }}
               required={selectedEvent?.rule?.link}
-              refLinkInput={linkRef}
             />
           )}
 

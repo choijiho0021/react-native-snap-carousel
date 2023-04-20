@@ -94,17 +94,14 @@ const styles = StyleSheet.create({
 
 type LinkInputProps = {
   value: string[];
-  isEssential?: boolean;
   onChangeValue: (v: string[]) => void;
   required?: boolean;
-  refLinkInput: React.MutableRefObject<LinkInputRef | null>;
 };
 
 const LinkInput: React.FC<LinkInputProps> = ({
   value,
   onChangeValue,
   required = false,
-  refLinkInput,
 }) => {
   const [linkList, setLinkList] = useState(['']);
   const [linkCount, setLinkCount] = useState(1);
