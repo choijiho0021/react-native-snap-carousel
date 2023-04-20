@@ -331,21 +331,23 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
 
   return (
     <SafeAreaView key="container" style={styles.container}>
-      <FlatList
-        data={pending ? [] : data}
-        renderItem={renderItem}
-        ListEmptyComponent={
-          <AppText style={styles.emptyPage}>{i18n.t('noti:empty')}</AppText>
-        }
-        refreshControl={
-          <RefreshControl
-            refreshing={pending}
-            onRefresh={onRefresh}
-            colors={[colors.clearBlue]} // android 전용
-            tintColor={colors.clearBlue} // ios 전용
-          />
-        }
-      />
+      {!pending && (
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          ListEmptyComponent={
+            <AppText style={styles.emptyPage}>{i18n.t('noti:empty')}</AppText>
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={pending}
+              onRefresh={onRefresh}
+              colors={[colors.clearBlue]} // android 전용
+              tintColor={colors.clearBlue} // ios 전용
+            />
+          }
+        />
+      )}
     </SafeAreaView>
   );
 };
