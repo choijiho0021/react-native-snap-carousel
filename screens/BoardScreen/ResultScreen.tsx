@@ -205,7 +205,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
           <AppText style={styles.label}>{i18n.t('link')}</AppText>
           {linkList.map((l: string, idx: number) => (
             <AppText
-              key={l}
+              key={l + idx}
               style={[styles.inputBox, idx > 0 && {marginTop: 8}]}
               onPress={() => Linking.openURL(l)}>
               {l}
