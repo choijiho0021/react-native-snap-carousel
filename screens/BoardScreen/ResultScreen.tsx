@@ -150,7 +150,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
 
   useEffect(() => {
     setIsEnded(!eventList.find((e: RkbEvent) => e.nid === issue?.eventId));
-  }, []);
+  }, [eventList, issue?.eventId]);
 
   useEffect(() => {
     navigation.setOptions({
