@@ -98,14 +98,12 @@ export type LinkInputRef = {
 
 type LinkInputProps = {
   value: string[];
-  onChangeValue: (v: string[]) => void;
   isEssential?: boolean;
   refLinkInput: React.MutableRefObject<LinkInputRef | null>;
 };
 
 const LinkInput: React.FC<LinkInputProps> = ({
   value,
-  onChangeValue,
   isEssential = false,
   refLinkInput,
 }) => {
@@ -133,16 +131,9 @@ const LinkInput: React.FC<LinkInputProps> = ({
     setLinkList((prev) => prev.map((p, i) => (i === idx ? v : p)));
   }, []);
 
-  const deleteLink = useCallback(
-    (idx: number) => {
-      setLinkList((prev) => {
-        const a = prev.filter((l, index) => index !== idx);
-        onChangeValue(a);
-        return a;
-      });
-    },
-    [onChangeValue],
-  );
+  const deleteLink = useCallback((idx: number) => {
+    setLinkList((prev) => prev.filter((l, index) => index !== idx));
+  }, []);
 
   const addLinkInput = useCallback(() => {
     if (linkCount < 3) {

@@ -298,6 +298,10 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     }
   }, [eventList, paramIssue]);
 
+  useEffect(() => {
+    if (pIssue) setShowWebView(true);
+  }, [pIssue]);
+
   const validate = useCallback((key: string, value: string) => {
     const valid = validationUtil.validate(key, value, validationRule);
 
@@ -614,9 +618,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
           {selectedEvent && (
             <LinkInput
               value={linkParam}
-              onChangeValue={(v) => {
-                setLinkParam(v);
-              }}
               isEssential={selectedEvent?.rule?.link}
               refLinkInput={linkRef}
             />
