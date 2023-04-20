@@ -1,8 +1,5 @@
 import React from 'react';
-import {connect} from 'react-redux';
-import {RootState} from '@/redux';
 import i18n from '@/utils/i18n';
-import {actions as eventBoardActions} from '@/redux/modules/eventBoard';
 import BoardScreen from '@/screens/BoardScreen';
 import ApplyEvent from './ApplyEvent';
 import MyEventList from './MyEventList';
@@ -10,7 +7,7 @@ import MyEventList from './MyEventList';
 const EventBoardScreen = (props) => {
   return (
     <BoardScreen
-      pending={props.pending}
+      pending={false}
       title={i18n.t('event:title')}
       routes={[
         {
@@ -34,7 +31,4 @@ const EventBoardScreen = (props) => {
   );
 };
 
-export default connect(({status}: RootState) => ({
-  pending:
-    status.pending[eventBoardActions.fetchEventIssueList.typePrefix] || false,
-}))(EventBoardScreen);
+export default EventBoardScreen;
