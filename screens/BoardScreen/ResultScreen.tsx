@@ -19,7 +19,7 @@ import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {goBack, navigate} from '@/navigation/navigation';
+import {navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import utils from '@/redux/api/utils';
@@ -282,13 +282,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
             issue?.statusCode === 'f' && {color: colors.black},
           ]}
           type={issue?.statusCode === 'f' ? 'secondary' : 'primary'}
-          onPress={() => {
-            navigate(navigation, route, 'MyPageStack', {
-              tab: 'HomeStack',
-              screen: 'EventBoard',
-              params: {index: 1},
-            });
-          }}
+          onPress={() => navigation.goBack()}
         />
         {issue?.statusCode === 'f' && (
           <AppButton
@@ -308,6 +302,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
               if (isEnded) {
                 action.toast.push('event:ended');
               } else {
+                [1, 2].forEach(() => navigation.goBack());
                 navigate(navigation, route, 'MyPageStack', {
                   tab: 'HomeStack',
                   screen: 'EventBoard',
