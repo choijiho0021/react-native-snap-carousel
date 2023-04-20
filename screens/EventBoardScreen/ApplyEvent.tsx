@@ -429,7 +429,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
                 },
               ]}>
               <AppTextInput
-                autoFocus
+                autoFocus={idx > 0}
                 style={{flex: 1, height: 56}}
                 maxLength={1000}
                 onChangeText={(v) => {
