@@ -61,7 +61,7 @@ export type RkbLogin = {
 const toLogin =
   (pass: string) =>
   (login: RkbLogin): ApiResult<RkbLogin> => {
-    storeData(LOGOUT_TOKEN, login.logout_token);
+    if (login.logout_token) storeData(LOGOUT_TOKEN, login.logout_token);
 
     if (login.current_user) {
       return api.success([{...login, pass}]);
