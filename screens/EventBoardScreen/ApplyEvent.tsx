@@ -211,6 +211,11 @@ const validationRule: ValidationRule = {
   },
 };
 
+const urlPattern = /^(?:\w+:)?\/\/([^\s.]+\.\S{2}|localhost[\:?\d]*)\S*$/;
+const isUrl = (str: string) => {
+  return urlPattern.test(str);
+};
+
 const inputAccessoryViewID = 'doneKbd';
 
 const injectedJavaScript = `
@@ -250,18 +255,16 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   const [focusedItem, setFocusedItem] = useState({
     title: false,
     msg: false,
-    link: [false, false, false, false, false, false],
   });
   const [webviewHeight, setWebviewHeight] = useState(0);
   const [paramImages, setParamImages] = useState<EventParamImagesType[]>([]);
   const [pressed, setPressed] = useState(false);
   const [pIssue, setPIssue] = useState<RkbEventBoard>();
-
+  const linkRef = useRef<LinkInputRef>(null);
   const onMessage = useCallback((event: WebViewMessageEvent) => {
     const height = parseInt(event.nativeEvent.data, 10);
     setWebviewHeight(height);
   }, []);
-
   const eventTitleList = useMemo(() => {
     if (eventList?.length > 0) {
       return eventList.map((e) => ({value: e.title, label: e.title}));
@@ -322,7 +325,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     setFocusedItem({
       title: false,
       msg: false,
-      link: [false, false, false],
     });
     setPIssue(undefined);
     setParamImages([]);
@@ -369,11 +371,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     },
     [errors],
   );
-
-  const isUrl = useCallback((str: string) => {
-    const urlPattern = /^(?:\w+:)?\/\/([^\s.]+\.\S{2}|localhost[\:?\d]*)\S*$/;
-    return urlPattern.test(str);
-  }, []);
 
   // errors object의 모든 value 값들이 undefined인지 확인한다.
   const hasError = useMemo(() => {
@@ -484,10 +481,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     attachment,
     paramImages,
     eventBoard.list,
-    action.toast,
-    action.modal,
-    action.eventBoard,
-    isUrl,
+    action,
     pIssue?.id,
   ]);
 
@@ -498,7 +492,9 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         enableResetScrollToCoords={false}
         contentContainerStyle={styles.modalInner}
         extraScrollHeight={extraHeight}
-        innerRef={(ref) => (scrollRef.current = ref)}
+        innerRef={(ref) => {
+          scrollRef.current = ref;
+        }}
         keyboardShouldPersistTaps="handled">
         <View style={{flex: 1}}>
           {pIssue ? (
@@ -631,8 +627,11 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
           {selectedEvent && (
             <LinkInput
               value={linkParam}
-              isEssential={selectedEvent?.rule?.link}
-              onChangeValue={(v) => setLinkParam(v)}
+              onChangeValue={(v) => {
+                setLinkParam(v);
+              }}
+              required={selectedEvent?.rule?.link}
+              refLinkInput={linkRef}
             />
           )}
 

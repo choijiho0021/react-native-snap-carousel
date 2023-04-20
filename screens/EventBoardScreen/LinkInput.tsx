@@ -96,12 +96,15 @@ type LinkInputProps = {
   value: string[];
   isEssential?: boolean;
   onChangeValue: (v: string[]) => void;
+  required?: boolean;
+  refLinkInput: React.MutableRefObject<LinkInputRef | null>;
 };
 
 const LinkInput: React.FC<LinkInputProps> = ({
   value,
-  isEssential = false,
   onChangeValue,
+  required = false,
+  refLinkInput,
 }) => {
   const [linkList, setLinkList] = useState(['']);
   const [linkCount, setLinkCount] = useState(1);
@@ -174,7 +177,7 @@ const LinkInput: React.FC<LinkInputProps> = ({
             {marginTop: 0, marginBottom: 0, marginHorizontal: 0},
           ]}>
           <AppText style={styles.attachTitleText}>{i18n.t('link')}</AppText>
-          {isEssential && (
+          {required && (
             <AppText style={styles.essentialText}>
               {i18n.t('event:essential')}
             </AppText>
