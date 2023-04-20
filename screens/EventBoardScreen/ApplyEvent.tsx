@@ -14,7 +14,6 @@ import {Image as CropImage} from 'react-native-image-crop-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import _ from 'underscore';
-import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {
@@ -237,11 +236,6 @@ const isUrl = (str: string) => {
 };
 
 const inputAccessoryViewID = 'doneKbd';
-
-const injectedJavaScript = `
-window.ReactNativeWebView.postMessage(
-  document.body.scrollHeight.toString()
-);`;
 
 export type EventParamImagesType = {
   url: string;
