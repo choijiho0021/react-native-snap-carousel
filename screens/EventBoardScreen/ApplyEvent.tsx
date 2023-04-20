@@ -302,9 +302,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     if (paramIssue) {
       setPIssue(paramIssue);
       setTitle(paramIssue.title);
-      setSelectedEvent(eventList.find((e) => e.title === paramIssue.title));
-      setLinkParam(paramIssue.link.map((l: string) => ({value: l})));
-      setLinkCount(paramIssue.link.length);
+      setSelectedEvent(eventList.find((e) => e.nid === paramIssue.eventId));
       setParamImages(
         paramIssue.images.map((url, idx) => ({
           url,
@@ -312,6 +310,10 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         })),
       );
       setMsg(paramIssue.msg || '');
+      if (paramIssue.link.length > 0) {
+        setLinkParam(paramIssue.link.map((l: string) => ({value: l})));
+        setLinkCount(paramIssue.link.length);
+      }
     }
   }, [eventList, paramIssue]);
 
@@ -386,6 +388,11 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     [errors],
   );
 
+  const isUrl = useCallback((str: string) => {
+    const urlPattern = /^(?:\w+:)?\/\/([^\s.]+\.\S{2}|localhost[\:?\d]*)\S*$/;
+    return urlPattern.test(str);
+  }, []);
+
   // errors object의 모든 value 값들이 undefined인지 확인한다.
   const hasError = useMemo(() => {
     return (
@@ -394,9 +401,17 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       (selectedEvent?.rule?.image &&
         attachment.size < 1 &&
         paramImages.length < 1) ||
-      (selectedEvent?.rule?.link && linkParam.find((l) => l.value === ''))
+      (selectedEvent?.rule?.link && linkParam.find((l) => l.value === '')) ||
+      linkParam.find((l) => l.value !== '' && !isUrl(l.value))
     );
-  }, [attachment.size, linkParam, msg, paramImages.length, selectedEvent]);
+  }, [
+    attachment.size,
+    isUrl,
+    linkParam,
+    msg,
+    paramImages.length,
+    selectedEvent,
+  ]);
 
   const renderLinkInput = useCallback(() => {
     return linkParam.map((cur, idx) =>
@@ -502,8 +517,13 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       return;
     }
 
+    if (linkParam.find((l) => l.value !== '' && !isUrl(l.value))) {
+      action.toast.push('event:invalidLink');
+      return;
+    }
+
     const statusCode =
-      eventBoard.list.find((l) => l.title === selectedEvent?.title)
+      eventBoard.list.find((l) => l.eventId === selectedEvent?.nid)
         ?.statusCode || '';
 
     if (statusCode && (statusCode === 'r' || statusCode !== 'f')) {
@@ -546,15 +566,16 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       setPressed(true);
     }
   }, [
-    action,
-    attachment,
-    eventBoard.list,
-    linkParam,
-    msg,
-    paramImages,
-    pIssue?.id,
-    selectedEvent,
     title,
+    msg,
+    selectedEvent,
+    linkParam,
+    attachment,
+    paramImages,
+    eventBoard.list,
+    action,
+    isUrl,
+    pIssue?.id,
   ]);
 
   return (
@@ -764,6 +785,8 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             setAttachment={setAttachment}
             imageQuality={selectedEvent?.rule?.imageQuality}
           />
+
+          <View style={{height: 56}} />
         </View>
       </KeyboardAwareScrollView>
 
