@@ -51,7 +51,6 @@ const styles = StyleSheet.create({
   tabScroll: {
     marginTop: 16,
     marginBottom: 6,
-    paddingLeft: 20,
   },
   image: {
     paddingVertical: 5,
@@ -158,6 +157,7 @@ const ExtraCouponScreen = () => {
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.tabScroll}>
+        <View style={{width: 20}} />
         {couponGrp.map((grp) => {
           const isSelected = grp === selectedGrp;
           return (
@@ -177,6 +177,7 @@ const ExtraCouponScreen = () => {
             </Pressable>
           );
         })}
+        <View style={{width: 20}} />
       </ScrollView>
     ),
     [couponGrp, selectedGrp],
