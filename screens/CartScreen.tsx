@@ -187,7 +187,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         <ChatTalk visible bottom={(isIOS ? 100 : 70) - tabBarHeight} />
       </View>
     ),
-    [],
+    [tabBarHeight],
   );
 
   const removeItem = useCallback(
