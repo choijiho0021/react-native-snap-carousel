@@ -97,6 +97,15 @@ const styles = StyleSheet.create({
     color: colors.black,
     paddingHorizontal: 16,
   },
+  inputMsgBox: {
+    height: 208,
+    paddingVertical: 16,
+  },
+  inputMsg: {
+    height: 176,
+    textAlignVertical: 'top',
+    padding: 0,
+  },
   notice: {
     borderRadius: 3,
     backgroundColor: colors.backGrey,
@@ -564,45 +573,43 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             </View>
           )}
 
-          <AppTextInput
+          <View
             style={[
               styles.inputBox,
-              {
-                height: 208,
-                paddingTop: 16,
-                paddingHorizontal: 16,
-                textAlignVertical: 'top',
-              },
+              styles.inputMsgBox,
               focusedItem.msg ? {borderColor: colors.clearBlue} : undefined,
-            ]}
-            ref={keybd}
-            placeholder={i18n.t('event:content')}
-            placeholderTextColor={colors.greyish}
-            multiline
-            numberOfLines={8}
-            inputAccessoryViewID={inputAccessoryViewID}
-            enablesReturnKeyAutomatically
-            clearTextOnFocus={false}
-            maxLength={2000}
-            onChangeText={(v) => {
-              setMsg(v);
-              validate('msg', v);
-            }}
-            onFocus={() => {
-              setExtraHeight(80);
-              setFocusedItem((prev) => ({...prev, msg: true}));
-            }}
-            onBlur={() => setFocusedItem((prev) => ({...prev, msg: false}))}
-            error={error('msg')}
-            autoCapitalize="none"
-            autoCorrect={false}
-            onContentSizeChange={({target}) =>
-              scrollRef.current?.props?.scrollToFocusedInput(
-                findNodeHandle(target),
-              )
-            }
-            value={msg}
-          />
+            ]}>
+            <AppTextInput
+              style={styles.inputMsg}
+              ref={keybd}
+              placeholder={i18n.t('event:content')}
+              placeholderTextColor={colors.greyish}
+              multiline
+              numberOfLines={8}
+              inputAccessoryViewID={inputAccessoryViewID}
+              enablesReturnKeyAutomatically
+              clearTextOnFocus={false}
+              maxLength={2000}
+              onChangeText={(v) => {
+                setMsg(v);
+                validate('msg', v);
+              }}
+              onFocus={() => {
+                setExtraHeight(80);
+                setFocusedItem((prev) => ({...prev, msg: true}));
+              }}
+              onBlur={() => setFocusedItem((prev) => ({...prev, msg: false}))}
+              error={error('msg')}
+              autoCapitalize="none"
+              autoCorrect={false}
+              onContentSizeChange={({target}) =>
+                scrollRef.current?.props?.scrollToFocusedInput(
+                  findNodeHandle(target),
+                )
+              }
+              value={msg}
+            />
+          </View>
 
           {selectedEvent && (
             <LinkInput
