@@ -618,9 +618,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
           {selectedEvent && (
             <LinkInput
               value={linkParam}
-              onChangeValue={(v) => {
-                setLinkParam(v);
-              }}
+              onChangeValue={setLinkParam}
               required={selectedEvent?.rule?.link}
             />
           )}
