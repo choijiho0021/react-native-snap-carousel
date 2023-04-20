@@ -58,8 +58,6 @@ const BoardScreen: React.FC<BoardScreenProps> = ({pending, title, routes}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppActivityIndicator visible={pending} />
-
       <AppTabHeader
         index={index}
         routes={routes}
@@ -76,6 +74,7 @@ const BoardScreen: React.FC<BoardScreenProps> = ({pending, title, routes}) => {
         initialLayout={{width: windowWidth}}
         renderTabBar={() => null}
       />
+      <AppActivityIndicator visible={pending} />
     </SafeAreaView>
   );
 };

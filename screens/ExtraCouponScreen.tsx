@@ -194,11 +194,9 @@ const ExtraCouponScreen = () => {
         source={require('../assets/images/esim/couponBanner.png')}
         style={{width: '100%'}}
       />
-      <FlatList
-        data={data}
-        renderItem={renderItem}
-        ListHeaderComponent={renderGroup()}
-      />
+      <View>{renderGroup()}</View>
+
+      <FlatList data={data} renderItem={renderItem} />
 
       {showItem && (
         <AppModal

@@ -1,5 +1,6 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {bindActionCreators} from 'redux';
 import {
   Linking,
   Pressable,
@@ -10,6 +11,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import moment from 'moment';
+import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -28,6 +30,7 @@ import ImgWithIndicator from './ImgWithIndicator';
 import EventStatusBox from './EventStatusBox';
 import {RkbBoardBase} from '@/redux/api/boardApi';
 import ImageListModal from './ImageListModal';
+import {RkbEvent} from '@/redux/api/promotionApi';
 
 const styles = StyleSheet.create({
   date: {
@@ -114,28 +117,40 @@ type ResultScreenProps = {
   issue: RkbBoardBase;
   title: string;
   showStatus: boolean;
+  eventList?: RkbEvent[];
   resp?: string;
+  action: {
+    toast: ToastAction;
+  };
 };
 
 const ResultScreen: React.FC<ResultScreenProps> = ({
   issue: ip,
   title: tp,
   showStatus: sp,
+  eventList: el,
   pending,
   resp,
+  action,
 }) => {
   const navigation = useNavigation();
   const route = useRoute();
-  const [issue, title, showStatus = false] = useMemo(
+  const [issue, title, showStatus = false, eventList = []] = useMemo(
     () => [
       ip || route.params?.issue,
       tp || route.params?.title,
       sp || route.params?.showStatus,
+      el || route.params?.eventList,
     ],
-    [ip, route.params, sp, tp],
+    [el, ip, route.params, sp, tp],
   );
   const [imgIndex, setImgIndex] = useState(0);
   const [modalImgList, setModalImgList] = useState<string[]>([]);
+  const [isEnded, setIsEnded] = useState(false);
+
+  useEffect(() => {
+    setIsEnded(!eventList.find((e: RkbEvent) => e.nid === issue?.eventId));
+  }, [eventList, issue?.eventId]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -190,7 +205,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
           <AppText style={styles.label}>{i18n.t('link')}</AppText>
           {linkList.map((l: string, idx: number) => (
             <AppText
-              key={l}
+              key={l + idx}
               style={[styles.inputBox, idx > 0 && {marginTop: 8}]}
               onPress={() => Linking.openURL(l)}>
               {l}
@@ -271,17 +286,29 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
         />
         {issue?.statusCode === 'f' && (
           <AppButton
-            style={styles.button}
+            style={[
+              styles.button,
+              isEnded && {backgroundColor: colors.warmGrey},
+            ]}
+            pressedStyle={
+              isEnded
+                ? {backgroundColor: colors.warmGrey}
+                : {backgroundColor: colors.dodgerBlue}
+            }
             title={i18n.t('event:reapply')}
             titleStyle={styles.buttonText}
             type="primary"
             onPress={() => {
-              [1, 2].forEach(() => navigation.goBack());
-              navigate(navigation, route, 'MyPageStack', {
-                tab: 'HomeStack',
-                screen: 'EventBoard',
-                params: {index: 0, issue},
-              });
+              if (isEnded) {
+                action.toast.push('event:ended');
+              } else {
+                [1, 2].forEach(() => navigation.goBack());
+                navigate(navigation, route, 'MyPageStack', {
+                  tab: 'HomeStack',
+                  screen: 'EventBoard',
+                  params: {index: 0, issue},
+                });
+              }
             }}
           />
         )}
@@ -297,9 +324,16 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
   );
 };
 
-export default connect(({status}: RootState) => ({
-  pending:
-    status.pending[boardActions.getIssueResp.typePrefix] ||
-    status.pending[eventBoardActions.getEventIssueResp.typePrefix] ||
-    false,
-}))(ResultScreen);
+export default connect(
+  ({status}: RootState) => ({
+    pending:
+      status.pending[boardActions.getIssueResp.typePrefix] ||
+      status.pending[eventBoardActions.getEventIssueResp.typePrefix] ||
+      false,
+  }),
+  (dispatch) => ({
+    action: {
+      toast: bindActionCreators(toastActions, dispatch),
+    },
+  }),
+)(ResultScreen);

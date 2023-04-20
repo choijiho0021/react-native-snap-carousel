@@ -451,8 +451,10 @@
   "event:alert:reOpen": "<b>인증 재신청이 완료되었습니다.</b>\n확인 후 순차적으로 리워드 지급 예정입니다.\n조금만 기다려주세요!",
   "event:alert:open": "<b>인증 신청이 완료되었습니다.</b>\n확인 후 순차적으로 리워드 지급 예정입니다.",
   "event:alert:link": "<b>링크는 최대 3개까지만 가능합니다.</b>",
+  "event:invalidLink": "올바르지 않은 링크입니다. 다시 입력해주세요.",
   "event:nolist": "인증 내역이 없습니다",
   "event:fail:loading": "이미지 파일을 업로드 할 수 없습니다.",
+  "event:ended": "이미 종료된 이벤트입니다.",
 
   "cart:totalCnt": "총 상품 수",
   "cart:totalPrice": "상품 금액 합계",

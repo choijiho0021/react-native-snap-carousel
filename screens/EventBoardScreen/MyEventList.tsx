@@ -11,8 +11,10 @@ import {
 import BoardItemList from '@/screens/BoardScreen/BoardItemList';
 import i18n from '@/utils/i18n';
 import {RkbEventBoard} from '@/redux/api/eventBoardApi';
+import {PromotionModelState} from '@/redux/modules/promotion';
 
 type MyEventListProps = {
+  promotion: PromotionModelState;
   eventBoard: EventBoardModelState;
   uid: number;
   isEvent?: boolean;
@@ -24,6 +26,7 @@ type MyEventListProps = {
 };
 
 const MyEventList: React.FC<MyEventListProps> = ({
+  promotion,
   eventBoard,
   pending,
   uid,
@@ -47,6 +50,7 @@ const MyEventList: React.FC<MyEventListProps> = ({
           issue,
           title: i18n.t('event:list'),
           showStatus: true,
+          eventList: promotion.event,
         })
       }
     />
@@ -54,7 +58,8 @@ const MyEventList: React.FC<MyEventListProps> = ({
 };
 
 export default connect(
-  ({account, eventBoard, status}: RootState) => ({
+  ({account, promotion, eventBoard, status}: RootState) => ({
+    promotion,
     eventBoard,
     uid: account.uid || 0,
     pending: status.pending[eventBoardActions.getIssueList.typePrefix] || false,
