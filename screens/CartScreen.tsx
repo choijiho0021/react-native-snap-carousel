@@ -37,6 +37,7 @@ import {
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import ChatTalk from '@/components/ChatTalk';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 
 const {esimCurrency, isIOS} = Env.get();
 
@@ -110,6 +111,8 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
   const [showSnackBar, setShowSnackbar] = useState(false);
   const loading = useRef(false);
 
+  const tabBarHeight = useBottomTabBarHeight();
+
   const onChecked = useCallback((key: string) => {
     setChecked((prev) => prev.update(key, (v) => !v));
   }, []);
@@ -181,7 +184,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
             {i18n.t('cart:empty2')}
           </AppText>
         </View>
-        <ChatTalk visible bottom={isIOS ? 100 : 70} />
+        <ChatTalk visible bottom={(isIOS ? 100 : 70) - tabBarHeight} />
       </View>
     ),
     [],
@@ -350,7 +353,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
           onPress={onPurchase}
         />
       </View>
-      <ChatTalk visible bottom={isIOS ? 100 : 70} />
+      <ChatTalk visible bottom={(isIOS ? 100 : 70) - tabBarHeight} />
     </SafeAreaView>
   );
 };
