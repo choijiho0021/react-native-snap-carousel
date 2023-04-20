@@ -11,7 +11,7 @@ import {
 import BoardItemList from '@/screens/BoardScreen/BoardItemList';
 import i18n from '@/utils/i18n';
 import {RkbEventBoard} from '@/redux/api/eventBoardApi';
-import promotion, {PromotionModelState} from '@/redux/modules/promotion';
+import {PromotionModelState} from '@/redux/modules/promotion';
 
 type MyEventListProps = {
   promotion: PromotionModelState;
