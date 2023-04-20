@@ -49,7 +49,7 @@ import AppStyledText from '@/components/AppStyledText';
 import AttachmentBox from '@/screens/BoardScreen/AttachmentBox';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {utils} from '@/utils/utils';
-import LinkInput, {LinkInputRef} from './LinkInput';
+import LinkInput from './LinkInput';
 
 const styles = StyleSheet.create({
   inputAccessoryText: {
@@ -257,8 +257,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   const [pressed, setPressed] = useState(false);
   const [pIssue, setPIssue] = useState<RkbEventBoard>();
 
-  const linkRef = useRef<LinkInputRef>(null);
-
   const onMessage = useCallback((event: WebViewMessageEvent) => {
     const height = parseInt(event.nativeEvent.data, 10);
     setWebviewHeight(height);
@@ -385,9 +383,18 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       (selectedEvent?.rule?.image &&
         attachment.size < 1 &&
         paramImages.length < 1) ||
-      (selectedEvent?.rule?.link && linkParam.find((l) => l === ''))
+      (selectedEvent?.rule?.link &&
+        linkParam.findIndex((l) => l === '') !== -1) ||
+      linkParam?.find((l) => l !== '' && !isUrl(l))
     );
-  }, [attachment.size, linkParam, msg, paramImages.length, selectedEvent]);
+  }, [
+    attachment.size,
+    isUrl,
+    linkParam,
+    msg,
+    paramImages.length,
+    selectedEvent,
+  ]);
 
   const onPress = useCallback(() => {
     if (!title) {
@@ -399,11 +406,11 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       return;
     }
 
-    const list = linkRef?.current?.getValue() || [];
-    setLinkParam(list);
-
     // 링크 필수 인경우
-    if (selectedEvent?.rule?.link && list?.find((l) => l === '')) {
+    if (
+      selectedEvent?.rule?.link &&
+      linkParam?.findIndex((l) => l === '') !== -1
+    ) {
       action.toast.push('event:empty:link');
       return;
     }
@@ -418,7 +425,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       return;
     }
 
-    if (list.find((l) => l !== '' && !isUrl(l))) {
+    if (linkParam.find((l) => l !== '' && !isUrl(l))) {
       action.toast.push('event:invalidLink');
       return;
     }
@@ -453,7 +460,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       const issue = {
         title,
         msg,
-        link: list.map((l) => ({value: l})),
+        link: linkParam.map((l) => ({value: l})),
         eventUuid: selectedEvent?.uuid,
         eventStatus: statusCode === 'f' ? 'R' : 'O',
         paramImages,
@@ -469,11 +476,17 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   }, [
     title,
     msg,
-    selectedEvent,
+    selectedEvent?.rule?.link,
+    selectedEvent?.rule?.image,
+    selectedEvent?.nid,
+    selectedEvent?.uuid,
+    linkParam,
     attachment,
     paramImages,
     eventBoard.list,
-    action,
+    action.toast,
+    action.modal,
+    action.eventBoard,
     isUrl,
     pIssue?.id,
   ]);
@@ -619,7 +632,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             <LinkInput
               value={linkParam}
               isEssential={selectedEvent?.rule?.link}
-              refLinkInput={linkRef}
+              onChangeValue={(v) => setLinkParam(v)}
             />
           )}
 
