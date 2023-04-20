@@ -26,6 +26,9 @@ import {actions as modalActions} from '@/redux/modules/modal';
 import PreviewImageModal from './PreviewImagesModal';
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: 56,
+  },
   attachTitle: {
     marginTop: 32,
     marginBottom: 8,
@@ -156,7 +159,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
   );
 
   return (
-    <View>
+    <View style={styles.container}>
       <View style={styles.attachTitle}>
         <AppText style={styles.attachTitleText}>
           {i18n.t('board:attach')}

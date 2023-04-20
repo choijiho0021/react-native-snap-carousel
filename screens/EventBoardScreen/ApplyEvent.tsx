@@ -106,11 +106,14 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     padding: 0,
   },
+  noticeBox: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
   notice: {
     borderRadius: 3,
     backgroundColor: colors.backGrey,
     marginHorizontal: 20,
-    height: 64,
   },
   noticeBtnWeb: {
     height: 64 - 8,
@@ -178,6 +181,23 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     letterSpacing: -0.32,
     color: colors.black,
+  },
+  noticeTitle: {
+    ...appStyles.bold14Text,
+    lineHeight: 22,
+    color: colors.black,
+  },
+  noticeMainContents: {
+    ...appStyles.bold14Text,
+    lineHeight: 22,
+    letterSpacing: -0.28,
+    color: colors.warmGrey,
+  },
+  noticeSubContents: {
+    ...appStyles.medium14,
+    lineHeight: 22,
+    letterSpacing: -0.28,
+    color: colors.warmGrey,
   },
 });
 
@@ -251,19 +271,14 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   const [extraHeight, setExtraHeight] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<RkbEvent | undefined>();
-  const [showWebView, setShowWebView] = useState(false);
+  const [showNotice, setShowNotice] = useState(true);
   const [focusedItem, setFocusedItem] = useState({
     title: false,
     msg: false,
   });
-  const [webviewHeight, setWebviewHeight] = useState(0);
   const [paramImages, setParamImages] = useState<EventParamImagesType[]>([]);
   const [pressed, setPressed] = useState(false);
   const [pIssue, setPIssue] = useState<RkbEventBoard>();
-  const onMessage = useCallback((event: WebViewMessageEvent) => {
-    const height = parseInt(event.nativeEvent.data, 10);
-    setWebviewHeight(height);
-  }, []);
   const eventTitleList = useMemo(() => {
     if (eventList?.length > 0) {
       return eventList.map((e) => ({value: e.title, label: e.title}));
@@ -297,10 +312,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       }
     }
   }, [eventList, paramIssue]);
-
-  useEffect(() => {
-    if (pIssue) setShowWebView(true);
-  }, [pIssue]);
 
   const validate = useCallback((key: string, value: string) => {
     const valid = validationUtil.validate(key, value, validationRule);
@@ -477,6 +488,10 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     pIssue?.id,
   ]);
 
+  useEffect(() => {
+    console.log('@@@@ selectedEvent.notice', selectedEvent?.notice);
+  }, [selectedEvent]);
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
@@ -527,40 +542,30 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
           </Pressable>
 
           {selectedEvent && (
-            <View
-              style={[
-                styles.notice,
-                showWebView
-                  ? {
-                      height: webviewHeight + 64 - 8,
-                      borderBottomLeftRadius: 0,
-                      borderBottomRightRadius: 0,
-                      backgroundColor: colors.backGrey,
-                    }
-                  : undefined,
-              ]}>
+            <View style={styles.notice}>
               <Pressable
                 style={[
                   styles.noticeBtn,
-                  showWebView ? styles.noticeBtnWeb : undefined,
+                  showNotice ? styles.noticeBtnWeb : undefined,
                 ]}
-                onPress={() => setShowWebView(!showWebView)}>
+                onPress={() => setShowNotice(!showNotice)}>
                 <AppText style={styles.noticeBtnTitle}>
                   {i18n.t('event:notice')}
                 </AppText>
                 <AppSvgIcon
-                  name={showWebView ? 'iconArrowUp' : 'iconArrowDown'}
+                  name={showNotice ? 'iconArrowUp' : 'iconArrowDown'}
                 />
               </Pressable>
 
-              {showWebView && (
-                <View style={{height: webviewHeight}}>
-                  <WebView
-                    style={{flex: 1}}
-                    source={{html: selectedEvent.notice || ''}}
-                    originWhitelist={['*']}
-                    onMessage={onMessage}
-                    injectedJavaScript={injectedJavaScript}
+              {selectedEvent.notice && showNotice && (
+                <View style={styles.noticeBox}>
+                  <AppStyledText
+                    text={selectedEvent.notice}
+                    textStyle={styles.noticeSubContents}
+                    format={{
+                      b: styles.noticeTitle,
+                      s: styles.noticeMainContents,
+                    }}
                   />
                 </View>
               )}
@@ -634,8 +639,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             setAttachment={setAttachment}
             imageQuality={selectedEvent?.rule?.imageQuality}
           />
-
-          <View style={{height: 56}} />
         </View>
       </KeyboardAwareScrollView>
 
@@ -676,8 +679,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         onPress={(value) => {
           setSelectedEvent(eventList.find((e) => e.title === value));
           setShowModal(false);
-          setShowWebView(true);
-          setWebviewHeight(0);
         }}
         value={selectedEvent?.title}
       />
