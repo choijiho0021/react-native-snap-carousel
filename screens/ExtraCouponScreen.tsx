@@ -112,8 +112,8 @@ const ExtraCouponScreen = () => {
   const [couponGrp, setCouponGrp] = useState<string[]>([]);
   const [selectedGrp, setSelectedGrp] = useState<string>('All');
   const [showItem, setShowItem] = useState<RkbExtraCoupon>();
-  const [isTop, setIsTop] = useState(false);
-  const scrollY = useRef(new Animated.Value(0)).current;
+  const [isTop, setIsTop] = useState(true);
+  const scrollY = useRef(new Animated.Value(bannerHeight)).current;
 
   useEffect(() => {
     if (coupons.length > 0)
