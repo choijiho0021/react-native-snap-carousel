@@ -434,7 +434,9 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
               receipt = rsp.objects[0];
             }
           }
-        } else if (id) {
+        }
+
+        if (!receipt && id) {
           // iamport receipt
           const resp = await API.Payment.getImpToken();
           if (resp.code === 0) {

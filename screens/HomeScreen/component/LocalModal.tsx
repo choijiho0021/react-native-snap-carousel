@@ -1,4 +1,4 @@
-import React, {memo, useCallback} from 'react';
+import React, {memo, useCallback, useRef, useState} from 'react';
 import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
@@ -57,20 +57,42 @@ type LocalModalProps = {
 
 const LocalModal: React.FC<LocalModalProps> = ({localOpKey, html, onPress}) => {
   const dispatch = useDispatch();
+  const [webviewHeight, setWebviewHeight] = useState(0);
+  const ref = useRef<WebView>(null);
+  const injected = useRef(false);
   const okHandler = useCallback(() => {
     dispatch(modalActions.closeModal());
     onPress?.();
   }, [dispatch, onPress]);
 
+  const onMessage = useCallback((event: WebViewMessageEvent) => {
+    const height = parseInt(event.nativeEvent.data, 10);
+    console.log('@@@ height', height);
+    setWebviewHeight(height);
+  }, []);
+
+  const onLoadEnd = useCallback(() => {
+    if (!injected.current) {
+      ref.current?.injectJavaScript(injectedJavaScript);
+      injected.current = true;
+    }
+  }, []);
+
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
-        <Pressable
-          style={{flex: 1}}
-          onPress={() => dispatch(modalActions.closeModal())}
-        />
-        <View style={[styles.container, {height: 520}]}>
-          <WebView style={{flex: 1}} originWhitelist={['*']} source={{html}} />
+      <Pressable
+        style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}
+        onPress={() => dispatch(modalActions.closeModal())}>
+        <View style={[styles.container, {height: webviewHeight + 166}]}>
+          <WebView
+            style={{flex: 1}}
+            originWhitelist={['*']}
+            ref={ref}
+            source={{html}}
+            onMessage={onMessage}
+            onLoadEnd={onLoadEnd}
+            injectedJavaScript={injectedJavaScript}
+          />
           <View style={styles.okBtnContainer}>
             <AppButton
               style={styles.okButton}
