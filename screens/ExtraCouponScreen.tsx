@@ -46,9 +46,6 @@ const styles = StyleSheet.create({
   imageStyle: {
     height: (windowWidth - 60) / 3,
   },
-  downloadStyle: {
-    height: windowHeight,
-  },
   tabScroll: {
     marginTop: 16,
     marginBottom: 6,
@@ -113,6 +110,7 @@ const ExtraCouponScreen = () => {
   const [selectedGrp, setSelectedGrp] = useState<string>('All');
   const [showItem, setShowItem] = useState<RkbExtraCoupon>();
   const [isTop, setIsTop] = useState(true);
+  const [imgRatio, setImgRatio] = useState(windowWidth / windowHeight);
   const scrollY = useRef(new Animated.Value(bannerHeight)).current;
 
   useEffect(() => {
@@ -195,6 +193,13 @@ const ExtraCouponScreen = () => {
     }).start();
   }, [scrollY, isTop]);
 
+  useEffect(() => {
+    if (showItem?.dimension) {
+      const l = showItem?.dimension.split('x');
+      if (l.length > 1) setImgRatio(Number(l[0]) / Number(l[1]));
+    }
+  }, [showItem?.dimension]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -228,7 +233,8 @@ const ExtraCouponScreen = () => {
           justifyContent="flex-end"
           safeAreaColor={colors.white}
           visible={showItem !== undefined}
-          onOkClose={() => setShowItem(undefined)}>
+          onOkClose={() => setShowItem(undefined)}
+          titleViewStyle={{}}>
           <View style={{flex: 1}}>
             <View style={styles.modalClose}>
               <AppSvgIcon
@@ -238,8 +244,9 @@ const ExtraCouponScreen = () => {
             </View>
             <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
               <Image
-                style={styles.downloadStyle}
+                style={{aspectRatio: imgRatio}}
                 source={{uri: API.default.httpImageUrl(showItem.download)}}
+                resizeMode="contain"
               />
             </ScrollView>
           </View>
