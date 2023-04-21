@@ -482,10 +482,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     pIssue?.id,
   ]);
 
-  useEffect(() => {
-    console.log('@@@@ selectedEvent.notice', selectedEvent?.notice);
-  }, [selectedEvent]);
-
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
