@@ -54,6 +54,7 @@ type LocalModalProps = {
   html: string;
   onPress: () => void;
 };
+
 const injectedJavaScript = `
   window.ReactNativeWebView.postMessage(
     document.body.scrollHeight.toString()
@@ -72,7 +73,6 @@ const LocalModal: React.FC<LocalModalProps> = ({localOpKey, html, onPress}) => {
 
   const onMessage = useCallback((event: WebViewMessageEvent) => {
     const height = parseInt(event.nativeEvent.data, 10);
-    console.log('@@@ height', height);
     setWebviewHeight(height);
   }, []);
 
@@ -85,10 +85,16 @@ const LocalModal: React.FC<LocalModalProps> = ({localOpKey, html, onPress}) => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <Pressable
-        style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}
-        onPress={() => dispatch(modalActions.closeModal())}>
-        <View style={[styles.container, {height: webviewHeight + 166}]}>
+      <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
+        <Pressable
+          style={{flex: 1}}
+          onPress={() => dispatch(modalActions.closeModal())}
+        />
+        <View
+          style={[
+            styles.container,
+            {height: webviewHeight + 166, maxHeight: 520},
+          ]}>
           <WebView
             style={{flex: 1}}
             originWhitelist={['*']}
@@ -122,7 +128,7 @@ const LocalModal: React.FC<LocalModalProps> = ({localOpKey, html, onPress}) => {
             </View>
           </Pressable>
         </View>
-      </Pressable>
+      </View>
     </SafeAreaView>
   );
 };
