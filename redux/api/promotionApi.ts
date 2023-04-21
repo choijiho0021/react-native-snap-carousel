@@ -394,6 +394,7 @@ export type RkbExtraCoupon = {
   download: string;
   uuid: string;
   group: string;
+  dimension: string;
 };
 const toExtraCoupon = (data: RkbExtraCoupon[]): ApiResult<RkbExtraCoupon> => {
   if (_.isArray(data)) {
