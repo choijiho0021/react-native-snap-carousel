@@ -147,7 +147,6 @@ export type RkbPriceInfo = Partial<RkbProdByCountry> & {
   partnerList: string[];
   weight: number;
   maxDiscount: number;
-  tags?: string[];
 };
 
 export type ProdDataType = {title: string; data: RkbProduct[]};
@@ -249,7 +248,6 @@ const slice = createSlice({
             partnerList: [cur.partner],
             minPrice: utils.stringToCurrency(cur.price),
             maxDiscount: Number(cur.max_discount),
-            tags: cur.tags?.split(','),
           } as RkbPriceInfo;
           return acc.update(cur.category, (prev) =>
             prev ? prev.concat(elm) : [elm],

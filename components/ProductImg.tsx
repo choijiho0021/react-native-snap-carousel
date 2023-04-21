@@ -33,7 +33,7 @@ const ProductImg = ({
   imageStyle?: StyleProp<ImageStyle>;
   source: ImageSourcePropType;
   maxDiscount?: number;
-  tags?: string[];
+  tags?: string;
 }) => {
   return (
     <View style={style}>
@@ -43,8 +43,7 @@ const ProductImg = ({
       />
       <View style={{position: 'absolute', flexDirection: 'row'}}>
         {tags &&
-          tags.length > 0 &&
-          tags.map((elm) => (
+          tags.split(',').map((elm) => (
             <View
               style={[styles.tagBox, {backgroundColor: colors.purplyBlue}]}
               key={elm}>
