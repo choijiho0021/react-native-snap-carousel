@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useEffect, useState} from 'react';
+import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
 import {
   FlatList,
   Pressable,
@@ -7,6 +7,7 @@ import {
   Image,
   SafeAreaView,
   ScrollView,
+  Animated,
 } from 'react-native';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
@@ -102,6 +103,7 @@ const ExtraCouponListItem0 = ({
   );
 };
 
+const bannerHeight = 255;
 const ExtraCouponListItem = memo(ExtraCouponListItem0);
 
 const ExtraCouponScreen = () => {
@@ -110,6 +112,8 @@ const ExtraCouponScreen = () => {
   const [couponGrp, setCouponGrp] = useState<string[]>([]);
   const [selectedGrp, setSelectedGrp] = useState<string>('All');
   const [showItem, setShowItem] = useState<RkbExtraCoupon>();
+  const [isTop, setIsTop] = useState(false);
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (coupons.length > 0)
@@ -183,6 +187,14 @@ const ExtraCouponScreen = () => {
     [couponGrp, selectedGrp],
   );
 
+  useEffect(() => {
+    Animated.timing(scrollY, {
+      toValue: isTop ? bannerHeight : 0,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  }, [scrollY, isTop]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -191,13 +203,23 @@ const ExtraCouponScreen = () => {
           style={{width: '70%', height: 56}}
         />
       </View>
-      <Image
-        source={require('../assets/images/esim/couponBanner.png')}
-        style={{width: '100%'}}
-      />
+      <Animated.View style={{height: scrollY, overflow: 'hidden'}}>
+        <Image
+          source={require('../assets/images/esim/couponBanner.png')}
+          style={{width: '100%'}}
+        />
+      </Animated.View>
       <View>{renderGroup()}</View>
 
-      <FlatList data={data} renderItem={renderItem} />
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        onScroll={({nativeEvent}) => {
+          const {y} = nativeEvent.contentOffset;
+          if (isTop && y > bannerHeight) setIsTop(false);
+          else if (!isTop && y <= 0) setIsTop(true);
+        }}
+      />
 
       {showItem && (
         <AppModal
