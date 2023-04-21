@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useState} from 'react';
+import React, {memo, useCallback, useRef, useState} from 'react';
 import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
@@ -63,6 +63,8 @@ const injectedJavaScript = `
 const LocalModal: React.FC<LocalModalProps> = ({localOpKey, html, onPress}) => {
   const dispatch = useDispatch();
   const [webviewHeight, setWebviewHeight] = useState(0);
+  const ref = useRef<WebView>(null);
+  const injected = useRef(false);
   const okHandler = useCallback(() => {
     dispatch(modalActions.closeModal());
     onPress?.();
@@ -70,7 +72,15 @@ const LocalModal: React.FC<LocalModalProps> = ({localOpKey, html, onPress}) => {
 
   const onMessage = useCallback((event: WebViewMessageEvent) => {
     const height = parseInt(event.nativeEvent.data, 10);
+    console.log('@@@ height', height);
     setWebviewHeight(height);
+  }, []);
+
+  const onLoadEnd = useCallback(() => {
+    if (!injected.current) {
+      ref.current?.injectJavaScript(injectedJavaScript);
+      injected.current = true;
+    }
   }, []);
 
   return (
@@ -82,8 +92,10 @@ const LocalModal: React.FC<LocalModalProps> = ({localOpKey, html, onPress}) => {
           <WebView
             style={{flex: 1}}
             originWhitelist={['*']}
+            ref={ref}
             source={{html}}
             onMessage={onMessage}
+            onLoadEnd={onLoadEnd}
             injectedJavaScript={injectedJavaScript}
           />
           <View style={styles.okBtnContainer}>
