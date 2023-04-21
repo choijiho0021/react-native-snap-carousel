@@ -120,7 +120,7 @@ const env: Env = {
     },
   },
   specialCategories,
-  cachePrefix: `${esimGlobal ? 'g' : 'e'}.${isProduction ? 'p' : 'd'}.`,
+  cachePrefix: `${esimGlobal ? 'g.' : ''}${isProduction ? '' : 'd.'}`,
 };
 
 function get() {
