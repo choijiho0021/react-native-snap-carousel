@@ -3,9 +3,9 @@ import Env from '@/environment';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import {RkbInfo} from './pageApi';
 
-const {isProduction} = Env.get();
+const {isProduction, cachePrefix} = Env.get();
 
-const KEY_INIT_LIST = 'noti.initList';
+const KEY_INIT_LIST = `${cachePrefix}noti.initList`;
 
 export type RkbNoti = RkbInfo & {
   bodyTitle?: string;

@@ -5,16 +5,19 @@ import {AccountAuth} from '@/redux/modules/account';
 import api, {ApiResult} from './api';
 import {RkbFile} from './accountApi';
 import {SocialAuthInfo} from '@/components/SocialLogin';
+import Env from '@/environment';
 
-const KEY_ICCID = 'account.iccid';
+const {cachePrefix} = Env.get();
 
-const KEY_MOBILE = 'account.mobile';
+const KEY_ICCID = `${cachePrefix}account.iccid`;
 
-const KEY_PIN = 'account.pin';
+const KEY_MOBILE = `${cachePrefix}account.mobile`;
 
-const KEY_TOKEN = 'account.token';
+const KEY_PIN = `${cachePrefix}account.pin`;
 
-const LOGOUT_TOKEN = 'logout.token';
+const KEY_TOKEN = `${cachePrefix}account.token`;
+
+const LOGOUT_TOKEN = `${cachePrefix}logout.token`;
 
 export type RkbUser = {
   id?: string;

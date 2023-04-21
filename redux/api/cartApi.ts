@@ -6,7 +6,9 @@ import api, {ApiResult, DrupalNode} from './api';
 import {Currency, CurrencyCode} from './productApi';
 import {API} from '.';
 
-const KEY_INIT_CART = 'cart.initList';
+const {esimCurrency, cachePrefix} = Env.get();
+
+const KEY_INIT_CART = `${cachePrefix}cart.initList`;
 
 export type RkbOrderItem = {
   orderItemId: number;
@@ -392,7 +394,6 @@ const makeOrder = ({
       ? 'physical'
       : 'default';
 
-  const {esimCurrency} = Env.get();
   const body = {
     iccid,
     esimIccid,

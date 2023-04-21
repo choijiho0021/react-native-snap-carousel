@@ -4,9 +4,12 @@ import utils from '@/redux/api/utils';
 import api, {ApiResult, DrupalNode} from './api';
 import {Currency} from './productApi';
 import {parseJson} from '@/utils/utils';
+import Env from '@/environment';
+
+const {cachePrefix} = Env.get();
 
 const ORDER_PAGE_ITEMS = 10;
-const KEY_INIT_ORDER = 'order.init';
+const KEY_INIT_ORDER = `${cachePrefix}order.init`;
 
 const deliveryText = [
   {
@@ -119,7 +122,7 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
                 : 0,
               totalPrice.currency,
             ),
-          };
+          } as RkbOrder;
         })
         .sort((a, b) => (a.orderDate < b.orderDate ? 1 : -1)),
       [page],
