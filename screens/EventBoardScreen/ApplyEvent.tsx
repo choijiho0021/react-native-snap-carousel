@@ -266,19 +266,14 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   const [showModal, setShowModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<RkbEvent | undefined>();
   const [showNotice, setShowNotice] = useState(true);
-  const [focusedItem, setFocusedItem] = useState({
-    title: false,
-    msg: false,
-  });
+  const [msgFocused, setMsgFocused] = useState(false);
   const [paramImages, setParamImages] = useState<EventParamImagesType[]>([]);
   const [pressed, setPressed] = useState(false);
   const [pIssue, setPIssue] = useState<RkbEventBoard>();
-  const eventTitleList = useMemo(() => {
-    if (eventList?.length > 0) {
-      return eventList.map((e) => ({value: e.title, label: e.title}));
-    }
-    return [];
-  }, [eventList]);
+  const eventTitleList = useMemo(
+    () => eventList?.map((e) => ({value: e.title, label: e.title})) || [],
+    [eventList],
+  );
   const scrollRef = useRef();
   const keybd = useRef();
 
@@ -326,10 +321,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     setMsg(undefined);
     setTitle(undefined);
     setAttachment((a) => a.clear());
-    setFocusedItem({
-      title: false,
-      msg: false,
-    });
+    setMsgFocused(false);
     setPIssue(undefined);
     setParamImages([]);
   }, []);
@@ -384,9 +376,8 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       (selectedEvent?.rule?.image &&
         attachment.size < 1 &&
         paramImages.length < 1) ||
-      (selectedEvent?.rule?.link &&
-        linkParam.findIndex((l) => l === '') !== -1) ||
-      linkParam?.find((l) => l !== '' && !isUrl(l))
+      (selectedEvent?.rule?.link && linkParam.findIndex((l) => !l) >= 0) ||
+      linkParam?.find((l) => !!l && !isUrl(l))
     );
   }, [attachment.size, linkParam, msg, paramImages.length, selectedEvent]);
 
@@ -401,11 +392,13 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
     }
 
     // 링크 필수 인경우
-    if (
-      selectedEvent?.rule?.link &&
-      linkParam?.findIndex((l) => l === '') !== -1
-    ) {
+    if (selectedEvent?.rule?.link && linkParam?.findIndex((l) => !l) >= 0) {
       action.toast.push('event:empty:link');
+      return;
+    }
+
+    if (linkParam.find((l) => !!l && !isUrl(l))) {
+      action.toast.push('event:invalidLink');
       return;
     }
 
@@ -419,11 +412,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       return;
     }
 
-    if (linkParam.find((l) => l !== '' && !isUrl(l))) {
-      action.toast.push('event:invalidLink');
-      return;
-    }
-
     const statusCode =
       eventBoard.list.find((l) => l.eventId === selectedEvent?.nid)
         ?.statusCode || '';
@@ -433,9 +421,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         content: (
           <AppModalContent
             type="info"
-            onOkClose={() => {
-              action.modal.closeModal();
-            }}>
+            onOkClose={() => action.modal.closeModal()}>
             <View style={{marginLeft: 30}}>
               <AppStyledText
                 text={i18n.t(
@@ -470,10 +456,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   }, [
     title,
     msg,
-    selectedEvent?.rule?.link,
-    selectedEvent?.rule?.image,
-    selectedEvent?.nid,
-    selectedEvent?.uuid,
+    selectedEvent,
     linkParam,
     attachment,
     paramImages,
@@ -577,7 +560,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             style={[
               styles.inputBox,
               styles.inputMsgBox,
-              focusedItem.msg ? {borderColor: colors.clearBlue} : undefined,
+              msgFocused ? {borderColor: colors.clearBlue} : undefined,
             ]}>
             <AppTextInput
               style={styles.inputMsg}
@@ -596,9 +579,9 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
               }}
               onFocus={() => {
                 setExtraHeight(80);
-                setFocusedItem((prev) => ({...prev, msg: true}));
+                setMsgFocused(true);
               }}
-              onBlur={() => setFocusedItem((prev) => ({...prev, msg: false}))}
+              onBlur={() => setMsgFocused(false)}
               error={error('msg')}
               autoCapitalize="none"
               autoCorrect={false}
@@ -649,11 +632,9 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
           styles.confirm,
           hasError ? {backgroundColor: colors.warmGrey} : undefined,
         ]}
-        pressedStyle={
-          hasError
-            ? {backgroundColor: colors.warmGrey}
-            : {backgroundColor: colors.dodgerBlue}
-        }
+        pressedStyle={{
+          backgroundColor: hasError ? colors.warmGrey : colors.dodgerBlue,
+        }}
         title={i18n.t(`event:new2${pIssue ? ':re' : ''}`)}
         onPress={onPress}
         type="primary"
