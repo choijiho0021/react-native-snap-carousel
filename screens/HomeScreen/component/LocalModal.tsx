@@ -1,9 +1,9 @@
-import React, {memo, useCallback, useState} from 'react';
+import React, {memo, useCallback} from 'react';
 import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
 import {useDispatch} from 'react-redux';
-import WebView, {WebViewMessageEvent} from 'react-native-webview';
+import WebView from 'react-native-webview';
 import {actions as modalActions} from '@/redux/modules/modal';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -54,38 +54,23 @@ type LocalModalProps = {
   html: string;
   onPress: () => void;
 };
-const injectedJavaScript = `
-  window.ReactNativeWebView.postMessage(
-    document.body.scrollHeight.toString()
-  );
-`;
 
 const LocalModal: React.FC<LocalModalProps> = ({localOpKey, html, onPress}) => {
   const dispatch = useDispatch();
-  const [webviewHeight, setWebviewHeight] = useState(0);
   const okHandler = useCallback(() => {
     dispatch(modalActions.closeModal());
     onPress?.();
   }, [dispatch, onPress]);
 
-  const onMessage = useCallback((event: WebViewMessageEvent) => {
-    const height = parseInt(event.nativeEvent.data, 10);
-    setWebviewHeight(height);
-  }, []);
-
   return (
     <SafeAreaView style={{flex: 1}}>
-      <Pressable
-        style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}
-        onPress={() => dispatch(modalActions.closeModal())}>
-        <View style={[styles.container, {height: webviewHeight + 166}]}>
-          <WebView
-            style={{flex: 1}}
-            originWhitelist={['*']}
-            source={{html}}
-            onMessage={onMessage}
-            injectedJavaScript={injectedJavaScript}
-          />
+      <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
+        <Pressable
+          style={{flex: 1}}
+          onPress={() => dispatch(modalActions.closeModal())}
+        />
+        <View style={[styles.container, {height: 520}]}>
+          <WebView style={{flex: 1}} originWhitelist={['*']} source={{html}} />
           <View style={styles.okBtnContainer}>
             <AppButton
               style={styles.okButton}
@@ -110,7 +95,7 @@ const LocalModal: React.FC<LocalModalProps> = ({localOpKey, html, onPress}) => {
             </View>
           </Pressable>
         </View>
-      </Pressable>
+      </View>
     </SafeAreaView>
   );
 };
