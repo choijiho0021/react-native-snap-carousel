@@ -206,7 +206,8 @@ const ExtraCouponScreen = () => {
           justifyContent="flex-end"
           safeAreaColor={colors.white}
           visible={showItem !== undefined}
-          onOkClose={() => setShowItem(undefined)}>
+          onOkClose={() => setShowItem(undefined)}
+          titleViewStyle={{}}>
           <View style={{flex: 1}}>
             <View style={styles.modalClose}>
               <AppSvgIcon
@@ -218,6 +219,7 @@ const ExtraCouponScreen = () => {
               <Image
                 style={styles.downloadStyle}
                 source={{uri: API.default.httpImageUrl(showItem.download)}}
+                resizeMode="contain"
               />
             </ScrollView>
           </View>
