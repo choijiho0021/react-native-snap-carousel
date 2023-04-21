@@ -3,7 +3,7 @@ import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
 import {useDispatch} from 'react-redux';
-import WebView from 'react-native-webview';
+import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {actions as modalActions} from '@/redux/modules/modal';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -55,6 +55,12 @@ type LocalModalProps = {
   onPress: () => void;
 };
 
+const injectedJavaScript = `
+  window.ReactNativeWebView.postMessage(
+    document.body.scrollHeight.toString()
+  );
+`;
+
 const LocalModal: React.FC<LocalModalProps> = ({localOpKey, html, onPress}) => {
   const dispatch = useDispatch();
   const [webviewHeight, setWebviewHeight] = useState(0);
@@ -67,7 +73,6 @@ const LocalModal: React.FC<LocalModalProps> = ({localOpKey, html, onPress}) => {
 
   const onMessage = useCallback((event: WebViewMessageEvent) => {
     const height = parseInt(event.nativeEvent.data, 10);
-    console.log('@@@ height', height);
     setWebviewHeight(height);
   }, []);
 
@@ -80,10 +85,16 @@ const LocalModal: React.FC<LocalModalProps> = ({localOpKey, html, onPress}) => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <Pressable
-        style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}
-        onPress={() => dispatch(modalActions.closeModal())}>
-        <View style={[styles.container, {height: webviewHeight + 166}]}>
+      <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
+        <Pressable
+          style={{flex: 1}}
+          onPress={() => dispatch(modalActions.closeModal())}
+        />
+        <View
+          style={[
+            styles.container,
+            {height: webviewHeight + 166, maxHeight: 520},
+          ]}>
           <WebView
             style={{flex: 1}}
             originWhitelist={['*']}
