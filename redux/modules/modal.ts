@@ -1,42 +1,32 @@
 /* eslint-disable no-param-reassign */
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import _ from 'underscore';
-import {ReactElement} from 'react';
+import {createSlice} from '@reduxjs/toolkit';
 
 export type ModalModelState = {
-  visible?: boolean;
-  content?: ReactElement<any, any>;
-};
-
-const updateModalState = (state: ModalModelState, payload: ModalModelState) => {
-  const newState = _.clone(state);
-  newState.visible = payload.visible;
-  newState.content = payload.content;
-
-  return newState;
+  visible: boolean;
+  render?: () => React.ReactElement;
 };
 
 const initialState: ModalModelState = {
   visible: false,
-  content: undefined,
+  render: undefined,
 };
 
 const slice = createSlice({
   name: 'modal',
   initialState,
   reducers: {
-    showModal: (state, action: PayloadAction<ModalModelState>) => {
-      return updateModalState(state, {...action.payload, visible: true});
+    renderModal: (state, {payload}) => {
+      state.visible = true;
+      state.render = payload;
+      return state;
     },
-    closeModal: () => {
-      return {visible: false, content: undefined};
+    closeModal: (state) => {
+      state.visible = false;
+      state.render = undefined;
+      return state;
     },
-    resetModal: (state) => ({
-      ...initialState,
-      ...state,
-    }),
   },
 });
 

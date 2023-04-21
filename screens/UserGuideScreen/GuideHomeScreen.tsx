@@ -59,9 +59,9 @@ const GuideHomeScreen = () => {
               AsyncStorage.setItem('esim.guide.modal.check', 'checked');
 
               dispatch(
-                modalActions.showModal({
-                  content: <GuideModal guideOption={guideOption} isHome />,
-                }),
+                modalActions.renderModal(() => (
+                  <GuideModal guideOption={guideOption} isHome />
+                )),
               );
             } else {
               navigation.navigate('UserGuideSelectRegion', {guideOption: v});

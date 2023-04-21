@@ -145,17 +145,6 @@ const ContactGlobalScreen: React.FC<ContactScreenProps> = ({
     Analytics.trackEvent('Page_View_Count', {page: 'Service Center'});
   }, [navigation]);
 
-  /*
-  componentDidUpdate(prevProps: ContactScreenProps) {
-    if (
-      !!this.props.noti.result &&
-      prevProps.noti.result !== this.props.noti.result
-    ) {
-      this.showModal(true);
-    }
-  }
-  */
-
   const onPress = useCallback(
     (key: string) => {
       switch (key) {
@@ -203,35 +192,6 @@ const ContactGlobalScreen: React.FC<ContactScreenProps> = ({
     },
     [onPress],
   );
-
-  /*
-    const resendable = this.props.noti.result !== 0 ||
-      (this.props.noti.lastSent instanceof Date ? Math.round( (new Date() - this.props.noti.lastSent)/ (1000*60) ) > 0 : true)
-
-    if ( ! this.props.account.loggedIn ) {
-      this.props.navigation.navigate('Auth')
-      return;
-    }
-
-    if (this.props.pending || ! resendable ) {
-      this.showModal(true)
-      return;
-    }
-
-    if ( this.cancelKtalk ) {
-      this.cancelKtalk()
-      this.cancelKtalk = null
-    }
-
-    const sendKtalk = this.props.action.noti.initAndSendAlimTalk({
-      mobile: this.props.account.mobile,
-      abortController: new AbortController()
-    })
-
-    this.cancelKtalk = sendKtalk.cancel
-    sendKtalk.catch( err => console.log("failed to send alimtalk", err))
-
-    */
 
   return (
     <View style={styles.container}>

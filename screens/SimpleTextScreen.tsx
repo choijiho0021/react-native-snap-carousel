@@ -48,7 +48,6 @@ import i18n from '@/utils/i18n';
 import AppAlert from '@/components/AppAlert';
 import {parseJson} from '@/utils/utils';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
-import AppStyledText from '@/components/AppStyledText';
 
 const {scheme, apiUrl} = Env.get();
 const {width} = Dimensions.get('window');
@@ -189,23 +188,21 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
           break;
         case 'moveToEvent':
           if (!account.loggedIn) {
-            action.modal.showModal({
-              content: (
-                <AppModalContent
-                  title={i18n.t('event:login')}
-                  type="normal"
-                  onOkClose={() => {
-                    navigation.navigate('Auth', {
-                      screen: 'RegisterMobile',
-                    });
-                    action.modal.closeModal();
-                  }}
-                  onCancelClose={() => {
-                    action.modal.closeModal();
-                  }}
-                />
-              ),
-            });
+            action.modal.renderModal(() => (
+              <AppModalContent
+                title={i18n.t('event:login')}
+                type="normal"
+                onOkClose={() => {
+                  navigation.navigate('Auth', {
+                    screen: 'RegisterMobile',
+                  });
+                  action.modal.closeModal();
+                }}
+                onCancelClose={() => {
+                  action.modal.closeModal();
+                }}
+              />
+            ));
           } else {
             navigation.navigate('EventBoard', {index: 0, nid: cmd.value});
           }

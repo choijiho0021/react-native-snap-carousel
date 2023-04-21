@@ -150,9 +150,9 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
   const renderModal = useCallback(
     ({imgUrl, att}: {imgUrl?: string; att?: CropImage}) => {
       dispatch(
-        modalActions.showModal({
-          content: <PreviewImageModal imgUrl={imgUrl} attachment={att} />,
-        }),
+        modalActions.renderModal(() => (
+          <PreviewImageModal imgUrl={imgUrl} attachment={att} />
+        )),
       );
     },
     [dispatch],

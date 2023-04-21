@@ -104,18 +104,16 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
   const [inValid, setInValid] = useState<ValidationResult>({});
 
   const showModal = useCallback(() => {
-    actions.modal.showModal({
-      content: (
-        <AppModalContent
-          title={i18n.t('changeEmail:saveInfo')}
-          type="info"
-          onOkClose={() => {
-            actions.modal.closeModal();
-            navigation.goBack();
-          }}
-        />
-      ),
-    });
+    actions.modal.renderModal(() => (
+      <AppModalContent
+        title={i18n.t('changeEmail:saveInfo')}
+        type="info"
+        onOkClose={() => {
+          actions.modal.closeModal();
+          navigation.goBack();
+        }}
+      />
+    ));
   }, [actions.modal, navigation]);
 
   useEffect(() => {

@@ -146,21 +146,19 @@ const LinkInput: React.FC<LinkInputProps> = ({
       setLinkCount((prev) => prev + 1);
     } else {
       dispatch(
-        modalActions.showModal({
-          content: (
-            <AppModalContent
-              type="info"
-              onOkClose={() => dispatch(modalActions.closeModal())}>
-              <View style={{marginLeft: 30}}>
-                <AppStyledText
-                  text={i18n.t('event:alert:link')}
-                  textStyle={styles.modalText}
-                  format={{b: styles.modalBoldText}}
-                />
-              </View>
-            </AppModalContent>
-          ),
-        }),
+        modalActions.renderModal(() => (
+          <AppModalContent
+            type="info"
+            onOkClose={() => dispatch(modalActions.closeModal())}>
+            <View style={{marginLeft: 30}}>
+              <AppStyledText
+                text={i18n.t('event:alert:link')}
+                textStyle={styles.modalText}
+                format={{b: styles.modalBoldText}}
+              />
+            </View>
+          </AppModalContent>
+        )),
       );
     }
   }, [dispatch, linkCount, onChangeValue]);

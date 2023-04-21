@@ -339,15 +339,13 @@ const Esim: React.FC<EsimProps> = ({
         const tm = moment(item, 'YYYY-MM-DD HH:mm:ss');
 
         if (!tm.isValid() || tm.add(1, 'day').isBefore(moment())) {
-          return action.modal.showModal({
-            content: (
-              <LocalModal
-                onPress={() => navToCountry(info)}
-                localOpKey={localOp?.key || ''}
-                html={localOp.notice}
-              />
-            ),
-          });
+          return action.modal.renderModal(() => (
+            <LocalModal
+              onPress={() => navToCountry(info)}
+              localOpKey={localOp?.key || ''}
+              html={localOp.notice}
+            />
+          ));
         }
       }
 

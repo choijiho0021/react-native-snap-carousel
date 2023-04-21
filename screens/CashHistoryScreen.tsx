@@ -568,7 +568,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   const showExpirePt = useCallback(() => {
     if (expirePt <= 0) setShowSnackbar(true);
     else {
-      action.modal.showModal({content: expirePtModalBody()});
+      action.modal.renderModal(() => expirePtModalBody());
     }
   }, [action.modal, expirePt, expirePtModalBody]);
 
@@ -639,7 +639,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           </AppText>
           <Pressable
             style={{flexDirection: 'row', alignItems: 'center'}}
-            onPress={() => action.modal.showModal({content: orderModalBody()})}>
+            onPress={() => action.modal.renderModal(() => orderModalBody())}>
             <AppText
               style={[
                 appStyles.medium14,

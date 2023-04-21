@@ -70,11 +70,9 @@ const GuideSelectRegionScreen = () => {
           style={styles.box}
           onPress={() =>
             dispatch(
-              modalActions.showModal({
-                content: (
-                  <GuideModal guideOption={guideOption} isHome={false} />
-                ),
-              }),
+              modalActions.renderModal(() => (
+                <GuideModal guideOption={guideOption} isHome={false} />
+              )),
             )
           }>
           <AppSvgIcon name="noticeFlag" style={{marginRight: 8}} />

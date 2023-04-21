@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
 
 type LocalModalProps = {
   localOpKey: string;
-  html: string;
+  html?: string;
   onPress: () => void;
 };
 
@@ -83,7 +83,7 @@ const LocalModal: React.FC<LocalModalProps> = ({localOpKey, html, onPress}) => {
     }
   }, []);
 
-  return (
+  return html ? (
     <SafeAreaView style={{flex: 1}}>
       <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
         <Pressable
@@ -130,7 +130,7 @@ const LocalModal: React.FC<LocalModalProps> = ({localOpKey, html, onPress}) => {
         </View>
       </View>
     </SafeAreaView>
-  );
+  ) : null;
 };
 
 export default memo(LocalModal);

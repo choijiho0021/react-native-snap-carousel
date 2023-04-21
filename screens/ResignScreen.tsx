@@ -403,15 +403,13 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
   }, [action.account, action.cart, action.modal, action.noti, action.order]);
 
   const showFinishModal = useCallback(() => {
-    action.modal.showModal({
-      content: (
-        <AppModalContent
-          title={i18n.t('resign:finished')}
-          type="info"
-          onOkClose={logout}
-        />
-      ),
-    });
+    action.modal.renderModal(() => (
+      <AppModalContent
+        title={i18n.t('resign:finished')}
+        type="info"
+        onOkClose={logout}
+      />
+    ));
   }, [action.modal, logout]);
 
   const resign = useCallback(async () => {
@@ -442,26 +440,24 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
   ]);
 
   const showConfirmModal = useCallback(() => {
-    action.modal.showModal({
-      content: (
-        <AppModalContent
-          title={i18n.t('resign:confirmModal', {
-            info: resignInfo,
-          })}
-          type="normal"
-          onCancelClose={resign}
-          onOkClose={() => {
-            navigation.popToTop();
-            navigation.navigate('HomeStack', {screen: 'Home'});
-            action.modal.closeModal();
-          }}
-          cancelButtonTitle={i18n.t('yes')}
-          cancelButtonStyle={{color: colors.black, marginRight: 60}}
-          okButtonTitle={i18n.t('no')}
-          okButtonStyle={{color: colors.clearBlue}}
-        />
-      ),
-    });
+    action.modal.renderModal(() => (
+      <AppModalContent
+        title={i18n.t('resign:confirmModal', {
+          info: resignInfo,
+        })}
+        type="normal"
+        onCancelClose={resign}
+        onOkClose={() => {
+          navigation.popToTop();
+          navigation.navigate('HomeStack', {screen: 'Home'});
+          action.modal.closeModal();
+        }}
+        cancelButtonTitle={i18n.t('yes')}
+        cancelButtonStyle={{color: colors.black, marginRight: 60}}
+        okButtonTitle={i18n.t('no')}
+        okButtonStyle={{color: colors.clearBlue}}
+      />
+    ));
   }, [action.modal, navigation, resign, resignInfo]);
 
   return (

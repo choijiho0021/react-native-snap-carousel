@@ -328,27 +328,25 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
 
   useEffect(() => {
     if (pressed && !pending && success) {
-      action.modal.showModal({
-        content: (
-          <AppModalContent
-            type="info"
-            onOkClose={() => {
-              action.modal.closeModal();
-              setInitial();
-              action.eventBoard.getIssueList();
-              setPressed(false);
-              jumpTo('list');
-            }}>
-            <View style={{marginLeft: 30}}>
-              <AppStyledText
-                text={i18n.t(`event:alert:${pIssue ? 'reOpen' : 'open'}`)}
-                textStyle={styles.modalText}
-                format={{b: styles.modalBoldText}}
-              />
-            </View>
-          </AppModalContent>
-        ),
-      });
+      action.modal.renderModal(() => (
+        <AppModalContent
+          type="info"
+          onOkClose={() => {
+            action.modal.closeModal();
+            setInitial();
+            action.eventBoard.getIssueList();
+            setPressed(false);
+            jumpTo('list');
+          }}>
+          <View style={{marginLeft: 30}}>
+            <AppStyledText
+              text={i18n.t(`event:alert:${pIssue ? 'reOpen' : 'open'}`)}
+              textStyle={styles.modalText}
+              format={{b: styles.modalBoldText}}
+            />
+          </View>
+        </AppModalContent>
+      ));
     }
   }, [
     action.eventBoard,
@@ -417,25 +415,21 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         ?.statusCode || '';
 
     if (statusCode && (statusCode === 'r' || statusCode !== 'f')) {
-      action.modal.showModal({
-        content: (
-          <AppModalContent
-            type="info"
-            onOkClose={() => action.modal.closeModal()}>
-            <View style={{marginLeft: 30}}>
-              <AppStyledText
-                text={i18n.t(
-                  `event:alert:duplication${
-                    statusCode === 'r' ? ':reopen' : ''
-                  }`,
-                )}
-                textStyle={styles.modalText}
-                format={{b: styles.modalBoldText}}
-              />
-            </View>
-          </AppModalContent>
-        ),
-      });
+      action.modal.renderModal(() => (
+        <AppModalContent
+          type="info"
+          onOkClose={() => action.modal.closeModal()}>
+          <View style={{marginLeft: 30}}>
+            <AppStyledText
+              text={i18n.t(
+                `event:alert:duplication${statusCode === 'r' ? ':reopen' : ''}`,
+              )}
+              textStyle={styles.modalText}
+              format={{b: styles.modalBoldText}}
+            />
+          </View>
+        </AppModalContent>
+      ));
     } else {
       const issue = {
         title,

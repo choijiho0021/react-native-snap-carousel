@@ -511,9 +511,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       (!closedPopUp.includes(popUpPromo?.uuid) ||
         popUpPromo.rule?.display?.repeat)
     ) {
-      actions.modal.showModal({
-        content: popUpModalBody(popUpPromo),
-      });
+      actions.modal.renderModal(() => popUpModalBody(popUpPromo));
     }
   }, [actions.modal, closedPopUp, popUpModalBody, popUpPromo]);
 
@@ -609,7 +607,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       }}>
       {mainStack()}
       <Modal animationType="fade" transparent visible={modal.visible}>
-        {modal.content}
+        {modal.render?.()}
       </Modal>
     </NavigationContainer>
   );
