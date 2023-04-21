@@ -14,7 +14,6 @@ import {Image as CropImage} from 'react-native-image-crop-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import _ from 'underscore';
-import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {
@@ -49,7 +48,7 @@ import AppStyledText from '@/components/AppStyledText';
 import AttachmentBox from '@/screens/BoardScreen/AttachmentBox';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {utils} from '@/utils/utils';
-import LinkInput, {LinkInputRef} from './LinkInput';
+import LinkInput from './LinkInput';
 
 const styles = StyleSheet.create({
   inputAccessoryText: {
@@ -97,11 +96,23 @@ const styles = StyleSheet.create({
     color: colors.black,
     paddingHorizontal: 16,
   },
+  inputMsgBox: {
+    height: 208,
+    paddingVertical: 16,
+  },
+  inputMsg: {
+    height: 176,
+    textAlignVertical: 'top',
+    padding: 0,
+  },
+  noticeBox: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
   notice: {
     borderRadius: 3,
     backgroundColor: colors.backGrey,
     marginHorizontal: 20,
-    height: 64,
   },
   noticeBtnWeb: {
     height: 64 - 8,
@@ -170,6 +181,23 @@ const styles = StyleSheet.create({
     letterSpacing: -0.32,
     color: colors.black,
   },
+  noticeTitle: {
+    ...appStyles.bold14Text,
+    lineHeight: 22,
+    color: colors.black,
+  },
+  noticeMainContents: {
+    ...appStyles.bold14Text,
+    lineHeight: 22,
+    letterSpacing: -0.28,
+    color: colors.warmGrey,
+  },
+  noticeSubContents: {
+    ...appStyles.medium14,
+    lineHeight: 22,
+    letterSpacing: -0.28,
+    color: colors.warmGrey,
+  },
 });
 
 type ApplyEventProps = {
@@ -209,11 +237,6 @@ const isUrl = (str: string) => {
 
 const inputAccessoryViewID = 'doneKbd';
 
-const injectedJavaScript = `
-window.ReactNativeWebView.postMessage(
-  document.body.scrollHeight.toString()
-);`;
-
 export type EventParamImagesType = {
   url: string;
   imagesInfo: EventImagesInfo;
@@ -242,20 +265,14 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   const [extraHeight, setExtraHeight] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<RkbEvent | undefined>();
-  const [showWebView, setShowWebView] = useState(false);
+  const [showNotice, setShowNotice] = useState(true);
   const [focusedItem, setFocusedItem] = useState({
     title: false,
     msg: false,
   });
-  const [webviewHeight, setWebviewHeight] = useState(0);
   const [paramImages, setParamImages] = useState<EventParamImagesType[]>([]);
   const [pressed, setPressed] = useState(false);
   const [pIssue, setPIssue] = useState<RkbEventBoard>();
-  const linkRef = useRef<LinkInputRef>(null);
-  const onMessage = useCallback((event: WebViewMessageEvent) => {
-    const height = parseInt(event.nativeEvent.data, 10);
-    setWebviewHeight(height);
-  }, []);
   const eventTitleList = useMemo(() => {
     if (eventList?.length > 0) {
       return eventList.map((e) => ({value: e.title, label: e.title}));
@@ -367,7 +384,9 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       (selectedEvent?.rule?.image &&
         attachment.size < 1 &&
         paramImages.length < 1) ||
-      (selectedEvent?.rule?.link && linkParam.find((l) => l === ''))
+      (selectedEvent?.rule?.link &&
+        linkParam.findIndex((l) => l === '') !== -1) ||
+      linkParam?.find((l) => l !== '' && !isUrl(l))
     );
   }, [attachment.size, linkParam, msg, paramImages.length, selectedEvent]);
 
@@ -381,11 +400,11 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       return;
     }
 
-    const list = linkRef?.current?.getValue() || [];
-    setLinkParam(list);
-
     // 링크 필수 인경우
-    if (selectedEvent?.rule?.link && list?.find((l) => l === '')) {
+    if (
+      selectedEvent?.rule?.link &&
+      linkParam?.findIndex((l) => l === '') !== -1
+    ) {
       action.toast.push('event:empty:link');
       return;
     }
@@ -400,7 +419,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       return;
     }
 
-    if (list.find((l) => l !== '' && !isUrl(l))) {
+    if (linkParam.find((l) => l !== '' && !isUrl(l))) {
       action.toast.push('event:invalidLink');
       return;
     }
@@ -435,7 +454,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       const issue = {
         title,
         msg,
-        link: list.map((l) => ({value: l})),
+        link: linkParam.map((l) => ({value: l})),
         eventUuid: selectedEvent?.uuid,
         eventStatus: statusCode === 'f' ? 'R' : 'O',
         paramImages,
@@ -451,7 +470,11 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   }, [
     title,
     msg,
-    selectedEvent,
+    selectedEvent?.rule?.link,
+    selectedEvent?.rule?.image,
+    selectedEvent?.nid,
+    selectedEvent?.uuid,
+    linkParam,
     attachment,
     paramImages,
     eventBoard.list,
@@ -509,40 +532,30 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
           </Pressable>
 
           {selectedEvent && (
-            <View
-              style={[
-                styles.notice,
-                showWebView
-                  ? {
-                      height: webviewHeight + 64 - 8,
-                      borderBottomLeftRadius: 0,
-                      borderBottomRightRadius: 0,
-                      backgroundColor: colors.backGrey,
-                    }
-                  : undefined,
-              ]}>
+            <View style={styles.notice}>
               <Pressable
                 style={[
                   styles.noticeBtn,
-                  showWebView ? styles.noticeBtnWeb : undefined,
+                  showNotice ? styles.noticeBtnWeb : undefined,
                 ]}
-                onPress={() => setShowWebView(!showWebView)}>
+                onPress={() => setShowNotice(!showNotice)}>
                 <AppText style={styles.noticeBtnTitle}>
                   {i18n.t('event:notice')}
                 </AppText>
                 <AppSvgIcon
-                  name={showWebView ? 'iconArrowUp' : 'iconArrowDown'}
+                  name={showNotice ? 'iconArrowUp' : 'iconArrowDown'}
                 />
               </Pressable>
 
-              {showWebView && (
-                <View style={{height: webviewHeight}}>
-                  <WebView
-                    style={{flex: 1}}
-                    source={{html: selectedEvent.notice || ''}}
-                    originWhitelist={['*']}
-                    onMessage={onMessage}
-                    injectedJavaScript={injectedJavaScript}
+              {selectedEvent.notice && showNotice && (
+                <View style={styles.noticeBox}>
+                  <AppStyledText
+                    text={selectedEvent.notice}
+                    textStyle={styles.noticeSubContents}
+                    format={{
+                      b: styles.noticeTitle,
+                      s: styles.noticeMainContents,
+                    }}
                   />
                 </View>
               )}
@@ -560,54 +573,49 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             </View>
           )}
 
-          <AppTextInput
+          <View
             style={[
               styles.inputBox,
-              {
-                height: 208,
-                paddingTop: 16,
-                paddingHorizontal: 16,
-                textAlignVertical: 'top',
-              },
+              styles.inputMsgBox,
               focusedItem.msg ? {borderColor: colors.clearBlue} : undefined,
-            ]}
-            ref={keybd}
-            placeholder={i18n.t('event:content')}
-            placeholderTextColor={colors.greyish}
-            multiline
-            numberOfLines={8}
-            inputAccessoryViewID={inputAccessoryViewID}
-            enablesReturnKeyAutomatically
-            clearTextOnFocus={false}
-            maxLength={2000}
-            onChangeText={(v) => {
-              setMsg(v);
-              validate('msg', v);
-            }}
-            onFocus={() => {
-              setExtraHeight(80);
-              setFocusedItem((prev) => ({...prev, msg: true}));
-            }}
-            onBlur={() => setFocusedItem((prev) => ({...prev, msg: false}))}
-            error={error('msg')}
-            autoCapitalize="none"
-            autoCorrect={false}
-            onContentSizeChange={({target}) =>
-              scrollRef.current?.props?.scrollToFocusedInput(
-                findNodeHandle(target),
-              )
-            }
-            value={msg}
-          />
+            ]}>
+            <AppTextInput
+              style={styles.inputMsg}
+              ref={keybd}
+              placeholder={i18n.t('event:content')}
+              placeholderTextColor={colors.greyish}
+              multiline
+              numberOfLines={8}
+              inputAccessoryViewID={inputAccessoryViewID}
+              enablesReturnKeyAutomatically
+              clearTextOnFocus={false}
+              maxLength={2000}
+              onChangeText={(v) => {
+                setMsg(v);
+                validate('msg', v);
+              }}
+              onFocus={() => {
+                setExtraHeight(80);
+                setFocusedItem((prev) => ({...prev, msg: true}));
+              }}
+              onBlur={() => setFocusedItem((prev) => ({...prev, msg: false}))}
+              error={error('msg')}
+              autoCapitalize="none"
+              autoCorrect={false}
+              onContentSizeChange={({target}) =>
+                scrollRef.current?.props?.scrollToFocusedInput(
+                  findNodeHandle(target),
+                )
+              }
+              value={msg}
+            />
+          </View>
 
           {selectedEvent && (
             <LinkInput
               value={linkParam}
-              onChangeValue={(v) => {
-                setLinkParam(v);
-              }}
+              onChangeValue={setLinkParam}
               required={selectedEvent?.rule?.link}
-              refLinkInput={linkRef}
             />
           )}
 
@@ -619,8 +627,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             setAttachment={setAttachment}
             imageQuality={selectedEvent?.rule?.imageQuality}
           />
-
-          <View style={{height: 56}} />
         </View>
       </KeyboardAwareScrollView>
 
@@ -661,8 +667,6 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         onPress={(value) => {
           setSelectedEvent(eventList.find((e) => e.title === value));
           setShowModal(false);
-          setShowWebView(true);
-          setWebviewHeight(0);
         }}
         value={selectedEvent?.title}
       />

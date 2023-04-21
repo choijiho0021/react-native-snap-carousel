@@ -92,22 +92,16 @@ const styles = StyleSheet.create({
   },
 });
 
-export type LinkInputRef = {
-  getValue: () => string[];
-};
-
 type LinkInputProps = {
   value: string[];
   onChangeValue: (v: string[]) => void;
   required?: boolean;
-  refLinkInput: React.MutableRefObject<LinkInputRef | null>;
 };
 
 const LinkInput: React.FC<LinkInputProps> = ({
   value,
   onChangeValue,
   required = false,
-  refLinkInput,
 }) => {
   const [linkList, setLinkList] = useState(['']);
   const [linkCount, setLinkCount] = useState(1);
@@ -119,19 +113,16 @@ const LinkInput: React.FC<LinkInputProps> = ({
     setLinkCount(value.length);
   }, [value]);
 
-  useEffect(() => {
-    if (refLinkInput) {
-      refLinkInput.current = {
-        getValue: () => {
-          return linkList;
-        },
-      };
-    }
-  }, [linkList, refLinkInput]);
-
-  const changeList = useCallback((idx: number, v: string) => {
-    setLinkList((prev) => prev.map((p, i) => (i === idx ? v : p)));
-  }, []);
+  const changeList = useCallback(
+    (idx: number, v: string) => {
+      setLinkList((prev) => {
+        const a = prev.map((p, i) => (i === idx ? v : p));
+        onChangeValue(a);
+        return a;
+      });
+    },
+    [onChangeValue],
+  );
 
   const deleteLink = useCallback(
     (idx: number) => {
@@ -146,7 +137,11 @@ const LinkInput: React.FC<LinkInputProps> = ({
 
   const addLinkInput = useCallback(() => {
     if (linkCount < 3) {
-      setLinkList((prev) => prev.concat(''));
+      setLinkList((prev) => {
+        const a = prev.concat('');
+        onChangeValue(a);
+        return a;
+      });
       setFocusedItem(linkCount);
       setLinkCount((prev) => prev + 1);
     } else {
@@ -168,7 +163,7 @@ const LinkInput: React.FC<LinkInputProps> = ({
         }),
       );
     }
-  }, [dispatch, linkCount]);
+  }, [dispatch, linkCount, onChangeValue]);
 
   return (
     <View>
@@ -212,7 +207,9 @@ const LinkInput: React.FC<LinkInputProps> = ({
                 // autoFocus={idx > 0}
                 style={{flex: 1, height: 56}}
                 maxLength={1000}
-                onChangeText={(v) => changeList(idx, v)}
+                onChangeText={(v) => {
+                  changeList(idx, v);
+                }}
                 value={linkList[idx]}
                 enablesReturnKeyAutomatically
                 clearTextOnFocus={false}

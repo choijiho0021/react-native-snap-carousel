@@ -13,7 +13,7 @@ import {colors} from '@/constants/Colors';
 import i18n from '@/utils/i18n';
 import {API} from '@/redux/api';
 import {RkbExtraCoupon} from '@/redux/api/promotionApi';
-import {windowWidth} from '@/constants/SliderEntry.style';
+import {windowWidth, windowHeight} from '@/constants/SliderEntry.style';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
 import {appStyles} from '../constants/Styles';
@@ -46,12 +46,11 @@ const styles = StyleSheet.create({
     height: (windowWidth - 60) / 3,
   },
   downloadStyle: {
-    height: windowWidth * 1.83,
+    height: windowHeight,
   },
   tabScroll: {
     marginTop: 16,
     marginBottom: 6,
-    paddingLeft: 20,
   },
   image: {
     paddingVertical: 5,
@@ -158,6 +157,7 @@ const ExtraCouponScreen = () => {
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.tabScroll}>
+        <View style={{width: 20}} />
         {couponGrp.map((grp) => {
           const isSelected = grp === selectedGrp;
           return (
@@ -177,6 +177,7 @@ const ExtraCouponScreen = () => {
             </Pressable>
           );
         })}
+        <View style={{width: 20}} />
       </ScrollView>
     ),
     [couponGrp, selectedGrp],
@@ -201,7 +202,6 @@ const ExtraCouponScreen = () => {
       {showItem && (
         <AppModal
           type="close"
-          titleViewStyle={{backgroundColor: 'red'}}
           contentStyle={styles.contentStyle}
           justifyContent="flex-end"
           safeAreaColor={colors.white}
