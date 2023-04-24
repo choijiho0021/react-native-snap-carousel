@@ -410,11 +410,10 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       return;
     }
 
-    const statusCode =
-      eventBoard.list.find((l) => l.eventId === selectedEvent?.nid)
-        ?.statusCode || '';
+    const prev = eventBoard.list.find((l) => l.eventId === selectedEvent?.nid);
+    const statusCode = prev?.statusCode || '';
 
-    if (statusCode && (statusCode === 'r' || statusCode !== 'f')) {
+    if (statusCode && statusCode !== 'f') {
       action.modal.renderModal(() => (
         <AppModalContent
           type="info"
@@ -441,7 +440,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         images: attachment
           .map((a) => utils.convertCropImageToRkbImage(a))
           .toArray(),
-        prevId: pIssue?.id || '',
+        prevId: pIssue?.id || prev?.id || '',
       } as RkbEventIssue;
 
       action.eventBoard.postAndGetList(issue);
