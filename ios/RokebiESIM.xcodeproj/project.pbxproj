@@ -1313,8 +1313,8 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODEPUSH_KEY = 8rALrmcU6FwIZqHido0wy0xTulKhTuSiobwoxQ;
 				CODE_SIGN_ENTITLEMENTS = RokebiESIM/RokebiESIM.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CONFIGURATION = Release;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
@@ -1413,7 +1413,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.uangel.rokebi-ESIM";
 				PRODUCT_NAME = RokebiESIM;
-				PROVISIONING_PROFILE_SPECIFIER = Esim_distribution_adhoc;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
@@ -1484,8 +1484,8 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODEPUSH_KEY = pIbLXtxfL7vV7b6HJbgpBzp6gtN593MHEG54f;
 				CODE_SIGN_ENTITLEMENTS = RokebiESIM/RokebiESIM.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CONFIGURATION = Staging;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ESZYQX5P9N;
@@ -1585,7 +1585,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.uangel.rokebi-ESIM";
 				PRODUCT_NAME = RokebiESIM;
-				PROVISIONING_PROFILE_SPECIFIER = RokebiESIM_distribution_appstore;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
