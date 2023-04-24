@@ -1085,5 +1085,7 @@
 
   "service:ready": "This is a service in preparation.",
 
-  "extraCoupon": "Coupons"
+  "extraCoupon": "Coupons",
+
+  "localOp:tag:N": "New"
 }
