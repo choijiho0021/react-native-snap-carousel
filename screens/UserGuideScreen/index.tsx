@@ -505,6 +505,7 @@ const UserGuideScreen = () => {
                 }
               }}
               style={styles.contact}
+              rowStyle={{height: 74}}
             />
           ))}
         </View>

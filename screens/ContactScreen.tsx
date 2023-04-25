@@ -132,10 +132,12 @@ const ContactListItem0 = ({
   item,
   onPress,
   style,
+  rowStyle,
 }: {
   item: MenuItem;
   onPress?: (k: string) => void;
   style?: ViewStyle;
+  rowStyle?: ViewStyle;
 }) => {
   return (
     <Pressable
@@ -143,7 +145,7 @@ const ContactListItem0 = ({
       onPress={() => {
         if (onPress) onPress(item.key);
       }}>
-      <View style={styles.contactListItemRow}>
+      <View style={[styles.contactListItemRow, rowStyle]}>
         <View style={{flexDirection: 'row'}}>
           <AppSvgIcon
             style={{alignSelf: 'center', marginHorizontal: 30}}
