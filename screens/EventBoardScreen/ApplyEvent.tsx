@@ -98,12 +98,15 @@ const styles = StyleSheet.create({
   },
   inputMsgBox: {
     height: 208,
-    paddingVertical: 16,
+    paddingTop: 10,
   },
   inputMsg: {
-    height: 176,
+    height: 198,
     textAlignVertical: 'top',
     padding: 0,
+    ...appStyles.medium16,
+    lineHeight: 24,
+    color: colors.black,
   },
   noticeBox: {
     paddingHorizontal: 20,
