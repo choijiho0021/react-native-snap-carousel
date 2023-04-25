@@ -5,7 +5,7 @@ import _ from 'underscore';
 import Env from '@/environment';
 import userApi from './userApi';
 import {API} from '@/redux/api';
-import {retrieveData, storeData} from '@/utils/utils';
+import {parseJson, retrieveData, storeData} from '@/utils/utils';
 import store from '@/store';
 import {actions as ToastActions, Toast} from '../modules/toast';
 
@@ -280,7 +280,7 @@ export const cachedApi =
       storeData(cachePrefix + key, JSON.stringify(rsp));
     } else if (rsp.result === E_REQUEST_FAILED) {
       const cache = await retrieveData(cachePrefix + key);
-      if (cache) return fulfillWithValue(JSON.parse(cache));
+      if (cache) return fulfillWithValue(parseJson(cache));
     }
     return fulfillWithValue(rsp);
   };
@@ -290,7 +290,7 @@ export const reloadOrCallApi =
   async (reload: boolean, {fulfillWithValue}) => {
     if (!reload) {
       const cache = await retrieveData(cachePrefix + key);
-      if (cache) return fulfillWithValue(JSON.parse(cache));
+      if (cache) return fulfillWithValue(parseJson(cache));
     }
     return cachedApi(key, apiToCall)(param, {fulfillWithValue});
   };

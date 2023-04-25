@@ -6,7 +6,7 @@ import {Reducer} from 'react';
 import {AnyAction} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
 import {Platform} from 'react-native';
-import {storeData, retrieveData} from '@/utils/utils';
+import {storeData, retrieveData, parseJson} from '@/utils/utils';
 import {RkbNoti} from '@/redux/api/notiApi';
 import {API} from '@/redux/api';
 
@@ -119,7 +119,7 @@ const slice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(initNotiList.fulfilled, (state, {payload}) => {
-      state.notiList = JSON.parse(payload) || [];
+      state.notiList = parseJson(payload) || [];
     });
 
     builder.addCase(getNotiList.fulfilled, (state, {payload}) => {
