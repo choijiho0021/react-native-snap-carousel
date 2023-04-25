@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     height: 56,
+    backgroundColor: colors.white,
   },
   checkInfo: {
     backgroundColor: colors.white,
@@ -217,13 +218,7 @@ const UserGuideScreen = () => {
 
   const renderModalHeader = useCallback(
     (index: number) => (
-      <View
-        style={[
-          styles.modalHeader,
-          {
-            backgroundColor: index !== 1 ? colors.whiteSeven : colors.white,
-          },
-        ]}>
+      <View style={styles.modalHeader}>
         <AppText style={[appStyles.bold16Text, {color: colors.clearBlue}]}>
           {index + 1}
           {/* eslint-disable-next-line react-native/no-raw-text */}
