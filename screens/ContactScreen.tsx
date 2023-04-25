@@ -154,7 +154,7 @@ const ContactListItem0 = ({
         {onPress && (
           <AppIcon
             style={{alignSelf: 'center', marginRight: 30}}
-            name="iconArrowRight"
+            name="iconArrowRightBlack"
           />
         )}
       </View>
