@@ -84,8 +84,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   checkInfoText: {
-    ...appStyles.normal14Text,
+    ...appStyles.medium14,
     lineHeight: 22,
+    color: colors.black,
   },
 
   step: {
@@ -275,7 +276,9 @@ const UserGuideScreen = () => {
                       <AppStyledText
                         textStyle={styles.checkInfoText}
                         text={i18n.t(`userGuide:checkInfo${k}`)}
-                        format={{b: {color: colors.clearBlue}}}
+                        format={{
+                          b: [appStyles.bold14Text, {color: colors.clearBlue}],
+                        }}
                       />
                     </View>
                   </View>
