@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   },
   noticeTitle: {
     ...appStyles.bold14Text,
-    lineHeight: 22,
+    lineHeight: 24,
     color: colors.black,
   },
   noticeMainContents: {
