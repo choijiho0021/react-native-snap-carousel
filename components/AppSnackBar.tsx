@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     height: 55,
     marginHorizontal: 20,
+    opacity: 0.92,
   },
 });
 
