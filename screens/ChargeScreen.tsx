@@ -86,7 +86,6 @@ const styles = StyleSheet.create({
   btnCancel: {
     width: 12,
     height: 12,
-    padding: 8,
     marginRight: 8,
   },
   toolTipBody: {
@@ -185,7 +184,11 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
               <AppText style={styles.toolTipTitleText}>
                 {i18n.t('esim:chargeCaution')}
               </AppText>
-              <AppButton style={styles.btnCancel} iconName="btnCancelWhite" />
+              <AppButton
+                style={styles.btnCancel}
+                iconName="btnCancelWhite"
+                onPress={() => setTip(false)}
+              />
             </View>
             <View style={styles.toolTipBody}>
               {[1, 2, 3].map((k) => (
