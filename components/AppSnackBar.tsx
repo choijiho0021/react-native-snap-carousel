@@ -19,7 +19,6 @@ const styles = StyleSheet.create({
 type AppSnackBarProps = {
   textMessage: string;
   visible: boolean;
-  backgroundColor?: string;
   messageColor?: string;
   bottom?: number;
   hideCancel?: boolean;
@@ -49,7 +48,7 @@ class AppSnackBar extends PureComponent<AppSnackBarProps> {
         <SnackBar
           ref={this.snackRef}
           visible={this.props.visible}
-          backgroundColor={this.props.backgroundColor || colors.greyishBrown}
+          backgroundColor={colors.black}
           messageColor={this.props.messageColor || colors.white}
           position="bottom"
           bottom={this.props.bottom || 50}
