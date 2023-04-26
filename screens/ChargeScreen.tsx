@@ -175,6 +175,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
         backgroundColor="rgba(0,0,0,0)"
         contentStyle={styles.toolTipBox}
         tooltipStyle={styles.toolTipStyle}
+        backgroundStyle={{opacity: 0.92}}
         arrowStyle={styles.arrowStyle}
         disableShadow
         arrowSize={{width: 16, height: 8}}

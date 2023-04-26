@@ -263,6 +263,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         contentStyle={styles.toolTipBox}
         tooltipStyle={styles.toolTipStyle}
         arrowStyle={styles.arrowStyle}
+        backgroundStyle={{opacity: 0.92}}
         disableShadow
         arrowSize={{width: 20, height: 12}}
         content={
