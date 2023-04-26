@@ -44,12 +44,12 @@ const styles = StyleSheet.create({
     color: colors.greyish,
     fontWeight: 'bold',
     textAlign: 'right',
-    lineHeight: 20,
+    lineHeight: isDeviceSize('medium') ? 20 : 22,
   },
   disWonStyleCharge: {
     fontSize: isDeviceSize('medium') ? 14 : 16,
     fontWeight: '600',
-    lineHeight: 20,
+    lineHeight: isDeviceSize('medium') ? 20 : 22,
     color: colors.greyish,
   },
   textView: {
@@ -190,7 +190,7 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
                 {
                   flex: 1,
                   fontSize: isDeviceSize('medium') ? 14 : 16,
-                  lineHeight: 22,
+                  lineHeight: isDeviceSize('medium') ? 20 : 22,
                 },
               ]}>
               {item.field_description}
@@ -213,7 +213,6 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
                     {
                       marginLeft: 4,
                       marginRight: 0,
-                      lineHeight: 20,
                       color: colors.redError,
                     },
                   ]}>
