@@ -109,6 +109,7 @@ export type RkbSubscription = {
   country?: string[];
   prodName?: string;
   prodId?: string;
+  prodNid?: string;
   nid?: string;
   actCode?: string;
   smdpAddr?: string;
@@ -146,6 +147,7 @@ const toSubscription =
           country: item.field_country || '',
           prodName: item.title || '',
           prodId: item.product_uuid || '',
+          prodNid: item.product_id || '',
           nid: item.nid || '',
           actCode: item.field_activation_code || '',
           smdpAddr: item.sm_dp_address || '',
