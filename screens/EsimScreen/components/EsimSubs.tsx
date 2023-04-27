@@ -321,7 +321,7 @@ const EsimSubs = ({
           isChargeable,
         });
       } else if (isChargeable) {
-        navigation.navigate('Charge', {
+        navigation.navigate('ChargeType', {
           mainSubs: item,
           chargeablePeriod,
         });

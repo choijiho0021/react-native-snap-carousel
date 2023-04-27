@@ -61,6 +61,7 @@ import GuideSelectRegionScreen from '@/screens/UserGuideScreen/GuideSelectRegion
 import Env from '@/environment';
 import EventBoardScreen from '@/screens/EventBoardScreen';
 import EventResultScreen from '@/screens/BoardScreen/ResultScreen';
+import ChargeTypeScreen from '@/screens/ChargeTypeScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -214,6 +215,7 @@ function EsimStackComponent() {
       <EsimStack.Screen name="Esim" component={EsimScreen} />
       <EsimStack.Screen name="Gift" component={GiftScreen} />
       <EsimStack.Screen name="RedirectHK" component={RedirectHKScreen} />
+      <EsimStack.Screen name="ChargeType" component={ChargeTypeScreen} />
       <EsimStack.Screen name="Charge" component={ChargeScreen} />
       <EsimStack.Screen name="ChargeHistory" component={ChargeHistoryScreen} />
       <EsimStack.Screen name="ChargeDetail" component={ChargeDetailScreen} />
