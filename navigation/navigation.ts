@@ -147,6 +147,10 @@ export type HomeStackParamList = {
     mainSubs: RkbSubscription;
     chargeablePeriod: string;
   };
+  AddOn: {
+    mainSubs: RkbSubscription;
+    chargeablePeriod: string;
+  };
   Receipt: {
     order: RkbOrder;
     receipt: RkbReceipt;

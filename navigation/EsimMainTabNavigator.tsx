@@ -62,6 +62,7 @@ import Env from '@/environment';
 import EventBoardScreen from '@/screens/EventBoardScreen';
 import EventResultScreen from '@/screens/BoardScreen/ResultScreen';
 import ChargeTypeScreen from '@/screens/ChargeTypeScreen';
+import AddOnScreen from '@/screens/AddOnScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -217,6 +218,7 @@ function EsimStackComponent() {
       <EsimStack.Screen name="RedirectHK" component={RedirectHKScreen} />
       <EsimStack.Screen name="ChargeType" component={ChargeTypeScreen} />
       <EsimStack.Screen name="Charge" component={ChargeScreen} />
+      <EsimStack.Screen name="AddOn" component={AddOnScreen} />
       <EsimStack.Screen name="ChargeHistory" component={ChargeHistoryScreen} />
       <EsimStack.Screen name="ChargeDetail" component={ChargeDetailScreen} />
       <EsimStack.Screen name="QrInfo" component={QrInfoScreen} />
