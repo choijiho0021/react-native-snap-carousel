@@ -25,17 +25,17 @@ const styles = StyleSheet.create({
   },
 });
 
-type ChargeTypeScreenNavigationProp = StackNavigationProp<
+type AddOnScreenScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
   'ChargeType'
 >;
 
-type ChargeTypeScreenProps = {
-  navigation: ChargeTypeScreenNavigationProp;
-  route: RouteProp<HomeStackParamList, 'ChargeType'>;
+type AddOnScreenScreenProps = {
+  navigation: AddOnScreenScreenNavigationProp;
+  route: RouteProp<HomeStackParamList, 'AddOn'>;
 };
 
-const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
+const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   navigation,
   route: {params},
 }) => {
@@ -45,7 +45,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       headerLeft: () => (
         <View style={styles.header}>
           <AppBackButton
-            title={i18n.t('esim:charge')}
+            title={i18n.t('esim:charge:type:addOn')}
             style={styles.headerTitle}
           />
         </View>
@@ -53,28 +53,11 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     });
   }, [navigation]);
 
-  return (
-    <SafeAreaView style={styles.container}>
-      {['addOn', 'extension'].map((t) => (
-        <ChargeTypeButton
-          type={t}
-          onPress={() => {
-            if (t === 'extension') {
-              navigation.navigate('Charge', {
-                mainSubs: params?.mainSubs,
-                chargeablePeriod: params?.chargeablePeriod,
-              });
-            } else {
-              navigation.navigate('AddOn', {
-                mainSubs: params?.mainSubs,
-                chargeablePeriod: params?.chargeablePeriod,
-              });
-            }
-          }}
-        />
-      ))}
-    </SafeAreaView>
-  );
+  useEffect(() => {
+    console.log('@@@@ params', params.mainSubs);
+  }, [params]);
+
+  return <SafeAreaView style={styles.container} />;
 };
 
-export default ChargeTypeScreen;
+export default AddOnScreen;
