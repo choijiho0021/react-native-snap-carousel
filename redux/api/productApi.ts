@@ -169,6 +169,28 @@ type DrupalProdCountry = {
   description__value?: string;
 };
 
+type DrupalAddonProd = {
+  sku: string;
+  title: string;
+  price: string;
+  list_price: string;
+  id: string;
+  days: string;
+  volume: string;
+  localop: string;
+};
+
+export type RkbAddOnProd = {
+  sku: string;
+  title: string;
+  price: string;
+  list_price: string;
+  id: string;
+  days: string;
+  volume: string;
+  localop: string;
+};
+
 export type RkbLocalOp = {
   key: string;
   name: string;
@@ -247,6 +269,13 @@ const toColumnList = (v: RkbPriceInfo[]) => {
     }, [] as RkbPriceInfo[][]);
 };
 
+const toAddOnProd = (data: DrupalAddonProd[]): ApiResult<RkbAddOnProd> => {
+  if (data.result === 0) {
+    return api.success(data.objects);
+  }
+  return api.failure(api.E_NOT_FOUND);
+};
+
 const getTitle = (localOp?: RkbLocalOp) => {
   return localOp ? localOp.name.split('-')[0] : '';
 };
@@ -301,6 +330,15 @@ const getProdCountry = () => {
   );
 };
 
+const getAddOnProduct = (subsId: string, remainDays: string) => {
+  return api.callHttpGet<RkbAddOnProd>(
+    api.httpUrl(
+      `${api.path.rokApi.rokebi.prodAddOn}/${subsId}?_format=json&days=${remainDays}`,
+    ),
+    toAddOnProd,
+  );
+};
+
 export type RkbProdByCountry = {
   category: string;
   country: string;
@@ -332,4 +370,5 @@ export default {
   getProdCountry,
   productByCountry,
   getProductByUuid,
+  getAddOnProduct,
 };

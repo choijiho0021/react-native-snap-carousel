@@ -23,6 +23,7 @@ import {API} from '@/redux/api';
 import utils from '@/redux/api/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {HomeStackParamList} from '@/navigation/navigation';
+import ButtonWithPrice from './EsimScreen/components/ButtonWithPrice';
 
 const styles = StyleSheet.create({
   paymentBtnFrame: {
@@ -242,24 +243,11 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
           </View>
         </View>
       </ScrollView>
-      <View style={styles.paymentBtnFrame}>
-        <View style={styles.amountFrame}>
-          <AppText style={styles.amountText}>
-            {i18n.t('esim:charge:amount')}
-            <AppText style={styles.amount}>
-              {utils.currencyString(params?.data.price.value)}
-            </AppText>
-            {i18n.t(params?.data.price.currency)}
-          </AppText>
-        </View>
-        <AppButton
-          style={styles.paymentBtn}
-          type="primary"
-          onPress={onPressBtnPurchase}
-          title={i18n.t('esim:charge:payment')}
-          titleStyle={styles.paymentBtnTitle}
-        />
-      </View>
+      <ButtonWithPrice
+        amount={utils.currencyString(params?.data.price.value)}
+        currency={i18n.t(params?.data.price.currency)}
+        onPress={onPressBtnPurchase}
+      />
     </SafeAreaView>
   );
 };

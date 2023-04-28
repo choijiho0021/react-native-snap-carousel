@@ -57,6 +57,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     <SafeAreaView style={styles.container}>
       {['addOn', 'extension'].map((t) => (
         <ChargeTypeButton
+          key={t}
           type={t}
           onPress={() => {
             if (t === 'extension') {
