@@ -130,11 +130,6 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
       });
   }, [mainSubs, remainDays]);
 
-  useEffect(() => {
-    console.log('@@@@ addOnProd', todayAddOnProd);
-    console.log('@@@@ mainSubs', remainDaysAddOnProd);
-  }, [mainSubs, todayAddOnProd, remainDaysAddOnProd]);
-
   const renderTypeBtn = useCallback(
     (type: AddOnType) => (
       <Pressable
