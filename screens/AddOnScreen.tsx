@@ -11,6 +11,8 @@ import {API} from '@/redux/api';
 import {RkbAddOnProd} from '@/redux/api/productApi';
 import {appStyles} from '@/constants/Styles';
 import ButtonWithPrice from './EsimScreen/components/ButtonWithPrice';
+import ChargeProdTitle from './EsimScreen/components/ChargeProdTitle';
+import TextWithDot from './EsimScreen/components/TextWithDot';
 
 const styles = StyleSheet.create({
   container: {
@@ -26,14 +28,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     height: 56,
     marginRight: 8,
-  },
-  prodName: {
-    marginTop: 10,
-    paddingTop: 50,
-    marginHorizontal: 20,
-  },
-  prodNameText: {
-    ...appStyles.bold20Text,
   },
   addOnFrame: {
     paddingHorizontal: 10,
@@ -72,6 +66,17 @@ const styles = StyleSheet.create({
   },
   typeBtnText: {
     ...appStyles.bold18Text,
+  },
+  dot: {
+    ...appStyles.normal14Text,
+    marginHorizontal: 5,
+    marginTop: 3,
+    color: colors.red,
+  },
+  dotText: {
+    ...appStyles.normal14Text,
+    lineHeight: 22,
+    color: colors.red,
   },
 });
 
@@ -192,9 +197,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.prodName}>
-        <AppText style={styles.prodNameText}>{mainSubs.prodName}</AppText>
-      </View>
+      <ChargeProdTitle prodName={mainSubs.prodName || ''} />
       <View style={styles.addOnFrame}>
         <AppText style={styles.addonType}>
           {i18n.t('esim:charge:addOn:type')}
@@ -214,7 +217,35 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
       <ButtonWithPrice
         amount={selectedAddOnProd?.price || '0'}
         currency={i18n.t('esim:charge:addOn:currency')}
-        onPress={() => {}}
+        onPress={() => {
+          navigation.navigate('ChargeAgreement', {
+            title: i18n.t('esim:charge:type:addOn'),
+            addOnProd: selectedAddOnProd,
+            mainSubs,
+            contents: {
+              chargeProd: i18n.t('esim:charge:addOn:title', {
+                period: i18n.t(`esim:charge:addOn:type:${selectedType}`),
+                volume:
+                  Number(selectedAddOnProd?.volume) > 500
+                    ? `${Number(selectedAddOnProd?.volume) / 1024}GB`
+                    : `${selectedAddOnProd?.volume}MB`,
+              }),
+              period: (
+                <TextWithDot
+                  text={i18n.t('esim:charge:addOn:body', {
+                    date: '0000년 00월 00일 00:00:00',
+                  })}
+                  dotStyle={styles.dot}
+                  textStyle={styles.dotText}
+                />
+              ),
+              noticeTitle: i18n.t('esim:charge:addOn:notice:title'),
+              noticeBody: [1, 2, 3, 4, 5].map((n) =>
+                i18n.t(`esim:charge:addOn:notice:body${n}`),
+              ),
+            },
+          });
+        }}
       />
     </SafeAreaView>
   );
