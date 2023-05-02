@@ -72,6 +72,9 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
               });
             }
           }}
+          disabled={
+            params?.mainSubs.partner === 'Quadcell' && t === 'extension'
+          }
         />
       ))}
     </SafeAreaView>
