@@ -181,7 +181,9 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
 
       <ButtonWithPrice
         amount={
-          params.addOnProd?.price || params.extensionProd?.price.value || '0'
+          params.addOnProd?.price ||
+          params.extensionProd?.price.value.toString() ||
+          '0'
         }
         currency={i18n.t('esim:charge:addOn:currency')}
         onPress={onPressBtnPurchase}
