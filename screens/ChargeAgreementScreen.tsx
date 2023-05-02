@@ -133,13 +133,19 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
     action.cart.purchase({
       purchaseItems,
       balance,
-      esimIccid: params.mainSubs.key,
+      esimIccid: params.mainSubs.subsIccid,
     });
 
     navigation.navigate('PymMethod', {
       mode: 'roaming_product',
     });
-  }, [account, action.cart, navigation, params.mainSubs.key, purchaseItems]);
+  }, [
+    account,
+    action.cart,
+    navigation,
+    params.mainSubs.subsIccid,
+    purchaseItems,
+  ]);
 
   return (
     <SafeAreaView style={styles.container}>

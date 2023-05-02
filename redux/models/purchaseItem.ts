@@ -29,7 +29,7 @@ export const createFromProduct = (prod: RkbProduct) => {
 
 export const createFromAddOnProduct = (prod: RkbAddOnProd, subsId: string) => {
   return {
-    type: 'product',
+    type: 'addon',
     title: prod.title,
     price: utils.stringToCurrency(prod.price),
     qty: 1,
