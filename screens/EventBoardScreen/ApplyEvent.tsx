@@ -15,7 +15,6 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import _ from 'underscore';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
-import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {
   actions as eventBoardActions,
   EventBoardAction,
@@ -49,6 +48,7 @@ import AttachmentBox from '@/screens/BoardScreen/AttachmentBox';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {utils} from '@/utils/utils';
 import LinkInput from './LinkInput';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const styles = StyleSheet.create({
   inputAccessoryText: {
@@ -98,12 +98,15 @@ const styles = StyleSheet.create({
   },
   inputMsgBox: {
     height: 208,
-    paddingVertical: 16,
+    paddingTop: 10,
   },
   inputMsg: {
-    height: 176,
+    height: 198,
     textAlignVertical: 'top',
     padding: 0,
+    ...appStyles.medium16,
+    lineHeight: 24,
+    color: colors.black,
   },
   noticeBox: {
     paddingHorizontal: 20,
@@ -183,7 +186,7 @@ const styles = StyleSheet.create({
   },
   noticeTitle: {
     ...appStyles.bold14Text,
-    lineHeight: 22,
+    lineHeight: 24,
     color: colors.black,
   },
   noticeMainContents: {
@@ -212,7 +215,6 @@ type ApplyEventProps = {
   paramNid?: string;
   action: {
     eventBoard: EventBoardAction;
-    toast: ToastAction;
     modal: ModalAction;
   };
 };
@@ -256,6 +258,10 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   success,
   jumpTo,
 }) => {
+  const [showSnackBar, setShowSnackBar] = useState<{
+    text: string;
+    visible: boolean;
+  }>({text: '', visible: false});
   const eventList = useMemo(() => promotion.event || [], [promotion.event]);
   const [errors, setErrors] = useState<ValidationResult>({});
   const [title, setTitle] = useState<string>();
@@ -381,22 +387,22 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
 
   const onPress = useCallback(() => {
     if (!title) {
-      action.toast.push('event:empty:title');
+      setShowSnackBar({text: i18n.t('event:empty:title'), visible: true});
       return;
     }
     if (!msg) {
-      action.toast.push('event:empty:msg');
+      setShowSnackBar({text: i18n.t('event:empty:msg'), visible: true});
       return;
     }
 
     // 링크 필수 인경우
     if (selectedEvent?.rule?.link && linkParam?.findIndex((l) => !l) >= 0) {
-      action.toast.push('event:empty:link');
+      setShowSnackBar({text: i18n.t('event:empty:link'), visible: true});
       return;
     }
 
     if (linkParam.find((l) => !!l && !isUrl(l))) {
-      action.toast.push('event:invalidLink');
+      setShowSnackBar({text: i18n.t('event:invalidLink'), visible: true});
       return;
     }
 
@@ -406,15 +412,14 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
       attachment.size < 1 &&
       (paramImages?.length || 0) < 1
     ) {
-      action.toast.push('event:empty:image');
+      setShowSnackBar({text: i18n.t('event:empty:image'), visible: true});
       return;
     }
 
-    const statusCode =
-      eventBoard.list.find((l) => l.eventId === selectedEvent?.nid)
-        ?.statusCode || '';
+    const prev = eventBoard.list.find((l) => l.eventId === selectedEvent?.nid);
+    const statusCode = prev?.statusCode || '';
 
-    if (statusCode && (statusCode === 'r' || statusCode !== 'f')) {
+    if (statusCode && statusCode !== 'f') {
       action.modal.renderModal(() => (
         <AppModalContent
           type="info"
@@ -441,7 +446,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         images: attachment
           .map((a) => utils.convertCropImageToRkbImage(a))
           .toArray(),
-        prevId: pIssue?.id || '',
+        prevId: pIssue?.id || prev?.id || '',
       } as RkbEventIssue;
 
       action.eventBoard.postAndGetList(issue);
@@ -493,7 +498,8 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             ]}
             onPress={() => {
               if (eventList.length > 0) setShowModal(true);
-              else action.toast.push('event:empty');
+              else
+                setShowSnackBar({text: i18n.t('event:empty'), visible: true});
             }}
             disabled={!!pIssue}>
             <AppText
@@ -634,6 +640,16 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
         type="primary"
       />
 
+      <AppSnackBar
+        visible={showSnackBar.visible}
+        onClose={() =>
+          setShowSnackBar((pre) => ({text: pre.text, visible: false}))
+        }
+        textMessage={showSnackBar.text}
+        bottom={72}
+        hideCancel
+      />
+
       <AppModalDropDown
         key="appDropDown"
         visible={showModal}
@@ -663,7 +679,6 @@ export default connect(
   (dispatch) => ({
     action: {
       eventBoard: bindActionCreators(eventBoardActions, dispatch),
-      toast: bindActionCreators(toastActions, dispatch),
       modal: bindActionCreators(modalActions, dispatch),
     },
   }),

@@ -7,7 +7,7 @@ import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
-import {storeData, retrieveData} from '@/utils/utils';
+import {storeData, retrieveData, parseJson} from '@/utils/utils';
 import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
 import {cachedApi} from '@/redux/api/api';
@@ -202,7 +202,7 @@ const slice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(init.fulfilled, (state, {payload}) => {
       const orders = ImmutableMap(
-        payload ? JSON.parse(payload).map((o) => [o.orderId, o]) : [],
+        payload ? parseJson(payload).map((o) => [o.orderId, o]) : [],
       ).merge(state.page === 0 ? [] : state.orders);
 
       if (orders) {

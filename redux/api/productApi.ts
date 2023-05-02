@@ -4,11 +4,15 @@ import {Set} from 'immutable';
 import {Platform} from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import utils from '@/redux/api/utils';
-import {createFromProduct} from '@/redux/models/purchaseItem';
+import {
+  createFromAddOnProduct,
+  createFromProduct,
+} from '@/redux/models/purchaseItem';
 import api, {ApiResult} from './api';
 import {RkbPriceInfo} from '../modules/product';
 import {colors} from '@/constants/Colors';
 import Env from '@/environment';
+import {parseJson} from '@/utils/utils';
 
 const {specialCategories} = Env.get();
 
@@ -110,6 +114,10 @@ const toPurchaseItem = (prod?: RkbProduct) => {
   return prod ? createFromProduct(prod) : undefined;
 };
 
+const toPurchaseAddOnItem = (subsId: string, prod?: RkbAddOnProd) => {
+  return prod ? createFromAddOnProduct(prod, subsId) : undefined;
+};
+
 const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
   const testProductReg = /test/;
 
@@ -140,7 +148,7 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
           hotspot: item.field_hotspot === 'On',
           weight: utils.stringToNumber(item.field_weight),
           desc: item.field_desc
-            ? JSON.parse(item.field_desc.replace(/&quot;/g, '"'))
+            ? parseJson(item.field_desc.replace(/&quot;/g, '"'))
             : {},
         })),
     );
@@ -166,6 +174,28 @@ type DrupalLocalOp = {
 type DrupalProdCountry = {
   key?: string;
   description__value?: string;
+};
+
+type DrupalAddonProd = {
+  sku: string;
+  title: string;
+  price: string;
+  list_price: string;
+  id: string;
+  days: string;
+  volume: string;
+  localop: string;
+};
+
+export type RkbAddOnProd = {
+  sku: string;
+  title: string;
+  price: string;
+  list_price: string;
+  id: string;
+  days: string;
+  volume: string;
+  localop: string;
 };
 
 export type RkbLocalOp = {
@@ -246,6 +276,13 @@ const toColumnList = (v: RkbPriceInfo[]) => {
     }, [] as RkbPriceInfo[][]);
 };
 
+const toAddOnProd = (data: DrupalAddonProd[]): ApiResult<RkbAddOnProd> => {
+  if (data.result === 0) {
+    return api.success(data.objects);
+  }
+  return api.failure(api.E_NOT_FOUND);
+};
+
 const getTitle = (localOp?: RkbLocalOp) => {
   return localOp ? localOp.name.split('-')[0] : '';
 };
@@ -300,6 +337,15 @@ const getProdCountry = () => {
   );
 };
 
+const getAddOnProduct = (subsId: string, remainDays: string) => {
+  return api.callHttpGet<RkbAddOnProd>(
+    api.httpUrl(
+      `${api.path.rokApi.rokebi.prodAddOn}/${subsId}?_format=json&days=${remainDays}`,
+    ),
+    toAddOnProd,
+  );
+};
+
 export type RkbProdByCountry = {
   category: string;
   country: string;
@@ -322,6 +368,7 @@ const productByCountry = () => {
 export default {
   category,
   toPurchaseItem,
+  toPurchaseAddOnItem,
   toColumnList,
   getTitle,
   getProduct,
@@ -331,4 +378,5 @@ export default {
   getProdCountry,
   productByCountry,
   getProductByUuid,
+  getAddOnProduct,
 };

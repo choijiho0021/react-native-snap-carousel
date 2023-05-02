@@ -485,7 +485,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
           style={styles.chargeBtn}
           type="primary"
           onPress={() =>
-            navigation.navigate('Charge', {
+            navigation.navigate('ChargeType', {
               mainSubs,
               chargeablePeriod,
             })

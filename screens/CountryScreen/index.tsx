@@ -48,14 +48,19 @@ const styles = StyleSheet.create({
   },
   tab: {
     backgroundColor: colors.white,
-    height: 84,
-    paddingHorizontal: 25,
+    height: 90,
+    paddingTop: 16,
+    paddingHorizontal: 20,
     paddingBottom: 24,
   },
   tabTitle: {
-    fontSize: 18,
-    lineHeight: 20,
+    ...appStyles.medium18,
+    lineHeight: 26,
     color: colors.gray2,
+  },
+  selectedTabTitle: {
+    ...appStyles.bold18Text,
+    color: colors.black,
   },
   toolTipBox: {
     backgroundColor: colors.black,
@@ -258,6 +263,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         contentStyle={styles.toolTipBox}
         tooltipStyle={styles.toolTipStyle}
         arrowStyle={styles.arrowStyle}
+        backgroundStyle={{opacity: 0.92}}
         disableShadow
         arrowSize={{width: 20, height: 12}}
         content={
@@ -341,6 +347,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
             style={styles.tab}
             tintColor={colors.black}
             titleStyle={styles.tabTitle}
+            seletedStyle={styles.selectedTabTitle}
           />
 
           <TabView

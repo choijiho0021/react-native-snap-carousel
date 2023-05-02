@@ -1,7 +1,8 @@
-import {Currency, RkbProduct} from '../api/productApi';
+import {utils} from '@/utils/utils';
+import {Currency, RkbAddOnProd, RkbProduct} from '../api/productApi';
 
 export type PurchaseItem = {
-  type: 'product' | 'rch' | 'sim_card';
+  type: 'addon' | 'product' | 'rch' | 'sim_card';
   title: string;
   variationId?: string;
   price: Currency;
@@ -10,6 +11,7 @@ export type PurchaseItem = {
   orderItemId?: number;
   sku: string;
   imageUrl?: string;
+  subsId?: string;
 };
 
 export const createFromProduct = (prod: RkbProduct) => {
@@ -22,5 +24,17 @@ export const createFromProduct = (prod: RkbProduct) => {
     key: prod.uuid,
     sku: prod.sku,
     imageUrl: prod.imageUrl,
+  } as PurchaseItem;
+};
+
+export const createFromAddOnProduct = (prod: RkbAddOnProd, subsId: string) => {
+  return {
+    type: 'addon',
+    title: prod.title,
+    price: utils.stringToCurrency(prod.price),
+    qty: 1,
+    key: prod.id,
+    sku: prod.sku,
+    subsId,
   } as PurchaseItem;
 };

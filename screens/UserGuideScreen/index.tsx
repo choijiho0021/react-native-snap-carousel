@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     height: 56,
+    backgroundColor: colors.white,
   },
   checkInfo: {
     backgroundColor: colors.white,
@@ -83,8 +84,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   checkInfoText: {
-    ...appStyles.normal14Text,
+    ...appStyles.medium14,
     lineHeight: 22,
+    color: colors.black,
   },
 
   step: {
@@ -217,13 +219,7 @@ const UserGuideScreen = () => {
 
   const renderModalHeader = useCallback(
     (index: number) => (
-      <View
-        style={[
-          styles.modalHeader,
-          {
-            backgroundColor: index !== 1 ? colors.whiteSeven : colors.white,
-          },
-        ]}>
+      <View style={styles.modalHeader}>
         <AppText style={[appStyles.bold16Text, {color: colors.clearBlue}]}>
           {index + 1}
           {/* eslint-disable-next-line react-native/no-raw-text */}
@@ -280,7 +276,9 @@ const UserGuideScreen = () => {
                       <AppStyledText
                         textStyle={styles.checkInfoText}
                         text={i18n.t(`userGuide:checkInfo${k}`)}
-                        format={{b: {color: colors.clearBlue}}}
+                        format={{
+                          b: [appStyles.bold14Text, {color: colors.clearBlue}],
+                        }}
                       />
                     </View>
                   </View>
@@ -507,6 +505,7 @@ const UserGuideScreen = () => {
                 }
               }}
               style={styles.contact}
+              rowStyle={{height: 74}}
             />
           ))}
         </View>

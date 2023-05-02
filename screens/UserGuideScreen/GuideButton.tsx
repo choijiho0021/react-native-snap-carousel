@@ -1,4 +1,4 @@
-import React, {memo} from 'react';
+import React, {memo, useState} from 'react';
 import {StyleSheet, View, Pressable} from 'react-native';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import i18n from '@/utils/i18n';
@@ -11,6 +11,7 @@ const styles = StyleSheet.create({
     padding: 30,
     borderWidth: 1,
     borderColor: colors.whiteFive,
+    borderRadius: 3,
     marginHorizontal: 20,
     marginTop: 24,
     display: 'flex',
@@ -48,30 +49,36 @@ const GuideButton = ({
   item: string;
   onPress: () => void;
   isHome: boolean;
-}) => (
-  <Pressable
-    key={item}
-    style={[
-      styles.btn,
-      item === 'checkSetting' && {backgroundColor: colors.backGrey},
-    ]}
-    onPress={onPress}>
-    <View>
-      <AppText style={styles.btnTitle}>
-        {isHome
-          ? i18n.t(`userGuide:${item}:title`)
-          : i18n.t(`userGuide:selectRegion:${item}`)}
-      </AppText>
-      {isHome && (
-        <View style={{marginTop: 4}}>
-          <AppText style={styles.btnBody}>
-            {i18n.t(`userGuide:${item}:body`)}
-          </AppText>
-        </View>
-      )}
-    </View>
-    <AppSvgIcon name="rightArrow20" />
-  </Pressable>
-);
+}) => {
+  const [isPressed, setIsPressed] = useState(false);
+
+  return (
+    <Pressable
+      key={item}
+      style={[
+        styles.btn,
+        {backgroundColor: isPressed ? colors.backGrey : colors.white},
+      ]}
+      onPress={onPress}
+      onPressIn={() => setIsPressed(true)}
+      onPressOut={() => setIsPressed(false)}>
+      <View>
+        <AppText style={styles.btnTitle}>
+          {isHome
+            ? i18n.t(`userGuide:${item}:title`)
+            : i18n.t(`userGuide:selectRegion:${item}`)}
+        </AppText>
+        {isHome && (
+          <View style={{marginTop: 4}}>
+            <AppText style={styles.btnBody}>
+              {i18n.t(`userGuide:${item}:body`)}
+            </AppText>
+          </View>
+        )}
+      </View>
+      <AppSvgIcon name="rightArrow20" />
+    </Pressable>
+  );
+};
 
 export default memo(GuideButton);
