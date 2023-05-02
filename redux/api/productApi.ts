@@ -4,7 +4,10 @@ import {Set} from 'immutable';
 import {Platform} from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import utils from '@/redux/api/utils';
-import {createFromProduct} from '@/redux/models/purchaseItem';
+import {
+  createFromAddOnProduct,
+  createFromProduct,
+} from '@/redux/models/purchaseItem';
 import api, {ApiResult} from './api';
 import {RkbPriceInfo} from '../modules/product';
 import {colors} from '@/constants/Colors';
@@ -109,6 +112,10 @@ export type RkbProduct = {
 
 const toPurchaseItem = (prod?: RkbProduct) => {
   return prod ? createFromProduct(prod) : undefined;
+};
+
+const toPurchaseAddOnItem = (subsId: string, prod?: RkbAddOnProd) => {
+  return prod ? createFromAddOnProduct(prod, subsId) : undefined;
 };
 
 const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
@@ -361,6 +368,7 @@ const productByCountry = () => {
 export default {
   category,
   toPurchaseItem,
+  toPurchaseAddOnItem,
   toColumnList,
   getTitle,
   getProduct,

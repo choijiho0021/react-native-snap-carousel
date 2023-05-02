@@ -1,8 +1,12 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {StyleSheet, SafeAreaView, View, Pressable} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
+import {connect} from 'react-redux';
+import {RootState} from '@reduxjs/toolkit';
+import {bindActionCreators} from 'redux';
+import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppBackButton from '@/components/AppBackButton';
@@ -13,6 +17,8 @@ import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import TextWithDot from './EsimScreen/components/TextWithDot';
 import ButtonWithPrice from './EsimScreen/components/ButtonWithPrice';
+import {API} from '@/redux/api';
+import {AccountModelState} from '@/redux/modules/account';
 
 const styles = StyleSheet.create({
   container: {
@@ -82,14 +88,27 @@ type ChargeAgreementScreenNavigationProp = StackNavigationProp<
 type ChargeAgreementScreenProps = {
   navigation: ChargeAgreementScreenNavigationProp;
   route: RouteProp<HomeStackParamList, 'ChargeAgreement'>;
+  account: AccountModelState;
+  action: {
+    cart: CartAction;
+  };
 };
 
 const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
   navigation,
   route: {params},
+  account,
+  action,
 }) => {
   const contents = useMemo(() => params.contents, [params.contents]);
+  const purchaseItems = useMemo(
+    () => [
+      API.Product.toPurchaseAddOnItem(params.mainSubs.key, params.addOnProd),
+    ],
+    [params.addOnProd, params.mainSubs.key],
+  );
   const [isPressed, setIsPressed] = useState(false);
+
   useEffect(() => {
     navigation.setOptions({
       title: null,
@@ -100,6 +119,21 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
       ),
     });
   }, [navigation, params.title]);
+
+  const onPressBtnPurchase = useCallback(() => {
+    const {balance} = account;
+
+    // 구매 품목을 갱신한다.
+    action.cart.purchase({
+      purchaseItems,
+      balance,
+      esimIccid: params.mainSubs.key,
+    });
+
+    navigation.navigate('PymMethod', {
+      mode: 'roaming_product',
+    });
+  }, [account, action.cart, navigation, params.mainSubs.key, purchaseItems]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -136,10 +170,19 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
       <ButtonWithPrice
         amount={params.addOnProd?.price || '0'}
         currency={i18n.t('esim:charge:addOn:currency')}
-        onPress={() => {}}
+        onPress={onPressBtnPurchase}
       />
     </SafeAreaView>
   );
 };
 
-export default ChargeAgreementScreen;
+export default connect(
+  ({account}: RootState) => ({
+    account,
+  }),
+  (dispatch) => ({
+    action: {
+      cart: bindActionCreators(cartActions, dispatch),
+    },
+  }),
+)(ChargeAgreementScreen);
