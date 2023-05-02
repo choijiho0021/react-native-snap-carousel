@@ -25,6 +25,7 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RkbProduct} from '@/redux/api/productApi';
 import ProdByType from '@/components/ProdByType';
+import TextWithDot from './EsimScreen/components/TextWithDot';
 
 const styles = StyleSheet.create({
   container: {
@@ -233,7 +234,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
       headerLeft: () => (
         <View style={styles.header}>
           <AppBackButton
-            title={i18n.t('esim:charge')}
+            title={i18n.t('esim:charge:type:extension')}
             style={styles.headerTitle}
           />
           {renderToolTip()}
@@ -264,18 +265,26 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
 
   const onPress = useCallback(
     (data: RkbProduct) =>
-      navigation.navigate('ChargeDetail', {
-        data,
-        prodName: params?.mainSubs?.prodName,
-        chargeablePeriod: params?.chargeablePeriod,
-        subsIccid: params?.mainSubs?.subsIccid,
+      navigation.navigate('ChargeAgreement', {
+        title: i18n.t('esim:charge:type:extension'),
+        extensionProd: data,
+        mainSubs: params.mainSubs,
+        contents: {
+          chargeProd: data.name,
+          period: (
+            <TextWithDot
+              text={i18n.t('esim:charge:extension:body', {
+                date: '0000년 00월 00일',
+              })}
+            />
+          ),
+          noticeTitle: i18n.t('esim:charge:extension:notice:title'),
+          noticeBody: [1, 2, 3, 4, 5, 6, 7].map((n) =>
+            i18n.t(`esim:charge:extension:notice:body${n}`),
+          ),
+        },
       }),
-    [
-      navigation,
-      params?.chargeablePeriod,
-      params?.mainSubs?.prodName,
-      params?.mainSubs?.subsIccid,
-    ],
+    [navigation, params.mainSubs],
   );
 
   const renderScene = useCallback(

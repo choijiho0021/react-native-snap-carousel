@@ -102,10 +102,16 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
 }) => {
   const contents = useMemo(() => params.contents, [params.contents]);
   const purchaseItems = useMemo(
-    () => [
-      API.Product.toPurchaseAddOnItem(params.mainSubs.key, params.addOnProd),
-    ],
-    [params.addOnProd, params.mainSubs.key],
+    () =>
+      params?.addOnProd
+        ? [
+            API.Product.toPurchaseAddOnItem(
+              params.mainSubs.key,
+              params.addOnProd,
+            ),
+          ]
+        : [API.Product.toPurchaseItem(params?.extensionProd)],
+    [params?.addOnProd, params?.extensionProd, params?.mainSubs.key],
   );
   const [isPressed, setIsPressed] = useState(false);
 
@@ -168,7 +174,9 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
       </Pressable>
 
       <ButtonWithPrice
-        amount={params.addOnProd?.price || '0'}
+        amount={
+          params.addOnProd?.price || params.extensionProd?.price.value || '0'
+        }
         currency={i18n.t('esim:charge:addOn:currency')}
         onPress={onPressBtnPurchase}
       />
