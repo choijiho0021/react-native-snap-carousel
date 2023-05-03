@@ -406,10 +406,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
           <AppText style={[appStyles.normal14Text, {color: colors.gray}]}>
             {i18n.t('his:expireDate2', {
               purchaseDate: utils.toDateString(item.purchaseDate, 'YYYY.MM.DD'),
-              expireDate: utils.toDateString(
-                moment(item.purchaseDate).add(180, 'days'),
-                'YYYY.MM.DD',
-              ),
+              expireDate: utils.toDateString(item.expireDate, 'YYYY.MM.DD'),
             })}
           </AppText>
           {addOnData
