@@ -8,7 +8,7 @@ import {RkbInfo} from '@/redux/api/pageApi';
 import {BoardMsgStatus} from '@/redux/api/boardApi';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
-import {RkbProduct} from '@/redux/api/productApi';
+import {RkbAddOnProd, RkbProduct} from '@/redux/api/productApi';
 import {RkbReceipt} from '@/screens/ReceiptScreen';
 import {GuideOption} from '@/screens/UserGuideScreen/GuideHomeScreen';
 import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
@@ -47,6 +47,13 @@ export type PaymentParams = {
   mode?: string;
   card?: string;
   paymentRule?: Record<string, string>;
+};
+
+type ChargeAgreementContents = {
+  chargeProd: string;
+  period: JSX.Element;
+  noticeTitle: string;
+  noticeBody: string[];
 };
 
 type SimpleTextParams = {
@@ -140,6 +147,20 @@ export type HomeStackParamList = {
     subsIccid?: string;
   };
   Charge: {
+    mainSubs: RkbSubscription;
+    chargeablePeriod: string;
+  };
+  ChargeType: {
+    mainSubs: RkbSubscription;
+    chargeablePeriod: string;
+  };
+  ChargeAgreement: {
+    mainSubs: RkbSubscription;
+    addOnProd?: RkbAddOnProd;
+    title: string;
+    contents: ChargeAgreementContents;
+  };
+  AddOn: {
     mainSubs: RkbSubscription;
     chargeablePeriod: string;
   };

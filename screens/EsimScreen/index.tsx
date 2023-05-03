@@ -515,9 +515,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   }, [isFocused, isPressClose]);
 
   useEffect(() => {
-    setSubsList(
-      Array.from(order.subs.sort(sortSubs), ([, subscription]) => subscription),
-    );
+    setSubsList(order.subs.valueSeq().sort(sortSubs).toArray());
   }, [order.subs]);
 
   return (

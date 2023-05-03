@@ -10,11 +10,11 @@ import {PaymentInfo, RkbOrderItem} from '@/redux/api/cartApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import api from '@/redux/api/api';
 import {Currency} from '@/redux/api/productApi';
-import {storeData, retrieveData, utils} from '@/utils/utils';
+import {storeData, retrieveData, utils, parseJson} from '@/utils/utils';
 import {actions as orderAction} from './order';
 import {actions as accountAction} from './account';
 
-const {esimApp, esimCurrency} = Env.get();
+const {esimCurrency} = Env.get();
 
 const initCart = createAsyncThunk('cart/initCart', async () => {
   const oldData = await retrieveData(API.Cart.KEY_INIT_CART);
@@ -37,7 +37,7 @@ const makeOrder = createAsyncThunk('cart/makeOrder', API.Cart.makeOrder);
 const checkStock = createAsyncThunk(
   'cart/checkStock',
   ({purchaseItems}: {purchaseItems: PurchaseItem[]}, {dispatch}) => {
-    return esimApp && purchaseItems[0].type !== 'rch'
+    return purchaseItems[0].type === 'product'
       ? dispatch(cartCheckStock({purchaseItems})).then(({payload: resp}) => {
           if (resp.result === 0) return resp;
           return dispatch(getOutOfStockTitle(resp));
@@ -92,6 +92,7 @@ export interface CartModelState {
   pymPrice?: Currency;
   deduct?: Currency;
   esimIccid?: string;
+  mainSubsId?: string;
 }
 
 const onSuccess = (state, action) => {
@@ -144,13 +145,14 @@ const slice = createSlice({
     },
 
     // 구매할 품목을 저장한다.
-    purchase: (state, action) => {
+    purchase: (state, {payload}) => {
       const {
         esimIccid,
         purchaseItems,
         dlvCost = false,
         balance = 0,
-      } = action.payload;
+        mainSubsId,
+      } = payload;
       const total = ((purchaseItems as PurchaseItem[]) || []).reduce(
         (acc, cur) =>
           utils.toCurrency(
@@ -183,6 +185,7 @@ const slice = createSlice({
       // 잔액 차감
 
       state.esimIccid = esimIccid;
+      state.mainSubsId = mainSubsId;
       // purchaseItems에는 key, qty, price, title 정보 필요
       state.purchaseItems = purchaseItems;
       state.pymReq = pymReq;
@@ -210,7 +213,7 @@ const slice = createSlice({
 
   extraReducers: (builder) => {
     builder.addCase(initCart.fulfilled, (state, {payload}) => {
-      const obj = JSON.parse(payload);
+      const obj = parseJson(payload);
       state.orderId = obj[0].orderId;
       state.orderItems = obj[0].orderItems.filter(
         (i) => i.type === 'esim_product',
@@ -281,7 +284,7 @@ const checkStockAndMakeOrder = createAsyncThunk(
   (info: PaymentInfo, {dispatch, getState}) => {
     const {account, cart} = getState() as RootState;
     const {token, iccid, email, mobile} = account;
-    const {purchaseItems, orderId, esimIccid} = cart;
+    const {purchaseItems, orderId, esimIccid, mainSubsId} = cart;
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
@@ -297,6 +300,7 @@ const checkStockAndMakeOrder = createAsyncThunk(
               token,
               iccid,
               esimIccid,
+              mainSubsId,
               user: mobile,
               mail: email,
             }),

@@ -15,7 +15,6 @@ import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import AppStyledText from '@/components/AppStyledText';
-import AppButton from '@/components/AppButton';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {RootState} from '@/redux';
 import {AccountModelState} from '@/redux/modules/account';
@@ -23,42 +22,9 @@ import {API} from '@/redux/api';
 import utils from '@/redux/api/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {HomeStackParamList} from '@/navigation/navigation';
+import ButtonWithPrice from './EsimScreen/components/ButtonWithPrice';
 
 const styles = StyleSheet.create({
-  paymentBtnFrame: {
-    height: 52,
-    flexDirection: 'row',
-  },
-  paymentBtn: {
-    height: 52,
-    backgroundColor: colors.clearBlue,
-    flex: 0.65,
-  },
-  amountFrame: {
-    flex: 0.35,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.white,
-    borderTopWidth: 1,
-    borderColor: '#d8d8d8',
-  },
-  amountText: {
-    ...appStyles.normal16Text,
-    lineHeight: 36,
-    letterSpacing: 0.26,
-  },
-  amount: {
-    ...appStyles.robotoBold16Text,
-    lineHeight: 36,
-    letterSpacing: 0.26,
-    color: colors.black,
-  },
-  paymentBtnTitle: {
-    ...appStyles.medium18,
-    color: colors.white,
-    textAlign: 'center',
-    width: '100%',
-  },
   bg: {
     height: 288,
     paddingTop: 40,
@@ -242,24 +208,11 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
           </View>
         </View>
       </ScrollView>
-      <View style={styles.paymentBtnFrame}>
-        <View style={styles.amountFrame}>
-          <AppText style={styles.amountText}>
-            {i18n.t('esim:charge:amount')}
-            <AppText style={styles.amount}>
-              {utils.currencyString(params?.data.price.value)}
-            </AppText>
-            {i18n.t(params?.data.price.currency)}
-          </AppText>
-        </View>
-        <AppButton
-          style={styles.paymentBtn}
-          type="primary"
-          onPress={onPressBtnPurchase}
-          title={i18n.t('esim:charge:payment')}
-          titleStyle={styles.paymentBtnTitle}
-        />
-      </View>
+      <ButtonWithPrice
+        amount={utils.currencyString(params?.data.price.value)}
+        currency={i18n.t(params?.data.price.currency)}
+        onPress={onPressBtnPurchase}
+      />
     </SafeAreaView>
   );
 };

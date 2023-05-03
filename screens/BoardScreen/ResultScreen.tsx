@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import moment from 'moment';
-import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -31,6 +30,7 @@ import EventStatusBox from './EventStatusBox';
 import {RkbBoardBase} from '@/redux/api/boardApi';
 import ImageListModal from './ImageListModal';
 import {RkbEvent} from '@/redux/api/promotionApi';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const styles = StyleSheet.create({
   date: {
@@ -119,9 +119,6 @@ type ResultScreenProps = {
   showStatus: boolean;
   eventList?: RkbEvent[];
   resp?: string;
-  action: {
-    toast: ToastAction;
-  };
 };
 
 const ResultScreen: React.FC<ResultScreenProps> = ({
@@ -131,8 +128,8 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
   eventList: el,
   pending,
   resp,
-  action,
 }) => {
+  const [showSnackBar, setShowSnackbar] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
   const [issue, title, showStatus = false, eventList = []] = useMemo(
@@ -300,7 +297,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
             type="primary"
             onPress={() => {
               if (isEnded) {
-                action.toast.push('event:ended');
+                setShowSnackbar(true);
               } else {
                 [1, 2].forEach(() => navigation.goBack());
                 navigate(navigation, route, 'MyPageStack', {
@@ -314,6 +311,14 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
         )}
       </View>
 
+      <AppSnackBar
+        visible={showSnackBar}
+        onClose={() => setShowSnackbar(false)}
+        textMessage={i18n.t('event:ended')}
+        bottom={72}
+        hideCancel
+      />
+
       <ImageListModal
         visible={modalImgList.length > 0}
         images={modalImgList}
@@ -324,16 +329,9 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
   );
 };
 
-export default connect(
-  ({status}: RootState) => ({
-    pending:
-      status.pending[boardActions.getIssueResp.typePrefix] ||
-      status.pending[eventBoardActions.getEventIssueResp.typePrefix] ||
-      false,
-  }),
-  (dispatch) => ({
-    action: {
-      toast: bindActionCreators(toastActions, dispatch),
-    },
-  }),
-)(ResultScreen);
+export default connect(({status}: RootState) => ({
+  pending:
+    status.pending[boardActions.getIssueResp.typePrefix] ||
+    status.pending[eventBoardActions.getEventIssueResp.typePrefix] ||
+    false,
+}))(ResultScreen);

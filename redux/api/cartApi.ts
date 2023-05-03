@@ -355,6 +355,7 @@ const makeOrder = ({
   iccid,
   esimIccid,
   orderId,
+  mainSubsId,
 }: {
   items: PurchaseItem[];
   info: PaymentInfo;
@@ -364,6 +365,7 @@ const makeOrder = ({
   iccid?: string;
   esimIccid?: string;
   orderId?: number;
+  mainSubsId?: string;
 }) => {
   if (_.isEmpty(items))
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: items');
@@ -397,6 +399,7 @@ const makeOrder = ({
   const body = {
     iccid,
     esimIccid,
+    mainSubsId,
     order: {
       orderId,
       type: orderType,
