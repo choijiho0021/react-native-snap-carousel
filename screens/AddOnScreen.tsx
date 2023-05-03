@@ -223,13 +223,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
             addOnProd: selectedAddOnProd,
             mainSubs,
             contents: {
-              chargeProd: i18n.t('esim:charge:addOn:title', {
-                period: i18n.t(`esim:charge:addOn:type:${selectedType}`),
-                volume:
-                  Number(selectedAddOnProd?.volume) > 500
-                    ? `${Number(selectedAddOnProd?.volume) / 1024}GB`
-                    : `${selectedAddOnProd?.volume}MB`,
-              }),
+              chargeProd: selectedAddOnProd?.title || '',
               period: (
                 <TextWithDot
                   text={i18n.t('esim:charge:addOn:body', {
