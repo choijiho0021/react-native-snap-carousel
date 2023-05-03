@@ -57,6 +57,7 @@ const DropDownHeader = ({
           style={{backgroundColor: colors.white, height: 70}}
           iconName={showModal ? 'iconArrowUp' : 'iconArrowDown'}
           iconStyle={styles.dropDownIcon}
+          onPress={onPress}
         />
       </View>
     </Pressable>
