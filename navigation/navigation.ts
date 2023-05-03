@@ -157,6 +157,7 @@ export type HomeStackParamList = {
   ChargeAgreement: {
     mainSubs: RkbSubscription;
     addOnProd?: RkbAddOnProd;
+    extensionProd?: RkbProduct;
     title: string;
     contents: ChargeAgreementContents;
   };

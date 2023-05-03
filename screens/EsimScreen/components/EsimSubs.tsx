@@ -297,7 +297,7 @@ const EsimSubs = ({
   }, [mainSubs.expireDate]);
 
   const isChargeable = useMemo(
-    () => !(mainSubs.partner !== 'CMI' || isChargeExpired),
+    () => !(mainSubs.partner === 'BillionConnect' || isChargeExpired),
     [isChargeExpired, mainSubs.partner],
   );
 

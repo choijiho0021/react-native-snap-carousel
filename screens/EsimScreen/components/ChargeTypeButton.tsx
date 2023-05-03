@@ -38,9 +38,11 @@ const styles = StyleSheet.create({
 const ChargeTypeButton = ({
   type,
   onPress,
+  disabled = false,
 }: {
   type: string;
   onPress: () => void;
+  disabled: boolean;
 }) => {
   const [isPressed, setIsPressed] = useState(false);
 
@@ -48,9 +50,15 @@ const ChargeTypeButton = ({
     <Pressable
       style={[
         styles.btn,
-        {backgroundColor: isPressed ? colors.backGrey : colors.white},
+        {
+          backgroundColor: disabled
+            ? colors.whiteTwo
+            : isPressed
+            ? colors.backGrey
+            : colors.white,
+        },
       ]}
-      onPress={onPress}
+      onPress={() => !disabled && onPress()}
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}>
       <AppText style={styles.detailText}>
