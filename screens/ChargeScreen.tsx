@@ -157,7 +157,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
   const prodData = useMemo(() => {
     if (partnerIds) {
       const cmiPartnerIds = partnerIds.filter(
-        (partnerId) => localOpList.get(partnerId)?.partner === 'CMI',
+        (partnerId) => localOpList.get(partnerId)?.partner === 'cmi',
       );
       return makeProdData(prodByPartner, cmiPartnerIds);
     }

@@ -361,7 +361,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
                   {item.prodName}
                 </AppText>
               </View>
-              {!isCallProduct && item.partner !== 'BillionConnect' ? (
+              {!isCallProduct && item.partner !== 'billionconnect' ? (
                 <View style={styles.topOfActiveContainer}>
                   {isShowUsage ? usageRender() : checkUsageButton()}
                   <AppText style={styles.warning}>

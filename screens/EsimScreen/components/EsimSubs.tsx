@@ -280,7 +280,7 @@ const EsimSubs = ({
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
   const isBc = useMemo(
-    () => mainSubs.partner === 'BillionConnect',
+    () => mainSubs.partner === 'billionconnect',
     [mainSubs.partner],
   );
   const notCardInfo = useMemo(
@@ -297,7 +297,7 @@ const EsimSubs = ({
   }, [mainSubs.expireDate]);
 
   const isChargeable = useMemo(
-    () => !(mainSubs.partner === 'BillionConnect' || isChargeExpired),
+    () => !(mainSubs.partner === 'billionconnect' || isChargeExpired),
     [isChargeExpired, mainSubs.partner],
   );
 
@@ -431,7 +431,7 @@ const EsimSubs = ({
 
   const QRnCopyInfo = useCallback(() => {
     // const usageCheckable =
-    //   item.packageId?.startsWith('D') || item.partner === 'Quadcell';
+    //   item.packageId?.startsWith('D') || item.partner === 'quadcell';
     return (
       <View style={styles.activeBottomBox}>
         <AppSvgIcon

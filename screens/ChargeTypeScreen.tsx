@@ -73,7 +73,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             }
           }}
           disabled={
-            params?.mainSubs.partner === 'Quadcell' && t === 'extension'
+            params?.mainSubs.partner === 'quadcell' && t === 'extension'
           }
         />
       ))}

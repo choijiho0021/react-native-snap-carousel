@@ -160,7 +160,7 @@ const toSubscription =
           subsIccid: item.field_iccid || '',
           packageId: item.field_cmi_package_id || '',
           subsOrderNo: item.field_cmi_order_id || '',
-          partner: item.field_ref_partner || '',
+          partner: item.field_ref_partner?.toLowerCase() || '',
           isStore,
           promoFlag: item.field_special_categories
             ? item.field_special_categories
