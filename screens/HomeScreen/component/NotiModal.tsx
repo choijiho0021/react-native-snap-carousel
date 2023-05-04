@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
 import React, {memo, useCallback, useState, useMemo, useEffect} from 'react';
-import {Image, Pressable, View, StyleSheet, Animated} from 'react-native';
+import {Image, Pressable, View, StyleSheet} from 'react-native';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -11,13 +11,6 @@ import {colors} from '@/constants/Colors';
 import {API} from '@/redux/api';
 import ProgressiveImage from '../../../components/ProgressiveImage';
 import AppCarousel from '@/components/AppCarousel';
-import {
-  ACTIVE_DOT_WIDTH,
-  dotStyle,
-  DOT_MARGIN,
-  INACTIVE_DOT_WIDTH,
-} from './PromotionCarousel';
-import utils from '@/redux/api/utils';
 import {sliderWidth} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 
@@ -45,13 +38,6 @@ const styles = StyleSheet.create({
     width: 1.4,
     backgroundColor: colors.white,
   },
-  inactiveDot: {
-    width: INACTIVE_DOT_WIDTH,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.lightGrey,
-    marginLeft: DOT_MARGIN,
-  },
 });
 
 type NotiModalProps = {
@@ -75,7 +61,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
     'redirect',
   );
   const [imageHeight, setImageHeight] = useState(450);
-  const [activeSlide, setActiveSlide] = useState(-1);
+  const [activeSlide, setActiveSlide] = useState(0);
   const modalImageSize = useMemo(() => sliderWidth - 40, []);
 
   const setPopupDisabled = useCallback(() => {
@@ -85,62 +71,6 @@ const NotiModal: React.FC<NotiModalProps> = ({
         moment().format('YYYY-MM-DD HH:mm'),
       );
   }, [checked]);
-
-  const renderDots = useCallback(
-    (activeIndex: number) => {
-      const duration = 200;
-      const aniMationWidth = new Animated.Value(INACTIVE_DOT_WIDTH);
-      const margin = aniMationWidth.interpolate({
-        inputRange: [INACTIVE_DOT_WIDTH, ACTIVE_DOT_WIDTH],
-        outputRange: [ACTIVE_DOT_WIDTH, INACTIVE_DOT_WIDTH],
-      });
-
-      Animated.timing(aniMationWidth, {
-        toValue: ACTIVE_DOT_WIDTH,
-        duration,
-        useNativeDriver: false,
-      }).start();
-
-      if (activeIndex === 0) {
-        return popUpList.map((elm, idx) =>
-          idx === 0 ? (
-            <Animated.View
-              key={elm.uuid + idx.toString()}
-              style={dotStyle(aniMationWidth, margin)}
-            />
-          ) : (
-            <View
-              key={utils.generateKey(idx.toString())}
-              style={styles.inactiveDot}
-            />
-          ),
-        );
-      }
-
-      return popUpList.map((_elm, idx) => {
-        if (activeIndex === idx)
-          return (
-            <Animated.View
-              key={utils.generateKey(idx.toString())}
-              style={dotStyle(aniMationWidth, DOT_MARGIN, colors.clearBlue)}
-            />
-          );
-
-        return activeIndex === (idx + 1) % popUpList.length ? (
-          <Animated.View
-            key={utils.generateKey(idx.toString())}
-            style={dotStyle(margin, DOT_MARGIN, colors.lightGrey)}
-          />
-        ) : (
-          <View
-            key={utils.generateKey(idx.toString())}
-            style={styles.inactiveDot}
-          />
-        );
-      });
-    },
-    [popUpList],
-  );
 
   const renderItem = useCallback(
     ({item}: {item: RkbPromotion}) => {
