@@ -61,7 +61,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
     'redirect',
   );
   const [imageHeight, setImageHeight] = useState(450);
-  const [activeSlide, setActiveSlide] = useState(0);
+  const [activeSlide, setActiveSlide] = useState(-1);
   const modalImageSize = useMemo(() => sliderWidth - 40, []);
 
   const setPopupDisabled = useCallback(() => {
