@@ -228,7 +228,7 @@ const toLocalOp = (data: DrupalLocalOp[]): ApiResult<RkbLocalOp> => {
         network: item.field_network,
         weight: utils.stringToNumber(item.field_weight) || 0,
         detail: item.body,
-        partner: item.field_ref_partner,
+        partner: item.field_ref_partner.toLowerCase(),
         notice: item.field_notice,
       })),
     );
