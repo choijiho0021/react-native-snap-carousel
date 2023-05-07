@@ -297,8 +297,8 @@ const EsimSubs = ({
   }, [mainSubs.expireDate]);
 
   const isChargeable = useMemo(
-    () => !(mainSubs.partner === 'billionconnect' || isChargeExpired),
-    [isChargeExpired, mainSubs.partner],
+    () => mainSubs.partner !== 'billionconnect',
+    [mainSubs.partner],
   );
 
   useEffect(() => {
@@ -318,19 +318,21 @@ const EsimSubs = ({
           chargeablePeriod,
           onPressUsage,
           chargedSubs,
-          isChargeable,
+          isChargeable: isChargeExpired,
         });
-      } else if (isChargeable) {
+      } else if (!isBc) {
         navigation.navigate('ChargeType', {
           mainSubs: item,
           chargeablePeriod,
+          isChargeable: isChargeExpired,
         });
       }
     },
     [
       chargeablePeriod,
       chargedSubs,
-      isChargeable,
+      isBc,
+      isChargeExpired,
       isCharged,
       navigation,
       onPressUsage,
@@ -457,7 +459,7 @@ const EsimSubs = ({
           name="btnUsage"
         />
 
-        {isChargeable ? (
+        {!isBc ? (
           <AppSvgIcon
             style={styles.btn}
             onPress={() => onPressRecharge(mainSubs)}
@@ -480,8 +482,8 @@ const EsimSubs = ({
       </View>
     );
   }, [
+    isBc,
     isChargeExpired,
-    isChargeable,
     isCharged,
     mainSubs,
     navigation,
@@ -529,9 +531,7 @@ const EsimSubs = ({
   }, [expired, mainSubs, navigation]);
 
   const renderMoveBtn = useCallback(() => {
-    const moveBtnList = [sendable, isCharged || isChargeable].filter(
-      (elm) => elm,
-    );
+    const moveBtnList = [sendable, isCharged || !isBc].filter((elm) => elm);
     if (moveBtnList.length === 0) return null;
 
     return (
@@ -562,14 +562,7 @@ const EsimSubs = ({
         })}
       </View>
     );
-  }, [
-    isChargeable,
-    isCharged,
-    mainSubs,
-    navigation,
-    onPressRecharge,
-    sendable,
-  ]);
+  }, [isBc, isCharged, mainSubs, navigation, onPressRecharge, sendable]);
 
   const renderCautionText = useCallback(
     (caution: string, subNum: number, hasPreDot: boolean) => (

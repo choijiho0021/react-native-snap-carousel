@@ -32,6 +32,7 @@ import SplitText from '@/components/SplitText';
 import Triangle from '@/components/Triangle';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {HomeStackParamList} from '@/navigation/navigation';
+import {API} from '@/redux/api';
 
 const styles = StyleSheet.create({
   chargeBtn: {
@@ -251,6 +252,12 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
       headerLeft: () => <AppBackButton title={i18n.t('esim:chargeHistory')} />,
     });
   }, [navigation]);
+
+  useEffect(() => {
+    prodData.forEach((p) => {
+      console.log('@@@@ nid', p.nid);
+    });
+  }, [prodData]);
 
   const renderTooltip = useCallback(() => {
     return (
@@ -515,6 +522,8 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
             navigation.navigate('ChargeType', {
               mainSubs,
               chargeablePeriod,
+              chargedSubs: prodData,
+              isChargeable,
             })
           }
           title={i18n.t('esim:charge')}

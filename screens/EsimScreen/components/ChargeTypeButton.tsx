@@ -58,7 +58,7 @@ const ChargeTypeButton = ({
             : colors.white,
         },
       ]}
-      onPress={() => !disabled && onPress()}
+      onPress={() => onPress()}
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}>
       <AppText style={styles.detailText}>

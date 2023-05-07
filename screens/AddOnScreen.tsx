@@ -13,6 +13,7 @@ import {appStyles} from '@/constants/Styles';
 import ButtonWithPrice from './EsimScreen/components/ButtonWithPrice';
 import ChargeProdTitle from './EsimScreen/components/ChargeProdTitle';
 import TextWithDot from './EsimScreen/components/TextWithDot';
+import status from '@/redux/modules/status';
 
 const styles = StyleSheet.create({
   container: {
@@ -195,52 +196,63 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
     [selectedAddOnProd?.sku],
   );
 
+  useEffect(() => {
+    console.log('@@@@ partner, status', mainSubs.partner, params?.status);
+  }, [mainSubs.partner, params?.status]);
+
   return (
     <SafeAreaView style={styles.container}>
       <ChargeProdTitle prodName={mainSubs.prodName || ''} />
-      <View style={styles.addOnFrame}>
-        <AppText style={styles.addonType}>
-          {i18n.t('esim:charge:addOn:type')}
-        </AppText>
-        <View style={[styles.row, styles.typeBtnFrame]}>
-          {addOnTypeList.map((t) => renderTypeBtn(t))}
-        </View>
-        <AppText style={styles.addonVolume}>
-          {i18n.t('esim:charge:addOn:volume')}
-        </AppText>
-        <View style={[styles.row, styles.typeBtnFrame]}>
-          {selectedType === 'today'
-            ? todayAddOnProd.map((t) => renderAddOnProd(t))
-            : remainDaysAddOnProd.map((t) => renderAddOnProd(t))}
-        </View>
-      </View>
-      <ButtonWithPrice
-        amount={selectedAddOnProd?.price || '0'}
-        currency={i18n.t('esim:charge:addOn:currency')}
-        onPress={() => {
-          navigation.navigate('ChargeAgreement', {
-            title: i18n.t('esim:charge:type:addOn'),
-            addOnProd: selectedAddOnProd,
-            mainSubs,
-            contents: {
-              chargeProd: selectedAddOnProd?.title || '',
-              period: (
-                <TextWithDot
-                  text={i18n.t('esim:charge:addOn:body', {
-                    date: '0000년 00월 00일 00:00:00',
-                  })}
-                  dotStyle={styles.dot}
-                  textStyle={styles.dotText}
-                />
-              ),
-              noticeTitle: i18n.t('esim:charge:addOn:notice:title'),
-              noticeBody: [1, 2, 3, 4, 5].map((n) =>
-                i18n.t(`esim:charge:addOn:notice:body${n}`),
-              ),
-            },
-          });
-        }}
-      />
+
+      {mainSubs.partner === 'cmi' && params?.status === 'unUsed' ? (
+        <AppText>CMI 사용전 충전 불가</AppText>
+      ) : (
+        <>
+          <View style={styles.addOnFrame}>
+            <AppText style={styles.addonType}>
+              {i18n.t('esim:charge:addOn:type')}
+            </AppText>
+            <View style={[styles.row, styles.typeBtnFrame]}>
+              {addOnTypeList.map((t) => renderTypeBtn(t))}
+            </View>
+            <AppText style={styles.addonVolume}>
+              {i18n.t('esim:charge:addOn:volume')}
+            </AppText>
+            <View style={[styles.row, styles.typeBtnFrame]}>
+              {selectedType === 'today'
+                ? todayAddOnProd.map((t) => renderAddOnProd(t))
+                : remainDaysAddOnProd.map((t) => renderAddOnProd(t))}
+            </View>
+          </View>
+          <ButtonWithPrice
+            amount={selectedAddOnProd?.price || '0'}
+            currency={i18n.t('esim:charge:addOn:currency')}
+            onPress={() => {
+              navigation.navigate('ChargeAgreement', {
+                title: i18n.t('esim:charge:type:addOn'),
+                addOnProd: selectedAddOnProd,
+                mainSubs,
+                contents: {
+                  chargeProd: selectedAddOnProd?.title || '',
+                  period: (
+                    <TextWithDot
+                      text={i18n.t('esim:charge:addOn:body', {
+                        date: '0000년 00월 00일 00:00:00',
+                      })}
+                      dotStyle={styles.dot}
+                      textStyle={styles.dotText}
+                    />
+                  ),
+                  noticeTitle: i18n.t('esim:charge:addOn:notice:title'),
+                  noticeBody: [1, 2, 3, 4, 5].map((n) =>
+                    i18n.t(`esim:charge:addOn:notice:body${n}`),
+                  ),
+                },
+              });
+            }}
+          />
+        </>
+      )}
     </SafeAreaView>
   );
 };
