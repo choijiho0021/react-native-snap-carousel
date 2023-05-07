@@ -296,11 +296,6 @@ const EsimSubs = ({
     return utils.toDateString(mainSubs.expireDate, 'YYYY.MM.DD');
   }, [mainSubs.expireDate]);
 
-  const isChargeable = useMemo(
-    () => mainSubs.partner !== 'billionconnect',
-    [mainSubs.partner],
-  );
-
   useEffect(() => {
     if (showMoreInfo)
       flatListRef?.current?.scrollToIndex({index, animated: true});
@@ -318,13 +313,13 @@ const EsimSubs = ({
           chargeablePeriod,
           onPressUsage,
           chargedSubs,
-          isChargeable: isChargeExpired,
+          isChargeable: !isChargeExpired,
         });
       } else if (!isBc) {
         navigation.navigate('ChargeType', {
           mainSubs: item,
           chargeablePeriod,
-          isChargeable: isChargeExpired,
+          isChargeable: !isChargeExpired,
         });
       }
     },
