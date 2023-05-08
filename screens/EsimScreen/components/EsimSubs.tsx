@@ -84,12 +84,12 @@ const styles = StyleSheet.create({
   },
   usageTitleNormal: {
     ...appStyles.normal16Text,
-    fontSize: isDeviceSize('small') ? 16 : 18,
+    fontSize: isDeviceSize('small') ? 18 : 20,
     color: colors.warmGrey,
   },
   usageTitleBold: {
     ...appStyles.normal16Text,
-    fontSize: isDeviceSize('small') ? 16 : 18,
+    fontSize: isDeviceSize('small') ? 18 : 20,
     fontWeight: 'bold',
   },
   expiredBg: {
