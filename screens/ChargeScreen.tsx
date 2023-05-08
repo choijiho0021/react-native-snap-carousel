@@ -34,12 +34,14 @@ const styles = StyleSheet.create({
   },
   tab: {
     backgroundColor: colors.white,
-    height: 60,
-    paddingHorizontal: 25,
+    height: 74,
+    paddingHorizontal: 20,
+    paddingBottom: 24,
   },
   tabTitle: {
-    fontSize: 16,
-    lineHeight: 20,
+    ...appStyles.medium18,
+    lineHeight: 26,
+    color: colors.gray2,
   },
   header: {
     flexDirection: 'row',
@@ -99,6 +101,10 @@ const styles = StyleSheet.create({
   },
   devider: {
     height: 14,
+  },
+  selectedTabTitle: {
+    ...appStyles.bold18Text,
+    color: colors.black,
   },
 });
 
@@ -301,9 +307,9 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
           style={styles.tab}
           tintColor={colors.black}
           titleStyle={styles.tabTitle}
+          seletedStyle={styles.selectedTabTitle}
         />
 
-        <View style={styles.devider} />
         <TabView
           sceneContainerStyle={{flex: 1}}
           navigationState={{index, routes}}
