@@ -55,6 +55,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const {mainSubs, chargeablePeriod, chargedSubs, isChargeable} = params || {};
   const [chargeableItem, setChargeableItem] = useState<RkbSubscription>();
   const [addonEnabled, setAddonEnable] = useState(false);
+  const [expireTime, setExpireTime] = useState('');
   const [status, setStatus] = useState<StatusType>();
   useEffect(() => {
     navigation.setOptions({
@@ -98,6 +99,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             today.isBetween(moment(b.activeTime), moment(b.expireTime)),
         );
         if (inUseItem) {
+          setExpireTime(inUseItem.expireTime);
           if (chargedSubs) {
             const i = chargedSubs.find(
               (s) => s.subsOrderNo === inUseItem.orderID,
@@ -196,8 +198,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             } else if (addonEnabled) {
               navigation.navigate('AddOn', {
                 mainSubs,
-                chargeablePeriod,
                 status,
+                expireTime,
               });
             }
           }}

@@ -13,7 +13,6 @@ import {appStyles} from '@/constants/Styles';
 import ButtonWithPrice from './EsimScreen/components/ButtonWithPrice';
 import ChargeProdTitle from './EsimScreen/components/ChargeProdTitle';
 import TextWithDot from './EsimScreen/components/TextWithDot';
-import status from '@/redux/modules/status';
 
 const styles = StyleSheet.create({
   container: {
@@ -97,7 +96,8 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   navigation,
   route: {params},
 }) => {
-  const mainSubs = useMemo(() => params.mainSubs, [params.mainSubs]);
+  // const mainSubs = useMemo(() => params.mainSubs, [params.mainSubs]);
+  const {mainSubs, status, expireTime} = params || {};
   const remainDays = useMemo(() => '2', []);
   const [todayAddOnProd, setTodayAddOnProd] = useState<RkbAddOnProd[]>([]);
   const [remainDaysAddOnProd, setRemainDaysAddOnProd] = useState<
@@ -106,6 +106,13 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   const [addOnTypeList, setAddOnTypeList] = useState<AddOnType[]>(['today']);
   const [selectedType, setSelectedType] = useState<AddOnType>('today');
   const [selectedAddOnProd, setSelectedAddOnProd] = useState<RkbAddOnProd>();
+
+  useEffect(() => {
+    if (expireTime) {
+      console.log('@@@@ expireTime', expireTime);
+    }
+  }, [expireTime]);
+
   useEffect(() => {
     navigation.setOptions({
       title: null,
@@ -125,6 +132,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
       API.Product.getAddOnProduct(mainSubs.nid, remainDays).then((data) => {
         if (data.result === 0) {
           const rsp = data.objects;
+          console.log('@@@@ rsp', rsp);
           const todayProd = rsp.filter((r) => r.days === '1');
           const remainDaysProd = rsp.filter((r) => r.days !== '1');
           if (remainDaysProd.length > 0)
@@ -197,14 +205,14 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   );
 
   useEffect(() => {
-    console.log('@@@@ partner, status', mainSubs.partner, params?.status);
-  }, [mainSubs.partner, params?.status]);
+    console.log('@@@@ partner, status', mainSubs.partner, status);
+  }, [mainSubs.partner, status]);
 
   return (
     <SafeAreaView style={styles.container}>
       <ChargeProdTitle prodName={mainSubs.prodName || ''} />
 
-      {mainSubs.partner === 'cmi' && params?.status === 'unUsed' ? (
+      {mainSubs.partner === 'cmi' && status === 'unUsed' ? (
         <AppText>CMI 사용전 충전 불가</AppText>
       ) : (
         <>
