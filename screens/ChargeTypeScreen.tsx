@@ -15,7 +15,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.white,
     flex: 1,
-    // alignItems: 'stretch',
   },
   header: {
     flexDirection: 'row',
@@ -55,6 +54,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 }) => {
   const {mainSubs, chargeablePeriod, chargedSubs, isChargeable} = params || {};
   const [chargeableItem, setChargeableItem] = useState<RkbSubscription>();
+  const [addonEnabled, setAddonEnable] = useState(false);
   const [status, setStatus] = useState<StatusType>();
   useEffect(() => {
     navigation.setOptions({
@@ -99,10 +99,13 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         );
         if (inUseItem) {
           if (chargedSubs) {
-            setChargeableItem(
-              chargedSubs.find((s) => s.subsOrderNo === inUseItem.orderID),
+            const i = chargedSubs.find(
+              (s) => s.subsOrderNo === inUseItem.orderID,
             );
+            setChargeableItem(i);
+            if (i?.daily === 'daily') setAddonEnable(true);
           } else {
+            if (mainSubs.daily === 'daily') setAddonEnable(true);
             setChargeableItem(mainSubs);
           }
           setStatus('using');
@@ -111,6 +114,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
         // 사용 전 상품이 있는지 체크
         if (bundles.find((b) => b.status === 1)) {
+          setAddonEnable(true);
           setStatus('unUsed');
           return;
         }
@@ -150,9 +154,11 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           }
           // 사용 중
           setStatus('using');
+          setAddonEnable(true);
           return;
         }
         // 사용 전
+        setAddonEnable(true);
         setStatus('unUsed');
       }
     }
@@ -172,8 +178,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   }, [checkCmiStatus, checkQuadcellStatus, mainSubs]);
 
   useEffect(() => {
-    console.log('@@@@ partner, status', mainSubs.partner, status);
-  }, [mainSubs.partner, status]);
+    console.log('@@@@', mainSubs.partner, mainSubs.daily, status);
+  }, [mainSubs.daily, mainSubs.partner, status]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -187,7 +193,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
                 mainSubs: chargeableItem || mainSubs,
                 chargeablePeriod,
               });
-            } else if (status && status !== 'expired') {
+            } else if (addonEnabled) {
               navigation.navigate('AddOn', {
                 mainSubs,
                 chargeablePeriod,
@@ -196,7 +202,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             }
           }}
           disabled={
-            (t === 'addOn' && status === 'expired') ||
+            (t === 'addOn' && !addonEnabled) ||
             (t === 'extension' &&
               (mainSubs.partner === 'quadcell' || !isChargeable))
           }
