@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     textAlign: 'center',
     marginTop: 10,
+    letterSpacing: -0.5,
   },
   btnTitle2: {
     ...appStyles.medium18,

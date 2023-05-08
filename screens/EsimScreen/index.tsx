@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   ifFirstText: {
-    ...appStyles.normal15Text,
+    ...appStyles.semiBold15Text,
     lineHeight: 20,
     color: '#001c65',
   },
