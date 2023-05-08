@@ -214,7 +214,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
 
   const renderUsagePrieod = useCallback(() => {
     let diff = '';
-    if (selectedType === 'remainDays') {
+    if (selectedType === 'today') {
       const now = moment();
       const resetTime = moment(dataResetTime, 'HH:mm:ss');
 
