@@ -110,6 +110,7 @@ export type RkbSubscription = {
   prodName?: string;
   prodId?: string;
   prodNid?: string;
+  prodDays?: string;
   nid?: string;
   actCode?: string;
   smdpAddr?: string;
@@ -175,6 +176,7 @@ const toSubscription =
           dataVolume: item.field_data_volume,
           refSubs: item.field_ref_subscription || '',
           prodType: item.product_type || '',
+          prodDays: item.product_days || '',
         })),
         // .sort(sortSubs),
       );

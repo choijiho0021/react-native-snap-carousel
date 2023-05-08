@@ -2,6 +2,7 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {StyleSheet, SafeAreaView, View, Pressable} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
+import moment from 'moment';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppBackButton from '@/components/AppBackButton';
@@ -96,9 +97,8 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   navigation,
   route: {params},
 }) => {
-  // const mainSubs = useMemo(() => params.mainSubs, [params.mainSubs]);
   const {mainSubs, status, expireTime} = params || {};
-  const remainDays = useMemo(() => '2', []);
+  const [remainDays, setRemainDays] = useState(1);
   const [todayAddOnProd, setTodayAddOnProd] = useState<RkbAddOnProd[]>([]);
   const [remainDaysAddOnProd, setRemainDaysAddOnProd] = useState<
     RkbAddOnProd[]
@@ -106,12 +106,22 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   const [addOnTypeList, setAddOnTypeList] = useState<AddOnType[]>(['today']);
   const [selectedType, setSelectedType] = useState<AddOnType>('today');
   const [selectedAddOnProd, setSelectedAddOnProd] = useState<RkbAddOnProd>();
+  const [dataResetTime, setDataResetTime] = useState('01:00:00');
 
   useEffect(() => {
     if (expireTime) {
-      console.log('@@@@ expireTime', expireTime);
+      if (mainSubs.partner === 'cmi')
+        setDataResetTime(expireTime.format('HH:mm:ss'));
+
+      // 남은 사용기간 구하기
+      const today = moment();
+      setRemainDays(Math.ceil(expireTime.diff(today, 'hours') / 24));
     }
-  }, [expireTime]);
+  }, [expireTime, mainSubs.partner]);
+
+  // useEffect(() => {
+  //   console.log('@@@@ mainsubs', mainSubs);
+  // }, [mainSubs]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -132,7 +142,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
       API.Product.getAddOnProduct(mainSubs.nid, remainDays).then((data) => {
         if (data.result === 0) {
           const rsp = data.objects;
-          console.log('@@@@ rsp', rsp);
+          // console.log('@@@@ rsp', rsp);
           const todayProd = rsp.filter((r) => r.days === '1');
           const remainDaysProd = rsp.filter((r) => r.days !== '1');
           if (remainDaysProd.length > 0)
@@ -204,9 +214,37 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
     [selectedAddOnProd?.sku],
   );
 
-  useEffect(() => {
-    console.log('@@@@ partner, status', mainSubs.partner, status);
-  }, [mainSubs.partner, status]);
+  // useEffect(() => {
+  //   console.log('@@@@ partner, status', mainSubs.partner, status);
+  // }, [mainSubs.partner, status]);
+
+  const renderUsagePrieod = useCallback(() => {
+    let diff = '';
+    if (selectedType === 'remainDays') {
+      const now = moment();
+      const resetTime = moment(dataResetTime, 'HH:mm:ss');
+
+      if (now.isAfter(resetTime)) {
+        console.log('@@@@ isBefore');
+        resetTime.add(1, 'day');
+      }
+
+      diff = moment
+        .utc(moment.duration(resetTime.diff(now)).asMilliseconds())
+        .format('HH:mm:ss');
+    }
+
+    return (
+      <TextWithDot
+        text={i18n.t(`esim:charge:addOn:usagePeriod:${selectedType}`, {
+          usagePeriod:
+            selectedType === 'remainDays'
+              ? expireTime?.format('YYYY년 MM월 DD일 HH:mm:ss')
+              : diff,
+        })}
+      />
+    );
+  }, [dataResetTime, expireTime, selectedType]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -222,6 +260,15 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
             </AppText>
             <View style={[styles.row, styles.typeBtnFrame]}>
               {addOnTypeList.map((t) => renderTypeBtn(t))}
+            </View>
+            <View>
+              <TextWithDot
+                text={i18n.t(
+                  `esim:charge:addOn:resetTime:${mainSubs.partner}`,
+                  {expireTime: dataResetTime},
+                )}
+              />
+              {renderUsagePrieod()}
             </View>
             <AppText style={styles.addonVolume}>
               {i18n.t('esim:charge:addOn:volume')}

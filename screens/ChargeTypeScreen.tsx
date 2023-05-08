@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {StyleSheet, SafeAreaView, View} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
-import moment from 'moment';
+import moment, {Moment} from 'moment';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppBackButton from '@/components/AppBackButton';
@@ -55,7 +55,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const {mainSubs, chargeablePeriod, chargedSubs, isChargeable} = params || {};
   const [chargeableItem, setChargeableItem] = useState<RkbSubscription>();
   const [addonEnabled, setAddonEnable] = useState(false);
-  const [expireTime, setExpireTime] = useState('');
+  const [expireTime, setExpireTime] = useState<Moment>();
   const [status, setStatus] = useState<StatusType>();
   useEffect(() => {
     navigation.setOptions({
@@ -96,10 +96,13 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         const inUseItem = bundles.find(
           (b) =>
             b.status === 3 &&
-            today.isBetween(moment(b.activeTime), moment(b.expireTime)),
+            today.isBetween(
+              moment(b.activeTime).add(9, 'h'),
+              moment(b.expireTime).add(9, 'h'),
+            ),
         );
         if (inUseItem) {
-          setExpireTime(inUseItem.expireTime);
+          setExpireTime(moment(inUseItem.expireTime).add(9, 'h'));
           if (chargedSubs) {
             const i = chargedSubs.find(
               (s) => s.subsOrderNo === inUseItem.orderID,
@@ -142,6 +145,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
       if (status.result === 0 && status.objects?.retCode === '000000') {
         const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss').add(1, 'h');
+        setExpireTime(exp);
 
         // 사용 완료
         if (!dataPack) {
@@ -196,6 +200,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
                 chargeablePeriod,
               });
             } else if (addonEnabled) {
+              // } else {
               navigation.navigate('AddOn', {
                 mainSubs,
                 status,
