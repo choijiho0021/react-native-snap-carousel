@@ -360,7 +360,7 @@ const EsimSubs = ({
               : styles.usageTitleBold,
             {
               alignSelf: 'center',
-              lineHeight: 28,
+              lineHeight: isDeviceSize('small') ? 26 : 28,
               marginRight: 8,
             },
           ]}
