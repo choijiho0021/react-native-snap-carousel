@@ -106,10 +106,12 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   const [addOnTypeList, setAddOnTypeList] = useState<AddOnType[]>(['today']);
   const [selectedType, setSelectedType] = useState<AddOnType>('today');
   const [selectedAddOnProd, setSelectedAddOnProd] = useState<RkbAddOnProd>();
+  // quadcell 기준 기본 한국시간 1시
   const [dataResetTime, setDataResetTime] = useState('01:00:00');
 
   useEffect(() => {
     if (expireTime) {
+      // cmi의 리셋타임은 활성화 시간 기준으로 변경 됨
       if (mainSubs.partner === 'cmi')
         setDataResetTime(expireTime.format('HH:mm:ss'));
 
@@ -118,10 +120,6 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
       setRemainDays(Math.ceil(expireTime.diff(today, 'hours') / 24));
     }
   }, [expireTime, mainSubs.partner]);
-
-  // useEffect(() => {
-  //   console.log('@@@@ mainsubs', mainSubs);
-  // }, [mainSubs]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -214,10 +212,6 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
     [selectedAddOnProd?.sku],
   );
 
-  // useEffect(() => {
-  //   console.log('@@@@ partner, status', mainSubs.partner, status);
-  // }, [mainSubs.partner, status]);
-
   const renderUsagePrieod = useCallback(() => {
     let diff = '';
     if (selectedType === 'remainDays') {
@@ -225,7 +219,6 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
       const resetTime = moment(dataResetTime, 'HH:mm:ss');
 
       if (now.isAfter(resetTime)) {
-        console.log('@@@@ isBefore');
         resetTime.add(1, 'day');
       }
 
@@ -236,15 +229,28 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
 
     return (
       <TextWithDot
-        text={i18n.t(`esim:charge:addOn:usagePeriod:${selectedType}`, {
-          usagePeriod:
-            selectedType === 'remainDays'
-              ? expireTime?.format('YYYY년 MM월 DD일 HH:mm:ss')
-              : diff,
-        })}
+        text={
+          mainSubs.partner === 'quadcell' && status === 'unUsed'
+            ? i18n.t('esim:charge:addOn:usagePeriod:unUsed', {
+                prodDays: mainSubs.prodDays,
+              })
+            : i18n.t(`esim:charge:addOn:usagePeriod:${selectedType}`, {
+                usagePeriod:
+                  selectedType === 'remainDays'
+                    ? expireTime?.format('YYYY년 MM월 DD일 HH:mm:ss')
+                    : diff,
+              })
+        }
       />
     );
-  }, [dataResetTime, expireTime, selectedType]);
+  }, [
+    dataResetTime,
+    expireTime,
+    mainSubs.partner,
+    mainSubs.prodDays,
+    selectedType,
+    status,
+  ]);
 
   return (
     <SafeAreaView style={styles.container}>
