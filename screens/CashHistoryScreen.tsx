@@ -144,8 +144,9 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     ...appStyles.bold18Text,
+    lineHeight: 30,
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingBottom: 12,
     backgroundColor: colors.white,
   },
   contentContainerStyle: {
@@ -172,6 +173,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteTwo,
     height: 10,
     width: '100%',
+  },
+  historyTitleText: {
+    ...appStyles.bold18Text,
+    lineHeight: 22,
+    color: colors.black,
+    flex: 1,
   },
 });
 
@@ -230,7 +237,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 
   useEffect(() => {
     Animated.timing(animatedValue, {
-      toValue: isTop ? 160 : 0,
+      toValue: isTop ? 170 : 0,
       duration: 500,
       useNativeDriver: false,
     }).start();
@@ -254,7 +261,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 
   useEffect(() => {
     Animated.timing(dividerAnimatedMargin, {
-      toValue: isTop ? 0 : 20,
+      toValue: isTop ? 0 : 24,
       duration: 500,
       useNativeDriver: false,
     }).start();
@@ -543,7 +550,12 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   const renderFilter = useCallback(
     () => (
       <View>
-        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            marginHorizontal: 20,
+            marginBottom: 24,
+          }}>
           {filterList.map((elm) => (
             <Pressable
               onPress={() => setDataFilter(elm)}
@@ -638,8 +650,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         <View style={styles.divider} />
 
         <View key="header" style={styles.hisHeader}>
-          <AppText
-            style={[appStyles.bold18Text, {color: colors.black, flex: 1}]}>
+          <AppText style={styles.historyTitleText}>
             {i18n.t('cashHistory:useHistory')}
           </AppText>
           <Pressable
@@ -685,7 +696,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             contentOffset: {y},
           },
         }) => {
-          if (isTop && y > 170) setIsTop(false);
+          if (isTop && y > 178) setIsTop(false);
           else if (!isTop && y <= 0) setIsTop(true);
         }}
         overScrollMode="never"
