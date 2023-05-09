@@ -1,10 +1,13 @@
 package com.rokebiesim;
 
+import android.app.Activity;
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.RemoteException;
 
@@ -81,6 +84,9 @@ import com.reactnativecommunity.cameraroll.CameraRollPackage;
 import fr.greweb.reactnativeviewshot.RNViewShotPackage;
 
 import com.reactnativepagerview.PagerViewPackage;
+
+import com.navercorp.ntracker.ntrackersdk.NTrackerExt;
+import com.navercorp.ntracker.ntrackersdk.NTrackerPhase;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -245,6 +251,16 @@ public class MainApplication extends Application implements ReactApplication {
 
         ChannelIO.initialize(this);
 
+        if (BuildConfig.DEBUG || BuildConfig.NODE_ENV == "development") {
+            NTrackerExt.enableDebugLog(true);
+            NTrackerExt.configure(getApplicationContext(), "g_4c528f1885cf", NTrackerPhase.DEBUG);
+        } else {
+            NTrackerExt.configure(getApplicationContext(), "g_4c528f1885cf", NTrackerPhase.RELEASE);
+        }
+
+
+
+
         boolean isFirstRun = prefs.getBoolean("isFirstRun", true);
         if (isFirstRun) {
             getReferrer();
@@ -292,5 +308,4 @@ public class MainApplication extends Application implements ReactApplication {
             manager.createNotificationChannel(notificationChannel);
         }
     }
-
 }
