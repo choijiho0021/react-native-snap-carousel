@@ -11,6 +11,7 @@ import i18n from '@/utils/i18n';
 import {actions as modalActions} from '@/redux/modules/modal';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
+import MinusButton from './components/MinusButton';
 
 const styles = StyleSheet.create({
   link: {
@@ -230,15 +231,13 @@ const LinkInput: React.FC<LinkInputProps> = ({
               )}
             </View>
             {idx > 0 && (
-              <Pressable
-                style={styles.minusBtn}
+              <MinusButton
                 onPress={() => {
                   setLinkCount((prev) => prev - 1);
                   if (focusedItem === idx) setFocusedItem(undefined);
                   deleteLink(idx);
-                }}>
-                <AppSvgIcon name="minus16" />
-              </Pressable>
+                }}
+              />
             )}
           </View>
         ) : undefined,
