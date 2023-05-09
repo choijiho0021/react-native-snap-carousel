@@ -56,8 +56,9 @@ const styles = StyleSheet.create({
   },
   balanceBox: {
     flexDirection: 'row',
-    marginTop: 9,
+    marginTop: 4,
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   rechargeBox: {
     flexDirection: 'row',
@@ -67,6 +68,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 18,
     paddingVertical: 8,
+  },
+  rechargeBoxText: {
+    ...appStyles.normal14Text,
+    lineHeight: 24,
   },
   hisHeader: {
     flexDirection: 'row',
@@ -597,7 +602,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             style={styles.rechargeBox}
             onPress={() => navigation.navigate('Recharge')}>
             <AppSvgIcon name="cashHistoryPlus" style={{marginRight: 4}} />
-            <AppText style={appStyles.normal14Text}>
+            <AppText style={styles.rechargeBoxText}>
               {i18n.t('acc:goRecharge')}
             </AppText>
           </Pressable>
