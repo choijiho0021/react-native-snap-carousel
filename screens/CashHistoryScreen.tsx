@@ -631,7 +631,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               balanceStyle={[appStyles.bold18Text, {color: colors.redError}]}
               currencyStyle={[appStyles.bold16Text, {color: colors.redError}]}
             />
-            <AppSvgIcon name="rightArrow" />
+            <AppSvgIcon name="rightArrow" style={{marginLeft: 8}} />
           </View>
         </Pressable>
 
