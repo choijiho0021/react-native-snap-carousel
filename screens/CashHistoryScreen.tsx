@@ -101,7 +101,6 @@ const styles = StyleSheet.create({
     width: 89,
     height: 34,
     borderRadius: 100,
-    borderColor: colors.lightGrey,
     borderWidth: 1,
     marginRight: 8,
     alignItems: 'center',
@@ -581,6 +580,8 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
                 {
                   backgroundColor:
                     dataFilter === elm ? colors.clearBlue : colors.white,
+                  borderColor:
+                    dataFilter === elm ? colors.clearBlue : colors.lightGrey,
                 },
               ]}>
               <AppText
