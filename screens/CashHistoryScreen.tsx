@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: 20,
     paddingVertical: 12,
+    marginBottom: 8,
   },
   expPtBox: {
     marginHorizontal: 20,
@@ -361,19 +362,27 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               }
             }
           }}>
-          <AppText style={[appStyles.medium14, {marginRight: 23, width: 50}]}>
+          <AppText
+            style={[
+              appStyles.medium14,
+              {marginRight: 23, width: 50, lineHeight: 30},
+            ]}>
             {index > 0 && predate === date ? '' : date}
           </AppText>
           <View style={{flex: 1}}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <AppText style={appStyles.bold16Text}>
+              <AppText style={[appStyles.bold16Text, {lineHeight: 30}]}>
                 {i18n.t(`cashHistory:type:${item.type}`)}
               </AppText>
               {order.orders.get(Number(item.order_id)) && (
                 <AppSvgIcon name="rightAngleBracket" style={{marginLeft: 4}} />
               )}
             </View>
-            <AppText style={[appStyles.medium14, {color: colors.warmGrey}]}>
+            <AppText
+              style={[
+                appStyles.medium14,
+                {color: colors.warmGrey, lineHeight: 20, marginTop: 3},
+              ]}>
               {showDetail(item)}
             </AppText>
           </View>
@@ -385,11 +394,18 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             )}
             balanceStyle={[
               appStyles.bold18Text,
-              {color: item.inc === 'Y' ? colors.clearBlue : colors.redError},
+
+              {
+                color: item.inc === 'Y' ? colors.clearBlue : colors.redError,
+                lineHeight: 30,
+              },
             ]}
             currencyStyle={[
               appStyles.bold16Text,
-              {color: item.inc === 'Y' ? colors.clearBlue : colors.redError},
+              {
+                color: item.inc === 'Y' ? colors.clearBlue : colors.redError,
+                lineHeight: 30,
+              },
             ]}
             showPlus
           />
