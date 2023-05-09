@@ -180,6 +180,16 @@ const styles = StyleSheet.create({
     color: colors.black,
     flex: 1,
   },
+  selectedTypeText: {
+    ...appStyles.bold18Text,
+    lineHeight: 22,
+    color: colors.clearBlue,
+  },
+  normalText: {
+    ...appStyles.medium18,
+    lineHeight: 22,
+    color: colors.black,
+  },
 });
 
 type CashHistoryScreenProps = {
@@ -464,10 +474,10 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         style={styles.sortModalContainer}
         onPress={() => action.modal.closeModal()}>
         <Pressable style={styles.sortModalContent}>
-          <AppText style={appStyles.bold18Text}>
+          <AppText style={[appStyles.bold18Text, {lineHeight: 24}]}>
             {i18n.t(`cashHistory:orderType`)}
           </AppText>
-          <View style={{marginTop: 30}}>
+          <View style={{marginTop: 28}}>
             {orderTypeList.map((elm) => (
               <Pressable
                 key={elm}
@@ -477,12 +487,11 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
                 }}
                 style={styles.orderTypeItem}>
                 <AppText
-                  style={[
-                    appStyles.normal18Text,
-                    {
-                      color: orderType === elm ? colors.black : colors.warmGrey,
-                    },
-                  ]}>
+                  style={
+                    orderType === elm
+                      ? styles.selectedTypeText
+                      : styles.normalText
+                  }>
                   {i18n.t(`cashHistory:orderType:${elm}`)}
                 </AppText>
                 {orderType === elm && <AppSvgIcon name="selected" />}
