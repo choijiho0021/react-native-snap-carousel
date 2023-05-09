@@ -218,6 +218,8 @@ const LinkInput: React.FC<LinkInputProps> = ({
                 }}
                 autoCapitalize="none"
                 autoCorrect={false}
+                placeholder={i18n.t('event:input:link')}
+                placeholderTextColor={colors.greyish}
               />
               {linkList[idx].length > 0 && (
                 <AppSvgIcon
