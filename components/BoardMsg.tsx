@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   status: {
-    ...appStyles.normal14Text,
+    ...appStyles.semiBold14Text,
   },
   reopenText: {
     ...appStyles.bold16Text,

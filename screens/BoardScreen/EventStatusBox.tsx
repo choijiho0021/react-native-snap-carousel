@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     borderColor: colors.clearBlue,
     borderRadius: 3,
     width: '100%',
-    borderWidth: 1,
+    borderWidth: 2,
     padding: 16,
   },
   boxText: {
