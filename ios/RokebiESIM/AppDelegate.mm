@@ -21,15 +21,13 @@
 
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
-#import "RNKakaoLogins.h"
-
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <React/RCTAppSetupUtils.h>
 #import <ChannelIOFront/ChannelIOFront-swift.h>
-
+#import "RokebiESIM-Swift.h"
 
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
@@ -146,9 +144,10 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   center.delegate = self;
  // [FIRMessaging messaging].delegate = self;
 
+  [NaverTracker configure];
+  
   [RNSplashScreen show];
   
-
   return YES;
 }
 
@@ -232,4 +231,5 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   return RCTAppSetupDefaultModuleFromClass(moduleClass);
 }
 #endif
+
 @end
