@@ -110,6 +110,14 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   const [dataResetTime, setDataResetTime] = useState('01:00:00');
 
   useEffect(() => {
+    if (mainSubs.daily === 'total') {
+      setAddOnTypeList(['remainDays']);
+      setSelectedType('remainDays');
+      setSelectedAddOnProd(remainDaysAddOnProd[0]);
+    }
+  }, [mainSubs.daily, remainDaysAddOnProd, selectedAddOnProd]);
+
+  useEffect(() => {
     if (expireTime) {
       // cmi의 리셋타임은 활성화 시간 기준으로 변경 됨
       if (mainSubs.partner === 'cmi')
