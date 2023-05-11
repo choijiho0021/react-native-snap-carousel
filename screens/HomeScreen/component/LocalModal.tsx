@@ -93,7 +93,7 @@ const LocalModal: React.FC<LocalModalProps> = ({localOpKey, html, onPress}) => {
         <View
           style={[
             styles.container,
-            {height: webviewHeight + 166, maxHeight: 520},
+            {height: webviewHeight + 166, maxHeight: 590},
           ]}>
           <WebView
             style={{flex: 1}}

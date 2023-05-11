@@ -1412,7 +1412,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
-      <Path d="M0 0h17a3 3 0 0 1 3 3v17H0V0z" fill="#000" fillOpacity=".4" />
+      <Path d="M0 0h20v20H0V0z" fill="#000" fillOpacity=".4" />
       <Path
         d="M3.99 3.282 16.716 16.01l-.707.707L3.282 3.99l.708-.707z"
         fill="#fff"
