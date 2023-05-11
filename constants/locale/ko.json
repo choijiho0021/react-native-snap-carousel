@@ -442,6 +442,7 @@
   "event:empty:image": "이미지를 첨부해주세요",
   "event:notice": "이벤트 참여 방법",
   "event:essential": "필수",
+  "event:input:link": "링크를 입력하세요.",
   "event:add": "추가하기",
   "event:status:o": "<b>확인 후 순차적으로 리워드 지급 예정</b>입니다.\n조금만 기다려주세요!",
   "event:status:r": "<b>재신청되었습니다.</b>\n<b>확인 후 순차적으로 리워드 지급 예정</b>입니다.\n조금만 기다려주세요!",

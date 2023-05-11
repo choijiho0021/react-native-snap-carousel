@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   attach: {
+    overflow: 'hidden',
     width: attachmentSize + 2,
     height: attachmentSize + 2,
     borderRadius: 3,
@@ -177,7 +178,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
             .filter((item) => !_.isEmpty(item))
             .map((image, i) => (
               <Pressable
-                style={[styles.attach, i < 2 ? {marginRight: 33} : undefined]}
+                style={[styles.attach, i < 2 ? {marginRight: 11.5} : undefined]}
                 key={utils.generateKey(`${image.url}${i}`)}
                 onPress={() => renderModal({imgUrl: image.url})}>
                 <Pressable
@@ -198,7 +199,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
         {attachment.map((image, idx) => (
           <Pressable
             key={image.filename}
-            style={[styles.attach, idx < 2 ? {marginRight: 33} : undefined]}
+            style={[styles.attach, idx < 2 ? {marginRight: 11.5} : undefined]}
             onPress={() => renderModal({att: image})}>
             <Image
               style={styles.imgSize}

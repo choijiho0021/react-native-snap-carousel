@@ -56,8 +56,9 @@ const styles = StyleSheet.create({
   },
   balanceBox: {
     flexDirection: 'row',
-    marginTop: 9,
+    marginTop: 4,
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   rechargeBox: {
     flexDirection: 'row',
@@ -67,6 +68,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 18,
     paddingVertical: 8,
+  },
+  rechargeBoxText: {
+    ...appStyles.normal14Text,
+    lineHeight: 24,
   },
   hisHeader: {
     flexDirection: 'row',
@@ -96,7 +101,6 @@ const styles = StyleSheet.create({
     width: 89,
     height: 34,
     borderRadius: 100,
-    borderColor: colors.lightGrey,
     borderWidth: 1,
     marginRight: 8,
     alignItems: 'center',
@@ -120,6 +124,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: 20,
     paddingVertical: 12,
+    marginBottom: 8,
   },
   expPtBox: {
     marginHorizontal: 20,
@@ -139,8 +144,9 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     ...appStyles.bold18Text,
+    lineHeight: 30,
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingBottom: 12,
     backgroundColor: colors.white,
   },
   contentContainerStyle: {
@@ -167,6 +173,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteTwo,
     height: 10,
     width: '100%',
+  },
+  historyTitleText: {
+    ...appStyles.bold18Text,
+    lineHeight: 22,
+    color: colors.black,
+    flex: 1,
+  },
+  selectedTypeText: {
+    ...appStyles.bold18Text,
+    lineHeight: 22,
+    color: colors.clearBlue,
+  },
+  normalText: {
+    ...appStyles.medium18,
+    lineHeight: 22,
+    color: colors.black,
   },
 });
 
@@ -225,7 +247,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 
   useEffect(() => {
     Animated.timing(animatedValue, {
-      toValue: isTop ? 160 : 0,
+      toValue: isTop ? 170 : 0,
       duration: 500,
       useNativeDriver: false,
     }).start();
@@ -249,7 +271,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 
   useEffect(() => {
     Animated.timing(dividerAnimatedMargin, {
-      toValue: isTop ? 0 : 20,
+      toValue: isTop ? 0 : 24,
       duration: 500,
       useNativeDriver: false,
     }).start();
@@ -349,19 +371,27 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               }
             }
           }}>
-          <AppText style={[appStyles.medium14, {marginRight: 23, width: 50}]}>
+          <AppText
+            style={[
+              appStyles.medium14,
+              {marginRight: 23, width: 50, lineHeight: 30},
+            ]}>
             {index > 0 && predate === date ? '' : date}
           </AppText>
           <View style={{flex: 1}}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <AppText style={appStyles.bold16Text}>
+              <AppText style={[appStyles.bold16Text, {lineHeight: 30}]}>
                 {i18n.t(`cashHistory:type:${item.type}`)}
               </AppText>
               {order.orders.get(Number(item.order_id)) && (
                 <AppSvgIcon name="rightAngleBracket" style={{marginLeft: 4}} />
               )}
             </View>
-            <AppText style={[appStyles.medium14, {color: colors.warmGrey}]}>
+            <AppText
+              style={[
+                appStyles.medium14,
+                {color: colors.warmGrey, lineHeight: 20, marginTop: 3},
+              ]}>
               {showDetail(item)}
             </AppText>
           </View>
@@ -373,11 +403,18 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             )}
             balanceStyle={[
               appStyles.bold18Text,
-              {color: item.inc === 'Y' ? colors.clearBlue : colors.redError},
+
+              {
+                color: item.inc === 'Y' ? colors.clearBlue : colors.redError,
+                lineHeight: 30,
+              },
             ]}
             currencyStyle={[
               appStyles.bold16Text,
-              {color: item.inc === 'Y' ? colors.clearBlue : colors.redError},
+              {
+                color: item.inc === 'Y' ? colors.clearBlue : colors.redError,
+                lineHeight: 30,
+              },
             ]}
             showPlus
           />
@@ -437,10 +474,10 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         style={styles.sortModalContainer}
         onPress={() => action.modal.closeModal()}>
         <Pressable style={styles.sortModalContent}>
-          <AppText style={appStyles.bold18Text}>
+          <AppText style={[appStyles.bold18Text, {lineHeight: 24}]}>
             {i18n.t(`cashHistory:orderType`)}
           </AppText>
-          <View style={{marginTop: 30}}>
+          <View style={{marginTop: 28}}>
             {orderTypeList.map((elm) => (
               <Pressable
                 key={elm}
@@ -450,12 +487,11 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
                 }}
                 style={styles.orderTypeItem}>
                 <AppText
-                  style={[
-                    appStyles.normal18Text,
-                    {
-                      color: orderType === elm ? colors.black : colors.warmGrey,
-                    },
-                  ]}>
+                  style={
+                    orderType === elm
+                      ? styles.selectedTypeText
+                      : styles.normalText
+                  }>
                   {i18n.t(`cashHistory:orderType:${elm}`)}
                 </AppText>
                 {orderType === elm && <AppSvgIcon name="selected" />}
@@ -538,7 +574,12 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   const renderFilter = useCallback(
     () => (
       <View>
-        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            marginHorizontal: 20,
+            marginBottom: 24,
+          }}>
           {filterList.map((elm) => (
             <Pressable
               onPress={() => setDataFilter(elm)}
@@ -548,6 +589,8 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
                 {
                   backgroundColor:
                     dataFilter === elm ? colors.clearBlue : colors.white,
+                  borderColor:
+                    dataFilter === elm ? colors.clearBlue : colors.lightGrey,
                 },
               ]}>
               <AppText
@@ -597,7 +640,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             style={styles.rechargeBox}
             onPress={() => navigation.navigate('Recharge')}>
             <AppSvgIcon name="cashHistoryPlus" style={{marginRight: 4}} />
-            <AppText style={appStyles.normal14Text}>
+            <AppText style={styles.rechargeBoxText}>
               {i18n.t('acc:goRecharge')}
             </AppText>
           </Pressable>
@@ -626,15 +669,14 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               balanceStyle={[appStyles.bold18Text, {color: colors.redError}]}
               currencyStyle={[appStyles.bold16Text, {color: colors.redError}]}
             />
-            <AppSvgIcon name="rightArrow" />
+            <AppSvgIcon name="rightArrow" style={{marginLeft: 8}} />
           </View>
         </Pressable>
 
         <View style={styles.divider} />
 
         <View key="header" style={styles.hisHeader}>
-          <AppText
-            style={[appStyles.bold18Text, {color: colors.black, flex: 1}]}>
+          <AppText style={styles.historyTitleText}>
             {i18n.t('cashHistory:useHistory')}
           </AppText>
           <Pressable
@@ -680,7 +722,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             contentOffset: {y},
           },
         }) => {
-          if (isTop && y > 170) setIsTop(false);
+          if (isTop && y > 178) setIsTop(false);
           else if (!isTop && y <= 0) setIsTop(true);
         }}
         overScrollMode="never"
