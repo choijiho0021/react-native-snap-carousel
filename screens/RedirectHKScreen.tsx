@@ -32,6 +32,7 @@ import {AccountModelState} from '@/redux/modules/account';
 import {API} from '@/redux/api';
 import HkStatusLottie from './EsimScreen/components/HkStatusLottie';
 import AppModal from '@/components/AppModal';
+import {removeData, retrieveData, storeData, utils} from '@/utils/utils';
 
 const {width} = Dimensions.get('window');
 
@@ -282,8 +283,21 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
   const [reCheckCount, setReCheckCount] = useState(0);
   const [reCheckable, setReCheckable] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [params, setParams] = useState<Object>(route?.params || {});
   const images = useMemo(() => Object.keys(guideImage), []);
-  const params = useMemo(() => route?.params || {}, [route?.params]);
+  // const params = useMemo(() => route?.params || {}, [route?.params]);
+
+  useEffect(() => {
+    const {iccid, uuid, imsi} = route?.params;
+    if (iccid && uuid && imsi) {
+      storeData('HKScreenParams', JSON.stringify(route?.params));
+      setParams(route?.params);
+    } else {
+      retrieveData('HKScreenParams').then((p: string) =>
+        setParams(JSON.parse(p)),
+      );
+    }
+  }, [route?.params]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -445,11 +459,11 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
                     appStyles.normal16Text,
                     {marginRight: 10, color: colors.warmGrey},
                   ]}>
-                  {params.iccid.substring(0, 7)}
+                  {params.iccid?.substring(0, 7)}
                 </AppText>
                 <View style={styles.textUnderLine}>
                   <AppText style={appStyles.bold16Text}>
-                    {params.iccid.substring(7)}
+                    {params.iccid?.substring(7)}
                   </AppText>
                 </View>
               </View>
@@ -460,7 +474,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
                 appStyles.normal14Text,
                 {
                   color:
-                    copyString === params.iccid.substring(7)
+                    copyString === params.iccid?.substring(7)
                       ? colors.clearBlue
                       : colors.black,
                 },
@@ -469,12 +483,12 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
                 styles.btnCopy,
                 {
                   borderColor:
-                    copyString === params.iccid.substring(7)
+                    copyString === params.iccid?.substring(7)
                       ? colors.clearBlue
                       : colors.lightGrey,
                 },
               ]}
-              onPress={copyToClipboard(params.iccid.substring(7))}
+              onPress={copyToClipboard(params.iccid?.substring(7))}
             />
           </View>
         </View>
