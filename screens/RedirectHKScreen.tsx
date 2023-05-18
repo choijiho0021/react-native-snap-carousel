@@ -459,11 +459,11 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
                     appStyles.normal16Text,
                     {marginRight: 10, color: colors.warmGrey},
                   ]}>
-                  {params.iccid?.substring(0, 7)}
+                  {params?.iccid?.substring(0, 7)}
                 </AppText>
                 <View style={styles.textUnderLine}>
                   <AppText style={appStyles.bold16Text}>
-                    {params.iccid?.substring(7)}
+                    {params?.iccid?.substring(7)}
                   </AppText>
                 </View>
               </View>
@@ -474,7 +474,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
                 appStyles.normal14Text,
                 {
                   color:
-                    copyString === params.iccid?.substring(7)
+                    copyString === params?.iccid?.substring(7)
                       ? colors.clearBlue
                       : colors.black,
                 },
@@ -483,12 +483,12 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
                 styles.btnCopy,
                 {
                   borderColor:
-                    copyString === params.iccid?.substring(7)
+                    copyString === params?.iccid?.substring(7)
                       ? colors.clearBlue
                       : colors.lightGrey,
                 },
               ]}
-              onPress={copyToClipboard(params.iccid?.substring(7))}
+              onPress={copyToClipboard(params?.iccid?.substring(7))}
             />
           </View>
         </View>
