@@ -12,15 +12,16 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     height: 55,
     marginHorizontal: 20,
+    opacity: 0.92,
   },
 });
 
 type AppSnackBarProps = {
   textMessage: string;
   visible: boolean;
-  backgroundColor?: string;
   messageColor?: string;
   bottom?: number;
+  hideCancel?: boolean;
   onClose: () => void;
 };
 
@@ -47,7 +48,7 @@ class AppSnackBar extends PureComponent<AppSnackBarProps> {
         <SnackBar
           ref={this.snackRef}
           visible={this.props.visible}
-          backgroundColor={this.props.backgroundColor || colors.greyishBrown}
+          backgroundColor={colors.black}
           messageColor={this.props.messageColor || colors.white}
           position="bottom"
           bottom={this.props.bottom || 50}
@@ -70,10 +71,12 @@ class AppSnackBar extends PureComponent<AppSnackBarProps> {
               <AppText style={[appStyles.normal14Text, {color: colors.white}]}>
                 {this.props.textMessage}
               </AppText>
-              <AppSvgIcon
-                name="closeSnackBar"
-                onPress={() => this.props.onClose()}
-              />
+              {!this.props.hideCancel && (
+                <AppSvgIcon
+                  name="closeSnackBar"
+                  onPress={() => this.props.onClose()}
+                />
+              )}
             </View>
           )}
         />

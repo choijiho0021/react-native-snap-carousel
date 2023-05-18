@@ -10,6 +10,7 @@ import Env from '@/environment';
 import {RkbImage} from './accountApi';
 import {Currency, CurrencyCode} from './productApi';
 import {urlParamObj} from '@/redux/modules/link';
+import {parseJson} from '@/utils/utils';
 
 const {esimCurrency} = Env.get();
 const dateTimeFmt = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})*$/;
@@ -291,7 +292,7 @@ const getParam = (link?: string): urlParamObj => {
     const url = link.split(/[;?&]/);
     url.shift();
     const param = url.map((elm) => `"${elm.replace('=', '":"')}"`);
-    const json = JSON.parse(`{${param.join(',')}}`);
+    const json = parseJson(`{${param.join(',')}}`);
     return json;
   }
   return {};

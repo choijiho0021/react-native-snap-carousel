@@ -10,7 +10,7 @@ import {PaymentInfo, RkbOrderItem} from '@/redux/api/cartApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import api from '@/redux/api/api';
 import {Currency} from '@/redux/api/productApi';
-import {storeData, retrieveData, utils} from '@/utils/utils';
+import {storeData, retrieveData, utils, parseJson} from '@/utils/utils';
 import {actions as orderAction} from './order';
 import {actions as accountAction} from './account';
 
@@ -210,7 +210,7 @@ const slice = createSlice({
 
   extraReducers: (builder) => {
     builder.addCase(initCart.fulfilled, (state, {payload}) => {
-      const obj = JSON.parse(payload);
+      const obj = parseJson(payload);
       state.orderId = obj[0].orderId;
       state.orderItems = obj[0].orderItems.filter(
         (i) => i.type === 'esim_product',

@@ -143,7 +143,6 @@ const LinkInput: React.FC<LinkInputProps> = ({
         onChangeValue(a);
         return a;
       });
-      setFocusedItem(linkCount);
       setLinkCount((prev) => prev + 1);
     } else {
       dispatch(
@@ -226,7 +225,7 @@ const LinkInput: React.FC<LinkInputProps> = ({
               {linkList[idx].length > 0 && (
                 <AppSvgIcon
                   style={{marginLeft: 10}}
-                  name={idx === 0 ? 'x' : 'circleX'}
+                  name={idx === focusedItem ? 'circleX' : 'x'}
                   onPress={() => changeList(idx, '')}
                 />
               )}

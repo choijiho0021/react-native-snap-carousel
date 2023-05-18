@@ -44,6 +44,7 @@ import {
 } from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import utils from '@/redux/api/utils';
+import {parseJson} from '@/utils/utils';
 
 const {baseUrl, channelId, esimGlobal, fbUser} = Env.get();
 
@@ -171,7 +172,7 @@ const ProductDetailGlobalScreen: React.FC<ProductDetailScreenProps> = ({
 
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
-      const cmd = JSON.parse(event.nativeEvent.data);
+      const cmd = parseJson(event.nativeEvent.data);
 
       switch (cmd.key) {
         case 'dimension':

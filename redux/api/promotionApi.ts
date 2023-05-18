@@ -109,9 +109,7 @@ const toEvent = (data: DrupalNode[]): ApiResult<RkbEvent> => {
     return api.success(
       data
         .map((item) => {
-          const rule = item.field_promotion_rule
-            ? JSON.parse(item.field_promotion_rule)
-            : {};
+          const rule = parseJson(item.field_promotion_rule) || {};
 
           return {
             title: item.title,

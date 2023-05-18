@@ -31,6 +31,7 @@ const TabHeader = ({
   style,
   titleStyle = styles.normal16WarmGrey,
   tintColor = clearBlue,
+  seletedStyle,
   disabledTintColor = whiteTwo,
 }: {
   index: number;
@@ -39,6 +40,7 @@ const TabHeader = ({
   style?: ViewStyle;
   titleStyle?: TextStyle;
   tintColor?: string;
+  seletedStyle?: TextStyle;
   disabledTintColor?: string;
 }) => {
   return (
@@ -48,7 +50,11 @@ const TabHeader = ({
           <View key={elm.key} style={{flex: 1}}>
             <AppButton
               style={{flex: 1}}
-              titleStyle={[titleStyle, idx === index ? {color: tintColor} : {}]}
+              titleStyle={[
+                titleStyle,
+                idx === index ? {color: tintColor} : {},
+                idx === index ? seletedStyle : {},
+              ]}
               title={elm.title}
               onPress={() => onIndexChange(idx)}
             />

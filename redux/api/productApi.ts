@@ -9,6 +9,7 @@ import api, {ApiResult} from './api';
 import {RkbPriceInfo} from '../modules/product';
 import {colors} from '@/constants/Colors';
 import Env from '@/environment';
+import {parseJson} from '@/utils/utils';
 
 const {specialCategories} = Env.get();
 
@@ -140,7 +141,7 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
           hotspot: item.field_hotspot === 'On',
           weight: utils.stringToNumber(item.field_weight),
           desc: item.field_desc
-            ? JSON.parse(item.field_desc.replace(/&quot;/g, '"'))
+            ? parseJson(item.field_desc.replace(/&quot;/g, '"'))
             : {},
         })),
     );
