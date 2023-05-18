@@ -42,6 +42,7 @@ const guideImage: Record<string, any[]> = {
   step3: [require(`${dir}/guideHK3.png`), require(`${dir}/en.guideHK3.png`)],
   step4: [require(`${dir}/guideHK4.png`), require(`${dir}/en.guideHK4.png`)],
   step5: [require(`${dir}/guideHK5.png`), require(`${dir}/en.guideHK5.png`)],
+  step6: [require(`${dir}/guideHK6.png`), require(`${dir}/guideHK6.png`)], // 영문버전 추후 추가, 임시로 한글버전 사용
 };
 
 const styles = StyleSheet.create({
@@ -433,40 +434,49 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
           />
         </View>
         <View style={{paddingHorizontal: 20, marginBottom: 32, marginTop: 24}}>
-          {['iccid', 'orderNo'].map((elm) => (
-            <View style={styles.copyBox}>
-              <View style={{flex: 9}}>
-                <AppText style={styles.keyTitle}>
-                  {i18n.t(`redirectHK:${elm}`)}
+          <View style={styles.copyBox}>
+            <View style={{flex: 9}}>
+              <AppText style={styles.keyTitle}>
+                {i18n.t(`redirectHK:iccid`)}
+              </AppText>
+              <View style={{flexDirection: 'row'}}>
+                <AppText
+                  style={[
+                    appStyles.normal16Text,
+                    {marginRight: 10, color: colors.warmGrey},
+                  ]}>
+                  {params.iccid.substring(0, 7)}
                 </AppText>
                 <View style={styles.textUnderLine}>
-                  <AppText style={appStyles.bold16Text}>{params[elm]}</AppText>
+                  <AppText style={appStyles.bold16Text}>
+                    {params.iccid.substring(7)}
+                  </AppText>
                 </View>
               </View>
-              <AppButton
-                title={i18n.t('copy')}
-                titleStyle={[
-                  appStyles.normal14Text,
-                  {
-                    color:
-                      copyString === params[elm]
-                        ? colors.clearBlue
-                        : colors.black,
-                  },
-                ]}
-                style={[
-                  styles.btnCopy,
-                  {
-                    borderColor:
-                      copyString === params[elm]
-                        ? colors.clearBlue
-                        : colors.lightGrey,
-                  },
-                ]}
-                onPress={copyToClipboard(params[elm])}
-              />
             </View>
-          ))}
+            <AppButton
+              title={i18n.t('copy')}
+              titleStyle={[
+                appStyles.normal14Text,
+                {
+                  color:
+                    copyString === params.iccid.substring(7)
+                      ? colors.clearBlue
+                      : colors.black,
+                },
+              ]}
+              style={[
+                styles.btnCopy,
+                {
+                  borderColor:
+                    copyString === params.iccid.substring(7)
+                      ? colors.clearBlue
+                      : colors.lightGrey,
+                },
+              ]}
+              onPress={copyToClipboard(params.iccid.substring(7))}
+            />
+          </View>
         </View>
 
         <View style={[styles.hkCheckBox, styles.row]}>
