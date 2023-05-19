@@ -98,7 +98,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 8,
   },
   filter: {
-    width: 89,
+    // width: 89,
+    paddingHorizontal: 14,
+    paddingVertical: 5,
     height: 34,
     borderRadius: 100,
     borderWidth: 1,
@@ -716,6 +718,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             {i18n.t(`year`, {year: title})}
           </AppText>
         )}
+        stickySectionHeadersEnabled
         ListEmptyComponent={() => renderEmpty()}
         onScroll={({
           nativeEvent: {

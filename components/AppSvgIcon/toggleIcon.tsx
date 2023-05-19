@@ -32,7 +32,7 @@ const toggleIcons: Record<string, React.ReactElement[]> = {
       xmlns="http://www.w3.org/2000/svg">
       <Mask
         id="qrhjr868ra"
-        style="mask-type:alpha"
+        mask-type="alpha"
         maskUnits="userSpaceOnUse"
         x="1"
         y="1"
@@ -61,8 +61,8 @@ const toggleIcons: Record<string, React.ReactElement[]> = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Mask
-        id="3ybweor42a"
-        style="mask-type:alpha"
+        id="9jea6wmfva"
+        mask-ype="luminance"
         maskUnits="userSpaceOnUse"
         x="1"
         y="1"
@@ -75,7 +75,7 @@ const toggleIcons: Record<string, React.ReactElement[]> = {
           fill="#fff"
         />
       </Mask>
-      <G mask="url(#3ybweor42a)">
+      <G mask="url(#9jea6wmfva)">
         <Path
           fillRule="evenodd"
           clipRule="evenodd"

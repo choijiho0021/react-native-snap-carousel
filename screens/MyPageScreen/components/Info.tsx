@@ -105,9 +105,12 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   },
   balanceStyle: {
-    ...appStyles.robotoSemiBold22Text,
-    color: 'white',
+    fontSize: 22,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    lineHeight: 24,
     letterSpacing: 0,
+    color: 'white',
     marginRight: 4,
   },
 });
