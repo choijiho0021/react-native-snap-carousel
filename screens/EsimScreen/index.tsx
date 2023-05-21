@@ -415,10 +415,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           };
 
           const bcUsage: UsageObj = {
-            quota: Number(planInfo.totalTraffic) || 0, // Mb
+            quota: Number(planInfo.totalTraffic) / 1024 || 0, // Mb
             used:
-              Number(planInfo.totalTraffic) -
-                Number(planInfo?.remainingTraffic) || 0, // Mb
+              (Number(planInfo.totalTraffic) -
+                Number(planInfo?.remainingTraffic)) /
+                1024 || 0, // Mb
           };
 
           return {status: bcStatus, usage: bcUsage};
