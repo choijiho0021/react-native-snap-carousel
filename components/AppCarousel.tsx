@@ -137,6 +137,7 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
       scrollEventThrottle={16}
       disableIntervalMomentum
       ref={ref}
+      scrollEnabled={slides?.length > 1}
     />
   );
 };
