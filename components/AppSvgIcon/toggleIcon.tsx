@@ -60,29 +60,12 @@ const toggleIcons: Record<string, React.ReactElement[]> = {
       viewBox="0 0 22 22"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
-      <Mask
-        id="9jea6wmfva"
-        mask-ype="luminance"
-        maskUnits="userSpaceOnUse"
-        x="1"
-        y="1"
-        width="20"
-        height="20">
-        <Path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M1 1h20v20H1V1z"
-          fill="#fff"
-        />
-      </Mask>
-      <G mask="url(#9jea6wmfva)">
-        <Path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M11 1c-.284 0-.57.098-.8.295l-8.75 7.43c-.285.243-.45.602-.45.98V19.75C1 20.441 1.56 21 2.25 21h5.416c.69 0 1.25-.56 1.25-1.25v-5.444c0-1.109.79-2.102 1.87-2.214.072-.008.143-.011.214-.011 1.146 0 2.084.955 2.084 2.123v5.545c0 .691.56 1.251 1.25 1.251h5.415C20.44 21 21 20.44 21 19.75V9.704c0-.378-.166-.737-.45-.98l-8.75-7.43A1.235 1.235 0 0 0 11 1zm0 2 8.182 6.95v9.232h-4.28v-4.977c0-2.173-1.751-3.942-3.902-3.942-.132 0-.265.006-.4.02-1.996.206-3.502 1.935-3.502 4.023v4.876h-4.28V9.95L11 3z"
-          fill="#2C2C2C"
-        />
-      </G>
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.36 1.263a1 1 0 0 1 1.28 0l9 7.5a1 1 0 0 1 .36.769V20a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1v-5.698a2 2 0 0 0-4 0V20a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V9.532a1 1 0 0 1 .36-.769l9-7.5zM3 10v9h4v-4.698a4 4 0 0 1 8 0V19h4v-9l-8-6.667L3 10z"
+        fill="#2C2C2C"
+      />
     </Svg>,
   ],
   btnCart: [
