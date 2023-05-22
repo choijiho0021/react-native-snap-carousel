@@ -10,6 +10,7 @@ import i18n from '@/utils/i18n';
 import ChargeTypeButton from './EsimScreen/components/ChargeTypeButton';
 import {API} from '@/redux/api';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 
 const styles = StyleSheet.create({
   container: {
@@ -57,6 +58,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [addonEnabled, setAddonEnable] = useState(false);
   const [expireTime, setExpireTime] = useState<Moment>();
   const [status, setStatus] = useState<StatusType>();
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     navigation.setOptions({
       title: null,
@@ -74,6 +76,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const checkCmiStatus = useCallback(
     async (item: RkbSubscription) => {
       if (item?.subsIccid && item?.packageId) {
+        setLoading(true);
         const rsp = await API.Subscription.cmiGetSubsStatus({
           iccid: item?.subsIccid,
         });
@@ -126,6 +129,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
         // 사용 완료
         setStatus('expired');
+        setLoading(false);
       }
     },
     [chargedSubs, mainSubs],
@@ -215,6 +219,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           }
         />
       ))}
+      <AppActivityIndicator visible={loading} />
     </SafeAreaView>
   );
 };
