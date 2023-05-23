@@ -481,7 +481,6 @@ const EsimSubs = ({
       </View>
     );
   }, [
-    isBc,
     isChargeExpired,
     isChargeable,
     isCharged,
