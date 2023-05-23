@@ -7,6 +7,7 @@ const styles = StyleSheet.create({
   attach: {
     width: attachmentSize,
     height: attachmentSize,
+    borderRadius: 3,
   },
 });
 

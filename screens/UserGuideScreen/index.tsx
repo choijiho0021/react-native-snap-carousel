@@ -127,6 +127,7 @@ const styles = StyleSheet.create({
     padding: 30,
     borderWidth: 1,
     borderColor: colors.whiteFive,
+    borderRadius: 3,
     marginHorizontal: 20,
     display: 'flex',
     flexDirection: 'row',
@@ -242,6 +243,7 @@ const UserGuideScreen = () => {
       return (
         <ScrollView
           style={styles.container}
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={{alignItems: 'center'}}>
           <View style={{alignItems: 'center', marginTop: 40}}>
             {data?.title}
@@ -359,6 +361,7 @@ const UserGuideScreen = () => {
             flex: 1,
             backgroundColor: colors.white,
           }}
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={[
             styles.stepPage,
             isDeviceSize('large') ? undefined : {flex: 1},
@@ -443,6 +446,7 @@ const UserGuideScreen = () => {
           flex: 1,
           backgroundColor: colors.white,
         }}
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.tailPageTitle}>
         <View style={{alignItems: 'center', marginTop: 20, marginBottom: 48}}>
           {data?.title}
@@ -535,7 +539,9 @@ const UserGuideScreen = () => {
 
         <View style={{flex: 1, maxWidth: MAX_WIDTH, width: '100%'}}>
           {isDeviceSize('medium') || isFolderOpen(dimensions.width) ? (
-            <ScrollView contentContainerStyle={{flex: 1}}>
+            <ScrollView
+              contentContainerStyle={{flex: 1}}
+              showsVerticalScrollIndicator={false}>
               {renderBody(item, index)}
             </ScrollView>
           ) : (

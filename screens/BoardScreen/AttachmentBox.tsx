@@ -103,7 +103,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
       const permission =
         Platform.OS === 'ios'
           ? PERMISSIONS.IOS.PHOTO_LIBRARY
-          : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
+          : PERMISSIONS.ANDROID.READ_MEDIA_IMAGES;
       const result = await check(permission);
       setHasPhotoPermission(result === RESULTS.GRANTED);
     };
@@ -118,7 +118,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
       const permission =
         Platform.OS === 'ios'
           ? PERMISSIONS.IOS.PHOTO_LIBRARY
-          : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
+          : PERMISSIONS.ANDROID.READ_MEDIA_IMAGES;
       const result = await check(permission);
 
       checkNewPermission = result === RESULTS.GRANTED;

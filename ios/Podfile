@@ -1,7 +1,7 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-platform :ios, '12.4'
+platform :ios, '13'
 install! 'cocoapods', :deterministic_uuids => false
 production = ENV["PRODUCTION"] == "1"
 $RNFirebaseAnalyticsWithoutAdIdSupport=true
@@ -77,6 +77,7 @@ target 'RokebiESIM' do
   pod 'RNChannelIO', :path => '../node_modules/react-native-channel-plugin'
 
   pod 'lottie-react-native', :path => '../node_modules/lottie-react-native'
+  pod 'NTrackerSDKExt'
 
 end
 

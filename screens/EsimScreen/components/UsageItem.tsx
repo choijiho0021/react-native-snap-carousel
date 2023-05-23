@@ -152,6 +152,14 @@ const styles = StyleSheet.create({
     right: 0,
     paddingVertical: 30,
   },
+  notShowUsage: {
+    width: '100%',
+    height: 100,
+    marginVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
 });
 
 const {esimApp} = Env.get();
@@ -192,7 +200,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
   onPress,
   cmiPending,
   usage,
-
   cmiStatusCd,
   endTime,
   account: {token},
@@ -204,6 +211,15 @@ const UsageItem: React.FC<UsageItemProps> = ({
   const circularProgress = useRef();
 
   const showExpire = useMemo(() => item.partner !== undefined, [item.partner]); // partner별로 만료기하니 정해지지 않았을 때 조정 필요
+  const showUsage = useMemo(
+    () =>
+      item.partner !== 'BillionConnect' ||
+      !(
+        (item.country?.includes('JP') && item.daily === 'daily') ||
+        (item.country?.includes('TH') && item.daily === 'total')
+      ),
+    [item.country, item.daily, item.partner],
+  );
 
   useEffect(() => {
     if (disableBtn) {
@@ -361,7 +377,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
                   {item.prodName}
                 </AppText>
               </View>
-              {!isCallProduct && item.partner !== 'BillionConnect' ? (
+              {!isCallProduct && showUsage ? (
                 <View style={styles.topOfActiveContainer}>
                   {isShowUsage ? usageRender() : checkUsageButton()}
                   <AppText style={styles.warning}>
@@ -371,15 +387,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
                 </View>
               ) : (
                 <Fragment>
-                  <View
-                    style={{
-                      width: '100%',
-                      height: 100,
-                      marginVertical: 10,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      padding: 20,
-                    }}>
+                  <View style={styles.notShowUsage}>
                     <AppText
                       style={{...appStyles.medium16, color: colors.warmGrey}}>
                       {i18n.t('esim:notShowUsage')}
@@ -427,10 +435,10 @@ const UsageItem: React.FC<UsageItemProps> = ({
       expire,
       isShowUsage,
       item.key,
-      item.partner,
       item.prodName,
       item.type,
       showExpire,
+      showUsage,
       usageRender,
     ],
   );
