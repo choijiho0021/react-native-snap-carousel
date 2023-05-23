@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     borderWidth: 1,
     borderColor: colors.whiteFive,
+    borderRadius: 3,
     marginHorizontal: 20,
     display: 'flex',
     flexDirection: 'row',
