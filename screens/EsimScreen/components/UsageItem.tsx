@@ -211,14 +211,19 @@ const UsageItem: React.FC<UsageItemProps> = ({
   const circularProgress = useRef();
 
   const showExpire = useMemo(() => item.partner !== undefined, [item.partner]); // partner별로 만료기하니 정해지지 않았을 때 조정 필요
+  // const showUsage = useMemo(
+  //   () =>
+  //     item.partner !== 'BillionConnect' ||
+  //     !(
+  //       (item.country?.includes('JP') && item.daily === 'daily') ||
+  //       (item.country?.includes('TH') && item.daily === 'total')
+  //     ),
+  //   [item.country, item.daily, item.partner],
+  // );
+
   const showUsage = useMemo(
-    () =>
-      item.partner !== 'BillionConnect' ||
-      !(
-        (item.country?.includes('JP') && item.daily === 'daily') ||
-        (item.country?.includes('TH') && item.daily === 'total')
-      ),
-    [item.country, item.daily, item.partner],
+    () => item.partner !== 'BillionConnect',
+    [item.partner],
   );
 
   useEffect(() => {
