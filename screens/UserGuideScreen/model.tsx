@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: colors.white,
     width: Dimensions.get('window').width - 40,
+    marginBottom: 10,
 
     elevation: 12,
     shadowColor: 'rgb(166, 168, 172)',
