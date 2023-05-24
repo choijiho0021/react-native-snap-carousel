@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   imgSize: {
     width: attachmentSize,
     height: attachmentSize,
-    borderRadius: 3,
+    borderRadius: 2,
   },
   plusButton: {
     alignItems: 'center',

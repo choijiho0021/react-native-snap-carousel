@@ -203,7 +203,7 @@ const LinkInput: React.FC<LinkInputProps> = ({
               ]}>
               <AppTextInput
                 // autoFocus={idx > 0}
-                style={{flex: 1, height: 56}}
+                style={{flex: 1, height: 56, ...appStyles.normal16Text}}
                 maxLength={1000}
                 onChangeText={(v) => {
                   changeList(idx, v);
