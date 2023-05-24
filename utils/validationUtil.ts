@@ -63,7 +63,7 @@ i18nEvent.on('loaded', () => {
         message: i18n.t('reg:noMobile'),
       },
       format: {
-        pattern: /^\d{4}-\d{4}$|^\d{3}-\d{4}-\d{4}$/,
+        pattern: /^\d{3}-\d{4}-\d{4}$/,
         message: i18n.t('reg:invalidMobile'),
       },
     },
