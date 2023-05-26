@@ -218,6 +218,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const [loading, setLoading] = useState(false);
   const [pin, setPin] = useState('');
   const [mobile, setMobile] = useState('');
+  const [pinEditable, setPinEditable] = useState(false);
   const [authorized, setAuthorized] = useState<boolean | undefined>();
   const [authNoti, setAuthNoti] = useState(false);
   const [timeoutFlag, setTimeoutFlag] = useState(false);
@@ -485,6 +486,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         );
       } else {
         setPin('');
+        setPinEditable(true);
         setAuthorized(undefined);
         setTimeoutFlag(true);
 
@@ -647,6 +649,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         <InputPinInTime
           style={{marginTop: 20, paddingHorizontal: 20}}
           clickable={editablePin || !isProduction}
+          editable={pinEditable}
           authorized={mobile ? authorized : undefined}
           countdown={authNoti && !authorized && !timeoutFlag}
           onTimeout={() => setTimeoutFlag(true)}
@@ -656,7 +659,16 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         />
       </View>
     );
-  }, [authNoti, authorized, loading, mobile, sendSms, onPressPin, timeoutFlag]);
+  }, [
+    mobile,
+    authNoti,
+    authorized,
+    loading,
+    sendSms,
+    pinEditable,
+    timeoutFlag,
+    onPressPin,
+  ]);
 
   const renderLogin = useCallback(() => {
     return (
