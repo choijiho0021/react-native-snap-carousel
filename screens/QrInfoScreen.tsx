@@ -13,9 +13,9 @@ import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import AppButton from '@/components/AppButton';
 import AppStyledText from '@/components/AppStyledText';
 import AppSnackBar from '@/components/AppSnackBar';
+import AppCopyBtn from '@/components/AppCopyBtn';
 
 const {isIOS} = Env.get();
 
@@ -73,14 +73,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.26,
     color: 'rgb(119, 119, 119)',
     marginBottom: 6,
-  },
-  btnCopy: {
-    backgroundColor: colors.white,
-    marginLeft: 10,
-    width: 62,
-    height: 40,
-    borderStyle: 'solid',
-    borderWidth: 1,
   },
   content: {
     ...appStyles.robotoBold16Text,
@@ -154,7 +146,6 @@ const esimManualInputInfo = () => (
 const QrInfoScreen = () => {
   const route = useRoute<RouteProp<ParamList, 'QrInfoScreen'>>();
   const params = useMemo(() => route?.params, [route?.params]);
-  const [copyString, setCopyString] = useState('');
   const [showSnackBar, setShowSnackBar] = useState(false);
 
   const navigation = useNavigation();
@@ -167,33 +158,18 @@ const QrInfoScreen = () => {
   }, [navigation]);
 
   const copyToClipboard = useCallback((value?: string) => {
-    if (value) {
-      Clipboard.setString(value);
-      setCopyString(value);
-    }
+    if (value) Clipboard.setString(value);
   }, []);
 
   const renderCode = useCallback(
     (title: string, content: string) => {
-      const selected = copyString === content;
       return (
         <View style={styles.copyBox}>
           <AppText style={styles.copyBoxTitle}>{title}</AppText>
           <View style={styles.codeContent}>
             <AppText style={styles.content}>{content}</AppText>
-            <AppButton
+            <AppCopyBtn
               title={i18n.t('copy')}
-              titleStyle={[
-                appStyles.normal14Text,
-                {color: selected ? colors.clearBlue : colors.black},
-              ]}
-              style={[
-                styles.btnCopy,
-                {
-                  borderColor: selected ? colors.clearBlue : colors.lightGrey,
-                  borderRadius: 3,
-                },
-              ]}
               onPress={() => {
                 copyToClipboard(content);
                 setShowSnackBar(true);
@@ -203,7 +179,7 @@ const QrInfoScreen = () => {
         </View>
       );
     },
-    [copyString, copyToClipboard],
+    [copyToClipboard],
   );
 
   return (

@@ -27,6 +27,22 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'stretch',
   },
+  tab: {
+    height: 56,
+    backgroundColor: colors.white,
+    paddingBottom: 8,
+    paddingHorizontal: 20,
+  },
+  tabTitle: {
+    ...appStyles.medium16,
+    lineHeight: 24,
+    color: colors.gray2,
+  },
+  selectedTabTitle: {
+    ...appStyles.bold16Text,
+    lineHeight: 24,
+    color: colors.black,
+  },
 });
 
 type FaqScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Faq'>;
@@ -139,7 +155,10 @@ const FaqScreen: React.FC<FaqScreenProps & DispatchProp> = ({
         index={index}
         routes={routes}
         onIndexChange={onIndexChange}
-        style={{height: 52, backgroundColor: colors.whiteTwo}}
+        style={styles.tab}
+        tintColor={colors.black}
+        titleStyle={styles.tabTitle}
+        seletedStyle={styles.selectedTabTitle}
       />
       <TabView
         style={styles.container}

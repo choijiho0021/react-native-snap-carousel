@@ -61,6 +61,7 @@ const InputMobile: React.FC<InputMobileProps> = ({
   inputRef,
 }) => {
   const [mobile, setMobile] = useState('');
+  const [value, setValue] = useState('');
   const [errors, setErrors] = useState<ValidationResult>();
   const [timer, setTimer] = useState<NodeJS.Timeout>();
 
@@ -76,15 +77,18 @@ const InputMobile: React.FC<InputMobileProps> = ({
     }
   }, [inputRef]);
 
-  const onChangeText = useCallback((value) => {
-    setMobile(value);
-    setErrors(validationUtil.validateAll({mobile: value}));
+  const onChangeText = useCallback((value: string) => {
+    const mobileTxt = value.replace(/-/g, '');
+    setMobile(mobileTxt);
+    setValue(mobileTxt);
+    setErrors(
+      validationUtil.validateAll({mobile: utils.toPhoneNumber(mobileTxt)}),
+    );
   }, []);
 
   const onPressInput = useCallback(() => {
-    const value = mobile.replace(/-/g, '');
-    onPress?.(value);
-    const error = validationUtil.validate('mobileSms', value);
+    onPress?.(mobile);
+    const error = validationUtil.validate('mobileSms', mobile);
     if (!error) {
       setTimer(
         setTimeout(() => {
@@ -101,8 +105,8 @@ const InputMobile: React.FC<InputMobileProps> = ({
   }, [timer]);
 
   const clickable = useMemo(
-    () => _.isEmpty(errors?.mobile) && !disabled && !timer,
-    [disabled, errors?.mobile, timer],
+    () => _.isEmpty(errors?.mobile) && !disabled && !timer && mobile.length > 1,
+    [disabled, errors?.mobile, mobile.length, timer],
   );
   return (
     <View>
@@ -119,10 +123,12 @@ const InputMobile: React.FC<InputMobileProps> = ({
           placeholderTextColor={colors.greyish}
           keyboardType="numeric"
           enablesReturnKeyAutomatically
+          onFocus={() => setValue(mobile)}
+          onBlur={() => setValue(utils.toPhoneNumber(mobile))}
           maxLength={13}
           blurOnSubmit={false}
           onChangeText={onChangeText}
-          value={utils.toPhoneNumber(mobile)}
+          value={value}
           allowFontScaling={false}
           style={[
             styles.input,

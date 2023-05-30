@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     borderWidth: 1,
     borderColor: colors.whiteFive,
+    borderRadius: 3,
     marginHorizontal: 20,
     display: 'flex',
     flexDirection: 'row',
@@ -111,6 +112,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: colors.white,
     width: Dimensions.get('window').width - 40,
+    marginBottom: 94,
 
     elevation: 12,
     shadowColor: 'rgb(166, 168, 172)',

@@ -104,7 +104,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
       const permission =
         Platform.OS === 'ios'
           ? PERMISSIONS.IOS.PHOTO_LIBRARY
-          : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
+          : PERMISSIONS.ANDROID.READ_MEDIA_IMAGES;
       const result = await check(permission);
 
       return result === RESULTS.GRANTED;

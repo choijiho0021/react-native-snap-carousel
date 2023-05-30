@@ -286,7 +286,12 @@ const Esim: React.FC<EsimProps> = ({
         API.default.httpImageUrl(promotion[0].imageUrl),
         (width, height) => {
           // 배너 높이 = 이미지 높이 * 비율 + 30(여백)
-          setBannerHeight(Math.ceil(height * (dimensions.width / width) + 30));
+          setBannerHeight(
+            Math.ceil(
+              height * (dimensions.width / width) +
+                (promotion?.length > 1 ? 30 : 0),
+            ),
+          );
         },
       );
     } else {
