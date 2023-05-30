@@ -125,6 +125,9 @@ export type RkbSubscription = {
   noticeOption: string[];
   daily?: string;
   dataVolume?: string;
+
+  refSubs?: string;
+  prodType?: string;
 };
 
 const toSubscription =
@@ -170,6 +173,8 @@ const toSubscription =
           noticeOption: item.field_notice_option || [],
           daily: item.field_daily,
           dataVolume: item.field_data_volume,
+          refSubs: item.field_ref_subscription || '',
+          prodType: item.product_type || '',
         })),
         // .sort(sortSubs),
       );

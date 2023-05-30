@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import moment from 'moment';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
@@ -225,6 +226,19 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
     [chargedSubs, orderType],
   );
 
+  const [prodData, addOnData] = useMemo(() => {
+    const prod: RkbSubscription[] = [];
+    const addOn: RkbSubscription[] = [];
+    data.forEach((d) => {
+      if (d.prodType === 'esim_product') {
+        prod.push(d);
+      } else if (d.prodType === 'add_on_product') {
+        addOn.push(d);
+      }
+    });
+    return [prod, addOn];
+  }, [data]);
+
   useEffect(() => {
     retrieveData('chargeHistoryTooltip').then((elm) =>
       setShowTip(elm !== 'closed'),
@@ -236,7 +250,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
       title: null,
       headerLeft: () => <AppBackButton title={i18n.t('esim:chargeHistory')} />,
     });
-  }, [navigation, params?.mainSubs?.prodName]);
+  }, [navigation]);
 
   const renderTooltip = useCallback(() => {
     return (
@@ -275,18 +289,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
           <AppText style={styles.normal14Gray}>{i18n.t('esim:iccid')}</AppText>
           <AppText style={styles.normal14Gray}>{mainSubs?.subsIccid}</AppText>
         </View>
-        <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal14Gray}>
-            {i18n.t('esim:usablePeriod')}
-          </AppText>
-          <AppText style={styles.normal14Gray}>{`${utils.toDateString(
-            mainSubs?.purchaseDate,
-            'YYYY.MM.DD',
-          )} - ${utils.toDateString(
-            chargedSubs[chargedSubs?.length - 1].expireDate,
-            'YYYY.MM.DD',
-          )}`}</AppText>
-        </View>
+
         <View style={styles.inactiveContainer}>
           <AppText style={styles.normal14Gray}>
             {i18n.t('esim:rechargeablePeriod')}
@@ -295,12 +298,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         </View>
       </View>
     );
-  }, [
-    chargeablePeriod,
-    chargedSubs,
-    mainSubs?.purchaseDate,
-    mainSubs?.subsIccid,
-  ]);
+  }, [chargeablePeriod, mainSubs?.subsIccid]);
 
   const renderCard = useCallback(() => {
     const isDaily = chargedSubs[0].daily === 'daily';
@@ -363,9 +361,6 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
     ({item}: {item: RkbSubscription}) => {
       return (
         <View style={{paddingVertical: 16}}>
-          <AppText style={[appStyles.normal14Text, {color: colors.gray}]}>
-            {utils.toDateString(item.purchaseDate, 'YYYY.MM.DD HH:mm:ss')}
-          </AppText>
           <View style={styles.itemRow}>
             <View style={{flex: 1}}>
               <SplitText
@@ -400,10 +395,42 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
               <AppSvgIcon name="bottomArrow" style={{marginRight: 8}} />
             </Pressable>
           </View>
+          <AppText style={[appStyles.normal14Text, {color: colors.gray}]}>
+            {i18n.t('his:purchaseDate2', {
+              purchaseDate: utils.toDateString(
+                item.purchaseDate,
+                'YYYY.MM.DD HH:mm:ss',
+              ),
+            })}
+          </AppText>
+          <AppText style={[appStyles.normal14Text, {color: colors.gray}]}>
+            {i18n.t('his:expireDate2', {
+              purchaseDate: utils.toDateString(item.purchaseDate, 'YYYY.MM.DD'),
+              expireDate: utils.toDateString(item.expireDate, 'YYYY.MM.DD'),
+            })}
+          </AppText>
+          {addOnData
+            .filter((a) => a.refSubs === item.nid)
+            .map((k) => (
+              <View>
+                <View style={[styles.itemRow, {marginTop: 10}]}>
+                  <AppSvgIcon name="plus" />
+                  <AppText style={appStyles.bold16Text}>{k.prodName}</AppText>
+                </View>
+                <AppText style={[appStyles.normal14Text, {color: colors.gray}]}>
+                  {i18n.t('his:purchaseDate2', {
+                    purchaseDate: utils.toDateString(
+                      k.purchaseDate,
+                      'YYYY.MM.DD HH:mm:ss',
+                    ),
+                  })}
+                </AppText>
+              </View>
+            ))}
         </View>
       );
     },
-    [onPressUsage],
+    [addOnData, onPressUsage],
   );
 
   return (
@@ -423,7 +450,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
 
       <View style={styles.listContainer}>
         <FlatList
-          data={data}
+          data={prodData}
           renderItem={renderItem}
           ListHeaderComponent={renderHeader}
           keyExtractor={(item, idx) => item.key + idx}
