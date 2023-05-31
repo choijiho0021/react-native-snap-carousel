@@ -324,7 +324,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           title={headerTitle}
           style={{marginRight: 10, height: 56}}
           onPress={() => {
-            navigation.navigate('Home');
+            navigation.goBack();
           }}
         />
         {(headerTitle.includes('(로컬망)') ||
