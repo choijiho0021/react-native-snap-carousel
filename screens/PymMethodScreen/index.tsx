@@ -248,12 +248,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         navigation.navigate(
           esimGlobal || product.rule.inicis_enabled !== '1'
             ? 'Payment'
+            : payMethod?.method === 'card'
+            ? 'SelectCard'
             : 'PaymentGateway',
-          // product.rule.inicis_enabled === '1'
-          //   ? payMethod?.method === 'card'
-          //     ? 'SelectCard'
-          //     : 'PaymentGateway'
-          //   : 'Payment',
           params,
         );
       }
