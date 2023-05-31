@@ -68,10 +68,10 @@ SSP	삼성페이
 };
 
 const pymMethod: Record<string, string[]> = {
-  card: ['card', '', payment.hecto.PG_MID],
-  payco: ['corp', 'PAC', 'nxca_payco'],
-  kakaopay: ['corp', 'KKP', 'nxca_kakao'],
-  naverpay: ['corp', 'NVP', 'hecto_test', 'CARD'],
+  card: ['card', ''],
+  payco: ['corp', 'PAC'],
+  kakaopay: ['corp', 'KKP'],
+  naverpay: ['corp', 'NVP'],
 };
 
 export const hectoWebViewHtml = (info: PaymentParams) => {
@@ -79,14 +79,13 @@ export const hectoWebViewHtml = (info: PaymentParams) => {
   const pym = pymMethod[info.pay_method];
   if (!pym) return '';
 
-  const [method, corpPayCode, mchtId, corpPayType] = pym;
+  const [method, corpPayCode] = pym;
 
   const data = {
     env: configHecto.PAYMENT_SERVER,
     method,
     corpPayCode,
-    corpPayType,
-    mchtId,
+    mchtId: payment.hecto.PG_MID,
     trdDt: now.format('YYYYMMDD'),
     trdTm: now.format('HHmmss'),
     mchtTrdNo: info.merchant_uid,
@@ -120,6 +119,8 @@ export const hectoWebViewHtml = (info: PaymentParams) => {
       info.amount.toString() +
       payment.hecto.LICENSE_KEY,
   ).toString(CryptoJS.enc.Hex);
+
+  console.log('@@@ hecto', data);
 
   return `<html>
   <head>
