@@ -31,6 +31,7 @@ import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
 import ChatTalk from '@/components/ChatTalk';
+import {CartModelState} from '../../redux/modules/cart';
 
 const {esimGlobal, webViewHost, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -102,7 +103,7 @@ type ProductDetailScreenProps = {
   route: ProductDetailScreenRouteProp;
 
   account: AccountModelState;
-
+  cart: CartModelState;
   action: {
     cart: CartAction;
     info: InfoAction;
@@ -114,6 +115,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   route,
   action,
   account,
+  cart,
 }) => {
   const [showSnackBar, setShowSnackBar] = useState<{
     text: string;
@@ -122,6 +124,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [disabled, setDisabled] = useState(false);
   const [status, setStatus] = useState<TrackingStatus>();
   const [purchaseItems, setPurchaseItems] = useState<PurchaseItem[]>([]);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   useEffect(() => {
     setPurchaseItems(route.params.item ? [route.params.item] : []);
@@ -210,6 +213,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   const onPressBtnCart = useCallback(async () => {
     const {loggedIn} = account;
+    setIsButtonDisabled(true);
 
     if (status === 'authorized') {
       Analytics.trackEvent('Click_cart');
@@ -226,9 +230,14 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       return navigation.navigate('Auth');
     }
 
-    return action.cart
-      .cartAddAndGet({purchaseItems})
-      .then(({payload: resp}) => {
+    const existInCart = cart.orderItems
+      ?.map((elm) => elm.key)
+      .includes(purchaseItems[0].key);
+
+    if (existInCart) {
+      setShowSnackBar({text: i18n.t('country:existInCart'), visible: true});
+    } else if (!isButtonDisabled) {
+      action.cart.cartAddAndGet({purchaseItems}).then(({payload: resp}) => {
         if (resp.result === 0) {
           setShowSnackBar({text: i18n.t('country:addCart'), visible: true});
           if (
@@ -242,12 +251,18 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           soldOut(resp, 'cart:notToCart');
         }
       });
+    }
+    return setTimeout(() => {
+      setIsButtonDisabled(false);
+    }, 3000);
   }, [
     account,
     action.cart,
+    cart.orderItems,
+    isButtonDisabled,
     navigation,
     purchaseItems,
-    route.params.item,
+    route.params.item?.key,
     soldOut,
     status,
   ]);
@@ -348,7 +363,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 };
 
 export default connect(
-  ({account}: RootState) => ({account}),
+  ({account, cart}: RootState) => ({account, cart}),
   (dispatch) => ({
     action: {
       info: bindActionCreators(infoActions, dispatch),

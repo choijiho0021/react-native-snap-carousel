@@ -115,6 +115,7 @@
   "country:detail": "Detail Info",
   "country:empty": "No search result",
   "country:addCart": "Added to the Cart",
+  "country:existInCart": "Adjust number of products in the cart.",
   "country:total": "Volume Data Plan",
   "country:daily": "Unlimited Data Plan",
   "country:noProd1": "No products.",
