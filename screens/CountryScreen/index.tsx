@@ -188,7 +188,10 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
 
   useEffect(() => {
     retrieveData('LocalProdTooltip').then((elm) => {
-      setTip(elm !== 'closed');
+      setTimeout(() => {
+        setTip(elm !== 'closed');
+      }, 1000);
+
       storeData('LocalProdTooltip', 'closed');
     });
   }, []);
