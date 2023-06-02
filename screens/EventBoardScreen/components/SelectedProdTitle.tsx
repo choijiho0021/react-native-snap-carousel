@@ -32,11 +32,13 @@ const styles = StyleSheet.create({
 interface SelectedProdTitleProps {
   isdaily: boolean;
   prodName: string;
+  isAddOn: boolean;
 }
 
 const SelectedProdTitle: React.FC<SelectedProdTitleProps> = ({
   isdaily,
   prodName,
+  isAddOn,
 }) => {
   return (
     <ImageBackground
@@ -47,7 +49,7 @@ const SelectedProdTitle: React.FC<SelectedProdTitleProps> = ({
       }
       style={styles.bg}>
       <AppStyledText
-        text={i18n.t('esim:charge:type:addOn:title', {
+        text={i18n.t(`esim:charge:type:${isAddOn ? 'addOn' : 'charge'}:title`, {
           prodName,
         })}
         textStyle={styles.prodTitle}

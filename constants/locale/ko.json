@@ -541,6 +541,7 @@
   "esim:charge": "충전하기",
   "esim:charge:type:addOn": "용량 충전하기",
   "esim:charge:type:addOn:title": "고객님께서는\n<b>{{prodName}}</b><l> 상품의</l>\n용량 충전을 선택하셨습니다.",
+  "esim:charge:type:charge:title": "고객님께서는\n<b>{{prodName}}</b><l> 상품의</l>\n연장 하기를 선택하셨습니다.",
   "esim:charge:type:addOn:detail": "사용하고 있는 상품에\n데이터를 증액하고 싶을 때!",
   "esim:charge:type:extension": "상품 연장하기",
   "esim:charge:type:extension:detail": "사용하고 있는 상품을\n이어서 계속 사용하고 싶을 때!",

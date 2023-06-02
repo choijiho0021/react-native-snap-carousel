@@ -26,6 +26,7 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import {RkbProduct} from '@/redux/api/productApi';
 import ProdByType from '@/components/ProdByType';
 import TextWithDot from './EsimScreen/components/TextWithDot';
+import SelectedProdTitle from './EventBoardScreen/components/SelectedProdTitle';
 
 const styles = StyleSheet.create({
   container: {
@@ -100,9 +101,6 @@ const styles = StyleSheet.create({
     color: colors.white,
     lineHeight: 20,
   },
-  devider: {
-    height: 14,
-  },
   selectedTabTitle: {
     ...appStyles.bold18Text,
     color: colors.black,
@@ -174,66 +172,6 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
     action.product.getProdOfPartner(partnerIds);
   }, [action.product, partnerIds]);
 
-  const renderToolTip = useCallback(
-    () => (
-      <Tooltip
-        isVisible={showTip}
-        backgroundColor="rgba(0,0,0,0)"
-        contentStyle={styles.toolTipBox}
-        tooltipStyle={styles.toolTipStyle}
-        backgroundStyle={{opacity: 0.92}}
-        arrowStyle={styles.arrowStyle}
-        disableShadow
-        arrowSize={{width: 16, height: 8}}
-        content={
-          <View>
-            <View style={styles.toolTipTitleFrame}>
-              <AppText style={styles.toolTipTitleText}>
-                {i18n.t('esim:chargeCaution')}
-              </AppText>
-              <AppButton
-                style={styles.btnCancel}
-                iconName="btnCancelWhite"
-                onPress={() => setTip(false)}
-              />
-            </View>
-            <View style={styles.toolTipBody}>
-              {[1, 2, 3].map((k) => (
-                <View key={k} style={{flexDirection: 'row'}}>
-                  <AppText
-                    style={[
-                      appStyles.normal14Text,
-                      {marginHorizontal: 5, marginTop: 3, color: colors.white},
-                    ]}>
-                    •
-                  </AppText>
-                  <AppText style={styles.toolTipBodyText}>
-                    {i18n.t(`esim:chargeCaution:modal${k}`)}
-                  </AppText>
-                </View>
-              ))}
-            </View>
-          </View>
-        }
-        onClose={() => {
-          setTip(false);
-          storeData('chargeTooltip', 'closed');
-        }}
-        placement="bottom">
-        <AppSvgIcon
-          style={styles.cautionBtn}
-          onPress={() => {
-            storeData('chargeTooltip', 'closed');
-            setTip(true);
-          }}
-          name="btnChargeCaution"
-        />
-        {/* {showTip && <View style={styles.triangle} />} */}
-      </Tooltip>
-    ),
-    [showTip],
-  );
-
   useEffect(() => {
     navigation.setOptions({
       title: null,
@@ -243,11 +181,10 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
             title={i18n.t('esim:charge:type:extension')}
             style={styles.headerTitle}
           />
-          {renderToolTip()}
         </View>
       ),
     });
-  }, [navigation, renderToolTip, showTip]);
+  }, [navigation, showTip]);
 
   const onIndexChange = useCallback((idx: number) => {
     setIndex(idx);
@@ -309,6 +246,10 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <View style={{flex: 1}}>
+        <SelectedProdTitle
+          isdaily={params?.mainSubs?.daily === 'daily'}
+          prodName={params?.mainSubs?.prodName || ''}
+        />
         <AppTabHeader
           index={index}
           routes={routes}

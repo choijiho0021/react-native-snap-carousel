@@ -402,6 +402,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
         <SelectedProdTitle
           isdaily={mainSubs.daily === 'daily'}
           prodName={mainSubs.prodName || ''}
+          isAddOn
         />
 
         {mainSubs.partner === 'cmi' && status === 'unUsed' ? (
