@@ -80,6 +80,7 @@ export interface AppModalProps {
   safeAreaColor?: ColorValue;
   onOkClose?: (v?: string) => void;
   onCancelClose?: () => void;
+  onRequestClose?: () => void;
   bottom?: () => React.ReactNode;
 }
 
@@ -104,6 +105,9 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   safeAreaColor = 'rgba(0,0,0,0.5)',
   onOkClose = () => {},
   onCancelClose = () => {},
+  onRequestClose = () => {
+    onOkClose();
+  },
   bottom,
 }) => {
   const getButtonType = useCallback(() => {
@@ -225,7 +229,13 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   ]);
 
   return visible ? (
-    <Modal animationType="fade" transparent visible={visible}>
+    <Modal
+      animationType="fade"
+      transparent
+      visible={visible}
+      onRequestClose={() => {
+        onRequestClose();
+      }}>
       <SafeAreaView
         style={[
           appStyles.modal,
