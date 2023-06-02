@@ -85,12 +85,14 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
       extraData={prodData}
       renderItem={renderItem}
       onScrollBeginDrag={() => onTop(false)}
+      showsVerticalScrollIndicator={false}
+
       onScroll={({
         nativeEvent: {
           contentOffset: {y},
         },
       }) => {
-        if (y <= -5) onTop(true);
+        if (y <= 0) onTop(true);
       }}
     />
   );

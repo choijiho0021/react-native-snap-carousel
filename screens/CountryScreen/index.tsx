@@ -166,6 +166,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const [index, setIndex] = useState<number>();
   const [showTip, setTip] = useState(false);
   const [isTop, setIsTop] = useState(true);
+  const [blockAnimation, setBlockAnimation] = useState(false);
   const headerTitle = useMemo(
     () => API.Product.getTitle(localOpList.get(route.params?.partner[0])),
     [localOpList, route.params?.partner],
@@ -197,12 +198,15 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    Animated.timing(animatedValue, {
-      toValue: isTop ? 150 : 0,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-  }, [animatedValue, isTop]);
+    if(!blockAnimation){
+      setBlockAnimation(true)
+      Animated.timing(animatedValue, {
+        toValue: isTop ? 150 : 0,
+        duration: 500,
+        useNativeDriver: false,
+      }).start(() => setBlockAnimation(false));
+    }
+  }, [animatedValue, blockAnimation, isTop]);
 
   useEffect(() => {
     if (route.params?.partner) {
