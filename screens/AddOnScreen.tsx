@@ -1,11 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {
-  StyleSheet,
-  SafeAreaView,
-  View,
-  Pressable,
-  ImageBackground,
-} from 'react-native';
+import {StyleSheet, SafeAreaView, View, Pressable} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import moment from 'moment';
@@ -23,32 +17,12 @@ import TextWithDot from './EsimScreen/components/TextWithDot';
 import AppStyledText from '@/components/AppStyledText';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {sliderWidth} from '@/constants/SliderEntry.style';
+import SelectedProdTitle from './EventBoardScreen/components/SelectedProdTitle';
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.white,
     flex: 1,
-  },
-  bg: {
-    paddingTop: 40,
-    paddingBottom: 40,
-    paddingLeft: 20,
-    marginTop: 6,
-  },
-  prodTitle: {
-    ...appStyles.normal20Text,
-    lineHeight: 32,
-    color: colors.white,
-  },
-  prodTitleBold: {
-    ...appStyles.bold24Text,
-    lineHeight: 34,
-    color: colors.white,
-  },
-  prodTitleLine: {
-    ...appStyles.normal20Text,
-    lineHeight: 34,
-    color: colors.white,
   },
   header: {
     flex: 1,
@@ -425,21 +399,10 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={{flex: 1}}>
-        <ImageBackground
-          source={
-            mainSubs.daily === 'daily'
-              ? require('../assets/images/esim/img_bg_1.png')
-              : require('../assets/images/esim/img_bg_2.png')
-          }
-          style={styles.bg}>
-          <AppStyledText
-            text={i18n.t('esim:charge:type:addOn:title', {
-              prodName: mainSubs.prodName || '',
-            })}
-            textStyle={styles.prodTitle}
-            format={{b: styles.prodTitleBold, l: styles.prodTitleLine}}
-          />
-        </ImageBackground>
+        <SelectedProdTitle
+          isdaily={mainSubs.daily === 'daily'}
+          prodName={mainSubs.prodName || ''}
+        />
 
         {mainSubs.partner === 'cmi' && status === 'unUsed' ? (
           <View style={styles.no}>
