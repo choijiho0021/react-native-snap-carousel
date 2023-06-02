@@ -341,7 +341,6 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
       // 최근 검색 기록
       const oldsearchHist: string | null = await retrieveData('searchHist');
 
-      console.log('aaaaa oldsearchHist', oldsearchHist);
       if (!_.isNull(oldsearchHist)) {
         const oldHist = oldsearchHist.split(',');
         const wordIdx = oldHist.findIndex((elm) => elm === word);
