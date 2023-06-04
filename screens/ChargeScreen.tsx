@@ -6,6 +6,7 @@ import {TabView} from 'react-native-tab-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {StackNavigationProp} from '@react-navigation/stack';
+import moment from 'moment';
 import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
 import {RootState} from '@/redux';
@@ -27,6 +28,7 @@ import {RkbProduct} from '@/redux/api/productApi';
 import ProdByType from '@/components/ProdByType';
 import TextWithDot from './EsimScreen/components/TextWithDot';
 import SelectedProdTitle from './EventBoardScreen/components/SelectedProdTitle';
+import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
   container: {
@@ -54,56 +56,33 @@ const styles = StyleSheet.create({
     height: 56,
     marginRight: 8,
   },
-  cautionBtn: {
-    width: 24,
-    height: 24,
-    marginTop: 2,
+  whiteBox: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: colors.white,
   },
-  toolTipStyle: {
-    borderRadius: 5,
-  },
-  arrowStyle: {
-    borderTopColor: colors.black,
-    zIndex: 10,
-  },
-  toolTipBox: {
-    backgroundColor: colors.black,
-    // borderWidth: 1,
-    // borderColor: colors.lightGrey,
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 20,
-    height: '100%',
-  },
-  toolTipTitleFrame: {
+  greyBox: {
+    padding: 16,
+    backgroundColor: colors.backGrey,
+    display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: 36,
-    marginBottom: 12,
   },
-  toolTipTitleText: {
-    ...appStyles.bold14Text,
-    color: colors.white,
-    lineHeight: 20,
-  },
-  btnCancel: {
-    width: 12,
-    height: 12,
-    marginRight: 8,
-  },
-  toolTipBody: {
-    paddingRight: 30,
-  },
-
-  toolTipBodyText: {
-    ...appStyles.normal14Text,
-    color: colors.white,
-    lineHeight: 20,
+  clock: {
+    marginRight: 6,
+    alignSelf: 'center',
   },
   selectedTabTitle: {
     ...appStyles.bold18Text,
     color: colors.black,
+  },
+  chargeablePeriodText: {
+    ...appStyles.medium14,
+    lineHeight: 22,
+    color: colors.clearBlue,
+  },
+  chargeablePeriodTextBold: {
+    ...appStyles.bold14Text,
+    lineHeight: 22,
   },
 });
 
@@ -243,6 +222,8 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
     [onPress, prodData],
   );
 
+  console.log('@@@@ params?.mainSubs', params?.mainSubs);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={{flex: 1}}>
@@ -250,6 +231,23 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
           isdaily={params?.mainSubs?.daily === 'daily'}
           prodName={params?.mainSubs?.prodName || ''}
         />
+        <View style={styles.whiteBox}>
+          <View style={styles.greyBox}>
+            <AppSvgIcon name="blueClock" style={styles.clock} />
+            <AppStyledText
+              text={i18n.t('esim:rechargeablePeriod2')}
+              textStyle={styles.chargeablePeriodText}
+              format={{b: styles.chargeablePeriodTextBold}}
+              data={{
+                chargeablePeriod:
+                  moment(params?.chargeablePeriod, 'YYYY.MM.DD').format(
+                    'YYYY년 MM월 DD일',
+                  ) || '',
+              }}
+            />
+          </View>
+        </View>
+
         <AppTabHeader
           index={index}
           routes={routes}

@@ -2997,6 +2997,21 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  blueClock: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12zm.75-9a.75.75 0 0 0-1.5 0v3c0 .414.336.75.75.75h2a.75.75 0 0 0 0-1.5H8.75V5zM4.53.47a.75.75 0 0 1 0 1.06l-2 2a.75.75 0 0 1-1.06-1.06l2-2a.75.75 0 0 1 1.06 0zM11.47.47a.75.75 0 0 0 0 1.06l2 2a.75.75 0 1 0 1.06-1.06l-2-2a.75.75 0 0 0-1.06 0z"
+        fill="#2A7FF6"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;
