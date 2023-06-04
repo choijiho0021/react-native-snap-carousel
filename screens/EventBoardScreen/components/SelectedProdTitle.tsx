@@ -32,13 +32,13 @@ const styles = StyleSheet.create({
 interface SelectedProdTitleProps {
   isdaily: boolean;
   prodName: string;
-  isAddOn: boolean;
+  isAddOn?: boolean;
 }
 
 const SelectedProdTitle: React.FC<SelectedProdTitleProps> = ({
   isdaily,
   prodName,
-  isAddOn,
+  isAddOn = false,
 }) => {
   return (
     <ImageBackground
