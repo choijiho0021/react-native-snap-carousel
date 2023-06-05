@@ -232,20 +232,28 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           expireTime,
         });
       } else {
-        if (status === 'expired')
+        if (status === 'expired') {
           setShowSnackBar({
             text: i18n.t('esim:charge:snackBar:addOn:used'),
             visible: true,
           });
+          return;
+        }
         if (
           mainSubs.partner?.toLowerCase() === 'billionconnect' ||
           (mainSubs.partner?.toLowerCase() === 'cmi' &&
             mainSubs.daily === 'total')
-        )
+        ) {
           setShowSnackBar({
             text: i18n.t('esim:charge:snackBar:addOn:unsupported'),
             visible: true,
           });
+          return;
+        }
+        setShowSnackBar({
+          text: i18n.t('esim:charge:snackBar:addOn:unsupported'),
+          visible: true,
+        });
       }
     },
     [
