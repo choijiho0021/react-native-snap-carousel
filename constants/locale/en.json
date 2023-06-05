@@ -538,6 +538,7 @@
   "esim:moveToGuide": "Go to Guide",
   "esim:copyMsg": "Copied the information",
   "esim:checkUsage": "Check Usage",
+  "esim:prodInfo": "Product Info",
   "esim:notShowUsage": "This product does not provide usage inquiry",
   "esim:charge": "Recharge",
   "esim:charge:recommend": "이런 분들께 추천해요!",

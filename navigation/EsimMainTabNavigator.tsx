@@ -238,6 +238,20 @@ function EsimStackComponent() {
           component={GuideSelectRegionScreen}
         />
       </EsimStack.Group>
+      <EsimStack.Screen
+        name="ProductDetail"
+        component={ProductDetailScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
+      <EsimStack.Screen
+        name="ProductDetailOp"
+        component={ProductDetailOpScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <EsimStack.Screen name="Payment" component={PaymentScreen} />
       <EsimStack.Screen name="PymMethod" component={PymMethodScreen} />
       <EsimStack.Screen name="PaymentResult" component={PaymentResultScreen} />
