@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   attach: {
+    overflow: 'hidden',
     width: attachmentSize + 2,
     height: attachmentSize + 2,
     borderRadius: 3,
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
   imgSize: {
     width: attachmentSize,
     height: attachmentSize,
-    borderRadius: 3,
+    borderRadius: 2,
   },
   plusButton: {
     alignItems: 'center',
@@ -102,7 +103,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
       const permission =
         Platform.OS === 'ios'
           ? PERMISSIONS.IOS.PHOTO_LIBRARY
-          : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
+          : PERMISSIONS.ANDROID.READ_MEDIA_IMAGES;
       const result = await check(permission);
       setHasPhotoPermission(result === RESULTS.GRANTED);
     };
@@ -117,7 +118,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
       const permission =
         Platform.OS === 'ios'
           ? PERMISSIONS.IOS.PHOTO_LIBRARY
-          : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
+          : PERMISSIONS.ANDROID.READ_MEDIA_IMAGES;
       const result = await check(permission);
 
       checkNewPermission = result === RESULTS.GRANTED;
@@ -177,7 +178,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
             .filter((item) => !_.isEmpty(item))
             .map((image, i) => (
               <Pressable
-                style={[styles.attach, i < 2 ? {marginRight: 33} : undefined]}
+                style={[styles.attach, i < 2 ? {marginRight: 11.5} : undefined]}
                 key={utils.generateKey(`${image.url}${i}`)}
                 onPress={() => renderModal({imgUrl: image.url})}>
                 <Pressable
@@ -198,7 +199,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
         {attachment.map((image, idx) => (
           <Pressable
             key={image.filename}
-            style={[styles.attach, idx < 2 ? {marginRight: 33} : undefined]}
+            style={[styles.attach, idx < 2 ? {marginRight: 11.5} : undefined]}
             onPress={() => renderModal({att: image})}>
             <Image
               style={styles.imgSize}

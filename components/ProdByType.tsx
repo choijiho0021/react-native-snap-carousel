@@ -72,11 +72,10 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
           item={item}
           onPress={() => onPress(item)}
           position={position(index, prodData)}
-          isCharge={isCharge}
         />
       );
     },
-    [isCharge, onPress, prodData],
+    [onPress, prodData],
   );
 
   return (
@@ -86,12 +85,14 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
       extraData={prodData}
       renderItem={renderItem}
       onScrollBeginDrag={() => onTop(false)}
+      showsVerticalScrollIndicator={false}
+
       onScroll={({
         nativeEvent: {
           contentOffset: {y},
         },
       }) => {
-        if (y <= -5) onTop(true);
+        if (y <= 0) onTop(true);
       }}
     />
   );

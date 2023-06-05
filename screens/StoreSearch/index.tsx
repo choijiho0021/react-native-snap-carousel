@@ -254,6 +254,7 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
   const [searchList, setSearchList] = useState<string[]>([]);
   const [recommendCountry, setRecommendCountry] = useState<string[]>([]);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
+  const [chatVisible, setChatVisible] = useState(true);
 
   // useEffect(() => {
   //   action.product.getProdCountry();
@@ -345,18 +346,19 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
         const wordIdx = oldHist.findIndex((elm) => elm === word);
 
         if (wordIdx < 0) {
-          storeData(
-            'searchHist',
-            `${word},${oldHist.slice(0, MAX_HISTORY_LENGTH - 1).join(',')}`,
-          );
-        } else if (wordIdx >= 0) {
-          storeData(
-            'searchHist',
-            `${word},${oldsearchHist.replace(`,${word}`, '')}`,
-          );
+          const hist = `${word},${oldHist
+            .slice(0, MAX_HISTORY_LENGTH - 1)
+            .join(',')}`;
+          storeData('searchHist', hist);
+          setSearchList(hist?.split(','));
+        } else if (wordIdx >= 1) {
+          const hist = `${word},${oldsearchHist.replace(`,${word}`, '')}`;
+          storeData('searchHist', hist);
+          setSearchList(hist?.split(','));
         }
       } else {
         storeData('searchHist', word);
+        setSearchList(word?.split(','));
       }
     }
   }, []);
@@ -473,6 +475,20 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
     getSearchHist();
   }, [getRecommendation, getSearchHist, navigation, search]);
 
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      if (!isIOS) setChatVisible(false);
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      if (!isIOS) setChatVisible(true);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <HeaderTitle search={search} searchWord={searchWord} />
@@ -489,7 +505,7 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
         </ScrollView>
       )}
 
-      <ChatTalk visible bottom={isIOS ? 100 : 70} />
+      <ChatTalk visible={chatVisible} bottom={isIOS ? 100 : 70} />
     </SafeAreaView>
   );
 };

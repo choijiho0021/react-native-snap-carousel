@@ -84,12 +84,12 @@ const styles = StyleSheet.create({
   },
   usageTitleNormal: {
     ...appStyles.normal16Text,
-    fontSize: isDeviceSize('small') ? 16 : 18,
+    fontSize: isDeviceSize('small') ? 18 : 20,
     color: colors.warmGrey,
   },
   usageTitleBold: {
     ...appStyles.normal16Text,
-    fontSize: isDeviceSize('small') ? 16 : 18,
+    fontSize: isDeviceSize('small') ? 18 : 20,
     fontWeight: 'bold',
   },
   expiredBg: {
@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     textAlign: 'center',
     marginTop: 10,
+    letterSpacing: -0.5,
   },
   btnTitle2: {
     ...appStyles.medium18,
@@ -359,7 +360,7 @@ const EsimSubs = ({
               : styles.usageTitleBold,
             {
               alignSelf: 'center',
-              lineHeight: 28,
+              lineHeight: isDeviceSize('small') ? 26 : 28,
               marginRight: 8,
             },
           ]}

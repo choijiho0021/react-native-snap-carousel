@@ -327,6 +327,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
               format="price"
               valueStyle={appStyles.roboto16Text}
               value={item.price}
+              balanceStyle={[styles.normal16BlueTxt, {color: colors.black}]}
               currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
             />
           ))}
@@ -362,7 +363,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         )}
         <View style={styles.bar} />
         <View style={[styles.row, {marginBottom: 5}]}>
-          <AppText style={[appStyles.normal16Text]}>
+          <AppText style={appStyles.normal16Text}>
             {i18n.t('cart:totalCost')}{' '}
           </AppText>
           <View

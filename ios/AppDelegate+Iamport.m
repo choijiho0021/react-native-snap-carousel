@@ -8,7 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import "AppDelegate+Iamport.h"
-#import "RNKakaoLogins.h"
+#import "RokebiESIM-Swift.h"
+//#import "RNKakaoLogins.h"
 #import <React/RCTLinkingManager.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import "Adjust.h"
@@ -19,6 +20,8 @@
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
+  
+  [NaverTracker setInflow:url];
   
   if([RNKakaoLogins isKakaoTalkLoginUrl:url]) {
     return [RNKakaoLogins handleOpenUrl: url];
@@ -36,6 +39,9 @@
 {
   
   if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+    if(userActivity.webpageURL) {
+      [NaverTracker setInflow:userActivity.webpageURL];
+    }
           NSURL *url = [userActivity webpageURL];
           // url object contains your universal link content
       }

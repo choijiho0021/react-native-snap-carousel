@@ -24,6 +24,7 @@ import {
   Image,
   Pressable,
   AppState,
+  BackHandler,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {Settings} from 'react-native-fbsdk-next';
@@ -286,7 +287,12 @@ const Esim: React.FC<EsimProps> = ({
         API.default.httpImageUrl(promotion[0].imageUrl),
         (width, height) => {
           // 배너 높이 = 이미지 높이 * 비율 + 30(여백)
-          setBannerHeight(Math.ceil(height * (dimensions.width / width) + 30));
+          setBannerHeight(
+            Math.ceil(
+              height * (dimensions.width / width) +
+                (promotion?.length > 1 ? 30 : 0),
+            ),
+          );
         },
       );
     } else {
@@ -860,6 +866,7 @@ const Esim: React.FC<EsimProps> = ({
           titleStyle={styles.modalTitle}
           type="close"
           onOkClose={() => exitApp('exit')}
+          onRequestClose={() => BackHandler.exitApp()}
           visible={modalType === 'unSupported'}>
           {modalBody()}
         </AppModal>
