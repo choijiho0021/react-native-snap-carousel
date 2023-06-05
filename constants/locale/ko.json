@@ -540,6 +540,7 @@
   "esim:checkUsage": "사용량 확인",
   "esim:notShowUsage": "본 상품은 사용량 조회를 제공하지 않습니다.",
   "esim:charge": "충전하기",
+  "esim:charge:type": "충전 용도를\n선택해주세요!",
   "esim:charge:type:addOn": "용량 충전하기",
   "esim:charge:type:addOn:title": "고객님께서는\n<b>{{prodName}}</b><l> 상품의</l>\n용량 충전을 선택하셨습니다.",
   "esim:charge:type:charge:title": "고객님께서는\n<b>{{prodName}}</b><l> 상품의</l>\n연장을 선택하셨습니다.",

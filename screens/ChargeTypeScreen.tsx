@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {StyleSheet, SafeAreaView, View} from 'react-native';
+import {StyleSheet, SafeAreaView, View, Image} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import moment, {Moment} from 'moment';
@@ -10,6 +10,9 @@ import i18n from '@/utils/i18n';
 import ChargeTypeButton from './EsimScreen/components/ChargeTypeButton';
 import {API} from '@/redux/api';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import AppText from '@/components/AppText';
+import {appStyles} from '@/constants/Styles';
 
 const styles = StyleSheet.create({
   container: {
@@ -24,6 +27,18 @@ const styles = StyleSheet.create({
   headerTitle: {
     height: 56,
     marginRight: 8,
+  },
+  top: {
+    marginTop: 50,
+    paddingHorizontal: 20,
+    marginBottom: 1,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  topText: {
+    ...appStyles.bold24Text,
+    lineHeight: 28,
   },
 });
 
@@ -189,6 +204,14 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.top}>
+        <AppText style={styles.topText}>{i18n.t('esim:charge:type')}</AppText>
+        <Image
+          style={{marginTop: 14}}
+          source={require('@/assets/images/esim/chargeType.png')}
+          resizeMode="stretch"
+        />
+      </View>
       {['addOn', 'extension'].map((t) => (
         <ChargeTypeButton
           key={t}

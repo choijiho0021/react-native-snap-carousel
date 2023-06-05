@@ -3012,6 +3012,125 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  addOnType: [
+    <Svg
+      width="30"
+      height="30"
+      viewBox="0 0 30 30"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect
+        x="3.529"
+        width="26.471"
+        height="26.471"
+        rx="2"
+        fill="url(#7yj4exp40a)"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M19 4a1 1 0 1 0 0 2h3.586l-6.293 6.293a1 1 0 0 0 1.414 1.414L24 7.414V11a1 1 0 1 0 2 0V5a1 1 0 0 0-1-1h-6z"
+        fill="#fff"
+      />
+      <Rect
+        y="15.882"
+        width="14.118"
+        height="14.118"
+        rx="2"
+        fill="url(#re5c0amlib)"
+      />
+      <Defs>
+        <LinearGradient
+          id="7yj4exp40a"
+          x1="30"
+          y1="-3.5"
+          x2="-2.44"
+          y2="8.307"
+          gradientUnits="userSpaceOnUse">
+          <Stop offset=".281" stopColor="#2B80F7" />
+          <Stop offset="1" stopColor="#7DA6FF" />
+        </LinearGradient>
+        <LinearGradient
+          id="re5c0amlib"
+          x1="1.246"
+          y1="27.924"
+          x2="15.567"
+          y2="14.996"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#FFC700" />
+          <Stop offset=".802" stopColor="#FFDF43" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
+  extensionType: [
+    <Svg
+      width="30"
+      height="30"
+      viewBox="0 0 30 30"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect
+        y="1.765"
+        width="30"
+        height="26.471"
+        rx="2"
+        fill="url(#h3ltfb24fa)"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M21.84 9.881a1 1 0 1 0-1.415 1.415L23.13 14H15a1 1 0 1 0 0 2h8.041l-2.616 2.616a1 1 0 1 0 1.414 1.414l4.368-4.367a1 1 0 0 0 0-1.414L21.839 9.88z"
+        fill="#fff"
+      />
+      <Path
+        d="M0 3.765a2 2 0 0 1 2-2h8.588v26.47H2a2 2 0 0 1-2-2V3.765z"
+        fill="url(#yzm5g2ts0b)"
+      />
+      <Defs>
+        <LinearGradient
+          id="h3ltfb24fa"
+          x1="30"
+          y1="15"
+          x2="13.073"
+          y2="7.451"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#2B80F7" />
+          <Stop offset="1" stopColor="#7DA6FF" />
+        </LinearGradient>
+        <LinearGradient
+          id="yzm5g2ts0b"
+          x1=".934"
+          y1="24.343"
+          x2="18.179"
+          y2="18.116"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#FFC700" />
+          <Stop offset=".802" stopColor="#FFDF43" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
+  info: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="10" cy="10" r="9" fill="#979797" />
+      <Rect
+        x="11"
+        y="15"
+        width="2"
+        height="7"
+        rx="1"
+        transform="rotate(-180 11 15)"
+        fill="#fff"
+      />
+      <Circle cx="10" cy="6" r="1" transform="rotate(-180 10 6)" fill="#fff" />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

@@ -1,15 +1,21 @@
 import React, {memo, useState} from 'react';
-import {StyleSheet, Pressable} from 'react-native';
+import {StyleSheet, Pressable, View} from 'react-native';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import AppText from '@/components/AppText';
 import {sliderWidth} from '@/constants/SliderEntry.style';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
-  btn: {
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  frame: {
     width: sliderWidth - 40,
-    marginTop: 22,
+    marginTop: 26,
     marginHorizontal: 20,
     borderRadius: 3,
     padding: 30,
@@ -26,12 +32,20 @@ const styles = StyleSheet.create({
     },
   },
   detailText: {
-    ...appStyles.normal14Text,
+    ...appStyles.bold18Text,
+    lineHeight: 26,
+    marginTop: 8,
   },
   typeText: {
-    ...appStyles.bold20Text,
-    marginTop: 50,
-    alignSelf: 'flex-end',
+    ...appStyles.bold18Text,
+    lineHeight: 26,
+    color: colors.white,
+    textAlign: 'center',
+  },
+  btn: {
+    marginTop: 24,
+    paddingHorizontal: 16,
+    paddingVertical: 13,
   },
 });
 
@@ -47,27 +61,30 @@ const ChargeTypeButton = ({
   const [isPressed, setIsPressed] = useState(false);
 
   return (
-    <Pressable
-      style={[
-        styles.btn,
-        {
-          backgroundColor: disabled
-            ? colors.whiteTwo
-            : isPressed
-            ? colors.backGrey
-            : colors.white,
-        },
-      ]}
-      onPress={() => onPress()}
-      onPressIn={() => setIsPressed(true)}
-      onPressOut={() => setIsPressed(false)}>
-      <AppText style={styles.detailText}>
+    <View style={styles.frame}>
+      <View style={styles.row}>
+        <AppSvgIcon
+          style={{opacity: disabled ? 0.64 : 1}}
+          name={`${type}Type`}
+        />
+        <AppSvgIcon name="info" />
+      </View>
+      <AppText style={[styles.detailText, {opacity: disabled ? 0.64 : 1}]}>
         {i18n.t(`esim:charge:type:${type}:detail`)}
       </AppText>
-      <AppText style={styles.typeText}>
-        {i18n.t(`esim:charge:type:${type}`)}
-      </AppText>
-    </Pressable>
+      <Pressable
+        onPress={() => onPress()}
+        onPressIn={() => setIsPressed(true)}
+        onPressOut={() => setIsPressed(false)}
+        style={[
+          styles.btn,
+          {backgroundColor: disabled ? colors.line : colors.clearBlue},
+        ]}>
+        <AppText style={styles.typeText}>
+          {i18n.t(`esim:charge:type:${type}`)}
+        </AppText>
+      </Pressable>
+    </View>
   );
 };
 
