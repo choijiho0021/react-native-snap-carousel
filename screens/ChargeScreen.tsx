@@ -192,7 +192,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
         contents: {
           chargeProd: data.name,
           noticeTitle: i18n.t('esim:charge:extension:notice:title'),
-          noticeBody: [1, 2, 3, 4, 5, 6, 7].map((n) =>
+          noticeBody: [1, 2, 3, 4, 5, 6].map((n) =>
             i18n.t(`esim:charge:extension:notice:body${n}`),
           ),
         },

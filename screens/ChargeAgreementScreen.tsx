@@ -11,7 +11,6 @@ import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppBackButton from '@/components/AppBackButton';
-import ChargeProdTitle from './EsimScreen/components/ChargeProdTitle';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
@@ -79,17 +78,29 @@ const styles = StyleSheet.create({
   },
   notice: {
     backgroundColor: colors.backGrey,
-    paddingTop: 30,
+    paddingTop: 41,
     paddingHorizontal: 20,
     paddingBottom: 120,
   },
   noticeTitle: {
-    ...appStyles.bold20Text,
+    ...appStyles.bold18Text,
+    lineHeight: 22,
+  },
+  noticeText: {
+    ...appStyles.medium14,
+    lineHeight: 22,
+    color: colors.warmGrey,
   },
   noticeBold: {
     ...appStyles.bold14Text,
     lineHeight: 22,
-    color: colors.black,
+    color: colors.warmGrey,
+  },
+  dot: {
+    ...appStyles.bold14Text,
+    marginHorizontal: 5,
+    marginTop: 0,
+    color: colors.warmGrey,
   },
   agreement: {
     backgroundColor: colors.white,
@@ -118,6 +129,11 @@ const styles = StyleSheet.create({
     marginRight: 40,
     ...appStyles.semiBold16Text,
     lineHeight: 20,
+  },
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 
@@ -208,12 +224,20 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
           />
         </View>
         <View style={styles.notice}>
-          <AppText style={styles.noticeTitle}>{contents.noticeTitle}</AppText>
-          <AppText style={{marginTop: 30}}>
+          <View style={[styles.row, {marginBottom: 13}]}>
+            <AppSvgIcon name="cautionRed" style={{marginRight: 8}} />
+            <AppText style={styles.noticeTitle}>{contents.noticeTitle}</AppText>
+          </View>
+          <View style={{marginRight: 20}}>
             {contents.noticeBody.map((k) => (
-              <TextWithDot text={k} boldStyle={styles.noticeBold} />
+              <TextWithDot
+                text={k}
+                boldStyle={styles.noticeBold}
+                textStyle={styles.noticeText}
+                dotStyle={styles.dot}
+              />
             ))}
-          </AppText>
+          </View>
         </View>
       </ScrollView>
 
@@ -236,7 +260,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
           '0'
         }
         currency={i18n.t('esim:charge:addOn:currency')}
-        onPress={() => isPressed && onPressBtnPurchase}
+        onPress={onPressBtnPurchase}
         disable={!isPressed}
         title={i18n.t('esim:charge:payment:agree')}
       />
