@@ -538,6 +538,7 @@
   "esim:moveToGuide": "Go to Guide",
   "esim:copyMsg": "Copied the information",
   "esim:checkUsage": "Check Usage",
+  "esim:prodInfo": "Product Info",
   "esim:notShowUsage": "This product does not provide usage inquiry",
   "esim:charge": "Recharge",
   "esim:charge:type": "충전 용도를\n선택해주세요!",

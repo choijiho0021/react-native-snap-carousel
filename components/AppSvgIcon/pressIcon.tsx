@@ -386,6 +386,27 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  prodInfo: [
+    <Svg
+      width="27"
+      height="26"
+      viewBox="0 0 27 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="m5.547 3.5-1.583 19h18.74l-1.584-19H5.547zm17.068-.125A1.5 1.5 0 0 0 21.12 2H5.547a1.5 1.5 0 0 0-1.495 1.375l-1.583 19A1.5 1.5 0 0 0 3.964 24h18.74a1.5 1.5 0 0 0 1.494-1.625l-1.583-19z"
+        fill="#2C2C2C"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.333 6a.75.75 0 0 1 .75.75v1a2.25 2.25 0 0 0 4.5 0v-1a.75.75 0 0 1 1.5 0v1a3.75 3.75 0 1 1-7.5 0v-1a.75.75 0 0 1 .75-.75z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
   btnUsage: [
     <Svg
       width="26"

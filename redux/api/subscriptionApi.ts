@@ -129,6 +129,7 @@ export type RkbSubscription = {
 
   refSubs?: string;
   prodType?: string;
+  flagImage?: string;
 };
 
 const toSubscription =
@@ -177,6 +178,7 @@ const toSubscription =
           refSubs: item.field_ref_subscription || '',
           prodType: item.product_type || '',
           prodDays: item.product_days || '',
+          flagImage: item.field_flag_image || '',
         })),
         // .sort(sortSubs),
       );
