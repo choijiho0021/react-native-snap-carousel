@@ -281,7 +281,7 @@ const EsimSubs = ({
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
   const isBc = useMemo(
-    () => mainSubs.partner === 'billionconnect',
+    () => mainSubs.partner?.toLowerCase() === 'billionconnect',
     [mainSubs.partner],
   );
   const notCardInfo = useMemo(
@@ -429,7 +429,7 @@ const EsimSubs = ({
 
   const QRnCopyInfo = useCallback(() => {
     // const usageCheckable =
-    //   item.packageId?.startsWith('D') || item.partner === 'quadcell';
+    //   item.packageId?.startsWith('D') || item.partner?.toLowerCase() === 'quadcell';
     return (
       <View style={styles.activeBottomBox}>
         <AppSvgIcon

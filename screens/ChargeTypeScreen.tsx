@@ -10,7 +10,6 @@ import i18n from '@/utils/i18n';
 import ChargeTypeButton from './EsimScreen/components/ChargeTypeButton';
 import {API} from '@/redux/api';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
-import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 
@@ -234,7 +233,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           disabled={
             (t === 'addOn' && !addonEnabled) ||
             (t === 'extension' &&
-              (mainSubs.partner === 'quadcell' || !isChargeable))
+              (mainSubs.partner?.toLowerCase() === 'quadcell' || !isChargeable))
           }
         />
       ))}

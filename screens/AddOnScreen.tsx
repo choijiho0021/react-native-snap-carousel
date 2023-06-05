@@ -222,7 +222,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   useEffect(() => {
     if (expireTime) {
       // cmi의 리셋타임은 활성화 시간 기준으로 변경 됨
-      if (mainSubs.partner === 'cmi')
+      if (mainSubs.partner?.toLowerCase() === 'cmi')
         setDataResetTime(expireTime.format('HH:mm:ss'));
 
       // 남은 사용기간 구하기
@@ -333,7 +333,8 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
 
     return (
       <View style={styles.whiteBox}>
-        {mainSubs.partner === 'quadcell' && status === 'unUsed' ? (
+        {mainSubs.partner?.toLowerCase() === 'quadcell' &&
+        status === 'unUsed' ? (
           <AppStyledText
             text={i18n.t('esim:charge:addOn:usagePeriod:unUsed')}
             textStyle={styles.useText}
@@ -405,7 +406,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
           isAddOn
         />
 
-        {mainSubs.partner === 'cmi' && status === 'unUsed' ? (
+        {mainSubs.partner?.toLowerCase() === 'cmi' && status === 'unUsed' ? (
           <View style={styles.no}>
             <AppSvgIcon name="blueNotice" style={{marginBottom: 16}} />
             <AppStyledText
@@ -439,7 +440,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
         )}
       </ScrollView>
 
-      {mainSubs.partner === 'cmi' && status === 'unUsed' ? (
+      {mainSubs.partner?.toLowerCase() === 'cmi' && status === 'unUsed' ? (
         <Pressable style={styles.close} onPress={() => navigation.goBack()}>
           <AppText style={styles.closeText}>{i18n.t('close')}</AppText>
         </Pressable>
