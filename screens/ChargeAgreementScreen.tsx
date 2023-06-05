@@ -108,7 +108,6 @@ const styles = StyleSheet.create({
     bottom: 100,
     marginHorizontal: 20,
     padding: 20,
-    paddingBottom: 30,
     display: 'flex',
     flexDirection: 'row',
     width: sliderWidth - 40,
