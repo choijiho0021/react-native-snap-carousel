@@ -1,6 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {StyleSheet, SafeAreaView, View} from 'react-native';
-import Tooltip from 'react-native-walkthrough-tooltip';
 import {RouteProp} from '@react-navigation/native';
 import {TabView} from 'react-native-tab-view';
 import {connect} from 'react-redux';
@@ -19,9 +18,7 @@ import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import AppTabHeader from '@/components/AppTabHeader';
 import {makeProdData} from './CountryScreen';
-import AppButton from '@/components/AppButton';
-import AppText from '@/components/AppText';
-import {retrieveData, storeData} from '@/utils/utils';
+import {retrieveData} from '@/utils/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RkbProduct} from '@/redux/api/productApi';
@@ -222,8 +219,6 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
     },
     [onPress, prodData],
   );
-
-  console.log('@@@@ params?.mainSubs', params?.mainSubs);
 
   return (
     <SafeAreaView style={styles.container}>
