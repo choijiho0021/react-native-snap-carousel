@@ -24,6 +24,11 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     color: colors.gray2,
   },
+  selectedTabTitle: {
+    ...appStyles.bold18Text,
+    lineHeight: 26,
+    color: colors.black,
+  },
 });
 
 type TabRoute = {key: string; title: string};
@@ -65,6 +70,7 @@ const BoardScreen: React.FC<BoardScreenProps> = ({pending, title, routes}) => {
         style={styles.tab}
         tintColor={colors.black}
         titleStyle={styles.tabTitle}
+        seletedStyle={styles.selectedTabTitle}
       />
       <TabView
         style={styles.container}

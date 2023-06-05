@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   ifFirstText: {
-    ...appStyles.normal15Text,
+    ...appStyles.semiBold15Text,
     lineHeight: 20,
     color: '#001c65',
   },
@@ -415,10 +415,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           };
 
           const bcUsage: UsageObj = {
-            quota: Number(planInfo.totalTraffic) || 0, // Mb
+            quota: Number(planInfo.totalTraffic) / 1024 || 0, // Mb
             used:
-              Number(planInfo.totalTraffic) -
-                Number(planInfo?.remainingTraffic) || 0, // Mb
+              (Number(planInfo.totalTraffic) -
+                Number(planInfo?.remainingTraffic)) /
+                1024 || 0, // Mb
           };
 
           return {status: bcStatus, usage: bcUsage};
@@ -439,13 +440,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
       let result = {status: {}, usage: {}};
       switch (item.partner) {
-        case 'CMI':
+        case 'cmi':
           result = await checkCmiData(item);
           break;
-        case 'Quadcell':
+        case 'quadcell':
           result = await checkQuadcellData(item);
           break;
-        case 'BillionConnect':
+        case 'billionconnect':
           result = await checkBcData(item);
           break;
         // setShowSnackBar(true);

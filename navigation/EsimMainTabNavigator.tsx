@@ -227,7 +227,17 @@ function EsimStackComponent() {
       <EsimStack.Screen name="ChargeHistory" component={ChargeHistoryScreen} />
       <EsimStack.Screen name="ChargeDetail" component={ChargeDetailScreen} />
       <EsimStack.Screen name="QrInfo" component={QrInfoScreen} />
-      <EsimStack.Screen name="UserGuideStep" component={UserGuideScreen} />
+      <EsimStack.Group screenOptions={{animationEnabled: true}}>
+        <EsimStack.Screen name="UserGuideStep" component={UserGuideScreen} />
+        <EsimStack.Screen
+          name="UserGuide"
+          component={esimGlobal ? GlobalGuideScreen : GuideHomeScreen}
+        />
+        <EsimStack.Screen
+          name="UserGuideSelectRegion"
+          component={GuideSelectRegionScreen}
+        />
+      </EsimStack.Group>
       <EsimStack.Screen name="Payment" component={PaymentScreen} />
       <EsimStack.Screen name="PymMethod" component={PymMethodScreen} />
       <EsimStack.Screen name="PaymentResult" component={PaymentResultScreen} />

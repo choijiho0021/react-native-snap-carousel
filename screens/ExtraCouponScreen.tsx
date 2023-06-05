@@ -55,7 +55,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     marginRight: 8,
     borderRadius: 30,
-    borderColor: colors.gray,
     borderStyle: 'solid',
     borderWidth: 1,
     alignItems: 'center',
@@ -167,6 +166,7 @@ const ExtraCouponScreen = () => {
               style={[
                 styles.image,
                 {backgroundColor: isSelected ? colors.clearBlue : colors.white},
+                {borderColor: isSelected ? colors.clearBlue : colors.gray},
               ]}
               onPress={() => setSelectedGrp(grp)}>
               <AppText

@@ -6,6 +6,7 @@ import {TabView} from 'react-native-tab-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {StackNavigationProp} from '@react-navigation/stack';
+import moment from 'moment';
 import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
 import {RootState} from '@/redux';
@@ -26,6 +27,8 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import {RkbProduct} from '@/redux/api/productApi';
 import ProdByType from '@/components/ProdByType';
 import TextWithDot from './EsimScreen/components/TextWithDot';
+import SelectedProdTitle from './EventBoardScreen/components/SelectedProdTitle';
+import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
   container: {
@@ -35,12 +38,14 @@ const styles = StyleSheet.create({
   },
   tab: {
     backgroundColor: colors.white,
-    height: 60,
-    paddingHorizontal: 25,
+    height: 74,
+    paddingHorizontal: 20,
+    paddingBottom: 24,
   },
   tabTitle: {
-    fontSize: 16,
-    lineHeight: 20,
+    ...appStyles.medium18,
+    lineHeight: 26,
+    color: colors.gray2,
   },
   header: {
     flexDirection: 'row',
@@ -51,55 +56,33 @@ const styles = StyleSheet.create({
     height: 56,
     marginRight: 8,
   },
-  cautionBtn: {
-    width: 24,
-    height: 24,
-    marginTop: 2,
+  whiteBox: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: colors.white,
   },
-  toolTipStyle: {
-    borderRadius: 5,
-  },
-  arrowStyle: {
-    borderTopColor: colors.black,
-    zIndex: 10,
-  },
-  toolTipBox: {
-    backgroundColor: colors.black,
-    // borderWidth: 1,
-    // borderColor: colors.lightGrey,
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 20,
-    height: '100%',
-  },
-  toolTipTitleFrame: {
+  greyBox: {
+    padding: 16,
+    backgroundColor: colors.backGrey,
+    display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: 36,
-    marginBottom: 12,
   },
-  toolTipTitleText: {
+  clock: {
+    marginRight: 6,
+    alignSelf: 'center',
+  },
+  selectedTabTitle: {
+    ...appStyles.bold18Text,
+    color: colors.black,
+  },
+  chargeablePeriodText: {
+    ...appStyles.medium14,
+    lineHeight: 22,
+    color: colors.clearBlue,
+  },
+  chargeablePeriodTextBold: {
     ...appStyles.bold14Text,
-    color: colors.white,
-    lineHeight: 20,
-  },
-  btnCancel: {
-    width: 12,
-    height: 12,
-    marginRight: 8,
-  },
-  toolTipBody: {
-    paddingRight: 30,
-  },
-
-  toolTipBodyText: {
-    ...appStyles.normal14Text,
-    color: colors.white,
-    lineHeight: 20,
-  },
-  devider: {
-    height: 14,
+    lineHeight: 22,
   },
 });
 
@@ -157,7 +140,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
   const prodData = useMemo(() => {
     if (partnerIds) {
       const cmiPartnerIds = partnerIds.filter(
-        (partnerId) => localOpList.get(partnerId)?.partner === 'CMI',
+        (partnerId) => localOpList.get(partnerId)?.partner === 'cmi',
       );
       return makeProdData(prodByPartner, cmiPartnerIds);
     }
@@ -168,66 +151,6 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
     action.product.getProdOfPartner(partnerIds);
   }, [action.product, partnerIds]);
 
-  const renderToolTip = useCallback(
-    () => (
-      <Tooltip
-        isVisible={showTip}
-        backgroundColor="rgba(0,0,0,0)"
-        contentStyle={styles.toolTipBox}
-        tooltipStyle={styles.toolTipStyle}
-        backgroundStyle={{opacity: 0.92}}
-        arrowStyle={styles.arrowStyle}
-        disableShadow
-        arrowSize={{width: 16, height: 8}}
-        content={
-          <View>
-            <View style={styles.toolTipTitleFrame}>
-              <AppText style={styles.toolTipTitleText}>
-                {i18n.t('esim:chargeCaution')}
-              </AppText>
-              <AppButton
-                style={styles.btnCancel}
-                iconName="btnCancelWhite"
-                onPress={() => setTip(false)}
-              />
-            </View>
-            <View style={styles.toolTipBody}>
-              {[1, 2, 3].map((k) => (
-                <View key={k} style={{flexDirection: 'row'}}>
-                  <AppText
-                    style={[
-                      appStyles.normal14Text,
-                      {marginHorizontal: 5, marginTop: 3, color: colors.white},
-                    ]}>
-                    •
-                  </AppText>
-                  <AppText style={styles.toolTipBodyText}>
-                    {i18n.t(`esim:chargeCaution:modal${k}`)}
-                  </AppText>
-                </View>
-              ))}
-            </View>
-          </View>
-        }
-        onClose={() => {
-          setTip(false);
-          storeData('chargeTooltip', 'closed');
-        }}
-        placement="bottom">
-        <AppSvgIcon
-          style={styles.cautionBtn}
-          onPress={() => {
-            storeData('chargeTooltip', 'closed');
-            setTip(true);
-          }}
-          name="btnChargeCaution"
-        />
-        {/* {showTip && <View style={styles.triangle} />} */}
-      </Tooltip>
-    ),
-    [showTip],
-  );
-
   useEffect(() => {
     navigation.setOptions({
       title: null,
@@ -237,11 +160,10 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
             title={i18n.t('esim:charge:type:extension')}
             style={styles.headerTitle}
           />
-          {renderToolTip()}
         </View>
       ),
     });
-  }, [navigation, renderToolTip, showTip]);
+  }, [navigation, showTip]);
 
   const onIndexChange = useCallback((idx: number) => {
     setIndex(idx);
@@ -300,9 +222,32 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
     [onPress, prodData],
   );
 
+  console.log('@@@@ params?.mainSubs', params?.mainSubs);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={{flex: 1}}>
+        <SelectedProdTitle
+          isdaily={params?.mainSubs?.daily === 'daily'}
+          prodName={params?.mainSubs?.prodName || ''}
+        />
+        <View style={styles.whiteBox}>
+          <View style={styles.greyBox}>
+            <AppSvgIcon name="blueClock" style={styles.clock} />
+            <AppStyledText
+              text={i18n.t('esim:rechargeablePeriod2')}
+              textStyle={styles.chargeablePeriodText}
+              format={{b: styles.chargeablePeriodTextBold}}
+              data={{
+                chargeablePeriod:
+                  moment(params?.chargeablePeriod, 'YYYY.MM.DD').format(
+                    'YYYY년 MM월 DD일',
+                  ) || '',
+              }}
+            />
+          </View>
+        </View>
+
         <AppTabHeader
           index={index}
           routes={routes}
@@ -310,9 +255,9 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
           style={styles.tab}
           tintColor={colors.black}
           titleStyle={styles.tabTitle}
+          seletedStyle={styles.selectedTabTitle}
         />
 
-        <View style={styles.devider} />
         <TabView
           sceneContainerStyle={{flex: 1}}
           navigationState={{index, routes}}

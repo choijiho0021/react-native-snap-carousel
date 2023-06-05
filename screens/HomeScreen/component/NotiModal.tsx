@@ -1,8 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
 import React, {memo, useCallback, useState, useMemo, useEffect} from 'react';
-import {Image, Pressable, View, StyleSheet, Animated} from 'react-native';
-import {Pagination} from 'react-native-snap-carousel';
+import {Image, Pressable, View, StyleSheet} from 'react-native';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -12,31 +11,32 @@ import {colors} from '@/constants/Colors';
 import {API} from '@/redux/api';
 import ProgressiveImage from '../../../components/ProgressiveImage';
 import AppCarousel from '@/components/AppCarousel';
-import {
-  ACTIVE_DOT_WIDTH,
-  dotStyle,
-  DOT_MARGIN,
-  INACTIVE_DOT_WIDTH,
-} from './PromotionCarousel';
-import utils from '@/redux/api/utils';
 import {sliderWidth} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
 
 const styles = StyleSheet.create({
   pagination: {
-    marginBottom: 15,
-    alignSelf: 'center',
+    position: 'absolute',
+    height: 22,
+    width: 54,
+    borderRadius: 100,
+    backgroundColor: 'rgba(44, 44, 44, 0.64)',
+    right: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
-  paginationContainer: {
-    paddingBottom: 0,
-    paddingTop: 2,
-    paddingHorizontal: 0,
+  paginationText: {
+    ...appStyles.bold14Text,
+    lineHeight: 20,
+    color: colors.white,
+    width: 9,
   },
-  inactiveDot: {
-    width: INACTIVE_DOT_WIDTH,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.lightGrey,
-    marginLeft: DOT_MARGIN,
+  divider: {
+    height: 12,
+    marginHorizontal: 4,
+    width: 1.4,
+    backgroundColor: colors.white,
   },
 });
 
@@ -71,62 +71,6 @@ const NotiModal: React.FC<NotiModalProps> = ({
         moment().format('YYYY-MM-DD HH:mm'),
       );
   }, [checked]);
-
-  const renderDots = useCallback(
-    (activeIndex: number) => {
-      const duration = 200;
-      const aniMationWidth = new Animated.Value(INACTIVE_DOT_WIDTH);
-      const margin = aniMationWidth.interpolate({
-        inputRange: [INACTIVE_DOT_WIDTH, ACTIVE_DOT_WIDTH],
-        outputRange: [ACTIVE_DOT_WIDTH, INACTIVE_DOT_WIDTH],
-      });
-
-      Animated.timing(aniMationWidth, {
-        toValue: ACTIVE_DOT_WIDTH,
-        duration,
-        useNativeDriver: false,
-      }).start();
-
-      if (activeIndex === 0) {
-        return popUpList.map((elm, idx) =>
-          idx === 0 ? (
-            <Animated.View
-              key={elm.uuid + idx.toString()}
-              style={dotStyle(aniMationWidth, margin)}
-            />
-          ) : (
-            <View
-              key={utils.generateKey(idx.toString())}
-              style={styles.inactiveDot}
-            />
-          ),
-        );
-      }
-
-      return popUpList.map((_elm, idx) => {
-        if (activeIndex === idx)
-          return (
-            <Animated.View
-              key={utils.generateKey(idx.toString())}
-              style={dotStyle(aniMationWidth, DOT_MARGIN, colors.clearBlue)}
-            />
-          );
-
-        return activeIndex === (idx + 1) % popUpList.length ? (
-          <Animated.View
-            key={utils.generateKey(idx.toString())}
-            style={dotStyle(margin, DOT_MARGIN, colors.lightGrey)}
-          />
-        ) : (
-          <View
-            key={utils.generateKey(idx.toString())}
-            style={styles.inactiveDot}
-          />
-        );
-      });
-    },
-    [popUpList],
-  );
 
   const renderItem = useCallback(
     ({item}: {item: RkbPromotion}) => {
@@ -208,13 +152,12 @@ const NotiModal: React.FC<NotiModalProps> = ({
         sliderWidth={modalImageSize}
       />
       {popUpList.length > 1 && (
-        <View style={styles.pagination}>
-          <Pagination
-            dotsLength={popUpList.length}
-            activeDotIndex={(activeSlide + 1) % popUpList.length}
-            containerStyle={styles.paginationContainer}
-            renderDots={renderDots}
-          />
+        <View style={[styles.pagination, {top: imageHeight - (22 + 16)}]}>
+          <AppText style={styles.paginationText}>{activeSlide + 1}</AppText>
+          <View style={styles.divider} />
+          <AppText style={[styles.paginationText, {opacity: 0.8}]}>
+            {popUpList.length}
+          </AppText>
         </View>
       )}
 

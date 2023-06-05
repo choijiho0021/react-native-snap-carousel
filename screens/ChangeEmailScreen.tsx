@@ -39,19 +39,32 @@ const styles = StyleSheet.create({
   },
   textInput: {
     marginTop: 10,
-    fontSize: 16,
     borderBottomColor: colors.black,
     borderBottomWidth: 1,
     paddingVertical: 12,
     paddingHorizontal: 15,
+    ...appStyles.normal16Text,
+    lineHeight: 22,
+    color: colors.black,
+  },
+  title: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
+    color: colors.warmGrey,
   },
   oldEmail: {
     height: 46,
     marginTop: 4,
     marginBottom: 32,
     backgroundColor: colors.whiteTwo,
+    borderRadius: 3,
     paddingHorizontal: 15,
     justifyContent: 'center',
+  },
+  oldEmailText: {
+    ...appStyles.normal16Text,
+    lineHeight: 22,
+    color: colors.black,
   },
   helpText: {
     ...appStyles.normal14Text,
@@ -158,16 +171,12 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
             padding: 20,
             flex: 1,
           }}>
-          <AppText style={appStyles.normal14Text}>
-            {i18n.t('changeEmail:using')}
-          </AppText>
+          <AppText style={styles.title}>{i18n.t('changeEmail:using')}</AppText>
           <View style={styles.oldEmail}>
-            <AppText>{email}</AppText>
+            <AppText style={styles.oldEmailText}>{email}</AppText>
           </View>
 
-          <AppText style={appStyles.normal14Text}>
-            {i18n.t('changeEmail:new')}
-          </AppText>
+          <AppText style={styles.title}>{i18n.t('changeEmail:new')}</AppText>
 
           <View>
             <AppTextInput

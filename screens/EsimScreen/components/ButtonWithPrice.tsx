@@ -46,10 +46,12 @@ const styles = StyleSheet.create({
 const ButtonWithPrice = ({
   amount,
   currency,
+  title,
   onPress,
 }: {
   amount: string;
   currency: string;
+  title?: string;
   onPress: () => void;
 }) => {
   return (
@@ -65,7 +67,7 @@ const ButtonWithPrice = ({
         style={styles.paymentBtn}
         type="primary"
         onPress={onPress}
-        title={i18n.t('esim:charge:payment')}
+        title={title || i18n.t('esim:charge:payment')}
         titleStyle={styles.paymentBtnTitle}
       />
     </View>

@@ -242,12 +242,6 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
       }
     } else if (rule?.navigate?.startsWith('http')) {
       Linking.openURL(rule.openLink);
-    } else if (!loggedIn) {
-      // 로그인 화면으로 이동
-      navigation.navigate('Auth', {
-        screen: 'RegisterMobile',
-        params: rule?.skuNavigate,
-      });
     } else {
       navigation.goBack();
     }

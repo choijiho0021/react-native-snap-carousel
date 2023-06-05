@@ -11,7 +11,8 @@ export async function requestPermission() {
     await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
     await messaging().requestPermission();
   } else if (Platform.OS === 'android') {
-    await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+    // await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+    await request(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES);
   }
 }
 

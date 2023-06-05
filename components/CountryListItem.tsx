@@ -18,14 +18,6 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     flexDirection: 'row',
   },
-  cardCharge: {
-    backgroundColor: colors.white,
-    marginHorizontal: 8,
-    paddingHorizontal: 15,
-    paddingVertical: 20,
-    flexDirection: 'row',
-  },
-
   balanceStyle: {
     fontSize: isDeviceSize('medium') ? 20 : 22,
     fontWeight: 'bold',
@@ -92,14 +84,12 @@ type CountryListItemProps = {
   item: RkbProduct;
   position?: string;
   onPress: () => void;
-  isCharge?: boolean;
 };
 
 const CountryListItem: React.FC<CountryListItemProps> = ({
   item,
   position,
   onPress,
-  isCharge = false,
 }) => {
   const color = useMemo(
     () => ({
@@ -155,9 +145,7 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
 
   return (
     <Pressable onPress={onPress} style={{backgroundColor: colors.white}}>
-      <View
-        key="product"
-        style={isCharge ? styles.cardCharge : [styles.card, myStyle]}>
+      <View key="product" style={[styles.card, myStyle]}>
         <View key="text" style={styles.textView}>
           <View style={styles.titleAndPrice}>
             <View style={{flexDirection: 'row'}}>
@@ -228,7 +216,7 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
           </View>
         </View>
       </View>
-      {position !== 'tail' && position !== 'onlyOne' && !isCharge && (
+      {position !== 'tail' && position !== 'onlyOne' && (
         <View style={styles.itemOutDivider}>
           <View style={styles.itemDivider} />
         </View>

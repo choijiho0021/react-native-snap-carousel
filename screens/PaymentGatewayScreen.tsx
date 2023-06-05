@@ -1,9 +1,10 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useMemo} from 'react';
-import {SafeAreaView} from 'react-native';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators, RootState} from 'redux';
+import Video from 'react-native-video';
 import AppAlert from '@/components/AppAlert';
 import {HomeStackParamList} from '@/navigation/navigation';
 import api from '@/redux/api/api';
@@ -16,6 +17,10 @@ import AppPaymentGateway, {
 import {API} from '@/redux/api';
 import {AccountModelState} from '@/redux/modules/account';
 import AppBackButton from '@/components/AppBackButton';
+import AppText from '@/components/AppText';
+import {colors} from '@/constants/Colors';
+
+const loading = require('../assets/images/loading_1.mp4');
 
 type PaymentGatewayScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
@@ -37,12 +42,33 @@ type PaymentGatewayScreenProps = {
   };
 };
 
+const styles = StyleSheet.create({
+  backgroundVideo: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 80,
+    right: 0,
+  },
+  infoText: {
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
+    right: 0,
+    marginBottom: 30,
+    color: colors.clearBlue,
+    textAlign: 'center',
+    fontSize: 14,
+  },
+});
+
 const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
   route: {params},
   navigation,
   account,
   action,
 }) => {
+  const [isOrderReady, setIsOrderReady] = useState(false);
   const pymInfo = useMemo(
     () =>
       ({
@@ -111,6 +137,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       action.cart
         .checkStockAndMakeOrder(pymInfo)
         .then(({payload: resp}) => {
+          setIsOrderReady(true);
           if (!resp || resp.result < 0) {
             let text = 'cart:systemError';
             if (resp?.result === api.E_RESOURCE_NOT_FOUND)
@@ -129,9 +156,28 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
     }
   }, [action.cart, navigation, params.isPaid, pymInfo]);
 
+  const renderLoading = useCallback(() => {
+    return (
+      <View style={{flex: 1, alignItems: 'stretch'}}>
+        <Video
+          source={loading}
+          repeat
+          style={styles.backgroundVideo}
+          resizeMode="cover"
+          mixWithOthers="mix"
+        />
+        <AppText style={styles.infoText}>{i18n.t('pym:loadingInfo')}</AppText>
+      </View>
+    );
+  }, []);
+
   return (
     <SafeAreaView style={{flex: 1}}>
-      <AppPaymentGateway info={params} callback={callback} />
+      {isOrderReady ? (
+        <AppPaymentGateway info={params} callback={callback} />
+      ) : (
+        renderLoading()
+      )}
     </SafeAreaView>
   );
 };

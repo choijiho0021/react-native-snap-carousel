@@ -3,6 +3,7 @@ import {
   ParamListBase,
   RouteProp,
 } from '@react-navigation/native';
+import {Moment} from 'moment';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {RkbInfo} from '@/redux/api/pageApi';
 import {BoardMsgStatus} from '@/redux/api/boardApi';
@@ -153,6 +154,8 @@ export type HomeStackParamList = {
   ChargeType: {
     mainSubs: RkbSubscription;
     chargeablePeriod: string;
+    isChargeable: boolean;
+    chargedSubs?: RkbSubscription[];
   };
   ChargeAgreement: {
     mainSubs: RkbSubscription;
@@ -163,7 +166,8 @@ export type HomeStackParamList = {
   };
   AddOn: {
     mainSubs: RkbSubscription;
-    chargeablePeriod: string;
+    status?: string;
+    expireTime?: Moment;
   };
   Receipt: {
     order: RkbOrder;

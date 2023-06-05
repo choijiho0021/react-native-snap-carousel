@@ -747,6 +747,21 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  checkGreySmall: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M11.909 5.247a1 1 0 0 1 .095 1.41l-3.82 4.377a1 1 0 0 1-1.467.043l-2.43-2.47a1 1 0 0 1 1.426-1.402l1.673 1.7 3.112-3.563a1 1 0 0 1 1.41-.095z"
+        fill="#777"
+      />
+    </Svg>,
+  ],
   hkCheck: [
     <Svg
       width="96"
@@ -1427,7 +1442,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
-      <Path d="M0 0h17a3 3 0 0 1 3 3v17H0V0z" fill="#000" fillOpacity=".4" />
+      <Path d="M0 0h20v20H0V0z" fill="#000" fillOpacity=".4" />
       <Path
         d="M3.99 3.282 16.716 16.01l-.707.707L3.282 3.99l.708-.707z"
         fill="#fff"
@@ -2938,6 +2953,182 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           <Path fill="#fff" transform="translate(2 2)" d="M0 0h16v16H0z" />
         </ClipPath>
       </Defs>
+    </Svg>,
+  ],
+  bluePin: [
+    <Svg
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.02 17.322c2.157-1.505 6.98-5.278 6.98-8.91C17 3.734 13.418 1 9 1S1 3.734 1 8.412c0 3.632 4.824 7.405 6.98 8.91a1.772 1.772 0 0 0 2.04 0zM9 9.25a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"
+        fill="#2A7FF6"
+      />
+    </Svg>,
+  ],
+  blueNotice: [
+    <Svg
+      width="63"
+      height="63"
+      viewBox="0 0 63 63"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M30.626 4.073a1 1 0 0 1 1.748 0l28.3 50.941a1 1 0 0 1-.873 1.486H3.2a1 1 0 0 1-.875-1.486l28.3-50.94z"
+        fill="url(#yr2y7wdt3a)"
+      />
+      <Circle cx="31.5" cy="43.5" r="2" fill="#fff" />
+      <Rect x="29.5" y="24.5" width="4" height="15" rx="2" fill="#fff" />
+      <Defs>
+        <LinearGradient
+          id="yr2y7wdt3a"
+          x1="77"
+          y1="69"
+          x2="18.5"
+          y2="22"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#CADCF5" />
+          <Stop offset="1" stopColor="#2A7FF6" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
+  blueClock: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12zm.75-9a.75.75 0 0 0-1.5 0v3c0 .414.336.75.75.75h2a.75.75 0 0 0 0-1.5H8.75V5zM4.53.47a.75.75 0 0 1 0 1.06l-2 2a.75.75 0 0 1-1.06-1.06l2-2a.75.75 0 0 1 1.06 0zM11.47.47a.75.75 0 0 0 0 1.06l2 2a.75.75 0 1 0 1.06-1.06l-2-2a.75.75 0 0 0-1.06 0z"
+        fill="#2A7FF6"
+      />
+    </Svg>,
+  ],
+  addOnType: [
+    <Svg
+      width="30"
+      height="30"
+      viewBox="0 0 30 30"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect
+        x="3.529"
+        width="26.471"
+        height="26.471"
+        rx="2"
+        fill="url(#7yj4exp40a)"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M19 4a1 1 0 1 0 0 2h3.586l-6.293 6.293a1 1 0 0 0 1.414 1.414L24 7.414V11a1 1 0 1 0 2 0V5a1 1 0 0 0-1-1h-6z"
+        fill="#fff"
+      />
+      <Rect
+        y="15.882"
+        width="14.118"
+        height="14.118"
+        rx="2"
+        fill="url(#re5c0amlib)"
+      />
+      <Defs>
+        <LinearGradient
+          id="7yj4exp40a"
+          x1="30"
+          y1="-3.5"
+          x2="-2.44"
+          y2="8.307"
+          gradientUnits="userSpaceOnUse">
+          <Stop offset=".281" stopColor="#2B80F7" />
+          <Stop offset="1" stopColor="#7DA6FF" />
+        </LinearGradient>
+        <LinearGradient
+          id="re5c0amlib"
+          x1="1.246"
+          y1="27.924"
+          x2="15.567"
+          y2="14.996"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#FFC700" />
+          <Stop offset=".802" stopColor="#FFDF43" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
+  extensionType: [
+    <Svg
+      width="30"
+      height="30"
+      viewBox="0 0 30 30"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect
+        y="1.765"
+        width="30"
+        height="26.471"
+        rx="2"
+        fill="url(#h3ltfb24fa)"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M21.84 9.881a1 1 0 1 0-1.415 1.415L23.13 14H15a1 1 0 1 0 0 2h8.041l-2.616 2.616a1 1 0 1 0 1.414 1.414l4.368-4.367a1 1 0 0 0 0-1.414L21.839 9.88z"
+        fill="#fff"
+      />
+      <Path
+        d="M0 3.765a2 2 0 0 1 2-2h8.588v26.47H2a2 2 0 0 1-2-2V3.765z"
+        fill="url(#yzm5g2ts0b)"
+      />
+      <Defs>
+        <LinearGradient
+          id="h3ltfb24fa"
+          x1="30"
+          y1="15"
+          x2="13.073"
+          y2="7.451"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#2B80F7" />
+          <Stop offset="1" stopColor="#7DA6FF" />
+        </LinearGradient>
+        <LinearGradient
+          id="yzm5g2ts0b"
+          x1=".934"
+          y1="24.343"
+          x2="18.179"
+          y2="18.116"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#FFC700" />
+          <Stop offset=".802" stopColor="#FFDF43" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
+  info: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="10" cy="10" r="9" fill="#979797" />
+      <Rect
+        x="11"
+        y="15"
+        width="2"
+        height="7"
+        rx="1"
+        transform="rotate(-180 11 15)"
+        fill="#fff"
+      />
+      <Circle cx="10" cy="6" r="1" transform="rotate(-180 10 6)" fill="#fff" />
     </Svg>,
   ],
 };

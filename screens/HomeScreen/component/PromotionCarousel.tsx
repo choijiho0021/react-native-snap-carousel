@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {memo, useCallback, useState, useMemo} from 'react';
+import React, {memo, useCallback, useState, useMemo, useEffect} from 'react';
 import {Animated, Image, Pressable, StyleSheet, View} from 'react-native';
 import {Pagination} from 'react-native-snap-carousel';
 import {connect} from 'react-redux';
@@ -217,19 +217,21 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
       <AppCarousel
         data={promotion}
         renderItem={renderItem}
-        autoplay
-        loop
+        autoplay={promotion?.length > 1}
+        loop={promotion?.length > 1}
         onSnapToItem={setActiveSlide}
         sliderWidth={width}
       />
-      <View style={styles.pagination}>
-        <Pagination
-          dotsLength={promotion.length}
-          activeDotIndex={activeSlide}
-          containerStyle={styles.paginationContainer}
-          renderDots={renderDots}
-        />
-      </View>
+      {promotion?.length > 1 && (
+        <View style={styles.pagination}>
+          <Pagination
+            dotsLength={promotion.length}
+            activeDotIndex={activeSlide}
+            containerStyle={styles.paginationContainer}
+            renderDots={renderDots}
+          />
+        </View>
+      )}
     </View>
   );
 };

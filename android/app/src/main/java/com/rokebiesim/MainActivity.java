@@ -4,7 +4,39 @@ import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import com.facebook.react.ReactActivity;
+import com.navercorp.ntracker.ntrackersdk.NTrackerExt;
+
 public class MainActivity extends ReactActivity {
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    handleIntent(getIntent());
+    // Your Codes.
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    handleIntent(intent);
+    // Your Codes.
+  }
+
+  private void handleIntent(Intent intent) {
+    if (intent == null) {
+      return;
+    }
+    String appLinkAction = intent.getAction();
+    Uri appLinkData = intent.getData();
+    if (Intent.ACTION_VIEW.equals(appLinkAction)) {
+      NTrackerExt.setInflow(appLinkData);
+    }
+    // Your Codes.
+  }
 
   /**
    * Returns the name of the main component registered from JavaScript. This is used to schedule

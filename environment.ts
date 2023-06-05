@@ -105,7 +105,7 @@ const env: Env = {
   isProduction,
   appStoreUrl: {
     ios: 'https://apps.apple.com/kr/app/%EB%A1%9C%EB%B0%8D%EB%8F%84%EA%B9%A8%EB%B9%84-esim-%EB%8D%B0%EC%9D%B4%ED%84%B0%EA%B0%80-%ED%95%84%EC%9A%94%ED%95%9C-%EC%88%9C%EA%B0%84/id1525664178',
-    android: '',
+    android: 'https://play.google.com/store/apps/details?id=com.rokebiesim',
   },
   fbUser: secureData.fbUser,
   channelId: secureData.kakaoChannelId,
