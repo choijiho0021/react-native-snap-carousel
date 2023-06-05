@@ -13,6 +13,7 @@ import {API} from '@/redux/api';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const styles = StyleSheet.create({
   container: {
@@ -67,6 +68,10 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   navigation,
   route: {params},
 }) => {
+  const [showSnackBar, setShowSnackBar] = useState<{
+    text: string;
+    visible: boolean;
+  }>({text: '', visible: false});
   const {mainSubs, chargeablePeriod, chargedSubs, isChargeable} = params || {};
   const [chargeableItem, setChargeableItem] = useState<RkbSubscription>();
   const [addonEnabled, setAddonEnable] = useState(false);
@@ -165,6 +170,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         // 사용 완료
         if (!dataPack) {
           setStatus('expired');
+
           return;
         }
         if (dataPack?.effTime) {
@@ -198,9 +204,61 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     }
   }, [checkCmiStatus, checkQuadcellStatus, mainSubs]);
 
-  useEffect(() => {
-    console.log('@@@@', mainSubs.partner, mainSubs.daily, status);
-  }, [mainSubs.daily, mainSubs.partner, status]);
+  const onPress = useCallback(
+    (type: string) => {
+      if (type === 'extension') {
+        if (mainSubs.partner?.toLowerCase() === 'cmi' && isChargeable)
+          navigation.navigate('Charge', {
+            mainSubs: chargeableItem || mainSubs,
+            chargeablePeriod,
+          });
+        else {
+          if (!isChargeable) {
+            setShowSnackBar({
+              text: i18n.t('esim:charge:snackBar:extension:expired'),
+              visible: true,
+            });
+            return;
+          }
+          setShowSnackBar({
+            text: i18n.t('esim:charge:snackBar:extension:unsupported'),
+            visible: true,
+          });
+        }
+      } else if (addonEnabled) {
+        navigation.navigate('AddOn', {
+          mainSubs,
+          status,
+          expireTime,
+        });
+      } else {
+        if (status === 'expired')
+          setShowSnackBar({
+            text: i18n.t('esim:charge:snackBar:addOn:used'),
+            visible: true,
+          });
+        if (
+          mainSubs.partner?.toLowerCase() === 'billionconnect' ||
+          (mainSubs.partner?.toLowerCase() === 'cmi' &&
+            mainSubs.daily === 'total')
+        )
+          setShowSnackBar({
+            text: i18n.t('esim:charge:snackBar:addOn:unsupported'),
+            visible: true,
+          });
+      }
+    },
+    [
+      addonEnabled,
+      chargeableItem,
+      chargeablePeriod,
+      expireTime,
+      isChargeable,
+      mainSubs,
+      navigation,
+      status,
+    ],
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -217,29 +275,23 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           <ChargeTypeButton
             key={t}
             type={t}
-            onPress={() => {
-              if (t === 'extension') {
-                navigation.navigate('Charge', {
-                  mainSubs: chargeableItem || mainSubs,
-                  chargeablePeriod,
-                });
-              } else if (addonEnabled) {
-                // } else {
-                navigation.navigate('AddOn', {
-                  mainSubs,
-                  status,
-                  expireTime,
-                });
-              }
-            }}
+            onPress={() => onPress(t)}
             disabled={
               (t === 'addOn' && !addonEnabled) ||
               (t === 'extension' &&
-                (mainSubs.partner?.toLowerCase() === 'quadcell' ||
-                  !isChargeable))
+                (mainSubs.partner?.toLowerCase() !== 'cmi' || !isChargeable))
             }
           />
         ))}
+        <AppSnackBar
+          visible={showSnackBar.visible}
+          onClose={() =>
+            setShowSnackBar((pre) => ({text: pre.text, visible: false}))
+          }
+          textMessage={showSnackBar.text}
+          bottom={20}
+          preIcon="cautionRed"
+        />
       </ScrollView>
     </SafeAreaView>
   );

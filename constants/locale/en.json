@@ -621,6 +621,11 @@
   "esim:chargeCaution:body7": "Recharged product is <b>unexchangable and non refundable.</b>",
   "esim:chargeCaution:body8": "You can check recharge log in the ROKEBI App > eSIM tab > 'Recharge log' button",
   "esim:chargeCaution:body9": "Recharged product is <b>unexchangable and non refundable.</b>",
+  "esim:charge:snackBar:addOn:used": "사용  완료되어 용량 충전할 수 없는 상품입니다.",
+  "esim:charge:snackBar:addOn:unsupported": "용량 충전 기능을 지원하지 않는 상품입니다.",
+  "esim:charge:snackBar:addOn:noProd": "용량 충전 가능한 상품이 없습니다.",
+  "esim:charge:snackBar:extension:unsupported": "상품 연장 기능을 지원하지 않는 상품입니다.",
+  "esim:charge:snackBar:extension:expired": "연장 가능 기간이 만료된 상품입니다.",
 
   "esim:charge:payment": "Checkout",
   "esim:charge:payment:agree": "동의 후 결제하기",

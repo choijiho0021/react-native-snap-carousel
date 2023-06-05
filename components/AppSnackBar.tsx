@@ -23,6 +23,7 @@ type AppSnackBarProps = {
   bottom?: number;
   hideCancel?: boolean;
   onClose: () => void;
+  preIcon?: string;
 };
 
 class AppSnackBar extends PureComponent<AppSnackBarProps> {
@@ -67,10 +68,20 @@ class AppSnackBar extends PureComponent<AppSnackBarProps> {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 flex: 1,
+                alignItems: 'center',
               }}>
-              <AppText style={[appStyles.normal14Text, {color: colors.white}]}>
-                {this.props.textMessage}
-              </AppText>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                {this.props.preIcon && (
+                  <AppSvgIcon
+                    name={this.props.preIcon}
+                    style={{marginRight: 6}}
+                  />
+                )}
+                <AppText
+                  style={[appStyles.normal14Text, {color: colors.white}]}>
+                  {this.props.textMessage}
+                </AppText>
+              </View>
               {!this.props.hideCancel && (
                 <AppSvgIcon
                   name="closeSnackBar"
