@@ -191,13 +191,6 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
         mainSubs: params.mainSubs,
         contents: {
           chargeProd: data.name,
-          period: (
-            <TextWithDot
-              text={i18n.t('esim:charge:extension:body', {
-                date: '0000년 00월 00일',
-              })}
-            />
-          ),
           noticeTitle: i18n.t('esim:charge:extension:notice:title'),
           noticeBody: [1, 2, 3, 4, 5, 6, 7].map((n) =>
             i18n.t(`esim:charge:extension:notice:body${n}`),
