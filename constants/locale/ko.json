@@ -549,7 +549,7 @@
   "esim:charge:type:extension": "상품 연장하기",
   "esim:charge:type:extension:detail": "사용하고 있는 상품을\n이어서 계속 사용하고 싶을 때!",
   "esim:charge:cautionExpired": "<r>충전 가능 기간이 만료</r>되어\n충전 기능을 사용하실 수 없는 상품입니다.",
-  "esim:charge:noProd1": "충전 가능한 상품이 없습니다.",
+  "esim:charge:noProd1": "연장 가능한 상품이 없습니다.",
   "esim:charge:noProd2": "다른 탭에 있는 상품을 선택해주세요!",
   "esim:charge:addOn:type": "데이터 사용기간",
   "esim:charge:addOn:type:today": "오늘 하루만",
