@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
 
 type ChargeTypeModalProps = {
   type: string;
-  onPress: () => void;
+  onPress: (type: string) => void;
   disabled: boolean;
 };
 
@@ -140,7 +140,7 @@ const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
             type={type}
             onPress={() => {
               if (!disabled) dispatch(modalActions.closeModal());
-              onPress();
+              onPress(type);
             }}
             disabled={disabled}
           />

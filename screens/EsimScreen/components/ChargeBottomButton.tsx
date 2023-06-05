@@ -25,14 +25,14 @@ const ChargeBottomButton = ({
   disabled = false,
 }: {
   type: string;
-  onPress: () => void;
+  onPress: (type: string) => void;
   disabled: boolean;
 }) => {
   const [isPressed, setIsPressed] = useState(false);
 
   return (
     <Pressable
-      onPress={onPress}
+      onPress={() => onPress(type)}
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}
       style={[

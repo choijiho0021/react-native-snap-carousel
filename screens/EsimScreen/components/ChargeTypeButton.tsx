@@ -48,7 +48,7 @@ const ChargeTypeButton = ({
   disabled = false,
 }: {
   type: string;
-  onPress: () => void;
+  onPress: (type: string) => void;
   disabled: boolean;
 }) => {
   const dispatch = useDispatch();
@@ -56,7 +56,11 @@ const ChargeTypeButton = ({
   const onPressInfo = useCallback(() => {
     dispatch(
       modalActions.renderModal(() => (
-        <ChargeTypeModal type={type} onPress={onPress} disabled={disabled} />
+        <ChargeTypeModal
+          type={type}
+          onPress={() => onPress(type)}
+          disabled={disabled}
+        />
       )),
     );
   }, [disabled, dispatch, onPress, type]);
@@ -73,7 +77,11 @@ const ChargeTypeButton = ({
       <AppText style={[styles.detailText, {opacity: disabled ? 0.64 : 1}]}>
         {i18n.t(`esim:charge:type:${type}:detail`)}
       </AppText>
-      <ChargeBottomButton type={type} onPress={onPress} disabled={disabled} />
+      <ChargeBottomButton
+        type={type}
+        onPress={() => onPress(type)}
+        disabled={disabled}
+      />
     </View>
   );
 };
