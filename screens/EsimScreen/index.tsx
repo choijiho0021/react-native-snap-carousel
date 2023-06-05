@@ -440,13 +440,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
       let result = {status: {}, usage: {}};
       switch (item.partner) {
-        case 'CMI':
+        case 'cmi':
           result = await checkCmiData(item);
           break;
-        case 'Quadcell':
+        case 'quadcell':
           result = await checkQuadcellData(item);
           break;
-        case 'BillionConnect':
+        case 'billionconnect':
           result = await checkBcData(item);
           break;
         // setShowSnackBar(true);

@@ -281,7 +281,7 @@ const EsimSubs = ({
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
   const isBc = useMemo(
-    () => mainSubs.partner === 'BillionConnect',
+    () => mainSubs.partner === 'billionconnect',
     [mainSubs.partner],
   );
   const notCardInfo = useMemo(
@@ -296,11 +296,6 @@ const EsimSubs = ({
   const chargeablePeriod = useMemo(() => {
     return utils.toDateString(mainSubs.expireDate, 'YYYY.MM.DD');
   }, [mainSubs.expireDate]);
-
-  const isChargeable = useMemo(
-    () => !(mainSubs.partner === 'BillionConnect' || isChargeExpired),
-    [isChargeExpired, mainSubs.partner],
-  );
 
   useEffect(() => {
     if (showMoreInfo)
@@ -319,19 +314,21 @@ const EsimSubs = ({
           chargeablePeriod,
           onPressUsage,
           chargedSubs,
-          isChargeable,
+          isChargeable: !isChargeExpired,
         });
-      } else if (isChargeable) {
+      } else if (!isBc) {
         navigation.navigate('ChargeType', {
           mainSubs: item,
           chargeablePeriod,
+          isChargeable: !isChargeExpired,
         });
       }
     },
     [
       chargeablePeriod,
       chargedSubs,
-      isChargeable,
+      isBc,
+      isChargeExpired,
       isCharged,
       navigation,
       onPressUsage,
@@ -432,7 +429,7 @@ const EsimSubs = ({
 
   const QRnCopyInfo = useCallback(() => {
     // const usageCheckable =
-    //   item.packageId?.startsWith('D') || item.partner === 'Quadcell';
+    //   item.packageId?.startsWith('D') || item.partner === 'quadcell';
     return (
       <View style={styles.activeBottomBox}>
         <AppSvgIcon
@@ -458,7 +455,7 @@ const EsimSubs = ({
           name="btnUsage"
         />
 
-        {isChargeable ? (
+        {!isBc ? (
           <AppSvgIcon
             style={styles.btn}
             onPress={() => onPressRecharge(mainSubs)}
@@ -482,7 +479,6 @@ const EsimSubs = ({
     );
   }, [
     isChargeExpired,
-    isChargeable,
     isCharged,
     mainSubs,
     navigation,
@@ -530,9 +526,7 @@ const EsimSubs = ({
   }, [expired, mainSubs, navigation]);
 
   const renderMoveBtn = useCallback(() => {
-    const moveBtnList = [sendable, isCharged || isChargeable].filter(
-      (elm) => elm,
-    );
+    const moveBtnList = [sendable, isCharged || !isBc].filter((elm) => elm);
     if (moveBtnList.length === 0) return null;
 
     return (
@@ -563,14 +557,7 @@ const EsimSubs = ({
         })}
       </View>
     );
-  }, [
-    isChargeable,
-    isCharged,
-    mainSubs,
-    navigation,
-    onPressRecharge,
-    sendable,
-  ]);
+  }, [isBc, isCharged, mainSubs, navigation, onPressRecharge, sendable]);
 
   const renderCautionText = useCallback(
     (caution: string, subNum: number, hasPreDot: boolean) => (

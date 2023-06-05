@@ -6,6 +6,7 @@ import {FlatList, SafeAreaView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -37,7 +38,6 @@ import {
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import ChatTalk from '@/components/ChatTalk';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 
 const {esimCurrency, isIOS} = Env.get();
 

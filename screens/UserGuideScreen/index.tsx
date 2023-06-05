@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
   btn: {
     padding: 30,
     borderWidth: 1,
+    borderRadius: 3,
     borderColor: colors.whiteFive,
     borderRadius: 3,
     marginHorizontal: 20,

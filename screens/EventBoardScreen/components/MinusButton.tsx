@@ -1,15 +1,6 @@
 import React, {memo, useState} from 'react';
-import {
-  Pressable,
-  StyleProp,
-  StyleSheet,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
+import {Pressable, StyleSheet} from 'react-native';
 import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
-import AppText from './AppText';
 import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
