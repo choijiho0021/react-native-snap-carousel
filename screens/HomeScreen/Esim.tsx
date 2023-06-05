@@ -24,6 +24,7 @@ import {
   Image,
   Pressable,
   AppState,
+  BackHandler,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {Settings} from 'react-native-fbsdk-next';
@@ -865,6 +866,7 @@ const Esim: React.FC<EsimProps> = ({
           titleStyle={styles.modalTitle}
           type="close"
           onOkClose={() => exitApp('exit')}
+          onRequestClose={() => BackHandler.exitApp()}
           visible={modalType === 'unSupported'}>
           {modalBody()}
         </AppModal>

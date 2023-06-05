@@ -166,6 +166,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const [index, setIndex] = useState<number>();
   const [showTip, setTip] = useState(false);
   const [isTop, setIsTop] = useState(true);
+  const [blockAnimation, setBlockAnimation] = useState(false);
   const headerTitle = useMemo(
     () => API.Product.getTitle(localOpList.get(route.params?.partner[0])),
     [localOpList, route.params?.partner],
@@ -188,18 +189,24 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
 
   useEffect(() => {
     retrieveData('LocalProdTooltip').then((elm) => {
-      setTip(elm !== 'closed');
+      setTimeout(() => {
+        setTip(elm !== 'closed');
+      }, 1000);
+
       storeData('LocalProdTooltip', 'closed');
     });
   }, []);
 
   useEffect(() => {
-    Animated.timing(animatedValue, {
-      toValue: isTop ? 150 : 0,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-  }, [animatedValue, isTop]);
+    if(!blockAnimation){
+      setBlockAnimation(true)
+      Animated.timing(animatedValue, {
+        toValue: isTop ? 150 : 0,
+        duration: 500,
+        useNativeDriver: false,
+      }).start(() => setBlockAnimation(false));
+    }
+  }, [animatedValue, blockAnimation, isTop]);
 
   useEffect(() => {
     if (route.params?.partner) {
@@ -321,7 +328,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           title={headerTitle}
           style={{marginRight: 10, height: 56}}
           onPress={() => {
-            navigation.navigate('Home');
+            navigation.goBack();
           }}
         />
         {(headerTitle.includes('(로컬망)') ||

@@ -36,7 +36,7 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
   onSnapToItem,
   autoplay = false,
   loop = false,
-  interval = 2500,
+  interval = 3700,
   carouselRef,
 }) => {
   const sliderWidth = useMemo(() => Math.floor(sw), [sw]);
