@@ -3,6 +3,7 @@ import {StyleSheet, SafeAreaView, View, Image} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import moment, {Moment} from 'moment';
+import {ScrollView} from 'react-native-gesture-handler';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppBackButton from '@/components/AppBackButton';
@@ -203,40 +204,43 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.top}>
-        <AppText style={styles.topText}>{i18n.t('esim:charge:type')}</AppText>
-        <Image
-          style={{marginTop: 14}}
-          source={require('@/assets/images/esim/chargeType.png')}
-          resizeMode="stretch"
-        />
-      </View>
-      {['addOn', 'extension'].map((t) => (
-        <ChargeTypeButton
-          key={t}
-          type={t}
-          onPress={() => {
-            if (t === 'extension') {
-              navigation.navigate('Charge', {
-                mainSubs: chargeableItem || mainSubs,
-                chargeablePeriod,
-              });
-            } else if (addonEnabled) {
-              // } else {
-              navigation.navigate('AddOn', {
-                mainSubs,
-                status,
-                expireTime,
-              });
+      <ScrollView style={{flex: 1}}>
+        <View style={styles.top}>
+          <AppText style={styles.topText}>{i18n.t('esim:charge:type')}</AppText>
+          <Image
+            style={{marginTop: 14}}
+            source={require('@/assets/images/esim/chargeType.png')}
+            resizeMode="stretch"
+          />
+        </View>
+        {['addOn', 'extension'].map((t) => (
+          <ChargeTypeButton
+            key={t}
+            type={t}
+            onPress={() => {
+              if (t === 'extension') {
+                navigation.navigate('Charge', {
+                  mainSubs: chargeableItem || mainSubs,
+                  chargeablePeriod,
+                });
+              } else if (addonEnabled) {
+                // } else {
+                navigation.navigate('AddOn', {
+                  mainSubs,
+                  status,
+                  expireTime,
+                });
+              }
+            }}
+            disabled={
+              (t === 'addOn' && !addonEnabled) ||
+              (t === 'extension' &&
+                (mainSubs.partner?.toLowerCase() === 'quadcell' ||
+                  !isChargeable))
             }
-          }}
-          disabled={
-            (t === 'addOn' && !addonEnabled) ||
-            (t === 'extension' &&
-              (mainSubs.partner?.toLowerCase() === 'quadcell' || !isChargeable))
-          }
-        />
-      ))}
+          />
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 };
