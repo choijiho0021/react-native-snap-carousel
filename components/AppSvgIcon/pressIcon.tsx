@@ -3019,47 +3019,46 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       viewBox="0 0 30 30"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
-      <Rect
-        x="3.529"
-        width="26.471"
-        height="26.471"
-        rx="2"
-        fill="url(#7yj4exp40a)"
-      />
-      <Path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M19 4a1 1 0 1 0 0 2h3.586l-6.293 6.293a1 1 0 0 0 1.414 1.414L24 7.414V11a1 1 0 1 0 2 0V5a1 1 0 0 0-1-1h-6z"
-        fill="#fff"
-      />
-      <Rect
-        y="15.882"
-        width="14.118"
-        height="14.118"
-        rx="2"
-        fill="url(#re5c0amlib)"
-      />
+      <G clipPath="url(#clip0_5564_56664)">
+        <Path
+          d="M3 2C3 0.895431 3.89543 0 5 0H28C29.1046 0 30 0.895431 30 2V25C30 26.1046 29.1046 27 28 27H5C3.89543 27 3 26.1046 3 25V2Z"
+          fill="url(#paint0_linear_5564_56664)"
+        />
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M19 4C18.4477 4 18 4.44772 18 5C18 5.55228 18.4477 6 19 6H22.5858L16.2929 12.2929C15.9024 12.6834 15.9024 13.3166 16.2929 13.7071C16.6834 14.0976 17.3166 14.0976 17.7071 13.7071L24 7.41421V11C24 11.5523 24.4477 12 25 12C25.5523 12 26 11.5523 26 11V5C26 4.44772 25.5523 4 25 4H19Z"
+          fill="white"
+        />
+        <Path
+          d="M0 18C0 16.8954 0.895431 16 2 16H12C13.1046 16 14 16.8954 14 18V28C14 29.1046 13.1046 30 12 30H2C0.89543 30 0 29.1046 0 28V18Z"
+          fill="url(#paint1_linear_5564_56664)"
+        />
+      </G>
       <Defs>
         <LinearGradient
-          id="7yj4exp40a"
-          x1="30"
-          y1="-3.5"
-          x2="-2.44"
-          y2="8.307"
+          id="paint0_linear_5564_56664"
+          x1="30.0001"
+          y1="-3.57"
+          x2="-3.08834"
+          y2="8.47299"
           gradientUnits="userSpaceOnUse">
-          <Stop offset=".281" stopColor="#2B80F7" />
+          <Stop offset="0.28125" stopColor="#2B80F7" />
           <Stop offset="1" stopColor="#7DA6FF" />
         </LinearGradient>
         <LinearGradient
-          id="re5c0amlib"
-          x1="1.246"
-          y1="27.924"
-          x2="15.567"
-          y2="14.996"
+          id="paint1_linear_5564_56664"
+          x1="1.23529"
+          y1="27.9412"
+          x2="15.4369"
+          y2="15.1212"
           gradientUnits="userSpaceOnUse">
           <Stop stopColor="#FFC700" />
-          <Stop offset=".802" stopColor="#FFDF43" />
+          <Stop offset="0.801663" stopColor="#FFDF43" />
         </LinearGradient>
+        <ClipPath id="clip0_5564_56664">
+          <Rect width="30" height="30" fill="white" />
+        </ClipPath>
       </Defs>
     </Svg>,
   ],
@@ -3070,43 +3069,40 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       viewBox="0 0 30 30"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
-      <Rect
-        y="1.765"
-        width="30"
-        height="26.471"
-        rx="2"
-        fill="url(#h3ltfb24fa)"
+      <Path
+        d="M11 2H28C29.1046 2 30 2.89543 30 4V26C30 27.1046 29.1046 28 28 28H11V2Z"
+        fill="url(#paint0_linear_5564_56652)"
+      />
+      <Path
+        d="M0 3.96444C0 2.87951 0.930253 2 2.07778 2H11V28H2.07778C0.930254 28 0 27.1205 0 26.0356V3.96444Z"
+        fill="url(#paint1_linear_5564_56652)"
       />
       <Path
         fillRule="evenodd"
         clipRule="evenodd"
-        d="M21.84 9.881a1 1 0 1 0-1.415 1.415L23.13 14H15a1 1 0 1 0 0 2h8.041l-2.616 2.616a1 1 0 1 0 1.414 1.414l4.368-4.367a1 1 0 0 0 0-1.414L21.839 9.88z"
-        fill="#fff"
-      />
-      <Path
-        d="M0 3.765a2 2 0 0 1 2-2h8.588v26.47H2a2 2 0 0 1-2-2V3.765z"
-        fill="url(#yzm5g2ts0b)"
+        d="M21.8392 9.88127C21.4487 9.49075 20.8155 9.49075 20.425 9.88127C20.0344 10.2718 20.0344 10.905 20.425 11.2955L23.1296 14.0001L15 14.0001C14.4477 14.0001 14 14.4478 14 15.0001C14 15.5524 14.4477 16.0001 15 16.0001L23.041 16.0001L20.425 18.6161C20.0344 19.0066 20.0344 19.6398 20.425 20.0303C20.8155 20.4209 21.4487 20.4209 21.8392 20.0303L26.2066 15.6629C26.5971 15.2724 26.5971 14.6392 26.2066 14.2487L21.8392 9.88127Z"
+        fill="white"
       />
       <Defs>
         <LinearGradient
-          id="h3ltfb24fa"
+          id="paint0_linear_5564_56652"
           x1="30"
-          y1="15"
-          x2="13.073"
-          y2="7.451"
+          y1="15.0001"
+          x2="18.1287"
+          y2="11.5863"
           gradientUnits="userSpaceOnUse">
           <Stop stopColor="#2B80F7" />
           <Stop offset="1" stopColor="#7DA6FF" />
         </LinearGradient>
         <LinearGradient
-          id="yzm5g2ts0b"
-          x1=".934"
-          y1="24.343"
-          x2="18.179"
-          y2="18.116"
+          id="paint1_linear_5564_56652"
+          x1="0.970588"
+          y1="24.1765"
+          x2="18.6441"
+          y2="17.4267"
           gradientUnits="userSpaceOnUse">
           <Stop stopColor="#FFC700" />
-          <Stop offset=".802" stopColor="#FFDF43" />
+          <Stop offset="0.801663" stopColor="#FFDF43" />
         </LinearGradient>
       </Defs>
     </Svg>,
@@ -3129,6 +3125,25 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         fill="#fff"
       />
       <Circle cx="10" cy="6" r="1" transform="rotate(-180 10 6)" fill="#fff" />
+    </Svg>,
+  ],
+  fire: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12 6c-1.5-2.5-4-5-4-5S3 6.5 3 11.5 7 19 10.02 19c3.019 0 6.98-2.5 6.98-7.5S13.5 4 13.5 4s-1 1-1.5 2z"
+        fill="#F1694F"
+      />
+      <Path
+        d="M13 15.143C13 17.273 11.657 19 10 19s-3-1.727-3-3.857S10 10 10 10s3 3.013 3 5.143z"
+        fill="#FFC82D"
+      />
     </Svg>,
   ],
 };
