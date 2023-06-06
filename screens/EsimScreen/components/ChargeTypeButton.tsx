@@ -42,14 +42,21 @@ const styles = StyleSheet.create({
   },
 });
 
+export type ChargeDisReason = {
+  addOn: string;
+  extension: string;
+};
+
 const ChargeTypeButton = ({
   type,
   onPress,
   disabled = false,
+  disReason,
 }: {
   type: string;
   onPress: (type: string) => void;
   disabled: boolean;
+  disReason?: ChargeDisReason;
 }) => {
   const dispatch = useDispatch();
 
@@ -60,10 +67,11 @@ const ChargeTypeButton = ({
           type={type}
           onPress={() => onPress(type)}
           disabled={disabled}
+          disReason={disReason}
         />
       )),
     );
-  }, [disabled, dispatch, onPress, type]);
+  }, [disReason, disabled, dispatch, onPress, type]);
 
   return (
     <View style={styles.frame}>

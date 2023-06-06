@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {StyleSheet, SafeAreaView, View, Image} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
@@ -74,9 +74,16 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   }>({text: '', visible: false});
   const {mainSubs, chargeablePeriod, chargedSubs, isChargeable} = params || {};
   const [chargeableItem, setChargeableItem] = useState<RkbSubscription>();
-  const [addonEnabled, setAddonEnable] = useState(false);
+  const [addonEnable, setAddonEnable] = useState(false);
   const [expireTime, setExpireTime] = useState<Moment>();
   const [status, setStatus] = useState<StatusType>();
+  const [addOnDisReason, setAddOnDisReasen] = useState('');
+  const [extensionDisReason, setExtensionDisReason] = useState('');
+
+  const extensionEnable = useMemo(
+    () => mainSubs.partner?.toLowerCase() === 'cmi' && isChargeable,
+    [isChargeable, mainSubs.partner],
+  );
   useEffect(() => {
     navigation.setOptions({
       title: null,
@@ -204,64 +211,71 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     }
   }, [checkCmiStatus, checkQuadcellStatus, mainSubs]);
 
+  useEffect(() => {
+    if (!extensionEnable) {
+      if (!isChargeable) {
+        setExtensionDisReason('expired');
+        return;
+      }
+      setExtensionDisReason('unsupported');
+    }
+  }, [extensionEnable, isChargeable, mainSubs.partner]);
+
+  useEffect(() => {
+    if (!addonEnable) {
+      if (status === 'expired') {
+        setAddOnDisReasen('used');
+        return;
+      }
+      if (
+        mainSubs.partner?.toLowerCase() === 'billionconnect' ||
+        (mainSubs.partner?.toLowerCase() === 'cmi' &&
+          mainSubs.daily === 'total')
+      ) {
+        setAddOnDisReasen('unsupported');
+        return;
+      }
+      setAddOnDisReasen('noProd');
+    }
+  }, [addonEnable, mainSubs.daily, mainSubs.partner, status]);
+
   const onPress = useCallback(
     (type: string) => {
       if (type === 'extension') {
-        if (mainSubs.partner?.toLowerCase() === 'cmi' && isChargeable)
+        if (extensionEnable)
           navigation.navigate('Charge', {
             mainSubs: chargeableItem || mainSubs,
             chargeablePeriod,
           });
         else {
-          if (!isChargeable) {
-            setShowSnackBar({
-              text: i18n.t('esim:charge:snackBar:extension:expired'),
-              visible: true,
-            });
-            return;
-          }
           setShowSnackBar({
-            text: i18n.t('esim:charge:snackBar:extension:unsupported'),
+            text: i18n.t(
+              `esim:charge:snackBar:extension:${extensionDisReason}`,
+            ),
             visible: true,
           });
         }
-      } else if (addonEnabled) {
+      } else if (addonEnable) {
         navigation.navigate('AddOn', {
           mainSubs,
           status,
           expireTime,
         });
       } else {
-        if (status === 'expired') {
-          setShowSnackBar({
-            text: i18n.t('esim:charge:snackBar:addOn:used'),
-            visible: true,
-          });
-          return;
-        }
-        if (
-          mainSubs.partner?.toLowerCase() === 'billionconnect' ||
-          (mainSubs.partner?.toLowerCase() === 'cmi' &&
-            mainSubs.daily === 'total')
-        ) {
-          setShowSnackBar({
-            text: i18n.t('esim:charge:snackBar:addOn:unsupported'),
-            visible: true,
-          });
-          return;
-        }
         setShowSnackBar({
-          text: i18n.t('esim:charge:snackBar:addOn:unsupported'),
+          text: i18n.t(`esim:charge:snackBar:addOn:${addOnDisReason}`),
           visible: true,
         });
       }
     },
     [
-      addonEnabled,
+      addOnDisReason,
+      addonEnable,
       chargeableItem,
       chargeablePeriod,
       expireTime,
-      isChargeable,
+      extensionDisReason,
+      extensionEnable,
       mainSubs,
       navigation,
       status,
@@ -285,10 +299,10 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             type={t}
             onPress={() => onPress(t)}
             disabled={
-              (t === 'addOn' && !addonEnabled) ||
-              (t === 'extension' &&
-                (mainSubs.partner?.toLowerCase() !== 'cmi' || !isChargeable))
+              (t === 'addOn' && !addonEnable) ||
+              (t === 'extension' && !extensionEnable)
             }
+            disReason={{addOn: addOnDisReason, extension: extensionDisReason}}
           />
         ))}
         <AppSnackBar

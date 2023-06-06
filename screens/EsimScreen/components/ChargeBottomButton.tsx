@@ -23,10 +23,12 @@ const ChargeBottomButton = ({
   type,
   onPress,
   disabled = false,
+  title,
 }: {
   type: string;
-  onPress: (type: string) => void;
+  onPress: (t: string) => void;
   disabled: boolean;
+  title?: string;
 }) => {
   const [isPressed, setIsPressed] = useState(false);
 
@@ -46,7 +48,7 @@ const ChargeBottomButton = ({
         },
       ]}>
       <AppText style={styles.typeText}>
-        {i18n.t(`esim:charge:type:${type}`)}
+        {title || i18n.t(`esim:charge:type:${type}`)}
       </AppText>
     </Pressable>
   );

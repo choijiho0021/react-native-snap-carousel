@@ -628,6 +628,12 @@
   "esim:charge:snackBar:extension:unsupported": "상품 연장 기능을 지원하지 않는 상품입니다.",
   "esim:charge:snackBar:extension:expired": "연장 가능 기간이 만료된 상품입니다.",
 
+  "esim:charge:button:addOn:used": "사용  완료되어 용량 충전할 수 없는 상품",
+  "esim:charge:button:addOn:unsupported": "용량 충전 기능을 지원하지 않는 상품",
+  "esim:charge:button:addOn:noProd": "용량 충전 가능한 상품이 없습니다",
+  "esim:charge:button:extension:unsupported": "상품 연장 기능을 지원하지 않는 상품",
+  "esim:charge:button:extension:expired": "연장 가능 기간이 만료된 상품",
+
   "esim:charge:payment": "Checkout",
   "esim:charge:payment:agree": "동의 후 결제하기",
   "esim:charge:amount": "Amount: ",

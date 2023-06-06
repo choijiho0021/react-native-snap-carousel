@@ -9,6 +9,7 @@ import i18n from '@/utils/i18n';
 import TextWithDot from '@/screens/EsimScreen/components/TextWithDot';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import ChargeBottomButton from '@/screens/EsimScreen/components/ChargeBottomButton';
+import {ChargeDisReason} from '@/screens/EsimScreen/components/ChargeTypeButton';
 
 const styles = StyleSheet.create({
   container: {
@@ -69,12 +70,14 @@ type ChargeTypeModalProps = {
   type: string;
   onPress: (type: string) => void;
   disabled: boolean;
+  disReason?: ChargeDisReason;
 };
 
 const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
   type,
   onPress,
   disabled,
+  disReason,
 }) => {
   const dispatch = useDispatch();
 
@@ -143,6 +146,17 @@ const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
               onPress(type);
             }}
             disabled={disabled}
+            title={
+              disabled
+                ? i18n.t(
+                    `esim:charge:button:${
+                      type === 'addOn' ? 'addOn' : 'extension'
+                    }:${
+                      type === 'addOn' ? disReason?.addOn : disReason?.extension
+                    }`,
+                  )
+                : undefined
+            }
           />
           <View style={{height: 20}} />
         </View>
