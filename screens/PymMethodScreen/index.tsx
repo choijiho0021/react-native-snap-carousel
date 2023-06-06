@@ -147,14 +147,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      if (cart.esimIccid) setShowChargeAlert(true);
-    });
-
-    return unsubscribe;
-  }, [cart.esimIccid, navigation, showChargeAlert]);
-
-  useEffect(() => {
     if (!info.infoMap.has(infoKey)) {
       action.info.getInfoList(infoKey);
     }
@@ -308,15 +300,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     );
   }, [info.infoMap, selected, showModalMethod]);
 
-  const modalBody = useCallback((isSupported: boolean) => {
+  const modalBody = useCallback(() => {
     return (
       <View style={styles.modalBodyStyle}>
         <AppStyledText
-          text={
-            isSupported
-              ? i18n.t('pym:unsupportDeviceModalContent')
-              : i18n.t('pym:chargeInfo')
-          }
+          text={i18n.t('pym:unsupportDeviceModalContent')}
           textStyle={styles.modalText}
           format={{b: styles.textHeighlight, c: styles.textCaution}}
         />
@@ -368,20 +356,12 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         title={showUnsupAlert ? i18n.t('pym:unsupportDeviceModal') : undefined}
         type={showUnsupAlert ? 'normal' : 'info'}
         onOkClose={async () => {
-          if (showChargeAlert) {
-            setShowChargeAlert((prev) => !prev);
-          } else {
-            setShowUnsupAlert((prev) => !prev);
-            onSubmit(true);
-          }
+          setShowUnsupAlert((prev) => !prev);
+          onSubmit(true);
         }}
-        onCancelClose={() => {
-          if (showChargeAlert) {
-            setShowChargeAlert((prev) => !prev);
-          } else setShowUnsupAlert((prev) => !prev);
-        }}
-        visible={showUnsupAlert || showChargeAlert}>
-        {modalBody(showUnsupAlert)}
+        onCancelClose={() => setShowUnsupAlert((prev) => !prev)}
+        visible={showUnsupAlert}>
+        {modalBody()}
       </AppModal>
     </SafeAreaView>
   );
