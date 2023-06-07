@@ -195,10 +195,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
               return;
             }
             // 사용 중
-            if (quadAddonOverLimited) {
-              setStatus('using');
-              return;
-            }
             setStatus('using');
             setAddonEnable(true);
             return;
