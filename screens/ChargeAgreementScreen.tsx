@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.white,
@@ -203,11 +204,12 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <SelectedProdTitle
-        isdaily={params?.mainSubs?.daily === 'daily'}
-        prodName={params?.mainSubs?.prodName || ''}
-      />
       <ScrollView style={{flex: 1}}>
+        <SelectedProdTitle
+          isdaily={params?.mainSubs?.daily === 'daily'}
+          prodName={params?.mainSubs?.prodName || ''}
+        />
+
         <View style={styles.chargeProd}>
           <View style={styles.sticker}>
             <AppText style={styles.stickerText}>
