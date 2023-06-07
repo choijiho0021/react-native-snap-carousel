@@ -13,8 +13,8 @@ const styles = StyleSheet.create({
   },
   paymentBtn: {
     height: 52,
-    backgroundColor: colors.clearBlue,
     flex: 0.65,
+    backgroundColor: colors.clearBlue,
   },
   amountFrame: {
     flex: 0.35,
@@ -37,7 +37,6 @@ const styles = StyleSheet.create({
   },
   paymentBtnTitle: {
     ...appStyles.medium18,
-    color: colors.white,
     textAlign: 'center',
     width: '100%',
   },
@@ -48,12 +47,15 @@ const ButtonWithPrice = ({
   currency,
   title,
   onPress,
+  disable = false,
 }: {
   amount: string;
   currency: string;
   title?: string;
   onPress: () => void;
+  disable?: boolean;
 }) => {
+  console.log('@@@@ disable', disable);
   return (
     <View style={styles.paymentBtnFrame}>
       <View style={styles.amountFrame}>
@@ -68,7 +70,12 @@ const ButtonWithPrice = ({
         type="primary"
         onPress={onPress}
         title={title || i18n.t('esim:charge:payment')}
-        titleStyle={styles.paymentBtnTitle}
+        titleStyle={[
+          styles.paymentBtnTitle,
+          {color: disable ? colors.greyish : colors.white},
+        ]}
+        disabled={disable}
+        disableStyle={{backgroundColor: colors.line}}
       />
     </View>
   );

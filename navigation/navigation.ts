@@ -153,6 +153,7 @@ export type HomeStackParamList = {
   };
   ChargeType: {
     mainSubs: RkbSubscription;
+    addOnData?: RkbSubscription[];
     chargeablePeriod: string;
     isChargeable: boolean;
     chargedSubs?: RkbSubscription[];
@@ -168,6 +169,7 @@ export type HomeStackParamList = {
     mainSubs: RkbSubscription;
     status?: string;
     expireTime?: Moment;
+    addOnData?: RkbSubscription[];
   };
   Receipt: {
     order: RkbOrder;
