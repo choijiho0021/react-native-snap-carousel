@@ -142,7 +142,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [showModalMethod, setShowModalMethod] = useState(true);
   const [policyChecked, setPolicyChecked] = useState(false);
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
-  const [showChargeAlert, setShowChargeAlert] = useState(false);
   const {pymPrice, deduct} = useMemo(() => cart, [cart]);
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
 
