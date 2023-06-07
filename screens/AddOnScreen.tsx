@@ -199,7 +199,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   navigation,
   route: {params},
 }) => {
-  const {mainSubs, status, expireTime} = params || {};
+  const {mainSubs, status, expireTime, addOnData} = params || {};
   const [remainDays, setRemainDays] = useState(1);
   const [todayAddOnProd, setTodayAddOnProd] = useState<RkbAddOnProd[]>([]);
   const [remainDaysAddOnProd, setRemainDaysAddOnProd] = useState<
@@ -271,7 +271,20 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
                 setRemainDaysAddOnProd(remainDaysProd);
                 return;
               }
-              setAddOnTypeList(['today', 'remainDays']);
+              // 남은 기간 충전이 1회라도 있는 경우
+              if (
+                mainSubs.partner?.toLocaleLowerCase() === 'quadcell' &&
+                status === 'Using' &&
+                mainSubs.daily === 'total' &&
+                addOnData?.find((a) => a.prodDays && Number(a.prodDays) > 1)
+              ) {
+                setAddOnTypeList(['today']);
+                setSelectedType('today');
+                setTodayAddOnProd(todayProd);
+                setSelectedAddOnProd(todayProd[0]);
+                setRemainDaysAddOnProd(remainDaysProd);
+                return;
+              }
             }
 
             setTodayAddOnProd(todayProd);
@@ -280,7 +293,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
           }
         },
       );
-  }, [mainSubs, remainDays, status]);
+  }, [addOnData, mainSubs, remainDays, status]);
 
   const renderTypeBtn = useCallback(
     (type: AddOnType) => (
