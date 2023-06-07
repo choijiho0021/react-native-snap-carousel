@@ -108,6 +108,10 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
   const checkCmiStatus = useCallback(
     async (item: RkbSubscription) => {
+      // CMI 종량제 addOn 미지원
+      if (item.daily === 'total') {
+        return;
+      }
       if (item?.subsIccid && item?.packageId) {
         const rsp = await API.Subscription.cmiGetSubsStatus({
           iccid: item?.subsIccid,
@@ -143,11 +147,10 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
               (s) => s.subsOrderNo === inUseItem.orderID,
             );
             setChargeableItem(i);
-            if (i?.daily === 'daily') setAddonEnable(true);
           } else {
-            if (mainSubs.daily === 'daily') setAddonEnable(true);
             setChargeableItem(mainSubs);
           }
+          setAddonEnable(true);
           setStatus('using');
           return;
         }
@@ -286,6 +289,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           mainSubs,
           status,
           expireTime,
+          addOnData,
         });
       } else {
         setShowSnackBar({
@@ -295,6 +299,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       }
     },
     [
+      addOnData,
       addOnDisReason,
       addonEnable,
       chargeableItem,
