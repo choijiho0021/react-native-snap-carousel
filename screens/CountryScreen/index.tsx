@@ -171,7 +171,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     () => API.Product.getTitle(localOpList.get(route.params?.partner[0])),
     [localOpList, route.params?.partner],
   );
-  const animatedValue = useRef(new Animated.Value(150)).current;
+  const animatedValue = useRef(new Animated.Value(264)).current;
   const routes = useMemo(
     () =>
       [
@@ -198,8 +198,8 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    if(!blockAnimation){
-      setBlockAnimation(true)
+    if (!blockAnimation) {
+      setBlockAnimation(true);
       Animated.timing(animatedValue, {
         toValue: isTop ? 150 : 0,
         duration: 500,

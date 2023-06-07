@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {StyleSheet, SafeAreaView, View} from 'react-native';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {StyleSheet, SafeAreaView, View, Animated} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {TabView} from 'react-native-tab-view';
 import {connect} from 'react-redux';
@@ -23,7 +23,6 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RkbProduct} from '@/redux/api/productApi';
 import ProdByType from '@/components/ProdByType';
-import TextWithDot from './EsimScreen/components/TextWithDot';
 import SelectedProdTitle from './EventBoardScreen/components/SelectedProdTitle';
 import AppStyledText from '@/components/AppStyledText';
 
@@ -35,9 +34,8 @@ const styles = StyleSheet.create({
   },
   tab: {
     backgroundColor: colors.white,
-    height: 74,
+    height: 50,
     paddingHorizontal: 20,
-    paddingBottom: 24,
   },
   tabTitle: {
     ...appStyles.medium18,
@@ -55,7 +53,7 @@ const styles = StyleSheet.create({
   },
   whiteBox: {
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingTop: 16,
     backgroundColor: colors.white,
   },
   greyBox: {
@@ -80,6 +78,16 @@ const styles = StyleSheet.create({
   chargeablePeriodTextBold: {
     ...appStyles.bold14Text,
     lineHeight: 22,
+  },
+  divider16: {
+    height: 16,
+    width: '100%',
+    backgroundColor: colors.white,
+  },
+  divider24: {
+    height: 24,
+    width: '100%',
+    backgroundColor: colors.white,
   },
 });
 
@@ -113,10 +121,24 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
   const {localOpList, prodByPartner} = product;
   const [index, setIndex] = useState(0);
   const [showTip, setTip] = useState(false);
+  const [isTop, setIsTop] = useState(true);
+  const [blockAnimation, setBlockAnimation] = useState(false);
+  const animatedValue = useRef(new Animated.Value(264)).current;
 
   useEffect(() => {
     retrieveData('chargeTooltip').then((elm) => setTip(elm !== 'closed'));
   }, []);
+
+  useEffect(() => {
+    if (!blockAnimation) {
+      setBlockAnimation(true);
+      Animated.timing(animatedValue, {
+        toValue: isTop ? 264 : 0,
+        duration: 500,
+        useNativeDriver: false,
+      }).start(() => setBlockAnimation(false));
+    }
+  }, [animatedValue, blockAnimation, isTop]);
 
   const partnerIds = useMemo(() => {
     return product.prodByCountry.reduce((acc: string[], cur) => {
@@ -205,6 +227,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
       return (
         <ProdByType
           prodData={prodData[sceneRoute.category === 'daily' ? 0 : 1]}
+          onTop={setIsTop}
           onPress={onPress}
           isCharge
         />
@@ -216,26 +239,30 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <View style={{flex: 1}}>
-        <SelectedProdTitle
-          isdaily={params?.mainSubs?.daily === 'daily'}
-          prodName={params?.mainSubs?.prodName || ''}
-        />
-        <View style={styles.whiteBox}>
-          <View style={styles.greyBox}>
-            <AppSvgIcon name="blueClock" style={styles.clock} />
-            <AppStyledText
-              text={i18n.t('esim:rechargeablePeriod2')}
-              textStyle={styles.chargeablePeriodText}
-              format={{b: styles.chargeablePeriodTextBold}}
-              data={{
-                chargeablePeriod:
-                  moment(params?.chargeablePeriod, 'YYYY.MM.DD').format(
-                    'YYYY년 MM월 DD일',
-                  ) || '',
-              }}
-            />
+        <Animated.View style={{height: animatedValue}}>
+          <SelectedProdTitle
+            isdaily={params?.mainSubs?.daily === 'daily'}
+            prodName={params?.mainSubs?.prodName || ''}
+          />
+          <View style={styles.whiteBox}>
+            <View style={styles.greyBox}>
+              <AppSvgIcon name="blueClock" style={styles.clock} />
+              <AppStyledText
+                text={i18n.t('esim:rechargeablePeriod2')}
+                textStyle={styles.chargeablePeriodText}
+                format={{b: styles.chargeablePeriodTextBold}}
+                data={{
+                  chargeablePeriod:
+                    moment(params?.chargeablePeriod, 'YYYY.MM.DD').format(
+                      'YYYY년 MM월 DD일',
+                    ) || '',
+                }}
+              />
+            </View>
           </View>
-        </View>
+        </Animated.View>
+
+        <View style={styles.divider16} />
 
         <AppTabHeader
           index={index}
@@ -246,6 +273,8 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
           titleStyle={styles.tabTitle}
           seletedStyle={styles.selectedTabTitle}
         />
+
+        <View style={styles.divider24} />
 
         <TabView
           sceneContainerStyle={{flex: 1}}
