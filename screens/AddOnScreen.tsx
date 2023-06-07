@@ -224,12 +224,18 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
       // cmi의 리셋타임은 활성화 시간 기준으로 변경 됨
       if (mainSubs.partner?.toLowerCase() === 'cmi')
         setDataResetTime(expireTime.format('HH:mm:ss'));
+    }
+  }, [expireTime, mainSubs.partner]);
 
-      // 남은 사용기간 구하기
+  useEffect(() => {
+    // 남은 사용기간 구하기
+    if (status === 'unUsed' && mainSubs.prodDays) {
+      setRemainDays(Number(mainSubs.prodDays));
+    } else if (expireTime) {
       const today = moment();
       setRemainDays(Math.ceil(expireTime.diff(today, 'hours') / 24));
     }
-  }, [expireTime, mainSubs.partner]);
+  }, [expireTime, mainSubs, mainSubs.partner, status]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -253,15 +259,28 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
             const rsp = data.objects;
             const todayProd = rsp.filter((r) => r.days === '1');
             const remainDaysProd = rsp.filter((r) => r.days !== '1');
-            if (remainDaysProd.length > 0)
+            if (remainDaysProd.length > 0) {
+              if (
+                mainSubs.partner?.toLocaleLowerCase() === 'quadcell' &&
+                (status === 'unUsed' || mainSubs.daily === 'total')
+              ) {
+                setAddOnTypeList(['remainDays']);
+                setSelectedType('remainDays');
+                setTodayAddOnProd(remainDaysProd);
+                setSelectedAddOnProd(remainDaysProd[0]);
+                setRemainDaysAddOnProd(remainDaysProd);
+                return;
+              }
               setAddOnTypeList(['today', 'remainDays']);
+            }
+
             setTodayAddOnProd(todayProd);
             setSelectedAddOnProd(todayProd[0]);
             setRemainDaysAddOnProd(remainDaysProd);
           }
         },
       );
-  }, [mainSubs, remainDays]);
+  }, [mainSubs, remainDays, status]);
 
   const renderTypeBtn = useCallback(
     (type: AddOnType) => (

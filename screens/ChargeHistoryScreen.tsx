@@ -524,6 +524,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
               chargeablePeriod,
               chargedSubs: prodData,
               isChargeable,
+              addOnData,
             })
           }
           title={i18n.t('esim:charge')}

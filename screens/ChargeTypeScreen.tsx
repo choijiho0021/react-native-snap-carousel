@@ -72,7 +72,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     text: string;
     visible: boolean;
   }>({text: '', visible: false});
-  const {mainSubs, chargeablePeriod, chargedSubs, isChargeable} = params || {};
+  const {mainSubs, chargeablePeriod, chargedSubs, isChargeable, addOnData} =
+    params || {};
   const [chargeableItem, setChargeableItem] = useState<RkbSubscription>();
   const [addonEnable, setAddonEnable] = useState(false);
   const [expireTime, setExpireTime] = useState<Moment>();
@@ -83,6 +84,13 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const extensionEnable = useMemo(
     () => mainSubs.partner?.toLowerCase() === 'cmi' && isChargeable,
     [isChargeable, mainSubs.partner],
+  );
+  const quadAddonOverLimited = useMemo(
+    () =>
+      mainSubs.partner?.toLowerCase() === 'quadcell' &&
+      mainSubs.daily === 'daily' &&
+      (addOnData?.length || 0) > 0,
+    [addOnData?.length, mainSubs.daily, mainSubs.partner],
   );
   useEffect(() => {
     navigation.setOptions({
@@ -158,45 +166,55 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     [chargedSubs, mainSubs],
   );
 
-  const checkQuadcellStatus = useCallback(async (item: RkbSubscription) => {
-    if (item?.imsi) {
-      const status = await API.Subscription.quadcellGetData({
-        imsi: item.imsi,
-        key: 'packlist',
-      });
+  const checkQuadcellStatus = useCallback(
+    async (item: RkbSubscription) => {
+      if (item?.imsi) {
+        const status = await API.Subscription.quadcellGetData({
+          imsi: item.imsi,
+          key: 'packlist',
+        });
 
-      const dataPack = status.objects?.packList?.find(
-        (elm) =>
-          elm?.packOrderSn !== undefined && Number(elm?.packCode) <= 900000,
-      );
+        const dataPack = status.objects?.packList?.find(
+          (elm) =>
+            elm?.packOrderSn !== undefined && Number(elm?.packCode) <= 900000,
+        );
 
-      if (status.result === 0 && status.objects?.retCode === '000000') {
-        const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss').add(1, 'h');
-        setExpireTime(exp);
+        if (status.result === 0 && status.objects?.retCode === '000000') {
+          const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss').add(1, 'h');
+          setExpireTime(exp);
 
-        // 사용 완료
-        if (!dataPack) {
-          setStatus('expired');
-
-          return;
-        }
-        if (dataPack?.effTime) {
-          if (moment().isAfter(exp)) {
-            // 사용 완료
+          // 사용 완료
+          if (!dataPack) {
             setStatus('expired');
             return;
           }
-          // 사용 중
-          setStatus('using');
+          if (dataPack?.effTime) {
+            if (moment().isAfter(exp)) {
+              // 사용 완료
+              setStatus('expired');
+              return;
+            }
+            // 사용 중
+            if (quadAddonOverLimited) {
+              setStatus('using');
+              return;
+            }
+            setStatus('using');
+            setAddonEnable(true);
+            return;
+          }
+          // 사용 전
+          if (quadAddonOverLimited) {
+            setStatus('unUsed');
+            return;
+          }
           setAddonEnable(true);
-          return;
+          setStatus('unUsed');
         }
-        // 사용 전
-        setAddonEnable(true);
-        setStatus('unUsed');
       }
-    }
-  }, []);
+    },
+    [quadAddonOverLimited],
+  );
 
   useEffect(() => {
     switch (mainSubs.partner) {
@@ -209,7 +227,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       default:
         break;
     }
-  }, [checkCmiStatus, checkQuadcellStatus, mainSubs]);
+  }, [addOnData?.length, checkCmiStatus, checkQuadcellStatus, mainSubs]);
 
   useEffect(() => {
     if (!extensionEnable) {
@@ -223,6 +241,11 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
   useEffect(() => {
     if (!addonEnable) {
+      // 쿼드셀 무제한 상품 1회 충전 제한
+      if (quadAddonOverLimited) {
+        setAddOnDisReasen('overLimit');
+        return;
+      }
       if (status === 'expired') {
         setAddOnDisReasen('used');
         return;
@@ -237,7 +260,14 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       }
       setAddOnDisReasen('noProd');
     }
-  }, [addonEnable, mainSubs.daily, mainSubs.partner, status]);
+  }, [
+    addOnData,
+    addonEnable,
+    mainSubs.daily,
+    mainSubs.partner,
+    quadAddonOverLimited,
+    status,
+  ]);
 
   const onPress = useCallback(
     (type: string) => {
