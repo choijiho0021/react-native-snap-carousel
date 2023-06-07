@@ -328,6 +328,11 @@ const intentToUrl = (url: string): string => {
   return url;
 };
 
+const toDataVolumeString = (dataVolume: number): string => {
+  if (dataVolume < 1024) return `${dataVolume}MB`;
+  return `${dataVolume / 1024}GB`;
+};
+
 export default {
   fontScaling,
   numberToCommaString,
@@ -354,4 +359,5 @@ export default {
   generateKey,
   getParam,
   intentToUrl,
+  toDataVolumeString,
 };

@@ -1005,6 +1005,21 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  rightBlueAngleBracket: [
+    <Svg
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M4.5.5 9 5 4.5 9.5"
+        stroke="#2A7FF6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
   imgBoard: [
     <Svg
       width="26"
@@ -3150,6 +3165,16 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         fill="#fff"
       />
       <Circle cx="10" cy="6" r="1" transform="rotate(-180 10 6)" fill="#fff" />
+    </Svg>,
+  ],
+  blueBulletPoint: [
+    <Svg
+      width="8"
+      height="8"
+      viewBox="0 0 8 8"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="4" cy="4" r="4" fill="#2A7FF6" />
     </Svg>,
   ],
 };

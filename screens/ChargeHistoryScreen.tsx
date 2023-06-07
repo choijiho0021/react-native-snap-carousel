@@ -13,6 +13,7 @@ import {
   ImageBackground,
   Pressable,
   Modal,
+  Image,
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -77,14 +78,10 @@ const styles = StyleSheet.create({
   badgeText: {
     ...appStyles.bold13Text,
   },
-  itemRow: {
-    flexDirection: 'row',
-    marginTop: 2,
-    alignItems: 'center',
-  },
+  itemRow: {},
   listContainer: {
     flex: 1,
-    backgroundColor: colors.whiteTwo,
+    backgroundColor: colors.white,
     paddingHorizontal: 20,
     paddingTop: 24,
   },
@@ -154,6 +151,12 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  divider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: colors.lightGrey,
+    marginBottom: 16,
   },
 });
 
@@ -303,6 +306,15 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
           </AppText>
           <AppText style={styles.normal14Gray}>{chargeablePeriod}</AppText>
         </View>
+
+        <View style={styles.inactiveContainer}>
+          <AppText style={styles.normal14Gray}>
+            {i18n.t('esim:resetTime')}
+          </AppText>
+          <AppText style={styles.normal14Gray}>
+            {i18n.t('esim:KST', {time: '01'})}
+          </AppText>
+        </View>
       </View>
     );
   }, [chargeablePeriod, mainSubs?.subsIccid]);
@@ -332,6 +344,10 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
           </ImageBackground>
         </View>
         <View style={styles.cardTitle}>
+          <Image
+            source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
+            style={{width: 20, height: 20, marginRight: 10}}
+          />
           <AppText
             key={mainSubs?.key}
             style={appStyles.bold20Text}
@@ -346,9 +362,10 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
 
   const renderHeader = useCallback(() => {
     return (
-      <View key="header" style={{flexDirection: 'row', marginBottom: 4}}>
-        <AppText
-          style={[appStyles.bold14Text, {color: colors.warmGrey, flex: 1}]}>
+      <View
+        key="header"
+        style={{flexDirection: 'row', marginBottom: 4, paddingBottom: 20}}>
+        <AppText style={[appStyles.bold18Text, {color: colors.black, flex: 1}]}>
           {i18n.t('esim:chargeHistory:usage')}
         </AppText>
         <Pressable
@@ -364,80 +381,143 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
     );
   }, [orderType]);
 
+  const toProdDaysString = useCallback((days: number) => {
+    if (days <= 0) return '남은 기간 동안';
+    return days + i18n.t('days');
+  }, []);
+
   const renderItem = useCallback(
     ({item}: {item: RkbSubscription}) => {
       return (
-        <View style={{paddingVertical: 16}}>
-          <View style={styles.itemRow}>
-            <View style={{flex: 1}}>
-              <SplitText
-                renderExpend={() =>
-                  renderPromoFlag(item.promoFlag || [], item.isStore)
-                }
-                style={{...appStyles.bold16Text, marginRight: 8}}
-                numberOfLines={2}
-                ellipsizeMode="tail">
-                {utils.removeBracketOfName(item.prodName)}
-              </SplitText>
-            </View>
-            <Pressable
-              style={{flexDirection: 'row', alignItems: 'center'}}
-              onPress={() => {
-                setPending(true);
-                setSelectedSubs(item);
-                onPressUsage(item)?.then((u) => {
-                  setUsage(u.usage);
-                  setStatus(u.status);
-                  setPending(false);
-                });
-                setShowModal(true);
+        <View
+          style={{
+            borderWidth: 1,
+            borderColor: colors.lightGrey,
+          }}>
+          <View style={{alignItems: 'center', paddingHorizontal: 20}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginTop: 16,
+                marginBottom: 20,
+                width: '100%',
               }}>
-              <AppText
-                style={[
-                  appStyles.medium14,
-                  {color: colors.black, marginRight: 8},
-                ]}>
-                {i18n.t('esim:checkUsage')}
+              <AppText style={[appStyles.normal14Text, {color: colors.gray}]}>
+                {i18n.t('his:expireDate2')}
               </AppText>
-              <AppSvgIcon name="bottomArrow" style={{marginRight: 8}} />
-            </Pressable>
-          </View>
-          <AppText style={[appStyles.normal14Text, {color: colors.gray}]}>
-            {i18n.t('his:purchaseDate2', {
-              purchaseDate: utils.toDateString(
-                item.purchaseDate,
-                'YYYY.MM.DD HH:mm:ss',
-              ),
-            })}
-          </AppText>
-          <AppText style={[appStyles.normal14Text, {color: colors.gray}]}>
-            {i18n.t('his:expireDate2', {
-              purchaseDate: utils.toDateString(item.purchaseDate, 'YYYY.MM.DD'),
-              expireDate: utils.toDateString(item.expireDate, 'YYYY.MM.DD'),
-            })}
-          </AppText>
-          {addOnData
-            .filter((a) => a.refSubs === item.nid)
-            .map((k) => (
-              <View>
-                <View style={[styles.itemRow, {marginTop: 10}]}>
-                  <AppSvgIcon name="plus" />
-                  <AppText style={appStyles.bold16Text}>{k.prodName}</AppText>
-                </View>
-                <AppText style={[appStyles.normal14Text, {color: colors.gray}]}>
-                  {i18n.t('his:purchaseDate2', {
-                    purchaseDate: utils.toDateString(
-                      k.purchaseDate,
-                      'YYYY.MM.DD HH:mm:ss',
-                    ),
-                  })}
-                </AppText>
+              <AppText style={[appStyles.normal14Text, {color: colors.black}]}>
+                {`${utils.toDateString(
+                  item.purchaseDate,
+                  'YYYY.MM.DD',
+                )} - ${utils.toDateString(item.expireDate, 'YYYY.MM.DD')}`}
+              </AppText>
+            </View>
+
+            <View style={{flexDirection: 'row', marginBottom: 19}}>
+              <View style={{flex: 1}}>
+                <SplitText
+                  renderExpend={() =>
+                    renderPromoFlag(item.promoFlag || [], item.isStore)
+                  }
+                  numberOfLines={2}
+                  style={{...appStyles.bold16Text, marginRight: 8}}
+                  ellipsizeMode="tail">
+                  {utils.removeBracketOfName(item.prodName)}
+                </SplitText>
               </View>
-            ))}
+              <Pressable
+                style={{flexDirection: 'row', alignItems: 'center'}}
+                onPress={() => {
+                  setPending(true);
+                  setSelectedSubs(item);
+                  onPressUsage(item)?.then((u) => {
+                    setUsage(u.usage);
+                    setStatus(u.status);
+                    setPending(false);
+                  });
+                  setShowModal(true);
+                }}>
+                <AppText
+                  style={[
+                    appStyles.bold14Text,
+                    {color: colors.clearBlue, marginRight: 8},
+                  ]}>
+                  {i18n.t('esim:checkUsage')}
+                </AppText>
+                <AppSvgIcon
+                  name="rightBlueAngleBracket"
+                  style={{marginRight: 8}}
+                />
+              </Pressable>
+            </View>
+          </View>
+
+          <View style={{backgroundColor: colors.whiteTwo}}>
+            {addOnData
+              .filter((a) => a.refSubs === item.nid)
+              .map((k, idx, arr) => (
+                <View style={{flexDirection: 'row', paddingHorizontal: 20}}>
+                  <AppSvgIcon
+                    name="blueBulletPoint"
+                    style={{marginTop: 23, marginRight: 16}}
+                  />
+                  <View style={{flex: 1}}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        marginTop: 16,
+                        marginBottom: 8,
+                      }}>
+                      <AppText style={appStyles.bold16Text}>
+                        {utils.toDataVolumeString(Number(k.dataVolume))}
+                        {` ${toProdDaysString(Number(k.prodDays))}`}
+                      </AppText>
+                      <View
+                        style={{
+                          paddingHorizontal: 8,
+                          borderWidth: 1,
+                          borderColor: colors.lightGrey,
+                          justifyContent: 'center',
+                        }}>
+                        <AppText
+                          style={{
+                            ...appStyles.bold12Text,
+                            color: colors.warmGrey,
+                          }}>
+                          {i18n.t('recharge')}
+                        </AppText>
+                      </View>
+                    </View>
+                    <AppText
+                      style={[
+                        appStyles.normal14Text,
+                        {color: colors.gray, marginBottom: 24},
+                      ]}>
+                      {i18n.t('his:useableDate', {
+                        useableDate: utils.toDateString(
+                          k.purchaseDate,
+                          'YYYY.MM.DD HH:mm:ss',
+                        ),
+                      })}
+                    </AppText>
+
+                    <View
+                      style={
+                        arr.length - 1 === idx
+                          ? {width: '100%', height: 9}
+                          : styles.divider
+                      }
+                    />
+                  </View>
+                </View>
+              ))}
+          </View>
         </View>
       );
     },
-    [addOnData, onPressUsage],
+    [addOnData, onPressUsage, toProdDaysString],
   );
 
   return (
@@ -455,6 +535,9 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
 
       {topInfo()}
 
+      <View
+        style={{width: '100%', height: 10, backgroundColor: colors.whiteTwo}}
+      />
       <View style={styles.listContainer}>
         <FlatList
           data={prodData}
