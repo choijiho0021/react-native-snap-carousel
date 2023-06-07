@@ -485,9 +485,19 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
                   />
                 ),
                 noticeTitle: i18n.t('esim:charge:addOn:notice:title'),
-                noticeBody: [1, 2, 3, 4, 5].map((n) =>
-                  i18n.t(`esim:charge:addOn:notice:body${n}`),
-                ),
+                noticeBody:
+                  mainSubs.partner?.toLowerCase() === 'quadcell' &&
+                  mainSubs.daily === 'daily'
+                    ? [1, 2, 3, 4, 5, 6].map((n) =>
+                        n < 4
+                          ? i18n.t(`esim:charge:addOn:notice:body${n}`)
+                          : i18n.t(
+                              `esim:charge:addOn:notice:body${n}:quadcellD`,
+                            ),
+                      )
+                    : [1, 2, 3, 4, 5].map((n) =>
+                        i18n.t(`esim:charge:addOn:notice:body${n}`),
+                      ),
               },
             });
           }}

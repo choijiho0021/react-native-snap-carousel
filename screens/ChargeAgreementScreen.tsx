@@ -173,8 +173,6 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
   const expPeriod = useMemo(() => moment().add(180, 'day'), []);
   const [isPressed, setIsPressed] = useState(false);
 
-  console.log('@@@@ expPeriod', expPeriod.format('YYYY년 MM월 DD일'));
-
   useEffect(() => {
     navigation.setOptions({
       title: null,
