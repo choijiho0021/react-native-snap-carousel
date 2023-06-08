@@ -64,6 +64,7 @@ import EventResultScreen from '@/screens/BoardScreen/ResultScreen';
 import ChargeTypeScreen from '@/screens/ChargeTypeScreen';
 import AddOnScreen from '@/screens/AddOnScreen';
 import ChargeAgreementScreen from '@/screens/ChargeAgreementScreen';
+import InvitePromoScreen from '@/screens/InvitePromoScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -149,6 +150,7 @@ function HomeStackComponent() {
       <HomeStack.Screen name="EventResult" component={EventResultScreen} />
       <HomeStack.Screen name="GiftGuide" component={GiftGuideScreen} />
       <HomeStack.Screen name="Invite" component={InviteScreen} />
+      <HomeStack.Screen name="InvitePromo" component={InvitePromoScreen} />
       <HomeStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />
       <HomeStack.Screen name="Faq" component={FaqScreen} />
       <HomeStack.Screen
@@ -264,6 +266,7 @@ function MyPageStackComponent() {
       <MyPageStack.Screen name="Recharge" component={RechargeScreen} />
       {/* <MyPageStack.Screen name="Pedometer" component={PedometerScreen} /> */}
       <MyPageStack.Screen name="Invite" component={InviteScreen} />
+      <MyPageStack.Screen name="InvitePromo" component={InvitePromoScreen} />
       <MyPageStack.Screen name="Payment" component={PaymentScreen} />
       <MyPageStack.Screen name="PymMethod" component={PymMethodScreen} />
       <MyPageStack.Screen

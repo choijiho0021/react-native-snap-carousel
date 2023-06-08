@@ -45,6 +45,11 @@ export type RkbInviteStatInfo = {
   rokebiCash: string;
   signupGift: string;
   recommenderGift: string;
+  promo: {
+    from: string;
+    to: string;
+    uri: string;
+  };
 };
 
 export type RkbGiftImages = {
@@ -145,14 +150,16 @@ const toStatInfo = (data: {
 }): ApiResult<RkbInviteStatInfo> => {
   if (data.result === 0) {
     return api.success(
-      data.objects.map((v) => {
-        return {
-          inviteCount: v.invite_count,
-          rokebiCash: v.rokebi_cash,
-          signupGift: v.signup_gift,
-          recommenderGift: v.recommender_gift,
-        };
-      }),
+      data.objects.map(
+        (v) =>
+          ({
+            inviteCount: v.invite_count,
+            rokebiCash: v.rokebi_cash,
+            signupGift: v.signup_gift,
+            recommenderGift: v.recommender_gift,
+            promo: v.promo,
+          } as RkbInviteStatInfo),
+      ),
       [],
       data.result,
     );

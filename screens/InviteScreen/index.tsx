@@ -1,9 +1,16 @@
 import Clipboard from '@react-native-community/clipboard';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import moment from 'moment';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
@@ -160,33 +167,27 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
 }) => {
   const [showSnackBar, setShowSnackbar] = useState(false);
 
-  const mountWithLogin = useCallback(() => {
-    action.promotion.getPromotionStat();
-
+  useEffect(() => {
     navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={i18n.t('inv:title')} />,
     });
-  }, [action.promotion, navigation]);
+  }, [navigation]);
 
   useEffect(() => {
-    if (!account.loggedIn && navigation.isFocused()) {
-      navigation.navigate('Auth', {
-        screen: 'RegisterMobile',
-        params: {
-          screen: 'Invite',
-        },
-      });
-    } else {
-      mountWithLogin();
+    if (navigation.isFocused()) {
+      if (account.loggedIn) {
+        action.promotion.getPromotionStat();
+      } else {
+        navigation.navigate('Auth', {
+          screen: 'RegisterMobile',
+          params: {
+            screen: 'Invite',
+          },
+        });
+      }
     }
-  }, [account.loggedIn, mountWithLogin, navigation]);
-
-  useEffect(() => {
-    if (account.loggedIn && navigation.isFocused()) {
-      mountWithLogin();
-    }
-  }, [account.loggedIn, mountWithLogin, navigation]);
+  }, [account.loggedIn, action.promotion, navigation]);
 
   const cashText = useCallback(
     (text: string, cash: string) => (
@@ -204,9 +205,7 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
     (v: string, isLast: boolean, gift: string) => {
       const cash = utils.stringToNumber(gift) || 0;
       return (
-        <View
-          key={v}
-          style={[isLast ? styles.highLightRow : {marginBottom: 20}]}>
+        <View key={v} style={isLast ? styles.highLightRow : {marginBottom: 20}}>
           <View style={{flexDirection: 'column'}}>
             <AppStyledText
               text={v}
@@ -302,11 +301,29 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
     );
   }, [promotion]);
 
-  const {signupGift, recommenderGift} = promotion.stat;
+  const {promo, signupGift, recommenderGift} = promotion.stat;
+
+  const showPromo = useMemo(
+    () => moment().isBetween(moment(promo.from), moment(promo.to)),
+    [promo],
+  );
+
+  const joinPromo = useCallback(() => {
+    navigation.navigate('InvitePromo');
+  }, [navigation]);
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
+        {showPromo && (
+          <Pressable style={{height: 50}} onPress={joinPromo}>
+            <View>
+              <AppText>
+                {promo.from} ~ {promo.to}
+              </AppText>
+            </View>
+          </Pressable>
+        )}
         <View style={styles.blueBg}>
           <AppText style={[appStyles.normal20Text, {color: colors.white}]}>
             {i18n.t('inv:upper1')}
