@@ -141,7 +141,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             ),
         );
         if (inUseItem) {
-          setExpireTime(moment(inUseItem.expireTime).add(1, 'h').zone(-540));
+          setExpireTime(moment(inUseItem.expireTime).add(9, 'h').zone(-540));
           if (chargedSubs) {
             const i = chargedSubs.find(
               (s) => s.subsOrderNo === inUseItem.orderID,
@@ -185,7 +185,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
         if (status.result === 0 && status.objects?.retCode === '000000') {
           const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss')
-            .add(9, 'h')
+            .add(1, 'h')
             .zone(-540);
 
           setExpireTime(exp);
