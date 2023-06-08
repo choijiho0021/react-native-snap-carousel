@@ -115,7 +115,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       if (item?.subsIccid && item?.packageId) {
         const rsp = await API.Subscription.cmiGetSubsStatus({
           iccid: item?.subsIccid,
-          // iccid: '89852342022009749788',
         });
 
         const today = moment().zone(-540);
@@ -152,7 +151,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             setChargeableItem(mainSubs);
           }
           setAddonEnable(true);
-          // console.log('@@@@ 사용 중');
           setStatus('using');
           return;
         }
@@ -160,13 +158,11 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         // 사용 전 상품이 있는지 체크
         if (bundles.find((b) => b.status === 1)) {
           setAddonEnable(true);
-          // console.log('@@@@ 사용 전');
           setStatus('unUsed');
           return;
         }
 
         // 사용 완료
-        // console.log('@@@@ 사용 완료');
         setStatus('expired');
       }
     },
@@ -177,8 +173,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     async (item: RkbSubscription) => {
       if (item?.imsi) {
         const status = await API.Subscription.quadcellGetData({
-          imsi: item.imsi,
-          // imsi: '454070042530585',
+          // imsi: item.imsi,
+          imsi: '454070042530432',
           key: 'packlist',
         });
 
@@ -188,30 +184,38 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         );
 
         if (status.result === 0 && status.objects?.retCode === '000000') {
-          const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss').add(1, 'h');
+          const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss')
+            .add(9, 'h')
+            .zone(-540);
+
           setExpireTime(exp);
 
           // 사용 완료
           if (!dataPack) {
+            console.log('@@@@ 사용완료');
             setStatus('expired');
             return;
           }
           if (dataPack?.effTime) {
             if (moment().isAfter(exp)) {
               // 사용 완료
+              console.log('@@@@ 사용완료');
               setStatus('expired');
               return;
             }
             // 사용 중
+            console.log('@@@@ 사용 중');
             setStatus('using');
             setAddonEnable(true);
             return;
           }
           // 사용 전
           if (quadAddonOverLimited) {
+            console.log('@@@@ 사용 전, 충전내역 O');
             setStatus('unUsed');
             return;
           }
+          console.log('@@@@ 사용 전, 충전내역 X');
           setAddonEnable(true);
           setStatus('unUsed');
         }
