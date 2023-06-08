@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
   badgeText: {
     ...appStyles.bold13Text,
   },
-  itemRow: {},
   listContainer: {
     flex: 1,
     backgroundColor: colors.white,
@@ -87,6 +86,7 @@ const styles = StyleSheet.create({
     paddingTop: 24,
   },
   cautionText: {
+    ...appStyles.bold14Text,
     marginLeft: 10,
     color: colors.redError,
   },
@@ -214,8 +214,14 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   navigation,
   route: {params},
 }) => {
-  const {mainSubs, chargeablePeriod, chargedSubs, onPressUsage, isChargeable} =
-    params || {};
+  const {
+    mainSubs,
+    chargeablePeriod,
+    chargedSubs,
+    onPressUsage,
+    isChargeable,
+    expireTime,
+  } = params || {};
   const [showModal, setShowModal] = useState(false);
   const [selectedSubs, setSelectedSubs] = useState<RkbSubscription>(mainSubs);
   const [pending, setPending] = useState(false);
@@ -226,23 +232,27 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   const orderTypeList: OrderType[] = useMemo(() => ['purchase', 'latest'], []);
   const [showTip, setShowTip] = useState(false);
   const [blockAnimation, setBlockAnimation] = useState(false);
-  const animatedValue = useRef(
-    new Animated.Value(!isChargeable ? 415 : 345),
-  ).current;
+  const topHeight = useMemo(() => {
+    let height = 345;
+    if (mainSubs.partner === 'cmi') height += 22;
+    if (!isChargeable) height += 74;
+    return height;
+  }, [isChargeable, mainSubs.partner]);
+
+  const animatedValue = useRef(new Animated.Value(topHeight)).current;
 
   const showTop = useCallback(
     (isTop: boolean) => {
       if (!blockAnimation) {
-        const height = !isChargeable ? 415 : 345;
         setBlockAnimation(true);
         Animated.timing(animatedValue, {
-          toValue: isTop ? height : 0,
+          toValue: isTop ? topHeight : 0,
           duration: 500,
           useNativeDriver: false,
         }).start(() => setBlockAnimation(false));
       }
     },
-    [animatedValue, blockAnimation, isChargeable],
+    [animatedValue, blockAnimation, topHeight],
   );
 
   const data = useMemo(
@@ -311,16 +321,34 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
     return (
       <View style={styles.topInfo}>
         <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal14Gray}>{i18n.t('esim:iccid')}</AppText>
+          <AppText style={appStyles.bold14Text}>{i18n.t('esim:iccid')}</AppText>
           <AppText style={styles.normal14Gray}>{mainSubs?.subsIccid}</AppText>
         </View>
 
         <View style={styles.inactiveContainer}>
           <AppText style={styles.normal14Gray}>
-            {i18n.t('esim:rechargeablePeriod')}
+            {i18n.t('his:expireDate2')}
           </AppText>
-          <AppText style={styles.normal14Gray}>{chargeablePeriod}</AppText>
+
+          <AppText style={appStyles.normal14Text}>
+            {`${utils.toDateString(
+              mainSubs.purchaseDate,
+              'YYYY.MM.DD',
+            )} - ${utils.toDateString(expireTime, 'YYYY.MM.DD')}`}
+          </AppText>
         </View>
+
+        {mainSubs.partner === 'cmi' && (
+          <View style={styles.inactiveContainer}>
+            <AppText style={styles.normal14Gray}>
+              {i18n.t('esim:rechargeablePeriod')}
+            </AppText>
+            <AppText style={styles.normal14Gray}>
+              {chargeablePeriod}
+              {i18n.t('sim:until')}
+            </AppText>
+          </View>
+        )}
 
         <View style={styles.inactiveContainer}>
           <AppText style={styles.normal14Gray}>
@@ -332,7 +360,13 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         </View>
       </View>
     );
-  }, [chargeablePeriod, mainSubs?.subsIccid]);
+  }, [
+    chargeablePeriod,
+    expireTime,
+    mainSubs.partner,
+    mainSubs.purchaseDate,
+    mainSubs?.subsIccid,
+  ]);
 
   const renderCard = useCallback(() => {
     const isDaily = chargedSubs[0].daily === 'daily';
@@ -412,26 +446,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
             borderColor: colors.lightGrey,
           }}>
           <View style={{alignItems: 'center', paddingHorizontal: 20}}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginTop: 16,
-                marginBottom: 20,
-                width: '100%',
-              }}>
-              <AppText style={[appStyles.normal14Text, {color: colors.gray}]}>
-                {i18n.t('his:expireDate2')}
-              </AppText>
-              <AppText style={[appStyles.normal14Text, {color: colors.black}]}>
-                {`${utils.toDateString(
-                  item.purchaseDate,
-                  'YYYY.MM.DD',
-                )} - ${utils.toDateString(item.expireDate, 'YYYY.MM.DD')}`}
-              </AppText>
-            </View>
-
-            <View style={{flexDirection: 'row', marginBottom: 19}}>
+            <View style={{flexDirection: 'row', marginVertical: 19}}>
               <View style={{flex: 1}}>
                 <SplitText
                   renderExpend={() =>
@@ -539,9 +554,9 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
       <Animated.View style={{height: animatedValue}}>
-        {!true && (
+        {!isChargeable && (
           <View style={styles.cautionContainer}>
-            <AppSvgIcon name="cautionIcon" />
+            <AppSvgIcon name="chargeHistoryCautionIcon" />
             <AppText style={styles.cautionText}>
               {i18n.t('esim:chargeHistory:caution')}
             </AppText>

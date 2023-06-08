@@ -140,6 +140,7 @@ export type HomeStackParamList = {
     onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
     chargeablePeriod: string;
     isChargeable: boolean;
+    expireTime: string;
   };
   ChargeDetail: {
     data: RkbProduct;
