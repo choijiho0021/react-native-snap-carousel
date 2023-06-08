@@ -232,7 +232,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
     if (status === 'unUsed' && mainSubs.prodDays) {
       setRemainDays(Number(mainSubs.prodDays));
     } else if (expireTime) {
-      const today = moment();
+      const today = moment().zone(-540);
       setRemainDays(Math.ceil(expireTime.diff(today, 'hours') / 24));
     }
   }, [expireTime, mainSubs, mainSubs.partner, status]);
@@ -286,7 +286,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
                 return;
               }
             }
-
+            setAddOnTypeList(['today', 'remainDays']);
             setTodayAddOnProd(todayProd);
             setSelectedAddOnProd(todayProd[0]);
             setRemainDaysAddOnProd(remainDaysProd);

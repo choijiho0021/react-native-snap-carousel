@@ -115,9 +115,10 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       if (item?.subsIccid && item?.packageId) {
         const rsp = await API.Subscription.cmiGetSubsStatus({
           iccid: item?.subsIccid,
+          // iccid: '89852342022009749788',
         });
 
-        const today = moment();
+        const today = moment().zone(-540);
         const {userDataBundles} = rsp.objects || {};
 
         const bundles: CMIBundlesType[] = userDataBundles
@@ -136,12 +137,12 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           (b) =>
             b.status === 3 &&
             today.isBetween(
-              moment(b.activeTime).add(9, 'h'),
-              moment(b.expireTime).add(9, 'h'),
+              moment(b.activeTime).add(1, 'h').zone(-540),
+              moment(b.expireTime).add(1, 'h').zone(-540),
             ),
         );
         if (inUseItem) {
-          setExpireTime(moment(inUseItem.expireTime).add(9, 'h'));
+          setExpireTime(moment(inUseItem.expireTime).add(1, 'h').zone(-540));
           if (chargedSubs) {
             const i = chargedSubs.find(
               (s) => s.subsOrderNo === inUseItem.orderID,
@@ -151,6 +152,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             setChargeableItem(mainSubs);
           }
           setAddonEnable(true);
+          // console.log('@@@@ 사용 중');
           setStatus('using');
           return;
         }
@@ -158,11 +160,13 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         // 사용 전 상품이 있는지 체크
         if (bundles.find((b) => b.status === 1)) {
           setAddonEnable(true);
+          // console.log('@@@@ 사용 전');
           setStatus('unUsed');
           return;
         }
 
         // 사용 완료
+        // console.log('@@@@ 사용 완료');
         setStatus('expired');
       }
     },
@@ -174,6 +178,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       if (item?.imsi) {
         const status = await API.Subscription.quadcellGetData({
           imsi: item.imsi,
+          // imsi: '454070042530585',
           key: 'packlist',
         });
 
