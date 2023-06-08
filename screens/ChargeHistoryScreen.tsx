@@ -27,7 +27,7 @@ import AppButton from '@/components/AppButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {retrieveData, storeData, utils} from '@/utils/utils';
-import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
+import {windowWidth} from '@/constants/SliderEntry.style';
 import EsimModal from './EsimScreen/components/EsimModal';
 import {getPromoFlagColor} from '@/redux/api/productApi';
 import SplitText from '@/components/SplitText';
