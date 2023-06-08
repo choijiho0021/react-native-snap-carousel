@@ -14,6 +14,7 @@ import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 import AppSnackBar from '@/components/AppSnackBar';
+import {USAGE_TIME_INTERVAL} from './EsimScreen';
 
 const styles = StyleSheet.create({
   container: {
@@ -136,12 +137,20 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           (b) =>
             b.status === 3 &&
             today.isBetween(
-              moment(b.activeTime).add(1, 'h').zone(-540),
-              moment(b.expireTime).add(1, 'h').zone(-540),
+              moment(b.activeTime)
+                .add(USAGE_TIME_INTERVAL.quadcell, 'h')
+                .zone(-540),
+              moment(b.expireTime)
+                .add(USAGE_TIME_INTERVAL.quadcell, 'h')
+                .zone(-540),
             ),
         );
         if (inUseItem) {
-          setExpireTime(moment(inUseItem.expireTime).add(9, 'h').zone(-540));
+          setExpireTime(
+            moment(inUseItem.expireTime)
+              .add(USAGE_TIME_INTERVAL.cmi, 'h')
+              .zone(-540),
+          );
           if (chargedSubs) {
             const i = chargedSubs.find(
               (s) => s.subsOrderNo === inUseItem.orderID,
@@ -184,7 +193,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
         if (status.result === 0 && status.objects?.retCode === '000000') {
           const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss')
-            .add(1, 'h')
+            .add(USAGE_TIME_INTERVAL.quadcell, 'h')
             .zone(-540);
 
           setExpireTime(exp);

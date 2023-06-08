@@ -139,6 +139,12 @@ type UsageObj = {
   used?: number;
 };
 
+export const USAGE_TIME_INTERVAL = {
+  cmi: 9,
+  quadcell: 1,
+  billionconnect: 1,
+};
+
 export const renderInfo = (navigation) => (
   <Pressable
     style={styles.usrGuideBtn}
@@ -268,9 +274,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             !_.isUndefined(userDataBundles[0]?.status) &&
             cmiStatusCd[userDataBundles[0]?.status];
           const end = moment(userDataBundles[0]?.endTime)
-            .add(9, 'h')
+            .add(USAGE_TIME_INTERVAL.cmi, 'h')
             .format('YYYY.MM.DD HH:mm:ss');
-          const exp = moment(userDataBundles[0]?.expireTime).add(9, 'h');
+          const exp = moment(userDataBundles[0]?.expireTime).add(
+            USAGE_TIME_INTERVAL.cmi,
+            'h',
+          );
           const now = moment();
 
           const isExpired = statusCd === 'C' || (statusCd === 'A' && exp < now);
@@ -356,7 +365,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               ? quota?.objects?.packQuotaList
               : [{}];
 
-          const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss').add(1, 'h');
+          const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss').add(
+            USAGE_TIME_INTERVAL.quadcell,
+            'h',
+          );
 
           const statusCd = getQuadcellStatus(dataPack, exp);
 
@@ -410,7 +422,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           const bcStatus: StatusObj = {
             statusCd: bcStatusCd[planInfo.planStatus],
             endTime: moment(planInfo.planEndTime, 'YYYY-MM-DD HH:mm:ss')
-              .add(1, 'h')
+              .add(USAGE_TIME_INTERVAL.billionconnect, 'h')
               .format('YYYY.MM.DD HH:mm:ss'),
           };
 
