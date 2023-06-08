@@ -382,7 +382,8 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
             format={{b: styles.useTextBold}}
             data={{
               usagePeriod:
-                selectedType === 'remainDays'
+                selectedType === 'remainDays' ||
+                (expireTime && expireTime.diff(now, 'hours') < 24)
                   ? expireTime?.format('YYYY년 MM월 DD일 HH:mm:ss') || ''
                   : resetTime.format('YYYY년 MM월 DD일 HH:mm:ss') || '',
             }}
