@@ -55,7 +55,6 @@ const ButtonWithPrice = ({
   onPress: () => void;
   disable?: boolean;
 }) => {
-  console.log('@@@@ disable', disable);
   return (
     <View style={styles.paymentBtnFrame}>
       <View style={styles.amountFrame}>
