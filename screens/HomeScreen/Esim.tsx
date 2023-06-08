@@ -78,7 +78,7 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
 import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
 import AppStyledText from '@/components/AppStyledText';
-import {retrieveData, storeData} from '@/utils/utils';
+import {retrieveData, storeData, utils} from '@/utils/utils';
 import LocalModal from './component/LocalModal';
 import ChatTalk from '@/components/ChatTalk';
 
@@ -238,6 +238,7 @@ const Esim: React.FC<EsimProps> = ({
   const [popUpVisible, setPopUpVisible] = useState();
   const [isClosedPopUp, setIsClosedPopUp] = useState<boolean>(false);
   const [popupDisabled, setPopupDisabled] = useState(true);
+  const [needUpdate, setNeedUpdate] = useState(false);
   const [appUpdate, setAppUpdate] = useState('');
   const [appUpdateVisible, setAppUpdateVisible] = useState<boolean>();
   const [popUpList, setPopUpList] = useState<RkbPromotion[]>();
@@ -391,7 +392,15 @@ const Esim: React.FC<EsimProps> = ({
       switch (v) {
         case 'redirect':
           setIsClosedPopUp(true);
-          if (item?.rule?.navigate) {
+          if (
+            item?.rule?.cond?.version &&
+            utils.compareVersion(
+              item?.rule?.cond?.version[Platform.OS],
+              VersionCheck.getCurrentVersion(),
+            )
+          ) {
+            setNeedUpdate(true);
+          } else if (item?.rule?.navigate) {
             if (item?.rule?.navigate?.startsWith('http')) {
               Linking.openURL(item?.rule?.navigate);
             } else if (item?.rule?.stack) {
@@ -503,6 +512,9 @@ const Esim: React.FC<EsimProps> = ({
                 <PromotionCarousel
                   width={dimensions.width / 2}
                   promotion={promotionBanner}
+                  checkNeedUpdate={() => {
+                    setNeedUpdate(true);
+                  }}
                 />
               </View>
               <View style={{flex: 1}}>{renderSearch()}</View>
@@ -515,6 +527,9 @@ const Esim: React.FC<EsimProps> = ({
                 <PromotionCarousel
                   width={dimensions.width}
                   promotion={promotionBanner}
+                  checkNeedUpdate={() => {
+                    setNeedUpdate(true);
+                  }}
                 />
               </Animated.View>
               {renderSearch()}
@@ -871,13 +886,17 @@ const Esim: React.FC<EsimProps> = ({
           {modalBody()}
         </AppModal>
         <AppVerModal
-          visible={modalType === 'update'}
-          option={appUpdate}
-          onOkClose={() => setAppUpdateVisible(false)}
+          visible={modalType === 'update' || needUpdate}
+          option={needUpdate ? 'O' : appUpdate}
+          needUpdate
+          onOkClose={() => {
+            setAppUpdateVisible(false);
+            setNeedUpdate(false);
+          }}
         />
       </>
     ),
-    [appUpdate, exitApp, modalBody, modalType, popUpList],
+    [appUpdate, exitApp, modalBody, modalType, needUpdate, popUpList],
   );
 
   return (
