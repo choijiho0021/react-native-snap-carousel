@@ -352,17 +352,18 @@ const EsimSubs = ({
 
   const title = useCallback(() => {
     const country = mainSubs.prodName?.split(' ')?.[0];
-
     return (
       <Pressable
         style={styles.prodTitle}
         onPress={() => {
           if (notCardInfo) setShowMoreInfo((prev) => !prev);
         }}>
-        <Image
-          source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
-          style={{width: 40, height: 40, marginRight: 20}}
-        />
+        {mainSubs.flagImage !== '' && (
+          <Image
+            source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
+            style={{width: 40, height: 40, marginRight: 20}}
+          />
+        )}
         <SplitText
           key={mainSubs.key}
           renderExpend={() =>

@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useMemo,
   useState,
+  useRef,
 } from 'react';
 import {
   StyleSheet,
@@ -14,10 +15,10 @@ import {
   Pressable,
   Modal,
   Image,
+  Animated,
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import moment from 'moment';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
@@ -224,6 +225,26 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   const [orderType, setOrderType] = useState<OrderType>('purchase');
   const orderTypeList: OrderType[] = useMemo(() => ['purchase', 'latest'], []);
   const [showTip, setShowTip] = useState(false);
+  const [blockAnimation, setBlockAnimation] = useState(false);
+  const animatedValue = useRef(
+    new Animated.Value(!isChargeable ? 415 : 345),
+  ).current;
+
+  const showTop = useCallback(
+    (isTop: boolean) => {
+      if (!blockAnimation) {
+        const height = !isChargeable ? 415 : 345;
+        setBlockAnimation(true);
+        Animated.timing(animatedValue, {
+          toValue: isTop ? height : 0,
+          duration: 500,
+          useNativeDriver: false,
+        }).start(() => setBlockAnimation(false));
+      }
+    },
+    [animatedValue, blockAnimation, isChargeable],
+  );
+
   const data = useMemo(
     () =>
       orderType === 'purchase' ? chargedSubs : chargedSubs?.slice().reverse(),
@@ -255,12 +276,6 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
       headerLeft: () => <AppBackButton title={i18n.t('esim:chargeHistory')} />,
     });
   }, [navigation]);
-
-  useEffect(() => {
-    prodData.forEach((p) => {
-      console.log('@@@@ nid', p.nid);
-    });
-  }, [prodData]);
 
   const renderTooltip = useCallback(() => {
     return (
@@ -344,10 +359,12 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
           </ImageBackground>
         </View>
         <View style={styles.cardTitle}>
-          <Image
-            source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
-            style={{width: 20, height: 20, marginRight: 10}}
-          />
+          {mainSubs.flagImage !== '' && (
+            <Image
+              source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
+              style={{width: 20, height: 20, marginRight: 10}}
+            />
+          )}
           <AppText
             key={mainSubs?.key}
             style={appStyles.bold20Text}
@@ -502,7 +519,6 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                         ),
                       })}
                     </AppText>
-
                     <View
                       style={
                         arr.length - 1 === idx
@@ -522,28 +538,43 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
-      {!isChargeable && (
-        <View style={styles.cautionContainer}>
-          <AppSvgIcon name="cautionIcon" />
-          <AppText style={styles.cautionText}>
-            {i18n.t('esim:chargeHistory:caution')}
-          </AppText>
-        </View>
-      )}
+      <Animated.View style={{height: animatedValue}}>
+        {!true && (
+          <View style={styles.cautionContainer}>
+            <AppSvgIcon name="cautionIcon" />
+            <AppText style={styles.cautionText}>
+              {i18n.t('esim:chargeHistory:caution')}
+            </AppText>
+          </View>
+        )}
 
-      {renderCard()}
+        {renderCard()}
 
-      {topInfo()}
+        {topInfo()}
 
-      <View
-        style={{width: '100%', height: 10, backgroundColor: colors.whiteTwo}}
-      />
+        <View
+          style={{
+            width: '100%',
+            height: 10,
+            backgroundColor: colors.whiteTwo,
+          }}
+        />
+      </Animated.View>
       <View style={styles.listContainer}>
         <FlatList
           data={prodData}
           renderItem={renderItem}
           ListHeaderComponent={renderHeader}
+          onScrollBeginDrag={() => showTop(false)}
+          showsVerticalScrollIndicator={false}
           keyExtractor={(item, idx) => item.key + idx}
+          onScroll={({
+            nativeEvent: {
+              contentOffset: {y},
+            },
+          }) => {
+            if (y <= 0 && !blockAnimation) showTop(true);
+          }}
         />
         {showTip && renderTooltip()}
       </View>
