@@ -312,6 +312,20 @@ const EsimSubs = ({
     return utils.toDateString(mainSubs.expireDate, 'YYYY.MM.DD');
   }, [mainSubs.expireDate]);
 
+  const expireTime = useMemo(() => {
+    const {expireDate} = chargedSubs.reduce((oldest, current) => {
+      const oldestDateObj = new Date(oldest.expireDate);
+      const currentDateObj = new Date(current.expireDate);
+
+      if (currentDateObj > oldestDateObj) {
+        return current;
+      }
+      return oldest;
+    });
+
+    return expireDate;
+  }, [chargedSubs]);
+
   useEffect(() => {
     if (showMoreInfo)
       flatListRef?.current?.scrollToIndex({index, animated: true});
@@ -330,6 +344,7 @@ const EsimSubs = ({
           onPressUsage,
           chargedSubs,
           isChargeable: !isChargeExpired,
+          expireTime,
         });
       } else if (!isBc) {
         navigation.navigate('ChargeType', {
@@ -342,6 +357,7 @@ const EsimSubs = ({
     [
       chargeablePeriod,
       chargedSubs,
+      expireTime,
       isBc,
       isChargeExpired,
       isCharged,
@@ -352,17 +368,18 @@ const EsimSubs = ({
 
   const title = useCallback(() => {
     const country = mainSubs.prodName?.split(' ')?.[0];
-
     return (
       <Pressable
         style={styles.prodTitle}
         onPress={() => {
           if (notCardInfo) setShowMoreInfo((prev) => !prev);
         }}>
-        <Image
-          source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
-          style={{width: 40, height: 40, marginRight: 20}}
-        />
+        {mainSubs.flagImage !== '' && (
+          <Image
+            source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
+            style={{width: 40, height: 40, marginRight: 20}}
+          />
+        )}
         <SplitText
           key={mainSubs.key}
           renderExpend={() =>
@@ -424,10 +441,7 @@ const EsimSubs = ({
           <AppText style={styles.normal14Gray}>{`${utils.toDateString(
             mainSubs.purchaseDate,
             'YYYY.MM.DD',
-          )} - ${utils.toDateString(
-            chargedSubs[chargedSubs.length - 1].expireDate,
-            'YYYY.MM.DD',
-          )}`}</AppText>
+          )} - ${utils.toDateString(expireTime, 'YYYY.MM.DD')}`}</AppText>
         </View>
         <View style={styles.inactiveContainer}>
           <AppText style={styles.normal14Gray}>
@@ -439,7 +453,7 @@ const EsimSubs = ({
     );
   }, [
     chargeablePeriod,
-    chargedSubs,
+    expireTime,
     mainSubs.purchaseDate,
     mainSubs.subsIccid,
     mainSubs.type,

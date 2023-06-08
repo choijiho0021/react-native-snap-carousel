@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useMemo,
   useState,
+  useRef,
 } from 'react';
 import {
   StyleSheet,
@@ -14,10 +15,10 @@ import {
   Pressable,
   Modal,
   Image,
+  Animated,
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import moment from 'moment';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
@@ -34,6 +35,7 @@ import Triangle from '@/components/Triangle';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {API} from '@/redux/api';
+import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
   chargeBtn: {
@@ -49,7 +51,16 @@ const styles = StyleSheet.create({
   normal14Gray: {
     ...appStyles.normal14Text,
     color: colors.warmGrey,
-    fontSize: isDeviceSize('small') ? 12 : 14,
+    fontSize: 14,
+  },
+  boldl14Gray: {
+    ...appStyles.bold14Text,
+    color: colors.warmGrey,
+    fontSize: 14,
+  },
+  boldl12Gray: {
+    ...appStyles.bold12Text,
+    color: colors.warmGrey,
   },
   topInfo: {
     marginTop: 20,
@@ -78,7 +89,6 @@ const styles = StyleSheet.create({
   badgeText: {
     ...appStyles.bold13Text,
   },
-  itemRow: {},
   listContainer: {
     flex: 1,
     backgroundColor: colors.white,
@@ -86,6 +96,7 @@ const styles = StyleSheet.create({
     paddingTop: 24,
   },
   cautionText: {
+    ...appStyles.bold14Text,
     marginLeft: 10,
     color: colors.redError,
   },
@@ -158,6 +169,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightGrey,
     marginBottom: 16,
   },
+  addOnRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  rechargeTag: {
+    paddingHorizontal: 8,
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    justifyContent: 'center',
+  },
 });
 
 export const renderPromoFlag = (flags: string[], isStore: boolean) => (
@@ -213,8 +236,14 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   navigation,
   route: {params},
 }) => {
-  const {mainSubs, chargeablePeriod, chargedSubs, onPressUsage, isChargeable} =
-    params || {};
+  const {
+    mainSubs,
+    chargeablePeriod,
+    chargedSubs,
+    onPressUsage,
+    isChargeable,
+    expireTime,
+  } = params || {};
   const [showModal, setShowModal] = useState(false);
   const [selectedSubs, setSelectedSubs] = useState<RkbSubscription>(mainSubs);
   const [pending, setPending] = useState(false);
@@ -224,6 +253,30 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   const [orderType, setOrderType] = useState<OrderType>('purchase');
   const orderTypeList: OrderType[] = useMemo(() => ['purchase', 'latest'], []);
   const [showTip, setShowTip] = useState(false);
+  const [blockAnimation, setBlockAnimation] = useState(false);
+  const topHeight = useMemo(() => {
+    let height = 345;
+    if (mainSubs.partner === 'cmi') height += 22;
+    if (!isChargeable) height += 74;
+    return height;
+  }, [isChargeable, mainSubs.partner]);
+
+  const animatedValue = useRef(new Animated.Value(topHeight)).current;
+
+  const showTop = useCallback(
+    (isTop: boolean) => {
+      if (!blockAnimation) {
+        setBlockAnimation(true);
+        Animated.timing(animatedValue, {
+          toValue: isTop ? topHeight : 0,
+          duration: 500,
+          useNativeDriver: false,
+        }).start(() => setBlockAnimation(false));
+      }
+    },
+    [animatedValue, blockAnimation, topHeight],
+  );
+
   const data = useMemo(
     () =>
       orderType === 'purchase' ? chargedSubs : chargedSubs?.slice().reverse(),
@@ -255,12 +308,6 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
       headerLeft: () => <AppBackButton title={i18n.t('esim:chargeHistory')} />,
     });
   }, [navigation]);
-
-  useEffect(() => {
-    prodData.forEach((p) => {
-      console.log('@@@@ nid', p.nid);
-    });
-  }, [prodData]);
 
   const renderTooltip = useCallback(() => {
     return (
@@ -296,19 +343,37 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
     return (
       <View style={styles.topInfo}>
         <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal14Gray}>{i18n.t('esim:iccid')}</AppText>
+          <AppText style={styles.boldl14Gray}>{i18n.t('esim:iccid')}</AppText>
           <AppText style={styles.normal14Gray}>{mainSubs?.subsIccid}</AppText>
         </View>
 
         <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal14Gray}>
-            {i18n.t('esim:rechargeablePeriod')}
+          <AppText style={styles.boldl14Gray}>
+            {i18n.t('his:expireDate2')}
           </AppText>
-          <AppText style={styles.normal14Gray}>{chargeablePeriod}</AppText>
+
+          <AppText style={styles.normal14Gray}>
+            {`${utils.toDateString(
+              mainSubs.purchaseDate,
+              'YYYY.MM.DD',
+            )} - ${utils.toDateString(expireTime, 'YYYY.MM.DD')}`}
+          </AppText>
         </View>
 
+        {mainSubs.partner === 'cmi' && (
+          <View style={styles.inactiveContainer}>
+            <AppText style={styles.boldl14Gray}>
+              {i18n.t('esim:rechargeablePeriod')}
+            </AppText>
+            <AppText style={styles.normal14Gray}>
+              {chargeablePeriod}
+              {i18n.t('sim:until')}
+            </AppText>
+          </View>
+        )}
+
         <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal14Gray}>
+          <AppText style={styles.boldl14Gray}>
             {i18n.t('esim:resetTime')}
           </AppText>
           <AppText style={styles.normal14Gray}>
@@ -317,7 +382,13 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         </View>
       </View>
     );
-  }, [chargeablePeriod, mainSubs?.subsIccid]);
+  }, [
+    chargeablePeriod,
+    expireTime,
+    mainSubs.partner,
+    mainSubs.purchaseDate,
+    mainSubs?.subsIccid,
+  ]);
 
   const renderCard = useCallback(() => {
     const isDaily = chargedSubs[0].daily === 'daily';
@@ -344,10 +415,12 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
           </ImageBackground>
         </View>
         <View style={styles.cardTitle}>
-          <Image
-            source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
-            style={{width: 20, height: 20, marginRight: 10}}
-          />
+          {mainSubs.flagImage !== '' && (
+            <Image
+              source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
+              style={{width: 20, height: 20, marginRight: 10}}
+            />
+          )}
           <AppText
             key={mainSubs?.key}
             style={appStyles.bold20Text}
@@ -395,26 +468,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
             borderColor: colors.lightGrey,
           }}>
           <View style={{alignItems: 'center', paddingHorizontal: 20}}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginTop: 16,
-                marginBottom: 20,
-                width: '100%',
-              }}>
-              <AppText style={[appStyles.normal14Text, {color: colors.gray}]}>
-                {i18n.t('his:expireDate2')}
-              </AppText>
-              <AppText style={[appStyles.normal14Text, {color: colors.black}]}>
-                {`${utils.toDateString(
-                  item.purchaseDate,
-                  'YYYY.MM.DD',
-                )} - ${utils.toDateString(item.expireDate, 'YYYY.MM.DD')}`}
-              </AppText>
-            </View>
-
-            <View style={{flexDirection: 'row', marginBottom: 19}}>
+            <View style={{flexDirection: 'row', marginVertical: 19}}>
               <View style={{flex: 1}}>
                 <SplitText
                   renderExpend={() =>
@@ -427,7 +481,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                 </SplitText>
               </View>
               <Pressable
-                style={{flexDirection: 'row', alignItems: 'center'}}
+                style={{flexDirection: 'row'}}
                 onPress={() => {
                   setPending(true);
                   setSelectedSubs(item);
@@ -447,7 +501,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                 </AppText>
                 <AppSvgIcon
                   name="rightBlueAngleBracket"
-                  style={{marginRight: 8}}
+                  style={{marginRight: 8, marginTop: 4}}
                 />
               </Pressable>
             </View>
@@ -463,46 +517,31 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                     style={{marginTop: 23, marginRight: 16}}
                   />
                   <View style={{flex: 1}}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        marginTop: 16,
-                        marginBottom: 8,
-                      }}>
+                    <View style={styles.addOnRow}>
                       <AppText style={appStyles.bold16Text}>
                         {utils.toDataVolumeString(Number(k.dataVolume))}
                         {` ${toProdDaysString(Number(k.prodDays))}`}
                       </AppText>
-                      <View
-                        style={{
-                          paddingHorizontal: 8,
-                          borderWidth: 1,
-                          borderColor: colors.lightGrey,
-                          justifyContent: 'center',
-                        }}>
-                        <AppText
-                          style={{
-                            ...appStyles.bold12Text,
-                            color: colors.warmGrey,
-                          }}>
+                      <View style={styles.rechargeTag}>
+                        <AppText style={styles.boldl12Gray}>
                           {i18n.t('recharge')}
                         </AppText>
                       </View>
                     </View>
-                    <AppText
-                      style={[
-                        appStyles.normal14Text,
-                        {color: colors.gray, marginBottom: 24},
-                      ]}>
-                      {i18n.t('his:useableDate', {
+                    <AppStyledText
+                      text={i18n.t('his:useableDate')}
+                      textStyle={{...styles.normal14Gray, marginBottom: 24}}
+                      format={{
+                        b: {...styles.boldl14Gray, marginBottom: 24},
+                      }}
+                      data={{
                         useableDate: utils.toDateString(
                           k.purchaseDate,
                           'YYYY.MM.DD HH:mm:ss',
                         ),
-                      })}
-                    </AppText>
-
+                      }}
+                      numberOfLines={2}
+                    />
                     <View
                       style={
                         arr.length - 1 === idx
@@ -522,28 +561,43 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
-      {!isChargeable && (
-        <View style={styles.cautionContainer}>
-          <AppSvgIcon name="cautionIcon" />
-          <AppText style={styles.cautionText}>
-            {i18n.t('esim:chargeHistory:caution')}
-          </AppText>
-        </View>
-      )}
+      <Animated.View style={{height: animatedValue}}>
+        {!isChargeable && (
+          <View style={styles.cautionContainer}>
+            <AppSvgIcon name="chargeHistoryCautionIcon" />
+            <AppText style={styles.cautionText}>
+              {i18n.t('esim:chargeHistory:caution')}
+            </AppText>
+          </View>
+        )}
 
-      {renderCard()}
+        {renderCard()}
 
-      {topInfo()}
+        {topInfo()}
 
-      <View
-        style={{width: '100%', height: 10, backgroundColor: colors.whiteTwo}}
-      />
+        <View
+          style={{
+            width: '100%',
+            height: 10,
+            backgroundColor: colors.whiteTwo,
+          }}
+        />
+      </Animated.View>
       <View style={styles.listContainer}>
         <FlatList
           data={prodData}
           renderItem={renderItem}
           ListHeaderComponent={renderHeader}
+          onScrollBeginDrag={() => showTop(false)}
+          showsVerticalScrollIndicator={false}
           keyExtractor={(item, idx) => item.key + idx}
+          onScroll={({
+            nativeEvent: {
+              contentOffset: {y},
+            },
+          }) => {
+            if (y <= 0 && !blockAnimation) showTop(true);
+          }}
         />
         {showTip && renderTooltip()}
       </View>

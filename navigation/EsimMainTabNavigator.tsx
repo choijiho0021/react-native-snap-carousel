@@ -79,7 +79,7 @@ const EsimStack = createStackNavigator();
 const MyPageStack = createStackNavigator();
 
 const screenOptions = {
-  animationEnabled: false,
+  animationEnabled: true,
   headerStyle: {
     elevation: 0,
     shadowOpacity: 0,
@@ -99,8 +99,7 @@ const tabBarLabel = (focused: boolean, textId: string) => (
 
 function HomeStackComponent() {
   return (
-    <HomeStack.Navigator
-      screenOptions={{...screenOptions, presentation: 'modal'}}>
+    <HomeStack.Navigator screenOptions={{...screenOptions}}>
       <HomeStack.Screen
         name="Home"
         component={HomeScreenEsim}
@@ -160,7 +159,8 @@ function HomeStackComponent() {
       />
       <HomeStack.Screen name="Payment" component={PaymentScreen} />
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
-      <HomeStack.Group screenOptions={{animationEnabled: true}}>
+      <HomeStack.Group
+        screenOptions={{animationEnabled: true, presentation: 'modal'}}>
         <HomeStack.Screen name="UserGuideStep" component={UserGuideScreen} />
         <HomeStack.Screen
           name="UserGuide"
