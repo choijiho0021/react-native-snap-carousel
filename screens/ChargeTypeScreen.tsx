@@ -205,11 +205,12 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             setAddonEnable(true);
             return;
           }
-          // 사용 전
+          // 사용 전,  충전내역 O
           if (quadAddonOverLimited) {
             setStatus('unUsed');
             return;
           }
+          // 사용 전,  충전내역 X
           setAddonEnable(true);
           setStatus('unUsed');
         }
@@ -243,21 +244,23 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
   useEffect(() => {
     if (!addonEnable) {
-      // 쿼드셀 무제한 상품 1회 충전 제한
-      if (quadAddonOverLimited) {
-        setAddOnDisReasen('overLimit');
-        return;
-      }
       if (status === 'expired') {
         setAddOnDisReasen('used');
         return;
       }
+
       if (
         mainSubs.partner?.toLowerCase() === 'billionconnect' ||
         (mainSubs.partner?.toLowerCase() === 'cmi' &&
           mainSubs.daily === 'total')
       ) {
         setAddOnDisReasen('unsupported');
+        return;
+      }
+
+      // 쿼드셀 무제한 상품 1회 충전 제한
+      if (quadAddonOverLimited) {
+        setAddOnDisReasen('overLimit');
         return;
       }
       setAddOnDisReasen('noProd');
