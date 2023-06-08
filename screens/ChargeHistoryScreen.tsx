@@ -35,6 +35,7 @@ import Triangle from '@/components/Triangle';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {API} from '@/redux/api';
+import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
   chargeBtn: {
@@ -50,7 +51,16 @@ const styles = StyleSheet.create({
   normal14Gray: {
     ...appStyles.normal14Text,
     color: colors.warmGrey,
-    fontSize: isDeviceSize('small') ? 12 : 14,
+    fontSize: 14,
+  },
+  boldl14Gray: {
+    ...appStyles.bold14Text,
+    color: colors.warmGrey,
+    fontSize: 14,
+  },
+  boldl12Gray: {
+    ...appStyles.bold12Text,
+    color: colors.warmGrey,
   },
   topInfo: {
     marginTop: 20,
@@ -158,6 +168,18 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.lightGrey,
     marginBottom: 16,
+  },
+  addOnRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  rechargeTag: {
+    paddingHorizontal: 8,
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    justifyContent: 'center',
   },
 });
 
@@ -321,16 +343,16 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
     return (
       <View style={styles.topInfo}>
         <View style={styles.inactiveContainer}>
-          <AppText style={appStyles.bold14Text}>{i18n.t('esim:iccid')}</AppText>
+          <AppText style={styles.boldl14Gray}>{i18n.t('esim:iccid')}</AppText>
           <AppText style={styles.normal14Gray}>{mainSubs?.subsIccid}</AppText>
         </View>
 
         <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal14Gray}>
+          <AppText style={styles.boldl14Gray}>
             {i18n.t('his:expireDate2')}
           </AppText>
 
-          <AppText style={appStyles.normal14Text}>
+          <AppText style={styles.normal14Gray}>
             {`${utils.toDateString(
               mainSubs.purchaseDate,
               'YYYY.MM.DD',
@@ -340,7 +362,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
 
         {mainSubs.partner === 'cmi' && (
           <View style={styles.inactiveContainer}>
-            <AppText style={styles.normal14Gray}>
+            <AppText style={styles.boldl14Gray}>
               {i18n.t('esim:rechargeablePeriod')}
             </AppText>
             <AppText style={styles.normal14Gray}>
@@ -351,7 +373,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         )}
 
         <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal14Gray}>
+          <AppText style={styles.boldl14Gray}>
             {i18n.t('esim:resetTime')}
           </AppText>
           <AppText style={styles.normal14Gray}>
@@ -459,7 +481,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                 </SplitText>
               </View>
               <Pressable
-                style={{flexDirection: 'row', alignItems: 'center'}}
+                style={{flexDirection: 'row'}}
                 onPress={() => {
                   setPending(true);
                   setSelectedSubs(item);
@@ -479,7 +501,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                 </AppText>
                 <AppSvgIcon
                   name="rightBlueAngleBracket"
-                  style={{marginRight: 8}}
+                  style={{marginRight: 8, marginTop: 4}}
                 />
               </Pressable>
             </View>
@@ -495,45 +517,31 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                     style={{marginTop: 23, marginRight: 16}}
                   />
                   <View style={{flex: 1}}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        marginTop: 16,
-                        marginBottom: 8,
-                      }}>
+                    <View style={styles.addOnRow}>
                       <AppText style={appStyles.bold16Text}>
                         {utils.toDataVolumeString(Number(k.dataVolume))}
                         {` ${toProdDaysString(Number(k.prodDays))}`}
                       </AppText>
-                      <View
-                        style={{
-                          paddingHorizontal: 8,
-                          borderWidth: 1,
-                          borderColor: colors.lightGrey,
-                          justifyContent: 'center',
-                        }}>
-                        <AppText
-                          style={{
-                            ...appStyles.bold12Text,
-                            color: colors.warmGrey,
-                          }}>
+                      <View style={styles.rechargeTag}>
+                        <AppText style={styles.boldl12Gray}>
                           {i18n.t('recharge')}
                         </AppText>
                       </View>
                     </View>
-                    <AppText
-                      style={[
-                        appStyles.normal14Text,
-                        {color: colors.gray, marginBottom: 24},
-                      ]}>
-                      {i18n.t('his:useableDate', {
+                    <AppStyledText
+                      text={i18n.t('his:useableDate')}
+                      textStyle={{...styles.normal14Gray, marginBottom: 24}}
+                      format={{
+                        b: {...styles.boldl14Gray, marginBottom: 24},
+                      }}
+                      data={{
                         useableDate: utils.toDateString(
                           k.purchaseDate,
                           'YYYY.MM.DD HH:mm:ss',
                         ),
-                      })}
-                    </AppText>
+                      }}
+                      numberOfLines={2}
+                    />
                     <View
                       style={
                         arr.length - 1 === idx
