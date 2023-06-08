@@ -285,8 +285,9 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
                 setRemainDaysAddOnProd(remainDaysProd);
                 return;
               }
+              setAddOnTypeList(['today', 'remainDays']);
             }
-            setAddOnTypeList(['today', 'remainDays']);
+
             setTodayAddOnProd(todayProd);
             setSelectedAddOnProd(todayProd[0]);
             setRemainDaysAddOnProd(remainDaysProd);
