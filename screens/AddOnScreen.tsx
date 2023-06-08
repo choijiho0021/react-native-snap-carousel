@@ -253,47 +253,48 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
 
   useEffect(() => {
     if (mainSubs.nid)
-      API.Product.getAddOnProduct(mainSubs.nid, remainDays.toString()).then(
-        (data) => {
-          if (data.result === 0) {
-            const rsp = data.objects;
-            const todayProd = rsp.filter((r) => r.days === '1');
-            const remainDaysProd = rsp.filter((r) => r.days !== '1');
-            if (remainDaysProd.length > 0) {
-              if (
-                mainSubs.partner?.toLocaleLowerCase() === 'quadcell' &&
-                (status === 'unUsed' || mainSubs.daily === 'total')
-              ) {
-                setAddOnTypeList(['remainDays']);
-                setSelectedType('remainDays');
-                setTodayAddOnProd(remainDaysProd);
-                setSelectedAddOnProd(remainDaysProd[0]);
-                setRemainDaysAddOnProd(remainDaysProd);
-                return;
-              }
-              // 남은 기간 충전이 1회라도 있는 경우
-              if (
-                mainSubs.partner?.toLocaleLowerCase() === 'quadcell' &&
-                status === 'Using' &&
-                mainSubs.daily === 'total' &&
-                addOnData?.find((a) => a.prodDays && Number(a.prodDays) > 1)
-              ) {
-                setAddOnTypeList(['today']);
-                setSelectedType('today');
-                setTodayAddOnProd(todayProd);
-                setSelectedAddOnProd(todayProd[0]);
-                setRemainDaysAddOnProd(remainDaysProd);
-                return;
-              }
-              setAddOnTypeList(['today', 'remainDays']);
+      API.Product.getAddOnProduct(
+        mainSubs.nid,
+        mainSubs.daily === 'daily' ? remainDays.toString() : '1',
+      ).then((data) => {
+        if (data.result === 0) {
+          const rsp = data.objects;
+          const todayProd = rsp.filter((r) => r.days === '1');
+          const remainDaysProd = rsp.filter((r) => r.days !== '1');
+          if (remainDaysProd.length > 0) {
+            if (
+              mainSubs.partner?.toLocaleLowerCase() === 'quadcell' &&
+              (status === 'unUsed' || mainSubs.daily === 'total')
+            ) {
+              setAddOnTypeList(['remainDays']);
+              setSelectedType('remainDays');
+              setTodayAddOnProd(remainDaysProd);
+              setSelectedAddOnProd(remainDaysProd[0]);
+              setRemainDaysAddOnProd(remainDaysProd);
+              return;
             }
-
-            setTodayAddOnProd(todayProd);
-            setSelectedAddOnProd(todayProd[0]);
-            setRemainDaysAddOnProd(remainDaysProd);
+            // 남은 기간 충전이 1회라도 있는 경우
+            if (
+              mainSubs.partner?.toLocaleLowerCase() === 'quadcell' &&
+              status === 'Using' &&
+              mainSubs.daily === 'total' &&
+              addOnData?.find((a) => a.prodDays && Number(a.prodDays) > 1)
+            ) {
+              setAddOnTypeList(['today']);
+              setSelectedType('today');
+              setTodayAddOnProd(todayProd);
+              setSelectedAddOnProd(todayProd[0]);
+              setRemainDaysAddOnProd(remainDaysProd);
+              return;
+            }
+            setAddOnTypeList(['today', 'remainDays']);
           }
-        },
-      );
+
+          setTodayAddOnProd(todayProd);
+          setSelectedAddOnProd(todayProd[0]);
+          setRemainDaysAddOnProd(remainDaysProd);
+        }
+      });
   }, [addOnData, mainSubs, remainDays, status]);
 
   const renderTypeBtn = useCallback(
