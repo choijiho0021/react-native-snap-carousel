@@ -173,8 +173,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     async (item: RkbSubscription) => {
       if (item?.imsi) {
         const status = await API.Subscription.quadcellGetData({
-          // imsi: item.imsi,
-          imsi: '454070042530432',
+          imsi: item.imsi,
           key: 'packlist',
         });
 
@@ -192,30 +191,25 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
           // 사용 완료
           if (!dataPack) {
-            console.log('@@@@ 사용완료');
             setStatus('expired');
             return;
           }
           if (dataPack?.effTime) {
             if (moment().isAfter(exp)) {
               // 사용 완료
-              console.log('@@@@ 사용완료');
               setStatus('expired');
               return;
             }
             // 사용 중
-            console.log('@@@@ 사용 중');
             setStatus('using');
             setAddonEnable(true);
             return;
           }
           // 사용 전
           if (quadAddonOverLimited) {
-            console.log('@@@@ 사용 전, 충전내역 O');
             setStatus('unUsed');
             return;
           }
-          console.log('@@@@ 사용 전, 충전내역 X');
           setAddonEnable(true);
           setStatus('unUsed');
         }

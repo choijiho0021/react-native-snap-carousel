@@ -48,7 +48,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
   },
   volumeBtnFrame: {
     marginBottom: 48,
@@ -325,7 +324,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   );
 
   const renderAddOnProd = useCallback(
-    (item: RkbAddOnProd) => {
+    (item: RkbAddOnProd, index: number) => {
       const volume = Number(item.volume);
       return (
         <Pressable
@@ -338,6 +337,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
                   : colors.line,
             },
             {width: (sliderWidth - 60) / 3, marginBottom: 10},
+            {marginHorizontal: (index + 1) % 3 === 2 ? 10 : 0},
           ]}
           onPress={() => setSelectedAddOnProd(item)}>
           <AppText
@@ -457,7 +457,11 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
             <AppText style={styles.titleText}>
               {i18n.t('esim:charge:addOn:type')}
             </AppText>
-            <View style={[styles.row, {marginBottom: 16}]}>
+            <View
+              style={[
+                styles.row,
+                {marginBottom: 16, justifyContent: 'space-between'},
+              ]}>
               {addOnTypeList.map((t) => renderTypeBtn(t))}
             </View>
             {renderNotice()}
@@ -467,8 +471,8 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
             </AppText>
             <View style={[styles.row, styles.volumeBtnFrame]}>
               {selectedType === 'today'
-                ? todayAddOnProd.map((t) => renderAddOnProd(t))
-                : remainDaysAddOnProd.map((t) => renderAddOnProd(t))}
+                ? todayAddOnProd.map((t, i) => renderAddOnProd(t, i))
+                : remainDaysAddOnProd.map((t, i) => renderAddOnProd(t, i))}
             </View>
           </View>
         )}
