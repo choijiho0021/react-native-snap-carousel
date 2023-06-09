@@ -164,9 +164,9 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
       );
 
       // 중복 제거
-      const uniqueList = cmiPartnerIds.filter((item, i) => {
-        return cmiPartnerIds.indexOf(item) === i;
-      });
+      const uniqueList = cmiPartnerIds.filter(
+        (item, i) => cmiPartnerIds.indexOf(item) === i,
+      );
 
       return makeProdData(prodByPartner, uniqueList);
     }
