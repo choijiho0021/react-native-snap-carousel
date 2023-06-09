@@ -19,13 +19,13 @@ const styles = StyleSheet.create({
   },
   frame: {
     width: sliderWidth - 40,
-    marginTop: 26,
+    marginBottom: 26,
     marginHorizontal: 20,
     borderRadius: 3,
     padding: 30,
     borderWidth: 1,
     borderColor: colors.whiteFive,
-
+    backgroundColor: colors.white,
     elevation: 12,
     shadowColor: 'rgb(166, 168, 172)',
     shadowRadius: 12,
