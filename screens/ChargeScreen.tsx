@@ -244,52 +244,50 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{flex: 1}}>
-        <Animated.View style={{height: animatedValue}}>
-          <SelectedProdTitle
-            isdaily={params?.mainSubs?.daily === 'daily'}
-            prodName={params?.mainSubs?.prodName || ''}
-          />
-          <View style={styles.whiteBox}>
-            <View style={styles.greyBox}>
-              <AppSvgIcon name="blueClock" style={styles.clock} />
-              <AppStyledText
-                text={i18n.t('esim:rechargeablePeriod2')}
-                textStyle={styles.chargeablePeriodText}
-                format={{b: styles.chargeablePeriodTextBold}}
-                data={{
-                  chargeablePeriod:
-                    moment(params?.chargeablePeriod, 'YYYY.MM.DD').format(
-                      'YYYY년 MM월 DD일',
-                    ) || '',
-                }}
-              />
-            </View>
+      <Animated.View style={{height: animatedValue}}>
+        <SelectedProdTitle
+          isdaily={params?.mainSubs?.daily === 'daily'}
+          prodName={params?.mainSubs?.prodName || ''}
+        />
+        <View style={styles.whiteBox}>
+          <View style={styles.greyBox}>
+            <AppSvgIcon name="blueClock" style={styles.clock} />
+            <AppStyledText
+              text={i18n.t('esim:rechargeablePeriod2')}
+              textStyle={styles.chargeablePeriodText}
+              format={{b: styles.chargeablePeriodTextBold}}
+              data={{
+                chargeablePeriod:
+                  moment(params?.chargeablePeriod, 'YYYY.MM.DD').format(
+                    'YYYY년 MM월 DD일',
+                  ) || '',
+              }}
+            />
           </View>
-        </Animated.View>
+        </View>
+      </Animated.View>
 
-        <View style={styles.divider16} />
+      <View style={styles.divider16} />
 
-        <AppTabHeader
-          index={index}
-          routes={routes}
-          onIndexChange={onIndexChange}
-          style={styles.tab}
-          tintColor={colors.black}
-          titleStyle={styles.tabTitle}
-          seletedStyle={styles.selectedTabTitle}
-        />
+      <AppTabHeader
+        index={index}
+        routes={routes}
+        onIndexChange={onIndexChange}
+        style={styles.tab}
+        tintColor={colors.black}
+        titleStyle={styles.tabTitle}
+        seletedStyle={styles.selectedTabTitle}
+      />
 
-        <View style={styles.divider24} />
+      <View style={styles.divider24} />
 
-        <TabView
-          sceneContainerStyle={{flex: 1}}
-          navigationState={{index, routes}}
-          renderScene={renderScene}
-          onIndexChange={onIndexChange}
-          renderTabBar={() => null}
-        />
-      </View>
+      <TabView
+        sceneContainerStyle={{flex: 1}}
+        navigationState={{index, routes}}
+        renderScene={renderScene}
+        onIndexChange={onIndexChange}
+        renderTabBar={() => null}
+      />
     </SafeAreaView>
   );
 };
