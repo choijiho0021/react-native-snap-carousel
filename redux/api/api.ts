@@ -7,7 +7,7 @@ import userApi from './userApi';
 import {API} from '@/redux/api';
 import {parseJson, retrieveData, storeData} from '@/utils/utils';
 import store from '@/store';
-import {actions as ToastActions, Toast} from '../modules/toast';
+import {actions as ToastActions, Toast} from '@/redux/modules/toast';
 
 export type Langcode = 'ko' | 'en';
 const {scheme, apiUrl, esimGlobal, rokApiUrl, cachePrefix} = Env.get();
@@ -277,11 +277,10 @@ export const cachedApi =
   <A, T>(key: string, apiToCall: (p: A) => Promise<T>) =>
   async (param: A, {fulfillWithValue}) => {
     const rsp = await apiToCall(param);
-    const storedMobile = await retrieveData(API.User.KEY_MOBILE);
     if (rsp.result === 0) {
-      storeData(cachePrefix + storedMobile + key, JSON.stringify(rsp));
+      storeData(cachePrefix + key, JSON.stringify(rsp));
     } else if (rsp.result === E_REQUEST_FAILED) {
-      const cache = await retrieveData(cachePrefix + storedMobile + key);
+      const cache = await retrieveData(cachePrefix + key);
       if (cache) return fulfillWithValue(parseJson(cache));
     }
     return fulfillWithValue(rsp);
