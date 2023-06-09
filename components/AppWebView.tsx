@@ -1,19 +1,24 @@
 import React, {useCallback, useRef, useState} from 'react';
 import WebView from 'react-native-webview';
+import AppActivityIndicator from './AppActivityIndicator';
+
+type AppWebViewCallbackParams = {
+  cmd: string;
+};
 
 type AppWebViewProps = {
   uri: string;
-  callback: (v) => void;
+  callback: (v: AppWebViewCallbackParams) => void;
 };
 
 const AppWebView: React.FC<AppWebViewProps> = ({uri, callback}) => {
   const [loading, setLoading] = useState(true);
   const ref = useRef<WebView>(null);
   const onMessage = useCallback(
-    (payload) => {
+    ({nativeEvent: {data}}) => {
+      console.log('@@@ webview onMessage', data);
       try {
-        const data = JSON.parse(payload.nativeEvent.data);
-        callback?.(data);
+        if (data) callback?.(JSON.parse(data));
       } catch (e) {
         console.log('[Console] ', e);
       }
@@ -21,33 +26,29 @@ const AppWebView: React.FC<AppWebViewProps> = ({uri, callback}) => {
     [callback],
   );
 
-  const onLoadEnd = useCallback(({nativeEvent: {url}}) => {
-    // console.log('@@@ onLoadEnd url', url, injected.current);
-    // ref.current?.injectJavaScript(
-    //   'console.log("END" + window.document.documentElement.innerHTML);' +
-    //     'console.log("LOAD:" + document.body.onload);',
-    // );
-    setLoading(false);
-  }, []);
-
   const onError = useCallback(({nativeEvent}) => {
     console.log('loading error', nativeEvent);
   }, []);
 
   return (
-    <WebView
-      style={{flex: 1}}
-      ref={ref}
-      javaScriptEnabled
-      mixedContentMode="compatibility"
-      onMessage={onMessage}
-      onError={onError}
-      originWhitelist={['*']}
-      sharedCookiesEnabled
-      javaScriptCanOpenWindowsAutomatically
-      onLoadEnd={onLoadEnd}
-      source={{uri}}
-    />
+    <>
+      <WebView
+        style={{flex: 1}}
+        ref={ref}
+        javaScriptEnabled
+        mixedContentMode="compatibility"
+        onMessage={onMessage}
+        onError={onError}
+        originWhitelist={['*']}
+        sharedCookiesEnabled
+        javaScriptCanOpenWindowsAutomatically
+        onLoadEnd={({nativeEvent: {loading: webViewLoading}}) =>
+          setLoading(webViewLoading)
+        }
+        source={{uri}}
+      />
+      <AppActivityIndicator visible={loading} />
+    </>
   );
 };
 
