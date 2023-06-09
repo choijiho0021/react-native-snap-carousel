@@ -288,7 +288,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         else {
           setShowSnackBar({
             text: i18n.t(
-              `esim:charge:snackBar:extension:${extensionDisReason}`,
+              `esim:charge:disReason:extension:${extensionDisReason}`,
             ),
             visible: true,
           });
@@ -302,7 +302,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         });
       } else {
         setShowSnackBar({
-          text: i18n.t(`esim:charge:snackBar:addOn:${addOnDisReason}`),
+          text: i18n.t(`esim:charge:disReason:addOn:${addOnDisReason}`),
           visible: true,
         });
       }

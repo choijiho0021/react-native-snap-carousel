@@ -151,7 +151,7 @@ const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
             title={
               disabled
                 ? i18n.t(
-                    `esim:charge:button:${
+                    `esim:charge:disReason:${
                       type === 'addOn' ? 'addOn' : 'extension'
                     }:${
                       type === 'addOn' ? disReason?.addOn : disReason?.extension
