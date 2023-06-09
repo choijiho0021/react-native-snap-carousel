@@ -118,7 +118,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           iccid: item?.subsIccid,
         });
 
-        const today = moment().zone(-540);
+        const today = moment();
         const {userDataBundles} = rsp.objects || {};
 
         const bundles: CMIBundlesType[] = userDataBundles
@@ -137,19 +137,13 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           (b) =>
             b.status === 3 &&
             today.isBetween(
-              moment(b.activeTime)
-                .add(USAGE_TIME_INTERVAL.quadcell, 'h')
-                .zone(-540),
-              moment(b.expireTime)
-                .add(USAGE_TIME_INTERVAL.quadcell, 'h')
-                .zone(-540),
+              moment(b.activeTime).add(USAGE_TIME_INTERVAL.quadcell, 'h'),
+              moment(b.expireTime).add(USAGE_TIME_INTERVAL.quadcell, 'h'),
             ),
         );
         if (inUseItem) {
           setExpireTime(
-            moment(inUseItem.expireTime)
-              .add(USAGE_TIME_INTERVAL.cmi, 'h')
-              .zone(-540),
+            moment(inUseItem.expireTime).add(USAGE_TIME_INTERVAL.cmi, 'h'),
           );
           if (chargedSubs) {
             const i = chargedSubs.find(
@@ -192,10 +186,10 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         );
 
         if (status.result === 0 && status.objects?.retCode === '000000') {
-          const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss')
-            .add(USAGE_TIME_INTERVAL.quadcell, 'h')
-            .zone(-540);
-
+          const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss').add(
+            USAGE_TIME_INTERVAL.quadcell,
+            'h',
+          );
           setExpireTime(exp);
 
           // 사용 완료

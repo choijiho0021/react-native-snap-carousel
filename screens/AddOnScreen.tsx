@@ -231,7 +231,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
     if (status === 'unUsed' && mainSubs.prodDays) {
       setRemainDays(Number(mainSubs.prodDays));
     } else if (expireTime) {
-      const today = moment().zone(-540);
+      const today = moment();
       setRemainDays(Math.ceil(expireTime.diff(today, 'hours') / 24));
     }
   }, [expireTime, mainSubs, mainSubs.partner, status]);
