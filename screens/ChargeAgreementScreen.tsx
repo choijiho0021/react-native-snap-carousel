@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backGrey,
     paddingTop: 41,
     paddingHorizontal: 20,
-    paddingBottom: 120,
+    paddingBottom: 10,
   },
   noticeTitle: {
     ...appStyles.bold18Text,
@@ -103,11 +103,13 @@ const styles = StyleSheet.create({
     marginTop: 0,
     color: colors.warmGrey,
   },
+  agreementFrame: {
+    backgroundColor: colors.backGrey,
+    paddingBottom: 12,
+    paddingHorizontal: 20,
+  },
   agreement: {
     backgroundColor: colors.white,
-    position: 'absolute',
-    bottom: 100,
-    marginHorizontal: 20,
     padding: 20,
     display: 'flex',
     flexDirection: 'row',
@@ -239,30 +241,32 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
           </View>
         </View>
       </ScrollView>
-
-      <Pressable
-        style={styles.agreement}
-        onPress={() => setIsPressed((prev) => !prev)}>
-        <AppSvgIcon
-          name={isPressed ? 'afterCheck' : 'beforeCheck'}
-          style={{marginRight: 12}}
+      <View>
+        <View style={styles.agreementFrame}>
+          <Pressable
+            style={styles.agreement}
+            onPress={() => setIsPressed((prev) => !prev)}>
+            <AppSvgIcon
+              name={isPressed ? 'afterCheck' : 'beforeCheck'}
+              style={{marginRight: 12}}
+            />
+            <AppText style={styles.agreementText}>
+              {i18n.t('esim:charge:agreement')}
+            </AppText>
+          </Pressable>
+        </View>
+        <ButtonWithPrice
+          amount={
+            params.addOnProd?.price ||
+            params.extensionProd?.price.value.toString() ||
+            '0'
+          }
+          currency={i18n.t('esim:charge:addOn:currency')}
+          onPress={onPressBtnPurchase}
+          disable={!isPressed}
+          title={i18n.t('esim:charge:payment:agree')}
         />
-        <AppText style={styles.agreementText}>
-          {i18n.t('esim:charge:agreement')}
-        </AppText>
-      </Pressable>
-
-      <ButtonWithPrice
-        amount={
-          params.addOnProd?.price ||
-          params.extensionProd?.price.value.toString() ||
-          '0'
-        }
-        currency={i18n.t('esim:charge:addOn:currency')}
-        onPress={onPressBtnPurchase}
-        disable={!isPressed}
-        title={i18n.t('esim:charge:payment:agree')}
-      />
+      </View>
     </SafeAreaView>
   );
 };
