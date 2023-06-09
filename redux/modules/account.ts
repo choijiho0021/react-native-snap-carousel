@@ -19,6 +19,9 @@ import {actions as toastActions, reflectWithToast, Toast} from './toast';
 import {actions as orderActions} from './order';
 import {actions as promotionActions} from './promotion';
 import {actions as notiActions} from './noti';
+import Env from '@/environment';
+
+const {cachePrefix} = Env.get();
 
 const getToken = createAsyncThunk('account/getToken', API.User.getToken);
 const logIn = createAsyncThunk('acccount/logIn', API.User.logIn);
@@ -570,6 +573,8 @@ const logout = createAsyncThunk('account/logout', async (param, {dispatch}) => {
   removeData(API.Noti.KEY_INIT_LIST);
   removeData(API.Order.KEY_INIT_ORDER);
   removeData(API.Cart.KEY_INIT_CART);
+  removeData(`${cachePrefix}cache.subs`);
+  removeData(`${cachePrefix}cache.store`);
 
   batch(() => {
     // 먼저 로그아웃 한다.
