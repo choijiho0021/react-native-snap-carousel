@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backGrey,
     paddingTop: 41,
     paddingHorizontal: 20,
-    paddingBottom: 10,
+    paddingBottom: 100,
   },
   noticeTitle: {
     ...appStyles.bold18Text,
@@ -103,12 +103,11 @@ const styles = StyleSheet.create({
     marginTop: 0,
     color: colors.warmGrey,
   },
-  agreementFrame: {
-    backgroundColor: colors.backGrey,
-    paddingBottom: 12,
-    paddingHorizontal: 20,
-  },
   agreement: {
+    marginBottom: 12,
+    marginHorizontal: 20,
+    position: 'absolute',
+    bottom: 0,
     backgroundColor: colors.white,
     padding: 20,
     display: 'flex',
@@ -204,57 +203,59 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={{flex: 1}}>
-        <SelectedProdTitle
-          isdaily={params?.mainSubs?.daily === 'daily'}
-          prodName={params?.mainSubs?.prodName || ''}
-        />
-
-        <View style={styles.chargeProd}>
-          <View style={styles.sticker}>
-            <AppText style={styles.stickerText}>
-              {i18n.t('esim:charge:selected:prod')}
-            </AppText>
-          </View>
-          <AppText style={styles.title}>{contents.chargeProd}</AppText>
-          <AppStyledText
-            text={i18n.t('esim:charge:expPeriod')}
-            textStyle={styles.expPeriodText}
-            format={{b: styles.expPeriodTextBold}}
-            data={{expPeriod: expPeriod.format('YYYY년 MM월 DD일')}}
+      <View style={{position: 'relative', flex: 1}}>
+        <ScrollView style={{flex: 1}}>
+          <SelectedProdTitle
+            isdaily={params?.mainSubs?.daily === 'daily'}
+            prodName={params?.mainSubs?.prodName || ''}
           />
-        </View>
-        <View style={styles.notice}>
-          <View style={[styles.row, {marginBottom: 13}]}>
-            <AppSvgIcon name="cautionRed" style={{marginRight: 8}} />
-            <AppText style={styles.noticeTitle}>{contents.noticeTitle}</AppText>
-          </View>
-          <View style={{marginRight: 20}}>
-            {contents.noticeBody.map((k) => (
-              <TextWithDot
-                text={k}
-                boldStyle={styles.noticeBold}
-                textStyle={styles.noticeText}
-                dotStyle={styles.dot}
-              />
-            ))}
-          </View>
-        </View>
-      </ScrollView>
-      <View>
-        <View style={styles.agreementFrame}>
-          <Pressable
-            style={styles.agreement}
-            onPress={() => setIsPressed((prev) => !prev)}>
-            <AppSvgIcon
-              name={isPressed ? 'afterCheck' : 'beforeCheck'}
-              style={{marginRight: 12}}
+
+          <View style={styles.chargeProd}>
+            <View style={styles.sticker}>
+              <AppText style={styles.stickerText}>
+                {i18n.t('esim:charge:selected:prod')}
+              </AppText>
+            </View>
+            <AppText style={styles.title}>{contents.chargeProd}</AppText>
+            <AppStyledText
+              text={i18n.t('esim:charge:expPeriod')}
+              textStyle={styles.expPeriodText}
+              format={{b: styles.expPeriodTextBold}}
+              data={{expPeriod: expPeriod.format('YYYY년 MM월 DD일')}}
             />
-            <AppText style={styles.agreementText}>
-              {i18n.t('esim:charge:agreement')}
-            </AppText>
-          </Pressable>
-        </View>
+          </View>
+          <View style={styles.notice}>
+            <View style={[styles.row, {marginBottom: 13}]}>
+              <AppSvgIcon name="cautionRed" style={{marginRight: 8}} />
+              <AppText style={styles.noticeTitle}>
+                {contents.noticeTitle}
+              </AppText>
+            </View>
+            <View style={{marginRight: 20}}>
+              {contents.noticeBody.map((k) => (
+                <TextWithDot
+                  text={k}
+                  boldStyle={styles.noticeBold}
+                  textStyle={styles.noticeText}
+                  dotStyle={styles.dot}
+                />
+              ))}
+            </View>
+          </View>
+        </ScrollView>
+        <Pressable
+          style={styles.agreement}
+          onPress={() => setIsPressed((prev) => !prev)}>
+          <AppSvgIcon
+            name={isPressed ? 'afterCheck' : 'beforeCheck'}
+            style={{marginRight: 12}}
+          />
+          <AppText style={styles.agreementText}>
+            {i18n.t('esim:charge:agreement')}
+          </AppText>
+        </Pressable>
+      </View>
+      <View>
         <ButtonWithPrice
           amount={
             params.addOnProd?.price ||
