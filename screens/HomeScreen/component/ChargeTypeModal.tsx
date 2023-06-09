@@ -115,6 +115,7 @@ const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
             {type === 'addOn'
               ? [1, 2].map((n) => (
                   <TextWithDot
+                    key={n}
                     dotStyle={styles.dot}
                     textStyle={styles.noticeText}
                     text={i18n.t(`esim:charge:type:addOn:modal:notice${n}`)}
@@ -122,6 +123,7 @@ const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
                 ))
               : [1, 2, 3].map((n) => (
                   <TextWithDot
+                    key={n}
                     dotStyle={styles.dot}
                     textStyle={styles.noticeText}
                     text={i18n.t(`esim:charge:type:extension:modal:notice${n}`)}
