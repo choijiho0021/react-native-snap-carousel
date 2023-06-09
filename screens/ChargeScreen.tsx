@@ -162,7 +162,13 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
         (partnerId) =>
           localOpList.get(partnerId)?.partner?.toLowerCase() === 'cmi',
       );
-      return makeProdData(prodByPartner, cmiPartnerIds);
+
+      // 중복 제거
+      const uniqueList = cmiPartnerIds.filter((item, i) => {
+        return cmiPartnerIds.indexOf(item) === i;
+      });
+
+      return makeProdData(prodByPartner, uniqueList);
     }
     return [];
   }, [localOpList, partnerIds, prodByPartner]);
