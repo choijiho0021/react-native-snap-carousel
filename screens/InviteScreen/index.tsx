@@ -159,6 +159,38 @@ type InviteScreenProps = {
   };
 };
 
+export const sendLink = async (
+  method: string,
+  promotion: PromotionModelState,
+  account: AccountModelState,
+  setShowSnackbar: (b: boolean) => void,
+) => {
+  const {invite, stat} = promotion;
+  const {userId} = account;
+
+  if (userId && invite?.rule) {
+    switch (method) {
+      case 'copy': {
+        API.Promotion.buildLink({
+          recommender: userId,
+          cash: stat.signupGift,
+          imageUrl: invite.rule?.share,
+        }).then((url) => {
+          if (url) {
+            Clipboard.setString(url);
+            setShowSnackbar(true);
+          }
+        });
+        break;
+      }
+      default:
+        // share
+        await API.Promotion.invite(userId, stat.signupGift, invite.rule);
+        break;
+    }
+  }
+};
+
 const InviteScreen: React.FC<InviteScreenProps> = ({
   navigation,
   promotion,
@@ -244,36 +276,6 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
     [],
   );
 
-  const sendLink = useCallback(
-    async (method: string) => {
-      const {invite, stat} = promotion;
-      const {userId} = account;
-
-      if (userId && invite?.rule) {
-        switch (method) {
-          case 'copy': {
-            API.Promotion.buildLink({
-              recommender: userId,
-              cash: stat.signupGift,
-              imageUrl: invite.rule?.share,
-            }).then((url) => {
-              if (url) {
-                Clipboard.setString(url);
-                setShowSnackbar(true);
-              }
-            });
-            break;
-          }
-          default:
-            // share
-            await API.Promotion.invite(userId, stat.signupGift, invite.rule);
-            break;
-        }
-      }
-    },
-    [account, promotion],
-  );
-
   const statBox = useCallback(() => {
     const {stat} = promotion;
     return (
@@ -352,7 +354,9 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
             title={i18n.t('inv:share')}
             titleStyle={appStyles.medium18}
             type="primary"
-            onPress={() => sendLink('share')}
+            onPress={() =>
+              sendLink('share', promotion, account, setShowSnackbar)
+            }
             viewStyle={styles.rowCenter}
             style={{
               height: 62,
@@ -366,7 +370,9 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
             title={i18n.t('inv:copy')}
             titleStyle={[appStyles.medium18, {color: colors.black}]}
             type="secondary"
-            onPress={() => sendLink('copy')}
+            onPress={() =>
+              sendLink('copy', promotion, account, setShowSnackbar)
+            }
             viewStyle={styles.rowCenter}
             style={{height: 62, borderWidth: 1, borderColor: colors.lightGrey}}
           />
