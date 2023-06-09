@@ -333,6 +333,20 @@ const toDataVolumeString = (dataVolume: number): string => {
   return `${dataVolume / 1024}GB`;
 };
 
+const toVersionStr = (version: string): number => {
+  return version
+    .split('.')
+    .reduce(
+      (accumulator, currentValue, idx, arr) =>
+        accumulator + Number(currentValue) * 100 ** (arr.length - idx - 1),
+      0,
+    );
+};
+
+const compareVersion = (version1: string, version2: string): boolean => {
+  return toVersionStr(version1) > toVersionStr(version2);
+};
+
 export default {
   fontScaling,
   numberToCommaString,
@@ -360,4 +374,5 @@ export default {
   getParam,
   intentToUrl,
   toDataVolumeString,
+  compareVersion,
 };

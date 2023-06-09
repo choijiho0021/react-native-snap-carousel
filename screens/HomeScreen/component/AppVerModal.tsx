@@ -1,4 +1,4 @@
-import React, {memo, useCallback} from 'react';
+import React, {Fragment, memo, useCallback} from 'react';
 import {Linking, Platform, StyleSheet, View} from 'react-native';
 import AppModal from '@/components/AppModal';
 import AppButton from '@/components/AppButton';
@@ -37,12 +37,14 @@ const styles = StyleSheet.create({
 type AppVerModalProps = {
   visible: boolean;
   option?: string;
+  needUpdate?: boolean;
   onOkClose?: () => void;
 };
 
 const AppVerModal: React.FC<AppVerModalProps> = ({
   visible,
   option,
+  needUpdate,
   onOkClose,
 }) => {
   const renderBottom = useCallback(
@@ -124,8 +126,17 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
             marginRight: 12,
           }}>
           <View>
-            {renderText('app:updateTitle-1')}
-            {renderText('app:updateTitle-2')}
+            {needUpdate ? (
+              <Fragment>
+                {renderText('app:updateTitle-3')}
+                {renderText('app:updateTitle-4')}
+              </Fragment>
+            ) : (
+              <Fragment>
+                {renderText('app:updateTitle-1')}
+                {renderText('app:updateTitle-2')}
+              </Fragment>
+            )}
           </View>
           <AppIcon name="updateImg" />
         </View>

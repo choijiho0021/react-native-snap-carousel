@@ -27,7 +27,7 @@ import AppButton from '@/components/AppButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {retrieveData, storeData, utils} from '@/utils/utils';
-import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
+import {windowWidth} from '@/constants/SliderEntry.style';
 import EsimModal from './EsimScreen/components/EsimModal';
 import {getPromoFlagColor} from '@/redux/api/productApi';
 import SplitText from '@/components/SplitText';
@@ -255,7 +255,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   const [showTip, setShowTip] = useState(false);
   const [blockAnimation, setBlockAnimation] = useState(false);
   const topHeight = useMemo(() => {
-    let height = 345;
+    let height = 326;
     if (mainSubs.partner === 'cmi') height += 22;
     if (!isChargeable) height += 74;
     return height;
@@ -371,15 +371,6 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
             </AppText>
           </View>
         )}
-
-        <View style={styles.inactiveContainer}>
-          <AppText style={styles.boldl14Gray}>
-            {i18n.t('esim:resetTime')}
-          </AppText>
-          <AppText style={styles.normal14Gray}>
-            {i18n.t('esim:KST', {time: '01'})}
-          </AppText>
-        </View>
       </View>
     );
   }, [
@@ -437,7 +428,12 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
     return (
       <View
         key="header"
-        style={{flexDirection: 'row', marginBottom: 4, paddingBottom: 20}}>
+        style={{
+          flexDirection: 'row',
+          marginBottom: 4,
+          paddingBottom: 20,
+          backgroundColor: colors.white,
+        }}>
         <AppText style={[appStyles.bold18Text, {color: colors.black, flex: 1}]}>
           {i18n.t('esim:chargeHistory:usage')}
         </AppText>
@@ -466,6 +462,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
           style={{
             borderWidth: 1,
             borderColor: colors.lightGrey,
+            marginBottom: 16,
           }}>
           <View style={{alignItems: 'center', paddingHorizontal: 20}}>
             <View style={{flexDirection: 'row', marginVertical: 19}}>
@@ -588,7 +585,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
           data={prodData}
           renderItem={renderItem}
           ListHeaderComponent={renderHeader}
-          onScrollBeginDrag={() => showTop(false)}
+          stickyHeaderIndices={[0]}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, idx) => item.key + idx}
           onScroll={({
@@ -597,6 +594,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
             },
           }) => {
             if (y <= 0 && !blockAnimation) showTop(true);
+            if (y >= 30 && !blockAnimation) showTop(false);
           }}
         />
         {showTip && renderTooltip()}

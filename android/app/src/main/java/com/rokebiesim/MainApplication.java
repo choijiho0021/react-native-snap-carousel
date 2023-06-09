@@ -253,9 +253,9 @@ public class MainApplication extends Application implements ReactApplication {
 
         if (BuildConfig.DEBUG || BuildConfig.NODE_ENV == "development") {
             NTrackerExt.enableDebugLog(true);
-            NTrackerExt.configure(getApplicationContext(), "g_4c528f1885cf", NTrackerPhase.DEBUG);
+            NTrackerExt.configure(getApplicationContext(), "g_88dbc8a6743d5", NTrackerPhase.DEBUG);
         } else {
-            NTrackerExt.configure(getApplicationContext(), "g_4c528f1885cf", NTrackerPhase.RELEASE);
+            NTrackerExt.configure(getApplicationContext(), "g_88dbc8a6743d5", NTrackerPhase.RELEASE);
         }
 
 

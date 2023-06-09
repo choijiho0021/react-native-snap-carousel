@@ -1,6 +1,14 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {memo, useCallback, useState, useMemo, useEffect} from 'react';
-import {Animated, Image, Pressable, StyleSheet, View} from 'react-native';
+import {
+  Animated,
+  Image,
+  Linking,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {Pagination} from 'react-native-snap-carousel';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -16,6 +24,7 @@ import i18n from '@/utils/i18n';
 import {actions as infoActions, InfoAction} from '@/redux/modules/info';
 import AppCarousel from '@/components/AppCarousel';
 import utils from '@/redux/api/utils';
+import VersionCheck from 'react-native-version-check';
 
 export const DOT_MARGIN = 6;
 export const INACTIVE_DOT_WIDTH = 6;
@@ -92,6 +101,7 @@ type PromotionCarouselProps = {
   promotion: RkbPromotion[];
   product: ProductModelState;
   width: number;
+  checkNeedUpdate?: () => void;
   action: {
     info: InfoAction;
   };
@@ -102,13 +112,23 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   product,
   action,
   width,
+  checkNeedUpdate,
 }) => {
   const navigation = useNavigation();
   const [activeSlide, setActiveSlide] = useState(0);
 
   const onPress = useCallback(
     (item: RkbPromotion) => {
-      if (item.product_uuid) {
+      if (
+        checkNeedUpdate &&
+        item?.rule?.cond?.version &&
+        utils.compareVersion(
+          item?.rule?.cond?.version[Platform.OS],
+          VersionCheck.getCurrentVersion(),
+        )
+      ) {
+        checkNeedUpdate();
+      } else if (item.product_uuid) {
         const {prodList} = product;
         const prod = prodList.get(item.product_uuid);
 
@@ -146,7 +166,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
         navigation.navigate('Faq');
       }
     },
-    [action.info, navigation, product],
+    [action.info, checkNeedUpdate, navigation, product],
   );
 
   const renderDots = useCallback(
