@@ -87,6 +87,7 @@ type Env = {
   specialCategories: Record<string, PromoFlag>;
   payment: {
     inicis: Record<string, string>;
+    hecto: Record<string, string>;
   };
   cachePrefix: string;
 };
@@ -113,12 +114,20 @@ const env: Env = {
   impKey: esimGlobal ? secureData.globalImpKey : secureData.esimImpKey,
   impSecret: esimGlobal ? secureData.globalImpSecret : secureData.esimImpSecret,
   talkPluginKey: secureData.talkPluginKey,
-  payment: secureData.payment || {
-    inicis: {
-      MID: 'INIpayTest', // inicis test key
-      HASHKEY: '3CB8183A4BE283555ACC8363C0360223',
-    },
-  },
+  payment:
+    isProduction && secureData.payment
+      ? secureData.payment
+      : {
+          inicis: {
+            MID: 'INIpayTest', // inicis test key
+            HASHKEY: '3CB8183A4BE283555ACC8363C0360223',
+          },
+          hecto: {
+            PG_MID: 'nx_mid_il',
+            LICENSE_KEY: 'ST1009281328226982205',
+            AES256_KEY: 'pgSettle30y739r82jtd709yOfZ2yK5K',
+          },
+        },
   specialCategories,
   cachePrefix: `${esimGlobal ? 'g.' : ''}${isProduction ? '' : 'd.'}`,
 };

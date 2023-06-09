@@ -32,19 +32,16 @@ const opt: Record<string, string> = {
 };
 
 export const inicisWebviewHtml = (info: PaymentParams) => {
-  const inicis = isProduction
-    ? payment.inicis
-    : {
-        MID: 'INIpayTest', // inicis test key
-        HASHKEY: '3CB8183A4BE283555ACC8363C0360223',
-      };
   let reserved = opt[info.pay_method] || '';
   if (info.card) {
     reserved += `&d_card=${info.card}&d_quota=0&cardshowopt=${info.card}:3`;
   }
   const timestamp = Date.now();
   const hash = CryptoJS.SHA512(
-    info.amount.toString() + info.merchant_uid + timestamp + inicis.HASHKEY,
+    info.amount.toString() +
+      info.merchant_uid +
+      timestamp +
+      payment.inicis.HASHKEY,
   ).toString(CryptoJS.enc.Base64);
 
   return `<html>
@@ -55,7 +52,7 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
     ${debugScript}
     function start_script() {
       const myform = document.mobileweb;
-      myform.action = "https://mobile.inicis.com/smart/payment/";
+      myform.action = "${configInicis.WEBVIEW_ENDPOINT}";
       myform.target = "_self";
       myform.submit();
       }
@@ -66,7 +63,7 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
       <input type="hidden" name="P_INI_PAYMENT" value="${
         info.pay_method === 'trans' ? 'VBANK' : 'CARD'
       }" />
-      <input type="hidden" name="P_MID" value="${inicis.MID}" />
+      <input type="hidden" name="P_MID" value="${payment.inicis.MID}" />
       <input type="hidden" name="P_OID" value="${info.merchant_uid}" />
       <input type="hidden" name="P_AMT" value="${info.amount}" />
       <input type="hidden" name="P_CHARSET" value="utf8" />

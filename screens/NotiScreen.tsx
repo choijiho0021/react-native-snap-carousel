@@ -44,7 +44,7 @@ import {
   OrderModelState,
 } from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import {PromotionModelState} from '../redux/modules/promotion';
+import {PromotionModelState} from '@/redux/modules/promotion';
 import {
   EventBoardAction,
   EventBoardModelState,
