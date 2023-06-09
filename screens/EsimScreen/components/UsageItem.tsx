@@ -274,7 +274,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
     const isDaily = item.daily === 'daily';
     return (
       <Fragment>
-        {isDaily && (
+        {isDaily && ['cmi', 'quadcell'].includes(item.partner || '') && (
           <View
             style={[
               styles.endInfoContainer,
@@ -286,7 +286,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
             <AppText style={appStyles.normal14Text}>
               {item.partner === 'cmi'
                 ? i18n.t('esim:until:KST', {
-                    time: utils.toDateString(item.purchaseDate, 'HH:mm:ss'),
+                    time: utils.toDateString(endTime, 'HH:mm:ss'),
                   })
                 : i18n.t('esim:KST', {time: '01'})}
             </AppText>
@@ -308,7 +308,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         </View>
       </Fragment>
     );
-  }, [endTime, item.daily, item.endDate, item.partner, item.purchaseDate]);
+  }, [endTime, item.daily, item.endDate, item.partner]);
 
   // data는 esim:Mb usim:kb 단위
   const toMb = useCallback((data: number) => {
