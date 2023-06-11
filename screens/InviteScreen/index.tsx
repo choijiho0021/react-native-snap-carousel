@@ -2,6 +2,7 @@ import Clipboard from '@react-native-community/clipboard';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
+  Image,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -31,6 +32,7 @@ import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppStyledText from '@/components/AppStyledText';
 import {InviteRokebi1, InviteRokebi2} from './Img';
+import {sliderWidth} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   container: {
@@ -318,12 +320,11 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {showPromo && (
-          <Pressable style={{height: 50}} onPress={joinPromo}>
-            <View>
-              <AppText>
-                {promo.from} ~ {promo.to}
-              </AppText>
-            </View>
+          <Pressable onPress={joinPromo}>
+            <Image
+              source={require('@/assets/images/invite/stamp_promo/stampPromo.png')}
+              style={{width: sliderWidth, height: sliderWidth * 0.63}}
+            />
           </Pressable>
         )}
         <View style={styles.blueBg}>
