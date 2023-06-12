@@ -29,11 +29,7 @@ const getEvent = createAsyncThunk(
 
 const getPromotionStat = createAsyncThunk(
   'promotion/getPromotionStat',
-  API.default.reloadOrCallApi(
-    'cache.promotionStat',
-    undefined,
-    API.Promotion.getStat,
-  ),
+  API.Promotion.getStat,
 );
 
 const getGiftBgImages = createAsyncThunk(
