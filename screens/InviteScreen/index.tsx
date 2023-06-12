@@ -284,7 +284,8 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
       <View style={styles.benefitBox}>
         {Object.keys(stat)?.map(
           (v, idx) =>
-            !v.includes('Gift') && (
+            !v.includes('Gift') &&
+            !v.includes('promo') && (
               <View
                 key={v}
                 style={[idx ? styles.rightBox : styles.leftBox, {flex: 1}]}>
