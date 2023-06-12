@@ -79,8 +79,8 @@ const InvitePromoScreen: React.FC<InvitePromoScreenProps> = ({
   );
 
   const uri = useMemo(
-    () => `${promo.uri}/${account.loggedIn ? account.uuid : '0'}`,
-    [account.loggedIn, account.uuid, promo.uri],
+    () => `${promo.uri}/${account.loggedIn ? account.userId : '0'}`,
+    [account, promo.uri],
   );
 
   return (
