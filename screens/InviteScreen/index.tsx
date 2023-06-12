@@ -309,7 +309,7 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
   const {promo, signupGift, recommenderGift} = promotion.stat;
 
   const showPromo = useMemo(
-    () => moment().isBetween(moment(promo.from), moment(promo.to)),
+    () => promo && moment().isBetween(moment(promo.from), moment(promo.to)),
     [promo],
   );
 
