@@ -18,6 +18,7 @@ const NOTI_TYPE_PROVISION = 'provision';
 const NOTI_TYPE_EVENT = 'event';
 const NOTI_TYPE_USIM = 'usim';
 const NOTI_TYPE_NOTI = 'noti';
+const NOTI_TYPE_URI = 'uri';
 
 const initNotiList = createAsyncThunk('noti/initNotiList', async () => {
   const oldData = await retrieveData(API.Noti.KEY_INIT_LIST);
@@ -173,6 +174,7 @@ const slice = createSlice({
 export const actions = {
   ...slice.actions,
   NOTI_TYPE_ACCOUNT,
+  NOTI_TYPE_URI,
   NOTI_TYPE_PROVISION,
   NOTI_TYPE_NOTI,
   NOTI_TYPE_PYM,

@@ -719,7 +719,19 @@ ${body}
 `;
 };
 
-export const htmlDetailWithCss = (body, script = basicScript) => {
+const unescapeHtmlTags = (input: string) => {
+  return input
+    ?.replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&#39;/g, "'");
+};
+
+export const htmlDetailWithCss = (input, script = basicScript) => {
+  const body = unescapeHtmlTags(input);
+
   return `
     <html>
     <head>
