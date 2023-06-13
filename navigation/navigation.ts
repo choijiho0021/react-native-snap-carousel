@@ -131,6 +131,7 @@ export type HomeStackParamList = {
   MyPage: undefined;
   Recharge: {mode: string};
   Invite: undefined;
+  InvitePromo: undefined;
   GiftGuide: undefined;
 
   Gift: {mainSubs: RkbSubscription};
@@ -140,6 +141,7 @@ export type HomeStackParamList = {
     onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
     chargeablePeriod: string;
     isChargeable: boolean;
+    expireTime: string;
   };
   ChargeDetail: {
     data: RkbProduct;
@@ -153,6 +155,7 @@ export type HomeStackParamList = {
   };
   ChargeType: {
     mainSubs: RkbSubscription;
+    addOnData?: RkbSubscription[];
     chargeablePeriod: string;
     isChargeable: boolean;
     chargedSubs?: RkbSubscription[];
@@ -168,6 +171,7 @@ export type HomeStackParamList = {
     mainSubs: RkbSubscription;
     status?: string;
     expireTime?: Moment;
+    addOnData?: RkbSubscription[];
   };
   Receipt: {
     order: RkbOrder;

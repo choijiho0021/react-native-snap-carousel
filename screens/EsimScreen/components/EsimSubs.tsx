@@ -7,8 +7,16 @@ import React, {
   useState,
   useEffect,
 } from 'react';
-import {Pressable, StyleSheet, View, Platform, FlatList} from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  View,
+  Platform,
+  FlatList,
+  Image,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {connect} from 'react-redux';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -23,6 +31,9 @@ import SplitText from '@/components/SplitText';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 import AppStyledText from '@/components/AppStyledText';
 import AppModal from '@/components/AppModal';
+import {RootState} from '@/redux';
+import {ProductModelState} from '../../../redux/modules/product';
+import {RkbProduct} from '../../../redux/api/productApi';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -261,6 +272,8 @@ const EsimSubs = ({
   showDetail = false,
   onPressUsage,
   setShowModal,
+
+  product,
 }: {
   flatListRef?: MutableRefObject<FlatList<any> | undefined>;
   index: number;
@@ -272,6 +285,8 @@ const EsimSubs = ({
   showDetail: boolean;
   onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
   setShowModal: (visible: boolean) => void;
+
+  product: ProductModelState;
 }) => {
   const navigation = useNavigation();
   const sendable = useMemo(
@@ -281,7 +296,7 @@ const EsimSubs = ({
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
   const isBc = useMemo(
-    () => mainSubs.partner === 'billionconnect',
+    () => mainSubs.partner?.toLowerCase() === 'billionconnect',
     [mainSubs.partner],
   );
   const notCardInfo = useMemo(
@@ -296,6 +311,20 @@ const EsimSubs = ({
   const chargeablePeriod = useMemo(() => {
     return utils.toDateString(mainSubs.expireDate, 'YYYY.MM.DD');
   }, [mainSubs.expireDate]);
+
+  const expireTime = useMemo(() => {
+    const {expireDate} = chargedSubs.reduce((oldest, current) => {
+      const oldestDateObj = new Date(oldest.expireDate);
+      const currentDateObj = new Date(current.expireDate);
+
+      if (currentDateObj > oldestDateObj) {
+        return current;
+      }
+      return oldest;
+    });
+
+    return expireDate;
+  }, [chargedSubs]);
 
   useEffect(() => {
     if (showMoreInfo)
@@ -315,6 +344,7 @@ const EsimSubs = ({
           onPressUsage,
           chargedSubs,
           isChargeable: !isChargeExpired,
+          expireTime,
         });
       } else if (!isBc) {
         navigation.navigate('ChargeType', {
@@ -327,6 +357,7 @@ const EsimSubs = ({
     [
       chargeablePeriod,
       chargedSubs,
+      expireTime,
       isBc,
       isChargeExpired,
       isCharged,
@@ -337,13 +368,18 @@ const EsimSubs = ({
 
   const title = useCallback(() => {
     const country = mainSubs.prodName?.split(' ')?.[0];
-
     return (
       <Pressable
         style={styles.prodTitle}
         onPress={() => {
           if (notCardInfo) setShowMoreInfo((prev) => !prev);
         }}>
+        {mainSubs.flagImage !== '' && (
+          <Image
+            source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
+            style={{width: 40, height: 40, marginRight: 20}}
+          />
+        )}
         <SplitText
           key={mainSubs.key}
           renderExpend={() =>
@@ -405,10 +441,7 @@ const EsimSubs = ({
           <AppText style={styles.normal14Gray}>{`${utils.toDateString(
             mainSubs.purchaseDate,
             'YYYY.MM.DD',
-          )} - ${utils.toDateString(
-            chargedSubs[chargedSubs.length - 1].expireDate,
-            'YYYY.MM.DD',
-          )}`}</AppText>
+          )} - ${utils.toDateString(expireTime, 'YYYY.MM.DD')}`}</AppText>
         </View>
         <View style={styles.inactiveContainer}>
           <AppText style={styles.normal14Gray}>
@@ -420,7 +453,7 @@ const EsimSubs = ({
     );
   }, [
     chargeablePeriod,
-    chargedSubs,
+    expireTime,
     mainSubs.purchaseDate,
     mainSubs.subsIccid,
     mainSubs.type,
@@ -428,10 +461,25 @@ const EsimSubs = ({
   ]);
 
   const QRnCopyInfo = useCallback(() => {
-    // const usageCheckable =
-    //   item.packageId?.startsWith('D') || item.partner === 'quadcell';
     return (
       <View style={styles.activeBottomBox}>
+        <AppSvgIcon
+          name="prodInfo"
+          style={styles.btn}
+          title={i18n.t('esim:prodInfo')}
+          titleStyle={styles.btnTitle}
+          onPress={() => {
+            const prod = product.prodList.get(mainSubs?.prodId || '0');
+            if (prod)
+              navigation.navigate('ProductDetail', {
+                title: prod.name,
+                item: API.Product.toPurchaseItem(prod),
+                uuid: prod.uuid,
+                desc: prod.desc,
+              });
+          }}
+        />
+
         <AppSvgIcon
           name="qrInfo"
           style={styles.btn}
@@ -454,36 +502,15 @@ const EsimSubs = ({
           titleStyle={[styles.btnTitle, {opacity: 1}]}
           name="btnUsage"
         />
-
-        {!isBc ? (
-          <AppSvgIcon
-            style={styles.btn}
-            onPress={() => onPressRecharge(mainSubs)}
-            title={i18n.t('esim:rechargeable')}
-            titleStyle={styles.btnTitle}
-            name="btnChargeable"
-          />
-        ) : (
-          <AppSvgIcon
-            style={isChargeExpired ? styles.btnExpired : styles.btnDis}
-            title={i18n.t(
-              isChargeExpired ? 'esim:rechargeExpired' : 'esim:notrechargeable',
-            )}
-            titleStyle={[styles.btnTitle, {opacity: isChargeExpired ? 1 : 0.6}]}
-            onPress={() => isChargeExpired && setExpiredModalVisible(true)}
-            name={isChargeExpired ? 'btnChargeExpired' : 'btnNonChargeable'}
-          />
-        )}
-        {isChargeExpired && <View style={styles.expiredDot} />}
       </View>
     );
   }, [
-    isChargeExpired,
     isCharged,
     mainSubs,
     navigation,
     onPressRecharge,
     onPressUsage,
+    product.prodList,
     setShowModal,
   ]);
 
@@ -658,4 +685,8 @@ const EsimSubs = ({
   );
 };
 
-export default memo(EsimSubs);
+// export default memo(EsimSubs);
+
+export default connect(({product}: RootState) => ({
+  product,
+}))(EsimSubs);

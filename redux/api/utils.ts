@@ -328,6 +328,25 @@ const intentToUrl = (url: string): string => {
   return url;
 };
 
+const toDataVolumeString = (dataVolume: number): string => {
+  if (dataVolume < 1024) return `${dataVolume}MB`;
+  return `${dataVolume / 1024}GB`;
+};
+
+const toVersionStr = (version: string): number => {
+  return version
+    .split('.')
+    .reduce(
+      (accumulator, currentValue, idx, arr) =>
+        accumulator + Number(currentValue) * 100 ** (arr.length - idx - 1),
+      0,
+    );
+};
+
+const compareVersion = (version1: string, version2: string): boolean => {
+  return toVersionStr(version1) > toVersionStr(version2);
+};
+
 export default {
   fontScaling,
   numberToCommaString,
@@ -354,4 +373,6 @@ export default {
   generateKey,
   getParam,
   intentToUrl,
+  toDataVolumeString,
+  compareVersion,
 };

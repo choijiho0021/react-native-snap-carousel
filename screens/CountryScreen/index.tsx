@@ -198,8 +198,8 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    if(!blockAnimation){
-      setBlockAnimation(true)
+    if (!blockAnimation) {
+      setBlockAnimation(true);
       Animated.timing(animatedValue, {
         toValue: isTop ? 150 : 0,
         duration: 500,

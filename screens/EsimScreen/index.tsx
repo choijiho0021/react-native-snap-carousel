@@ -139,6 +139,12 @@ type UsageObj = {
   used?: number;
 };
 
+export const USAGE_TIME_INTERVAL = {
+  cmi: 9,
+  quadcell: 1,
+  billionconnect: 1,
+};
+
 export const renderInfo = (navigation) => (
   <Pressable
     style={styles.usrGuideBtn}
@@ -268,9 +274,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             !_.isUndefined(userDataBundles[0]?.status) &&
             cmiStatusCd[userDataBundles[0]?.status];
           const end = moment(userDataBundles[0]?.endTime)
-            .add(9, 'h')
+            .add(USAGE_TIME_INTERVAL.cmi, 'h')
             .format('YYYY.MM.DD HH:mm:ss');
-          const exp = moment(userDataBundles[0]?.expireTime).add(9, 'h');
+          const exp = moment(userDataBundles[0]?.expireTime).add(
+            USAGE_TIME_INTERVAL.cmi,
+            'h',
+          );
           const now = moment();
 
           const isExpired = statusCd === 'C' || (statusCd === 'A' && exp < now);
@@ -323,7 +332,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     ): Promise<{status: StatusObj; usage: UsageObj}> => {
       if (item?.imsi) {
         const status = await API.Subscription.quadcellGetData({
-          imsi: item.imsi,
+          imsi: '454070042530886',
           key: 'packlist',
         });
 
@@ -335,12 +344,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         const query =
           item.daily === 'daily' && dataPack
             ? {
-                startTime: dataPack?.effTime,
+                startTime: dataPack?.effTime || '20230101000000',
               }
             : undefined;
 
         const quota = await API.Subscription.quadcellGetData({
-          imsi: item.imsi,
+          imsi: '454070042530886',
           key: 'quota',
           query,
         });
@@ -356,12 +365,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               ? quota?.objects?.packQuotaList
               : [{}];
 
-          const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss').add(1, 'h');
+          const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss').add(
+            USAGE_TIME_INTERVAL.quadcell,
+            'h',
+          );
 
           const statusCd = getQuadcellStatus(dataPack, exp);
 
           const quadcellStatus: StatusObj = {
-            statusCd,
+            statusCd: 'A',
             endTime: exp.format('YYYY.MM.DD HH:mm:ss'),
           };
 
@@ -394,32 +406,31 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       if (item?.subsIccid) {
         const resp = await API.Subscription.bcGetSubsUsage({
           subsIccid: item.subsIccid,
+          orderId: item.subsOrderNo,
         });
 
         if (
           resp?.result === 0 &&
           resp?.objects?.tradeCode === '1000' &&
-          resp?.objects?.tradeData.length > 0 &&
-          resp?.objects?.tradeData[0].subOrderList.length > 0
+          resp?.objects?.tradeData?.subOrderList?.length > 0
         ) {
-          const planInfo =
-            resp.objects.tradeData[0].subOrderList.find(
-              (elm) => elm.subOrderId === item.subsOrderNo,
-            ) || resp.objects.tradeData[0].subOrderList[0];
+          const planInfo = resp.objects.tradeData?.subOrderList[0];
 
           const bcStatus: StatusObj = {
             statusCd: bcStatusCd[planInfo.planStatus],
             endTime: moment(planInfo.planEndTime, 'YYYY-MM-DD HH:mm:ss')
-              .add(1, 'h')
+              .add(USAGE_TIME_INTERVAL.billionconnect, 'h')
               .format('YYYY.MM.DD HH:mm:ss'),
           };
 
+          const usage = planInfo.usageInfoList.reduce(
+            (acc, cur) => acc + Number(cur.usageAmt),
+            0,
+          );
+
           const bcUsage: UsageObj = {
-            quota: Number(planInfo.totalTraffic) / 1024 || 0, // Mb
-            used:
-              (Number(planInfo.totalTraffic) -
-                Number(planInfo?.remainingTraffic)) /
-                1024 || 0, // Mb
+            quota: Number(planInfo.highFlowSize) / 1024 || 0, // Mb
+            used: (Number(planInfo.highFlowSize) - usage) / 1024 || 0, // Mb
           };
 
           return {status: bcStatus, usage: bcUsage};

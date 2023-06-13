@@ -61,8 +61,7 @@ const styles = StyleSheet.create({
     marginBottom: 25,
     textAlign: 'center',
   },
-  endDateContainer: {
-    paddingVertical: 20,
+  endInfoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.white,
@@ -211,20 +210,20 @@ const UsageItem: React.FC<UsageItemProps> = ({
   const circularProgress = useRef();
 
   const showExpire = useMemo(() => item.partner !== undefined, [item.partner]); // partner별로 만료기하니 정해지지 않았을 때 조정 필요
-  // const showUsage = useMemo(
-  //   () =>
-  //     item.partner !== 'BillionConnect' ||
-  //     !(
-  //       (item.country?.includes('JP') && item.daily === 'daily') ||
-  //       (item.country?.includes('TH') && item.daily === 'total')
-  //     ),
-  //   [item.country, item.daily, item.partner],
-  // );
-
   const showUsage = useMemo(
-    () => item.partner !== 'BillionConnect',
-    [item.partner],
+    () =>
+      item.partner !== 'billionconnect' ||
+      !(
+        (item.country?.includes('JP') && item.daily === 'daily') ||
+        (item.country?.includes('TH') && item.daily === 'total')
+      ),
+    [item.country, item.daily, item.partner],
   );
+
+  // const showUsage = useMemo(
+  //   () => item.partner !== 'billionconnect',
+  //   [item.partner],
+  // );
 
   useEffect(() => {
     if (disableBtn) {
@@ -272,19 +271,44 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [item.nid, item.statusCd, showSnackbar, token]);
 
   const expire = useCallback(() => {
+    const isDaily = item.daily === 'daily';
     return (
-      <View style={styles.endDateContainer}>
-        <AppText style={styles.normal14WarmGrey}>
-          {i18n.t('usim:usingTime')}
-        </AppText>
-        <AppText style={appStyles.normal14Text}>{`${
-          esimApp
-            ? endTime?.replace(/-/gi, '.')
-            : utils.toDateString(item.endDate)
-        } ${i18n.t(`sim:${'until'}`)}`}</AppText>
-      </View>
+      <Fragment>
+        {isDaily && ['cmi', 'quadcell'].includes(item.partner || '') && (
+          <View
+            style={[
+              styles.endInfoContainer,
+              {marginTop: 20, marginBottom: 10},
+            ]}>
+            <AppText style={styles.normal14WarmGrey}>
+              {i18n.t('esim:chargeHistory:resetTime')}
+            </AppText>
+            <AppText style={appStyles.normal14Text}>
+              {item.partner === 'cmi'
+                ? i18n.t('esim:until:KST', {
+                    time: utils.toDateString(endTime, 'HH:mm:ss'),
+                  })
+                : i18n.t('esim:KST', {time: '01'})}
+            </AppText>
+          </View>
+        )}
+        <View
+          style={[
+            styles.endInfoContainer,
+            {marginBottom: isDaily ? 20 : 0, marginVertical: isDaily ? 0 : 20},
+          ]}>
+          <AppText style={styles.normal14WarmGrey}>
+            {i18n.t('usim:usingTime')}
+          </AppText>
+          <AppText style={appStyles.normal14Text}>{`${
+            esimApp
+              ? endTime?.replace(/-/gi, '.')
+              : utils.toDateString(item.endDate)
+          } ${i18n.t(`sim:${'until'}`)}`}</AppText>
+        </View>
+      </Fragment>
     );
-  }, [endTime, item.endDate]);
+  }, [endTime, item.daily, item.endDate, item.partner]);
 
   // data는 esim:Mb usim:kb 단위
   const toMb = useCallback((data: number) => {

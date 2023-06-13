@@ -2,6 +2,7 @@ import Clipboard from '@react-native-community/clipboard';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
+  Image,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -31,6 +32,7 @@ import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppStyledText from '@/components/AppStyledText';
 import {InviteRokebi1, InviteRokebi2} from './Img';
+import {sliderWidth} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   container: {
@@ -141,6 +143,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: colors.warmGrey,
   },
+  promoBtn: {
+    position: 'relative',
+  },
+  promoPeriod: {
+    position: 'absolute',
+    left: 20,
+    top: sliderWidth * 0.63 * 0.17,
+    ...appStyles.bold16Text,
+    lineHeight: 24,
+    color: colors.white,
+  },
 });
 
 type InviteScreenNavigationProp = StackNavigationProp<
@@ -157,6 +170,38 @@ type InviteScreenProps = {
   action: {
     promotion: PromotionAction;
   };
+};
+
+export const sendLink = async (
+  method: string,
+  promotion: PromotionModelState,
+  account: AccountModelState,
+  setShowSnackbar: (b: boolean) => void,
+) => {
+  const {invite, stat} = promotion;
+  const {userId} = account;
+
+  if (userId && invite?.rule) {
+    switch (method) {
+      case 'copy': {
+        API.Promotion.buildLink({
+          recommender: userId,
+          cash: stat.signupGift,
+          imageUrl: invite.rule?.share,
+        }).then((url) => {
+          if (url) {
+            Clipboard.setString(url);
+            setShowSnackbar(true);
+          }
+        });
+        break;
+      }
+      default:
+        // share
+        await API.Promotion.invite(userId, stat.signupGift, invite.rule);
+        break;
+    }
+  }
 };
 
 const InviteScreen: React.FC<InviteScreenProps> = ({
@@ -244,43 +289,14 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
     [],
   );
 
-  const sendLink = useCallback(
-    async (method: string) => {
-      const {invite, stat} = promotion;
-      const {userId} = account;
-
-      if (userId && invite?.rule) {
-        switch (method) {
-          case 'copy': {
-            API.Promotion.buildLink({
-              recommender: userId,
-              cash: stat.signupGift,
-              imageUrl: invite.rule?.share,
-            }).then((url) => {
-              if (url) {
-                Clipboard.setString(url);
-                setShowSnackbar(true);
-              }
-            });
-            break;
-          }
-          default:
-            // share
-            await API.Promotion.invite(userId, stat.signupGift, invite.rule);
-            break;
-        }
-      }
-    },
-    [account, promotion],
-  );
-
   const statBox = useCallback(() => {
     const {stat} = promotion;
     return (
       <View style={styles.benefitBox}>
         {Object.keys(stat)?.map(
           (v, idx) =>
-            !v.includes('Gift') && (
+            !v.includes('Gift') &&
+            !v.includes('promo') && (
               <View
                 key={v}
                 style={[idx ? styles.rightBox : styles.leftBox, {flex: 1}]}>
@@ -304,7 +320,7 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
   const {promo, signupGift, recommenderGift} = promotion.stat;
 
   const showPromo = useMemo(
-    () => moment().isBetween(moment(promo.from), moment(promo.to)),
+    () => promo && moment().isBetween(moment(promo.from), moment(promo.to)),
     [promo],
   );
 
@@ -316,12 +332,17 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {showPromo && (
-          <Pressable style={{height: 50}} onPress={joinPromo}>
-            <View>
-              <AppText>
-                {promo.from} ~ {promo.to}
-              </AppText>
-            </View>
+          <Pressable onPress={joinPromo} style={styles.promoBtn}>
+            <Image
+              source={require('@/assets/images/invite/stamp_promo/stampPromo.png')}
+              style={{width: sliderWidth, height: sliderWidth * 0.63}}
+            />
+            <AppText style={styles.promoPeriod}>
+              {i18n.t('invite:promo:period', {
+                from: moment(promo.from).format('M.DD'),
+                to: moment(promo.to).format('M.DD'),
+              })}
+            </AppText>
           </Pressable>
         )}
         <View style={styles.blueBg}>
@@ -352,7 +373,9 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
             title={i18n.t('inv:share')}
             titleStyle={appStyles.medium18}
             type="primary"
-            onPress={() => sendLink('share')}
+            onPress={() =>
+              sendLink('share', promotion, account, setShowSnackbar)
+            }
             viewStyle={styles.rowCenter}
             style={{
               height: 62,
@@ -366,7 +389,9 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
             title={i18n.t('inv:copy')}
             titleStyle={[appStyles.medium18, {color: colors.black}]}
             type="secondary"
-            onPress={() => sendLink('copy')}
+            onPress={() =>
+              sendLink('copy', promotion, account, setShowSnackbar)
+            }
             viewStyle={styles.rowCenter}
             style={{height: 62, borderWidth: 1, borderColor: colors.lightGrey}}
           />
