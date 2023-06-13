@@ -406,18 +406,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       if (item?.subsIccid) {
         const resp = await API.Subscription.bcGetSubsUsage({
           subsIccid: item.subsIccid,
+          orderId: item.subsOrderNo,
         });
 
         if (
           resp?.result === 0 &&
           resp?.objects?.tradeCode === '1000' &&
-          resp?.objects?.tradeData.length > 0 &&
-          resp?.objects?.tradeData[0].subOrderList.length > 0
+          resp?.objects?.tradeData?.subOrderList?.length > 0
         ) {
-          const planInfo =
-            resp.objects.tradeData[0].subOrderList.find(
-              (elm) => elm.subOrderId === item.subsOrderNo,
-            ) || resp.objects.tradeData[0].subOrderList[0];
+          const planInfo = resp.objects.tradeData?.subOrderList[0];
 
           const bcStatus: StatusObj = {
             statusCd: bcStatusCd[planInfo.planStatus],
@@ -426,12 +423,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               .format('YYYY.MM.DD HH:mm:ss'),
           };
 
+          const usage = planInfo.usageInfoList.reduce(
+            (acc, cur) => acc + Number(cur.usageAmt),
+            0,
+          );
+
           const bcUsage: UsageObj = {
-            quota: Number(planInfo.totalTraffic) / 1024 || 0, // Mb
-            used:
-              (Number(planInfo.totalTraffic) -
-                Number(planInfo?.remainingTraffic)) /
-                1024 || 0, // Mb
+            quota: Number(planInfo.highFlowSize) / 1024 || 0, // Mb
+            used: (Number(planInfo.highFlowSize) - usage) / 1024 || 0, // Mb
           };
 
           return {status: bcStatus, usage: bcUsage};
