@@ -53,7 +53,10 @@ type CMIBundlesType = {
   status: number;
 };
 
-type StatusType = 'using' | 'unUsed' | 'expired' | undefined;
+// A: 사용중
+// R: 사용전
+// E: 사용완료
+type StatusType = 'A' | 'R' | 'E' | undefined;
 
 type ChargeTypeScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
@@ -154,19 +157,19 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             setChargeableItem(mainSubs);
           }
           setAddonEnable(true);
-          setStatus('using');
+          setStatus('A');
           return;
         }
 
         // 사용 전 상품이 있는지 체크
         if (bundles.find((b) => b.status === 1)) {
           setAddonEnable(true);
-          setStatus('unUsed');
+          setStatus('R');
           return;
         }
 
         // 사용 완료
-        setStatus('expired');
+        setStatus('E');
       }
     },
     [chargedSubs, mainSubs],
@@ -175,17 +178,17 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const checkQuadcellStatus = useCallback(
     async (item: RkbSubscription) => {
       if (item?.imsi) {
-        const status = await API.Subscription.quadcellGetData({
+        const qStatus = await API.Subscription.quadcellGetData({
           imsi: item.imsi,
           key: 'packlist',
         });
 
-        const dataPack = status.objects?.packList?.find(
+        const dataPack = qStatus.objects?.packList?.find(
           (elm) =>
             elm?.packOrderSn !== undefined && Number(elm?.packCode) <= 900000,
         );
 
-        if (status.result === 0 && status.objects?.retCode === '000000') {
+        if (qStatus.result === 0 && qStatus.objects?.retCode === '000000') {
           const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss').add(
             USAGE_TIME_INTERVAL.quadcell,
             'h',
@@ -194,28 +197,28 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
           // 사용 완료
           if (!dataPack) {
-            setStatus('expired');
+            setStatus('E');
             return;
           }
           if (dataPack?.effTime) {
             if (moment().isAfter(exp)) {
               // 사용 완료
-              setStatus('expired');
+              setStatus('E');
               return;
             }
             // 사용 중
-            setStatus('using');
+            setStatus('A');
             setAddonEnable(true);
             return;
           }
           // 사용 전,  충전내역 O
           if (quadAddonOverLimited) {
-            setStatus('unUsed');
+            setStatus('R');
             return;
           }
           // 사용 전,  충전내역 X
           setAddonEnable(true);
-          setStatus('unUsed');
+          setStatus('R');
         }
       }
     },
@@ -238,7 +241,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   useEffect(() => {
     if (!extensionEnable) {
       if (!isChargeable) {
-        setExtensionDisReason('expired');
+        setExtensionDisReason('E');
         return;
       }
       setExtensionDisReason('unsupported');
@@ -247,7 +250,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
   useEffect(() => {
     if (!addonEnable) {
-      if (status === 'expired') {
+      if (status === 'E') {
         setAddOnDisReasen('used');
         return;
       }

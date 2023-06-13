@@ -228,7 +228,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
 
   useEffect(() => {
     // 남은 사용기간 구하기
-    if (status === 'unUsed' && mainSubs.prodDays) {
+    if (status === 'R' && mainSubs.prodDays) {
       setRemainDays(Number(mainSubs.prodDays));
     } else if (expireTime) {
       const today = moment();
@@ -262,8 +262,8 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
           const remainDaysProd = rsp.filter((r) => r.days !== '1');
           if (remainDaysProd.length > 0) {
             if (
-              mainSubs.partner?.toLocaleLowerCase() === 'quadcell' &&
-              (status === 'unUsed' || mainSubs.daily === 'total')
+              mainSubs.partner?.toLowerCase() === 'quadcell' &&
+              (status === 'R' || mainSubs.daily === 'total')
             ) {
               setAddOnTypeList(['remainDays']);
               setSelectedType('remainDays');
@@ -274,8 +274,8 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
             }
             // 남은 기간 충전이 1회라도 있는 경우
             if (
-              mainSubs.partner?.toLocaleLowerCase() === 'quadcell' &&
-              status === 'Using' &&
+              mainSubs.partner?.toLowerCase() === 'quadcell' &&
+              status === 'A' &&
               mainSubs.daily === 'total' &&
               addOnData?.find((a) => a.prodDays && Number(a.prodDays) > 1)
             ) {
@@ -367,8 +367,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
 
     return (
       <View style={styles.whiteBox}>
-        {mainSubs.partner?.toLowerCase() === 'quadcell' &&
-        status === 'unUsed' ? (
+        {mainSubs.partner?.toLowerCase() === 'quadcell' && status === 'R' ? (
           <AppStyledText
             text={i18n.t('esim:charge:addOn:usagePeriod:unUsed')}
             textStyle={styles.useText}
@@ -441,7 +440,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
           isAddOn
         />
 
-        {mainSubs.partner?.toLowerCase() === 'cmi' && status === 'unUsed' ? (
+        {mainSubs.partner?.toLowerCase() === 'cmi' && status === 'R' ? (
           <View style={styles.no}>
             <AppSvgIcon name="blueNotice" style={{marginBottom: 16}} />
             <AppStyledText
@@ -479,7 +478,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
         )}
       </ScrollView>
 
-      {mainSubs.partner?.toLowerCase() === 'cmi' && status === 'unUsed' ? (
+      {mainSubs.partner?.toLowerCase() === 'cmi' && status === 'R' ? (
         <Pressable style={styles.close} onPress={() => navigation.goBack()}>
           <AppText style={styles.closeText}>{i18n.t('close')}</AppText>
         </Pressable>
@@ -508,16 +507,10 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
                 noticeBody:
                   mainSubs.partner?.toLowerCase() === 'quadcell' &&
                   mainSubs.daily === 'daily'
-                    ? [1, 2, 3, 4, 5, 6].map((n) =>
-                        n < 4
-                          ? i18n.t(`esim:charge:addOn:notice:body${n}`)
-                          : i18n.t(
-                              `esim:charge:addOn:notice:body${n}:quadcellD`,
-                            ),
-                      )
-                    : [1, 2, 3, 4, 5].map((n) =>
-                        i18n.t(`esim:charge:addOn:notice:body${n}`),
-                      ),
+                    ? i18n
+                        .t('esim:charge:addOn:notice:body:quadcellD')
+                        .split('\n')
+                    : i18n.t('esim:charge:addOn:notice:body').split('\n'),
               },
             });
           }}

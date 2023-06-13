@@ -234,6 +234,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
             <View style={{marginRight: 20}}>
               {contents.noticeBody.map((k) => (
                 <TextWithDot
+                  key={k}
                   text={k}
                   boldStyle={styles.noticeBold}
                   textStyle={styles.noticeText}
@@ -258,7 +259,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
       <View>
         <ButtonWithPrice
           amount={
-            params.addOnProd?.price ||
+            params.addOnProd?.price.split(' ')[0] ||
             params.extensionProd?.price.value.toString() ||
             '0'
           }
