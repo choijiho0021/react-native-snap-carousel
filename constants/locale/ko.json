@@ -93,8 +93,8 @@
 
   "app:updateTitle-1": "새로운 버전이",
   "app:updateTitle-2": "<b>업데이트</b> 되었어요!",
-  "app:updateTitle-3": "버전 <b>업데이트</b> 후",
-  "app:updateTitle-4": "확인해보세요!",
+  "app:updateTitle-3": "<b>업데이트 </b>후",
+  "app:updateTitle-4": "확인해주세요!",
   "app:updateMandatory": "로밍도깨비가 유저분들에게 더 좋은 상품과 서비스를\n제공하기 위해 앱 사용성을 개선했어요.\n지금 바로 업데이트하고 즐겨보세요!",
   "app:updateOptional": "로깨비 최신 버전이 출시되었습니다.\n업데이트 후, 이용하세요.",
   "app:updateNow": "업데이트",
