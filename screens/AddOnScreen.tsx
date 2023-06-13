@@ -262,7 +262,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
           const remainDaysProd = rsp.filter((r) => r.days !== '1');
           if (remainDaysProd.length > 0) {
             if (
-              mainSubs.partner?.toLocaleLowerCase() === 'quadcell' &&
+              mainSubs.partner?.toLowerCase() === 'quadcell' &&
               (status === 'unUsed' || mainSubs.daily === 'total')
             ) {
               setAddOnTypeList(['remainDays']);
@@ -274,7 +274,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
             }
             // 남은 기간 충전이 1회라도 있는 경우
             if (
-              mainSubs.partner?.toLocaleLowerCase() === 'quadcell' &&
+              mainSubs.partner?.toLowerCase() === 'quadcell' &&
               status === 'Using' &&
               mainSubs.daily === 'total' &&
               addOnData?.find((a) => a.prodDays && Number(a.prodDays) > 1)
