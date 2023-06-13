@@ -208,6 +208,8 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
           }
           break;
         default:
+          console.log('@@@ on message', cmd);
+          break;
       }
     },
     [account.loggedIn, action.info, action.modal, action.product, navigation],

@@ -44,7 +44,7 @@ import {
   OrderModelState,
 } from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import {PromotionModelState} from '../redux/modules/promotion';
+import {PromotionModelState} from '@/redux/modules/promotion';
 import {
   EventBoardAction,
   EventBoardModelState,
@@ -295,7 +295,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
                   : i18n.t('contact:noticeDetail'),
               bodyTitle,
               text: body,
-              mode: 'html',
+              mode: type === notiActions.NOTI_TYPE_URI ? 'uri' : 'html',
             });
             break;
         }

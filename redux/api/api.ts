@@ -7,7 +7,7 @@ import userApi from './userApi';
 import {API} from '@/redux/api';
 import {parseJson, retrieveData, storeData} from '@/utils/utils';
 import store from '@/store';
-import {actions as ToastActions, Toast} from '../modules/toast';
+import {actions as ToastActions, Toast} from '@/redux/modules/toast';
 
 export type Langcode = 'ko' | 'en';
 const {scheme, apiUrl, esimGlobal, rokApiUrl, cachePrefix} = Env.get();
