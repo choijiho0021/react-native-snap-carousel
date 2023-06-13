@@ -592,15 +592,24 @@ const quadcellGetData = ({
 };
 
 // get usage bc data from svc server
-const bcGetSubsUsage = ({subsIccid}: {subsIccid: string}) => {
-  if (!subsIccid)
+const bcGetSubsUsage = ({
+  subsIccid,
+  orderId,
+}: {
+  subsIccid: string;
+  orderId?: string;
+}) => {
+  if (!subsIccid || !orderId)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
+
+  if (!orderId)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: orderId');
 
   return api.callHttpGet(
     `${api.rokHttpUrl(
-      `${api.path.rokApi.pv.bc}/usage`,
+      `${api.path.rokApi.pv.bc}/dataUsage`,
       isProduction ? undefined : 5000,
-    )}&${api.queryString({iccid: subsIccid})}`,
+    )}&${api.queryString({iccid: subsIccid, orderId})}`,
     (data) => {
       if (data?.result?.code === 0) {
         return api.success(data?.objects);
