@@ -143,6 +143,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: colors.warmGrey,
   },
+  promoBtn: {
+    position: 'relative',
+  },
+  promoPeriod: {
+    position: 'absolute',
+    left: 20,
+    top: sliderWidth * 0.63 * 0.17,
+    ...appStyles.bold16Text,
+    lineHeight: 24,
+    color: colors.white,
+  },
 });
 
 type InviteScreenNavigationProp = StackNavigationProp<
@@ -321,11 +332,17 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {showPromo && (
-          <Pressable onPress={joinPromo}>
+          <Pressable onPress={joinPromo} style={styles.promoBtn}>
             <Image
               source={require('@/assets/images/invite/stamp_promo/stampPromo.png')}
               style={{width: sliderWidth, height: sliderWidth * 0.63}}
             />
+            <AppText style={styles.promoPeriod}>
+              {i18n.t('invite:promo:period', {
+                from: moment(promo.from).format('M.DD'),
+                to: moment(promo.to).format('M.DD'),
+              })}
+            </AppText>
           </Pressable>
         )}
         <View style={styles.blueBg}>

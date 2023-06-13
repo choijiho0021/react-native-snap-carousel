@@ -795,6 +795,7 @@
   "invite:desc": "Maybe your overseas travel data is free!?",
   "invite:btn-1": "What if your data is free?",
   "invite:btn-2": "Invite friends and get free cash!",
+  "invite:promo:period": "{{from}} - {{to}}",
 
   "inv:title": "Invite Friends",
   "inv:share": "Send Invitation Link",

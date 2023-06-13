@@ -831,6 +831,7 @@
   "invite:desc": "어쩌면 당신의 해외여행 데이터는 공짜!?",
   "invite:btn-1": "어쩌면 데이터가 공짜?",
   "invite:btn-2": "친구 초대하면 <b>무제한</b> 캐시 적립",
+  "invite:promo:period": "{{from}} - {{to}}",
 
   "inv:title": "친구 초대",
   "inv:share": "초대 링크 보내기",
