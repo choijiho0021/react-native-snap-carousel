@@ -12,6 +12,8 @@ import i18n from '@/utils/i18n';
 import {sendLink} from './InviteScreen';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import AppButton from '@/components/AppButton';
 
 const styles = StyleSheet.create({
   header: {
@@ -24,6 +26,13 @@ const styles = StyleSheet.create({
   headerTitle: {
     height: 56,
     marginRight: 8,
+  },
+  button: {
+    ...appStyles.normal16Text,
+    height: 52,
+    backgroundColor: colors.clearBlue,
+    textAlign: 'center',
+    color: '#ffffff',
   },
 });
 
@@ -86,6 +95,22 @@ const InvitePromoScreen: React.FC<InvitePromoScreenProps> = ({
   return (
     <SafeAreaView style={{flex: 1}}>
       <AppWebView uri={uri} callback={({cmd}) => callback(cmd)} />
+
+      {!account.loggedIn && (
+        <AppButton
+          style={styles.button}
+          type="primary"
+          title={i18n.t('promo:login')}
+          onPress={() =>
+            navigation.navigate('Auth', {
+              screen: 'RegisterMobile',
+              params: {
+                screen: 'Invite',
+              },
+            })
+          }
+        />
+      )}
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackbar(false)}
