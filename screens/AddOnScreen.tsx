@@ -228,7 +228,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
 
   useEffect(() => {
     // 남은 사용기간 구하기
-    if (status === 'unUsed' && mainSubs.prodDays) {
+    if (status === 'R' && mainSubs.prodDays) {
       setRemainDays(Number(mainSubs.prodDays));
     } else if (expireTime) {
       const today = moment();
@@ -263,7 +263,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
           if (remainDaysProd.length > 0) {
             if (
               mainSubs.partner?.toLowerCase() === 'quadcell' &&
-              (status === 'unUsed' || mainSubs.daily === 'total')
+              (status === 'R' || mainSubs.daily === 'total')
             ) {
               setAddOnTypeList(['remainDays']);
               setSelectedType('remainDays');
@@ -275,7 +275,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
             // 남은 기간 충전이 1회라도 있는 경우
             if (
               mainSubs.partner?.toLowerCase() === 'quadcell' &&
-              status === 'Using' &&
+              status === 'A' &&
               mainSubs.daily === 'total' &&
               addOnData?.find((a) => a.prodDays && Number(a.prodDays) > 1)
             ) {
@@ -367,8 +367,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
 
     return (
       <View style={styles.whiteBox}>
-        {mainSubs.partner?.toLowerCase() === 'quadcell' &&
-        status === 'unUsed' ? (
+        {mainSubs.partner?.toLowerCase() === 'quadcell' && status === 'R' ? (
           <AppStyledText
             text={i18n.t('esim:charge:addOn:usagePeriod:unUsed')}
             textStyle={styles.useText}
@@ -441,7 +440,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
           isAddOn
         />
 
-        {mainSubs.partner?.toLowerCase() === 'cmi' && status === 'unUsed' ? (
+        {mainSubs.partner?.toLowerCase() === 'cmi' && status === 'R' ? (
           <View style={styles.no}>
             <AppSvgIcon name="blueNotice" style={{marginBottom: 16}} />
             <AppStyledText
@@ -479,7 +478,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
         )}
       </ScrollView>
 
-      {mainSubs.partner?.toLowerCase() === 'cmi' && status === 'unUsed' ? (
+      {mainSubs.partner?.toLowerCase() === 'cmi' && status === 'R' ? (
         <Pressable style={styles.close} onPress={() => navigation.goBack()}>
           <AppText style={styles.closeText}>{i18n.t('close')}</AppText>
         </Pressable>
