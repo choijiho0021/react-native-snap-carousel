@@ -53,6 +53,9 @@ type CMIBundlesType = {
   status: number;
 };
 
+// A: 사용중
+// R: 사용전
+// E: 사용완료
 type StatusType = 'A' | 'R' | 'E' | undefined;
 
 type ChargeTypeScreenNavigationProp = StackNavigationProp<
@@ -175,17 +178,17 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const checkQuadcellStatus = useCallback(
     async (item: RkbSubscription) => {
       if (item?.imsi) {
-        const status = await API.Subscription.quadcellGetData({
+        const qStatus = await API.Subscription.quadcellGetData({
           imsi: item.imsi,
           key: 'packlist',
         });
 
-        const dataPack = status.objects?.packList?.find(
+        const dataPack = qStatus.objects?.packList?.find(
           (elm) =>
             elm?.packOrderSn !== undefined && Number(elm?.packCode) <= 900000,
         );
 
-        if (status.result === 0 && status.objects?.retCode === '000000') {
+        if (qStatus.result === 0 && qStatus.objects?.retCode === '000000') {
           const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss').add(
             USAGE_TIME_INTERVAL.quadcell,
             'h',
