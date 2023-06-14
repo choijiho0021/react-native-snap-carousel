@@ -142,19 +142,18 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   jumpTo,
   action,
 }) => {
-  const [mobile, setMobile] = useState('');
   const [errors, setErrors] = useState<ValidationResult>({});
   const [title, setTitle] = useState<string>();
   const [msg, setMsg] = useState<string>();
   const [pin, setPin] = useState<string>();
   const [attachment, setAttachment] = useState(List<CropImage>());
   const [extraHeight, setExtraHeight] = useState(0);
+  const [value, setValue] = useState('');
   const scrollRef = useRef();
   const keybd = useRef();
 
   useEffect(() => {
     const number = utils.toPhoneNumber(account.mobile);
-    setMobile(number);
 
     setErrors(validationUtil.validate('mobile', number));
   }, [account]);
@@ -187,7 +186,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     const issue = {
       title,
       msg,
-      mobile,
+      mobile: value,
       pin,
       images: attachment
         .map((a) => utils.convertCropImageToRkbImage(a))
@@ -200,7 +199,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     setTitle(undefined);
     setPin(undefined);
     setAttachment((a) => a.clear());
-  }, [action.board, attachment, mobile, msg, pin, title]);
+  }, [action.board, attachment, msg, pin, title, value]);
 
   const error = useCallback(
     (key: string) => {
@@ -252,22 +251,24 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
           style={styles.button}
           placeholder={i18n.t('board:noMobile')}
           placeholderTextColor={colors.greyish}
+          onFocus={() => setValue(value.replace(/-/g, ''))}
+          onBlur={() => setValue(utils.toPhoneNumber(value))}
           keyboardType="numeric"
           returnKeyType="next"
           enablesReturnKeyAutomatically
-          maxLength={13}
+          maxLength={11}
           onChangeText={(v) => {
-            const value = utils.toPhoneNumber(v);
-            setMobile(value);
-            validate('mobile', value);
+            const mobileNo = utils.toPhoneNumber(v);
+            setValue(v);
+            validate('mobile', mobileNo);
           }}
-          onFocus={() => setExtraHeight(20)}
+          // onFocus={() => setExtraHeight(20)}
           error={error('mobile')}
-          value={mobile}
+          value={value}
         />
       </View>
     ),
-    [error, mobile, validate],
+    [error, validate, value],
   );
 
   // errors object의 모든 value 값들이 undefined인지 확인한다.
@@ -278,8 +279,8 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
       (!account.loggedIn && _.isEmpty(pin)) ||
       _.isEmpty(msg) ||
       _.isEmpty(title) ||
-      _.isEmpty(mobile),
-    [account.loggedIn, errors, mobile, msg, pin, title],
+      _.isEmpty(value),
+    [account.loggedIn, errors, msg, pin, title, value],
   );
 
   return (

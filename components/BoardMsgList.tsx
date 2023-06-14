@@ -85,6 +85,7 @@ const InputMobile0 = ({
   onSubmit: (v: string) => void;
 }) => {
   const [value, setValue] = useState('');
+  const [mobile, setMobile] = useState('');
   return (
     <View>
       {uid === 0 && (
@@ -97,10 +98,16 @@ const InputMobile0 = ({
               placeholderTextColor={colors.greyish}
               keyboardType="numeric"
               returnKeyType="done"
-              maxLength={13}
+              maxLength={11}
               value={value}
-              onSubmitEditing={() => onSubmit(value)}
-              onChangeText={setValue}
+              onSubmitEditing={() => onSubmit(mobile)}
+              onFocus={() => setValue(value.replace(/-/g, ''))}
+              onBlur={() => setValue(utils.toPhoneNumber(mobile))}
+              onChangeText={(v) => {
+                const mobileNo = utils.toPhoneNumber(v);
+                setMobile(mobileNo);
+                setValue(v);
+              }}
             />
 
             <AppButton

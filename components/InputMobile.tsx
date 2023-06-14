@@ -125,7 +125,7 @@ const InputMobile: React.FC<InputMobileProps> = ({
           enablesReturnKeyAutomatically
           onFocus={() => setValue(mobile)}
           onBlur={() => setValue(utils.toPhoneNumber(mobile))}
-          maxLength={13}
+          maxLength={11}
           blurOnSubmit={false}
           onChangeText={onChangeText}
           value={value}
