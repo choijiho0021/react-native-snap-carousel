@@ -284,7 +284,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
       <View style={styles.divider24} />
 
       <TabView
-        sceneContainerStyle={{flex: 1}}
+        sceneContainerStyle={{flex: 1, backgroundColor: colors.white}}
         navigationState={{index, routes}}
         renderScene={renderScene}
         onIndexChange={onIndexChange}
