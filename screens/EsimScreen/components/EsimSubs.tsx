@@ -296,7 +296,7 @@ const EsimSubs = ({
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
   const isBc = useMemo(
-    () => mainSubs.partner?.toLowerCase() === 'billionconnect',
+    () => mainSubs.partner === 'billionconnect',
     [mainSubs.partner],
   );
   const notCardInfo = useMemo(

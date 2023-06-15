@@ -86,12 +86,12 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [extensionDisReason, setExtensionDisReason] = useState('');
 
   const extensionEnable = useMemo(
-    () => mainSubs.partner?.toLowerCase() === 'cmi' && isChargeable,
+    () => mainSubs.partner === 'cmi' && isChargeable,
     [isChargeable, mainSubs.partner],
   );
   const quadAddonOverLimited = useMemo(
     () =>
-      mainSubs.partner?.toLowerCase() === 'quadcell' &&
+      mainSubs.partner === 'quadcell' &&
       mainSubs.daily === 'daily' &&
       (addOnData?.length || 0) > 0,
     [addOnData?.length, mainSubs.daily, mainSubs.partner],
@@ -256,9 +256,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       }
 
       if (
-        mainSubs.partner?.toLowerCase() === 'billionconnect' ||
-        (mainSubs.partner?.toLowerCase() === 'cmi' &&
-          mainSubs.daily === 'total')
+        mainSubs.partner === 'billionconnect' ||
+        (mainSubs.partner === 'cmi' && mainSubs.daily === 'total')
       ) {
         setAddOnDisReasen('unsupported');
         return;
