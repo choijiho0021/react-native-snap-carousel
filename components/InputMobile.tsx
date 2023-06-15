@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {StyleSheet, TextInput, View} from 'react-native';
+import {Platform, StyleSheet, TextInput, View} from 'react-native';
 import _ from 'underscore';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -125,7 +125,7 @@ const InputMobile: React.FC<InputMobileProps> = ({
           enablesReturnKeyAutomatically
           onFocus={() => setValue(mobile)}
           onBlur={() => setValue(utils.toPhoneNumber(mobile))}
-          maxLength={13}
+          maxLength={Platform.OS === 'android' ? 13 : 11}
           blurOnSubmit={false}
           onChangeText={onChangeText}
           value={value}

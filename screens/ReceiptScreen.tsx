@@ -2,7 +2,6 @@ import {RouteProp} from '@react-navigation/native';
 import {bindActionCreators} from 'redux';
 import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
 import {
-  PermissionsAndroid,
   Platform,
   SafeAreaView,
   ScrollView,
@@ -15,6 +14,13 @@ import {RootState} from '@reduxjs/toolkit';
 import ViewShot from 'react-native-view-shot';
 import CameraRoll from '@react-native-community/cameraroll';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {
+  PERMISSIONS,
+  request,
+  check,
+  RESULTS,
+  openSettings,
+} from 'react-native-permissions';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import i18n from '@/utils/i18n';
@@ -28,6 +34,7 @@ import AppButton from '@/components/AppButton';
 import {AccountModelState} from '@/redux/modules/account';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {HomeStackParamList} from '@/navigation/navigation';
+import AppAlert from '@/components/AppAlert';
 
 const styles = StyleSheet.create({
   container: {
@@ -137,15 +144,21 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
   }, [navigation, params?.order, params?.receipt]);
 
   const hasAndroidPermission = useCallback(async () => {
-    const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
+    const permission =
+      Platform.Version >= 33
+        ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
+        : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
 
-    const hasPermission = await PermissionsAndroid.check(permission);
-    if (hasPermission) {
+    const hasPermission = await check(permission);
+    if (hasPermission === RESULTS.GRANTED) {
       return true;
     }
 
-    const status = await PermissionsAndroid.request(permission);
-    return status === 'granted';
+    AppAlert.confirm(i18n.t('settings'), i18n.t('acc:permPhoto'), {
+      ok: () => openSettings(),
+    });
+
+    return false;
   }, []);
 
   const capture = useCallback(async () => {
