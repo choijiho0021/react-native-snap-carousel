@@ -372,7 +372,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
           const statusCd = getQuadcellStatus(dataPack, exp);
 
-          console.log('aaaaa statuscd', statusCd);
           const quadcellStatus: StatusObj = {
             statusCd,
             endTime: exp.format('YYYY.MM.DD HH:mm:ss'),

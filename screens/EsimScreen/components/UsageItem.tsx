@@ -285,10 +285,8 @@ const UsageItem: React.FC<UsageItemProps> = ({
             </AppText>
             <AppText style={appStyles.normal14Text}>
               {item.partner === 'cmi'
-                ? i18n.t('esim:until:KST', {
-                    time: utils.toDateString(endTime, 'HH:mm:ss'),
-                  })
-                : i18n.t('esim:KST', {time: '01'})}
+                ? endTime?.split(' ')[1] || '오류문구'
+                : '01:00:00'}
             </AppText>
           </View>
         )}
