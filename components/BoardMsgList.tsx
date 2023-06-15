@@ -1,6 +1,7 @@
 import React, {memo, useCallback, useEffect, useState} from 'react';
 import {
   FlatList,
+  Platform,
   RefreshControl,
   SafeAreaView,
   StyleSheet,
@@ -98,7 +99,7 @@ const InputMobile0 = ({
               placeholderTextColor={colors.greyish}
               keyboardType="numeric"
               returnKeyType="done"
-              maxLength={11}
+              maxLength={Platform.OS === 'android' ? 13 : 11}
               value={value}
               onSubmitEditing={() => onSubmit(mobile)}
               onFocus={() => setValue(value.replace(/-/g, ''))}

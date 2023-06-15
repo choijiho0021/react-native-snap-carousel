@@ -256,7 +256,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
           keyboardType="numeric"
           returnKeyType="next"
           enablesReturnKeyAutomatically
-          maxLength={11}
+          maxLength={Platform.OS === 'android' ? 13 : 11}
           onChangeText={(v) => {
             const mobileNo = utils.toPhoneNumber(v);
             setValue(v);
