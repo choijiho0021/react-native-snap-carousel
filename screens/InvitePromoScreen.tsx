@@ -63,7 +63,7 @@ const InvitePromoScreen: React.FC<InvitePromoScreenProps> = ({
       headerLeft: () => (
         <View style={styles.header}>
           <AppBackButton
-            title={i18n.t('invite:friend')}
+            title={i18n.t('inv:title')}
             style={styles.headerTitle}
           />
         </View>
