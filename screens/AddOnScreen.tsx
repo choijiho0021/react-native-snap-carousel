@@ -209,6 +209,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   const [selectedAddOnProd, setSelectedAddOnProd] = useState<RkbAddOnProd>();
   // quadcell 기준 기본 한국시간 1시
   const [dataResetTime, setDataResetTime] = useState('01:00:00');
+  const [noProd, setNoProd] = useState(false);
 
   useEffect(() => {
     if (mainSubs.daily === 'total') {
@@ -261,6 +262,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
           const todayProd = rsp.filter((r) => r.days === '1');
           const remainDaysProd = rsp.filter((r) => r.days !== '1');
           if (remainDaysProd.length > 0) {
+            // 쿼드셀 무제한 (사용전), 쿼드셀 종량제의 경우 하루 충전 지원 x
             if (
               mainSubs.partner === 'quadcell' &&
               (status === 'R' || mainSubs.daily === 'total')
@@ -272,26 +274,24 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
               setRemainDaysAddOnProd(remainDaysProd);
               return;
             }
-            // 남은 기간 충전이 1회라도 있는 경우
-            if (
-              mainSubs.partner === 'quadcell' &&
-              status === 'A' &&
-              mainSubs.daily === 'total' &&
-              addOnData?.find((a) => a.prodDays && Number(a.prodDays) > 1)
-            ) {
-              setAddOnTypeList(['today']);
-              setSelectedType('today');
-              setTodayAddOnProd(todayProd);
-              setSelectedAddOnProd(todayProd[0]);
-              setRemainDaysAddOnProd(remainDaysProd);
-              return;
-            }
+            // 쿼드셀 무제한의 경우 2일 이상인 addOn 상품을 충전한 이력이 있으면 남은 기간 사용에 대한 상품을 내려주지 않음
+
             setAddOnTypeList(['today', 'remainDays']);
           }
 
-          setTodayAddOnProd(todayProd);
-          setSelectedAddOnProd(todayProd[0]);
-          setRemainDaysAddOnProd(remainDaysProd);
+          // 쿼드셀 무제한 (사용전), 쿼드셀 종량제의 경우 하루 충전 지원 x
+          if (
+            mainSubs.partner === 'quadcell' &&
+            (status === 'R' || mainSubs.daily === 'total')
+          ) {
+            setNoProd(true);
+          } else if (todayProd.length > 0) {
+            setTodayAddOnProd(todayProd);
+            setSelectedAddOnProd(todayProd[0]);
+            setRemainDaysAddOnProd(remainDaysProd);
+          } else {
+            setNoProd(true);
+          }
         }
       });
   }, [addOnData, mainSubs, remainDays, status]);
@@ -440,22 +440,19 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
           isAddOn
         />
 
-        {(mainSubs.partner === 'cmi' && status === 'R') ||
-        (todayAddOnProd.length < 1 && remainDaysAddOnProd.length < 1) ? (
+        {(mainSubs.partner === 'cmi' && status === 'R') || noProd ? (
           <View style={styles.no}>
             <AppSvgIcon name="blueNotice" style={{marginBottom: 16}} />
             <AppStyledText
               text={i18n.t(
                 `esim:charge:addOn:${
-                  todayAddOnProd.length < 1 && remainDaysAddOnProd.length < 1
-                    ? 'empty'
-                    : 'no'
-                }no:title`,
+                  mainSubs.partner === 'cmi' && status === 'R' ? 'no' : 'empty'
+                }:title`,
               )}
               textStyle={styles.noTitle}
               format={{b: styles.noTitleBold}}
             />
-            {!(todayAddOnProd.length < 1 && remainDaysAddOnProd.length < 1) && (
+            {mainSubs.partner === 'cmi' && status === 'R' && (
               <AppText style={styles.noBody}>
                 {i18n.t('esim:charge:addOn:no:body')}
               </AppText>
@@ -487,7 +484,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
         )}
       </ScrollView>
 
-      {mainSubs.partner === 'cmi' && status === 'R' ? (
+      {(mainSubs.partner === 'cmi' && status === 'R') || noProd ? (
         <Pressable style={styles.close} onPress={() => navigation.goBack()}>
           <AppText style={styles.closeText}>{i18n.t('close')}</AppText>
         </Pressable>
