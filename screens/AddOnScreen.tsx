@@ -261,6 +261,10 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
           const rsp = data.objects;
           const todayProd = rsp.filter((r) => r.days === '1');
           const remainDaysProd = rsp.filter((r) => r.days !== '1');
+          if (todayProd.length < 1 && remainDaysProd.length < 1) {
+            setNoProd(true);
+            return;
+          }
           if (remainDaysProd.length > 0) {
             // 쿼드셀 무제한 (사용전), 쿼드셀 종량제의 경우 하루 충전 지원 x
             if (
