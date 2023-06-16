@@ -199,7 +199,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   route: {params},
 }) => {
   const {mainSubs, status, expireTime, addOnData} = params || {};
-  const [remainDays, setRemainDays] = useState(1);
+  const [remainDays, setRemainDays] = useState(0);
   const [todayAddOnProd, setTodayAddOnProd] = useState<RkbAddOnProd[]>([]);
   const [remainDaysAddOnProd, setRemainDaysAddOnProd] = useState<
     RkbAddOnProd[]
@@ -251,7 +251,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   }, [navigation]);
 
   useEffect(() => {
-    if (mainSubs.nid)
+    if (mainSubs.nid && remainDays !== 0)
       API.Product.getAddOnProduct(
         mainSubs.nid,
         mainSubs.daily === 'daily' ? remainDays.toString() : '1',
@@ -440,17 +440,26 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
           isAddOn
         />
 
-        {mainSubs.partner === 'cmi' && status === 'R' ? (
+        {(mainSubs.partner === 'cmi' && status === 'R') ||
+        (todayAddOnProd.length < 1 && remainDaysAddOnProd.length < 1) ? (
           <View style={styles.no}>
             <AppSvgIcon name="blueNotice" style={{marginBottom: 16}} />
             <AppStyledText
-              text={i18n.t('esim:charge:addOn:no:title')}
+              text={i18n.t(
+                `esim:charge:addOn:${
+                  todayAddOnProd.length < 1 && remainDaysAddOnProd.length < 1
+                    ? 'empty'
+                    : 'no'
+                }no:title`,
+              )}
               textStyle={styles.noTitle}
               format={{b: styles.noTitleBold}}
             />
-            <AppText style={styles.noBody}>
-              {i18n.t('esim:charge:addOn:no:body')}
-            </AppText>
+            {!(todayAddOnProd.length < 1 && remainDaysAddOnProd.length < 1) && (
+              <AppText style={styles.noBody}>
+                {i18n.t('esim:charge:addOn:no:body')}
+              </AppText>
+            )}
           </View>
         ) : (
           <View style={styles.addOnFrame}>
