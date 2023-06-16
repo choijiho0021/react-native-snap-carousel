@@ -25,6 +25,7 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import Env from '@/environment';
 import AppIcon from '@/components/AppIcon';
+import TextWithDot from './TextWithDot';
 
 const styles = StyleSheet.create({
   usageListContainer: {
@@ -158,6 +159,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+  },
+  noticeText: {
+    ...appStyles.normal14Text,
+    lineHeight: 18,
+    color: colors.warmGrey,
   },
 });
 
@@ -452,6 +458,10 @@ const UsageItem: React.FC<UsageItemProps> = ({
                   <AppText style={styles.inactiveIcon}>
                     {i18n.t(`esim:${code[v]}Info`)}
                   </AppText>
+                  <TextWithDot
+                    text={i18n.t('usageInfo')}
+                    textStyle={styles.noticeText}
+                  />
                 </View>
               )
             );
