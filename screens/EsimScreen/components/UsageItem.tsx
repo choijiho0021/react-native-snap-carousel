@@ -292,7 +292,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
             </AppText>
             <AppText style={appStyles.normal14Text}>
               {item.partner === 'cmi'
-                ? endTime?.split(' ')[1] || '오류문구'
+                ? endTime?.split(' ')[1] || i18n.t('contact:q')
                 : '01:00:00'}
             </AppText>
           </View>

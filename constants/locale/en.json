@@ -389,6 +389,7 @@
   "contact:info2": "Don’t worry!\nROKEBI is here to help.",
   "contact:OpenChFail": "It can't connect to Live Chat Support Channel.",
   "contact:workTimeDesc": "Weekday 08:00 - 24:00(GMT+9)\nLunch Time: 12:30 - 13:30",
+  "contact:q": "Contact CS",
 
   "faq:general": "General",
   "faq:config": "Config",
