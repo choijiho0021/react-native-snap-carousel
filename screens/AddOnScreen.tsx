@@ -16,7 +16,7 @@ import ButtonWithPrice from './EsimScreen/components/ButtonWithPrice';
 import TextWithDot from './EsimScreen/components/TextWithDot';
 import AppStyledText from '@/components/AppStyledText';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {sliderWidth} from '@/constants/SliderEntry.style';
+import {sliderWidth, windowHeight} from '@/constants/SliderEntry.style';
 import SelectedProdTitle from './EventBoardScreen/components/SelectedProdTitle';
 
 const styles = StyleSheet.create({
@@ -157,9 +157,14 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     color: colors.white,
   },
+  flex: {
+    display: 'flex',
+    height: windowHeight - 374,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   no: {
     width: '100%',
-    marginTop: 105,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -445,22 +450,26 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
         />
 
         {(mainSubs.partner === 'cmi' && status === 'R') || noProd ? (
-          <View style={styles.no}>
-            <AppSvgIcon name="blueNotice" style={{marginBottom: 16}} />
-            <AppStyledText
-              text={i18n.t(
-                `esim:charge:addOn:${
-                  mainSubs.partner === 'cmi' && status === 'R' ? 'no' : 'empty'
-                }:title`,
+          <View style={styles.flex}>
+            <View style={styles.no}>
+              <AppSvgIcon name="blueNotice" style={{marginBottom: 16}} />
+              <AppStyledText
+                text={i18n.t(
+                  `esim:charge:addOn:${
+                    mainSubs.partner === 'cmi' && status === 'R'
+                      ? 'no'
+                      : 'empty'
+                  }:title`,
+                )}
+                textStyle={styles.noTitle}
+                format={{b: styles.noTitleBold}}
+              />
+              {mainSubs.partner === 'cmi' && status === 'R' && (
+                <AppText style={styles.noBody}>
+                  {i18n.t('esim:charge:addOn:no:body')}
+                </AppText>
               )}
-              textStyle={styles.noTitle}
-              format={{b: styles.noTitleBold}}
-            />
-            {mainSubs.partner === 'cmi' && status === 'R' && (
-              <AppText style={styles.noBody}>
-                {i18n.t('esim:charge:addOn:no:body')}
-              </AppText>
-            )}
+            </View>
           </View>
         ) : (
           <View style={styles.addOnFrame}>

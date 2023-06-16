@@ -574,7 +574,7 @@
   "esim:charge:addOn:usagePeriod": "<b>사용기간</b>\n{usagePeriod}(KST)",
   "esim:charge:addOn:usagePeriod:unUsed": "<b>사용기간</b>\n상품 사용 시작 시점부터 {prodDays}일",
   "esim:charge:addOn:no:title": "본 상품은 현지 네트워크를 잡아\n실제로 <b>상품 사용 중일때만</b>\n<b>용량 충전</b>할 수 있습니다.",
-  "esim:charge:addOn:empty:title": "충전 가능한 상품이 없습니다.",
+  "esim:charge:addOn:empty:title": "현재 충전할 수 있는 상품이 없습니다.",
   "esim:charge:addOn:no:body": "상품 사용 중일 때 다시 시도해보세요!",
   "esim:charge:addOn:notice:title": "용량 충전 구매 전 꼭 읽어주세요!",
   "esim:charge:addOn:notice:body": "충전 상품은 결제 후 어떠한 경우에도 <b>교환, 환불 불가</b>합니다. 상품 확인 후 신중하게 구매해주세요!\n충전한 데이터는 구매 후 즉시 사용 시작되며, <b>충전 데이터 사용 가능 기간까지만 사용 가능</b>합니다.\n사용하고 있는 상품의 사용기간 내에서만 데이터 충전이 가능합니다.\n본 상품은 무제한으로 데이터 용량 충전 가능한 상품입니다.\n상품 사용기간을 늘리고 싶거나, 추가로 상품을 이어서 사용하고 싶은 경우, 상품 연장하기 기능을 이용해주세요!",
