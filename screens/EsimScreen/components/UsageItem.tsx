@@ -164,6 +164,7 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     lineHeight: 18,
     color: colors.warmGrey,
+    marginRight: 20,
   },
 });
 

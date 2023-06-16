@@ -1074,6 +1074,7 @@
 
   "quadcell:usageInfo1": "\u00B7 Actual usage may differ",
   "quadcell:usageInfo2": " You may check your data usage when initial connection to the local network is made",
+  "usageInfo": "Usage status may not be accurate due to local carrier issues. If the actual usage status and the status value retrieved from the app do not match, contact the customer center.",
 
   "rcpt:buyer": "Buyer",
   "rcpt:pay_method": "Payment method",
