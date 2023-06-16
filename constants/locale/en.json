@@ -1074,9 +1074,9 @@
   "g:userGuide:tipPage9:android_1": "Check if the eSIM is configured as <b>Default for mobile data</b>",
   "g:userGuide:tipPage9:android_2": "Tap on the eSIM and toggle 'Mobile Data' and <s>'Roaming' to ON</s>.",
 
+  "quadcell:usageInfo": "Usage status may not be accurate due to local carrier issues. If the actual usage status and the status value retrieved from the app do not match, contact the customer center.",
   "quadcell:usageInfo1": "\u00B7 Actual usage may differ",
   "quadcell:usageInfo2": " You may check your data usage when initial connection to the local network is made",
-  "usageInfo": "Usage status may not be accurate due to local carrier issues. If the actual usage status and the status value retrieved from the app do not match, contact the customer center.",
 
   "rcpt:buyer": "Buyer",
   "rcpt:pay_method": "Payment method",

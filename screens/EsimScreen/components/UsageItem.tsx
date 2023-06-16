@@ -457,10 +457,12 @@ const UsageItem: React.FC<UsageItemProps> = ({
                   <AppText style={styles.inactiveIcon}>
                     {i18n.t(`esim:${code[v]}Info`)}
                   </AppText>
-                  <TextWithDot
-                    text={i18n.t('usageInfo')}
-                    textStyle={styles.noticeText}
-                  />
+                  {item.partner === 'billionconnect' && (
+                    <TextWithDot
+                      text={i18n.t('quadcell:usageInfo')}
+                      textStyle={styles.noticeText}
+                    />
+                  )}
                 </View>
               )
             );
@@ -473,6 +475,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
       expire,
       isShowUsage,
       item.key,
+      item.partner,
       item.prodName,
       item.type,
       showExpire,
