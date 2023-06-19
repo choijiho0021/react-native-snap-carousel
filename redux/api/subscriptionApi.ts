@@ -541,7 +541,6 @@ const cmiGetSubsUsage = ({
   return api.callHttpGet(
     `${api.rokHttpUrl(
       api.path.rokApi.pv.cmiUsage,
-      isProduction ? undefined : 5000,
     )}&iccid=${iccid}&orderId=${orderId}`,
     (data) => data,
     new Headers({'Content-Type': 'application/json'}),
@@ -553,10 +552,7 @@ const cmiGetSubsStatus = ({iccid}: {iccid: string}) => {
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
 
   return api.callHttpGet(
-    `${api.rokHttpUrl(
-      api.path.rokApi.pv.cmiStatus,
-      isProduction ? undefined : 5000,
-    )}&iccid=${iccid}`,
+    `${api.rokHttpUrl(api.path.rokApi.pv.cmiStatus)}&iccid=${iccid}`,
     toCmiStatus,
     new Headers({'Content-Type': 'application/json'}),
   );
@@ -577,10 +573,9 @@ const quadcellGetData = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
 
   return api.callHttpGet(
-    `${api.rokHttpUrl(
-      `${api.path.rokApi.pv.quadcell}/imsi/${imsi}/${key}`,
-      isProduction ? undefined : 5000,
-    )}${query ? `&${api.queryString(query)}` : ''}`,
+    `${api.rokHttpUrl(`${api.path.rokApi.pv.quadcell}/imsi/${imsi}/${key}`)}${
+      query ? `&${api.queryString(query)}` : ''
+    }`,
     (data) => {
       if (data?.result?.code === 0) {
         return api.success(data?.objects);
@@ -606,10 +601,10 @@ const bcGetSubsUsage = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: orderId');
 
   return api.callHttpGet(
-    `${api.rokHttpUrl(
-      `${api.path.rokApi.pv.bc}/dataUsage`,
-      isProduction ? undefined : 5000,
-    )}&${api.queryString({iccid: subsIccid, orderId})}`,
+    `${api.rokHttpUrl(`${api.path.rokApi.pv.bc}/dataUsage`)}&${api.queryString({
+      iccid: subsIccid,
+      orderId,
+    })}`,
     (data) => {
       if (data?.result?.code === 0) {
         return api.success(data?.objects);
@@ -629,7 +624,6 @@ const getHkRegStatus = ({iccid, imsi}: {iccid: string; imsi: string}) => {
   return api.callHttpGet(
     `${api.rokHttpUrl(
       api.path.rokApi.pv.hkRegStatus,
-      isProduction ? undefined : 5000,
     )}&iccid=${iccid}&imsi=${imsi}`,
     (data) => {
       if (data?.result?.code === 0) {
