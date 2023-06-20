@@ -1,6 +1,5 @@
 /* eslint-disable no-nested-ternary */
 import React, {
-  memo,
   MutableRefObject,
   useCallback,
   useMemo,
@@ -33,7 +32,6 @@ import AppStyledText from '@/components/AppStyledText';
 import AppModal from '@/components/AppModal';
 import {RootState} from '@/redux';
 import {ProductModelState} from '../../../redux/modules/product';
-import {RkbProduct} from '../../../redux/api/productApi';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -118,13 +116,6 @@ const styles = StyleSheet.create({
     fontSize: isDeviceSize('small') ? 12 : 14,
   },
   btn: {
-    width: 85,
-  },
-  btnDis: {
-    width: 85,
-    opacity: 0.6,
-  },
-  btnExpired: {
     width: 85,
   },
   btnTitle: {
@@ -218,15 +209,6 @@ const styles = StyleSheet.create({
     ...appStyles.medium14,
     color: colors.tomato,
     lineHeight: 18,
-  },
-  expiredDot: {
-    position: 'absolute',
-    width: 7,
-    height: 7,
-    borderRadius: 7,
-    backgroundColor: 'red',
-    right: 24,
-    top: 5,
   },
   expiredModalTextFrame: {
     marginLeft: 30,
@@ -327,9 +309,8 @@ const EsimSubs = ({
   }, [chargedSubs]);
 
   useEffect(() => {
-    if (showMoreInfo)
-      flatListRef?.current?.scrollToIndex({index, animated: true});
-  }, [flatListRef, index, showMoreInfo]);
+    setShowMoreInfo(showDetail);
+  }, [showDetail]);
 
   useEffect(() => {
     if (!notCardInfo) setShowMoreInfo(false);
@@ -372,7 +353,10 @@ const EsimSubs = ({
       <Pressable
         style={styles.prodTitle}
         onPress={() => {
-          if (notCardInfo) setShowMoreInfo((prev) => !prev);
+          if (notCardInfo) {
+            setShowMoreInfo((prev) => !prev);
+            flatListRef?.current?.scrollToIndex({index, animated: true});
+          }
         }}>
         {mainSubs.flagImage !== '' && (
           <Image
@@ -421,7 +405,15 @@ const EsimSubs = ({
         )}
       </Pressable>
     );
-  }, [mainSubs, expired, isCharged, showMoreInfo, notCardInfo]);
+  }, [
+    mainSubs,
+    expired,
+    isCharged,
+    showMoreInfo,
+    notCardInfo,
+    flatListRef,
+    index,
+  ]);
 
   const topInfo = useCallback(() => {
     return (

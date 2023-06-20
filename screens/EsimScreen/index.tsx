@@ -460,12 +460,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         case 'billionconnect':
           result = await checkBcData(item);
           break;
-        // setShowSnackBar(true);
-        // result = {
-        //   status: {statusCd: undefined, endTime: undefined},
-        //   usage: {quota: undefined, used: undefined},
-        // };
-        // break;
         default:
           result = await checkCmiData(item);
           break;
@@ -559,6 +553,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           _.isEmpty(subsList) && {flex: 1},
         ]}
         ListEmptyComponent={empty}
+        onScrollToIndexFailed={(rsp) => {
+          const wait = new Promise((resolve) => setTimeout(resolve, 500));
+          wait.then(() => {
+            flatListRef?.current?.scrollToIndex({
+              index: rsp.index,
+              animated: true,
+            });
+          });
+        }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing && !isFirstLoad}
