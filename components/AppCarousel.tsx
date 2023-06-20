@@ -136,6 +136,16 @@ const AppCarousel: React.FC<AppCarouselProps<T>> = ({
       onMomentumScrollBegin={onMomentumScrollStart}
       scrollEventThrottle={16}
       disableIntervalMomentum
+      onScrollToIndexFailed={(rsp) => {
+        console.log('onScrollToIndexFailed', rsp);
+        // const wait = new Promise((resolve) => setTimeout(resolve, 500));
+        // wait.then(() => {
+        //   ref?.current?.scrollToIndex({
+        //     index: rsp.index,
+        //     animated: true,
+        //   });
+        // });
+      }}
       ref={ref}
       scrollEnabled={slides?.length > 1}
     />
