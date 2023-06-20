@@ -9,7 +9,6 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
-import {API} from '@/redux/api';
 import {RkbAddOnProd} from '@/redux/api/productApi';
 import {appStyles} from '@/constants/Styles';
 import ButtonWithPrice from './EsimScreen/components/ButtonWithPrice';
@@ -203,8 +202,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   navigation,
   route: {params},
 }) => {
-  const {mainSubs, status, expireTime, addOnData} = params || {};
-  const [remainDays, setRemainDays] = useState(0);
+  const {mainSubs, status, expireTime, addonProds} = params || {};
   const [todayAddOnProd, setTodayAddOnProd] = useState<RkbAddOnProd[]>([]);
   const [remainDaysAddOnProd, setRemainDaysAddOnProd] = useState<
     RkbAddOnProd[]
@@ -233,16 +231,6 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   }, [expireTime, mainSubs.partner]);
 
   useEffect(() => {
-    // 남은 사용기간 구하기
-    if (status === 'R' && mainSubs.prodDays) {
-      setRemainDays(Number(mainSubs.prodDays));
-    } else if (expireTime) {
-      const today = moment();
-      setRemainDays(Math.ceil(expireTime.diff(today, 'hours') / 24));
-    }
-  }, [expireTime, mainSubs, mainSubs.partner, status]);
-
-  useEffect(() => {
     navigation.setOptions({
       title: null,
       headerLeft: () => (
@@ -257,53 +245,45 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   }, [navigation]);
 
   useEffect(() => {
-    if (mainSubs.nid && remainDays !== 0)
-      API.Product.getAddOnProduct(
-        mainSubs.nid,
-        mainSubs.daily === 'daily' ? remainDays.toString() : '1',
-      ).then((data) => {
-        if (data.result === 0) {
-          const rsp = data.objects;
-          const todayProd = rsp.filter((r) => r.days === '1');
-          const remainDaysProd = rsp.filter((r) => r.days !== '1');
-          if (todayProd.length < 1 && remainDaysProd.length < 1) {
-            setNoProd(true);
-            return;
-          }
-          if (remainDaysProd.length > 0) {
-            // 쿼드셀 무제한 (사용전), 쿼드셀 종량제의 경우 하루 충전 지원 x
-            if (
-              mainSubs.partner === 'quadcell' &&
-              (status === 'R' || mainSubs.daily === 'total')
-            ) {
-              setAddOnTypeList(['remainDays']);
-              setSelectedType('remainDays');
-              setTodayAddOnProd(remainDaysProd);
-              setSelectedAddOnProd(remainDaysProd[0]);
-              setRemainDaysAddOnProd(remainDaysProd);
-              return;
-            }
-            // 쿼드셀 무제한의 경우 2일 이상인 addOn 상품을 충전한 이력이 있으면 남은 기간 사용에 대한 상품을 내려주지 않음
-
-            setAddOnTypeList(['today', 'remainDays']);
-          }
-
-          // 쿼드셀 무제한 (사용전), 쿼드셀 종량제의 경우 하루 충전 지원 x
-          if (
-            mainSubs.partner === 'quadcell' &&
-            (status === 'R' || mainSubs.daily === 'total')
-          ) {
-            setNoProd(true);
-          } else if (todayProd.length > 0) {
-            setTodayAddOnProd(todayProd);
-            setSelectedAddOnProd(todayProd[0]);
-            setRemainDaysAddOnProd(remainDaysProd);
-          } else {
-            setNoProd(true);
-          }
+    if (addonProds) {
+      const todayProd = addonProds.filter((r) => r.days === '1');
+      const remainDaysProd = addonProds.filter((r) => r.days !== '1');
+      if (todayProd.length < 1 && remainDaysProd.length < 1) {
+        setNoProd(true);
+        return;
+      }
+      if (remainDaysProd.length > 0) {
+        // 쿼드셀 무제한 (사용전), 쿼드셀 종량제의 경우 하루 충전 지원 x
+        if (
+          mainSubs.partner === 'quadcell' &&
+          (status === 'R' || mainSubs.daily === 'total')
+        ) {
+          setAddOnTypeList(['remainDays']);
+          setSelectedType('remainDays');
+          setTodayAddOnProd(remainDaysProd);
+          setSelectedAddOnProd(remainDaysProd[0]);
+          setRemainDaysAddOnProd(remainDaysProd);
+          return;
         }
-      });
-  }, [addOnData, mainSubs, remainDays, status]);
+
+        setAddOnTypeList(['today', 'remainDays']);
+      }
+
+      // 쿼드셀 무제한 (사용전), 쿼드셀 종량제의 경우 하루 충전 지원 x
+      if (
+        mainSubs.partner === 'quadcell' &&
+        (status === 'R' || mainSubs.daily === 'total')
+      ) {
+        setNoProd(true);
+      } else if (todayProd.length > 0) {
+        setTodayAddOnProd(todayProd);
+        setSelectedAddOnProd(todayProd[0]);
+        setRemainDaysAddOnProd(remainDaysProd);
+      } else {
+        setNoProd(true);
+      }
+    }
+  }, [addonProds, mainSubs.daily, mainSubs.partner, status]);
 
   const renderTypeBtn = useCallback(
     (type: AddOnType) => (

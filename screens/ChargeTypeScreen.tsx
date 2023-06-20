@@ -15,6 +15,7 @@ import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 import AppSnackBar from '@/components/AppSnackBar';
 import {USAGE_TIME_INTERVAL} from './EsimScreen';
+import {RkbAddOnProd} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -80,10 +81,22 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     params || {};
   const [chargeableItem, setChargeableItem] = useState<RkbSubscription>();
   const [addonEnable, setAddonEnable] = useState(false);
+  const [remainDays, setRemainDays] = useState(0);
   const [expireTime, setExpireTime] = useState<Moment>();
   const [status, setStatus] = useState<StatusType>();
   const [addOnDisReason, setAddOnDisReasen] = useState('');
   const [extensionDisReason, setExtensionDisReason] = useState('');
+  const [addonProds, setAddonProds] = useState<RkbAddOnProd[]>();
+
+  useEffect(() => {
+    // 남은 사용기간 구하기
+    if (status === 'R' && mainSubs.prodDays) {
+      setRemainDays(Number(mainSubs.prodDays));
+    } else if (expireTime) {
+      const today = moment();
+      setRemainDays(Math.ceil(expireTime.diff(today, 'hours') / 24));
+    }
+  }, [expireTime, mainSubs, mainSubs.partner, status]);
 
   const extensionEnable = useMemo(
     () => mainSubs.partner === 'cmi' && isChargeable,
@@ -248,6 +261,22 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     }
   }, [extensionEnable, isChargeable, mainSubs.partner]);
 
+  const getAddOnProduct = useCallback(() => {
+    if (mainSubs.nid && remainDays !== 0)
+      API.Product.getAddOnProduct(
+        mainSubs.nid,
+        mainSubs.daily === 'daily' ? remainDays.toString() : '1',
+      ).then((data) => {
+        const rsp = data.objects;
+        if (rsp.length < 1) {
+          setAddonEnable(false);
+          setAddOnDisReasen('noProd');
+        } else {
+          setAddonProds(rsp);
+        }
+      });
+  }, [mainSubs.daily, mainSubs.nid, remainDays]);
+
   useEffect(() => {
     if (!addonEnable) {
       if (status === 'E') {
@@ -269,10 +298,12 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         return;
       }
       setAddOnDisReasen('noProd');
+    } else {
+      getAddOnProduct();
     }
   }, [
-    addOnData,
     addonEnable,
+    getAddOnProduct,
     mainSubs.daily,
     mainSubs.partner,
     quadAddonOverLimited,
@@ -300,7 +331,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           mainSubs,
           status,
           expireTime,
-          addOnData,
+          addonProds,
         });
       } else {
         setShowSnackBar({
@@ -310,9 +341,9 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       }
     },
     [
-      addOnData,
       addOnDisReason,
       addonEnable,
+      addonProds,
       chargeableItem,
       chargeablePeriod,
       expireTime,
