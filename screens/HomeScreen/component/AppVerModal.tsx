@@ -98,7 +98,11 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
         textStyle={appStyles.bold22Text}
         data={formatText('b', {
           text: i18n.t(id),
-          textStyle: {...appStyles.bold22Text, color: colors.clearBlue},
+          textStyle: {
+            ...appStyles.bold22Text,
+            color: colors.clearBlue,
+            bottom: 2,
+          },
         })}
       />
     ),
