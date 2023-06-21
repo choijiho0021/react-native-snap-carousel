@@ -549,6 +549,7 @@
   "esim:charge:selected:prod": "선택 상품",
   "esim:charge:expPeriod": "<b>유효기간</b> : {expPeriod}",
   "esim:charge:recommend": "이런 분들께 추천해요!",
+  "esim:charge:agreement:check": "구매 전 유의사항 확인 후 동의해주세요.",
   "esim:charge:type": "충전 용도를\n선택해주세요!",
   "esim:charge:type:addOn": "용량 충전하기",
   "esim:charge:type:addOn:modal:notice1": "현재 사용하고 있는 상품에 데이터를 충전하여 사용할 수 있는 기능이에요.",
