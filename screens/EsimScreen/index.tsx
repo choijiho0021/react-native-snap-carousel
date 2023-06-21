@@ -377,25 +377,17 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             endTime: exp.format('YYYY.MM.DD HH:mm:ss'),
           };
 
-          let dataVolume = item.dataVolume || '0';
+          let dataVolume = Number(item.dataVolume) || 0;
           if (item.daily === 'daily' && statusCd === 'A') {
-            const {objects} = await API.Subscription.quadcellGetData({
-              imsi: item.imsi,
-              key: 'fupquota',
-            });
-
-            const {remainingBalance, consumption} = objects?.quotaList[0];
-
-            dataVolume =
-              remainingBalance > 0
-                ? remainingBalance + consumption
-                : consumption;
+            dataVolume = order.subs
+              .get(item.subsIccid || '0')
+              ?.reduce((acc, cur) => acc + Number(cur.dataVolume), 0);
           }
 
           const quadcellUsage: UsageObj =
             item.daily === 'daily'
               ? {
-                  quota: Number(dataVolume) / 1024 || 0, // Mb
+                  quota: dataVolume || 0, // Mb
                   used: Number(quota?.objects?.dailyUsage) || 0, // Mb
                 }
               : {
@@ -411,7 +403,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         usage: {quota: undefined, used: undefined},
       };
     },
-    [getQuadcellStatus],
+    [getQuadcellStatus, order.subs],
   );
 
   const checkBcData = useCallback(
