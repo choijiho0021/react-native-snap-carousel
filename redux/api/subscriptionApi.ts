@@ -566,7 +566,7 @@ const quadcellGetData = ({
   query,
 }: {
   imsi: string;
-  key: 'quota' | 'info' | 'packlist' | 'hlrstate';
+  key: 'quota' | 'info' | 'packlist' | 'hlrstate' | 'fupquota';
   query?: Record<string, string | number>;
 }) => {
   if (!imsi)

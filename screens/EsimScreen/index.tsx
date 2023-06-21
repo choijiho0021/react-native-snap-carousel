@@ -377,10 +377,25 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             endTime: exp.format('YYYY.MM.DD HH:mm:ss'),
           };
 
+          let dataVolume = item.dataVolume || '0';
+          if (item.daily === 'daily' && statusCd === 'A') {
+            const {objects} = await API.Subscription.quadcellGetData({
+              imsi: item.imsi,
+              key: 'fupquota',
+            });
+
+            const {remainingBalance, consumption} = objects?.quotaList[0];
+
+            dataVolume =
+              remainingBalance > 0
+                ? remainingBalance + consumption
+                : consumption;
+          }
+
           const quadcellUsage: UsageObj =
             item.daily === 'daily'
               ? {
-                  quota: Number(item.dataVolume) || 0, // Mb
+                  quota: Number(dataVolume) / 1024 || 0, // Mb
                   used: Number(quota?.objects?.dailyUsage) || 0, // Mb
                 }
               : {
