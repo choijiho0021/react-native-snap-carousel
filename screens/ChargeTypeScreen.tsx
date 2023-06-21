@@ -273,14 +273,25 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         mainSubs.daily === 'daily' ? remainDays.toString() : '1',
       ).then((data) => {
         const rsp = data.objects;
+        const remainDaysProd = rsp.filter((r) => r.days !== '1');
+
         if (rsp.length < 1) {
           setAddonEnable(false);
           setAddOnDisReasen('noProd');
+        } else if (
+          // 쿼드셀 무제한 (사용전), 쿼드셀 종량제의 경우 하루 충전 지원 x
+          remainDaysProd.length < 1 &&
+          mainSubs.partner === 'quadcell' &&
+          status === 'R' &&
+          mainSubs.daily === 'daily'
+        ) {
+          setAddonEnable(false);
+          setAddOnDisReasen('overLimit');
         } else {
           setAddonProds(rsp);
         }
       });
-  }, [mainSubs.daily, mainSubs.nid, remainDays]);
+  }, [mainSubs, remainDays, status]);
 
   useEffect(() => {
     if (!addonEnable) {
