@@ -4,6 +4,8 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import moment, {Moment} from 'moment';
 import {ScrollView} from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-community/async-storage';
+import {useDispatch} from 'react-redux';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppBackButton from '@/components/AppBackButton';
@@ -11,11 +13,13 @@ import i18n from '@/utils/i18n';
 import ChargeTypeButton from './EsimScreen/components/ChargeTypeButton';
 import {API} from '@/redux/api';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {actions as modalActions} from '@/redux/modules/modal';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 import AppSnackBar from '@/components/AppSnackBar';
 import {USAGE_TIME_INTERVAL} from './EsimScreen';
 import {RkbAddOnProd} from '@/redux/api/productApi';
+import ChargeTypeModal from './HomeScreen/component/ChargeTypeModal';
 
 const styles = StyleSheet.create({
   container: {
@@ -87,6 +91,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [addOnDisReason, setAddOnDisReasen] = useState('');
   const [extensionDisReason, setExtensionDisReason] = useState('');
   const [addonProds, setAddonProds] = useState<RkbAddOnProd[]>();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     // 남은 사용기간 구하기
@@ -311,14 +316,37 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   ]);
 
   const onPress = useCallback(
-    (type: string) => {
+    async (type: string) => {
       if (type === 'extension') {
-        if (extensionEnable)
-          navigation.navigate('Charge', {
-            mainSubs: chargeableItem || mainSubs,
-            chargeablePeriod,
-          });
-        else {
+        if (extensionEnable) {
+          const checked = await AsyncStorage.getItem(
+            'esim.charge.extension.modal.check',
+          );
+          if (checked !== 'checked') {
+            AsyncStorage.setItem(
+              'esim.charge.extension.modal.check',
+              'checked',
+            );
+            dispatch(
+              modalActions.renderModal(() => (
+                <ChargeTypeModal
+                  type={type}
+                  onPress={() => onPress(type)}
+                  disabled={!extensionEnable}
+                  disReason={{
+                    addOn: addOnDisReason,
+                    extension: extensionDisReason,
+                  }}
+                />
+              )),
+            );
+          } else {
+            navigation.navigate('Charge', {
+              mainSubs: chargeableItem || mainSubs,
+              chargeablePeriod,
+            });
+          }
+        } else {
           setShowSnackBar({
             text: i18n.t(
               `esim:charge:disReason:extension:${extensionDisReason}`,
@@ -327,12 +355,32 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           });
         }
       } else if (addonEnable) {
-        navigation.navigate('AddOn', {
-          mainSubs,
-          status,
-          expireTime,
-          addonProds,
-        });
+        const checked = await AsyncStorage.getItem(
+          'esim.charge.addon.modal.check',
+        );
+        if (checked !== 'checked') {
+          AsyncStorage.setItem('esim.charge.addon.modal.check', 'checked');
+          dispatch(
+            modalActions.renderModal(() => (
+              <ChargeTypeModal
+                type={type}
+                onPress={() => onPress(type)}
+                disabled={!addonEnable}
+                disReason={{
+                  addOn: addOnDisReason,
+                  extension: extensionDisReason,
+                }}
+              />
+            )),
+          );
+        } else {
+          navigation.navigate('AddOn', {
+            mainSubs,
+            status,
+            expireTime,
+            addonProds,
+          });
+        }
       } else {
         setShowSnackBar({
           text: i18n.t(`esim:charge:disReason:addOn:${addOnDisReason}`),
@@ -346,6 +394,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       addonProds,
       chargeableItem,
       chargeablePeriod,
+      dispatch,
       expireTime,
       extensionDisReason,
       extensionEnable,
