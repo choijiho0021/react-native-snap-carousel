@@ -196,6 +196,13 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     color: colors.white,
   },
+  purchaseText: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 20,
+    color: colors.warmGrey,
+    alignSelf: 'flex-start',
+    marginTop: 16,
+  },
 });
 
 export const renderPromoFlag = (flags: string[], isStore: boolean) => (
@@ -476,7 +483,13 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
             marginBottom: 16,
           }}>
           <View style={{alignItems: 'center', paddingHorizontal: 20}}>
-            <View style={{flexDirection: 'row', marginVertical: 19}}>
+            <AppText style={styles.purchaseText}>
+              {i18n.t('purchase:date', {
+                date: utils.toDateString(item.purchaseDate, 'YYYY.MM.DD'),
+              })}
+            </AppText>
+            <View
+              style={{flexDirection: 'row', marginBottom: 16, marginTop: 6}}>
               <View style={{flex: 1}}>
                 <SplitText
                   renderExpend={() =>

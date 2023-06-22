@@ -78,6 +78,8 @@
   "link": "Link",
   "new": "New",
 
+  "purchase:date": "{{date}}",
+
   "home:exitApp": "Close App",
   "home:guide": "User Guide",
   "home:checkGuide": "Check",
