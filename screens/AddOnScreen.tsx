@@ -278,10 +278,12 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
     if (addonProds) {
       const todayProd = addonProds.filter((r) => r.days === '1');
       const remainDaysProd = addonProds.filter((r) => r.days !== '1');
+
       if (todayProd.length < 1 && remainDaysProd.length < 1) {
         setNoProd(true);
         return;
       }
+
       if (remainDaysProd.length > 0) {
         // 쿼드셀 무제한 (사용전), 쿼드셀 종량제의 경우 하루 충전 지원 x
         if (
@@ -290,7 +292,6 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
         ) {
           setAddOnTypeList(['remainDays']);
           setSelectedType('remainDays');
-          setTodayAddOnProd(remainDaysProd);
           setSelectedAddOnProd(remainDaysProd[0]);
           setRemainDaysAddOnProd(remainDaysProd);
           return;
@@ -299,19 +300,11 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
         setAddOnTypeList(['today', 'remainDays']);
       }
 
-      // 쿼드셀 무제한 (사용전), 쿼드셀 종량제의 경우 하루 충전 지원 x
-      if (
-        mainSubs.partner === 'quadcell' &&
-        (status === 'R' || mainSubs.daily === 'total')
-      ) {
-        setNoProd(true);
-      } else if (todayProd.length > 0) {
-        setTodayAddOnProd(todayProd);
-        setSelectedAddOnProd(todayProd[0]);
-        setRemainDaysAddOnProd(remainDaysProd);
-      } else {
-        setNoProd(true);
-      }
+      setTodayAddOnProd(todayProd);
+      setSelectedAddOnProd(todayProd[0]);
+      setRemainDaysAddOnProd(remainDaysProd);
+    } else {
+      setNoProd(true);
     }
   }, [addonProds, mainSubs.daily, mainSubs.partner, status]);
 

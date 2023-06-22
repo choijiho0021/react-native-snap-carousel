@@ -92,17 +92,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [extensionDisReason, setExtensionDisReason] = useState('');
   const [addonProds, setAddonProds] = useState<RkbAddOnProd[]>();
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    // 남은 사용기간 구하기
-    if (status === 'R' && mainSubs.prodDays) {
-      setRemainDays(Number(mainSubs.prodDays));
-    } else if (expireTime) {
-      const today = moment();
-      setRemainDays(Math.ceil(expireTime.diff(today, 'hours') / 24));
-    }
-  }, [expireTime, mainSubs, mainSubs.partner, status]);
-
   const extensionEnable = useMemo(
     () => mainSubs.partner === 'cmi' && isChargeable,
     [isChargeable, mainSubs.partner],
@@ -114,6 +103,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       (addOnData?.length || 0) > 0,
     [addOnData?.length, mainSubs.daily, mainSubs.partner],
   );
+
   useEffect(() => {
     navigation.setOptions({
       title: null,
@@ -127,6 +117,16 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       ),
     });
   }, [navigation]);
+
+  useEffect(() => {
+    // 남은 사용기간 구하기
+    if (status === 'R' && mainSubs.prodDays) {
+      setRemainDays(Number(mainSubs.prodDays));
+    } else if (expireTime) {
+      const today = moment();
+      setRemainDays(Math.ceil(expireTime.diff(today, 'hours') / 24));
+    }
+  }, [expireTime, mainSubs, mainSubs.partner, status]);
 
   const checkCmiStatus = useCallback(
     async (item: RkbSubscription) => {
