@@ -120,16 +120,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     });
   }, [navigation]);
 
-  useEffect(() => {
-    // 남은 사용기간 구하기
-    if (status === 'R' && mainSubs.prodDays) {
-      setRemainDays(Number(mainSubs.prodDays));
-    } else if (expireTime) {
-      const today = moment();
-      setRemainDays(Math.ceil(expireTime.diff(today, 'hours') / 24));
-    }
-  }, [expireTime, mainSubs, mainSubs.partner, status]);
-
   const checkCmiStatus = useCallback(
     async (item: RkbSubscription) => {
       // CMI 종량제 addOn 미지원
@@ -263,12 +253,22 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   useEffect(() => {
     if (!extensionEnable) {
       if (!isChargeable) {
-        setExtensionDisReason('E');
+        setExtensionDisReason('expired');
         return;
       }
       setExtensionDisReason('unsupported');
     }
   }, [extensionEnable, isChargeable, mainSubs.partner]);
+
+  useEffect(() => {
+    // 남은 사용기간 구하기
+    if (status === 'R' && mainSubs.prodDays) {
+      setRemainDays(Number(mainSubs.prodDays));
+    } else if (expireTime) {
+      const today = moment();
+      setRemainDays(Math.ceil(expireTime.diff(today, 'hours') / 24));
+    }
+  }, [expireTime, mainSubs, mainSubs.partner, status]);
 
   const getAddOnProduct = useCallback(() => {
     if (mainSubs.nid && remainDays !== 0)
