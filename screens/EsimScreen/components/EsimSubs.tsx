@@ -580,7 +580,7 @@ const EsimSubs = ({
                 {marginRight: !isLast ? 12 : 0},
                 isSendBtn ? {} : {position: 'relative'},
               ]}>
-              {!isSendBtn && (
+              {!isSendBtn && !isCharged && (
                 <>
                   <AppSvgIcon name="speechBubble" style={styles.newIcon} />
                   <AppText style={styles.newText}>{i18n.t('new')}</AppText>
