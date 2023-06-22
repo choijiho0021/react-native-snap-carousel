@@ -241,6 +241,21 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     marginLeft: 6,
   },
+  newIcon: {
+    position: 'absolute',
+    top: -12,
+    zIndex: 20,
+    alignSelf: 'center',
+  },
+  newText: {
+    position: 'absolute',
+    top: -10,
+    zIndex: 30,
+    alignSelf: 'center',
+    ...appStyles.bold12Text,
+    lineHeight: 16,
+    color: colors.white,
+  },
 });
 
 const EsimSubs = ({
@@ -560,7 +575,18 @@ const EsimSubs = ({
           return (
             <View
               key={utils.generateKey(idx)}
-              style={[styles.btnMove, {marginRight: !isLast ? 12 : 0}]}>
+              style={[
+                styles.btnMove,
+                {marginRight: !isLast ? 12 : 0},
+                isSendBtn ? {} : {position: 'relative'},
+              ]}>
+              {!isSendBtn && (
+                <>
+                  <AppSvgIcon name="speechBubble" style={styles.newIcon} />
+                  <AppText style={styles.newText}>{i18n.t('new')}</AppText>
+                </>
+              )}
+
               <AppButton
                 title={btnTitle}
                 titleStyle={[styles.btnTitle2, !isLast && styles.colorblack]}
