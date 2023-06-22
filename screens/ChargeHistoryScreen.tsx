@@ -181,6 +181,21 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
     justifyContent: 'center',
   },
+  newIcon: {
+    position: 'absolute',
+    top: -14,
+    zIndex: 20,
+    alignSelf: 'center',
+  },
+  newText: {
+    position: 'absolute',
+    top: -12,
+    zIndex: 30,
+    alignSelf: 'center',
+    ...appStyles.bold12Text,
+    lineHeight: 16,
+    color: colors.white,
+  },
 });
 
 export const renderPromoFlag = (flags: string[], isStore: boolean) => (
@@ -646,21 +661,25 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
       </Modal>
 
       {isChargeable && (
-        <AppButton
-          style={styles.chargeBtn}
-          type="primary"
-          onPress={() =>
-            navigation.navigate('ChargeType', {
-              mainSubs,
-              chargeablePeriod,
-              chargedSubs: prodData,
-              isChargeable,
-              addOnData,
-            })
-          }
-          title={i18n.t('esim:charge')}
-          titleStyle={styles.chargeBtnTitle}
-        />
+        <View style={{position: 'relative'}}>
+          <AppSvgIcon name="speechBubble" style={styles.newIcon} />
+          <AppText style={styles.newText}>{i18n.t('new')}</AppText>
+          <AppButton
+            style={styles.chargeBtn}
+            type="primary"
+            onPress={() =>
+              navigation.navigate('ChargeType', {
+                mainSubs,
+                chargeablePeriod,
+                chargedSubs: prodData,
+                isChargeable,
+                addOnData,
+              })
+            }
+            title={i18n.t('esim:charge')}
+            titleStyle={styles.chargeBtnTitle}
+          />
+        </View>
       )}
     </SafeAreaView>
   );
