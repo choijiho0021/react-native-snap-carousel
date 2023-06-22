@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {StyleSheet, SafeAreaView, View, Pressable} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
@@ -214,6 +214,36 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   const [dataResetTime, setDataResetTime] = useState('01:00:00');
   const [noProd, setNoProd] = useState(false);
 
+  const usagePeriod = useMemo(() => {
+    const now = moment();
+    const resetTime = moment(dataResetTime, 'HH:mm:ss');
+
+    if (selectedType === 'today' && now.isAfter(resetTime))
+      resetTime.add(1, 'day');
+
+    if (mainSubs.partner === 'quadcell' && status === 'R') {
+      return {
+        text: i18n.t('esim:charge:addOn:usagePeriod:unUsed'),
+        period: mainSubs.prodDays || '',
+      };
+    }
+    return {
+      text: i18n.t('esim:charge:addOn:usagePeriod'),
+      period:
+        selectedType === 'remainDays' ||
+        (expireTime && expireTime.diff(now, 'hours') < 24)
+          ? expireTime?.format('YYYY년 MM월 DD일 HH:mm:ss') || ''
+          : resetTime.format('YYYY년 MM월 DD일 HH:mm:ss') || '',
+    };
+  }, [
+    dataResetTime,
+    expireTime,
+    mainSubs.partner,
+    mainSubs.prodDays,
+    selectedType,
+    status,
+  ]);
+
   useEffect(() => {
     if (mainSubs.daily === 'total') {
       setAddOnTypeList(['remainDays']);
@@ -347,46 +377,19 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
     [selectedAddOnProd?.sku],
   );
 
-  const renderUsagePrieod = useCallback(() => {
-    const now = moment();
-    const resetTime = moment(dataResetTime, 'HH:mm:ss');
-
-    if (selectedType === 'today' && now.isAfter(resetTime))
-      resetTime.add(1, 'day');
-
-    return (
+  const renderUsagePrieod = useCallback(
+    () => (
       <View style={styles.whiteBox}>
-        {mainSubs.partner === 'quadcell' && status === 'R' ? (
-          <AppStyledText
-            text={i18n.t('esim:charge:addOn:usagePeriod:unUsed')}
-            textStyle={styles.useText}
-            format={{b: styles.useTextBold}}
-            data={{prodDays: mainSubs.prodDays || ''}}
-          />
-        ) : (
-          <AppStyledText
-            text={i18n.t('esim:charge:addOn:usagePeriod')}
-            textStyle={styles.useText}
-            format={{b: styles.useTextBold}}
-            data={{
-              usagePeriod:
-                selectedType === 'remainDays' ||
-                (expireTime && expireTime.diff(now, 'hours') < 24)
-                  ? expireTime?.format('YYYY년 MM월 DD일 HH:mm:ss') || ''
-                  : resetTime.format('YYYY년 MM월 DD일 HH:mm:ss') || '',
-            }}
-          />
-        )}
+        <AppStyledText
+          text={usagePeriod.text}
+          textStyle={styles.useText}
+          format={{b: styles.useTextBold}}
+          data={{date: usagePeriod.period}}
+        />
       </View>
-    );
-  }, [
-    dataResetTime,
-    expireTime,
-    mainSubs.partner,
-    mainSubs.prodDays,
-    selectedType,
-    status,
-  ]);
+    ),
+    [usagePeriod],
+  );
 
   const renderNotice = useCallback(
     () => (
@@ -490,18 +493,11 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
             navigation.navigate('ChargeAgreement', {
               title: i18n.t('esim:charge:type:addOn'),
               addOnProd: selectedAddOnProd,
+              usagePeriod,
+              status,
               mainSubs,
               contents: {
                 chargeProd: selectedAddOnProd?.title || '',
-                period: (
-                  <TextWithDot
-                    text={i18n.t('esim:charge:addOn:body', {
-                      date: '0000년 00월 00일 00:00:00',
-                    })}
-                    dotStyle={styles.dot}
-                    textStyle={styles.dotText}
-                  />
-                ),
                 noticeTitle: i18n.t('esim:charge:addOn:notice:title'),
                 noticeBody:
                   mainSubs.partner === 'quadcell' && mainSubs.daily === 'daily'

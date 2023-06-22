@@ -232,6 +232,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
           <SelectedProdTitle
             isdaily={params?.mainSubs?.daily === 'daily'}
             prodName={params?.mainSubs?.prodName || ''}
+            isAddOn={!!params?.addOnProd}
           />
 
           <View style={styles.chargeProd}>
@@ -242,10 +243,22 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
             </View>
             <AppText style={styles.title}>{contents.chargeProd}</AppText>
             <AppStyledText
-              text={i18n.t('esim:charge:expPeriod')}
+              text={i18n.t(
+                `esim:charge:${
+                  params?.addOnProd
+                    ? params?.status === 'R'
+                      ? 'day'
+                      : 'duration'
+                    : 'expPeriod'
+                }`,
+              )}
               textStyle={styles.expPeriodText}
               format={{b: styles.expPeriodTextBold}}
-              data={{expPeriod: expPeriod.format('YYYY년 MM월 DD일')}}
+              data={{
+                period: params?.usagePeriod
+                  ? params?.usagePeriod.period
+                  : expPeriod.format('YYYY년 MM월 DD일'),
+              }}
             />
           </View>
           <View style={styles.notice}>

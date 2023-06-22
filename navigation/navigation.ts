@@ -52,7 +52,6 @@ export type PaymentParams = {
 
 type ChargeAgreementContents = {
   chargeProd: string;
-  period: JSX.Element;
   noticeTitle: string;
   noticeBody: string[];
 };
@@ -166,6 +165,8 @@ export type HomeStackParamList = {
     extensionProd?: RkbProduct;
     title: string;
     contents: ChargeAgreementContents;
+    usagePeriod?: {text: string; period: string};
+    status?: string;
   };
   AddOn: {
     mainSubs: RkbSubscription;

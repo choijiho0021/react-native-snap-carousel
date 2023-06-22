@@ -61,7 +61,7 @@ type CMIBundlesType = {
 // A: 사용중
 // R: 사용전
 // E: 사용완료
-type StatusType = 'A' | 'R' | 'E' | undefined;
+export type UsageStatusType = 'A' | 'R' | 'E' | undefined;
 
 type ChargeTypeScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
@@ -87,7 +87,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [addonEnable, setAddonEnable] = useState(false);
   const [remainDays, setRemainDays] = useState(0);
   const [expireTime, setExpireTime] = useState<Moment>();
-  const [status, setStatus] = useState<StatusType>();
+  const [status, setStatus] = useState<UsageStatusType>();
   const [addOnDisReason, setAddOnDisReasen] = useState('');
   const [extensionDisReason, setExtensionDisReason] = useState('');
   const [addonProds, setAddonProds] = useState<RkbAddOnProd[]>();
