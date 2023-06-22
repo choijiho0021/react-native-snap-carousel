@@ -360,15 +360,12 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
           </AppText>
         </View>
 
-        {mainSubs.partner === 'cmi' && (
+        {chargeablePeriod && (
           <View style={styles.inactiveContainer}>
             <AppText style={styles.boldl14Gray}>
               {i18n.t('esim:rechargeablePeriod')}
             </AppText>
-            <AppText style={styles.normal14Gray}>
-              {chargeablePeriod}
-              {i18n.t('sim:until')}
-            </AppText>
+            <AppText style={styles.normal14Gray}>{chargeablePeriod}</AppText>
           </View>
         )}
       </View>
@@ -376,7 +373,6 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   }, [
     chargeablePeriod,
     expireTime,
-    mainSubs.partner,
     mainSubs.purchaseDate,
     mainSubs?.subsIccid,
   ]);
