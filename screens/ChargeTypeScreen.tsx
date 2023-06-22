@@ -96,12 +96,14 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     () => mainSubs.partner === 'cmi' && isChargeable,
     [isChargeable, mainSubs.partner],
   );
+
+  // 쿼드셀 무제한 상품의 경우 남은 기간 충전은 1회로 제한 됨
   const quadAddonOverLimited = useMemo(
     () =>
       mainSubs.partner === 'quadcell' &&
       mainSubs.daily === 'daily' &&
-      (addOnData?.length || 0) > 0,
-    [addOnData?.length, mainSubs.daily, mainSubs.partner],
+      addOnData?.find((a) => Number(a.prodDays) > 1),
+    [addOnData, mainSubs],
   );
 
   useEffect(() => {
@@ -174,6 +176,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           } else {
             setChargeableItem(mainSubs);
           }
+          // 사용 중
           setAddonEnable(true);
           setStatus('A');
           return;
@@ -182,6 +185,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         // 사용 전 상품이 있는지 체크
         if (bundles.find((b) => b.status === 1)) {
           setAddonEnable(true);
+          // 사용 전
           setStatus('R');
           return;
         }
@@ -279,7 +283,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           setAddonEnable(false);
           setAddOnDisReasen('noProd');
         } else if (
-          // 쿼드셀 무제한 (사용전), 쿼드셀 종량제의 경우 하루 충전 지원 x
+          // 남은 기간 충전에 대한 처리 건이 있으면 서버에서 하루 충전 상품만 내려줌
+          // 사용전인 쿼드셀 무제한 상품의 경우 하루 충전은 지원하지 않음
           remainDaysProd.length < 1 &&
           mainSubs.partner === 'quadcell' &&
           status === 'R' &&
