@@ -90,7 +90,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [status, setStatus] = useState<UsageStatusType>();
   const [addOnDisReason, setAddOnDisReasen] = useState('');
   const [extensionDisReason, setExtensionDisReason] = useState('');
-  const [addonProds, setAddonProds] = useState<RkbAddOnProd[]>();
+  const [addonProds, setAddonProds] = useState<RkbAddOnProd[]>([]);
   const dispatch = useDispatch();
   const extensionEnable = useMemo(
     () => mainSubs.partner === 'cmi' && isChargeable,
