@@ -187,8 +187,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const checkQuadcellStatus = useCallback(async (item: RkbSubscription) => {
     if (item?.imsi) {
       const qStatus = await API.Subscription.quadcellGetData({
-        // imsi: item.imsi,
-        imsi: '454070042533683',
+        imsi: item.imsi,
         key: 'packlist',
       });
 
