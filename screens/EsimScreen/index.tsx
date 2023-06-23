@@ -332,7 +332,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     ): Promise<{status: StatusObj; usage: UsageObj}> => {
       if (item?.imsi) {
         const status = await API.Subscription.quadcellGetData({
-          imsi: '454070042530886',
+          imsi: item.imsi,
           key: 'packlist',
         });
 
@@ -349,7 +349,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             : undefined;
 
         const quota = await API.Subscription.quadcellGetData({
-          imsi: '454070042530886',
+          imsi: item.imsi,
           key: 'quota',
           query,
         });
@@ -373,14 +373,21 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           const statusCd = getQuadcellStatus(dataPack, exp);
 
           const quadcellStatus: StatusObj = {
-            statusCd: 'A',
+            statusCd,
             endTime: exp.format('YYYY.MM.DD HH:mm:ss'),
           };
+
+          let dataVolume = Number(item.dataVolume) || 0;
+          if (item.daily === 'daily' && statusCd === 'A') {
+            dataVolume = order.subs
+              .get(item.subsIccid || '0')
+              ?.reduce((acc, cur) => acc + Number(cur.dataVolume), 0);
+          }
 
           const quadcellUsage: UsageObj =
             item.daily === 'daily'
               ? {
-                  quota: Number(item.dataVolume) || 0, // Mb
+                  quota: dataVolume || 0, // Mb
                   used: Number(quota?.objects?.dailyUsage) || 0, // Mb
                 }
               : {
@@ -396,7 +403,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         usage: {quota: undefined, used: undefined},
       };
     },
-    [getQuadcellStatus],
+    [getQuadcellStatus, order.subs],
   );
 
   const checkBcData = useCallback(
@@ -460,12 +467,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         case 'billionconnect':
           result = await checkBcData(item);
           break;
-        // setShowSnackBar(true);
-        // result = {
-        //   status: {statusCd: undefined, endTime: undefined},
-        //   usage: {quota: undefined, used: undefined},
-        // };
-        // break;
         default:
           result = await checkCmiData(item);
           break;
@@ -559,6 +560,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           _.isEmpty(subsList) && {flex: 1},
         ]}
         ListEmptyComponent={empty}
+        onScrollToIndexFailed={(rsp) => {
+          const wait = new Promise((resolve) => setTimeout(resolve, 500));
+          wait.then(() => {
+            flatListRef?.current?.scrollToIndex({
+              index: rsp.index,
+              animated: true,
+            });
+          });
+        }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing && !isFirstLoad}

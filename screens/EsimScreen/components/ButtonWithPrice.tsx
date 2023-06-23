@@ -65,7 +65,10 @@ const ButtonWithPrice = ({
         </AppText>
       </View>
       <AppButton
-        style={styles.paymentBtn}
+        style={[
+          styles.paymentBtn,
+          {backgroundColor: disable ? colors.line : colors.clearBlue},
+        ]}
         type="primary"
         onPress={onPress}
         title={title || i18n.t('esim:charge:payment')}
@@ -73,8 +76,10 @@ const ButtonWithPrice = ({
           styles.paymentBtnTitle,
           {color: disable ? colors.greyish : colors.white},
         ]}
-        disabled={disable}
         disableStyle={{backgroundColor: colors.line}}
+        pressedStyle={{
+          backgroundColor: disable ? colors.line : colors.dodgerBlue,
+        }}
       />
     </View>
   );

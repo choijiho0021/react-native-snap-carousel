@@ -1,6 +1,5 @@
 /* eslint-disable no-nested-ternary */
 import React, {
-  memo,
   MutableRefObject,
   useCallback,
   useMemo,
@@ -33,7 +32,6 @@ import AppStyledText from '@/components/AppStyledText';
 import AppModal from '@/components/AppModal';
 import {RootState} from '@/redux';
 import {ProductModelState} from '../../../redux/modules/product';
-import {RkbProduct} from '../../../redux/api/productApi';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -118,13 +116,6 @@ const styles = StyleSheet.create({
     fontSize: isDeviceSize('small') ? 12 : 14,
   },
   btn: {
-    width: 85,
-  },
-  btnDis: {
-    width: 85,
-    opacity: 0.6,
-  },
-  btnExpired: {
     width: 85,
   },
   btnTitle: {
@@ -219,15 +210,6 @@ const styles = StyleSheet.create({
     color: colors.tomato,
     lineHeight: 18,
   },
-  expiredDot: {
-    position: 'absolute',
-    width: 7,
-    height: 7,
-    borderRadius: 7,
-    backgroundColor: 'red',
-    right: 24,
-    top: 5,
-  },
   expiredModalTextFrame: {
     marginLeft: 30,
     marginBottom: 24,
@@ -258,6 +240,21 @@ const styles = StyleSheet.create({
     color: colors.blue,
     lineHeight: 26,
     marginLeft: 6,
+  },
+  newIcon: {
+    position: 'absolute',
+    top: -12,
+    zIndex: 20,
+    alignSelf: 'center',
+  },
+  newText: {
+    position: 'absolute',
+    top: -10,
+    zIndex: 30,
+    alignSelf: 'center',
+    ...appStyles.bold12Text,
+    lineHeight: 16,
+    color: colors.white,
   },
 });
 
@@ -296,7 +293,7 @@ const EsimSubs = ({
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
   const isBc = useMemo(
-    () => mainSubs.partner?.toLowerCase() === 'billionconnect',
+    () => mainSubs.partner === 'billionconnect',
     [mainSubs.partner],
   );
   const notCardInfo = useMemo(
@@ -327,9 +324,8 @@ const EsimSubs = ({
   }, [chargedSubs]);
 
   useEffect(() => {
-    if (showMoreInfo)
-      flatListRef?.current?.scrollToIndex({index, animated: true});
-  }, [flatListRef, index, showMoreInfo]);
+    setShowMoreInfo(showDetail);
+  }, [showDetail]);
 
   useEffect(() => {
     if (!notCardInfo) setShowMoreInfo(false);
@@ -372,7 +368,10 @@ const EsimSubs = ({
       <Pressable
         style={styles.prodTitle}
         onPress={() => {
-          if (notCardInfo) setShowMoreInfo((prev) => !prev);
+          if (notCardInfo) {
+            setShowMoreInfo((prev) => !prev);
+            flatListRef?.current?.scrollToIndex({index, animated: true});
+          }
         }}>
         {mainSubs.flagImage !== '' && (
           <Image
@@ -421,7 +420,15 @@ const EsimSubs = ({
         )}
       </Pressable>
     );
-  }, [mainSubs, expired, isCharged, showMoreInfo, notCardInfo]);
+  }, [
+    mainSubs,
+    expired,
+    isCharged,
+    showMoreInfo,
+    notCardInfo,
+    flatListRef,
+    index,
+  ]);
 
   const topInfo = useCallback(() => {
     return (
@@ -568,7 +575,18 @@ const EsimSubs = ({
           return (
             <View
               key={utils.generateKey(idx)}
-              style={[styles.btnMove, {marginRight: !isLast ? 12 : 0}]}>
+              style={[
+                styles.btnMove,
+                {marginRight: !isLast ? 12 : 0},
+                isSendBtn ? {} : {position: 'relative'},
+              ]}>
+              {!isSendBtn && !isCharged && (
+                <>
+                  <AppSvgIcon name="speechBubble" style={styles.newIcon} />
+                  <AppText style={styles.newText}>{i18n.t('new')}</AppText>
+                </>
+              )}
+
               <AppButton
                 title={btnTitle}
                 titleStyle={[styles.btnTitle2, !isLast && styles.colorblack]}

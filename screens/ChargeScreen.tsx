@@ -161,8 +161,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
   const prodData = useMemo(() => {
     if (partnerIds) {
       const cmiPartnerIds = partnerIds.filter(
-        (partnerId) =>
-          localOpList.get(partnerId)?.partner?.toLowerCase() === 'cmi',
+        (partnerId) => localOpList.get(partnerId)?.partner === 'cmi',
       );
 
       // 중복 제거
@@ -284,7 +283,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
       <View style={styles.divider24} />
 
       <TabView
-        sceneContainerStyle={{flex: 1}}
+        sceneContainerStyle={{flex: 1, backgroundColor: colors.white}}
         navigationState={{index, routes}}
         renderScene={renderScene}
         onIndexChange={onIndexChange}

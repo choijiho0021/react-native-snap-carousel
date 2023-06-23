@@ -25,6 +25,7 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import Env from '@/environment';
 import AppIcon from '@/components/AppIcon';
+import TextWithDot from './TextWithDot';
 
 const styles = StyleSheet.create({
   usageListContainer: {
@@ -159,6 +160,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
+  noticeText: {
+    ...appStyles.normal14Text,
+    lineHeight: 18,
+    color: colors.warmGrey,
+    marginRight: 20,
+  },
 });
 
 const {esimApp} = Env.get();
@@ -285,10 +292,8 @@ const UsageItem: React.FC<UsageItemProps> = ({
             </AppText>
             <AppText style={appStyles.normal14Text}>
               {item.partner === 'cmi'
-                ? i18n.t('esim:until:KST', {
-                    time: utils.toDateString(endTime, 'HH:mm:ss'),
-                  })
-                : i18n.t('esim:KST', {time: '01'})}
+                ? endTime?.split(' ')[1] || i18n.t('contact:q')
+                : '01:00:00'}
             </AppText>
           </View>
         )}
@@ -452,6 +457,12 @@ const UsageItem: React.FC<UsageItemProps> = ({
                   <AppText style={styles.inactiveIcon}>
                     {i18n.t(`esim:${code[v]}Info`)}
                   </AppText>
+                  {item.partner === 'billionconnect' && (
+                    <TextWithDot
+                      text={i18n.t('quadcell:usageInfo')}
+                      textStyle={styles.noticeText}
+                    />
+                  )}
                 </View>
               )
             );
@@ -464,6 +475,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
       expire,
       isShowUsage,
       item.key,
+      item.partner,
       item.prodName,
       item.type,
       showExpire,

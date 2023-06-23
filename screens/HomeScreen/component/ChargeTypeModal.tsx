@@ -144,8 +144,8 @@ const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
           <ChargeBottomButton
             type={type}
             onPress={() => {
-              if (!disabled) dispatch(modalActions.closeModal());
-              onPress(type);
+              dispatch(modalActions.closeModal());
+              if (!disabled) onPress(type);
             }}
             disabled={disabled}
             title={

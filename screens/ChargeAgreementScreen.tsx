@@ -8,6 +8,7 @@ import {RootState} from '@reduxjs/toolkit';
 import {bindActionCreators} from 'redux';
 import moment from 'moment';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppBackButton from '@/components/AppBackButton';
@@ -22,6 +23,7 @@ import {AccountModelState} from '@/redux/modules/account';
 import SelectedProdTitle from './EventBoardScreen/components/SelectedProdTitle';
 import AppStyledText from '@/components/AppStyledText';
 import {sliderWidth} from '@/constants/SliderEntry.style';
+import AppModalContent from '@/components/ModalContent/AppModalContent';
 
 const styles = StyleSheet.create({
   container: {
@@ -136,6 +138,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  modalText: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 26,
+    letterSpacing: -0.32,
+    color: colors.black,
+  },
 });
 
 type ChargeAgreementScreenNavigationProp = StackNavigationProp<
@@ -149,6 +157,7 @@ type ChargeAgreementScreenProps = {
   account: AccountModelState;
   action: {
     cart: CartAction;
+    modal: ModalAction;
   };
 };
 
@@ -188,18 +197,33 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
   useEffect(() => {}, []);
 
   const onPressBtnPurchase = useCallback(() => {
-    const {balance} = account;
+    if (isPressed) {
+      const {balance} = account;
+      // 구매 품목을 갱신한다.
+      action.cart.purchase({
+        purchaseItems,
+        balance,
+        esimIccid: params.mainSubs.subsIccid,
+        mainSubsId: params.mainSubs.nid,
+      });
 
-    // 구매 품목을 갱신한다.
-    action.cart.purchase({
-      purchaseItems,
-      balance,
-      esimIccid: params.mainSubs.subsIccid,
-      mainSubsId: params.mainSubs.nid,
-    });
-
-    navigation.navigate('PymMethod', {mode: 'roaming_product'});
-  }, [account, action.cart, navigation, params.mainSubs, purchaseItems]);
+      navigation.navigate('PymMethod', {mode: 'roaming_product'});
+    } else {
+      action.modal.renderModal(() => (
+        <AppModalContent
+          type="info"
+          onOkClose={() => {
+            action.modal.closeModal();
+          }}>
+          <View style={{marginLeft: 30}}>
+            <AppText style={styles.modalText}>
+              {i18n.t('esim:charge:agreement:check')}
+            </AppText>
+          </View>
+        </AppModalContent>
+      ));
+    }
+  }, [account, action, isPressed, navigation, params.mainSubs, purchaseItems]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -208,6 +232,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
           <SelectedProdTitle
             isdaily={params?.mainSubs?.daily === 'daily'}
             prodName={params?.mainSubs?.prodName || ''}
+            isAddOn={!!params?.addOnProd}
           />
 
           <View style={styles.chargeProd}>
@@ -218,10 +243,22 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
             </View>
             <AppText style={styles.title}>{contents.chargeProd}</AppText>
             <AppStyledText
-              text={i18n.t('esim:charge:expPeriod')}
+              text={i18n.t(
+                `esim:charge:${
+                  params?.addOnProd
+                    ? params?.status === 'R'
+                      ? 'day'
+                      : 'duration'
+                    : 'expPeriod'
+                }`,
+              )}
               textStyle={styles.expPeriodText}
               format={{b: styles.expPeriodTextBold}}
-              data={{expPeriod: expPeriod.format('YYYY년 MM월 DD일')}}
+              data={{
+                period: params?.usagePeriod
+                  ? params?.usagePeriod.period
+                  : expPeriod.format('YYYY년 MM월 DD일'),
+              }}
             />
           </View>
           <View style={styles.notice}>
@@ -234,6 +271,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
             <View style={{marginRight: 20}}>
               {contents.noticeBody.map((k) => (
                 <TextWithDot
+                  key={k}
                   text={k}
                   boldStyle={styles.noticeBold}
                   textStyle={styles.noticeText}
@@ -258,7 +296,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
       <View>
         <ButtonWithPrice
           amount={
-            params.addOnProd?.price ||
+            params.addOnProd?.price.split(' ')[0] ||
             params.extensionProd?.price.value.toString() ||
             '0'
           }
@@ -279,6 +317,7 @@ export default connect(
   (dispatch) => ({
     action: {
       cart: bindActionCreators(cartActions, dispatch),
+      modal: bindActionCreators(modalActions, dispatch),
     },
   }),
 )(ChargeAgreementScreen);

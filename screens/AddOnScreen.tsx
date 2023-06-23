@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {StyleSheet, SafeAreaView, View, Pressable} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
@@ -9,14 +9,13 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
-import {API} from '@/redux/api';
 import {RkbAddOnProd} from '@/redux/api/productApi';
 import {appStyles} from '@/constants/Styles';
 import ButtonWithPrice from './EsimScreen/components/ButtonWithPrice';
 import TextWithDot from './EsimScreen/components/TextWithDot';
 import AppStyledText from '@/components/AppStyledText';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {sliderWidth} from '@/constants/SliderEntry.style';
+import {sliderWidth, windowHeight} from '@/constants/SliderEntry.style';
 import SelectedProdTitle from './EventBoardScreen/components/SelectedProdTitle';
 
 const styles = StyleSheet.create({
@@ -157,9 +156,14 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     color: colors.white,
   },
+  flex: {
+    display: 'flex',
+    height: windowHeight - 374,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   no: {
     width: '100%',
-    marginTop: 105,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -198,8 +202,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   navigation,
   route: {params},
 }) => {
-  const {mainSubs, status, expireTime, addOnData} = params || {};
-  const [remainDays, setRemainDays] = useState(1);
+  const {mainSubs, status, expireTime, addonProds} = params || {};
   const [todayAddOnProd, setTodayAddOnProd] = useState<RkbAddOnProd[]>([]);
   const [remainDaysAddOnProd, setRemainDaysAddOnProd] = useState<
     RkbAddOnProd[]
@@ -209,6 +212,37 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   const [selectedAddOnProd, setSelectedAddOnProd] = useState<RkbAddOnProd>();
   // quadcell 기준 기본 한국시간 1시
   const [dataResetTime, setDataResetTime] = useState('01:00:00');
+  const [noProd, setNoProd] = useState(false);
+
+  const usagePeriod = useMemo(() => {
+    const now = moment();
+    const resetTime = moment(dataResetTime, 'HH:mm:ss');
+
+    if (selectedType === 'today' && now.isAfter(resetTime))
+      resetTime.add(1, 'day');
+
+    if (mainSubs.partner === 'quadcell' && status === 'R') {
+      return {
+        text: i18n.t('esim:charge:addOn:usagePeriod:unUsed'),
+        period: mainSubs.prodDays || '',
+      };
+    }
+    return {
+      text: i18n.t('esim:charge:addOn:usagePeriod'),
+      period:
+        selectedType === 'remainDays' ||
+        (expireTime && expireTime.diff(now, 'hours') < 24)
+          ? expireTime?.format('YYYY년 MM월 DD일 HH:mm:ss') || ''
+          : resetTime.format('YYYY년 MM월 DD일 HH:mm:ss') || '',
+    };
+  }, [
+    dataResetTime,
+    expireTime,
+    mainSubs.partner,
+    mainSubs.prodDays,
+    selectedType,
+    status,
+  ]);
 
   useEffect(() => {
     if (mainSubs.daily === 'total') {
@@ -221,20 +255,10 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   useEffect(() => {
     if (expireTime) {
       // cmi의 리셋타임은 활성화 시간 기준으로 변경 됨
-      if (mainSubs.partner?.toLowerCase() === 'cmi')
+      if (mainSubs.partner === 'cmi')
         setDataResetTime(expireTime.format('HH:mm:ss'));
     }
   }, [expireTime, mainSubs.partner]);
-
-  useEffect(() => {
-    // 남은 사용기간 구하기
-    if (status === 'unUsed' && mainSubs.prodDays) {
-      setRemainDays(Number(mainSubs.prodDays));
-    } else if (expireTime) {
-      const today = moment();
-      setRemainDays(Math.ceil(expireTime.diff(today, 'hours') / 24));
-    }
-  }, [expireTime, mainSubs, mainSubs.partner, status]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -251,50 +275,38 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   }, [navigation]);
 
   useEffect(() => {
-    if (mainSubs.nid)
-      API.Product.getAddOnProduct(
-        mainSubs.nid,
-        mainSubs.daily === 'daily' ? remainDays.toString() : '1',
-      ).then((data) => {
-        if (data.result === 0) {
-          const rsp = data.objects;
-          const todayProd = rsp.filter((r) => r.days === '1');
-          const remainDaysProd = rsp.filter((r) => r.days !== '1');
-          if (remainDaysProd.length > 0) {
-            if (
-              mainSubs.partner?.toLocaleLowerCase() === 'quadcell' &&
-              (status === 'unUsed' || mainSubs.daily === 'total')
-            ) {
-              setAddOnTypeList(['remainDays']);
-              setSelectedType('remainDays');
-              setTodayAddOnProd(remainDaysProd);
-              setSelectedAddOnProd(remainDaysProd[0]);
-              setRemainDaysAddOnProd(remainDaysProd);
-              return;
-            }
-            // 남은 기간 충전이 1회라도 있는 경우
-            if (
-              mainSubs.partner?.toLocaleLowerCase() === 'quadcell' &&
-              status === 'Using' &&
-              mainSubs.daily === 'total' &&
-              addOnData?.find((a) => a.prodDays && Number(a.prodDays) > 1)
-            ) {
-              setAddOnTypeList(['today']);
-              setSelectedType('today');
-              setTodayAddOnProd(todayProd);
-              setSelectedAddOnProd(todayProd[0]);
-              setRemainDaysAddOnProd(remainDaysProd);
-              return;
-            }
-            setAddOnTypeList(['today', 'remainDays']);
-          }
+    if (addonProds) {
+      const todayProd = addonProds.filter((r) => r.days === '1');
+      const remainDaysProd = addonProds.filter((r) => r.days !== '1');
 
-          setTodayAddOnProd(todayProd);
-          setSelectedAddOnProd(todayProd[0]);
+      if (todayProd.length < 1 && remainDaysProd.length < 1) {
+        setNoProd(true);
+        return;
+      }
+
+      if (remainDaysProd.length > 0) {
+        // 쿼드셀 무제한 (사용전), 쿼드셀 종량제의 경우 하루 충전 지원 x
+        if (
+          mainSubs.partner === 'quadcell' &&
+          (status === 'R' || mainSubs.daily === 'total')
+        ) {
+          setAddOnTypeList(['remainDays']);
+          setSelectedType('remainDays');
+          setSelectedAddOnProd(remainDaysProd[0]);
           setRemainDaysAddOnProd(remainDaysProd);
+          return;
         }
-      });
-  }, [addOnData, mainSubs, remainDays, status]);
+
+        setAddOnTypeList(['today', 'remainDays']);
+      }
+
+      setTodayAddOnProd(todayProd);
+      setSelectedAddOnProd(todayProd[0]);
+      setRemainDaysAddOnProd(remainDaysProd);
+    } else {
+      setNoProd(true);
+    }
+  }, [addonProds, mainSubs.daily, mainSubs.partner, status]);
 
   const renderTypeBtn = useCallback(
     (type: AddOnType) => (
@@ -358,47 +370,19 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
     [selectedAddOnProd?.sku],
   );
 
-  const renderUsagePrieod = useCallback(() => {
-    const now = moment();
-    const resetTime = moment(dataResetTime, 'HH:mm:ss');
-
-    if (selectedType === 'today' && now.isAfter(resetTime))
-      resetTime.add(1, 'day');
-
-    return (
+  const renderUsagePrieod = useCallback(
+    () => (
       <View style={styles.whiteBox}>
-        {mainSubs.partner?.toLowerCase() === 'quadcell' &&
-        status === 'unUsed' ? (
-          <AppStyledText
-            text={i18n.t('esim:charge:addOn:usagePeriod:unUsed')}
-            textStyle={styles.useText}
-            format={{b: styles.useTextBold}}
-            data={{prodDays: mainSubs.prodDays || ''}}
-          />
-        ) : (
-          <AppStyledText
-            text={i18n.t('esim:charge:addOn:usagePeriod')}
-            textStyle={styles.useText}
-            format={{b: styles.useTextBold}}
-            data={{
-              usagePeriod:
-                selectedType === 'remainDays' ||
-                (expireTime && expireTime.diff(now, 'hours') < 24)
-                  ? expireTime?.format('YYYY년 MM월 DD일 HH:mm:ss') || ''
-                  : resetTime.format('YYYY년 MM월 DD일 HH:mm:ss') || '',
-            }}
-          />
-        )}
+        <AppStyledText
+          text={usagePeriod.text}
+          textStyle={styles.useText}
+          format={{b: styles.useTextBold}}
+          data={{date: usagePeriod.period}}
+        />
       </View>
-    );
-  }, [
-    dataResetTime,
-    expireTime,
-    mainSubs.partner,
-    mainSubs.prodDays,
-    selectedType,
-    status,
-  ]);
+    ),
+    [usagePeriod],
+  );
 
   const renderNotice = useCallback(
     () => (
@@ -441,17 +425,27 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
           isAddOn
         />
 
-        {mainSubs.partner?.toLowerCase() === 'cmi' && status === 'unUsed' ? (
-          <View style={styles.no}>
-            <AppSvgIcon name="blueNotice" style={{marginBottom: 16}} />
-            <AppStyledText
-              text={i18n.t('esim:charge:addOn:no:title')}
-              textStyle={styles.noTitle}
-              format={{b: styles.noTitleBold}}
-            />
-            <AppText style={styles.noBody}>
-              {i18n.t('esim:charge:addOn:no:body')}
-            </AppText>
+        {(mainSubs.partner === 'cmi' && status === 'R') || noProd ? (
+          <View style={styles.flex}>
+            <View style={styles.no}>
+              <AppSvgIcon name="blueNotice" style={{marginBottom: 16}} />
+              <AppStyledText
+                text={i18n.t(
+                  `esim:charge:addOn:${
+                    mainSubs.partner === 'cmi' && status === 'R'
+                      ? 'no'
+                      : 'empty'
+                  }:title`,
+                )}
+                textStyle={styles.noTitle}
+                format={{b: styles.noTitleBold}}
+              />
+              {mainSubs.partner === 'cmi' && status === 'R' && (
+                <AppText style={styles.noBody}>
+                  {i18n.t('esim:charge:addOn:no:body')}
+                </AppText>
+              )}
+            </View>
           </View>
         ) : (
           <View style={styles.addOnFrame}>
@@ -479,7 +473,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
         )}
       </ScrollView>
 
-      {mainSubs.partner?.toLowerCase() === 'cmi' && status === 'unUsed' ? (
+      {(mainSubs.partner === 'cmi' && status === 'R') || noProd ? (
         <Pressable style={styles.close} onPress={() => navigation.goBack()}>
           <AppText style={styles.closeText}>{i18n.t('close')}</AppText>
         </Pressable>
@@ -492,32 +486,18 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
             navigation.navigate('ChargeAgreement', {
               title: i18n.t('esim:charge:type:addOn'),
               addOnProd: selectedAddOnProd,
+              usagePeriod,
+              status,
               mainSubs,
               contents: {
                 chargeProd: selectedAddOnProd?.title || '',
-                period: (
-                  <TextWithDot
-                    text={i18n.t('esim:charge:addOn:body', {
-                      date: '0000년 00월 00일 00:00:00',
-                    })}
-                    dotStyle={styles.dot}
-                    textStyle={styles.dotText}
-                  />
-                ),
                 noticeTitle: i18n.t('esim:charge:addOn:notice:title'),
                 noticeBody:
-                  mainSubs.partner?.toLowerCase() === 'quadcell' &&
-                  mainSubs.daily === 'daily'
-                    ? [1, 2, 3, 4, 5, 6].map((n) =>
-                        n < 4
-                          ? i18n.t(`esim:charge:addOn:notice:body${n}`)
-                          : i18n.t(
-                              `esim:charge:addOn:notice:body${n}:quadcellD`,
-                            ),
-                      )
-                    : [1, 2, 3, 4, 5].map((n) =>
-                        i18n.t(`esim:charge:addOn:notice:body${n}`),
-                      ),
+                  mainSubs.partner === 'quadcell' && mainSubs.daily === 'daily'
+                    ? i18n
+                        .t('esim:charge:addOn:notice:body:quadcellD')
+                        .split('\n')
+                    : i18n.t('esim:charge:addOn:notice:body').split('\n'),
               },
             });
           }}

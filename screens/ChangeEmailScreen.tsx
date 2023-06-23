@@ -123,7 +123,7 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
         type="info"
         onOkClose={() => {
           actions.modal.closeModal();
-          navigation.goBack();
+          navigation.popToTop();
         }}
       />
     ));

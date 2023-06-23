@@ -3240,6 +3240,21 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  speechBubble: [
+    <Svg
+      width="54"
+      height="24"
+      viewBox="0 0 54 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M3 0a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h20l4 4 4-4h20a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3H3z"
+        fill="#5B16EF"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

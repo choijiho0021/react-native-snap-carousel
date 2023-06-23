@@ -181,6 +181,28 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
     justifyContent: 'center',
   },
+  newIcon: {
+    position: 'absolute',
+    top: -14,
+    zIndex: 20,
+    alignSelf: 'center',
+  },
+  newText: {
+    position: 'absolute',
+    top: -12,
+    zIndex: 30,
+    alignSelf: 'center',
+    ...appStyles.bold12Text,
+    lineHeight: 16,
+    color: colors.white,
+  },
+  purchaseText: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 20,
+    color: colors.warmGrey,
+    alignSelf: 'flex-start',
+    marginTop: 16,
+  },
 });
 
 export const renderPromoFlag = (flags: string[], isStore: boolean) => (
@@ -360,15 +382,12 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
           </AppText>
         </View>
 
-        {mainSubs.partner === 'cmi' && (
+        {chargeablePeriod && (
           <View style={styles.inactiveContainer}>
             <AppText style={styles.boldl14Gray}>
               {i18n.t('esim:rechargeablePeriod')}
             </AppText>
-            <AppText style={styles.normal14Gray}>
-              {chargeablePeriod}
-              {i18n.t('sim:until')}
-            </AppText>
+            <AppText style={styles.normal14Gray}>{chargeablePeriod}</AppText>
           </View>
         )}
       </View>
@@ -376,7 +395,6 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   }, [
     chargeablePeriod,
     expireTime,
-    mainSubs.partner,
     mainSubs.purchaseDate,
     mainSubs?.subsIccid,
   ]);
@@ -465,7 +483,13 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
             marginBottom: 16,
           }}>
           <View style={{alignItems: 'center', paddingHorizontal: 20}}>
-            <View style={{flexDirection: 'row', marginVertical: 19}}>
+            <AppText style={styles.purchaseText}>
+              {i18n.t('purchase:date', {
+                date: utils.toDateString(item.purchaseDate, 'YYYY.MM.DD'),
+              })}
+            </AppText>
+            <View
+              style={{flexDirection: 'row', marginBottom: 16, marginTop: 6}}>
               <View style={{flex: 1}}>
                 <SplitText
                   renderExpend={() =>
@@ -650,21 +674,25 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
       </Modal>
 
       {isChargeable && (
-        <AppButton
-          style={styles.chargeBtn}
-          type="primary"
-          onPress={() =>
-            navigation.navigate('ChargeType', {
-              mainSubs,
-              chargeablePeriod,
-              chargedSubs: prodData,
-              isChargeable,
-              addOnData,
-            })
-          }
-          title={i18n.t('esim:charge')}
-          titleStyle={styles.chargeBtnTitle}
-        />
+        <View style={{position: 'relative'}}>
+          <AppSvgIcon name="speechBubble" style={styles.newIcon} />
+          <AppText style={styles.newText}>{i18n.t('new')}</AppText>
+          <AppButton
+            style={styles.chargeBtn}
+            type="primary"
+            onPress={() =>
+              navigation.navigate('ChargeType', {
+                mainSubs,
+                chargeablePeriod,
+                chargedSubs: prodData,
+                isChargeable,
+                addOnData,
+              })
+            }
+            title={i18n.t('esim:charge')}
+            titleStyle={styles.chargeBtnTitle}
+          />
+        </View>
       )}
     </SafeAreaView>
   );
