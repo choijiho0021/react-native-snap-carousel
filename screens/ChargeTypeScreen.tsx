@@ -167,15 +167,12 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             setChargeableItem(mainSubs);
           }
           // 사용 중
-          setAddonEnable(true);
           setStatus('A');
           return;
         }
 
-        // 사용 전 상품이 있는지 체크
+        // 사용 전
         if (bundles.find((b) => b.status === 1)) {
-          setAddonEnable(true);
-          // 사용 전
           setStatus('R');
           return;
         }
@@ -187,55 +184,46 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     [chargedSubs, mainSubs],
   );
 
-  const checkQuadcellStatus = useCallback(
-    async (item: RkbSubscription) => {
-      if (item?.imsi) {
-        const qStatus = await API.Subscription.quadcellGetData({
-          imsi: item.imsi,
-          key: 'packlist',
-        });
+  const checkQuadcellStatus = useCallback(async (item: RkbSubscription) => {
+    if (item?.imsi) {
+      const qStatus = await API.Subscription.quadcellGetData({
+        // imsi: item.imsi,
+        imsi: '454070042533683',
+        key: 'packlist',
+      });
 
-        const dataPack = qStatus.objects?.packList?.find(
-          (elm) =>
-            elm?.packOrderSn !== undefined && Number(elm?.packCode) <= 900000,
+      const dataPack = qStatus.objects?.packList?.find(
+        (elm) =>
+          elm?.packOrderSn !== undefined && Number(elm?.packCode) <= 900000,
+      );
+
+      if (qStatus.result === 0 && qStatus.objects?.retCode === '000000') {
+        const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss').add(
+          USAGE_TIME_INTERVAL.quadcell,
+          'h',
         );
+        setExpireTime(exp);
 
-        if (qStatus.result === 0 && qStatus.objects?.retCode === '000000') {
-          const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss').add(
-            USAGE_TIME_INTERVAL.quadcell,
-            'h',
-          );
-          setExpireTime(exp);
-
-          // 사용 완료
-          if (!dataPack) {
+        // 사용 완료
+        if (!dataPack) {
+          setStatus('E');
+          return;
+        }
+        if (dataPack?.effTime) {
+          if (moment().isAfter(exp)) {
+            // 사용 완료
             setStatus('E');
             return;
           }
-          if (dataPack?.effTime) {
-            if (moment().isAfter(exp)) {
-              // 사용 완료
-              setStatus('E');
-              return;
-            }
-            // 사용 중
-            setStatus('A');
-            setAddonEnable(true);
-            return;
-          }
-          // 사용 전,  충전내역 O
-          if (quadAddonOverLimited) {
-            setStatus('R');
-            return;
-          }
-          // 사용 전,  충전내역 X
-          setAddonEnable(true);
-          setStatus('R');
+          // 사용 중
+          setStatus('A');
+          return;
         }
+        // 사용 전
+        setStatus('R');
       }
-    },
-    [quadAddonOverLimited],
-  );
+    }
+  }, []);
 
   useEffect(() => {
     switch (mainSubs.partner) {
@@ -271,7 +259,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   }, [expireTime, mainSubs, mainSubs.partner, status]);
 
   const getAddOnProduct = useCallback(() => {
-    if (mainSubs.nid && remainDays !== 0)
+    if (mainSubs.nid && remainDays && remainDays > 0) {
       API.Product.getAddOnProduct(
         mainSubs.nid,
         mainSubs.daily === 'daily' ? remainDays.toString() : '1',
@@ -280,6 +268,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         const remainDaysProd = rsp.filter((r) => r.days !== '1');
 
         if (rsp.length < 1) {
+          // 상품 없음
           setAddonEnable(false);
           setAddOnDisReasen('noProd');
         } else if (
@@ -293,37 +282,50 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           setAddonEnable(false);
           setAddOnDisReasen('overLimit');
         } else {
+          setAddonEnable(true);
           setAddonProds(rsp);
         }
       });
-  }, [mainSubs, remainDays, status]);
+    }
+  }, [mainSubs.daily, mainSubs.nid, mainSubs.partner, remainDays, status]);
 
   useEffect(() => {
-    if (!addonEnable) {
-      if (status === 'E') {
-        setAddOnDisReasen('used');
-        return;
-      }
-
-      if (
-        mainSubs.partner === 'billionconnect' ||
-        (mainSubs.partner === 'cmi' && mainSubs.daily === 'total')
-      ) {
-        setAddOnDisReasen('unsupported');
-        return;
-      }
-
-      // 쿼드셀 무제한 상품 1회 충전 제한
-      if (quadAddonOverLimited) {
-        setAddOnDisReasen('overLimit');
-        return;
-      }
-      setAddOnDisReasen('noProd');
-    } else {
-      getAddOnProduct();
+    // BC 상품 및 cmi 종량제 상품 미지원
+    if (
+      mainSubs.partner === 'billionconnect' ||
+      (mainSubs.partner === 'cmi' && mainSubs.daily === 'total')
+    ) {
+      setAddonEnable(false);
+      setAddOnDisReasen('unsupported');
+      return;
     }
+
+    // 모든 사용완료 상품은 충전 불가
+    if (status === 'E') {
+      setAddonEnable(false);
+      setAddOnDisReasen('used');
+      return;
+    }
+
+    // 쿼드셀 무제한 상품 1회 충전 제한
+    if (quadAddonOverLimited) {
+      setAddonEnable(false);
+      setAddOnDisReasen('overLimit');
+      return;
+    }
+
+    // cmi 무제한 상품 사용전 상태에는 충전은 불가하지만 다음 페이지에로 넘어가서 해당 내용 안내
+    if (
+      status === 'R' &&
+      mainSubs.partner === 'cmi' &&
+      mainSubs.daily === 'daily'
+    ) {
+      setAddonEnable(true);
+      return;
+    }
+
+    getAddOnProduct();
   }, [
-    addonEnable,
     getAddOnProduct,
     mainSubs.daily,
     mainSubs.partner,
