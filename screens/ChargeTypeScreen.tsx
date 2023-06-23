@@ -299,32 +299,33 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       setAddOnDisReasen('unsupported');
       return;
     }
+    if (status) {
+      // 모든 사용완료 상품은 충전 불가
+      if (status === 'E') {
+        setAddonEnable(false);
+        setAddOnDisReasen('used');
+        return;
+      }
 
-    // 모든 사용완료 상품은 충전 불가
-    if (status === 'E') {
-      setAddonEnable(false);
-      setAddOnDisReasen('used');
-      return;
+      // 쿼드셀 무제한 상품 1회 충전 제한
+      if (quadAddonOverLimited) {
+        setAddonEnable(false);
+        setAddOnDisReasen('overLimit');
+        return;
+      }
+
+      // cmi 무제한 상품 사용전 상태에는 충전은 불가하지만 다음 페이지에로 넘어가서 해당 내용 안내
+      if (
+        status === 'R' &&
+        mainSubs.partner === 'cmi' &&
+        mainSubs.daily === 'daily'
+      ) {
+        setAddonEnable(true);
+        return;
+      }
+
+      getAddOnProduct();
     }
-
-    // 쿼드셀 무제한 상품 1회 충전 제한
-    if (quadAddonOverLimited) {
-      setAddonEnable(false);
-      setAddOnDisReasen('overLimit');
-      return;
-    }
-
-    // cmi 무제한 상품 사용전 상태에는 충전은 불가하지만 다음 페이지에로 넘어가서 해당 내용 안내
-    if (
-      status === 'R' &&
-      mainSubs.partner === 'cmi' &&
-      mainSubs.daily === 'daily'
-    ) {
-      setAddonEnable(true);
-      return;
-    }
-
-    getAddOnProduct();
   }, [
     getAddOnProduct,
     mainSubs.daily,
