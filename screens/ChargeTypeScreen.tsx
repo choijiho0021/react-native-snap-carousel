@@ -306,7 +306,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         return;
       }
 
-      // 쿼드셀 무제한 상품 1회 충전 제한
+      // 쿼드셀 무제한상품 사용전 남은 기간 충전 이력이 있을 경우
       if (quadAddonOverLimited && status === 'R') {
         setAddonEnable(false);
         setAddOnDisReasen('overLimit');
