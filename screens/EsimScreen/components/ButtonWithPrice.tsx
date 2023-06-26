@@ -60,7 +60,9 @@ const ButtonWithPrice = ({
       <View style={styles.amountFrame}>
         <AppText style={styles.amountText}>
           {i18n.t('esim:charge:amount')}
-          <AppText style={styles.amount}>{amount}</AppText>
+          <AppText style={styles.amount}>
+            {amount.includes(',') ? amount : Number(amount).toLocaleString()}
+          </AppText>
           {currency}
         </AppText>
       </View>
