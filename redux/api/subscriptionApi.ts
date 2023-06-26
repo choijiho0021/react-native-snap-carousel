@@ -98,6 +98,7 @@ export type RkbSubscription = {
   purchaseDate: string;
   expireDate: string;
   activationDate: string;
+  provDate?: string;
   statusCd: string;
   status: string;
   giftStatusCd: string;
@@ -143,6 +144,7 @@ const toSubscription =
           purchaseDate: item.field_purchase_date || '',
           expireDate: item.field_expiration_date || '',
           activationDate: item.field_subs_activation_date || '',
+          provDate: item.field_prov_time || '',
           endDate: item.field_subs_expiration_date || '',
           statusCd: item.field_status || '',
           status: toStatus(item.field_status) || '',
