@@ -329,6 +329,8 @@
   "his:etcCnt": "%% case",
   "his:purchaseDate": "Purchase Date",
   "his:purchaseDate2": "Purchase Date : {{purchaseDate}}",
+  "his:today": "다음 데이터 리셋 시간까지만 사용 가능",
+  "his:remainDays": "남은 사용기간 동안 사용 가능",
   "his:activationDate": "Activation Date",
   "his:termDate": "Termination Date",
   "his:expireDate": "Expiration Date",

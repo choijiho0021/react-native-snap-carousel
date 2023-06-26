@@ -469,7 +469,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   }, [orderType]);
 
   const toProdDaysString = useCallback((days: number) => {
-    if (days <= 0) return '남은 기간 동안';
+    if (days <= 0) return '';
     return days + i18n.t('days');
   }, []);
 
@@ -485,7 +485,10 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
           <View style={{alignItems: 'center', paddingHorizontal: 20}}>
             <AppText style={styles.purchaseText}>
               {i18n.t('purchase:date', {
-                date: utils.toDateString(item.purchaseDate, 'YYYY.MM.DD'),
+                date: utils.toDateString(
+                  item.provDate || item.purchaseDate,
+                  'YYYY.MM.DD',
+                ),
               })}
             </AppText>
             <View
@@ -549,20 +552,12 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                         </AppText>
                       </View>
                     </View>
-                    <AppStyledText
-                      text={i18n.t('his:useableDate')}
-                      textStyle={{...styles.normal14Gray, marginBottom: 24}}
-                      format={{
-                        b: {...styles.boldl14Gray, marginBottom: 24},
-                      }}
-                      data={{
-                        useableDate: utils.toDateString(
-                          k.purchaseDate,
-                          'YYYY.MM.DD HH:mm:ss',
-                        ),
-                      }}
-                      numberOfLines={2}
-                    />
+                    <AppText style={{...styles.normal14Gray, marginBottom: 24}}>
+                      {k.prodDays === '1'
+                        ? i18n.t('his:today')
+                        : i18n.t('his:remainDays')}
+                    </AppText>
+
                     <View
                       style={
                         arr.length - 1 === idx
