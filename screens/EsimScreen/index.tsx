@@ -34,6 +34,9 @@ import {
   cmiStatusCd,
   RkbSubscription,
   sortSubs,
+  StatusObj,
+  UsageObj,
+  Usage,
 } from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
@@ -127,16 +130,6 @@ type EsimScreenProps = {
     order: OrderAction;
     account: AccountAction;
   };
-};
-
-type StatusObj = {
-  statusCd?: string;
-  endTime?: string;
-};
-
-type UsageObj = {
-  quota?: number;
-  used?: number;
 };
 
 export const USAGE_TIME_INTERVAL = {
@@ -318,92 +311,21 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [],
   );
 
-  const getQuadcellStatus = useCallback((dataPack, exp: moment.Moment) => {
-    if (!dataPack) return 'U';
-    if (dataPack?.effTime) {
-      return moment().isAfter(exp) ? 'U' : 'A';
-    }
-    return 'R';
-  }, []);
-
   const checkQuadcellData = useCallback(
-    async (
-      item: RkbSubscription,
-    ): Promise<{status: StatusObj; usage: UsageObj}> => {
+    async (item: RkbSubscription): Promise<Usage> => {
       if (item?.imsi) {
-        const status = await API.Subscription.quadcellGetData({
+        const {result, objects} = await API.Subscription.quadcellGetUsage({
           imsi: item.imsi,
-          key: 'packlist',
         });
 
-        const dataPack = status.objects?.packList?.find(
-          (elm) =>
-            elm?.packOrderSn !== undefined && Number(elm?.packCode) <= 900000,
-        );
-
-        const query =
-          item.daily === 'daily' && dataPack
-            ? {
-                startTime: dataPack?.effTime || '20230101000000',
-              }
-            : undefined;
-
-        const quota = await API.Subscription.quadcellGetData({
-          imsi: item.imsi,
-          key: 'quota',
-          query,
-        });
-
-        if (
-          status.result === 0 &&
-          quota.result === 0 &&
-          status.objects?.retCode === '000000' &&
-          quota.objects?.retCode === '000000'
-        ) {
-          const packQuotaList =
-            quota?.objects?.packQuotaList.length > 0
-              ? quota?.objects?.packQuotaList
-              : [{}];
-
-          const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss').add(
-            USAGE_TIME_INTERVAL.quadcell,
-            'h',
-          );
-
-          const statusCd = getQuadcellStatus(dataPack, exp);
-
-          const quadcellStatus: StatusObj = {
-            statusCd,
-            endTime: exp.format('YYYY.MM.DD HH:mm:ss'),
-          };
-
-          let dataVolume = Number(item.dataVolume) || 0;
-          if (item.daily === 'daily' && statusCd === 'A') {
-            dataVolume = order.subs
-              .get(item.subsIccid || '0')
-              ?.reduce((acc, cur) => acc + Number(cur.dataVolume), 0);
-          }
-
-          const quadcellUsage: UsageObj =
-            item.daily === 'daily'
-              ? {
-                  quota: dataVolume || 0, // Mb
-                  used: Number(quota?.objects?.dailyUsage) || 0, // Mb
-                }
-              : {
-                  quota: Number(packQuotaList[0]?.totalQuota) || 0, // Mb
-                  used: Number(packQuotaList[0]?.consumedQuota) || 0, // Mb
-                };
-
-          return {status: quadcellStatus, usage: quadcellUsage};
-        }
+        if (result === 0) return objects;
       }
       return {
         status: {statusCd: undefined, endTime: undefined},
         usage: {quota: undefined, used: undefined},
       };
     },
-    [getQuadcellStatus, order.subs],
+    [],
   );
 
   const checkBcData = useCallback(

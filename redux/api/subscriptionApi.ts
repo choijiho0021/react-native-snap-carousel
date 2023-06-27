@@ -92,6 +92,21 @@ const toStatus = (v?: string) => {
   return code[v] ? i18n.t(`his:${code[v]}`) : v;
 };
 
+export type StatusObj = {
+  statusCd?: string;
+  endTime?: string;
+};
+
+export type UsageObj = {
+  quota?: number;
+  used?: number;
+};
+
+export type Usage = {
+  status: StatusObj;
+  usage: UsageObj;
+};
+
 export type RkbSubscription = {
   key: string;
   uuid: string;
@@ -588,6 +603,30 @@ const quadcellGetData = ({
   );
 };
 
+const quadcellGetUsage = ({
+  imsi,
+  query,
+}: {
+  imsi: string;
+  query?: Record<string, string | number>;
+}) => {
+  if (!imsi)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
+
+  return api.callHttpGet(
+    `${api.rokHttpUrl(
+      `${api.path.rokApi.pv.quadcell}/usage/quota`,
+    )}&imsi=${imsi}`,
+    (data) => {
+      if (data?.result?.code === 0) {
+        return api.success(data?.objects);
+      }
+      return data;
+    },
+    new Headers({'Content-Type': 'application/json'}),
+  );
+};
+
 // get usage bc data from svc server
 const bcGetSubsUsage = ({
   subsIccid,
@@ -780,4 +819,5 @@ export default {
   quadcellGetData,
   getHkRegStatus,
   bcGetSubsUsage,
+  quadcellGetUsage,
 };
