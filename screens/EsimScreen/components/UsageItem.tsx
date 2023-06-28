@@ -217,20 +217,20 @@ const UsageItem: React.FC<UsageItemProps> = ({
   const circularProgress = useRef();
 
   const showExpire = useMemo(() => item.partner !== undefined, [item.partner]); // partner별로 만료기하니 정해지지 않았을 때 조정 필요
-  const showUsage = useMemo(
-    () =>
-      item.partner !== 'billionconnect' ||
-      !(
-        (item.country?.includes('JP') && item.daily === 'daily') ||
-        (item.country?.includes('TH') && item.daily === 'total')
-      ),
-    [item.country, item.daily, item.partner],
-  );
-
   // const showUsage = useMemo(
-  //   () => item.partner !== 'billionconnect',
-  //   [item.partner],
+  //   () =>
+  //     item.partner !== 'billionconnect' ||
+  //     !(
+  //       (item.country?.includes('JP') && item.daily === 'daily') ||
+  //       (item.country?.includes('TH') && item.daily === 'total')
+  //     ),
+  //   [item.country, item.daily, item.partner],
   // );
+
+  const showUsage = useMemo(
+    () => item.partner !== 'billionconnect',
+    [item.partner],
+  );
 
   useEffect(() => {
     if (disableBtn) {
@@ -307,7 +307,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           </AppText>
           <AppText style={appStyles.normal14Text}>{`${
             esimApp
-              ? endTime?.replace(/-/gi, '.')
+              ? utils.toDateString(endTime, 'YYYY-MM-DD HH:mm:ss')
               : utils.toDateString(item.endDate)
           } ${i18n.t(`sim:${'until'}`)}`}</AppText>
         </View>
