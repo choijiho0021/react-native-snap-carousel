@@ -613,7 +613,7 @@ const quadcellGetUsage = ({
   if (!imsi)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
 
-  return api.callHttpGet(
+  return api.callHttpGet<Usage>(
     `${api.rokHttpUrl(
       `${api.path.rokApi.pv.quadcell}/usage/quota`,
     )}&imsi=${imsi}`,

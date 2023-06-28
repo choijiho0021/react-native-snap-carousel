@@ -318,7 +318,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           imsi: item.imsi,
         });
 
-        if (result === 0) return objects;
+        if (result === 0 && objects.length > 0) return objects[0];
       }
       return {
         status: {statusCd: undefined, endTime: undefined},

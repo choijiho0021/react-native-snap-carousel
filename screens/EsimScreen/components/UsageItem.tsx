@@ -307,7 +307,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           </AppText>
           <AppText style={appStyles.normal14Text}>{`${
             esimApp
-              ? endTime?.replace(/-/gi, '.')
+              ? utils.toDateString(endTime, 'YYYY-MM-DD HH:mm:ss')
               : utils.toDateString(item.endDate)
           } ${i18n.t(`sim:${'until'}`)}`}</AppText>
         </View>
