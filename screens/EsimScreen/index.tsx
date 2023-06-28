@@ -308,7 +308,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             statusCd: bcStatusCd[planInfo.planStatus],
             endTime: moment(planInfo.planEndTime, 'YYYY-MM-DD HH:mm:ss')
               .add(USAGE_TIME_INTERVAL.billionconnect, 'h')
-              .format('YYYY.MM.DD HH:mm:ss'),
+              .format('YYYY-MM-DD HH:mm:ss'),
           };
 
           const usage = planInfo.usageInfoList.reduce(
@@ -318,7 +318,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
           const bcUsage: UsageObj = {
             quota: Number(planInfo.highFlowSize) / 1024 || 0, // Mb
-            used: (Number(planInfo.highFlowSize) - usage) / 1024 || 0, // Mb
+            used: usage / 1024 || 0, // Mb
           };
 
           return {status: bcStatus, usage: bcUsage};
