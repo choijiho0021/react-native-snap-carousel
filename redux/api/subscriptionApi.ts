@@ -2,6 +2,7 @@ import _, {isArray} from 'underscore';
 import i18n from '@/utils/i18n';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import Env from '@/environment';
+import moment from 'moment';
 
 const {isProduction, specialCategories} = Env.get();
 
@@ -66,7 +67,9 @@ export const bcStatusCd = {
 };
 
 export const isDisabled = (item: RkbSubscription) => {
-  return item.giftStatusCd === 'S' || new Date(item.expireDate) <= new Date();
+  return (
+    item.giftStatusCd === 'S' || moment(item.expireDate).isBefore(moment())
+  );
 };
 
 // 선물안한 상품(구매,선물받음) - 구매일자별 정렬, 선물한 상품 구매일자별 정렬
