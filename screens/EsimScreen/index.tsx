@@ -255,53 +255,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       item: RkbSubscription,
     ): Promise<{status: StatusObj; usage: UsageObj}> => {
       if (item?.subsIccid && item?.packageId) {
-        const rsp = await API.Subscription.cmiGetSubsUsage({
+        const {result, objects} = await API.Subscription.cmiGetSubsUsage({
           iccid: item?.subsIccid,
           orderId: item?.subsOrderNo || 'noOrderId',
         });
 
-        const {result, userDataBundles, subscriberQuota} = rsp || {};
-
-        if (result?.code === 0 && userDataBundles && userDataBundles[0]) {
-          const statusCd: string =
-            !_.isUndefined(userDataBundles[0]?.status) &&
-            cmiStatusCd[userDataBundles[0]?.status];
-          const end = moment(userDataBundles[0]?.endTime)
-            .add(USAGE_TIME_INTERVAL.cmi, 'h')
-            .format('YYYY.MM.DD HH:mm:ss');
-          const exp = moment(userDataBundles[0]?.expireTime).add(
-            USAGE_TIME_INTERVAL.cmi,
-            'h',
-          );
-          const now = moment();
-
-          const isExpired = statusCd === 'C' || (statusCd === 'A' && exp < now);
-
-          const tempCmiStatus: StatusObj = {
-            statusCd: isExpired ? 'U' : statusCd,
-            endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
-          };
-
-          const tempCmiUsage = {
-            quota:
-              (Number(subscriberQuota?.qtavalue) || 0) +
-              (Number(subscriberQuota?.refuelingTotal) || 0), // Mb
-            used: Number(subscriberQuota?.qtaconsumption) || 0, // Mb
-          };
-
-          return {status: tempCmiStatus, usage: tempCmiUsage};
-        }
-        if (!item.subsOrderNo || userDataBundles?.length === 0) {
-          return {
-            status: {statusCd: 'U', endTime: undefined},
-            usage: {quota: undefined, used: undefined},
-          };
-        }
-        setCmiPending(false);
-        return {
-          status: {statusCd: undefined, endTime: undefined},
-          usage: {quota: undefined, used: undefined},
-        };
+        if (result?.code === 0 && objects.length > 0) return objects[0];
       }
       return {
         status: {statusCd: undefined, endTime: undefined},

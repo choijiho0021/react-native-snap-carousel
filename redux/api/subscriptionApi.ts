@@ -555,7 +555,7 @@ const cmiGetSubsUsage = ({
   if (!orderId)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: orderId');
 
-  return api.callHttpGet(
+  return api.callHttpGet<Usage>(
     `${api.rokHttpUrl(
       api.path.rokApi.pv.cmiUsage,
     )}&iccid=${iccid}&orderId=${orderId}`,
