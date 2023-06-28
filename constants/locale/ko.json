@@ -633,10 +633,12 @@
   "esim:chargeCaution:body7": "충전한 상품에 대해서는 선물하기 기능을 사용하실 수 없습니다.",
   "esim:chargeCaution:body8": "구매 eSIM 목록 > 충전 내역 버튼을 클릭하면, 충전 구매한 내역을 확인하실 수 있습니다",
   "esim:chargeCaution:body9": "충전 구매한 상품은 <b>교환, 환불이 불가</b>합니다.",
+  "esim:charge:disReason:addOn:": "잠시 후 다시 시도해주세요.",
   "esim:charge:disReason:addOn:used": "사용 완료되어 용량 충전 불가합니다.",
   "esim:charge:disReason:addOn:overLimit": "충전 가능 횟수를 초과한 상품 입니다.",
   "esim:charge:disReason:addOn:unsupported": "용량 충전 기능 미지원 상품입니다.",
   "esim:charge:disReason:addOn:noProd": "용량 충전 가능한 상품이 없습니다.",
+  "esim:charge:disReason:extension:": "잠시 후 다시 시도해주세요.",
   "esim:charge:disReason:extension:unsupported": "상품 연장 기능 미지원 상품입니다.",
   "esim:charge:disReason:extension:expired": "연장 가능 기간이 만료된 상품입니다.",
 
