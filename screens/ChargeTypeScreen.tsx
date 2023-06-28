@@ -6,6 +6,7 @@ import moment, {Moment} from 'moment';
 import {ScrollView} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-community/async-storage';
 import {useDispatch} from 'react-redux';
+import {async} from 'validate.js';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppBackButton from '@/components/AppBackButton';
@@ -20,6 +21,7 @@ import AppSnackBar from '@/components/AppSnackBar';
 import {USAGE_TIME_INTERVAL} from './EsimScreen';
 import {RkbAddOnProd} from '@/redux/api/productApi';
 import ChargeTypeModal from './HomeScreen/component/ChargeTypeModal';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 
 const styles = StyleSheet.create({
   container: {
@@ -80,10 +82,13 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [showSnackBar, setShowSnackBar] = useState<{
     text: string;
     visible: boolean;
-  }>({text: '', visible: false});
+    type: string;
+  }>({text: '', visible: false, type: ''});
   const {mainSubs, chargeablePeriod, chargedSubs, isChargeable, addOnData} =
     params || {};
   const [chargeableItem, setChargeableItem] = useState<RkbSubscription>();
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [addonLoading, setAddonLoading] = useState(false);
   const [addonEnable, setAddonEnable] = useState(false);
   const [remainDays, setRemainDays] = useState(0);
   const [expireTime, setExpireTime] = useState<Moment>();
@@ -127,9 +132,12 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         return;
       }
       if (item?.subsIccid && item?.packageId) {
+        setStatusLoading(true);
         const rsp = await API.Subscription.cmiGetSubsStatus({
           iccid: item?.subsIccid,
         });
+
+        setStatusLoading(false);
 
         const today = moment();
         const {userDataBundles} = rsp.objects || {};
@@ -186,10 +194,12 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
   const checkQuadcellStatus = useCallback(async (item: RkbSubscription) => {
     if (item?.imsi) {
+      setStatusLoading(true);
       const qStatus = await API.Subscription.quadcellGetData({
         imsi: item.imsi,
         key: 'packlist',
       });
+      setStatusLoading(false);
 
       const dataPack = qStatus.objects?.packList?.find(
         (elm) =>
@@ -257,35 +267,37 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     }
   }, [expireTime, mainSubs, mainSubs.partner, status]);
 
-  const getAddOnProduct = useCallback(() => {
+  const getAddOnProduct = useCallback(async () => {
+    setAddonLoading(true);
     if (mainSubs.nid && remainDays && remainDays > 0) {
-      API.Product.getAddOnProduct(
+      const data = await API.Product.getAddOnProduct(
         mainSubs.nid,
         mainSubs.daily === 'daily' ? remainDays.toString() : '1',
-      ).then((data) => {
-        const rsp = data.objects;
-        const remainDaysProd = rsp.filter((r) => r.days !== '1');
+      );
 
-        if (rsp.length < 1) {
-          // 상품 없음
-          setAddonEnable(false);
-          setAddOnDisReasen('noProd');
-        } else if (
-          // 남은 기간 충전에 대한 처리 건이 있으면 서버에서 하루 충전 상품만 내려줌
-          // 사용전인 쿼드셀 무제한 상품의 경우 하루 충전은 지원하지 않음
-          remainDaysProd.length < 1 &&
-          mainSubs.partner === 'quadcell' &&
-          status === 'R' &&
-          mainSubs.daily === 'daily'
-        ) {
-          setAddonEnable(false);
-          setAddOnDisReasen('overLimit');
-        } else {
-          setAddonEnable(true);
-          setAddonProds(rsp);
-        }
-      });
+      const rsp = data.objects;
+      const remainDaysProd = rsp.filter((r) => r.days !== '1');
+
+      if (rsp.length < 1) {
+        // 상품 없음
+        setAddonEnable(false);
+        setAddOnDisReasen('noProd');
+      } else if (
+        // 남은 기간 충전에 대한 처리 건이 있으면 서버에서 하루 충전 상품만 내려줌
+        // 사용전인 쿼드셀 무제한 상품의 경우 하루 충전은 지원하지 않음
+        remainDaysProd.length < 1 &&
+        mainSubs.partner === 'quadcell' &&
+        status === 'R' &&
+        mainSubs.daily === 'daily'
+      ) {
+        setAddonEnable(false);
+        setAddOnDisReasen('overLimit');
+      } else {
+        setAddonEnable(true);
+        setAddonProds(rsp);
+      }
     }
+    setAddonLoading(false);
   }, [mainSubs.daily, mainSubs.nid, mainSubs.partner, remainDays, status]);
 
   useEffect(() => {
@@ -370,6 +382,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
               `esim:charge:disReason:extension:${extensionDisReason}`,
             ),
             visible: true,
+            type: 'extension',
           });
         }
       } else if (addonEnable) {
@@ -403,6 +416,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         setShowSnackBar({
           text: i18n.t(`esim:charge:disReason:addOn:${addOnDisReason}`),
           visible: true,
+          type: 'addOn',
         });
       }
     },
@@ -424,6 +438,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <AppActivityIndicator visible={statusLoading || addonLoading} />
       <ScrollView style={{flex: 1}}>
         <View style={styles.top}>
           <AppText style={styles.topText}>{i18n.t('esim:charge:type')}</AppText>
@@ -452,7 +467,12 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           }
           textMessage={showSnackBar.text}
           bottom={20}
-          preIcon="cautionRed"
+          preIcon={
+            (showSnackBar.type === 'addOn' && addOnDisReason === '') ||
+            (showSnackBar.type === 'extension' && extensionDisReason === '')
+              ? undefined
+              : 'cautionRed'
+          }
         />
       </ScrollView>
     </SafeAreaView>
