@@ -61,7 +61,9 @@ const ButtonWithPrice = ({
         <AppText style={styles.amountText}>
           {i18n.t('esim:charge:amount')}
           <AppText style={styles.amount}>
-            {amount.includes(',') ? amount : Number(amount).toLocaleString()}
+            {amount.includes(',')
+              ? amount
+              : amount.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           </AppText>
           {currency}
         </AppText>
