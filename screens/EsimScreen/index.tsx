@@ -449,7 +449,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             ),
             onPressUsage,
             chargedSubs: filter,
-            isChargeable: moment(main?.expireDate).isBefore(moment()),
+            isChargeable: !moment(main?.expireDate).isBefore(moment()),
             expireTime: expireDate,
           });
         }
