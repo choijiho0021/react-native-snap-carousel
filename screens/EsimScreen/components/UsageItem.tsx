@@ -302,7 +302,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         <View
           style={[
             styles.endInfoContainer,
-            {marginBottom: isDaily ? 20 : 0, marginVertical: isDaily ? 0 : 20},
+            {marginBottom: isDaily ? 20 : 0, marginTop: isDaily ? 0 : 20},
           ]}>
           <AppText style={styles.normal14WarmGrey}>
             {i18n.t('usim:usingTime')}
