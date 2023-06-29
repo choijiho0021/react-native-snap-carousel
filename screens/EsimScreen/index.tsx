@@ -55,6 +55,7 @@ import EsimModal from './components/EsimModal';
 import GiftModal from './components/GiftModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import ChatTalk from '@/components/ChatTalk';
+import {utils} from '@/utils/utils';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -411,6 +412,50 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   useEffect(() => {
     setSubsList(order.subs.valueSeq().sort(sortSubs).toArray());
   }, [order.subs]);
+
+  useEffect(() => {
+    if (route && route.params) {
+      const {iccid} = route.params;
+      if (iccid) {
+        const filter: RkbSubscription[] =
+          subsList
+            ?.find((s) => s[0].subsIccid === iccid)
+            ?.filter((s2) => s2.subsIccid === iccid) || [];
+
+        const main = filter
+          ?.filter((item) => item.prodType === 'esim_product')
+          ?.sort((a, b) =>
+            moment(a.purchaseDate).diff(moment(b.purchaseDate)),
+          )[0];
+
+        if (main) {
+          const {expireDate} = filter?.reduce((oldest, current) => {
+            const oldestDateObj = new Date(oldest.expireDate);
+            const currentDateObj = new Date(current.expireDate);
+
+            if (currentDateObj > oldestDateObj) {
+              return current;
+            }
+            return oldest;
+          });
+
+          navigation.setParams({iccid: undefined});
+
+          navigation.navigate('ChargeHistory', {
+            mainSubs: main,
+            chargeablePeriod: utils.toDateString(
+              main?.expireDate,
+              'YYYY.MM.DD',
+            ),
+            onPressUsage,
+            chargedSubs: filter,
+            isChargeable: moment(main?.expireDate).isBefore(moment()),
+            expireTime: expireDate,
+          });
+        }
+      }
+    }
+  }, [navigation, onPressUsage, route, subsList]);
 
   return (
     <SafeAreaView style={styles.container}>

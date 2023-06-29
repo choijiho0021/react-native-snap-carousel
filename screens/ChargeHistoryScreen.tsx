@@ -35,7 +35,6 @@ import Triangle from '@/components/Triangle';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {API} from '@/redux/api';
-import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
   chargeBtn: {
@@ -278,10 +277,10 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   const [blockAnimation, setBlockAnimation] = useState(false);
   const topHeight = useMemo(() => {
     let height = 326;
-    if (mainSubs.partner === 'cmi') height += 22;
+    if (mainSubs?.partner === 'cmi') height += 22;
     if (!isChargeable) height += 74;
     return height;
-  }, [isChargeable, mainSubs.partner]);
+  }, [isChargeable, mainSubs?.partner]);
 
   const animatedValue = useRef(new Animated.Value(topHeight)).current;
 
