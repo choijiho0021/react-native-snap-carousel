@@ -292,7 +292,9 @@ const UsageItem: React.FC<UsageItemProps> = ({
             </AppText>
             <AppText style={appStyles.normal14Text}>
               {item.partner === 'cmi'
-                ? endTime?.split(' ')[1] || i18n.t('contact:q')
+                ? utils
+                    .toDateString(endTime, 'YYYY-MM-DD HH:mm:ss')
+                    ?.split(' ')[1] || i18n.t('contact:q')
                 : '01:00:00'}
             </AppText>
           </View>
