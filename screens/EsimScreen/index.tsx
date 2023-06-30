@@ -37,6 +37,7 @@ import {
   StatusObj,
   UsageObj,
   Usage,
+  getLatestExpireDateSubs,
 } from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
@@ -370,7 +371,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           index={index}
           mainSubs={item[0]}
           chargedSubs={item}
-          expired={moment(item[item.length - 1].expireDate).isBefore(moment())}
+          expired={moment(getLatestExpireDateSubs(item).expireDate).isBefore(
+            moment(),
+          )}
           isChargeExpired={moment(item[0].expireDate).isBefore(moment())}
           isCharged={item.length > 1}
           showDetail={
@@ -410,7 +413,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   }, [isFocused, isPressClose]);
 
   useEffect(() => {
-    setSubsList(order.subs.valueSeq().sort(sortSubs).toArray());
+    setSubsList(order.subs.valueSeq().toArray().sort(sortSubs));
   }, [order.subs]);
 
   useEffect(() => {

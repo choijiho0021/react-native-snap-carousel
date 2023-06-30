@@ -66,6 +66,15 @@ export const bcStatusCd = {
   3: 'C', // cancelled
 };
 
+export const getLatestExpireDateSubs = (a: RkbSubscription[]) =>
+  a.reduce((latest, item) => {
+    const itemExpireDate = moment(item?.expireDate);
+    if (!latest || itemExpireDate.isAfter(moment(latest?.expireDate))) {
+      return item;
+    }
+    return latest;
+  }, a[0]);
+
 export const isDisabled = (item: RkbSubscription) => {
   return (
     item.giftStatusCd === 'S' || moment(item.expireDate).isBefore(moment())
@@ -79,11 +88,13 @@ export const sortSubs = (a: RkbSubscription[], b: RkbSubscription[]) => {
     return -1;
   }
 
-  if (!isDisabled(a[0]) && isDisabled(b[0])) return -1;
+  const lastExpireA = getLatestExpireDateSubs(a);
+  const lastExpireB = getLatestExpireDateSubs(b);
+  if (!isDisabled(lastExpireA) && isDisabled(lastExpireB)) return -1;
 
   if (
-    isDisabled(a[0]) === isDisabled(b[0]) &&
-    a[a.length - 1].purchaseDate > b[b.length - 1].purchaseDate
+    isDisabled(lastExpireA) === isDisabled(lastExpireB) &&
+    moment(lastExpireA.purchaseDate).isBefore(lastExpireB.purchaseDate)
   ) {
     return -1;
   }
