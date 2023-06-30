@@ -94,7 +94,7 @@ export const sortSubs = (a: RkbSubscription[], b: RkbSubscription[]) => {
 
   if (
     isDisabled(lastExpireA) === isDisabled(lastExpireB) &&
-    moment(lastExpireA.purchaseDate).isBefore(lastExpireB.purchaseDate)
+    moment(lastExpireA.purchaseDate).isAfter(lastExpireB.purchaseDate)
   ) {
     return -1;
   }
