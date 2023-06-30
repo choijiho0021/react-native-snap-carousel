@@ -16,6 +16,7 @@ import {
   Modal,
   Image,
   Animated,
+  RefreshControl,
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -606,13 +607,23 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
           stickyHeaderIndices={[0]}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, idx) => item.key + idx}
+          overScrollMode="always"
+          refreshControl={
+            // Android에서는 -y로 스크롤이 안되기 때문에 refresh로 대체
+            <RefreshControl
+              refreshing={false}
+              onRefresh={() => showTop(true)}
+              colors={['transparent']} // android 전용
+              tintColor="transparent" // ios 전용
+            />
+          }
           onScroll={({
             nativeEvent: {
               contentOffset: {y},
             },
           }) => {
             if (y <= 0 && !blockAnimation) showTop(true);
-            if (y >= 30 && !blockAnimation) showTop(false);
+            if (y >= 15 && !blockAnimation) showTop(false);
           }}
         />
         {showTip && renderTooltip()}
