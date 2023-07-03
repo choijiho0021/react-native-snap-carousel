@@ -450,17 +450,20 @@ const EsimSubs = ({
             'YYYY.MM.DD',
           )} - ${utils.toDateString(expireTime, 'YYYY.MM.DD')}`}</AppText>
         </View>
-        <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal14Gray}>
-            {i18n.t('esim:rechargeablePeriod')}
-          </AppText>
-          <AppText style={styles.normal14Gray}>{chargeablePeriod}</AppText>
-        </View>
+        {!isBc && (
+          <View style={styles.inactiveContainer}>
+            <AppText style={styles.normal14Gray}>
+              {i18n.t('esim:rechargeablePeriod')}
+            </AppText>
+            <AppText style={styles.normal14Gray}>{chargeablePeriod}</AppText>
+          </View>
+        )}
       </View>
     );
   }, [
     chargeablePeriod,
     expireTime,
+    isBc,
     mainSubs.purchaseDate,
     mainSubs.subsIccid,
     mainSubs.type,

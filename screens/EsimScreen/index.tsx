@@ -34,6 +34,10 @@ import {
   cmiStatusCd,
   RkbSubscription,
   sortSubs,
+  StatusObj,
+  UsageObj,
+  Usage,
+  getLatestExpireDateSubs,
 } from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
@@ -52,6 +56,7 @@ import EsimModal from './components/EsimModal';
 import GiftModal from './components/GiftModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import ChatTalk from '@/components/ChatTalk';
+import {utils} from '@/utils/utils';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -127,16 +132,6 @@ type EsimScreenProps = {
     order: OrderAction;
     account: AccountAction;
   };
-};
-
-type StatusObj = {
-  statusCd?: string;
-  endTime?: string;
-};
-
-type UsageObj = {
-  quota?: number;
-  used?: number;
 };
 
 export const USAGE_TIME_INTERVAL = {
@@ -262,53 +257,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       item: RkbSubscription,
     ): Promise<{status: StatusObj; usage: UsageObj}> => {
       if (item?.subsIccid && item?.packageId) {
-        const rsp = await API.Subscription.cmiGetSubsUsage({
+        const {result, objects} = await API.Subscription.cmiGetSubsUsage({
           iccid: item?.subsIccid,
           orderId: item?.subsOrderNo || 'noOrderId',
         });
 
-        const {result, userDataBundles, subscriberQuota} = rsp || {};
-
-        if (result?.code === 0 && userDataBundles && userDataBundles[0]) {
-          const statusCd: string =
-            !_.isUndefined(userDataBundles[0]?.status) &&
-            cmiStatusCd[userDataBundles[0]?.status];
-          const end = moment(userDataBundles[0]?.endTime)
-            .add(USAGE_TIME_INTERVAL.cmi, 'h')
-            .format('YYYY.MM.DD HH:mm:ss');
-          const exp = moment(userDataBundles[0]?.expireTime).add(
-            USAGE_TIME_INTERVAL.cmi,
-            'h',
-          );
-          const now = moment();
-
-          const isExpired = statusCd === 'C' || (statusCd === 'A' && exp < now);
-
-          const tempCmiStatus: StatusObj = {
-            statusCd: isExpired ? 'U' : statusCd,
-            endTime: exp.format('YYYY.MM.DD HH:mm:ss') || end,
-          };
-
-          const tempCmiUsage = {
-            quota:
-              (Number(subscriberQuota?.qtavalue) || 0) +
-              (Number(subscriberQuota?.refuelingTotal) || 0), // Mb
-            used: Number(subscriberQuota?.qtaconsumption) || 0, // Mb
-          };
-
-          return {status: tempCmiStatus, usage: tempCmiUsage};
-        }
-        if (!item.subsOrderNo || userDataBundles?.length === 0) {
-          return {
-            status: {statusCd: 'U', endTime: undefined},
-            usage: {quota: undefined, used: undefined},
-          };
-        }
-        setCmiPending(false);
-        return {
-          status: {statusCd: undefined, endTime: undefined},
-          usage: {quota: undefined, used: undefined},
-        };
+        if (result?.code === 0 && objects.length > 0) return objects[0];
       }
       return {
         status: {statusCd: undefined, endTime: undefined},
@@ -318,92 +272,21 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [],
   );
 
-  const getQuadcellStatus = useCallback((dataPack, exp: moment.Moment) => {
-    if (!dataPack) return 'U';
-    if (dataPack?.effTime) {
-      return moment().isAfter(exp) ? 'U' : 'A';
-    }
-    return 'R';
-  }, []);
-
   const checkQuadcellData = useCallback(
-    async (
-      item: RkbSubscription,
-    ): Promise<{status: StatusObj; usage: UsageObj}> => {
+    async (item: RkbSubscription): Promise<Usage> => {
       if (item?.imsi) {
-        const status = await API.Subscription.quadcellGetData({
+        const {result, objects} = await API.Subscription.quadcellGetUsage({
           imsi: item.imsi,
-          key: 'packlist',
         });
 
-        const dataPack = status.objects?.packList?.find(
-          (elm) =>
-            elm?.packOrderSn !== undefined && Number(elm?.packCode) <= 900000,
-        );
-
-        const query =
-          item.daily === 'daily' && dataPack
-            ? {
-                startTime: dataPack?.effTime || '20230101000000',
-              }
-            : undefined;
-
-        const quota = await API.Subscription.quadcellGetData({
-          imsi: item.imsi,
-          key: 'quota',
-          query,
-        });
-
-        if (
-          status.result === 0 &&
-          quota.result === 0 &&
-          status.objects?.retCode === '000000' &&
-          quota.objects?.retCode === '000000'
-        ) {
-          const packQuotaList =
-            quota?.objects?.packQuotaList.length > 0
-              ? quota?.objects?.packQuotaList
-              : [{}];
-
-          const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss').add(
-            USAGE_TIME_INTERVAL.quadcell,
-            'h',
-          );
-
-          const statusCd = getQuadcellStatus(dataPack, exp);
-
-          const quadcellStatus: StatusObj = {
-            statusCd,
-            endTime: exp.format('YYYY.MM.DD HH:mm:ss'),
-          };
-
-          let dataVolume = Number(item.dataVolume) || 0;
-          if (item.daily === 'daily' && statusCd === 'A') {
-            dataVolume = order.subs
-              .get(item.subsIccid || '0')
-              ?.reduce((acc, cur) => acc + Number(cur.dataVolume), 0);
-          }
-
-          const quadcellUsage: UsageObj =
-            item.daily === 'daily'
-              ? {
-                  quota: dataVolume || 0, // Mb
-                  used: Number(quota?.objects?.dailyUsage) || 0, // Mb
-                }
-              : {
-                  quota: Number(packQuotaList[0]?.totalQuota) || 0, // Mb
-                  used: Number(packQuotaList[0]?.consumedQuota) || 0, // Mb
-                };
-
-          return {status: quadcellStatus, usage: quadcellUsage};
-        }
+        if (result === 0 && objects.length > 0) return objects[0];
       }
       return {
         status: {statusCd: undefined, endTime: undefined},
         usage: {quota: undefined, used: undefined},
       };
     },
-    [getQuadcellStatus, order.subs],
+    [],
   );
 
   const checkBcData = useCallback(
@@ -427,7 +310,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             statusCd: bcStatusCd[planInfo.planStatus],
             endTime: moment(planInfo.planEndTime, 'YYYY-MM-DD HH:mm:ss')
               .add(USAGE_TIME_INTERVAL.billionconnect, 'h')
-              .format('YYYY.MM.DD HH:mm:ss'),
+              .format('YYYY-MM-DD HH:mm:ss'),
           };
 
           const usage = planInfo.usageInfoList.reduce(
@@ -437,7 +320,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
           const bcUsage: UsageObj = {
             quota: Number(planInfo.highFlowSize) / 1024 || 0, // Mb
-            used: (Number(planInfo.highFlowSize) - usage) / 1024 || 0, // Mb
+            used: usage / 1024 || 0, // Mb
           };
 
           return {status: bcStatus, usage: bcUsage};
@@ -488,7 +371,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           index={index}
           mainSubs={item[0]}
           chargedSubs={item}
-          expired={moment(item[item.length - 1].expireDate).isBefore(moment())}
+          expired={moment(getLatestExpireDateSubs(item).expireDate).isBefore(
+            moment(),
+          )}
           isChargeExpired={moment(item[0].expireDate).isBefore(moment())}
           isCharged={item.length > 1}
           showDetail={
@@ -528,8 +413,52 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   }, [isFocused, isPressClose]);
 
   useEffect(() => {
-    setSubsList(order.subs.valueSeq().sort(sortSubs).toArray());
+    setSubsList(order.subs.valueSeq().toArray().sort(sortSubs));
   }, [order.subs]);
+
+  useEffect(() => {
+    if (route && route.params) {
+      const {iccid} = route.params;
+      if (iccid) {
+        const filter: RkbSubscription[] =
+          subsList
+            ?.find((s) => s[0].subsIccid === iccid)
+            ?.filter((s2) => s2.subsIccid === iccid) || [];
+
+        const main = filter
+          ?.filter((item) => item.prodType === 'esim_product')
+          ?.sort((a, b) =>
+            moment(a.purchaseDate).diff(moment(b.purchaseDate)),
+          )[0];
+
+        if (main) {
+          const {expireDate} = filter?.reduce((oldest, current) => {
+            const oldestDateObj = new Date(oldest.expireDate);
+            const currentDateObj = new Date(current.expireDate);
+
+            if (currentDateObj > oldestDateObj) {
+              return current;
+            }
+            return oldest;
+          });
+
+          navigation.setParams({iccid: undefined});
+
+          navigation.navigate('ChargeHistory', {
+            mainSubs: main,
+            chargeablePeriod: utils.toDateString(
+              main?.expireDate,
+              'YYYY.MM.DD',
+            ),
+            onPressUsage,
+            chargedSubs: filter,
+            isChargeable: !moment(main?.expireDate).isBefore(moment()),
+            expireTime: expireDate,
+          });
+        }
+      }
+    }
+  }, [navigation, onPressUsage, route, subsList]);
 
   return (
     <SafeAreaView style={styles.container}>

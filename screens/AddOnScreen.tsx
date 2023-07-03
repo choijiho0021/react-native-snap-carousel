@@ -74,17 +74,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
   },
-  dot: {
-    ...appStyles.normal14Text,
-    marginHorizontal: 5,
-    marginTop: 3,
-    color: colors.red,
-  },
-  dotText: {
-    ...appStyles.normal14Text,
-    lineHeight: 22,
-    color: colors.red,
-  },
   noticeText: {
     ...appStyles.medium14,
     lineHeight: 22,
@@ -245,14 +234,6 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   ]);
 
   useEffect(() => {
-    if (mainSubs.daily === 'total') {
-      setAddOnTypeList(['remainDays']);
-      setSelectedType('remainDays');
-      setSelectedAddOnProd(remainDaysAddOnProd[0]);
-    }
-  }, [mainSubs.daily, remainDaysAddOnProd, selectedAddOnProd]);
-
-  useEffect(() => {
     if (expireTime) {
       // cmi의 리셋타임은 활성화 시간 기준으로 변경 됨
       if (mainSubs.partner === 'cmi')
@@ -348,7 +329,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
                   ? colors.clearBlue
                   : colors.line,
             },
-            {width: (sliderWidth - 60) / 3, marginBottom: 10},
+            {width: (sliderWidth - 61) / 3, marginBottom: 10},
             {marginHorizontal: (index + 1) % 3 === 2 ? 10 : 0},
           ]}
           onPress={() => setSelectedAddOnProd(item)}>

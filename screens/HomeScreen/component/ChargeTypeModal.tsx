@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
     ...appStyles.semiBold14Text,
     lineHeight: 22,
     letterSpacing: -0.28,
+    marginRight: 32,
   },
 });
 
@@ -84,7 +85,10 @@ const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
   const textWithCheck = useCallback(
     (text: string) => (
       <View style={styles.row} key={text}>
-        <AppSvgIcon style={{marginRight: 8}} name="checkedBlueSmall" />
+        <AppSvgIcon
+          style={{marginRight: 8, alignSelf: 'flex-start', marginTop: 3}}
+          name="checkedBlueSmall"
+        />
         <AppText style={styles.boxText}>{text}</AppText>
       </View>
     ),

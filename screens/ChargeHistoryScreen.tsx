@@ -16,6 +16,7 @@ import {
   Modal,
   Image,
   Animated,
+  RefreshControl,
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -35,7 +36,6 @@ import Triangle from '@/components/Triangle';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {API} from '@/redux/api';
-import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
   chargeBtn: {
@@ -278,10 +278,10 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   const [blockAnimation, setBlockAnimation] = useState(false);
   const topHeight = useMemo(() => {
     let height = 326;
-    if (mainSubs.partner === 'cmi') height += 22;
+    if (mainSubs?.partner === 'cmi') height += 22;
     if (!isChargeable) height += 74;
     return height;
-  }, [isChargeable, mainSubs.partner]);
+  }, [isChargeable, mainSubs?.partner]);
 
   const animatedValue = useRef(new Animated.Value(topHeight)).current;
 
@@ -469,7 +469,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   }, [orderType]);
 
   const toProdDaysString = useCallback((days: number) => {
-    if (days <= 0) return '남은 기간 동안';
+    if (days <= 0) return '';
     return days + i18n.t('days');
   }, []);
 
@@ -485,7 +485,10 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
           <View style={{alignItems: 'center', paddingHorizontal: 20}}>
             <AppText style={styles.purchaseText}>
               {i18n.t('purchase:date', {
-                date: utils.toDateString(item.purchaseDate, 'YYYY.MM.DD'),
+                date: utils.toDateString(
+                  item.provDate || item.purchaseDate,
+                  'YYYY.MM.DD',
+                ),
               })}
             </AppText>
             <View
@@ -549,20 +552,12 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                         </AppText>
                       </View>
                     </View>
-                    <AppStyledText
-                      text={i18n.t('his:useableDate')}
-                      textStyle={{...styles.normal14Gray, marginBottom: 24}}
-                      format={{
-                        b: {...styles.boldl14Gray, marginBottom: 24},
-                      }}
-                      data={{
-                        useableDate: utils.toDateString(
-                          k.purchaseDate,
-                          'YYYY.MM.DD HH:mm:ss',
-                        ),
-                      }}
-                      numberOfLines={2}
-                    />
+                    <AppText style={{...styles.normal14Gray, marginBottom: 24}}>
+                      {k.prodDays === '1'
+                        ? i18n.t('his:today')
+                        : i18n.t('his:remainDays')}
+                    </AppText>
+
                     <View
                       style={
                         arr.length - 1 === idx
@@ -612,13 +607,23 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
           stickyHeaderIndices={[0]}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, idx) => item.key + idx}
+          overScrollMode="always"
+          refreshControl={
+            // Android에서는 -y로 스크롤이 안되기 때문에 refresh로 대체
+            <RefreshControl
+              refreshing={false}
+              onRefresh={() => showTop(true)}
+              colors={['transparent']} // android 전용
+              tintColor="transparent" // ios 전용
+            />
+          }
           onScroll={({
             nativeEvent: {
               contentOffset: {y},
             },
           }) => {
             if (y <= 0 && !blockAnimation) showTop(true);
-            if (y >= 30 && !blockAnimation) showTop(false);
+            if (y >= 15 && !blockAnimation) showTop(false);
           }}
         />
         {showTip && renderTooltip()}

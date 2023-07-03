@@ -7,9 +7,15 @@ import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {storeData, retrieveData, parseJson} from '@/utils/utils';
 import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
 import {cachedApi} from '@/redux/api/api';
+
+const init = createAsyncThunk('order/init', async (mobile?: string) => {
+  const oldData = await retrieveData(`${API.Order.KEY_INIT_ORDER}.${mobile}`);
+  return oldData;
+});
 
 const getNextOrders = createAsyncThunk('order/getOrders', API.Order.getOrders);
 const getOrderById = createAsyncThunk(
@@ -20,14 +26,29 @@ const cancelOrder = createAsyncThunk(
   'order/cancelOrder',
   API.Order.cancelOrder,
 );
+
 const getSubs = createAsyncThunk(
   'order/getSubs',
-  cachedApi('cache.subs', API.Subscription.getSubscription),
+  async (param: {iccid?: string; token?: string; prodType?: string}) =>
+    cachedApi(`cache.subs.${param?.iccid}`, API.Subscription.getSubscription)(
+      param,
+      {
+        fulfillWithValue: (value) => value,
+      },
+    ),
 );
+
 const getStoreSubs = createAsyncThunk(
   'order/getStoreSubs',
-  cachedApi('cache.store', API.Subscription.getStoreSubscription),
+  async (param: {mobile?: string; token?: string}) =>
+    cachedApi(
+      `cache.store.${param?.mobile}`,
+      API.Subscription.getStoreSubscription,
+    )(param, {
+      fulfillWithValue: (value) => value,
+    }),
 );
+
 const getSubsUsage = createAsyncThunk(
   'order/getSubsUsage',
   API.Subscription.getSubsUsage,
@@ -194,6 +215,16 @@ const slice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(init.fulfilled, (state, {payload}) => {
+      const orders = ImmutableMap(
+        payload ? parseJson(payload).map((o) => [o.orderId, o]) : [],
+      ).merge(state.page === 0 ? [] : state.orders);
+
+      if (orders) {
+        updateOrders(state, orders, 0);
+      }
+    });
+
     builder.addCase(getNextOrders.fulfilled, (state, action) => {
       const {objects, result} = action.payload;
 
@@ -205,6 +236,19 @@ const slice = createSlice({
         const orders = ImmutableMap(state.orders).merge(
           objects.map((o) => [o.orderId, o]),
         );
+
+        if (orders && orders.size <= 10) {
+          const orderCache = orders
+            .sort((a, b) => b.orderDate.localeCompare(a.orderDate))
+            .valueSeq()
+            .toArray()
+            .slice(0, 10);
+
+          storeData(
+            `${API.Order.KEY_INIT_ORDER}.${action.meta.arg.user}`,
+            JSON.stringify(orderCache),
+          );
+        }
 
         updateOrders(state, orders, action.meta.arg.page);
       }
@@ -298,6 +342,7 @@ export const actions = {
   ...slice.actions,
   getSubsWithToast,
   getStoreSubsWithToast,
+  init,
   getSubs,
   getStoreSubs,
   getOrders,

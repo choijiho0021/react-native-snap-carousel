@@ -101,7 +101,7 @@ const AppVerModal: React.FC<AppVerModalProps> = ({
           textStyle: {
             ...appStyles.bold22Text,
             color: colors.clearBlue,
-            bottom: 2,
+            bottom: Platform.OS === 'android' ? 0 : 2,
           },
         })}
       />

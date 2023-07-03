@@ -217,20 +217,20 @@ const UsageItem: React.FC<UsageItemProps> = ({
   const circularProgress = useRef();
 
   const showExpire = useMemo(() => item.partner !== undefined, [item.partner]); // partner별로 만료기하니 정해지지 않았을 때 조정 필요
-  const showUsage = useMemo(
-    () =>
-      item.partner !== 'billionconnect' ||
-      !(
-        (item.country?.includes('JP') && item.daily === 'daily') ||
-        (item.country?.includes('TH') && item.daily === 'total')
-      ),
-    [item.country, item.daily, item.partner],
-  );
-
   // const showUsage = useMemo(
-  //   () => item.partner !== 'billionconnect',
-  //   [item.partner],
+  //   () =>
+  //     item.partner !== 'billionconnect' ||
+  //     !(
+  //       (item.country?.includes('JP') && item.daily === 'daily') ||
+  //       (item.country?.includes('TH') && item.daily === 'total')
+  //     ),
+  //   [item.country, item.daily, item.partner],
   // );
+
+  const showUsage = useMemo(
+    () => item.partner !== 'billionconnect',
+    [item.partner],
+  );
 
   useEffect(() => {
     if (disableBtn) {
@@ -292,7 +292,9 @@ const UsageItem: React.FC<UsageItemProps> = ({
             </AppText>
             <AppText style={appStyles.normal14Text}>
               {item.partner === 'cmi'
-                ? endTime?.split(' ')[1] || i18n.t('contact:q')
+                ? utils
+                    .toDateString(endTime, 'YYYY-MM-DD HH:mm:ss')
+                    ?.split(' ')[1] || i18n.t('contact:q')
                 : '01:00:00'}
             </AppText>
           </View>
@@ -300,14 +302,14 @@ const UsageItem: React.FC<UsageItemProps> = ({
         <View
           style={[
             styles.endInfoContainer,
-            {marginBottom: isDaily ? 20 : 0, marginVertical: isDaily ? 0 : 20},
+            {marginBottom: isDaily ? 20 : 0, marginTop: isDaily ? 0 : 20},
           ]}>
           <AppText style={styles.normal14WarmGrey}>
             {i18n.t('usim:usingTime')}
           </AppText>
           <AppText style={appStyles.normal14Text}>{`${
             esimApp
-              ? endTime?.replace(/-/gi, '.')
+              ? utils.toDateString(endTime, 'YYYY-MM-DD HH:mm:ss')
               : utils.toDateString(item.endDate)
           } ${i18n.t(`sim:${'until'}`)}`}</AppText>
         </View>

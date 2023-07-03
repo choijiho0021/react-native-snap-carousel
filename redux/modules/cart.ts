@@ -16,10 +16,13 @@ import {actions as accountAction} from './account';
 
 const {esimCurrency} = Env.get();
 
-const initCart = createAsyncThunk('cart/initCart', async () => {
-  const oldData = await retrieveData(API.Cart.KEY_INIT_CART);
-  return oldData;
-});
+const initCart = createAsyncThunk(
+  'cart/initCart',
+  async ({mobile}: {mobile?: string}) => {
+    const oldData = await retrieveData(`${API.Cart.KEY_INIT_CART}.${mobile}`);
+    return oldData;
+  },
+);
 
 const calculateTotal = createAsyncThunk('cart/calc', API.Cart.calculateTotal);
 const cartFetch = createAsyncThunk('cart/fetch', API.Cart.get);
@@ -71,10 +74,13 @@ const cartAddAndGet = createAsyncThunk(
   },
 );
 
-const init = createAsyncThunk('cart/init', async (_, {dispatch}) => {
-  await dispatch(initCart());
-  await dispatch(cartFetch());
-});
+const init = createAsyncThunk(
+  'cart/init',
+  async (param: {mobile?: string}, {dispatch}) => {
+    await dispatch(initCart(param));
+    await dispatch(cartFetch());
+  },
+);
 
 // const cartLock = createAsyncThunk('cart/lock', API.Cart.lock);
 
@@ -97,7 +103,12 @@ export interface CartModelState {
 
 const onSuccess = (state, action) => {
   const {result, objects} = action.payload;
-  if (objects) storeData(API.Cart.KEY_INIT_CART, JSON.stringify(objects));
+
+  if (objects)
+    storeData(
+      `${API.Cart.KEY_INIT_CART}.${action?.meta?.arg?.mobile}`,
+      JSON.stringify(objects),
+    );
 
   state.result = result;
   if (result === 0 && objects.length > 0) {
@@ -213,12 +224,14 @@ const slice = createSlice({
 
   extraReducers: (builder) => {
     builder.addCase(initCart.fulfilled, (state, {payload}) => {
-      const obj = parseJson(payload);
-      state.orderId = obj[0].orderId;
-      state.orderItems = obj[0].orderItems.filter(
-        (i) => i.type === 'esim_product',
-      );
-      state.uuid = obj[0].uuid;
+      if (payload) {
+        const obj = parseJson(payload);
+        state.orderId = obj[0].orderId;
+        state.orderItems = obj[0].orderItems.filter(
+          (i) => i.type === 'esim_product',
+        );
+        state.uuid = obj[0].uuid;
+      }
     });
 
     builder.addCase(cartFetch.fulfilled, onSuccess);

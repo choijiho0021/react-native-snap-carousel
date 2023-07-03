@@ -4,8 +4,12 @@ import utils from '@/redux/api/utils';
 import api, {ApiResult, DrupalNode} from './api';
 import {Currency} from './productApi';
 import {parseJson} from '@/utils/utils';
+import Env from '@/environment';
+
+const {cachePrefix} = Env.get();
 
 const ORDER_PAGE_ITEMS = 10;
+const KEY_INIT_ORDER = `${cachePrefix}order.init`;
 
 const deliveryText = [
   {
@@ -202,6 +206,7 @@ const deliveryTrackingUrl = (company: string, trackingCode?: string) => {
 
 export default {
   ORDER_PAGE_ITEMS,
+  KEY_INIT_ORDER,
 
   deliveryText,
   shipmentState,

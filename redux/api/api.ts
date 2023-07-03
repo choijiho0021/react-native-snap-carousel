@@ -128,7 +128,7 @@ const path = {
       prodAddOn: 'rokebi/prod/addon',
     },
     pv: {
-      cmiUsage: 'api/v1/pvd/pv/cmi/v2/quota',
+      cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage/quota',
       cmiStatus: 'api/v1/pvd/pv/cmi/v2/bundle/status',
       quadcell: 'api/v1/pvd/pv/quadcell',
       bc: 'api/v1/pvd/pv/bc',

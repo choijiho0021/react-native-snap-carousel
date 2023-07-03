@@ -268,6 +268,16 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             break;
 
           case notiActions.NOTI_TYPE_PROVISION:
+            navigation.popToTop();
+            if (orderId) {
+              navigation.navigate('EsimStack', {
+                screen: 'Esim',
+                params: {
+                  iccid: orderId,
+                },
+              });
+              break;
+            }
             navigation.navigate('EsimStack', {screen: 'Esim'});
             break;
 

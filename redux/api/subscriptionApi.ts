@@ -2,6 +2,7 @@ import _, {isArray} from 'underscore';
 import i18n from '@/utils/i18n';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import Env from '@/environment';
+import moment from 'moment';
 
 const {isProduction, specialCategories} = Env.get();
 
@@ -65,8 +66,28 @@ export const bcStatusCd = {
   3: 'C', // cancelled
 };
 
+export const getLatestExpireDateSubs = (a: RkbSubscription[]) =>
+  a.reduce((latest, item) => {
+    const itemExpireDate = moment(item?.expireDate);
+    if (!latest || itemExpireDate.isAfter(moment(latest?.expireDate))) {
+      return item;
+    }
+    return latest;
+  }, a[0]);
+
+export const getLatestPurchaseDateSubs = (a: RkbSubscription[]) =>
+  a.reduce((latest, item) => {
+    const itemPurchaseDate = moment(item?.purchaseDate);
+    if (!latest || itemPurchaseDate.isAfter(moment(latest?.purchaseDate))) {
+      return item;
+    }
+    return latest;
+  }, a[0]);
+
 export const isDisabled = (item: RkbSubscription) => {
-  return item.giftStatusCd === 'S' || new Date(item.expireDate) <= new Date();
+  return (
+    item.giftStatusCd === 'S' || moment(item.expireDate).isBefore(moment())
+  );
 };
 
 // 선물안한 상품(구매,선물받음) - 구매일자별 정렬, 선물한 상품 구매일자별 정렬
@@ -76,11 +97,15 @@ export const sortSubs = (a: RkbSubscription[], b: RkbSubscription[]) => {
     return -1;
   }
 
-  if (!isDisabled(a[0]) && isDisabled(b[0])) return -1;
+  const lastExpireA = getLatestExpireDateSubs(a);
+  const lastExpireB = getLatestExpireDateSubs(b);
+  if (!isDisabled(lastExpireA) && isDisabled(lastExpireB)) return -1;
 
   if (
-    isDisabled(a[0]) === isDisabled(b[0]) &&
-    a[a.length - 1].purchaseDate > b[b.length - 1].purchaseDate
+    isDisabled(lastExpireA) === isDisabled(lastExpireB) &&
+    moment(getLatestPurchaseDateSubs(a).purchaseDate).isAfter(
+      getLatestPurchaseDateSubs(b).purchaseDate,
+    )
   ) {
     return -1;
   }
@@ -92,12 +117,28 @@ const toStatus = (v?: string) => {
   return code[v] ? i18n.t(`his:${code[v]}`) : v;
 };
 
+export type StatusObj = {
+  statusCd?: string;
+  endTime?: string;
+};
+
+export type UsageObj = {
+  quota?: number;
+  used?: number;
+};
+
+export type Usage = {
+  status: StatusObj;
+  usage: UsageObj;
+};
+
 export type RkbSubscription = {
   key: string;
   uuid: string;
   purchaseDate: string;
   expireDate: string;
   activationDate: string;
+  provDate?: string;
   statusCd: string;
   status: string;
   giftStatusCd: string;
@@ -143,6 +184,7 @@ const toSubscription =
           purchaseDate: item.field_purchase_date || '',
           expireDate: item.field_expiration_date || '',
           activationDate: item.field_subs_activation_date || '',
+          provDate: item.field_prov_time || '',
           endDate: item.field_subs_expiration_date || '',
           statusCd: item.field_status || '',
           status: toStatus(item.field_status) || '',
@@ -538,7 +580,7 @@ const cmiGetSubsUsage = ({
   if (!orderId)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: orderId');
 
-  return api.callHttpGet(
+  return api.callHttpGet<Usage>(
     `${api.rokHttpUrl(
       api.path.rokApi.pv.cmiUsage,
     )}&iccid=${iccid}&orderId=${orderId}`,
@@ -576,6 +618,30 @@ const quadcellGetData = ({
     `${api.rokHttpUrl(`${api.path.rokApi.pv.quadcell}/imsi/${imsi}/${key}`)}${
       query ? `&${api.queryString(query)}` : ''
     }`,
+    (data) => {
+      if (data?.result?.code === 0) {
+        return api.success(data?.objects);
+      }
+      return data;
+    },
+    new Headers({'Content-Type': 'application/json'}),
+  );
+};
+
+const quadcellGetUsage = ({
+  imsi,
+  query,
+}: {
+  imsi: string;
+  query?: Record<string, string | number>;
+}) => {
+  if (!imsi)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
+
+  return api.callHttpGet<Usage>(
+    `${api.rokHttpUrl(
+      `${api.path.rokApi.pv.quadcell}/usage/quota`,
+    )}&imsi=${imsi}`,
     (data) => {
       if (data?.result?.code === 0) {
         return api.success(data?.objects);
@@ -778,4 +844,5 @@ export default {
   quadcellGetData,
   getHkRegStatus,
   bcGetSubsUsage,
+  quadcellGetUsage,
 };
