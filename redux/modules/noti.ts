@@ -20,10 +20,13 @@ const NOTI_TYPE_USIM = 'usim';
 const NOTI_TYPE_NOTI = 'noti';
 const NOTI_TYPE_URI = 'uri';
 
-const initNotiList = createAsyncThunk('noti/initNotiList', async () => {
-  const oldData = await retrieveData(API.Noti.KEY_INIT_LIST);
-  return oldData;
-});
+const initNotiList = createAsyncThunk(
+  'noti/initNotiList',
+  async (mobile?: string) => {
+    const oldData = await retrieveData(`${API.Noti.KEY_INIT_LIST}.${mobile}`);
+    return oldData;
+  },
+);
 
 const getNotiList = createAsyncThunk('noti/getNotiList', API.Noti.getNoti);
 const readNoti = createAsyncThunk('noti/readNoti', API.Noti.read);
@@ -38,7 +41,7 @@ const sendLog = createAsyncThunk('noti/sendLog', API.Noti.sendLog);
 const init = createAsyncThunk(
   'noti/init',
   async (param: {mobile?: string}, {dispatch}) => {
-    await dispatch(initNotiList());
+    await dispatch(initNotiList(param?.mobile));
     await dispatch(getNotiList(param));
   },
 );

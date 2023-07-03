@@ -391,7 +391,7 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
     Promise.all([
       action.cart.reset(),
       action.order.reset(),
-      action.noti.init({mobile: undefined}),
+      action.noti.reset(),
       action.account.logout(),
     ]).then(async () => {
       if (Platform.OS === 'ios')
