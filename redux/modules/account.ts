@@ -571,7 +571,7 @@ const logout = createAsyncThunk('account/logout', async (param, {dispatch}) => {
   removeData(API.User.KEY_PIN);
   removeData(API.User.KEY_TOKEN);
   removeData(API.Noti.KEY_INIT_LIST);
-  removeData(API.Order.KEY_INIT_ORDER);
+  removeData(`${API.Order.KEY_INIT_ORDER}.${API.User.KEY_MOBILE}`);
   removeData(API.Cart.KEY_INIT_CART);
   removeData(`${cachePrefix}cache.subs`);
   removeData(`${cachePrefix}cache.store`);

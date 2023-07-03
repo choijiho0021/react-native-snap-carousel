@@ -12,8 +12,8 @@ import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
 import {cachedApi} from '@/redux/api/api';
 
-const init = createAsyncThunk('order/init', async () => {
-  const oldData = await retrieveData(API.Order.KEY_INIT_ORDER);
+const init = createAsyncThunk('order/init', async (mobile?: string) => {
+  const oldData = await retrieveData(`${API.Order.KEY_INIT_ORDER}.${mobile}`);
   return oldData;
 });
 
@@ -223,10 +223,17 @@ const slice = createSlice({
         );
 
         if (orders && orders.size <= 10) {
-          storeData(API.Order.KEY_INIT_ORDER, JSON.stringify(objects));
+          storeData(
+            `${API.Order.KEY_INIT_ORDER}.${action.meta.arg.user}`,
+            JSON.stringify(objects),
+          );
         }
 
         updateOrders(state, orders, action.meta.arg.page);
+
+        console.log('aaaaa orderList', orders, state.orderList);
+        //ysjoung
+        console.log('aaaaa action', action.meta.arg.user);
       }
     });
 
