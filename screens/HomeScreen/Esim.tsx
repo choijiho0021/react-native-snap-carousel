@@ -840,8 +840,8 @@ const Esim: React.FC<EsimProps> = ({
 
         if (loggedIn) {
           action.noti.init({mobile});
-          action.cart.init();
-          action.order.init();
+          action.cart.init({mobile});
+          action.order.init(mobile);
         } else {
           action.noti.getNotiList({mobile: account.mobile});
         }
