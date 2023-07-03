@@ -75,6 +75,15 @@ export const getLatestExpireDateSubs = (a: RkbSubscription[]) =>
     return latest;
   }, a[0]);
 
+export const getLatestPurchaseDateSubs = (a: RkbSubscription[]) =>
+  a.reduce((latest, item) => {
+    const itemPurchaseDate = moment(item?.purchaseDate);
+    if (!latest || itemPurchaseDate.isAfter(moment(latest?.purchaseDate))) {
+      return item;
+    }
+    return latest;
+  }, a[0]);
+
 export const isDisabled = (item: RkbSubscription) => {
   return (
     item.giftStatusCd === 'S' || moment(item.expireDate).isBefore(moment())
@@ -94,7 +103,9 @@ export const sortSubs = (a: RkbSubscription[], b: RkbSubscription[]) => {
 
   if (
     isDisabled(lastExpireA) === isDisabled(lastExpireB) &&
-    moment(lastExpireA.purchaseDate).isAfter(lastExpireB.purchaseDate)
+    moment(getLatestPurchaseDateSubs(a).purchaseDate).isAfter(
+      getLatestPurchaseDateSubs(b).purchaseDate,
+    )
   ) {
     return -1;
   }
