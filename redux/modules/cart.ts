@@ -78,7 +78,7 @@ const init = createAsyncThunk(
   'cart/init',
   async (param: {mobile?: string}, {dispatch}) => {
     await dispatch(initCart(param));
-    await dispatch(cartFetch(param));
+    await dispatch(cartFetch());
   },
 );
 

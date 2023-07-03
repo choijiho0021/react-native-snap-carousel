@@ -102,7 +102,7 @@ const toStock =
     );
   };
 
-const get = ({mobile}: {mobile?: string}) => {
+const get = () => {
   return api.callHttpGet(
     `${api.httpUrl(api.path.cart, '')}?_format=json`,
     toCart,
