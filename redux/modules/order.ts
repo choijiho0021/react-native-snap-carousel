@@ -7,9 +7,15 @@ import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {storeData, retrieveData, parseJson} from '@/utils/utils';
 import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
 import {cachedApi} from '@/redux/api/api';
+
+const init = createAsyncThunk('order/init', async () => {
+  const oldData = await retrieveData(API.Order.KEY_INIT_ORDER);
+  return oldData;
+});
 
 const getNextOrders = createAsyncThunk('order/getOrders', API.Order.getOrders);
 const getOrderById = createAsyncThunk(
@@ -194,6 +200,16 @@ const slice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(init.fulfilled, (state, {payload}) => {
+      const orders = ImmutableMap(
+        payload ? parseJson(payload).map((o) => [o.orderId, o]) : [],
+      ).merge(state.page === 0 ? [] : state.orders);
+
+      if (orders) {
+        updateOrders(state, orders, 0);
+      }
+    });
+
     builder.addCase(getNextOrders.fulfilled, (state, action) => {
       const {objects, result} = action.payload;
 
@@ -205,6 +221,10 @@ const slice = createSlice({
         const orders = ImmutableMap(state.orders).merge(
           objects.map((o) => [o.orderId, o]),
         );
+
+        if (orders && orders.size <= 10) {
+          storeData(API.Order.KEY_INIT_ORDER, JSON.stringify(objects));
+        }
 
         updateOrders(state, orders, action.meta.arg.page);
       }
@@ -298,6 +318,7 @@ export const actions = {
   ...slice.actions,
   getSubsWithToast,
   getStoreSubsWithToast,
+  init,
   getSubs,
   getStoreSubs,
   getOrders,
