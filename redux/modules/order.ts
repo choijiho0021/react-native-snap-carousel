@@ -26,14 +26,29 @@ const cancelOrder = createAsyncThunk(
   'order/cancelOrder',
   API.Order.cancelOrder,
 );
+
 const getSubs = createAsyncThunk(
   'order/getSubs',
-  cachedApi('cache.subs', API.Subscription.getSubscription),
+  async (param: {iccid?: string; token?: string; prodType?: string}) =>
+    cachedApi(`cache.subs.${param?.iccid}`, API.Subscription.getSubscription)(
+      param,
+      {
+        fulfillWithValue: (value) => value,
+      },
+    ),
 );
+
 const getStoreSubs = createAsyncThunk(
   'order/getStoreSubs',
-  cachedApi('cache.store', API.Subscription.getStoreSubscription),
+  async (param: {mobile?: string; token?: string}) =>
+    cachedApi(
+      `cache.store.${param?.mobile}`,
+      API.Subscription.getStoreSubscription,
+    )(param, {
+      fulfillWithValue: (value) => value,
+    }),
 );
+
 const getSubsUsage = createAsyncThunk(
   'order/getSubsUsage',
   API.Subscription.getSubsUsage,
