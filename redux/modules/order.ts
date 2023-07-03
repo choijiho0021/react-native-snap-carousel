@@ -223,17 +223,19 @@ const slice = createSlice({
         );
 
         if (orders && orders.size <= 10) {
+          const orderCache = orders
+            .sort((a, b) => b.orderDate.localeCompare(a.orderDate))
+            .valueSeq()
+            .toArray()
+            .slice(0, 10);
+
           storeData(
             `${API.Order.KEY_INIT_ORDER}.${action.meta.arg.user}`,
-            JSON.stringify(objects),
+            JSON.stringify(orderCache),
           );
         }
 
         updateOrders(state, orders, action.meta.arg.page);
-
-        console.log('aaaaa orderList', orders, state.orderList);
-        //ysjoung
-        console.log('aaaaa action', action.meta.arg.user);
       }
     });
 
