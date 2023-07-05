@@ -191,6 +191,9 @@ type PurchaseDetailScreenProps = {
   };
 };
 
+const isRokebiCash = (pg: string) =>
+  ['rokebi_cash', 'rokebi_point'].includes(pg);
+
 const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   navigation,
   route,
@@ -224,15 +227,26 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     setIsCanceled(detail?.state === 'canceled' || false);
     setBillingAmt(utils.addCurrency(detail?.totalPrice, detail?.dlvCost));
     setMethod(
-      detail?.paymentList?.find(
-        (item) => item.paymentGateway !== 'rokebi_cash',
-      ),
+      detail?.paymentList?.find((item) => !isRokebiCash(item.paymentGateway)),
     );
-    // setTotalCnt(detail?.orderItems.reduce((acc, cur) => acc + cur.qty, 0) || 0);
-    setBalanceCharge(
-      detail?.paymentList?.find((item) => item.paymentGateway === 'rokebi_cash')
-        ?.amount,
+
+    const list = detail?.paymentList?.filter((item) =>
+      isRokebiCash(item.paymentGateway),
     );
+    if (list?.[0]) {
+      setBalanceCharge(
+        list.reduce(
+          (acc, cur) => ({
+            value: acc.value + cur.amount.value,
+            currency: acc.currency,
+          }),
+          {
+            value: 0,
+            currency: list[0].amount.currency,
+          } as Currency,
+        ),
+      );
+    }
   }, [account, route.params]);
 
   useEffect(() => {

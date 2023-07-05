@@ -82,9 +82,14 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
       data
         .map((item) => {
           const paymentList = parseJson(item.payment_list) || [];
-          const balanceCharge = paymentList.find(
-            (value) => value.payment_gateway === 'rokebi_cash',
-          );
+          const balanceCharge = paymentList
+            .filter((value) =>
+              ['rokebi_cash', 'rokebi_point'].includes(value.payment_gateway),
+            )
+            .reduce(
+              (acc, cur) => acc + utils.stringToNumber(cur.amount__number),
+              0,
+            );
           const totalPrice = utils.stringToCurrency(item.total_price__number); // 배송비 불포함 금액
 
           return {
@@ -116,12 +121,7 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
               remote_id: value.remote_id,
             })),
             dlvCost: utils.stringToCurrency(item.dlv_cost),
-            balanceCharge: utils.toCurrency(
-              balanceCharge
-                ? utils.stringToNumber(balanceCharge.amount__number) || 0
-                : 0,
-              totalPrice.currency,
-            ),
+            balanceCharge: utils.toCurrency(balanceCharge, totalPrice.currency),
           } as RkbOrder;
         })
         .sort((a, b) => (a.orderDate < b.orderDate ? 1 : -1)),
