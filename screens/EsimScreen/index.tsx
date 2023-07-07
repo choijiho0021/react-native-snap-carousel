@@ -276,7 +276,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     async (item: RkbSubscription): Promise<Usage> => {
       if (item?.imsi) {
         const {result, objects} = await API.Subscription.quadcellGetUsage({
-          imsi: item.imsi,
+          // imsi: item.imsi,
+          imsi: '454070042536493',
         });
 
         if (result === 0 && objects.length > 0) return objects[0];

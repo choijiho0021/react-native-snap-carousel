@@ -835,7 +835,7 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@expo/config-plugins@^4.0.3", "@expo/config-plugins@^4.1.5":
+"@expo/config-plugins@^4.0.3":
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-4.1.5.tgz#9d357d2cda9c095e511b51583ede8a3b76174068"
   integrity sha512-RVvU40RtZt12HavuDAe+LDIq9lHj7sheOfMEHdmpJ/uTA8pgvkbc56XF6JHQD+yRr6+uhhb+JnAasGq49dsQbw==
@@ -1714,10 +1714,10 @@
   resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-12.9.3.tgz#d89cb95c1e90ccdf6eeac8a9b7e895bee2aa9a36"
   integrity sha512-5xO6WuTmm9qfaRaTaG0jRiMr2hPzgl6IMJYtZ48/xXYLe38gxXyOd14w9f+f4yXlJftqcPIE3thLeNawMfdWBA==
 
-"@react-native-google-signin/google-signin@7.0.1":
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/@react-native-google-signin/google-signin/-/google-signin-7.0.1.tgz#a03f1a3e43ddb1bb092679bfdd6e38ff6ed819a1"
-  integrity sha512-iG1OkFx1ohSupofWnlbV+Re74L2HF823SOL1KNl1gGDiVxzNKJTZm/wuaPuujzci4kr8GuwR9PRgxLShiAZwlg==
+"@react-native-google-signin/google-signin@^9.0.2":
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/@react-native-google-signin/google-signin/-/google-signin-9.1.0.tgz#7757dabfe6f397ab25f09393f99e816ad7c9b7ff"
+  integrity sha512-a7yyJyytNxi1w1KFy8iFSvAIgssepI/POQrdpZqP+crYNbYYGctCH9QaYu0zMFlQfUsvc6NY+duV1/FnftnETQ==
 
 "@react-native-picker/picker@^1.8.3":
   version "1.16.8"
@@ -1954,6 +1954,11 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/crypto-js@^4.1.1":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@types/crypto-js/-/crypto-js-4.1.1.tgz#602859584cecc91894eb23a4892f38cfa927890d"
+  integrity sha512-BG7fQKZ689HIoc5h+6D2Dgq1fABRa0RbBWKBd9SP/MVRVXROflpm5fhwyATX5duFmbStzyzyycPB8qUYKDH3NA==
+
 "@types/graceful-fs@^4.1.2":
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/@types/graceful-fs/-/graceful-fs-4.1.5.tgz#21ffba0d98da4350db64891f92a9e5db3cdb4e15"
@@ -1979,7 +1984,7 @@
   resolved "https://registry.yarnpkg.com/@types/i18n-js/-/i18n-js-3.8.3.tgz#9aac0ac81c0b5f16d864b395607442eebb382528"
   integrity sha512-Y20B7kgoNrchIYCfty20zQYeFFJMHdegwy9VopCEKdByp7Tlv0jtWrfoRb+3r2mIvgrwp/eMwXhhXOBYKEFkTA==
 
-"@types/iamport-react-native@^1.5.1":
+"@types/iamport-react-native@^1.5.2":
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/@types/iamport-react-native/-/iamport-react-native-1.5.2.tgz#5a29424d62c08833e9307ed5d2007592e95f1271"
   integrity sha512-+24xymiCfe7KeWCThcO7FP2H4CVprKtW9Bjud9PdzkKcvUPSTHti9yL+zD9VWUS3AknuruegNal/xfB0IM/n+Q==
@@ -3764,6 +3769,11 @@ cross-spawn@^7.0.2, cross-spawn@^7.0.3:
     path-key "^3.1.0"
     shebang-command "^2.0.0"
     which "^2.0.1"
+
+crypto-js@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.1.1.tgz#9e485bcf03521041bd85844786b83fb7619736cf"
+  integrity sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==
 
 crypto-random-string@^1.0.0:
   version "1.0.0"
@@ -5646,10 +5656,10 @@ i@^0.3.7:
   resolved "https://registry.yarnpkg.com/i/-/i-0.3.7.tgz#2a7437a923d59c14b17243dc63a549af24d85799"
   integrity sha512-FYz4wlXgkQwIPqhzC5TdNMLSE5+GS1IIDJZY/1ZiEPCT2S3COUVZeT5OW4BmW4r5LHLQuOosSwsvnroG9GR59Q==
 
-iamport-react-native@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/iamport-react-native/-/iamport-react-native-2.0.2.tgz#5d1fe3cb3bc992232994568f791f3ce02cb3138b"
-  integrity sha512-LSU5wbfh5w0JXvl6SAI0OAZ5f+jAvWUv+HvDafWfJ9+3dIOJTdbmykoNLoJz9c/1+qWIUWWryDSYNXIO7HvXRw==
+iamport-react-native@^2.0.3:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/iamport-react-native/-/iamport-react-native-2.0.5.tgz#f0833870e87771747d7b16f0291b78cc36af9414"
+  integrity sha512-KOM/RNoxpZCiUIRA3bJXGteOphOju7TSWjD+pfgELL/L0A6Wr9dVCgyuBFWfkeaqROBkBq5Ilo1fI49kKoELiQ==
 
 iconv-lite@0.4.24, iconv-lite@^0.4.24:
   version "0.4.24"
@@ -8149,12 +8159,19 @@ mkdirp@^1.0.3, mkdirp@^1.0.4:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
+moment-timezone@^0.5.43:
+  version "0.5.43"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.43.tgz#3dd7f3d0c67f78c23cd1906b9b2137a09b3c4790"
+  integrity sha512-72j3aNyuIsDxdF1i7CEgV2FfxM1r6aaqJyLB2vwb33mXYyoyLly+F1zbWqhA3/bVIoJ4szlUoMbUnVdid32NUQ==
+  dependencies:
+    moment "^2.29.4"
+
 moment-with-locales-es6@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/moment-with-locales-es6/-/moment-with-locales-es6-1.0.1.tgz#c2eec19c902f98baa959afeacc34275bb61a3336"
   integrity sha512-aKHuk7hHGVGk1X86rhu4aVwSEpBEwL3Lo5BEvZnqGueZeVK9pfpTrlLT3qN4A64vMkiKkxWpwQCcyg2YpoZGaQ==
 
-moment@^2.29.1:
+moment@^2.29.1, moment@^2.29.4:
   version "2.29.4"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
   integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
@@ -9482,10 +9499,10 @@ react-native-codegen@^0.0.17:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
-react-native-config@1.4.6:
-  version "1.4.6"
-  resolved "https://registry.yarnpkg.com/react-native-config/-/react-native-config-1.4.6.tgz#2aefebf4d9cf02831e64bbc1307596bd212f6d42"
-  integrity sha512-cSLdOfva2IPCxh6HjHN1IDVW9ratAvNnnAUx6ar2Byvr8KQU7++ysdFYPaoNVuJURuYoAKgvjab8ZcnwGZIO6Q==
+react-native-config@^1.5.0:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/react-native-config/-/react-native-config-1.5.1.tgz#73c94f511493e9b7ff9350cdf351d203a1b05acc"
+  integrity sha512-g1xNgt1tV95FCX+iWz6YJonxXkQX0GdD3fB8xQtR1GUBEqweB9zMROW77gi2TygmYmUkBI7LU4pES+zcTyK4HA==
 
 react-native-device-info@^10.2.1:
   version "10.2.1"
@@ -9497,12 +9514,11 @@ react-native-exit-app@^1.1.0:
   resolved "https://registry.yarnpkg.com/react-native-exit-app/-/react-native-exit-app-1.1.0.tgz#5ec082152974240e2d6a93f1608efb49a4385f21"
   integrity sha512-Spne19zfMfJvnUTX909EHUqWMk69rATtLJq9XMBGpNSHhx0M7v5yetx2Z87egBhLOqQm+CWfD/oxWzDG8rbIQA==
 
-react-native-fbsdk-next@^10.1.0:
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-fbsdk-next/-/react-native-fbsdk-next-10.1.0.tgz#e26c4e2505ffe34050ffdd44b8e6bbb8eaf736a4"
-  integrity sha512-M7G4G0WIyg6HY72eViROSiV/9DVCdovoLSTdED+Ovj+otTPwDCniYPOirBBES14GTzN0Ehl6rZkwX6qAspAhqA==
+react-native-fbsdk-next@^11.2.0:
+  version "11.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-fbsdk-next/-/react-native-fbsdk-next-11.2.1.tgz#624b16c245c505887ad1dd17265ddaefb6c71e02"
+  integrity sha512-CfJmexiDpdeAUAGM3uHxLEHyRtiAQTeELoZ+eKp1z9W2X5a7/uITHIxCaqy/B+4GfHCCj4m1WF1RKjOy+d6G/A==
   dependencies:
-    "@expo/config-plugins" "^4.1.5"
     xml2js "^0.4.23"
 
 react-native-flipper@^0.162.0:
@@ -9510,15 +9526,15 @@ react-native-flipper@^0.162.0:
   resolved "https://registry.yarnpkg.com/react-native-flipper/-/react-native-flipper-0.162.0.tgz#9919adb743dae50a80d914eaa3a53eb33eaf39ec"
   integrity sha512-htXhzHDKWkMaBivc+SLTxqT1GkJxR2rrXobXlAhFYrvaQ6ws1KA6peqQssEiPSrXQJ2Z2oRXQ+yrlPKaBC/Hjg==
 
-react-native-gesture-handler@^1.6.1:
-  version "1.10.3"
-  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.10.3.tgz#942bbf2963bbf49fa79593600ee9d7b5dab3cfc0"
-  integrity sha512-cBGMi1IEsIVMgoox4RvMx7V2r6bNKw0uR1Mu1o7NbuHS6BRSVLq0dP34l2ecnPlC+jpWd3le6Yg1nrdCjby2Mw==
+react-native-gesture-handler@^2.9.0:
+  version "2.12.0"
+  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.12.0.tgz#59ca9d97e4c71f70b9c258f14a1a081f4c689976"
+  integrity sha512-rr+XwVzXAVpY8co25ukvyI38fKCxTQjz7WajeZktl8qUPdh1twnSExgpT47DqDi4n+m+OiJPAnHfZOkqqAQMOg==
   dependencies:
     "@egjs/hammerjs" "^2.0.17"
-    fbjs "^3.0.0"
     hoist-non-react-statics "^3.3.0"
     invariant "^2.2.4"
+    lodash "^4.17.21"
     prop-types "^15.7.2"
 
 react-native-gradle-plugin@^0.0.6:
@@ -9526,10 +9542,10 @@ react-native-gradle-plugin@^0.0.6:
   resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.0.6.tgz#b61a9234ad2f61430937911003cddd7e15c72b45"
   integrity sha512-eIlgtsmDp1jLC24dRn43hB3kEcZVqx6DUQbR0N1ABXGnMEafm9I3V3dUUeD1vh+Dy5WqijSoEwLNUPLgu5zDMg==
 
-react-native-image-crop-picker@^0.36.3:
-  version "0.36.4"
-  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.36.4.tgz#13a659fc296bea695a88a36de9eacd1e4aebc9b8"
-  integrity sha512-FOWkYbCEh78V5/aK9HqMSvRnQJtelGwj0UOu1zhE49gO6e4YoKKNBvA15jweAMM/kPA+omDXBIgJaruonoEXGA==
+react-native-image-crop-picker@^0.39.0:
+  version "0.39.0"
+  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.39.0.tgz#9cb8e8ffb0e8ab06f7b3227cadf077169e225eba"
+  integrity sha512-4aANbQMrmU6zN/4b0rVBA7SbaZ3aa5JESm3Xk751sINybZMt1yz/9h95LkO7U0pbslHDo3ofXjG75PmQRP6a/w==
 
 react-native-iphone-x-helper@^1.0.3:
   version "1.3.1"
@@ -9566,10 +9582,10 @@ react-native-pagination@^1.5.5:
   dependencies:
     react-native-vector-icons "^4.3.0"
 
-react-native-permissions@^3.0.1:
-  version "3.6.1"
-  resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-3.6.1.tgz#73adcc1cef8cd57a9ef167b4507405f4ff5749c4"
-  integrity sha512-fzPpPQXeD34inUccqtoResSwYubfrwUguP4qrVUUv8+KSMjYSaHGoS5HaIJLZHlN9gO+TvLJZ2L5ZljTsb6qnQ==
+react-native-permissions@3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-3.6.0.tgz#4b284b6374fdb8b9b6702c6a0719bfb1a97aa7ff"
+  integrity sha512-aiancYU5eAC3lCtdAFNz/8OQAShAXSgFJAcNrsspXiMulL4zjClIa52uWMi5NTU4skU0KoWG5rCfqjxWAkJL8w==
 
 react-native-picker-select@^8.0.4:
   version "8.0.4"
@@ -9644,6 +9660,11 @@ react-native-svg@^13.2.0:
   dependencies:
     css-select "^5.1.0"
     css-tree "^1.1.3"
+
+react-native-system-setting@^1.7.6:
+  version "1.7.6"
+  resolved "https://registry.yarnpkg.com/react-native-system-setting/-/react-native-system-setting-1.7.6.tgz#43633604ac1bd5fd906acdbffa627a1998d2345a"
+  integrity sha512-nBnIK5Xnyu8XRRA3BMzRI54oYlSBKc0oOTQdZOCEeOvn4ltS1nk2shj/vtMQe6khXvuhai3vIc+g7DcsOcr5+w==
 
 react-native-tab-view@^3.3.4:
   version "3.3.4"
