@@ -622,7 +622,6 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
               contentOffset: {y},
             },
           }) => {
-            if (y <= 0 && !blockAnimation) showTop(true);
             if (y >= 15 && !blockAnimation) showTop(false);
           }}
         />
