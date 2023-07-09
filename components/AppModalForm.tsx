@@ -51,7 +51,7 @@ type AppModalFormProps = {
   keyboardType?: KeyboardTypeOptions;
   infoText?: string;
   defaultValue?: string;
-  valueType: ValidationKey;
+  valueType?: ValidationKey;
   validate?: (v: string) => ValidationResult;
   validateAsync?: (v: string) => Promise<ValidationResult>;
 } & AppModalProps;
@@ -87,8 +87,11 @@ const AppModalForm: React.FC<AppModalFormProps> = ({
         (validate && validate(val)) ||
         (validateAsync && (await validateAsync(val)));
 
-      if (validated === undefined || _.isEmpty(validated)) onOkClose(val);
-      else setError(validated);
+      if (validated === undefined || _.isEmpty(validated)) {
+        onOkClose(val);
+        setValue(undefined);
+        setError(undefined);
+      } else setError(validated);
     },
     [onOkClose, validate, validateAsync],
   );
@@ -96,14 +99,14 @@ const AppModalForm: React.FC<AppModalFormProps> = ({
   const onChangeText = useCallback(
     (val: string) => {
       setValue(val);
-      setError(validationUtil.validate(valueType, val));
+      if (valueType) setError(validationUtil.validate(valueType, val));
     },
     [valueType],
   );
 
   const onCancel = useCallback(() => {
     setValue('');
-    setError();
+    setError(undefined);
     onCancelClose();
   }, [onCancelClose]);
 
