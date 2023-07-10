@@ -13,6 +13,8 @@ import {connect} from 'react-redux';
 import Video from 'react-native-video';
 import _ from 'underscore';
 import Lottie from 'lottie-react-native';
+import moment from 'moment-timezone';
+import * as RNLocalize from 'react-native-localize';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -29,8 +31,6 @@ import AppIcon from '@/components/AppIcon';
 import TextWithDot from './TextWithDot';
 import AppSvgIcon from '@/components/AppSvgIcon';
 // import moment from 'moment';
-import moment from 'moment-timezone';
-import * as RNLocalize from 'react-native-localize';
 import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
@@ -356,9 +356,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
             </AppText>
             <AppText style={appStyles.normal14Text}>
               {item.partner === 'cmi'
-                ? utils
-                    .toDateString(endTime, 'YYYY-MM-DD HH:mm:ss')
-                    ?.split(' ')[1] || i18n.t('contact:q')
+                ? moment(endTime).tz('Asia/Seoul').format('HH:mm:ss')
                 : '01:00:00'}
             </AppText>
           </View>
@@ -373,7 +371,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           </AppText>
           <AppText style={appStyles.normal14Text}>{`${
             esimApp
-              ? utils.toDateString(endTime, 'YYYY-MM-DD HH:mm:ss')
+              ? moment(endTime).tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss')
               : utils.toDateString(item.endDate)
           } ${i18n.t(`sim:${'until'}`)}`}</AppText>
         </View>

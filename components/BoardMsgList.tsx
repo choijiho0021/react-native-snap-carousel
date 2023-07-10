@@ -275,7 +275,7 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
         visible={showModal}
         title={i18n.t('board:inputPass')}
         maxLength={4}
-        valueType="pin"
+        // valueType="pin"
         keyboardType="numeric"
         onOkClose={onSubmitPin}
         onCancelClose={() => setShowModal(false)}

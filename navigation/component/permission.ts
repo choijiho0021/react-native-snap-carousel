@@ -13,6 +13,8 @@ export async function requestPermission() {
   } else if (Platform.OS === 'android') {
     // await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
     await request(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES);
+    await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+    await messaging().requestPermission();
   }
 }
 

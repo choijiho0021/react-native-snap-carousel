@@ -770,11 +770,15 @@ const Esim: React.FC<EsimProps> = ({
   }, [action.product, isSupport, product.rule.timestamp_dev]);
 
   useEffect(() => {
-    if (isSupport && !initialized.current) {
+    const {loggedIn} = account;
+
+    if (loggedIn && isSupport && !initialized.current) {
       initialized.current = true;
-      pushNoti.add(notification);
+      pushNoti.add(notification, () =>
+        action.noti.getNotiList({mobile: account.mobile}),
+      );
     }
-  }, [isSupport, notification]);
+  }, [account, action.noti, isSupport, notification]);
 
   useEffect(() => {
     if (
