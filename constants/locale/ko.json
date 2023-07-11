@@ -655,7 +655,7 @@
   "esim:charge:amount": "금액: ",
   "esim:pedometer:title": "만보기",
   "esim:pedometer:sub": "목표 걸음 수",
-  "esim:prodType:totcautional": "데이터 종량제",
+  "esim:prodType:total": "데이터 종량제",
   "esim:prodType:daily": "데이터 무제한",
   "esim:caution": "주의사항",
   "esim:caution:usage": "실 사용량과 차이가 있을 수 있습니다.",
