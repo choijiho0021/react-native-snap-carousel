@@ -227,8 +227,8 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
   const renderResetTimeRow = useCallback(
     (key: string, rowStyle: ViewStyle = {}) => {
-      // const tz = key === 'local' ? RNLocalize.getTimeZone() : 'Asia/Seoul';
-      const tz = key === 'local' ? 'America/New_York' : 'Asia/Seoul';
+      const tz = key === 'local' ? RNLocalize.getTimeZone() : 'Asia/Seoul';
+      // const tz = key === 'local' ? 'America/New_York' : 'Asia/Seoul';
 
       return (
         <View style={rowStyle}>
