@@ -47,41 +47,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 20,
   },
-  inactiveContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    flexDirection: 'row',
-    marginBottom: 20,
-    alignItems: 'center',
-    backgroundColor: colors.white,
-    width: '100%',
-    justifyContent: 'space-between',
-  },
-  inactiveIcon: {
-    ...appStyles.normal14Text,
-    marginTop: 15,
-    marginBottom: 25,
-    textAlign: 'center',
-  },
-  endInfoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.white,
-    width: '100%',
-    justifyContent: 'space-between',
-    borderTopRightRadius: 8,
-    borderTopLeftRadius: 8,
-  },
-  topOfActiveContainer: {
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
-  },
-  bottomOfActiveContainer: {
-    alignItems: 'center',
-    backgroundColor: colors.white,
-    borderTopRightRadius: 8,
-    borderTopLeftRadius: 8,
-  },
   circular: {
     marginLeft: 12,
     marginRight: 40,
@@ -97,26 +62,8 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     fontSize: isDeviceSize('small') ? 12 : 14,
   },
-  usagePeriod: {
-    ...appStyles.normal14Text,
-    color: colors.warmGrey,
-    fontSize: isDeviceSize('small') ? 12 : 14,
-  },
-  normal12WarmGrey: {
-    ...appStyles.normal12Text,
-    color: colors.warmGrey,
-    textAlign: 'left',
-  },
-  normal14WarmGrey: {
-    ...appStyles.normal14Text,
-    color: colors.warmGrey,
-  },
   bold14WarmGrey: {
     ...appStyles.bold14Text,
-    color: colors.warmGrey,
-  },
-  bold16WarmGrey: {
-    ...appStyles.bold16Text,
     color: colors.warmGrey,
   },
   warning: {
@@ -124,27 +71,11 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     color: colors.warmGrey,
   },
-  divider: {
-    height: 1,
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
-  },
-  checkUsageBtn: {
-    width: 160,
-    height: 50,
-    justifyContent: 'center',
-    alignSelf: 'center',
-    backgroundColor: colors.clearBlue,
-    borderRadius: 24,
-  },
-  checkUsageBtnTitle: {
-    ...appStyles.bold16Text,
-    textAlign: 'center',
-    color: colors.white,
-  },
-  checkUsageBtnContainer: {
-    marginBottom: 30,
-    alignContent: 'center',
+  warningDot: {
+    ...appStyles.normal14Text,
+    textAlign: 'left',
+    color: colors.warmGrey,
+    marginHorizontal: 8,
   },
   backgroundVideo: {
     position: 'absolute',
@@ -153,14 +84,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
     paddingVertical: 30,
-  },
-  notShowUsage: {
-    width: '100%',
-    height: 100,
-    marginVertical: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
   },
   noticeText: {
     ...appStyles.normal14Text,
@@ -176,10 +99,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     width: '100%',
-  },
-  cautionText: {
-    ...appStyles.bold14Text,
-    marginLeft: 10,
   },
   timeContainer: {
     flexDirection: 'row',
@@ -252,6 +171,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
   account: {token},
 }) => {
   const [disableBtn, setDisableBtn] = useState(false);
+  const [isOverUsed, setIsOverUsed] = useState(false);
   const [quota, setQuota] = useState<number | undefined>(usage?.quota);
   const [used, setUsed] = useState<number | undefined>(usage?.used);
   const isExhausted = useMemo(
@@ -259,8 +179,8 @@ const UsageItem: React.FC<UsageItemProps> = ({
     [quota, used],
   );
   const circularProgress = useRef();
+  const overCircularProgress = useRef();
 
-  const showExpire = useMemo(() => item.partner !== undefined, [item.partner]); // partner별로 만료기하니 정해지지 않았을 때 조정 필요
   // const showUsage = useMemo(
   //   () =>
   //     item.partner !== 'billionconnect' ||
@@ -288,37 +208,22 @@ const UsageItem: React.FC<UsageItemProps> = ({
         setQuota(usage.quota);
         setUsed(usage.used);
 
-        const progress = used >= 0 ? 100 - Math.floor((used / quota) * 100) : 0;
-        circularProgress.current?.animate(40, 3000, null);
+        const progress = used >= 0 ? Math.floor((used / quota) * 100) : 0;
+        const overProgress =
+          used >= 0 ? Math.floor(((used - quota) / quota) * 100) : 0;
+
+        if (isOverUsed) {
+          overCircularProgress.current?.reAnimate(0, overProgress, 3000, null);
+        } else {
+          circularProgress.current?.reAnimate(0, progress, 3000, null);
+        }
       }
     }
     if (esimApp && !cmiStatusCd) {
       console.log('@@ show snackbar');
       showSnackbar();
     }
-  }, [cmiStatusCd, quota, showSnackbar, usage, used]);
-
-  const getUsage = useCallback(() => {
-    if (!esimApp && item.statusCd === 'A') {
-      API.Subscription.getSubsUsage({id: item.nid, token}).then((resp) => {
-        setDisableBtn(true);
-        if (resp.result === 0) {
-          const {quota: subsQuota, used: subsUsed} = resp.objects[0];
-          const progress =
-            subsUsed >= 0 ? 100 - Math.floor((subsUsed / subsQuota) * 100) : 0;
-
-          setQuota(subsQuota);
-          setUsed(subsUsed);
-
-          circularProgress.current?.animate(progress, 3000, null);
-
-          Analytics.trackEvent('Page_View_Count', {page: 'Get Detail Data'});
-        } else {
-          showSnackbar();
-        }
-      });
-    }
-  }, [item.nid, item.statusCd, showSnackbar, token]);
+  }, [cmiStatusCd, isOverUsed, quota, showSnackbar, usage, used]);
 
   const renderResetTimeRow = useCallback(
     (key: string, rowStyle: ViewStyle = {}) => {
@@ -340,50 +245,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
     },
     [endTime, item.partner],
   );
-
-  const expire = useCallback(() => {
-    const isDaily = item.daily === 'daily';
-    return (
-      <Fragment>
-        {isDaily && ['cmi', 'quadcell'].includes(item.partner || '') && (
-          <View
-            style={[
-              styles.endInfoContainer,
-              {marginTop: 20, marginBottom: 10},
-            ]}>
-            <AppText style={styles.normal14WarmGrey}>
-              {i18n.t('esim:chargeHistory:resetTime')}
-            </AppText>
-            <AppText style={appStyles.normal14Text}>
-              {item.partner === 'cmi'
-                ? moment(endTime).tz('Asia/Seoul').format('HH:mm:ss')
-                : '01:00:00'}
-            </AppText>
-          </View>
-        )}
-        <View
-          style={[
-            styles.endInfoContainer,
-            {marginBottom: isDaily ? 20 : 0, marginTop: isDaily ? 0 : 20},
-          ]}>
-          <AppText style={styles.normal14WarmGrey}>
-            {i18n.t('usim:usingTime')}
-          </AppText>
-          <AppText style={appStyles.normal14Text}>{`${
-            esimApp
-              ? moment(endTime).tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss')
-              : utils.toDateString(item.endDate)
-          } ${i18n.t(`sim:${'until'}`)}`}</AppText>
-        </View>
-      </Fragment>
-    );
-  }, [endTime, item.daily, item.endDate, item.partner]);
-
-  // data는 esim:Mb usim:kb 단위
-  const toMb = useCallback((data: number) => {
-    if (data === 0) return 0;
-    return esimApp ? data?.toFixed(2) : utils.numberToCommaString(data / 1024);
-  }, []);
 
   // data는 esim:Mb usim:kb 단위
   const toGb = useCallback((data: number) => {
@@ -427,7 +288,9 @@ const UsageItem: React.FC<UsageItemProps> = ({
           }}
         />
       </View>
-    ) : null;
+    ) : (
+      <View style={{height: 20}} />
+    );
   }, [isExhausted, quota, showUsage, used]);
 
   const renderDailyUsage = useCallback(
@@ -501,25 +364,66 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [endTime, item.daily, renderResetTimeRow]);
 
   const renderAnimatedCircularProgress = useCallback(() => {
+    if (!isOverUsed) {
+      return (
+        <AnimatedCircularProgress
+          ref={circularProgress}
+          style={styles.circular}
+          size={140}
+          width={10}
+          fill={0}
+          rotation={0}
+          backgroundWidth={10}
+          tintColor={colors.gray3}
+          // onAnimationComplete={() => setIsOverUsed(isExhausted)}
+          backgroundColor={colors.clearBlue}>
+          {(fill) => {
+            if (fill > 100) setIsOverUsed(isExhausted);
+            return (
+              <View style={{alignItems: 'center'}}>
+                <View style={{width: 24, height: 24}}>
+                  <Lottie
+                    autoPlay={isExhausted}
+                    loop
+                    source={require('@/assets/images/lottie/lightning.json')}
+                  />
+                </View>
+                <AppText style={{...appStyles.bold14Text, textAlign: 'center'}}>
+                  {i18n.t('esim:remainAmount')}
+                </AppText>
+                <AppText
+                  style={{
+                    ...appStyles.bold24Text,
+                    color: isExhausted ? colors.redError : colors.clearBlue,
+                  }}>
+                  {`${toGb(quota - used || 0)}GB`}
+                </AppText>
+              </View>
+            );
+          }}
+        </AnimatedCircularProgress>
+      );
+    }
     return (
       <AnimatedCircularProgress
-        ref={circularProgress}
+        ref={overCircularProgress}
         style={styles.circular}
         size={140}
         width={10}
+        prefill={0}
         fill={0}
         rotation={0}
         backgroundWidth={10}
-        tintColor={isExhausted ? colors.redError : colors.gray3}
-        // onAnimationComplete={() => console.log('onAnimationComplete')}
-        backgroundColor={isExhausted ? colors.gray3 : colors.clearBlue}>
+        tintColor={colors.redError}
+        // onAnimationComplete={() => setIsOverUsed(true)}
+        backgroundColor={colors.gray3}>
         {(fill) => (
           <View style={{alignItems: 'center'}}>
             <View style={{width: 24, height: 24}}>
               <Lottie
                 autoPlay={isExhausted}
                 loop
-                source={require('@/assets/images/lottie/blink.json')}
+                source={require('@/assets/images/lottie/lightning.json')}
               />
             </View>
             <AppText style={{...appStyles.bold14Text, textAlign: 'center'}}>
@@ -530,33 +434,35 @@ const UsageItem: React.FC<UsageItemProps> = ({
                 ...appStyles.bold24Text,
                 color: isExhausted ? colors.redError : colors.clearBlue,
               }}>
-              {`${toGb(quota || 0)}GB`}
+              {`${toGb(quota - used || 0)}GB`}
             </AppText>
           </View>
         )}
       </AnimatedCircularProgress>
     );
-  }, [isExhausted, quota, toGb]);
+  }, [isExhausted, isOverUsed, quota, toGb, used]);
 
   const renderWarning = useCallback(() => {
     return (
       <View style={{width: '100%', marginTop: 16}}>
-        <View style={{flexDirection: 'row'}}>
-          <AppText style={styles.warning}>{i18n.t('centerDot')}</AppText>
-          <AppText style={styles.warning}>
-            {i18n.t('esim:caution:usage')}
-          </AppText>
-        </View>
+        {showUsage && (
+          <View style={{flexDirection: 'row'}}>
+            <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
+            <AppText style={styles.warning}>
+              {i18n.t('esim:caution:usage')}
+            </AppText>
+          </View>
+        )}
 
         <View style={{flexDirection: 'row'}}>
-          <AppText style={styles.warning}>{i18n.t('centerDot')}</AppText>
+          <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
           <AppText style={styles.warning}>
             {i18n.t('esim:caution:time')}
           </AppText>
         </View>
       </View>
     );
-  }, []);
+  }, [showUsage]);
 
   const usageRender = useCallback(() => {
     return (
@@ -604,7 +510,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
                   {i18n.t('esim:quota', {quota: toGb(quota || 0)})}
                 </AppText>
               </View>
-
               {usageRender()}
             </View>
           )}
@@ -613,9 +518,27 @@ const UsageItem: React.FC<UsageItemProps> = ({
               statusCd === v && (
                 <View key={v}>
                   <AppIcon style={{alignItems: 'center'}} name={`usage${v}`} />
-                  <AppText style={styles.inactiveIcon}>
-                    {i18n.t(`esim:${code[v]}Info`)}
-                  </AppText>
+                  <View style={{marginTop: 15, marginBottom: 25}}>
+                    <AppStyledText
+                      text={i18n.t(`esim:${code[v]}Info`)}
+                      textStyle={{
+                        ...appStyles.normal16Text,
+                        textAlign: 'center',
+                      }}
+                      format={{
+                        b: {
+                          ...appStyles.bold16Text,
+                          textAlign: 'center',
+                          color: colors.clearBlue,
+                        },
+                        r: {
+                          ...appStyles.bold16Text,
+                          textAlign: 'center',
+                          color: colors.redError,
+                        },
+                      }}
+                    />
+                  </View>
                   {item.partner === 'billionconnect' && (
                     <TextWithDot
                       text={i18n.t('quadcell:usageInfo')}

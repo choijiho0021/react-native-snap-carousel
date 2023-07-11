@@ -656,7 +656,7 @@
   "esim:prodType:total": "데이터 종량제",
   "esim:prodType:daily": "Unlimited Data",
   "esim:caution": "Notice",
-  "esim:caution:usage": "하루 데이터 사용량을 기준으로 하며, 실 사용량과 차이가 있을 수 있습니다.",
+  "esim:caution:usage": "실 사용량과 차이가 있을 수 있습니다.",
   "esim:caution:time": "사용기간은 한국 표준 시(KST)를 기준으로 합니다.",
 
   "redirectHK": "Real Name Registration",

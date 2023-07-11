@@ -276,8 +276,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     async (item: RkbSubscription): Promise<Usage> => {
       if (item?.imsi) {
         const {result, objects} = await API.Subscription.quadcellGetUsage({
-          // imsi: item.imsi,
-          imsi: '454070042536493',
+          imsi: item.imsi,
         });
 
         if (result === 0 && objects.length > 0) return objects[0];
@@ -461,6 +460,19 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     }
   }, [navigation, onPressUsage, route, subsList]);
 
+  const navigateToChargeType = useCallback(() => {
+    setShowModal(false);
+    setCmiStatus({});
+    setCmiUsage({});
+    setCmiPending(false);
+
+    navigation.navigate('ChargeType', {
+      mainSubs: subs,
+      chargeablePeriod: utils.toDateString(subs?.expireDate, 'YYYY.MM.DD'),
+      isChargeable: !moment(subs?.expireDate).isBefore(moment()),
+    });
+  }, [navigation, subs]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={[appStyles.header, styles.esimHeader]}>
@@ -517,12 +529,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         cmiPending={cmiPending}
         cmiUsage={cmiUsage}
         cmiStatus={cmiStatus}
-        onOkClose={() => {
+        onCancelClose={() => {
           setShowModal(false);
           setCmiStatus({});
           setCmiUsage({});
           setCmiPending(false);
         }}
+        onOkClose={navigateToChargeType}
       />
       {!esimGlobal && (
         <GiftModal
