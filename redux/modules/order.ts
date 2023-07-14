@@ -53,9 +53,9 @@ const getSubsUsage = createAsyncThunk(
   'order/getSubsUsage',
   API.Subscription.getSubsUsage,
 );
-const updateSubsStatus = createAsyncThunk(
-  'order/updateSubsStatus',
-  API.Subscription.updateSubscriptionStatus,
+const updateSubsInfo = createAsyncThunk(
+  'order/updateSubsInfo',
+  API.Subscription.updateSubscriptionInfo,
 );
 const updateSubsAndOrderTag = createAsyncThunk(
   'order/updateSubsAndOrderTag',
@@ -280,7 +280,7 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(updateSubsStatus.fulfilled, (state, action) => {
+    builder.addCase(updateSubsInfo.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
       const {subs} = state;
@@ -289,8 +289,8 @@ const slice = createSlice({
         const idx = subs.findIndex((item) => item.key === objects[0]?.key);
 
         if (!_.isEmpty(idx)) {
-          subs[idx].statusCd = objects[0]?.statusCd;
-          subs[idx].status = objects[0]?.status;
+          subs[idx].alias = objects[0]?.alias;
+          subs[idx].hide = objects[0]?.hide;
         }
         state.subs = subs;
       }
@@ -346,7 +346,7 @@ export const actions = {
   getSubs,
   getStoreSubs,
   getOrders,
-  updateSubsStatus,
+  updateSubsInfo,
   updateSubsAndOrderTag,
   updateSubsGiftStatus,
   cancelAndGetOrder,
