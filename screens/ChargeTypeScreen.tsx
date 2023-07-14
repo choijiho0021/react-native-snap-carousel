@@ -158,8 +158,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           (b) =>
             b.status === 3 &&
             today.isBetween(
-              moment(b.activeTime).add(USAGE_TIME_INTERVAL.quadcell, 'h'),
-              moment(b.expireTime).add(USAGE_TIME_INTERVAL.quadcell, 'h'),
+              moment(b.activeTime).add(USAGE_TIME_INTERVAL.cmi, 'h'),
+              moment(b.expireTime).add(USAGE_TIME_INTERVAL.cmi, 'h'),
             ),
         );
         if (inUseItem) {
@@ -372,7 +372,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             );
           } else {
             navigation.navigate('Charge', {
-              mainSubs: chargeableItem || mainSubs,
+              mainSubs,
               chargeablePeriod,
             });
           }
@@ -406,7 +406,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           );
         } else {
           navigation.navigate('AddOn', {
-            mainSubs,
+            mainSubs: chargeableItem || mainSubs,
             status,
             expireTime,
             addonProds,

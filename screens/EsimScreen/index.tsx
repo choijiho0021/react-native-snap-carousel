@@ -460,6 +460,19 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     }
   }, [navigation, onPressUsage, route, subsList]);
 
+  const navigateToChargeType = useCallback(() => {
+    setShowModal(false);
+    setCmiStatus({});
+    setCmiUsage({});
+    setCmiPending(false);
+
+    navigation.navigate('ChargeType', {
+      mainSubs: subs,
+      chargeablePeriod: utils.toDateString(subs?.expireDate, 'YYYY.MM.DD'),
+      isChargeable: !moment(subs?.expireDate).isBefore(moment()),
+    });
+  }, [navigation, subs]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={[appStyles.header, styles.esimHeader]}>
@@ -516,12 +529,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         cmiPending={cmiPending}
         cmiUsage={cmiUsage}
         cmiStatus={cmiStatus}
-        onOkClose={() => {
+        onCancelClose={() => {
           setShowModal(false);
           setCmiStatus({});
           setCmiUsage({});
           setCmiPending(false);
         }}
+        onOkClose={navigateToChargeType}
       />
       {!esimGlobal && (
         <GiftModal

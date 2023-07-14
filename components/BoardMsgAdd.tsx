@@ -154,6 +154,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
 
   useEffect(() => {
     const number = utils.toPhoneNumber(account.mobile);
+    setValue(number);
 
     setErrors(validationUtil.validate('mobile', number));
   }, [account]);

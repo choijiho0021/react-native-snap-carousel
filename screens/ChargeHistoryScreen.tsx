@@ -473,6 +473,27 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
     return days + i18n.t('days');
   }, []);
 
+  const navigateToChargeType = useCallback(() => {
+    setShowModal(false);
+    setStatus({});
+    setUsage({});
+
+    navigation.navigate('ChargeType', {
+      mainSubs,
+      chargeablePeriod,
+      chargedSubs: prodData,
+      isChargeable,
+      addOnData,
+    });
+  }, [
+    addOnData,
+    chargeablePeriod,
+    isChargeable,
+    mainSubs,
+    navigation,
+    prodData,
+  ]);
+
   const renderItem = useCallback(
     ({item}: {item: RkbSubscription}) => {
       return (
@@ -622,7 +643,6 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
               contentOffset: {y},
             },
           }) => {
-            if (y <= 0 && !blockAnimation) showTop(true);
             if (y >= 15 && !blockAnimation) showTop(false);
           }}
         />
@@ -635,11 +655,12 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         cmiPending={pending}
         cmiUsage={usage}
         cmiStatus={status}
-        onOkClose={() => {
+        onCancelClose={() => {
           setShowModal(false);
           setStatus({});
           setUsage({});
         }}
+        onOkClose={navigateToChargeType}
       />
 
       <Modal transparent visible={orderModalVisible}>
@@ -685,15 +706,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
           <AppButton
             style={styles.chargeBtn}
             type="primary"
-            onPress={() =>
-              navigation.navigate('ChargeType', {
-                mainSubs,
-                chargeablePeriod,
-                chargedSubs: prodData,
-                isChargeable,
-                addOnData,
-              })
-            }
+            onPress={navigateToChargeType}
             title={i18n.t('esim:charge')}
             titleStyle={styles.chargeBtnTitle}
           />

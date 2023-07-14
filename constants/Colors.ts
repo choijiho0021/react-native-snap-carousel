@@ -59,6 +59,9 @@ export const colors = {
   redError: '#ee4423',
   shadow1: '#a6a8ac',
   gray2: '#979797',
+  gray3: '#e2e8ed',
   darkBlue: '#194c94',
   red: '#F1694F',
+  violet500: '#5b16ef',
+  violetbg: '#F3EDFF',
 };
