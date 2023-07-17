@@ -72,6 +72,12 @@
 				<string>fb147522690488197</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array/>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
@@ -92,6 +98,8 @@
 	<key>FirebaseDynamicLinksCustomDomains</key>
 	<array>
 		<string>https://rokebi.page.link</string>
+		<string>http://tb.rokebi.com</string>
+		<string>https://www.rokebi.com</string>
 	</array>
 	<key>KAKAO_APP_KEY</key>
 	<string>f881469e3b4a140967dfaebe648ede8d</string>
@@ -183,9 +191,11 @@
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
-			<key>tb-usim.rokebi.com</key>
+			<key>tb.rokebi.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
 				<true/>
 			</dict>
 			<key>tb.service.rokebi.com</key>

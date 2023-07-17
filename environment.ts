@@ -153,7 +153,7 @@ function get() {
       env.apiUrl = esimGlobal ? 'global.rokebi.com' : 'esim.rokebi.com';
       env.webViewHost = esimGlobal
         ? 'https://www.rokebi.com/us'
-        : 'https://www.rokebi.com';
+        : 'https://www.rokebi.com/link';
       break;
     default:
       env.scheme = 'http';
@@ -161,7 +161,7 @@ function get() {
       env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'tb-esim.rokebi.com';
       env.webViewHost = esimGlobal
         ? 'http://tb.rokebi.com/us'
-        : 'http://tb.rokebi.com';
+        : 'http://tb.rokebi.com/link';
       break;
   }
   return env;
