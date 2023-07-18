@@ -94,9 +94,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const EsimSubs = ({
+const EsimDraftSubs = ({
   mainSubs,
-  chargedSubs,
   onClick,
 }: {
   mainSubs: RkbOrder;
@@ -207,4 +206,4 @@ const EsimSubs = ({
 
 export default connect(({product}: RootState) => ({
   product,
-}))(EsimSubs);
+}))(EsimDraftSubs);

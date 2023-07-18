@@ -205,38 +205,40 @@ const styles = StyleSheet.create({
   },
 });
 
-export const renderPromoFlag = (flags: string[], isStore: boolean) => (
-  <Fragment>
-    {flags
-      .filter((elm) => elm !== 'hot')
-      .map((elm) => {
-        const badgeColor = getPromoFlagColor(elm);
-        return (
-          <View
-            key={elm}
-            style={[
-              styles.badge,
-              {
-                backgroundColor: badgeColor.backgroundColor,
-                marginRight: 8,
-              },
-            ]}>
-            <AppText
-              key="name"
+export const renderPromoFlag = (flags: string[], isStore: boolean) => {
+  return (
+    <Fragment>
+      {flags
+        .filter((elm) => elm !== 'hot')
+        .map((elm) => {
+          const badgeColor = getPromoFlagColor(elm);
+          return (
+            <View
+              key={elm}
               style={[
-                styles.badgeText,
-                {color: badgeColor.fontColor, top: -1},
+                styles.badge,
+                {
+                  backgroundColor: badgeColor.backgroundColor,
+                  marginRight: 8,
+                },
               ]}>
-              {i18n.t(elm)}
-            </AppText>
-          </View>
-        );
-      })}
-    {isStore && (
-      <AppSvgIcon name="naverIcon" style={{justifyContent: 'center'}} />
-    )}
-  </Fragment>
-);
+              <AppText
+                key="name"
+                style={[
+                  styles.badgeText,
+                  {color: badgeColor.fontColor, top: -1},
+                ]}>
+                {i18n.t(elm)}
+              </AppText>
+            </View>
+          );
+        })}
+      {isStore && (
+        <AppSvgIcon name="naverIcon" style={{justifyContent: 'center'}} />
+      )}
+    </Fragment>
+  );
+};
 
 type OrderType = 'latest' | 'purchase';
 
