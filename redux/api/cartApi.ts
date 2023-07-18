@@ -201,29 +201,6 @@ const remove = ({
   );
 };
 
-const lock = ({orderId, token}: {orderId: number; token: string}) => {
-  if (!orderId)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: orderId');
-  if (!token)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
-
-  const url = `${api.httpUrl(
-    api.path.commerce.order,
-    '',
-  )}/${orderId}?_format=json`;
-  const headers = api.withToken(token, 'json');
-
-  return api.callHttp(
-    url,
-    {
-      method: 'PATCH',
-      headers,
-      body: JSON.stringify({lock: true}),
-    },
-    toCart,
-  );
-};
-
 const updateQty = ({
   orderId,
   orderItemId,
@@ -392,9 +369,10 @@ const makeOrder = ({
 
   // SIM card와 같이 배송이 필요한 상품은 orderType을 'physical'로 설정한다.
   const orderType =
-    items.findIndex((item) => item.type === 'sim_card') >= 0
-      ? 'physical'
-      : 'default';
+    items.findIndex((item) => ['add_on_product', 'rch'].includes(item.type)) >=
+    0
+      ? 'immediate_order'
+      : 'refundable';
 
   const body = {
     iccid,
@@ -493,7 +471,6 @@ export default {
   remove,
   updateQty,
   makeOrder,
-  lock,
   calculateTotal,
   KEY_INIT_CART,
 };

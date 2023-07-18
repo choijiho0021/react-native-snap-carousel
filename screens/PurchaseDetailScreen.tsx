@@ -62,6 +62,12 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     letterSpacing: 0.24,
   },
+  normal16RedTxt: {
+    ...appStyles.normal18Text,
+    color: colors.red,
+    lineHeight: 24,
+    letterSpacing: 0.24,
+  },
   boldTitle: {
     ...appStyles.bold18Text,
     color: colors.black,
@@ -84,6 +90,12 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     borderColor: colors.lightGrey,
     borderWidth: 1,
+    margin: 20,
+    height: 48,
+    justifyContent: 'center',
+  },
+  cancelDraftBtn: {
+    backgroundColor: colors.white,
     margin: 20,
     height: 48,
     justifyContent: 'center',
@@ -159,8 +171,21 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginRight: 15,
   },
+  secondaryButton: {
+    flex: 1,
+    height: 52,
+    backgroundColor: colors.white,
+    borderColor: colors.dodgerBlue,
+    borderWidth: 1,
+    color: '#ffffff',
+  },
+  secondaryButtonText: {
+    ...appStyles.normal18Text,
+    textAlign: 'center',
+  },
   button: {
     ...appStyles.normal16Text,
+    flex: 1,
     height: 52,
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
@@ -393,6 +418,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             />
           </View>
         </View>
+
         {!isRecharge && !esimApp ? (
           <AppButton
             style={[
@@ -411,9 +437,24 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         ) : (
           <View style={{marginBottom: 20}} />
         )}
-        <AppText style={styles.cancelInfo}>
-          {!isRecharge && !esimApp && infoText}
-        </AppText>
+
+        {!isRecharge && !esimApp && (
+          <AppText style={styles.cancelInfo}>
+            {!isRecharge && !esimApp && infoText}
+          </AppText>
+        )}
+
+        {/* */}
+        {!isRecharge && (
+          <AppButton
+            style={styles.cancelDraftBtn}
+            onPress={() => {
+              console.log('취소 화면 미구현 ');
+            }}
+            title={i18n.t('his:cancelDraft')}
+            titleStyle={styles.normal16RedTxt}
+          />
+        )}
       </View>
     );
   }, [
@@ -565,13 +606,23 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         textMessage={i18n.t('his:cancelSuccess')}
         bottom={10}
       />
-      <AppButton
-        style={styles.button}
-        type="primary"
-        title={i18n.t('his:receipt')}
-        disabled={!pymId}
-        onPress={() => showReciept(pymId)}
-      />
+      <View style={{flexDirection: 'row'}}>
+        <AppButton
+          style={styles.secondaryButton}
+          type="secondary"
+          title={i18n.t('his:receipt')}
+          titleStyle={styles.secondaryButtonText}
+          disabled={!pymId}
+          onPress={() => showReciept(pymId)}
+        />
+        <AppButton
+          style={styles.button}
+          type="primary"
+          title={i18n.t('his:draft')}
+          disabled={!pymId}
+          onPress={() => showReciept(pymId)}
+        />
+      </View>
       <AppActivityIndicator visible={pending} />
     </SafeAreaView>
   );

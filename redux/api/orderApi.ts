@@ -132,14 +132,44 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
   return api.failure(api.E_NOT_FOUND);
 };
 
+const draftOrder = ({orderId, token}: {orderId?: string; token?: string}) => {
+  if (!orderId) {
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter : orderId');
+  }
+  if (!token) {
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter : token');
+  }
+
+  const url = `${api.httpUrl(
+    api.path.commerce.order,
+    '',
+  )}/${orderId}?_format=json`;
+
+  const body = JSON.stringify({status: 'R'});
+
+  return api.callHttp(
+    url,
+    {
+      method: 'PATCH',
+      headers: api.withToken(token, 'json'),
+      body,
+    },
+    (resp) => {
+      return resp;
+    },
+  );
+};
+
 const getOrders = ({
   user,
   token,
   page = 0,
+  state = 'all',
 }: {
   user?: string;
   token?: string;
   page?: number;
+  state?: 'all' | 'validation';
 }) => {
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
@@ -147,7 +177,10 @@ const getOrders = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
 
   return api.callHttpGet(
-    `${api.httpUrl(api.path.order, '')}/${user}?_format=json&page=${page}`,
+    `${api.httpUrl(
+      api.path.order,
+      '',
+    )}/${user}/all/${state}?_format=json&page=${page}`,
     (resp) => toOrder(resp, page),
     api.withToken(token, 'json'),
   );
@@ -214,5 +247,6 @@ export default {
   getOrders,
   getOrderById,
   cancelOrder,
+  draftOrder,
   deliveryTrackingUrl,
 };

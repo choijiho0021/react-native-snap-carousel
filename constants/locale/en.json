@@ -378,6 +378,8 @@
   "his:usedOrExpiredInfo": "• The product has been used or the deadline for canceling payment has expired.",
   "his:dataCancelInfo": "• If all products included in the payment are not in use, you can cancel them within 7 days after payment.",
   "his:receipt": "Show Reciept",
+  "his:draft": "Draft",
+  "his:cancelDraft": "Cancel Draft",
 
   "contact:title": "I Need Help!",
   "contact:notice": "Announcement",
@@ -499,11 +501,17 @@
   "usim:usingTime": "Service expires on (KST)",
 
   "sim:until": " ",
-
   "esim:R": "Non-use",
   "esim:A": "Activated",
   "esim:U": "Used up",
   "esim:sendGift": "Gift this Item",
+  "esim:draft": "Draft this Item",
+  "esim:etcCnt": "%% case",
+  "esim:draftNotice": "You can check the product information after draft!",
+  "esim:orderNo": "Purchase ID",
+  "esim:draftExpire": "Draft Expiration Date",
+  "esim:reserved": "Product Shipping",
+
   "esim:S": "Gift",
   "esim:S2": "Gifted",
   "esim:reservedInfo": "This item has not been activated.\nPlease check again after activation.",
