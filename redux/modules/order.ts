@@ -94,13 +94,6 @@ const updateOrders = (state, orders, page) => {
   state.page = page;
 };
 
-const updateDrafts = (
-  state: OrderModelState,
-  drafts: ImmutableMap<number, RkbOrder>,
-) => {
-  state.drafts = drafts;
-};
-
 const checkAndGetOrderById = createAsyncThunk(
   'order/checkAndGetOrderById',
   (
@@ -133,8 +126,13 @@ const getOrders = createAsyncThunk(
   ) => {
     const {order} = getState() as RootState;
 
-    if (page !== undefined)
+    console.log('GetOrder ');
+
+    if (page !== undefined) {
+      console.log('1');
       return dispatch(getNextOrders({user, token, page, state}));
+    }
+    console.log('2');
     return dispatch(
       getNextOrders({user, token, page: (order.page || 0) + 1}, state),
     );
@@ -323,6 +321,7 @@ const slice = createSlice({
     builder.addCase(getNextOrders.fulfilled, (state, action) => {
       const {objects, result} = action.payload;
 
+      console.log('조회 결과 저장할 draft : ', objects);
       if (action.meta.arg?.state === 'all' || !action.meta.arg?.state) {
         if (result === 0 && objects.length > 0) {
           // 기존에 있던 order에 새로운 order로 갱신
