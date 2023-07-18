@@ -210,18 +210,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [action.order],
   );
 
-  const getDraftsData = useCallback(
-    async (mobileParam, tokenParam, state) => {
-      return action.order.getOrders({
-        user: mobileParam,
-        token: tokenParam,
-        state,
-        page: 0,
-      });
-    },
-    [action.order],
-  );
-
   const onRefresh = useCallback(() => {
     if (iccid) {
       setRefreshing(true);
@@ -233,21 +221,19 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             action.order.getStoreSubsWithToast({mobile, token});
           }
           action.account.getAccount({iccid, token});
+          action.order.getOrders({
+            user: mobile,
+            token,
+            state: 'validation',
+            page: 0,
+          });
         })
         .finally(() => {
-          getDraftsData(mobile, token, 'validation').then((resp) => {
-            if (resp) {
-              action.account.getAccount({iccid, token}).then((r) => {
-                if (r) {
-                  setRefreshing(false);
-                  setIsFirstLoad(false);
-                }
-              });
-            }
-          });
+          setRefreshing(false);
+          setIsFirstLoad(false);
         });
     }
-  }, [action.account, action.order, getDraftsData, iccid, mobile, token]);
+  }, [action.account, action.order, iccid, mobile, token]);
 
   useEffect(() => {
     if (isFocused) {
