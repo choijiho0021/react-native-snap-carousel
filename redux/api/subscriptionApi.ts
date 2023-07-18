@@ -171,6 +171,8 @@ export type RkbSubscription = {
   refSubs?: string;
   prodType?: string;
   flagImage?: string;
+  alias?: string;
+  hide?: boolean;
 };
 
 const toSubscription =
@@ -221,6 +223,8 @@ const toSubscription =
           prodType: item.product_type || '',
           prodDays: item.product_days || '',
           flagImage: item.field_flag_image || '',
+          alias: item.alias?.startsWith('00001111') ? '' : item.alias,
+          hide: item.published !== '1',
         })),
         // .sort(sortSubs),
       );
@@ -265,6 +269,8 @@ const toSubsUpdate = (data) => {
         giftStatusCd:
           giftCode[item.field_gift_status] || item.field_gift_status || '',
         prodName: item.title[0].value,
+        alias: item.alias?.startsWith('00001111') ? '' : item.alias,
+        hide: item.published !== '1',
       })),
     );
   }
@@ -459,19 +465,19 @@ const getOtaSubscription = ({
   return otaSubscription({iccid, mccmnc, user, pass, method: 'GET'});
 };
 
-const updateSubscriptionStatus = ({
+const updateSubscriptionInfo = ({
   uuid, // subs uuid
-  status, // target status
   token,
+  alias, // target status
+  hide, // target status
 }: {
   uuid: string;
-  status: string;
   token: string;
+  alias?: string;
+  hide?: boolean;
 }) => {
   if (!uuid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
-  if (!status)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: status');
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
@@ -480,7 +486,7 @@ const updateSubscriptionStatus = ({
     {
       method: 'PATCH',
       headers: api.withToken(token, 'json'),
-      body: JSON.stringify({status}),
+      body: JSON.stringify({alias, hide}),
     },
     toSubsUpdate,
   );
@@ -835,7 +841,7 @@ export default {
   addSubscription,
   otaSubscription,
   getOtaSubscription,
-  updateSubscriptionStatus,
+  updateSubscriptionInfo,
   updateSubscriptionAndOrderTag,
   updateSubscriptionGiftStatus,
   getSubsUsage,

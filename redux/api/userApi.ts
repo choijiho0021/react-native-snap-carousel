@@ -223,6 +223,33 @@ const update = ({
   );
 };
 
+const registeRecommender = ({
+  uuid,
+  recommender,
+  token,
+}: {
+  uuid?: string;
+  recommender?: string;
+  token?: string;
+}) => {
+  if (!token)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
+  if (!recommender)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: recommender');
+  if (!uuid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
+
+  return api.callHttp(
+    api.httpUrl(`${api.path.rokApi.rokebi.user}/${uuid}`, ''),
+    {
+      method: 'PATCH',
+      body: JSON.stringify({recommender}),
+      headers: api.withToken(token, 'json'),
+    },
+    toUser,
+  );
+};
+
 const changePicture = ({
   uid,
   userPicture,
@@ -500,4 +527,5 @@ export default {
   confirmEmail,
   socialLogin,
   resign,
+  registeRecommender,
 };
