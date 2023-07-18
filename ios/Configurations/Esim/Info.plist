@@ -70,7 +70,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>7</string>
+	<string>2</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
@@ -86,6 +86,8 @@
 	<key>FirebaseDynamicLinksCustomDomains</key>
 	<array>
 		<string>https://rokebi.page.link</string>
+		<string>http://tb.rokebi.com</string>
+		<string>https://www.rokebi.com</string>
 	</array>
 	<key>FirebaseScreenReportingEnabled</key>
 	<false/>

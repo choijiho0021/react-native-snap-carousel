@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
-import {Map as ImmutableMap} from 'immutable';
+import Immutable, {Map as ImmutableMap} from 'immutable';
 import _ from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
@@ -18,10 +18,13 @@ const init = createAsyncThunk('order/init', async (mobile?: string) => {
 });
 
 const getNextOrders = createAsyncThunk('order/getOrders', API.Order.getOrders);
+
 const getOrderById = createAsyncThunk(
   'order/getOrderById',
   API.Order.getOrderById,
 );
+
+const draftOrder = createAsyncThunk('order/draftOrder', API.Order.draftOrder);
 const cancelOrder = createAsyncThunk(
   'order/cancelOrder',
   API.Order.cancelOrder,
@@ -77,6 +80,7 @@ export interface OrderModelState {
   orders: ImmutableMap<number, RkbOrder>;
   orderList: number[];
   subs: ImmutableMap<string, RkbSubscription[]>;
+  drafts: ImmutableMap<number, RkbOrder>;
   usageProgress: object;
   page: number;
 }
@@ -107,13 +111,38 @@ const checkAndGetOrderById = createAsyncThunk(
 const getOrders = createAsyncThunk(
   'order/getOrders',
   (
-    {user, token, page}: {user?: string; token?: string; page?: number},
+    {
+      user,
+      token,
+      page,
+      state,
+    }: {
+      user?: string;
+      token?: string;
+      page?: number;
+      state?: 'all' | 'validation';
+    },
     {dispatch, getState},
   ) => {
     const {order} = getState() as RootState;
 
-    if (page !== undefined) return dispatch(getNextOrders({user, token, page}));
-    return dispatch(getNextOrders({user, token, page: (order.page || 0) + 1}));
+    console.log('GetOrder ');
+
+    if (page !== undefined) {
+      console.log('1');
+      return dispatch(getNextOrders({user, token, page, state}));
+    }
+    console.log('2');
+    return dispatch(
+      getNextOrders({user, token, page: (order.page || 0) + 1}, state),
+    );
+  },
+);
+
+const changeDraft = createAsyncThunk(
+  'order/draftOrder',
+  ({orderId, token}: {orderId: number; token?: string}, {dispatch}) => {
+    return dispatch(draftOrder({orderId, token}));
   },
 );
 
@@ -181,17 +210,50 @@ const mergeSubs = (
   org: ImmutableMap<string, RkbSubscription[]>,
   subs: RkbSubscription[],
 ) => {
+  console.log('@@@ org : ', org);
+  console.log('@@@ subs : ', subs);
+
   const subsToMap: ImmutableMap<string, RkbSubscription[]> = subs.reduce(
-    (acc, s) =>
-      s.subsIccid
+    (acc, s) => {
+      return s.subsIccid
         ? acc.update(s.subsIccid, (pre) =>
-            (pre?.filter((elm) => elm.uuid !== s.uuid) || [])
+            (
+              pre?.filter((elm) => {
+                return elm.uuid !== s.uuid;
+              }) || []
+            )
               .concat(s)
               .sort((subs1, subs2) =>
                 subs1.purchaseDate > subs2.purchaseDate ? 1 : -1,
               ),
           )
-        : acc,
+        : acc;
+    },
+    org,
+  );
+
+  return subsToMap;
+};
+
+// 이건 머지로 하면 안되겠다. 중복 데이터 때문에
+const updateReservedSubs = (
+  org: ImmutableMap<string, RkbSubscription[]>,
+  subs: RkbSubscription[],
+) => {
+  console.log('@@@ org : ', org);
+  console.log('@@@ subs : ', subs);
+
+  const subsToMap: ImmutableMap<string, RkbSubscription[]> = subs.reduce(
+    (acc, s) => {
+      // reserved는 subsIccid가 없으므로 nid로 처리한다.
+      return acc.update(s?.nid, (pre) =>
+        pre
+          .concat(s)
+          .sort((subs1, subs2) =>
+            subs1.purchaseDate > subs2.purchaseDate ? 1 : -1,
+          ),
+      );
+    },
     org,
   );
 
@@ -200,6 +262,7 @@ const mergeSubs = (
 
 const initialState: OrderModelState = {
   orders: ImmutableMap<number, RkbOrder>(),
+  drafts: ImmutableMap<number, RkbOrder>(),
   orderList: [],
   subs: ImmutableMap(),
   usageProgress: {},
@@ -225,27 +288,66 @@ const slice = createSlice({
       }
     });
 
+    builder.addCase(draftOrder.fulfilled, (state, action) => {
+      const {objects, result} = action.payload;
+
+      const orderId = action?.meta?.arg.orderId;
+      const subs: RkbSubscription[] = objects?.subs;
+
+      console.log('objects : ', objects);
+
+      // 작업 진행 중
+      // field_flag_image: "/sites/default/files/2023-06/Vietnam_%EB%B2%A0%ED%8A%B8%EB%82%A8.png"
+      // field_status: "R"
+      // nid: "20054"
+      // title: "0000111101021035030 - 베트남(로컬) 무제한 1일"
+      // uuid: "12465457-5026-41ad-b709-da61ef38cebc"
+
+      // const draft: ImmutableMap<number, RkbOrder> = state.drafts;
+
+      // Reserved 는 merge가 아닌
+      if (
+        result === 0 &&
+        objects.length > 0 &&
+        objects[0]?.state === 'completed'
+      ) {
+        // 새로고침 대신 성공한 order를 drafts에서 뺀다.
+        // 추가 확인 필요, order
+        state.drafts = state.drafts.filter((d) => d.key !== orderId);
+        state.subs = updateReservedSubs(state.subs, subs);
+      }
+    });
+
     builder.addCase(getNextOrders.fulfilled, (state, action) => {
       const {objects, result} = action.payload;
 
-      if (result === 0 && objects.length > 0) {
-        // 기존에 있던 order에 새로운 order로 갱신
-        const orders = ImmutableMap(state.orders).merge(
-          objects.map((o) => [o.orderId, o]),
+      console.log('조회 결과 저장할 draft : ', objects);
+      if (action.meta.arg?.state === 'all' || !action.meta.arg?.state) {
+        if (result === 0 && objects.length > 0) {
+          // 기존에 있던 order에 새로운 order로 갱신
+          const orders = ImmutableMap(state.orders).merge(
+            objects.map((o) => [o.orderId, o]),
+          );
+
+          const orderCache = orders
+            .sort((a, b) => b.orderDate.localeCompare(a.orderDate))
+            .valueSeq()
+            .toArray()
+            .slice(0, 10);
+
+          storeData(
+            `${API.Order.KEY_INIT_ORDER}.${action.meta.arg.user}`,
+            JSON.stringify(orderCache),
+          );
+
+          updateOrders(state, orders, action.meta.arg.page);
+        }
+      } else {
+        const drafts = ImmutableMap(
+          (objects || []).map((o) => [o?.orderId, o]),
         );
 
-        const orderCache = orders
-          .sort((a, b) => b.orderDate.localeCompare(a.orderDate))
-          .valueSeq()
-          .toArray()
-          .slice(0, 10);
-
-        storeData(
-          `${API.Order.KEY_INIT_ORDER}.${action.meta.arg.user}`,
-          JSON.stringify(orderCache),
-        );
-
-        updateOrders(state, orders, action.meta.arg.page);
+        state.drafts = drafts;
       }
     });
 
@@ -307,14 +409,30 @@ const slice = createSlice({
     });
 
     builder.addCase(getSubs.fulfilled, (state, action) => {
-      const {result, objects} = action.payload;
+      const {result, objects}: {objects: RkbSubscription[]} = action.payload;
+      console.log('getStoreSubs : ', state, ', payload: ', action);
+      console.log('objects : ', objects);
+
       if (result === 0) {
+        // 작업 진행 중
+        // const usedSubs = objects.filter((r) => r.statusCd === 'U');
+        // const reserevedSubs = objects.filter((r) => r.statusCd === 'R');
+        // const subsWithUsed = mergeSubs(state.subs, usedSubs);
+        // const subsWithReserved = updateReservedSubs(
+        //   subsWithUsed,
+        //   reserevedSubs,
+        // );
+
+        // console.log('subsWithReserved : ', subsWithReserved);
         state.subs = mergeSubs(state.subs, objects);
+
+        // state.subs = subsWithUsed.concat(subsWithReserved);
       }
     });
 
     builder.addCase(getStoreSubs.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
+
       if (result === 0) {
         state.subs = mergeSubs(state.subs, objects);
       }
@@ -346,6 +464,7 @@ export const actions = {
   updateSubsGiftStatus,
   cancelAndGetOrder,
   checkAndGetOrderById,
+  changeDraft,
   cmiGetSubsUsage,
 };
 

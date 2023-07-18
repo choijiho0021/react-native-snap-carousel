@@ -194,6 +194,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  draftFrame: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  draftIcon: {
+    marginLeft: 2,
+    width: 26,
+    height: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   cautionBox: {
     justifyContent: 'center',
     marginTop: 28,
@@ -286,9 +298,10 @@ const EsimSubs = ({
   product: ProductModelState;
 }) => {
   const navigation = useNavigation();
+  const isDraft = useMemo(() => mainSubs?.statusCd === 'R', [mainSubs]);
   const sendable = useMemo(
-    () => !expired && !mainSubs.giftStatusCd && !isCharged,
-    [expired, mainSubs.giftStatusCd, isCharged],
+    () => !expired && !mainSubs.giftStatusCd && !isCharged && !isDraft,
+    [expired, mainSubs.giftStatusCd, isCharged, isDraft],
   );
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
@@ -324,8 +337,8 @@ const EsimSubs = ({
   }, [chargedSubs]);
 
   useEffect(() => {
-    setShowMoreInfo(showDetail);
-  }, [showDetail]);
+    setShowMoreInfo(isDraft ? false : showDetail);
+  }, [showDetail, isDraft]);
 
   useEffect(() => {
     if (!notCardInfo) setShowMoreInfo(false);
@@ -368,6 +381,8 @@ const EsimSubs = ({
       <Pressable
         style={styles.prodTitle}
         onPress={() => {
+          if (isDraft) return;
+
           if (notCardInfo) {
             setShowMoreInfo((prev) => !prev);
             flatListRef?.current?.scrollToIndex({index, animated: true});
@@ -413,6 +428,15 @@ const EsimSubs = ({
                 : i18n.t('esim:expired')}
             </AppText>
           </View>
+        ) : // R 발송중인 상태에선 상품 발송중 표시
+
+        isDraft ? (
+          <View style={styles.draftFrame}>
+            <AppText>{i18n.t('esim:reserved')}</AppText>
+            <View style={styles.draftIcon}>
+              <AppSvgIcon name={showMoreInfo ? 'topArrow' : 'bottomArrow'} />
+            </View>
+          </View>
         ) : (
           <View style={styles.arrow}>
             <AppSvgIcon name={showMoreInfo ? 'topArrow' : 'bottomArrow'} />
@@ -424,6 +448,7 @@ const EsimSubs = ({
     mainSubs,
     expired,
     isCharged,
+    isDraft,
     showMoreInfo,
     notCardInfo,
     flatListRef,
@@ -658,8 +683,7 @@ const EsimSubs = ({
       ]}>
       <View style={notCardInfo ? styles.infoRadiusBorder : styles.infoCard}>
         {title()}
-
-        {notCardInfo ? QRnCopyInfo() : topInfo()}
+        {isDraft ? <View></View> : notCardInfo ? QRnCopyInfo() : topInfo()}
       </View>
       {showMoreInfo && (
         <View style={showMoreInfo && styles.moreInfoContent}>

@@ -31,7 +31,6 @@ import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {
   bcStatusCd,
-  cmiStatusCd,
   RkbSubscription,
   sortSubs,
   StatusObj,
@@ -57,6 +56,8 @@ import GiftModal from './components/GiftModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import ChatTalk from '@/components/ChatTalk';
 import {utils} from '@/utils/utils';
+import EsimDraftSubs from './components/EsimDraftSubs';
+import {RkbOrder} from '@/redux/api/orderApi';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -181,6 +182,17 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [subsList, setSubsList] = useState<RkbSubscription[][]>();
   const tabBarHeight = useBottomTabBarHeight();
 
+  // 발권 관련 기능들
+  const [orderList, setOrderList] = useState<RkbOrder[]>();
+
+  useEffect(() => {
+    // 정렬해야하나? 확인 필요
+    const draftList = order.drafts.valueSeq().toArray();
+
+    console.log('draftList : ', draftList);
+    setOrderList(draftList);
+  }, [order.drafts]);
+
   const init = useCallback(
     (initInfo: {iccid?: string; mobile?: string; token?: string}) => {
       const {iccid: initIccid, mobile: initMobile, token: initToken} = initInfo;
@@ -198,9 +210,22 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [action.order],
   );
 
+  const getDraftsData = useCallback(
+    async (mobileParam, tokenParam, state) => {
+      return action.order.getOrders({
+        user: mobileParam,
+        token: tokenParam,
+        state,
+        page: 0,
+      });
+    },
+    [action.order],
+  );
+
   const onRefresh = useCallback(() => {
     if (iccid) {
       setRefreshing(true);
+
       action.order
         .getSubsWithToast({iccid, token})
         .then(() => {
@@ -210,11 +235,19 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           action.account.getAccount({iccid, token});
         })
         .finally(() => {
-          setRefreshing(false);
-          setIsFirstLoad(false);
+          getDraftsData(mobile, token, 'validation').then((resp) => {
+            if (resp) {
+              action.account.getAccount({iccid, token}).then((r) => {
+                if (r) {
+                  setRefreshing(false);
+                  setIsFirstLoad(false);
+                }
+              });
+            }
+          });
         });
     }
-  }, [action.account, action.order, iccid, mobile, token]);
+  }, [action.account, action.order, getDraftsData, iccid, mobile, token]);
 
   useEffect(() => {
     if (isFocused) {
@@ -234,22 +267,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       </View>
     ),
     [],
-  );
-
-  const info = useCallback(
-    () =>
-      esimGlobal ? null : (
-        <View>
-          <CardInfo
-            iccid={iccid}
-            balance={balance}
-            expDate={expDate}
-            navigation={navigation}
-          />
-          {renderInfo(navigation)}
-        </View>
-      ),
-    [balance, expDate, iccid, navigation],
   );
 
   const checkCmiData = useCallback(
@@ -390,6 +407,42 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       );
     },
     [onPressUsage],
+  );
+
+  const renderDraft = useCallback(
+    (item: RkbOrder) => {
+      return (
+        <EsimDraftSubs
+          key={item.key}
+          flatListRef={flatListRef}
+          mainSubs={item}
+          onClick={(item) => {
+            action.order.changeDraft({
+              orderId: item?.orderId,
+              token,
+            });
+          }}
+        />
+      );
+    },
+    [action.order, token],
+  );
+
+  const info = useCallback(
+    () =>
+      esimGlobal ? null : (
+        <View>
+          <CardInfo
+            iccid={iccid}
+            balance={balance}
+            expDate={expDate}
+            navigation={navigation}
+          />
+          {renderInfo(navigation)}
+          <View>{orderList?.map((item) => renderDraft(item))}</View>
+        </View>
+      ),
+    [balance, expDate, iccid, navigation, orderList, renderDraft],
   );
 
   useEffect(() => {
