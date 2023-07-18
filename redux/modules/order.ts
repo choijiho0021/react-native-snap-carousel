@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
-import Immutable, {Map as ImmutableMap} from 'immutable';
+import {Map as ImmutableMap} from 'immutable';
 import _ from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
@@ -16,8 +16,6 @@ const init = createAsyncThunk('order/init', async (mobile?: string) => {
   const oldData = await retrieveData(`${API.Order.KEY_INIT_ORDER}.${mobile}`);
   return oldData;
 });
-
-const getNextOrders = createAsyncThunk('order/getOrders', API.Order.getOrders);
 
 const getOrderById = createAsyncThunk(
   'order/getOrderById',
@@ -122,20 +120,19 @@ const getOrders = createAsyncThunk(
       page?: number;
       state?: 'all' | 'validation';
     },
-    {dispatch, getState},
+    {getState},
   ) => {
-    const {order} = getState() as RootState;
-
-    console.log('GetOrder ');
-
     if (page !== undefined) {
-      console.log('1');
-      return dispatch(getNextOrders({user, token, page, state}));
+      return API.Order.getOrders({user, token, page, state});
     }
-    console.log('2');
-    return dispatch(
-      getNextOrders({user, token, page: (order.page || 0) + 1}, state),
-    );
+
+    const {order} = getState() as RootState;
+    return API.Order.getOrders({
+      user,
+      token,
+      page: (order.page || 0) + 1,
+      state,
+    });
   },
 );
 
@@ -318,36 +315,33 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(getNextOrders.fulfilled, (state, action) => {
+    builder.addCase(getOrders.fulfilled, (state, action) => {
       const {objects, result} = action.payload;
 
-      console.log('조회 결과 저장할 draft : ', objects);
-      if (action.meta.arg?.state === 'all' || !action.meta.arg?.state) {
-        if (result === 0 && objects.length > 0) {
-          // 기존에 있던 order에 새로운 order로 갱신
-          const orders = ImmutableMap(state.orders).merge(
-            objects.map((o) => [o.orderId, o]),
-          );
-
-          const orderCache = orders
-            .sort((a, b) => b.orderDate.localeCompare(a.orderDate))
-            .valueSeq()
-            .toArray()
-            .slice(0, 10);
-
-          storeData(
-            `${API.Order.KEY_INIT_ORDER}.${action.meta.arg.user}`,
-            JSON.stringify(orderCache),
-          );
-
-          updateOrders(state, orders, action.meta.arg.page);
-        }
-      } else {
+      if (action.meta.arg?.state === 'validation') {
         const drafts = ImmutableMap(
           (objects || []).map((o) => [o?.orderId, o]),
         );
 
         state.drafts = drafts;
+      } else if (result === 0 && objects.length > 0) {
+        // 기존에 있던 order에 새로운 order로 갱신
+        const orders = ImmutableMap(state.orders).merge(
+          objects.map((o) => [o.orderId, o]),
+        );
+
+        const orderCache = orders
+          .sort((a, b) => b.orderDate.localeCompare(a.orderDate))
+          .valueSeq()
+          .toArray()
+          .slice(0, 10);
+
+        storeData(
+          `${API.Order.KEY_INIT_ORDER}.${action.meta.arg.user}`,
+          JSON.stringify(orderCache),
+        );
+
+        updateOrders(state, orders, action.meta.arg.page);
       }
     });
 
