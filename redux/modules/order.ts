@@ -18,9 +18,17 @@ const init = createAsyncThunk('order/init', async (mobile?: string) => {
 });
 
 const getNextOrders = createAsyncThunk('order/getOrders', API.Order.getOrders);
+
+const getDataDrafts = createAsyncThunk('order/getDrafts', API.Order.getDrafts);
+
 const getOrderById = createAsyncThunk(
   'order/getOrderById',
   API.Order.getOrderById,
+);
+
+const changeOrderState = createAsyncThunk(
+  'order/chageOrderState',
+  API.Order.changeOrderState,
 );
 const cancelOrder = createAsyncThunk(
   'order/cancelOrder',
@@ -77,6 +85,7 @@ export interface OrderModelState {
   orders: ImmutableMap<number, RkbOrder>;
   orderList: number[];
   subs: ImmutableMap<string, RkbSubscription[]>;
+  drafts: ImmutableMap<number, RkbOrder>;
   usageProgress: object;
   page: number;
 }
@@ -88,6 +97,13 @@ const updateOrders = (state, orders, page) => {
     .keySeq()
     .toArray();
   state.page = page;
+};
+
+const updateDrafts = (
+  state: OrderModelState,
+  drafts: ImmutableMap<number, RkbOrder>,
+) => {
+  state.drafts = drafts;
 };
 
 const checkAndGetOrderById = createAsyncThunk(
@@ -107,13 +123,61 @@ const checkAndGetOrderById = createAsyncThunk(
 const getOrders = createAsyncThunk(
   'order/getOrders',
   (
-    {user, token, page}: {user?: string; token?: string; page?: number},
+    {
+      user,
+      token,
+      page,
+      state,
+    }: {
+      user?: string;
+      token?: string;
+      page?: number;
+      state?: 'all' | 'validation';
+    },
     {dispatch, getState},
   ) => {
     const {order} = getState() as RootState;
 
-    if (page !== undefined) return dispatch(getNextOrders({user, token, page}));
-    return dispatch(getNextOrders({user, token, page: (order.page || 0) + 1}));
+    if (page !== undefined)
+      return dispatch(getNextOrders({user, token, page, state}));
+    return dispatch(
+      getNextOrders({user, token, page: (order.page || 0) + 1}, state),
+    );
+  },
+);
+
+const getDrafts = createAsyncThunk(
+  'order/getOrders',
+  (
+    {
+      user,
+      token,
+      page,
+    }: {
+      user?: string;
+      token?: string;
+      page?: number;
+    },
+    {dispatch, getState},
+  ) => {
+    const {order} = getState() as RootState;
+
+    if (page !== undefined) return dispatch(getDataDrafts({user, token, page}));
+    return dispatch(getDataDrafts({user, token, page: (order.page || 0) + 1}));
+  },
+);
+
+const changeOrder = createAsyncThunk(
+  'order/changeOrderState',
+  (
+    {
+      orderId,
+      status,
+      token,
+    }: {orderId?: number; status?: string; token?: string},
+    {dispatch},
+  ) => {
+    return dispatch(changeOrderState({orderId, status, token}));
   },
 );
 
@@ -181,17 +245,50 @@ const mergeSubs = (
   org: ImmutableMap<string, RkbSubscription[]>,
   subs: RkbSubscription[],
 ) => {
+  console.log('@@@ org : ', org);
+  console.log('@@@ subs : ', subs);
+
   const subsToMap: ImmutableMap<string, RkbSubscription[]> = subs.reduce(
-    (acc, s) =>
-      s.subsIccid
+    (acc, s) => {
+      return s.subsIccid
         ? acc.update(s.subsIccid, (pre) =>
-            (pre?.filter((elm) => elm.uuid !== s.uuid) || [])
+            (
+              pre?.filter((elm) => {
+                return elm.uuid !== s.uuid;
+              }) || []
+            )
               .concat(s)
               .sort((subs1, subs2) =>
                 subs1.purchaseDate > subs2.purchaseDate ? 1 : -1,
               ),
           )
-        : acc,
+        : acc;
+    },
+    org,
+  );
+
+  return subsToMap;
+};
+
+// 이건 머지로 하면 안되겠다. 중복 데이터 때문에
+const updateReservedSubs = (
+  org: ImmutableMap<string, RkbSubscription[]>,
+  subs: RkbSubscription[],
+) => {
+  console.log('@@@ org : ', org);
+  console.log('@@@ subs : ', subs);
+
+  const subsToMap: ImmutableMap<string, RkbSubscription[]> = subs.reduce(
+    (acc, s) => {
+      // reserved는 subsIccid가 없으므로 nid로 처리한다.
+      return acc.update(s?.nid, (pre) =>
+        pre
+          .concat(s)
+          .sort((subs1, subs2) =>
+            subs1.purchaseDate > subs2.purchaseDate ? 1 : -1,
+          ),
+      );
+    },
     org,
   );
 
@@ -200,6 +297,7 @@ const mergeSubs = (
 
 const initialState: OrderModelState = {
   orders: ImmutableMap<number, RkbOrder>(),
+  drafts: ImmutableMap<number, RkbOrder>(),
   orderList: [],
   subs: ImmutableMap(),
   usageProgress: {},
@@ -223,6 +321,41 @@ const slice = createSlice({
       if (orders) {
         updateOrders(state, orders, 0);
       }
+    });
+
+    builder.addCase(changeOrderState.fulfilled, (state, action) => {
+      const {objects, result} = action.payload;
+
+      const orderId = action?.meta?.arg.orderId;
+      const subs: RkbSubscription[] = objects?.subs;
+
+      console.log('objects : ', objects);
+
+      // 작업 진행 중
+      // field_flag_image: "/sites/default/files/2023-06/Vietnam_%EB%B2%A0%ED%8A%B8%EB%82%A8.png"
+      // field_status: "R"
+      // nid: "20054"
+      // title: "0000111101021035030 - 베트남(로컬) 무제한 1일"
+      // uuid: "12465457-5026-41ad-b709-da61ef38cebc"
+
+      if (
+        result === 0 &&
+        objects.length > 0 &&
+        objects[0]?.state === 'completed'
+      ) {
+        if (result === 0) {
+          console.log('state.subs : ', state?.subs);
+          console.log('mergeSubs : ', subs);
+          console.log(
+            'mergesubs result : ',
+            updateReservedSubs(state.subs, subs),
+          );
+
+          state.subs = updateReservedSubs(state.subs, subs);
+        }
+      }
+
+      // update 코드 제거, 확인 후 필요하면 다시 추가
     });
 
     builder.addCase(getNextOrders.fulfilled, (state, action) => {
@@ -249,6 +382,25 @@ const slice = createSlice({
       }
     });
 
+    builder.addCase(getDataDrafts.fulfilled, (state, action) => {
+      const {objects, result} = action.payload;
+
+      if (result === 0) {
+        // 기존에 있던 order에 새로운 order로 갱신
+        // merge를 쓰지 말자
+        // const orders = ImmutableMap(state.drafts).merge(
+        //   (objects || []).map((o) => [o?.orderId, o]),
+        // );
+
+        const drafts = ImmutableMap(
+          (objects || []).map((o) => [o?.orderId, o]),
+        );
+
+        console.log('@@@ drafts 저장 잘 되나? getDataDrafts : ', drafts);
+
+        updateDrafts(state, drafts);
+      }
+    });
     builder.addCase(getOrderById.fulfilled, (state) => {
       // return updateOrders(state, action);
       // TODO: 다시 구현 필요
@@ -307,14 +459,30 @@ const slice = createSlice({
     });
 
     builder.addCase(getSubs.fulfilled, (state, action) => {
-      const {result, objects} = action.payload;
+      const {result, objects}: {objects: RkbSubscription[]} = action.payload;
+      console.log('getStoreSubs : ', state, ', payload: ', action);
+      console.log('objects : ', objects);
+
       if (result === 0) {
+        // 작업 진행 중
+        // const usedSubs = objects.filter((r) => r.statusCd === 'U');
+        // const reserevedSubs = objects.filter((r) => r.statusCd === 'R');
+        // const subsWithUsed = mergeSubs(state.subs, usedSubs);
+        // const subsWithReserved = updateReservedSubs(
+        //   subsWithUsed,
+        //   reserevedSubs,
+        // );
+
+        // console.log('subsWithReserved : ', subsWithReserved);
         state.subs = mergeSubs(state.subs, objects);
+
+        // state.subs = subsWithUsed.concat(subsWithReserved);
       }
     });
 
     builder.addCase(getStoreSubs.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
+
       if (result === 0) {
         state.subs = mergeSubs(state.subs, objects);
       }
@@ -341,11 +509,13 @@ export const actions = {
   getSubs,
   getStoreSubs,
   getOrders,
+  getDrafts,
   updateSubsStatus,
   updateSubsAndOrderTag,
   updateSubsGiftStatus,
   cancelAndGetOrder,
   checkAndGetOrderById,
+  changeOrder,
   cmiGetSubsUsage,
 };
 

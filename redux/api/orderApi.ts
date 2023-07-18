@@ -132,7 +132,71 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
   return api.failure(api.E_NOT_FOUND);
 };
 
+// changeOrderState가 아니라 Draft용으로 바꿀까
+const changeOrderState = ({
+  orderId,
+  status,
+  token,
+}: {
+  orderId?: string;
+  status?: string; // state 정리된 enum로 적용하기
+  token?: string;
+}) => {
+  if (!orderId) {
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter : orderId');
+  }
+  if (!token) {
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter : token');
+  }
+
+  const url = `${api.httpUrl(
+    api.path.commerce.order,
+    '',
+  )}/${orderId}?_format=json`;
+
+  const body = JSON.stringify({status});
+
+  return api.callHttp(
+    url,
+    {
+      method: 'PATCH',
+      headers: api.withToken(token, 'json'),
+      body,
+    },
+    (resp) => {
+      return resp;
+    },
+  );
+};
+
 const getOrders = ({
+  user,
+  token,
+  page = 0,
+  state = 'all',
+}: {
+  user?: string;
+  token?: string;
+  page?: number;
+  state?: 'all' | 'validation';
+}) => {
+  if (!token)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
+  if (!user)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
+
+  return api.callHttpGet(
+    `${api.httpUrl(
+      api.path.order,
+      '',
+    )}/${user}/all/${state}?_format=json&page=${page}`,
+    (resp) => toOrder(resp, page),
+    api.withToken(token, 'json'),
+  );
+};
+
+// 기존 order API, state만 변경한 값
+const getDrafts = ({
   user,
   token,
   page = 0,
@@ -147,7 +211,10 @@ const getOrders = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
 
   return api.callHttpGet(
-    `${api.httpUrl(api.path.order, '')}/${user}?_format=json&page=${page}`,
+    `${api.httpUrl(
+      api.path.order,
+      '',
+    )}/${user}/all/validation?_format=json&page=${page}`,
     (resp) => toOrder(resp, page),
     api.withToken(token, 'json'),
   );
@@ -213,6 +280,8 @@ export default {
   consentItem,
   getOrders,
   getOrderById,
+  getDrafts,
   cancelOrder,
+  changeOrderState,
   deliveryTrackingUrl,
 };
