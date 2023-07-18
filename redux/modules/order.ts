@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
-import {Map as ImmutableMap} from 'immutable';
+import Immutable, {Map as ImmutableMap} from 'immutable';
 import _ from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
@@ -18,8 +18,6 @@ const init = createAsyncThunk('order/init', async (mobile?: string) => {
 });
 
 const getNextOrders = createAsyncThunk('order/getOrders', API.Order.getOrders);
-
-const getDataDrafts = createAsyncThunk('order/getDrafts', API.Order.getDrafts);
 
 const getOrderById = createAsyncThunk(
   'order/getOrderById',
@@ -140,27 +138,6 @@ const getOrders = createAsyncThunk(
     return dispatch(
       getNextOrders({user, token, page: (order.page || 0) + 1}, state),
     );
-  },
-);
-
-const getDrafts = createAsyncThunk(
-  'order/getOrders',
-  (
-    {
-      user,
-      token,
-      page,
-    }: {
-      user?: string;
-      token?: string;
-      page?: number;
-    },
-    {dispatch, getState},
-  ) => {
-    const {order} = getState() as RootState;
-
-    if (page !== undefined) return dispatch(getDataDrafts({user, token, page}));
-    return dispatch(getDataDrafts({user, token, page: (order.page || 0) + 1}));
   },
 );
 
@@ -328,69 +305,53 @@ const slice = createSlice({
       // title: "0000111101021035030 - 베트남(로컬) 무제한 1일"
       // uuid: "12465457-5026-41ad-b709-da61ef38cebc"
 
+      // const draft: ImmutableMap<number, RkbOrder> = state.drafts;
+
+      // Reserved 는 merge가 아닌
       if (
         result === 0 &&
         objects.length > 0 &&
         objects[0]?.state === 'completed'
       ) {
-        if (result === 0) {
-          console.log('state.subs : ', state?.subs);
-          console.log('mergeSubs : ', subs);
-          console.log(
-            'mergesubs result : ',
-            updateReservedSubs(state.subs, subs),
-          );
-
-          state.subs = updateReservedSubs(state.subs, subs);
-        }
+        // 새로고침 대신 성공한 order를 drafts에서 뺀다.
+        // 추가 확인 필요, order
+        state.drafts = state.drafts.filter((d) => d.key !== orderId);
+        state.subs = updateReservedSubs(state.subs, subs);
       }
-
-      // update 코드 제거, 확인 후 필요하면 다시 추가
     });
 
     builder.addCase(getNextOrders.fulfilled, (state, action) => {
       const {objects, result} = action.payload;
 
-      if (result === 0 && objects.length > 0) {
-        // 기존에 있던 order에 새로운 order로 갱신
-        const orders = ImmutableMap(state.orders).merge(
-          objects.map((o) => [o.orderId, o]),
-        );
+      if (action.meta.arg?.state === 'all' || !action.meta.arg?.state) {
+        if (result === 0 && objects.length > 0) {
+          // 기존에 있던 order에 새로운 order로 갱신
+          const orders = ImmutableMap(state.orders).merge(
+            objects.map((o) => [o.orderId, o]),
+          );
 
-        const orderCache = orders
-          .sort((a, b) => b.orderDate.localeCompare(a.orderDate))
-          .valueSeq()
-          .toArray()
-          .slice(0, 10);
+          const orderCache = orders
+            .sort((a, b) => b.orderDate.localeCompare(a.orderDate))
+            .valueSeq()
+            .toArray()
+            .slice(0, 10);
 
-        storeData(
-          `${API.Order.KEY_INIT_ORDER}.${action.meta.arg.user}`,
-          JSON.stringify(orderCache),
-        );
+          storeData(
+            `${API.Order.KEY_INIT_ORDER}.${action.meta.arg.user}`,
+            JSON.stringify(orderCache),
+          );
 
-        updateOrders(state, orders, action.meta.arg.page);
-      }
-    });
-
-    builder.addCase(getDataDrafts.fulfilled, (state, action) => {
-      const {objects, result} = action.payload;
-
-      if (result === 0) {
-        // 기존에 있던 order에 새로운 order로 갱신
-        // merge를 쓰지 말자
-        // const orders = ImmutableMap(state.drafts).merge(
-        //   (objects || []).map((o) => [o?.orderId, o]),
-        // );
-
+          updateOrders(state, orders, action.meta.arg.page);
+        }
+      } else {
         const drafts = ImmutableMap(
           (objects || []).map((o) => [o?.orderId, o]),
         );
 
-        console.log('@@@ drafts 저장 잘 되나? getDataDrafts : ', drafts);
-
-        updateDrafts(state, drafts);
+        state.drafts = drafts;
       }
     });
+
     builder.addCase(getOrderById.fulfilled, (state) => {
       // return updateOrders(state, action);
       // TODO: 다시 구현 필요
@@ -499,7 +460,6 @@ export const actions = {
   getSubs,
   getStoreSubs,
   getOrders,
-  getDrafts,
   updateSubsInfo,
   updateSubsAndOrderTag,
   updateSubsGiftStatus,

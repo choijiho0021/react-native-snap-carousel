@@ -186,31 +186,6 @@ const getOrders = ({
   );
 };
 
-// 기존 order API, state만 변경한 값
-const getDrafts = ({
-  user,
-  token,
-  page = 0,
-}: {
-  user?: string;
-  token?: string;
-  page?: number;
-}) => {
-  if (!token)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
-  if (!user)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
-
-  return api.callHttpGet(
-    `${api.httpUrl(
-      api.path.order,
-      '',
-    )}/${user}/all/validation?_format=json&page=${page}`,
-    (resp) => toOrder(resp, page),
-    api.withToken(token, 'json'),
-  );
-};
-
 const getOrderById = ({
   user,
   token,
@@ -271,7 +246,6 @@ export default {
   consentItem,
   getOrders,
   getOrderById,
-  getDrafts,
   cancelOrder,
   draftOrder,
   deliveryTrackingUrl,
