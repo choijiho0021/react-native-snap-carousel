@@ -210,11 +210,22 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [action.order],
   );
 
+  const getDraftsData = useCallback(
+    async (mobileParam, tokenParam, state) => {
+      return action.order.getOrders({
+        user: mobileParam,
+        token: tokenParam,
+        state,
+        page: 0,
+      });
+    },
+    [action.order],
+  );
+
   const onRefresh = useCallback(() => {
     if (iccid) {
       setRefreshing(true);
 
-      // 함수로 묶어야하나
       action.order
         .getSubsWithToast({iccid, token})
         .then(() => {
@@ -224,25 +235,19 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           action.account.getAccount({iccid, token});
         })
         .finally(() => {
-          action.order
-            .getDrafts({
-              user: mobile,
-              token,
-              page: 0,
-            })
-            .then((resp) => {
-              if (resp) {
-                action.account.getAccount({iccid, token}).then((r) => {
-                  if (r) {
-                    setRefreshing(false);
-                    setIsFirstLoad(false);
-                  }
-                });
-              }
-            });
+          getDraftsData(mobile, token, 'validation').then((resp) => {
+            if (resp) {
+              action.account.getAccount({iccid, token}).then((r) => {
+                if (r) {
+                  setRefreshing(false);
+                  setIsFirstLoad(false);
+                }
+              });
+            }
+          });
         });
     }
-  }, [action.account, action.order, iccid, mobile, token]);
+  }, [action.account, action.order, getDraftsData, iccid, mobile, token]);
 
   useEffect(() => {
     if (isFocused) {
@@ -412,20 +417,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           flatListRef={flatListRef}
           mainSubs={item}
           onClick={(item) => {
-            action.order
-              .changeDraft({
-                orderId: item?.orderId,
-                token,
-              })
-              .then((r) => {
-                // TODO : 발권 후 새로고침 뺼 수 있나 확인
-                onRefresh();
-              });
+            action.order.changeDraft({
+              orderId: item?.orderId,
+              token,
+            });
           }}
         />
       );
     },
-    [action.order, onRefresh, token],
+    [action.order, token],
   );
 
   const info = useCallback(
