@@ -413,9 +413,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           mainSubs={item}
           onClick={(item) => {
             action.order
-              .changeOrder({
+              .changeDraft({
                 orderId: item?.orderId,
-                status: 'R',
                 token,
               })
               .then((r) => {

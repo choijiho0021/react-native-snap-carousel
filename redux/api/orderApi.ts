@@ -132,16 +132,7 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
   return api.failure(api.E_NOT_FOUND);
 };
 
-// changeOrderState가 아니라 Draft용으로 바꿀까
-const changeOrderState = ({
-  orderId,
-  status,
-  token,
-}: {
-  orderId?: string;
-  status?: string; // state 정리된 enum로 적용하기
-  token?: string;
-}) => {
+const draftOrder = ({orderId, token}: {orderId?: string; token?: string}) => {
   if (!orderId) {
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter : orderId');
   }
@@ -154,7 +145,7 @@ const changeOrderState = ({
     '',
   )}/${orderId}?_format=json`;
 
-  const body = JSON.stringify({status});
+  const body = JSON.stringify({status: 'R'});
 
   return api.callHttp(
     url,
@@ -282,6 +273,6 @@ export default {
   getOrderById,
   getDrafts,
   cancelOrder,
-  changeOrderState,
+  draftOrder,
   deliveryTrackingUrl,
 };

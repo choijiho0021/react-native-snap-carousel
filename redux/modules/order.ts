@@ -26,10 +26,7 @@ const getOrderById = createAsyncThunk(
   API.Order.getOrderById,
 );
 
-const changeOrderState = createAsyncThunk(
-  'order/chageOrderState',
-  API.Order.changeOrderState,
-);
+const draftOrder = createAsyncThunk('order/draftOrder', API.Order.draftOrder);
 const cancelOrder = createAsyncThunk(
   'order/cancelOrder',
   API.Order.cancelOrder,
@@ -167,17 +164,10 @@ const getDrafts = createAsyncThunk(
   },
 );
 
-const changeOrder = createAsyncThunk(
-  'order/changeOrderState',
-  (
-    {
-      orderId,
-      status,
-      token,
-    }: {orderId?: number; status?: string; token?: string},
-    {dispatch},
-  ) => {
-    return dispatch(changeOrderState({orderId, status, token}));
+const changeDraft = createAsyncThunk(
+  'order/draftOrder',
+  ({orderId, token}: {orderId: number; token?: string}, {dispatch}) => {
+    return dispatch(draftOrder({orderId, token}));
   },
 );
 
@@ -323,7 +313,7 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(changeOrderState.fulfilled, (state, action) => {
+    builder.addCase(draftOrder.fulfilled, (state, action) => {
       const {objects, result} = action.payload;
 
       const orderId = action?.meta?.arg.orderId;
@@ -515,7 +505,7 @@ export const actions = {
   updateSubsGiftStatus,
   cancelAndGetOrder,
   checkAndGetOrderById,
-  changeOrder,
+  changeDraft,
   cmiGetSubsUsage,
 };
 
