@@ -517,13 +517,18 @@ const slice = createSlice({
           if (idx <= -1) {
             acc.push({title: year, data: [cur] as CashHistory[]});
           } else {
+            const diff = utils.stringToNumber(cur.diff) || 0;
+
+            // diff, sum이 모두 양수이거나, 음수인 경우에만 합산한다.
             const orderidx = acc[idx].data.findIndex(
-              (elm) => elm.order_id && elm.order_id === cur.order_id,
+              (elm) =>
+                elm.order_id &&
+                elm.order_id === cur.order_id &&
+                (utils.stringToNumber(elm.diff) || 0) * diff > 0,
             );
-            if (orderidx > -1) {
+            if (orderidx >= 0) {
               acc[idx].data[orderidx].diff = `${
-                (utils.stringToNumber(acc[idx].data[orderidx].diff) || 0) +
-                (utils.stringToNumber(cur.diff) || 0)
+                diff + (utils.stringToNumber(acc[idx].data[orderidx].diff) || 0)
               }`;
             } else {
               acc[idx].data?.push(cur);

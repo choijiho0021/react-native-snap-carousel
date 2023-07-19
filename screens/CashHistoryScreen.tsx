@@ -405,7 +405,6 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             )}
             balanceStyle={[
               appStyles.bold18Text,
-
               {
                 color: item.inc === 'Y' ? colors.clearBlue : colors.redError,
                 lineHeight: 30,
