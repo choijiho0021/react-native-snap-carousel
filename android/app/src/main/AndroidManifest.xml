@@ -107,8 +107,8 @@
                 <data android:host="www.rokebi.com" android:pathPrefix="/gift" android:scheme="https"/>
                 <data android:host="tb.rokebi.com" android:path="/link" android:scheme="http"/>
                 <data android:host="tb.rokebi.com" android:pathPrefix="/gift" android:scheme="http"/>
-                <data android:host="app.adjust.com" android:scheme="https" />
-                <data android:scheme="rokebiesim" />
+                <data android:host="app.adjust.com" android:scheme="https" android:pathPattern=".*"/>
+                <data android:scheme="rokebiesim" android:host="*"/>
             </intent-filter>
         </activity>
         <activity
