@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const getStatus = (state: OrderState, reserved?: string) => {
+const getStatus = (state?: OrderState, reserved?: string) => {
   if (state === 'canceled') return [i18n.t('his:cancel'), colors.tomato];
   if (state === 'validation') return [i18n.t('his:draft'), colors.clearBlue];
 
@@ -48,7 +48,7 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
 
   const isCanceled = item.state === 'canceled';
   const [status, statusColor] = getStatus(
-    item.state,
+    item?.state,
     item.usageList.find((v) => v.status === STATUS_RESERVED)?.status,
   );
   const billingAmt = utils.addCurrency(item.totalPrice, item.dlvCost);

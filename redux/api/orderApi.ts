@@ -56,6 +56,9 @@ export type RkbPayment = {
   paymentMethod: string;
   remote_id?: string;
 };
+
+export type OrderState = 'completed' | 'validation' | 'canceled' | 'draft';
+
 export type RkbOrder = {
   key: string;
   orderId: number;
@@ -68,7 +71,7 @@ export type RkbOrder = {
   trackingCompany?: string;
   shipmentState?: string;
   memo?: string;
-  state?: string;
+  state?: OrderState;
   orderItems: {title: string; qty: number; price: number}[];
   usageList: {status: string; nid: string}[];
   paymentList: RkbPayment[];

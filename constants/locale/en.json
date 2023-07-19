@@ -360,6 +360,7 @@
   "his:notSelected": "Nothing Selected",
   "his:paymentCompleted": "Summary",
   "his:ready": "on the preparing",
+  "his:draft": "on the drafting",
   "his:shipped": "Shipment completed",
   "his:addressInfo": "Shipping address",
   "his:companyInfo": "Logistics Info",
@@ -378,7 +379,7 @@
   "his:usedOrExpiredInfo": "• The product has been used or the deadline for canceling payment has expired.",
   "his:dataCancelInfo": "• If all products included in the payment are not in use, you can cancel them within 7 days after payment.",
   "his:receipt": "Show Reciept",
-  "his:draft": "Draft",
+  "his:draftRequest": "Draft",
   "his:cancelDraft": "Cancel Draft",
 
   "contact:title": "I Need Help!",

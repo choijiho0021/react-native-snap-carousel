@@ -26,7 +26,7 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
-import {RkbOrder, RkbPayment} from '@/redux/api/orderApi';
+import {OrderState, RkbOrder, RkbPayment} from '@/redux/api/orderApi';
 import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
@@ -50,6 +50,14 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignSelf: 'flex-end',
   },
+  headerNoti: {
+    marginHorizontal: 20,
+    opacity: 0.6,
+    backgroundColor: colors.noticeBackground,
+    marginTop: 20,
+    borderRadius: 10,
+  },
+  headerNotiText: {margin: 5},
   date: {
     ...appStyles.normal14Text,
     marginTop: 40,
@@ -95,9 +103,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cancelDraftBtn: {
+    borderWidth: 1,
+    borderColor: colors.red,
     backgroundColor: colors.white,
-    margin: 20,
-    height: 48,
+    height: 36,
+    justifyContent: 'center',
+  },
+  cancelDraftBtnDisabled: {
+    borderWidth: 0,
+    backgroundColor: colors.white,
+    height: 36,
     justifyContent: 'center',
   },
   cancelInfo: {
@@ -218,6 +233,8 @@ type PurchaseDetailScreenProps = {
 
 const isRokebiCash = (pg: string) =>
   ['rokebi_cash', 'rokebi_point'].includes(pg);
+const isUseNotiState = (state: OrderState) =>
+  ['validation', 'completed'].includes(state);
 
 const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   navigation,
@@ -451,6 +468,9 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             onPress={() => {
               console.log('취소 화면 미구현 ');
             }}
+            disabled={order.state !== 'validation'}
+            disableStyle={styles.cancelDraftBtnDisabled}
+            disableColor={colors.gray}
             title={i18n.t('his:cancelDraft')}
             titleStyle={styles.normal16RedTxt}
           />
@@ -518,6 +538,28 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     [account.token, navigation, order],
   );
 
+  const headerNoti = useCallback(() => {
+    if (!order || !order.orderItems || !isUseNotiState(order?.state))
+      return <View />;
+
+    const getNoti = () => {
+      switch (order?.state) {
+        case 'validation':
+          return i18n.t('his:draftBeforeNoti');
+        case 'completed':
+          return i18n.t('his:draftAfterNoti');
+        default:
+          return '';
+      }
+    };
+
+    return (
+      <View style={styles.headerNoti}>
+        <AppText style={styles.headerNotiText}>{getNoti()}</AppText>
+      </View>
+    );
+  }, [order]);
+
   const headerInfo = useCallback(() => {
     if (!order || !order.orderItems) return <View />;
 
@@ -571,6 +613,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={{flex: 1}}>
+        {headerNoti()}
         {headerInfo()}
         <Pressable
           style={styles.dropDownBox}
@@ -615,13 +658,15 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           disabled={!pymId}
           onPress={() => showReciept(pymId)}
         />
-        <AppButton
-          style={styles.button}
-          type="primary"
-          title={i18n.t('his:draft')}
-          disabled={!pymId}
-          onPress={() => showReciept(pymId)}
-        />
+
+        {order?.state === 'validation' && (
+          <AppButton
+            style={[styles.button]}
+            type="primary"
+            title={i18n.t('his:draftRequest')}
+            onPress={() => console.log('발권하기 화면으로 이동')}
+          />
+        )}
       </View>
       <AppActivityIndicator visible={pending} />
     </SafeAreaView>
