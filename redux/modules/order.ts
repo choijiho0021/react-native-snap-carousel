@@ -11,6 +11,9 @@ import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
 import {cachedApi} from '@/redux/api/api';
+import Env from '@/environment';
+
+const {specialCategories} = Env.get();
 
 const init = createAsyncThunk('order/init', async (mobile?: string) => {
   const oldData = await retrieveData(`${API.Order.KEY_INIT_ORDER}.${mobile}`);
@@ -207,9 +210,6 @@ const mergeSubs = (
   org: ImmutableMap<string, RkbSubscription[]>,
   subs: RkbSubscription[],
 ) => {
-  console.log('@@@ org : ', org);
-  console.log('@@@ subs : ', subs);
-
   const subsToMap: ImmutableMap<string, RkbSubscription[]> = subs.reduce(
     (acc, s) => {
       return s.subsIccid
@@ -287,6 +287,7 @@ const slice = createSlice({
         // Esim 새로고침 대신 성공한 order만 drafts에서 뺀다.
         state.drafts = state.drafts.filter((d) => d.orderId !== orderId);
 
+        // 함수로 뺄 지 고민
         state.subs = ImmutableMap(state.subs).merge(
           subs.map((o) => [
             o.nid,
@@ -296,6 +297,12 @@ const slice = createSlice({
                 statusCd: o?.field_status,
                 flagImage: o?.field_flag_image,
                 prodName: utils.extractProdName(o?.title),
+                promoFlag: o?.field_special_categories
+                  ? o.field_special_categories
+                      .split(',')
+                      .map((v) => specialCategories[v.trim()])
+                      .filter((v) => !_.isEmpty(v))
+                  : [],
               },
             ],
           ]),
