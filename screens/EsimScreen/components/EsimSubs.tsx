@@ -553,7 +553,7 @@ const EsimSubs = ({
     if (
       !expired &&
       mainSubs.giftStatusCd !== 'S' &&
-      mainSubs.noticeOption.includes('H')
+      mainSubs.noticeOption?.includes('H')
     )
       return (
         <Pressable

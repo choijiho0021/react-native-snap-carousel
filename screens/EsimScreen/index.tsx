@@ -530,7 +530,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       <FlatList
         ref={flatListRef}
         data={subsList}
-        keyExtractor={(item) => item[item.length - 1].key.toString()}
+        keyExtractor={(item) => item[item.length - 1].nid.toString()}
         ListHeaderComponent={info}
         renderItem={renderSubs}
         // onRefresh={this.onRefresh}
