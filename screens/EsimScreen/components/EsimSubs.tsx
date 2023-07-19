@@ -683,10 +683,41 @@ const EsimSubs = ({
       ]}>
       <View style={notCardInfo ? styles.infoRadiusBorder : styles.infoCard}>
         {title()}
+
+        {/* 투명화 창 예제 {true && mainSubs.statusCd === 'U' ? (
+          <View
+            style={{
+              top: 60,
+              height: 93,
+              width: '110%',
+              opacity: 0.9,
+              backgroundColor: 'white',
+              position: 'absolute',
+              zIndex: 100,
+            }}
+          />
+        ) : (
+          <View></View>
+        )} */}
         {isDraft ? <View></View> : notCardInfo ? QRnCopyInfo() : topInfo()}
       </View>
       {showMoreInfo && (
         <View style={showMoreInfo && styles.moreInfoContent}>
+          {/* 투명화창 예제 {true && mainSubs.statusCd === 'U' ? (
+            <View
+              style={{
+                top: 0,
+                height: 200,
+                width: '110%',
+                opacity: 0.9,
+                backgroundColor: 'white',
+                position: 'absolute',
+                zIndex: 100,
+              }}
+            />
+          ) : (
+            <View></View>
+          )} */}
           {topInfo()}
 
           {!!mainSubs.caution || (mainSubs.cautionList?.length || 0) > 0 ? (
