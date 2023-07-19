@@ -62,7 +62,7 @@ import com.BV.LinearGradient.LinearGradientPackage;
 import com.zoyi.channel.plugin.android.ChannelIO;
 import com.zoyi.channel.rn.RNChannelIOPackage;
 
-import org.reactnative.camera.RNCameraPackage;
+//import org.reactnative.camera.RNCameraPackage;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -195,7 +195,7 @@ public class MainApplication extends Application implements ReactApplication {
                             new AppCenterReactNativePackage(getApplication()),
                             new RNVersionCheckPackage(),
                             new CodePush(getResources().getString(com.rokebiesim.R.string.CodePushDeploymentKey), getApplicationContext(), BuildConfig.DEBUG),
-                            new RNCameraPackage(),
+//                            new RNCameraPackage(),
                             new ReactVideoPackage(),
                             new RNGestureHandlerPackage(),
                             new RNCWebViewPackage(),

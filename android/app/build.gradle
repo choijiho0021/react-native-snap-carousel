@@ -165,7 +165,7 @@ android {
 
 
     defaultConfig {
-        missingDimensionStrategy 'react-native-camera', 'general'
+//        missingDimensionStrategy 'react-native-camera', 'general'
         applicationId 'com.rokebiesim'
         minSdkVersion rootProject.ext.minSdkVersion
         multiDexEnabled true
@@ -379,7 +379,7 @@ dependencies {
     implementation project(':appcenter')
     implementation project(':react-native-version-check')
     implementation project(':react-native-code-push')
-    implementation project(':react-native-camera')
+//    implementation project(':react-native-camera')
     implementation project(':react-native-video')
     implementation project(':react-native-gesture-handler')
     implementation project(':react-native-webview')
@@ -413,7 +413,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
     implementation 'com.android.installreferrer:installreferrer:2.2'
     // Add the following if you are using the Adjust SDK inside web views on your app
-    implementation 'com.adjust.sdk:adjust-android-webbridge:4.31.1'
+    implementation 'com.adjust.sdk:adjust-android-webbridge:4.33.5'
     implementation project(':react-native-system-setting')
     implementation 'com.facebook.fresco:animated-gif:2.5.0'
     implementation project(':react-native-linear-gradient')

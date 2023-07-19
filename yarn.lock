@@ -9438,10 +9438,10 @@ react-is@^16.13.0, react-is@^16.13.1, react-is@^16.7.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react-native-adjust@^4.29.6:
-  version "4.32.0"
-  resolved "https://registry.yarnpkg.com/react-native-adjust/-/react-native-adjust-4.32.0.tgz#8bbcd350862f2925da416cccd5f03810cb4698cd"
-  integrity sha512-Ipd56bMzvdWPLXPsac19bkA/2Y4uJTa4+/I3dGbKVWKkP4gPUR2oZlT04bWz9B1HWmKeoyrSqGdEdIyKVtyvlw==
+react-native-adjust@^4.33.0:
+  version "4.33.0"
+  resolved "https://registry.yarnpkg.com/react-native-adjust/-/react-native-adjust-4.33.0.tgz#92a906d137993d8763500d85e07e4789c6ab33cd"
+  integrity sha512-EYCG5iA5I/VaIpAEEvawEvdE4miKH2hAtEzWo7on775go+dbtKsd4c3G26NvSu8cCei39HMs9CAIlGBVI+SxRw==
 
 react-native-app-badge@0.1.5:
   version "0.1.5"
@@ -9457,17 +9457,10 @@ react-native-barcode-mask@^1.2.2:
   dependencies:
     prop-types "^15.6.2"
 
-react-native-camera@^4.2.1:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-4.2.1.tgz#caf74081f055e89d7e9b0cd5108965d808c60e90"
-  integrity sha512-+Vkql24PFYQfsPRznJCvPwJQfyzCnjlcww/iZ4Ej80bgivKjL9eU0IMQIXp4yi6XCrKi4voWXxIDPMupQZKeIQ==
-  dependencies:
-    prop-types "^15.6.2"
-
-react-native-channel-plugin@^0.7.7:
-  version "0.7.7"
-  resolved "https://registry.yarnpkg.com/react-native-channel-plugin/-/react-native-channel-plugin-0.7.7.tgz#b952954d486145841d8954bddd1dcb8c732f3d21"
-  integrity sha512-1gyUOZNn8kPoAzoDa43HrTcS/anHhkNVVKF6AF1yhzb+Sz+qCjolg0lVx3voKTSrU/2pXluqi/GFgBS3cU5guA==
+react-native-channel-plugin@^0.7.12:
+  version "0.7.12"
+  resolved "https://registry.yarnpkg.com/react-native-channel-plugin/-/react-native-channel-plugin-0.7.12.tgz#ffc47608ba30ff29dd0ebaef2785267c76d47cff"
+  integrity sha512-1TNPZMBmtkS4/82rM8H7Dg5Ru/UPOqWuOjY/uxOUf8gYi6q3DmlP+CigexzrBgQ4mQqS6lHNuWSpxdjSwZRy8w==
 
 react-native-circular-progress@^1.3.7:
   version "1.3.7"
