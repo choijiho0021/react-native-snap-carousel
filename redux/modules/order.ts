@@ -7,7 +7,7 @@ import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
-import {storeData, retrieveData, parseJson} from '@/utils/utils';
+import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
 import {cachedApi} from '@/redux/api/api';
@@ -138,8 +138,8 @@ const getOrders = createAsyncThunk(
 
 const changeDraft = createAsyncThunk(
   'order/draftOrder',
-  ({orderId, token}: {orderId: number; token?: string}, {dispatch}) => {
-    return dispatch(draftOrder({orderId, token}));
+  ({orderId, token}: {orderId: string; token?: string}) => {
+    return API.Order.draftOrder({orderId, token});
   },
 );
 
@@ -234,27 +234,15 @@ const mergeSubs = (
 
 // 이건 머지로 하면 안되겠다. 중복 데이터 때문에
 const updateReservedSubs = (
-  org: ImmutableMap<string, RkbSubscription[]>,
-  subs: RkbSubscription[],
+  subsExcludeReserved: ImmutableMap<string, RkbSubscription[]>,
+  subsOnlyReserved: RkbSubscription[],
 ) => {
-  console.log('@@@ org : ', org);
-  console.log('@@@ subs : ', subs);
+  const parseToImmutableSubs = (subsList: RkbSubscription[]) => {
+    return ImmutableMap(subsList.map((o) => [o.nid, [o]]));
+  };
 
-  const subsToMap: ImmutableMap<string, RkbSubscription[]> = subs.reduce(
-    (acc, s) => {
-      // reserved는 subsIccid가 없으므로 nid로 처리한다.
-      return acc.update(s?.nid, (pre) =>
-        pre
-          .concat(s)
-          .sort((subs1, subs2) =>
-            subs1.purchaseDate > subs2.purchaseDate ? 1 : -1,
-          ),
-      );
-    },
-    org,
-  );
-
-  return subsToMap;
+  // reserved는 새로 덮어씌운다.
+  return subsExcludeReserved.merge(parseToImmutableSubs(subsOnlyReserved));
 };
 
 const initialState: OrderModelState = {
@@ -286,32 +274,32 @@ const slice = createSlice({
     });
 
     builder.addCase(draftOrder.fulfilled, (state, action) => {
-      const {objects, result} = action.payload;
+      const {objects = [], result} = action.payload;
 
       const orderId = action?.meta?.arg.orderId;
-      const subs: RkbSubscription[] = objects?.subs;
+      const subs: RkbSubscription[] = objects[0]?.subs;
 
-      console.log('objects : ', objects);
-
-      // 작업 진행 중
-      // field_flag_image: "/sites/default/files/2023-06/Vietnam_%EB%B2%A0%ED%8A%B8%EB%82%A8.png"
-      // field_status: "R"
-      // nid: "20054"
-      // title: "0000111101021035030 - 베트남(로컬) 무제한 1일"
-      // uuid: "12465457-5026-41ad-b709-da61ef38cebc"
-
-      // const draft: ImmutableMap<number, RkbOrder> = state.drafts;
-
-      // Reserved 는 merge가 아닌
       if (
         result === 0 &&
         objects.length > 0 &&
         objects[0]?.state === 'completed'
       ) {
-        // 새로고침 대신 성공한 order를 drafts에서 뺀다.
-        // 추가 확인 필요, order
-        state.drafts = state.drafts.filter((d) => d.key !== orderId);
-        state.subs = updateReservedSubs(state.subs, subs);
+        // Esim 새로고침 대신 성공한 order만 drafts에서 뺀다.
+        state.drafts = state.drafts.filter((d) => d.orderId !== orderId);
+
+        state.subs = ImmutableMap(state.subs).merge(
+          subs.map((o) => [
+            o.nid,
+            [
+              {
+                ...o,
+                statusCd: o?.field_status,
+                flagImage: o?.field_flag_image,
+                prodName: utils.extractProdName(o?.title),
+              },
+            ],
+          ]),
+        );
       }
     });
 
@@ -404,23 +392,20 @@ const slice = createSlice({
 
     builder.addCase(getSubs.fulfilled, (state, action) => {
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
-      console.log('getStoreSubs : ', state, ', payload: ', action);
-      console.log('objects : ', objects);
 
       if (result === 0) {
-        // 작업 진행 중
-        // const usedSubs = objects.filter((r) => r.statusCd === 'U');
-        // const reserevedSubs = objects.filter((r) => r.statusCd === 'R');
-        // const subsWithUsed = mergeSubs(state.subs, usedSubs);
-        // const subsWithReserved = updateReservedSubs(
-        //   subsWithUsed,
-        //   reserevedSubs,
-        // );
+        const subsExcludeReserved: RkbSubscription[] = [];
+        const subsOnlyReserved: RkbSubscription[] = [];
 
-        // console.log('subsWithReserved : ', subsWithReserved);
-        state.subs = mergeSubs(state.subs, objects);
+        objects.forEach((r) => {
+          if (r.statusCd === 'R') {
+            subsOnlyReserved.push(r);
+          }
+          subsExcludeReserved.push(r);
+        });
 
-        // state.subs = subsWithUsed.concat(subsWithReserved);
+        const subs = mergeSubs(state.subs, subsExcludeReserved);
+        state.subs = updateReservedSubs(subs, subsOnlyReserved);
       }
     });
 
