@@ -65,6 +65,7 @@ import ChargeTypeScreen from '@/screens/ChargeTypeScreen';
 import AddOnScreen from '@/screens/AddOnScreen';
 import ChargeAgreementScreen from '@/screens/ChargeAgreementScreen';
 import InvitePromoScreen from '@/screens/InvitePromoScreen';
+import DraftScreen from '@/screens/DraftScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -302,6 +303,8 @@ function MyPageStackComponent() {
           headerShown: false,
         })}
       />
+      <MyPageStack.Screen name="Draft" component={DraftScreen} />
+
       <MyPageStack.Group screenOptions={{animationEnabled: true}}>
         <MyPageStack.Screen
           name="PaymentGateway"
