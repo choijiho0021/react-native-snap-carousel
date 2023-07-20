@@ -16,6 +16,8 @@ import moment from 'moment';
 
 const {specialCategories} = Env.get();
 
+const getNextOrders = createAsyncThunk('order/getOrders', API.Order.getOrders);
+
 const init = createAsyncThunk('order/init', async (mobile?: string) => {
   const oldData = await retrieveData(`${API.Order.KEY_INIT_ORDER}.${mobile}`);
   return oldData;
@@ -124,19 +126,16 @@ const getOrders = createAsyncThunk(
       page?: number;
       state?: 'all' | 'validation';
     },
-    {getState},
+    {getState, dispatch},
   ) => {
     if (page !== undefined) {
-      return API.Order.getOrders({user, token, page, state});
+      return dispatch(getNextOrders({user, token, page, state}));
     }
 
     const {order} = getState() as RootState;
-    return API.Order.getOrders({
-      user,
-      token,
-      page: (order.page || 0) + 1,
-      state,
-    });
+    return dispatch(
+      getNextOrders({user, token, page: (order.page || 0) + 1}, state),
+    );
   },
 );
 
