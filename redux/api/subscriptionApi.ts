@@ -319,10 +319,12 @@ const getSubscription = ({
   iccid,
   token,
   prodType,
+  hidden,
 }: {
   iccid?: string;
   token?: string;
   prodType?: string;
+  hidden?: boolean;
 }) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
@@ -330,8 +332,8 @@ const getSubscription = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
   return api.callHttpGet(
-    `${api.httpUrl(api.path.subscription)}/${iccid}${
-      prodType ? `/${prodType}` : ''
+    `${api.httpUrl(api.path.subscription)}/${iccid}/${prodType || 'all'}/${
+      hidden ? 'all/1' : '1'
     }?_format=hal_json`,
     toSubscription(),
     api.withToken(token, 'hal+json'),
