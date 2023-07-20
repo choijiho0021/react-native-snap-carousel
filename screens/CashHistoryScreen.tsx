@@ -399,13 +399,9 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           </View>
 
           <AppPrice
-            price={utils.toCurrency(
-              utils.stringToNumber(item.diff) || 0,
-              esimCurrency,
-            )}
+            price={utils.toCurrency(item.diff, esimCurrency)}
             balanceStyle={[
               appStyles.bold18Text,
-
               {
                 color: item.inc === 'Y' ? colors.clearBlue : colors.redError,
                 lineHeight: 30,

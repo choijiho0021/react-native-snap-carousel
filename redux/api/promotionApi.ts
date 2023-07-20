@@ -313,7 +313,7 @@ const join = ({
 };
 
 const inviteLink = (recommender: string, gift: string = '') => {
-  return `${webViewHost}?recommender=${recommender}${
+  return `${webViewHost}/link?recommender=${recommender}${
     gift?.length > 0 ? `&gift=${gift}` : ''
   }`;
 };
