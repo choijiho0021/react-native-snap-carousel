@@ -186,11 +186,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [orderList, setOrderList] = useState<RkbOrder[]>();
 
   useEffect(() => {
-    // 정렬해야하나? 확인 필요
-    const draftList = order.drafts.valueSeq().toArray();
-
-    console.log('draftList : ', draftList);
-    setOrderList(draftList);
+    setOrderList(order.drafts);
   }, [order.drafts]);
 
   const init = useCallback(

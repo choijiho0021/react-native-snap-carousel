@@ -12,6 +12,7 @@ import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
 import {cachedApi} from '@/redux/api/api';
 import Env from '@/environment';
+import moment from 'moment';
 
 const {specialCategories} = Env.get();
 
@@ -81,7 +82,7 @@ export interface OrderModelState {
   orders: ImmutableMap<number, RkbOrder>;
   orderList: number[];
   subs: ImmutableMap<string, RkbSubscription[]>;
-  drafts: ImmutableMap<number, RkbOrder>;
+  drafts: RkbOrder[];
   usageProgress: object;
   page: number;
 }
@@ -247,7 +248,7 @@ const updateReservedSubs = (
 
 const initialState: OrderModelState = {
   orders: ImmutableMap<number, RkbOrder>(),
-  drafts: ImmutableMap<number, RkbOrder>(),
+  drafts: [],
   orderList: [],
   subs: ImmutableMap(),
   usageProgress: {},
@@ -314,11 +315,12 @@ const slice = createSlice({
       const {objects, result} = action.payload;
 
       if (action.meta.arg?.state === 'validation') {
-        const drafts = ImmutableMap(
-          (objects || []).map((o) => [o?.orderId, o]),
-        );
-
-        state.drafts = drafts;
+        state.drafts =
+          objects
+            .filter((r) => moment().diff(moment(r.orderDate), 'day') < 7)
+            .sort((a, b) => {
+              return a.orderDate < b.orderDate ? 1 : -1;
+            }) || [];
       } else if (result === 0 && objects.length > 0) {
         // 기존에 있던 order에 새로운 order로 갱신
         const orders = ImmutableMap(state.orders).merge(
