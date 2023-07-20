@@ -5,7 +5,7 @@ import LabelText from '@/components/LabelText';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
-import {RkbOrder} from '@/redux/api/orderApi';
+import {OrderState, RkbOrder} from '@/redux/api/orderApi';
 import {STATUS_RESERVED} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
@@ -26,8 +26,11 @@ const styles = StyleSheet.create({
   },
 });
 
-const getStatus = (canceled: boolean, reserved?: string) => {
-  if (canceled) return [i18n.t('his:cancel'), colors.tomato];
+const getStatus = (state?: OrderState, reserved?: string) => {
+  if (state === 'canceled') return [i18n.t('his:cancel'), colors.tomato];
+  if (state === 'validation') return [i18n.t('his:draft'), colors.clearBlue];
+
+  // 기존 상품 대기중은?
   if (reserved) return [i18n.t('his:ready'), colors.clearBlue];
   return [undefined];
 };
@@ -45,7 +48,7 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
 
   const isCanceled = item.state === 'canceled';
   const [status, statusColor] = getStatus(
-    isCanceled,
+    item?.state,
     item.usageList.find((v) => v.status === STATUS_RESERVED)?.status,
   );
   const billingAmt = utils.addCurrency(item.totalPrice, item.dlvCost);

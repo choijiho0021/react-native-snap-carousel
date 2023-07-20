@@ -56,6 +56,9 @@ export type RkbPayment = {
   paymentMethod: string;
   remote_id?: string;
 };
+
+export type OrderState = 'completed' | 'validation' | 'canceled' | 'draft';
+
 export type RkbOrder = {
   key: string;
   orderId: number;
@@ -68,8 +71,8 @@ export type RkbOrder = {
   trackingCompany?: string;
   shipmentState?: string;
   memo?: string;
-  state?: string;
-  orderItems: {title: string; qty: number; price: number}[];
+  state?: OrderState;
+  orderItems: {title: string; qty: number; price: number; uuid: string}[];
   usageList: {status: string; nid: string}[];
   paymentList: RkbPayment[];
   dlvCost: Currency;
@@ -109,6 +112,7 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
               title: value.title,
               qty: parseInt(value.quantity, 10),
               price: utils.stringToNumber(value.total_price__number),
+              uuid: value?.uuid,
             })),
             usageList: (parseJson(item.usage_list) || []).map((value) => ({
               status: value.field_status,

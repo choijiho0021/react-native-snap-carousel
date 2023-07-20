@@ -347,6 +347,13 @@ const compareVersion = (version1: string, version2: string): boolean => {
   return toVersionStr(version1) > toVersionStr(version2);
 };
 
+// 000001021035030 - 베트남 10일 무제한  -> 베트남 10일 무제한만 추출
+const extractProdName = (str) => {
+  const regex = / - (.+)$/;
+  const match = str.match(regex);
+  return match ? match[1] : str;
+};
+
 export default {
   fontScaling,
   numberToCommaString,
@@ -361,6 +368,7 @@ export default {
   htmlToString,
   toDateString,
   toDate,
+  extractProdName,
   stringToCurrency,
   priceToCurrency,
   toCurrency,

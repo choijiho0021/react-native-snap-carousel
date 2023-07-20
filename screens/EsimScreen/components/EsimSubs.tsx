@@ -553,7 +553,7 @@ const EsimSubs = ({
     if (
       !expired &&
       mainSubs.giftStatusCd !== 'S' &&
-      mainSubs.noticeOption.includes('H')
+      mainSubs.noticeOption?.includes('H')
     )
       return (
         <Pressable
@@ -687,6 +687,21 @@ const EsimSubs = ({
       </View>
       {showMoreInfo && (
         <View style={showMoreInfo && styles.moreInfoContent}>
+          {/* 투명화창 예제 {true && mainSubs.statusCd === 'U' ? (
+            <View
+              style={{
+                top: 0,
+                height: 200,
+                width: '110%',
+                opacity: 0.9,
+                backgroundColor: 'white',
+                position: 'absolute',
+                zIndex: 100,
+              }}
+            />
+          ) : (
+            <View></View>
+          )} */}
           {topInfo()}
 
           {!!mainSubs.caution || (mainSubs.cautionList?.length || 0) > 0 ? (

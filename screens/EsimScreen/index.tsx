@@ -186,11 +186,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [orderList, setOrderList] = useState<RkbOrder[]>();
 
   useEffect(() => {
-    // 정렬해야하나? 확인 필요
-    const draftList = order.drafts.valueSeq().toArray();
-
-    console.log('draftList : ', draftList);
-    setOrderList(draftList);
+    setOrderList(order.drafts);
   }, [order.drafts]);
 
   const init = useCallback(
@@ -210,18 +206,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [action.order],
   );
 
-  const getDraftsData = useCallback(
-    async (mobileParam, tokenParam, state) => {
-      return action.order.getOrders({
-        user: mobileParam,
-        token: tokenParam,
-        state,
-        page: 0,
-      });
-    },
-    [action.order],
-  );
-
   const onRefresh = useCallback(() => {
     if (iccid) {
       setRefreshing(true);
@@ -233,21 +217,19 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             action.order.getStoreSubsWithToast({mobile, token});
           }
           action.account.getAccount({iccid, token});
+          action.order.getOrders({
+            user: mobile,
+            token,
+            state: 'validation',
+            page: 0,
+          });
         })
         .finally(() => {
-          getDraftsData(mobile, token, 'validation').then((resp) => {
-            if (resp) {
-              action.account.getAccount({iccid, token}).then((r) => {
-                if (r) {
-                  setRefreshing(false);
-                  setIsFirstLoad(false);
-                }
-              });
-            }
-          });
+          setRefreshing(false);
+          setIsFirstLoad(false);
         });
     }
-  }, [action.account, action.order, getDraftsData, iccid, mobile, token]);
+  }, [action.account, action.order, iccid, mobile, token]);
 
   useEffect(() => {
     if (isFocused) {
@@ -544,7 +526,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       <FlatList
         ref={flatListRef}
         data={subsList}
-        keyExtractor={(item) => item[item.length - 1].key.toString()}
+        keyExtractor={(item) => item[item.length - 1].nid.toString()}
         ListHeaderComponent={info}
         renderItem={renderSubs}
         // onRefresh={this.onRefresh}
