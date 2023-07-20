@@ -117,7 +117,7 @@ export type CashHistory = {
   before: string;
   create_dt: string;
   created: string;
-  diff: string;
+  diff: number;
   expire_dt: string;
   field: string;
   id: string;
@@ -518,13 +518,13 @@ const slice = createSlice({
             acc.push({title: year, data: [cur] as CashHistory[]});
           } else {
             const orderidx = acc[idx].data.findIndex(
-              (elm) => elm.order_id && elm.order_id === cur.order_id,
+              (elm) =>
+                elm.order_id &&
+                elm.order_id === cur.order_id &&
+                elm.type === cur.type,
             );
-            if (orderidx > -1) {
-              acc[idx].data[orderidx].diff = `${
-                (utils.stringToNumber(acc[idx].data[orderidx].diff) || 0) +
-                (utils.stringToNumber(cur.diff) || 0)
-              }`;
+            if (orderidx >= 0) {
+              acc[idx].data[orderidx].diff += cur.diff;
             } else {
               acc[idx].data?.push(cur);
             }

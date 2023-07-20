@@ -31,7 +31,7 @@ import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 import AppStyledText from '@/components/AppStyledText';
 import AppModal from '@/components/AppModal';
 import {RootState} from '@/redux';
-import {ProductModelState} from '../../../redux/modules/product';
+import {ProductModelState} from '@/redux/modules/product';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -553,7 +553,7 @@ const EsimSubs = ({
     if (
       !expired &&
       mainSubs.giftStatusCd !== 'S' &&
-      mainSubs.noticeOption.includes('H')
+      mainSubs.noticeOption?.includes('H')
     )
       return (
         <Pressable
@@ -683,10 +683,25 @@ const EsimSubs = ({
       ]}>
       <View style={notCardInfo ? styles.infoRadiusBorder : styles.infoCard}>
         {title()}
-        {isDraft ? <View></View> : notCardInfo ? QRnCopyInfo() : topInfo()}
+        {isDraft ? <View /> : notCardInfo ? QRnCopyInfo() : topInfo()}
       </View>
       {showMoreInfo && (
         <View style={showMoreInfo && styles.moreInfoContent}>
+          {/* 투명화창 예제 {true && mainSubs.statusCd === 'U' ? (
+            <View
+              style={{
+                top: 0,
+                height: 200,
+                width: '110%',
+                opacity: 0.9,
+                backgroundColor: 'white',
+                position: 'absolute',
+                zIndex: 100,
+              }}
+            />
+          ) : (
+            <View></View>
+          )} */}
           {topInfo()}
 
           {!!mainSubs.caution || (mainSubs.cautionList?.length || 0) > 0 ? (
@@ -729,8 +744,6 @@ const EsimSubs = ({
     </View>
   );
 };
-
-// export default memo(EsimSubs);
 
 export default connect(({product}: RootState) => ({
   product,

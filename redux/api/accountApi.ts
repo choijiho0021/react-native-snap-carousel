@@ -2,7 +2,7 @@ import _ from 'underscore';
 import {Buffer} from 'buffer';
 import utils from '@/redux/api/utils';
 import api, {ApiResult, ApiToken, DrupalNode, DrupalNodeJsonApi} from './api';
-import {CashExpire, CashHistory} from '../modules/account';
+import {CashExpire, CashHistory} from '@/redux/modules/account';
 
 export type RkbAccount = {
   nid: number;
@@ -137,7 +137,15 @@ const getCashHistory = ({iccid, token}: {iccid?: string; token?: string}) => {
     `${api.httpUrl(api.path.rokApi.rokebi.cash)}/${iccid}?_format=json`,
     (rsp) => {
       return rsp.result === 0
-        ? api.success(rsp.objects)
+        ? api.success(
+            rsp.objects.map(
+              (o) =>
+                ({
+                  ...o,
+                  diff: utils.stringToNumber(o.diff) || 0,
+                } as CashHistory),
+            ),
+          )
         : api.failure(rsp.result, rsp.error);
     },
     api.withToken(token, 'json'),
