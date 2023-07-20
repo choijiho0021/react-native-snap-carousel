@@ -72,7 +72,7 @@ export type RkbOrder = {
   shipmentState?: string;
   memo?: string;
   state?: OrderState;
-  orderItems: {title: string; qty: number; price: number}[];
+  orderItems: {title: string; qty: number; price: number; uuid: string}[];
   usageList: {status: string; nid: string}[];
   paymentList: RkbPayment[];
   dlvCost: Currency;
@@ -112,6 +112,7 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
               title: value.title,
               qty: parseInt(value.quantity, 10),
               price: utils.stringToNumber(value.total_price__number),
+              uuid: value?.uuid,
             })),
             usageList: (parseJson(item.usage_list) || []).map((value) => ({
               status: value.field_status,

@@ -261,6 +261,10 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   }, [navigation]);
 
   useEffect(() => {
+    console.log('order : ', order);
+  }, [order]);
+
+  useEffect(() => {
     const {detail} = route.params;
 
     Analytics.trackEvent('Page_View_Count', {page: 'Purchase Detail'});
@@ -554,7 +558,16 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     };
 
     return (
-      <View style={styles.headerNoti}>
+      <View
+        style={[
+          styles.headerNoti,
+          {
+            backgroundColor:
+              order?.state === 'validation'
+                ? colors.backRed
+                : colors.veryLightBlue,
+          },
+        ]}>
         <AppText style={styles.headerNotiText}>{getNoti()}</AppText>
       </View>
     );
@@ -664,7 +677,10 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             style={[styles.button]}
             type="primary"
             title={i18n.t('his:draftRequest')}
-            onPress={() => console.log('발권하기 화면으로 이동')}
+            onPress={() => {
+              console.log('발권하기 화면으로 이동');
+              navigation.navigate('Draft', {order});
+            }}
           />
         )}
       </View>
