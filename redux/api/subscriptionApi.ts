@@ -343,9 +343,11 @@ const getSubscription = ({
 const getStoreSubscription = ({
   mobile,
   token,
+  hidden,
 }: {
   mobile?: string;
   token?: string;
+  hidden?: boolean;
 }) => {
   if (!mobile)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: mobile');
@@ -353,7 +355,9 @@ const getStoreSubscription = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
   return api.callHttpGet(
-    `${api.httpUrl(api.path.storeSubs)}/${mobile}?_format=hal_json`,
+    `${api.httpUrl(api.path.storeSubs)}/${mobile}/${
+      hidden ? 'all/1' : '1'
+    }?_format=hal_json`,
     toSubscription(true),
     api.withToken(token, 'hal+json'),
   );
