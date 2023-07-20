@@ -182,23 +182,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [subsList, setSubsList] = useState<RkbSubscription[][]>();
   const tabBarHeight = useBottomTabBarHeight();
 
-  const init = useCallback(
-    (initInfo: {iccid?: string; mobile?: string; token?: string}) => {
-      const {iccid: initIccid, mobile: initMobile, token: initToken} = initInfo;
-
-      if (initIccid && initToken) {
-        action.order.getSubsWithToast({iccid: initIccid, token: initToken});
-      }
-      if (initMobile && initToken && !esimGlobal) {
-        action.order.getStoreSubsWithToast({
-          mobile: initMobile,
-          token: initToken,
-        });
-      }
-    },
-    [action.order],
-  );
-
   const onRefresh = useCallback(() => {
     if (iccid) {
       setRefreshing(true);
@@ -424,8 +407,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     navigation.setOptions({
       headerShown: false,
     });
-    init({iccid, mobile, token});
-  }, [iccid, init, mobile, navigation, route, token]);
+  }, [iccid, mobile, navigation, route, token]);
 
   useEffect(() => {
     async function checkShowModal() {
