@@ -231,8 +231,45 @@ type PurchaseDetailScreenProps = {
   };
 };
 
-const isRokebiCash = (pg: string) =>
+export const isRokebiCash = (pg: string) =>
   ['rokebi_cash', 'rokebi_point'].includes(pg);
+
+// const list = detail?.paymentList?.filter((item) =>
+//   isRokebiCash(item.paymentGateway),
+// );
+// if (list?.[0]) {
+//   setBalanceCharge(
+//     list.reduce(
+//       (acc, cur) => ({
+//         value: acc.value + cur.amount.value,
+//         currency: acc.currency,
+//       }),
+//       {
+//         value: 0,
+//         currency: list[0].amount.currency,
+//       } as Currency,
+//     ),
+//   );
+// }
+
+export const countRokebiCash = (order: RkbOrder) => {
+  const list = order?.paymentList?.filter((item) =>
+    isRokebiCash(item.paymentGateway),
+  );
+  if (list?.[0]) {
+    return list.reduce(
+      (acc, cur) => ({
+        value: acc.value + cur.amount.value,
+        currency: acc.currency,
+      }),
+      {
+        value: 0,
+        currency: list[0].amount.currency,
+      } as Currency,
+    );
+  }
+};
+
 const isUseNotiState = (state: OrderState) =>
   ['validation', 'completed'].includes(state);
 
@@ -261,10 +298,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   }, [navigation]);
 
   useEffect(() => {
-    console.log('order : ', order);
-  }, [order]);
-
-  useEffect(() => {
     const {detail} = route.params;
 
     Analytics.trackEvent('Page_View_Count', {page: 'Purchase Detail'});
@@ -276,23 +309,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
       detail?.paymentList?.find((item) => !isRokebiCash(item.paymentGateway)),
     );
 
-    const list = detail?.paymentList?.filter((item) =>
-      isRokebiCash(item.paymentGateway),
-    );
-    if (list?.[0]) {
-      setBalanceCharge(
-        list.reduce(
-          (acc, cur) => ({
-            value: acc.value + cur.amount.value,
-            currency: acc.currency,
-          }),
-          {
-            value: 0,
-            currency: list[0].amount.currency,
-          } as Currency,
-        ),
-      );
-    }
+    setBalanceCharge(countRokebiCash(detail));
   }, [account, route.params]);
 
   useEffect(() => {
@@ -470,6 +487,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           <AppButton
             style={styles.cancelDraftBtn}
             onPress={() => {
+              navigation.navigate('CancelOrder', {order});
               console.log('취소 화면 미구현 ');
             }}
             disabled={order.state !== 'validation'}
@@ -678,7 +696,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             type="primary"
             title={i18n.t('his:draftRequest')}
             onPress={() => {
-              console.log('발권하기 화면으로 이동');
               navigation.navigate('Draft', {order});
             }}
           />
