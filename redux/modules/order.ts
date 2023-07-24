@@ -5,7 +5,7 @@ import {Map as ImmutableMap} from 'immutable';
 import _ from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
-import {RkbOrder} from '@/redux/api/orderApi';
+import {CancelKeywordType, RkbOrder} from '@/redux/api/orderApi';
 import {RkbSubscription, STATUS_RESERVED} from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {actions as accountAction} from './account';
@@ -149,35 +149,43 @@ const changeDraft = createAsyncThunk(
 const cancelAndGetOrder = createAsyncThunk(
   'order/cancelAndGetOrder',
   (
-    {orderId, token}: {orderId?: number; token?: string},
+    {
+      orderId,
+      token,
+      keyword,
+    }: {orderId?: number; token?: string; keyword?: CancelKeywordType},
     {dispatch, getState},
   ) => {
     const {
       account: {iccid},
     } = getState() as RootState;
 
-    return dispatch(cancelOrder({orderId, token})).then(({payload: resp}) => {
-      // 결제취소요청 후 항상 order를 가져온다
-      return dispatch(getOrderById({orderId, token})).then(({payload: val}) => {
-        if (resp.result === 0) {
-          if (val.result === 0) {
-            dispatch(accountAction.getAccount({iccid, token}));
-            return val;
-          }
-          return {
-            ...val,
-            result: 1,
-          };
-        }
-        if (val.result === 0) {
-          return {
-            ...val,
-            result: 1,
-          };
-        }
-        return resp;
-      });
-    });
+    return dispatch(cancelOrder({orderId, token, keyword})).then(
+      ({payload: resp}) => {
+        // 결제취소요청 후 항상 order를 가져온다
+        return dispatch(getOrderById({orderId, token})).then(
+          ({payload: val}) => {
+            if (resp.result === 0) {
+              if (val.result === 0) {
+                dispatch(accountAction.getAccount({iccid, token}));
+                return val;
+              }
+              return {
+                ...val,
+                result: 1,
+              };
+            }
+            if (val.result === 0) {
+              return {
+                ...val,
+                result: 1,
+              };
+            }
+            return resp;
+          },
+        );
+      },
+    );
   },
 );
 

@@ -213,7 +213,15 @@ const getOrderById = ({
   );
 };
 
-const cancelOrder = ({orderId, token}: {orderId?: number; token?: string}) => {
+const cancelOrder = ({
+  orderId,
+  token,
+  keyword,
+}: {
+  orderId?: number;
+  token?: string;
+  keyword?: string;
+}) => {
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
   if (!_.isNumber(orderId))
