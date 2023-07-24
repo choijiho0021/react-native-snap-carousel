@@ -134,7 +134,7 @@ const getOrders = createAsyncThunk(
 
     const {order} = getState() as RootState;
     return dispatch(
-      getNextOrders({user, token, page: (order.page || 0) + 1}, state),
+      getNextOrders({user, token, page: (order.page || 0) + 1, state}),
     );
   },
 );
@@ -314,12 +314,17 @@ const slice = createSlice({
       const {objects, result} = action.payload;
 
       if (action.meta.arg?.state === 'validation') {
+        // 이전과 달리 동작하는 이유, 2번째 object undefined 일때  undefined.filter 시도
+        // promise rejection으로 2번째 undefined을 state.drafts에 저장 안함
+        // 2번 호출 원인 분석 필요
         state.drafts =
           objects
             .filter((r) => moment().diff(moment(r.orderDate), 'day') < 7)
             .sort((a, b) => {
               return a.orderDate < b.orderDate ? 1 : -1;
             }) || [];
+
+        // 기존 코드도 마찬가지, undefined.length 시도 -> promise rejection
       } else if (result === 0 && objects.length > 0) {
         // 기존에 있던 order에 새로운 order로 갱신
         const orders = ImmutableMap(state.orders).merge(
