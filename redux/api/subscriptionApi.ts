@@ -175,6 +175,12 @@ export type RkbSubscription = {
   hide?: boolean;
 };
 
+const groupPartner = (partner: string) => {
+  if (partner.startsWith('cmi')) return 'cmi';
+  if (partner.startsWith('quadcell')) return 'quadcell';
+  return partner;
+};
+
 const toSubscription =
   (isStore = false) =>
   (data: DrupalNode[] | DrupalNodeJsonApi): ApiResult<RkbSubscription> => {
@@ -206,7 +212,7 @@ const toSubscription =
           subsIccid: item.field_iccid || '',
           packageId: item.field_cmi_package_id || '',
           subsOrderNo: item.field_cmi_order_id || '',
-          partner: item.field_ref_partner?.toLowerCase() || '',
+          partner: groupPartner(item.field_ref_partner?.toLowerCase() || ''),
           isStore,
           promoFlag: item.field_special_categories
             ? item.field_special_categories
