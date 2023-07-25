@@ -235,7 +235,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
     });
 
     setProds(prodList);
-  }, [order, product.prodList]);
+  }, [getProdDate, order, product.prodList]);
 
   const renderItem = useCallback(({item}: {item: ProdDesc}) => {
     return Array.from({length: item.qty}, (_, index) => {
@@ -268,7 +268,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         }
       />
     );
-  }, [prods]);
+  }, [prods, renderItem]);
 
   const renderStep2 = useCallback(() => {
     return (
@@ -298,7 +298,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
               </View>,
             ];
           })}
-          <View style={{flexDirection: 'row'}}></View>
+          <View style={{flexDirection: 'row'}} />
         </View>
 
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -380,7 +380,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         </View>
       </View>
     );
-  }, [balanceCharge, paidAmount, method]);
+  }, [method?.amount, order.totalPrice, balanceCharge]);
 
   const renderGuide = useCallback(() => {
     return (
@@ -407,7 +407,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           orderId: order?.orderId,
         });
       });
-  }, [keyword, order]);
+  }, [action.order, keyword, navigation, order.orderId, prods, token]);
 
   const renderCheckButton = useCallback(() => {
     return (
@@ -432,7 +432,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         </Pressable>
       </>
     );
-  }, [checked]);
+  }, [checked, onCheck, renderGuide]);
 
   if (!order || !order.orderItems) return <View />;
 

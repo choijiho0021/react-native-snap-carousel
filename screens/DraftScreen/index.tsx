@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -32,7 +33,6 @@ import {
 import i18n from '@/utils/i18n';
 import {renderPromoFlag} from '../ChargeHistoryScreen';
 import SplitText from '@/components/SplitText';
-import _ from 'underscore';
 import AppStyledText from '@/components/AppStyledText';
 import AppIcon from '@/components/AppIcon';
 
@@ -163,7 +163,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
     });
 
     setProds(prodList);
-  }, [order, product.prodList]);
+  }, [getProdDate, order, product.prodList]);
 
   const renderItem = useCallback(({item}: {item: ProdDesc}) => {
     return Array.from({length: item.qty}, (_, index) => {

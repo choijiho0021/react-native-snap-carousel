@@ -76,7 +76,7 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
 
     setOrderResult(orderResult);
     setProds(route?.params?.prods);
-  }, [route?.params]);
+  }, [order.orders, route?.params]);
 
   const renderItem = useCallback(({item}: {item: ProdDesc}) => {
     return Array.from({length: item.qty}, (_, index) => {
@@ -94,7 +94,7 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
         keyExtractor={(item, index) => item?.title + index}
       />
     );
-  }, [prods]);
+  }, [prods, renderItem]);
 
   const renderContent = useCallback(
     () => (
