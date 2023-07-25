@@ -6,7 +6,6 @@ import {
   FlatList,
   Pressable,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
@@ -42,6 +41,7 @@ import AppAlert from '@/components/AppAlert';
 import Env from '@/environment';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import ProductDetailInfo from './component/ProductDetailInfo';
+import {Currency} from '@/redux/api/productApi';
 
 const {esimApp, esimCurrency} = Env.get();
 
@@ -171,10 +171,8 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   const loading = useRef(false);
   const [inputText, setInputText] = useState('');
   const [keyword, setKeyword] = useState<CancelKeywordType>();
-  const [disabled, setDisabled] = useState(false);
   const [method, setMethod] = useState<RkbPayment>();
   const [checked, setChecked] = useState<boolean>(false);
-  const [cancelPressed, setCancelPressed] = useState(false);
 
   const paidAmount = method?.amount || utils.toCurrency(0, esimCurrency);
 
@@ -213,14 +211,6 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
       });
     }
   }, [action?.product, order?.orderItems, product.prodList]);
-
-  useEffect(() => {
-    if (cancelPressed) {
-      setTimeout(() => {
-        setDisabled(true);
-      }, 3000);
-    }
-  }, [cancelPressed]);
 
   const onCheck = useCallback(() => {
     setChecked((prev) => !prev);
@@ -446,21 +436,16 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
   if (!order || !order.orderItems) return <View />;
 
-  // [physical] shipmentState : draft(취소 가능) / ready shipped (취소 불가능)
-  // [draft] state = validation && status = inactive , reserved (취소 가능)
-
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={{flex: 1}}>
-        <View style={{marginHorizontal: 20, flex: 1}}>
-          {step === 0 && renderStep1()}
-          {step === 1 && renderStep2()}
-          {step === 2 && renderStep3()}
-        </View>
-        <View style={{marginHorizontal: 20}}>
-          {step === 2 && renderCheckButton()}
-        </View>
-      </ScrollView>
+      <View style={{marginHorizontal: 20, flex: 1}}>
+        {step === 0 && renderStep1()}
+        {step === 1 && renderStep2()}
+        {step === 2 && renderStep3()}
+      </View>
+      <View style={{marginHorizontal: 20}}>
+        {step === 2 && renderCheckButton()}
+      </View>
       <View style={{flexDirection: 'row'}}>
         <AppButton
           style={styles.secondaryButton}
@@ -479,26 +464,24 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           title={
             step === 2 ? i18n.t('his:cancelButton') : i18n.t('his:nextStep')
           }
-          disabled={disabled}
+          // diabled 추가 작업 필요
           onPress={() => {
             if (step === 1 && !keyword) {
               AppAlert.info(i18n.t('his:cancelReasonAlert1'));
               return;
-            }
-
-            if (step === 1 && inputText?.length < 20 && keyword === 'other') {
+            } else if (
+              step === 1 &&
+              inputText?.length < 20 &&
+              keyword === 'other'
+            ) {
               AppAlert.info(i18n.t('his:cancelReasonAlert2'));
-              return;
-            }
-
-            if (step === 2) {
+            } else if (step === 2) {
               if (checked) {
                 cancelOrder();
               } else {
                 AppAlert.info(i18n.t('his:cancelReasonAlert3'));
               }
             }
-
             setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
           }}
         />

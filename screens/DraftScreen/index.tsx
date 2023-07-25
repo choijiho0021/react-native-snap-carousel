@@ -280,7 +280,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
           contentContainerStyle={[_.isEmpty(prods) && {flex: 1}]}
           data={prods}
           renderItem={renderItem}
-          keyExtractor={(item, index) => item.title + index}
+          keyExtractor={(item, index) => item?.title + index}
           ListHeaderComponent={
             <View style={{marginTop: 10, marginBottom: 20}}>
               <AppStyledText

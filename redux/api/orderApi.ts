@@ -49,6 +49,12 @@ const consentItem = {
   1: 'privacy',
   2: 'paymentAgency',
 };
+export type CancelKeywordType =
+  | 'changeOfMind'
+  | 'mistake'
+  | 'dissatisfaction'
+  | 'other'
+  | '';
 
 export type RkbPayment = {
   amount: Currency;
