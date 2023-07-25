@@ -398,7 +398,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
 
         {!isRecharge && <View style={{marginBottom: 20}} />}
 
-        {/* */}
         {!isRecharge && (
           <AppButton
             style={styles.cancelDraftBtn}
@@ -406,6 +405,12 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
               navigation.navigate('CancelOrder', {order});
             }}
             disabled={order.state !== 'validation'}
+            disabledCanOnPress
+            disabledOnPress={() => {
+              if (['completed', 'canceled'].includes(order?.state)) {
+                AppAlert.info(i18n.t(`his:draftButtonAlert:${order?.state}`));
+              }
+            }}
             disableStyle={styles.cancelDraftBtnDisabled}
             disableColor={colors.gray}
             title={i18n.t('his:cancelDraft')}
@@ -509,6 +514,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     if (!order || !order.orderItems) return <View />;
 
     const pg = method?.paymentMethod || i18n.t('pym:balance');
+    const state = i18n.t(`pym:orderState:${order?.state}`);
     let label: string = order.orderItems[0].title;
     if (order.orderItems.length > 1)
       label += i18n
@@ -521,11 +527,11 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           {utils.toDateString(order?.orderDate)}
         </AppText>
         <View style={styles.productTitle}>
-          {isCanceled && (
+          {/* {isCanceled && (
             <AppText style={[appStyles.bold18Text, {color: colors.tomato}]}>
               {`(${i18n.t('his:cancel')})`}{' '}
             </AppText>
-          )}
+          )} */}
           <AppText style={appStyles.bold18Text}>{label}</AppText>
         </View>
         <View style={styles.bar} />
@@ -539,11 +545,23 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         />
         <LabelText
           key="pymMethod"
-          style={[styles.item, {marginBottom: 20}]}
+          style={styles.item}
           label={i18n.t('pym:method')}
           labelStyle={styles.label2}
           value={pg}
           valueStyle={styles.labelValue}
+        />
+        <LabelText
+          key="orderState"
+          style={[styles.item, {marginBottom: 20}]}
+          label={i18n.t('pym:orderState')}
+          labelStyle={styles.label2}
+          value={state}
+          valueStyle={
+            isCanceled
+              ? [styles.labelValue, {color: colors.tomato}]
+              : styles.labelValue
+          }
         />
         <View style={styles.dividerTop} />
       </View>

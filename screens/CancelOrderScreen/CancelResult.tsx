@@ -6,7 +6,7 @@ import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {HomeStackParamList, navigate} from '@/navigation/navigation';
+import {HomeStackParamList} from '@/navigation/navigation';
 import i18n from '@/utils/i18n';
 import _ from 'underscore';
 import ProductDetailInfo from './component/ProductDetailInfo';
