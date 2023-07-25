@@ -6,7 +6,7 @@ import {PaymentParams} from '@/navigation/navigation';
 import {debugScript} from './ConfigInicis';
 import {pgWebViewConfig} from '.';
 
-const {payment, scheme, apiUrl, isProduction} = Env.get();
+const {payment, scheme, apiUrl} = Env.get();
 
 export const configHecto = {
   notiUrl: `${scheme}://${apiUrl}/rokebi/payment/hecto?noti`,
