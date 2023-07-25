@@ -49,6 +49,12 @@ const consentItem = {
   1: 'privacy',
   2: 'paymentAgency',
 };
+export type CancelKeywordType =
+  | 'changeOfMind'
+  | 'mistake'
+  | 'dissatisfaction'
+  | 'other'
+  | '';
 
 export type RkbPayment = {
   amount: Currency;
@@ -213,7 +219,15 @@ const getOrderById = ({
   );
 };
 
-const cancelOrder = ({orderId, token}: {orderId?: number; token?: string}) => {
+const cancelOrder = ({
+  orderId,
+  token,
+  reason,
+}: {
+  orderId?: number;
+  token?: string;
+  reason?: string;
+}) => {
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
   if (!_.isNumber(orderId))
@@ -224,11 +238,13 @@ const cancelOrder = ({orderId, token}: {orderId?: number; token?: string}) => {
     {
       method: 'DELETE',
       headers: api.withToken(token, 'json'),
+      body: JSON.stringify({
+        reason,
+      }),
     },
-    (resp) => ({
-      result: resp.status === '204' ? 0 : api.FAILED,
-      objects: [],
-    }),
+    (resp) => {
+      return resp;
+    },
   );
 };
 

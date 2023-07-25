@@ -182,30 +182,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [subsList, setSubsList] = useState<RkbSubscription[][]>();
   const tabBarHeight = useBottomTabBarHeight();
 
-  // 발권 관련 기능들
-  const [orderList, setOrderList] = useState<RkbOrder[]>();
-
-  useEffect(() => {
-    setOrderList(order.drafts);
-  }, [order.drafts]);
-
-  const init = useCallback(
-    (initInfo: {iccid?: string; mobile?: string; token?: string}) => {
-      const {iccid: initIccid, mobile: initMobile, token: initToken} = initInfo;
-
-      if (initIccid && initToken) {
-        action.order.getSubsWithToast({iccid: initIccid, token: initToken});
-      }
-      if (initMobile && initToken && !esimGlobal) {
-        action.order.getStoreSubsWithToast({
-          mobile: initMobile,
-          token: initToken,
-        });
-      }
-    },
-    [action.order],
-  );
-
   const onRefresh = useCallback(() => {
     if (iccid) {
       setRefreshing(true);
@@ -421,18 +397,17 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             navigation={navigation}
           />
           {renderInfo(navigation)}
-          <View>{orderList?.map((item) => renderDraft(item))}</View>
+          <View>{order.drafts?.map((item) => renderDraft(item))}</View>
         </View>
       ),
-    [balance, expDate, iccid, navigation, orderList, renderDraft],
+    [balance, expDate, iccid, navigation, order.drafts, renderDraft],
   );
 
   useEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
-    init({iccid, mobile, token});
-  }, [iccid, init, mobile, navigation, route, token]);
+  }, [iccid, mobile, navigation, route, token]);
 
   useEffect(() => {
     async function checkShowModal() {
