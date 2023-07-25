@@ -162,10 +162,6 @@ const cancelDraftOrder = createAsyncThunk(
 
     return dispatch(cancelOrder({orderId, token, reason})).then(
       ({payload: resp}) => {
-        // if (resp.result === 0) {
-        //   return {result : 0, }
-        // }
-
         if (resp.result === 0 && resp.objects?.length > 0) {
           return resp;
         } else {
@@ -200,6 +196,10 @@ const mergeSubs = (
   );
 
   return subsToMap;
+};
+
+export const isExpiredDraft = (orderDate: string) => {
+  return !(moment().diff(moment(orderDate), 'day') < 7);
 };
 
 // 이건 머지로 하면 안되겠다. 중복 데이터 때문에
@@ -289,7 +289,7 @@ const slice = createSlice({
         // 2번 호출 원인 분석 필요
         state.drafts =
           objects
-            .filter((r) => moment().diff(moment(r.orderDate), 'day') < 7)
+            .filter((r) => !isExpiredDraft(r.orderDate))
             .sort((a, b) => {
               return a.orderDate < b.orderDate ? 1 : -1;
             }) || [];
