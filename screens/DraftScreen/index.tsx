@@ -99,7 +99,6 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   product,
   pending,
 }) => {
-  const [method, setMethod] = useState<RkbPayment>();
   const [order, setOrder] = useState<RkbOrder>({});
   const [prods, setProds] = useState<ProdDesc[]>([]);
   const loading = useRef(false);

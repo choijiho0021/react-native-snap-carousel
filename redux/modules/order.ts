@@ -199,7 +199,7 @@ const mergeSubs = (
 };
 
 export const isExpiredDraft = (orderDate: string) => {
-  return !(moment().diff(moment(orderDate), 'day') < 7);
+  return moment().diff(moment(orderDate), 'day') >= 7;
 };
 
 // 이건 머지로 하면 안되겠다. 중복 데이터 때문에
