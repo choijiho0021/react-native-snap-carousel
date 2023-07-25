@@ -22,7 +22,7 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
-import {RkbOrder, RkbPayment} from '@/redux/api/orderApi';
+import {RkbOrder} from '@/redux/api/orderApi';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
@@ -112,30 +112,17 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   }, [navigation]);
 
   useEffect(() => {
-    if (route?.params?.order) setOrder(route.params.order);
+    if (route?.params?.order) setOrder(route.params?.order);
   }, [route?.params?.order]);
 
   const onCheck = useCallback(() => {
     setChecked((prev) => !prev);
   }, []);
 
-  //
-  const getProdDate = useCallback(() => {
-    if (!loading.current && order?.orderItems?.length > 0) {
-      order?.orderItems?.forEach((i) => {
-        if (!product.prodList.has(i.uuid)) {
-          // 해당 Uuid로 없다면 서버에서 가져온다.
-          action.product.getProdByUuid(i.uuid);
-          loading.current = true;
-        }
-      });
-    }
-  }, [action?.product, order?.orderItems, product.prodList]);
-
   const onClickButton = useCallback(() => {
     action.order
       .changeDraft({
-        orderId: order.orderId,
+        orderId: order.orderId.toString(),
         token,
       })
       .then((r) => {
@@ -145,12 +132,23 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
       });
   }, [action.order, order?.orderId, token, navigation]);
 
+  //
+  const getProdDate = useCallback(() => {
+    if (!loading.current && order?.orderItems?.length > 0) {
+      order?.orderItems?.forEach((i) => {
+        if (!product.prodList.has(i.uuid)) {
+          // 해당 Uuid로 없다면 서버에서 가져온다.
+          action?.product.getProdByUuid(i.uuid);
+          loading.current = true;
+        }
+      });
+    }
+  }, [action?.product, order?.orderItems, product.prodList]);
+
   useEffect(() => {
     if (!order?.orderItems) return;
 
-    getProdDate();
-
-    const prodList = order.orderItems.map((r) => {
+    const prodList: ProdDesc[] = order.orderItems.map((r) => {
       const prod = product.prodList.get(r.uuid);
       if (prod)
         return {
@@ -159,9 +157,14 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
           promoFlag: prod.promoFlag,
           qty: r.qty,
         };
+
+      return null;
     });
 
-    setProds(prodList);
+    const isNeedUpdate = prodList.some((item) => item === null);
+
+    if (isNeedUpdate) getProdDate();
+    else setProds(prodList);
   }, [getProdDate, order, product.prodList]);
 
   const renderItem = useCallback(({item}: {item: ProdDesc}) => {

@@ -11,12 +11,12 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
@@ -29,9 +29,6 @@ import {
   ProductModelState,
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
-import {renderPromoFlag} from '../ChargeHistoryScreen';
-import SplitText from '@/components/SplitText';
-import _ from 'underscore';
 import AppStyledText from '@/components/AppStyledText';
 import AppIcon from '@/components/AppIcon';
 import LabelText from '@/components/LabelText';
@@ -42,25 +39,15 @@ import Env from '@/environment';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import ProductDetailInfo from './component/ProductDetailInfo';
 import {Currency} from '@/redux/api/productApi';
+import {ProdDesc} from './CancelResult';
 
-const {esimApp, esimCurrency} = Env.get();
+const {esimCurrency} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
   },
-  headerNoti: {
-    marginHorizontal: 20,
-    marginVertical: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 40,
-    opacity: 0.6,
-    backgroundColor: colors.noticeBackground,
-    borderRadius: 10,
-  },
-
   button: {
     ...appStyles.normal16Text,
     flex: 1,
@@ -69,7 +56,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#ffffff',
   },
-  headerNotiText: {margin: 5},
   secondaryButton: {
     flex: 1,
     height: 52,
@@ -147,15 +133,6 @@ type CancelOrderScreenProps = {
   };
 };
 
-type ProdDesc = {
-  title: string;
-  field_description: string;
-  promoFlag: string[];
-  qty: number;
-};
-
-const REASON_MAX_BYTE = 500;
-
 const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   navigation,
   route,
@@ -164,6 +141,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   product,
   pending,
 }) => {
+  const REASON_MAX_BYTE = 500;
   const [order, setOrder] = useState<RkbOrder>({});
   const [prods, setProds] = useState<ProdDesc[]>([]);
   const [step, setStep] = useState(0);
@@ -171,10 +149,10 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   const loading = useRef(false);
   const [inputText, setInputText] = useState('');
   const [keyword, setKeyword] = useState<CancelKeywordType>();
+
+  // 이건 3단계 그릴 떄 필요
   const [method, setMethod] = useState<RkbPayment>();
   const [checked, setChecked] = useState<boolean>(false);
-
-  const paidAmount = method?.amount || utils.toCurrency(0, esimCurrency);
 
   useEffect(() => {
     navigation.setOptions({
@@ -197,7 +175,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         order?.paymentList?.find((item) => !isRokebiCash(item.paymentGateway)),
       );
     }
-  }, [route?.params?.order]);
+  }, [order?.paymentList, route.params.order]);
 
   //
   const getProdDate = useCallback(() => {
@@ -220,10 +198,9 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
     if (!order?.orderItems) return;
 
     setBalanceCharge(countRokebiCash(order));
-
     getProdDate();
 
-    const prodList = order.orderItems.map((r) => {
+    const prodList: ProdDesc[] = order.orderItems.map((r) => {
       const prod = product.prodList.get(r.uuid);
       if (prod)
         return {
@@ -232,10 +209,15 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           promoFlag: prod.promoFlag,
           qty: r.qty,
         };
+
+      return null;
     });
 
-    setProds(prodList);
-  }, [getProdDate, order, product.prodList]);
+    const isNeedUpdate = prodList.some((item) => item === null);
+
+    if (isNeedUpdate) getProdDate();
+    else setProds(prodList);
+  }, [getProdDate, order, prods, product.prodList]);
 
   const renderItem = useCallback(({item}: {item: ProdDesc}) => {
     return Array.from({length: item.qty}, (_, index) => {
@@ -278,21 +260,21 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         </AppText>
         <View style={styles.reasonButtonFrame}>
           {[
-            ['changeOfMind', 'mistake'],
-            ['dissatisfaction', 'other'],
+            ['changeOfMind', 'mistake'] as CancelKeywordType[],
+            ['dissatisfaction', 'other'] as CancelKeywordType[],
           ].map((key: CancelKeywordType[], idx) => {
             return [
-              <View key={key + idx} style={{flexDirection: 'row'}}>
+              <View key={key.toString()} style={{flexDirection: 'row'}}>
                 {key.map((btn) => (
                   <AppButton
-                    key={btn + 'button'}
-                    style={[styles.reasonButton]}
+                    key={`${btn}button`}
+                    style={styles.reasonButton}
                     titleStyle={{color: 'black'}}
                     onPress={() => {
                       setKeyword(btn);
                       setInputText('');
                     }}
-                    title={`${i18n.t('his:cancelReason:' + btn)}`}
+                    title={`${i18n.t(`his:cancelReason:${btn}`)}`}
                   />
                 ))}
               </View>,
@@ -305,7 +287,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           <AppText style={appStyles.bold20Text}>
             {i18n.t('his:cancelReasonDetail')}
           </AppText>
-          <AppText>{inputText?.length + '/' + REASON_MAX_BYTE}</AppText>
+          <AppText>{`${inputText.length || ''}/${REASON_MAX_BYTE}`}</AppText>
         </View>
         <AppTextInput
           style={{
@@ -334,8 +316,6 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   }, [inputText]);
 
   const renderStep3 = useCallback(() => {
-    const paidAmount = method?.amount || utils.toCurrency(0, esimCurrency);
-
     return (
       <View>
         <AppText style={appStyles.bold20Text}>
@@ -380,7 +360,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         </View>
       </View>
     );
-  }, [method?.amount, order.totalPrice, balanceCharge]);
+  }, [order.totalPrice, balanceCharge]);
 
   const renderGuide = useCallback(() => {
     return (
@@ -459,7 +439,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         />
 
         <AppButton
-          style={[styles.button]}
+          style={styles.button}
           type="primary"
           title={
             step === 2 ? i18n.t('his:cancelButton') : i18n.t('his:nextStep')
@@ -468,7 +448,6 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           onPress={() => {
             if (step === 1 && !keyword) {
               AppAlert.info(i18n.t('his:cancelReasonAlert1'));
-              return;
             } else if (
               step === 1 &&
               inputText?.length < 20 &&
