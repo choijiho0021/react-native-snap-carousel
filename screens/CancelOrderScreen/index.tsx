@@ -179,8 +179,8 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
   // 함수로 묶기
   const getProdDate = useCallback(() => {
-    if (!loading.current && order?.orderItems?.length > 0) {
-      order?.orderItems?.forEach((i) => {
+    if (!loading.current && (order?.orderItems?.length || 0) > 0) {
+      order.orderItems.forEach((i) => {
         if (!product.prodList.has(i.uuid)) {
           // 해당 Uuid로 없다면 서버에서 가져온다.
           action.product.getProdByUuid(i.uuid);
@@ -202,6 +202,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
     const prodList: ProdDesc[] = order.orderItems.map((r) => {
       const prod = product.prodList.get(r.uuid);
+
       if (prod)
         return {
           title: prod.name,
@@ -209,7 +210,6 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           promoFlag: prod.promoFlag,
           qty: r.qty,
         };
-
       return null;
     });
 
@@ -217,7 +217,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
     if (isNeedUpdate) getProdDate();
     else setProds(prodList);
-  }, [getProdDate, order, prods, product.prodList]);
+  }, [getProdDate, order, product.prodList]);
 
   const renderItem = useCallback(({item}: {item: ProdDesc}) => {
     return Array.from({length: item.qty}, (_, index) => {
@@ -262,7 +262,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           {[
             ['changeOfMind', 'mistake'] as CancelKeywordType[],
             ['dissatisfaction', 'other'] as CancelKeywordType[],
-          ].map((key: CancelKeywordType[], idx) => {
+          ].map((key: CancelKeywordType[]) => {
             return [
               <View key={key.toString()} style={{flexDirection: 'row'}}>
                 {key.map((btn) => (
@@ -375,7 +375,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
   const cancelOrder = useCallback(() => {
     action.order
-      .cancelDraftOrder({orderId: order.orderId, token, reason: keyword})
+      .cancelDraftOrder({orderId: order?.orderId, token, reason: keyword})
       .then(({payload: resp}) => {
         navigation.navigate('CancelResult', {
           isSuccess: resp?.result === 0,
@@ -383,7 +383,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           orderId: order?.orderId,
         });
       });
-  }, [action.order, keyword, navigation, order.orderId, prods, token]);
+  }, [action.order, keyword, navigation, order?.orderId, prods, token]);
 
   const renderCheckButton = useCallback(() => {
     return (

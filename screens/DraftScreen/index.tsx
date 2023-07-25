@@ -122,7 +122,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   const onClickButton = useCallback(() => {
     action.order
       .changeDraft({
-        orderId: order.orderId.toString(),
+        orderId: order?.orderId.toString(),
         token,
       })
       .then((r) => {
