@@ -25,7 +25,11 @@ import {RootState} from '@/redux';
 import {RkbOrder} from '@/redux/api/orderApi';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
-import {actions as orderActions, OrderAction} from '@/redux/modules/order';
+import {
+  actions as orderActions,
+  OrderAction,
+  getCountProds,
+} from '@/redux/modules/order';
 import {
   actions as productActions,
   ProductModelState,
@@ -261,7 +265,9 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
           ListHeaderComponent={
             <View style={{marginTop: 10, marginBottom: 20}}>
               <AppStyledText
-                text={i18n.t('his:draftItemText').replace('%', prods.length)}
+                text={i18n
+                  .t('his:draftItemText')
+                  .replace('%', getCountProds(prods))}
                 textStyle={{...appStyles.bold20Text}}
                 format={{b: [appStyles.bold20Text, {color: 'purple'}]}}
               />

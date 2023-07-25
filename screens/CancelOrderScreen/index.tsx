@@ -23,7 +23,11 @@ import {RootState} from '@/redux';
 import {CancelKeywordType, RkbOrder, RkbPayment} from '@/redux/api/orderApi';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
-import {actions as orderActions, OrderAction} from '@/redux/modules/order';
+import {
+  actions as orderActions,
+  OrderAction,
+  getCountProds,
+} from '@/redux/modules/order';
 import {
   actions as productActions,
   ProductModelState,
@@ -242,7 +246,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
             <AppStyledText
               text={i18n
                 .t('his:cancelHeaderTitle2')
-                .replace('%', prods?.length)}
+                .replace('%', getCountProds(prods))}
               textStyle={{...appStyles.bold20Text}}
               format={{b: [appStyles.bold20Text, {color: 'red'}]}}
             />
