@@ -3,6 +3,7 @@ import Env from '@/environment';
 import api, {ApiResult, DrupalNodeJsonApi} from './api';
 import {utils} from '@/utils/utils';
 import {RkbReceipt} from '@/screens/ReceiptScreen';
+import {PaymentParams} from '@/navigation/navigation';
 
 const {esimGlobal, isProduction, impKey, impSecret} = Env.get();
 
@@ -40,38 +41,38 @@ const method: Record<string, PaymentMethod> = esimGlobal
       'pym:kakao': {
         key: 'html5_inicis',
         method: 'kakaopay',
-        icon: 'kakao',
       },
       'pym:toss': {
         key: 'html5_inicis',
         method: 'tosspay',
-        icon: 'toss',
       },
       'pym:payco': {
         key: 'html5_inicis',
         method: 'payco',
-        icon: 'payco',
       },
       'pym:naver': {
         key: 'html5_inicis',
         method: 'naverpay',
-        icon: 'naver',
-        // language: 'ko',
       },
       'pym:ssgpay': {
         key: 'html5_inicis',
         method: 'ssgpay',
-        icon: 'ssgpay',
       },
       'pym:lpay': {
         key: 'html5_inicis',
         method: 'lpay',
-        icon: 'lpay',
       },
       'pym:samsung': {
         key: 'html5_inicis',
         method: 'samsung',
-        icon: 'samsung',
+      },
+      'pym:applepay': {
+        key: 'html5_inicis',
+        method: 'applepay',
+      },
+      'pym:vbank': {
+        key: 'html5_inicis',
+        method: 'vbank',
       },
     };
 
@@ -182,13 +183,24 @@ const getRokebiPayment = ({
   pg?: string;
   token: string;
 }) => {
-  return api.callHttp(
+  return api.callHttpPost(
     `${api.httpUrl(api.path.rokApi.rokebi.payment, '')}?_format=json`,
-    {
-      method: 'POST',
-      headers: api.withToken(token, 'json'),
-      body: JSON.stringify({pym_id: key, pg}),
-    },
+    JSON.stringify({pym_id: key, pg}),
+    api.withToken(token, 'json'),
+  );
+};
+
+const reqRokebiPaymentVBank = ({
+  params,
+  token,
+}: {
+  params: PaymentParams;
+  token?: string;
+}) => {
+  return api.callHttpPost(
+    `${api.httpUrl(api.path.rokApi.rokebi.vbank, '')}?_format=json`,
+    JSON.stringify(params),
+    api.withToken(token, 'json'),
   );
 };
 
@@ -205,13 +217,10 @@ const getRokebiPaymentReceipt = ({
   key: string;
   token: string;
 }) => {
-  return api.callHttp(
+  return api.callHttpPost(
     `${api.httpUrl(api.path.rokApi.rokebi.payment, '')}?_format=json`,
-    {
-      method: 'POST',
-      headers: api.withToken(token, 'json'),
-      body: JSON.stringify({pym_id: key, receipt: true}),
-    },
+    JSON.stringify({pym_id: key, receipt: true}),
+    api.withToken(token, 'json'),
     (rsp) => {
       if (rsp.result === 0) {
         if (rsp.objects[0]) {
@@ -291,4 +300,5 @@ export default {
   getRokebiPayment,
   getRokebiPaymentRule,
   getRokebiPaymentReceipt,
+  reqRokebiPaymentVBank,
 };

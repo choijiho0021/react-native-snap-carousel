@@ -29,6 +29,7 @@ const opt: Record<string, string> = {
   ssgpay: '&d_ssgpay=Y',
   lpay: '&d_lpay=Y',
   samsung: '&d_samsungpay=Y',
+  applepay: '&d_applepay=Y',
 };
 
 export const inicisWebviewHtml = (info: PaymentParams) => {

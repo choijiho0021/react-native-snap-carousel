@@ -421,13 +421,11 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     );
   }, [
     balanceCharge,
-    borderBlue,
     cancelPressed,
-    disableBtn,
     isCanceled,
     method?.amount,
+    navigation,
     order,
-    pending,
   ]);
 
   const pymId = useMemo(
