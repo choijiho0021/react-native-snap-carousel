@@ -18,7 +18,7 @@ import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
-import {HomeStackParamList, navigate} from '@/navigation/navigation';
+import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {CancelKeywordType, RkbOrder, RkbPayment} from '@/redux/api/orderApi';
 import utils from '@/redux/api/utils';
@@ -40,6 +40,7 @@ import AppTextInput from '@/components/AppTextInput';
 import AppAlert from '@/components/AppAlert';
 import Env from '@/environment';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import ProductDetailInfo from './component/ProductDetailInfo';
 
 const {esimApp, esimCurrency} = Env.get();
 
@@ -222,22 +223,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
     setChecked((prev) => !prev);
   }, []);
 
-  const onClickButton = useCallback(() => {
-    // action.order
-    //   .changeCancelOrder({
-    //     orderId: order.orderId,
-    //     token,
-    //   })
-    //   .then((r) => {
-    //     navigation.navigate('CancelOrderResult', {
-    //       isSuccess: r?.payload?.result === 0,
-    //     });
-    //   });
-  }, [action.order, order?.orderId, token, navigation]);
-
   useEffect(() => {
-    console.log('order : ', order);
-
     if (!order?.orderItems) return;
 
     //
@@ -261,42 +247,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
   const renderItem = useCallback(({item}: {item: ProdDesc}) => {
     return Array.from({length: item.qty}, (_, index) => {
-      return (
-        <View
-          key={`${item.title + index.toString()}`}
-          style={{marginBottom: 10}}>
-          <View
-            style={{
-              width: '100%',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}>
-            <SplitText
-              renderExpend={() => renderPromoFlag(item.promoFlag || [], false)}
-              numberOfLines={2}
-              style={{...appStyles.bold16Text, marginRight: 8}}
-              ellipsizeMode="tail">
-              {utils.removeBracketOfName(item.title)}
-            </SplitText>
-          </View>
-          <View>
-            <AppText
-              key="desc"
-              numberOfLines={2}
-              ellipsizeMode="tail"
-              style={[
-                appStyles.normal14Text,
-                {
-                  flex: 1,
-                  fontSize: isDeviceSize('medium') ? 14 : 16,
-                  lineHeight: isDeviceSize('medium') ? 20 : 22,
-                },
-              ]}>
-              {item.field_description}
-            </AppText>
-          </View>
-        </View>
-      );
+      return <ProductDetailInfo key={item.title + index} item={item} />;
     });
   }, []);
 
@@ -463,29 +414,14 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
   const cancelOrder = useCallback(() => {
     action.order
-      .cancelAndGetOrder({orderId: order.orderId, token, keyword})
-      .then(
-        ({payload: resp}) => {
-          // getOrderById 에 대한 결과 확인
-          // 기존에 취소했는데, 처리가 안되어 다시 취소버튼을 누르게 된 경우
-          // 배송상태가 변화되었는데 refresh 되지 않아 취소버튼을 누른 경우 등
-          if (resp.result === 0) setCancelPressed(true);
-          else if (resp.result > 0) {
-            setOrder(resp.objects[0]);
-
-            const canceled = resp.objects[0].state === 'canceled';
-
-            if (canceled) AppAlert.info(i18n.t('his:alreadyCanceled'));
-            else AppAlert.info(i18n.t('his:refresh'));
-          } else {
-            AppAlert.info(i18n.t('his:cancelFail'));
-          }
-        },
-        (err) => {
-          console.log('error', err);
-          AppAlert.info(i18n.t('his:cancelError'));
-        },
-      );
+      .cancelDraftOrder({orderId: order.orderId, token, reason: keyword})
+      .then(({payload: resp}) => {
+        navigation.navigate('CancelResult', {
+          isSuccess: resp?.result === 0,
+          prods,
+          orderId: order?.orderId,
+        });
+      });
   }, [keyword, order]);
 
   const renderCheckButton = useCallback(() => {

@@ -2,7 +2,7 @@
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import _ from 'underscore';
+import _, {object} from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
 import {CancelKeywordType, RkbOrder} from '@/redux/api/orderApi';
@@ -146,73 +146,35 @@ const changeDraft = createAsyncThunk(
   },
 );
 
-const cancelAndGetOrder = createAsyncThunk(
-  'order/cancelAndGetOrder',
+const cancelDraftOrder = createAsyncThunk(
+  'order/cancelOrder',
   (
     {
       orderId,
       token,
-      keyword,
-    }: {orderId?: number; token?: string; keyword?: CancelKeywordType},
+      reason,
+    }: {orderId?: number; token?: string; reason?: CancelKeywordType},
     {dispatch, getState},
   ) => {
     const {
       account: {iccid},
     } = getState() as RootState;
 
-    return dispatch(cancelOrder({orderId, token, keyword})).then(
+    return dispatch(cancelOrder({orderId, token, reason})).then(
       ({payload: resp}) => {
-        // 결제취소요청 후 항상 order를 가져온다
-        return dispatch(getOrderById({orderId, token})).then(
-          ({payload: val}) => {
-            if (resp.result === 0) {
-              if (val.result === 0) {
-                dispatch(accountAction.getAccount({iccid, token}));
-                return val;
-              }
-              return {
-                ...val,
-                result: 1,
-              };
-            }
-            if (val.result === 0) {
-              return {
-                ...val,
-                result: 1,
-              };
-            }
-            return resp;
-          },
-        );
-      },
-    );
-  },
-);
+        // if (resp.result === 0) {
+        //   return {result : 0, }
+        // }
 
-// subs status 변환 후
-/* not used
-export const updateStatusAndGetSubs = createAsyncThunk(
-  'order/updateStatusAndGetSubs',
-  (
-    {uuid, status, token}: {uuid: string; status: string; token: string},
-    {dispatch, getState},
-  ) => {
-    const {
-      account: {iccid},
-    } = getState() as RootState;
-
-    return dispatch(updateSubsStatus({uuid, status, token})).then(
-      ({payload: resp}) => {
-        // 결제취소요청 후 항상 order를 가져온다
-        if (resp.result === 0) {
-          return dispatch(getSubs({iccid, token}));
+        if (resp.result === 0 && resp.objects?.length > 0) {
+          return resp;
+        } else {
+          return {result: -1};
         }
-        return resp;
       },
     );
   },
 );
-*/
 
 const mergeSubs = (
   org: ImmutableMap<string, RkbSubscription[]>,
@@ -360,7 +322,22 @@ const slice = createSlice({
       return state;
     });
 
-    builder.addCase(cancelOrder.fulfilled, (state) => {
+    builder.addCase(cancelOrder.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      const {orders} = state;
+
+      const orderId = action?.meta?.arg?.orderId;
+      const order = orders.get(orderId);
+
+      if (result === 0 && objects[0]?.state && order) {
+        const updateOrder = orders.set(orderId, {
+          ...order,
+          state: objects[0].state,
+        });
+        state.orders = updateOrder;
+      }
+
       return state;
     });
 
@@ -462,7 +439,7 @@ export const actions = {
   updateSubsInfo,
   updateSubsAndOrderTag,
   updateSubsGiftStatus,
-  cancelAndGetOrder,
+  cancelDraftOrder,
   checkAndGetOrderById,
   changeDraft,
   cmiGetSubsUsage,

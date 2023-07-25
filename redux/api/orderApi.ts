@@ -216,11 +216,11 @@ const getOrderById = ({
 const cancelOrder = ({
   orderId,
   token,
-  keyword,
+  reason,
 }: {
   orderId?: number;
   token?: string;
-  keyword?: string;
+  reason?: string;
 }) => {
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
@@ -232,11 +232,13 @@ const cancelOrder = ({
     {
       method: 'DELETE',
       headers: api.withToken(token, 'json'),
+      body: JSON.stringify({
+        reason,
+      }),
     },
-    (resp) => ({
-      result: resp.status === '204' ? 0 : api.FAILED,
-      objects: [],
-    }),
+    (resp) => {
+      return resp;
+    },
   );
 };
 
