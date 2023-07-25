@@ -415,6 +415,16 @@
   "his:draftFailText": "고객센터로 문의해주세요.",
   "his:draftFailButton": "확인",
 
+  "his:cancelOrderTitle": "구매 취소\n완료되었습니다.",
+  "his:cancelOrderBody": "결제 수단에 따라 최종 환불까지는\n3-5 영업일이 소요될 수 있습니다.",
+  "his:cancelOrderButton": "확인",
+
+  "his:cancelOrderFail1Title": "구매 취소\n실패하였습니다.",
+  "his:cancelOrderFail1Body": "발권 기한 경과로 구매 취소 불가합니다.",
+
+  "his:cancelOrderFail2Title": "구매 취소\n실패하였습니다.",
+  "his:cancelOrderFail2Body": "고객센터로 문의해주세요.",
+
   "contact:title": "I Need Help!",
   "contact:notice": "Announcement",
   "contact:noticeDetail": "Announcement Details",
