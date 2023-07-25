@@ -215,6 +215,12 @@ export type RkbProdCountry = {
   keyword: string;
 };
 
+const groupPartner = (partner: string) => {
+  if (partner.startsWith('cmi')) return 'cmi';
+  if (partner.startsWith('quadcell')) return 'quadcell';
+  return partner;
+};
+
 const toLocalOp = (data: DrupalLocalOp[]): ApiResult<RkbLocalOp> => {
   if (_.isArray(data)) {
     return api.success(
@@ -228,7 +234,7 @@ const toLocalOp = (data: DrupalLocalOp[]): ApiResult<RkbLocalOp> => {
         network: item.field_network,
         weight: utils.stringToNumber(item.field_weight) || 0,
         detail: item.body,
-        partner: item.field_ref_partner.toLowerCase(),
+        partner: groupPartner(item.field_ref_partner.toLowerCase()),
         notice: item.field_notice,
       })),
     );

@@ -176,6 +176,12 @@ export type RkbSubscription = {
   hide?: boolean;
 };
 
+const groupPartner = (partner: string) => {
+  if (partner.startsWith('cmi')) return 'cmi';
+  if (partner.startsWith('quadcell')) return 'quadcell';
+  return partner;
+};
+
 const toSubscription =
   (isStore = false) =>
   (data: DrupalNode[] | DrupalNodeJsonApi): ApiResult<RkbSubscription> => {
@@ -207,7 +213,7 @@ const toSubscription =
           subsIccid: item.field_iccid || '',
           packageId: item.field_cmi_package_id || '',
           subsOrderNo: item.field_cmi_order_id || '',
-          partner: item.field_ref_partner?.toLowerCase() || '',
+          partner: groupPartner(item.field_ref_partner?.toLowerCase() || ''),
           isStore,
           promoFlag: item.field_special_categories
             ? item.field_special_categories
@@ -320,10 +326,12 @@ const getSubscription = ({
   iccid,
   token,
   prodType,
+  hidden,
 }: {
   iccid?: string;
   token?: string;
   prodType?: string;
+  hidden?: boolean;
 }) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
@@ -331,8 +339,8 @@ const getSubscription = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
   return api.callHttpGet(
-    `${api.httpUrl(api.path.subscription)}/${iccid}${
-      prodType ? `/${prodType}` : ''
+    `${api.httpUrl(api.path.subscription)}/${iccid}/${prodType || 'all'}/${
+      hidden ? 'all/1' : '1'
     }?_format=hal_json`,
     toSubscription(),
     api.withToken(token, 'hal+json'),
@@ -342,9 +350,11 @@ const getSubscription = ({
 const getStoreSubscription = ({
   mobile,
   token,
+  hidden,
 }: {
   mobile?: string;
   token?: string;
+  hidden?: boolean;
 }) => {
   if (!mobile)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: mobile');
@@ -352,7 +362,9 @@ const getStoreSubscription = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
   return api.callHttpGet(
-    `${api.httpUrl(api.path.storeSubs)}/${mobile}?_format=hal_json`,
+    `${api.httpUrl(api.path.storeSubs)}/${mobile}/${
+      hidden ? 'all/1' : '1'
+    }?_format=hal_json`,
     toSubscription(true),
     api.withToken(token, 'hal+json'),
   );
