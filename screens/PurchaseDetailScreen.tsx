@@ -80,7 +80,6 @@ const styles = StyleSheet.create({
     ...appStyles.bold18Text,
     color: colors.black,
     lineHeight: 22,
-    // marginTop: 20,
     alignSelf: 'center',
   },
   productTitle: {
@@ -234,24 +233,6 @@ type PurchaseDetailScreenProps = {
 export const isRokebiCash = (pg: string) =>
   ['rokebi_cash', 'rokebi_point'].includes(pg);
 
-// const list = detail?.paymentList?.filter((item) =>
-//   isRokebiCash(item.paymentGateway),
-// );
-// if (list?.[0]) {
-//   setBalanceCharge(
-//     list.reduce(
-//       (acc, cur) => ({
-//         value: acc.value + cur.amount.value,
-//         currency: acc.currency,
-//       }),
-//       {
-//         value: 0,
-//         currency: list[0].amount.currency,
-//       } as Currency,
-//     ),
-//   );
-// }
-
 export const countRokebiCash = (order: RkbOrder) => {
   const list = order?.paymentList?.filter((item) =>
     isRokebiCash(item.paymentGateway),
@@ -320,48 +301,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
       }, 3000);
     }
   }, [cancelPressed]);
-
-  const cancelOrder = useCallback(
-    (o: RkbOrder) => {
-      const {token} = account;
-
-      setBorderBlue(true);
-
-      AppAlert.confirm(i18n.t('his:cancel'), i18n.t('his:cancelAlert'), {
-        ok: () => {
-          action.order.cancelAndGetOrder({orderId: o.orderId, token}).then(
-            ({payload: resp}) => {
-              // getOrderById 에 대한 결과 확인
-              // 기존에 취소했는데, 처리가 안되어 다시 취소버튼을 누르게 된 경우
-              // 배송상태가 변화되었는데 refresh 되지 않아 취소버튼을 누른 경우 등
-              if (resp.result === 0) setCancelPressed(true);
-              else if (resp.result > 0) {
-                setOrder(resp.objects[0]);
-
-                const canceled = resp.objects[0].state === 'canceled';
-                setIsCanceled(canceled);
-
-                if (canceled) AppAlert.info(i18n.t('his:alreadyCanceled'));
-                else AppAlert.info(i18n.t('his:refresh'));
-              } else {
-                AppAlert.info(i18n.t('his:cancelFail'));
-              }
-            },
-            (err) => {
-              console.log('error', err);
-              AppAlert.info(i18n.t('his:cancelError'));
-            },
-          );
-
-          setBorderBlue(false);
-        },
-        cancel: () => {
-          setBorderBlue(false);
-        },
-      });
-    },
-    [account, action.order],
-  );
 
   const paymentInfo = useCallback(() => {
     if (!order) return null;
@@ -457,30 +396,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           </View>
         </View>
 
-        {!isRecharge && !esimApp ? (
-          <AppButton
-            style={[
-              styles.cancelBtn,
-              {
-                borderColor: borderBlue ? colors.clearBlue : colors.lightGrey,
-              },
-            ]}
-            disableBackgroundColor={colors.whiteTwo}
-            disableColor={pending ? colors.whiteTwo : colors.greyish}
-            disabled={disabled || disableBtn || pending}
-            onPress={() => cancelOrder(order)}
-            title={i18n.t('his:cancel')}
-            titleStyle={styles.normal16BlueTxt}
-          />
-        ) : (
-          <View style={{marginBottom: 20}} />
-        )}
-
-        {!isRecharge && !esimApp && (
-          <AppText style={styles.cancelInfo}>
-            {!isRecharge && !esimApp && infoText}
-          </AppText>
-        )}
+        {!isRecharge && <View style={{marginBottom: 20}} />}
 
         {/* */}
         {!isRecharge && (
@@ -488,7 +404,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             style={styles.cancelDraftBtn}
             onPress={() => {
               navigation.navigate('CancelOrder', {order});
-              console.log('취소 화면 미구현 ');
             }}
             disabled={order.state !== 'validation'}
             disableStyle={styles.cancelDraftBtnDisabled}
@@ -502,7 +417,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   }, [
     balanceCharge,
     borderBlue,
-    cancelOrder,
     cancelPressed,
     disableBtn,
     isCanceled,
@@ -711,7 +625,7 @@ export default connect(
     account,
     pending:
       status.pending[orderActions.getOrders.typePrefix] ||
-      status.pending[orderActions.cancelAndGetOrder.typePrefix] ||
+      status.pending[orderActions.cancelDraftOrder.typePrefix] ||
       false,
   }),
   (dispatch) => ({
