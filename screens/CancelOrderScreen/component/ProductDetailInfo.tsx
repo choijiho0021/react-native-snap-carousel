@@ -23,7 +23,7 @@ type ProdDesc = {
   qty: number;
 };
 
-type ProductDetailInfoPros = {item: ProdDesc; style: StyleProp<ViewStyle>};
+type ProductDetailInfoPros = {item: ProdDesc; style?: StyleProp<ViewStyle>};
 
 const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
   item,

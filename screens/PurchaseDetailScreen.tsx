@@ -527,11 +527,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           {utils.toDateString(order?.orderDate)}
         </AppText>
         <View style={styles.productTitle}>
-          {/* {isCanceled && (
-            <AppText style={[appStyles.bold18Text, {color: colors.tomato}]}>
-              {`(${i18n.t('his:cancel')})`}{' '}
-            </AppText>
-          )} */}
           <AppText style={appStyles.bold18Text}>{label}</AppText>
         </View>
         <View style={styles.bar} />

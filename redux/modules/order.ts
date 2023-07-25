@@ -10,7 +10,7 @@ import {RkbSubscription, STATUS_RESERVED} from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
-import {cachedApi} from '@/redux/api/api';
+import api, {cachedApi} from '@/redux/api/api';
 import Env from '@/environment';
 import moment from 'moment';
 
@@ -165,7 +165,7 @@ const cancelDraftOrder = createAsyncThunk(
         if (resp.result === 0 && resp.objects?.length > 0) {
           return resp;
         } else {
-          return {result: -1};
+          return {result: api.FAILED};
         }
       },
     );

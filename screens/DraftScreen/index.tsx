@@ -317,21 +317,19 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
       </View>
       <View style={{flexDirection: 'row'}}>
         <AppButton
-          style={[
-            styles.button,
-            {backgroundColor: checked ? colors.clearBlue : colors.gray},
-          ]}
+          style={[styles.button]}
           type="primary"
           pressedStyle={{
             backgroundColor: checked ? colors.clearBlue : colors.gray,
           }}
+          disabled={!checked}
           title={i18n.t('his:draftRequest')}
           onPress={() => {
-            if (checked) {
-              onClickButton();
-            } else {
-              AppAlert.info(i18n.t('his:draftAlert'));
-            }
+            onClickButton();
+          }}
+          disabledCanOnPress
+          disabledOnPress={() => {
+            AppAlert.info(i18n.t('his:draftAlert'));
           }}
         />
       </View>

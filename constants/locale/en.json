@@ -422,6 +422,26 @@
   "his:cancelOrderFail1Title": "구매 취소\n실패하였습니다.",
   "his:cancelOrderFail1Body": "발권 기한 경과로 구매 취소 불가합니다.",
 
+  "his:cancelHeaderTitle3": "구매 취소 사유를 알려주세요.",
+
+  "his:cancelReasonDetail": "상세 사유",
+  "his:cancelReasonDetail:placeholder": "상세 사유를 입력해주세요.",
+
+  "his:cancelHeaderTitle4": "환불 정보를 확인하세요.",
+  "his:refundMethod": "환불 수단",
+  "his:cancelGuideLine1": "구매 취소 전 확인해주세요!",
+  "his:cancelGuideLine2": "• 구매 취소는 발권 전 상태에서만 가능합니다.",
+  "his:cancelGuideLine3": "• 구매 취소는 주문번호 기준입니다. 주문번호에 해당하는 상품 전체 취소-발권만 가능하며, 부분 취소-발권은 불가합니다.",
+  "his:cancelGuideLine4": "• 구매 취소 시 결제 수단 그대로 환불됩니다. 결제 수단에 따라 최종 환불까지는 3-5영업일이 소요될 수 있습니다.",
+  "his:cancelGuideLine5": "• 로깨비캐시는 이벤트, 친구 초대 등을 통해 취득한 유효기간이 있는 캐시와 캐시 충전 구매한 유효기간이 없는 캐시로 나누어 환불됩니다.",
+  "his:cancelGuideLine6": "• 환불 대상 캐시의 유효기간이 상이한 경우, 가장 긴 유효기간 기준으로 환불됩니다.",
+  "his:backStep": "이전 단계",
+  "his:nextStep": "다음 단계",
+  "his:cancelButton": "구매 취소하기",
+  "his:cancelReasonAlert1": "구매 취소 사유를 선택해주세요.",
+  "his:cancelReasonAlert2": "상세 사유를 20자 이상 입력해주세요.",
+  "his:cancelReasonAlert3": "구매 취소 전 유의사항 확인 후 동의해주세요.",
+
   "his:cancelOrderFail2Title": "구매 취소\n실패하였습니다.",
   "his:cancelOrderFail2Body": "고객센터로 문의해주세요.",
 

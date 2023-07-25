@@ -6,6 +6,7 @@ import {
   FlatList,
   Pressable,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
@@ -153,6 +154,8 @@ type ProdDesc = {
   qty: number;
 };
 
+const REASON_MAX_BYTE = 500;
+
 const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   navigation,
   route,
@@ -226,7 +229,6 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   useEffect(() => {
     if (!order?.orderItems) return;
 
-    //
     setBalanceCharge(countRokebiCash(order));
 
     getProdDate();
@@ -266,7 +268,9 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
               format={{b: [appStyles.bold20Text, {color: 'purple'}]}}
             />
             <AppStyledText
-              text={i18n.t('his:cancelHeaderTitle2').replace('%', prods.length)}
+              text={i18n
+                .t('his:cancelHeaderTitle2')
+                .replace('%', prods?.length)}
               textStyle={{...appStyles.bold20Text}}
               format={{b: [appStyles.bold20Text, {color: 'red'}]}}
             />
@@ -280,7 +284,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
     return (
       <View>
         <AppText style={appStyles.bold20Text}>
-          {'구매 취소 사유를 알려주세요.'}
+          {i18n.t('his:cancelHeaderTitle3')}
         </AppText>
         <View style={styles.reasonButtonFrame}>
           {[
@@ -307,17 +311,20 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           <View style={{flexDirection: 'row'}}></View>
         </View>
 
-        <AppText style={appStyles.bold20Text}>{'상세 사유'}</AppText>
-        <AppText>{inputText?.length + '/500'}</AppText>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <AppText style={appStyles.bold20Text}>
+            {i18n.t('his:cancelReasonDetail')}
+          </AppText>
+          <AppText>{inputText?.length + '/' + REASON_MAX_BYTE}</AppText>
+        </View>
         <AppTextInput
-          // autoFocus={idx > 0}
           style={{
             height: 150,
             ...appStyles.normal16Text,
             backgroundColor: 'gray',
             overflow: 'scroll',
           }}
-          maxLength={500}
+          maxLength={REASON_MAX_BYTE}
           onChangeText={(v) => {
             setInputText(v);
           }}
@@ -329,7 +336,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           onBlur={() => {}}
           autoCapitalize="none"
           autoCorrect={false}
-          placeholder={'상세 사유를 입력해주세요.'}
+          placeholder={i18n.t('his:cancelReasonDetail:placeholder')}
           placeholderTextColor={colors.greyish}
         />
       </View>
@@ -342,7 +349,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
     return (
       <View>
         <AppText style={appStyles.bold20Text}>
-          {'환불 정보를 확인하세요.'}
+          {i18n.t('his:cancelHeaderTitle4')}
         </AppText>
 
         <View>
@@ -363,7 +370,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         <View style={{flexDirection: 'column'}}>
           <View>
             <View>
-              <AppText>환불 수단</AppText>
+              <AppText>{i18n.t('his:refundMethod')}</AppText>
             </View>
 
             {balanceCharge !== utils.toCurrency(0, esimCurrency) && (
@@ -389,25 +396,13 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
     return (
       <View>
         <AppText style={appStyles.bold18Text}>
-          구매 취소 전 확인해주세요!
+          {i18n.t('his:cancelGuideLine1')}
         </AppText>
-        <AppText>. 구매 취소는 발권 전 상태에서만 가능합니다.</AppText>
-        <AppText>
-          . 구매 취소는 주문번호 기준입니다. 주문번호에 해당하는 상품 전체
-          취소-발권만 가능하며, 부분 취소-발권은 불가합니다.
-        </AppText>
-        <AppText>
-          . 구매 취소 시 결제 수단 그대로 환불됩니다. 결제 수단에 따라 최종
-          환불까지는 3-5영업일이 소요될 수 있습니다.
-        </AppText>
-        <AppText>
-          . 로깨비캐시는 이벤트, 친구 초대 등을 통해 취득한 유효기간이 있는
-          캐시와 캐시 충전 구매한 유효기간이 없는 캐시로 나누어 환불됩니다.
-        </AppText>
-        <AppText>
-          . 환불 대상 캐시의 유효기간이 상이한 경우, 가장 긴 유효기간 기준으로
-          환불됩니다.
-        </AppText>
+        <AppText>{i18n.t('his:cancelGuideLine2')}</AppText>
+        <AppText>{i18n.t('his:cancelGuideLine3')}</AppText>
+        <AppText>{i18n.t('his:cancelGuideLine4')}</AppText>
+        <AppText>{i18n.t('his:cancelGuideLine5')}</AppText>
+        <AppText>{i18n.t('his:cancelGuideLine6')}</AppText>
       </View>
     );
   }, []);
@@ -456,21 +451,23 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{marginHorizontal: 20, flex: 1}}>
-        {step === 0 && renderStep1()}
-        {step === 1 && renderStep2()}
-        {step === 2 && renderStep3()}
-      </View>
-      <View style={{marginHorizontal: 20}}>
-        {step === 2 && renderCheckButton()}
-      </View>
+      <ScrollView style={{flex: 1}}>
+        <View style={{marginHorizontal: 20, flex: 1}}>
+          {step === 0 && renderStep1()}
+          {step === 1 && renderStep2()}
+          {step === 2 && renderStep3()}
+        </View>
+        <View style={{marginHorizontal: 20}}>
+          {step === 2 && renderCheckButton()}
+        </View>
+      </ScrollView>
       <View style={{flexDirection: 'row'}}>
         <AppButton
           style={styles.secondaryButton}
           type="secondary"
-          title={'이전 단계'}
+          title={i18n.t('his:backStep')}
           titleStyle={styles.secondaryButtonText}
-          disabled={false}
+          disabled={step === 0}
           onPress={() => {
             setStep((prev) => (prev - 1 <= 0 ? 0 : prev - 1));
           }}
@@ -479,16 +476,18 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         <AppButton
           style={[styles.button]}
           type="primary"
-          title={step === 2 ? '구매 취소하기' : '다음 단계'}
+          title={
+            step === 2 ? i18n.t('his:cancelButton') : i18n.t('his:nextStep')
+          }
           disabled={disabled}
           onPress={() => {
             if (step === 1 && !keyword) {
-              AppAlert.info('구매 취소 사유를 선택해주세요.');
+              AppAlert.info(i18n.t('his:cancelReasonAlert1'));
               return;
             }
 
             if (step === 1 && inputText?.length < 20 && keyword === 'other') {
-              AppAlert.info('상세 사유를 20자 이상 입력해주세요.');
+              AppAlert.info(i18n.t('his:cancelReasonAlert2'));
               return;
             }
 
@@ -496,7 +495,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
               if (checked) {
                 cancelOrder();
               } else {
-                AppAlert.info('구매 취소 전 유의사항 확인 후 동의해주세요.');
+                AppAlert.info(i18n.t('his:cancelReasonAlert3'));
               }
             }
 
