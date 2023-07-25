@@ -16,7 +16,6 @@ import CameraRoll from '@react-native-community/cameraroll';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {
   PERMISSIONS,
-  request,
   check,
   RESULTS,
   openSettings,

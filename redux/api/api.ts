@@ -123,6 +123,7 @@ const path = {
       prodByCountry: 'rokebi/prod/bycntry',
       cash: 'rokebi/cash',
       payment: 'rokebi/payment',
+      vbank: 'rokebi/payment/vbank',
       paymentRule: 'rokebi/payment/rule',
       calculateTotal: 'rokebi/order/calc',
       prodAddOn: 'rokebi/prod/addon',
@@ -417,6 +418,21 @@ const callHttpGet = <T>(
   );
 };
 
+const callHttpPost = <T>(
+  url: string,
+  body: string,
+  httpHeaders?: Record<string, string> | Headers,
+  callback?: CallHttpCallback<T>,
+  option: CallHttpOption = {isJson: true},
+) => {
+  return callHttp<T>(
+    url,
+    {method: 'POST', headers: httpHeaders, body},
+    callback,
+    option,
+  );
+};
+
 const missingParameters = (obj: object) => {
   return Object.entries(obj).reduce(
     (acc, [key, value]) => (_.isEmpty(value) ? acc.concat([key]) : acc),
@@ -460,6 +476,7 @@ export default {
   withToken,
   basicAuth,
   callHttpGet,
+  callHttpPost,
   callHttp,
   missingParameters,
   toLangcode,

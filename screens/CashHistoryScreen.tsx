@@ -490,7 +490,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
                       ? styles.selectedTypeText
                       : styles.normalText
                   }>
-                  {i18n.t(`cashHistory:orderType:${elm}`)}
+                  {i18n.t(`cashHistory:orderType:modal:${elm}`)}
                 </AppText>
                 {orderType === elm && <AppSvgIcon name="selected" />}
               </Pressable>
@@ -679,7 +679,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           </AppText>
           <Pressable
             style={{flexDirection: 'row', alignItems: 'center'}}
-            onPress={() => action.modal.renderModal(() => orderModalBody())}>
+            onPress={() => action.modal.renderModal(orderModalBody)}>
             <AppText
               style={[
                 appStyles.medium14,

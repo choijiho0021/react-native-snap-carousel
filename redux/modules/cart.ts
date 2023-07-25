@@ -82,8 +82,6 @@ const init = createAsyncThunk(
   },
 );
 
-// const cartLock = createAsyncThunk('cart/lock', API.Cart.lock);
-
 export type PaymentReq = {key: string; title: string; amount: Currency};
 
 export interface CartModelState {
