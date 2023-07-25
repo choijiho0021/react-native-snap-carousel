@@ -699,6 +699,7 @@
   "pym:method": "결제 방법",
   "pym:ccard": "신용카드",
   "pym:bank": "계좌이체",
+  "pym:vbank": "계좌이체",
   "pym:mobile": "휴대폰결제",
   "pym:toss": "토스",
   "pym:paypal": "페이팔",

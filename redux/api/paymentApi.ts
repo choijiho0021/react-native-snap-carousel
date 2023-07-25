@@ -66,6 +66,10 @@ const method: Record<string, PaymentMethod> = esimGlobal
         key: 'html5_inicis',
         method: 'samsung',
       },
+      'pym:applepay': {
+        key: 'html5_inicis',
+        method: 'applepay',
+      },
       'pym:vbank': {
         key: 'html5_inicis',
         method: 'vbank',
