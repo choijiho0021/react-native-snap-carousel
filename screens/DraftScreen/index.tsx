@@ -236,32 +236,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
           {i18n.t('his:draftCheckNotiTitle')}
         </AppText>
         <AppStyledText
-          text={i18n.t('his:draftCheckNoti1')}
-          textStyle={{...appStyles.normal16Text}}
-          format={{b: appStyles.bold16Text}}
-        />
-        <AppStyledText
-          text={i18n.t('his:draftCheckNoti2')}
-          textStyle={{...appStyles.normal16Text}}
-          format={{b: appStyles.bold16Text}}
-        />
-        <AppStyledText
-          text={i18n.t('his:draftCheckNoti3')}
-          textStyle={{...appStyles.normal16Text}}
-          format={{b: appStyles.bold16Text}}
-        />
-        <AppStyledText
-          text={i18n.t('his:draftCheckNoti4')}
-          textStyle={{...appStyles.normal16Text}}
-          format={{b: appStyles.bold16Text}}
-        />
-        <AppStyledText
-          text={i18n.t('his:draftCheckNoti5')}
-          textStyle={{...appStyles.normal16Text}}
-          format={{b: appStyles.bold16Text}}
-        />
-        <AppStyledText
-          text={i18n.t('his:draftCheckNoti6')}
+          text={i18n.t('his:draftCheckNotiBody')}
           textStyle={{...appStyles.normal16Text}}
           format={{b: appStyles.bold16Text}}
         />

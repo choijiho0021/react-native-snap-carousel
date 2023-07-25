@@ -142,7 +142,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   pending,
 }) => {
   const REASON_MAX_BYTE = 500;
-  const [order, setOrder] = useState<RkbOrder>({});
+  const [order, setOrder] = useState<RkbOrder>();
   const [prods, setProds] = useState<ProdDesc[]>([]);
   const [step, setStep] = useState(0);
   const [balanceCharge, setBalanceCharge] = useState<Currency>();
@@ -177,7 +177,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
     }
   }, [order?.paymentList, route.params.order]);
 
-  //
+  // 함수로 묶기
   const getProdDate = useCallback(() => {
     if (!loading.current && order?.orderItems?.length > 0) {
       order?.orderItems?.forEach((i) => {
@@ -360,19 +360,15 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         </View>
       </View>
     );
-  }, [order.totalPrice, balanceCharge]);
+  }, [order?.totalPrice, balanceCharge]);
 
   const renderGuide = useCallback(() => {
     return (
       <View>
         <AppText style={appStyles.bold18Text}>
-          {i18n.t('his:cancelGuideLine1')}
+          {i18n.t('his:cancelGuideLineTitle')}
         </AppText>
-        <AppText>{i18n.t('his:cancelGuideLine2')}</AppText>
-        <AppText>{i18n.t('his:cancelGuideLine3')}</AppText>
-        <AppText>{i18n.t('his:cancelGuideLine4')}</AppText>
-        <AppText>{i18n.t('his:cancelGuideLine5')}</AppText>
-        <AppText>{i18n.t('his:cancelGuideLine6')}</AppText>
+        <AppText>{i18n.t('his:cancelGuideLineBody')}</AppText>
       </View>
     );
   }, []);
