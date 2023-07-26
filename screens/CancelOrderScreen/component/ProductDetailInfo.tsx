@@ -27,11 +27,10 @@ type ProductDetailInfoPros = {item: ProdDesc; style?: StyleProp<ViewStyle>};
 
 const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
   item,
-  key,
   style = {marginBottom: 10},
 }) => {
   return (
-    <View key={key} style={style}>
+    <View style={style}>
       <View
         style={{
           width: '100%',

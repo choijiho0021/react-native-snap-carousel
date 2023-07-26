@@ -444,8 +444,12 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           title={
             step === 2 ? i18n.t('his:cancelButton') : i18n.t('his:nextStep')
           }
-          // diabled 추가 작업 필요
-          onPress={() => {
+          disabled={
+            (step === 1 && inputText?.length < 20 && keyword === 'other') ||
+            (step === 1 && !keyword) ||
+            (step === 2 && !checked)
+          }
+          disabledOnPress={() => {
             if (step === 1 && !keyword) {
               AppAlert.info(i18n.t('his:cancelReasonAlert1'));
             } else if (
@@ -454,12 +458,14 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
               keyword === 'other'
             ) {
               AppAlert.info(i18n.t('his:cancelReasonAlert2'));
-            } else if (step === 2) {
-              if (checked) {
-                cancelOrder();
-              } else {
-                AppAlert.info(i18n.t('his:cancelReasonAlert3'));
-              }
+            } else if (step === 2 && !checked) {
+              AppAlert.info(i18n.t('his:cancelReasonAlert3'));
+            }
+          }}
+          disabledCanOnPress
+          onPress={() => {
+            if (step === 2 && checked) {
+              cancelOrder();
             }
             setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
           }}
