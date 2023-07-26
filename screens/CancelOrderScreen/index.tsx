@@ -264,8 +264,8 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         </AppText>
         <View style={styles.reasonButtonFrame}>
           {[
-            ['changeOfMind', 'mistake'] as CancelKeywordType[],
-            ['dissatisfaction', 'other'] as CancelKeywordType[],
+            ['changed', 'mistake'] as CancelKeywordType[],
+            ['complain', 'etc'] as CancelKeywordType[],
           ].map((key: CancelKeywordType[]) => {
             return [
               <View key={key.toString()} style={{flexDirection: 'row'}}>
@@ -445,7 +445,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
             step === 2 ? i18n.t('his:cancelButton') : i18n.t('his:nextStep')
           }
           disabled={
-            (step === 1 && inputText?.length < 20 && keyword === 'other') ||
+            (step === 1 && inputText?.length < 20 && keyword === 'etc') ||
             (step === 1 && !keyword) ||
             (step === 2 && !checked)
           }
@@ -455,7 +455,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
             } else if (
               step === 1 &&
               inputText?.length < 20 &&
-              keyword === 'other'
+              keyword === 'etc'
             ) {
               AppAlert.info(i18n.t('his:cancelReasonAlert2'));
             } else if (step === 2 && !checked) {
