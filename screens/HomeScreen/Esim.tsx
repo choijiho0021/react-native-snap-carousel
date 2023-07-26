@@ -687,6 +687,8 @@ const Esim: React.FC<EsimProps> = ({
         isForeground,
         isRegister: type === 'register',
         updateAccount: action.account.updateAccount,
+        getSubs: action.order.getSubs,
+        token: account?.token,
         clearCurrentAccount: () => {
           Promise.all([
             action.cart.reset(),
