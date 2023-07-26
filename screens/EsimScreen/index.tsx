@@ -402,13 +402,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           {renderInfo(navigation)}
 
           <View>
-            <View>
+            {/* <View>
               <AppText>발권이 필요한 상품 굵은 글씨</AppText>
               <View style={{flexDirection: 'row'}}>
                 <AppText>종모양</AppText>
                 <AppText>발권 후 상품 정보를 확인하실 수 있어요!</AppText>
               </View>
-            </View>
+            </View> */}
             <View>{order.drafts?.map((item) => renderDraft(item))}</View>
           </View>
         </View>
