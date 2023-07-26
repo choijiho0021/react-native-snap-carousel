@@ -2,6 +2,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
+import _ from 'underscore';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -9,7 +10,8 @@ import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList, navigate} from '@/navigation/navigation';
 import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
-import _ from 'underscore';
+import {OrderAction} from '@/redux/modules/order';
+import {ProductModelState} from '@/redux/modules/product';
 
 const styles = StyleSheet.create({
   container: {
@@ -47,16 +49,9 @@ type DraftResultScreenProps = {
   };
 };
 
-type ProdDesc = {
-  title: string;
-  field_description: string;
-  promoFlag: string[];
-};
-
 const DraftResultScreen: React.FC<DraftResultScreenProps> = ({
   navigation,
   route,
-  pending,
 }) => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
@@ -103,7 +98,6 @@ const DraftResultScreen: React.FC<DraftResultScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <View style={{marginHorizontal: 20, flex: 1}}>{renderContent()}</View>
-      {/* {showPayment && paymentInfo()} */}
       <View style={{flexDirection: 'row'}}>
         <AppButton
           style={styles.button}

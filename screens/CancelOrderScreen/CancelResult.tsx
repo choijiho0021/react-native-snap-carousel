@@ -46,10 +46,11 @@ type CancelResultScreenProps = {
   order: OrderModelState;
 };
 
-type ProdDesc = {
+export type ProdDesc = {
   title: string;
   field_description: string;
   promoFlag: string[];
+  qty: number;
 };
 
 // 내용 별거 없으면 그냥 CancelResult랑 합칠까
@@ -70,11 +71,10 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
   }, [navigation]);
 
   useEffect(() => {
+    if (!route?.params?.orderId) return;
+
     setIsSuccess(route?.params?.isSuccess);
-
-    const orderResult = order.orders.get(route?.params?.orderId);
-
-    setOrderResult(orderResult);
+    setOrderResult(order.orders.get(route?.params?.orderId));
     setProds(route?.params?.prods);
   }, [order.orders, route?.params]);
 

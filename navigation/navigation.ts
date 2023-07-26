@@ -14,6 +14,7 @@ import {RkbReceipt} from '@/screens/ReceiptScreen';
 import {GuideOption} from '@/screens/UserGuideScreen/GuideHomeScreen';
 import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
 import {RkbEventBoard} from '@/redux/api/eventBoardApi';
+import {ProdDesc} from '@/screens/CancelOrderScreen/CancelResult';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti';
 export type PymMethodScreenMode =
@@ -132,6 +133,11 @@ export type HomeStackParamList = {
   Invite: undefined;
   InvitePromo: undefined;
   GiftGuide: undefined;
+
+  Draft: {order: RkbOrder};
+  DraftResult: {isSuccess: boolean; prods: ProdDesc[]};
+  CancelOrder: {order: RkbOrder};
+  CancelResult: {isSuccess: boolean; orderId: number; prods: ProdDesc[]};
 
   Gift: {mainSubs: RkbSubscription};
   ChargeHistory: {

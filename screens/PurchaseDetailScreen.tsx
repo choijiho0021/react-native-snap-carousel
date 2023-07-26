@@ -258,13 +258,10 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   navigation,
   route,
   account,
-  action,
   pending,
 }) => {
   const [showPayment, setShowPayment] = useState(true);
   const [cancelPressed, setCancelPressed] = useState(false); // 결제취소버튼 클릭시 true
-  const [disableBtn, setDisableBtn] = useState(false);
-  const [borderBlue, setBorderBlue] = useState(false);
   const [isCanceled, setIsCanceled] = useState(false);
   const [billingAmt, setBillingAmt] = useState<Currency>();
   const [method, setMethod] = useState<RkbPayment>();
@@ -296,7 +293,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   useEffect(() => {
     if (cancelPressed) {
       setTimeout(() => {
-        setDisableBtn(true);
         setIsCanceled(true);
       }, 3000);
     }
@@ -305,31 +301,11 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   const paymentInfo = useCallback(() => {
     if (!order) return null;
 
-    const elapsedDay = order.orderDate
-      ? moment().diff(moment(order.orderDate), 'days')
-      : 0;
     const paidAmount = method?.amount || utils.toCurrency(0, esimCurrency);
     const isRecharge =
       order.orderItems?.find((item) =>
         item.title.includes(i18n.t('sim:rechargeBalance')),
       ) || false;
-    const isUsed =
-      order.usageList?.find(
-        (value) => value.status !== 'R' && value.status !== 'I',
-      ) || false;
-    const usedOrExpired = isUsed || elapsedDay > 7;
-    const activateCancelBtn =
-      (order.state === 'draft' || order.state === 'validation') && !isUsed;
-    const disabled =
-      isCanceled || !activateCancelBtn || cancelPressed || elapsedDay > 7;
-
-    // eslint-disable-next-line no-nested-ternary
-    const infoText = isCanceled
-      ? i18n.t('his:afterCancelInfo')
-      : usedOrExpired
-      ? i18n.t('his:usedOrExpiredInfo')
-      : i18n.t('his:dataCancelInfo');
-
     return (
       <View>
         <View style={styles.thickBar} />
@@ -380,7 +356,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         <View style={styles.bar} />
         <View style={[styles.row, {marginBottom: 5}]}>
           <AppText style={appStyles.normal16Text}>
-            {i18n.t('cart:totalCost')}{' '}
+            {i18n.t('cart:totalCost')}
           </AppText>
           <View
             style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
@@ -419,14 +395,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         )}
       </View>
     );
-  }, [
-    balanceCharge,
-    cancelPressed,
-    isCanceled,
-    method?.amount,
-    navigation,
-    order,
-  ]);
+  }, [balanceCharge, method?.amount, navigation, order]);
 
   const pymId = useMemo(
     () =>

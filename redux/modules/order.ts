@@ -13,6 +13,7 @@ import {reflectWithToast, Toast} from './toast';
 import api, {cachedApi} from '@/redux/api/api';
 import Env from '@/environment';
 import moment from 'moment';
+import {ProdDesc} from '@/screens/CancelOrderScreen/CancelResult';
 
 const {specialCategories} = Env.get();
 
@@ -141,7 +142,7 @@ const getOrders = createAsyncThunk(
 
 const changeDraft = createAsyncThunk(
   'order/draftOrder',
-  ({orderId, token}: {orderId: string; token?: string}) => {
+  ({orderId, token}: {orderId: number; token?: string}) => {
     return API.Order.draftOrder({orderId, token});
   },
 );
@@ -199,7 +200,11 @@ const mergeSubs = (
 };
 
 export const isExpiredDraft = (orderDate: string) => {
-  return !(moment().diff(moment(orderDate), 'day') < 7);
+  return moment().diff(moment(orderDate), 'day') >= 7;
+};
+
+export const getCountProds = (prods: ProdDesc[]) => {
+  return prods.reduce((acc, p) => acc + p.qty, 0).toString();
 };
 
 // 이건 머지로 하면 안되겠다. 중복 데이터 때문에
@@ -328,7 +333,10 @@ const slice = createSlice({
       const {orders} = state;
 
       const orderId = action?.meta?.arg?.orderId;
+
       const order = orders.get(orderId);
+
+      state.drafts = state.drafts.filter((d) => d.orderId !== orderId);
 
       if (result === 0 && objects[0]?.state && order) {
         const updateOrder = orders.set(orderId, {

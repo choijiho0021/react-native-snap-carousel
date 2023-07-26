@@ -49,12 +49,7 @@ const consentItem = {
   1: 'privacy',
   2: 'paymentAgency',
 };
-export type CancelKeywordType =
-  | 'changeOfMind'
-  | 'mistake'
-  | 'dissatisfaction'
-  | 'other'
-  | '';
+export type CancelKeywordType = 'changed' | 'mistake' | 'complain' | 'etc' | '';
 
 export type RkbPayment = {
   amount: Currency;
@@ -142,7 +137,7 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
   return api.failure(api.E_NOT_FOUND);
 };
 
-const draftOrder = ({orderId, token}: {orderId?: string; token?: string}) => {
+const draftOrder = ({orderId, token}: {orderId?: number; token?: string}) => {
   if (!orderId) {
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter : orderId');
   }
