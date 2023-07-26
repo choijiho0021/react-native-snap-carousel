@@ -13,6 +13,7 @@ import {reflectWithToast, Toast} from './toast';
 import api, {cachedApi} from '@/redux/api/api';
 import Env from '@/environment';
 import moment from 'moment';
+import {ProdDesc} from '@/screens/CancelOrderScreen/CancelResult';
 
 const {specialCategories} = Env.get();
 
@@ -199,7 +200,11 @@ const mergeSubs = (
 };
 
 export const isExpiredDraft = (orderDate: string) => {
-  return !(moment().diff(moment(orderDate), 'day') < 7);
+  return moment().diff(moment(orderDate), 'day') >= 7;
+};
+
+export const getCountProds = (prods: ProdDesc[]) => {
+  return prods.reduce((acc, p) => acc + p.qty, 0).toString();
 };
 
 // 이건 머지로 하면 안되겠다. 중복 데이터 때문에
