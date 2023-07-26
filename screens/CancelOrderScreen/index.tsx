@@ -161,7 +161,8 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   product,
   pending,
 }) => {
-  const REASON_MAX_BYTE = 500;
+  const REASON_MAX_LENGTH = 500;
+  const REASON_MIN_LENGTH = 10;
   const [order, setOrder] = useState<RkbOrder>();
   const [prods, setProds] = useState<ProdDesc[]>([]);
   const [step, setStep] = useState(0);
@@ -309,7 +310,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           <AppText style={appStyles.bold20Text}>
             {i18n.t('his:cancelReasonDetail')}
           </AppText>
-          <AppText>{`${inputText.length || ''}/${REASON_MAX_BYTE}`}</AppText>
+          <AppText>{`${inputText.length || '0'}/${REASON_MAX_LENGTH}`}</AppText>
         </View>
         <AppTextInput
           style={{
@@ -318,7 +319,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
             backgroundColor: 'gray',
             overflow: 'scroll',
           }}
-          maxLength={REASON_MAX_BYTE}
+          maxLength={REASON_MAX_LENGTH}
           onChangeText={(v) => {
             setInputText(v);
           }}
@@ -479,7 +480,9 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
             step === 2 ? i18n.t('his:cancelButton') : i18n.t('his:nextStep')
           }
           disabled={
-            (step === 1 && inputText?.length < 20 && keyword === 'etc') ||
+            (step === 1 &&
+              inputText?.length < REASON_MIN_LENGTH &&
+              keyword === 'etc') ||
             (step === 1 && !keyword) ||
             (step === 2 && !checked)
           }
@@ -488,10 +491,14 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
               AppAlert.info(i18n.t('his:cancelReasonAlert1'));
             } else if (
               step === 1 &&
-              inputText?.length < 20 &&
+              inputText?.length < REASON_MIN_LENGTH &&
               keyword === 'etc'
             ) {
-              AppAlert.info(i18n.t('his:cancelReasonAlert2'));
+              AppAlert.info(
+                i18n
+                  .t('his:cancelReasonAlert2')
+                  .replace('%', REASON_MIN_LENGTH),
+              );
             } else if (step === 2 && !checked) {
               AppAlert.info(i18n.t('his:cancelReasonAlert3'));
             }
