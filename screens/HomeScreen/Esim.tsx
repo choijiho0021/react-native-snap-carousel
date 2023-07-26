@@ -816,6 +816,7 @@ const Esim: React.FC<EsimProps> = ({
   }, [action.product, product.rule.timestamp_prod]);
 
   useEffect(() => {
+    const {token, iccid} = account;
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (
         appState.current.match(/inactive|background/) &&
@@ -828,6 +829,7 @@ const Esim: React.FC<EsimProps> = ({
           nextAppState,
         );
         action.product.refresh();
+        action.order.getSubs({iccid, token});
       }
 
       appState.current = nextAppState;
@@ -836,7 +838,7 @@ const Esim: React.FC<EsimProps> = ({
     return () => {
       subscription.remove();
     };
-  }, [action.product]);
+  }, [account, action.order, action.product]);
 
   useEffect(() => {
     const {mobile, loggedIn, iccid} = account;
