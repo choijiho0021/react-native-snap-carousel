@@ -4,6 +4,8 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   FlatList,
+  InputAccessoryView,
+  Platform,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -11,7 +13,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import _ from 'underscore';
+import _, {isEmpty} from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -114,6 +116,18 @@ const styles = StyleSheet.create({
     height: 40,
     marginHorizontal: 18,
   },
+
+  inputAccessoryText: {
+    ...appStyles.normal18Text,
+    textAlign: 'center',
+    margin: 5,
+  },
+  inputAccessory: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    backgroundColor: colors.lightGrey,
+    padding: 5,
+  },
 });
 
 type CancelOrderScreenNavigationProp = StackNavigationProp<
@@ -137,6 +151,8 @@ type CancelOrderScreenProps = {
   };
 };
 
+const inputAccessoryViewID = 'doneKbd';
+
 const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   navigation,
   route,
@@ -153,6 +169,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   const loading = useRef(false);
   const [inputText, setInputText] = useState('');
   const [keyword, setKeyword] = useState<CancelKeywordType>();
+  const keybd = useRef();
 
   // 이건 3단계 그릴 떄 필요
   const [method, setMethod] = useState<RkbPayment>();
@@ -305,8 +322,10 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           onChangeText={(v) => {
             setInputText(v);
           }}
+          ref={keybd}
           multiline
           value={inputText}
+          inputAccessoryViewID={inputAccessoryViewID}
           enablesReturnKeyAutomatically
           clearTextOnFocus={false}
           onFocus={() => {}}
@@ -438,6 +457,20 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
             setStep((prev) => (prev - 1 <= 0 ? 0 : prev - 1));
           }}
         />
+
+        {Platform.OS === 'ios' ? (
+          <InputAccessoryView nativeID={inputAccessoryViewID}>
+            <AppButton
+              style={styles.inputAccessory}
+              title={i18n.t('done')}
+              titleStyle={[
+                styles.inputAccessoryText,
+                {color: _.isEmpty(inputText) ? colors.white : colors.blue},
+              ]}
+              onPress={() => keybd.current?.blur()}
+            />
+          </InputAccessoryView>
+        ) : null}
 
         <AppButton
           style={styles.button}
