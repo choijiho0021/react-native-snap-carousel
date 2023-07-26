@@ -1,8 +1,8 @@
 import _, {isArray} from 'underscore';
+import moment from 'moment';
 import i18n from '@/utils/i18n';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import Env from '@/environment';
-import moment from 'moment';
 
 const {isProduction, specialCategories} = Env.get();
 
@@ -600,6 +600,17 @@ const cmiGetSubsStatus = ({iccid}: {iccid: string}) => {
   );
 };
 
+const cmiGetStatus = ({iccid}: {iccid: string}) => {
+  if (!iccid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
+
+  return api.callHttpGet<Usage>(
+    `${api.rokHttpUrl(api.path.rokApi.pv.cmiUsage)}&iccid=${iccid}&onlyStatus`,
+    (data) => data,
+    new Headers({'Content-Type': 'application/json'}),
+  );
+};
+
 // get usage data from svc server
 // CMI API를 사용하는 경우
 const quadcellGetData = ({
@@ -642,6 +653,24 @@ const quadcellGetUsage = ({
     `${api.rokHttpUrl(
       `${api.path.rokApi.pv.quadcell}/usage/quota`,
     )}&imsi=${imsi}`,
+    (data) => {
+      if (data?.result?.code === 0) {
+        return api.success(data?.objects);
+      }
+      return data;
+    },
+    new Headers({'Content-Type': 'application/json'}),
+  );
+};
+
+const quadcellGetStatus = ({imsi}: {imsi: string}) => {
+  if (!imsi)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
+
+  return api.callHttpGet<Usage>(
+    `${api.rokHttpUrl(
+      `${api.path.rokApi.pv.quadcell}/usage/quota`,
+    )}&imsi=${imsi}&onlyStatus`,
     (data) => {
       if (data?.result?.code === 0) {
         return api.success(data?.objects);
@@ -841,7 +870,9 @@ export default {
   getSubsUsage,
   cmiGetSubsUsage,
   cmiGetSubsStatus,
+  cmiGetStatus,
   quadcellGetData,
+  quadcellGetStatus,
   getHkRegStatus,
   bcGetSubsUsage,
   quadcellGetUsage,
