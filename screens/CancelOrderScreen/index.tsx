@@ -454,6 +454,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           title={i18n.t('his:backStep')}
           titleStyle={styles.secondaryButtonText}
           disabled={step === 0}
+          disableStyle={{borderWidth: 0}}
           onPress={() => {
             setStep((prev) => (prev - 1 <= 0 ? 0 : prev - 1));
           }}
