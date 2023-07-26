@@ -6,7 +6,7 @@ import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {OrderState, RkbOrder} from '@/redux/api/orderApi';
-import {STATUS_RESERVED} from '@/redux/api/subscriptionApi';
+import {STATUS_PENDING, STATUS_RESERVED} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 
@@ -49,7 +49,9 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
   const isCanceled = item.state === 'canceled';
   const [status, statusColor] = getStatus(
     item?.state,
-    item.usageList.find((v) => v.status === STATUS_RESERVED)?.status,
+    item.usageList.find((v) =>
+      [STATUS_RESERVED, STATUS_PENDING].includes(v.status),
+    )?.status,
   );
   const billingAmt = utils.addCurrency(item.totalPrice, item.dlvCost);
 

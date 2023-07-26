@@ -2,19 +2,21 @@
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import _ from 'underscore';
+import _, {object} from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
-import {RkbOrder} from '@/redux/api/orderApi';
+import {CancelKeywordType, RkbOrder} from '@/redux/api/orderApi';
 import {RkbSubscription, STATUS_RESERVED} from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
-import {cachedApi} from '@/redux/api/api';
+import api, {cachedApi} from '@/redux/api/api';
 import Env from '@/environment';
 import moment from 'moment';
 
 const {specialCategories} = Env.get();
+
+const getNextOrders = createAsyncThunk('order/getOrders', API.Order.getOrders);
 
 const init = createAsyncThunk('order/init', async (mobile?: string) => {
   const oldData = await retrieveData(`${API.Order.KEY_INIT_ORDER}.${mobile}`);
@@ -124,19 +126,16 @@ const getOrders = createAsyncThunk(
       page?: number;
       state?: 'all' | 'validation';
     },
-    {getState},
+    {getState, dispatch},
   ) => {
     if (page !== undefined) {
-      return API.Order.getOrders({user, token, page, state});
+      return dispatch(getNextOrders({user, token, page, state}));
     }
 
     const {order} = getState() as RootState;
-    return API.Order.getOrders({
-      user,
-      token,
-      page: (order.page || 0) + 1,
-      state,
-    });
+    return dispatch(
+      getNextOrders({user, token, page: (order.page || 0) + 1, state}),
+    );
   },
 );
 
@@ -147,65 +146,31 @@ const changeDraft = createAsyncThunk(
   },
 );
 
-const cancelAndGetOrder = createAsyncThunk(
-  'order/cancelAndGetOrder',
+const cancelDraftOrder = createAsyncThunk(
+  'order/cancelOrder',
   (
-    {orderId, token}: {orderId?: number; token?: string},
+    {
+      orderId,
+      token,
+      reason,
+    }: {orderId?: number; token?: string; reason?: CancelKeywordType},
     {dispatch, getState},
   ) => {
     const {
       account: {iccid},
     } = getState() as RootState;
 
-    return dispatch(cancelOrder({orderId, token})).then(({payload: resp}) => {
-      // 결제취소요청 후 항상 order를 가져온다
-      return dispatch(getOrderById({orderId, token})).then(({payload: val}) => {
-        if (resp.result === 0) {
-          if (val.result === 0) {
-            dispatch(accountAction.getAccount({iccid, token}));
-            return val;
-          }
-          return {
-            ...val,
-            result: 1,
-          };
-        }
-        if (val.result === 0) {
-          return {
-            ...val,
-            result: 1,
-          };
-        }
-        return resp;
-      });
-    });
-  },
-);
-
-// subs status 변환 후
-/* not used
-export const updateStatusAndGetSubs = createAsyncThunk(
-  'order/updateStatusAndGetSubs',
-  (
-    {uuid, status, token}: {uuid: string; status: string; token: string},
-    {dispatch, getState},
-  ) => {
-    const {
-      account: {iccid},
-    } = getState() as RootState;
-
-    return dispatch(updateSubsStatus({uuid, status, token})).then(
+    return dispatch(cancelOrder({orderId, token, reason})).then(
       ({payload: resp}) => {
-        // 결제취소요청 후 항상 order를 가져온다
-        if (resp.result === 0) {
-          return dispatch(getSubs({iccid, token}));
+        if (resp.result === 0 && resp.objects?.length > 0) {
+          return resp;
+        } else {
+          return {result: api.FAILED};
         }
-        return resp;
       },
     );
   },
 );
-*/
 
 const mergeSubs = (
   org: ImmutableMap<string, RkbSubscription[]>,
@@ -231,6 +196,10 @@ const mergeSubs = (
   );
 
   return subsToMap;
+};
+
+export const isExpiredDraft = (orderDate: string) => {
+  return !(moment().diff(moment(orderDate), 'day') < 7);
 };
 
 // 이건 머지로 하면 안되겠다. 중복 데이터 때문에
@@ -315,12 +284,17 @@ const slice = createSlice({
       const {objects, result} = action.payload;
 
       if (action.meta.arg?.state === 'validation') {
+        // 이전과 달리 동작하는 이유, 2번째 object undefined 일때  undefined.filter 시도
+        // promise rejection으로 2번째 undefined을 state.drafts에 저장 안함
+        // 2번 호출 원인 분석 필요
         state.drafts =
           objects
-            .filter((r) => moment().diff(moment(r.orderDate), 'day') < 7)
+            .filter((r) => !isExpiredDraft(r.orderDate))
             .sort((a, b) => {
               return a.orderDate < b.orderDate ? 1 : -1;
             }) || [];
+
+        // 기존 코드도 마찬가지, undefined.length 시도 -> promise rejection
       } else if (result === 0 && objects.length > 0) {
         // 기존에 있던 order에 새로운 order로 갱신
         const orders = ImmutableMap(state.orders).merge(
@@ -348,7 +322,22 @@ const slice = createSlice({
       return state;
     });
 
-    builder.addCase(cancelOrder.fulfilled, (state) => {
+    builder.addCase(cancelOrder.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      const {orders} = state;
+
+      const orderId = action?.meta?.arg?.orderId;
+      const order = orders.get(orderId);
+
+      if (result === 0 && objects[0]?.state && order) {
+        const updateOrder = orders.set(orderId, {
+          ...order,
+          state: objects[0].state,
+        });
+        state.orders = updateOrder;
+      }
+
       return state;
     });
 
@@ -450,7 +439,7 @@ export const actions = {
   updateSubsInfo,
   updateSubsAndOrderTag,
   updateSubsGiftStatus,
-  cancelAndGetOrder,
+  cancelDraftOrder,
   checkAndGetOrderById,
   changeDraft,
   cmiGetSubsUsage,

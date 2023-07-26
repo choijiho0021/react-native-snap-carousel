@@ -54,6 +54,8 @@ interface AppButtonProps {
   viewStyle?: ViewStyle;
   pressedStyle?: ViewStyle;
   disableStyle?: ViewStyle;
+  disabledCanOnPress?: boolean; // disabled인데 클릭을 원하는 경우
+  disabledOnPress?: () => void;
 }
 
 const AppButton: React.FC<AppButtonProps> = ({
@@ -76,6 +78,8 @@ const AppButton: React.FC<AppButtonProps> = ({
   viewStyle,
   pressedStyle,
   disableStyle,
+  disabledCanOnPress = false,
+  disabledOnPress = () => {},
 }) => {
   const [pressed, setPressed] = useState(false);
   return (
@@ -97,10 +101,10 @@ const AppButton: React.FC<AppButtonProps> = ({
               : undefined)),
         disabled && disableStyle,
       ]}
-      disabled={disabled}
+      disabled={!disabledCanOnPress && disabled}
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
-      onPress={onPress}>
+      onPress={disabled ? disabledOnPress : onPress}>
       <View
         style={[
           viewStyle || styles.container,

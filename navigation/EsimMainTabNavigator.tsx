@@ -66,6 +66,9 @@ import AddOnScreen from '@/screens/AddOnScreen';
 import ChargeAgreementScreen from '@/screens/ChargeAgreementScreen';
 import InvitePromoScreen from '@/screens/InvitePromoScreen';
 import DraftScreen from '@/screens/DraftScreen';
+import DraftResultScreen from '@/screens/DraftScreen/DraftResult';
+import CancelOrderScreen from '@/screens/CancelOrderScreen';
+import CancelResultScreen from '@/screens/CancelOrderScreen/CancelResult';
 
 const {esimGlobal} = Env.get();
 
@@ -304,6 +307,9 @@ function MyPageStackComponent() {
         })}
       />
       <MyPageStack.Screen name="Draft" component={DraftScreen} />
+      <MyPageStack.Screen name="DraftResult" component={DraftResultScreen} />
+      <MyPageStack.Screen name="CancelOrder" component={CancelOrderScreen} />
+      <MyPageStack.Screen name="CancelResult" component={CancelResultScreen} />
 
       <MyPageStack.Group screenOptions={{animationEnabled: true}}>
         <MyPageStack.Screen
