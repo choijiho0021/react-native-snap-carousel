@@ -162,15 +162,16 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
     navigation.setOptions({
       title: null,
       headerLeft: () => <AppBackButton title={i18n.t('his:cancelDraft')} />,
-      headerRight: () => (
-        <AppSvgIcon
-          name="closeModal"
-          style={styles.btnCnter}
-          onPress={() => navigation.goBack()}
-        />
-      ),
+      headerRight: () =>
+        step !== 0 && (
+          <AppSvgIcon
+            name="closeModal"
+            style={styles.btnCnter}
+            onPress={() => navigation.goBack()}
+          />
+        ),
     });
-  }, [navigation]);
+  }, [navigation, step]);
 
   useEffect(() => {
     if (route?.params?.order) {
