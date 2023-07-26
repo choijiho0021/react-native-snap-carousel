@@ -243,9 +243,13 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   }, [getProdDate, order, product.prodList]);
 
   const renderItem = useCallback(({item}: {item: ProdDesc}) => {
-    return Array.from({length: item.qty}, (_, index) => {
-      return <ProductDetailInfo key={item.title + index} item={item} />;
-    });
+    return (
+      <>
+        {Array.from({length: item.qty}, (_, index) => {
+          return <ProductDetailInfo key={item.title + index} item={item} />;
+        })}
+      </>
+    );
   }, []);
 
   const renderStep1 = useCallback(() => {
