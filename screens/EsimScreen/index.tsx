@@ -374,16 +374,19 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           key={item.key}
           flatListRef={flatListRef}
           mainSubs={item}
-          onClick={(item) => {
-            action.order.changeDraft({
-              orderId: item?.orderId,
-              token,
+          onClick={(currentOrder) => {
+            navigate(navigation, route, 'EsimStack', {
+              tab: 'MyPageStack',
+              screen: 'Draft',
+              params: {
+                order: currentOrder,
+              },
             });
           }}
         />
       );
     },
-    [action.order, token],
+    [navigation, route],
   );
 
   const info = useCallback(
@@ -397,7 +400,17 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             navigation={navigation}
           />
           {renderInfo(navigation)}
-          <View>{order.drafts?.map((item) => renderDraft(item))}</View>
+
+          <View>
+            <View>
+              <AppText>발권이 필요한 상품 굵은 글씨</AppText>
+              <View style={{flexDirection: 'row'}}>
+                <AppText>종모양</AppText>
+                <AppText>발권 후 상품 정보를 확인하실 수 있어요!</AppText>
+              </View>
+            </View>
+            <View>{order.drafts?.map((item) => renderDraft(item))}</View>
+          </View>
         </View>
       ),
     [balance, expDate, iccid, navigation, order.drafts, renderDraft],
