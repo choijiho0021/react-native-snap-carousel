@@ -207,37 +207,40 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [subsList, setSubsList] = useState<RkbSubscription[][]>();
   const tabBarHeight = useBottomTabBarHeight();
 
-  const onRefresh = useCallback(() => {
-    if (iccid) {
-      setRefreshing(true);
+  const onRefresh = useCallback(
+    (hidden: boolean) => {
+      if (iccid) {
+        setRefreshing(true);
 
-      action.order
-        .getSubsWithToast({iccid, token})
-        .then(() => {
-          if (!esimGlobal) {
-            action.order.getStoreSubsWithToast({mobile, token});
-          }
-          action.account.getAccount({iccid, token});
-          action.order.getOrders({
-            user: mobile,
-            token,
-            state: 'validation',
-            page: 0,
+        action.order
+          .getSubsWithToast({iccid, token, hidden})
+          .then(() => {
+            if (!esimGlobal) {
+              action.order.getStoreSubsWithToast({mobile, token});
+            }
+            action.account.getAccount({iccid, token, hidden});
+            action.order.getOrders({
+              user: mobile,
+              token,
+              state: 'validation',
+              page: 0,
+            });
+          })
+          .finally(() => {
+            setRefreshing(false);
+            setIsFirstLoad(false);
           });
-        })
-        .finally(() => {
-          setRefreshing(false);
-          setIsFirstLoad(false);
-        });
-    }
-  }, [action.account, action.order, iccid, mobile, token]);
+      }
+    },
+    [action.account, action.order, iccid, mobile, token],
+  );
 
   useEffect(() => {
     if (isFocused) {
-      onRefresh();
+      onRefresh(isEditMode);
       setIsFirstLoad(true);
     }
-  }, [isFocused, onRefresh]);
+  }, [isEditMode, isFocused, onRefresh]);
 
   const empty = useCallback(() => {
     return _.isEmpty(order.drafts) ? (
@@ -596,7 +599,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       </View>
       <FlatList
         ref={flatListRef}
-        data={subsList}
+        data={subsList?.filter((elm) =>
+          isEditMode ? true : elm[0].hide === isEditMode,
+        )}
         keyExtractor={(item) => item[item.length - 1].nid.toString()}
         ListHeaderComponent={isEditMode ? undefined : info}
         renderItem={renderSubs}

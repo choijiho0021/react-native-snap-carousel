@@ -324,7 +324,7 @@ const EsimSubs = ({
     [expired, mainSubs.giftStatusCd, isCharged, isDraft],
   );
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
-  const [showSubs, setShowSubs] = useState<boolean>(!mainSubs.hide || true);
+  const [showSubs, setShowSubs] = useState<boolean>(!mainSubs.hide);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
   const isBc = useMemo(
     () => mainSubs.partner === 'billionconnect',

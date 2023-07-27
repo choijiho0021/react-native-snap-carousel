@@ -37,7 +37,12 @@ const cancelOrder = createAsyncThunk(
 
 const getSubs = createAsyncThunk(
   'order/getSubs',
-  async (param: {iccid?: string; token?: string; prodType?: string}) =>
+  async (param: {
+    iccid?: string;
+    token?: string;
+    prodType?: string;
+    hidden?: boolean;
+  }) =>
     cachedApi(`cache.subs.${param?.iccid}`, API.Subscription.getSubscription)(
       param,
       {
@@ -48,7 +53,7 @@ const getSubs = createAsyncThunk(
 
 const getStoreSubs = createAsyncThunk(
   'order/getStoreSubs',
-  async (param: {mobile?: string; token?: string}) =>
+  async (param: {mobile?: string; token?: string; hidden?: boolean}) =>
     cachedApi(
       `cache.store.${param?.mobile}`,
       API.Subscription.getStoreSubscription,
