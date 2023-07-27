@@ -2,6 +2,7 @@
 import React, {MutableRefObject, useCallback, useMemo} from 'react';
 import {Pressable, StyleSheet, View, FlatList} from 'react-native';
 import {connect} from 'react-redux';
+import moment from 'moment';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -13,20 +14,16 @@ import {utils} from '@/utils/utils';
 import {RootState} from '@/redux';
 import {ProductModelState} from '../../../redux/modules/product';
 import {RkbOrder} from '@/redux/api/orderApi';
-import moment from 'moment';
 
 const styles = StyleSheet.create({
   draftButtonFrame: {
     marginHorizontal: 20,
   },
   usageListContainer: {
-    marginTop: 24,
     marginHorizontal: 20,
-    backgroundColor: colors.gray3,
-  },
-  infoRadiusBorder: {
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 24,
+    backgroundColor: colors.white,
   },
   draftButton: {
     flex: 1,
@@ -40,7 +37,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 10,
   },
   inactiveContainer: {
     marginBottom: 6,
@@ -67,15 +63,6 @@ const styles = StyleSheet.create({
   btnFrame: {
     flex: 1,
     flexDirection: 'row',
-  },
-  moreInfoContentDraft: {
-    backgroundColor: colors.gray03,
-    paddingBottom: 20,
-    paddingLeft: 20,
-    paddingRight: 20,
-    borderTopColor: '#eeeeee',
-    borderBottomLeftRadius: 3,
-    borderBottomRightRadius: 3,
   },
   topInfo: {
     marginTop: 24,
@@ -134,7 +121,7 @@ const EsimDraftSubs = ({
 
   const topInfoDraft = useCallback(() => {
     return (
-      <View style={[styles.topInfo, {marginTop: 28}]}>
+      <View style={[styles.topInfo]}>
         {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
           <View style={styles.inactiveContainer}>
             <AppText style={styles.normal14Gray}>
@@ -143,30 +130,9 @@ const EsimDraftSubs = ({
             <AppText style={styles.normal14Gray}>{mainSubs.orderNo}</AppText>
           </View>
         )}
-        <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal14Gray}>
-            {i18n.t('esim:draftExpire')}
-          </AppText>
-          <AppText style={styles.normal14Gray}>{`${utils.toDateString(
-            expiredDate,
-            'YYYY.MM.DD HH:MM:SS',
-          )}`}</AppText>
-        </View>
-
-        <View
-          style={{
-            backgroundColor: colors.black,
-            height: 28,
-            justifyContent: 'center',
-            marginTop: 10,
-          }}>
-          <AppText style={{alignSelf: 'center', color: colors.white}}>
-            {i18n.t('esim:draftNotice')}
-          </AppText>
-        </View>
       </View>
     );
-  }, [expiredDate, mainSubs.orderNo, mainSubs.type]);
+  }, [mainSubs.orderNo, mainSubs.type]);
 
   const renderDraftBtn = useCallback(() => {
     return (
@@ -185,14 +151,31 @@ const EsimDraftSubs = ({
     );
   }, [mainSubs, onClick]);
 
+  const renderExpiredDate = useCallback(() => {
+    return (
+      <View style={{marginTop: 0}}>
+        <View style={styles.inactiveContainer}>
+          <AppText style={styles.normal14Gray}>
+            {i18n.t('esim:draftExpire')}
+          </AppText>
+          <AppText style={styles.normal14Gray}>{`${utils.toDateString(
+            expiredDate,
+            'YYYY.MM.DD HH:MM:SS',
+          )}`}</AppText>
+        </View>
+      </View>
+    );
+  }, []);
+
   const renderDraft = useCallback(() => {
     return (
       <View style={styles.usageListContainer}>
-        <View style={styles.infoRadiusBorder}>{titleDraft()}</View>
-        <View style={styles.moreInfoContentDraft}>{topInfoDraft()}</View>
+        <View>{renderExpiredDate()}</View>
+        <View>{titleDraft()}</View>
+        <View>{topInfoDraft()}</View>
       </View>
     );
-  }, [titleDraft, topInfoDraft]);
+  }, [renderExpiredDate, titleDraft, topInfoDraft]);
 
   return (
     <View>
