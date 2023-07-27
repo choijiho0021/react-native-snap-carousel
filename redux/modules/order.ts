@@ -371,12 +371,14 @@ const slice = createSlice({
       const {subs} = state;
 
       if (result === 0 && objects[0]) {
-        const subsIccid = subs.get(objects[0]?.iccid)?.map((s) => {
-          if (s.uuid === objects[0].uuid) s.hide = objects[0]?.hide;
+        const changeSubs = subs.get(objects[0]?.iccid)?.map((s) => {
+          if (objects.map((elm) => elm.uuid).includes(s.uuid)) {
+            s.hide = objects[0].hide;
+          }
           return s;
         });
 
-        if (subsIccid) subs.set(iccid, subsIccid);
+        if (changeSubs) subs.set(objects[0].iccid, changeSubs);
         state.subs = subs;
       }
     });

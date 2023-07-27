@@ -271,6 +271,7 @@ const toSubsUpdate = (data) => {
       data.objects.map((item) => ({
         nid: item.nid,
         uuid: item.uuid,
+        iccid: item.iccid,
         // alias: item.alias?.startsWith('00001111') ? '' : item.alias,
         hide: item.hidden === '1',
       })),
