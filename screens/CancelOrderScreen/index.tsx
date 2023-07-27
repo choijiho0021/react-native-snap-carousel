@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import _, {isEmpty} from 'underscore';
+import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';

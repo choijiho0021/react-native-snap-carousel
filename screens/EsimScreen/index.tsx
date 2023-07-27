@@ -422,7 +422,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             <View
               style={{
                 marginHorizontal: 16,
-                marginVertical: 24,
+                marginTop: 24,
+                marginBottom: 8,
               }}>
               <AppText style={appStyles.bold24Text}>발권이 필요한 상품</AppText>
               <View

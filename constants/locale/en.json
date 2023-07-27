@@ -560,10 +560,11 @@
   "esim:A": "Activated",
   "esim:U": "Used up",
   "esim:sendGift": "Gift this Item",
-  "esim:draft": "Draft this Item",
+  "esim:draft": "총 %개 발권하기",
   "esim:etcCnt": "%% case",
   "esim:draftNotice": "You can check the product information after draft!",
   "esim:orderNo": "Purchase ID",
+  "esim:orderDate": "주문일자",
   "esim:draftExpire": "Draft Expiration Date",
   "esim:reserved": "Product Shipping",
 
