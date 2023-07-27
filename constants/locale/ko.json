@@ -411,7 +411,7 @@
   "his:nextStep": "다음 단계",
   "his:cancelButton": "구매 취소하기",
   "his:cancelReasonAlert1": "구매 취소 사유를 선택해주세요.",
-  "his:cancelReasonAlert2": "상세 사유를 20자 이상 입력해주세요.",
+  "his:cancelReasonAlert2": "상세 사유를 %자 이상 입력해주세요.",
   "his:cancelReasonAlert3": "구매 취소 전 유의사항 확인 후 동의해주세요.",
 
   "his:cancelReason:changed": "단순 변심",
@@ -571,7 +571,7 @@
   "esim:etcCnt": "외 %%개",
   "esim:orderNo": "주문번호",
   "esim:draftExpire": "발권 기한",
-  "esim:draftNotice": "발권 후 상품 정보를 확인할 수 있어요!",
+  "esim:draftNotice": "<b>발권 후</b> 상품 정보를 확인할 수 있어요!",
   "esim:S": "선물 완료",
   "esim:S2": "선물완료",
   "esim:reserved": "상품 발송중",

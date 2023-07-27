@@ -430,7 +430,7 @@
   "his:nextStep": "다음 단계",
   "his:cancelButton": "구매 취소하기",
   "his:cancelReasonAlert1": "구매 취소 사유를 선택해주세요.",
-  "his:cancelReasonAlert2": "상세 사유를 20자 이상 입력해주세요.",
+  "his:cancelReasonAlert2": "상세 사유를 %자 이상 입력해주세요.",
   "his:cancelReasonAlert3": "구매 취소 전 유의사항 확인 후 동의해주세요.",
 
   "his:cancelOrderFail2Title": "구매 취소\n실패하였습니다.",

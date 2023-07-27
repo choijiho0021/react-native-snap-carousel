@@ -581,6 +581,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           title={i18n.t('his:receipt')}
           titleStyle={styles.secondaryButtonText}
           disabled={!pymId}
+          disableStyle={{borderWidth: 0}}
           onPress={() => showReciept(pymId)}
         />
 

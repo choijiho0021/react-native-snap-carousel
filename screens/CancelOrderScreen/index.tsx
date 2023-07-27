@@ -4,6 +4,8 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   FlatList,
+  InputAccessoryView,
+  Platform,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -11,7 +13,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import _ from 'underscore';
+import _, {isEmpty} from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -114,6 +116,18 @@ const styles = StyleSheet.create({
     height: 40,
     marginHorizontal: 18,
   },
+
+  inputAccessoryText: {
+    ...appStyles.normal18Text,
+    textAlign: 'center',
+    margin: 5,
+  },
+  inputAccessory: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    backgroundColor: colors.lightGrey,
+    padding: 5,
+  },
 });
 
 type CancelOrderScreenNavigationProp = StackNavigationProp<
@@ -137,6 +151,8 @@ type CancelOrderScreenProps = {
   };
 };
 
+const inputAccessoryViewID = 'doneKbd';
+
 const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   navigation,
   route,
@@ -145,7 +161,8 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   product,
   pending,
 }) => {
-  const REASON_MAX_BYTE = 500;
+  const REASON_MAX_LENGTH = 500;
+  const REASON_MIN_LENGTH = 10;
   const [order, setOrder] = useState<RkbOrder>();
   const [prods, setProds] = useState<ProdDesc[]>([]);
   const [step, setStep] = useState(0);
@@ -153,6 +170,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   const loading = useRef(false);
   const [inputText, setInputText] = useState('');
   const [keyword, setKeyword] = useState<CancelKeywordType>();
+  const keybd = useRef();
 
   // 이건 3단계 그릴 떄 필요
   const [method, setMethod] = useState<RkbPayment>();
@@ -225,9 +243,13 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   }, [getProdDate, order, product.prodList]);
 
   const renderItem = useCallback(({item}: {item: ProdDesc}) => {
-    return Array.from({length: item.qty}, (_, index) => {
-      return <ProductDetailInfo key={item.title + index} item={item} />;
-    });
+    return (
+      <>
+        {Array.from({length: item.qty}, (_, index) => {
+          return <ProductDetailInfo key={item.title + index} item={item} />;
+        })}
+      </>
+    );
   }, []);
 
   const renderStep1 = useCallback(() => {
@@ -292,7 +314,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           <AppText style={appStyles.bold20Text}>
             {i18n.t('his:cancelReasonDetail')}
           </AppText>
-          <AppText>{`${inputText.length || ''}/${REASON_MAX_BYTE}`}</AppText>
+          <AppText>{`${inputText.length || '0'}/${REASON_MAX_LENGTH}`}</AppText>
         </View>
         <AppTextInput
           style={{
@@ -301,12 +323,14 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
             backgroundColor: 'gray',
             overflow: 'scroll',
           }}
-          maxLength={REASON_MAX_BYTE}
+          maxLength={REASON_MAX_LENGTH}
           onChangeText={(v) => {
             setInputText(v);
           }}
+          ref={keybd}
           multiline
           value={inputText}
+          inputAccessoryViewID={inputAccessoryViewID}
           enablesReturnKeyAutomatically
           clearTextOnFocus={false}
           onFocus={() => {}}
@@ -434,10 +458,25 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           title={i18n.t('his:backStep')}
           titleStyle={styles.secondaryButtonText}
           disabled={step === 0}
+          disableStyle={{borderWidth: 0}}
           onPress={() => {
             setStep((prev) => (prev - 1 <= 0 ? 0 : prev - 1));
           }}
         />
+
+        {Platform.OS === 'ios' ? (
+          <InputAccessoryView nativeID={inputAccessoryViewID}>
+            <AppButton
+              style={styles.inputAccessory}
+              title={i18n.t('done')}
+              titleStyle={[
+                styles.inputAccessoryText,
+                {color: _.isEmpty(inputText) ? colors.white : colors.blue},
+              ]}
+              onPress={() => keybd.current?.blur()}
+            />
+          </InputAccessoryView>
+        ) : null}
 
         <AppButton
           style={styles.button}
@@ -446,7 +485,9 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
             step === 2 ? i18n.t('his:cancelButton') : i18n.t('his:nextStep')
           }
           disabled={
-            (step === 1 && inputText?.length < 20 && keyword === 'etc') ||
+            (step === 1 &&
+              inputText?.length < REASON_MIN_LENGTH &&
+              keyword === 'etc') ||
             (step === 1 && !keyword) ||
             (step === 2 && !checked)
           }
@@ -455,10 +496,14 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
               AppAlert.info(i18n.t('his:cancelReasonAlert1'));
             } else if (
               step === 1 &&
-              inputText?.length < 20 &&
+              inputText?.length < REASON_MIN_LENGTH &&
               keyword === 'etc'
             ) {
-              AppAlert.info(i18n.t('his:cancelReasonAlert2'));
+              AppAlert.info(
+                i18n
+                  .t('his:cancelReasonAlert2')
+                  .replace('%', REASON_MIN_LENGTH),
+              );
             } else if (step === 2 && !checked) {
               AppAlert.info(i18n.t('his:cancelReasonAlert3'));
             }

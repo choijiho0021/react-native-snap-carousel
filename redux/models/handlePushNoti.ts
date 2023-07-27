@@ -3,18 +3,20 @@ import _ from 'underscore';
 // import {API} from '@/redux/api';
 
 class HandlePushNoti {
-  private navigation: any;
-  private payload: any;
-  private isForeground: boolean;
-  private isRegister: boolean;
-  private isNoticed: boolean;
-  private updateAccount: any;
-  private clearCurrentAccount: any;
-  private checkAndGetOrderById: any;
-  private order: any;
-  private auth: any;
-  private mobile: any;
-  private iccid: any;
+  protected navigation: any;
+  protected payload: any;
+  protected isForeground: boolean;
+  protected isRegister: boolean;
+  protected isNoticed: boolean;
+  protected updateAccount: any;
+  protected getSubs: any;
+  protected token: string;
+  protected clearCurrentAccount: any;
+  protected checkAndGetOrderById: any;
+  protected order: any;
+  protected auth: any;
+  protected mobile: any;
+  protected iccid: any;
 
   constructor(
     navigation: any, // replace 'any' with the actual type of 'navigation'
@@ -25,6 +27,8 @@ class HandlePushNoti {
       isForeground,
       isRegister,
       updateAccount,
+      getSubs,
+      token,
       clearCurrentAccount,
       checkAndGetOrderById,
       auth,
@@ -35,6 +39,8 @@ class HandlePushNoti {
       isForeground: boolean;
       isRegister: boolean;
       updateAccount: any;
+      getSubs: any;
+      token: string;
       clearCurrentAccount: any;
       checkAndGetOrderById: any;
       auth: any;
@@ -47,6 +53,8 @@ class HandlePushNoti {
     this.isRegister = isRegister;
     this.isNoticed = false;
     this.updateAccount = updateAccount;
+    this.getSubs = getSubs;
+    this.token = token;
     this.clearCurrentAccount = clearCurrentAccount;
     this.checkAndGetOrderById = checkAndGetOrderById;
     this.order = order;
