@@ -9,7 +9,7 @@ import {RkbPromotion} from '@/redux/api/promotionApi';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {API} from '@/redux/api';
-import ProgressiveImage from '../../../components/ProgressiveImage';
+import ProgressiveImage from '@/components/ProgressiveImage';
 import AppCarousel from '@/components/AppCarousel';
 import {sliderWidth} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
@@ -176,7 +176,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
           checked={checked}
           onPress={() => setChecked((prev) => !prev)}
         />
-        <AppText>{i18n.t('close:week')}</AppText>
+        <AppText style={{color: colors.black}}>{i18n.t('close:week')}</AppText>
       </Pressable>
     </AppModal>
   );

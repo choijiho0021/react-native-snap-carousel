@@ -9,7 +9,7 @@ import UsageItem from '@/screens/EsimScreen/components/UsageItem';
 import AppSnackBar from '@/components/AppSnackBar';
 import {MAX_WIDTH} from '@/constants/SliderEntry.style';
 import AppButton from '@/components/AppButton';
-import {appStyles} from '../../../constants/Styles';
+import {appStyles} from '@/constants/Styles';
 
 const styles = StyleSheet.create({
   titleStyle: {
