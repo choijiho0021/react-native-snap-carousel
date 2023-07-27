@@ -273,6 +273,17 @@ export const appStyles = StyleSheet.create({
     padding: 0,
     margin: 0,
   },
+  roboto14Text: {
+    fontFamily: 'Roboto-Regular',
+    fontSize: 14,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    lineHeight: 16,
+    letterSpacing: -0.03,
+    color: colors.black,
+    padding: 0,
+    margin: 0,
+  },
   roboto16Text: {
     fontFamily: 'Roboto-Regular',
     fontSize: 16,

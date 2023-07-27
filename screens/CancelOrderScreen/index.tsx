@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import _, {isEmpty} from 'underscore';
+import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -404,7 +404,11 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
   const cancelOrder = useCallback(() => {
     action.order
-      .cancelDraftOrder({orderId: order?.orderId, token, reason: keyword})
+      .cancelDraftOrder({
+        orderId: order?.orderId,
+        token,
+        reason: `${keyword}:${inputText}`,
+      })
       .then(({payload: resp}) => {
         navigation.navigate('CancelResult', {
           isSuccess: resp?.result === 0,
@@ -412,7 +416,15 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           orderId: order?.orderId,
         });
       });
-  }, [action.order, keyword, navigation, order?.orderId, prods, token]);
+  }, [
+    action.order,
+    inputText,
+    keyword,
+    navigation,
+    order?.orderId,
+    prods,
+    token,
+  ]);
 
   const renderCheckButton = useCallback(() => {
     return (
@@ -502,7 +514,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
               AppAlert.info(
                 i18n
                   .t('his:cancelReasonAlert2')
-                  .replace('%', REASON_MIN_LENGTH),
+                  .replace('%', REASON_MIN_LENGTH.toString()),
               );
             } else if (step === 2 && !checked) {
               AppAlert.info(i18n.t('his:cancelReasonAlert3'));

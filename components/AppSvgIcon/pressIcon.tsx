@@ -3433,6 +3433,23 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
 
+  bell: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="8" cy="13.334" r="2" fill="#EE4423" />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M8 .667a6 6 0 0 0-6 6v4.666l-.297.445a1 1 0 0 0 .832 1.555h10.93a1 1 0 0 0 .832-1.555L14 11.333V6.666a6 6 0 0 0-6-6z"
+        fill="#FFC82D"
+      />
+    </Svg>,
+  ],
+
   bannerCheck: [
     <Svg
       width="24"
