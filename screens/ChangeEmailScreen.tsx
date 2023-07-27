@@ -184,6 +184,7 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
               value={newEmail}
               onChangeText={onChangeText}
               placeholder={i18n.t('changeEmail:placeholder')}
+              placeholderTextColor="#aaaaaa"
             />
 
             <AppText style={[styles.helpText, {color: colors.errorBackground}]}>
