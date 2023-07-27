@@ -231,7 +231,7 @@ const toSubscription =
           prodDays: item.product_days || '',
           flagImage: item.field_flag_image || '',
           alias: item.alias?.startsWith('00001111') ? '' : item.alias,
-          hide: item.published !== '1',
+          hide: item.field_hidden === '1',
         })),
         // .sort(sortSubs),
       );
@@ -269,15 +269,10 @@ const toSubsUpdate = (data) => {
   if (data.result === 0 && isArray(data.objects)) {
     return api.success(
       data.objects.map((item) => ({
-        key: item.uuid[0].value,
-        uuid: item.uuid[0].value,
-        statusCd: item.field_status[0].value,
-        status: toStatus(item.field_status[0].value),
-        giftStatusCd:
-          giftCode[item.field_gift_status] || item.field_gift_status || '',
-        prodName: item.title[0].value,
-        alias: item.alias?.startsWith('00001111') ? '' : item.alias,
-        hide: item.published !== '1',
+        nid: item.nid,
+        uuid: item.uuid,
+        // alias: item.alias?.startsWith('00001111') ? '' : item.alias,
+        hide: item.hidden === '1',
       })),
     );
   }
