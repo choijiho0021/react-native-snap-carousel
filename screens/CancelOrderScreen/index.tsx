@@ -8,6 +8,7 @@ import {
   Platform,
   Pressable,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
@@ -54,6 +55,67 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
+  notiContainer: {
+    marginTop: 20,
+  },
+  notiFrame: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+    paddingVertical: 16,
+    paddingHorizontal: 17,
+    backgroundColor: colors.backGrey,
+  },
+  notiText: {
+    ...appStyles.normal14Text,
+    textAlign: 'center',
+    alignContent: 'center',
+    color: colors.violet500,
+  },
+  cancelCountNotiFrame: {
+    backgroundColor: colors.darkBlue,
+    alignItems: 'center',
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+    borderTopLeftRadius: 3,
+    borderTopRightRadius: 3,
+    paddingVertical: 12,
+
+    shadowColor: colors.shadow2,
+    shadowRadius: 10,
+
+    shadowOpacity: 0.16,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+  },
+  cancelItemFrame: {
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
+    borderBottomLeftRadius: 3,
+    borderBottomRightRadius: 3,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    shadowColor: colors.shadow2,
+    shadowRadius: 10,
+    shadowOpacity: 0.16,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+  },
+  cancelItem: {
+    paddingVertical: 24,
+    borderBottomWidth: 1,
+    borderColor: colors.whiteFive,
+  },
+  bannerCheck: {
+    width: 24,
+    height: 24,
+    marginRight: 9,
+  },
   button: {
     ...appStyles.normal16Text,
     flex: 1,
@@ -87,17 +149,36 @@ const styles = StyleSheet.create({
     color: colors.warmGrey,
   },
   reasonButton: {
-    width: 140,
-    height: 40,
-    marginLeft: 20,
-    marginRight: 0,
-    marginBottom: 10,
+    width: 161,
+    height: 52,
     borderWidth: 1,
+    borderColor: colors.lightGrey,
   },
   reasonButtonFrame: {
     marginTop: 20,
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    marginBottom: 24,
+    height: 116,
+    justifyContent: 'space-between',
+    alignContent: 'center',
+  },
+  reasonButtonText: {
+    ...appStyles.bold18Text,
+  },
+  reasonDetailTitle: {
+    ...appStyles.semiBold14Text,
+    marginBottom: 6,
+  },
+  reasonDetailLength: {
+    ...appStyles.semiBold14Text,
+    color: colors.warmGrey,
+  },
+  reasonDetailBox: {
+    height: 208,
+    ...appStyles.normal16Text,
+    textAlignVertical: 'top',
+    backgroundColor: colors.whiteFive,
+    overflow: 'scroll',
+    padding: 16,
   },
   bar: {
     borderBottomColor: colors.lightGrey,
@@ -127,6 +208,14 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     backgroundColor: colors.lightGrey,
     padding: 5,
+  },
+
+  cancelReasonTitleFrame: {
+    height: 69,
+    justifyContent: 'center',
+    marginTop: 24,
+    borderBottomWidth: 1,
+    borderColor: colors.black,
   },
 });
 
@@ -243,10 +332,17 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   }, [getProdDate, order, product.prodList]);
 
   const renderItem = useCallback(({item}: {item: ProdDesc}) => {
+    console.log('item : ', item);
     return (
       <>
-        {Array.from({length: item.qty}, (_, index) => {
-          return <ProductDetailInfo key={item.title + index} item={item} />;
+        {Array.from({length: item?.qty}, (_, index) => {
+          return (
+            <ProductDetailInfo
+              key={item.title + index}
+              item={item}
+              style={styles.cancelItem}
+            />
+          );
         })}
       </>
     );
@@ -254,49 +350,65 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
   const renderStep1 = useCallback(() => {
     return (
-      <FlatList
-        contentContainerStyle={[_.isEmpty(prods) && {flex: 1}]}
-        data={prods}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => item?.title + index}
-        ListHeaderComponent={
-          <View style={{marginTop: 10, marginBottom: 20}}>
+      <ScrollView>
+        <View style={styles.notiContainer}>
+          <View style={styles.notiFrame}>
+            <AppSvgIcon style={styles.bannerCheck} name="bannerCheck" />
             <AppStyledText
               text={i18n.t('his:cancelHeaderTitle')}
-              textStyle={[appStyles.bold20Text, {marginBottom: 20}]}
-              format={{b: [appStyles.bold20Text, {color: 'purple'}]}}
+              textStyle={styles.notiText}
+              format={{b: [appStyles.bold14Text, {color: colors.violet500}]}}
             />
+          </View>
+          <View style={styles.cancelCountNotiFrame}>
             <AppStyledText
               text={i18n
                 .t('his:cancelHeaderTitle2')
                 .replace('%', getCountProds(prods))}
-              textStyle={{...appStyles.bold20Text}}
-              format={{b: [appStyles.bold20Text, {color: 'red'}]}}
+              textStyle={{...appStyles.normal20Text, color: colors.white}}
+              format={{b: {...appStyles.bold20Text, color: colors.white}}}
             />
           </View>
-        }
-      />
+        </View>
+
+        {/* contentContainerStyle={[styles.cancelItemFrame]} */}
+
+        <View style={styles.cancelItemFrame}>
+          {prods.map((r) => renderItem({item: r}))}
+        </View>
+      </ScrollView>
     );
   }, [prods, renderItem]);
 
   const renderStep2 = useCallback(() => {
     return (
       <View>
-        <AppText style={appStyles.bold20Text}>
-          {i18n.t('his:cancelHeaderTitle3')}
-        </AppText>
+        <View style={styles.cancelReasonTitleFrame}>
+          <AppText style={appStyles.bold20Text}>
+            {i18n.t('his:cancelHeaderTitle3')}
+          </AppText>
+        </View>
         <View style={styles.reasonButtonFrame}>
           {[
             ['changed', 'mistake'] as CancelKeywordType[],
             ['complain', 'etc'] as CancelKeywordType[],
-          ].map((key: CancelKeywordType[]) => {
+          ].map((key: CancelKeywordType[], index) => {
             return [
-              <View key={key.toString()} style={{flexDirection: 'row'}}>
+              <View
+                key={key.toString()}
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignContent: 'space-between',
+                }}>
                 {key.map((btn) => (
                   <AppButton
                     key={`${btn}button`}
-                    style={styles.reasonButton}
-                    titleStyle={{color: 'black'}}
+                    style={[
+                      styles.reasonButton,
+                      index === 0 && {marginBottom: 12},
+                    ]}
+                    titleStyle={styles.reasonButtonText}
                     onPress={() => {
                       setKeyword(btn);
                       setInputText('');
@@ -311,18 +423,15 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         </View>
 
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <AppText style={appStyles.bold20Text}>
+          <AppText style={styles.reasonDetailTitle}>
             {i18n.t('his:cancelReasonDetail')}
           </AppText>
-          <AppText>{`${inputText.length || '0'}/${REASON_MAX_LENGTH}`}</AppText>
+          <AppText style={styles.reasonDetailLength}>{`${
+            inputText.length || '0'
+          }/${REASON_MAX_LENGTH}`}</AppText>
         </View>
         <AppTextInput
-          style={{
-            height: 150,
-            ...appStyles.normal16Text,
-            backgroundColor: 'gray',
-            overflow: 'scroll',
-          }}
+          style={styles.reasonDetailBox}
           maxLength={REASON_MAX_LENGTH}
           onChangeText={(v) => {
             setInputText(v);
@@ -360,7 +469,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
             labelStyle={styles.label2}
             format="price"
             valueStyle={appStyles.roboto16Text}
-            value={order.totalPrice}
+            value={order?.totalPrice}
             currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
             balanceStyle={[styles.normal16BlueTxt, {color: colors.black}]}
           />
@@ -389,7 +498,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         </View>
       </View>
     );
-  }, [order?.totalPrice, balanceCharge]);
+  }, [order, balanceCharge]);
 
   const renderGuide = useCallback(() => {
     return (

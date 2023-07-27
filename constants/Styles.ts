@@ -373,6 +373,7 @@ export const appStyles = StyleSheet.create({
     // fontFamily: "Roboto",
     fontSize: 20,
     fontStyle: 'normal',
+    fontWeight: 'normal',
     // lineHeight: 24,
     letterSpacing: 0.19,
     color: colors.black,

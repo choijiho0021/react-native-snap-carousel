@@ -212,15 +212,7 @@ const styles = StyleSheet.create({
   },
   draftFrame: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  draftIcon: {
-    marginLeft: 2,
-    width: 26,
-    height: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: 10,
   },
   cautionBox: {
     justifyContent: 'center',
@@ -283,6 +275,10 @@ const styles = StyleSheet.create({
     ...appStyles.bold12Text,
     lineHeight: 16,
     color: colors.white,
+  },
+  drafting: {
+    ...appStyles.bold14Text,
+    color: colors.clearBlue,
   },
 });
 
@@ -426,6 +422,11 @@ const EsimSubs = ({
     return (
       <View
         style={notCardInfo ? styles.infoRadiusBorderTop : styles.infoCardTop}>
+        {isDraft && (
+          <View style={styles.draftFrame}>
+            <AppText style={styles.drafting}>{i18n.t('esim:reserved')}</AppText>
+          </View>
+        )}
         <Pressable
           style={styles.prodTitle}
           onPress={() => {
@@ -478,19 +479,14 @@ const EsimSubs = ({
                   : i18n.t('esim:expired')}
               </AppText>
             </View>
-          ) : // R 발송중인 상태에선 상품 발송중 표시
+          ) : (
+            // R 발송중인 상태에선 상품 발송중 표시
 
-          isDraft ? (
-            <View style={styles.draftFrame}>
-              <AppText>{i18n.t('esim:reserved')}</AppText>
-              <View style={styles.draftIcon}>
+            !isDraft && (
+              <View style={styles.arrow}>
                 <AppSvgIcon name={showMoreInfo ? 'topArrow' : 'bottomArrow'} />
               </View>
-            </View>
-          ) : (
-            <View style={styles.arrow}>
-              <AppSvgIcon name={showMoreInfo ? 'topArrow' : 'bottomArrow'} />
-            </View>
+            )
           )}
         </Pressable>
       </View>

@@ -1,14 +1,9 @@
 /* eslint-disable no-nested-ternary */
-import React, {
-  MutableRefObject,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-import {Pressable, StyleSheet, View, FlatList} from 'react-native';
+import React, {useCallback, useState} from 'react';
+import {Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import moment from 'moment';
+import LinearGradient from 'react-native-linear-gradient';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -20,7 +15,6 @@ import {utils} from '@/utils/utils';
 import {RootState} from '@/redux';
 import {ProductModelState} from '../../../redux/modules/product';
 import {RkbOrder} from '@/redux/api/orderApi';
-import LinearGradient from 'react-native-linear-gradient';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 import {ProdDesc} from '@/screens/CancelOrderScreen/CancelResult';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -101,7 +95,11 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 3,
   },
-
+  ticket: {
+    width: 40,
+    height: 40,
+    marginRight: 8,
+  },
   topInfo: {
     marginTop: 16,
   },
@@ -128,29 +126,38 @@ const styles = StyleSheet.create({
 const EsimDraftSubs = ({
   mainSubs,
   onClick,
-  product,
   showDetail,
 }: {
   mainSubs: RkbOrder;
   expired: boolean;
   onClick: (subs: RkbOrder) => void;
   showDetail: boolean;
-  product: ProductModelState;
 }) => {
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
-
-  const [prod, setProd] = useState<ProdDesc>();
 
   // 발권 생성 7일 지난게 오늘보다 전이라면? 발권기한이 지났다.
   const expiredDate = moment(mainSubs.orderDate).add(7, 'day');
 
   const titleDraft = useCallback(() => {
     return (
-      <Pressable style={styles.prodTitle} onPress={() => {}}>
+      <Pressable
+        style={styles.prodTitle}
+        onPress={() => {
+          console.log('hellow');
+          setShowMoreInfo((prev) => !prev);
+        }}>
         <View>
-          <View style={{flexDirection: 'row'}}>
-            {renderPromoFlag(mainSubs.orderItems[0].promoFlag || [], false)}
-            <AppText style={styles.draftTitleMainText}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <AppSvgIcon name="ticket" style={styles.ticket} />
+            <AppText
+              style={styles.draftTitleMainText}
+              numberOfLines={2}
+              ellipsizeMode="tail">
               {`${mainSubs.orderItems[0].title} `}
             </AppText>
             {mainSubs.orderItems?.length > 1 && (
@@ -239,16 +246,20 @@ const EsimDraftSubs = ({
       <View style={[styles.usageListContainer, {borderBottomWidth: 1}]}>
         <View>{renderExpiredDate()}</View>
         <View>{titleDraft()}</View>
-        <View>{topInfoDraft()}</View>
+        {showMoreInfo && <View>{topInfoDraft()}</View>}
         <View style={styles.draftButtonFrame}>{renderDraftBtn()}</View>
       </View>
     );
-  }, [renderDraftBtn, renderExpiredDate, titleDraft, topInfoDraft]);
+  }, [
+    renderDraftBtn,
+    renderExpiredDate,
+    showMoreInfo,
+    titleDraft,
+    topInfoDraft,
+  ]);
 
   return <View>{renderDraft()}</View>;
 };
-
-// export default memo(EsimSubs);
 
 export default connect(({product}: RootState) => ({
   product,

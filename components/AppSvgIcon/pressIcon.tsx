@@ -1099,6 +1099,29 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  ticket: [
+    <Svg
+      width="40"
+      height="40"
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M34 8H6a4 4 0 0 0-4 4v16a4 4 0 0 0 4 4h28a4 4 0 0 0 4-4V12a4 4 0 0 0-4-4z"
+        fill="#F3EDFF"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M11 15a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3a2 2 0 1 0 0 4v3a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2v-3a2 2 0 1 0 0-4v-3z"
+        fill="#5B16EF"
+      />
+      <Path
+        d="M19.552 16.909a.5.5 0 0 1 .896 0l.611 1.237a.5.5 0 0 0 .377.274l1.366.198a.5.5 0 0 1 .277.853l-.989.964a.5.5 0 0 0-.143.442l.233 1.36a.5.5 0 0 1-.726.528l-1.221-.643a.5.5 0 0 0-.466 0l-1.221.643a.5.5 0 0 1-.726-.527l.233-1.36a.5.5 0 0 0-.143-.443l-.989-.964a.5.5 0 0 1 .277-.853l1.366-.198a.5.5 0 0 0 .377-.274l.61-1.237z"
+        fill="#FFC82D"
+      />
+    </Svg>,
+  ],
   localNotice1: [
     <Svg
       width="18"
