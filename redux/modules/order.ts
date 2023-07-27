@@ -142,7 +142,7 @@ const getOrders = createAsyncThunk(
 
 const changeDraft = createAsyncThunk(
   'order/draftOrder',
-  ({orderId, token}: {orderId: string; token?: string}) => {
+  ({orderId, token}: {orderId: number; token?: string}) => {
     return API.Order.draftOrder({orderId, token});
   },
 );
@@ -333,7 +333,10 @@ const slice = createSlice({
       const {orders} = state;
 
       const orderId = action?.meta?.arg?.orderId;
+
       const order = orders.get(orderId);
+
+      state.drafts = state.drafts.filter((d) => d.orderId !== orderId);
 
       if (result === 0 && objects[0]?.state && order) {
         const updateOrder = orders.set(orderId, {

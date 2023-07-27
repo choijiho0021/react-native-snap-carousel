@@ -306,11 +306,18 @@ function MyPageStackComponent() {
           headerShown: false,
         })}
       />
+
       <MyPageStack.Screen name="Draft" component={DraftScreen} />
       <MyPageStack.Screen name="DraftResult" component={DraftResultScreen} />
-      <MyPageStack.Screen name="CancelOrder" component={CancelOrderScreen} />
-      <MyPageStack.Screen name="CancelResult" component={CancelResultScreen} />
 
+      <MyPageStack.Group
+        screenOptions={{animationEnabled: true, presentation: 'modal'}}>
+        <MyPageStack.Screen name="CancelOrder" component={CancelOrderScreen} />
+        <MyPageStack.Screen
+          name="CancelResult"
+          component={CancelResultScreen}
+        />
+      </MyPageStack.Group>
       <MyPageStack.Group screenOptions={{animationEnabled: true}}>
         <MyPageStack.Screen
           name="PaymentGateway"

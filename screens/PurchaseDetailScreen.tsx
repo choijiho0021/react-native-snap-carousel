@@ -356,7 +356,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         <View style={styles.bar} />
         <View style={[styles.row, {marginBottom: 5}]}>
           <AppText style={appStyles.normal16Text}>
-            {i18n.t('cart:totalCost')}{' '}
+            {i18n.t('cart:totalCost')}
           </AppText>
           <View
             style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
@@ -581,6 +581,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           title={i18n.t('his:receipt')}
           titleStyle={styles.secondaryButtonText}
           disabled={!pymId}
+          disableStyle={{borderWidth: 0}}
           onPress={() => showReciept(pymId)}
         />
 

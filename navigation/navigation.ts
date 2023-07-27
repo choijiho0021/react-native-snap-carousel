@@ -201,10 +201,16 @@ export const navigate = (
   navigation: NavigationProp<any>,
   route: RouteProp<ParamListBase, string>,
   returnTab: string,
-  {tab, screen, params}: {tab?: string; screen: string; params?: object},
+  {
+    tab,
+    screen,
+    params,
+    initial = true, // false : 스택 상단에 해당 화면이 덮어씌워지지 않도록 방지
+  }: {tab?: string; screen: string; params?: object; initial?: boolean},
 ) => {
   navigation.navigate(tab || returnTab, {
     screen,
+    initial,
     params: {
       ...params,
       returnRoute: {
