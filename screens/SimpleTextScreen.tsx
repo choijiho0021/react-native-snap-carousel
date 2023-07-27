@@ -219,7 +219,11 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     const {rule} = route.params;
     const {iccid, token, loggedIn} = account;
 
-    if (rule && isProdEvent && eventStatus === 'open') {
+    if (
+      rule &&
+      isProdEvent &&
+      (eventStatus === 'open' || eventStatus === 'unknown')
+    ) {
       if (!loggedIn) {
         // 로그인 화면으로 이동
         navigation.navigate('Auth', {
