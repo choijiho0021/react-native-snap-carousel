@@ -58,6 +58,7 @@ export const colors = {
   greyishBrown: '#575757',
   redError: '#ee4423',
   shadow1: '#a6a8ac',
+  shadow2: 'rgba(166, 168, 172, 0.16)',
   gray2: '#979797',
   gray3: '#e2e8ed',
   darkBlue: '#194c94',
