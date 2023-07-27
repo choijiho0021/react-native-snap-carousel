@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
 type AppSwitchProps = {
   waitFor: number;
   value: boolean;
+  width: number;
   onPress: () => void;
   style?: StyleProp<ViewStyle>;
 };
@@ -37,6 +38,7 @@ type AppSwitchState = {
   animatedValue: Animated.Value;
   circlePosXStart: number;
   circlePosXEnd: number;
+  width: number;
   waitFor: number;
 };
 
@@ -52,7 +54,8 @@ export default class AppSwitch extends PureComponent<
     this.state = {
       animatedValue: new Animated.Value(0),
       circlePosXStart: 0,
-      circlePosXEnd: 30,
+      circlePosXEnd: typeof props.width === 'number' ? props.width - 30 : 30,
+      width: typeof props.width === 'number' ? props.width : 60,
       waitFor: typeof props.waitFor === 'number' ? props.waitFor : 1000,
     };
 
@@ -103,7 +106,7 @@ export default class AppSwitch extends PureComponent<
 
     return (
       <TouchableOpacity
-        style={[styles.container, style]}
+        style={[styles.container, style, {width: this.state.width}]}
         activeOpacity={0.7}
         onPress={this.onPress}>
         <Animated.View

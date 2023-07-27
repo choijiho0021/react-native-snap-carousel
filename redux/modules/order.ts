@@ -371,12 +371,12 @@ const slice = createSlice({
       const {subs} = state;
 
       if (result === 0 && objects[0]) {
-        const idx = subs.findIndex((item) => item.key === objects[0]?.key);
+        const subsIccid = subs.get(objects[0]?.iccid)?.map((s) => {
+          if (s.uuid === objects[0].uuid) s.hide = objects[0]?.hide;
+          return s;
+        });
 
-        if (!_.isEmpty(idx)) {
-          subs[idx].alias = objects[0]?.alias;
-          subs[idx].hide = objects[0]?.hide;
-        }
+        if (subsIccid) subs.set(iccid, subsIccid);
         state.subs = subs;
       }
     });
