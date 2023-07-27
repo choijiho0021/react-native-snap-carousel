@@ -5,11 +5,13 @@ import {createSlice} from '@reduxjs/toolkit';
 
 export type ModalModelState = {
   visible: boolean;
+  showTabbar: boolean;
   render?: () => React.ReactElement;
 };
 
 const initialState: ModalModelState = {
   visible: false,
+  showTabbar: true,
   render: undefined,
 };
 
@@ -25,6 +27,14 @@ const slice = createSlice({
     closeModal: (state) => {
       state.visible = false;
       state.render = undefined;
+      return state;
+    },
+    hideTabbar: (state) => {
+      state.showTabbar = false;
+      return state;
+    },
+    showTabbar: (state) => {
+      state.showTabbar = true;
       return state;
     },
   },
