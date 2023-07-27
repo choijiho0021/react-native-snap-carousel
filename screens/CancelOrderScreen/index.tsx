@@ -54,6 +54,48 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
+  notiContainer: {
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  notiFrame: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+    paddingVertical: 16,
+    paddingHorizontal: 17,
+    backgroundColor: colors.backGrey,
+  },
+  notiText: {
+    ...appStyles.normal14Text,
+    textAlign: 'center',
+    alignContent: 'center',
+    color: colors.violet500,
+  },
+  cancelCountNotiFrame: {
+    backgroundColor: colors.darkBlue,
+    alignItems: 'center',
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+    borderTopLeftRadius: 3,
+    borderTopRightRadius: 3,
+    paddingVertical: 12,
+  },
+  cancelItemFrame: {
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+    borderTopLeftRadius: 3,
+    borderTopRightRadius: 3,
+    paddingVertical: 12,
+  },
+  bannerCheck: {
+    width: 24,
+    height: 24,
+    marginRight: 9,
+  },
   button: {
     ...appStyles.normal16Text,
     flex: 1,
@@ -255,24 +297,29 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   const renderStep1 = useCallback(() => {
     return (
       <FlatList
-        contentContainerStyle={[_.isEmpty(prods) && {flex: 1}]}
+        contentContainerStyle={[styles.cancelItemFrame]}
         data={prods}
         renderItem={renderItem}
         keyExtractor={(item, index) => item?.title + index}
         ListHeaderComponent={
-          <View style={{marginTop: 10, marginBottom: 20}}>
-            <AppStyledText
-              text={i18n.t('his:cancelHeaderTitle')}
-              textStyle={[appStyles.bold20Text, {marginBottom: 20}]}
-              format={{b: [appStyles.bold20Text, {color: 'purple'}]}}
-            />
-            <AppStyledText
-              text={i18n
-                .t('his:cancelHeaderTitle2')
-                .replace('%', getCountProds(prods))}
-              textStyle={{...appStyles.bold20Text}}
-              format={{b: [appStyles.bold20Text, {color: 'red'}]}}
-            />
+          <View style={styles.notiContainer}>
+            <View style={styles.notiFrame}>
+              <AppSvgIcon style={styles.bannerCheck} name="bannerCheck" />
+              <AppStyledText
+                text={i18n.t('his:cancelHeaderTitle')}
+                textStyle={styles.notiText}
+                format={{b: [appStyles.bold14Text, {color: colors.violet500}]}}
+              />
+            </View>
+            <View style={styles.cancelCountNotiFrame}>
+              <AppStyledText
+                text={i18n
+                  .t('his:cancelHeaderTitle2')
+                  .replace('%', getCountProds(prods))}
+                textStyle={{...appStyles.normal20Text, color: colors.white}}
+                format={{b: {...appStyles.bold20Text, color: colors.white}}}
+              />
+            </View>
           </View>
         }
       />
@@ -360,7 +407,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
             labelStyle={styles.label2}
             format="price"
             valueStyle={appStyles.roboto16Text}
-            value={order.totalPrice}
+            value={order?.totalPrice}
             currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
             balanceStyle={[styles.normal16BlueTxt, {color: colors.black}]}
           />
@@ -389,7 +436,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         </View>
       </View>
     );
-  }, [order?.totalPrice, balanceCharge]);
+  }, [order, balanceCharge]);
 
   const renderGuide = useCallback(() => {
     return (
