@@ -90,7 +90,8 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       headerLeft: () => (
         <AppBackButton
           title={i18n.t(params?.isPaid ? 'his:paymentCompleted' : 'payment')}
-          isPaid={params.isPaid}
+          disabled={params.isPaid}
+          showIcon={!params.isPaid}
         />
       ),
     });
