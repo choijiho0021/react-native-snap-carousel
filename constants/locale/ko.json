@@ -395,8 +395,8 @@
   "his:draftCheckNotiBody": "• 사용하시려는 단말이 <b>eSIM 지원 단말인지 확인</b>해주세요.\n• <b>발권은 주문 건별로 진행</b>되며, 부분 발권은 불가합니다.\n• <b>발권 후에는 교환-환불이 불가</b>합니다.\n• <b>상품 구매일로부터 7일 경과 후에는 자동 발권처리</b>되며, <b>자동 발권 후에는 교환-환불 불가</b>합니다.\n• 발권 전 취소-환불을 원하시는 경우, 주문 건별로 취소-환불 신청하실 수 있습니다. 부분 취소-환불은 불가합니다.\n• 선물하기 기능은 발권 후 이용하실 수 있습니다.",
 
   "his:cancelDraft": "구매 취소하기",
-  "his:cancelHeaderTitle": "해당 주문은 발권 전 상태로\n취소 신청하실 수 있습니다.",
-  "his:cancelHeaderTitle2": "취소할 상품 <b>%개</b>를\n확인해주세요.",
+  "his:cancelHeaderTitle": "해당 주문은 발권 전 상태로\n<b>취소 신청하실 수 있습니다.</b>",
+  "his:cancelHeaderTitle2": "취소할 상품 <b>%개</b>를 확인해주세요!",
 
   "his:cancelHeaderTitle3": "구매 취소 사유를 알려주세요.",
   "his:cancelReasonDetail": "상세 사유",
@@ -728,6 +728,9 @@
   "esim:caution": "주의사항",
   "esim:caution:usage": "실 사용량과 차이가 있을 수 있습니다.",
   "esim:caution:time": "사용기간은 한국 표준 시(KST)를 기준으로 합니다.",
+
+  "esim:editMode": "목록편집",
+  "esim:editMode:confirm": "편집 완료",
 
   "redirectHK": "홍콩 실명등록",
   "redirectHK:info1": "홍콩 정부의 통신 정책 변경으로 인해, 홍콩 현지 데이터를 사용하고자 하는 모든 사용자(내/외국인 포함)는 홍콩 현지 통신사의 웹페이지에서 <b>실명 등록 후 현지 데이터 사용이 가능합니다.</b>",

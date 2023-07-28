@@ -36,11 +36,12 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
           width: '100%',
           flexDirection: 'row',
           justifyContent: 'space-between',
+          marginBottom: 8,
         }}>
         <SplitText
           numberOfLines={2}
           renderExpend={() => renderPromoFlag(item.promoFlag || [], false)}
-          style={{...appStyles.bold16Text, marginRight: 8}}
+          style={{...appStyles.bold16Text, marginRight: 6}}
           ellipsizeMode="tail">
           {utils.removeBracketOfName(item.title)}
         </SplitText>
@@ -51,9 +52,10 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
           numberOfLines={2}
           ellipsizeMode="tail"
           style={[
-            appStyles.normal14Text,
+            appStyles.medium14,
             {
               flex: 1,
+              color: colors.warmGrey,
               fontSize: isDeviceSize('medium') ? 14 : 16,
               lineHeight: isDeviceSize('medium') ? 20 : 22,
             },

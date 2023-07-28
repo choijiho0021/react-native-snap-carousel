@@ -59,6 +59,13 @@ import {utils} from '@/utils/utils';
 import EsimDraftSubs from './components/EsimDraftSubs';
 import {RkbOrder} from '@/redux/api/orderApi';
 import AppStyledText from '@/components/AppStyledText';
+import {
+  ModalModelState,
+  actions as modalActions,
+  ModalAction,
+} from '@/redux/modules/modal';
+import {actions} from '@/redux/modules/toast';
+import AppButton from '@/components/AppButton';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -119,6 +126,19 @@ const styles = StyleSheet.create({
   esimHeader: {
     height: 56,
   },
+  divider10: {
+    width: 375,
+    height: 10,
+    backgroundColor: colors.whiteTwo,
+  },
+  eidtMode: {
+    ...appStyles.bold16Text,
+    color: colors.clearBlue,
+  },
+  confirm: {
+    ...appStyles.normal18Text,
+    ...appStyles.confirm,
+  },
 });
 
 type EsimScreenProps = {
@@ -128,11 +148,13 @@ type EsimScreenProps = {
   loginPending: boolean;
   pending: boolean;
   account: AccountModelState;
+  modal: ModalModelState;
   order: OrderModelState;
 
   action: {
     order: OrderAction;
     account: AccountAction;
+    modal: ModalAction;
   };
 };
 
@@ -164,10 +186,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   route,
   action,
   account: {iccid, mobile, token, balance, expDate},
+  modal,
   order,
   pending,
   loginPending,
 }) => {
+  const [isEditMode, setIsEditMode] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -183,40 +207,43 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [subsList, setSubsList] = useState<RkbSubscription[][]>();
   const tabBarHeight = useBottomTabBarHeight();
 
-  const onRefresh = useCallback(() => {
-    if (iccid) {
-      setRefreshing(true);
+  const onRefresh = useCallback(
+    (hidden: boolean) => {
+      if (iccid) {
+        setRefreshing(true);
 
-      action.order
-        .getSubsWithToast({iccid, token})
-        .then(() => {
-          if (!esimGlobal) {
-            action.order.getStoreSubsWithToast({mobile, token});
-          }
-          action.account.getAccount({iccid, token});
-          action.order.getOrders({
-            user: mobile,
-            token,
-            state: 'validation',
-            page: 0,
+        action.order
+          .getSubsWithToast({iccid, token, hidden})
+          .then(() => {
+            if (!esimGlobal) {
+              action.order.getStoreSubsWithToast({mobile, token});
+            }
+            action.account.getAccount({iccid, token, hidden});
+            action.order.getOrders({
+              user: mobile,
+              token,
+              state: 'validation',
+              page: 0,
+            });
+          })
+          .finally(() => {
+            setRefreshing(false);
+            setIsFirstLoad(false);
           });
-        })
-        .finally(() => {
-          setRefreshing(false);
-          setIsFirstLoad(false);
-        });
-    }
-  }, [action.account, action.order, iccid, mobile, token]);
+      }
+    },
+    [action.account, action.order, iccid, mobile, token],
+  );
 
   useEffect(() => {
     if (isFocused) {
-      onRefresh();
+      onRefresh(isEditMode);
       setIsFirstLoad(true);
     }
-  }, [isFocused, onRefresh]);
+  }, [isEditMode, isFocused, onRefresh]);
 
-  const empty = useCallback(
-    () => (
+  const empty = useCallback(() => {
+    return _.isEmpty(order.drafts) ? (
       <View style={styles.nolist}>
         <AppIcon name="emptyESIM" size={176} />
         <AppText style={styles.blueText}>{i18n.t('his:noUsage1')}</AppText>
@@ -224,9 +251,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           {i18n.t('his:noUsage2')}
         </AppText>
       </View>
-    ),
-    [],
-  );
+    ) : (
+      <></>
+    );
+  }, [order.drafts]);
 
   const checkCmiData = useCallback(
     async (
@@ -362,10 +390,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             onPressUsage(subscription)
           }
           setShowModal={(visible: boolean) => setShowModal(visible)}
+          isEditMode={isEditMode}
         />
       );
     },
-    [onPressUsage],
+    [isEditMode, onPressUsage],
   );
 
   const renderDraft = useCallback(
@@ -403,50 +432,58 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           />
           {renderInfo(navigation)}
 
-          <View
-            style={{
-              backgroundColor: colors.white,
-              marginHorizontal: 20,
-              marginVertical: 24,
-              borderRadius: 3,
-              borderWidth: 1,
-              borderColor: colors.whiteFive,
-              shadowColor: colors.shadow2,
-              shadowRadius: 10,
-              shadowOpacity: 1,
-              shadowOffset: {
-                width: 0,
-                height: 4,
-              },
-            }}>
-            <View
-              style={{
-                marginHorizontal: 16,
-                marginTop: 24,
-                marginBottom: 8,
-              }}>
-              <AppText style={appStyles.bold24Text}>발권이 필요한 상품</AppText>
+          {order.drafts?.length > 0 && (
+            <>
               <View
                 style={{
-                  flexDirection: 'row',
-                  marginTop: 12,
-                  backgroundColor: colors.backGrey,
-                  paddingHorizontal: 16,
-                  paddingVertical: 8,
+                  backgroundColor: colors.white,
+                  marginHorizontal: 20,
+                  marginVertical: 24,
+                  borderRadius: 3,
+                  borderWidth: 1,
+                  borderColor: colors.whiteFive,
+                  shadowColor: colors.shadow2,
+                  shadowRadius: 10,
+                  shadowOpacity: 1,
+                  shadowOffset: {
+                    width: 0,
+                    height: 4,
+                  },
                 }}>
-                <AppSvgIcon name="bell" />
+                <View
+                  style={{
+                    marginHorizontal: 16,
+                    marginTop: 24,
+                    marginBottom: 8,
+                  }}>
+                  <AppText style={appStyles.bold24Text}>
+                    발권이 필요한 상품
+                  </AppText>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      marginTop: 12,
+                      backgroundColor: colors.backGrey,
+                      paddingHorizontal: 16,
+                      paddingVertical: 8,
+                    }}>
+                    <AppSvgIcon name="bell" />
 
-                <AppStyledText
-                  text={i18n.t(`esim:draftNotice`)}
-                  textStyle={{...appStyles.normal14Text}}
-                  format={{
-                    b: [appStyles.bold14Text, {color: colors.redError}],
-                  }}
-                />
+                    <AppStyledText
+                      text={i18n.t(`esim:draftNotice`)}
+                      textStyle={{...appStyles.normal14Text}}
+                      format={{
+                        b: [appStyles.bold14Text, {color: colors.redError}],
+                      }}
+                    />
+                  </View>
+                </View>
+                <View>{order.drafts?.map((item) => renderDraft(item))}</View>
               </View>
-            </View>
-            <View>{order.drafts?.map((item) => renderDraft(item))}</View>
-          </View>
+
+              <View style={styles.divider10} />
+            </>
+          )}
         </View>
       ),
     [balance, expDate, iccid, navigation, order.drafts, renderDraft],
@@ -536,29 +573,44 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <View style={[appStyles.header, styles.esimHeader]}>
         <AppText style={styles.title}>{i18n.t('esimList')}</AppText>
-        <AppSvgIcon
-          name="btnCnter"
-          style={styles.btnCnter}
-          onPress={() => {
-            navigate(navigation, route, 'EsimStack', {
-              tab: 'HomeStack',
-              screen: 'Contact',
-            });
-          }}
-        />
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          {isEditMode ? null : (
+            <Pressable
+              onPress={() => {
+                action.modal.hideTabbar();
+                setIsEditMode(true);
+              }}>
+              <AppText style={styles.eidtMode}>
+                {i18n.t('esim:editMode')}
+              </AppText>
+            </Pressable>
+          )}
+          <AppSvgIcon
+            name="btnCnter"
+            style={styles.btnCnter}
+            onPress={() => {
+              navigate(navigation, route, 'EsimStack', {
+                tab: 'HomeStack',
+                screen: 'Contact',
+              });
+            }}
+          />
+        </View>
       </View>
       <FlatList
         ref={flatListRef}
-        data={subsList}
+        data={subsList?.filter((elm) =>
+          isEditMode ? true : elm[0].hide === isEditMode,
+        )}
         keyExtractor={(item) => item[item.length - 1].nid.toString()}
-        ListHeaderComponent={info}
+        ListHeaderComponent={isEditMode ? undefined : info}
         renderItem={renderSubs}
         // onRefresh={this.onRefresh}
         // refreshing={refreshing}
-        extraData={subsList}
+        extraData={[subsList, isEditMode]}
         contentContainerStyle={[
           {paddingBottom: 34},
-          _.isEmpty(subsList) && {flex: 1},
+          _.isEmpty(subsList) && _.isEmpty(order.drafts) && {flex: 1},
         ]}
         ListEmptyComponent={empty}
         onScrollToIndexFailed={(rsp) => {
@@ -611,15 +663,27 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         textMessage={i18n.t('service:ready')}
         bottom={10}
       />
+      {isEditMode && (
+        <AppButton
+          style={styles.confirm}
+          title={i18n.t('esim:editMode:confirm')}
+          onPress={() => {
+            action.modal.showTabbar();
+            setIsEditMode(false);
+          }}
+          type="primary"
+        />
+      )}
       <ChatTalk visible bottom={(isIOS ? 100 : 70) - tabBarHeight} />
     </SafeAreaView>
   );
 };
 
 export default connect(
-  ({account, order, status}: RootState) => ({
+  ({account, order, status, modal}: RootState) => ({
     order,
     account,
+    modal,
     loginPending:
       status.pending[accountActions.logInAndGetAccount.typePrefix] ||
       status.pending[accountActions.getAccount.typePrefix] ||
@@ -633,6 +697,7 @@ export default connect(
     action: {
       order: bindActionCreators(orderActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
+      modal: bindActionCreators(modalActions, dispatch),
     },
   }),
 )(EsimScreen);

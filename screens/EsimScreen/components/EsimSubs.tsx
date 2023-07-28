@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -32,6 +33,13 @@ import AppStyledText from '@/components/AppStyledText';
 import AppModal from '@/components/AppModal';
 import {RootState} from '@/redux';
 import {ProductModelState} from '@/redux/modules/product';
+import AppSwitch from '@/components/AppSwitch';
+import {
+  actions as orderActions,
+  OrderAction,
+  OrderModelState,
+} from '@/redux/modules/order';
+import {AccountModelState} from '@/redux/modules/account';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -55,13 +63,21 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     backgroundColor: colors.white,
   },
-  infoCard: {
+  infoCardTop: {
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingTop: 16,
   },
-  infoRadiusBorder: {
+  infoRadiusBorderTop: {
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingTop: 8,
+  },
+  infoCardBottom: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+  },
+  infoRadiusBorderBottom: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
   },
   giftButton: {
     flex: 1,
@@ -196,15 +212,7 @@ const styles = StyleSheet.create({
   },
   draftFrame: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  draftIcon: {
-    marginLeft: 2,
-    width: 26,
-    height: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: 10,
   },
   cautionBox: {
     justifyContent: 'center',
@@ -268,6 +276,10 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     color: colors.white,
   },
+  drafting: {
+    ...appStyles.bold14Text,
+    color: colors.clearBlue,
+  },
 });
 
 const EsimSubs = ({
@@ -279,10 +291,13 @@ const EsimSubs = ({
   isChargeExpired,
   isCharged,
   showDetail = false,
+  isEditMode = false,
   onPressUsage,
   setShowModal,
 
+  account: {token},
   product,
+  action,
 }: {
   flatListRef?: MutableRefObject<FlatList<any> | undefined>;
   index: number;
@@ -292,10 +307,15 @@ const EsimSubs = ({
   isChargeExpired: boolean;
   isCharged: boolean;
   showDetail: boolean;
+  isEditMode: boolean;
   onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
   setShowModal: (visible: boolean) => void;
 
+  account: AccountModelState;
   product: ProductModelState;
+  action: {
+    order: OrderAction;
+  };
 }) => {
   const navigation = useNavigation();
   const isDraft = useMemo(() => mainSubs?.statusCd === 'R', [mainSubs]);
@@ -304,6 +324,7 @@ const EsimSubs = ({
     [expired, mainSubs.giftStatusCd, isCharged, isDraft],
   );
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
+  const [showSubs, setShowSubs] = useState<boolean>(!mainSubs.hide);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
   const isBc = useMemo(
     () => mainSubs.partner === 'billionconnect',
@@ -375,82 +396,112 @@ const EsimSubs = ({
     ],
   );
 
+  const renderSwitch = useCallback(() => {
+    return (
+      <AppSwitch
+        style={{marginRight: 10}}
+        value={showSubs}
+        onPress={async () => {
+          const {
+            payload: {result},
+          } = await action.order.updateSubsInfo({
+            token: token!,
+            uuid: mainSubs.uuid,
+            hide: !mainSubs.hide,
+          });
+          if (result === 0) setShowSubs((pre) => !pre);
+        }}
+        waitFor={1000}
+        width={40}
+      />
+    );
+  }, [action.order, mainSubs.hide, mainSubs.uuid, showSubs, token]);
+
   const title = useCallback(() => {
     const country = mainSubs.prodName?.split(' ')?.[0];
     return (
-      <Pressable
-        style={styles.prodTitle}
-        onPress={() => {
-          if (isDraft) return;
-
-          if (notCardInfo) {
-            setShowMoreInfo((prev) => !prev);
-            flatListRef?.current?.scrollToIndex({index, animated: true});
-          }
-        }}>
-        {mainSubs.flagImage !== '' && (
-          <Image
-            source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
-            style={{width: 40, height: 40, marginRight: 20}}
-          />
-        )}
-        <SplitText
-          key={mainSubs.key}
-          renderExpend={() =>
-            !isDisabled(mainSubs) &&
-            !isCharged &&
-            renderPromoFlag(mainSubs.promoFlag || [], mainSubs.isStore)
-          }
-          style={[
-            expired || mainSubs.giftStatusCd === 'S'
-              ? styles.usageTitleNormal
-              : styles.usageTitleBold,
-            {
-              alignSelf: 'center',
-              lineHeight: isDeviceSize('small') ? 26 : 28,
-              marginRight: 8,
-            },
-          ]}
-          numberOfLines={2}
-          ellipsizeMode="tail">
-          {isCharged && mainSubs.giftStatusCd !== 'S'
-            ? `${i18n.t('acc:rechargeDone')} ${utils.removeBracketOfName(
-                country,
-              )}`
-            : utils.removeBracketOfName(mainSubs.prodName)}
-        </SplitText>
-
-        {expired || mainSubs.giftStatusCd === 'S' ? (
-          <View style={styles.expiredBg}>
-            <AppText key={mainSubs.nid} style={appStyles.normal12Text}>
-              {mainSubs.giftStatusCd === 'S'
-                ? i18n.t('esim:S2')
-                : i18n.t('esim:expired')}
-            </AppText>
-          </View>
-        ) : // R 발송중인 상태에선 상품 발송중 표시
-
-        isDraft ? (
+      <View
+        style={notCardInfo ? styles.infoRadiusBorderTop : styles.infoCardTop}>
+        {isDraft && (
           <View style={styles.draftFrame}>
-            <AppText>{i18n.t('esim:reserved')}</AppText>
-            <View style={styles.draftIcon}>
-              <AppSvgIcon name={showMoreInfo ? 'topArrow' : 'bottomArrow'} />
-            </View>
-          </View>
-        ) : (
-          <View style={styles.arrow}>
-            <AppSvgIcon name={showMoreInfo ? 'topArrow' : 'bottomArrow'} />
+            <AppText style={styles.drafting}>{i18n.t('esim:reserved')}</AppText>
           </View>
         )}
-      </Pressable>
+        <Pressable
+          style={styles.prodTitle}
+          onPress={() => {
+            if (isDraft) return;
+
+            if (notCardInfo) {
+              setShowMoreInfo((prev) => !prev);
+              flatListRef?.current?.scrollToIndex({index, animated: true});
+            }
+          }}>
+          {isEditMode
+            ? renderSwitch()
+            : mainSubs.flagImage !== '' && (
+                <Image
+                  source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
+                  style={{width: 40, height: 40, marginRight: 20}}
+                />
+              )}
+          <SplitText
+            key={mainSubs.key}
+            renderExpend={() =>
+              !isDisabled(mainSubs) &&
+              !isCharged &&
+              renderPromoFlag(mainSubs.promoFlag || [], mainSubs.isStore)
+            }
+            style={[
+              expired || mainSubs.giftStatusCd === 'S'
+                ? styles.usageTitleNormal
+                : styles.usageTitleBold,
+              {
+                alignSelf: 'center',
+                lineHeight: isDeviceSize('small') ? 26 : 28,
+                marginRight: 8,
+              },
+            ]}
+            numberOfLines={2}
+            ellipsizeMode="tail">
+            {isCharged && mainSubs.giftStatusCd !== 'S'
+              ? `${i18n.t('acc:rechargeDone')} ${utils.removeBracketOfName(
+                  country,
+                )}`
+              : utils.removeBracketOfName(mainSubs.prodName)}
+          </SplitText>
+
+          {expired || mainSubs.giftStatusCd === 'S' ? (
+            <View style={styles.expiredBg}>
+              <AppText key={mainSubs.nid} style={appStyles.normal12Text}>
+                {mainSubs.giftStatusCd === 'S'
+                  ? i18n.t('esim:S2')
+                  : i18n.t('esim:expired')}
+              </AppText>
+            </View>
+          ) : (
+            // R 발송중인 상태에선 상품 발송중 표시
+
+            !isDraft && (
+              <View style={styles.arrow}>
+                <AppSvgIcon name={showMoreInfo ? 'topArrow' : 'bottomArrow'} />
+              </View>
+            )
+          )}
+        </Pressable>
+      </View>
     );
   }, [
     mainSubs,
+    notCardInfo,
+    isEditMode,
+    renderSwitch,
+    token,
+    action,
     expired,
     isCharged,
     isDraft,
     showMoreInfo,
-    notCardInfo,
     flatListRef,
     index,
   ]);
@@ -681,53 +732,46 @@ const EsimSubs = ({
           ? styles.cardExpiredBg
           : styles.shadow,
       ]}>
-      <View style={notCardInfo ? styles.infoRadiusBorder : styles.infoCard}>
-        {title()}
-        {isDraft ? <View /> : notCardInfo ? QRnCopyInfo() : topInfo()}
-      </View>
-      {showMoreInfo && (
-        <View style={showMoreInfo && styles.moreInfoContent}>
-          {/* 투명화창 예제 {true && mainSubs.statusCd === 'U' ? (
-            <View
-              style={{
-                top: 0,
-                height: 200,
-                width: '110%',
-                opacity: 0.9,
-                backgroundColor: 'white',
-                position: 'absolute',
-                zIndex: 100,
-              }}
-            />
-          ) : (
-            <View></View>
-          )} */}
-          {topInfo()}
-
-          {!!mainSubs.caution || (mainSubs.cautionList?.length || 0) > 0 ? (
-            <View style={styles.cautionBox}>
-              <View style={styles.cautionRow}>
-                <AppSvgIcon name="cautionIcon" style={{marginRight: 12}} />
-                <AppText style={styles.cautionTitle}>
-                  {i18n.t('esim:caution')}
-                </AppText>
-              </View>
-
-              <View>
-                {(mainSubs.cautionList || [])
-                  .concat(mainSubs.caution || [])
-                  ?.map(renderCautionList)}
-              </View>
-            </View>
-          ) : (
-            <View style={{height: 40}} />
-          )}
-
-          {renderHkBtn()}
-
-          {renderMoveBtn()}
+      {title()}
+      <View
+        pointerEvents={isEditMode ? 'none' : 'auto'}
+        style={{opacity: isEditMode ? 0.6 : 1}}>
+        <View
+          style={
+            notCardInfo ? styles.infoRadiusBorderBottom : styles.infoCardBottom
+          }>
+          {isDraft ? <View /> : notCardInfo ? QRnCopyInfo() : topInfo()}
         </View>
-      )}
+
+        {showMoreInfo && (
+          <View style={showMoreInfo && styles.moreInfoContent}>
+            {topInfo()}
+
+            {!!mainSubs.caution || (mainSubs.cautionList?.length || 0) > 0 ? (
+              <View style={styles.cautionBox}>
+                <View style={styles.cautionRow}>
+                  <AppSvgIcon name="cautionIcon" style={{marginRight: 12}} />
+                  <AppText style={styles.cautionTitle}>
+                    {i18n.t('esim:caution')}
+                  </AppText>
+                </View>
+
+                <View>
+                  {(mainSubs.cautionList || [])
+                    .concat(mainSubs.caution || [])
+                    ?.map(renderCautionList)}
+                </View>
+              </View>
+            ) : (
+              <View style={{height: 40}} />
+            )}
+
+            {renderHkBtn()}
+
+            {renderMoveBtn()}
+          </View>
+        )}
+      </View>
       <AppModal
         type="info"
         buttonStyle={styles.btnStyle}
@@ -745,6 +789,14 @@ const EsimSubs = ({
   );
 };
 
-export default connect(({product}: RootState) => ({
-  product,
-}))(EsimSubs);
+export default connect(
+  ({account, product}: RootState) => ({
+    account,
+    product,
+  }),
+  (dispatch) => ({
+    action: {
+      order: bindActionCreators(orderActions, dispatch),
+    },
+  }),
+)(EsimSubs);
