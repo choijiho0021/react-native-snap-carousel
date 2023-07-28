@@ -3,10 +3,8 @@ import {StackNavigationProp} from '@react-navigation/stack';
 
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
-  FlatList,
   InputAccessoryView,
   Platform,
-  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -38,13 +36,11 @@ import {
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import AppStyledText from '@/components/AppStyledText';
-import AppIcon from '@/components/AppIcon';
 import LabelText from '@/components/LabelText';
 import {countRokebiCash, isRokebiCash} from '../PurchaseDetailScreen';
 import AppTextInput from '@/components/AppTextInput';
 import Env from '@/environment';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import ProductDetailInfo from './component/ProductDetailInfo';
 import {Currency} from '@/redux/api/productApi';
 import {ProdDesc} from './CancelResult';
 import AppSnackBar from '@/components/AppSnackBar';
@@ -63,9 +59,6 @@ const styles = StyleSheet.create({
   stepFrame: {
     marginHorizontal: 20,
   },
-  notiContainer: {
-    marginTop: 20,
-  },
   notiFrame: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -79,45 +72,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignContent: 'center',
     color: colors.violet500,
-  },
-  cancelCountNotiFrame: {
-    backgroundColor: colors.darkBlue,
-    alignItems: 'center',
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
-    borderTopLeftRadius: 3,
-    borderTopRightRadius: 3,
-    paddingVertical: 12,
-
-    shadowColor: colors.shadow2,
-    shadowRadius: 10,
-
-    shadowOpacity: 0.16,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-  },
-  cancelItemFrame: {
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: colors.whiteFive,
-    borderBottomLeftRadius: 3,
-    borderBottomRightRadius: 3,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    shadowColor: colors.shadow2,
-    shadowRadius: 10,
-    shadowOpacity: 0.16,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-  },
-  cancelItem: {
-    paddingVertical: 24,
-    borderBottomWidth: 1,
-    borderColor: colors.whiteFive,
   },
   bannerCheck: {
     width: 24,
@@ -143,13 +97,6 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     ...appStyles.normal18Text,
     textAlign: 'center',
-  },
-
-  normal16BlueTxt: {
-    ...appStyles.normal16Text,
-    color: colors.clearBlue,
-    lineHeight: 24,
-    letterSpacing: 0.24,
   },
   label2: {
     ...appStyles.normal14Text,
@@ -243,49 +190,6 @@ const styles = StyleSheet.create({
     height: 69,
     justifyContent: 'center',
     borderBottomWidth: 1,
-  },
-  refundGuideFrame: {
-    paddingTop: 41,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    backgroundColor: colors.backGrey,
-  },
-
-  refundGuideTitle: {
-    flexDirection: 'row',
-    marginBottom: 12,
-  },
-  refundGuideBody: {
-    ...appStyles.normal14Text,
-    lineHeight: 22,
-  },
-  refundGuideBodyBold: {
-    ...appStyles.bold14Text,
-    lineHeight: 22,
-  },
-  bannerMark: {
-    marginRight: 8,
-  },
-
-  checkFrame: {
-    padding: 20,
-    marginBottom: 20,
-    borderRadius: 3,
-    backgroundColor: colors.white,
-    shadowColor: 'rgba(166, 168, 172, 0.44)',
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowRadius: 10,
-    shadowOpacity: 1,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: colors.whiteFive,
-  },
-
-  checkText: {
-    ...appStyles.semiBold16Text,
   },
 });
 

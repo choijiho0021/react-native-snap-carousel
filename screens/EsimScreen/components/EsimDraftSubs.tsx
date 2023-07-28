@@ -13,10 +13,7 @@ import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import {RootState} from '@/redux';
-import {ProductModelState} from '../../../redux/modules/product';
 import {RkbOrder} from '@/redux/api/orderApi';
-import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
-import {ProdDesc} from '@/screens/CancelOrderScreen/CancelResult';
 import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
@@ -261,6 +258,4 @@ const EsimDraftSubs = ({
   return <View>{renderDraft()}</View>;
 };
 
-export default connect(({product}: RootState) => ({
-  product,
-}))(EsimDraftSubs);
+export default EsimDraftSubs;

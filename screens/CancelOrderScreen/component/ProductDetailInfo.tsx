@@ -1,11 +1,5 @@
 import React, {memo} from 'react';
-import {
-  StyleSheet,
-  ActivityIndicator,
-  ViewStyle,
-  View,
-  StyleProp,
-} from 'react-native';
+import {StyleSheet, ViewStyle, View, StyleProp} from 'react-native';
 import {colors} from '@/constants/Colors';
 import SplitText from '@/components/SplitText';
 import AppText from '@/components/AppText';
