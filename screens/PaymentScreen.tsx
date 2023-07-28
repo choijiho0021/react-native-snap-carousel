@@ -102,7 +102,8 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
       headerLeft: () => (
         <AppBackButton
           title={i18n.t(params?.isPaid ? 'his:paymentCompleted' : 'payment')}
-          isPaid={params.isPaid}
+          disabled={params.isPaid}
+          showIcon={!params.isPaid}
         />
       ),
     });
