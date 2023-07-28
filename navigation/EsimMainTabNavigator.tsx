@@ -227,7 +227,13 @@ function EsimStackComponent() {
       <EsimStack.Screen name="RedirectHK" component={RedirectHKScreen} />
       <EsimStack.Screen name="ChargeType" component={ChargeTypeScreen} />
       <EsimStack.Screen name="Charge" component={ChargeScreen} />
-      <EsimStack.Screen name="AddOn" component={AddOnScreen} />
+      <EsimStack.Screen
+        name="AddOn"
+        component={AddOnScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <EsimStack.Screen
         name="ChargeAgreement"
         component={ChargeAgreementScreen}
@@ -297,6 +303,9 @@ function MyPageStackComponent() {
       <MyPageStack.Screen
         name="AccountSettings"
         component={AccountSettingsScreen}
+        options={() => ({
+          headerShown: false,
+        })}
       />
       <MyPageStack.Screen name="Resign" component={ResignScreen} />
       <MyPageStack.Screen name="ChangeEmail" component={ChangeEmailScreen} />

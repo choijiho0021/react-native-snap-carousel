@@ -17,6 +17,7 @@ import AppStyledText from '@/components/AppStyledText';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {sliderWidth, windowHeight} from '@/constants/SliderEntry.style';
 import SelectedProdTitle from './EventBoardScreen/components/SelectedProdTitle';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -242,20 +243,6 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   }, [expireTime, mainSubs.partner]);
 
   useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <View style={styles.header}>
-          <AppBackButton
-            title={i18n.t('esim:charge:type:addOn')}
-            style={styles.headerTitle}
-          />
-        </View>
-      ),
-    });
-  }, [navigation]);
-
-  useEffect(() => {
     if (addonProds) {
       const todayProd = addonProds.filter((r) => r.days === '1');
       const remainDaysProd = addonProds.filter((r) => r.days !== '1');
@@ -399,6 +386,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScreenHeader title={i18n.t('esim:charge:type:addOn')} />
       <ScrollView style={{flex: 1}}>
         <SelectedProdTitle
           isdaily={mainSubs.daily === 'daily'}
