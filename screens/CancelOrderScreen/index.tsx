@@ -15,6 +15,7 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -41,12 +42,12 @@ import AppIcon from '@/components/AppIcon';
 import LabelText from '@/components/LabelText';
 import {countRokebiCash, isRokebiCash} from '../PurchaseDetailScreen';
 import AppTextInput from '@/components/AppTextInput';
-import AppAlert from '@/components/AppAlert';
 import Env from '@/environment';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import ProductDetailInfo from './component/ProductDetailInfo';
 import {Currency} from '@/redux/api/productApi';
 import {ProdDesc} from './CancelResult';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const {esimCurrency} = Env.get();
 
@@ -54,6 +55,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
+  },
+
+  stepFrame: {
+    marginHorizontal: 20,
   },
   notiContainer: {
     marginTop: 20,
@@ -180,18 +185,32 @@ const styles = StyleSheet.create({
     overflow: 'scroll',
     padding: 16,
   },
-  bar: {
-    borderBottomColor: colors.lightGrey,
+  orderItemContainer: {
+    marginBottom: 25,
+  },
+
+  orderItemFrame: {
+    paddingVertical: 25,
+    borderColor: colors.lightGrey,
     borderBottomWidth: 1,
-    marginHorizontal: 20,
-    marginVertical: 20,
   },
+
   item: {
-    marginHorizontal: 20,
-    height: 36,
     alignItems: 'center',
-    minWidth: '25%',
   },
+
+  itemCashText: {
+    ...appStyles.normal14Text,
+  },
+
+  itemCashCurrencyText: {
+    ...appStyles.roboto16Text,
+  },
+
+  totalCashCurrencyText: {
+    ...appStyles.robotoBold22Text,
+  },
+
   btnCnter: {
     width: 40,
     height: 40,
@@ -216,6 +235,54 @@ const styles = StyleSheet.create({
     marginTop: 24,
     borderBottomWidth: 1,
     borderColor: colors.black,
+  },
+  refundTitleFrame: {
+    height: 69,
+    justifyContent: 'center',
+    borderBottomWidth: 1,
+  },
+  refundGuideFrame: {
+    paddingTop: 41,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    backgroundColor: colors.backGrey,
+  },
+
+  refundGuideTitle: {
+    flexDirection: 'row',
+    marginBottom: 12,
+  },
+  refundGuideBody: {
+    ...appStyles.normal14Text,
+    lineHeight: 22,
+  },
+  refundGuideBodyBold: {
+    ...appStyles.bold14Text,
+    lineHeight: 22,
+  },
+  bannerMark: {
+    marginRight: 8,
+  },
+
+  checkFrame: {
+    padding: 20,
+    marginBottom: 20,
+    borderRadius: 3,
+    backgroundColor: colors.white,
+    shadowColor: 'rgba(166, 168, 172, 0.44)',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowRadius: 10,
+    shadowOpacity: 1,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
+  },
+
+  checkText: {
+    ...appStyles.semiBold16Text,
   },
 });
 
@@ -259,9 +326,9 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   const loading = useRef(false);
   const [inputText, setInputText] = useState('');
   const [keyword, setKeyword] = useState<CancelKeywordType>();
+  const [showSnackBar, setShowSnackBar] = useState('');
   const keybd = useRef();
 
-  // 이건 3단계 그릴 떄 필요
   const [method, setMethod] = useState<RkbPayment>();
   const [checked, setChecked] = useState<boolean>(false);
 
@@ -286,8 +353,10 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
       setMethod(
         order?.paymentList?.find((item) => !isRokebiCash(item.paymentGateway)),
       );
+
+      console.log('method : ', method);
     }
-  }, [order?.paymentList, route.params.order]);
+  }, [method, order?.paymentList, route.params.order]);
 
   // 함수로 묶기
   const getProdDate = useCallback(() => {
@@ -331,26 +400,30 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
     else setProds(prodList);
   }, [getProdDate, order, product.prodList]);
 
-  const renderItem = useCallback(({item}: {item: ProdDesc}) => {
-    console.log('item : ', item);
-    return (
-      <>
-        {Array.from({length: item?.qty}, (_, index) => {
-          return (
-            <ProductDetailInfo
-              key={item.title + index}
-              item={item}
-              style={styles.cancelItem}
-            />
-          );
-        })}
-      </>
-    );
-  }, []);
+  const renderItem = useCallback(
+    ({item, isLast}: {item: ProdDesc; isLast?: boolean}) => {
+      console.log('item : ', item);
+      console.log('index :', isLast);
+      return (
+        <>
+          {Array.from({length: item?.qty}, (_, index) => {
+            return (
+              <ProductDetailInfo
+                key={item.title + index}
+                item={item}
+                style={[styles.cancelItem, isLast && {borderBottomWidth: 0}]}
+              />
+            );
+          })}
+        </>
+      );
+    },
+    [],
+  );
 
   const renderStep1 = useCallback(() => {
     return (
-      <ScrollView>
+      <ScrollView style={styles.stepFrame}>
         <View style={styles.notiContainer}>
           <View style={styles.notiFrame}>
             <AppSvgIcon style={styles.bannerCheck} name="bannerCheck" />
@@ -374,7 +447,9 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         {/* contentContainerStyle={[styles.cancelItemFrame]} */}
 
         <View style={styles.cancelItemFrame}>
-          {prods.map((r) => renderItem({item: r}))}
+          {prods.map((r, index) =>
+            renderItem({item: r, isLast: index === prods.length - 1}),
+          )}
         </View>
       </ScrollView>
     );
@@ -382,7 +457,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
   const renderStep2 = useCallback(() => {
     return (
-      <View>
+      <KeyboardAwareScrollView style={styles.stepFrame} enableOnAndroid>
         <View style={styles.cancelReasonTitleFrame}>
           <AppText style={appStyles.bold20Text}>
             {i18n.t('his:cancelHeaderTitle3')}
@@ -406,9 +481,16 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                     key={`${btn}button`}
                     style={[
                       styles.reasonButton,
+                      btn === keyword && {
+                        backgroundColor: colors.blue,
+                        borderWidth: 0,
+                      },
                       index === 0 && {marginBottom: 12},
                     ]}
-                    titleStyle={styles.reasonButtonText}
+                    titleStyle={[
+                      styles.reasonButtonText,
+                      btn === keyword && {color: colors.white},
+                    ]}
                     onPress={() => {
                       setKeyword(btn);
                       setInputText('');
@@ -430,6 +512,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
             inputText.length || '0'
           }/${REASON_MAX_LENGTH}`}</AppText>
         </View>
+
         <AppTextInput
           style={styles.reasonDetailBox}
           maxLength={REASON_MAX_LENGTH}
@@ -449,38 +532,84 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           placeholder={i18n.t('his:cancelReasonDetail:placeholder')}
           placeholderTextColor={colors.greyish}
         />
+      </KeyboardAwareScrollView>
+    );
+  }, [inputText, keyword]);
+
+  const renderGuide = useCallback(() => {
+    return (
+      <View style={styles.refundGuideFrame}>
+        <View style={styles.refundGuideTitle}>
+          <AppSvgIcon name="bannerMark" style={styles.bannerMark} />
+          <AppText style={appStyles.bold18Text}>
+            {i18n.t('his:cancelGuideLineTitle')}
+          </AppText>
+        </View>
+        <AppStyledText
+          text={i18n.t('his:cancelGuideLineBody')}
+          textStyle={styles.refundGuideBody}
+          format={{b: styles.refundGuideBodyBold}}
+        />
       </View>
     );
-  }, [inputText]);
+  }, []);
 
+  const renderCheckButton = useCallback(() => {
+    return (
+      <Pressable
+        onPress={() => {
+          onCheck();
+        }}
+        style={styles.checkFrame}>
+        <View
+          style={{flexDirection: 'row', alignItems: 'center', width: '90%'}}>
+          <AppIcon
+            style={{marginRight: 20}}
+            name="btnCheck2"
+            checked={checked}
+            size={22}
+          />
+          <AppText style={styles.checkText}>{i18n.t('his:draftAgree')}</AppText>
+        </View>
+      </Pressable>
+    );
+  }, [checked, onCheck]);
   const renderStep3 = useCallback(() => {
     return (
-      <View>
-        <AppText style={appStyles.bold20Text}>
-          {i18n.t('his:cancelHeaderTitle4')}
-        </AppText>
+      <ScrollView>
+        <View style={styles.stepFrame}>
+          <View style={styles.refundTitleFrame}>
+            <AppText style={appStyles.bold20Text}>
+              {i18n.t('his:cancelHeaderTitle4')}
+            </AppText>
+          </View>
+          <View style={styles.orderItemContainer}>
+            <LabelText
+              key="productAmount"
+              style={styles.orderItemFrame}
+              label={i18n.t('his:orderTotalAmount')}
+              labelStyle={[appStyles.bold14Text, {color: colors.black}]}
+              format="price"
+              valueStyle={appStyles.roboto16Text}
+              value={order?.totalPrice}
+              currencyStyle={[appStyles.bold14Text, {color: colors.black}]}
+              balanceStyle={[appStyles.robotoBold16Text, {color: colors.black}]}
+            />
 
-        <View>
-          <View style={styles.bar} />
-          <LabelText
-            key="productAmount"
-            style={styles.item}
-            label={i18n.t('his:cancelTotalAmount')}
-            labelStyle={styles.label2}
-            format="price"
-            valueStyle={appStyles.roboto16Text}
-            value={order?.totalPrice}
-            currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
-            balanceStyle={[styles.normal16BlueTxt, {color: colors.black}]}
-          />
-        </View>
-
-        <View style={{flexDirection: 'column'}}>
-          <View>
-            <View>
-              <AppText>{i18n.t('his:refundMethod')}</AppText>
-            </View>
-
+            {method && (
+              <LabelText
+                key="cashBalance"
+                style={[styles.item, {marginTop: 10}]}
+                label={method?.paymentMethod}
+                format="price"
+                labelStyle={styles.label2}
+                valueStyle={styles.itemCashCurrencyText}
+                value={method?.amount}
+                balanceStyle={styles.itemCashCurrencyText}
+                currencyStyle={styles.itemCashCurrencyText}
+                color={colors.warmGrey}
+              />
+            )}
             {balanceCharge !== utils.toCurrency(0, esimCurrency) && (
               <LabelText
                 key="deductBalance"
@@ -488,28 +617,32 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                 label={i18n.t('his:rokebiCash')}
                 format="price"
                 labelStyle={styles.label2}
-                valueStyle={appStyles.roboto16Text}
+                valueStyle={styles.itemCashText}
                 value={balanceCharge}
-                balanceStyle={[styles.normal16BlueTxt, {color: colors.black}]}
-                currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
+                balanceStyle={styles.itemCashCurrencyText}
+                currencyStyle={styles.itemCashCurrencyText}
+                color={colors.warmGrey}
               />
             )}
+
+            <LabelText
+              key="totalRefund"
+              style={styles.item}
+              label={i18n.t('his:cancelTotalAmount')}
+              labelStyle={appStyles.bold16Text}
+              format="price"
+              valueStyle={appStyles.roboto16Text}
+              value={order?.totalPrice}
+              currencyStyle={styles.totalCashCurrencyText}
+              balanceStyle={styles.totalCashCurrencyText}
+              color={colors.blue}
+            />
           </View>
         </View>
-      </View>
+        <View>{renderGuide()}</View>
+      </ScrollView>
     );
-  }, [order, balanceCharge]);
-
-  const renderGuide = useCallback(() => {
-    return (
-      <View>
-        <AppText style={appStyles.bold18Text}>
-          {i18n.t('his:cancelGuideLineTitle')}
-        </AppText>
-        <AppText>{i18n.t('his:cancelGuideLineBody')}</AppText>
-      </View>
-    );
-  }, []);
+  }, [balanceCharge, method, order?.totalPrice, renderGuide]);
 
   const cancelOrder = useCallback(() => {
     action.order
@@ -535,43 +668,23 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
     token,
   ]);
 
-  const renderCheckButton = useCallback(() => {
-    return (
-      <>
-        {renderGuide()}
-        <Pressable
-          onPress={() => {
-            onCheck();
-          }}>
-          <View
-            style={{flexDirection: 'row', alignItems: 'center', width: '90%'}}>
-            <AppIcon
-              style={{marginRight: 20}}
-              name="btnCheck2"
-              checked={checked}
-              size={22}
-            />
-            <AppText style={[appStyles.normal18Text, {marginVertical: 20}]}>
-              {i18n.t('his:draftAgree')}
-            </AppText>
-          </View>
-        </Pressable>
-      </>
-    );
-  }, [checked, onCheck, renderGuide]);
-
   if (!order || !order.orderItems) return <View />;
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{marginHorizontal: 20, flex: 1}}>
+      <View style={{flex: 1}}>
         {step === 0 && renderStep1()}
         {step === 1 && renderStep2()}
         {step === 2 && renderStep3()}
+
+        <AppSnackBar
+          visible={showSnackBar !== ''}
+          onClose={() => setShowSnackBar('')}
+          textMessage={showSnackBar}
+          hideCancel
+        />
       </View>
-      <View style={{marginHorizontal: 20}}>
-        {step === 2 && renderCheckButton()}
-      </View>
+      {step === 2 && <View>{renderCheckButton()}</View>}
       <View style={{flexDirection: 'row'}}>
         <AppButton
           style={styles.secondaryButton}
@@ -614,19 +727,19 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           }
           disabledOnPress={() => {
             if (step === 1 && !keyword) {
-              AppAlert.info(i18n.t('his:cancelReasonAlert1'));
+              setShowSnackBar(i18n.t('his:cancelReasonAlert1'));
             } else if (
               step === 1 &&
               inputText?.length < REASON_MIN_LENGTH &&
               keyword === 'etc'
             ) {
-              AppAlert.info(
+              setShowSnackBar(
                 i18n
                   .t('his:cancelReasonAlert2')
                   .replace('%', REASON_MIN_LENGTH.toString()),
               );
             } else if (step === 2 && !checked) {
-              AppAlert.info(i18n.t('his:cancelReasonAlert3'));
+              setShowSnackBar(i18n.t('his:cancelReasonAlert3'));
             }
           }}
           disabledCanOnPress
