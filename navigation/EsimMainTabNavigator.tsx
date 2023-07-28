@@ -90,6 +90,7 @@ const screenOptions = {
     elevation: 0,
     shadowOpacity: 0,
   },
+  headerShown: false,
 };
 
 const tabBarLabel = (focused: boolean, textId: string) => (
@@ -148,11 +149,23 @@ function HomeStackComponent() {
       />
       <HomeStack.Screen name="Noti" component={NotiScreen} />
       <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />
-      <HomeStack.Screen name="Contact" component={ContactScreen} />
+      <HomeStack.Screen
+        name="Contact"
+        component={ContactScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <HomeStack.Screen name="ContactBoard" component={ContactBoardScreen} />
       <HomeStack.Screen name="EventBoard" component={EventBoardScreen} />
       <HomeStack.Screen name="EventResult" component={EventResultScreen} />
-      <HomeStack.Screen name="GiftGuide" component={GiftGuideScreen} />
+      <HomeStack.Screen
+        name="GiftGuide"
+        component={GiftGuideScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <HomeStack.Screen name="Invite" component={InviteScreen} />
       <HomeStack.Screen name="InvitePromo" component={InvitePromoScreen} />
       <HomeStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />

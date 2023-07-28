@@ -25,16 +25,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  title: {
+    ...appStyles.title,
+    marginLeft: 20,
+  },
 });
 
 interface ScreenHeaderProps {
   title?: string;
+  showIcon?: boolean;
+  isStackTop?: boolean;
   renderLeft?: JSX.Element;
   renderRight?: JSX.Element;
 }
 
 const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   title,
+  showIcon,
+  isStackTop,
   renderLeft,
   renderRight,
 }) => {
@@ -43,14 +51,20 @@ const ScreenHeader: React.FC<ScreenHeaderProps> = ({
 
   return (
     <View style={styles.header}>
-      <View style={{flexDirection: 'row'}}>
-        <AppBackButton
-          title={title}
-          style={{marginRight: 10, height: 56}}
-          onPress={() => {
-            navigation.goBack();
-          }}
-        />
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        {isStackTop ? (
+          <AppText style={styles.title}>{title}</AppText>
+        ) : (
+          <AppBackButton
+            title={title}
+            style={{marginRight: 10, height: 56}}
+            onPress={() => {
+              navigation.goBack();
+            }}
+            showIcon={showIcon}
+          />
+        )}
+
         {renderLeft}
       </View>
       {renderRight}

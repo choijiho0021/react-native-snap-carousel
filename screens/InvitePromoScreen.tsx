@@ -14,19 +14,9 @@ import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppButton from '@/components/AppButton';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const styles = StyleSheet.create({
-  header: {
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.white,
-  },
-  headerTitle: {
-    height: 56,
-    marginRight: 8,
-  },
   button: {
     ...appStyles.normal16Text,
     height: 52,
@@ -57,20 +47,6 @@ const InvitePromoScreen: React.FC<InvitePromoScreenProps> = ({
 }) => {
   const [showSnackBar, setShowSnackbar] = useState(false);
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <View style={styles.header}>
-          <AppBackButton
-            title={i18n.t('inv:title')}
-            style={styles.headerTitle}
-          />
-        </View>
-      ),
-    });
-  }, [navigation]);
-
   const callback = useCallback(
     (cmd: string) => {
       switch (cmd) {
@@ -94,6 +70,7 @@ const InvitePromoScreen: React.FC<InvitePromoScreenProps> = ({
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader title={i18n.t('inv:title')} />
       <AppWebView uri={uri} callback={({cmd}) => callback(cmd)} />
 
       {!account.loggedIn && (
