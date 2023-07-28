@@ -100,12 +100,6 @@ const styles = StyleSheet.create({
   topInfo: {
     marginTop: 16,
   },
-  draftDateText: {
-    marginBottom: 6,
-    ...appStyles.normal14Text,
-    alignSelf: 'flex-start',
-    color: colors.warmGrey,
-  },
   draftTitleMainText: {
     ...appStyles.bold16Text,
   },

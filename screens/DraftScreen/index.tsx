@@ -3,8 +3,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
-  FlatList,
-  Pressable,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -38,8 +37,6 @@ import {
 import i18n from '@/utils/i18n';
 import {renderPromoFlag} from '../ChargeHistoryScreen';
 import SplitText from '@/components/SplitText';
-import AppStyledText from '@/components/AppStyledText';
-import AppIcon from '@/components/AppIcon';
 import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
 import GuideBox from '../CancelOrderScreen/component/GuideBox';
 import FloatCheckButton from '../CancelOrderScreen/component/FloatCheckButton';
@@ -52,8 +49,6 @@ const styles = StyleSheet.create({
   headerNoti: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderTopWidth: 1,
-    borderStyle: 'solid',
     paddingVertical: 16,
     borderColor: colors.lightGrey,
   },
@@ -233,17 +228,45 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
     );
   }, [checked, onCheck]);
 
+  const renderDashedDiv = useCallback(() => {
+    return (
+      <View style={{overflow: 'hidden'}}>
+        <View
+          style={{
+            borderStyle: 'dashed',
+            borderWidth: 1,
+            borderColor: colors.lightGrey,
+            margin: -1,
+            height: 0,
+            marginBottom: 0,
+          }}>
+          <View style={{width: '100%'}} />
+        </View>
+      </View>
+    );
+  }, []);
+
   const headerNoti = useCallback(() => {
     if (!order || !order.orderItems) return <View />;
 
     return (
-      <View style={[styles.headerNoti]}>
-        <AppText style={styles.headerNotiText}>
-          {i18n.t('his:draftNoti')}
-        </AppText>
+      <View>
+        {Platform.OS === 'ios' && renderDashedDiv()}
+        <View
+          style={[
+            styles.headerNoti,
+            Platform.OS === 'android' && {
+              borderStyle: 'dashed',
+              borderTopWidth: 1,
+            },
+          ]}>
+          <AppText style={styles.headerNotiText}>
+            {i18n.t('his:draftNoti')}
+          </AppText>
+        </View>
       </View>
     );
-  }, [order]);
+  }, [order, renderDashedDiv]);
 
   if (!order || !order.orderItems) return <View />;
 
@@ -261,6 +284,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
               .t('his:draftItemText')
               .replace('%', getCountProds(prods))}
             footerComponent={headerNoti()}
+            isGradient
           />
         </View>
         <View>
