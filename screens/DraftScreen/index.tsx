@@ -108,6 +108,8 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   const loading = useRef(false);
   const [checked, setChecked] = useState<boolean>(false);
 
+  const scrollRef = useRef<ScrollView>();
+
   useEffect(() => {
     navigation.setOptions({
       title: null,
@@ -120,8 +122,10 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   }, [route?.params?.order]);
 
   const onCheck = useCallback(() => {
+    if (!checked) scrollRef?.current.scrollToEnd();
+
     setChecked((prev) => !prev);
-  }, []);
+  }, [checked]);
 
   const onClickButton = useCallback(() => {
     action.order
@@ -228,7 +232,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={{flex: 1}}>
+      <ScrollView ref={scrollRef} style={{flex: 1}}>
         <View style={{marginHorizontal: 20}}>
           <ProductDetailList
             style={{marginBottom: 40}}

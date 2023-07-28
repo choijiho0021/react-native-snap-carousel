@@ -235,6 +235,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   const [keyword, setKeyword] = useState<CancelKeywordType>();
   const [showSnackBar, setShowSnackBar] = useState('');
   const keybd = useRef();
+  const scrollRef = useRef<ScrollView>();
 
   const [method, setMethod] = useState<RkbPayment>();
   const [checked, setChecked] = useState<boolean>(false);
@@ -279,8 +280,10 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   }, [action?.product, order?.orderItems, product.prodList]);
 
   const onCheck = useCallback(() => {
+    if (!checked) scrollRef.current.scrollToEnd();
+
     setChecked((prev) => !prev);
-  }, []);
+  }, [checked]);
 
   useEffect(() => {
     if (!order?.orderItems) return;
@@ -433,7 +436,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
   const renderStep3 = useCallback(() => {
     return (
-      <ScrollView>
+      <ScrollView ref={scrollRef}>
         <View style={styles.stepFrame}>
           <View style={styles.refundTitleFrame}>
             <AppText style={appStyles.bold20Text}>
