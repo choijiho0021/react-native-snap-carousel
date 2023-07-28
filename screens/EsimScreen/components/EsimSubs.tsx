@@ -496,8 +496,6 @@ const EsimSubs = ({
     notCardInfo,
     isEditMode,
     renderSwitch,
-    token,
-    action,
     expired,
     isCharged,
     isDraft,
