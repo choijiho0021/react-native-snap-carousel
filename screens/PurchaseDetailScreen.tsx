@@ -33,6 +33,8 @@ import {AccountModelState} from '@/redux/modules/account';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import {API} from '@/redux/api';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import AppStyledText from '@/components/AppStyledText';
 
 const {esimApp, esimCurrency} = Env.get();
 
@@ -50,14 +52,25 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignSelf: 'flex-end',
   },
-  headerNoti: {
-    marginHorizontal: 20,
-    opacity: 0.6,
+  hearNotiFrame: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    ...appStyles.normal14Text,
     backgroundColor: colors.noticeBackground,
+    borderRadius: 3,
     marginTop: 20,
-    borderRadius: 10,
+    padding: 16,
   },
-  headerNotiText: {margin: 5},
+  headerNotiBoldText: {
+    ...appStyles.bold14Text,
+    color: colors.redError,
+  },
+  headerNotiText: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
+    margin: 5,
+    color: colors.redError,
+  },
   date: {
     ...appStyles.normal14Text,
     marginTop: 40,
@@ -450,6 +463,8 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     if (!order || !order.orderItems || !isUseNotiState(order?.state))
       return <View />;
 
+    const isValidate = order?.state === 'validation';
+
     const getNoti = () => {
       switch (order?.state) {
         case 'validation':
@@ -464,15 +479,32 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     return (
       <View
         style={[
-          styles.headerNoti,
+          styles.hearNotiFrame,
           {
-            backgroundColor:
-              order?.state === 'validation'
-                ? colors.backRed
-                : colors.veryLightBlue,
+            backgroundColor: isValidate ? colors.backRed : colors.backGrey,
           },
         ]}>
-        <AppText style={styles.headerNotiText}>{getNoti()}</AppText>
+        <AppSvgIcon
+          name={isValidate ? 'bannerMark' : 'bannerCheckBlue'}
+          style={{marginRight: 9}}
+        />
+        <AppStyledText
+          text={getNoti()}
+          textStyle={[
+            styles.headerNotiText,
+            {
+              color: isValidate ? colors.redError : colors.blue,
+            },
+          ]}
+          format={{
+            b: [
+              styles.headerNotiBoldText,
+              {
+                color: isValidate ? colors.redError : colors.blue,
+              },
+            ],
+          }}
+        />
       </View>
     );
   }, [order]);

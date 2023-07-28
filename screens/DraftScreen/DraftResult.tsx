@@ -12,6 +12,7 @@ import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import {OrderAction} from '@/redux/modules/order';
 import {ProductModelState} from '@/redux/modules/product';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
   container: {
@@ -71,13 +72,13 @@ const DraftResultScreen: React.FC<DraftResultScreenProps> = ({
       <View>
         {isSuccess ? (
           <View>
-            <AppText style={appStyles.bold20Text}>
+            <AppText style={[appStyles.bold24Text, {marginBottom: 16}]}>
               {i18n.t('his:draftSuccessTitle')}
             </AppText>
-            <AppText style={appStyles.normal16Text}>
+            <AppText style={[appStyles.normal16Text, {lineHeight: 24}]}>
               {i18n.t('his:draftSuccessText1')}
             </AppText>
-            <AppText style={appStyles.normal16Text}>
+            <AppText style={[appStyles.normal16Text, {lineHeight: 24}]}>
               {i18n.t('his:draftSuccessText2')}
             </AppText>
           </View>
@@ -97,7 +98,10 @@ const DraftResultScreen: React.FC<DraftResultScreenProps> = ({
   );
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{marginHorizontal: 20, flex: 1}}>{renderContent()}</View>
+      <View style={{marginHorizontal: 20, flex: 1}}>
+        {renderContent()}
+        {/* <AppSvgIcon name="goods" /> */}
+      </View>
       <View style={{flexDirection: 'row'}}>
         <AppButton
           style={styles.button}

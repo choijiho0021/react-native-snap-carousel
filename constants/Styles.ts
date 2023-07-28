@@ -576,6 +576,16 @@ export const appStyles = StyleSheet.create({
     textAlign: 'left',
     color: colors.clearBlue,
   },
+  robotoBold22Text: {
+    fontFamily: 'Roboto',
+    fontSize: 22,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'left',
+    lineHeight: 36,
+    color: colors.clearBlue,
+  },
   robotoBold28Text: {
     fontFamily: 'Roboto',
     fontSize: 28,
