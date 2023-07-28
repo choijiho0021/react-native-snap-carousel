@@ -23,7 +23,12 @@ import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
-import {isDisabled, RkbSubscription} from '@/redux/api/subscriptionApi';
+import {
+  isDisabled,
+  RkbSubscription,
+  STATUS_PENDING,
+  STATUS_RESERVED,
+} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -318,7 +323,10 @@ const EsimSubs = ({
   };
 }) => {
   const navigation = useNavigation();
-  const isDraft = useMemo(() => mainSubs?.statusCd === 'R', [mainSubs]);
+  const isDraft = useMemo(
+    () => [STATUS_PENDING, STATUS_RESERVED].includes(mainSubs?.statusCd),
+    [mainSubs],
+  );
   const sendable = useMemo(
     () => !expired && !mainSubs.giftStatusCd && !isCharged && !isDraft,
     [expired, mainSubs.giftStatusCd, isCharged, isDraft],

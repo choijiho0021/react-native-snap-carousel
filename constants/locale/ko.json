@@ -328,7 +328,7 @@
   "addr:mandatory": "*",
 
   "his:detail": "상세 내역",
-  "his:etcCnt": "외 %% 건",
+  "his:etcCnt": " 외 %% 개",
   "his:purchaseDate": "구매 시각",
   "his:today": "다음 데이터 리셋 시간까지만 사용 가능",
   "his:remainDays": "남은 사용기간 동안 사용 가능",

@@ -6,7 +6,11 @@ import _, {object} from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
 import {CancelKeywordType, RkbOrder} from '@/redux/api/orderApi';
-import {RkbSubscription, STATUS_RESERVED} from '@/redux/api/subscriptionApi';
+import {
+  RkbSubscription,
+  STATUS_PENDING,
+  STATUS_RESERVED,
+} from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
@@ -411,7 +415,7 @@ const slice = createSlice({
         const subsOnlyReserved: RkbSubscription[] = [];
 
         objects.forEach((r) => {
-          if (r.statusCd === STATUS_RESERVED) {
+          if ([STATUS_RESERVED, STATUS_PENDING].includes(r.statusCd)) {
             subsOnlyReserved.push(r);
           }
           subsExcludeReserved.push(r);
