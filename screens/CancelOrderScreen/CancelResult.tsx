@@ -1,7 +1,14 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, SafeAreaView, StyleSheet, View} from 'react-native';
+import {
+  FlatList,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import {connect} from 'react-redux';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -12,7 +19,6 @@ import _ from 'underscore';
 import ProductDetailInfo from './component/ProductDetailInfo';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {RootState} from '@reduxjs/toolkit';
-import {connect} from 'react-redux';
 import {OrderModelState, isExpiredDraft} from '@/redux/modules/order';
 
 const styles = StyleSheet.create({
@@ -27,6 +33,21 @@ const styles = StyleSheet.create({
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
     color: '#ffffff',
+  },
+  headerContentFrame: {
+    marginBottom: 32,
+  },
+  itemListFrame: {
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
+    borderRadius: 3,
+    paddingHorizontal: 16,
+  },
+
+  item: {
+    paddingVertical: 24,
+    borderBottomWidth: 1,
+    borderColor: colors.whiteFive,
   },
 });
 
@@ -73,56 +94,64 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
   useEffect(() => {
     if (!route?.params?.orderId) return;
 
-    setIsSuccess(route?.params?.isSuccess);
+    // setIsSuccess(route?.params?.isSuccess);
+    setIsSuccess(false);
     setOrderResult(order.orders.get(route?.params?.orderId));
     setProds(route?.params?.prods);
   }, [order.orders, route?.params]);
 
-  const renderItem = useCallback(({item}: {item: ProdDesc}) => {
-    return Array.from({length: item.qty}, (_, index) => {
-      return <ProductDetailInfo key={item.title + index} item={item} />;
-    });
-  }, []);
+  const renderItem = useCallback(
+    ({item, isLast}: {item: ProdDesc; isLast?: boolean}) => {
+      return Array.from({length: item.qty}, (_, index) => {
+        return (
+          <ProductDetailInfo
+            style={[styles.item, isLast && {borderBottomWidth: 0}]}
+            key={item.title + index}
+            item={item}
+          />
+        );
+      });
+    },
+    [],
+  );
 
   const renderItemList = useCallback(() => {
     return (
-      <FlatList
-        style={{marginTop: 100}}
-        contentContainerStyle={[_.isEmpty(prods) && {flex: 1}]}
-        data={prods}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => item?.title + index}
-      />
+      <View style={styles.itemListFrame}>
+        {prods.map((r, index) =>
+          renderItem({item: r, isLast: prods.length - 1 === index}),
+        )}
+      </View>
     );
   }, [prods, renderItem]);
 
   const renderContent = useCallback(
     () => (
-      <View>
+      <View style={styles.headerContentFrame}>
         {isSuccess ? (
           <View>
-            <AppText style={appStyles.bold20Text}>
+            <AppText style={[appStyles.bold24Text, {marginBottom: 16}]}>
               {i18n.t('his:cancelOrderTitle')}
             </AppText>
-            <AppText style={appStyles.normal16Text}>
+            <AppText style={[appStyles.normal16Text, {lineHeight: 24}]}>
               {i18n.t('his:cancelOrderBody')}
             </AppText>
           </View>
         ) : isExpiredDraft(orderResult?.orderDate) ? (
           <View>
-            <AppText style={appStyles.bold20Text}>
+            <AppText style={[appStyles.bold24Text, {marginBottom: 16}]}>
               {i18n.t('his:cancelOrderFail1Title')}
             </AppText>
-            <AppText style={appStyles.normal16Text}>
+            <AppText style={[appStyles.normal16Text, {lineHeight: 24}]}>
               {i18n.t('his:cancelOrderFail1Body')}
             </AppText>
           </View>
         ) : (
           <View>
-            <AppText style={appStyles.bold20Text}>
+            <AppText style={[appStyles.bold24Text, {marginBottom: 16}]}>
               {i18n.t('his:cancelOrderFail2Title')}
             </AppText>
-            <AppText style={appStyles.normal16Text}>
+            <AppText style={[appStyles.normal16Text, {lineHeight: 24}]}>
               {i18n.t('his:cancelOrderFail2Body')}
             </AppText>
           </View>
@@ -133,10 +162,10 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
   );
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{marginHorizontal: 20, flex: 1}}>
+      <ScrollView style={{marginHorizontal: 20, flex: 1}}>
         {renderContent()}
-        {renderItemList()}
-      </View>
+        {isSuccess && renderItemList()}
+      </ScrollView>
       <View style={{flexDirection: 'row'}}>
         <AppButton
           style={styles.button}

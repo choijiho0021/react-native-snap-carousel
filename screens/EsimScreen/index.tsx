@@ -658,6 +658,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         textMessage={i18n.t('service:ready')}
         bottom={10}
       />
+
       {isEditMode && (
         <AppButton
           style={styles.confirm}
