@@ -1,4 +1,4 @@
-import React, {memo, useCallback} from 'react';
+import React, {Fragment, memo, useCallback} from 'react';
 import {StyleSheet, ViewStyle, View, StyleProp} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {colors} from '@/constants/Colors';
@@ -114,26 +114,25 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
   const renderItem = useCallback(
     ({item, isLast}: {item: ProdDesc; isLast?: boolean}) => {
       return (
-        <>
+        <Fragment key={`${item.title}_${listTitle}`}>
           {Array.from({length: item?.qty}, (_, index) => {
-            console.log('key 체크 : ', item.title + item.qty + index);
             return (
               <ProductDetailInfo
-                key={item.title + item.qty + index}
+                key={`${item.title}_${index}_${listTitle}`}
                 item={item}
                 style={[styles.cancelItem, isLast && {borderBottomWidth: 0}]}
               />
             );
           })}
-        </>
+        </Fragment>
       );
     },
-    [],
+    [listTitle],
   );
 
   return (
-    <View style={style}>
-      <View style={styles.notiContainer}>
+    <View key="container" style={style}>
+      <View key="noti" style={styles.notiContainer}>
         {notiComponent}
 
         {isGradient ? (
@@ -165,8 +164,10 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
 
       {/* contentContainerStyle={[styles.cancelItemFrame]} */}
 
-      <View style={styles.cancelItemFrame}>
-        <View style={{paddingHorizontal: 16, justifyContent: 'center'}}>
+      <View key="cancelFrame" style={styles.cancelItemFrame}>
+        <View
+          key="cancelList"
+          style={{paddingHorizontal: 16, justifyContent: 'center'}}>
           {prods.map((r, index) =>
             renderItem({item: r, isLast: index === prods.length - 1}),
           )}

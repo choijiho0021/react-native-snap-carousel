@@ -171,53 +171,6 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
     else setProds(prodList);
   }, [getProdDate, order, product.prodList]);
 
-  const renderItem = useCallback(({item}: {item: ProdDesc}) => {
-    return (
-      <>
-        {Array.from({length: item.qty}, (_, index) => {
-          return (
-            <View
-              key={`${item.title + index.toString()}`}
-              style={{marginBottom: 10}}>
-              <View
-                style={{
-                  width: '100%',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                }}>
-                <SplitText
-                  renderExpend={() =>
-                    renderPromoFlag(item.promoFlag || [], false)
-                  }
-                  numberOfLines={2}
-                  style={{...appStyles.bold16Text, marginRight: 8}}
-                  ellipsizeMode="tail">
-                  {utils.removeBracketOfName(item.title)}
-                </SplitText>
-              </View>
-              <View>
-                <AppText
-                  key="desc"
-                  numberOfLines={2}
-                  ellipsizeMode="tail"
-                  style={[
-                    appStyles.normal14Text,
-                    {
-                      flex: 1,
-                      fontSize: isDeviceSize('medium') ? 14 : 16,
-                      lineHeight: isDeviceSize('medium') ? 20 : 22,
-                    },
-                  ]}>
-                  {item.field_description}
-                </AppText>
-              </View>
-            </View>
-          );
-        })}
-      </>
-    );
-  }, []);
-
   const renderCheckButton = useCallback(() => {
     return (
       <FloatCheckButton
