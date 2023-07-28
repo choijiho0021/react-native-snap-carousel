@@ -6,6 +6,7 @@ import {
   FlatList,
   Pressable,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
@@ -39,6 +40,9 @@ import {renderPromoFlag} from '../ChargeHistoryScreen';
 import SplitText from '@/components/SplitText';
 import AppStyledText from '@/components/AppStyledText';
 import AppIcon from '@/components/AppIcon';
+import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
+import GuideBox from '../CancelOrderScreen/component/GuideBox';
+import FloatCheckButton from '../CancelOrderScreen/component/FloatCheckButton';
 
 const styles = StyleSheet.create({
   container: {
@@ -46,14 +50,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   headerNoti: {
-    marginHorizontal: 20,
-    marginVertical: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    height: 40,
-    opacity: 0.6,
-    backgroundColor: colors.noticeBackground,
-    borderRadius: 10,
+    borderTopWidth: 1,
+    borderStyle: 'solid',
+    paddingVertical: 16,
+    borderColor: colors.lightGrey,
   },
 
   button: {
@@ -64,7 +66,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#ffffff',
   },
-  headerNotiText: {margin: 5},
+  headerNotiText: {
+    ...appStyles.bold16Text,
+    color: colors.redError,
+  },
 });
 
 type DraftScreenNavigationProp = StackNavigationProp<
@@ -218,42 +223,27 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
     );
   }, []);
 
+  const renderCheckButton = useCallback(() => {
+    return (
+      <FloatCheckButton
+        onCheck={onCheck}
+        checkText={i18n.t('his:draftAgree')}
+        checked={checked}
+      />
+    );
+  }, [checked, onCheck]);
+
   const headerNoti = useCallback(() => {
     if (!order || !order.orderItems) return <View />;
 
     return (
-      <View
-        style={[
-          styles.headerNoti,
-          {
-            backgroundColor:
-              order?.state === 'validation'
-                ? colors.backRed
-                : colors.veryLightBlue,
-          },
-        ]}>
+      <View style={[styles.headerNoti]}>
         <AppText style={styles.headerNotiText}>
           {i18n.t('his:draftNoti')}
         </AppText>
       </View>
     );
   }, [order]);
-
-  const draftNoti = useCallback(
-    () => (
-      <View>
-        <AppText style={appStyles.bold16Text}>
-          {i18n.t('his:draftCheckNotiTitle')}
-        </AppText>
-        <AppStyledText
-          text={i18n.t('his:draftCheckNotiBody')}
-          textStyle={{...appStyles.normal16Text}}
-          format={{b: appStyles.bold16Text}}
-        />
-      </View>
-    ),
-    [],
-  );
 
   if (!order || !order.orderItems) return <View />;
 
@@ -262,51 +252,29 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{marginHorizontal: 20, flex: 1}}>
-        <FlatList
-          contentContainerStyle={[_.isEmpty(prods) && {flex: 1}]}
-          data={prods}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => item?.title + index}
-          ListHeaderComponent={
-            <View style={{marginTop: 10, marginBottom: 20}}>
-              <AppStyledText
-                text={i18n
-                  .t('his:draftItemText')
-                  .replace('%', getCountProds(prods))}
-                textStyle={{...appStyles.bold20Text}}
-                format={{b: [appStyles.bold20Text, {color: 'purple'}]}}
-              />
-            </View>
-          }
-          ListFooterComponent={
-            <View>
-              {headerNoti()}
-              {draftNoti()}
-            </View>
-          }
-        />
-        <Pressable
-          onPress={() => {
-            onCheck();
-          }}>
-          <View
-            style={{flexDirection: 'row', alignItems: 'center', width: '90%'}}>
-            <AppIcon
-              style={{marginRight: 20}}
-              name="btnCheck2"
-              checked={checked}
-              size={22}
-            />
-            <AppText style={[appStyles.normal18Text, {marginVertical: 20}]}>
-              {i18n.t('his:draftAgree')}
-            </AppText>
-          </View>
-        </Pressable>
-      </View>
+      <ScrollView style={{flex: 1}}>
+        <View style={{marginHorizontal: 20}}>
+          <ProductDetailList
+            style={{marginBottom: 40}}
+            prods={prods}
+            listTitle={i18n
+              .t('his:draftItemText')
+              .replace('%', getCountProds(prods))}
+            footerComponent={headerNoti()}
+          />
+        </View>
+        <View>
+          <GuideBox
+            iconName="bannerMark"
+            title={i18n.t('his:draftCheckNotiTitle')}
+            body={i18n.t('his:draftCheckNotiBody')}
+          />
+        </View>
+      </ScrollView>
+      {renderCheckButton()}
       <View style={{flexDirection: 'row'}}>
         <AppButton
-          style={[styles.button]}
+          style={styles.button}
           type="primary"
           pressedStyle={{
             backgroundColor: checked ? colors.clearBlue : colors.gray,

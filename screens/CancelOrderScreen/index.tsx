@@ -48,6 +48,9 @@ import ProductDetailInfo from './component/ProductDetailInfo';
 import {Currency} from '@/redux/api/productApi';
 import {ProdDesc} from './CancelResult';
 import AppSnackBar from '@/components/AppSnackBar';
+import ProductDetailList from './component/ProductDetailList';
+import GuideBox from './component/GuideBox';
+import FloatCheckButton from './component/FloatCheckButton';
 
 const {esimCurrency} = Env.get();
 
@@ -400,60 +403,28 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
     else setProds(prodList);
   }, [getProdDate, order, product.prodList]);
 
-  const renderItem = useCallback(
-    ({item, isLast}: {item: ProdDesc; isLast?: boolean}) => {
-      console.log('item : ', item);
-      console.log('index :', isLast);
-      return (
-        <>
-          {Array.from({length: item?.qty}, (_, index) => {
-            return (
-              <ProductDetailInfo
-                key={item.title + index}
-                item={item}
-                style={[styles.cancelItem, isLast && {borderBottomWidth: 0}]}
-              />
-            );
-          })}
-        </>
-      );
-    },
-    [],
-  );
-
   const renderStep1 = useCallback(() => {
     return (
       <ScrollView style={styles.stepFrame}>
-        <View style={styles.notiContainer}>
-          <View style={styles.notiFrame}>
-            <AppSvgIcon style={styles.bannerCheck} name="bannerCheck" />
-            <AppStyledText
-              text={i18n.t('his:cancelHeaderTitle')}
-              textStyle={styles.notiText}
-              format={{b: [appStyles.bold14Text, {color: colors.violet500}]}}
-            />
-          </View>
-          <View style={styles.cancelCountNotiFrame}>
-            <AppStyledText
-              text={i18n
-                .t('his:cancelHeaderTitle2')
-                .replace('%', getCountProds(prods))}
-              textStyle={{...appStyles.normal20Text, color: colors.white}}
-              format={{b: {...appStyles.bold20Text, color: colors.white}}}
-            />
-          </View>
-        </View>
-
-        {/* contentContainerStyle={[styles.cancelItemFrame]} */}
-
-        <View style={styles.cancelItemFrame}>
-          {prods.map((r, index) =>
-            renderItem({item: r, isLast: index === prods.length - 1}),
-          )}
-        </View>
+        <ProductDetailList
+          prods={prods}
+          listTitle={i18n
+            .t('his:cancelHeaderTitle2')
+            .replace('%', getCountProds(prods))}
+          notiComponent={
+            <View style={styles.notiFrame}>
+              <AppSvgIcon style={styles.bannerCheck} name="bannerCheck" />
+              <AppStyledText
+                text={i18n.t('his:cancelHeaderTitle')}
+                textStyle={styles.notiText}
+                format={{b: [appStyles.bold14Text, {color: colors.violet500}]}}
+              />
+            </View>
+          }
+        />
       </ScrollView>
     );
-  }, [prods, renderItem]);
+  }, [prods]);
 
   const renderStep2 = useCallback(() => {
     return (
@@ -538,42 +509,24 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
   const renderGuide = useCallback(() => {
     return (
-      <View style={styles.refundGuideFrame}>
-        <View style={styles.refundGuideTitle}>
-          <AppSvgIcon name="bannerMark" style={styles.bannerMark} />
-          <AppText style={appStyles.bold18Text}>
-            {i18n.t('his:cancelGuideLineTitle')}
-          </AppText>
-        </View>
-        <AppStyledText
-          text={i18n.t('his:cancelGuideLineBody')}
-          textStyle={styles.refundGuideBody}
-          format={{b: styles.refundGuideBodyBold}}
-        />
-      </View>
+      <GuideBox
+        iconName="bannerMark"
+        title={i18n.t('his:cancelGuideLineTitle')}
+        body={i18n.t('his:cancelGuideLineBody')}
+      />
     );
   }, []);
 
   const renderCheckButton = useCallback(() => {
     return (
-      <Pressable
-        onPress={() => {
-          onCheck();
-        }}
-        style={styles.checkFrame}>
-        <View
-          style={{flexDirection: 'row', alignItems: 'center', width: '90%'}}>
-          <AppIcon
-            style={{marginRight: 20}}
-            name="btnCheck2"
-            checked={checked}
-            size={22}
-          />
-          <AppText style={styles.checkText}>{i18n.t('his:draftAgree')}</AppText>
-        </View>
-      </Pressable>
+      <FloatCheckButton
+        onCheck={onCheck}
+        checkText={i18n.t('his:draftAgree')}
+        checked={checked}
+      />
     );
   }, [checked, onCheck]);
+
   const renderStep3 = useCallback(() => {
     return (
       <ScrollView>
