@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
 });
 
 interface ScreenHeaderProps {
-  title: string;
+  title?: string;
   renderLeft?: JSX.Element;
   renderRight?: JSX.Element;
 }

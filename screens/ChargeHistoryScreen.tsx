@@ -36,6 +36,7 @@ import Triangle from '@/components/Triangle';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {API} from '@/redux/api';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const styles = StyleSheet.create({
   chargeBtn: {
@@ -326,13 +327,6 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
     );
   }, []);
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('esim:chargeHistory')} />,
-    });
-  }, [navigation]);
-
   const renderTooltip = useCallback(() => {
     return (
       <View style={styles.tooltipContainer}>
@@ -600,6 +594,8 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
+      <ScreenHeader title={i18n.t('esim:chargeHistory')} />
+
       <Animated.View style={{height: animatedValue}}>
         {!isChargeable && (
           <View style={styles.cautionContainer}>
