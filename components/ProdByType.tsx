@@ -84,16 +84,15 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
       ListEmptyComponent={renderEmpty}
       extraData={prodData}
       renderItem={renderItem}
-      onScrollBeginDrag={() => onTop(false)}
-      showsVerticalScrollIndicator={false}
-
-      onScroll={({
+      onScrollEndDrag={({
         nativeEvent: {
           contentOffset: {y},
         },
       }) => {
-        if (y <= 0) onTop(true);
+        if (y < -25) onTop(true);
+        else if (y > 25) onTop(false);
       }}
+      showsVerticalScrollIndicator={false}
     />
   );
 };

@@ -74,7 +74,7 @@ const SettingsListItem0 = ({
 }: {
   item: SettingsItem;
   toggle?: boolean;
-  onPress: () => void;
+  onPress: () => Promise<void>;
 }) => {
   return (
     <Pressable onPress={onPress}>

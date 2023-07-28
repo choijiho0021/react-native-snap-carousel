@@ -48,7 +48,7 @@ const PolicyChecker = ({onPress}: {onPress?: (v: boolean) => void}) => {
     (key: '1' | '2') => {
       const param = navParam[key];
       Analytics.trackEvent('Page_View_Count', {page: param.key});
-      navigation.navigate('SimpleText', param);
+      navigation.navigate('SimpleTextModal', param);
     },
     [navParam, navigation],
   );

@@ -37,7 +37,12 @@ const cancelOrder = createAsyncThunk(
 
 const getSubs = createAsyncThunk(
   'order/getSubs',
-  async (param: {iccid?: string; token?: string; prodType?: string}) =>
+  async (param: {
+    iccid?: string;
+    token?: string;
+    prodType?: string;
+    hidden?: boolean;
+  }) =>
     cachedApi(`cache.subs.${param?.iccid}`, API.Subscription.getSubscription)(
       param,
       {
@@ -48,7 +53,7 @@ const getSubs = createAsyncThunk(
 
 const getStoreSubs = createAsyncThunk(
   'order/getStoreSubs',
-  async (param: {mobile?: string; token?: string}) =>
+  async (param: {mobile?: string; token?: string; hidden?: boolean}) =>
     cachedApi(
       `cache.store.${param?.mobile}`,
       API.Subscription.getStoreSubscription,
@@ -371,12 +376,14 @@ const slice = createSlice({
       const {subs} = state;
 
       if (result === 0 && objects[0]) {
-        const subsIccid = subs.get(objects[0]?.iccid)?.map((s) => {
-          if (s.uuid === objects[0].uuid) s.hide = objects[0]?.hide;
+        const changeSubs = subs.get(objects[0]?.iccid)?.map((s) => {
+          if (objects.map((elm) => elm.uuid).includes(s.uuid)) {
+            s.hide = objects[0].hide;
+          }
           return s;
         });
 
-        if (subsIccid) subs.set(iccid, subsIccid);
+        if (changeSubs) subs.set(objects[0].iccid, changeSubs);
         state.subs = subs;
       }
     });

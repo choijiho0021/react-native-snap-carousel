@@ -5,7 +5,7 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
 import utils from '@/redux/api/utils';
-import {Currency} from '../redux/api/productApi';
+import {Currency} from '@/redux/api/productApi';
 import AppButton from './AppButton';
 import AppIcon from './AppIcon';
 import AppPrice from './AppPrice';

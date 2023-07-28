@@ -8,14 +8,16 @@ import AppSvgIcon from './AppSvgIcon';
 
 const AppBackButton = ({
   title,
-  isPaid = false,
+  disabled = false,
+  showIcon = true,
   onPress,
   style,
   imageStyle,
   textProps,
 }: {
   title?: string;
-  isPaid?: boolean;
+  disabled?: boolean;
+  showIcon?: boolean;
   onPress?: () => void;
   style?: ViewStyle;
   imageStyle?: ImageStyle;
@@ -29,13 +31,13 @@ const AppBackButton = ({
       style={{justifyContent: 'center', ...style}}
       onPress={() => {
         if (onPress) onPress();
-        else if (!isPaid) goBack(navigation, route);
+        else goBack(navigation, route);
       }}
-      disabled={isPaid}>
+      disabled={disabled}>
       <View
         key="btn"
         style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
-        {!isPaid ? (
+        {showIcon ? (
           <View key="icon" style={{marginLeft: 20, ...imageStyle}}>
             <AppSvgIcon name="btnBack" />
           </View>

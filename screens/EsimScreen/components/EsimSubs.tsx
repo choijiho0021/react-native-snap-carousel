@@ -324,6 +324,7 @@ const EsimSubs = ({
     [expired, mainSubs.giftStatusCd, isCharged, isDraft],
   );
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
+  const [showSubs, setShowSubs] = useState<boolean>(!mainSubs.hide);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
   const isBc = useMemo(
     () => mainSubs.partner === 'billionconnect',
@@ -395,6 +396,27 @@ const EsimSubs = ({
     ],
   );
 
+  const renderSwitch = useCallback(() => {
+    return (
+      <AppSwitch
+        style={{marginRight: 10}}
+        value={showSubs}
+        onPress={async () => {
+          const {
+            payload: {result},
+          } = await action.order.updateSubsInfo({
+            token: token!,
+            uuid: mainSubs.uuid,
+            hide: !mainSubs.hide,
+          });
+          if (result === 0) setShowSubs((pre) => !pre);
+        }}
+        waitFor={1000}
+        width={40}
+      />
+    );
+  }, [action.order, mainSubs.hide, mainSubs.uuid, showSubs, token]);
+
   const title = useCallback(() => {
     const country = mainSubs.prodName?.split(' ')?.[0];
     return (
@@ -415,28 +437,14 @@ const EsimSubs = ({
               flatListRef?.current?.scrollToIndex({index, animated: true});
             }
           }}>
-          {isEditMode ? (
-            <AppSwitch
-              style={{marginRight: 10}}
-              value={!mainSubs.hide || true}
-              onPress={() => {
-                action.order.updateSubsInfo({
-                  token: token!,
-                  uuid: mainSubs.uuid,
-                  hide: !mainSubs.hide,
-                });
-              }}
-              waitFor={1000}
-              width={40}
-            />
-          ) : (
-            mainSubs.flagImage !== '' && (
-              <Image
-                source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
-                style={{width: 40, height: 40, marginRight: 20}}
-              />
-            )
-          )}
+          {isEditMode
+            ? renderSwitch()
+            : mainSubs.flagImage !== '' && (
+                <Image
+                  source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
+                  style={{width: 40, height: 40, marginRight: 20}}
+                />
+              )}
           <SplitText
             key={mainSubs.key}
             renderExpend={() =>
@@ -487,14 +495,13 @@ const EsimSubs = ({
     mainSubs,
     notCardInfo,
     isEditMode,
+    renderSwitch,
     expired,
     isCharged,
     isDraft,
     showMoreInfo,
     flatListRef,
     index,
-    action.order,
-    token,
   ]);
 
   const topInfo = useCallback(() => {
