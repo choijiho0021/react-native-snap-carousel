@@ -135,24 +135,37 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         return;
       }
       rsp = await API.Subscription.cmiGetStatus({
-        iccid: item?.subsIccid || '',
+        // iccid: item?.subsIccid || '',
+        iccid: '89852342022011165627',
       });
     } else if (item.partner === 'quadcell' && item.imsi) {
       rsp = await API.Subscription.quadcellGetStatus({
-        imsi: item.imsi,
+        // imsi: item.imsi,
+        imsi: '454070042547566',
       });
     }
     setStatusLoading(false);
 
     if (rsp && rsp.result.code === 0) {
-      switch (rsp.objects[0]?.status?.statusCd) {
+      const rspStatus = rsp.objects[0]?.status;
+      switch (rspStatus.statusCd) {
         // 사용 전
         case 'R':
           setStatus('R');
           break;
         // 사용중
         case 'A':
-          setExpireTime(moment(rsp.objects[0]?.status?.endTime));
+          setExpireTime(moment(rspStatus.endTime));
+          if (item.partner === 'cmi') {
+            if (chargedSubs) {
+              const i = chargedSubs.find((s) => {
+                return s.subsOrderNo === rspStatus?.orderId;
+              });
+              setChargeableItem(i);
+            } else {
+              setChargeableItem(mainSubs);
+            }
+          }
           setStatus('A');
           break;
         // 사용 완료
