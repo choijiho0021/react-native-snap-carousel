@@ -13,7 +13,6 @@ import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
 import api, {cachedApi} from '@/redux/api/api';
 import Env from '@/environment';
-import {ProdDesc} from '@/screens/CancelOrderScreen/CancelResult';
 
 const {specialCategories} = Env.get();
 
@@ -218,19 +217,6 @@ export const getCountItems = (items?: OrderItemType[], etc?: boolean) => {
   return etc ? (result - 1).toString() : result.toString();
 };
 
-// 이건 머지로 하면 안되겠다. 중복 데이터 때문에
-const updateReservedSubs = (
-  subsExcludeReserved: ImmutableMap<string, RkbSubscription[]>,
-  subsOnlyReserved: RkbSubscription[],
-) => {
-  const parseToImmutableSubs = (subsList: RkbSubscription[]) => {
-    return ImmutableMap(subsList.map((o) => [o.nid, [o]]));
-  };
-
-  // reserved는 새로 덮어씌운다.
-  return subsExcludeReserved.merge(parseToImmutableSubs(subsOnlyReserved));
-};
-
 const initialState: OrderModelState = {
   orders: ImmutableMap<number, RkbOrder>(),
   drafts: [],
@@ -413,16 +399,16 @@ const slice = createSlice({
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
 
       if (result === 0) {
-        const subsExcludeReserved: RkbSubscription[] = [];
-        const subsOnlyReserved: RkbSubscription[] = [];
+        state.subs = mergeSubs(
+          state.subs,
 
-        objects.forEach((r) => {
-          if (isDraft(r.statusCd)) subsOnlyReserved.push(r);
-          else subsExcludeReserved.push(r);
-        });
-
-        const subs = mergeSubs(state.subs, subsExcludeReserved);
-        state.subs = updateReservedSubs(subs, subsOnlyReserved);
+          // 발권 상태는 subsIccid가 발급되기 전 nid를 subsIccid로 변경
+          // API 변경 후 다시 수정
+          objects.map((r) => {
+            if (isDraft(r.statusCd)) return {...r, subsIccid: r.nid};
+            return r;
+          }),
+        );
       }
     });
 
