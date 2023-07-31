@@ -35,6 +35,7 @@ import i18n from '@/utils/i18n';
 import {API} from '@/redux/api';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const {esimApp, esimCurrency} = Env.get();
 
@@ -280,13 +281,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   const [method, setMethod] = useState<RkbPayment>();
   const [balanceCharge, setBalanceCharge] = useState<Currency>();
   const [order, setOrder] = useState<RkbOrder>();
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('his:detail')} />,
-    });
-  }, [navigation]);
 
   useEffect(() => {
     const {detail} = route.params;
@@ -569,6 +563,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScreenHeader title={i18n.t('his:detail')} />
       <ScrollView style={{flex: 1}}>
         {headerNoti()}
         {headerInfo()}
