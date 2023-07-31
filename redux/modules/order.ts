@@ -6,7 +6,7 @@ import _ from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import moment from 'moment';
 import {API} from '@/redux/api';
-import {CancelKeywordType, RkbOrder} from '@/redux/api/orderApi';
+import {CancelKeywordType, OrderItemType, RkbOrder} from '@/redux/api/orderApi';
 import {RkbSubscription, STATUS_USED} from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {actions as accountAction} from './account';
@@ -210,8 +210,12 @@ export const isExpiredDraft = (orderDate: string) => {
   return moment().diff(moment(orderDate), 'day') >= 7;
 };
 
-export const getCountProds = (prods: ProdDesc[]) => {
-  return prods.reduce((acc, p) => acc + p.qty, 0).toString();
+export const getCountItems = (items?: OrderItemType[], etc?: boolean) => {
+  if (!items) return '';
+
+  const result = items.reduce((acc, i) => acc + i.qty, 0);
+
+  return etc ? (result - 1).toString() : result.toString();
 };
 
 // 이건 머지로 하면 안되겠다. 중복 데이터 때문에

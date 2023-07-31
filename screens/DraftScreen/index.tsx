@@ -26,7 +26,7 @@ import {AccountModelState} from '@/redux/modules/account';
 import {
   actions as orderActions,
   OrderAction,
-  getCountProds,
+  getCountItems,
 } from '@/redux/modules/order';
 import {
   actions as productActions,
@@ -120,7 +120,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   product,
   pending,
 }) => {
-  const [order, setOrder] = useState<RkbOrder>({});
+  const [order, setOrder] = useState<RkbOrder>();
   const [prods, setProds] = useState<ProdDesc[]>([]);
   const loading = useRef(false);
   const [checked, setChecked] = useState<boolean>(false);
@@ -248,7 +248,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
             prods={prods}
             listTitle={i18n
               .t('his:draftItemText')
-              .replace('%', getCountProds(prods))}
+              .replace('%', getCountItems(order?.orderItems, false))}
             footerComponent={headerNoti()}
             isGradient
           />

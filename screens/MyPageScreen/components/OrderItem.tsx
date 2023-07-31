@@ -9,6 +9,7 @@ import {appStyles} from '@/constants/Styles';
 import {OrderState, RkbOrder} from '@/redux/api/orderApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
+import {getCountItems} from '@/redux/modules/order';
 
 const styles = StyleSheet.create({
   order: {
@@ -43,7 +44,7 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
   if (item.orderItems && item.orderItems.length > 1) {
     label += i18n
       .t('his:etcCnt')
-      .replace('%%', (item.orderItems.length - 1).toString());
+      .replace('%%', getCountItems(item?.orderItems, true));
   }
 
   const isCanceled = item.state === 'canceled';

@@ -30,7 +30,11 @@ import {OrderState, RkbOrder, RkbPayment} from '@/redux/api/orderApi';
 import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
-import {actions as orderActions, OrderAction} from '@/redux/modules/order';
+import {
+  actions as orderActions,
+  OrderAction,
+  getCountItems,
+} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import {API} from '@/redux/api';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -510,7 +514,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     if (order.orderItems.length > 1)
       label += i18n
         .t('his:etcCnt')
-        .replace('%%', (order.orderItems.length - 1).toString());
+        .replace('%%', getCountItems(order?.orderItems, true));
     return (
       <View>
         <AppText style={styles.date}>

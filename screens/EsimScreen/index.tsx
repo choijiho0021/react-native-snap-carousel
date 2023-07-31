@@ -152,18 +152,18 @@ const styles = StyleSheet.create({
       width: 0,
       height: 4,
     },
-    draftTitleFrame: {
-      marginHorizontal: 16,
-      marginTop: 24,
-      marginBottom: 8,
-    },
-    draftTitle: {
-      flexDirection: 'row',
-      marginTop: 12,
-      backgroundColor: colors.backGrey,
-      paddingHorizontal: 16,
-      paddingVertical: 8,
-    },
+  },
+  draftTitleFrame: {
+    marginHorizontal: 16,
+    marginTop: 24,
+    marginBottom: 8,
+  },
+  draftTitle: {
+    flexDirection: 'row',
+    marginTop: 12,
+    backgroundColor: colors.backGrey,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
   },
 });
 
@@ -428,7 +428,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       return (
         <EsimDraftSubs
           key={item.key}
-          mainSubs={item}
+          draftOrder={item}
           onClick={(currentOrder) => {
             navigate(navigation, route, 'EsimStack', {
               tab: 'MyPageStack',
