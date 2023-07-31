@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   },
   normal14Gray: {
     ...appStyles.normal14Text,
-    color: '#777777',
+    color: colors.white,
     fontSize: isDeviceSize('small') ? 12 : 14,
   },
   btn: {
@@ -179,8 +179,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     marginLeft: 8,
     paddingBottom: 3,
-    // lineHeight: 26,
-    color: '#2c2c2c',
+    color: colors.black,
   },
   shadow: {
     borderRadius: 3,

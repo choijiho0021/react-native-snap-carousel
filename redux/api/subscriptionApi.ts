@@ -4,7 +4,7 @@ import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import Env from '@/environment';
 import moment from 'moment';
 
-const {isProduction, specialCategories} = Env.get();
+const {specialCategories} = Env.get();
 
 const STATUS_ACTIVE = 'A'; // 사용중
 const STATUS_INACTIVE = 'I'; // 미사용

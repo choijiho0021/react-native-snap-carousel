@@ -18,12 +18,10 @@ import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {RkbOrder} from '@/redux/api/orderApi';
-import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import {
   actions as orderActions,
@@ -35,8 +33,6 @@ import {
   ProductModelState,
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
-import {renderPromoFlag} from '../ChargeHistoryScreen';
-import SplitText from '@/components/SplitText';
 import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
 import GuideBox from '../CancelOrderScreen/component/GuideBox';
 import FloatCheckButton from '../CancelOrderScreen/component/FloatCheckButton';
@@ -53,17 +49,38 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
   },
 
+  buttonFrame: {flexDirection: 'row'},
   button: {
     ...appStyles.normal16Text,
     flex: 1,
     height: 52,
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
-    color: '#ffffff',
+    color: colors.white,
   },
   headerNotiText: {
     ...appStyles.bold16Text,
     color: colors.redError,
+  },
+  dashContainer: {
+    overflow: 'hidden',
+  },
+  dashFrame: {
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    margin: -1,
+    height: 0,
+    marginBottom: 0,
+  },
+  dash: {
+    width: '100%',
+  },
+  proudctFrame: {
+    marginHorizontal: 20,
+  },
+  product: {
+    marginBottom: 40,
   },
 });
 
@@ -187,17 +204,9 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
 
   const renderDashedDiv = useCallback(() => {
     return (
-      <View style={{overflow: 'hidden'}}>
-        <View
-          style={{
-            borderStyle: 'dashed',
-            borderWidth: 1,
-            borderColor: colors.lightGrey,
-            margin: -1,
-            height: 0,
-            marginBottom: 0,
-          }}>
-          <View style={{width: '100%'}} />
+      <View style={styles.dashContainer}>
+        <View style={styles.dashFrame}>
+          <View style={styles.dash} />
         </View>
       </View>
     );
@@ -233,9 +242,9 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView ref={scrollRef} style={{flex: 1}}>
-        <View style={{marginHorizontal: 20}}>
+        <View style={styles.proudctFrame}>
           <ProductDetailList
-            style={{marginBottom: 40}}
+            style={styles.product}
             prods={prods}
             listTitle={i18n
               .t('his:draftItemText')
@@ -253,7 +262,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
         </View>
       </ScrollView>
       {renderCheckButton()}
-      <View style={{flexDirection: 'row'}}>
+      <View style={styles.buttonFrame}>
         <AppButton
           style={styles.button}
           type="primary"

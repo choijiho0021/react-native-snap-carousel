@@ -36,7 +36,7 @@ import {API} from '@/redux/api';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
 
-const {esimApp, esimCurrency} = Env.get();
+const {esimCurrency} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -134,7 +134,6 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.black,
     borderBottomWidth: 1,
     marginHorizontal: 20,
-    // marginVertical: 20,
     marginBottom: 20,
   },
   item: {
@@ -159,10 +158,6 @@ const styles = StyleSheet.create({
   },
   dividerTop: {
     marginTop: 20,
-    height: 10,
-    backgroundColor: colors.whiteTwo,
-  },
-  divider: {
     height: 10,
     backgroundColor: colors.whiteTwo,
   },
@@ -194,7 +189,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderColor: colors.dodgerBlue,
     borderWidth: 1,
-    color: '#ffffff',
+    color: colors.white,
   },
   secondaryButtonText: {
     ...appStyles.normal18Text,
@@ -206,7 +201,7 @@ const styles = StyleSheet.create({
     height: 52,
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
-    color: '#ffffff',
+    color: colors.white,
   },
   priceStyle: {
     ...appStyles.bold22Text,

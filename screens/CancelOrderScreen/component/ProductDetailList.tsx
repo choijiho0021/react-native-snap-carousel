@@ -162,8 +162,6 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
         )}
       </View>
 
-      {/* contentContainerStyle={[styles.cancelItemFrame]} */}
-
       <View key="cancelFrame" style={styles.cancelItemFrame}>
         <View
           key="cancelList"

@@ -586,6 +586,7 @@
   "esim:rechargeExpired": "충전 만료",
   "esim:rechargeablePeriod": "충전 가능 기간",
   "esim:rechargeablePeriod2": "<b>연장 가능 기간:</b> {chargeablePeriod}",
+  "esim:draftTitle": "발권이 필요한 상품",
   "esim:until:KST": "{{time}}",
   "esim:expired": "기한만료",
   "esim:refresh": " \u00B7  업데이트 하시려면 아래로 당기세요\n \u00B7  도움이 필요하시면 상단 오른쪽의 물음표를 눌러주세요",

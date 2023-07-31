@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     height: 52,
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
-    color: '#ffffff',
+    color: colors.white,
   },
   secondaryButton: {
     flex: 1,
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderColor: colors.dodgerBlue,
     borderWidth: 1,
-    color: '#ffffff',
+    color: colors.white,
   },
   secondaryButtonText: {
     ...appStyles.normal18Text,
