@@ -363,56 +363,51 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   const renderSubs = useCallback(
-    ({item, index}: {item: RkbSubscription[]; index: number}) => {
-      return (
-        <EsimSubs
-          key={item[0].key}
-          flatListRef={flatListRef}
-          index={index}
-          mainSubs={item[0]}
-          chargedSubs={item}
-          expired={moment(getLatestExpireDateSubs(item).expireDate).isBefore(
-            moment(),
-          )}
-          isChargeExpired={moment(item[0].expireDate).isBefore(moment())}
-          isCharged={item.length > 1}
-          showDetail={
-            index === 0 &&
-            moment(item[item.length - 1].purchaseDate).isAfter(
-              moment().subtract(14, 'days'),
-            )
-          }
-          onPressUsage={(subscription: RkbSubscription) =>
-            onPressUsage(subscription)
-          }
-          setShowModal={(visible: boolean) => setShowModal(visible)}
-          isEditMode={isEditMode}
-        />
-      );
-    },
+    ({item, index}: {item: RkbSubscription[]; index: number}) => (
+      <EsimSubs
+        key={item[0].key}
+        flatListRef={flatListRef}
+        index={index}
+        mainSubs={item[0]}
+        chargedSubs={item}
+        expired={moment(getLatestExpireDateSubs(item).expireDate).isBefore(
+          moment(),
+        )}
+        isChargeExpired={moment(item[0].expireDate).isBefore(moment())}
+        isCharged={item.length > 1}
+        showDetail={
+          index === 0 &&
+          moment(item[item.length - 1].purchaseDate).isAfter(
+            moment().subtract(14, 'days'),
+          )
+        }
+        onPressUsage={(subscription: RkbSubscription) =>
+          onPressUsage(subscription)
+        }
+        setShowModal={(visible: boolean) => setShowModal(visible)}
+        isEditMode={isEditMode}
+      />
+    ),
     [isEditMode, onPressUsage],
   );
 
   const renderDraft = useCallback(
-    (item: RkbOrder) => {
-      return (
-        <EsimDraftSubs
-          key={item.key}
-          flatListRef={flatListRef}
-          mainSubs={item}
-          onClick={(currentOrder) => {
-            navigate(navigation, route, 'EsimStack', {
-              tab: 'MyPageStack',
-              initial: false,
-              screen: 'Draft',
-              params: {
-                order: currentOrder,
-              },
-            });
-          }}
-        />
-      );
-    },
+    (item: RkbOrder) => (
+      <EsimDraftSubs
+        key={item.key}
+        mainSubs={item}
+        onClick={(currentOrder) =>
+          navigate(navigation, route, 'EsimStack', {
+            tab: 'MyPageStack',
+            initial: false,
+            screen: 'Draft',
+            params: {
+              order: currentOrder,
+            },
+          })
+        }
+      />
+    ),
     [navigation, route],
   );
 

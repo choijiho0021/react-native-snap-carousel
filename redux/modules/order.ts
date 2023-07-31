@@ -402,7 +402,7 @@ const slice = createSlice({
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
 
       if (result === 0) {
-        state.subs = objects;
+        state.subs = mergeSubs(state.subs, objects);
       }
     });
 

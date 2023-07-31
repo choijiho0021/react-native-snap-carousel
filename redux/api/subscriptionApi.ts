@@ -297,12 +297,14 @@ const toSubsUsage = (data: {
 };
 
 const getSubscription = ({
+  uuid,
   iccid,
   token,
   hidden,
 }: {
-  iccid?: string;
-  token?: string;
+  iccid: string;
+  token: string;
+  uuid?: string;
   hidden?: boolean;
 }) => {
   if (!iccid)
@@ -311,10 +313,9 @@ const getSubscription = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
   return api.callHttpGet(
-    `${api.httpUrl(
-      api.path.rokApi.rokebi.subs,
-      '',
-    )}/${iccid}?_format=json&hidden=${hidden ? '1' : '0'}`,
+    `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${
+      uuid || '0'
+    }?_format=json&iccid=${iccid}&hidden=${hidden ? '1' : '0'}`,
     (resp) => {
       if (resp.result === 0) resp.objects = resp.objects.map(toSubs);
       return resp;
