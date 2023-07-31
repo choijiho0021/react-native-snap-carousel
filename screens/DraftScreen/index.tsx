@@ -3,8 +3,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
-  FlatList,
-  Pressable,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -38,8 +37,6 @@ import {
 import i18n from '@/utils/i18n';
 import {renderPromoFlag} from '../ChargeHistoryScreen';
 import SplitText from '@/components/SplitText';
-import AppStyledText from '@/components/AppStyledText';
-import AppIcon from '@/components/AppIcon';
 import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
 import GuideBox from '../CancelOrderScreen/component/GuideBox';
 import FloatCheckButton from '../CancelOrderScreen/component/FloatCheckButton';
@@ -52,8 +49,6 @@ const styles = StyleSheet.create({
   headerNoti: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderTopWidth: 1,
-    borderStyle: 'solid',
     paddingVertical: 16,
     borderColor: colors.lightGrey,
   },
@@ -113,6 +108,8 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   const loading = useRef(false);
   const [checked, setChecked] = useState<boolean>(false);
 
+  const scrollRef = useRef<ScrollView>();
+
   useEffect(() => {
     navigation.setOptions({
       title: null,
@@ -125,8 +122,10 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   }, [route?.params?.order]);
 
   const onCheck = useCallback(() => {
+    if (!checked) scrollRef?.current.scrollToEnd();
+
     setChecked((prev) => !prev);
-  }, []);
+  }, [checked]);
 
   const onClickButton = useCallback(() => {
     action.order
@@ -176,53 +175,6 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
     else setProds(prodList);
   }, [getProdDate, order, product.prodList]);
 
-  const renderItem = useCallback(({item}: {item: ProdDesc}) => {
-    return (
-      <>
-        {Array.from({length: item.qty}, (_, index) => {
-          return (
-            <View
-              key={`${item.title + index.toString()}`}
-              style={{marginBottom: 10}}>
-              <View
-                style={{
-                  width: '100%',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                }}>
-                <SplitText
-                  renderExpend={() =>
-                    renderPromoFlag(item.promoFlag || [], false)
-                  }
-                  numberOfLines={2}
-                  style={{...appStyles.bold16Text, marginRight: 8}}
-                  ellipsizeMode="tail">
-                  {utils.removeBracketOfName(item.title)}
-                </SplitText>
-              </View>
-              <View>
-                <AppText
-                  key="desc"
-                  numberOfLines={2}
-                  ellipsizeMode="tail"
-                  style={[
-                    appStyles.normal14Text,
-                    {
-                      flex: 1,
-                      fontSize: isDeviceSize('medium') ? 14 : 16,
-                      lineHeight: isDeviceSize('medium') ? 20 : 22,
-                    },
-                  ]}>
-                  {item.field_description}
-                </AppText>
-              </View>
-            </View>
-          );
-        })}
-      </>
-    );
-  }, []);
-
   const renderCheckButton = useCallback(() => {
     return (
       <FloatCheckButton
@@ -233,17 +185,45 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
     );
   }, [checked, onCheck]);
 
+  const renderDashedDiv = useCallback(() => {
+    return (
+      <View style={{overflow: 'hidden'}}>
+        <View
+          style={{
+            borderStyle: 'dashed',
+            borderWidth: 1,
+            borderColor: colors.lightGrey,
+            margin: -1,
+            height: 0,
+            marginBottom: 0,
+          }}>
+          <View style={{width: '100%'}} />
+        </View>
+      </View>
+    );
+  }, []);
+
   const headerNoti = useCallback(() => {
     if (!order || !order.orderItems) return <View />;
 
     return (
-      <View style={[styles.headerNoti]}>
-        <AppText style={styles.headerNotiText}>
-          {i18n.t('his:draftNoti')}
-        </AppText>
+      <View>
+        {Platform.OS === 'ios' && renderDashedDiv()}
+        <View
+          style={[
+            styles.headerNoti,
+            Platform.OS === 'android' && {
+              borderStyle: 'dashed',
+              borderTopWidth: 1,
+            },
+          ]}>
+          <AppText style={styles.headerNotiText}>
+            {i18n.t('his:draftNoti')}
+          </AppText>
+        </View>
       </View>
     );
-  }, [order]);
+  }, [order, renderDashedDiv]);
 
   if (!order || !order.orderItems) return <View />;
 
@@ -252,7 +232,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={{flex: 1}}>
+      <ScrollView ref={scrollRef} style={{flex: 1}}>
         <View style={{marginHorizontal: 20}}>
           <ProductDetailList
             style={{marginBottom: 40}}
@@ -261,6 +241,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
               .t('his:draftItemText')
               .replace('%', getCountProds(prods))}
             footerComponent={headerNoti()}
+            isGradient
           />
         </View>
         <View>

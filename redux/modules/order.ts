@@ -383,8 +383,7 @@ const slice = createSlice({
           return s;
         });
 
-        if (changeSubs) subs.set(objects[0].iccid, changeSubs);
-        state.subs = subs;
+        if (changeSubs) state.subs = subs.set(objects[0].iccid, changeSubs);
       }
     });
 

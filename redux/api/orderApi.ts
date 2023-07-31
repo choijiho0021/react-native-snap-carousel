@@ -58,7 +58,12 @@ export type RkbPayment = {
   remote_id?: string;
 };
 
-export type OrderState = 'completed' | 'validation' | 'canceled' | 'draft';
+export type OrderState =
+  | 'completed'
+  | 'validation'
+  | 'canceled'
+  | 'draft'
+  | 'completed';
 
 export type RkbOrder = {
   key: string;
