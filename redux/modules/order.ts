@@ -2,21 +2,17 @@
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import _, {object} from 'underscore';
+import _ from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
+import moment from 'moment';
 import {API} from '@/redux/api';
 import {CancelKeywordType, RkbOrder} from '@/redux/api/orderApi';
-import {
-  RkbSubscription,
-  STATUS_PENDING,
-  STATUS_RESERVED,
-} from '@/redux/api/subscriptionApi';
+import {RkbSubscription, STATUS_USED} from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
 import api, {cachedApi} from '@/redux/api/api';
 import Env from '@/environment';
-import moment from 'moment';
 import {ProdDesc} from '@/screens/CancelOrderScreen/CancelResult';
 
 const {specialCategories} = Env.get();
@@ -207,6 +203,8 @@ const mergeSubs = (
 
   return subsToMap;
 };
+
+export const isDraft = (state: string) => !(STATUS_USED === state);
 
 export const isExpiredDraft = (orderDate: string) => {
   return moment().diff(moment(orderDate), 'day') >= 7;
@@ -415,10 +413,8 @@ const slice = createSlice({
         const subsOnlyReserved: RkbSubscription[] = [];
 
         objects.forEach((r) => {
-          if ([STATUS_RESERVED, STATUS_PENDING].includes(r.statusCd)) {
-            subsOnlyReserved.push(r);
-          }
-          subsExcludeReserved.push(r);
+          if (isDraft(r.statusCd)) subsOnlyReserved.push(r);
+          else subsExcludeReserved.push(r);
         });
 
         const subs = mergeSubs(state.subs, subsExcludeReserved);
