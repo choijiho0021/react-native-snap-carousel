@@ -171,14 +171,6 @@ const KAKAO = 'kakao';
 const MESSAGE = 'message';
 const {isProduction, esimGlobal, webViewHost, isIOS} = Env.get();
 
-const numberOfLines = (txt: string) => {
-  let lines = 0;
-  for (let i = 0; i < txt.length; i++) {
-    if (txt[i] === '\n' || txt[i] === '\r') lines++;
-  }
-  return lines;
-};
-
 const GiftScreen: React.FC<GiftScreenProps> = ({
   navigation,
   route,
@@ -204,6 +196,8 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   const {mainSubs} = route.params || {};
   const [msg, setMsg] = useState(i18n.t('gift:default'));
   const [num, setNum] = useState(0);
+  const [prevMsg, setPrevMsg] = useState('');
+  const [contHeight, setContHeight] = useState(30);
   const msgRef = useRef();
   const [toastPending, setToastPending] = useState(false);
   const [showSnackBar, setShowSnackbar] = useState(false);
@@ -281,34 +275,39 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         item.prodName
       }\n${webUrl}${i18n.t('gift:msgBody2')}  `;
 
-      try {
-        let result = null;
-        let updateStatus = true;
+      switch (method) {
+        case MESSAGE: {
+          const result = await Linking.openURL(`sms:${SMSDivider}body=${body}`);
 
-        if (method === MESSAGE) {
-          result = await Linking.openURL(`sms:${SMSDivider}body=${body}`);
-        } else {
+          if (result) {
+            afterSend(item, true);
+          }
+
+          break;
+        }
+        default: {
           // kakao
-          const resp = await KakaoSDK.KakaoShareLink.sendCustom({
-            // kakao template 상용: 67017, TB: 70053
-            templateId: isProduction ? 67017 : 70053,
-            templateArgs: [
-              {
-                key: 'gift',
-                value: giftId,
-              },
-            ],
-          });
-          // eslint-disable-next-line prefer-destructuring
-          result = resp?.result;
-          updateStatus = false;
-        }
+          try {
+            const response = await KakaoSDK.KakaoShareLink.sendCustom({
+              // kakao template 상용: 67017, TB: 70053
+              templateId: isProduction ? 67017 : 70053,
+              templateArgs: [
+                {
+                  key: 'gift',
+                  value: giftId,
+                },
+              ],
+            });
 
-        if (result) {
-          afterSend(item, updateStatus);
+            // kakao 앱 이동 성공
+            if (response.result) {
+              afterSend(item);
+            }
+          } catch (e) {
+            console.error(e);
+          }
+          break;
         }
-      } catch (e) {
-        console.error(e);
       }
     },
     [SMSDivider, afterSend, createLink],
@@ -378,12 +377,20 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
               ref={msgRef}
               value={msg}
               onChangeText={(txt) => {
-                if (numberOfLines(txt) < 4) setMsg(txt);
+                setMsg(txt);
               }}
               scrollEnabled={false}
               maxLength={80}
-              numberOfLines={4}
               defaultValue={msg}
+              onContentSizeChange={({nativeEvent: {contentSize}}) => {
+                const {height} = contentSize;
+                setContHeight(height);
+                if (height > 120) setMsg(prevMsg);
+              }}
+              onKeyPress={({nativeEvent: {key: keyValue}}) => {
+                if (contHeight <= 120) setPrevMsg(msg);
+                if (contHeight >= 120 && keyValue === 'Enter') setPrevMsg(msg);
+              }}
               style={styles.msg}
             />
             <AppText style={styles.msgLength}>
@@ -408,7 +415,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         </View>
       </ImageBackground>
     ),
-    [bgImages, msg, num],
+    [bgImages, contHeight, msg, num, prevMsg],
   );
 
   return (
@@ -441,7 +448,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         bottom={10}
       />
       <AppButton
-        style={appStyles.confirm}
+        style={[appStyles.confirm]}
         title={i18n.t('esim:sendGift')}
         disabled={methodList.length === 0}
         onPress={() => sendLink(checked, mainSubs)}
