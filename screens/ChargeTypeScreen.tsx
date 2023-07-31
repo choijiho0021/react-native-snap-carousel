@@ -51,15 +51,6 @@ const styles = StyleSheet.create({
   },
 });
 
-type CMIBundlesType = {
-  createTime: string;
-  activeTime: string;
-  expireTime: string;
-  endTime: string;
-  orderID: string;
-  status: number;
-};
-
 // A: 사용중
 // R: 사용전
 // U: 사용완료
@@ -196,7 +187,9 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       setRemainDays(Number(mainSubs.prodDays));
     } else if (expireTime) {
       const today = moment();
-      setRemainDays(Math.ceil(expireTime.diff(today, 'hours') / 24));
+      setRemainDays(
+        Math.ceil(expireTime.diff(today, 'seconds') / (24 * 60 * 60)),
+      );
     }
   }, [expireTime, mainSubs, mainSubs.partner, status]);
 
