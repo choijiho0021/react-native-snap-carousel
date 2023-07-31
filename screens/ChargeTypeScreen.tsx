@@ -135,13 +135,11 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         return;
       }
       rsp = await API.Subscription.cmiGetStatus({
-        // iccid: item?.subsIccid || '',
-        iccid: '89852342022011165627',
+        iccid: item?.subsIccid || '',
       });
     } else if (item.partner === 'quadcell' && item.imsi) {
       rsp = await API.Subscription.quadcellGetStatus({
-        // imsi: item.imsi,
-        imsi: '454070042547566',
+        imsi: item.imsi,
       });
     }
     setStatusLoading(false);
