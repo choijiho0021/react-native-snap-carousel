@@ -64,7 +64,6 @@ import {
   actions as modalActions,
   ModalAction,
 } from '@/redux/modules/modal';
-import {actions} from '@/redux/modules/toast';
 import AppButton from '@/components/AppButton';
 
 const {esimGlobal, isIOS} = Env.get();
@@ -215,9 +214,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         action.order
           .getSubsWithToast({iccid, token, hidden})
           .then(() => {
-            if (!esimGlobal) {
-              action.order.getStoreSubsWithToast({mobile, token});
-            }
             action.account.getAccount({iccid, token, hidden});
             action.order.getOrders({
               user: mobile,
@@ -528,15 +524,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           )[0];
 
         if (main) {
-          const {expireDate} = filter?.reduce((oldest, current) => {
-            const oldestDateObj = new Date(oldest.expireDate);
-            const currentDateObj = new Date(current.expireDate);
-
-            if (currentDateObj > oldestDateObj) {
-              return current;
-            }
-            return oldest;
-          });
+          const {expireDate} = filter?.reduce((oldest, current) =>
+            oldest
+              ? current.expireDate > oldest.expireDate
+                ? current
+                : oldest
+              : current,
+          );
 
           navigation.setParams({iccid: undefined});
 
