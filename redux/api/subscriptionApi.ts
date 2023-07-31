@@ -118,6 +118,7 @@ const toStatus = (v?: string) => {
 };
 
 export type StatusObj = {
+  orderId?: string | undefined;
   statusCd?: string;
   endTime?: string;
 };
@@ -623,7 +624,7 @@ const cmiGetStatus = ({iccid}: {iccid: string}) => {
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
 
   return api.callHttpGet<Usage>(
-    `${api.rokHttpUrl(api.path.rokApi.pv.cmiUsage)}&iccid=${iccid}&onlyStatus`,
+    `${api.rokHttpUrl(api.path.rokApi.pv.cmiUsage)}&iccid=${iccid}&usage=n`,
     (data) => data,
     new Headers({'Content-Type': 'application/json'}),
   );
@@ -688,7 +689,7 @@ const quadcellGetStatus = ({imsi}: {imsi: string}) => {
   return api.callHttpGet<Usage>(
     `${api.rokHttpUrl(
       `${api.path.rokApi.pv.quadcell}/usage/quota`,
-    )}&imsi=${imsi}&onlyStatus`,
+    )}&imsi=${imsi}&usage=n`,
     (data) => {
       if (data?.result?.code === 0) {
         return api.success(data?.objects);
