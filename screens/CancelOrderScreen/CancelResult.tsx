@@ -1,13 +1,7 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState} from 'react';
-import {
-  FlatList,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
@@ -20,6 +14,7 @@ import ProductDetailInfo from './component/ProductDetailInfo';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {RootState} from '@reduxjs/toolkit';
 import {OrderModelState, isExpiredDraft} from '@/redux/modules/order';
+import AppIcon from '@/components/AppIcon';
 
 const styles = StyleSheet.create({
   container: {
@@ -48,6 +43,15 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     borderBottomWidth: 1,
     borderColor: colors.whiteFive,
+  },
+  titleText: {
+    ...appStyles.bold24Text,
+    marginBottom: 16,
+  },
+
+  bodyText: {
+    ...appStyles.normal16Text,
+    lineHeight: 24,
   },
 });
 
@@ -94,8 +98,7 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
   useEffect(() => {
     if (!route?.params?.orderId) return;
 
-    // setIsSuccess(route?.params?.isSuccess);
-    setIsSuccess(false);
+    setIsSuccess(route?.params?.isSuccess);
     setOrderResult(order.orders.get(route?.params?.orderId));
     setProds(route?.params?.prods);
   }, [order.orders, route?.params]);
@@ -130,28 +133,28 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
       <View style={styles.headerContentFrame}>
         {isSuccess ? (
           <View>
-            <AppText style={[appStyles.bold24Text, {marginBottom: 16}]}>
+            <AppText style={styles.titleText}>
               {i18n.t('his:cancelOrderTitle')}
             </AppText>
-            <AppText style={[appStyles.normal16Text, {lineHeight: 24}]}>
+            <AppText style={styles.bodyText}>
               {i18n.t('his:cancelOrderBody')}
             </AppText>
           </View>
         ) : isExpiredDraft(orderResult?.orderDate) ? (
           <View>
-            <AppText style={[appStyles.bold24Text, {marginBottom: 16}]}>
+            <AppText style={styles.titleText}>
               {i18n.t('his:cancelOrderFail1Title')}
             </AppText>
-            <AppText style={[appStyles.normal16Text, {lineHeight: 24}]}>
+            <AppText style={styles.bodyText}>
               {i18n.t('his:cancelOrderFail1Body')}
             </AppText>
           </View>
         ) : (
           <View>
-            <AppText style={[appStyles.bold24Text, {marginBottom: 16}]}>
+            <AppText style={styles.titleText}>
               {i18n.t('his:cancelOrderFail2Title')}
             </AppText>
-            <AppText style={[appStyles.normal16Text, {lineHeight: 24}]}>
+            <AppText style={styles.bodyText}>
               {i18n.t('his:cancelOrderFail2Body')}
             </AppText>
           </View>
@@ -160,11 +163,22 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
     ),
     [isSuccess, orderResult],
   );
+
+  // 제플린에 실패 시 이미지 있기는 한데, 파편화 되어 있어서 문의 필요
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={{marginHorizontal: 20, flex: 1}}>
         {renderContent()}
         {isSuccess && renderItemList()}
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: 100,
+          }}>
+          {!isSuccess && <AppIcon name="goodsError" size={252} />}
+        </View>
       </ScrollView>
       <View style={{flexDirection: 'row'}}>
         <AppButton
