@@ -22,6 +22,7 @@ import {USAGE_TIME_INTERVAL} from './EsimScreen';
 import {RkbAddOnProd} from '@/redux/api/productApi';
 import ChargeTypeModal from './HomeScreen/component/ChargeTypeModal';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -110,20 +111,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       addOnData?.find((a) => Number(a.prodDays) > 1),
     [addOnData, mainSubs],
   );
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <View style={styles.header}>
-          <AppBackButton
-            title={i18n.t('esim:charge')}
-            style={styles.headerTitle}
-          />
-        </View>
-      ),
-    });
-  }, [navigation]);
 
   const checkStatus = useCallback(async (item: RkbSubscription) => {
     setStatusLoading(true);
@@ -372,6 +359,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScreenHeader title={i18n.t('esim:charge')} />
+
       <AppActivityIndicator visible={statusLoading || addonLoading} />
       <ScrollView style={{flex: 1}}>
         <View style={styles.top}>

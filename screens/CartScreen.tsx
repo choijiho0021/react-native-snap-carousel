@@ -38,6 +38,7 @@ import {
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import ChatTalk from '@/components/ChatTalk';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const {esimCurrency, isIOS} = Env.get();
 
@@ -256,13 +257,6 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     }
   }, [action.product, cart, product.prodList]);
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('cart')} />,
-    });
-  }, [navigation]);
-
   useFocusEffect(
     React.useCallback(() => {
       action.cart.cartFetch();
@@ -312,6 +306,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     empty()
   ) : (
     <SafeAreaView style={styles.container}>
+      <ScreenHeader title={i18n.t('cart')} />
       <FlatList
         data={list}
         renderItem={renderItem}

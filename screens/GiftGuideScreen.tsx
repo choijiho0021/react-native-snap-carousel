@@ -26,6 +26,7 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import AppTextJoin from '@/components/AppTextJoin';
 import {API} from '@/redux/api';
 import AppStyledText from '@/components/AppStyledText';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const {width} = Dimensions.get('window');
 
@@ -100,12 +101,6 @@ type GiftGuideProps = {
 
 const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
   const [gift, setGift] = useState('');
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('gift:title')} />,
-    });
-  }, [navigation]);
 
   useEffect(() => {
     API.Promotion.getStat().then((rsp) => {
@@ -130,6 +125,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScreenHeader title={i18n.t('gift:title')} />
       <ScrollView>
         <View style={styles.whiteContainer}>
           <View key="top">

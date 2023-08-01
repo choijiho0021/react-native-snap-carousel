@@ -25,6 +25,7 @@ import {RkbProduct} from '@/redux/api/productApi';
 import ProdByType from '@/components/ProdByType';
 import SelectedProdTitle from './EventBoardScreen/components/SelectedProdTitle';
 import AppStyledText from '@/components/AppStyledText';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -178,20 +179,6 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
     action.product.getProdOfPartner(partnerIds);
   }, [action.product, partnerIds]);
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <View style={styles.header}>
-          <AppBackButton
-            title={i18n.t('esim:charge:type:extension')}
-            style={styles.headerTitle}
-          />
-        </View>
-      ),
-    });
-  }, [navigation, showTip]);
-
   const onIndexChange = useCallback((idx: number) => {
     setIndex(idx);
   }, []);
@@ -245,6 +232,8 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScreenHeader title={i18n.t('esim:charge:type:extension')} />
+
       <Animated.View style={{height: animatedValue}}>
         <SelectedProdTitle
           isdaily={params?.mainSubs?.daily === 'daily'}
