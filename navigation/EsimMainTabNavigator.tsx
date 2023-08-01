@@ -90,7 +90,7 @@ const screenOptions = {
     elevation: 0,
     shadowOpacity: 0,
   },
-  headerShown: false,
+  // headerShown: false,
 };
 
 const tabBarLabel = (focused: boolean, textId: string) => (
@@ -116,6 +116,7 @@ function HomeStackComponent() {
           headerStyle: {
             shadowColor: 'transparent',
           },
+          headerShown: false,
         })}
       />
       <HomeStack.Screen
@@ -132,7 +133,13 @@ function HomeStackComponent() {
           headerShown: false,
         })}
       />
-      <HomeStack.Screen name="Cart" component={CartScreen} />
+      <HomeStack.Screen
+        name="Cart"
+        component={CartScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <HomeStack.Screen
         name="ProductDetail"
         component={ProductDetailScreen}
@@ -147,7 +154,13 @@ function HomeStackComponent() {
           headerShown: false,
         })}
       />
-      <HomeStack.Screen name="Noti" component={NotiScreen} />
+      <HomeStack.Screen
+        name="Noti"
+        component={NotiScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <HomeStack.Screen
         name="Contact"
@@ -167,7 +180,13 @@ function HomeStackComponent() {
         })}
       />
       <HomeStack.Screen name="Invite" component={InviteScreen} />
-      <HomeStack.Screen name="InvitePromo" component={InvitePromoScreen} />
+      <HomeStack.Screen
+        name="InvitePromo"
+        component={InvitePromoScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <HomeStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />
       <HomeStack.Screen name="Faq" component={FaqScreen} />
       <HomeStack.Screen
@@ -197,10 +216,19 @@ function HomeStackComponent() {
         />
         <HomeStack.Screen name="SelectCard" component={SelectCardScreen} />
       </HomeStack.Group>
-      <HomeStack.Screen name="PaymentResult" component={PaymentResultScreen} />
+      <HomeStack.Screen
+        name="PaymentResult"
+        component={PaymentResultScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <HomeStack.Screen
         name="PurchaseDetail"
         component={PurchaseDetailScreen}
+        options={() => ({
+          headerShown: false,
+        })}
       />
       <HomeStack.Screen
         name="ExtraCoupon"
@@ -226,7 +254,13 @@ function CartStackComponent() {
       <CartStack.Screen name="Payment" component={PaymentScreen} />
       <CartStack.Screen name="PymMethod" component={PymMethodScreen} />
       <CartStack.Screen name="SimpleText" component={SimpleTextScreen} />
-      <CartStack.Screen name="PaymentResult" component={PaymentResultScreen} />
+      <CartStack.Screen
+        name="PaymentResult"
+        component={PaymentResultScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <CartStack.Group screenOptions={{animationEnabled: true}}>
         <CartStack.Screen
           name="PaymentGateway"
@@ -279,7 +313,13 @@ function EsimStackComponent() {
           headerShown: false,
         })}
       />
-      <EsimStack.Screen name="ChargeDetail" component={ChargeDetailScreen} />
+      <EsimStack.Screen
+        name="ChargeDetail"
+        component={ChargeDetailScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <EsimStack.Screen name="QrInfo" component={QrInfoScreen} />
       <EsimStack.Group screenOptions={{animationEnabled: true}}>
         <EsimStack.Screen name="UserGuideStep" component={UserGuideScreen} />
@@ -308,7 +348,13 @@ function EsimStackComponent() {
       />
       <EsimStack.Screen name="Payment" component={PaymentScreen} />
       <EsimStack.Screen name="PymMethod" component={PymMethodScreen} />
-      <EsimStack.Screen name="PaymentResult" component={PaymentResultScreen} />
+      <EsimStack.Screen
+        name="PaymentResult"
+        component={PaymentResultScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <EsimStack.Group screenOptions={{animationEnabled: true}}>
         <EsimStack.Screen
           name="PaymentGateway"
@@ -327,17 +373,29 @@ function MyPageStackComponent() {
       <MyPageStack.Screen
         name="PurchaseDetail"
         component={PurchaseDetailScreen}
+        options={() => ({
+          headerShown: false,
+        })}
       />
       <MyPageStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <MyPageStack.Screen name="Recharge" component={RechargeScreen} />
       {/* <MyPageStack.Screen name="Pedometer" component={PedometerScreen} /> */}
       <MyPageStack.Screen name="Invite" component={InviteScreen} />
-      <MyPageStack.Screen name="InvitePromo" component={InvitePromoScreen} />
+      <MyPageStack.Screen
+        name="InvitePromo"
+        component={InvitePromoScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
       <MyPageStack.Screen name="Payment" component={PaymentScreen} />
       <MyPageStack.Screen name="PymMethod" component={PymMethodScreen} />
       <MyPageStack.Screen
         name="PaymentResult"
         component={PaymentResultScreen}
+        options={() => ({
+          headerShown: false,
+        })}
       />
       <MyPageStack.Screen name="Settings" component={SettingsScreen} />
       <MyPageStack.Screen
