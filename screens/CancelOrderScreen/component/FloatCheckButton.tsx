@@ -3,7 +3,6 @@ import {Pressable, StyleSheet, View} from 'react-native';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import AppIcon from '@/components/AppIcon';
-import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 
 const styles = StyleSheet.create({

@@ -1,10 +1,10 @@
 import _, {isArray} from 'underscore';
+import moment from 'moment';
 import i18n from '@/utils/i18n';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import Env from '@/environment';
-import moment from 'moment';
 
-const {isProduction, specialCategories} = Env.get();
+const {specialCategories} = Env.get();
 
 const STATUS_ACTIVE = 'A'; // 사용중
 const STATUS_INACTIVE = 'I'; // 미사용
@@ -119,6 +119,7 @@ const toStatus = (v?: string) => {
 };
 
 export type StatusObj = {
+  orderId?: string | undefined;
   statusCd?: string;
   endTime?: string;
 };
@@ -182,83 +183,61 @@ const groupPartner = (partner: string) => {
   return partner;
 };
 
+const toSubs = (item) => ({
+  key: item.uuid || '',
+  uuid: item.uuid || '',
+  purchaseDate: item.field_purchase_date || '',
+  expireDate: item.field_expiration_date || '',
+  activationDate: item.field_subs_activation_date || '',
+  provDate: item.field_prov_time || '',
+  endDate: item.field_subs_expiration_date || '',
+  statusCd: item.field_status || '',
+  status: toStatus(item.field_status) || '',
+  tag: item.field_tag || [],
+  giftStatusCd:
+    giftCode[item.field_gift_status] || item.field_gift_status || '',
+  country: item.field_country || '',
+  prodName: item.title || '',
+  prodId: item.product_uuid || '',
+  prodNid: item.product_id || '',
+  nid: item.nid || '',
+  actCode: item.field_activation_code || '',
+  smdpAddr: item.sm_dp_address || '',
+  qrCode: item.qr_code || '',
+  imsi: item.field_imsi || '',
+  type: item.type || '',
+  subsIccid: item.field_iccid || '',
+  packageId: item.field_cmi_package_id || '',
+  subsOrderNo: item.field_cmi_order_id || '',
+  partner: groupPartner(item.field_ref_partner?.toLowerCase() || ''),
+  promoFlag: item.field_special_categories
+    ? item.field_special_categories
+        .split(',')
+        .map((v) => specialCategories[v.trim()])
+        .filter((v) => !_.isEmpty(v))
+    : [],
+  caution: item.field_caution || '',
+  cautionList: item.field_caution_list || [],
+  noticeOption: item.field_notice_option || [],
+  daily: item.field_daily,
+  dataVolume: item.field_data_volume,
+  refSubs: item.field_ref_subscription || '',
+  prodType: item.product_type || '',
+  prodDays: item.product_days || '',
+  flagImage: item.field_flag_image || '',
+  hide: item.field_hidden === '1',
+});
+
 const toSubscription =
   (isStore = false) =>
   (data: DrupalNode[] | DrupalNodeJsonApi): ApiResult<RkbSubscription> => {
     if (_.isArray(data)) {
       return api.success(
-        data.map((item) => ({
-          key: item.uuid || '',
-          uuid: item.uuid || '',
-          purchaseDate: item.field_purchase_date || '',
-          expireDate: item.field_expiration_date || '',
-          activationDate: item.field_subs_activation_date || '',
-          provDate: item.field_prov_time || '',
-          endDate: item.field_subs_expiration_date || '',
-          statusCd: item.field_status || '',
-          status: toStatus(item.field_status) || '',
-          tag: item.field_tag || [],
-          giftStatusCd:
-            giftCode[item.field_gift_status] || item.field_gift_status || '',
-          country: item.field_country || '',
-          prodName: item.title || '',
-          prodId: item.product_uuid || '',
-          prodNid: item.product_id || '',
-          nid: item.nid || '',
-          actCode: item.field_activation_code || '',
-          smdpAddr: item.sm_dp_address || '',
-          qrCode: item.qr_code || '',
-          imsi: item.field_imsi || '',
-          type: item.type || '',
-          subsIccid: item.field_iccid || '',
-          packageId: item.field_cmi_package_id || '',
-          subsOrderNo: item.field_cmi_order_id || '',
-          partner: groupPartner(item.field_ref_partner?.toLowerCase() || ''),
-          isStore,
-          promoFlag: item.field_special_categories
-            ? item.field_special_categories
-                .split(',')
-                .map((v) => specialCategories[v.trim()])
-                .filter((v) => !_.isEmpty(v))
-            : [],
-          caution: item.field_caution || '',
-          cautionList: item.field_caution_list || [],
-          noticeOption: item.field_notice_option || [],
-          daily: item.field_daily,
-          dataVolume: item.field_data_volume,
-          refSubs: item.field_ref_subscription || '',
-          prodType: item.product_type || '',
-          prodDays: item.product_days || '',
-          flagImage: item.field_flag_image || '',
-          alias: item.alias?.startsWith('00001111') ? '' : item.alias,
-          hide: item.field_hidden === '1',
-        })),
-        // .sort(sortSubs),
-      );
-    }
-
-    if (data.jsonapi) {
-      const obj = _.isArray(data.data) ? data.data : [data.data];
-
-      return api.success(
-        obj.map((item) => {
-          return {
-            key: item.id,
-            uuid: item.id,
-            purchaseDate: item.field_purchase_date,
-            activationDate: item.field_subs_activation_date,
-            expireDate: item.field_subs_expiration_date,
-            statusCd: item.field_status,
-            giftStatusCd:
-              giftCode[item.attributes?.field_gift_status] ||
-              item.attributes?.field_gift_status ||
-              '',
-            status: item.field_status,
-            type: item.type,
-          };
+        data.map((d) => {
+          const s = toSubs(d);
+          s.isStore = isStore;
+          return s;
         }),
-        // .sort(sortSubs)
-        data.links,
       );
     }
 
@@ -319,14 +298,14 @@ const toSubsUsage = (data: {
 };
 
 const getSubscription = ({
+  uuid,
   iccid,
   token,
-  prodType,
   hidden,
 }: {
-  iccid?: string;
-  token?: string;
-  prodType?: string;
+  iccid: string;
+  token: string;
+  uuid?: string;
   hidden?: boolean;
 }) => {
   if (!iccid)
@@ -335,11 +314,14 @@ const getSubscription = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
   return api.callHttpGet(
-    `${api.httpUrl(api.path.subscription)}/${iccid}/${prodType || 'all'}/${
-      hidden ? 'all/1' : '1'
-    }?_format=hal_json`,
-    toSubscription(),
-    api.withToken(token, 'hal+json'),
+    `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${
+      uuid || '0'
+    }?_format=json&iccid=${iccid}&hidden=${hidden ? '1' : '0'}`,
+    (resp) => {
+      if (resp.result === 0) resp.objects = resp.objects.map(toSubs);
+      return resp;
+    },
+    api.withToken(token, 'json'),
   );
 };
 
@@ -615,6 +597,17 @@ const cmiGetSubsStatus = ({iccid}: {iccid: string}) => {
   );
 };
 
+const cmiGetStatus = ({iccid}: {iccid: string}) => {
+  if (!iccid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
+
+  return api.callHttpGet<Usage>(
+    `${api.rokHttpUrl(api.path.rokApi.pv.cmiUsage)}&iccid=${iccid}&usage=n`,
+    (data) => data,
+    new Headers({'Content-Type': 'application/json'}),
+  );
+};
+
 // get usage data from svc server
 // CMI API를 사용하는 경우
 const quadcellGetData = ({
@@ -657,6 +650,24 @@ const quadcellGetUsage = ({
     `${api.rokHttpUrl(
       `${api.path.rokApi.pv.quadcell}/usage/quota`,
     )}&imsi=${imsi}`,
+    (data) => {
+      if (data?.result?.code === 0) {
+        return api.success(data?.objects);
+      }
+      return data;
+    },
+    new Headers({'Content-Type': 'application/json'}),
+  );
+};
+
+const quadcellGetStatus = ({imsi}: {imsi: string}) => {
+  if (!imsi)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
+
+  return api.callHttpGet<Usage>(
+    `${api.rokHttpUrl(
+      `${api.path.rokApi.pv.quadcell}/usage/quota`,
+    )}&imsi=${imsi}&usage=n`,
     (data) => {
       if (data?.result?.code === 0) {
         return api.success(data?.objects);
@@ -856,7 +867,9 @@ export default {
   getSubsUsage,
   cmiGetSubsUsage,
   cmiGetSubsStatus,
+  cmiGetStatus,
   quadcellGetData,
+  quadcellGetStatus,
   getHkRegStatus,
   bcGetSubsUsage,
   quadcellGetUsage,

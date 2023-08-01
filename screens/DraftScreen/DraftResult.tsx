@@ -12,7 +12,7 @@ import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import {OrderAction} from '@/redux/modules/order';
 import {ProductModelState} from '@/redux/modules/product';
-import AppSvgIcon from '@/components/AppSvgIcon';
+import AppIcon from '@/components/AppIcon';
 
 const styles = StyleSheet.create({
   container: {
@@ -26,6 +26,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
     color: '#ffffff',
+  },
+  titleText: {
+    ...appStyles.bold24Text,
+    marginBottom: 16,
+  },
+
+  bodyText: {
+    ...appStyles.normal16Text,
+    lineHeight: 24,
   },
 });
 
@@ -72,22 +81,22 @@ const DraftResultScreen: React.FC<DraftResultScreenProps> = ({
       <View>
         {isSuccess ? (
           <View>
-            <AppText style={[appStyles.bold24Text, {marginBottom: 16}]}>
+            <AppText style={styles.titleText}>
               {i18n.t('his:draftSuccessTitle')}
             </AppText>
-            <AppText style={[appStyles.normal16Text, {lineHeight: 24}]}>
+            <AppText style={styles.bodyText}>
               {i18n.t('his:draftSuccessText1')}
             </AppText>
-            <AppText style={[appStyles.normal16Text, {lineHeight: 24}]}>
+            <AppText style={styles.bodyText}>
               {i18n.t('his:draftSuccessText2')}
             </AppText>
           </View>
         ) : (
           <View>
-            <AppText style={appStyles.bold20Text}>
+            <AppText style={styles.titleText}>
               {i18n.t('his:draftFailTitle')}
             </AppText>
-            <AppText style={appStyles.normal16Text}>
+            <AppText style={styles.bodyText}>
               {i18n.t('his:draftFailText')}
             </AppText>
           </View>
@@ -100,7 +109,18 @@ const DraftResultScreen: React.FC<DraftResultScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <View style={{marginHorizontal: 20, flex: 1}}>
         {renderContent()}
-        {/* <AppSvgIcon name="goods" /> */}
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: 100,
+          }}>
+          {isSuccess ? (
+            <AppIcon name="goods" size={252} />
+          ) : (
+            <AppIcon name="goodsError" size={252} />
+          )}
+        </View>
       </View>
       <View style={{flexDirection: 'row'}}>
         <AppButton

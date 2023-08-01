@@ -205,11 +205,20 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   const [noProd, setNoProd] = useState(false);
 
   const usagePeriod = useMemo(() => {
-    const now = moment();
+    const now = moment().zone(-540);
     const resetTime = moment(dataResetTime, 'HH:mm:ss');
 
-    if (selectedType === 'today' && now.isAfter(resetTime))
-      resetTime.add(1, 'day');
+    if (selectedType === 'today') {
+      const n = moment(
+        now.format('YYYY년 MM월 DD일 HH:mm:ss'),
+        'YYYY년 MM월 DD일 HH:mm:ss',
+      );
+      const r = moment(
+        resetTime.format('YYYY년 MM월 DD일 HH:mm:ss'),
+        'YYYY년 MM월 DD일 HH:mm:ss',
+      );
+      if (n.isAfter(r)) resetTime.add(1, 'day');
+    }
 
     if (mainSubs.partner === 'quadcell' && status === 'R') {
       return {
@@ -222,7 +231,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
       period:
         selectedType === 'remainDays' ||
         (expireTime && expireTime.diff(now, 'hours') < 24)
-          ? expireTime?.format('YYYY년 MM월 DD일 HH:mm:ss') || ''
+          ? expireTime?.zone(-540).format('YYYY년 MM월 DD일 HH:mm:ss') || ''
           : resetTime.format('YYYY년 MM월 DD일 HH:mm:ss') || '',
     };
   }, [
@@ -238,7 +247,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
     if (expireTime) {
       // cmi의 리셋타임은 활성화 시간 기준으로 변경 됨
       if (mainSubs.partner === 'cmi')
-        setDataResetTime(expireTime.format('HH:mm:ss'));
+        setDataResetTime(expireTime.zone(-540).format('HH:mm:ss'));
     }
   }, [expireTime, mainSubs.partner]);
 
