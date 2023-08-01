@@ -261,7 +261,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   useEffect(() => {
     if (isFocused) {
-      onRefresh(isEditMode);
+      onRefresh(isEditMode, true);
       setIsFirstLoad(true);
     }
   }, [action.order, isEditMode, isFocused, onRefresh]);
@@ -394,7 +394,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     (more: boolean) => {
       if (!more) return;
 
-      onRefresh(isEditMode);
+      onRefresh(isEditMode, false);
     },
     [isEditMode, onRefresh],
   );
@@ -510,7 +510,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             ?.filter((s2) => s2.subsIccid === iccid) || [];
 
         const main = filter
-          ?.filter((item) => item.prodType === 'esim_product')
+          ?.filter((item) => item.type === 'esim_product')
           ?.sort((a, b) =>
             moment(a.purchaseDate).diff(moment(b.purchaseDate)),
           )[0];
@@ -533,7 +533,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               'YYYY.MM.DD',
             ),
             onPressUsage,
-            chargedSubs: filter,
             isChargeable: !moment(main?.expireDate).isBefore(moment()),
             expireTime: expireDate,
           });
@@ -586,9 +585,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       </View>
       <FlatList
         ref={flatListRef}
-        data={order.subs?.filter(
-          (elm) => (isEditMode ? elm.statusCd !== 'P' : !elm.hide), // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨실 수 없도록 한다.
-        )}
+        data={
+          isEditMode
+            ? order.subs
+            : order.subs?.filter(
+                (elm) => !elm.hide, // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨실 수 없도록 한다.
+              )
+        }
         keyExtractor={(item) => item.nid}
         ListHeaderComponent={isEditMode ? undefined : info}
         renderItem={renderSubs}
@@ -615,7 +618,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         refreshControl={
           <RefreshControl
             refreshing={refreshing && !isFirstLoad}
-            onRefresh={onRefresh}
+            onRefresh={() => onRefresh(isEditMode, true)}
             colors={[colors.clearBlue]} // android 전용
             tintColor={colors.clearBlue} // ios 전용
           />
