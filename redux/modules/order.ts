@@ -44,17 +44,6 @@ const getSubs = createAsyncThunk(
     ),
 );
 
-const getStoreSubs = createAsyncThunk(
-  'order/getStoreSubs',
-  async (param: {mobile?: string; token?: string; hidden?: boolean}) =>
-    cachedApi(
-      `cache.store.${param?.mobile}`,
-      API.Subscription.getStoreSubscription,
-    )(param, {
-      fulfillWithValue: (value) => value,
-    }),
-);
-
 const getSubsUsage = createAsyncThunk(
   'order/getSubsUsage',
   API.Subscription.getSubsUsage,
@@ -77,12 +66,11 @@ const cmiGetSubsUsage = createAsyncThunk(
 );
 
 const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
-const getStoreSubsWithToast = reflectWithToast(getStoreSubs, Toast.NOT_LOADED);
 
 export interface OrderModelState {
   orders: ImmutableMap<number, RkbOrder>;
   orderList: number[];
-  subs: ImmutableMap<string, RkbSubscription[]>;
+  subs: RkbSubscription[];
   drafts: RkbOrder[];
   usageProgress: object;
   page: number;
@@ -153,12 +141,8 @@ const cancelDraftOrder = createAsyncThunk(
       token,
       reason,
     }: {orderId?: number; token?: string; reason?: CancelKeywordType},
-    {dispatch, getState},
+    {dispatch},
   ) => {
-    const {
-      account: {iccid},
-    } = getState() as RootState;
-
     return dispatch(cancelOrder({orderId, token, reason})).then(
       ({payload: resp}) => {
         if (resp.result === 0 && resp.objects?.length > 0) {
@@ -214,7 +198,7 @@ const initialState: OrderModelState = {
   orders: ImmutableMap<number, RkbOrder>(),
   drafts: [],
   orderList: [],
-  subs: ImmutableMap(),
+  subs: [],
   usageProgress: {},
   page: 0,
 };
@@ -253,24 +237,19 @@ const slice = createSlice({
         state.drafts = state.drafts.filter((d) => d.orderId !== orderId);
 
         // 함수로 뺄 지 고민
-        state.subs = ImmutableMap(state.subs).merge(
-          subs.map((o) => [
-            o.nid,
-            [
-              {
-                ...o,
-                statusCd: o?.field_status,
-                flagImage: o?.field_flag_image,
-                prodName: utils.extractProdName(o?.title),
-                promoFlag: o?.field_special_categories
-                  ? o.field_special_categories
-                      .split(',')
-                      .map((v) => specialCategories[v.trim()])
-                      .filter((v) => !_.isEmpty(v))
-                  : [],
-              },
-            ],
-          ]),
+        state.subs = state.subs.concat(
+          subs.map((o) => ({
+            ...o,
+            statusCd: o?.field_status,
+            flagImage: o?.field_flag_image,
+            prodName: utils.extractProdName(o?.title),
+            promoFlag: o?.field_special_categories
+              ? o.field_special_categories
+                  .split(',')
+                  .map((v) => specialCategories[v.trim()])
+                  .filter((v) => !_.isEmpty(v))
+              : [],
+          })),
         );
       }
     });
@@ -393,17 +372,9 @@ const slice = createSlice({
     builder.addCase(getSubs.fulfilled, (state, action) => {
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
 
+      console.log('@@@ get subs', action?.meta?.arg);
       if (result === 0) {
-        state.subs = mergeSubs(state.subs, objects);
-      }
-    });
-
-    builder.addCase(getStoreSubs.fulfilled, (state, action) => {
-      // not used anymore
-      const {result, objects} = action.payload;
-
-      if (result === 0) {
-        state.subs = mergeSubs(state.subs, objects);
+        state.subs = objects;
       }
     });
 
@@ -423,10 +394,8 @@ const slice = createSlice({
 export const actions = {
   ...slice.actions,
   getSubsWithToast,
-  getStoreSubsWithToast,
   init,
   getSubs,
-  getStoreSubs,
   getOrders,
   updateSubsInfo,
   updateSubsAndOrderTag,
