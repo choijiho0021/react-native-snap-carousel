@@ -9,6 +9,8 @@ import {Image, Pressable, View} from 'react-native';
 import {ChannelIO} from 'react-native-channel-plugin';
 import {RootState} from '@reduxjs/toolkit';
 import {connect} from 'react-redux';
+import VersionCheck from 'react-native-version-check';
+import DeviceInfo from 'react-native-device-info';
 import {AccountModelState} from '@/redux/modules/account';
 import AppSnackBar from '@/components/AppSnackBar';
 import i18n from '@/utils/i18n';
@@ -30,6 +32,8 @@ const ChatTalk = ({
   bottom?: number;
   setChatTalkClicked?: (v: boolean) => void;
 }) => {
+  const a = DeviceInfo.getBuildNumber();
+  console.log('aaaaa a', a);
   const [loading, setLoading] = useState(false);
   const [showSnackBar, setShowSnackbar] = useState(false);
   const settings = useMemo(
@@ -44,9 +48,11 @@ const ChatTalk = ({
             email: account.email,
             mobileStr: account.mobile,
             orderUrl: `https://${appId}.rokebi.com/ko/admin/op/order/search?title=${account.mobile}&mail=&items_per_page=10`,
+            appVersion: `${VersionCheck.getCurrentVersion()}(${DeviceInfo.getBuildNumber()})`,
           }
         : {
             language: esimGlobal ? 'en' : 'ko',
+            appVersion: `${VersionCheck.getCurrentVersion()}/${DeviceInfo.getBuildNumber()}`,
           },
     }),
     [account.email, account.loggedIn, account.mobile, account.userId],

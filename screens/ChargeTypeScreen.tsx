@@ -6,7 +6,6 @@ import moment, {Moment} from 'moment';
 import {ScrollView} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-community/async-storage';
 import {useDispatch} from 'react-redux';
-import {async} from 'validate.js';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppBackButton from '@/components/AppBackButton';
@@ -18,7 +17,6 @@ import {actions as modalActions} from '@/redux/modules/modal';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
 import AppSnackBar from '@/components/AppSnackBar';
-import {USAGE_TIME_INTERVAL} from './EsimScreen';
 import {RkbAddOnProd} from '@/redux/api/productApi';
 import ChargeTypeModal from './HomeScreen/component/ChargeTypeModal';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
@@ -51,17 +49,10 @@ const styles = StyleSheet.create({
   },
 });
 
-type CMIBundlesType = {
-  createTime: string;
-  activeTime: string;
-  expireTime: string;
-  endTime: string;
-  orderID: string;
-  status: number;
-};
-
 // A: 사용중
 // R: 사용전
+// U: 사용완료
+export type UsageStatusType = 'A' | 'R' | 'U' | undefined;
 // U: 사용완료
 export type UsageStatusType = 'A' | 'R' | 'U' | undefined;
 
@@ -125,58 +116,59 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     });
   }, [navigation]);
 
-  const checkStatus = useCallback(async (item: RkbSubscription) => {
-    setStatusLoading(true);
-    let rsp;
-    if (item.partner === 'cmi' && item?.subsIccid) {
-      // CMI 종량제 addOn 미지원
-      if (item.daily === 'total') {
-        setStatusLoading(false);
-        return;
+  const checkStatus = useCallback(
+    async (item: RkbSubscription) => {
+      setStatusLoading(true);
+      let rsp;
+      if (item.partner === 'cmi' && item?.subsIccid) {
+        // CMI 종량제 addOn 미지원
+        if (item.daily === 'total') {
+          setStatusLoading(false);
+          return;
+        }
+        rsp = await API.Subscription.cmiGetStatus({
+          iccid: item?.subsIccid || '',
+        });
+      } else if (item.partner === 'quadcell' && item.imsi) {
+        rsp = await API.Subscription.quadcellGetStatus({
+          imsi: item.imsi,
+        });
       }
-      rsp = await API.Subscription.cmiGetStatus({
-        // iccid: item?.subsIccid || '',
-        iccid: '89852342022011165627',
-      });
-    } else if (item.partner === 'quadcell' && item.imsi) {
-      rsp = await API.Subscription.quadcellGetStatus({
-        // imsi: item.imsi,
-        imsi: '454070042547566',
-      });
-    }
-    setStatusLoading(false);
+      setStatusLoading(false);
 
-    if (rsp && rsp.result.code === 0) {
-      const rspStatus = rsp.objects[0]?.status;
-      switch (rspStatus.statusCd) {
-        // 사용 전
-        case 'R':
-          setStatus('R');
-          break;
-        // 사용중
-        case 'A':
-          setExpireTime(moment(rspStatus.endTime));
-          if (item.partner === 'cmi') {
-            if (chargedSubs) {
-              const i = chargedSubs.find((s) => {
-                return s.subsOrderNo === rspStatus?.orderId;
-              });
-              setChargeableItem(i);
-            } else {
-              setChargeableItem(mainSubs);
+      if (rsp && rsp.result.code === 0) {
+        const rspStatus = rsp.objects[0]?.status;
+        switch (rspStatus.statusCd) {
+          // 사용 전
+          case 'R':
+            setStatus('R');
+            break;
+          // 사용중
+          case 'A':
+            setExpireTime(moment(rspStatus.endTime));
+            if (item.partner === 'cmi') {
+              if (chargedSubs) {
+                const i = chargedSubs.find((s) => {
+                  return s.subsOrderNo === rspStatus?.orderId;
+                });
+                setChargeableItem(i);
+              } else {
+                setChargeableItem(mainSubs);
+              }
             }
-          }
-          setStatus('A');
-          break;
-        // 사용 완료
-        case 'U':
-          setStatus('U');
-          break;
-        default:
-          break;
+            setStatus('A');
+            break;
+          // 사용 완료
+          case 'U':
+            setStatus('U');
+            break;
+          default:
+            break;
+        }
       }
-    }
-  }, []);
+    },
+    [chargedSubs, mainSubs],
+  );
 
   useEffect(() => {
     if (mainSubs) checkStatus(mainSubs);
@@ -198,7 +190,9 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       setRemainDays(Number(mainSubs.prodDays));
     } else if (expireTime) {
       const today = moment();
-      setRemainDays(Math.ceil(expireTime.diff(today, 'hours') / 24));
+      setRemainDays(
+        Math.ceil(expireTime.diff(today, 'seconds') / (24 * 60 * 60)),
+      );
     }
   }, [expireTime, mainSubs, mainSubs.partner, status]);
 

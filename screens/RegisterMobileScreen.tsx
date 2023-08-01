@@ -693,13 +693,8 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           onPress={() => {
             initState();
 
-            const screen = route?.params?.screen;
-
-            if (!socialLogin) navigation.goBack();
-
-            if (screen === 'Invite') {
-              if (loggedIn) navigation.replace(screen);
-              else navigation.popToTop();
+            if (!socialLogin) {
+              navigation.goBack();
             }
           }}
         />

@@ -164,6 +164,7 @@ function HomeStackComponent() {
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
       <HomeStack.Group
         screenOptions={{animationEnabled: true, presentation: 'modal'}}>
+        <HomeStack.Screen name="SimpleTextModal" component={SimpleTextScreen} />
         <HomeStack.Screen name="UserGuideStep" component={UserGuideScreen} />
         <HomeStack.Screen
           name="UserGuide"

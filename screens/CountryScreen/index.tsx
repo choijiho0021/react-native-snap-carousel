@@ -165,8 +165,8 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const [partnerId, setPartnerId] = useState<string>();
   const [index, setIndex] = useState<number>();
   const [showTip, setTip] = useState(false);
-  const [isTop, setIsTop] = useState(true);
-  const [blockAnimation, setBlockAnimation] = useState(false);
+  const isTop = useRef(true);
+  const blockAnimation = useRef(false);
   const headerTitle = useMemo(
     () => API.Product.getTitle(localOpList.get(route.params?.partner[0])),
     [localOpList, route.params?.partner],
@@ -197,16 +197,18 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     });
   }, []);
 
-  useEffect(() => {
-    if (!blockAnimation) {
-      setBlockAnimation(true);
+  const runAnimation = useCallback(() => {
+    if (!blockAnimation.current) {
+      blockAnimation.current = true;
       Animated.timing(animatedValue, {
-        toValue: isTop ? 150 : 0,
+        toValue: isTop.current ? 150 : 0,
         duration: 500,
         useNativeDriver: false,
-      }).start(() => setBlockAnimation(false));
+      }).start(() => {
+        blockAnimation.current = false;
+      });
     }
-  }, [animatedValue, blockAnimation, isTop]);
+  }, [animatedValue]);
 
   useEffect(() => {
     if (route.params?.partner) {
@@ -254,12 +256,15 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     ({route}: {route: TabRoute}) => (
       <ProdByType
         prodData={prodData[route.key === 'daily' ? 0 : 1]}
-        onTop={setIsTop}
+        onTop={(v: boolean) => {
+          isTop.current = v;
+          runAnimation();
+        }}
         onPress={onPress}
         isCharge={false}
       />
     ),
-    [onPress, prodData],
+    [onPress, prodData, runAnimation],
   );
 
   const renderToolTip = useCallback(
