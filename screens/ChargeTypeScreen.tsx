@@ -54,8 +54,6 @@ const styles = StyleSheet.create({
 // R: 사용전
 // U: 사용완료
 export type UsageStatusType = 'A' | 'R' | 'U' | undefined;
-// U: 사용완료
-export type UsageStatusType = 'A' | 'R' | 'U' | undefined;
 
 type ChargeTypeScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
