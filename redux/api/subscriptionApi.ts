@@ -186,69 +186,33 @@ const groupPartner = (partner: string) => {
   return partner;
 };
 
-const toSubs = (item) => ({
-  key: item.uuid || '',
-  uuid: item.uuid || '',
-  purchaseDate: item.field_purchase_date || '',
-  expireDate: item.field_expiration_date || '',
-  activationDate: item.field_subs_activation_date || '',
-  provDate: item.field_prov_time || '',
-  endDate: item.field_subs_expiration_date || '',
-  statusCd: item.field_status || '',
-  status: toStatus(item.field_status) || '',
-  tag: item.field_tag || [],
-  giftStatusCd:
-    giftCode[item.field_gift_status] || item.field_gift_status || '',
-  country: item.field_country || '',
-  prodName: item.title || '',
-  prodId: item.product_uuid || '',
-  prodNid: item.product_id || '',
-  nid: item.nid || '',
-  actCode: item.field_activation_code || '',
-  smdpAddr: item.sm_dp_address || '',
-  qrCode: item.qr_code || '',
-  imsi: item.field_imsi || '',
-  type: item.type || '',
-  subsIccid: item.field_iccid || '',
-  packageId: item.field_cmi_package_id || '',
-  subsOrderNo: item.field_cmi_order_id || '',
-  partner: groupPartner(item.field_ref_partner?.toLowerCase() || ''),
-  promoFlag: item.field_special_categories
-    ? item.field_special_categories
-        .split(',')
-        .map((v) => specialCategories[v.trim()])
-        .filter((v) => !_.isEmpty(v))
-    : [],
-  caution: item.field_caution || '',
-  cautionList: item.field_caution_list || [],
-  noticeOption: item.field_notice_option || [],
-  daily: item.field_daily,
-  dataVolume: item.field_data_volume,
-  refSubs: item.field_ref_subscription || '',
-  prodType: item.product_type || '',
-  prodDays: item.product_days || '',
-  flagImage: item.field_flag_image || '',
-  hide: item.field_hidden === '1',
-  cnt: parseInt(item.cnt || '0', 10),
-  lastExpireDate: moment(item.exp_date),
-  startDate: moment(item.startDate),
-});
+const toSubscription = (
+  data: DrupalNode[] | DrupalNodeJsonApi,
+): ApiResult<RkbSubscription> => {
+  if (data.jsonapi) {
+    const obj = _.isArray(data.data) ? data.data : [data.data];
 
-const toSubscription =
-  (isStore = false) =>
-  (data: DrupalNode[] | DrupalNodeJsonApi): ApiResult<RkbSubscription> => {
-    if (_.isArray(data)) {
-      return api.success(
-        data.map((d) => {
-          const s = toSubs(d);
-          s.isStore = isStore;
-          return s;
-        }),
-      );
-    }
+    return api.success(
+      obj.map((item) => ({
+        key: item.id,
+        uuid: item.id,
+        purchaseDate: item.field_purchase_date,
+        activationDate: item.field_subs_activation_date,
+        expireDate: item.field_subs_expiration_date,
+        statusCd: item.field_status,
+        giftStatusCd:
+          giftCode[item.attributes?.field_gift_status] ||
+          item.attributes?.field_gift_status ||
+          '',
+        status: toStatus(item.field_status),
+        type: item.type,
+      })),
+      data.links,
+    );
+  }
 
-    return api.failure(data.result || api.E_NOT_FOUND, data.desc || '');
-  };
+  return api.failure(data.result || api.E_NOT_FOUND, data.desc || '');
+};
 
 const toSubsUpdate = (data) => {
   if (data.result === 0 && isArray(data.objects)) {
@@ -332,144 +296,13 @@ const getSubscription = ({
           startDate: moment(o.startDate),
           promoFlag: o.promoFlag.map((p) => specialCategories[p]),
           partner: groupPartner(o.partner),
-          hide: o.hide === '1',
+          status: toStatus(o.field_status),
         }));
       }
       return resp;
     },
     api.withToken(token, 'json'),
   );
-};
-
-const getStoreSubscription = ({
-  mobile,
-  token,
-  hidden,
-}: {
-  mobile?: string;
-  token?: string;
-  hidden?: boolean;
-}) => {
-  if (!mobile)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: mobile');
-  if (!token)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
-
-  return api.callHttpGet(
-    `${api.httpUrl(api.path.storeSubs)}/${mobile}/${
-      hidden ? 'all/1' : '1'
-    }?_format=hal_json`,
-    toSubscription(true),
-    api.withToken(token, 'hal+json'),
-  );
-};
-
-const getRkbTalkSubscription = ({
-  iccid,
-  token,
-}: {
-  iccid: string;
-  token: string;
-}) => {
-  return getSubscription({iccid, token, prodType: 'rokebi_call_product'});
-};
-
-const addSubscription = ({
-  subs,
-  user,
-  pass,
-}: {
-  subs: RkbSubscription;
-  user?: string;
-  pass?: string;
-}) => {
-  if (!subs)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: subs');
-  if (!user)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
-  if (!pass)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: pass');
-
-  const url = `${api.httpUrl(api.path.jsonapi.subscription)}`;
-  const headers = api.basicAuth(user, pass, 'vnd.api+json', {
-    Accept: 'application/vnd.api+json',
-  });
-  const body = {
-    data: {
-      type: 'node--subscription',
-      attributes: {
-        title: subs.title || user,
-        field_activation_date: subs.startDate,
-      },
-      relationships: {
-        field_ref_product: {
-          data: {
-            type: 'node--roaming_product',
-            id: subs.uuid,
-          },
-        },
-      },
-    },
-  };
-
-  return api.callHttp(
-    url,
-    {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body),
-    },
-    toSubscription(),
-  );
-};
-
-const otaSubscription = ({
-  iccid,
-  mccmnc,
-  user,
-  pass,
-  method = 'POST',
-}: {
-  iccid: string;
-  mccmnc: string;
-  user: string;
-  pass: string;
-  method?: string;
-}) => {
-  if (!iccid)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
-  if (!mccmnc)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: mccmnc');
-  if (!user)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
-  if (!pass)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: pass');
-
-  return api.callHttp(
-    `${api.httpUrl(
-      api.path.rokApi.rokebi.ota,
-      '',
-    )}/${iccid}/${mccmnc}?_format=json`,
-    {
-      method,
-      headers: api.basicAuth(user, pass, 'json'),
-    },
-    toSubscription(),
-  );
-};
-
-const getOtaSubscription = ({
-  iccid,
-  mccmnc,
-  user,
-  pass,
-}: {
-  iccid: string;
-  mccmnc: string;
-  user: string;
-  pass: string;
-}) => {
-  return otaSubscription({iccid, mccmnc, user, pass, method: 'GET'});
 };
 
 const updateSubscriptionInfo = ({
@@ -561,7 +394,7 @@ const updateSubscriptionGiftStatus = ({
       }),
       body: JSON.stringify(body),
     },
-    toSubscription(),
+    toSubscription,
   );
 };
 
@@ -872,11 +705,6 @@ export default {
   PAGE_SIZE,
 
   getSubscription,
-  getStoreSubscription,
-  getRkbTalkSubscription,
-  addSubscription,
-  otaSubscription,
-  getOtaSubscription,
   updateSubscriptionInfo,
   updateSubscriptionAndOrderTag,
   updateSubscriptionGiftStatus,
