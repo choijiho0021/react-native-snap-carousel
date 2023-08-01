@@ -91,22 +91,18 @@ export const isDisabled = (item: RkbSubscription) => {
   );
 };
 
-// 선물안한 상품(구매,선물받음) - 구매일자별 정렬, 선물한 상품 구매일자별 정렬
-export const sortSubs = (a: RkbSubscription[], b: RkbSubscription[]) => {
-  if (a.length < 1 || b.length < 1) {
+// 기존에 배열로 처리된 이유 질문 필요
+export const sortSubs = (a: RkbSubscription, b: RkbSubscription) => {
+  if (!a || !b) {
     console.log('@@@@ sortsubs params have empty array');
     return -1;
   }
 
-  const lastExpireA = getLatestExpireDateSubs(a);
-  const lastExpireB = getLatestExpireDateSubs(b);
-  if (!isDisabled(lastExpireA) && isDisabled(lastExpireB)) return -1;
+  if (!isDisabled(a) && isDisabled(b)) return -1;
 
   if (
-    isDisabled(lastExpireA) === isDisabled(lastExpireB) &&
-    moment(getLatestPurchaseDateSubs(a).purchaseDate).isAfter(
-      getLatestPurchaseDateSubs(b).purchaseDate,
-    )
+    isDisabled(a) === isDisabled(b) &&
+    moment(a.purchaseDate).isAfter(b.purchaseDate)
   ) {
     return -1;
   }
@@ -296,7 +292,7 @@ const getSubscription = ({
     uuid || '0'
   }?_format=json&hidden=${
     hidden ? '1' : '0'
-  }&iccid=${iccid}&count=${count}$offset=${offset}`;
+  }&iccid=${iccid}&count=${count}&offset=${offset}`;
 
   return api.callHttpGet(
     url,

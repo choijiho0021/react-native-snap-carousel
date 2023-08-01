@@ -63,7 +63,11 @@ import {
   NotiAction,
   NotiModelState,
 } from '@/redux/modules/noti';
-import {actions as orderActions, OrderAction} from '@/redux/modules/order';
+import {
+  actions as orderActions,
+  OrderAction,
+  PAGINATION_SUBS_COUNT,
+} from '@/redux/modules/order';
 import {
   actions as productActions,
   ProductAction,
@@ -832,7 +836,12 @@ const Esim: React.FC<EsimProps> = ({
         action.product.refresh();
 
         // 백그라운드 복귀 시 설정을 어떻게 할지 고민
-        action.order.getSubs({iccid, token, offset: 0, count: 10});
+        action.order.getSubs({
+          iccid,
+          token,
+          offset: 0,
+          count: PAGINATION_SUBS_COUNT,
+        });
       }
 
       appState.current = nextAppState;

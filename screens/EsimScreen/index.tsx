@@ -35,7 +35,6 @@ import {
   StatusObj,
   UsageObj,
   Usage,
-  getLatestExpireDateSubs,
 } from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
@@ -232,22 +231,21 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const isFocused = useIsFocused();
   const flatListRef = useRef<FlatList>();
   const tabBarHeight = useBottomTabBarHeight();
-  const [offset, setOffset] = useState(0);
 
   const onRefresh = useCallback(
-    (hidden: boolean) => {
+    (hidden: boolean, reset?: boolean) => {
       if (iccid) {
         setRefreshing(true);
+
+        if (reset) action.order.resetOffset();
 
         action.order
           .getSubsWithToast({
             iccid,
             token,
             hidden,
-            count: 10,
-            offset,
           })
-          .then(() => {
+          .then((rsp) => {
             action.account.getAccount({iccid, token, hidden});
             action.order.getOrders({
               user: mobile,
@@ -262,7 +260,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           });
       }
     },
-    [action.account, action.order, iccid, mobile, offset, token],
+    [action.account, action.order, iccid, mobile, token],
   );
 
   useEffect(() => {
@@ -270,7 +268,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       onRefresh(isEditMode);
       setIsFirstLoad(true);
     }
-  }, [isEditMode, isFocused, onRefresh]);
+  }, [action.order, isEditMode, isFocused, onRefresh]);
 
   const empty = useCallback(() => {
     return _.isEmpty(order.drafts) ? (
@@ -594,7 +592,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       <FlatList
         ref={flatListRef}
         data={order.subs}
-        keyExtractor={(item) => item.nid || '-1'} // undefined일 때 처리를 어떻게 해줄까
+        keyExtractor={(item) => item.nid || ''} // undefined일 때 처리를 어떻게 해줄까
         ListHeaderComponent={isEditMode ? undefined : info}
         renderItem={renderSubs}
         // onRefresh={this.onRefresh}
@@ -614,12 +612,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             });
           });
         }}
-        onEndReachedThreshold={0}
-        onEndReached={() => readMore(true)}
+        onEndReachedThreshold={0.4}
+        onEndReached={() => readMore(!order?.subsIsLast)}
         refreshControl={
           <RefreshControl
             refreshing={refreshing && !isFirstLoad}
-            onRefresh={onRefresh}
+            onRefresh={() => onRefresh(false, true)}
             colors={[colors.clearBlue]} // android 전용
             tintColor={colors.clearBlue} // ios 전용
           />

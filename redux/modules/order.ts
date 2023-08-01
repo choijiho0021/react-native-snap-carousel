@@ -2,13 +2,14 @@
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import _ from 'underscore';
+import _, {get} from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import moment from 'moment';
 import {API} from '@/redux/api';
 import {CancelKeywordType, RkbOrder} from '@/redux/api/orderApi';
 import {
   RkbSubscription,
+  sortSubs,
   STATUS_USED,
   SubscriptionParam,
 } from '@/redux/api/subscriptionApi';
@@ -69,8 +70,6 @@ const cmiGetSubsUsage = createAsyncThunk(
   API.Subscription.cmiGetSubsUsage,
 );
 
-const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
-
 export interface OrderModelState {
   orders: ImmutableMap<number, RkbOrder>;
   orderList: number[];
@@ -79,6 +78,7 @@ export interface OrderModelState {
   usageProgress: object;
   page: number;
   subsOffset: number;
+  subsIsLast: boolean;
 }
 
 const updateOrders = (state, orders, page) => {
@@ -103,6 +103,41 @@ const checkAndGetOrderById = createAsyncThunk(
     return undefined;
   },
 );
+
+const getNextSubs = createAsyncThunk(
+  'order/getSubs',
+  (
+    {
+      iccid,
+      token,
+      uuid,
+      hidden,
+      count = 10,
+      offset = undefined,
+    }: SubscriptionParam,
+    {getState, dispatch},
+  ) => {
+    if (offset !== undefined) {
+      return dispatch(getSubs({iccid, token, uuid, hidden, count, offset}));
+    }
+
+    const {order} = getState();
+
+    return dispatch(
+      getSubs({
+        iccid,
+        token,
+        uuid,
+        hidden,
+        count,
+        offset: order.subsOffset,
+      }),
+    );
+  },
+);
+
+// 질문 필요 reflectWithToast
+const getSubsWithToast = reflectWithToast(getNextSubs, Toast.NOT_LOADED);
 
 const getOrders = createAsyncThunk(
   'order/getOrders',
@@ -160,7 +195,11 @@ const cancelDraftOrder = createAsyncThunk(
 );
 
 const mergeSubs = (org: RkbSubscription[], subs: RkbSubscription[]) => {
-  // 이럴 바엔 Map으로 하는게 나을지도 모르겠다.
+  if (subs.length === 0) {
+    return org;
+  }
+
+  // Map으로 하는게 나을지도 모르겠다.
   const subsMap: {[nid: number]: RkbSubscription} = org.reduce((acc, sub) => {
     acc[sub.nid] = sub;
     return acc;
@@ -170,9 +209,7 @@ const mergeSubs = (org: RkbSubscription[], subs: RkbSubscription[]) => {
     subsMap[sub.nid] = sub;
   });
 
-  // 재 정렬 필요
-  const subsArray: RkbSubscription[] = Object.values(subsMap);
-  return subsArray;
+  return Object.values(subsMap).sort(sortSubs);
 };
 
 export const isDraft = (state: string) => !(STATUS_USED === state);
@@ -189,6 +226,9 @@ export const getCountItems = (items?: OrderItemType[], etc?: boolean) => {
   return etc ? (result - 1).toString() : result.toString();
 };
 
+// 적당한 위치 고민
+export const PAGINATION_SUBS_COUNT = 10;
+
 const initialState: OrderModelState = {
   orders: ImmutableMap<number, RkbOrder>(),
   drafts: [],
@@ -197,6 +237,7 @@ const initialState: OrderModelState = {
   usageProgress: {},
   subsOffset: 0,
   page: 0,
+  subsIsLast: false,
 };
 
 const slice = createSlice({
@@ -205,6 +246,14 @@ const slice = createSlice({
   reducers: {
     reset: () => {
       return initialState;
+    },
+
+    empty: (state) => {
+      state.subsOffset = 0;
+    },
+
+    resetIsLast: (state) => {
+      state.subsIsLast = false;
     },
   },
   extraReducers: (builder) => {
@@ -369,28 +418,28 @@ const slice = createSlice({
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
 
       // 현재 offset 확인하기
-      console.log('action.meta.arg : ', action?.meta?.arg);
       const arg = action?.meta?.arg;
 
       // offset이 0이라면? overWrite한다
-      if (arg?.offset === 0 && result === 0) {
-        state.subs = objects;
+      if (result === 0) {
+        if (objects?.length < PAGINATION_SUBS_COUNT) {
+          state.subsIsLast = true;
+        } else {
+          state.subsOffset += PAGINATION_SUBS_COUNT;
+          state.subsIsLast = false;
+        }
 
-        // 반환되는 지 확인해보자
-        // 반환이 잘 안되는 거 같으면 state로 isLast 설정하기
-      } else {
-        // offset이 0이 아니라면 페이지네이션 중이니 merge로 한다
-        state.subs = mergeSubs(state.subs, objects);
+        if (arg?.offset === 0) {
+          state.subs = objects;
+        } else {
+          // offset이 0이 아니라면 페이지네이션 중이니 merge로 한다
+          state.subs = mergeSubs(state.subs, objects);
+        }
       }
 
       // objects의 갯수가 카운트(한번에 가져오는 수)보다 적으면? isLast로 처리한다.
 
       // isLast를 return 햇을 때 화면에서 받아오면, 더이상 조회하지 않는다.
-
-      console.log('@@@ get subs', action?.meta?.arg);
-      if (result === 0) {
-        state.subs = objects;
-      }
     });
 
     builder.addCase(getSubsUsage.fulfilled, (state, action) => {
@@ -406,12 +455,21 @@ const slice = createSlice({
   },
 });
 
+const resetOffset = createAsyncThunk(
+  'order/resetOffset',
+  (params, {dispatch}) => {
+    dispatch(slice.actions.empty());
+  },
+);
+
 export const actions = {
   ...slice.actions,
   getSubsWithToast,
+  resetOffset,
   init,
   getSubs,
   getOrders,
+  getNextSubs,
   updateSubsInfo,
   updateSubsAndOrderTag,
   updateSubsGiftStatus,
