@@ -337,7 +337,17 @@ const getSubscription = ({
   return api.callHttpGet(
     url,
     (resp) => {
-      if (resp.result === 0) resp.objects = resp.objects.map(toSubs);
+      if (resp.result === 0) {
+        resp.objects = resp.objects.map((o) => ({
+          ...o,
+          cnt: parseInt(o.cnt || '0', 10),
+          lastExpireDate: moment(o.lastExpireDate),
+          startDate: moment(o.startDate),
+          promoFlag: o.promoFlag.map((p) => specialCategories[p]),
+          partner: groupPartner(o.partner),
+          hide: o.hide === '1',
+        }));
+      }
       return resp;
     },
     api.withToken(token, 'json'),
