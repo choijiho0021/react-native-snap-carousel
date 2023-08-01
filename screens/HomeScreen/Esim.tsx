@@ -81,6 +81,7 @@ import AppStyledText from '@/components/AppStyledText';
 import {retrieveData, storeData, utils} from '@/utils/utils';
 import LocalModal from './component/LocalModal';
 import ChatTalk from '@/components/ChatTalk';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const {esimGlobal, isIOS, cachePrefix} = Env.get();
 
@@ -909,6 +910,39 @@ const Esim: React.FC<EsimProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScreenHeader
+        title={`${i18n.t('esim')}${esimGlobal ? ' Store' : ''}`}
+        showIcon={false}
+        isStackTop={true}
+        renderRight={
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+            }}>
+            <AppSvgIcon
+              key="cnter"
+              style={styles.btnCnter}
+              onPress={() =>
+                navigate(navigation, route, 'HomeStack', {
+                  tab: 'HomeStack',
+                  screen: 'Contact',
+                })
+              }
+              name="btnCnter"
+            />
+            <AppButton
+              key="alarm"
+              style={styles.btnAlarm}
+              onPress={() => navigation?.navigate('Noti', {mode: 'noti'})}
+              iconName="btnAlarm"
+            />
+            {noti.notiList.find((elm) => elm.isRead === 'F') && (
+              <View style={styles.notiBadge} />
+            )}
+          </View>
+        }
+      />
       <StatusBar barStyle="dark-content" />
       {renderCarousel()}
 

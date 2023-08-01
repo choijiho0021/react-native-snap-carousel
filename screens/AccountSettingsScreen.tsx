@@ -10,6 +10,8 @@ import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import i18n from '@/utils/i18n';
+import ScreenHeader from '@/components/ScreenHeader';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const styles = StyleSheet.create({
   container: {
@@ -98,11 +100,6 @@ const AccountSettingsScreen: React.FC<AccountSettingsScreenProps> = ({
   );
 
   useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('set:accountSettings')} />,
-    });
-
     if (!loggedIn) {
       navigation.navigate('Auth');
     }
@@ -123,9 +120,10 @@ const AccountSettingsScreen: React.FC<AccountSettingsScreenProps> = ({
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <ScreenHeader title={i18n.t('set:accountSettings')} />
       <FlatList data={data} renderItem={renderItem} />
-    </View>
+    </SafeAreaView>
   );
 };
 

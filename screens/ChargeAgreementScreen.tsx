@@ -24,6 +24,7 @@ import SelectedProdTitle from './EventBoardScreen/components/SelectedProdTitle';
 import AppStyledText from '@/components/AppStyledText';
 import {sliderWidth} from '@/constants/SliderEntry.style';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -183,17 +184,6 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
   const expPeriod = useMemo(() => moment().add(180, 'day'), []);
   const [isPressed, setIsPressed] = useState(false);
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <View style={styles.header}>
-          <AppBackButton title={params.title} style={styles.headerTitle} />
-        </View>
-      ),
-    });
-  }, [navigation, params.title]);
-
   useEffect(() => {}, []);
 
   const onPressBtnPurchase = useCallback(() => {
@@ -227,6 +217,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScreenHeader title={params.title} />
       <View style={{position: 'relative', flex: 1}}>
         <ScrollView style={{flex: 1}}>
           <SelectedProdTitle

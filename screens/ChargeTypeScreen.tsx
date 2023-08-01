@@ -20,6 +20,7 @@ import AppSnackBar from '@/components/AppSnackBar';
 import {RkbAddOnProd} from '@/redux/api/productApi';
 import ChargeTypeModal from './HomeScreen/component/ChargeTypeModal';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -366,6 +367,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScreenHeader title={i18n.t('esim:charge')} />
+
       <AppActivityIndicator visible={statusLoading || addonLoading} />
       <ScrollView style={{flex: 1}}>
         <View style={styles.top}>

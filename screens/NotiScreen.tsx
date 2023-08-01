@@ -50,6 +50,7 @@ import {
   EventBoardModelState,
   actions as eventBoardActions,
 } from '@/redux/modules/eventBoard';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -212,13 +213,6 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
   ]);
 
   useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton title={route.params?.title || i18n.t('set:noti')} />
-      ),
-    });
-
     Analytics.trackEvent('Page_View_Count', {page: 'Noti'});
   }, [navigation, route.params?.title]);
 
@@ -341,6 +335,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
 
   return (
     <SafeAreaView key="container" style={styles.container}>
+      <ScreenHeader title={i18n.t('set:noti')} />
       {!pending && (
         <FlatList
           data={data}
