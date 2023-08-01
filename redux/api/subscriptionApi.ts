@@ -290,7 +290,7 @@ const getSubscription = ({
     uuid || '0'
   }?_format=json${
     hidden ? '' : '&hidden=0'
-  }&iccid=${iccid}&count=${count}$offset=${offset}`;
+  }&iccid=${iccid}&count=${count}&offset=${offset}`;
 
   return api.callHttpGet(
     url,
