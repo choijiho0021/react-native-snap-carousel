@@ -612,6 +612,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             });
           });
         }}
+        // 종종 중복 호출이 발생
         onEndReachedThreshold={0.4}
         onEndReached={() => readMore(!order?.subsIsLast)}
         refreshControl={
@@ -623,9 +624,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           />
         }
       />
-      <AppActivityIndicator
-        visible={isFirstLoad && (pending || loginPending || refreshing)}
-      />
+
+      <AppActivityIndicator visible={pending || loginPending || refreshing} />
       <EsimModal
         visible={showModal}
         subs={subs}
