@@ -32,7 +32,6 @@ import {API} from '@/redux/api';
 import {
   bcStatusCd,
   RkbSubscription,
-  sortSubs,
   StatusObj,
   UsageObj,
   Usage,
@@ -185,7 +184,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   route,
   action,
   account: {iccid, mobile, token, balance, expDate},
-  modal,
   order,
   pending,
   loginPending,
@@ -203,7 +201,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const isFocused = useIsFocused();
   const flatListRef = useRef<FlatList>();
-  const [subsList, setSubsList] = useState<RkbSubscription[][]>();
   const tabBarHeight = useBottomTabBarHeight();
 
   const onRefresh = useCallback(
@@ -363,28 +360,18 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   const renderSubs = useCallback(
-    ({item, index}: {item: RkbSubscription[]; index: number}) => (
+    ({item, index}: {item: RkbSubscription; index: number}) => (
       <EsimSubs
-        key={item[0].key}
+        key={item.key}
         flatListRef={flatListRef}
         index={index}
-        mainSubs={item[0]}
-        chargedSubs={item}
-        expired={moment(getLatestExpireDateSubs(item).expireDate).isBefore(
-          moment(),
-        )}
-        isChargeExpired={moment(item[0].expireDate).isBefore(moment())}
-        isCharged={item.length > 1}
+        mainSubs={item}
         showDetail={
           index === 0 &&
-          moment(item[item.length - 1].purchaseDate).isAfter(
-            moment().subtract(14, 'days'),
-          )
+          moment(item.purchaseDate).isAfter(moment().subtract(14, 'days'))
         }
-        onPressUsage={(subscription: RkbSubscription) =>
-          onPressUsage(subscription)
-        }
-        setShowModal={(visible: boolean) => setShowModal(visible)}
+        onPressUsage={onPressUsage}
+        setShowModal={setShowModal}
         isEditMode={isEditMode}
       />
     ),
@@ -500,16 +487,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   }, [isFocused, isPressClose]);
 
   useEffect(() => {
-    setSubsList(order.subs.valueSeq().toArray().sort(sortSubs));
-  }, [order.subs]);
-
-  useEffect(() => {
     if (route && route.params) {
       const {iccid} = route.params;
       if (iccid) {
-        const filter: RkbSubscription[] =
-          subsList
-            ?.find((s) => s[0].subsIccid === iccid)
+        /*
+        const filter= order.subs
+            ?.find((s) => s.subsIccid === iccid)
             ?.filter((s2) => s2.subsIccid === iccid) || [];
 
         const main = filter
@@ -541,9 +524,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             expireTime: expireDate,
           });
         }
+        */
       }
     }
-  }, [navigation, onPressUsage, route, subsList]);
+  }, [route]);
 
   const navigateToChargeType = useCallback(() => {
     setShowModal(false);
@@ -588,18 +572,16 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       </View>
       <FlatList
         ref={flatListRef}
-        data={subsList?.filter((elm) =>
-          isEditMode ? true : elm[0].hide === isEditMode,
-        )}
-        keyExtractor={(item) => item[item.length - 1].nid.toString()}
+        data={order.subs}
+        keyExtractor={(item) => item.nid}
         ListHeaderComponent={isEditMode ? undefined : info}
         renderItem={renderSubs}
         // onRefresh={this.onRefresh}
         // refreshing={refreshing}
-        extraData={[subsList, isEditMode]}
+        extraData={[isEditMode]}
         contentContainerStyle={[
           {paddingBottom: 34},
-          _.isEmpty(subsList) && _.isEmpty(order.drafts) && {flex: 1},
+          _.isEmpty(order.subs) && _.isEmpty(order.drafts) && {flex: 1},
         ]}
         ListEmptyComponent={empty}
         onScrollToIndexFailed={(rsp) => {

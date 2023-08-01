@@ -29,17 +29,18 @@ import {
 } from '@/redux/modules/account';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
-import {actions as orderActions, OrderAction} from '@/redux/modules/order';
+import {
+  actions as orderActions,
+  OrderAction,
+  OrderModelState,
+} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import {API} from '@/redux/api';
 import AppTextInput from '@/components/AppTextInput';
-import {OrderModelState} from '../redux/modules/order';
-import Env from '@/environment';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 
-const {esimGlobal} = Env.get();
 const radioButtons = [
   {id: 'resign:reason1'},
   {id: 'resign:reason2'},
@@ -353,19 +354,17 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
     () => reasonIdx === radioButtons.length - 1,
     [reasonIdx],
   );
-  const purchaseCnt = useMemo(() => {
-    return order.subs.size;
-  }, [order.subs.size]);
-
-  const resignInfo = useMemo(() => {
-    return purchaseCnt > 0
-      ? i18n.t('resign:cntInfo', {count: purchaseCnt})
-      : i18n.t('resign:noCnt');
-  }, [purchaseCnt]);
+  const [purchaseCnt, resignInfo] = useMemo(() => {
+    const count = order.subs.length;
+    return [
+      count,
+      count > 0 ? i18n.t('resign:cntInfo', {count}) : i18n.t('resign:noCnt'),
+    ];
+  }, [order.subs.length]);
 
   useEffect(() => {
     if (purchaseCnt <= 0) {
-      const {iccid: initIccid, mobile: initMobile, token} = account;
+      const {iccid: initIccid, token} = account;
 
       if (initIccid && token) {
         action.order.getSubsWithToast({iccid: initIccid, token});
