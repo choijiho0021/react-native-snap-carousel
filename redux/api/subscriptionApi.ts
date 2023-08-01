@@ -91,22 +91,18 @@ export const isDisabled = (item: RkbSubscription) => {
   );
 };
 
-// 선물안한 상품(구매,선물받음) - 구매일자별 정렬, 선물한 상품 구매일자별 정렬
-export const sortSubs = (a: RkbSubscription[], b: RkbSubscription[]) => {
-  if (a.length < 1 || b.length < 1) {
+// 기존에 배열로 처리된 이유 질문 필요
+export const sortSubs = (a: RkbSubscription, b: RkbSubscription) => {
+  if (!a || !b) {
     console.log('@@@@ sortsubs params have empty array');
     return -1;
   }
 
-  const lastExpireA = getLatestExpireDateSubs(a);
-  const lastExpireB = getLatestExpireDateSubs(b);
-  if (!isDisabled(lastExpireA) && isDisabled(lastExpireB)) return -1;
+  if (!isDisabled(a) && isDisabled(b)) return -1;
 
   if (
-    isDisabled(lastExpireA) === isDisabled(lastExpireB) &&
-    moment(getLatestPurchaseDateSubs(a).purchaseDate).isAfter(
-      getLatestPurchaseDateSubs(b).purchaseDate,
-    )
+    isDisabled(a) === isDisabled(b) &&
+    moment(a.purchaseDate).isAfter(b.purchaseDate)
   ) {
     return -1;
   }
@@ -135,6 +131,7 @@ export type Usage = {
 };
 
 export type RkbSubscription = {
+  nid: string;
   key: string;
   uuid: string;
   purchaseDate: string;
@@ -154,7 +151,6 @@ export type RkbSubscription = {
   prodId?: string;
   prodNid?: string;
   prodDays?: string;
-  nid?: string;
   actCode?: string;
   smdpAddr?: string;
   qrCode?: string;
@@ -269,21 +265,24 @@ const toSubsUsage = (data: {
 
 // tb-esim.rokebi.com/rokebi/subs/0?_format=json&hidden=1&iccid=0000111101010002000&count=40
 // tb-esim.rokebi.com/rokebi/subs/0?_format=json&iccid=0000111101010002000&count=40
-const getSubscription = ({
-  uuid,
-  iccid,
-  token,
-  hidden,
-  count = 100,
-  offset = 0,
-}: {
+
+export type SubscriptionParam = {
   iccid: string;
   token: string;
   uuid?: string;
   hidden?: boolean;
   count?: number;
   offset?: number;
-}) => {
+};
+
+const getSubscription = ({
+  uuid,
+  iccid,
+  token,
+  hidden,
+  count = 10,
+  offset = 0,
+}: SubscriptionParam) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
   if (!token)

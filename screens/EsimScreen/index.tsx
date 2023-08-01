@@ -35,7 +35,6 @@ import {
   StatusObj,
   UsageObj,
   Usage,
-  getLatestExpireDateSubs,
 } from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
@@ -189,6 +188,9 @@ export const USAGE_TIME_INTERVAL = {
   billionconnect: 1,
 };
 
+// state 값에 저장? 위치 고민하기
+const SUBS_COUNT = 10;
+
 export const renderInfo = (navigation) => (
   <Pressable
     style={styles.usrGuideBtn}
@@ -231,9 +233,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const tabBarHeight = useBottomTabBarHeight();
 
   const onRefresh = useCallback(
-    (hidden: boolean) => {
+    (hidden: boolean, reset?: boolean) => {
       if (iccid) {
         setRefreshing(true);
+
+        if (reset) action.order.resetOffset();
 
         action.order
           .getSubsWithToast({iccid, token, hidden})
@@ -260,7 +264,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       onRefresh(isEditMode);
       setIsFirstLoad(true);
     }
-  }, [isEditMode, isFocused, onRefresh]);
+  }, [action.order, isEditMode, isFocused, onRefresh]);
 
   const empty = useCallback(() => {
     return _.isEmpty(order.drafts) ? (
@@ -384,6 +388,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       return result;
     },
     [checkBcData, checkCmiData, checkQuadcellData],
+  );
+
+  const readMore = useCallback(
+    (more: boolean) => {
+      if (!more) return;
+
+      onRefresh(isEditMode);
+    },
+    [isEditMode, onRefresh],
   );
 
   const renderSubs = useCallback(
@@ -597,18 +610,20 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             });
           });
         }}
+        // 종종 중복 호출이 발생
+        onEndReachedThreshold={0.4}
+        onEndReached={() => readMore(!order?.subsIsLast)}
         refreshControl={
           <RefreshControl
             refreshing={refreshing && !isFirstLoad}
-            onRefresh={() => onRefresh(isEditMode)}
+            onRefresh={onRefresh}
             colors={[colors.clearBlue]} // android 전용
             tintColor={colors.clearBlue} // ios 전용
           />
         }
       />
-      <AppActivityIndicator
-        visible={isFirstLoad && (pending || loginPending || refreshing)}
-      />
+
+      <AppActivityIndicator visible={pending || loginPending || refreshing} />
       <EsimModal
         visible={showModal}
         subs={subs}

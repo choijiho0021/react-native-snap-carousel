@@ -343,12 +343,10 @@ const EsimSubs = ({
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
 
   useEffect(() => {
-    setShowMoreInfo(isTypeDraft ? false : showDetail);
-  }, [showDetail, isTypeDraft]);
-
-  useEffect(() => {
-    if (!notCardInfo) setShowMoreInfo(false);
-  }, [notCardInfo]);
+    if (isTypeDraft) setShowMoreInfo(false);
+    else if (!notCardInfo) setShowMoreInfo(false);
+    else setShowMoreInfo(showDetail);
+  }, [showDetail, isTypeDraft, notCardInfo]);
 
   const onPressRecharge = useCallback(
     (item: RkbSubscription) => {
