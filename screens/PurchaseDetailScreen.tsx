@@ -30,11 +30,17 @@ import {OrderState, RkbOrder, RkbPayment} from '@/redux/api/orderApi';
 import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
-import {actions as orderActions, OrderAction} from '@/redux/modules/order';
+import {
+  actions as orderActions,
+  OrderAction,
+  getCountItems,
+} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import {API} from '@/redux/api';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import AppStyledText from '@/components/AppStyledText';
 
-const {esimApp, esimCurrency} = Env.get();
+const {esimCurrency} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -50,14 +56,25 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignSelf: 'flex-end',
   },
-  headerNoti: {
-    marginHorizontal: 20,
-    opacity: 0.6,
+  hearNotiFrame: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    ...appStyles.normal14Text,
     backgroundColor: colors.noticeBackground,
+    borderRadius: 3,
     marginTop: 20,
-    borderRadius: 10,
+    padding: 16,
   },
-  headerNotiText: {margin: 5},
+  headerNotiBoldText: {
+    ...appStyles.bold14Text,
+    color: colors.redError,
+  },
+  headerNotiText: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
+    margin: 5,
+    color: colors.redError,
+  },
   date: {
     ...appStyles.normal14Text,
     marginTop: 40,
@@ -70,17 +87,15 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     letterSpacing: 0.24,
   },
-  normal16RedTxt: {
-    ...appStyles.normal18Text,
-    color: colors.red,
+  cancelButtonText: {
+    ...appStyles.medium14,
+    color: colors.blue,
     lineHeight: 24,
-    letterSpacing: 0.24,
   },
   boldTitle: {
     ...appStyles.bold18Text,
     color: colors.black,
     lineHeight: 22,
-    // marginTop: 20,
     alignSelf: 'center',
   },
   productTitle: {
@@ -93,34 +108,25 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     maxWidth: isDeviceSize('small') ? '70%' : '80%',
   },
-  cancelBtn: {
-    backgroundColor: colors.white,
-    borderRadius: 3,
-    borderColor: colors.lightGrey,
-    borderWidth: 1,
-    margin: 20,
-    height: 48,
-    justifyContent: 'center',
+  cancelDraftFrame: {
+    marginHorizontal: 20,
+    marginBottom: 26,
   },
   cancelDraftBtn: {
+    borderRadius: 3,
+    paddingVertical: 8,
     borderWidth: 1,
-    borderColor: colors.red,
+    borderColor: colors.blue,
     backgroundColor: colors.white,
-    height: 36,
     justifyContent: 'center',
   },
   cancelDraftBtnDisabled: {
-    borderWidth: 0,
-    backgroundColor: colors.white,
-    height: 36,
+    borderRadius: 3,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    backgroundColor: colors.whiteTwo,
     justifyContent: 'center',
-  },
-  cancelInfo: {
-    ...appStyles.normal14Text,
-    marginHorizontal: 20,
-    marginBottom: 40,
-    color: colors.warmGrey,
-    lineHeight: 28,
   },
   bar: {
     borderBottomColor: colors.lightGrey,
@@ -132,7 +138,6 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.black,
     borderBottomWidth: 1,
     marginHorizontal: 20,
-    // marginVertical: 20,
     marginBottom: 20,
   },
   item: {
@@ -149,7 +154,7 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
   labelValue: {
-    ...appStyles.normal16Text,
+    ...appStyles.robotoSemiBold16Text,
     lineHeight: 36,
     letterSpacing: 0.22,
     color: colors.black,
@@ -157,10 +162,6 @@ const styles = StyleSheet.create({
   },
   dividerTop: {
     marginTop: 20,
-    height: 10,
-    backgroundColor: colors.whiteTwo,
-  },
-  divider: {
     height: 10,
     backgroundColor: colors.whiteTwo,
   },
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderColor: colors.dodgerBlue,
     borderWidth: 1,
-    color: '#ffffff',
+    color: colors.white,
   },
   secondaryButtonText: {
     ...appStyles.normal18Text,
@@ -204,7 +205,11 @@ const styles = StyleSheet.create({
     height: 52,
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
-    color: '#ffffff',
+    color: colors.white,
+  },
+  priceStyle: {
+    ...appStyles.bold22Text,
+    color: colors.blue,
   },
 });
 
@@ -231,8 +236,27 @@ type PurchaseDetailScreenProps = {
   };
 };
 
-const isRokebiCash = (pg: string) =>
+export const isRokebiCash = (pg: string) =>
   ['rokebi_cash', 'rokebi_point'].includes(pg);
+
+export const countRokebiCash = (order: RkbOrder) => {
+  const list = order?.paymentList?.filter((item) =>
+    isRokebiCash(item.paymentGateway),
+  );
+  if (list?.[0]) {
+    return list.reduce(
+      (acc, cur) => ({
+        value: acc.value + cur.amount.value,
+        currency: acc.currency,
+      }),
+      {
+        value: 0,
+        currency: list[0].amount.currency,
+      } as Currency,
+    );
+  }
+};
+
 const isUseNotiState = (state: OrderState) =>
   ['validation', 'completed'].includes(state);
 
@@ -240,18 +264,14 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   navigation,
   route,
   account,
-  action,
   pending,
 }) => {
   const [showPayment, setShowPayment] = useState(true);
-  const [cancelPressed, setCancelPressed] = useState(false); // 결제취소버튼 클릭시 true
-  const [disableBtn, setDisableBtn] = useState(false);
-  const [borderBlue, setBorderBlue] = useState(false);
-  const [isCanceled, setIsCanceled] = useState(false);
   const [billingAmt, setBillingAmt] = useState<Currency>();
   const [method, setMethod] = useState<RkbPayment>();
   const [balanceCharge, setBalanceCharge] = useState<Currency>();
   const [order, setOrder] = useState<RkbOrder>();
+  const [showSnackBar, setShowSnackBar] = useState<string>('');
 
   useEffect(() => {
     navigation.setOptions({
@@ -261,119 +281,27 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   }, [navigation]);
 
   useEffect(() => {
-    console.log('order : ', order);
-  }, [order]);
-
-  useEffect(() => {
     const {detail} = route.params;
 
     Analytics.trackEvent('Page_View_Count', {page: 'Purchase Detail'});
 
     setOrder(detail);
-    setIsCanceled(detail?.state === 'canceled' || false);
     setBillingAmt(utils.addCurrency(detail?.totalPrice, detail?.dlvCost));
     setMethod(
       detail?.paymentList?.find((item) => !isRokebiCash(item.paymentGateway)),
     );
 
-    const list = detail?.paymentList?.filter((item) =>
-      isRokebiCash(item.paymentGateway),
-    );
-    if (list?.[0]) {
-      setBalanceCharge(
-        list.reduce(
-          (acc, cur) => ({
-            value: acc.value + cur.amount.value,
-            currency: acc.currency,
-          }),
-          {
-            value: 0,
-            currency: list[0].amount.currency,
-          } as Currency,
-        ),
-      );
-    }
+    setBalanceCharge(countRokebiCash(detail));
   }, [account, route.params]);
-
-  useEffect(() => {
-    if (cancelPressed) {
-      setTimeout(() => {
-        setDisableBtn(true);
-        setIsCanceled(true);
-      }, 3000);
-    }
-  }, [cancelPressed]);
-
-  const cancelOrder = useCallback(
-    (o: RkbOrder) => {
-      const {token} = account;
-
-      setBorderBlue(true);
-
-      AppAlert.confirm(i18n.t('his:cancel'), i18n.t('his:cancelAlert'), {
-        ok: () => {
-          action.order.cancelAndGetOrder({orderId: o.orderId, token}).then(
-            ({payload: resp}) => {
-              // getOrderById 에 대한 결과 확인
-              // 기존에 취소했는데, 처리가 안되어 다시 취소버튼을 누르게 된 경우
-              // 배송상태가 변화되었는데 refresh 되지 않아 취소버튼을 누른 경우 등
-              if (resp.result === 0) setCancelPressed(true);
-              else if (resp.result > 0) {
-                setOrder(resp.objects[0]);
-
-                const canceled = resp.objects[0].state === 'canceled';
-                setIsCanceled(canceled);
-
-                if (canceled) AppAlert.info(i18n.t('his:alreadyCanceled'));
-                else AppAlert.info(i18n.t('his:refresh'));
-              } else {
-                AppAlert.info(i18n.t('his:cancelFail'));
-              }
-            },
-            (err) => {
-              console.log('error', err);
-              AppAlert.info(i18n.t('his:cancelError'));
-            },
-          );
-
-          setBorderBlue(false);
-        },
-        cancel: () => {
-          setBorderBlue(false);
-        },
-      });
-    },
-    [account, action.order],
-  );
 
   const paymentInfo = useCallback(() => {
     if (!order) return null;
 
-    const elapsedDay = order.orderDate
-      ? moment().diff(moment(order.orderDate), 'days')
-      : 0;
     const paidAmount = method?.amount || utils.toCurrency(0, esimCurrency);
     const isRecharge =
       order.orderItems?.find((item) =>
         item.title.includes(i18n.t('sim:rechargeBalance')),
       ) || false;
-    const isUsed =
-      order.usageList?.find(
-        (value) => value.status !== 'R' && value.status !== 'I',
-      ) || false;
-    const usedOrExpired = isUsed || elapsedDay > 7;
-    const activateCancelBtn =
-      (order.state === 'draft' || order.state === 'validation') && !isUsed;
-    const disabled =
-      isCanceled || !activateCancelBtn || cancelPressed || elapsedDay > 7;
-
-    // eslint-disable-next-line no-nested-ternary
-    const infoText = isCanceled
-      ? i18n.t('his:afterCancelInfo')
-      : usedOrExpired
-      ? i18n.t('his:usedOrExpiredInfo')
-      : i18n.t('his:dataCancelInfo');
-
     return (
       <View>
         <View style={styles.thickBar} />
@@ -424,74 +352,46 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         <View style={styles.bar} />
         <View style={[styles.row, {marginBottom: 5}]}>
           <AppText style={appStyles.normal16Text}>
-            {i18n.t('cart:totalCost')}{' '}
+            {i18n.t('cart:totalCost')}
           </AppText>
           <View
             style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
             <AppPrice
               price={paidAmount}
-              balanceStyle={[
-                appStyles.price,
-                styles.fontWeightBold,
-                {marginHorizontal: 5},
-              ]}
-              currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
+              balanceStyle={[styles.priceStyle, {marginRight: 5}]}
+              currencyStyle={styles.priceStyle}
             />
           </View>
         </View>
 
-        {!isRecharge && !esimApp ? (
-          <AppButton
-            style={[
-              styles.cancelBtn,
-              {
-                borderColor: borderBlue ? colors.clearBlue : colors.lightGrey,
-              },
-            ]}
-            disableBackgroundColor={colors.whiteTwo}
-            disableColor={pending ? colors.whiteTwo : colors.greyish}
-            disabled={disabled || disableBtn || pending}
-            onPress={() => cancelOrder(order)}
-            title={i18n.t('his:cancel')}
-            titleStyle={styles.normal16BlueTxt}
-          />
-        ) : (
-          <View style={{marginBottom: 20}} />
-        )}
+        {!isRecharge && <View style={{marginBottom: 20}} />}
 
-        {!isRecharge && !esimApp && (
-          <AppText style={styles.cancelInfo}>
-            {!isRecharge && !esimApp && infoText}
-          </AppText>
-        )}
-
-        {/* */}
         {!isRecharge && (
-          <AppButton
-            style={styles.cancelDraftBtn}
-            onPress={() => {
-              console.log('취소 화면 미구현 ');
-            }}
-            disabled={order.state !== 'validation'}
-            disableStyle={styles.cancelDraftBtnDisabled}
-            disableColor={colors.gray}
-            title={i18n.t('his:cancelDraft')}
-            titleStyle={styles.normal16RedTxt}
-          />
+          <View style={styles.cancelDraftFrame}>
+            <AppButton
+              style={styles.cancelDraftBtn}
+              onPress={() => {
+                navigation.navigate('CancelOrder', {order});
+              }}
+              disabled={order.state !== 'validation'}
+              disabledCanOnPress
+              disabledOnPress={() => {
+                if (['completed', 'canceled'].includes(order?.state)) {
+                  setShowSnackBar(
+                    i18n.t(`his:draftButtonAlert:${order?.state}`),
+                  );
+                }
+              }}
+              disableStyle={styles.cancelDraftBtnDisabled}
+              disableColor={colors.greyish}
+              title={i18n.t('his:cancelDraft')}
+              titleStyle={styles.cancelButtonText}
+            />
+          </View>
         )}
       </View>
     );
-  }, [
-    balanceCharge,
-    borderBlue,
-    cancelOrder,
-    cancelPressed,
-    disableBtn,
-    isCanceled,
-    method?.amount,
-    order,
-    pending,
-  ]);
+  }, [balanceCharge, method?.amount, navigation, order]);
 
   const pymId = useMemo(
     () =>
@@ -546,6 +446,8 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     if (!order || !order.orderItems || !isUseNotiState(order?.state))
       return <View />;
 
+    const isValidate = order?.state === 'validation';
+
     const getNoti = () => {
       switch (order?.state) {
         case 'validation':
@@ -560,40 +462,65 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     return (
       <View
         style={[
-          styles.headerNoti,
+          styles.hearNotiFrame,
           {
-            backgroundColor:
-              order?.state === 'validation'
-                ? colors.backRed
-                : colors.veryLightBlue,
+            backgroundColor: isValidate ? colors.backRed : colors.backGrey,
           },
         ]}>
-        <AppText style={styles.headerNotiText}>{getNoti()}</AppText>
+        <AppSvgIcon
+          name={isValidate ? 'bannerMark' : 'bannerCheckBlue'}
+          style={{marginRight: 9}}
+        />
+        <AppStyledText
+          text={getNoti()}
+          textStyle={[
+            styles.headerNotiText,
+            {
+              color: isValidate ? colors.redError : colors.blue,
+            },
+          ]}
+          format={{
+            b: [
+              styles.headerNotiBoldText,
+              {
+                color: isValidate ? colors.redError : colors.blue,
+              },
+            ],
+          }}
+        />
       </View>
     );
   }, [order]);
+
+  const getColor = useCallback((state?: OrderState) => {
+    console.log('state : ', state);
+    switch (state) {
+      case 'canceled':
+        return colors.redError;
+      case 'completed':
+      case 'validation':
+        return colors.blue;
+      default:
+        return colors.black;
+    }
+  }, []);
 
   const headerInfo = useCallback(() => {
     if (!order || !order.orderItems) return <View />;
 
     const pg = method?.paymentMethod || i18n.t('pym:balance');
+    const state = i18n.t(`pym:orderState:${order?.state}`);
     let label: string = order.orderItems[0].title;
     if (order.orderItems.length > 1)
       label += i18n
         .t('his:etcCnt')
-        .replace('%%', (order.orderItems.length - 1).toString());
-
+        .replace('%%', getCountItems(order?.orderItems, true));
     return (
       <View>
         <AppText style={styles.date}>
           {utils.toDateString(order?.orderDate)}
         </AppText>
         <View style={styles.productTitle}>
-          {isCanceled && (
-            <AppText style={[appStyles.bold18Text, {color: colors.tomato}]}>
-              {`(${i18n.t('his:cancel')})`}{' '}
-            </AppText>
-          )}
           <AppText style={appStyles.bold18Text}>{label}</AppText>
         </View>
         <View style={styles.bar} />
@@ -607,16 +534,24 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         />
         <LabelText
           key="pymMethod"
-          style={[styles.item, {marginBottom: 20}]}
+          style={styles.item}
           label={i18n.t('pym:method')}
           labelStyle={styles.label2}
           value={pg}
           valueStyle={styles.labelValue}
         />
+        <LabelText
+          key="orderState"
+          style={[styles.item, {marginBottom: 20}]}
+          label={i18n.t('pym:orderState')}
+          labelStyle={styles.label2}
+          value={state}
+          valueStyle={[styles.labelValue, {color: getColor(order?.state)}]}
+        />
         <View style={styles.dividerTop} />
       </View>
     );
-  }, [isCanceled, method?.paymentMethod, order]);
+  }, [getColor, method?.paymentMethod, order]);
 
   if (!order || !order.orderItems) return <View />;
 
@@ -654,13 +589,13 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           </View>
         </Pressable>
         {showPayment && paymentInfo()}
-        <View style={styles.divider} />
       </ScrollView>
       <AppSnackBar
-        visible={cancelPressed}
-        onClose={() => setCancelPressed(false)}
-        textMessage={i18n.t('his:cancelSuccess')}
+        visible={showSnackBar !== ''}
+        onClose={() => setShowSnackBar('')}
+        textMessage={showSnackBar}
         bottom={10}
+        hideCancel
       />
       <View style={{flexDirection: 'row'}}>
         <AppButton
@@ -669,16 +604,16 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           title={i18n.t('his:receipt')}
           titleStyle={styles.secondaryButtonText}
           disabled={!pymId}
+          disableStyle={{borderWidth: 0}}
           onPress={() => showReciept(pymId)}
         />
 
         {order?.state === 'validation' && (
           <AppButton
-            style={[styles.button]}
+            style={styles.button}
             type="primary"
             title={i18n.t('his:draftRequest')}
             onPress={() => {
-              console.log('발권하기 화면으로 이동');
               navigation.navigate('Draft', {order});
             }}
           />
@@ -694,7 +629,7 @@ export default connect(
     account,
     pending:
       status.pending[orderActions.getOrders.typePrefix] ||
-      status.pending[orderActions.cancelAndGetOrder.typePrefix] ||
+      status.pending[orderActions.cancelDraftOrder.typePrefix] ||
       false,
   }),
   (dispatch) => ({

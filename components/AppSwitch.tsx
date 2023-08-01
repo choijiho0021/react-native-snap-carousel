@@ -29,7 +29,8 @@ const styles = StyleSheet.create({
 type AppSwitchProps = {
   waitFor: number;
   value: boolean;
-  onPress: () => void;
+  width?: number;
+  onPress: () => Promise<void>;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -37,7 +38,9 @@ type AppSwitchState = {
   animatedValue: Animated.Value;
   circlePosXStart: number;
   circlePosXEnd: number;
+  width: number;
   waitFor: number;
+  isOn: boolean;
 };
 
 export default class AppSwitch extends PureComponent<
@@ -52,17 +55,20 @@ export default class AppSwitch extends PureComponent<
     this.state = {
       animatedValue: new Animated.Value(0),
       circlePosXStart: 0,
-      circlePosXEnd: 30,
+      circlePosXEnd: typeof props.width === 'number' ? props.width - 30 : 30,
+      width: typeof props.width === 'number' ? props.width : 60,
       waitFor: typeof props.waitFor === 'number' ? props.waitFor : 1000,
+      isOn: props.value || false,
     };
 
     this.onPress = this.onPress.bind(this);
+    this.refresh = this.refresh.bind(this);
     this.clickable = true;
   }
 
   componentDidMount() {
-    const isOn = this.props.value || false;
-
+    // const isOn = this.props.value || false;
+    const {isOn} = this.state;
     if (isOn) {
       Animated.timing(this.state.animatedValue, {
         toValue: isOn ? 1 : 0,
@@ -72,9 +78,10 @@ export default class AppSwitch extends PureComponent<
     }
   }
 
-  componentDidUpdate(prevProps: AppSwitchProps) {
-    const isOn = this.props.value;
-    if (isOn !== prevProps.value) {
+  componentDidUpdate(prevProps: AppSwitchProps, prevState: AppSwitchState) {
+    const {isOn} = this.state;
+
+    if (isOn !== prevState.isOn) {
       Animated.timing(this.state.animatedValue, {
         toValue: isOn ? 1 : 0,
         easing: Easing.elastic(0.2),
@@ -82,18 +89,35 @@ export default class AppSwitch extends PureComponent<
         useNativeDriver: false,
       }).start();
     }
+
+    if (prevProps.value !== this.props.value) {
+      this.setState({isOn: this.props.value});
+    }
   }
 
   onPress() {
-    const {onPress} = this.props;
+    const {onPress, value} = this.props;
     const {waitFor} = this.state;
 
     if (_.isFunction(onPress) && this.clickable) {
+      this.setState((prevState) => ({
+        isOn: !prevState.isOn,
+      }));
       this.clickable = false;
-      onPress();
+      onPress().then(() => {
+        this.refresh();
+      });
       setTimeout(() => {
         this.clickable = true;
       }, waitFor);
+    }
+  }
+
+  refresh() {
+    const {value} = this.props;
+    const {isOn} = this.state;
+    if (isOn !== value) {
+      this.setState({isOn: value});
     }
   }
 
@@ -103,7 +127,7 @@ export default class AppSwitch extends PureComponent<
 
     return (
       <TouchableOpacity
-        style={[styles.container, style]}
+        style={[styles.container, style, {width: this.state.width}]}
         activeOpacity={0.7}
         onPress={this.onPress}>
         <Animated.View

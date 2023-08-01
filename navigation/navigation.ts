@@ -14,6 +14,7 @@ import {RkbReceipt} from '@/screens/ReceiptScreen';
 import {GuideOption} from '@/screens/UserGuideScreen/GuideHomeScreen';
 import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
 import {RkbEventBoard} from '@/redux/api/eventBoardApi';
+import {ProdDesc} from '@/screens/CancelOrderScreen/CancelResult';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti';
 export type PymMethodScreenMode =
@@ -133,6 +134,11 @@ export type HomeStackParamList = {
   InvitePromo: undefined;
   GiftGuide: undefined;
 
+  Draft: {order: RkbOrder};
+  DraftResult: {isSuccess: boolean; prods: ProdDesc[]};
+  CancelOrder: {order: RkbOrder};
+  CancelResult: {isSuccess: boolean; orderId: number; prods: ProdDesc[]};
+
   Gift: {mainSubs: RkbSubscription};
   ChargeHistory: {
     mainSubs: RkbSubscription;
@@ -195,10 +201,16 @@ export const navigate = (
   navigation: NavigationProp<any>,
   route: RouteProp<ParamListBase, string>,
   returnTab: string,
-  {tab, screen, params}: {tab?: string; screen: string; params?: object},
+  {
+    tab,
+    screen,
+    params,
+    initial = true, // false : 스택 상단에 해당 화면이 덮어씌워지지 않도록 방지
+  }: {tab?: string; screen: string; params?: object; initial?: boolean},
 ) => {
   navigation.navigate(tab || returnTab, {
     screen,
+    initial,
     params: {
       ...params,
       returnRoute: {

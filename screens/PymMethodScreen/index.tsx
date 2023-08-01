@@ -157,7 +157,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       headerLeft: () => (
         <AppBackButton
           title={i18n.t('payment')}
-          isPaid={route.params?.isPaid}
+          disabled={route.params.isPaid}
+          showIcon={!route.params.isPaid}
         />
       ),
     });

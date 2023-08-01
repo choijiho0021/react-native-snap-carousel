@@ -49,6 +49,7 @@ const consentItem = {
   1: 'privacy',
   2: 'paymentAgency',
 };
+export type CancelKeywordType = 'changed' | 'mistake' | 'complain' | 'etc' | '';
 
 export type RkbPayment = {
   amount: Currency;
@@ -57,7 +58,19 @@ export type RkbPayment = {
   remote_id?: string;
 };
 
-export type OrderState = 'completed' | 'validation' | 'canceled' | 'draft';
+export type OrderState =
+  | 'completed'
+  | 'validation'
+  | 'canceled'
+  | 'draft'
+  | 'completed';
+
+export type OrderItemType = {
+  title: string;
+  qty: number;
+  price: number;
+  uuid: string;
+};
 
 export type RkbOrder = {
   key: string;
@@ -72,7 +85,7 @@ export type RkbOrder = {
   shipmentState?: string;
   memo?: string;
   state?: OrderState;
-  orderItems: {title: string; qty: number; price: number; uuid: string}[];
+  orderItems: OrderItemType[];
   usageList: {status: string; nid: string}[];
   paymentList: RkbPayment[];
   dlvCost: Currency;
@@ -136,7 +149,7 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
   return api.failure(api.E_NOT_FOUND);
 };
 
-const draftOrder = ({orderId, token}: {orderId?: string; token?: string}) => {
+const draftOrder = ({orderId, token}: {orderId?: number; token?: string}) => {
   if (!orderId) {
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter : orderId');
   }
@@ -213,7 +226,15 @@ const getOrderById = ({
   );
 };
 
-const cancelOrder = ({orderId, token}: {orderId?: number; token?: string}) => {
+const cancelOrder = ({
+  orderId,
+  token,
+  reason,
+}: {
+  orderId?: number;
+  token?: string;
+  reason?: string;
+}) => {
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
   if (!_.isNumber(orderId))
@@ -224,11 +245,13 @@ const cancelOrder = ({orderId, token}: {orderId?: number; token?: string}) => {
     {
       method: 'DELETE',
       headers: api.withToken(token, 'json'),
+      body: JSON.stringify({
+        reason,
+      }),
     },
-    (resp) => ({
-      result: resp.status === '204' ? 0 : api.FAILED,
-      objects: [],
-    }),
+    (resp) => {
+      return resp;
+    },
   );
 };
 

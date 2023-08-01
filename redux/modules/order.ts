@@ -4,17 +4,18 @@ import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
 import _ from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
-import {API} from '@/redux/api';
-import {RkbOrder} from '@/redux/api/orderApi';
-import {RkbSubscription, STATUS_RESERVED} from '@/redux/api/subscriptionApi';
-import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
-import {actions as accountAction} from './account';
-import {reflectWithToast, Toast} from './toast';
-import {cachedApi} from '@/redux/api/api';
-import Env from '@/environment';
 import moment from 'moment';
+import {API} from '@/redux/api';
+import {CancelKeywordType, RkbOrder} from '@/redux/api/orderApi';
+import {RkbSubscription, STATUS_USED} from '@/redux/api/subscriptionApi';
+import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
+import {reflectWithToast, Toast} from './toast';
+import api, {cachedApi} from '@/redux/api/api';
+import Env from '@/environment';
 
 const {specialCategories} = Env.get();
+
+const getNextOrders = createAsyncThunk('order/getOrders', API.Order.getOrders);
 
 const init = createAsyncThunk('order/init', async (mobile?: string) => {
   const oldData = await retrieveData(`${API.Order.KEY_INIT_ORDER}.${mobile}`);
@@ -34,24 +35,13 @@ const cancelOrder = createAsyncThunk(
 
 const getSubs = createAsyncThunk(
   'order/getSubs',
-  async (param: {iccid?: string; token?: string; prodType?: string}) =>
+  async (param: {iccid?: string; token?: string; hidden?: boolean}) =>
     cachedApi(`cache.subs.${param?.iccid}`, API.Subscription.getSubscription)(
       param,
       {
         fulfillWithValue: (value) => value,
       },
     ),
-);
-
-const getStoreSubs = createAsyncThunk(
-  'order/getStoreSubs',
-  async (param: {mobile?: string; token?: string}) =>
-    cachedApi(
-      `cache.store.${param?.mobile}`,
-      API.Subscription.getStoreSubscription,
-    )(param, {
-      fulfillWithValue: (value) => value,
-    }),
 );
 
 const getSubsUsage = createAsyncThunk(
@@ -76,12 +66,11 @@ const cmiGetSubsUsage = createAsyncThunk(
 );
 
 const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
-const getStoreSubsWithToast = reflectWithToast(getStoreSubs, Toast.NOT_LOADED);
 
 export interface OrderModelState {
   orders: ImmutableMap<number, RkbOrder>;
   orderList: number[];
-  subs: ImmutableMap<string, RkbSubscription[]>;
+  subs: RkbSubscription[];
   drafts: RkbOrder[];
   usageProgress: object;
   page: number;
@@ -124,88 +113,46 @@ const getOrders = createAsyncThunk(
       page?: number;
       state?: 'all' | 'validation';
     },
-    {getState},
+    {getState, dispatch},
   ) => {
     if (page !== undefined) {
-      return API.Order.getOrders({user, token, page, state});
+      return dispatch(getNextOrders({user, token, page, state}));
     }
 
     const {order} = getState() as RootState;
-    return API.Order.getOrders({
-      user,
-      token,
-      page: (order.page || 0) + 1,
-      state,
-    });
+    return dispatch(
+      getNextOrders({user, token, page: (order.page || 0) + 1, state}),
+    );
   },
 );
 
 const changeDraft = createAsyncThunk(
   'order/draftOrder',
-  ({orderId, token}: {orderId: string; token?: string}) => {
+  ({orderId, token}: {orderId: number; token?: string}) => {
     return API.Order.draftOrder({orderId, token});
   },
 );
 
-const cancelAndGetOrder = createAsyncThunk(
-  'order/cancelAndGetOrder',
+const cancelDraftOrder = createAsyncThunk(
+  'order/cancelOrder',
   (
-    {orderId, token}: {orderId?: number; token?: string},
-    {dispatch, getState},
+    {
+      orderId,
+      token,
+      reason,
+    }: {orderId?: number; token?: string; reason?: CancelKeywordType},
+    {dispatch},
   ) => {
-    const {
-      account: {iccid},
-    } = getState() as RootState;
-
-    return dispatch(cancelOrder({orderId, token})).then(({payload: resp}) => {
-      // 결제취소요청 후 항상 order를 가져온다
-      return dispatch(getOrderById({orderId, token})).then(({payload: val}) => {
-        if (resp.result === 0) {
-          if (val.result === 0) {
-            dispatch(accountAction.getAccount({iccid, token}));
-            return val;
-          }
-          return {
-            ...val,
-            result: 1,
-          };
-        }
-        if (val.result === 0) {
-          return {
-            ...val,
-            result: 1,
-          };
-        }
-        return resp;
-      });
-    });
-  },
-);
-
-// subs status 변환 후
-/* not used
-export const updateStatusAndGetSubs = createAsyncThunk(
-  'order/updateStatusAndGetSubs',
-  (
-    {uuid, status, token}: {uuid: string; status: string; token: string},
-    {dispatch, getState},
-  ) => {
-    const {
-      account: {iccid},
-    } = getState() as RootState;
-
-    return dispatch(updateSubsStatus({uuid, status, token})).then(
+    return dispatch(cancelOrder({orderId, token, reason})).then(
       ({payload: resp}) => {
-        // 결제취소요청 후 항상 order를 가져온다
-        if (resp.result === 0) {
-          return dispatch(getSubs({iccid, token}));
+        if (resp.result === 0 && resp.objects?.length > 0) {
+          return resp;
         }
-        return resp;
+        return {result: api.FAILED};
       },
     );
   },
 );
-*/
 
 const mergeSubs = (
   org: ImmutableMap<string, RkbSubscription[]>,
@@ -233,24 +180,25 @@ const mergeSubs = (
   return subsToMap;
 };
 
-// 이건 머지로 하면 안되겠다. 중복 데이터 때문에
-const updateReservedSubs = (
-  subsExcludeReserved: ImmutableMap<string, RkbSubscription[]>,
-  subsOnlyReserved: RkbSubscription[],
-) => {
-  const parseToImmutableSubs = (subsList: RkbSubscription[]) => {
-    return ImmutableMap(subsList.map((o) => [o.nid, [o]]));
-  };
+export const isDraft = (state: string) => !(STATUS_USED === state);
 
-  // reserved는 새로 덮어씌운다.
-  return subsExcludeReserved.merge(parseToImmutableSubs(subsOnlyReserved));
+export const isExpiredDraft = (orderDate: string) => {
+  return moment().diff(moment(orderDate), 'day') >= 7;
+};
+
+export const getCountItems = (items?: OrderItemType[], etc?: boolean) => {
+  if (!items) return '';
+
+  const result = items.reduce((acc, i) => acc + i.qty, 0);
+
+  return etc ? (result - 1).toString() : result.toString();
 };
 
 const initialState: OrderModelState = {
   orders: ImmutableMap<number, RkbOrder>(),
   drafts: [],
   orderList: [],
-  subs: ImmutableMap(),
+  subs: [],
   usageProgress: {},
   page: 0,
 };
@@ -289,24 +237,19 @@ const slice = createSlice({
         state.drafts = state.drafts.filter((d) => d.orderId !== orderId);
 
         // 함수로 뺄 지 고민
-        state.subs = ImmutableMap(state.subs).merge(
-          subs.map((o) => [
-            o.nid,
-            [
-              {
-                ...o,
-                statusCd: o?.field_status,
-                flagImage: o?.field_flag_image,
-                prodName: utils.extractProdName(o?.title),
-                promoFlag: o?.field_special_categories
-                  ? o.field_special_categories
-                      .split(',')
-                      .map((v) => specialCategories[v.trim()])
-                      .filter((v) => !_.isEmpty(v))
-                  : [],
-              },
-            ],
-          ]),
+        state.subs = state.subs.concat(
+          subs.map((o) => ({
+            ...o,
+            statusCd: o?.field_status,
+            flagImage: o?.field_flag_image,
+            prodName: utils.extractProdName(o?.title),
+            promoFlag: o?.field_special_categories
+              ? o.field_special_categories
+                  .split(',')
+                  .map((v) => specialCategories[v.trim()])
+                  .filter((v) => !_.isEmpty(v))
+              : [],
+          })),
         );
       }
     });
@@ -315,12 +258,17 @@ const slice = createSlice({
       const {objects, result} = action.payload;
 
       if (action.meta.arg?.state === 'validation') {
+        // 이전과 달리 동작하는 이유, 2번째 object undefined 일때  undefined.filter 시도
+        // promise rejection으로 2번째 undefined을 state.drafts에 저장 안함
+        // 2번 호출 원인 분석 필요
         state.drafts =
           objects
-            .filter((r) => moment().diff(moment(r.orderDate), 'day') < 7)
+            .filter((r) => !isExpiredDraft(r.orderDate))
             .sort((a, b) => {
               return a.orderDate < b.orderDate ? 1 : -1;
             }) || [];
+
+        // 기존 코드도 마찬가지, undefined.length 시도 -> promise rejection
       } else if (result === 0 && objects.length > 0) {
         // 기존에 있던 order에 새로운 order로 갱신
         const orders = ImmutableMap(state.orders).merge(
@@ -348,7 +296,25 @@ const slice = createSlice({
       return state;
     });
 
-    builder.addCase(cancelOrder.fulfilled, (state) => {
+    builder.addCase(cancelOrder.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      const {orders} = state;
+
+      const orderId = action?.meta?.arg?.orderId;
+
+      const order = orders.get(orderId);
+
+      state.drafts = state.drafts.filter((d) => d.orderId !== orderId);
+
+      if (result === 0 && objects[0]?.state && order) {
+        const updateOrder = orders.set(orderId, {
+          ...order,
+          state: objects[0].state,
+        });
+        state.orders = updateOrder;
+      }
+
       return state;
     });
 
@@ -363,8 +329,9 @@ const slice = createSlice({
           if (s.key === key) s.tag = tag;
           return s;
         });
-        if (subsIccid) subs.set(iccid, subsIccid);
-        state.subs = subs;
+        if (subsIccid) {
+          state.subs = subs.set(iccid, subsIccid);
+        }
       }
     });
 
@@ -374,13 +341,16 @@ const slice = createSlice({
       const {subs} = state;
 
       if (result === 0 && objects[0]) {
-        const idx = subs.findIndex((item) => item.key === objects[0]?.key);
+        const changeSubs = subs.get(objects[0]?.iccid)?.map((s) => {
+          if (objects.map((elm) => elm.uuid).includes(s.uuid)) {
+            s.hide = objects[0].hide;
+          }
+          return s;
+        });
 
-        if (!_.isEmpty(idx)) {
-          subs[idx].alias = objects[0]?.alias;
-          subs[idx].hide = objects[0]?.hide;
+        if (changeSubs) {
+          state.subs = subs.set(objects[0].iccid, changeSubs);
         }
-        state.subs = subs;
       }
     });
 
@@ -402,27 +372,9 @@ const slice = createSlice({
     builder.addCase(getSubs.fulfilled, (state, action) => {
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
 
+      console.log('@@@ get subs', action?.meta?.arg);
       if (result === 0) {
-        const subsExcludeReserved: RkbSubscription[] = [];
-        const subsOnlyReserved: RkbSubscription[] = [];
-
-        objects.forEach((r) => {
-          if (r.statusCd === STATUS_RESERVED) {
-            subsOnlyReserved.push(r);
-          }
-          subsExcludeReserved.push(r);
-        });
-
-        const subs = mergeSubs(state.subs, subsExcludeReserved);
-        state.subs = updateReservedSubs(subs, subsOnlyReserved);
-      }
-    });
-
-    builder.addCase(getStoreSubs.fulfilled, (state, action) => {
-      const {result, objects} = action.payload;
-
-      if (result === 0) {
-        state.subs = mergeSubs(state.subs, objects);
+        state.subs = objects;
       }
     });
 
@@ -442,15 +394,13 @@ const slice = createSlice({
 export const actions = {
   ...slice.actions,
   getSubsWithToast,
-  getStoreSubsWithToast,
   init,
   getSubs,
-  getStoreSubs,
   getOrders,
   updateSubsInfo,
   updateSubsAndOrderTag,
   updateSubsGiftStatus,
-  cancelAndGetOrder,
+  cancelDraftOrder,
   checkAndGetOrderById,
   changeDraft,
   cmiGetSubsUsage,

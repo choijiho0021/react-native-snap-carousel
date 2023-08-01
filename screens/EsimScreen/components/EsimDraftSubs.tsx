@@ -1,7 +1,8 @@
 /* eslint-disable no-nested-ternary */
-import React, {MutableRefObject, useCallback, useMemo} from 'react';
-import {Pressable, StyleSheet, View, FlatList} from 'react-native';
-import {connect} from 'react-redux';
+import React, {useCallback, useState} from 'react';
+import {Pressable, StyleSheet, View} from 'react-native';
+import moment from 'moment';
+import LinearGradient from 'react-native-linear-gradient';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -10,29 +11,29 @@ import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
-import {RootState} from '@/redux';
-import {ProductModelState} from '../../../redux/modules/product';
 import {RkbOrder} from '@/redux/api/orderApi';
-import moment from 'moment';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import {getCountItems} from '@/redux/modules/order';
 
 const styles = StyleSheet.create({
-  draftButtonFrame: {
-    marginHorizontal: 20,
-  },
+  draftButtonFrame: {},
   usageListContainer: {
-    marginTop: 24,
     marginHorizontal: 20,
-    backgroundColor: colors.gray3,
+    paddingVertical: 24,
+    backgroundColor: colors.white,
+    borderColor: colors.whiteFive,
   },
-  infoRadiusBorder: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+
+  draftExpireText: {
+    ...appStyles.bold14Text,
+    color: colors.clearBlue,
+    fontSize: isDeviceSize('small') ? 12 : 14,
   },
   draftButton: {
     flex: 1,
     flexDirection: 'row',
     height: 52,
-    backgroundColor: '#4d377b',
+    backgroundColor: 'transparent',
     borderColor: colors.whiteThree,
     borderRadius: 12,
   },
@@ -40,18 +41,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 10,
+  },
+  expiredDateFrame: {
+    marginBottom: 12,
   },
   inactiveContainer: {
-    marginBottom: 6,
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
     justifyContent: 'space-between',
   },
+  inactiveDetailContainer: {
+    flexDirection: 'column',
+    width: '100%',
+    justifyContent: 'space-between',
+  },
+  inactiveDetailTextView: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+  },
   normal14Gray: {
     ...appStyles.normal14Text,
-    color: '#777777',
+    color: colors.warmGrey,
+    fontSize: isDeviceSize('small') ? 12 : 14,
+  },
+  roboto14Gray: {
+    ...appStyles.roboto14Text,
+    color: colors.warmGrey,
     fontSize: isDeviceSize('small') ? 12 : 14,
   },
   colorWhite: {
@@ -67,106 +84,111 @@ const styles = StyleSheet.create({
   btnFrame: {
     flex: 1,
     flexDirection: 'row',
+    marginTop: 16,
   },
-  moreInfoContentDraft: {
-    backgroundColor: colors.gray03,
-    paddingBottom: 20,
-    paddingLeft: 20,
-    paddingRight: 20,
-    borderTopColor: '#eeeeee',
-    borderBottomLeftRadius: 3,
-    borderBottomRightRadius: 3,
+  topGradient: {
+    width: '100%',
+    height: 40,
+    borderRadius: 3,
+  },
+
+  ticketFrame: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ticket: {
+    width: 40,
+    height: 40,
+    marginRight: 8,
   },
   topInfo: {
-    marginTop: 24,
+    marginTop: 16,
   },
-  draftDateText: {
-    marginBottom: 6,
-    ...appStyles.normal14Text,
-    alignSelf: 'flex-start',
-    color: colors.warmGrey,
-  },
-  draftTitleMainText: {
-    ...appStyles.bold16Text,
-  },
-  draftTitleSubText: {
-    ...appStyles.normal16Text,
+  draftTitleMainText: appStyles.bold16Text,
+  draftTitleSubText: appStyles.normal16Text,
+  arrow: {
+    width: 26,
+    height: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
 const EsimDraftSubs = ({
-  mainSubs,
+  draftOrder,
   onClick,
 }: {
-  mainSubs: RkbOrder;
-  expired: boolean;
+  draftOrder: RkbOrder;
   onClick: (subs: RkbOrder) => void;
-
-  product: ProductModelState;
 }) => {
+  const [showMoreInfo, setShowMoreInfo] = useState(false);
+
   // 발권 생성 7일 지난게 오늘보다 전이라면? 발권기한이 지났다.
-  const expiredDate = moment(mainSubs.orderDate).add(7, 'day');
+  const expiredDate = moment(draftOrder.orderDate).add(7, 'day');
 
   const titleDraft = useCallback(() => {
-    // ko 파일로 빼기
-    const time = `${utils.toDateString(mainSubs.orderDate, 'YYYY-MM-DD')} 구매`;
-
     return (
-      <Pressable style={styles.prodTitle} onPress={() => {}}>
+      <Pressable
+        style={styles.prodTitle}
+        onPress={() => {
+          console.log('hellow');
+          setShowMoreInfo((prev) => !prev);
+        }}>
         <View>
-          <AppText style={styles.draftDateText}>{time}</AppText>
-          <View style={{flexDirection: 'row'}}>
-            <AppText style={styles.draftTitleMainText}>
-              {`${mainSubs.orderItems[0].title} `}
+          <View style={styles.ticketFrame}>
+            <AppSvgIcon name="ticket" style={styles.ticket} />
+            <AppText
+              style={styles.draftTitleMainText}
+              numberOfLines={2}
+              ellipsizeMode="tail">
+              {`${draftOrder.orderItems[0].title} `}
             </AppText>
-            {mainSubs.orderItems?.length > 1 && (
+            {draftOrder.orderItems?.length > 1 && (
               <AppText style={styles.draftTitleSubText}>
                 {i18n
                   .t('esim:etcCnt')
-                  .replace('%%', mainSubs?.orderItems?.length)}
+                  .replace('%%', getCountItems(draftOrder?.orderItems, true))}
               </AppText>
             )}
           </View>
         </View>
+        <View style={styles.arrow}>
+          <AppSvgIcon name={showMoreInfo ? 'topArrow' : 'bottomArrow'} />
+        </View>
       </Pressable>
     );
-  }, [mainSubs]);
+  }, [draftOrder.orderItems, showMoreInfo]);
 
   const topInfoDraft = useCallback(() => {
+    const time = `${utils.toDateString(
+      draftOrder.orderDate,
+      'YYYY-MM-DD',
+    )} 구매`;
+
     return (
-      <View style={[styles.topInfo, {marginTop: 28}]}>
-        {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
-          <View style={styles.inactiveContainer}>
-            <AppText style={styles.normal14Gray}>
-              {i18n.t('esim:orderNo')}
-            </AppText>
-            <AppText style={styles.normal14Gray}>{mainSubs.orderNo}</AppText>
+      <View style={styles.topInfo}>
+        {draftOrder.type !== API.Subscription.CALL_PRODUCT && (
+          <View style={styles.inactiveDetailContainer}>
+            <View style={[styles.inactiveDetailTextView, {marginBottom: 6}]}>
+              <AppText style={styles.normal14Gray}>
+                {i18n.t('esim:orderNo')}
+              </AppText>
+              <AppText style={styles.roboto14Gray}>
+                {draftOrder.orderNo}
+              </AppText>
+            </View>
+            <View style={styles.inactiveDetailTextView}>
+              <AppText style={styles.normal14Gray}>
+                {i18n.t('esim:orderDate')}
+              </AppText>
+              <AppText style={styles.roboto14Gray}>{time}</AppText>
+            </View>
           </View>
         )}
-        <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal14Gray}>
-            {i18n.t('esim:draftExpire')}
-          </AppText>
-          <AppText style={styles.normal14Gray}>{`${utils.toDateString(
-            expiredDate,
-            'YYYY.MM.DD HH:MM:SS',
-          )}`}</AppText>
-        </View>
-
-        <View
-          style={{
-            backgroundColor: colors.black,
-            height: 28,
-            justifyContent: 'center',
-            marginTop: 10,
-          }}>
-          <AppText style={{alignSelf: 'center', color: colors.white}}>
-            {i18n.t('esim:draftNotice')}
-          </AppText>
-        </View>
       </View>
     );
-  }, [expiredDate, mainSubs.orderNo, mainSubs.type]);
+  }, [draftOrder.orderDate, draftOrder.orderNo, draftOrder.type]);
 
   const renderDraftBtn = useCallback(() => {
     return (
@@ -174,36 +196,58 @@ const EsimDraftSubs = ({
         <View
           key={utils.generateKey(1)}
           style={[styles.btnMove, {marginRight: 0}, {position: 'relative'}]}>
-          <AppButton
-            title={i18n.t('esim:draft')}
-            titleStyle={styles.colorWhite}
-            style={styles.draftButton}
-            onPress={() => onClick(mainSubs)}
-          />
+          <LinearGradient
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
+            colors={[colors.clearBlue, colors.purplyBlue]}
+            style={styles.topGradient}>
+            <AppButton
+              title={`${i18n
+                .t('esim:draft')
+                .replace('%', getCountItems(draftOrder?.orderItems, false))}`}
+              titleStyle={styles.colorWhite}
+              style={styles.draftButton}
+              onPress={() => onClick(draftOrder)}
+            />
+          </LinearGradient>
         </View>
       </View>
     );
-  }, [mainSubs, onClick]);
+  }, [draftOrder, onClick]);
+
+  const renderExpiredDate = useCallback(() => {
+    return (
+      <View style={styles.expiredDateFrame}>
+        <View style={styles.inactiveContainer}>
+          <AppText style={styles.draftExpireText}>
+            {`${i18n.t('esim:draftExpire')} | ${utils.toDateString(
+              expiredDate,
+              'YYYY.MM.DD HH:MM:SS',
+            )}`}
+          </AppText>
+        </View>
+      </View>
+    );
+  }, [expiredDate]);
 
   const renderDraft = useCallback(() => {
     return (
-      <View style={styles.usageListContainer}>
-        <View style={styles.infoRadiusBorder}>{titleDraft()}</View>
-        <View style={styles.moreInfoContentDraft}>{topInfoDraft()}</View>
+      <View style={[styles.usageListContainer, {borderBottomWidth: 1}]}>
+        <View>{renderExpiredDate()}</View>
+        <View>{titleDraft()}</View>
+        {showMoreInfo && <View>{topInfoDraft()}</View>}
+        <View style={styles.draftButtonFrame}>{renderDraftBtn()}</View>
       </View>
     );
-  }, [titleDraft, topInfoDraft]);
+  }, [
+    renderDraftBtn,
+    renderExpiredDate,
+    showMoreInfo,
+    titleDraft,
+    topInfoDraft,
+  ]);
 
-  return (
-    <View>
-      {renderDraft()}
-      <View style={styles.draftButtonFrame}>{renderDraftBtn()}</View>
-    </View>
-  );
+  return <View>{renderDraft()}</View>;
 };
 
-// export default memo(EsimSubs);
-
-export default connect(({product}: RootState) => ({
-  product,
-}))(EsimDraftSubs);
+export default EsimDraftSubs;

@@ -1,14 +1,15 @@
 import React, {memo} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import _ from 'underscore';
+import {isDraft} from '@reduxjs/toolkit';
 import LabelText from '@/components/LabelText';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {OrderState, RkbOrder} from '@/redux/api/orderApi';
-import {STATUS_RESERVED} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
+import {getCountItems} from '@/redux/modules/order';
 
 const styles = StyleSheet.create({
   order: {
@@ -43,13 +44,13 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
   if (item.orderItems && item.orderItems.length > 1) {
     label += i18n
       .t('his:etcCnt')
-      .replace('%%', (item.orderItems.length - 1).toString());
+      .replace('%%', getCountItems(item?.orderItems, true));
   }
 
   const isCanceled = item.state === 'canceled';
   const [status, statusColor] = getStatus(
     item?.state,
-    item.usageList.find((v) => v.status === STATUS_RESERVED)?.status,
+    item.usageList.find((v) => isDraft(v.status))?.status,
   );
   const billingAmt = utils.addCurrency(item.totalPrice, item.dlvCost);
 

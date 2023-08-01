@@ -54,6 +54,9 @@ interface AppButtonProps {
   viewStyle?: ViewStyle;
   pressedStyle?: ViewStyle;
   disableStyle?: ViewStyle;
+  disabledPressedStyle?: ViewStyle;
+  disabledCanOnPress?: boolean; // disabled인데 클릭을 원하는 경우
+  disabledOnPress?: () => void;
 }
 
 const AppButton: React.FC<AppButtonProps> = ({
@@ -75,7 +78,10 @@ const AppButton: React.FC<AppButtonProps> = ({
   iconStyle,
   viewStyle,
   pressedStyle,
+  disabledPressedStyle,
   disableStyle,
+  disabledCanOnPress = false,
+  disabledOnPress = () => {},
 }) => {
   const [pressed, setPressed] = useState(false);
   return (
@@ -88,19 +94,27 @@ const AppButton: React.FC<AppButtonProps> = ({
         checked &&
           (checkedStyle || {borderColor: checkedColor || colors.clearBlue}),
         pressed &&
-          (pressedStyle ||
-            // eslint-disable-next-line no-nested-ternary
-            (type === 'primary'
-              ? {backgroundColor: colors.dodgerBlue}
-              : type === 'secondary'
-              ? {backgroundColor: colors.whiteTwo}
-              : undefined)),
+          (disabled
+            ? disabledPressedStyle ||
+              // eslint-disable-next-line no-nested-ternary
+              (type === 'primary'
+                ? {backgroundColor: colors.warmGrey}
+                : type === 'secondary'
+                ? {backgroundColor: colors.warmGrey}
+                : undefined)
+            : pressedStyle ||
+              // eslint-disable-next-line no-nested-ternary
+              (type === 'primary'
+                ? {backgroundColor: colors.dodgerBlue}
+                : type === 'secondary'
+                ? {backgroundColor: colors.whiteTwo}
+                : undefined)),
         disabled && disableStyle,
       ]}
-      disabled={disabled}
+      disabled={!disabledCanOnPress && disabled}
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
-      onPress={onPress}>
+      onPress={disabled ? disabledOnPress : onPress}>
       <View
         style={[
           viewStyle || styles.container,

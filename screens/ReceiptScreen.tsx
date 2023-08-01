@@ -16,7 +16,6 @@ import CameraRoll from '@react-native-community/cameraroll';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {
   PERMISSIONS,
-  request,
   check,
   RESULTS,
   openSettings,
@@ -70,7 +69,7 @@ const styles = StyleSheet.create({
   },
   label: {
     ...appStyles.normal14Text,
-    color: '#777777',
+    color: colors.white,
     lineHeight: 36,
   },
   value: {
@@ -79,7 +78,7 @@ const styles = StyleSheet.create({
   },
   box: {
     padding: 20,
-    backgroundColor: 'white',
+    backgroundColor: colors.white,
     marginHorizontal: 10,
   },
   button: {
@@ -87,7 +86,7 @@ const styles = StyleSheet.create({
     height: 52,
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
-    color: '#ffffff',
+    color: colors.white,
     flex: 1,
   },
   balance: {

@@ -66,6 +66,10 @@ import AddOnScreen from '@/screens/AddOnScreen';
 import ChargeAgreementScreen from '@/screens/ChargeAgreementScreen';
 import InvitePromoScreen from '@/screens/InvitePromoScreen';
 import DraftScreen from '@/screens/DraftScreen';
+import DraftResultScreen from '@/screens/DraftScreen/DraftResult';
+import CancelOrderScreen from '@/screens/CancelOrderScreen';
+import CancelResultScreen from '@/screens/CancelOrderScreen/CancelResult';
+import {ModalModelState} from '@/redux/modules/modal';
 
 const {esimGlobal} = Env.get();
 
@@ -305,6 +309,9 @@ function MyPageStackComponent() {
         })}
       />
       <MyPageStack.Screen name="Draft" component={DraftScreen} />
+      <MyPageStack.Screen name="DraftResult" component={DraftResultScreen} />
+      <MyPageStack.Screen name="CancelOrder" component={CancelOrderScreen} />
+      <MyPageStack.Screen name="CancelResult" component={CancelResultScreen} />
 
       <MyPageStack.Group screenOptions={{animationEnabled: true}}>
         <MyPageStack.Screen
@@ -324,9 +331,11 @@ const Tab = createBottomTabNavigator();
 const TabNavigator = ({
   loggedIn,
   cart,
+  modal,
 }: {
   loggedIn?: boolean;
   cart: CartModelState;
+  modal: ModalModelState;
 }) => {
   return (
     <Tab.Navigator
@@ -388,6 +397,7 @@ const TabNavigator = ({
           tabBarStyle: {
             display:
               !!loggedIn &&
+              modal.showTabbar &&
               (getFocusedRouteNameFromRoute(route) || 'Esim') === 'Esim'
                 ? 'flex'
                 : 'none',
@@ -428,7 +438,8 @@ const TabNavigator = ({
   );
 };
 
-export default connect(({account, cart}: RootState) => ({
+export default connect(({account, cart, modal}: RootState) => ({
   loggedIn: account.loggedIn,
   cart,
+  modal,
 }))(TabNavigator);
