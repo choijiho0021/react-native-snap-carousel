@@ -7,7 +7,11 @@ import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import moment from 'moment';
 import {API} from '@/redux/api';
 import {CancelKeywordType, RkbOrder} from '@/redux/api/orderApi';
-import {RkbSubscription, STATUS_USED} from '@/redux/api/subscriptionApi';
+import {
+  RkbSubscription,
+  STATUS_USED,
+  SubscriptionParam,
+} from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {reflectWithToast, Toast} from './toast';
 import api, {cachedApi} from '@/redux/api/api';
@@ -35,7 +39,7 @@ const cancelOrder = createAsyncThunk(
 
 const getSubs = createAsyncThunk(
   'order/getSubs',
-  async (param: {iccid?: string; token?: string; hidden?: boolean}) =>
+  async (param: SubscriptionParam) =>
     cachedApi(`cache.subs.${param?.iccid}`, API.Subscription.getSubscription)(
       param,
       {
@@ -200,6 +204,7 @@ const initialState: OrderModelState = {
   orderList: [],
   subs: [],
   usageProgress: {},
+  subsOffset: 0,
   page: 0,
 };
 
@@ -371,6 +376,24 @@ const slice = createSlice({
 
     builder.addCase(getSubs.fulfilled, (state, action) => {
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
+
+      // 현재 offset 확인하기
+      console.log('action.meta.arg : ', action?.meta?.arg);
+      const arg = action?.meta?.arg;
+
+      // offset이 0이라면? overWrite한다
+      if (arg?.offset === 0 && result === 0) {
+        state.subs = objects;
+
+        // 반환되는 지 확인해보자
+        // 반환이 잘 안되는 거 같으면 state로 isLast 설정하기
+      }
+
+      // offset이 0이 아니라면 페이지네이션 중이니 merge로 한다
+
+      // objects의 갯수가 카운트(한번에 가져오는 수)보다 적으면? isLast로 처리한다.
+
+      // isLast를 return 햇을 때 화면에서 받아오면, 더이상 조회하지 않는다.
 
       console.log('@@@ get subs', action?.meta?.arg);
       if (result === 0) {

@@ -305,21 +305,24 @@ const toSubsUsage = (data: {
 
 // tb-esim.rokebi.com/rokebi/subs/0?_format=json&hidden=1&iccid=0000111101010002000&count=40
 // tb-esim.rokebi.com/rokebi/subs/0?_format=json&iccid=0000111101010002000&count=40
-const getSubscription = ({
-  uuid,
-  iccid,
-  token,
-  hidden,
-  count = 100,
-  offset = 0,
-}: {
+
+export type SubscriptionParam = {
   iccid: string;
   token: string;
   uuid?: string;
   hidden?: boolean;
   count?: number;
   offset?: number;
-}) => {
+};
+
+const getSubscription = ({
+  uuid,
+  iccid,
+  token,
+  hidden,
+  count = 10,
+  offset = 0,
+}: SubscriptionParam) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
   if (!token)
