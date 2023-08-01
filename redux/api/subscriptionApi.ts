@@ -11,7 +11,7 @@ const STATUS_INACTIVE = 'I'; // 미사용
 export const STATUS_RESERVED = 'R'; // 사용 대기중
 const STATUS_CANCELED = 'C'; // 취소
 const STATUS_EXPIRED = 'E'; // 사용 기간 종료
-const STATUS_USED = 'U'; // 사용 완료
+export const STATUS_USED = 'U'; // 사용 완료
 export const STATUS_PENDING = 'P'; // 지연 , 상품 배송 중
 
 const GIFT_STATUS_SEND = 'S'; // 선물 완료
