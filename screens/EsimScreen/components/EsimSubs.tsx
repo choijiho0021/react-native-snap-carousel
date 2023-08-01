@@ -310,16 +310,17 @@ const EsimSubs = ({
   };
 }) => {
   const navigation = useNavigation();
-  const [isCharged, isBc, isDraft, expired, isChargeExpired] = useMemo(() => {
-    const now = moment();
-    return [
-      (mainSubs.cnt || 0) > 0,
-      mainSubs.partner === 'billionconnect',
-      mainSubs.statusCd === 'R',
-      mainSubs.lastExpireDate?.isBefore(now) || false,
-      moment(mainSubs.expireDate).isBefore(now),
-    ];
-  }, [mainSubs]);
+  const [isTypeDraft, isCharged, isBc, expired, isChargeExpired] =
+    useMemo(() => {
+      const now = moment();
+      return [
+        isDraft(mainSubs?.statusCd),
+        (mainSubs.cnt || 0) > 0,
+        mainSubs.partner === 'billionconnect',
+        mainSubs.lastExpireDate?.isBefore(now) || false,
+        moment(mainSubs.expireDate).isBefore(now),
+      ];
+    }, [mainSubs]);
   const sendable = useMemo(
     () => !expired && !mainSubs.giftStatusCd && !isCharged && !isTypeDraft,
     [expired, mainSubs.giftStatusCd, isCharged, isTypeDraft],
