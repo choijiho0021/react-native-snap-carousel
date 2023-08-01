@@ -324,7 +324,7 @@ const EsimSubs = ({
     const expd = mainSubs.lastExpireDate?.isBefore(now) || false;
     return [
       isDraft(mainSubs?.statusCd),
-      (mainSubs.cnt || 0) > 0,
+      (mainSubs.cnt || 0) > 1,
       mainSubs.partner === 'billionconnect',
       expd,
       moment(mainSubs.expireDate).isBefore(now),
