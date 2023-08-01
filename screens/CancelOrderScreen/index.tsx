@@ -28,7 +28,7 @@ import {AccountModelState} from '@/redux/modules/account';
 import {
   actions as orderActions,
   OrderAction,
-  getCountProds,
+  getCountItems,
 } from '@/redux/modules/order';
 import {
   actions as productActions,
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     height: 52,
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
-    color: '#ffffff',
+    color: colors.white,
   },
   secondaryButton: {
     flex: 1,
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderColor: colors.dodgerBlue,
     borderWidth: 1,
-    color: '#ffffff',
+    color: colors,
   },
   secondaryButtonText: {
     ...appStyles.normal18Text,
@@ -317,7 +317,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           prods={prods}
           listTitle={i18n
             .t('his:cancelHeaderTitle2')
-            .replace('%', getCountProds(prods))}
+            .replace('%', getCountItems(order?.orderItems, false))}
           notiComponent={
             <View style={styles.notiFrame}>
               <AppSvgIcon style={styles.bannerCheck} name="bannerCheck" />
@@ -331,7 +331,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         />
       </ScrollView>
     );
-  }, [prods]);
+  }, [order?.orderItems, prods]);
 
   const renderStep2 = useCallback(() => {
     return (

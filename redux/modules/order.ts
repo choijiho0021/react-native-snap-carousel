@@ -7,12 +7,11 @@ import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import moment from 'moment';
 import {API} from '@/redux/api';
 import {CancelKeywordType, RkbOrder} from '@/redux/api/orderApi';
-import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {RkbSubscription, STATUS_USED} from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {reflectWithToast, Toast} from './toast';
 import api, {cachedApi} from '@/redux/api/api';
 import Env from '@/environment';
-import {ProdDesc} from '@/screens/CancelOrderScreen/CancelResult';
 
 const {specialCategories} = Env.get();
 
@@ -197,25 +196,18 @@ const mergeSubs = (
   return subsToMap;
 };
 
+export const isDraft = (state: string) => !(STATUS_USED === state);
+
 export const isExpiredDraft = (orderDate: string) => {
   return moment().diff(moment(orderDate), 'day') >= 7;
 };
 
-export const getCountProds = (prods: ProdDesc[]) => {
-  return prods.reduce((acc, p) => acc + p.qty, 0).toString();
-};
+export const getCountItems = (items?: OrderItemType[], etc?: boolean) => {
+  if (!items) return '';
 
-// 이건 머지로 하면 안되겠다. 중복 데이터 때문에
-const updateReservedSubs = (
-  subsExcludeReserved: ImmutableMap<string, RkbSubscription[]>,
-  subsOnlyReserved: RkbSubscription[],
-) => {
-  const parseToImmutableSubs = (subsList: RkbSubscription[]) => {
-    return ImmutableMap(subsList.map((o) => [o.nid, [o]]));
-  };
+  const result = items.reduce((acc, i) => acc + i.qty, 0);
 
-  // reserved는 새로 덮어씌운다.
-  return subsExcludeReserved.merge(parseToImmutableSubs(subsOnlyReserved));
+  return etc ? (result - 1).toString() : result.toString();
 };
 
 const initialState: OrderModelState = {

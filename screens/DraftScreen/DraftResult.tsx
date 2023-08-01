@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     height: 52,
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
-    color: '#ffffff',
+    color: colors.white,
   },
   titleText: {
     ...appStyles.bold24Text,

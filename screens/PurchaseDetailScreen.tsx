@@ -30,13 +30,17 @@ import {OrderState, RkbOrder, RkbPayment} from '@/redux/api/orderApi';
 import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
-import {actions as orderActions, OrderAction} from '@/redux/modules/order';
+import {
+  actions as orderActions,
+  OrderAction,
+  getCountItems,
+} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import {API} from '@/redux/api';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
 
-const {esimApp, esimCurrency} = Env.get();
+const {esimCurrency} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -134,7 +138,6 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.black,
     borderBottomWidth: 1,
     marginHorizontal: 20,
-    // marginVertical: 20,
     marginBottom: 20,
   },
   item: {
@@ -159,10 +162,6 @@ const styles = StyleSheet.create({
   },
   dividerTop: {
     marginTop: 20,
-    height: 10,
-    backgroundColor: colors.whiteTwo,
-  },
-  divider: {
     height: 10,
     backgroundColor: colors.whiteTwo,
   },
@@ -194,7 +193,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderColor: colors.dodgerBlue,
     borderWidth: 1,
-    color: '#ffffff',
+    color: colors.white,
   },
   secondaryButtonText: {
     ...appStyles.normal18Text,
@@ -206,7 +205,7 @@ const styles = StyleSheet.create({
     height: 52,
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
-    color: '#ffffff',
+    color: colors.white,
   },
   priceStyle: {
     ...appStyles.bold22Text,
@@ -515,7 +514,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     if (order.orderItems.length > 1)
       label += i18n
         .t('his:etcCnt')
-        .replace('%%', (order.orderItems.length - 1).toString());
+        .replace('%%', getCountItems(order?.orderItems, true));
     return (
       <View>
         <AppText style={styles.date}>

@@ -37,7 +37,7 @@ import AppSwitch from '@/components/AppSwitch';
 import {
   actions as orderActions,
   OrderAction,
-  OrderModelState,
+  isDraft,
 } from '@/redux/modules/order';
 import {AccountModelState} from '@/redux/modules/account';
 
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   },
   normal14Gray: {
     ...appStyles.normal14Text,
-    color: '#777777',
+    color: colors.white,
     fontSize: isDeviceSize('small') ? 12 : 14,
   },
   btn: {
@@ -174,8 +174,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     marginLeft: 8,
     paddingBottom: 3,
-    // lineHeight: 26,
-    color: '#2c2c2c',
+    color: colors.black,
   },
   shadow: {
     borderRadius: 3,
@@ -318,10 +317,10 @@ const EsimSubs = ({
   };
 }) => {
   const navigation = useNavigation();
-  const isDraft = useMemo(() => mainSubs?.statusCd === 'R', [mainSubs]);
+  const isTypeDraft = useMemo(() => isDraft(mainSubs?.statusCd), [mainSubs]);
   const sendable = useMemo(
-    () => !expired && !mainSubs.giftStatusCd && !isCharged && !isDraft,
-    [expired, mainSubs.giftStatusCd, isCharged, isDraft],
+    () => !expired && !mainSubs.giftStatusCd && !isCharged && !isTypeDraft,
+    [expired, mainSubs.giftStatusCd, isCharged, isTypeDraft],
   );
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [showSubs, setShowSubs] = useState<boolean>(!mainSubs.hide);
@@ -358,8 +357,8 @@ const EsimSubs = ({
   }, [chargedSubs]);
 
   useEffect(() => {
-    setShowMoreInfo(isDraft ? false : showDetail);
-  }, [showDetail, isDraft]);
+    setShowMoreInfo(isTypeDraft ? false : showDetail);
+  }, [showDetail, isTypeDraft]);
 
   useEffect(() => {
     if (!notCardInfo) setShowMoreInfo(false);
@@ -422,7 +421,7 @@ const EsimSubs = ({
     return (
       <View
         style={notCardInfo ? styles.infoRadiusBorderTop : styles.infoCardTop}>
-        {isDraft && (
+        {isTypeDraft && (
           <View style={styles.draftFrame}>
             <AppText style={styles.drafting}>{i18n.t('esim:reserved')}</AppText>
           </View>
@@ -430,7 +429,7 @@ const EsimSubs = ({
         <Pressable
           style={styles.prodTitle}
           onPress={() => {
-            if (isDraft) return;
+            if (isTypeDraft) return;
 
             if (notCardInfo) {
               setShowMoreInfo((prev) => !prev);
@@ -482,7 +481,7 @@ const EsimSubs = ({
           ) : (
             // R 발송중인 상태에선 상품 발송중 표시
 
-            !isDraft && (
+            !isTypeDraft && (
               <View style={styles.arrow}>
                 <AppSvgIcon name={showMoreInfo ? 'topArrow' : 'bottomArrow'} />
               </View>
@@ -498,7 +497,7 @@ const EsimSubs = ({
     renderSwitch,
     expired,
     isCharged,
-    isDraft,
+    isTypeDraft,
     showMoreInfo,
     flatListRef,
     index,
@@ -738,7 +737,7 @@ const EsimSubs = ({
           style={
             notCardInfo ? styles.infoRadiusBorderBottom : styles.infoCardBottom
           }>
-          {isDraft ? <View /> : notCardInfo ? QRnCopyInfo() : topInfo()}
+          {isTypeDraft ? <View /> : notCardInfo ? QRnCopyInfo() : topInfo()}
         </View>
 
         {showMoreInfo && (

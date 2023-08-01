@@ -3,16 +3,16 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
+import {RootState} from '@reduxjs/toolkit';
+import _ from 'underscore';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import i18n from '@/utils/i18n';
-import _ from 'underscore';
 import ProductDetailInfo from './component/ProductDetailInfo';
 import {RkbOrder} from '@/redux/api/orderApi';
-import {RootState} from '@reduxjs/toolkit';
 import {OrderModelState, isExpiredDraft} from '@/redux/modules/order';
 import AppIcon from '@/components/AppIcon';
 
@@ -164,8 +164,6 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
     [isSuccess, orderResult],
   );
 
-  // 제플린에 실패 시 이미지 있기는 한데, 파편화 되어 있어서 문의 필요
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={{marginHorizontal: 20, flex: 1}}>
@@ -186,9 +184,6 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
           type="primary"
           title={i18n.t('his:cancelOrderButton')}
           onPress={() => {
-            // MyPage 재 클릭시 결과 창으로 복귀 방지
-            // navigation.popToTop();
-
             navigation.navigate('PurchaseDetail', {
               detail: orderResult,
             });

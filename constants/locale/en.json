@@ -580,6 +580,7 @@
   "esim:notrechargeable": "Unrechargable",
   "esim:rechargeablePeriod": "Recharge period",
   "esim:rechargeablePeriod2": "<b>Recharge period:</b> {chargeablePeriod}",
+  "esim:draftTitle": "발권이 필요한 상품",
   "esim:KST": "KST {{time}}:00",
   "esim:expired": "Expired",
   "esim:refresh": " \u00B7  Pull down to refresh!\n \u00B7  If you need help, press the question mark.",
