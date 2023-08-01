@@ -61,6 +61,7 @@ export const colors = {
   shadow2: 'rgba(166, 168, 172, 0.16)',
   gray2: '#979797',
   gray3: '#e2e8ed',
+  gray4: '#eff1f3',
   darkBlue: '#194c94',
   red: '#F1694F',
   violet500: '#5b16ef',
