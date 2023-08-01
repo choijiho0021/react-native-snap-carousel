@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   FlatList,
   RefreshControl,
@@ -399,6 +399,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [isEditMode, onRefresh],
   );
 
+  const days14ago = useMemo(() => moment().subtract(14, 'days'), []);
+
   const renderSubs = useCallback(
     ({item, index}: {item: RkbSubscription; index: number}) => (
       <EsimSubs
@@ -406,16 +408,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         flatListRef={flatListRef}
         index={index}
         mainSubs={item}
-        showDetail={
-          index === 0 &&
-          moment(item.purchaseDate).isAfter(moment().subtract(14, 'days'))
-        }
+        showDetail={index === 0 && item.purchaseDate.isAfter(days14ago)}
         onPressUsage={onPressUsage}
         setShowModal={setShowModal}
         isEditMode={isEditMode}
       />
     ),
-    [isEditMode, onPressUsage],
+    [days14ago, isEditMode, onPressUsage],
   );
 
   const renderDraft = useCallback(
@@ -553,7 +552,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     navigation.navigate('ChargeType', {
       mainSubs: subs,
       chargeablePeriod: utils.toDateString(subs?.expireDate, 'YYYY.MM.DD'),
-      isChargeable: !moment(subs?.expireDate).isBefore(moment()),
+      isChargeable: !subs?.expireDate.isBefore(moment()),
     });
   }, [navigation, subs]);
 
