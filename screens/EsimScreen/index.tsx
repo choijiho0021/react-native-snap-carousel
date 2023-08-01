@@ -574,7 +574,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       </View>
       <FlatList
         ref={flatListRef}
-        data={isEditMode ? order.subs : order.subs?.filter((elm) => !elm.hide)}
+        data={order.subs?.filter(
+          (elm) => (isEditMode ? elm.statusCd !== 'P' : !elm.hide), // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨실 수 없도록 한다.
+        )}
         keyExtractor={(item) => item.nid}
         ListHeaderComponent={isEditMode ? undefined : info}
         renderItem={renderSubs}

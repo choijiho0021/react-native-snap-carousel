@@ -291,8 +291,8 @@ const getSubscription = ({
 
   const url = `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${
     uuid || '0'
-  }?_format=json&hidden=${
-    hidden ? '1' : '0'
+  }?_format=json${
+    hidden ? '' : '&hidden=0'
   }&iccid=${iccid}&count=${count}$offset=${offset}`;
 
   return api.callHttpGet(
