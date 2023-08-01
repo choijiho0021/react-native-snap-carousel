@@ -138,6 +138,33 @@ const styles = StyleSheet.create({
     ...appStyles.normal18Text,
     ...appStyles.confirm,
   },
+  draftFrame: {
+    backgroundColor: colors.white,
+    marginHorizontal: 20,
+    marginVertical: 24,
+    borderRadius: 3,
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
+    shadowColor: colors.shadow2,
+    shadowRadius: 10,
+    shadowOpacity: 1,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+  },
+  draftTitleFrame: {
+    marginHorizontal: 16,
+    marginTop: 24,
+    marginBottom: 8,
+  },
+  draftTitle: {
+    flexDirection: 'row',
+    marginTop: 12,
+    backgroundColor: colors.backGrey,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
 });
 
 type EsimScreenProps = {
@@ -392,22 +419,24 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   const renderDraft = useCallback(
-    (item: RkbOrder) => (
-      <EsimDraftSubs
-        key={item.key}
-        mainSubs={item}
-        onClick={(currentOrder) =>
-          navigate(navigation, route, 'EsimStack', {
-            tab: 'MyPageStack',
-            initial: false,
-            screen: 'Draft',
-            params: {
-              order: currentOrder,
-            },
-          })
-        }
-      />
-    ),
+    (item: RkbOrder) => {
+      return (
+        <EsimDraftSubs
+          key={item.key}
+          draftOrder={item}
+          onClick={(currentOrder) => {
+            navigate(navigation, route, 'EsimStack', {
+              tab: 'MyPageStack',
+              initial: false,
+              screen: 'Draft',
+              params: {
+                order: currentOrder,
+              },
+            });
+          }}
+        />
+      );
+    },
     [navigation, route],
   );
 
@@ -425,39 +454,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
           {order.drafts?.length > 0 && (
             <>
-              <View
-                style={{
-                  backgroundColor: colors.white,
-                  marginHorizontal: 20,
-                  marginVertical: 24,
-                  borderRadius: 3,
-                  borderWidth: 1,
-                  borderColor: colors.whiteFive,
-                  shadowColor: colors.shadow2,
-                  shadowRadius: 10,
-                  shadowOpacity: 1,
-                  shadowOffset: {
-                    width: 0,
-                    height: 4,
-                  },
-                }}>
-                <View
-                  style={{
-                    marginHorizontal: 16,
-                    marginTop: 24,
-                    marginBottom: 8,
-                  }}>
+              <View style={styles.draftFrame}>
+                <View style={styles.draftTitleFrame}>
                   <AppText style={appStyles.bold24Text}>
-                    발권이 필요한 상품
+                    {i18n.t('esim:draftTitle')}
                   </AppText>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginTop: 12,
-                      backgroundColor: colors.backGrey,
-                      paddingHorizontal: 16,
-                      paddingVertical: 8,
-                    }}>
+                  <View style={styles.draftTitle}>
                     <AppSvgIcon name="bell" />
 
                     <AppStyledText

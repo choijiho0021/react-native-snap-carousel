@@ -65,6 +65,13 @@ export type OrderState =
   | 'draft'
   | 'completed';
 
+export type OrderItemType = {
+  title: string;
+  qty: number;
+  price: number;
+  uuid: string;
+};
+
 export type RkbOrder = {
   key: string;
   orderId: number;
@@ -78,7 +85,7 @@ export type RkbOrder = {
   shipmentState?: string;
   memo?: string;
   state?: OrderState;
-  orderItems: {title: string; qty: number; price: number; uuid: string}[];
+  orderItems: OrderItemType[];
   usageList: {status: string; nid: string}[];
   paymentList: RkbPayment[];
   dlvCost: Currency;

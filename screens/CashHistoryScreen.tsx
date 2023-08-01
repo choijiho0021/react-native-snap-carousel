@@ -28,7 +28,7 @@ import {
   CashExpire,
   SectionData,
 } from '@/redux/modules/account';
-import {OrderModelState} from '@/redux/modules/order';
+import {OrderModelState, getCountItems} from '@/redux/modules/order';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppPrice from '@/components/AppPrice';
@@ -324,7 +324,8 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           <AppText>
             {i18n.t(`cashHistory:detail:etcCnt`, {
               prodName: orderItems[0]?.title || '',
-              cnt: orderItems.length - 1,
+              // 해당 부분은 확인 필요
+              cnt: getCountItems(orderItems, true),
             })}
           </AppText>
         );

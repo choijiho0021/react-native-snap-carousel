@@ -8,7 +8,14 @@ import {appStyles} from '@/constants/Styles';
 import {utils} from '@/utils/utils';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  productFrame: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+});
 
 type ProdDesc = {
   title: string;
@@ -25,13 +32,7 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
 }) => {
   return (
     <View style={style}>
-      <View
-        style={{
-          width: '100%',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginBottom: 8,
-        }}>
+      <View style={styles.productFrame}>
         <SplitText
           numberOfLines={2}
           renderExpend={() => renderPromoFlag(item.promoFlag || [], false)}

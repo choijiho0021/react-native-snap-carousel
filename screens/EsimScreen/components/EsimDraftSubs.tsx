@@ -1,7 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, {useCallback, useState} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
-import {connect} from 'react-redux';
 import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
 import AppButton from '@/components/AppButton';
@@ -12,9 +11,9 @@ import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
-import {RootState} from '@/redux';
 import {RkbOrder} from '@/redux/api/orderApi';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import {getCountItems} from '@/redux/modules/order';
 
 const styles = StyleSheet.create({
   draftButtonFrame: {},
@@ -64,12 +63,12 @@ const styles = StyleSheet.create({
   },
   normal14Gray: {
     ...appStyles.normal14Text,
-    color: '#777777',
+    color: colors.warmGrey,
     fontSize: isDeviceSize('small') ? 12 : 14,
   },
   roboto14Gray: {
     ...appStyles.roboto14Text,
-    color: '#777777',
+    color: colors.warmGrey,
     fontSize: isDeviceSize('small') ? 12 : 14,
   },
   colorWhite: {
@@ -92,6 +91,12 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 3,
   },
+
+  ticketFrame: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   ticket: {
     width: 40,
     height: 40,
@@ -100,12 +105,8 @@ const styles = StyleSheet.create({
   topInfo: {
     marginTop: 16,
   },
-  draftTitleMainText: {
-    ...appStyles.bold16Text,
-  },
-  draftTitleSubText: {
-    ...appStyles.normal16Text,
-  },
+  draftTitleMainText: appStyles.bold16Text,
+  draftTitleSubText: appStyles.normal16Text,
   arrow: {
     width: 26,
     height: 26,
@@ -115,19 +116,16 @@ const styles = StyleSheet.create({
 });
 
 const EsimDraftSubs = ({
-  mainSubs,
+  draftOrder,
   onClick,
-  showDetail,
 }: {
-  mainSubs: RkbOrder;
-  expired: boolean;
+  draftOrder: RkbOrder;
   onClick: (subs: RkbOrder) => void;
-  showDetail: boolean;
 }) => {
-  const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
+  const [showMoreInfo, setShowMoreInfo] = useState(false);
 
   // 발권 생성 7일 지난게 오늘보다 전이라면? 발권기한이 지났다.
-  const expiredDate = moment(mainSubs.orderDate).add(7, 'day');
+  const expiredDate = moment(draftOrder.orderDate).add(7, 'day');
 
   const titleDraft = useCallback(() => {
     return (
@@ -138,24 +136,19 @@ const EsimDraftSubs = ({
           setShowMoreInfo((prev) => !prev);
         }}>
         <View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
+          <View style={styles.ticketFrame}>
             <AppSvgIcon name="ticket" style={styles.ticket} />
             <AppText
               style={styles.draftTitleMainText}
               numberOfLines={2}
               ellipsizeMode="tail">
-              {`${mainSubs.orderItems[0].title} `}
+              {`${draftOrder.orderItems[0].title} `}
             </AppText>
-            {mainSubs.orderItems?.length > 1 && (
+            {draftOrder.orderItems?.length > 1 && (
               <AppText style={styles.draftTitleSubText}>
                 {i18n
                   .t('esim:etcCnt')
-                  .replace('%%', mainSubs?.orderItems?.length - 1)}
+                  .replace('%%', getCountItems(draftOrder?.orderItems, true))}
               </AppText>
             )}
           </View>
@@ -165,20 +158,25 @@ const EsimDraftSubs = ({
         </View>
       </Pressable>
     );
-  }, [mainSubs.orderItems, showMoreInfo]);
+  }, [draftOrder.orderItems, showMoreInfo]);
 
   const topInfoDraft = useCallback(() => {
-    const time = `${utils.toDateString(mainSubs.orderDate, 'YYYY-MM-DD')} 구매`;
+    const time = `${utils.toDateString(
+      draftOrder.orderDate,
+      'YYYY-MM-DD',
+    )} 구매`;
 
     return (
-      <View style={[styles.topInfo]}>
-        {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
+      <View style={styles.topInfo}>
+        {draftOrder.type !== API.Subscription.CALL_PRODUCT && (
           <View style={styles.inactiveDetailContainer}>
             <View style={[styles.inactiveDetailTextView, {marginBottom: 6}]}>
               <AppText style={styles.normal14Gray}>
                 {i18n.t('esim:orderNo')}
               </AppText>
-              <AppText style={styles.roboto14Gray}>{mainSubs.orderNo}</AppText>
+              <AppText style={styles.roboto14Gray}>
+                {draftOrder.orderNo}
+              </AppText>
             </View>
             <View style={styles.inactiveDetailTextView}>
               <AppText style={styles.normal14Gray}>
@@ -190,7 +188,7 @@ const EsimDraftSubs = ({
         )}
       </View>
     );
-  }, [mainSubs.orderDate, mainSubs.orderNo, mainSubs.type]);
+  }, [draftOrder.orderDate, draftOrder.orderNo, draftOrder.type]);
 
   const renderDraftBtn = useCallback(() => {
     return (
@@ -206,16 +204,16 @@ const EsimDraftSubs = ({
             <AppButton
               title={`${i18n
                 .t('esim:draft')
-                .replace('%', mainSubs?.orderItems?.length)}`}
+                .replace('%', getCountItems(draftOrder?.orderItems, false))}`}
               titleStyle={styles.colorWhite}
               style={styles.draftButton}
-              onPress={() => onClick(mainSubs)}
+              onPress={() => onClick(draftOrder)}
             />
           </LinearGradient>
         </View>
       </View>
     );
-  }, [mainSubs, onClick]);
+  }, [draftOrder, onClick]);
 
   const renderExpiredDate = useCallback(() => {
     return (
