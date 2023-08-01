@@ -370,12 +370,6 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
       if (initIccid && token) {
         action.order.getSubsWithToast({iccid: initIccid, token});
       }
-      if (initMobile && token && !esimGlobal) {
-        action.order.getStoreSubsWithToast({
-          mobile: initMobile,
-          token,
-        });
-      }
     }
   }, [account, action.order, purchaseCnt]);
 

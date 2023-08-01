@@ -6,10 +6,9 @@ import _ from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import moment from 'moment';
 import {API} from '@/redux/api';
-import {CancelKeywordType, OrderItemType, RkbOrder} from '@/redux/api/orderApi';
-import {RkbSubscription, STATUS_USED} from '@/redux/api/subscriptionApi';
+import {CancelKeywordType, RkbOrder} from '@/redux/api/orderApi';
+import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
-import {actions as accountAction} from './account';
 import {reflectWithToast, Toast} from './toast';
 import api, {cachedApi} from '@/redux/api/api';
 import Env from '@/environment';
@@ -36,12 +35,7 @@ const cancelOrder = createAsyncThunk(
 
 const getSubs = createAsyncThunk(
   'order/getSubs',
-  async (param: {
-    iccid?: string;
-    token?: string;
-    prodType?: string;
-    hidden?: boolean;
-  }) =>
+  async (param: {iccid?: string; token?: string; hidden?: boolean}) =>
     cachedApi(`cache.subs.${param?.iccid}`, API.Subscription.getSubscription)(
       param,
       {
@@ -169,9 +163,8 @@ const cancelDraftOrder = createAsyncThunk(
       ({payload: resp}) => {
         if (resp.result === 0 && resp.objects?.length > 0) {
           return resp;
-        } else {
-          return {result: api.FAILED};
         }
+        return {result: api.FAILED};
       },
     );
   },
@@ -357,8 +350,9 @@ const slice = createSlice({
           if (s.key === key) s.tag = tag;
           return s;
         });
-        if (subsIccid) subs.set(iccid, subsIccid);
-        state.subs = subs;
+        if (subsIccid) {
+          state.subs = subs.set(iccid, subsIccid);
+        }
       }
     });
 
@@ -375,8 +369,9 @@ const slice = createSlice({
           return s;
         });
 
-        if (changeSubs) subs.set(objects[0].iccid, changeSubs);
-        state.subs = subs;
+        if (changeSubs) {
+          state.subs = subs.set(objects[0].iccid, changeSubs);
+        }
       }
     });
 
@@ -399,20 +394,12 @@ const slice = createSlice({
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
 
       if (result === 0) {
-        state.subs = mergeSubs(
-          state.subs,
-
-          // 발권 상태는 subsIccid가 발급되기 전 nid를 subsIccid로 변경
-          // API 변경 후 다시 수정
-          objects.map((r) => {
-            if (isDraft(r.statusCd)) return {...r, subsIccid: r.nid};
-            return r;
-          }),
-        );
+        state.subs = mergeSubs(state.subs, objects);
       }
     });
 
     builder.addCase(getStoreSubs.fulfilled, (state, action) => {
+      // not used anymore
       const {result, objects} = action.payload;
 
       if (result === 0) {

@@ -62,8 +62,8 @@ type CMIBundlesType = {
 
 // A: 사용중
 // R: 사용전
-// E: 사용완료
-export type UsageStatusType = 'A' | 'R' | 'E' | undefined;
+// U: 사용완료
+export type UsageStatusType = 'A' | 'R' | 'U' | undefined;
 
 type ChargeTypeScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
@@ -125,127 +125,62 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     });
   }, [navigation]);
 
-  const checkCmiStatus = useCallback(
-    async (item: RkbSubscription) => {
+  const checkStatus = useCallback(async (item: RkbSubscription) => {
+    setStatusLoading(true);
+    let rsp;
+    if (item.partner === 'cmi' && item?.subsIccid) {
       // CMI 종량제 addOn 미지원
       if (item.daily === 'total') {
+        setStatusLoading(false);
         return;
       }
-      if (item?.subsIccid && item?.packageId) {
-        setStatusLoading(true);
-        const rsp = await API.Subscription.cmiGetSubsStatus({
-          iccid: item?.subsIccid,
-        });
-
-        setStatusLoading(false);
-
-        const today = moment();
-        const {userDataBundles} = rsp.objects || {};
-
-        const bundles: CMIBundlesType[] = userDataBundles
-          .map((b) => ({
-            createTime: b.createTime,
-            activeTime: b.activeTime,
-            expireTime: b.expireTime,
-            endTime: b.endTime,
-            orderID: b.orderID,
-            status: b.status,
-          }))
-          .sort((a, b) => moment(a.createTime).diff(moment(b.createTime)));
-
-        // 사용중인 상품이 있는지 체크
-        const inUseItem = bundles.find(
-          (b) =>
-            b.status === 3 &&
-            today.isBetween(
-              moment(b.activeTime).add(USAGE_TIME_INTERVAL.cmi, 'h'),
-              moment(b.expireTime).add(USAGE_TIME_INTERVAL.cmi, 'h'),
-            ),
-        );
-        if (inUseItem) {
-          setExpireTime(
-            moment(inUseItem.expireTime).add(USAGE_TIME_INTERVAL.cmi, 'h'),
-          );
-          if (chargedSubs) {
-            const i = chargedSubs.find(
-              (s) => s.subsOrderNo === inUseItem.orderID,
-            );
-            setChargeableItem(i);
-          } else {
-            setChargeableItem(mainSubs);
-          }
-          // 사용 중
-          setStatus('A');
-          return;
-        }
-
-        // 사용 전
-        if (bundles.find((b) => b.status === 1)) {
-          setStatus('R');
-          return;
-        }
-
-        // 사용 완료
-        setStatus('E');
-      }
-    },
-    [chargedSubs, mainSubs],
-  );
-
-  const checkQuadcellStatus = useCallback(async (item: RkbSubscription) => {
-    if (item?.imsi) {
-      setStatusLoading(true);
-      const qStatus = await API.Subscription.quadcellGetData({
-        imsi: item.imsi,
-        key: 'packlist',
+      rsp = await API.Subscription.cmiGetStatus({
+        // iccid: item?.subsIccid || '',
+        iccid: '89852342022011165627',
       });
-      setStatusLoading(false);
+    } else if (item.partner === 'quadcell' && item.imsi) {
+      rsp = await API.Subscription.quadcellGetStatus({
+        // imsi: item.imsi,
+        imsi: '454070042547566',
+      });
+    }
+    setStatusLoading(false);
 
-      const dataPack = qStatus.objects?.packList?.find(
-        (elm) =>
-          elm?.packOrderSn !== undefined && Number(elm?.packCode) <= 900000,
-      );
-
-      if (qStatus.result === 0 && qStatus.objects?.retCode === '000000') {
-        const exp = moment(dataPack?.expTime, 'YYYYMMDDHHmmss').add(
-          USAGE_TIME_INTERVAL.quadcell,
-          'h',
-        );
-        setExpireTime(exp);
-
-        // 사용 완료
-        if (!dataPack) {
-          setStatus('E');
-          return;
-        }
-        if (dataPack?.effTime) {
-          if (moment().isAfter(exp)) {
-            // 사용 완료
-            setStatus('E');
-            return;
-          }
-          // 사용 중
-          setStatus('A');
-          return;
-        }
+    if (rsp && rsp.result.code === 0) {
+      const rspStatus = rsp.objects[0]?.status;
+      switch (rspStatus.statusCd) {
         // 사용 전
-        setStatus('R');
+        case 'R':
+          setStatus('R');
+          break;
+        // 사용중
+        case 'A':
+          setExpireTime(moment(rspStatus.endTime));
+          if (item.partner === 'cmi') {
+            if (chargedSubs) {
+              const i = chargedSubs.find((s) => {
+                return s.subsOrderNo === rspStatus?.orderId;
+              });
+              setChargeableItem(i);
+            } else {
+              setChargeableItem(mainSubs);
+            }
+          }
+          setStatus('A');
+          break;
+        // 사용 완료
+        case 'U':
+          setStatus('U');
+          break;
+        default:
+          break;
       }
     }
   }, []);
 
   useEffect(() => {
-    switch (mainSubs.partner) {
-      case 'cmi':
-        checkCmiStatus(mainSubs);
-        break;
-      case 'quadcell':
-        checkQuadcellStatus(mainSubs);
-        break;
-      default:
-        break;
-    }
-  }, [addOnData?.length, checkCmiStatus, checkQuadcellStatus, mainSubs]);
+    if (mainSubs) checkStatus(mainSubs);
+  }, [checkStatus, mainSubs]);
 
   useEffect(() => {
     if (!extensionEnable) {
@@ -312,7 +247,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     }
     if (status) {
       // 모든 사용완료 상품은 충전 불가
-      if (status === 'E') {
+      if (status === 'U') {
         setAddonEnable(false);
         setAddOnDisReasen('used');
         return;
@@ -334,7 +269,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         setAddonEnable(true);
         return;
       }
-
       getAddOnProduct();
     }
   }, [
