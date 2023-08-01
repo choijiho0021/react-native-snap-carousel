@@ -17,6 +17,7 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import moment from 'moment';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -285,10 +286,6 @@ const EsimSubs = ({
   flatListRef,
   index,
   mainSubs,
-  chargedSubs,
-  expired,
-  isChargeExpired,
-  isCharged,
   showDetail = false,
   isEditMode = false,
   onPressUsage,
@@ -301,10 +298,6 @@ const EsimSubs = ({
   flatListRef?: MutableRefObject<FlatList<any> | undefined>;
   index: number;
   mainSubs: RkbSubscription;
-  chargedSubs: RkbSubscription[];
-  expired: boolean;
-  isChargeExpired: boolean;
-  isCharged: boolean;
   showDetail: boolean;
   isEditMode: boolean;
   onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
@@ -317,7 +310,17 @@ const EsimSubs = ({
   };
 }) => {
   const navigation = useNavigation();
-  const isTypeDraft = useMemo(() => isDraft(mainSubs?.statusCd), [mainSubs]);
+  const [isTypeDraft, isCharged, isBc, expired, isChargeExpired] =
+    useMemo(() => {
+      const now = moment();
+      return [
+        isDraft(mainSubs?.statusCd),
+        (mainSubs.cnt || 0) > 0,
+        mainSubs.partner === 'billionconnect',
+        mainSubs.lastExpireDate?.isBefore(now) || false,
+        moment(mainSubs.expireDate).isBefore(now),
+      ];
+    }, [mainSubs]);
   const sendable = useMemo(
     () => !expired && !mainSubs.giftStatusCd && !isCharged && !isTypeDraft,
     [expired, mainSubs.giftStatusCd, isCharged, isTypeDraft],
@@ -325,10 +328,6 @@ const EsimSubs = ({
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [showSubs, setShowSubs] = useState<boolean>(!mainSubs.hide);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
-  const isBc = useMemo(
-    () => mainSubs.partner === 'billionconnect',
-    [mainSubs.partner],
-  );
   const notCardInfo = useMemo(
     () =>
       !expired &&
@@ -341,20 +340,6 @@ const EsimSubs = ({
   const chargeablePeriod = useMemo(() => {
     return utils.toDateString(mainSubs.expireDate, 'YYYY.MM.DD');
   }, [mainSubs.expireDate]);
-
-  const expireTime = useMemo(() => {
-    const {expireDate} = chargedSubs.reduce((oldest, current) => {
-      const oldestDateObj = new Date(oldest.expireDate);
-      const currentDateObj = new Date(current.expireDate);
-
-      if (currentDateObj > oldestDateObj) {
-        return current;
-      }
-      return oldest;
-    });
-
-    return expireDate;
-  }, [chargedSubs]);
 
   useEffect(() => {
     setShowMoreInfo(isTypeDraft ? false : showDetail);
@@ -371,9 +356,7 @@ const EsimSubs = ({
           mainSubs: item,
           chargeablePeriod,
           onPressUsage,
-          chargedSubs,
           isChargeable: !isChargeExpired,
-          expireTime,
         });
       } else if (!isBc) {
         navigation.navigate('ChargeType', {
@@ -385,8 +368,6 @@ const EsimSubs = ({
     },
     [
       chargeablePeriod,
-      chargedSubs,
-      expireTime,
       isBc,
       isChargeExpired,
       isCharged,
@@ -521,7 +502,10 @@ const EsimSubs = ({
           <AppText style={styles.normal14Gray}>{`${utils.toDateString(
             mainSubs.purchaseDate,
             'YYYY.MM.DD',
-          )} - ${utils.toDateString(expireTime, 'YYYY.MM.DD')}`}</AppText>
+          )} - ${utils.toDateString(
+            mainSubs.lastExpirationDate,
+            'YYYY.MM.DD',
+          )}`}</AppText>
         </View>
         {!isBc && (
           <View style={styles.inactiveContainer}>
@@ -533,15 +517,7 @@ const EsimSubs = ({
         )}
       </View>
     );
-  }, [
-    chargeablePeriod,
-    expireTime,
-    isBc,
-    mainSubs.purchaseDate,
-    mainSubs.subsIccid,
-    mainSubs.type,
-    notCardInfo,
-  ]);
+  }, [chargeablePeriod, isBc, mainSubs, notCardInfo]);
 
   const QRnCopyInfo = useCallback(() => {
     return (

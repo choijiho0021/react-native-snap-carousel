@@ -1,5 +1,5 @@
 import _, {isArray} from 'underscore';
-import moment from 'moment';
+import moment, {Moment} from 'moment';
 import i18n from '@/utils/i18n';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import Env from '@/environment';
@@ -175,6 +175,9 @@ export type RkbSubscription = {
   flagImage?: string;
   alias?: string;
   hide?: boolean;
+  cnt?: number;
+  lastExpireDate?: Moment;
+  startDate?: Moment;
 };
 
 const groupPartner = (partner: string) => {
@@ -226,6 +229,9 @@ const toSubs = (item) => ({
   prodDays: item.product_days || '',
   flagImage: item.field_flag_image || '',
   hide: item.field_hidden === '1',
+  cnt: parseInt(item.cnt || '0', 10),
+  lastExpireDate: moment(item.exp_date),
+  startDate: moment(item.startDate),
 });
 
 const toSubscription =
