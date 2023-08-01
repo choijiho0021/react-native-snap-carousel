@@ -310,36 +310,37 @@ const EsimSubs = ({
   };
 }) => {
   const navigation = useNavigation();
-  const [isTypeDraft, isCharged, isBc, expired, isChargeExpired] =
-    useMemo(() => {
-      const now = moment();
-      return [
-        isDraft(mainSubs?.statusCd),
-        (mainSubs.cnt || 0) > 0,
-        mainSubs.partner === 'billionconnect',
-        mainSubs.lastExpireDate?.isBefore(now) || false,
-        moment(mainSubs.expireDate).isBefore(now),
-      ];
-    }, [mainSubs]);
-  const sendable = useMemo(
-    () => !expired && !mainSubs.giftStatusCd && !isCharged && !isTypeDraft,
-    [expired, mainSubs.giftStatusCd, isCharged, isTypeDraft],
-  );
+  const [
+    isTypeDraft,
+    isCharged,
+    isBc,
+    expired,
+    isChargeExpired,
+    chargeablePeriod,
+    notCardInfo,
+    sendable,
+  ] = useMemo(() => {
+    const now = moment();
+    const expd = mainSubs.lastExpireDate?.isBefore(now) || false;
+    return [
+      isDraft(mainSubs?.statusCd),
+      (mainSubs.cnt || 0) > 0,
+      mainSubs.partner === 'billionconnect',
+      expd,
+      moment(mainSubs.expireDate).isBefore(now),
+      utils.toDateString(mainSubs.expireDate, 'YYYY.MM.DD'),
+      !expd &&
+        mainSubs.giftStatusCd !== 'S' &&
+        mainSubs.type !== API.Subscription.CALL_PRODUCT,
+      !expd &&
+        !mainSubs.giftStatusCd &&
+        (mainSubs.cnt || 0) === 0 &&
+        !isDraft(mainSubs?.statusCd),
+    ];
+  }, [mainSubs]);
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [showSubs, setShowSubs] = useState<boolean>(!mainSubs.hide);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
-  const notCardInfo = useMemo(
-    () =>
-      !expired &&
-      mainSubs.giftStatusCd !== 'S' &&
-      mainSubs.type !== API.Subscription.CALL_PRODUCT,
-
-    [expired, mainSubs.giftStatusCd, mainSubs.type],
-  );
-
-  const chargeablePeriod = useMemo(() => {
-    return utils.toDateString(mainSubs.expireDate, 'YYYY.MM.DD');
-  }, [mainSubs.expireDate]);
 
   useEffect(() => {
     setShowMoreInfo(isTypeDraft ? false : showDetail);
