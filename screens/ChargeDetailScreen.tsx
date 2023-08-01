@@ -23,6 +23,7 @@ import utils from '@/redux/api/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {HomeStackParamList} from '@/navigation/navigation';
 import ButtonWithPrice from './EsimScreen/components/ButtonWithPrice';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const styles = StyleSheet.create({
   bg: {
@@ -102,13 +103,6 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
     [params?.data],
   );
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton />,
-    });
-  }, [navigation]);
-
   const onPressBtnPurchase = useCallback(() => {
     const {balance} = account;
 
@@ -149,6 +143,7 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
+      <ScreenHeader />
       <ScrollView style={{flex: 1}}>
         <ImageBackground
           source={

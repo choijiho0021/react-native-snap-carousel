@@ -2,12 +2,17 @@
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import _ from 'underscore';
+import _, {get} from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import moment from 'moment';
 import {API} from '@/redux/api';
 import {CancelKeywordType, RkbOrder} from '@/redux/api/orderApi';
-import {RkbSubscription, STATUS_USED} from '@/redux/api/subscriptionApi';
+import {
+  RkbSubscription,
+  sortSubs,
+  STATUS_USED,
+  SubscriptionParam,
+} from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {reflectWithToast, Toast} from './toast';
 import api, {cachedApi} from '@/redux/api/api';
@@ -35,7 +40,7 @@ const cancelOrder = createAsyncThunk(
 
 const getSubs = createAsyncThunk(
   'order/getSubs',
-  async (param: {iccid?: string; token?: string; hidden?: boolean}) =>
+  async (param: SubscriptionParam) =>
     cachedApi(`cache.subs.${param?.iccid}`, API.Subscription.getSubscription)(
       param,
       {
@@ -65,8 +70,6 @@ const cmiGetSubsUsage = createAsyncThunk(
   API.Subscription.cmiGetSubsUsage,
 );
 
-const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
-
 export interface OrderModelState {
   orders: ImmutableMap<number, RkbOrder>;
   orderList: number[];
@@ -74,6 +77,8 @@ export interface OrderModelState {
   drafts: RkbOrder[];
   usageProgress: object;
   page: number;
+  subsOffset: number;
+  subsIsLast: boolean;
 }
 
 const updateOrders = (state, orders, page) => {
@@ -98,6 +103,41 @@ const checkAndGetOrderById = createAsyncThunk(
     return undefined;
   },
 );
+
+const getNextSubs = createAsyncThunk(
+  'order/getSubs',
+  (
+    {
+      iccid,
+      token,
+      uuid,
+      hidden,
+      count = 10,
+      offset = undefined,
+    }: SubscriptionParam,
+    {getState, dispatch},
+  ) => {
+    if (offset !== undefined) {
+      return dispatch(getSubs({iccid, token, uuid, hidden, count, offset}));
+    }
+
+    const {order} = getState();
+
+    return dispatch(
+      getSubs({
+        iccid,
+        token,
+        uuid,
+        hidden,
+        count,
+        offset: order.subsOffset,
+      }),
+    );
+  },
+);
+
+// 질문 필요 reflectWithToast
+const getSubsWithToast = reflectWithToast(getNextSubs, Toast.NOT_LOADED);
 
 const getOrders = createAsyncThunk(
   'order/getOrders',
@@ -154,30 +194,22 @@ const cancelDraftOrder = createAsyncThunk(
   },
 );
 
-const mergeSubs = (
-  org: ImmutableMap<string, RkbSubscription[]>,
-  subs: RkbSubscription[],
-) => {
-  const subsToMap: ImmutableMap<string, RkbSubscription[]> = subs.reduce(
-    (acc, s) => {
-      return s.subsIccid
-        ? acc.update(s.subsIccid, (pre) =>
-            (
-              pre?.filter((elm) => {
-                return elm.uuid !== s.uuid;
-              }) || []
-            )
-              .concat(s)
-              .sort((subs1, subs2) =>
-                subs1.purchaseDate > subs2.purchaseDate ? 1 : -1,
-              ),
-          )
-        : acc;
-    },
-    org,
-  );
+const mergeSubs = (org: RkbSubscription[], subs: RkbSubscription[]) => {
+  if (subs.length === 0) {
+    return org;
+  }
 
-  return subsToMap;
+  // Map으로 하는게 나을지도 모르겠다.
+  const subsMap: {[nid: number]: RkbSubscription} = org.reduce((acc, sub) => {
+    acc[sub.nid] = sub;
+    return acc;
+  }, {});
+
+  subs.forEach((sub) => {
+    subsMap[sub.nid] = sub;
+  });
+
+  return Object.values(subsMap).sort(sortSubs);
 };
 
 export const isDraft = (state: string) => !(STATUS_USED === state);
@@ -194,13 +226,18 @@ export const getCountItems = (items?: OrderItemType[], etc?: boolean) => {
   return etc ? (result - 1).toString() : result.toString();
 };
 
+// 적당한 위치 고민
+export const PAGINATION_SUBS_COUNT = 10;
+
 const initialState: OrderModelState = {
   orders: ImmutableMap<number, RkbOrder>(),
   drafts: [],
   orderList: [],
   subs: [],
   usageProgress: {},
+  subsOffset: 0,
   page: 0,
+  subsIsLast: false,
 };
 
 const slice = createSlice({
@@ -209,6 +246,14 @@ const slice = createSlice({
   reducers: {
     reset: () => {
       return initialState;
+    },
+
+    empty: (state) => {
+      state.subsOffset = 0;
+    },
+
+    resetIsLast: (state) => {
+      state.subsIsLast = false;
     },
   },
   extraReducers: (builder) => {
@@ -341,7 +386,7 @@ const slice = createSlice({
       const {subs} = state;
 
       if (result === 0 && objects[0]) {
-        const changeSubs = subs.get(objects[0]?.iccid)?.map((s) => {
+        const changeSubs = subs.map((s) => {
           if (objects.map((elm) => elm.uuid).includes(s.uuid)) {
             s.hide = objects[0].hide;
           }
@@ -349,7 +394,7 @@ const slice = createSlice({
         });
 
         if (changeSubs) {
-          state.subs = subs.set(objects[0].iccid, changeSubs);
+          state.subs = changeSubs;
         }
       }
     });
@@ -372,10 +417,29 @@ const slice = createSlice({
     builder.addCase(getSubs.fulfilled, (state, action) => {
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
 
-      console.log('@@@ get subs', action?.meta?.arg);
+      // 현재 offset 확인하기
+      const arg = action?.meta?.arg;
+
+      // offset이 0이라면? overWrite한다
       if (result === 0) {
-        state.subs = objects;
+        if (objects?.length < PAGINATION_SUBS_COUNT) {
+          state.subsIsLast = true;
+        } else {
+          state.subsOffset += PAGINATION_SUBS_COUNT;
+          state.subsIsLast = false;
+        }
+
+        if (arg?.offset === 0) {
+          state.subs = objects;
+        } else {
+          // offset이 0이 아니라면 페이지네이션 중이니 merge로 한다
+          state.subs = mergeSubs(state.subs, objects);
+        }
       }
+
+      // objects의 갯수가 카운트(한번에 가져오는 수)보다 적으면? isLast로 처리한다.
+
+      // isLast를 return 햇을 때 화면에서 받아오면, 더이상 조회하지 않는다.
     });
 
     builder.addCase(getSubsUsage.fulfilled, (state, action) => {
@@ -391,12 +455,21 @@ const slice = createSlice({
   },
 });
 
+const resetOffset = createAsyncThunk(
+  'order/resetOffset',
+  (params, {dispatch}) => {
+    dispatch(slice.actions.empty());
+  },
+);
+
 export const actions = {
   ...slice.actions,
   getSubsWithToast,
+  resetOffset,
   init,
   getSubs,
   getOrders,
+  getNextSubs,
   updateSubsInfo,
   updateSubsAndOrderTag,
   updateSubsGiftStatus,

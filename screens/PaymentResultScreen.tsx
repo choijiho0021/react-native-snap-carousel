@@ -26,6 +26,7 @@ import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import {eventToken} from '@/constants/Adjust';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const {esimCurrency, esimGlobal} = Env.get();
 
@@ -123,15 +124,6 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   const isSuccess = useMemo(() => params?.pymResult || false, [params]);
 
   useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppText style={styles.title}>{i18n.t('his:paymentCompleted')}</AppText>
-      ),
-    });
-  }, [navigation]);
-
-  useEffect(() => {
     const {iccid, token} = account;
 
     // 구매 이력을 다시 읽어 온다.
@@ -175,6 +167,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
 
   return (
     <SafeAreaView style={{flex: 1, alignItems: 'stretch'}}>
+      <ScreenHeader title={i18n.t('his:paymentCompleted')} />
       <ScrollView style={styles.scrollView}>
         <View style={styles.paymentResultView}>
           <AppIcon

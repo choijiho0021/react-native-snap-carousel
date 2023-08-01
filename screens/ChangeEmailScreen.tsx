@@ -28,6 +28,7 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import Env from '@/environment';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const {isIOS} = Env.get();
 
@@ -129,13 +130,6 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
     ));
   }, [actions.modal, navigation]);
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('set:changeMail')} />,
-    });
-  }, [navigation]);
-
   const onChangeText = useCallback((v: string) => {
     setNewEmail(v);
     setInValid(validationUtil.validate('email', v));
@@ -166,6 +160,7 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
       behavior={isIOS ? 'padding' : undefined}
       keyboardVerticalOffset={isDeviceSize('medium') ? 65 : 90}>
       <SafeAreaView style={styles.container}>
+        <ScreenHeader title={i18n.t('set:changeMail')} />
         <View
           style={{
             padding: 20,

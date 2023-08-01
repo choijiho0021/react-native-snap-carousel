@@ -9,6 +9,7 @@ import {
   RouteProp,
 } from '@react-navigation/native';
 import {ChannelIO} from 'react-native-channel-plugin';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
@@ -24,11 +25,16 @@ import {navigate} from '@/navigation/navigation';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import ChatTalk from '@/components/ChatTalk';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: colors.white,
+    flex: 1,
+  },
+  scrollContainer: {
     backgroundColor: colors.whiteTwo,
     flex: 1,
   },
@@ -197,24 +203,6 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
   );
 
   useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('contact:title')} />,
-      headerRight: () => (
-        <AppButton
-          key="search"
-          style={styles.showSearchBar}
-          onPress={() =>
-            navigation.navigate('Noti', {
-              mode: 'info',
-              title: i18n.t('contact:notice'),
-            })
-          }
-          iconName="btnNotice"
-        />
-      ),
-    });
-
     Analytics.trackEvent('Page_View_Count', {page: 'Service Center'});
   }, [navigation]);
 
@@ -260,52 +248,72 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <ChatTalk
-        isClicked={chatTalkClicked}
-        setChatTalkClicked={setChatTalkClicked}
-      />
-
-      <View style={styles.infoContainer}>
-        <AppText style={styles.contactInfo}>{i18n.t('contact:info')}</AppText>
-        <AppIcon name="imgNotiDokebi" style={{marginRight: 12}} />
-      </View>
-
-      <View style={styles.absoluteView}>
-        {['Faq', 'Guide'].map((elm) => (
-          <Pressable
-            key={elm}
-            style={styles.btnBlue}
-            onPress={() => onPress(elm)}>
-            <AppIcon style={{marginBottom: 16}} name={`img${elm}`} />
-            <AppText style={[appStyles.bold16Text, {color: colors.white}]}>
-              {i18n.t(`contact:${elm.toLowerCase()}`)}
-            </AppText>
-          </Pressable>
-        ))}
-      </View>
-
-      <View style={styles.bottomContainer}>
-        <AppText style={styles.contactInfo2}>{i18n.t('contact:info2')}</AppText>
-        <AppText style={styles.contactInfoTime}>
-          {i18n.t('contact:workTimeDesc')}
-        </AppText>
-        {data.map((item) => (
-          <ContactListItem key={item.key} item={item} onPress={onPress} />
-        ))}
-      </View>
-
-      <AppModal
-        title={
-          noti.result === 0 || _.isUndefined(noti.result)
-            ? i18n.t('set:sendAlimTalk')
-            : i18n.t('set:failedToSendAlimTalk')
+    <SafeAreaView style={styles.container}>
+      <ScreenHeader
+        title={i18n.t('contact:title')}
+        renderRight={
+          <AppButton
+            key="search"
+            style={styles.showSearchBar}
+            onPress={() =>
+              navigation.navigate('Noti', {
+                mode: 'info',
+                title: i18n.t('contact:notice'),
+              })
+            }
+            iconName="btnNotice"
+          />
         }
-        type="info"
-        onOkClose={() => setShowModal(false)}
-        visible={showModal}
       />
-    </ScrollView>
+      <ScrollView style={styles.scrollContainer}>
+        <ChatTalk
+          isClicked={chatTalkClicked}
+          setChatTalkClicked={setChatTalkClicked}
+        />
+
+        <View style={styles.infoContainer}>
+          <AppText style={styles.contactInfo}>{i18n.t('contact:info')}</AppText>
+          <AppIcon name="imgNotiDokebi" style={{marginRight: 12}} />
+        </View>
+
+        <View style={styles.absoluteView}>
+          {['Faq', 'Guide'].map((elm) => (
+            <Pressable
+              key={elm}
+              style={styles.btnBlue}
+              onPress={() => onPress(elm)}>
+              <AppIcon style={{marginBottom: 16}} name={`img${elm}`} />
+              <AppText style={[appStyles.bold16Text, {color: colors.white}]}>
+                {i18n.t(`contact:${elm.toLowerCase()}`)}
+              </AppText>
+            </Pressable>
+          ))}
+        </View>
+
+        <View style={styles.bottomContainer}>
+          <AppText style={styles.contactInfo2}>
+            {i18n.t('contact:info2')}
+          </AppText>
+          <AppText style={styles.contactInfoTime}>
+            {i18n.t('contact:workTimeDesc')}
+          </AppText>
+          {data.map((item) => (
+            <ContactListItem key={item.key} item={item} onPress={onPress} />
+          ))}
+        </View>
+
+        <AppModal
+          title={
+            noti.result === 0 || _.isUndefined(noti.result)
+              ? i18n.t('set:sendAlimTalk')
+              : i18n.t('set:failedToSendAlimTalk')
+          }
+          type="info"
+          onOkClose={() => setShowModal(false)}
+          visible={showModal}
+        />
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

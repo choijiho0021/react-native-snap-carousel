@@ -35,7 +35,6 @@ import {
   StatusObj,
   UsageObj,
   Usage,
-  getLatestExpireDateSubs,
 } from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
@@ -189,6 +188,9 @@ export const USAGE_TIME_INTERVAL = {
   billionconnect: 1,
 };
 
+// state 값에 저장? 위치 고민하기
+const SUBS_COUNT = 10;
+
 export const renderInfo = (navigation) => (
   <Pressable
     style={styles.usrGuideBtn}
@@ -231,14 +233,16 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const tabBarHeight = useBottomTabBarHeight();
 
   const onRefresh = useCallback(
-    (hidden: boolean) => {
+    (hidden: boolean, reset?: boolean) => {
       if (iccid) {
         setRefreshing(true);
+
+        if (reset) action.order.resetOffset();
 
         action.order
           .getSubsWithToast({iccid, token, hidden})
           .then(() => {
-            action.account.getAccount({iccid, token, hidden});
+            action.account.getAccount({iccid, token});
             action.order.getOrders({
               user: mobile,
               token,
@@ -260,7 +264,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       onRefresh(isEditMode);
       setIsFirstLoad(true);
     }
-  }, [isEditMode, isFocused, onRefresh]);
+  }, [action.order, isEditMode, isFocused, onRefresh]);
 
   const empty = useCallback(() => {
     return _.isEmpty(order.drafts) ? (
@@ -384,6 +388,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       return result;
     },
     [checkBcData, checkCmiData, checkQuadcellData],
+  );
+
+  const readMore = useCallback(
+    (more: boolean) => {
+      if (!more) return;
+
+      onRefresh(isEditMode);
+    },
+    [isEditMode, onRefresh],
   );
 
   const renderSubs = useCallback(
@@ -574,7 +587,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       </View>
       <FlatList
         ref={flatListRef}
-        data={order.subs}
+        data={order.subs?.filter(
+          (elm) => (isEditMode ? elm.statusCd !== 'P' : !elm.hide), // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨실 수 없도록 한다.
+        )}
         keyExtractor={(item) => item.nid}
         ListHeaderComponent={isEditMode ? undefined : info}
         renderItem={renderSubs}
@@ -595,6 +610,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             });
           });
         }}
+        // 종종 중복 호출이 발생
+        onEndReachedThreshold={0.4}
+        onEndReached={() => readMore(!order?.subsIsLast)}
         refreshControl={
           <RefreshControl
             refreshing={refreshing && !isFirstLoad}
@@ -604,9 +622,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           />
         }
       />
-      <AppActivityIndicator
-        visible={isFirstLoad && (pending || loginPending || refreshing)}
-      />
+
+      <AppActivityIndicator visible={pending || loginPending || refreshing} />
       <EsimModal
         visible={showModal}
         subs={subs}
