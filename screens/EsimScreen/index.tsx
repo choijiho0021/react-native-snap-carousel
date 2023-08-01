@@ -238,7 +238,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         action.order
           .getSubsWithToast({iccid, token, hidden})
           .then(() => {
-            action.account.getAccount({iccid, token, hidden});
+            action.account.getAccount({iccid, token});
             action.order.getOrders({
               user: mobile,
               token,
@@ -574,7 +574,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       </View>
       <FlatList
         ref={flatListRef}
-        data={order.subs}
+        data={isEditMode ? order.subs : order.subs?.filter((elm) => !elm.hide)}
         keyExtractor={(item) => item.nid}
         ListHeaderComponent={isEditMode ? undefined : info}
         renderItem={renderSubs}
@@ -598,7 +598,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         refreshControl={
           <RefreshControl
             refreshing={refreshing && !isFirstLoad}
-            onRefresh={onRefresh}
+            onRefresh={() => onRefresh(isEditMode)}
             colors={[colors.clearBlue]} // android 전용
             tintColor={colors.clearBlue} // ios 전용
           />

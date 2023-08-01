@@ -341,7 +341,7 @@ const slice = createSlice({
       const {subs} = state;
 
       if (result === 0 && objects[0]) {
-        const changeSubs = subs.get(objects[0]?.iccid)?.map((s) => {
+        const changeSubs = subs.map((s) => {
           if (objects.map((elm) => elm.uuid).includes(s.uuid)) {
             s.hide = objects[0].hide;
           }
@@ -349,7 +349,7 @@ const slice = createSlice({
         });
 
         if (changeSubs) {
-          state.subs = subs.set(objects[0].iccid, changeSubs);
+          state.subs = changeSubs;
         }
       }
     });
