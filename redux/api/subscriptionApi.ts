@@ -517,12 +517,7 @@ const quadcellGetStatus = ({imsi}: {imsi: string}) => {
     `${api.rokHttpUrl(
       `${api.path.rokApi.pv.quadcell}/usage/quota`,
     )}&imsi=${imsi}&usage=n`,
-    (data) => {
-      if (data?.result?.code === 0) {
-        return api.success(data?.objects);
-      }
-      return data;
-    },
+    (data) => data,
     new Headers({'Content-Type': 'application/json'}),
   );
 };
