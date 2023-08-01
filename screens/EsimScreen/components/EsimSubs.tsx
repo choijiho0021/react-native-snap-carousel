@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   },
   normal14Gray: {
     ...appStyles.normal14Text,
-    color: colors.white,
+    color: colors.warmGrey,
     fontSize: isDeviceSize('small') ? 12 : 14,
   },
   btn: {
