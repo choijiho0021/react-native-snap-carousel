@@ -78,6 +78,7 @@ export interface OrderModelState {
   drafts: RkbOrder[];
   usageProgress: object;
   page: number;
+  subsOffset: number;
 }
 
 const updateOrders = (state, orders, page) => {
@@ -158,30 +159,20 @@ const cancelDraftOrder = createAsyncThunk(
   },
 );
 
-const mergeSubs = (
-  org: ImmutableMap<string, RkbSubscription[]>,
-  subs: RkbSubscription[],
-) => {
-  const subsToMap: ImmutableMap<string, RkbSubscription[]> = subs.reduce(
-    (acc, s) => {
-      return s.subsIccid
-        ? acc.update(s.subsIccid, (pre) =>
-            (
-              pre?.filter((elm) => {
-                return elm.uuid !== s.uuid;
-              }) || []
-            )
-              .concat(s)
-              .sort((subs1, subs2) =>
-                subs1.purchaseDate > subs2.purchaseDate ? 1 : -1,
-              ),
-          )
-        : acc;
-    },
-    org,
-  );
+const mergeSubs = (org: RkbSubscription[], subs: RkbSubscription[]) => {
+  // 이럴 바엔 Map으로 하는게 나을지도 모르겠다.
+  const subsMap: {[nid: number]: RkbSubscription} = org.reduce((acc, sub) => {
+    acc[sub.nid] = sub;
+    return acc;
+  }, {});
 
-  return subsToMap;
+  subs.forEach((sub) => {
+    subsMap[sub.nid] = sub;
+  });
+
+  // 재 정렬 필요
+  const subsArray: RkbSubscription[] = Object.values(subsMap);
+  return subsArray;
 };
 
 export const isDraft = (state: string) => !(STATUS_USED === state);
@@ -387,9 +378,10 @@ const slice = createSlice({
 
         // 반환되는 지 확인해보자
         // 반환이 잘 안되는 거 같으면 state로 isLast 설정하기
+      } else {
+        // offset이 0이 아니라면 페이지네이션 중이니 merge로 한다
+        state.subs = mergeSubs(state.subs, objects);
       }
-
-      // offset이 0이 아니라면 페이지네이션 중이니 merge로 한다
 
       // objects의 갯수가 카운트(한번에 가져오는 수)보다 적으면? isLast로 처리한다.
 

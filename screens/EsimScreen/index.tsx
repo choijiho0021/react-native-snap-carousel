@@ -189,6 +189,9 @@ export const USAGE_TIME_INTERVAL = {
   billionconnect: 1,
 };
 
+// state 값에 저장? 위치 고민하기
+const SUBS_COUNT = 10;
+
 export const renderInfo = (navigation) => (
   <Pressable
     style={styles.usrGuideBtn}
@@ -229,6 +232,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const isFocused = useIsFocused();
   const flatListRef = useRef<FlatList>();
   const tabBarHeight = useBottomTabBarHeight();
+  const [offset, setOffset] = useState(0);
 
   const onRefresh = useCallback(
     (hidden: boolean) => {
@@ -236,7 +240,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         setRefreshing(true);
 
         action.order
-          .getSubsWithToast({iccid, token, hidden})
+          .getSubsWithToast({
+            iccid,
+            token,
+            hidden,
+            count: 10,
+            offset,
+          })
           .then(() => {
             action.account.getAccount({iccid, token, hidden});
             action.order.getOrders({
@@ -252,7 +262,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           });
       }
     },
-    [action.account, action.order, iccid, mobile, token],
+    [action.account, action.order, iccid, mobile, offset, token],
   );
 
   useEffect(() => {
@@ -384,6 +394,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       return result;
     },
     [checkBcData, checkCmiData, checkQuadcellData],
+  );
+
+  const readMore = useCallback(
+    (more: boolean) => {
+      if (!more) return;
+
+      onRefresh(isEditMode);
+    },
+    [isEditMode, onRefresh],
   );
 
   const renderSubs = useCallback(
@@ -575,7 +594,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       <FlatList
         ref={flatListRef}
         data={order.subs}
-        keyExtractor={(item) => item.nid}
+        keyExtractor={(item) => item.nid || '-1'} // undefined일 때 처리를 어떻게 해줄까
         ListHeaderComponent={isEditMode ? undefined : info}
         renderItem={renderSubs}
         // onRefresh={this.onRefresh}
@@ -595,6 +614,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             });
           });
         }}
+        onEndReachedThreshold={0}
+        onEndReached={() => readMore(true)}
         refreshControl={
           <RefreshControl
             refreshing={refreshing && !isFirstLoad}
