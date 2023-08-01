@@ -7,7 +7,7 @@ import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import moment from 'moment';
 import {API} from '@/redux/api';
 import {CancelKeywordType, RkbOrder} from '@/redux/api/orderApi';
-import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {RkbSubscription, STATUS_USED} from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {reflectWithToast, Toast} from './toast';
 import api, {cachedApi} from '@/redux/api/api';
