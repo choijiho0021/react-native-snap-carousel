@@ -240,13 +240,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         if (reset) action.order.resetOffset();
 
         action.order
-          .getSubsWithToast({
-            iccid,
-            token,
-            hidden,
-          })
-          .then((rsp) => {
-            action.account.getAccount({iccid, token, hidden});
+          .getSubsWithToast({iccid, token, hidden})
+          .then(() => {
+            action.account.getAccount({iccid, token});
             action.order.getOrders({
               user: mobile,
               token,
@@ -591,8 +587,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       </View>
       <FlatList
         ref={flatListRef}
-        data={order.subs}
-        keyExtractor={(item) => item.nid || ''} // undefined일 때 처리를 어떻게 해줄까
+        data={order.subs?.filter(
+          (elm) => (isEditMode ? elm.statusCd !== 'P' : !elm.hide), // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨실 수 없도록 한다.
+        )}
+        keyExtractor={(item) => item.nid}
         ListHeaderComponent={isEditMode ? undefined : info}
         renderItem={renderSubs}
         // onRefresh={this.onRefresh}
@@ -618,7 +616,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         refreshControl={
           <RefreshControl
             refreshing={refreshing && !isFirstLoad}
-            onRefresh={() => onRefresh(false, true)}
+            onRefresh={onRefresh}
             colors={[colors.clearBlue]} // android 전용
             tintColor={colors.clearBlue} // ios 전용
           />

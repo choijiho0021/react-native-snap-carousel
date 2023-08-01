@@ -131,6 +131,7 @@ export type Usage = {
 };
 
 export type RkbSubscription = {
+  nid: string;
   key: string;
   uuid: string;
   purchaseDate: string;
@@ -150,7 +151,6 @@ export type RkbSubscription = {
   prodId?: string;
   prodNid?: string;
   prodDays?: string;
-  nid?: string;
   actCode?: string;
   smdpAddr?: string;
   qrCode?: string;
@@ -290,9 +290,9 @@ const getSubscription = ({
 
   const url = `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${
     uuid || '0'
-  }?_format=json&hidden=${
-    hidden ? '1' : '0'
-  }&iccid=${iccid}&count=${count}&offset=${offset}`;
+  }?_format=json${
+    hidden ? '' : '&hidden=0'
+  }&iccid=${iccid}&count=${count}$offset=${offset}`;
 
   return api.callHttpGet(
     url,
@@ -526,12 +526,7 @@ const quadcellGetStatus = ({imsi}: {imsi: string}) => {
     `${api.rokHttpUrl(
       `${api.path.rokApi.pv.quadcell}/usage/quota`,
     )}&imsi=${imsi}&usage=n`,
-    (data) => {
-      if (data?.result?.code === 0) {
-        return api.success(data?.objects);
-      }
-      return data;
-    },
+    (data) => data,
     new Headers({'Content-Type': 'application/json'}),
   );
 };
