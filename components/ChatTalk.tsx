@@ -32,8 +32,6 @@ const ChatTalk = ({
   bottom?: number;
   setChatTalkClicked?: (v: boolean) => void;
 }) => {
-  const a = DeviceInfo.getBuildNumber();
-  console.log('aaaaa a', a);
   const [loading, setLoading] = useState(false);
   const [showSnackBar, setShowSnackbar] = useState(false);
   const settings = useMemo(
