@@ -327,7 +327,7 @@ const EsimSubs = ({
       (mainSubs.cnt || 0) > 1,
       mainSubs.partner === 'billionconnect',
       expd,
-      moment(mainSubs.expireDate).isBefore(now),
+      mainSubs.expireDate.isBefore(now),
       utils.toDateString(mainSubs.expireDate, 'YYYY.MM.DD'),
       !expd &&
         mainSubs.giftStatusCd !== 'S' &&
@@ -343,8 +343,7 @@ const EsimSubs = ({
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
 
   useEffect(() => {
-    if (isTypeDraft) setShowMoreInfo(false);
-    else if (!notCardInfo) setShowMoreInfo(false);
+    if (isTypeDraft || !notCardInfo) setShowMoreInfo(false);
     else setShowMoreInfo(showDetail);
   }, [showDetail, isTypeDraft, notCardInfo]);
 
