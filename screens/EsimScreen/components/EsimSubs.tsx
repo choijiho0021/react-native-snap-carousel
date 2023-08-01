@@ -546,11 +546,17 @@ const EsimSubs = ({
   const QRnCopyInfo = useCallback(() => {
     return (
       <View style={styles.activeBottomBox}>
-        <AppSvgIcon
-          name="prodInfo"
-          style={styles.btn}
+        <AppButton
+          style={{
+            backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+          }}
+          titleStyle={{
+            ...appStyles.bold14Text,
+            color: isEditMode ? colors.lightGrey : colors.black,
+          }}
           title={i18n.t('esim:prodInfo')}
-          titleStyle={styles.btnTitle}
           onPress={() => {
             const prod = product.prodList.get(mainSubs?.prodId || '0');
             if (prod)
@@ -563,16 +569,31 @@ const EsimSubs = ({
           }}
         />
 
-        <AppSvgIcon
-          name="qrInfo"
-          style={styles.btn}
+        <AppButton
+          style={{
+            backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+          }}
+          titleStyle={{
+            ...appStyles.bold14Text,
+            color: isEditMode ? colors.lightGrey : colors.black,
+          }}
           title={i18n.t('esim:showQR')}
-          titleStyle={styles.btnTitle}
           onPress={() => navigation.navigate('QrInfo', {mainSubs})}
         />
 
-        <AppSvgIcon
-          style={[styles.btn, {opacity: 1}]}
+        <AppButton
+          style={{
+            backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+          }}
+          titleStyle={{
+            ...appStyles.bold14Text,
+            color: isEditMode ? colors.lightGrey : colors.black,
+          }}
+          title={i18n.t('esim:checkUsage')}
           onPress={() => {
             if (isCharged) {
               onPressRecharge(mainSubs);
@@ -581,14 +602,12 @@ const EsimSubs = ({
               onPressUsage(mainSubs);
             }
           }}
-          title={i18n.t('esim:checkUsage')}
-          titleStyle={[styles.btnTitle, {opacity: 1}]}
-          name="btnUsage"
         />
       </View>
     );
   }, [
     isCharged,
+    isEditMode,
     mainSubs,
     navigation,
     onPressRecharge,
@@ -665,8 +684,18 @@ const EsimSubs = ({
 
               <AppButton
                 title={btnTitle}
-                titleStyle={[styles.btnTitle2, !isLast && styles.colorblack]}
-                style={!isLast ? styles.giftButton : styles.chargeButton}
+                titleStyle={[
+                  styles.btnTitle2,
+                  !isLast && styles.colorblack,
+                  isEditMode && {color: colors.greyish},
+                ]}
+                style={[
+                  styles.chargeButton,
+                  !isLast && styles.giftButton,
+                  isEditMode && {
+                    backgroundColor: !isLast ? colors.white : colors.lightGrey,
+                  },
+                ]}
                 onPress={() =>
                   isSendBtn
                     ? navigation.navigate('Gift', {mainSubs})
@@ -678,7 +707,15 @@ const EsimSubs = ({
         })}
       </View>
     );
-  }, [isBc, isCharged, mainSubs, navigation, onPressRecharge, sendable]);
+  }, [
+    isBc,
+    isCharged,
+    isEditMode,
+    mainSubs,
+    navigation,
+    onPressRecharge,
+    sendable,
+  ]);
 
   const renderCautionText = useCallback(
     (caution: string, subNum: number, hasPreDot: boolean) => (
