@@ -303,26 +303,36 @@ const toSubsUsage = (data: {
   return api.failure(api.E_NOT_FOUND);
 };
 
+// tb-esim.rokebi.com/rokebi/subs/0?_format=json&hidden=1&iccid=0000111101010002000&count=40
+// tb-esim.rokebi.com/rokebi/subs/0?_format=json&iccid=0000111101010002000&count=40
 const getSubscription = ({
   uuid,
   iccid,
   token,
   hidden,
+  count = 100,
+  offset = 0,
 }: {
   iccid: string;
   token: string;
   uuid?: string;
   hidden?: boolean;
+  count?: number;
+  offset?: number;
 }) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
+  const url = `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${
+    uuid || '0'
+  }?_format=json&hidden=${
+    hidden ? '1' : '0'
+  }&iccid=${iccid}&count=${count}$offset=${offset}`;
+
   return api.callHttpGet(
-    `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${
-      uuid || '0'
-    }?_format=json&iccid=${iccid}&hidden=${hidden ? '1' : '0'}`,
+    url,
     (resp) => {
       if (resp.result === 0) resp.objects = resp.objects.map(toSubs);
       return resp;
