@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
   nolist: {
     marginVertical: 60,
     textAlign: 'center',
+    color: colors.black,
   },
   settings: {
     marginRight: 20,
