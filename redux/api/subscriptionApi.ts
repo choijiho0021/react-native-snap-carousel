@@ -3,6 +3,7 @@ import moment, {Moment} from 'moment';
 import i18n from '@/utils/i18n';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import Env from '@/environment';
+import {isDraft} from '../modules/order';
 
 const {specialCategories} = Env.get();
 
@@ -91,21 +92,42 @@ export const isDisabled = (item: RkbSubscription) => {
   );
 };
 
-// 기존에 배열로 처리된 이유 질문 필요
 export const sortSubs = (a: RkbSubscription, b: RkbSubscription) => {
   if (!a || !b) {
     console.log('@@@@ sortsubs params have empty array');
     return -1;
   }
 
-  if (!isDisabled(a) && isDisabled(b)) return -1;
+  const draftCheck = isDraft(a.statusCd) && isDraft(b.statusCd);
 
-  if (
-    isDisabled(a) === isDisabled(b) &&
-    a.purchaseDate.isAfter(b.purchaseDate)
-  ) {
+  const disableChecked = !isDisabled(a) && isDisabled(b);
+
+  const dateChecked = draftCheck
+    ? moment(a.purchaseDate).isAfter(b.purchaseDate)
+    : moment(a.provDate).isAfter(b.provDate);
+
+  const reservedOrPendingA = isDraft(a.statusCd);
+  const reservedOrPendingB = isDraft(b.statusCd);
+
+  if (disableChecked) return -1;
+
+  //  질문 필요
+  // if (
+  //   isDisabled(a) === isDisabled(b) &&
+  //   a.purchaseDate.isAfter(b.purchaseDate)
+  // ) {
+  //   return -1;
+  // }
+
+  if (reservedOrPendingA && !reservedOrPendingB) {
     return -1;
   }
+  if (!reservedOrPendingA && reservedOrPendingB) {
+    return 1;
+  }
+
+  // // Sort based on purchaseDate (most recent to oldest)
+  if (dateChecked) return -1;
 
   return 1;
 };
