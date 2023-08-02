@@ -45,7 +45,7 @@ export const reflectWithToast =
     dispatch(action(args)).then(
       (resp) => {
         const result = resp.payload
-          ? resp.payload.startsWith('order/getSubs')
+          ? resp.payload.type.startsWith('order/getSubs')
             ? resp.payload.payload.result
             : resp.payload.result
           : resp.result;
