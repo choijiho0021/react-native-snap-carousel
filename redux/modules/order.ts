@@ -368,13 +368,13 @@ const slice = createSlice({
       const {subs} = state;
 
       if (result === 0 && objects[0]) {
-        const {key, tag, iccid} = objects[0];
-        const subsIccid = subs.get(iccid)?.map((s) => {
+        const {key, tag} = objects[0];
+        const changeSubs = subs.map((s) => {
           if (s.key === key) s.tag = tag;
           return s;
         });
-        if (subsIccid) {
-          state.subs = subs.set(iccid, subsIccid);
+        if (changeSubs) {
+          state.subs = changeSubs;
         }
       }
     });
