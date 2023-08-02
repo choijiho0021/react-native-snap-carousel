@@ -616,14 +616,16 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         refreshControl={
           <RefreshControl
             refreshing={refreshing && !isFirstLoad}
-            onRefresh={onRefresh}
+            onRefresh={() => onRefresh(false, true)}
             colors={[colors.clearBlue]} // android 전용
             tintColor={colors.clearBlue} // ios 전용
           />
         }
       />
 
-      <AppActivityIndicator visible={pending || loginPending || refreshing} />
+      <AppActivityIndicator
+        visible={isFirstLoad && (pending || loginPending || refreshing)}
+      />
       <EsimModal
         visible={showModal}
         subs={subs}

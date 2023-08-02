@@ -208,7 +208,6 @@ const mergeSubs = (org: RkbSubscription[], subs: RkbSubscription[]) => {
   subs.forEach((sub) => {
     subsMap[sub.nid] = sub;
   });
-
   return Object.values(subsMap).sort(sortSubs);
 };
 
