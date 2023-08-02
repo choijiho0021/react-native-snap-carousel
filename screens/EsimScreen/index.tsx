@@ -553,8 +553,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <View style={[appStyles.header, styles.esimHeader]}>
         <AppText style={styles.title}>{i18n.t('esimList')}</AppText>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          {isEditMode ? null : (
+        {isEditMode ? null : (
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Pressable
               onPress={() => {
                 action.modal.hideTabbar();
@@ -564,18 +564,19 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
                 {i18n.t('esim:editMode')}
               </AppText>
             </Pressable>
-          )}
-          <AppSvgIcon
-            name="btnCnter"
-            style={styles.btnCnter}
-            onPress={() => {
-              navigate(navigation, route, 'EsimStack', {
-                tab: 'HomeStack',
-                screen: 'Contact',
-              });
-            }}
-          />
-        </View>
+
+            <AppSvgIcon
+              name="btnCnter"
+              style={styles.btnCnter}
+              onPress={() => {
+                navigate(navigation, route, 'EsimStack', {
+                  tab: 'HomeStack',
+                  screen: 'Contact',
+                });
+              }}
+            />
+          </View>
+        )}
       </View>
       <FlatList
         ref={flatListRef}
