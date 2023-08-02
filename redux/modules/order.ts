@@ -106,33 +106,13 @@ const checkAndGetOrderById = createAsyncThunk(
 
 const getNextSubs = createAsyncThunk(
   'order/getSubs',
-  (
-    {
-      iccid,
-      token,
-      uuid,
-      hidden,
-      count = 10,
-      offset = undefined,
-    }: SubscriptionParam,
-    {getState, dispatch},
-  ) => {
-    if (offset !== undefined) {
-      return dispatch(getSubs({iccid, token, uuid, hidden, count, offset}));
+  (param: SubscriptionParam, {getState, dispatch}) => {
+    if (param.offset === undefined) {
+      const {order} = getState() as RootState;
+      param.offset = order.subsOffset;
     }
 
-    const {order} = getState() as RootState;
-
-    return dispatch(
-      getSubs({
-        iccid,
-        token,
-        uuid,
-        hidden,
-        count,
-        offset: order.subsOffset,
-      }),
-    );
+    return dispatch(getSubs(param));
   },
 );
 
@@ -405,7 +385,7 @@ const slice = createSlice({
 
       if (result === 0 && objects[0]) {
         state.subs = subs.map((item) => {
-          if (item.key === objects[0]?.key) {
+          if (item.nid === objects[0].nid) {
             item.giftStatusCd = objects[0].giftStatusCd;
           }
           return item;
