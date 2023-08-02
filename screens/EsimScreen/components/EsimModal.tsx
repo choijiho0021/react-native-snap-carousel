@@ -10,6 +10,8 @@ import AppSnackBar from '@/components/AppSnackBar';
 import {MAX_WIDTH} from '@/constants/SliderEntry.style';
 import AppButton from '@/components/AppButton';
 import {appStyles} from '@/constants/Styles';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import AppText from '@/components/AppText';
 
 const styles = StyleSheet.create({
   titleStyle: {
@@ -37,6 +39,19 @@ const styles = StyleSheet.create({
   whiteBtnTitle: {
     ...appStyles.medium18,
     color: colors.black,
+  },
+  bubbleIcon: {
+    position: 'absolute',
+    top: -14,
+    zIndex: 20,
+    alignSelf: 'center',
+  },
+  bubbleText: {
+    flexDirection: 'row',
+    position: 'absolute',
+    top: -13,
+    zIndex: 30,
+    alignSelf: 'center',
   },
 });
 
@@ -109,6 +124,9 @@ const EsimModal: React.FC<EsimModalProps> = ({
   }, [cmiPending, cmiStatus, cmiUsage, subs]);
 
   const renderBottom = useCallback(() => {
+    const quota = Number(cmiUsage?.quota);
+    const used = Number(cmiUsage?.used);
+
     const isChargeable = onOkClose && cmiStatus.statusCd === 'A';
     return (
       <View style={{flexDirection: 'row'}}>
@@ -120,13 +138,32 @@ const EsimModal: React.FC<EsimModalProps> = ({
           titleStyle={isChargeable ? styles.whiteBtnTitle : styles.blueBtnTitle}
         />
         {isChargeable && (
-          <AppButton
-            style={styles.blueBtn}
-            type="primary"
-            onPress={onOkClose}
-            title={i18n.t('esim:charge')}
-            titleStyle={styles.blueBtnTitle}
-          />
+          <View style={{flex: 1, position: 'relative'}}>
+            {quota && used && quota > 0 && used / quota > 0.8 && (
+              <>
+                <AppSvgIcon name="speechBubble2" style={styles.bubbleIcon} />
+
+                <View style={styles.bubbleText}>
+                  <AppSvgIcon name="lightning" />
+                  <AppText
+                    style={{
+                      ...appStyles.bold12Text,
+                      lineHeight: 16,
+                      color: colors.white,
+                    }}>
+                    {i18n.t('esim:charge:speechBubble')}
+                  </AppText>
+                </View>
+              </>
+            )}
+            <AppButton
+              style={styles.blueBtn}
+              type="primary"
+              onPress={onOkClose}
+              title={i18n.t('esim:charge')}
+              titleStyle={styles.blueBtnTitle}
+            />
+          </View>
         )}
       </View>
     );

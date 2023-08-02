@@ -233,6 +233,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const tabBarHeight = useBottomTabBarHeight();
 
   const onRefresh = useCallback(
+    // hidden : true (used 상태인 것들 모두) , false (pending, reserve 상태 포함 하여 hidden이 false 것들만)
     (hidden: boolean, reset?: boolean) => {
       if (iccid) {
         setRefreshing(true);
@@ -243,12 +244,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           .getSubsWithToast({iccid, token, hidden})
           .then(() => {
             action.account.getAccount({iccid, token});
-            action.order.getOrders({
-              user: mobile,
-              token,
-              state: 'validation',
-              page: 0,
-            });
+            if (!hidden) {
+              action.order.getOrders({
+                user: mobile,
+                token,
+                state: 'validation',
+                page: 0,
+              });
+            }
           })
           .finally(() => {
             setRefreshing(false);

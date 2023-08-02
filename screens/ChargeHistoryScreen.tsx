@@ -334,7 +334,6 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         iccid,
         token,
         uuid: mainSubs.subsIccid,
-        isCharged: true,
       }).then((rsp) => {
         setChargedSubs(rsp.objects);
       });

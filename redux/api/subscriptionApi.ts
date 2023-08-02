@@ -68,24 +68,6 @@ export const bcStatusCd = {
   3: 'C', // cancelled
 };
 
-export const getLatestExpireDateSubs = (a: RkbSubscription[]) =>
-  a.reduce((latest, item) => {
-    const itemExpireDate = moment(item?.expireDate);
-    if (!latest || itemExpireDate.isAfter(moment(latest?.expireDate))) {
-      return item;
-    }
-    return latest;
-  }, a[0]);
-
-export const getLatestPurchaseDateSubs = (a: RkbSubscription[]) =>
-  a.reduce((latest, item) => {
-    const itemPurchaseDate = moment(item?.purchaseDate);
-    if (!latest || itemPurchaseDate.isAfter(moment(latest?.purchaseDate))) {
-      return item;
-    }
-    return latest;
-  }, a[0]);
-
 export const isDisabled = (item: RkbSubscription) => {
   return item.giftStatusCd === 'S' || item.expireDate.isBefore(moment());
 };
@@ -211,6 +193,8 @@ const groupPartner = (partner: string) => {
   return partner;
 };
 
+const getMoment = (str: string) => (str ? moment(str) : undefined);
+
 const toSubscription = (
   data: DrupalNode[] | DrupalNodeJsonApi,
 ): ApiResult<RkbSubscription> => {
@@ -221,8 +205,8 @@ const toSubscription = (
       obj.map((item) => ({
         key: item.id,
         uuid: item.id,
-        purchaseDate: moment(item.field_purchase_date),
-        expireDate: moment(item.field_subs_expiration_date),
+        purchaseDate: getMoment(item.field_purchase_date),
+        expireDate: getMoment(item.field_subs_expiration_date),
         statusCd: item.field_status,
         giftStatusCd:
           giftCode[item.attributes?.field_gift_status] ||
@@ -301,7 +285,6 @@ export type SubscriptionParam = {
   hidden?: boolean;
   count?: number;
   offset?: number;
-  isCharged?: boolean;
 };
 
 const getSubscription = ({
@@ -311,25 +294,17 @@ const getSubscription = ({
   hidden,
   count = 10,
   offset = 0,
-  isCharged,
 }: SubscriptionParam) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
-  if (isCharged && !uuid)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
 
-  const url = isCharged
-    ? `${api.httpUrl(
-        api.path.rokApi.rokebi.subs,
-        '',
-      )}/${uuid}?_format=json&iccid=${iccid}`
-    : `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${
-        uuid || '0'
-      }?_format=json${
-        hidden ? '' : '&hidden=0'
-      }&iccid=${iccid}&count=${count}&offset=${offset}`;
+  const url = `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${
+    uuid || '0'
+  }?_format=json${
+    hidden ? '' : '&hidden=0'
+  }&iccid=${iccid}&count=${count}&offset=${offset}`;
 
   return api.callHttpGet(
     url,
@@ -339,13 +314,13 @@ const getSubscription = ({
           ...o,
           provDate: moment(o.provDate),
           cnt: parseInt(o.cnt || '0', 10),
-          lastExpireDate: moment(o.lastExpireDate),
-          startDate: moment(o.startDate),
-          promoFlag: o.promoFlag.map((p) => specialCategories[p]),
+          lastExpireDate: getMoment(o.lastExpireDate),
+          startDate: getMoment(o.startDate),
+          promoFlag: o?.promoFlag?.map((p) => specialCategories[p]),
           partner: groupPartner(o.partner),
           status: toStatus(o.field_status),
-          purchaseDate: moment(o.purchaseDate),
-          expireDate: moment(o.expireDate),
+          purchaseDate: getMoment(o.purchaseDate),
+          expireDate: getMoment(o.expireDate),
         }));
       }
       return resp;

@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 52,
     backgroundColor: colors.white,
-    borderColor: colors.dodgerBlue,
+    borderColor: colors.lightGrey,
     borderWidth: 1,
     color: colors.white,
   },
