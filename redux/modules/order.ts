@@ -106,17 +106,18 @@ const checkAndGetOrderById = createAsyncThunk(
 
 const getNextSubs = createAsyncThunk(
   'order/getSubs',
-  (param: SubscriptionParam, {getState, dispatch}) => {
+  async (param: SubscriptionParam, {getState, dispatch}) => {
     if (param.offset === undefined) {
       const {order} = getState() as RootState;
       param.offset = order.subsOffset;
     }
-    return dispatch(getSubs(param));
+    const getSubsResp = await dispatch(getSubs(param));
+    return getSubsResp.payload;
   },
 );
 
 // 질문 필요 reflectWithToast
-const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
+const getSubsWithToast = reflectWithToast(getNextSubs, Toast.NOT_LOADED);
 
 const getOrders = createAsyncThunk(
   'order/getOrders',
