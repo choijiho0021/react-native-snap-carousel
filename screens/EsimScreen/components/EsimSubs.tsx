@@ -338,7 +338,7 @@ const EsimSubs = ({
         mainSubs.type !== API.Subscription.CALL_PRODUCT,
       !expd &&
         !mainSubs.giftStatusCd &&
-        (mainSubs.cnt || 0) === 0 &&
+        (mainSubs.cnt || 0) === 1 &&
         !isDraft(mainSubs?.statusCd),
     ];
   }, [mainSubs]);
