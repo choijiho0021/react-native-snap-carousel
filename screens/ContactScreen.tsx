@@ -10,7 +10,6 @@ import {
 } from '@react-navigation/native';
 import {ChannelIO} from 'react-native-channel-plugin';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppModal from '@/components/AppModal';

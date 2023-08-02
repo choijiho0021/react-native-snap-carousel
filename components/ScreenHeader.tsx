@@ -16,6 +16,7 @@ import i18n from '@/utils/i18n';
 import AppIcon from './AppIcon';
 import AppText from './AppText';
 import AppBackButton from './AppBackButton';
+import {goBack} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({
   header: {
@@ -59,7 +60,8 @@ const ScreenHeader: React.FC<ScreenHeaderProps> = ({
             title={title}
             style={{marginRight: 10, height: 56}}
             onPress={() => {
-              navigation.goBack();
+              // returnTab 으로 goBack
+              goBack(navigation, route);
             }}
             showIcon={showIcon}
           />
