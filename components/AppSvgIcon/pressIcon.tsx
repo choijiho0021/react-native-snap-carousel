@@ -3276,6 +3276,36 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  speechBubble2: [
+    <Svg
+      width="134"
+      height="24"
+      viewBox="0 0 134 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M3 0a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h60l4 4 4-4h60a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3H3z"
+        fill="#5B16EF"
+      />
+    </Svg>,
+  ],
+  lightning: [
+    <Svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="m8.167 5.833.412-4.123c.05-.498-.581-.752-.89-.359l-4.72 6.007a.5.5 0 0 0 .393.809h2.471l-.412 4.123c-.05.498.582.752.89.359l4.72-6.007a.5.5 0 0 0-.393-.809H8.167z"
+        fill="#FFC82D"
+      />
+    </Svg>,
+  ],
   notShowEsimUsage: [
     <Svg
       width="149"

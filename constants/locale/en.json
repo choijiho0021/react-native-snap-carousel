@@ -717,6 +717,7 @@
   "esim:charge:payment": "Checkout",
   "esim:charge:payment:agree": "동의 후 결제하기",
   "esim:charge:amount": "Amount: ",
+  "esim:charge:speechBubble": "빠른 속도를 원한다면?",
   "esim:pedometer:title": "만보기",
   "esim:pedometer:sub": "Target steps",
   "esim:prodType:total": "데이터 종량제",

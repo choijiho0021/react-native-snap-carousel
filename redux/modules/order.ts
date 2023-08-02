@@ -2,11 +2,11 @@
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import _, {get} from 'underscore';
+import _ from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import moment from 'moment';
 import {API} from '@/redux/api';
-import {CancelKeywordType, RkbOrder} from '@/redux/api/orderApi';
+import {CancelKeywordType, OrderItemType, RkbOrder} from '@/redux/api/orderApi';
 import {
   RkbSubscription,
   sortSubs,
@@ -106,33 +106,13 @@ const checkAndGetOrderById = createAsyncThunk(
 
 const getNextSubs = createAsyncThunk(
   'order/getSubs',
-  (
-    {
-      iccid,
-      token,
-      uuid,
-      hidden,
-      count = 10,
-      offset = undefined,
-    }: SubscriptionParam,
-    {getState, dispatch},
-  ) => {
-    if (offset !== undefined) {
-      return dispatch(getSubs({iccid, token, uuid, hidden, count, offset}));
+  (param: SubscriptionParam, {getState, dispatch}) => {
+    if (param.offset === undefined) {
+      const {order} = getState() as RootState;
+      param.offset = order.subsOffset;
     }
 
-    const {order} = getState();
-
-    return dispatch(
-      getSubs({
-        iccid,
-        token,
-        uuid,
-        hidden,
-        count,
-        offset: order.subsOffset,
-      }),
-    );
+    return dispatch(getSubs(param));
   },
 );
 
@@ -142,12 +122,7 @@ const getSubsWithToast = reflectWithToast(getNextSubs, Toast.NOT_LOADED);
 const getOrders = createAsyncThunk(
   'order/getOrders',
   (
-    {
-      user,
-      token,
-      page,
-      state,
-    }: {
+    param: {
       user?: string;
       token?: string;
       page?: number;
@@ -155,14 +130,12 @@ const getOrders = createAsyncThunk(
     },
     {getState, dispatch},
   ) => {
-    if (page !== undefined) {
-      return dispatch(getNextOrders({user, token, page, state}));
+    if (param.page === undefined) {
+      const {order} = getState() as RootState;
+      param.page = (order.page || 0) + 1;
     }
 
-    const {order} = getState() as RootState;
-    return dispatch(
-      getNextOrders({user, token, page: (order.page || 0) + 1, state}),
-    );
+    return dispatch(getNextOrders(param));
   },
 );
 
@@ -200,15 +173,15 @@ const mergeSubs = (org: RkbSubscription[], subs: RkbSubscription[]) => {
   }
 
   // Map으로 하는게 나을지도 모르겠다.
-  const subsMap: {[nid: number]: RkbSubscription} = org.reduce((acc, sub) => {
-    acc[sub.nid] = sub;
+  const subsMap: Record<string, string> = subs.reduce((acc, sub) => {
+    acc[sub.nid] = sub.nid;
     return acc;
-  }, {});
+  }, {} as Record<string, string>);
 
-  subs.forEach((sub) => {
-    subsMap[sub.nid] = sub;
-  });
-  return Object.values(subsMap).sort(sortSubs);
+  return org
+    .filter((o) => !subsMap[o.nid])
+    .concat(subs)
+    .sort(sortSubs);
 };
 
 export const isDraft = (state: string) => !(STATUS_USED === state);
@@ -383,8 +356,10 @@ const slice = createSlice({
       const {subs} = state;
 
       if (result === 0 && objects[0]) {
+        const uuidList = objects.map((elm) => elm?.uuid);
+
         const changeSubs = subs.map((s) => {
-          if (objects.map((elm) => elm.uuid).includes(s.uuid)) {
+          if (uuidList.includes(s.uuid)) {
             s.hide = objects[0].hide;
           }
           return s;
@@ -403,7 +378,7 @@ const slice = createSlice({
 
       if (result === 0 && objects[0]) {
         state.subs = subs.map((item) => {
-          if (item.key === objects[0]?.key) {
+          if (item.nid === objects[0].nid) {
             item.giftStatusCd = objects[0].giftStatusCd;
           }
           return item;
