@@ -625,7 +625,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         }
       />
 
-      <AppActivityIndicator visible={pending || loginPending || refreshing} />
+      <AppActivityIndicator
+        visible={isFirstLoad && (pending || loginPending || refreshing)}
+      />
       <EsimModal
         visible={showModal}
         subs={subs}

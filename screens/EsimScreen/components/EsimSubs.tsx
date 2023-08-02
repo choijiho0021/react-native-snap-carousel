@@ -86,7 +86,8 @@ const styles = StyleSheet.create({
     height: 52,
     borderWidth: 1,
     backgroundColor: colors.white,
-    borderColor: colors.whiteThree,
+    borderColor: colors.blue,
+    borderRadius: 3,
   },
   chargeButton: {
     flex: 1,
@@ -94,6 +95,7 @@ const styles = StyleSheet.create({
     height: 52,
     backgroundColor: '#2a7ff6',
     borderColor: colors.whiteThree,
+    borderRadius: 3,
   },
   prodTitle: {
     flexDirection: 'row',
@@ -132,22 +134,17 @@ const styles = StyleSheet.create({
     color: colors.warmGrey,
     fontSize: isDeviceSize('small') ? 12 : 14,
   },
-  btn: {
-    width: 85,
-  },
-  btnTitle: {
-    ...appStyles.normal14Text,
-    textAlign: 'center',
-    marginTop: 10,
-    letterSpacing: -0.5,
+  esimButton: {
+    ...appStyles.bold14Text,
+    lineHeight: 22,
   },
   btnTitle2: {
     ...appStyles.medium18,
     paddingBottom: 2,
     lineHeight: 22,
   },
-  colorblack: {
-    color: '#2c2c2c',
+  sendBtn: {
+    color: colors.blue,
   },
   btnMove: {
     flex: 1,
@@ -166,16 +163,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 24,
     alignItems: 'center',
-    backgroundColor: '#eff2f4',
+    backgroundColor: colors.white,
     borderColor: colors.lightGrey,
     borderRadius: 3,
+    borderWidth: 1,
   },
   redirectText: {
     ...appStyles.medium16,
     letterSpacing: 0,
     marginLeft: 8,
-    paddingBottom: 3,
     color: colors.black,
+  },
+  redirectButtonText: {
+    ...appStyles.medium16,
+    letterSpacing: 0,
+    marginRight: 5,
+    color: colors.blue,
   },
   shadow: {
     borderRadius: 3,
@@ -322,6 +325,7 @@ const EsimSubs = ({
   ] = useMemo(() => {
     const now = moment();
     const expd = mainSubs.lastExpireDate?.isBefore(now) || false;
+
     return [
       isDraft(mainSubs?.statusCd),
       (mainSubs.cnt || 0) > 1,
@@ -501,7 +505,7 @@ const EsimSubs = ({
             mainSubs.purchaseDate,
             'YYYY.MM.DD',
           )} - ${utils.toDateString(
-            mainSubs.lastExpirationDate,
+            mainSubs?.lastExpireDate,
             'YYYY.MM.DD',
           )}`}</AppText>
         </View>
@@ -527,7 +531,7 @@ const EsimSubs = ({
             paddingVertical: 8,
           }}
           titleStyle={{
-            ...appStyles.bold14Text,
+            ...styles.esimButton,
             color: isEditMode ? colors.lightGrey : colors.black,
           }}
           title={i18n.t('esim:prodInfo')}
@@ -550,7 +554,7 @@ const EsimSubs = ({
             paddingVertical: 8,
           }}
           titleStyle={{
-            ...appStyles.bold14Text,
+            ...styles.esimButton,
             color: isEditMode ? colors.lightGrey : colors.black,
           }}
           title={i18n.t('esim:showQR')}
@@ -564,7 +568,7 @@ const EsimSubs = ({
             paddingVertical: 8,
           }}
           titleStyle={{
-            ...appStyles.bold14Text,
+            ...styles.esimButton,
             color: isEditMode ? colors.lightGrey : colors.black,
           }}
           title={i18n.t('esim:checkUsage')}
@@ -608,7 +612,7 @@ const EsimSubs = ({
             })
           }>
           <View style={styles.row}>
-            <AppSvgIcon name="hkIcon" />
+            <AppSvgIcon name="hkIcon" style={{marginTop: 1}} />
             <AppText style={styles.redirectText}>
               {i18n.t('esim:redirectHK2')}
             </AppText>
@@ -621,7 +625,12 @@ const EsimSubs = ({
               </AppText>
             </View>
           ) : (
-            <AppSvgIcon name="rightArrow" />
+            <View style={[styles.row, {justifyContent: 'flex-end'}]}>
+              <AppText style={styles.redirectButtonText}>
+                {i18n.t('esim:redirectHK2:button')}
+              </AppText>
+              <AppSvgIcon name="rightArrow" />
+            </View>
           )}
         </Pressable>
       );
@@ -660,7 +669,7 @@ const EsimSubs = ({
                 title={btnTitle}
                 titleStyle={[
                   styles.btnTitle2,
-                  !isLast && styles.colorblack,
+                  !isLast && styles.sendBtn,
                   isEditMode && {color: colors.greyish},
                 ]}
                 style={[
