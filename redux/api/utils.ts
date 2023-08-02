@@ -5,6 +5,7 @@ import RNFetchBlob from 'rn-fetch-blob';
 import _ from 'underscore';
 import {Adjust, AdjustEvent} from 'react-native-adjust';
 import {Image as CropImage} from 'react-native-image-crop-picker';
+import {Moment} from 'moment';
 import i18n from '@/utils/i18n';
 import Env from '@/environment';
 import {RkbImage} from './accountApi';
@@ -229,6 +230,14 @@ const toDateString = (
   return '';
 };
 
+const cmpMomentDesc = (a: Moment, b: Moment) => {
+  return a.isBefore(b) ? 1 : -1;
+};
+
+const cmpMomentAsc = (a: Moment, b: Moment) => {
+  return a.isBefore(b) ? -1 : 1;
+};
+
 const convertURLtoRkbImage = async (url: string) => {
   if (!url) return Promise.reject(new Error('invalid URL'));
 
@@ -383,4 +392,6 @@ export default {
   intentToUrl,
   toDataVolumeString,
   compareVersion,
+  cmpMomentAsc,
+  cmpMomentDesc,
 };
