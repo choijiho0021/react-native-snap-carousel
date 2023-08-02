@@ -2,11 +2,16 @@
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import _, {get} from 'underscore';
+import _ from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import moment from 'moment';
 import {API} from '@/redux/api';
-import {CancelKeywordType, RkbOrder} from '@/redux/api/orderApi';
+import {
+  CancelKeywordType,
+  CancelOrderParam,
+  OrderItemType,
+  RkbOrder,
+} from '@/redux/api/orderApi';
 import {
   RkbSubscription,
   sortSubs,
@@ -175,22 +180,13 @@ const changeDraft = createAsyncThunk(
 
 const cancelDraftOrder = createAsyncThunk(
   'order/cancelOrder',
-  (
-    {
-      orderId,
-      token,
-      reason,
-    }: {orderId?: number; token?: string; reason?: CancelKeywordType},
-    {dispatch},
-  ) => {
-    return dispatch(cancelOrder({orderId, token, reason})).then(
-      ({payload: resp}) => {
-        if (resp.result === 0 && resp.objects?.length > 0) {
-          return resp;
-        }
-        return {result: api.FAILED};
-      },
-    );
+  (params: CancelOrderParam, {dispatch}) => {
+    return dispatch(cancelOrder(params)).then(({payload: resp}) => {
+      if (resp.result === 0 && resp.objects?.length > 0) {
+        return resp;
+      }
+      return {result: api.FAILED};
+    });
   },
 );
 
@@ -416,15 +412,14 @@ const slice = createSlice({
     builder.addCase(getSubs.fulfilled, (state, action) => {
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
 
-      // 현재 offset 확인하기
       const arg = action?.meta?.arg;
 
-      // offset이 0이라면? overWrite한다
       if (result === 0) {
-        if (objects?.length < PAGINATION_SUBS_COUNT) {
+        // count default 10 설정되어 있음
+        if (objects?.length < arg.count) {
           state.subsIsLast = true;
         } else {
-          state.subsOffset += PAGINATION_SUBS_COUNT;
+          state.subsOffset += arg.count;
           state.subsIsLast = false;
         }
 
