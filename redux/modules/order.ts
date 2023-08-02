@@ -122,12 +122,7 @@ const getSubsWithToast = reflectWithToast(getNextSubs, Toast.NOT_LOADED);
 const getOrders = createAsyncThunk(
   'order/getOrders',
   (
-    {
-      user,
-      token,
-      page,
-      state,
-    }: {
+    param: {
       user?: string;
       token?: string;
       page?: number;
@@ -135,14 +130,12 @@ const getOrders = createAsyncThunk(
     },
     {getState, dispatch},
   ) => {
-    if (page !== undefined) {
-      return dispatch(getNextOrders({user, token, page, state}));
+    if (param.page === undefined) {
+      const {order} = getState() as RootState;
+      param.page = (order.page || 0) + 1;
     }
 
-    const {order} = getState() as RootState;
-    return dispatch(
-      getNextOrders({user, token, page: (order.page || 0) + 1, state}),
-    );
+    return dispatch(getNextOrders(param));
   },
 );
 
