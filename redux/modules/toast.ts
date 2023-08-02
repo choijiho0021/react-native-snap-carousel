@@ -44,13 +44,7 @@ export const reflectWithToast =
   (dispatch: AppDispatch) =>
     dispatch(action(args)).then(
       (resp) => {
-        // payload 중첩 해제 방법 필요
-        const result = resp.payload
-          ? resp.payload.type?.startsWith('order/getSubs')
-            ? resp.payload.payload.result
-            : resp.payload.result
-          : resp.result;
-
+        const result = resp.payload ? resp.payload.result : resp.result;
         if (result !== 0) {
           dispatch(slice.actions.push(toastType));
         }
