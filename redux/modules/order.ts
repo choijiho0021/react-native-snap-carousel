@@ -111,13 +111,12 @@ const getNextSubs = createAsyncThunk(
       const {order} = getState() as RootState;
       param.offset = order.subsOffset;
     }
-
     return dispatch(getSubs(param));
   },
 );
 
 // 질문 필요 reflectWithToast
-const getSubsWithToast = reflectWithToast(getNextSubs, Toast.NOT_LOADED);
+const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
 
 const getOrders = createAsyncThunk(
   'order/getOrders',
