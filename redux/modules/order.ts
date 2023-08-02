@@ -2,11 +2,11 @@
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import _, {get} from 'underscore';
+import _ from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import moment from 'moment';
 import {API} from '@/redux/api';
-import {CancelKeywordType, RkbOrder} from '@/redux/api/orderApi';
+import {CancelKeywordType, OrderItemType, RkbOrder} from '@/redux/api/orderApi';
 import {
   RkbSubscription,
   sortSubs,
@@ -121,7 +121,7 @@ const getNextSubs = createAsyncThunk(
       return dispatch(getSubs({iccid, token, uuid, hidden, count, offset}));
     }
 
-    const {order} = getState();
+    const {order} = getState() as RootState;
 
     return dispatch(
       getSubs({
@@ -200,15 +200,15 @@ const mergeSubs = (org: RkbSubscription[], subs: RkbSubscription[]) => {
   }
 
   // Map으로 하는게 나을지도 모르겠다.
-  const subsMap: {[nid: number]: RkbSubscription} = org.reduce((acc, sub) => {
-    acc[sub.nid] = sub;
+  const subsMap: Record<string, string> = subs.reduce((acc, sub) => {
+    acc[sub.nid] = sub.nid;
     return acc;
-  }, {});
+  }, {} as Record<string, string>);
 
-  subs.forEach((sub) => {
-    subsMap[sub.nid] = sub;
-  });
-  return Object.values(subsMap).sort(sortSubs);
+  return org
+    .filter((o) => !subsMap[o.nid])
+    .concat(subs)
+    .sort(sortSubs);
 };
 
 export const isDraft = (state: string) => !(STATUS_USED === state);
