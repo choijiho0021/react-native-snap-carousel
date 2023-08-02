@@ -45,7 +45,6 @@ export const reflectWithToast =
     dispatch(action(args)).then(
       (resp) => {
         const result = resp.payload ? resp.payload.result : resp.result;
-
         if (result !== 0) {
           dispatch(slice.actions.push(toastType));
         }
