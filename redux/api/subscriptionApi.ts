@@ -111,6 +111,14 @@ export const sortSubs = (a: RkbSubscription, b: RkbSubscription) => {
 
   if (disableChecked) return -1;
 
+  //  질문 필요
+  // if (
+  //   isDisabled(a) === isDisabled(b) &&
+  //   a.purchaseDate.isAfter(b.purchaseDate)
+  // ) {
+  //   return -1;
+  // }
+
   if (reservedOrPendingA && !reservedOrPendingB) {
     return -1;
   }
@@ -148,9 +156,8 @@ export type RkbSubscription = {
   nid: string;
   key: string;
   uuid: string;
-  purchaseDate: string;
-  expireDate: string;
-  activationDate: string;
+  purchaseDate: Moment;
+  expireDate: Moment;
   provDate?: string;
   statusCd: string;
   status: string;
@@ -181,7 +188,6 @@ export type RkbSubscription = {
   dataVolume?: string;
 
   refSubs?: string;
-  prodType?: string;
   flagImage?: string;
   alias?: string;
   hide?: boolean;
@@ -206,9 +212,8 @@ const toSubscription = (
       obj.map((item) => ({
         key: item.id,
         uuid: item.id,
-        purchaseDate: item.field_purchase_date,
-        activationDate: item.field_subs_activation_date,
-        expireDate: item.field_subs_expiration_date,
+        purchaseDate: moment(item.field_purchase_date),
+        expireDate: moment(item.field_subs_expiration_date),
         statusCd: item.field_status,
         giftStatusCd:
           giftCode[item.attributes?.field_gift_status] ||
@@ -287,6 +292,7 @@ export type SubscriptionParam = {
   hidden?: boolean;
   count?: number;
   offset?: number;
+  isCharged?: boolean;
 };
 
 const getSubscription = ({
@@ -296,17 +302,25 @@ const getSubscription = ({
   hidden,
   count = 10,
   offset = 0,
+  isCharged,
 }: SubscriptionParam) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
+  if (isCharged && !uuid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
 
-  const url = `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${
-    uuid || '0'
-  }?_format=json${
-    hidden ? '' : '&hidden=0'
-  }&iccid=${iccid}&count=${count}&offset=${offset}`;
+  const url = isCharged
+    ? `${api.httpUrl(
+        api.path.rokApi.rokebi.subs,
+        '',
+      )}/${uuid}?_format=json&iccid=${iccid}`
+    : `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${
+        uuid || '0'
+      }?_format=json${
+        hidden ? '' : '&hidden=0'
+      }&iccid=${iccid}&count=${count}&offset=${offset}`;
 
   return api.callHttpGet(
     url,
@@ -320,6 +334,8 @@ const getSubscription = ({
           promoFlag: o.promoFlag.map((p) => specialCategories[p]),
           partner: groupPartner(o.partner),
           status: toStatus(o.field_status),
+          purchaseDate: moment(o.purchaseDate),
+          expireDate: moment(o.expireDate),
         }));
       }
       return resp;
@@ -597,112 +613,6 @@ const getHkRegStatus = ({iccid, imsi}: {iccid: string; imsi: string}) => {
     new Headers({'Content-Type': 'application/json'}),
   );
 };
-
-// rokebi call products
-/* not used
-const toRokebiProd = (data) => {
-  if (_.isArray(data)) {
-    return api.success(
-      data.map((item) => ({
-        subsId: item.subs_id,
-        key: item.id,
-        purchaseDate: utils.toDate(item.field_purchase_date),
-        expireDate: utils.toDate(item.field_expiration_date),
-        activationDate: utils.toDate(item.field_subs_activation_date),
-        endDate: utils.toDate(item.field_subs_expiration_date),
-        statusCd: item.field_status,
-        status: toStatus(item.field_status),
-        prodName: item.product_name,
-        callTime: utils.stringToNumber(item.call_time),
-        iccid: item.iccid,
-        number070: item.field_070_number,
-        localOpId: item.field_ref_local_operator,
-        prodId: item.field_ref_product,
-      })),
-    );
-  }
-
-  return api.failure(api.E_NOT_FOUND);
-};
-*/
-
-/* not used
-const toSubs = (data) => {
-  if (data.nid) {
-    return api.success([
-      {
-        nid: data.nid[0].value,
-      },
-    ]);
-  }
-
-  return api.failure(api.E_NOT_FOUND);
-};
-*/
-
-/* not used
-const getActiveRkbTalkProd = (iccid, {token}, abortController) => {
-  if (_.isEmpty(iccid)) {
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
-  }
-
-  if (_.isEmpty(token)) {
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
-  }
-
-  return api.callHttpGet(
-    `${api.httpUrl(api.path.rkbtalk, '')}/list/${iccid}/A?_format=json`,
-    toRokebiProd,
-    api.withToken(token),
-    {
-      abortController,
-    },
-  );
-};
-*/
-
-/* not used
-const reactivateRkbTalkProd = (
-  iccid,
-  subsId,
-  mobile,
-  {token},
-  abortController,
-) => {
-  if (_.isEmpty(iccid) || _.isEmpty(subsId) || _.isEmpty(token)) {
-    return api.reject(api.E_INVALID_ARGUMENT);
-  }
-
-  const url = `${api.httpUrl(
-    api.path.rokApi.rokebi.call,
-    '',
-  )}/${iccid}/${subsId}?_format=json`;
-  const headers = api.withToken(token, 'json');
-
-  return api.callHttp(
-    url,
-    {
-      method: 'PATCH',
-      headers,
-      body: JSON.stringify({userName: mobile}),
-    },
-    toSubs,
-    {
-      abortController,
-    },
-  );
-};
-
-const remainingTime = (endDate: Moment) => {
-  if (endDate) {
-    const diff = endDate.diff(moment(), 'minutes');
-    return `${Math.floor(diff / 60)}${i18n.t('hour')} ${
-      diff > 10 * 60 ? '' : (diff % 60) + i18n.t('min')
-    } ${i18n.t('call:timeLeft')}`;
-  }
-  return '';
-};
-*/
 
 export default {
   CALL_PRODUCT,
