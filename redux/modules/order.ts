@@ -4,7 +4,7 @@ import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
 import _ from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
-import moment from 'moment';
+import moment, {Moment} from 'moment';
 import {API} from '@/redux/api';
 import {CancelOrderParam, OrderItemType, RkbOrder} from '@/redux/api/orderApi';
 import {
@@ -84,7 +84,7 @@ export interface OrderModelState {
 const updateOrders = (state, orders, page) => {
   state.orders = orders;
   state.orderList = orders
-    .sort((a, b) => b.orderDate.localeCompare(a.orderDate))
+    .sort((a, b) => utils.cmpMomentDesc(a.orderDate, b.orderDate))
     .keySeq()
     .toArray();
   state.page = page;
@@ -111,13 +111,12 @@ const getNextSubs = createAsyncThunk(
       const {order} = getState() as RootState;
       param.offset = order.subsOffset;
     }
-
     return dispatch(getSubs(param));
   },
 );
 
 // 질문 필요 reflectWithToast
-const getSubsWithToast = reflectWithToast(getNextSubs, Toast.NOT_LOADED);
+const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
 
 const getOrders = createAsyncThunk(
   'order/getOrders',
@@ -177,8 +176,8 @@ const mergeSubs = (org: RkbSubscription[], subs: RkbSubscription[]) => {
 
 export const isDraft = (state: string) => !(STATUS_USED === state);
 
-export const isExpiredDraft = (orderDate: string) => {
-  return moment().diff(moment(orderDate), 'day') >= 7;
+export const isExpiredDraft = (orderDate: Moment) => {
+  return moment().diff(orderDate, 'day') >= 7;
 };
 
 export const getCountItems = (items?: OrderItemType[], etc?: boolean) => {
@@ -269,12 +268,13 @@ const slice = createSlice({
         // 이전과 달리 동작하는 이유, 2번째 object undefined 일때  undefined.filter 시도
         // promise rejection으로 2번째 undefined을 state.drafts에 저장 안함
         // 2번 호출 원인 분석 필요
-        state.drafts =
-          objects
-            .filter((r) => !isExpiredDraft(r.orderDate))
-            .sort((a, b) => {
-              return a.orderDate < b.orderDate ? 1 : -1;
-            }) || [];
+        if (objects) {
+          state.drafts =
+            objects
+              .filter((r) => !isExpiredDraft(r.orderDate))
+              .sort((a, b) => utils.cmpMomentDesc(a.orderDate, b.orderDate)) ||
+            [];
+        }
 
         // 기존 코드도 마찬가지, undefined.length 시도 -> promise rejection
       } else if (result === 0 && objects.length > 0) {
@@ -284,7 +284,7 @@ const slice = createSlice({
         );
 
         const orderCache = orders
-          .sort((a, b) => b.orderDate.localeCompare(a.orderDate))
+          .sort((a, b) => utils.cmpMomentDesc(a.orderDate, b.orderDate))
           .valueSeq()
           .toArray()
           .slice(0, 10);
@@ -316,11 +316,10 @@ const slice = createSlice({
       state.drafts = state.drafts.filter((d) => d.orderId !== orderId);
 
       if (result === 0 && objects[0]?.state && order) {
-        const updateOrder = orders.set(orderId, {
+        state.orders = orders.set(orderId, {
           ...order,
           state: objects[0].state,
         });
-        state.orders = updateOrder;
       }
 
       return state;
@@ -333,11 +332,10 @@ const slice = createSlice({
 
       if (result === 0 && objects[0]) {
         const {uuid, tag} = objects[0];
-        const changeSubs = subs.map((s) => {
+        state.subs = subs.map((s) => {
           if (s.uuid === uuid) s.tag = tag;
           return s;
         });
-        state.subs = changeSubs;
       }
     });
 
@@ -347,18 +345,12 @@ const slice = createSlice({
       const {subs} = state;
 
       if (result === 0 && objects[0]) {
-        const uuidList = objects.map((elm) => elm?.uuid);
-
-        const changeSubs = subs.map((s) => {
-          if (uuidList.includes(s.uuid)) {
+        state.subs = subs.map((s) => {
+          if (objects.find((o) => o.uuid === s.uuid)) {
             s.hide = objects[0].hide;
           }
           return s;
         });
-
-        if (changeSubs) {
-          state.subs = changeSubs;
-        }
       }
     });
 
@@ -380,18 +372,18 @@ const slice = createSlice({
     builder.addCase(getSubs.fulfilled, (state, action) => {
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
 
-      const arg = action?.meta?.arg;
+      const {count = PAGINATION_SUBS_COUNT, offset} = action?.meta?.arg;
 
       if (result === 0) {
         // count default 10 설정되어 있음
-        if (objects?.length < arg.count) {
+        if (objects?.length < count) {
           state.subsIsLast = true;
         } else {
-          state.subsOffset += arg.count;
+          state.subsOffset += count;
           state.subsIsLast = false;
         }
 
-        if (arg?.offset === 0) {
+        if (offset === 0) {
           state.subs = objects;
         } else {
           // offset이 0이 아니라면 페이지네이션 중이니 merge로 한다

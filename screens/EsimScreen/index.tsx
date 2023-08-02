@@ -393,15 +393,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [checkBcData, checkCmiData, checkQuadcellData],
   );
 
-  const readMore = useCallback(
-    (more: boolean) => {
-      if (!more) return;
-
-      onRefresh(isEditMode, false);
-    },
-    [isEditMode, onRefresh],
-  );
-
   const days14ago = useMemo(() => moment().subtract(14, 'days'), []);
 
   const renderSubs = useCallback(
@@ -617,7 +608,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         }}
         // 종종 중복 호출이 발생
         onEndReachedThreshold={0.4}
-        onEndReached={() => readMore(!order?.subsIsLast)}
+        onEndReached={() => {
+          if (!order?.subsIsLast) onRefresh(isEditMode, false);
+        }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing && !isFirstLoad}
