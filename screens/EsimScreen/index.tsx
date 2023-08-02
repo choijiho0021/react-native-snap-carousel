@@ -616,7 +616,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         refreshControl={
           <RefreshControl
             refreshing={refreshing && !isFirstLoad}
-            onRefresh={() => onRefresh(false, true)}
+            onRefresh={() => onRefresh(isEditMode, true)}
             colors={[colors.clearBlue]} // android 전용
             tintColor={colors.clearBlue} // ios 전용
           />
