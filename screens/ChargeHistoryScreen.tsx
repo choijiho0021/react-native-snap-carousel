@@ -266,8 +266,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   route: {params},
   account,
 }) => {
-  const {mainSubs, chargeablePeriod, onPressUsage, isChargeable, expireTime} =
-    params || {};
+  const {mainSubs, chargeablePeriod, onPressUsage, isChargeable} = params || {};
   const [showModal, setShowModal] = useState(false);
   const [selectedSubs, setSelectedSubs] = useState<RkbSubscription>(mainSubs);
   const [pending, setPending] = useState(false);
@@ -387,7 +386,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
             {`${utils.toDateString(
               mainSubs.purchaseDate,
               'YYYY.MM.DD',
-            )} - ${utils.toDateString(expireTime, 'YYYY.MM.DD')}`}
+            )} - ${utils.toDateString(mainSubs.lastExpireDate, 'YYYY.MM.DD')}`}
           </AppText>
         </View>
 
@@ -401,12 +400,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         )}
       </View>
     );
-  }, [
-    chargeablePeriod,
-    expireTime,
-    mainSubs.purchaseDate,
-    mainSubs?.subsIccid,
-  ]);
+  }, [chargeablePeriod, mainSubs]);
 
   const renderCard = useCallback(() => {
     const isDaily = chargedSubs[0]?.daily === 'daily';
