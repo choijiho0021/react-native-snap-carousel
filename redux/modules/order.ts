@@ -385,8 +385,10 @@ const slice = createSlice({
       const {subs} = state;
 
       if (result === 0 && objects[0]) {
+        const uuidList = objects.map((elm) => elm?.uuid);
+
         const changeSubs = subs.map((s) => {
-          if (objects.map((elm) => elm.uuid).includes(s.uuid)) {
+          if (uuidList.includes(s.uuid)) {
             s.hide = objects[0].hide;
           }
           return s;
