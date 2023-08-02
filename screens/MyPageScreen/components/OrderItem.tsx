@@ -1,7 +1,6 @@
 import React, {memo} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import _ from 'underscore';
-import {isDraft} from '@reduxjs/toolkit';
 import LabelText from '@/components/LabelText';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
@@ -9,7 +8,7 @@ import {appStyles} from '@/constants/Styles';
 import {OrderState, RkbOrder} from '@/redux/api/orderApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
-import {getCountItems} from '@/redux/modules/order';
+import {getCountItems, isDraft} from '@/redux/modules/order';
 
 const styles = StyleSheet.create({
   order: {
