@@ -367,12 +367,14 @@ const makeOrder = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: ICCID');
   }
 
-  // SIM card와 같이 배송이 필요한 상품은 orderType을 'physical'로 설정한다.
-  const orderType =
-    items.findIndex((item) => ['add_on_product', 'rch'].includes(item.type)) >=
-    0
-      ? 'immediate_order'
-      : 'refundable';
+  // 연장하기는 mainSubsId 값이 존재,  연장하기는 환불 불가능
+  const orderType = mainSubsId
+    ? 'immediate_order'
+    : items.findIndex((item) =>
+        ['add_on_product', 'rch'].includes(item.type),
+      ) >= 0
+    ? 'immediate_order'
+    : 'refundable';
 
   const body = {
     iccid,
