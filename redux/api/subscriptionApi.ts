@@ -331,7 +331,7 @@ const getSubscription = ({
           cnt: parseInt(o.cnt || '0', 10),
           lastExpireDate: moment(o.lastExpireDate),
           startDate: moment(o.startDate),
-          promoFlag: o.promoFlag.map((p) => specialCategories[p]),
+          promoFlag: o?.promoFlag?.map((p) => specialCategories[p]),
           partner: groupPartner(o.partner),
           status: toStatus(o.field_status),
           purchaseDate: moment(o.purchaseDate),
