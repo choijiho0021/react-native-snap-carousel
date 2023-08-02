@@ -1,7 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, {useCallback, useState} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
-import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
@@ -125,7 +124,7 @@ const EsimDraftSubs = ({
   const [showMoreInfo, setShowMoreInfo] = useState(false);
 
   // 발권 생성 7일 지난게 오늘보다 전이라면? 발권기한이 지났다.
-  const expiredDate = moment(draftOrder.orderDate).add(7, 'day');
+  const expiredDate = draftOrder.orderDate?.add(7, 'day');
 
   const titleDraft = useCallback(() => {
     return (

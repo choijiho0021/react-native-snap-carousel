@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import moment, {Moment} from 'moment';
 import i18n from '@/utils/i18n';
 import utils from '@/redux/api/utils';
 import api, {ApiResult, DrupalNode} from './api';
@@ -76,7 +77,7 @@ export type RkbOrder = {
   key: string;
   orderId: number;
   orderNo: string;
-  orderDate?: string;
+  orderDate?: Moment;
   orderType?: string;
   totalPrice?: Currency;
   profileId?: string;
@@ -112,7 +113,7 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
             key: item.order_id || '',
             orderId: utils.stringToNumber(item.order_id) || 0,
             orderNo: item.order_number || '',
-            orderDate: item.placed,
+            orderDate: item.placed ? moment(item.placed) : undefined,
             orderType: item.type,
             totalPrice,
             profileId: item.profile_id,
@@ -141,7 +142,7 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
             balanceCharge: utils.toCurrency(balanceCharge, totalPrice.currency),
           } as RkbOrder;
         })
-        .sort((a, b) => (a.orderDate < b.orderDate ? 1 : -1)),
+        .sort((a, b) => utils.cmpMomentDesc(a.orderDate, b.orderDate)),
       [page],
     );
   }
