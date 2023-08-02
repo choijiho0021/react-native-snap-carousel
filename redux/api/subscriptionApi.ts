@@ -184,6 +184,8 @@ const groupPartner = (partner: string) => {
   return partner;
 };
 
+const getMoment = (str: string) => (str ? moment(str) : undefined);
+
 const toSubscription = (
   data: DrupalNode[] | DrupalNodeJsonApi,
 ): ApiResult<RkbSubscription> => {
@@ -194,8 +196,8 @@ const toSubscription = (
       obj.map((item) => ({
         key: item.id,
         uuid: item.id,
-        purchaseDate: moment(item.field_purchase_date),
-        expireDate: moment(item.field_subs_expiration_date),
+        purchaseDate: getMoment(item.field_purchase_date),
+        expireDate: getMoment(item.field_subs_expiration_date),
         statusCd: item.field_status,
         giftStatusCd:
           giftCode[item.attributes?.field_gift_status] ||
@@ -302,13 +304,13 @@ const getSubscription = ({
         resp.objects = resp.objects.map((o) => ({
           ...o,
           cnt: parseInt(o.cnt || '0', 10),
-          lastExpireDate: moment(o.lastExpireDate),
-          startDate: moment(o.startDate),
+          lastExpireDate: getMoment(o.lastExpireDate),
+          startDate: getMoment(o.startDate),
           promoFlag: o.promoFlag.map((p) => specialCategories[p]),
           partner: groupPartner(o.partner),
           status: toStatus(o.field_status),
-          purchaseDate: moment(o.purchaseDate),
-          expireDate: moment(o.expireDate),
+          purchaseDate: getMoment(o.purchaseDate),
+          expireDate: getMoment(o.expireDate),
         }));
       }
       return resp;
