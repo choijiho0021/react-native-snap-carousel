@@ -274,7 +274,6 @@ export type SubscriptionParam = {
   hidden?: boolean;
   count?: number;
   offset?: number;
-  isCharged?: boolean;
 };
 
 const getSubscription = ({
@@ -284,25 +283,17 @@ const getSubscription = ({
   hidden,
   count = 10,
   offset = 0,
-  isCharged,
 }: SubscriptionParam) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
-  if (isCharged && !uuid)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
 
-  const url = isCharged
-    ? `${api.httpUrl(
-        api.path.rokApi.rokebi.subs,
-        '',
-      )}/${uuid}?_format=json&iccid=${iccid}`
-    : `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${
-        uuid || '0'
-      }?_format=json${
-        hidden ? '' : '&hidden=0'
-      }&iccid=${iccid}&count=${count}&offset=${offset}`;
+  const url = `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${
+    uuid || '0'
+  }?_format=json${
+    hidden ? '' : '&hidden=0'
+  }&iccid=${iccid}&count=${count}&offset=${offset}`;
 
   return api.callHttpGet(
     url,
