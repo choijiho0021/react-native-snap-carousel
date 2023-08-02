@@ -367,7 +367,7 @@ const makeOrder = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: ICCID');
   }
 
-  // 연장하기는 mainSubsId 값이 존재,  연장하기는 환불 불가능
+  // 연장하기는 mainSubsId 값이 존재, 연장하기는 환불 불가능
   const orderType = mainSubsId
     ? 'immediate_order'
     : items.findIndex((item) =>
