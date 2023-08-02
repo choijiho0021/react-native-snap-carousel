@@ -20,6 +20,7 @@ import {
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {connect} from 'react-redux';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
@@ -37,6 +38,8 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {API} from '@/redux/api';
 import ScreenHeader from '@/components/ScreenHeader';
+import {AccountModelState} from '@/redux/modules/account';
+import {RootState} from '@/redux';
 
 const styles = StyleSheet.create({
   chargeBtn: {
@@ -251,6 +254,7 @@ type ChargeHistoryScreenNavigationProp = StackNavigationProp<
 type ChargeHistoryScreenProps = {
   navigation: ChargeHistoryScreenNavigationProp;
   route: RouteProp<HomeStackParamList, 'ChargeHistory'>;
+  account: AccountModelState;
 };
 
 // SVG 파일로 대체 불가. SVG는 이미지가 깨져보임
@@ -260,15 +264,10 @@ const totalCardImg = require('../assets/images/esim/totalCard.png');
 const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   navigation,
   route: {params},
+  account,
 }) => {
-  const {
-    mainSubs,
-    chargeablePeriod,
-    chargedSubs,
-    onPressUsage,
-    isChargeable,
-    expireTime,
-  } = params || {};
+  const {mainSubs, chargeablePeriod, onPressUsage, isChargeable, expireTime} =
+    params || {};
   const [showModal, setShowModal] = useState(false);
   const [selectedSubs, setSelectedSubs] = useState<RkbSubscription>(mainSubs);
   const [pending, setPending] = useState(false);
@@ -279,6 +278,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   const orderTypeList: OrderType[] = useMemo(() => ['purchase', 'latest'], []);
   const [showTip, setShowTip] = useState(false);
   const [blockAnimation, setBlockAnimation] = useState(false);
+  const [chargedSubs, setChargedSubs] = useState([mainSubs]);
   const topHeight = useMemo(() => {
     let height = 326;
     if (mainSubs?.partner === 'cmi') height += 22;
@@ -312,9 +312,9 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
     const prod: RkbSubscription[] = [];
     const addOn: RkbSubscription[] = [];
     data.forEach((d) => {
-      if (d.prodType === 'esim_product') {
+      if (d?.type === 'esim_product') {
         prod.push(d);
-      } else if (d.prodType === 'add_on_product') {
+      } else if (d?.type === 'add_on_product') {
         addOn.push(d);
       }
     });
@@ -326,6 +326,20 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
       setShowTip(elm !== 'closed'),
     );
   }, []);
+
+  useEffect(() => {
+    const {iccid, token} = account;
+    if (iccid && token) {
+      API.Subscription.getSubscription({
+        iccid,
+        token,
+        uuid: mainSubs.subsIccid,
+        isCharged: true,
+      }).then((rsp) => {
+        setChargedSubs(rsp.objects);
+      });
+    }
+  }, [account, mainSubs.subsIccid]);
 
   const renderTooltip = useCallback(() => {
     return (
@@ -396,7 +410,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   ]);
 
   const renderCard = useCallback(() => {
-    const isDaily = chargedSubs[0].daily === 'daily';
+    const isDaily = chargedSubs[0]?.daily === 'daily';
 
     const title = utils.removeBracketOfName(
       mainSubs?.prodName?.split(' ')?.[0],
@@ -714,4 +728,6 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   );
 };
 
-export default ChargeHistoryScreen;
+export default connect(({account}: RootState) => ({account}))(
+  ChargeHistoryScreen,
+);

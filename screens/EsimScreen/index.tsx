@@ -510,7 +510,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             ?.filter((s2) => s2.subsIccid === iccid) || [];
 
         const main = filter
-          ?.filter((item) => item.prodType === 'esim_product')
+          ?.filter((item) => item.type === 'esim_product')
           ?.sort((a, b) =>
             moment(a.purchaseDate).diff(moment(b.purchaseDate)),
           )[0];
@@ -533,7 +533,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               'YYYY.MM.DD',
             ),
             onPressUsage,
-            chargedSubs: filter,
             isChargeable: !moment(main?.expireDate).isBefore(moment()),
             expireTime: expireDate,
           });
