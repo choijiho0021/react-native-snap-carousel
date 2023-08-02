@@ -87,9 +87,14 @@ export const getLatestPurchaseDateSubs = (a: RkbSubscription[]) =>
   }, a[0]);
 
 export const isDisabled = (item: RkbSubscription) => {
-  return (
-    item.giftStatusCd === 'S' || moment(item.expireDate).isBefore(moment())
-  );
+  return item.giftStatusCd === 'S' || item.expireDate.isBefore(moment());
+};
+
+const checkTimeOrder = (a: RkbSubscription, b: RkbSubscription) => {
+  // a가 b보다 최신이라면 정배열, 그대로 둔다.
+  return (a.provDate || a.purchaseDate).isAfter(b.provDate || b.purchaseDate)
+    ? -1
+    : 1;
 };
 
 export const sortSubs = (a: RkbSubscription, b: RkbSubscription) => {
@@ -98,38 +103,42 @@ export const sortSubs = (a: RkbSubscription, b: RkbSubscription) => {
     return -1;
   }
 
-  const draftCheck = isDraft(a.statusCd) && isDraft(b.statusCd);
+  const isDraftA = isDraft(a.statusCd);
+  const isDraftB = isDraft(b.statusCd);
 
-  const disableChecked = !isDisabled(a) && isDisabled(b);
-
-  const dateChecked = draftCheck
-    ? moment(a.purchaseDate).isAfter(b.purchaseDate)
-    : moment(a.provDate).isAfter(b.provDate);
-
-  const reservedOrPendingA = isDraft(a.statusCd);
-  const reservedOrPendingB = isDraft(b.statusCd);
-
-  if (disableChecked) return -1;
-
-  //  질문 필요
-  // if (
-  //   isDisabled(a) === isDisabled(b) &&
-  //   a.purchaseDate.isAfter(b.purchaseDate)
-  // ) {
-  //   return -1;
-  // }
-
-  if (reservedOrPendingA && !reservedOrPendingB) {
+  if (isDraftA) {
+    if (isDraftB) {
+      // 둘다 발송중이면 시간 순으로 나열한다.
+      return checkTimeOrder(a, b);
+    }
+    // 앞이 상품 발송중인데 뒤가 상품 발송중이 아니다. 정배열 상태
     return -1;
   }
-  if (!reservedOrPendingA && reservedOrPendingB) {
+
+  // 앞은 상품 발송중 아님, 뒤가 상품 발송중 -> 정배열 아님, 뒤집는다.
+  if (isDraftB) {
     return 1;
   }
 
-  // // Sort based on purchaseDate (most recent to oldest)
-  if (dateChecked) return -1;
+  // 앞과 뒤 모두 상품 발송 중이 아닌 경우
+  const isDisabledA = isDisabled(a);
+  const isDisabledB = isDisabled(b);
 
-  return 1;
+  if (isDisabledA) {
+    // 앞과 뒤 모두 비활성화 상태 -> 시간순으로 정렬한다.
+    if (isDisabledB) {
+      return checkTimeOrder(a, b);
+    }
+    // 앞 비활성화, 뒤가 활성화인 경우 -> 정배열 아님, 뒤집는다.
+    return 1;
+  }
+
+  // 앞 활성화, 뒤가 비활성화인 경우 -> 정배열 상태
+  if (isDisabledB) {
+    return 1;
+  }
+  // 앞 활성화, 뒤 활성화 -> 정배열 상태
+  return checkTimeOrder(a, b);
 };
 
 const toStatus = (v?: string) => {
@@ -158,7 +167,7 @@ export type RkbSubscription = {
   uuid: string;
   purchaseDate: Moment;
   expireDate: Moment;
-  provDate?: string;
+  provDate?: Moment;
   statusCd: string;
   status: string;
   giftStatusCd: string;
@@ -328,6 +337,7 @@ const getSubscription = ({
       if (resp.result === 0) {
         resp.objects = resp.objects.map((o) => ({
           ...o,
+          provDate: moment(o.provDate),
           cnt: parseInt(o.cnt || '0', 10),
           lastExpireDate: moment(o.lastExpireDate),
           startDate: moment(o.startDate),
