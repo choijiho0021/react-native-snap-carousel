@@ -331,7 +331,7 @@ const EsimSubs = ({
       (mainSubs.cnt || 0) > 1,
       mainSubs.partner === 'billionconnect',
       expd,
-      mainSubs.expireDate.isBefore(now),
+      mainSubs.expireDate && mainSubs.expireDate.isBefore(now),
       utils.toDateString(mainSubs.expireDate, 'YYYY.MM.DD'),
       !expd &&
         mainSubs.giftStatusCd !== 'S' &&

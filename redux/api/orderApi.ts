@@ -178,17 +178,14 @@ const draftOrder = ({orderId, token}: {orderId?: number; token?: string}) => {
   );
 };
 
-const getOrders = ({
-  user,
-  token,
-  page = 0,
-  state = 'all',
-}: {
+export type GetOrdersParam = {
   user?: string;
   token?: string;
   page?: number;
   state?: 'all' | 'validation';
-}) => {
+};
+
+const getOrders = ({user, token, page = 0, state = 'all'}: GetOrdersParam) => {
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
   if (!user)
