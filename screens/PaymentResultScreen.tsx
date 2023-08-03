@@ -167,7 +167,11 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
 
   return (
     <SafeAreaView style={{flex: 1, alignItems: 'stretch'}}>
-      <ScreenHeader title={i18n.t('his:paymentCompleted')} />
+      <ScreenHeader
+        title={i18n.t('his:paymentCompleted')}
+        backHandler={() => {}}
+        showIcon={false}
+      />
       <ScrollView style={styles.scrollView}>
         <View style={styles.paymentResultView}>
           <AppIcon

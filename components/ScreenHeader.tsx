@@ -36,6 +36,7 @@ interface ScreenHeaderProps {
   title?: string;
   showIcon?: boolean;
   isStackTop?: boolean;
+  backHandler?: () => void;
   renderLeft?: JSX.Element;
   renderRight?: JSX.Element;
 }
@@ -44,6 +45,7 @@ const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   title,
   showIcon,
   isStackTop,
+  backHandler,
   renderLeft,
   renderRight,
 }) => {
@@ -60,8 +62,11 @@ const ScreenHeader: React.FC<ScreenHeaderProps> = ({
             title={title}
             style={{marginRight: 10, height: 56}}
             onPress={() => {
-              // returnTab 으로 goBack
-              goBack(navigation, route);
+              if (backHandler) {
+                backHandler();
+              } else {
+                goBack(navigation, route);
+              }
             }}
             showIcon={showIcon}
           />
