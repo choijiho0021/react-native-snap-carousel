@@ -498,25 +498,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     if (route && route.params) {
       const {iccid} = route.params;
       if (iccid) {
-        /*
-        const filter= order.subs
-            ?.find((s) => s.subsIccid === iccid)
-            ?.filter((s2) => s2.subsIccid === iccid) || [];
-
-        const main = filter
-          ?.filter((item) => item.type === 'esim_product')
-          ?.sort((a, b) =>
-            moment(a.purchaseDate).diff(moment(b.purchaseDate)),
-          )[0];
+        const main = order.subs?.find((s) => s.subsIccid === iccid);
 
         if (main) {
-          const {expireDate} = filter?.reduce((oldest, current) =>
-            oldest
-              ? current.expireDate > oldest.expireDate
-                ? current
-                : oldest
-              : current,
-          );
+          const {lastExpireDate} = main;
 
           navigation.setParams({iccid: undefined});
 
@@ -528,13 +513,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             ),
             onPressUsage,
             isChargeable: !moment(main?.expireDate).isBefore(moment()),
-            expireTime: expireDate,
+            expireTime: lastExpireDate,
           });
         }
-        */
       }
     }
-  }, [route]);
+  }, [navigation, onPressUsage, order.subs, route]);
 
   const navigateToChargeType = useCallback(() => {
     setShowModal(false);
