@@ -312,7 +312,7 @@ const getSubscription = ({
       if (resp.result === 0) {
         resp.objects = resp.objects.map((o) => ({
           ...o,
-          provDate: moment(o.provDate),
+          provDate: getMoment(o.provDate),
           cnt: parseInt(o.cnt || '0', 10),
           lastExpireDate: getMoment(o.lastExpireDate),
           startDate: getMoment(o.startDate),
