@@ -6,7 +6,12 @@ import _ from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import moment, {Moment} from 'moment';
 import {API} from '@/redux/api';
-import {CancelOrderParam, OrderItemType, RkbOrder} from '@/redux/api/orderApi';
+import {
+  CancelOrderParam,
+  GetOrdersParam,
+  OrderItemType,
+  RkbOrder,
+} from '@/redux/api/orderApi';
 import {
   RkbSubscription,
   sortSubs,
@@ -19,8 +24,6 @@ import api, {cachedApi} from '@/redux/api/api';
 import Env from '@/environment';
 
 const {specialCategories} = Env.get();
-
-const getNextOrders = createAsyncThunk('order/getOrders', API.Order.getOrders);
 
 const init = createAsyncThunk('order/init', async (mobile?: string) => {
   const oldData = await retrieveData(`${API.Order.KEY_INIT_ORDER}.${mobile}`);
@@ -40,13 +43,19 @@ const cancelOrder = createAsyncThunk(
 
 const getSubs = createAsyncThunk(
   'order/getSubs',
-  async (param: SubscriptionParam) =>
-    cachedApi(`cache.subs.${param?.iccid}`, API.Subscription.getSubscription)(
-      param,
-      {
-        fulfillWithValue: (value) => value,
-      },
-    ),
+  async (param: SubscriptionParam, {getState}) => {
+    if (param.offset === undefined) {
+      const {order} = getState() as RootState;
+      param.offset = order.subsOffset;
+    }
+
+    return cachedApi(
+      `cache.subs.${param?.iccid}`,
+      API.Subscription.getSubscription,
+    )(param, {
+      fulfillWithValue: (value) => value,
+    });
+  },
 );
 
 const getSubsUsage = createAsyncThunk(
@@ -104,38 +113,18 @@ const checkAndGetOrderById = createAsyncThunk(
   },
 );
 
-const getNextSubs = createAsyncThunk(
-  'order/getSubs',
-  async (param: SubscriptionParam, {getState, dispatch}) => {
-    if (param.offset === undefined) {
-      const {order} = getState() as RootState;
-      param.offset = order.subsOffset;
-    }
-    const getSubsResp = await dispatch(getSubs(param));
-    return getSubsResp.payload;
-  },
-);
-
 // 질문 필요 reflectWithToast
-const getSubsWithToast = reflectWithToast(getNextSubs, Toast.NOT_LOADED);
+const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
 
 const getOrders = createAsyncThunk(
   'order/getOrders',
-  (
-    param: {
-      user?: string;
-      token?: string;
-      page?: number;
-      state?: 'all' | 'validation';
-    },
-    {getState, dispatch},
-  ) => {
+  (param: GetOrdersParam, {getState}) => {
     if (param.page === undefined) {
       const {order} = getState() as RootState;
       param.page = (order.page || 0) + 1;
     }
 
-    return dispatch(getNextOrders(param));
+    return API.Order.getOrders(param);
   },
 );
 
@@ -375,14 +364,12 @@ const slice = createSlice({
 
       const {count = PAGINATION_SUBS_COUNT, offset} = action?.meta?.arg;
 
-      if (result === 0) {
+      if (result === 0 && objects) {
         // count default 10 설정되어 있음
-        if (objects?.length < count) {
-          state.subsIsLast = true;
-        } else {
+        if (objects?.length === count) {
           state.subsOffset += count;
           state.subsIsLast = false;
-        }
+        } else state.subsIsLast = true;
 
         if (offset === 0) {
           state.subs = objects;
@@ -391,10 +378,6 @@ const slice = createSlice({
           state.subs = mergeSubs(state.subs, objects);
         }
       }
-
-      // objects의 갯수가 카운트(한번에 가져오는 수)보다 적으면? isLast로 처리한다.
-
-      // isLast를 return 햇을 때 화면에서 받아오면, 더이상 조회하지 않는다.
     });
 
     builder.addCase(getSubsUsage.fulfilled, (state, action) => {
@@ -424,7 +407,6 @@ export const actions = {
   init,
   getSubs,
   getOrders,
-  getNextSubs,
   updateSubsInfo,
   updateSubsAndOrderTag,
   updateSubsGiftStatus,
