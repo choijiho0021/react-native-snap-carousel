@@ -36,6 +36,7 @@ import i18n from '@/utils/i18n';
 import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
 import GuideBox from '../CancelOrderScreen/component/GuideBox';
 import FloatCheckButton from '../CancelOrderScreen/component/FloatCheckButton';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const styles = StyleSheet.create({
   container: {
@@ -124,6 +125,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   const [prods, setProds] = useState<ProdDesc[]>([]);
   const loading = useRef(false);
   const [checked, setChecked] = useState<boolean>(false);
+  const [showSnackBar, setShowSnackBar] = useState('');
 
   const scrollRef = useRef<ScrollView>();
 
@@ -261,7 +263,16 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
           />
         </View>
       </ScrollView>
+
+      <AppSnackBar
+        visible={showSnackBar !== ''}
+        onClose={() => setShowSnackBar('')}
+        textMessage={showSnackBar}
+        hideCancel
+      />
+
       {renderCheckButton()}
+
       <View style={styles.buttonFrame}>
         <AppButton
           style={styles.button}
@@ -276,7 +287,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
           }}
           disabledCanOnPress
           disabledOnPress={() => {
-            AppAlert.info(i18n.t('his:draftAlert'));
+            setShowSnackBar(i18n.t('his:draftAlert'));
           }}
         />
       </View>

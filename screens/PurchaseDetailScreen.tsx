@@ -41,7 +41,7 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
 import ScreenHeader from '@/components/ScreenHeader';
 
-const {esimCurrency} = Env.get();
+const {esimCurrency, esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -338,7 +338,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             format="price"
             labelStyle={styles.label2}
             valueStyle={appStyles.roboto16Text}
-            value={balanceCharge}
+            deduct={balanceCharge?.value}
             balanceStyle={[styles.normal16BlueTxt, {color: colors.black}]}
             currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
           />
@@ -512,7 +512,10 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     return (
       <View>
         <AppText style={styles.date}>
-          {utils.toDateString(order?.orderDate)}
+          {utils.toDateString(
+            order?.orderDate,
+            esimGlobal ? 'LLL' : 'YYYY년 MM월 DD일 A h:mm',
+          )}
         </AppText>
         <View style={styles.productTitle}>
           <AppText style={appStyles.bold18Text}>{label}</AppText>
