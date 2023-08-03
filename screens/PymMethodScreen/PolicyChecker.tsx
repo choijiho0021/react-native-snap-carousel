@@ -27,13 +27,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const PolicyChecker = ({
-  onPress,
-  route,
-}: {
-  onPress?: (v: boolean) => void;
-  route: any;
-}) => {
+const PolicyChecker = ({onPress}: {onPress?: (v: boolean) => void}) => {
   const navigation = useNavigation();
   const [checked, setChecked] = useState(false);
 
@@ -56,14 +50,8 @@ const PolicyChecker = ({
       const param = navParam[key];
       Analytics.trackEvent('Page_View_Count', {page: param.key});
       navigation.navigate('SimpleTextModal', param);
-
-      navigate(navigation, route, 'EsimStack', {
-        tab: 'HomeStack',
-        screen: 'SimpleTextModal',
-        params: {...param},
-      });
     },
-    [navParam, navigation, route],
+    [navParam, navigation],
   );
 
   return (
