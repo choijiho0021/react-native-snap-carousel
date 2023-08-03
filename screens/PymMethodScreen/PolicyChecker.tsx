@@ -7,6 +7,7 @@ import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
+import {navigate} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({
   rowCenter: {
@@ -26,7 +27,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const PolicyChecker = ({onPress}: {onPress?: (v: boolean) => void}) => {
+const PolicyChecker = ({
+  onPress,
+  route,
+}: {
+  onPress?: (v: boolean) => void;
+  route: any;
+}) => {
   const navigation = useNavigation();
   const [checked, setChecked] = useState(false);
 
@@ -49,8 +56,14 @@ const PolicyChecker = ({onPress}: {onPress?: (v: boolean) => void}) => {
       const param = navParam[key];
       Analytics.trackEvent('Page_View_Count', {page: param.key});
       navigation.navigate('SimpleTextModal', param);
+
+      navigate(navigation, route, 'EsimStack', {
+        tab: 'HomeStack',
+        screen: 'SimpleTextModal',
+        params: {...param},
+      });
     },
-    [navParam, navigation],
+    [navParam, navigation, route],
   );
 
   return (

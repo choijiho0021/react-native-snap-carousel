@@ -330,7 +330,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         {/* 가변영역 설정 */}
         <View style={{flex: 1}} />
 
-        <PolicyChecker onPress={setPolicyChecked} />
+        <PolicyChecker onPress={setPolicyChecked} route={route} />
         <AppButton
           title={i18n.t('payment')}
           titleStyle={appStyles.medium18}
