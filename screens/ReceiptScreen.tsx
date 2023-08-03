@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   },
   label: {
     ...appStyles.normal14Text,
-    color: colors.white,
+    color: colors.warmGrey,
     lineHeight: 36,
   },
   value: {
