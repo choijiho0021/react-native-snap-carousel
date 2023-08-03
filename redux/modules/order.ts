@@ -269,11 +269,13 @@ const slice = createSlice({
         // 이전과 달리 동작하는 이유, 2번째 object undefined 일때  undefined.filter 시도
         // promise rejection으로 2번째 undefined을 state.drafts에 저장 안함
         // 2번 호출 원인 분석 필요
-        state.drafts =
-          objects
-            .filter((r) => !isExpiredDraft(r.orderDate))
-            .sort((a, b) => utils.cmpMomentDesc(a.orderDate, b.orderDate)) ||
-          [];
+        if (objects) {
+          state.drafts =
+            objects
+              .filter((r) => !isExpiredDraft(r.orderDate))
+              .sort((a, b) => utils.cmpMomentDesc(a.orderDate, b.orderDate)) ||
+            [];
+        }
 
         // 기존 코드도 마찬가지, undefined.length 시도 -> promise rejection
       } else if (result === 0 && objects.length > 0) {
