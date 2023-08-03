@@ -245,7 +245,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           .then(() => {
             action.account.getAccount({iccid, token});
             if (!hidden) {
-              action.order.getOrders({
+              action.order.getNextOrders({
                 user: mobile,
                 token,
                 state: 'validation',

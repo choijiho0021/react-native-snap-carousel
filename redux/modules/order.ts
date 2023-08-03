@@ -20,7 +20,7 @@ import Env from '@/environment';
 
 const {specialCategories} = Env.get();
 
-const getNextOrders = createAsyncThunk('order/getOrders', API.Order.getOrders);
+const getOrders = createAsyncThunk('order/getOrders', API.Order.getOrders);
 
 const init = createAsyncThunk('order/init', async (mobile?: string) => {
   const oldData = await retrieveData(`${API.Order.KEY_INIT_ORDER}.${mobile}`);
@@ -105,7 +105,7 @@ const checkAndGetOrderById = createAsyncThunk(
 );
 
 const getNextSubs = createAsyncThunk(
-  'order/getSubs',
+  'order/getNextSubs',
   async (param: SubscriptionParam, {getState, dispatch}) => {
     if (param.offset === undefined) {
       const {order} = getState() as RootState;
@@ -119,8 +119,8 @@ const getNextSubs = createAsyncThunk(
 // 질문 필요 reflectWithToast
 const getSubsWithToast = reflectWithToast(getNextSubs, Toast.NOT_LOADED);
 
-const getOrders = createAsyncThunk(
-  'order/getOrders',
+const getNextOrders = createAsyncThunk(
+  'order/getNextOrder',
   (
     param: {
       user?: string;
@@ -135,7 +135,7 @@ const getOrders = createAsyncThunk(
       param.page = (order.page || 0) + 1;
     }
 
-    return dispatch(getNextOrders(param));
+    return dispatch(getOrders(param));
   },
 );
 
@@ -147,7 +147,7 @@ const changeDraft = createAsyncThunk(
 );
 
 const cancelDraftOrder = createAsyncThunk(
-  'order/cancelOrder',
+  'order/cancelDraftOrder',
   (params: CancelOrderParam, {dispatch}) => {
     return dispatch(cancelOrder(params)).then(({payload: resp}) => {
       if (resp.result === 0 && resp.objects?.length > 0) {
@@ -417,7 +417,7 @@ export const actions = {
   resetOffset,
   init,
   getSubs,
-  getOrders,
+  getNextOrders,
   getNextSubs,
   updateSubsInfo,
   updateSubsAndOrderTag,

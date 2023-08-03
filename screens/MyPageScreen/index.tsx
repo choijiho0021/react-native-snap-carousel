@@ -119,7 +119,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
 
       setHasPhotoPermission(perm);
 
-      // if (this.props.uid) this.props.action.order.getOrders(this.props.auth)
+      // if (this.props.uid) this.props.action.order.getNextOrders(this.props.auth)
     }
 
     navigation.setOptions({
@@ -152,7 +152,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
       if (!loggedIn) {
         navigation.navigate('Auth');
       } else {
-        action.order.getOrders({user: mobile, token, page: 0});
+        action.order.getNextOrders({user: mobile, token, page: 0});
         flatListRef.current?.scrollToOffset({animated: false, offset: 0});
       }
     }, [account, action.order, navigation]),
@@ -168,7 +168,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
       token,
     });
 
-    action.order.getOrders({user: mobile, token, page: 0}).then((resp) => {
+    action.order.getNextOrders({user: mobile, token, page: 0}).then((resp) => {
       if (resp) {
         action.account.getAccount({iccid, token}).then((r) => {
           if (r) setRefreshing(false);
@@ -179,7 +179,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
 
   const getNextOrder = useCallback(() => {
     const {mobile, token} = account;
-    action.order.getOrders({user: mobile, token});
+    action.order.getNextOrders({user: mobile, token});
   }, [account, action.order]);
 
   const onPressOrderDetail = useCallback(
@@ -292,7 +292,7 @@ export default connect(
     account,
     order,
     pending:
-      status.pending[orderActions.getOrders.typePrefix] ||
+      status.pending[orderActions.getNextOrders.typePrefix] ||
       status.pending[orderActions.getSubs.typePrefix] ||
       status.pending[accountActions.uploadPicture.typePrefix] ||
       status.pending[accountActions.uploadAndChangePicture.typePrefix] ||

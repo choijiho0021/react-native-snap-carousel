@@ -355,7 +355,7 @@ const updateOrder = createAsyncThunk(
     // remove ordered items from the cart
     const {purchaseItems} = cart;
 
-    dispatch(orderAction.getOrders({user: mobile, token, page: 0}));
+    dispatch(orderAction.getNextOrders({user: mobile, token, page: 0}));
 
     if (
       purchaseItems.find((item) => item.type === 'rch') ||
