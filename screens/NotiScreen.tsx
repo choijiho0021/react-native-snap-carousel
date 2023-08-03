@@ -335,7 +335,9 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
 
   return (
     <SafeAreaView key="container" style={styles.container}>
-      <ScreenHeader title={i18n.t('set:noti')} />
+      <ScreenHeader
+        title={mode === 'info' ? i18n.t('set:notice') : i18n.t('set:noti')}
+      />
       {!pending && (
         <FlatList
           data={data}
