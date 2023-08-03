@@ -47,10 +47,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 20,
   },
-  circular: {
-    marginLeft: 12,
-    marginRight: 40,
-  },
   usageTitleBold: {
     ...appStyles.bold20Text,
     fontSize: isDeviceSize('small') ? 18 : 20,
@@ -93,6 +89,7 @@ const styles = StyleSheet.create({
   },
   cautionContainer: {
     marginHorizontal: 20,
+    marginTop: 20,
     marginBottom: 12,
     paddingVertical: 10,
     paddingHorizontal: 12,
@@ -295,7 +292,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
   const renderDailyUsage = useCallback(
     () => (
-      <View style={{flexDirection: 'row', marginTop: 8, marginBottom: 20}}>
+      <View style={{flexDirection: 'row', marginTop: 8}}>
         <AppText style={{...appStyles.bold14Text, textAlign: 'center'}}>
           {i18n.t('esim:dailyUsageAmount')}
         </AppText>
@@ -368,7 +365,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
       return (
         <AnimatedCircularProgress
           ref={circularProgress}
-          style={styles.circular}
           size={140}
           width={10}
           fill={0}
@@ -407,7 +403,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
     return (
       <AnimatedCircularProgress
         ref={overCircularProgress}
-        style={styles.circular}
         size={140}
         width={10}
         prefill={0}
