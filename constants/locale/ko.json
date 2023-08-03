@@ -366,6 +366,7 @@
   "his:input": "직접 입력",
   "his:notSelected": "선택 안함",
   "his:paymentCompleted": "결제 완료",
+  "his:paymentFailed": "결제 실패",
   "his:ready": "상품 준비중",
   "his:draft": "발권 대기중",
   "his:shipped": "출고 완료",

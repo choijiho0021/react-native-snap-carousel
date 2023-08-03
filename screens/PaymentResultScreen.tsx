@@ -168,7 +168,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   return (
     <SafeAreaView style={{flex: 1, alignItems: 'stretch'}}>
       <ScreenHeader
-        title={i18n.t('his:paymentCompleted')}
+        title={i18n.t(isSuccess ? 'his:paymentCompleted' : 'his:paymentFailed')}
         backHandler={() => {}}
         showIcon={false}
       />
