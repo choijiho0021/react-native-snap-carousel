@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 52,
     backgroundColor: colors.white,
-    borderColor: colors.dodgerBlue,
+    borderColor: colors.lightGrey,
     borderWidth: 1,
     color: colors,
   },
@@ -478,7 +478,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                 format="price"
                 labelStyle={styles.label2}
                 valueStyle={styles.itemCashText}
-                value={balanceCharge}
+                deduct={balanceCharge?.value}
                 balanceStyle={styles.itemCashCurrencyText}
                 currencyStyle={styles.itemCashCurrencyText}
                 color={colors.warmGrey}

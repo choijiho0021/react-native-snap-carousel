@@ -273,15 +273,17 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     return _.isEmpty(order.drafts) ? (
       <View style={styles.nolist}>
         <AppIcon name="emptyESIM" size={176} />
-        <AppText style={styles.blueText}>{i18n.t('his:noUsage1')}</AppText>
+        <AppText style={styles.blueText}>
+          {i18n.t(isEditMode ? 'his:edit:noUsage1' : 'his:noUsage1')}
+        </AppText>
         <AppText style={{color: colors.warmGrey, textAlign: 'center'}}>
-          {i18n.t('his:noUsage2')}
+          {i18n.t(isEditMode ? 'his:edit:noUsage2' : 'his:noUsage2')}
         </AppText>
       </View>
     ) : (
       <></>
     );
-  }, [order.drafts]);
+  }, [isEditMode, order.drafts]);
 
   const checkCmiData = useCallback(
     async (
@@ -498,25 +500,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     if (route && route.params) {
       const {iccid} = route.params;
       if (iccid) {
-        /*
-        const filter= order.subs
-            ?.find((s) => s.subsIccid === iccid)
-            ?.filter((s2) => s2.subsIccid === iccid) || [];
-
-        const main = filter
-          ?.filter((item) => item.type === 'esim_product')
-          ?.sort((a, b) =>
-            moment(a.purchaseDate).diff(moment(b.purchaseDate)),
-          )[0];
+        const main = order.subs?.find((s) => s.subsIccid === iccid);
 
         if (main) {
-          const {expireDate} = filter?.reduce((oldest, current) =>
-            oldest
-              ? current.expireDate > oldest.expireDate
-                ? current
-                : oldest
-              : current,
-          );
+          const {lastExpireDate} = main;
 
           navigation.setParams({iccid: undefined});
 
@@ -528,13 +515,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             ),
             onPressUsage,
             isChargeable: !moment(main?.expireDate).isBefore(moment()),
-            expireTime: expireDate,
+            expireTime: lastExpireDate,
           });
         }
-        */
       }
     }
-  }, [route]);
+  }, [navigation, onPressUsage, order.subs, route]);
 
   const navigateToChargeType = useCallback(() => {
     setShowModal(false);
@@ -658,7 +644,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       {isEditMode && (
         <AppButton
           style={styles.confirm}
-          title={i18n.t('esim:editMode:confirm')}
+          title={i18n.t(
+            order.subs.length >= 1
+              ? 'esim:editMode:confirm'
+              : 'esim:editMode:confirm:noList',
+          )}
           onPress={() => {
             action.modal.showTabbar();
             setIsEditMode(false);
