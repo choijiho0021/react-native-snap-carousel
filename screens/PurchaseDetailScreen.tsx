@@ -338,7 +338,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             format="price"
             labelStyle={styles.label2}
             valueStyle={appStyles.roboto16Text}
-            value={balanceCharge}
+            deduct={balanceCharge?.value}
             balanceStyle={[styles.normal16BlueTxt, {color: colors.black}]}
             currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
           />
