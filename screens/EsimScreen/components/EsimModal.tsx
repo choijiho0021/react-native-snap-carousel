@@ -112,7 +112,6 @@ const EsimModal: React.FC<EsimModalProps> = ({
       cmiUsage && (
         <UsageItem
           item={subs}
-          onPress={() => {}}
           showSnackbar={() => {}}
           cmiPending={cmiPending}
           usage={{quota, used}}
@@ -124,10 +123,11 @@ const EsimModal: React.FC<EsimModalProps> = ({
   }, [cmiPending, cmiStatus, cmiUsage, subs]);
 
   const renderBottom = useCallback(() => {
-    const quota = Number(cmiUsage?.quota);
-    const used = Number(cmiUsage?.used);
+    const quota = Number(cmiUsage?.quota || 0);
+    const used = Number(cmiUsage?.used || 0);
 
     const isChargeable = onOkClose && cmiStatus.statusCd === 'A';
+
     return (
       <View style={{flexDirection: 'row'}}>
         <AppButton
@@ -139,23 +139,25 @@ const EsimModal: React.FC<EsimModalProps> = ({
         />
         {isChargeable && (
           <View style={{flex: 1, position: 'relative'}}>
-            {quota && used && quota > 0 && used / quota > 0.8 && (
-              <>
-                <AppSvgIcon name="speechBubble2" style={styles.bubbleIcon} />
-
-                <View style={styles.bubbleText}>
-                  <AppSvgIcon name="lightning" />
-                  <AppText
-                    style={{
-                      ...appStyles.bold12Text,
-                      lineHeight: 16,
-                      color: colors.white,
-                    }}>
-                    {i18n.t('esim:charge:speechBubble')}
-                  </AppText>
-                </View>
-              </>
-            )}
+            {_.isNumber(quota) &&
+              _.isNumber(used) &&
+              quota > 0 &&
+              used / quota > 0.8 && (
+                <>
+                  <AppSvgIcon name="speechBubble2" style={styles.bubbleIcon} />
+                  <View style={styles.bubbleText}>
+                    <AppSvgIcon name="lightning" />
+                    <AppText
+                      style={{
+                        ...appStyles.bold12Text,
+                        lineHeight: 16,
+                        color: colors.white,
+                      }}>
+                      {i18n.t('esim:charge:speechBubble')}
+                    </AppText>
+                  </View>
+                </>
+              )}
             <AppButton
               style={styles.blueBtn}
               type="primary"
@@ -167,7 +169,13 @@ const EsimModal: React.FC<EsimModalProps> = ({
         )}
       </View>
     );
-  }, [cmiStatus.statusCd, onCancelClose, onOkClose]);
+  }, [
+    cmiStatus.statusCd,
+    cmiUsage?.quota,
+    cmiUsage?.used,
+    onCancelClose,
+    onOkClose,
+  ]);
 
   return (
     <AppModal

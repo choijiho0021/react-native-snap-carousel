@@ -361,6 +361,7 @@
   "his:input": "Input",
   "his:notSelected": "Nothing Selected",
   "his:paymentCompleted": "Summary",
+  "his:paymentFailed": "Summary",
   "his:ready": "on the preparing",
   "his:draft": "on the drafting",
   "his:shipped": "Shipment completed",
