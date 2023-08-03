@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {Image, Pressable, View} from 'react-native';
+import {Image, Pressable} from 'react-native';
 import {ChannelIO} from 'react-native-channel-plugin';
 import {RootState} from '@reduxjs/toolkit';
 import {connect} from 'react-redux';

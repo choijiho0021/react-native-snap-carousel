@@ -6,6 +6,7 @@ import {
   View,
   Pressable,
   SafeAreaView,
+  BackHandler,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -16,6 +17,7 @@ import {
   NavigationProp,
   ParamListBase,
   RouteProp,
+  useFocusEffect,
   useIsFocused,
 } from '@react-navigation/native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
@@ -26,7 +28,7 @@ import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {navigate} from '@/navigation/navigation';
+import {goBack, navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {
@@ -63,7 +65,7 @@ import {
   ModalAction,
 } from '@/redux/modules/modal';
 import AppButton from '@/components/AppButton';
-
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 const {esimGlobal, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
@@ -521,6 +523,19 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       }
     }
   }, [navigation, onPressUsage, order.subs, route]);
+
+  BackbuttonHandler({
+    navigation,
+    onBack: () => {
+      if (isEditMode) {
+        setIsEditMode(false);
+        action.modal.showTabbar();
+      } else if (navigation.canGoBack()) {
+        navigation.goBack();
+      }
+      return true;
+    },
+  });
 
   const navigateToChargeType = useCallback(() => {
     setShowModal(false);
