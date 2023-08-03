@@ -273,15 +273,17 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     return _.isEmpty(order.drafts) ? (
       <View style={styles.nolist}>
         <AppIcon name="emptyESIM" size={176} />
-        <AppText style={styles.blueText}>{i18n.t('his:noUsage1')}</AppText>
+        <AppText style={styles.blueText}>
+          {i18n.t(isEditMode ? 'his:edit:noUsage1' : 'his:noUsage1')}
+        </AppText>
         <AppText style={{color: colors.warmGrey, textAlign: 'center'}}>
-          {i18n.t('his:noUsage2')}
+          {i18n.t(isEditMode ? 'his:edit:noUsage2' : 'his:noUsage2')}
         </AppText>
       </View>
     ) : (
       <></>
     );
-  }, [order.drafts]);
+  }, [isEditMode, order.drafts]);
 
   const checkCmiData = useCallback(
     async (
@@ -658,7 +660,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       {isEditMode && (
         <AppButton
           style={styles.confirm}
-          title={i18n.t('esim:editMode:confirm')}
+          title={i18n.t(
+            order.subs.length >= 1
+              ? 'esim:editMode:confirm'
+              : 'esim:editMode:confirm:noList',
+          )}
           onPress={() => {
             action.modal.showTabbar();
             setIsEditMode(false);
