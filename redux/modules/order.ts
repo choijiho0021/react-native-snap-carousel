@@ -375,14 +375,12 @@ const slice = createSlice({
 
       const {count = PAGINATION_SUBS_COUNT, offset} = action?.meta?.arg;
 
-      if (result === 0) {
+      if (result === 0 && objects) {
         // count default 10 설정되어 있음
-        if (objects?.length < count) {
-          state.subsIsLast = true;
-        } else {
+        if (objects?.length === count) {
           state.subsOffset += count;
           state.subsIsLast = false;
-        }
+        } else state.subsIsLast = true;
 
         if (offset === 0) {
           state.subs = objects;
@@ -391,10 +389,6 @@ const slice = createSlice({
           state.subs = mergeSubs(state.subs, objects);
         }
       }
-
-      // objects의 갯수가 카운트(한번에 가져오는 수)보다 적으면? isLast로 처리한다.
-
-      // isLast를 return 햇을 때 화면에서 받아오면, 더이상 조회하지 않는다.
     });
 
     builder.addCase(getSubsUsage.fulfilled, (state, action) => {
