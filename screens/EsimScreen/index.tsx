@@ -496,31 +496,53 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     checkShowModal();
   }, [isFocused, isPressClose]);
 
+  const moveToHistory = useCallback(
+    (mainSubs: RkbSubscription, chargedSubsParam?: RkbSubscription[]) => {
+      const {lastExpireDate, expireDate} = mainSubs;
+
+      navigation.setParams({iccid: undefined});
+
+      navigation.navigate('ChargeHistory', {
+        mainSubs,
+        chargeablePeriod: utils.toDateString(expireDate, 'YYYY.MM.DD'),
+        onPressUsage,
+        isChargeable: !moment(expireDate).isBefore(moment()),
+        expireTime: lastExpireDate || expireDate,
+        chargedSubsParam,
+      });
+    },
+    [navigation, onPressUsage],
+  );
+
   useEffect(() => {
     if (route && route.params) {
-      const {iccid} = route.params;
-      if (iccid) {
-        const main = order.subs?.find((s) => s.subsIccid === iccid);
-
+      if (route.params.iccid) {
+        const main = order.subs?.find(
+          (s) => s.subsIccid === route.params?.iccid,
+        );
         if (main) {
-          const {lastExpireDate} = main;
+          moveToHistory(main);
+        } else if (iccid && token) {
+          API.Subscription.getSubscription({
+            iccid,
+            token,
+            uuid: route.params?.iccid,
+          }).then((rsp) => {
+            const mainSubs = rsp.objects
+              .filter((o) => o.type === 'esim_product')
+              .reduce((acc, cur) => {
+                const accumulatorDate = moment(acc.purchaseDate);
+                const currentDate = moment(cur.purchaseDate);
 
-          navigation.setParams({iccid: undefined});
+                return accumulatorDate < currentDate ? acc : cur;
+              });
 
-          navigation.navigate('ChargeHistory', {
-            mainSubs: main,
-            chargeablePeriod: utils.toDateString(
-              main?.expireDate,
-              'YYYY.MM.DD',
-            ),
-            onPressUsage,
-            isChargeable: !moment(main?.expireDate).isBefore(moment()),
-            expireTime: lastExpireDate,
+            moveToHistory(mainSubs, rsp.objects);
           });
         }
       }
     }
-  }, [navigation, onPressUsage, order.subs, route]);
+  }, [iccid, moveToHistory, order.subs, route, token]);
 
   const navigateToChargeType = useCallback(() => {
     setShowModal(false);

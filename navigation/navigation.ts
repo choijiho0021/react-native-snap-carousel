@@ -142,7 +142,7 @@ export type HomeStackParamList = {
   Gift: {mainSubs: RkbSubscription};
   ChargeHistory: {
     mainSubs: RkbSubscription;
-    chargedSubs: RkbSubscription[];
+    chargedSubsParam: RkbSubscription[];
     onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
     chargeablePeriod: string;
     isChargeable: boolean;
