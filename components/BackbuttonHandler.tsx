@@ -2,17 +2,17 @@ import React from 'react';
 import {BackHandler} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 
-export default function BackbuttonHandler({navigation, back}) {
+type BackHandlerParam = {
+  navigation: any;
+  onBack?: () => boolean;
+};
+
+export default function BackbuttonHandler({
+  onBack = () => false,
+}: BackHandlerParam) {
   useFocusEffect(
     React.useCallback(() => {
-      const onBackPress = () => {
-        if (back) {
-          navigation.navigate(back);
-        } else {
-          navigation.goBack();
-        }
-        return true;
-      };
+      const onBackPress = onBack;
 
       const backHandler = BackHandler.addEventListener(
         'hardwareBackPress',
@@ -22,7 +22,7 @@ export default function BackbuttonHandler({navigation, back}) {
       return () => {
         backHandler.remove();
       };
-    }, [navigation, back]),
+    }, [onBack]),
   );
 
   return null;
