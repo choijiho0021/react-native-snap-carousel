@@ -112,7 +112,6 @@ const EsimModal: React.FC<EsimModalProps> = ({
       cmiUsage && (
         <UsageItem
           item={subs}
-          onPress={() => {}}
           showSnackbar={() => {}}
           cmiPending={cmiPending}
           usage={{quota, used}}

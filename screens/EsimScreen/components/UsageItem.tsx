@@ -147,7 +147,6 @@ function getStatusColor(statusCd: string) {
 
 type UsageItemProps = {
   item: RkbSubscription;
-  onPress: () => void;
   showSnackbar: () => void;
   cmiPending: Boolean;
   usage?: RkbSubsUsage;
@@ -160,7 +159,6 @@ type UsageItemProps = {
 const UsageItem: React.FC<UsageItemProps> = ({
   item,
   showSnackbar,
-  onPress,
   cmiPending,
   usage,
   cmiStatusCd,
@@ -558,7 +556,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
     getStatusColor(statusCd);
 
   return (
-    <TouchableOpacity onPress={onPress}>
+    <View>
       <View style={styles.usageListContainer}>
         <View style={styles.titleLine}>
           <AppText key={i18n.t('esim:checkUsage')} style={appStyles.bold18Text}>
@@ -589,7 +587,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           statusBox(statusCd)
         )}
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 
