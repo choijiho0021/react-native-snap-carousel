@@ -25,6 +25,7 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import ChatTalk from '@/components/ChatTalk';
 import ScreenHeader from '@/components/ScreenHeader';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const {esimGlobal} = Env.get();
 
@@ -208,6 +209,12 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
   useEffect(() => {
     if (noti.result) setShowModal(true);
   }, [noti.result]);
+
+  // TODO : AppHeader로 옮기기
+  BackbuttonHandler({
+    navigation,
+    route,
+  });
 
   const onPress = useCallback(
     (key: string) => {

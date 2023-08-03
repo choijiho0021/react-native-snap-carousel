@@ -17,7 +17,6 @@ import {
   NavigationProp,
   ParamListBase,
   RouteProp,
-  useFocusEffect,
   useIsFocused,
 } from '@react-navigation/native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
@@ -28,7 +27,7 @@ import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {goBack, navigate} from '@/navigation/navigation';
+import {navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {
