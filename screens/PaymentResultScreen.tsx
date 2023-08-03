@@ -127,7 +127,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     const {iccid, token} = account;
 
     // 구매 이력을 다시 읽어 온다.
-    // this.props.action.order.getNextOrders(this.props.auth)
+    // this.props.action.order.getOrders(this.props.auth)
     // 사용 내역을 다시 읽어 온다.
     action.order.getSubs({iccid, token});
     action.noti.getNotiList({mobile: account.mobile});

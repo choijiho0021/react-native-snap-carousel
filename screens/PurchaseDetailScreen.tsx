@@ -623,7 +623,7 @@ export default connect(
   ({account, status}: RootState) => ({
     account,
     pending:
-      status.pending[orderActions.getNextOrders.typePrefix] ||
+      status.pending[orderActions.getOrders.typePrefix] ||
       status.pending[orderActions.cancelDraftOrder.typePrefix] ||
       false,
   }),
