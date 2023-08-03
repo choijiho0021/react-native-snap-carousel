@@ -270,7 +270,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           />
         ),
     });
-  }, [navigation, step]);
+  }, [navigation, onBackStep, step]);
 
   useEffect(() => {
     if (route?.params?.order) {
