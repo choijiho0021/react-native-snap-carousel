@@ -497,6 +497,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   }, [isFocused, isPressClose]);
 
   useEffect(() => {
+    // 편집모드 on/off 시 항상 스크롤은 가장 위로 이동
+    if (isEditMode || !isEditMode) {
+      flatListRef.current?.scrollToOffset({animated: false, offset: 0});
+    }
+  }, [isEditMode]);
+
+  useEffect(() => {
     if (route && route.params) {
       const {iccid} = route.params;
       if (iccid) {
