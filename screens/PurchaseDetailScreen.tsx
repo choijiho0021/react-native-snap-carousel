@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   },
   date: {
     ...appStyles.normal14Text,
-    marginTop: 40,
+    marginTop: 24,
     marginLeft: 20,
     color: colors.warmGrey,
   },
@@ -437,7 +437,12 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   );
 
   const headerNoti = useCallback(() => {
-    if (!order || !order.orderItems || !isUseNotiState(order?.state))
+    if (
+      !order ||
+      !order.orderItems ||
+      order?.orderType !== 'refundable' ||
+      !isUseNotiState(order?.state)
+    )
       return <View />;
 
     const isValidate = order?.state === 'validation';

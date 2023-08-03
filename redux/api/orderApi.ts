@@ -73,12 +73,14 @@ export type OrderItemType = {
   uuid: string;
 };
 
+export type OrderPolicyType = 'immediate_order' | 'refundable';
+
 export type RkbOrder = {
   key: string;
   orderId: number;
   orderNo: string;
   orderDate?: Moment;
-  orderType?: string;
+  orderType?: OrderPolicyType;
   totalPrice?: Currency;
   profileId?: string;
   trackingCode?: string;

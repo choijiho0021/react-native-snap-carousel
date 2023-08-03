@@ -5,6 +5,7 @@ import {PurchaseItem} from '@/redux/models/purchaseItem';
 import api, {ApiResult, DrupalNode} from './api';
 import {Currency, CurrencyCode} from './productApi';
 import {API} from '.';
+import {OrderPolicyType} from './orderApi';
 
 const {esimCurrency, cachePrefix} = Env.get();
 
@@ -368,7 +369,7 @@ const makeOrder = ({
   }
 
   // 연장하기는 mainSubsId 값이 존재, 연장하기는 환불 불가능
-  const orderType =
+  const orderType: OrderPolicyType =
     mainSubsId ||
     items.findIndex((item) => ['add_on_product', 'rch'].includes(item.type)) >=
       0
