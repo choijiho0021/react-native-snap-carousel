@@ -421,7 +421,7 @@
   "his:cancelReason:mistake": "주문 실수",
   "his:cancelReason:complain": "상품 불만족",
   "his:cancelReason:etc": "기타 사유",
-  "his:cancelTotalAmount": "총 환불 금액",
+  "his:cancelTotalAmount": "최총 환불 금액",
   "his:orderTotalAmount": "주문금액",
   "his:rokebiCash": "로깨비캐시",
   "his:paidAmount": "일시불",
