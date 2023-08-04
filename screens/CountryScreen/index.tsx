@@ -210,25 +210,23 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     }
   }, [animatedValue]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      if (route.params?.partner) {
-        const partnerIds = route.params.partner;
+  useEffect(() => {
+    if (route.params?.partner) {
+      const partnerIds = route.params.partner;
 
-        const localOp = localOpList.get(partnerIds[0]);
-        setPartnerId(partnerIds[0]);
+      const localOp = localOpList.get(partnerIds[0]);
+      setPartnerId(partnerIds[0]);
 
-        setImageUrl(localOp?.imageUrl);
-        setLocalOpDetails(localOp?.detail);
-        if (partnerIds.every((elm) => prodByPartner.has(elm))) {
-          const data = makeProdData(prodByPartner, partnerIds);
-          setProdData(data);
-          if (data[0].length === 0) setIndex(1);
-          else setIndex(0);
-        }
+      setImageUrl(localOp?.imageUrl);
+      setLocalOpDetails(localOp?.detail);
+      if (partnerIds.every((elm) => prodByPartner.has(elm))) {
+        const data = makeProdData(prodByPartner, partnerIds);
+        setProdData(data);
+        if (data[0].length === 0) setIndex(1);
+        else setIndex(0);
       }
-    }, [localOpList, prodByPartner, route.params.partner]),
-  );
+    }
+  }, [localOpList, prodByPartner, route.params.partner]);
 
   const onIndexChange = useCallback((idx: number) => {
     setIndex(idx);
