@@ -15,6 +15,7 @@ import ProductDetailInfo from './component/ProductDetailInfo';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {OrderModelState, isExpiredDraft} from '@/redux/modules/order';
 import AppIcon from '@/components/AppIcon';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const styles = StyleSheet.create({
   container: {
@@ -95,6 +96,16 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
     });
   }, [navigation]);
 
+  // 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
+  BackbuttonHandler({
+    navigation,
+    onBack: () => {
+      navigation.navigate('PurchaseDetail', {
+        detail: orderResult,
+      });
+      return true;
+    },
+  });
   useEffect(() => {
     if (!route?.params?.orderId) return;
 

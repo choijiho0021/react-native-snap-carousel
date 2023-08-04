@@ -1,19 +1,8 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
-import React, {memo, useState} from 'react';
-import {
-  Image,
-  Pressable,
-  StyleProp,
-  StyleSheet,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
+import React, {memo} from 'react';
+import {StyleSheet, View} from 'react-native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {API} from '@/redux/api';
-import i18n from '@/utils/i18n';
-import AppIcon from './AppIcon';
 import AppText from './AppText';
 import AppBackButton from './AppBackButton';
 import {goBack} from '@/navigation/navigation';
