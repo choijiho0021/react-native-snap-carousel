@@ -86,6 +86,8 @@ import {retrieveData, storeData, utils} from '@/utils/utils';
 import LocalModal from './component/LocalModal';
 import ChatTalk from '@/components/ChatTalk';
 import ScreenHeader from '@/components/ScreenHeader';
+import AppSnackBar from '@/components/AppSnackBar';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const {esimGlobal, isIOS, cachePrefix} = Env.get();
 
@@ -254,6 +256,7 @@ const Esim: React.FC<EsimProps> = ({
   const [bannerHeight, setBannerHeight] = useState<number>(150);
   const appState = useRef('unknown');
   const tabBarHeight = useBottomTabBarHeight();
+  const [isShowBack, setIsShowBack] = useState(false);
 
   const isSupport = useMemo(() => account.isSupportDev, [account.isSupportDev]);
 
@@ -854,6 +857,15 @@ const Esim: React.FC<EsimProps> = ({
     };
   }, [account, action.order, action.product]);
 
+  BackbuttonHandler({
+    navigation,
+    onBack: () => {
+      if (!isShowBack) setIsShowBack(true);
+      else BackHandler.exitApp();
+      return true;
+    },
+  });
+
   useEffect(() => {
     const {mobile, loggedIn, iccid} = account;
     if (iccid) {
@@ -980,6 +992,14 @@ const Esim: React.FC<EsimProps> = ({
       {tabBarHeight > 0 && (
         <ChatTalk visible bottom={(isIOS ? 100 : 70) - tabBarHeight} />
       )}
+
+      <AppSnackBar
+        visible={isShowBack}
+        onClose={() => setIsShowBack(false)}
+        textMessage={i18n.t('service:exitNotice')}
+        hideCancel
+        bottom={10}
+      />
       {renderModal()}
     </SafeAreaView>
   );

@@ -34,6 +34,9 @@ import {AccountModelState} from '@/redux/modules/account';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppAlert from '@/components/AppAlert';
+import Env from '@/environment';
+
+const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -193,7 +196,10 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
           <View style={styles.title}>
             <AppText
               style={[appStyles.semiBold14Text, {color: colors.warmGrey}]}>
-              {utils.toDateString(order?.orderDate)}
+              {utils.toDateString(
+                order?.orderDate,
+                esimGlobal ? 'LLL' : 'YYYY년 MM월 DD일 A h:mm',
+              )}
             </AppText>
             <AppText style={styles.titleText}>{i18n.t('appTitle')}</AppText>
           </View>
@@ -290,7 +296,12 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
               }}
               text={i18n.t('rcpt:tail')}
               format={{b: {color: colors.clearBlue}}}
-              data={{date: utils.toDateString(order?.orderDate, 'LL')}}
+              data={{
+                date: utils.toDateString(
+                  order?.orderDate,
+                  esimGlobal ? 'YYYY-MM-DD' : 'YYYY년 MM월 DD일',
+                ),
+              }}
             />
           </View>
         </ViewShot>

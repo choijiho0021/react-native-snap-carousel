@@ -104,9 +104,10 @@ const styles = StyleSheet.create({
     color: colors.warmGrey,
   },
   reasonButton: {
-    width: 161,
+    flex: 1,
     height: 52,
     borderWidth: 1,
+    borderRadius: 3,
     borderColor: colors.lightGrey,
   },
   reasonButtonFrame: {
@@ -240,20 +241,36 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   const [method, setMethod] = useState<RkbPayment>();
   const [checked, setChecked] = useState<boolean>(false);
 
+  const onBackStep = useCallback(() => {
+    setStep((prev) => (prev - 1 <= 0 ? 0 : prev - 1));
+  }, []);
+
   useEffect(() => {
     navigation.setOptions({
       title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('his:cancelDraft')} />,
+      headerLeft: () => (
+        <AppBackButton
+          title={i18n.t('his:cancelDraft')}
+          onPress={() => {
+            if (step === 0) navigation.goBack();
+            else {
+              onBackStep();
+            }
+          }}
+        />
+      ),
       headerRight: () =>
         step !== 0 && (
           <AppSvgIcon
             name="closeModal"
             style={styles.btnCnter}
-            onPress={() => navigation.goBack()}
+            onPress={() => {
+              navigation.goBack();
+            }}
           />
         ),
     });
-  }, [navigation, step]);
+  }, [navigation, onBackStep, step]);
 
   useEffect(() => {
     if (route?.params?.order) {
@@ -354,7 +371,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                   justifyContent: 'space-between',
                   alignContent: 'space-between',
                 }}>
-                {key.map((btn) => (
+                {key.map((btn, idx) => (
                   <AppButton
                     key={`${btn}button`}
                     style={[
@@ -363,6 +380,8 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                         backgroundColor: colors.blue,
                         borderWidth: 0,
                       },
+
+                      idx === 0 && {marginRight: 12},
                       index === 0 && {marginBottom: 12},
                     ]}
                     titleStyle={[
@@ -371,7 +390,6 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                     ]}
                     onPress={() => {
                       setKeyword(btn);
-                      setInputText('');
                     }}
                     title={`${i18n.t(`his:cancelReason:${btn}`)}`}
                   />
@@ -473,12 +491,12 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
             {balanceCharge !== utils.toCurrency(0, esimCurrency) && (
               <LabelText
                 key="deductBalance"
-                style={styles.item}
+                style={[styles.item, {marginTop: method ? 0 : 10}]}
                 label={i18n.t('his:rokebiCash')}
                 format="price"
                 labelStyle={styles.label2}
                 valueStyle={styles.itemCashText}
-                deduct={balanceCharge?.value}
+                value={balanceCharge?.value}
                 balanceStyle={styles.itemCashCurrencyText}
                 currencyStyle={styles.itemCashCurrencyText}
                 color={colors.warmGrey}
@@ -546,17 +564,19 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
       </View>
       {step === 2 && <View>{renderCheckButton()}</View>}
       <View style={{flexDirection: 'row'}}>
-        <AppButton
-          style={styles.secondaryButton}
-          type="secondary"
-          title={i18n.t('his:backStep')}
-          titleStyle={styles.secondaryButtonText}
-          disabled={step === 0}
-          disableStyle={{borderWidth: 0}}
-          onPress={() => {
-            setStep((prev) => (prev - 1 <= 0 ? 0 : prev - 1));
-          }}
-        />
+        {step !== 0 && (
+          <AppButton
+            style={styles.secondaryButton}
+            type="secondary"
+            title={i18n.t('his:backStep')}
+            titleStyle={styles.secondaryButtonText}
+            disabled={step === 0}
+            disableStyle={{borderWidth: 0}}
+            onPress={() => {
+              setStep((prev) => (prev - 1 <= 0 ? 0 : prev - 1));
+            }}
+          />
+        )}
 
         {Platform.OS === 'ios' ? (
           <InputAccessoryView nativeID={inputAccessoryViewID}>
