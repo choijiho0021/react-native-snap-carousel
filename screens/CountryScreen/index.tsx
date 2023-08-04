@@ -1,5 +1,5 @@
 /* eslint-disable consistent-return */
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState, useMemo, useRef} from 'react';
 import {Animated, SafeAreaView, StyleSheet, View} from 'react-native';
@@ -210,29 +210,25 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     }
   }, [animatedValue]);
 
-  useEffect(() => {
-    if (route.params?.partner) {
-      const partnerIds = route.params.partner;
+  useFocusEffect(
+    React.useCallback(() => {
+      if (route.params?.partner) {
+        const partnerIds = route.params.partner;
 
-      const localOp = localOpList.get(partnerIds[0]);
-      setPartnerId(partnerIds[0]);
+        const localOp = localOpList.get(partnerIds[0]);
+        setPartnerId(partnerIds[0]);
 
-      setImageUrl(localOp?.imageUrl);
-      setLocalOpDetails(localOp?.detail);
-      if (partnerIds.every((elm) => prodByPartner.has(elm))) {
-        const data = makeProdData(prodByPartner, partnerIds);
-        setProdData(data);
-        if (data[0].length === 0) setIndex(1);
-        else setIndex(0);
+        setImageUrl(localOp?.imageUrl);
+        setLocalOpDetails(localOp?.detail);
+        if (partnerIds.every((elm) => prodByPartner.has(elm))) {
+          const data = makeProdData(prodByPartner, partnerIds);
+          setProdData(data);
+          if (data[0].length === 0) setIndex(1);
+          else setIndex(0);
+        }
       }
-    }
-  }, [
-    localOpList,
-    prodByLocalOp,
-    prodByPartner,
-    prodList,
-    route.params.partner,
-  ]);
+    }, [localOpList, prodByPartner, route.params.partner]),
+  );
 
   const onIndexChange = useCallback((idx: number) => {
     setIndex(idx);
