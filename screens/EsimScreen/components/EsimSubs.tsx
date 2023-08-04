@@ -348,6 +348,10 @@ const EsimSubs = ({
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
 
   useEffect(() => {
+    if (isEditMode || !isEditMode) setShowMoreInfo(false);
+  }, [isEditMode]);
+
+  useEffect(() => {
     if (isTypeDraft || !notCardInfo) setShowMoreInfo(false);
     else setShowMoreInfo(showDetail);
   }, [showDetail, isTypeDraft, notCardInfo]);
