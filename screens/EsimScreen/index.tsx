@@ -232,6 +232,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const flatListRef = useRef<FlatList>();
   const tabBarHeight = useBottomTabBarHeight();
 
+  const subsData = useMemo(
+    () =>
+      order.subs?.filter((elm) =>
+        isEditMode ? elm.statusCd === 'U' : !elm.hide,
+      ), // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨길 수 없도록 한다.
+    [isEditMode, order.subs],
+  );
+
   const onRefresh = useCallback(
     // hidden : true (used 상태인 것들 모두) , false (pending, reserve 상태 포함 하여 hidden이 false 것들만)
     (hidden: boolean, reset?: boolean) => {
@@ -405,14 +413,16 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         index={index}
         mainSubs={item}
         showDetail={
-          !isEditMode && index === 0 && item.purchaseDate.isAfter(days14ago)
+          index === subsData.findIndex((elm) => elm.statusCd === 'U') &&
+          item.statusCd === 'U' &&
+          item.purchaseDate.isAfter(days14ago)
         }
         onPressUsage={onPressUsage}
         setShowModal={setShowModal}
         isEditMode={isEditMode}
       />
     ),
-    [days14ago, isEditMode, onPressUsage],
+    [days14ago, isEditMode, onPressUsage, subsData],
   );
 
   const renderDraft = useCallback(
@@ -597,11 +607,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
       <FlatList
         ref={flatListRef}
-        data={
-          order.subs?.filter((elm) =>
-            isEditMode ? elm.statusCd === 'U' : !elm.hide,
-          ) // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨길 수 없도록 한다.
-        }
+        data={subsData}
         keyExtractor={(item) => item.nid}
         ListHeaderComponent={isEditMode ? undefined : info}
         renderItem={renderSubs}
