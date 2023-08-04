@@ -63,7 +63,7 @@ import {
   ModalAction,
 } from '@/redux/modules/modal';
 import AppButton from '@/components/AppButton';
-
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 const {esimGlobal, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
@@ -528,6 +528,19 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       }
     }
   }, [navigation, onPressUsage, order.subs, route]);
+
+  BackbuttonHandler({
+    navigation,
+    onBack: () => {
+      if (isEditMode) {
+        setIsEditMode(false);
+        action.modal.showTabbar();
+      } else if (navigation.canGoBack()) {
+        navigation.goBack();
+      }
+      return true;
+    },
+  });
 
   const navigateToChargeType = useCallback(() => {
     setShowModal(false);

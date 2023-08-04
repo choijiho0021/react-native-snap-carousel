@@ -259,6 +259,10 @@ function CartStackComponent() {
       <CartStack.Screen name="Payment" component={PaymentScreen} />
       <CartStack.Screen name="PymMethod" component={PymMethodScreen} />
       <CartStack.Screen name="SimpleText" component={SimpleTextScreen} />
+      <CartStack.Group
+        screenOptions={{animationEnabled: true, presentation: 'modal'}}>
+        <CartStack.Screen name="SimpleTextModal" component={SimpleTextScreen} />
+      </CartStack.Group>
       <CartStack.Screen
         name="PaymentResult"
         component={PaymentResultScreen}
@@ -283,6 +287,10 @@ function EsimStackComponent() {
       <EsimStack.Screen name="Esim" component={EsimScreen} />
       <EsimStack.Screen name="Gift" component={GiftScreen} />
       <EsimStack.Screen name="RedirectHK" component={RedirectHKScreen} />
+      <EsimStack.Group
+        screenOptions={{animationEnabled: true, presentation: 'modal'}}>
+        <EsimStack.Screen name="SimpleTextModal" component={SimpleTextScreen} />
+      </EsimStack.Group>
       <EsimStack.Screen
         name="ChargeType"
         component={ChargeTypeScreen}
@@ -383,6 +391,13 @@ function MyPageStackComponent() {
         })}
       />
       <MyPageStack.Screen name="SimpleText" component={SimpleTextScreen} />
+      <MyPageStack.Group
+        screenOptions={{animationEnabled: true, presentation: 'modal'}}>
+        <MyPageStack.Screen
+          name="SimpleTextModal"
+          component={SimpleTextScreen}
+        />
+      </MyPageStack.Group>
       <MyPageStack.Screen name="Recharge" component={RechargeScreen} />
       {/* <MyPageStack.Screen name="Pedometer" component={PedometerScreen} /> */}
       <MyPageStack.Screen name="Invite" component={InviteScreen} />
