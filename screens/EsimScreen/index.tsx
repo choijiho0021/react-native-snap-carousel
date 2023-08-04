@@ -270,7 +270,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   }, [action.order, isEditMode, isFocused, onRefresh]);
 
   const empty = useCallback(() => {
-    return _.isEmpty(order.drafts) ? (
+    return _.isEmpty(order.drafts) || isEditMode ? (
       <View style={styles.nolist}>
         <AppIcon name="emptyESIM" size={176} />
         <AppText style={styles.blueText}>
@@ -555,6 +555,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     });
   }, [navigation, subs]);
 
+  console.log(
+    'aaaaa subs',
+    isEditMode
+      ? order.subs
+      : order.subs?.filter(
+          (elm) => !elm.hide, // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨길 수 없도록 한다.
+        ),
+  );
   return (
     <SafeAreaView style={styles.container}>
       <View style={[appStyles.header, styles.esimHeader]}>
@@ -584,13 +592,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           </View>
         )}
       </View>
+
       <FlatList
         ref={flatListRef}
         data={
           isEditMode
             ? order.subs
             : order.subs?.filter(
-                (elm) => !elm.hide, // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨실 수 없도록 한다.
+                (elm) => !elm.hide, // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨길 수 없도록 한다.
               )
         }
         keyExtractor={(item) => item.nid}
@@ -601,7 +610,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         extraData={[isEditMode]}
         contentContainerStyle={[
           {paddingBottom: 34},
-          _.isEmpty(order.subs) && _.isEmpty(order.drafts) && {flex: 1},
+          _.isEmpty(order.subs) &&
+            (_.isEmpty(order.drafts) || isEditMode) && {flex: 1},
         ]}
         ListEmptyComponent={empty}
         onScrollToIndexFailed={(rsp) => {
