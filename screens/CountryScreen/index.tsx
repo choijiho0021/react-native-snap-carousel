@@ -250,6 +250,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     ({route}: {route: TabRoute}) => (
       <ProdByType
         prodData={prodData[route.key === 'daily' ? 0 : 1]}
+        prodType={route.key}
         onTop={(v: boolean) => {
           isTop.current = v;
           runAnimation();
