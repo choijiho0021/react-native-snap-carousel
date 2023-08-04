@@ -237,6 +237,11 @@ function HomeStackComponent() {
           headerShown: false,
         })}
       />
+      <HomeStack.Screen name="Draft" component={DraftScreen} />
+      <HomeStack.Screen name="DraftResult" component={DraftResultScreen} />
+      <HomeStack.Screen name="CancelOrder" component={CancelOrderScreen} />
+      <HomeStack.Screen name="CancelResult" component={CancelResultScreen} />
+      <HomeStack.Screen name="Receipt" component={ReceiptScreen} />
     </HomeStack.Navigator>
   );
 }
