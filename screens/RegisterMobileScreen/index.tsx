@@ -56,7 +56,8 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
 import {eventToken} from '@/constants/Adjust';
-import {LinkModelState} from '../redux/modules/link';
+import {LinkModelState} from '@/redux/modules/link';
+import DomainPicker from './DomainPicker';
 
 const {esimGlobal, isProduction, isIOS} = Env.get();
 
@@ -242,6 +243,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const emailRef = useRef<InputEmailRef>(null);
   const mobileRef = useRef<InputMobileRef>(null);
   const inputRef = useRef<InputPinRef>(null);
+  const [showPicker, setShowPicker] = useState(false);
 
   const recommender = useMemo(
     () => link?.params?.recommender,
@@ -736,6 +738,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
                 setIsValidEmail(() => true);
                 setEmailError(() => undefined);
               }}
+              onPressPicker={() => setShowPicker(true)}
             />
 
             <AppText style={[styles.helpText, {color: colors.errorBackground}]}>
@@ -776,6 +779,17 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       )}
 
       <AppActivityIndicator visible={pending || loading} />
+      <DomainPicker
+        visible={showPicker}
+        onOkClose={(val) => {
+          setEmail((prev) => {
+            const m = prev.split('@');
+            return `${m[0]}@${val}`;
+          });
+          setShowPicker(false);
+        }}
+        onCancelClose={() => setShowPicker(false)}
+      />
     </SafeAreaView>
   );
 };
