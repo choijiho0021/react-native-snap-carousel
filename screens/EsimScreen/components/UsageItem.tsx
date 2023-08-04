@@ -1,4 +1,3 @@
-import Analytics from 'appcenter-analytics';
 import React, {
   useCallback,
   useEffect,
@@ -6,31 +5,26 @@ import React, {
   useState,
   useMemo,
   Fragment,
+  memo,
 } from 'react';
-import {StyleSheet, TouchableOpacity, View, ViewStyle} from 'react-native';
+import {StyleSheet, View, ViewStyle} from 'react-native';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
-import {connect} from 'react-redux';
 import Video from 'react-native-video';
-import _ from 'underscore';
 import Lottie from 'lottie-react-native';
 import moment from 'moment-timezone';
 import * as RNLocalize from 'react-native-localize';
-import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
-import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {code, RkbSubscription, RkbSubsUsage} from '@/redux/api/subscriptionApi';
-import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import Env from '@/environment';
 import AppIcon from '@/components/AppIcon';
 import TextWithDot from './TextWithDot';
 import AppSvgIcon from '@/components/AppSvgIcon';
-// import moment from 'moment';
 import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
@@ -152,8 +146,6 @@ type UsageItemProps = {
   usage?: RkbSubsUsage;
   cmiStatusCd?: string;
   endTime?: string;
-
-  account: AccountModelState;
 };
 
 const UsageItem: React.FC<UsageItemProps> = ({
@@ -163,16 +155,12 @@ const UsageItem: React.FC<UsageItemProps> = ({
   usage,
   cmiStatusCd,
   endTime,
-  account: {token},
 }) => {
   const [disableBtn, setDisableBtn] = useState(false);
   const [isOverUsed, setIsOverUsed] = useState(false);
-  const [quota, setQuota] = useState<number | undefined>(usage?.quota);
-  const [used, setUsed] = useState<number | undefined>(usage?.used);
-  const isExhausted = useMemo(
-    () => (quota || 0) - (used || 0) <= 0,
-    [quota, used],
-  );
+  const [quota, setQuota] = useState<number>(usage?.quota || 0);
+  const [used, setUsed] = useState<number>(usage?.used || 0);
+  const isExhausted = useMemo(() => quota - used <= 0, [quota, used]);
   const circularProgress = useRef();
   const overCircularProgress = useRef();
 
@@ -591,4 +579,4 @@ const UsageItem: React.FC<UsageItemProps> = ({
   );
 };
 
-export default connect(({account}: RootState) => ({account}))(UsageItem);
+export default memo(UsageItem);
