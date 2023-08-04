@@ -24,6 +24,11 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 32,
   },
+  smallThumb: {
+    width: 13,
+    height: 13,
+    borderRadius: 32,
+  },
 });
 
 type AppSwitchProps = {
@@ -32,6 +37,7 @@ type AppSwitchProps = {
   width?: number;
   onPress: () => Promise<void>;
   style?: StyleProp<ViewStyle>;
+  isSmall?: boolean;
 };
 
 type AppSwitchState = {
@@ -122,7 +128,7 @@ export default class AppSwitch extends PureComponent<
   }
 
   render() {
-    const {style} = this.props;
+    const {style, isSmall} = this.props;
     const {animatedValue, circlePosXStart, circlePosXEnd} = this.state;
 
     return (
@@ -142,14 +148,17 @@ export default class AppSwitch extends PureComponent<
           ]}>
           <Animated.View
             style={[
-              styles.thumb,
+              isSmall ? styles.smallThumb : styles.thumb,
               {
                 backgroundColor: colors.white,
                 transform: [
                   {
                     translateX: animatedValue.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [circlePosXStart, circlePosXEnd],
+                      outputRange: [
+                        circlePosXStart,
+                        isSmall ? circlePosXEnd + 7 : circlePosXEnd,
+                      ],
                     }),
                   },
                 ],
