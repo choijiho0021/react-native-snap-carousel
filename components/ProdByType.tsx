@@ -91,7 +91,7 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
       ListEmptyComponent={renderEmpty}
       extraData={prodData}
       ListHeaderComponent={
-        prodType === 'daily' ? (
+        prodType === 'daily' && prodData.length > 0 ? (
           <DailyProdFilter onValueChange={setFilter} />
         ) : null
       }
