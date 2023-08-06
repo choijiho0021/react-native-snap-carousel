@@ -9,7 +9,6 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
@@ -91,7 +90,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const {navigation, route, product} = props;
   const {localOpList, prodByPartner} = product;
 
-  const [prodData, setProdData] = useState<RkbProduct[][]>([[], []]);
+  const [prodData, setProdData] = useState<RkbProduct[][]>([]);
   const [imageUrl, setImageUrl] = useState<string>();
   const [localOpDetails, setLocalOpDetails] = useState<string>();
   const [partnerId, setPartnerId] = useState<string>();
@@ -113,8 +112,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       setImageUrl(localOp?.imageUrl);
       setLocalOpDetails(localOp?.detail);
       if (partnerIds.every((elm) => prodByPartner.has(elm))) {
-        const data = makeProdData(prodByPartner, partnerIds);
-        setProdData(data);
+        setProdData(makeProdData(prodByPartner, partnerIds));
       }
     }
   }, [localOpList, prodByPartner, route.params.partner]);
@@ -151,29 +149,17 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     [animatedValue],
   );
 
-  const prodTypeDaily = useCallback(
-    () => (
-      <ProdByType
-        prodData={prodData[0]}
-        prodType="daily"
-        onTop={onTop}
-        onPress={onPress}
-        isCharge={false}
-      />
-    ),
-    [onPress, onTop, prodData],
-  );
-
-  const prodTypeTotal = useCallback(
-    () => (
-      <ProdByType
-        prodData={prodData[1]}
-        prodType="total"
-        onTop={onTop}
-        onPress={onPress}
-        isCharge={false}
-      />
-    ),
+  const renderProdType = useCallback(
+    (key: 'daily' | 'total') => () =>
+      (
+        <ProdByType
+          prodData={prodData[key === 'daily' ? 0 : 1]}
+          prodType={key}
+          onTop={onTop}
+          onPress={onPress}
+          isCharge={false}
+        />
+      ),
     [onPress, onTop, prodData],
   );
 
@@ -200,21 +186,21 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         </Animated.View>
       )}
 
-      <Tab.Navigator
-        initialRouteName={prodData[0].length === 0 ? 'Total' : 'Daily'}
-        tabBar={(props) => <TabBar {...props} />}
-        sceneContainerStyle={{backgroundColor: colors.white}}>
-        <Tab.Screen
-          name="Daily"
-          component={prodTypeDaily}
-          options={{lazy: true, title: i18n.t('country:daily')}}
-        />
-        <Tab.Screen
-          name="Total"
-          component={prodTypeTotal}
-          options={{lazy: true, title: i18n.t('country:total')}}
-        />
-      </Tab.Navigator>
+      {prodData.length > 0 ? (
+        <Tab.Navigator
+          initialRouteName={prodData[0].length === 0 ? 'total' : 'daily'}
+          tabBar={(props) => <TabBar {...props} />}
+          sceneContainerStyle={{backgroundColor: colors.white}}>
+          {['daily', 'total'].map((k) => (
+            <Tab.Screen
+              key={k}
+              name={k}
+              component={renderProdType(k)}
+              options={{lazy: true, title: i18n.t(`country:${k}`)}}
+            />
+          ))}
+        </Tab.Navigator>
+      ) : null}
 
       <AppActivityIndicator visible={props.pending} />
       <ChatTalk visible bottom={isIOS ? 100 : 70} />
