@@ -6,7 +6,6 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
-import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
 import {RootState} from '@/redux';
 import {
@@ -26,6 +25,7 @@ import ProdByType from '@/components/ProdByType';
 import SelectedProdTitle from './EventBoardScreen/components/SelectedProdTitle';
 import AppStyledText from '@/components/AppStyledText';
 import ScreenHeader from '@/components/ScreenHeader';
+import {windowWidth} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   container: {
@@ -42,17 +42,6 @@ const styles = StyleSheet.create({
     ...appStyles.medium18,
     lineHeight: 26,
     color: colors.gray2,
-  },
-  header: {
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.white,
-  },
-  headerTitle: {
-    height: 56,
-    marginRight: 8,
   },
   whiteBox: {
     paddingHorizontal: 20,
@@ -98,7 +87,6 @@ type ChargeTabRouteKey = 'daily' | 'total';
 type ChargeTabRoute = {
   key: ChargeTabRouteKey;
   title: string;
-  category: string;
 };
 
 type ChargeScreenNavigationProp = StackNavigationProp<
@@ -179,21 +167,16 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
     action.product.getProdOfPartner(partnerIds);
   }, [action.product, partnerIds]);
 
-  const onIndexChange = useCallback((idx: number) => {
-    setIndex(idx);
-  }, []);
   const routes = useMemo(
     () =>
       [
         {
           key: 'daily',
           title: i18n.t('country:daily'),
-          category: 'daily',
         },
         {
           key: 'total',
           title: i18n.t('country:total'),
-          category: 'total',
         },
       ] as ChargeTabRoute[],
     [],
@@ -217,16 +200,15 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
   );
 
   const renderScene = useCallback(
-    ({route: sceneRoute}: {route: ChargeTabRoute}) => {
-      return (
-        <ProdByType
-          prodData={prodData[sceneRoute.category === 'daily' ? 0 : 1]}
-          onTop={setIsTop}
-          onPress={onPress}
-          isCharge
-        />
-      );
-    },
+    ({route: sceneRoute}: {route: ChargeTabRoute}) => (
+      <ProdByType
+        prodData={prodData[sceneRoute.key === 'daily' ? 0 : 1]}
+        prodType={sceneRoute.key}
+        onTop={setIsTop}
+        onPress={onPress}
+        isCharge
+      />
+    ),
     [onPress, prodData],
   );
 
@@ -262,7 +244,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
       <AppTabHeader
         index={index}
         routes={routes}
-        onIndexChange={onIndexChange}
+        onIndexChange={setIndex}
         style={styles.tab}
         tintColor={colors.black}
         titleStyle={styles.tabTitle}
@@ -275,8 +257,12 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
         sceneContainerStyle={{flex: 1, backgroundColor: colors.white}}
         navigationState={{index, routes}}
         renderScene={renderScene}
-        onIndexChange={onIndexChange}
+        onIndexChange={setIndex}
         renderTabBar={() => null}
+        initialLayout={{
+          height: 0,
+          width: windowWidth,
+        }}
       />
     </SafeAreaView>
   );

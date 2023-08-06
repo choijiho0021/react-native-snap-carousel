@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -7,6 +7,7 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 import {RkbProduct} from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';
+import DailyProdFilter, {DailyProdFilterList} from './DailyProdFilter';
 
 const styles = StyleSheet.create({
   emptyImage: {
@@ -38,6 +39,7 @@ const position = (idx: number, arr: RkbProduct[]) => {
 
 type ProdByTypeProps = {
   prodData: RkbProduct[];
+  prodType: 'daily' | 'total';
   isCharge?: boolean;
   onPress: (prod: RkbProduct) => void;
   onTop?: (v: boolean) => void;
@@ -45,10 +47,13 @@ type ProdByTypeProps = {
 
 const ProdByType: React.FC<ProdByTypeProps> = ({
   prodData,
+  prodType,
   isCharge = false,
   onPress,
   onTop = () => {},
 }) => {
+  const [filter, setFilter] = useState<DailyProdFilterList>('all');
+
   const renderEmpty = useCallback(() => {
     return (
       <View style={styles.emptyData}>
@@ -65,24 +70,31 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
   }, [isCharge]);
 
   const renderItem = useCallback(
-    ({item, index}: {item: RkbProduct; index: number}) => {
-      return (
-        <CountryListItem
-          key={item.sku}
-          item={item}
-          onPress={() => onPress(item)}
-          position={position(index, prodData)}
-        />
-      );
-    },
+    ({item, index}: {item: RkbProduct; index: number}) => (
+      <CountryListItem
+        key={item.sku}
+        item={item}
+        onPress={() => onPress(item)}
+        position={position(index, prodData)}
+      />
+    ),
     [onPress, prodData],
   );
 
   return (
     <FlatList
-      data={prodData}
+      data={
+        filter === 'all'
+          ? prodData
+          : prodData.filter((p) => p.volume === filter)
+      }
       ListEmptyComponent={renderEmpty}
       extraData={prodData}
+      ListHeaderComponent={
+        prodType === 'daily' && prodData.length > 0 ? (
+          <DailyProdFilter onValueChange={setFilter} />
+        ) : null
+      }
       renderItem={renderItem}
       onScrollEndDrag={({
         nativeEvent: {
