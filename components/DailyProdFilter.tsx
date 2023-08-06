@@ -1,12 +1,11 @@
 import React, {useState} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
-import AppText from '@/components/AppText';
+import {StyleSheet, View} from 'react-native';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
+import AppButton from './AppButton';
 
 const styles = StyleSheet.create({
   button: {
-    borderWidth: 1,
     borderColor: colors.lightGrey,
     paddingHorizontal: 14,
     paddingVertical: 5,
@@ -33,24 +32,28 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({onValueChange}) => {
         marginBottom: 24,
       }}>
       {filterList.map((elm, idx) => (
-        <Pressable
+        <AppButton
           onPress={() => {
             setFilter(elm);
             onValueChange?.(elm);
           }}
           key={elm}
-          style={{marginLeft: idx > 0 ? 8 : 0}}>
-          <AppText
-            style={[
-              styles.button,
-              {
-                backgroundColor: elm === filter ? colors.clearBlue : 'white',
-                color: elm === filter ? 'white' : colors.warmGrey,
-              },
-            ]}>
-            {i18n.t(`daily:filter:${elm}`)}
-          </AppText>
-        </Pressable>
+          style={{
+            marginLeft: idx > 0 ? 8 : 0,
+            backgroundColor: elm === filter ? colors.clearBlue : 'white',
+            borderWidth: 1,
+            borderRadius: 100,
+            borderColor: elm === filter ? colors.clearBlue : colors.lightGrey,
+            height: 34,
+          }}
+          titleStyle={[
+            styles.button,
+            {
+              color: elm === filter ? 'white' : colors.warmGrey,
+            },
+          ]}
+          title={i18n.t(`daily:filter:${elm}`)}
+        />
       ))}
     </View>
   );
