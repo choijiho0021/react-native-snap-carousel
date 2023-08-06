@@ -25,6 +25,7 @@ import ProdByType from '@/components/ProdByType';
 import SelectedProdTitle from './EventBoardScreen/components/SelectedProdTitle';
 import AppStyledText from '@/components/AppStyledText';
 import ScreenHeader from '@/components/ScreenHeader';
+import {windowWidth} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   container: {
@@ -258,6 +259,10 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
         renderScene={renderScene}
         onIndexChange={setIndex}
         renderTabBar={() => null}
+        initialLayout={{
+          height: 0,
+          width: windowWidth,
+        }}
       />
     </SafeAreaView>
   );

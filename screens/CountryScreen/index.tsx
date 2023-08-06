@@ -1,5 +1,5 @@
 /* eslint-disable consistent-return */
-import {RouteProp, useFocusEffect} from '@react-navigation/native';
+import {RouteProp, useIsFocused} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState, useMemo, useRef} from 'react';
 import {Animated, SafeAreaView, StyleSheet, View} from 'react-native';
@@ -27,6 +27,7 @@ import {retrieveData, storeData} from '@/utils/utils';
 import ProdByType from '@/components/ProdByType';
 import ChatTalk from '@/components/ChatTalk';
 import Env from '@/environment';
+import {windowWidth} from '@/constants/SliderEntry.style';
 
 const {isIOS} = Env.get();
 
@@ -157,7 +158,7 @@ type TabRoute = {
 
 const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const {navigation, route, product} = props;
-  const {localOpList, prodByLocalOp, prodList, prodByPartner} = product;
+  const {localOpList, prodByPartner} = product;
 
   const [prodData, setProdData] = useState<RkbProduct[][]>([[], []]);
   const [imageUrl, setImageUrl] = useState<string>();
@@ -227,10 +228,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       }
     }
   }, [localOpList, prodByPartner, route.params.partner]);
-
-  const onIndexChange = useCallback((idx: number) => {
-    setIndex(idx);
-  }, []);
 
   const onPress = useCallback(
     (prod: RkbProduct) =>
@@ -303,9 +300,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
             </View>
           </View>
         }
-        onClose={() => {
-          setTip(false);
-        }}
+        onClose={() => setTip(false)}
         placement="bottom">
         <AppSvgIcon
           style={styles.cautionBtn}
@@ -320,6 +315,8 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     ),
     [showTip],
   );
+
+  console.log('@@@ country', index);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -350,7 +347,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           <AppTabHeader
             index={index}
             routes={routes}
-            onIndexChange={onIndexChange}
+            onIndexChange={setIndex}
             style={styles.tab}
             tintColor={colors.black}
             titleStyle={styles.tabTitle}
@@ -361,8 +358,9 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
             sceneContainerStyle={{flex: 1}}
             navigationState={{index, routes}}
             renderScene={renderScene}
-            onIndexChange={onIndexChange}
+            onIndexChange={setIndex}
             renderTabBar={() => null}
+            initialLayout={{width: windowWidth}}
           />
         </View>
       )}
