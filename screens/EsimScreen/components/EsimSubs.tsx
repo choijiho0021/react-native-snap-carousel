@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   },
   prodTitle: {
     flexDirection: 'row',
-    alignItems: 'center',
+    // alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 10,
   },
@@ -210,6 +210,7 @@ const styles = StyleSheet.create({
   arrow: {
     width: 26,
     height: 26,
+    alignSelf: 'flex-start',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -266,13 +267,13 @@ const styles = StyleSheet.create({
   },
   newIcon: {
     position: 'absolute',
-    top: -12,
+    top: -9,
     zIndex: 20,
     alignSelf: 'center',
   },
   newText: {
     position: 'absolute',
-    top: -10,
+    top: -7,
     zIndex: 30,
     alignSelf: 'center',
     ...appStyles.bold12Text,
@@ -347,6 +348,11 @@ const EsimSubs = ({
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
 
   useEffect(() => {
+    if (showDetail) setShowMoreInfo(showDetail);
+    else setShowMoreInfo(false);
+  }, [isEditMode, showDetail]);
+
+  useEffect(() => {
     if (isTypeDraft || !notCardInfo) setShowMoreInfo(false);
     else setShowMoreInfo(showDetail);
   }, [showDetail, isTypeDraft, notCardInfo]);
@@ -381,8 +387,12 @@ const EsimSubs = ({
   const renderSwitch = useCallback(() => {
     return (
       <AppSwitch
-        style={{marginRight: 10}}
+        style={{
+          marginRight: 10,
+          justifyContent: 'center',
+        }}
         value={showSubs}
+        isSmall
         onPress={async () => {
           const {
             payload: {result},
@@ -424,7 +434,12 @@ const EsimSubs = ({
             : mainSubs.flagImage !== '' && (
                 <Image
                   source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
-                  style={{width: 40, height: 40, marginRight: 20}}
+                  style={{
+                    width: 40,
+                    height: 30,
+                    marginRight: 10,
+                    alignSelf: 'flex-start',
+                  }}
                 />
               )}
           <SplitText
@@ -463,7 +478,6 @@ const EsimSubs = ({
             </View>
           ) : (
             // R 발송중인 상태에선 상품 발송중 표시
-
             !isTypeDraft && (
               <View style={styles.arrow}>
                 <AppSvgIcon name={showMoreInfo ? 'topArrow' : 'bottomArrow'} />
@@ -529,6 +543,7 @@ const EsimSubs = ({
             backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
             paddingHorizontal: 12,
             paddingVertical: 8,
+            borderRadius: 3,
           }}
           titleStyle={{
             ...styles.esimButton,
@@ -552,6 +567,7 @@ const EsimSubs = ({
             backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
             paddingHorizontal: 12,
             paddingVertical: 8,
+            borderRadius: 3,
           }}
           titleStyle={{
             ...styles.esimButton,
@@ -566,6 +582,7 @@ const EsimSubs = ({
             backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
             paddingHorizontal: 12,
             paddingVertical: 8,
+            borderRadius: 3,
           }}
           titleStyle={{
             ...styles.esimButton,
@@ -677,6 +694,7 @@ const EsimSubs = ({
                   !isLast && styles.giftButton,
                   isEditMode && {
                     backgroundColor: !isLast ? colors.white : colors.lightGrey,
+                    borderColor: colors.lightGrey,
                   },
                 ]}
                 onPress={() =>

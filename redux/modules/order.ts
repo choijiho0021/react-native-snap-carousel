@@ -13,10 +13,13 @@ import {
   RkbOrder,
 } from '@/redux/api/orderApi';
 import {
+  getMoment,
+  groupPartner,
   RkbSubscription,
   sortSubs,
   STATUS_USED,
   SubscriptionParam,
+  toStatus,
 } from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {reflectWithToast, Toast} from './toast';
@@ -53,7 +56,23 @@ const getSubs = createAsyncThunk(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
     )(param, {
-      fulfillWithValue: (value) => value,
+      fulfillWithValue: (resp) => {
+        if (resp.result === 0) {
+          resp.objects = resp.objects.map((o) => ({
+            ...o,
+            provDate: getMoment(o.provDate),
+            cnt: parseInt(o.cnt || '0', 10),
+            lastExpireDate: getMoment(o.lastExpireDate),
+            startDate: getMoment(o.startDate),
+            promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
+            partner: groupPartner(o.partner),
+            status: toStatus(o.field_status),
+            purchaseDate: getMoment(o.purchaseDate),
+            expireDate: getMoment(o.expireDate),
+          }));
+        }
+        return resp;
+      },
     });
   },
 );
@@ -362,21 +381,58 @@ const slice = createSlice({
     builder.addCase(getSubs.fulfilled, (state, action) => {
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
 
-      const {count = PAGINATION_SUBS_COUNT, offset} = action?.meta?.arg;
+      const {count = PAGINATION_SUBS_COUNT, offset, uuid} = action?.meta?.arg;
 
       if (result === 0 && objects) {
-        // count default 10 설정되어 있음
-        if (objects?.length === count) {
-          state.subsOffset += count;
-          state.subsIsLast = false;
-        } else state.subsIsLast = true;
+        // uuid param이 있으면 특정 상품 조회, offset 처리를 넘긴다.
+        if (!uuid) {
+          // count default 10 설정되어 있음
+          if (objects?.length === count) {
+            state.subsOffset += count;
+            state.subsIsLast = false;
+          } else state.subsIsLast = true;
 
-        if (offset === 0) {
-          state.subs = objects;
-        } else {
-          // offset이 0이 아니라면 페이지네이션 중이니 merge로 한다
-          state.subs = mergeSubs(state.subs, objects);
+          if (offset === 0) {
+            state.subs = objects;
+          } else {
+            // offset이 0이 아니라면 페이지네이션 중이니 merge로 한다
+            state.subs = mergeSubs(state.subs, objects);
+          }
         }
+        // uuid 가 있는 경우, 특정 상품 조회
+        else if (objects?.length > 1) {
+          // 기존 데이터를 가져와서 cnt가 1 이상인 것
+          const maxExpiredDate: Moment = objects.reduce(
+            (maxDate, obj) =>
+              obj.lastExpireDate && obj.lastExpireDate.isAfter(maxDate)
+                ? obj.lastExpireDate
+                : maxDate, //  maxDate,
+            moment('1900-01-01'),
+          );
+
+          const nidListByServer = objects.map((obj) => obj.nid);
+
+          const mainSubs = {
+            ...state.subs.find((sub) => {
+              return nidListByServer.includes(sub.nid) && sub?.cnt > 0;
+            }),
+            lastExpireDate: maxExpiredDate,
+          };
+
+          const filtered = state.subs.filter((sub) => {
+            return !(
+              nidListByServer.includes(sub.nid) &&
+              (!mainSubs.nid || sub.nid === mainSubs.nid)
+            );
+          });
+
+          state.subs = mergeSubs(
+            filtered,
+            mainSubs?.nid ? [...filtered, mainSubs] : filtered,
+          );
+
+          // 1개일 땐 해당 상품 그대로 merge
+        } else state.subs = mergeSubs(state.subs, objects);
       }
     });
 

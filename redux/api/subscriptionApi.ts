@@ -126,7 +126,7 @@ export const sortSubs = (a: RkbSubscription, b: RkbSubscription) => {
   return checkTimeOrder(a, b);
 };
 
-const toStatus = (v?: string) => {
+export const toStatus = (v?: string) => {
   return code[v] ? i18n.t(`his:${code[v]}`) : v;
 };
 
@@ -190,13 +190,13 @@ export type RkbSubscription = {
   startDate?: Moment;
 };
 
-const groupPartner = (partner: string) => {
+export const groupPartner = (partner: string) => {
   if (partner.startsWith('cmi')) return 'cmi';
   if (partner.startsWith('quadcell')) return 'quadcell';
   return partner;
 };
 
-const getMoment = (str: string) => (str ? moment(str) : undefined);
+export const getMoment = (str: string) => (str ? moment(str) : undefined);
 
 const toSubscription = (
   data: DrupalNode[] | DrupalNodeJsonApi,
@@ -312,21 +312,21 @@ const getSubscription = ({
   return api.callHttpGet(
     url,
     (resp) => {
-      if (resp.result === 0) {
-        resp.objects = resp.objects.map((o) => ({
-          ...o,
-          key: o.uuid,
-          provDate: getMoment(o.provDate),
-          cnt: parseInt(o.cnt || '0', 10),
-          lastExpireDate: getMoment(o.lastExpireDate),
-          startDate: getMoment(o.startDate),
-          promoFlag: o?.promoFlag?.map((p) => specialCategories[p]),
-          partner: groupPartner(o.partner),
-          status: toStatus(o.field_status),
-          purchaseDate: getMoment(o.purchaseDate),
-          expireDate: getMoment(o.expireDate),
-        }));
-      }
+      // if (resp.result === 0) {
+      //   resp.objects = resp.objects.map((o) => ({
+      //     ...o,
+      //     key: o.uuid,
+      //     provDate: getMoment(o.provDate),
+      //     cnt: parseInt(o.cnt || '0', 10),
+      //     lastExpireDate: getMoment(o.lastExpireDate),
+      //     startDate: getMoment(o.startDate),
+      //     promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
+      //     partner: groupPartner(o.partner),
+      //     status: toStatus(o.field_status),
+      //     purchaseDate: getMoment(o.purchaseDate),
+      //     expireDate: getMoment(o.expireDate),
+      //   }));
+      // }
       return resp;
     },
     api.withToken(token, 'json'),

@@ -7,6 +7,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import {RouteProp} from '@react-navigation/native';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -88,6 +89,7 @@ type CartScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Cart'>;
 
 type CartScreenProps = {
   navigation: CartScreenNavigationProp;
+  route: RouteProp<HomeStackParamList, 'Cart'>;
 
   cart: CartModelState;
   account: AccountModelState;
@@ -101,7 +103,7 @@ type CartScreenProps = {
 };
 
 const CartScreen: React.FC<CartScreenProps> = (props) => {
-  const {navigation, cart, account, product, action} = props;
+  const {navigation, route, cart, account, product, action} = props;
   const [list, setList] = useState<RkbOrderItem[]>([]);
   const [checked, setChecked] = useState(ImmutableMap<string, boolean>());
   const [qty, setQty] = useState(ImmutableMap<string, number>());
@@ -175,20 +177,23 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
 
   const empty = useCallback(
     () => (
-      <View style={styles.emptyView}>
-        <AppIcon name="emptyCart" />
-        <View style={{marginTop: 20}}>
-          <AppText style={[styles.emptyText, {color: colors.clearBlue}]}>
-            {i18n.t('cart:empty1')}
-          </AppText>
-          <AppText style={[styles.emptyText, {color: colors.warmGrey}]}>
-            {i18n.t('cart:empty2')}
-          </AppText>
+      <SafeAreaView style={styles.container}>
+        {route?.params?.showHeader && <ScreenHeader title={i18n.t('cart')} />}
+        <View style={styles.emptyView}>
+          <AppIcon name="emptyCart" />
+          <View style={{marginTop: 20}}>
+            <AppText style={[styles.emptyText, {color: colors.clearBlue}]}>
+              {i18n.t('cart:empty1')}
+            </AppText>
+            <AppText style={[styles.emptyText, {color: colors.warmGrey}]}>
+              {i18n.t('cart:empty2')}
+            </AppText>
+          </View>
+          <ChatTalk visible bottom={(isIOS ? 100 : 70) - tabBarHeight} />
         </View>
-        <ChatTalk visible bottom={(isIOS ? 100 : 70) - tabBarHeight} />
-      </View>
+      </SafeAreaView>
     ),
-    [tabBarHeight],
+    [route?.params?.showHeader, tabBarHeight],
   );
 
   const removeItem = useCallback(

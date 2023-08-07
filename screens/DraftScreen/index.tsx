@@ -11,9 +11,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
@@ -268,6 +266,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
         visible={showSnackBar !== ''}
         onClose={() => setShowSnackBar('')}
         textMessage={showSnackBar}
+        bottom={20}
         hideCancel
       />
 

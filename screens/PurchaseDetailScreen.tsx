@@ -271,6 +271,10 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   const [balanceCharge, setBalanceCharge] = useState<Currency>();
   const [order, setOrder] = useState<RkbOrder>();
   const [showSnackBar, setShowSnackBar] = useState<string>('');
+  const paidAmount = useMemo(
+    () => method?.amount || utils.toCurrency(0, esimCurrency),
+    [method?.amount],
+  );
 
   useEffect(() => {
     const {orderId} = route.params;
@@ -292,7 +296,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   const paymentInfo = useCallback(() => {
     if (!order) return null;
 
-    const paidAmount = method?.amount || utils.toCurrency(0, esimCurrency);
     const isRecharge =
       order.orderItems?.find((item) =>
         item.title.includes(i18n.t('sim:rechargeBalance')),
@@ -571,7 +574,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
                   styles.fontWeightBold,
                   styles.alignCenter,
                 ]}>
-                {utils.price(billingAmt)}
+                {utils.price(paidAmount)}
               </AppText>
             )}
             <AppButton

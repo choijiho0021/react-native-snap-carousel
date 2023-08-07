@@ -27,6 +27,7 @@ import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import {eventToken} from '@/constants/Adjust';
 import ScreenHeader from '@/components/ScreenHeader';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const {esimCurrency, esimGlobal} = Env.get();
 
@@ -132,6 +133,16 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     action.order.getSubs({iccid, token});
     action.noti.getNotiList({mobile: account.mobile});
   }, [account, action.noti, action.order]);
+
+  // 결제 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
+  BackbuttonHandler({
+    navigation,
+    onBack: () => {
+      navigation.popToTop();
+      navigation.navigate('HomeStack', {screen: 'Home'});
+      return true;
+    },
+  });
 
   useFocusEffect(
     React.useCallback(() => {
