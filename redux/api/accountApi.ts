@@ -145,6 +145,7 @@ const getCashHistory = ({iccid, token}: {iccid?: string; token?: string}) => {
                   ...o,
                   diff: utils.stringToNumber(o.diff) || 0,
                   expire_dt: o.expire_dt ? moment(o.expire_dt) : undefined,
+                  create_dt: o.create_dt ? moment(o.create_dt) : undefined,
                 } as CashHistory),
             ),
           )

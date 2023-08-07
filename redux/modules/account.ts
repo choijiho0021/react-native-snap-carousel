@@ -512,7 +512,7 @@ const slice = createSlice({
 
       if (result === 0 && objects && objects.length > 0) {
         const group = objects.reduce((acc, cur) => {
-          const year = cur.create_dt.format('YYYY');
+          const year = cur.create_dt?.format('YYYY');
           const idx = acc.findIndex((elm) => elm.title === year);
 
           if (idx <= -1) {
