@@ -1,7 +1,6 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import moment from 'moment';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Pressable,
@@ -14,7 +13,6 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
-import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppPrice from '@/components/AppPrice';
 import AppSnackBar from '@/components/AppSnackBar';
