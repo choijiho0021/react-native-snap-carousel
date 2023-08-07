@@ -312,21 +312,21 @@ const getSubscription = ({
   return api.callHttpGet(
     url,
     (resp) => {
-      if (resp.result === 0) {
-        resp.objects = resp.objects.map((o) => ({
-          ...o,
-          key: o.uuid,
-          provDate: getMoment(o.provDate),
-          cnt: parseInt(o.cnt || '0', 10),
-          lastExpireDate: getMoment(o.lastExpireDate),
-          startDate: getMoment(o.startDate),
-          promoFlag: o?.promoFlag?.map((p) => specialCategories[p]),
-          partner: groupPartner(o.partner),
-          status: toStatus(o.field_status),
-          purchaseDate: getMoment(o.purchaseDate),
-          expireDate: getMoment(o.expireDate),
-        }));
-      }
+      // if (resp.result === 0) {
+      //   resp.objects = resp.objects.map((o) => ({
+      //     ...o,
+      //     key: o.uuid,
+      //     provDate: getMoment(o.provDate),
+      //     cnt: parseInt(o.cnt || '0', 10),
+      //     lastExpireDate: getMoment(o.lastExpireDate),
+      //     startDate: getMoment(o.startDate),
+      //     promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
+      //     partner: groupPartner(o.partner),
+      //     status: toStatus(o.field_status),
+      //     purchaseDate: getMoment(o.purchaseDate),
+      //     expireDate: getMoment(o.expireDate),
+      //   }));
+      // }
       return resp;
     },
     api.withToken(token, 'json'),

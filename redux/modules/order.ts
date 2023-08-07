@@ -64,7 +64,7 @@ const getSubs = createAsyncThunk(
             cnt: parseInt(o.cnt || '0', 10),
             lastExpireDate: getMoment(o.lastExpireDate),
             startDate: getMoment(o.startDate),
-            promoFlag: o?.promoFlag?.map((p) => specialCategories[p]),
+            promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
             partner: groupPartner(o.partner),
             status: toStatus(o.field_status),
             purchaseDate: getMoment(o.purchaseDate),
@@ -380,7 +380,6 @@ const slice = createSlice({
 
     builder.addCase(getSubs.fulfilled, (state, action) => {
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
-
       const {count = PAGINATION_SUBS_COUNT, offset} = action?.meta?.arg;
 
       if (result === 0 && objects) {
