@@ -227,57 +227,65 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   const [orderType, setOrderType] = useState<OrderType>('latest');
   const [dataFilter, setDataFilter] = useState<string>('A');
   const [showSnackBar, setShowSnackbar] = useState(false);
-  const [isModalBeginDrag, setIsModalBeginDrag] = useState(false);
-  const [isTop, setIsTop] = useState(true);
+  const isModalBeginDrag = useRef(false);
+  const isTop = useRef(true);
+  const sectionRef = useRef<SectionList>(null);
 
-  const modalAnimatedValue = useRef(new Animated.Value(0)).current;
-  const animatedValue = useRef(new Animated.Value(0)).current;
-  const AnimatedTextHeight = useRef(new Animated.Value(0)).current;
-  const dividerAnimatedHeight = useRef(new Animated.Value(10)).current;
+  const modalAnimatedValue = useRef(new Animated.Value(56)).current;
+  const animatedValue = useRef(new Animated.Value(170)).current;
+  const animatedTextHeight = useRef(new Animated.Value(20)).current;
+  const dividerAnimatedHeight = useRef(new Animated.Value(0)).current;
   const dividerAnimatedMargin = useRef(new Animated.Value(0)).current;
 
   const orderTypeList: OrderType[] = useMemo(() => ['latest', 'old'], []);
   const filterList: string[] = useMemo(() => ['A', 'Y', 'N'], []);
 
-  useEffect(() => {
-    Animated.timing(modalAnimatedValue, {
-      toValue: isModalBeginDrag ? 56 : 194, // 56는 헤더 높이값, 168은 캐시잔액 높이값
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-  }, [modalAnimatedValue, isModalBeginDrag]);
+  const beginDragAnimation = useCallback(
+    (v: boolean) => {
+      isModalBeginDrag.current = v;
+      Animated.timing(modalAnimatedValue, {
+        toValue: isModalBeginDrag.current ? 56 : 194, // 56는 헤더 높이값, 168은 캐시잔액 높이값
+        duration: 500,
+        useNativeDriver: false,
+      }).start();
+    },
+    [modalAnimatedValue],
+  );
 
-  useEffect(() => {
-    Animated.timing(animatedValue, {
-      toValue: isTop ? 170 : 0,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-  }, [animatedValue, isTop]);
+  const runAnimation = useCallback(
+    (v: boolean) => {
+      isTop.current = v;
 
-  useEffect(() => {
-    Animated.timing(AnimatedTextHeight, {
-      toValue: isTop ? 20 : 0,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-  }, [AnimatedTextHeight, isTop]);
-
-  useEffect(() => {
-    Animated.timing(dividerAnimatedHeight, {
-      toValue: isTop ? 0 : 1,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-  }, [dividerAnimatedHeight, isTop]);
-
-  useEffect(() => {
-    Animated.timing(dividerAnimatedMargin, {
-      toValue: isTop ? 0 : 24,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-  }, [dividerAnimatedMargin, isTop]);
+      Animated.parallel([
+        Animated.timing(animatedValue, {
+          toValue: isTop.current ? 170 : 0,
+          duration: 500,
+          useNativeDriver: false,
+        }),
+        Animated.timing(animatedTextHeight, {
+          toValue: isTop.current ? 20 : 0,
+          duration: 500,
+          useNativeDriver: false,
+        }),
+        Animated.timing(dividerAnimatedHeight, {
+          toValue: isTop.current ? 0 : 1,
+          duration: 500,
+          useNativeDriver: false,
+        }),
+        Animated.timing(dividerAnimatedMargin, {
+          toValue: isTop.current ? 0 : 24,
+          duration: 500,
+          useNativeDriver: false,
+        }),
+      ]).start();
+    },
+    [
+      animatedTextHeight,
+      animatedValue,
+      dividerAnimatedHeight,
+      dividerAnimatedMargin,
+    ],
+  );
 
   const applyFilter = useCallback(
     (arr: any[]) =>
@@ -361,6 +369,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           ? moment(section.data[index - 1].create_dt).format('MM.DD')
           : '';
       const date = moment(item.create_dt).format('MM.DD');
+
       return (
         <Pressable
           style={styles.sectionItemContainer}
@@ -448,10 +457,10 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               appStyles.medium16,
               {color: colors.warmGrey, marginRight: 6},
             ]}>
-            {expireDate.format('YYYY.MM.DD')}까지
+            {expireDate.format('YYYY.MM.DD') + i18n.t('sim:until')}
           </AppText>
           <AppText style={[appStyles.bold14Text, {color: colors.redError}]}>
-            D-{dDay}
+            {`D-${dDay}`}
           </AppText>
         </View>
 
@@ -511,9 +520,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 
         <View style={{flex: 1}}>
           <Animated.ScrollView
-            onScrollBeginDrag={() => {
-              setIsModalBeginDrag(true);
-            }}
+            onScrollBeginDrag={() => beginDragAnimation(true)}
             stickyHeaderIndices={[0]}
             style={{
               flex: 1,
@@ -559,7 +566,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               type="primary"
               onPress={() => {
                 action.modal.closeModal();
-                setIsModalBeginDrag(false);
+                beginDragAnimation(false);
               }}
             />
           </View>
@@ -567,44 +574,54 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         <SafeAreaView style={{backgroundColor: colors.white}} />
       </View>
     ),
-    [action.modal, modalAnimatedValue, cashExpire, expirePt, renderExpireItem],
+    [
+      modalAnimatedValue,
+      expirePt,
+      cashExpire,
+      beginDragAnimation,
+      renderExpireItem,
+      action.modal,
+    ],
   );
+
+  const onPressFilter = useCallback((key: string) => {
+    setDataFilter(key);
+    sectionRef.current?.scrollToLocation({itemIndex: 0, sectionIndex: 0});
+  }, []);
 
   const renderFilter = useCallback(
     () => (
-      <View>
-        <View
-          style={{
-            flexDirection: 'row',
-            marginHorizontal: 20,
-            marginBottom: 24,
-          }}>
-          {filterList.map((elm) => (
-            <Pressable
-              onPress={() => setDataFilter(elm)}
-              key={elm}
+      <View
+        style={{
+          flexDirection: 'row',
+          marginHorizontal: 20,
+          marginBottom: 24,
+        }}>
+        {filterList.map((elm) => (
+          <Pressable
+            onPress={() => onPressFilter(elm)}
+            key={elm}
+            style={[
+              styles.filter,
+              {
+                backgroundColor:
+                  dataFilter === elm ? colors.clearBlue : colors.white,
+                borderColor:
+                  dataFilter === elm ? colors.clearBlue : colors.lightGrey,
+              },
+            ]}>
+            <AppText
               style={[
-                styles.filter,
-                {
-                  backgroundColor:
-                    dataFilter === elm ? colors.clearBlue : colors.white,
-                  borderColor:
-                    dataFilter === elm ? colors.clearBlue : colors.lightGrey,
-                },
+                appStyles.bold14Text,
+                {color: dataFilter === elm ? colors.white : colors.warmGrey},
               ]}>
-              <AppText
-                style={[
-                  appStyles.bold14Text,
-                  {color: dataFilter === elm ? colors.white : colors.warmGrey},
-                ]}>
-                {i18n.t(`cashHistory:filter:${elm}`)}
-              </AppText>
-            </Pressable>
-          ))}
-        </View>
+              {i18n.t(`cashHistory:filter:${elm}`)}
+            </AppText>
+          </Pressable>
+        ))}
       </View>
     ),
-    [dataFilter, filterList],
+    [dataFilter, filterList, onPressFilter],
   );
 
   const showExpirePt = useCallback(() => {
@@ -625,7 +642,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 
       <View style={styles.myRemain}>
         <Animated.Text
-          style={[appStyles.normal14Text, {height: AnimatedTextHeight}]}>
+          style={[appStyles.normal14Text, {height: animatedTextHeight}]}>
           {i18n.t('cashHistory:myBalance')}
         </Animated.Text>
         <View style={styles.balanceBox}>
@@ -705,6 +722,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
       {renderFilter()}
 
       <SectionList
+        ref={sectionRef}
         sections={sectionData}
         contentContainerStyle={
           sectionData.length > 0 ? undefined : styles.contentContainerStyle
@@ -722,8 +740,8 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             contentOffset: {y},
           },
         }) => {
-          if (isTop && y > 178) setIsTop(false);
-          else if (!isTop && y <= 0) setIsTop(true);
+          if (isTop.current && y > 178) runAnimation(false);
+          else if (!isTop.current && y <= 0) runAnimation(true);
         }}
         overScrollMode="never"
         bounces={false}
