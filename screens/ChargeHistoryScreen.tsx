@@ -21,7 +21,6 @@ import {
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {connect} from 'react-redux';
-import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
@@ -276,7 +275,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   const [orderType, setOrderType] = useState<OrderType>('purchase');
   const orderTypeList: OrderType[] = useMemo(() => ['purchase', 'latest'], []);
   const [showTip, setShowTip] = useState(false);
-  const [blockAnimation, setBlockAnimation] = useState(false);
+  const blockAnimation = useRef(false);
   const [chargedSubs, setChargedSubs] = useState([mainSubs]);
   const topHeight = useMemo(() => {
     let height = 326;
@@ -289,16 +288,18 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
 
   const showTop = useCallback(
     (isTop: boolean) => {
-      if (!blockAnimation) {
-        setBlockAnimation(true);
+      if (!blockAnimation.current) {
+        blockAnimation.current = true;
         Animated.timing(animatedValue, {
           toValue: isTop ? topHeight : 0,
           duration: 500,
           useNativeDriver: false,
-        }).start(() => setBlockAnimation(false));
+        }).start(() => {
+          blockAnimation.current = false;
+        });
       }
     },
-    [animatedValue, blockAnimation, topHeight],
+    [animatedValue, topHeight],
   );
 
   const data = useMemo(
@@ -643,12 +644,12 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
               tintColor="transparent" // ios 전용
             />
           }
-          onScroll={({
+          onScrollEndDrag={({
             nativeEvent: {
               contentOffset: {y},
             },
           }) => {
-            if (y >= 15 && !blockAnimation) showTop(false);
+            if (y >= 15) showTop(false);
           }}
         />
         {showTip && renderTooltip()}

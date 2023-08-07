@@ -726,7 +726,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         )}
         stickySectionHeadersEnabled
         ListEmptyComponent={() => renderEmpty()}
-        onScroll={({
+        onScrollEndDrag={({
           nativeEvent: {
             contentOffset: {y},
           },
