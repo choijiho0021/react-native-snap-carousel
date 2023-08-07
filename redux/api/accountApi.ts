@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import {Buffer} from 'buffer';
+import moment from 'moment';
 import utils from '@/redux/api/utils';
 import api, {ApiResult, ApiToken, DrupalNode, DrupalNodeJsonApi} from './api';
 import {CashExpire, CashHistory} from '@/redux/modules/account';
@@ -143,6 +144,7 @@ const getCashHistory = ({iccid, token}: {iccid?: string; token?: string}) => {
                 ({
                   ...o,
                   diff: utils.stringToNumber(o.diff) || 0,
+                  expire_dt: o.expire_dt ? moment(o.expire_dt) : undefined,
                 } as CashHistory),
             ),
           )
@@ -167,7 +169,12 @@ const getCashExpire = ({
     )}/${iccid}?_format=json&exp=${exp}`,
     (rsp) => {
       return rsp.result === 0
-        ? api.success(rsp.objects || [])
+        ? api.success(
+            rsp.objects.map((o) => ({
+              ...o,
+              expire_dt: o.expire_dt ? moment(o.expire_dt) : undefined,
+            })) || [],
+          )
         : api.failure(rsp.result, rsp.error);
     },
     api.withToken(token, 'json'),

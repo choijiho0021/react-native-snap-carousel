@@ -343,7 +343,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         return (
           <AppText>
             {i18n.t(`cashHistory:detail:expDate`, {
-              date: moment(item.expire_dt).format('YYYY.MM.DD'),
+              date: item.expire_dt.format('YYYY.MM.DD'),
             })}
           </AppText>
         );
@@ -365,10 +365,8 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
       section: SectionData;
     }) => {
       const predate =
-        index > 0
-          ? moment(section.data[index - 1].create_dt).format('MM.DD')
-          : '';
-      const date = moment(item.create_dt).format('MM.DD');
+        index > 0 ? section.data[index - 1].create_dt.format('MM.DD') : '';
+      const date = item.create_dt.format('MM.DD');
 
       return (
         <Pressable
@@ -444,20 +442,16 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   }, [dataFilter]);
 
   const renderExpireItem = useCallback((item: CashExpire) => {
-    const expireDate = moment(item.expire_dt);
-
-    const dDay = expireDate.diff(moment(), 'days');
+    const dDay = item.expire_dt?.diff(moment(), 'days');
     return (
-      <View
-        key={utils.generateKey(item.create_dt)}
-        style={styles.expPtContainer}>
+      <View key={item.create_dt.unix()} style={styles.expPtContainer}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <AppText
             style={[
               appStyles.medium16,
               {color: colors.warmGrey, marginRight: 6},
             ]}>
-            {expireDate.format('YYYY.MM.DD') + i18n.t('sim:until')}
+            {item.expire_dt?.format('YYYY.MM.DD') + i18n.t('sim:until')}
           </AppText>
           <AppText style={[appStyles.bold14Text, {color: colors.redError}]}>
             {`D-${dDay}`}
