@@ -2,7 +2,7 @@
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import _ from 'underscore';
+import _, {object} from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import moment, {Moment} from 'moment';
 import {API} from '@/redux/api';
@@ -171,7 +171,6 @@ const mergeSubs = (org: RkbSubscription[], subs: RkbSubscription[]) => {
     return org;
   }
 
-  // Map으로 하는게 나을지도 모르겠다.
   const subsMap: Record<string, string> = subs.reduce((acc, sub) => {
     acc[sub.nid] = sub.nid;
     return acc;
@@ -404,33 +403,31 @@ const slice = createSlice({
           // 기존 데이터를 가져와서 cnt가 1 이상인 것
           const maxExpiredDate: Moment = objects.reduce(
             (maxDate, obj) =>
-              obj.lastExpireDate && obj.lastExpireDate.isAfter(maxDate)
-                ? obj.lastExpireDate
+              obj.expireDate && obj.expireDate.isAfter(maxDate)
+                ? obj.expireDate
                 : maxDate, //  maxDate,
             moment('1900-01-01'),
           );
 
-          const nidListByServer = objects.map((obj) => obj.nid);
+          const {subsIccid} = objects[0];
+          const isMainSubs = (stateSubs: RkbSubscription) =>
+            stateSubs.subsIccid === subsIccid &&
+            stateSubs.statusCd === STATUS_USED;
 
-          const mainSubs = {
-            ...state.subs.find((sub) => {
-              return nidListByServer.includes(sub.nid) && sub?.cnt > 0;
-            }),
-            lastExpireDate: maxExpiredDate,
-          };
+          const updatedSubs = state.subs.map((sub) => {
+            if (isMainSubs(sub))
+              return {...sub, lastExpireDate: maxExpiredDate};
+            return sub;
+          });
 
-          const filtered = state.subs.filter((sub) => {
-            return !(
-              nidListByServer.includes(sub.nid) &&
-              (!mainSubs.nid || sub.nid === mainSubs.nid)
+          const filteredSubs = updatedSubs.filter((sub) => {
+            return (
+              !objects.map((obj) => obj.nid).includes(sub.nid) ||
+              isMainSubs(sub)
             );
           });
 
-          state.subs = mergeSubs(
-            filtered,
-            mainSubs?.nid ? [...filtered, mainSubs] : filtered,
-          );
-
+          state.subs = filteredSubs;
           // 1개일 땐 해당 상품 그대로 merge
         } else state.subs = mergeSubs(state.subs, objects);
       }
