@@ -71,7 +71,7 @@ type SimpleTextParams = {
     failure?: string;
   };
 };
-type PurchaseDetailParams = {detail?: RkbOrder};
+type PurchaseDetailParams = {orderId: string};
 
 export type HomeStackParamList = {
   Home: undefined;

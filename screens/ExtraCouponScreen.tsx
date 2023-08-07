@@ -108,7 +108,7 @@ const ExtraCouponScreen = () => {
   const [couponGrp, setCouponGrp] = useState<string[]>([]);
   const [selectedGrp, setSelectedGrp] = useState<string>('All');
   const [showItem, setShowItem] = useState<RkbExtraCoupon>();
-  const [isTop, setIsTop] = useState(true);
+  const isTop = useRef(true);
   const [imgRatio, setImgRatio] = useState(windowWidth / windowHeight);
   const scrollY = useRef(new Animated.Value(bannerHeight)).current;
 
@@ -185,13 +185,17 @@ const ExtraCouponScreen = () => {
     [couponGrp, selectedGrp],
   );
 
-  useEffect(() => {
-    Animated.timing(scrollY, {
-      toValue: isTop ? bannerHeight : 0,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-  }, [scrollY, isTop]);
+  const runAnimation = useCallback(
+    (v: boolean) => {
+      isTop.current = v;
+      Animated.timing(scrollY, {
+        toValue: isTop.current ? bannerHeight : 0,
+        duration: 500,
+        useNativeDriver: false,
+      }).start();
+    },
+    [scrollY],
+  );
 
   useEffect(() => {
     if (showItem?.dimension) {
@@ -219,10 +223,10 @@ const ExtraCouponScreen = () => {
       <FlatList
         data={data}
         renderItem={renderItem}
-        onScroll={({nativeEvent}) => {
+        onScrollEndDrag={({nativeEvent}) => {
           const {y} = nativeEvent.contentOffset;
-          if (isTop && y > bannerHeight) setIsTop(false);
-          else if (!isTop && y <= 0) setIsTop(true);
+          if (isTop.current && y > bannerHeight) runAnimation(false);
+          else if (!isTop.current && y <= 0) runAnimation(true);
         }}
       />
 

@@ -229,7 +229,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [cmiStatus, setCmiStatus] = useState({});
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const isFocused = useIsFocused();
-  const flatListRef = useRef<FlatList>();
+  const flatListRef = useRef<FlatList>(null);
   const tabBarHeight = useBottomTabBarHeight();
 
   const subsData = useMemo(
@@ -272,7 +272,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   useEffect(() => {
     if (isFocused) {
-      onRefresh(isEditMode, true);
+      onRefresh(isEditMode, false);
       setIsFirstLoad(true);
     }
   }, [action.order, isEditMode, isFocused, onRefresh]);
@@ -611,8 +611,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         keyExtractor={(item) => item.nid}
         ListHeaderComponent={isEditMode ? undefined : info}
         renderItem={renderSubs}
-        // onRefresh={this.onRefresh}
-        // refreshing={refreshing}
         extraData={[isEditMode]}
         contentContainerStyle={[
           {paddingBottom: 34},

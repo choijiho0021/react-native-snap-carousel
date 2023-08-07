@@ -249,7 +249,7 @@ const Esim: React.FC<EsimProps> = ({
   const [appUpdate, setAppUpdate] = useState('');
   const [appUpdateVisible, setAppUpdateVisible] = useState<boolean>();
   const [popUpList, setPopUpList] = useState<RkbPromotion[]>();
-  const [isTop, setIsTop] = useState<boolean>(true);
+  const isTop = useRef(true);
   const initialized = useRef(false);
   const initNoti = useRef(false);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
@@ -309,13 +309,17 @@ const Esim: React.FC<EsimProps> = ({
     }
   }, [dimensions.width, promotion]);
 
-  useEffect(() => {
-    Animated.timing(animatedValue, {
-      toValue: isTop ? bannerHeight : 0,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-  }, [animatedValue, bannerHeight, isTop]);
+  const runAnimation = useCallback(
+    (v: boolean) => {
+      isTop.current = v;
+      Animated.timing(animatedValue, {
+        toValue: isTop.current ? bannerHeight : 0,
+        duration: 500,
+        useNativeDriver: false,
+      }).start();
+    },
+    [animatedValue, bannerHeight],
+  );
 
   const setNotiModal = useCallback(() => {
     const popUpPromoList = promotion?.filter(
@@ -469,20 +473,20 @@ const Esim: React.FC<EsimProps> = ({
         onPress={onPressItem}
         localOpList={product.localOpList}
         width={dimensions.width}
-        onScroll={({nativeEvent}) => {
+        onScrollEndDrag={({nativeEvent}) => {
           const {y} = nativeEvent.contentOffset;
-          if (isTop && y > bannerHeight) setIsTop(false);
-          else if (!isTop && y <= 0) setIsTop(true);
+          if (isTop.current && y > bannerHeight) runAnimation(false);
+          else if (!isTop.current && y <= 0) runAnimation(true);
         }}
       />
     ),
     [
       bannerHeight,
       dimensions.width,
-      isTop,
       onPressItem,
       product.localOpList,
       product.priceInfo,
+      runAnimation,
     ],
   );
 

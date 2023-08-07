@@ -1,11 +1,11 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef} from 'react';
 import {StyleSheet, SafeAreaView, View, Animated} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
-import {TabView} from 'react-native-tab-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import i18n from '@/utils/i18n';
 import {RootState} from '@/redux';
 import {
@@ -15,9 +15,7 @@ import {
 } from '@/redux/modules/product';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
-import AppTabHeader from '@/components/AppTabHeader';
 import {makeProdData} from './CountryScreen';
-import {retrieveData} from '@/utils/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RkbProduct} from '@/redux/api/productApi';
@@ -25,23 +23,15 @@ import ProdByType from '@/components/ProdByType';
 import SelectedProdTitle from './EventBoardScreen/components/SelectedProdTitle';
 import AppStyledText from '@/components/AppStyledText';
 import ScreenHeader from '@/components/ScreenHeader';
-import {windowWidth} from '@/constants/SliderEntry.style';
+import TabBar from './CountryScreen/TabBar';
+
+const Tab = createMaterialTopTabNavigator();
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.white,
     flex: 1,
     alignItems: 'stretch',
-  },
-  tab: {
-    backgroundColor: colors.white,
-    height: 50,
-    paddingHorizontal: 20,
-  },
-  tabTitle: {
-    ...appStyles.medium18,
-    lineHeight: 26,
-    color: colors.gray2,
   },
   whiteBox: {
     paddingHorizontal: 20,
@@ -58,10 +48,6 @@ const styles = StyleSheet.create({
     marginRight: 6,
     alignSelf: 'center',
   },
-  selectedTabTitle: {
-    ...appStyles.bold18Text,
-    color: colors.black,
-  },
   chargeablePeriodText: {
     ...appStyles.medium14,
     lineHeight: 22,
@@ -71,23 +57,7 @@ const styles = StyleSheet.create({
     ...appStyles.bold14Text,
     lineHeight: 22,
   },
-  divider16: {
-    height: 16,
-    width: '100%',
-    backgroundColor: colors.white,
-  },
-  divider24: {
-    height: 24,
-    width: '100%',
-    backgroundColor: colors.white,
-  },
 });
-
-type ChargeTabRouteKey = 'daily' | 'total';
-type ChargeTabRoute = {
-  key: ChargeTabRouteKey;
-  title: string;
-};
 
 type ChargeScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
@@ -110,42 +80,27 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
   action,
 }) => {
   const {localOpList, prodByPartner} = product;
-  const [index, setIndex] = useState(0);
-  const [showTip, setTip] = useState(false);
-  const [isTop, setIsTop] = useState(true);
-  const [blockAnimation, setBlockAnimation] = useState(false);
+  const isTop = useRef(true);
+  const blockAnimation = useRef(false);
   const animatedValue = useRef(new Animated.Value(264)).current;
 
-  useEffect(() => {
-    retrieveData('chargeTooltip').then((elm) => setTip(elm !== 'closed'));
-  }, []);
+  const partnerIds = useMemo(
+    () =>
+      product.prodByCountry.reduce((acc: string[], cur) => {
+        const curArr = cur.country.split(',');
+        const mainCntryArr = params?.mainSubs?.country || [];
 
-  useEffect(() => {
-    if (!blockAnimation) {
-      setBlockAnimation(true);
-      Animated.timing(animatedValue, {
-        toValue: isTop ? 264 : 0,
-        duration: 500,
-        useNativeDriver: false,
-      }).start(() => setBlockAnimation(false));
-    }
-  }, [animatedValue, blockAnimation, isTop]);
+        if (
+          curArr.length === mainCntryArr.length &&
+          curArr.filter((elm) => mainCntryArr.includes(elm)).length ===
+            curArr.length
+        )
+          acc.push(cur.partner);
 
-  const partnerIds = useMemo(() => {
-    return product.prodByCountry.reduce((acc: string[], cur) => {
-      const curArr = cur.country.split(',');
-      const mainCntryArr = params?.mainSubs?.country || [];
-
-      if (
-        curArr.length === mainCntryArr.length &&
-        curArr.filter((elm) => mainCntryArr.includes(elm)).length ===
-          curArr.length
-      )
-        acc.push(cur.partner);
-
-      return acc;
-    }, []);
-  }, [params?.mainSubs?.country, product.prodByCountry]);
+        return acc;
+      }, []),
+    [params?.mainSubs?.country, product.prodByCountry],
+  );
 
   const prodData = useMemo(() => {
     if (partnerIds) {
@@ -167,21 +122,6 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
     action.product.getProdOfPartner(partnerIds);
   }, [action.product, partnerIds]);
 
-  const routes = useMemo(
-    () =>
-      [
-        {
-          key: 'daily',
-          title: i18n.t('country:daily'),
-        },
-        {
-          key: 'total',
-          title: i18n.t('country:total'),
-        },
-      ] as ChargeTabRoute[],
-    [],
-  );
-
   const onPress = useCallback(
     (data: RkbProduct) =>
       navigation.navigate('ChargeAgreement', {
@@ -199,17 +139,36 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
     [navigation, params.mainSubs],
   );
 
-  const renderScene = useCallback(
-    ({route: sceneRoute}: {route: ChargeTabRoute}) => (
-      <ProdByType
-        prodData={prodData[sceneRoute.key === 'daily' ? 0 : 1]}
-        prodType={sceneRoute.key}
-        onTop={setIsTop}
-        onPress={onPress}
-        isCharge
-      />
-    ),
-    [onPress, prodData],
+  const onTop = useCallback(
+    (v: boolean) => {
+      isTop.current = v;
+
+      if (!blockAnimation.current) {
+        blockAnimation.current = true;
+        Animated.timing(animatedValue, {
+          toValue: isTop.current ? 264 : 0,
+          duration: 500,
+          useNativeDriver: false,
+        }).start(() => {
+          blockAnimation.current = false;
+        });
+      }
+    },
+    [animatedValue],
+  );
+
+  const renderProdType = useCallback(
+    (key: 'daily' | 'total') => () =>
+      (
+        <ProdByType
+          prodData={prodData[key === 'daily' ? 0 : 1]}
+          prodType={key}
+          onTop={onTop}
+          onPress={onPress}
+          isCharge={false}
+        />
+      ),
+    [onPress, onTop, prodData],
   );
 
   return (
@@ -239,31 +198,21 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
         </View>
       </Animated.View>
 
-      <View style={styles.divider16} />
-
-      <AppTabHeader
-        index={index}
-        routes={routes}
-        onIndexChange={setIndex}
-        style={styles.tab}
-        tintColor={colors.black}
-        titleStyle={styles.tabTitle}
-        seletedStyle={styles.selectedTabTitle}
-      />
-
-      <View style={styles.divider24} />
-
-      <TabView
-        sceneContainerStyle={{flex: 1, backgroundColor: colors.white}}
-        navigationState={{index, routes}}
-        renderScene={renderScene}
-        onIndexChange={setIndex}
-        renderTabBar={() => null}
-        initialLayout={{
-          height: 0,
-          width: windowWidth,
-        }}
-      />
+      {prodData.length > 0 ? (
+        <Tab.Navigator
+          initialRouteName={prodData[0].length === 0 ? 'total' : 'daily'}
+          tabBar={(props) => <TabBar {...props} />}
+          sceneContainerStyle={{backgroundColor: colors.white}}>
+          {['daily', 'total'].map((k) => (
+            <Tab.Screen
+              key={k}
+              name={k}
+              component={renderProdType(k)}
+              options={{lazy: true, title: i18n.t(`country:${k}`)}}
+            />
+          ))}
+        </Tab.Navigator>
+      ) : null}
     </SafeAreaView>
   );
 };
