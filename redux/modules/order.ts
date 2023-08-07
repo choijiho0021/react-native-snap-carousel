@@ -400,12 +400,11 @@ const slice = createSlice({
         }
         // uuid 가 있는 경우, 특정 상품 조회
         else if (objects?.length > 1) {
-          // 기존 데이터를 가져와서 cnt가 1 이상인 것
           const maxExpiredDate: Moment = objects.reduce(
             (maxDate, obj) =>
               obj.expireDate && obj.expireDate.isAfter(maxDate)
                 ? obj.expireDate
-                : maxDate, //  maxDate,
+                : maxDate,
             moment('1900-01-01'),
           );
 

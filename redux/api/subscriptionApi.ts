@@ -120,7 +120,7 @@ export const sortSubs = (a: RkbSubscription, b: RkbSubscription) => {
 
   // 앞 활성화, 뒤가 비활성화인 경우 -> 정배열 상태
   if (isDisabledB) {
-    return 1;
+    return -1;
   }
   // 앞 활성화, 뒤 활성화 -> 정배열 상태
   return checkTimeOrder(a, b);
