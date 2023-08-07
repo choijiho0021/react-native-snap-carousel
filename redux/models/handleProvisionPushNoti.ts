@@ -5,8 +5,16 @@ class HandleProvisionPushNoti extends HandlePushNoti {
     if (!this.isForeground)
       this.navigation.navigate('EsimStack', {screen: 'Esim'});
     else {
-      // foreground 일 때
-      this.getSubs({iccid: this.iccid, token: this.token});
+      const {notiType} = this.payload.data;
+
+      if (notiType) {
+        const subsIccid = notiType.split('/')[1];
+
+        if (subsIccid) {
+          // foreground 일 때
+          this.getSubs({iccid: this.iccid, token: this.token, uuid: subsIccid});
+        }
+      }
     }
   }
 }
