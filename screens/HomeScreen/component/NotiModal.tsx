@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
 import React, {memo, useCallback, useState, useMemo, useEffect} from 'react';
-import {Image, Pressable, View, StyleSheet} from 'react-native';
+import {Image, Pressable, View, StyleSheet, Dimensions} from 'react-native';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
@@ -11,7 +11,7 @@ import {colors} from '@/constants/Colors';
 import {API} from '@/redux/api';
 import ProgressiveImage from '@/components/ProgressiveImage';
 import AppCarousel from '@/components/AppCarousel';
-import {sliderWidth} from '@/constants/SliderEntry.style';
+import {isFolderOpen} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 
 const styles = StyleSheet.create({
@@ -62,7 +62,26 @@ const NotiModal: React.FC<NotiModalProps> = ({
   );
   const [imageHeight, setImageHeight] = useState(450);
   const [activeSlide, setActiveSlide] = useState(-1);
-  const modalImageSize = useMemo(() => sliderWidth - 40, []);
+
+  const [dimensions, setDimensions] = useState(Dimensions.get('window'));
+  const folderOpened = useMemo(
+    () => isFolderOpen(dimensions.width),
+    [dimensions.width],
+  );
+
+  // 펼치고 접었을 때  modalImageSize 다시 계산하도록 변경
+  // TODO : 폴더블일 때 적절한 width 계산식 필요, modalImage가 modalHeight의 0.75 일 때 화면이 적절히 배치됨
+  const modalImageSize = useMemo(
+    () => (folderOpened ? 420 : dimensions.width - 40),
+    [dimensions.width, folderOpened],
+  );
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({window}) => {
+      setDimensions(window);
+    });
+    return () => subscription?.remove();
+  }, []);
 
   const setPopupDisabled = useCallback(() => {
     if (checked)
@@ -118,12 +137,10 @@ const NotiModal: React.FC<NotiModalProps> = ({
           setImageHeight(Math.ceil(height * (modalImageSize / width)));
         },
       );
-  }, [modalImageSize, popUpList]);
+  }, [modalImageSize, popUpList, dimensions]);
 
   return (
     <AppModal
-      // titleStyle={styles.infoModalTitle}
-      // title={popUp?.title}
       contentStyle={{
         paddingTop: 0,
         marginTop: 0,

@@ -12,6 +12,7 @@ import i18n from '@/utils/i18n';
 import {OrderAction} from '@/redux/modules/order';
 import {ProductModelState} from '@/redux/modules/product';
 import AppIcon from '@/components/AppIcon';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const styles = StyleSheet.create({
   container: {
@@ -70,6 +71,20 @@ const DraftResultScreen: React.FC<DraftResultScreenProps> = ({
       headerLeft: null,
     });
   }, [navigation]);
+
+  // 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
+  BackbuttonHandler({
+    navigation,
+    onBack: () => {
+      // MyPage 재 클릭시 결과 창으로 복귀 방지
+      navigation.popToTop();
+      navigate(navigation, route, 'MyPageStack', {
+        tab: 'EsimStack',
+        screen: 'Esim',
+      });
+      return true;
+    },
+  });
 
   useEffect(() => {
     setIsSuccess(route?.params?.isSuccess);
