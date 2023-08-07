@@ -567,14 +567,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     });
   }, [navigation, subs]);
 
-  console.log(
-    'aaaaa subs',
-    isEditMode
-      ? order.subs
-      : order.subs?.filter(
-          (elm) => !elm.hide, // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨길 수 없도록 한다.
-        ),
-  );
   return (
     <SafeAreaView style={styles.container}>
       <View style={[appStyles.header, styles.esimHeader]}>
