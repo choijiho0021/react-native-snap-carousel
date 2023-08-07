@@ -315,6 +315,7 @@ const getSubscription = ({
       if (resp.result === 0) {
         resp.objects = resp.objects.map((o) => ({
           ...o,
+          key: o.uuid,
           provDate: getMoment(o.provDate),
           cnt: parseInt(o.cnt || '0', 10),
           lastExpireDate: getMoment(o.lastExpireDate),
