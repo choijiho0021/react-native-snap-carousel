@@ -160,7 +160,7 @@ type StoreListProps = {
   localOpList: ImmutableMap<string, RkbLocalOp>;
   data: RkbPriceInfo[][];
   onPress: (p: RkbPriceInfo) => void;
-  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  onScrollEndDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   onEndReached?: () => void;
   scrollEnabled?: boolean;
   width: number;
@@ -170,7 +170,7 @@ const StoreList = ({
   localOpList,
   data,
   onPress,
-  onScroll,
+  onScrollEndDrag,
   onEndReached,
   scrollEnabled = true,
   width,
@@ -231,7 +231,7 @@ const StoreList = ({
     <View style={appStyles.container}>
       <FlatList
         data={list}
-        onScroll={onScroll}
+        onScrollEndDrag={onScrollEndDrag}
         renderItem={renderItem}
         onEndReached={onEndReached}
         scrollEnabled={scrollEnabled}

@@ -196,7 +196,7 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
           title={i18n.t('his:cancelOrderButton')}
           onPress={() => {
             navigation.navigate('PurchaseDetail', {
-              detail: orderResult,
+              orderId: orderResult?.orderId,
             });
           }}
         />

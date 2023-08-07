@@ -1,17 +1,14 @@
 /* eslint-disable consistent-return */
-import {RouteProp, useFocusEffect} from '@react-navigation/native';
+import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState, useMemo, useRef} from 'react';
 import {Animated, SafeAreaView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {Map as ImmutableMap} from 'immutable';
-import {TabView} from 'react-native-tab-view';
-import Tooltip from 'react-native-walkthrough-tooltip';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
-import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
@@ -20,15 +17,15 @@ import {actions as cartActions} from '@/redux/modules/cart';
 import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import ProductImg from '@/components/ProductImg';
-import AppSvgIcon from '@/components/AppSvgIcon';
-import AppTabHeader from '@/components/AppTabHeader';
-import AppButton from '@/components/AppButton';
-import {retrieveData, storeData} from '@/utils/utils';
 import ProdByType from '@/components/ProdByType';
 import ChatTalk from '@/components/ChatTalk';
 import Env from '@/environment';
+import TabBar from './TabBar';
+import ToolTip from './ToolTip';
 
 const {isIOS} = Env.get();
+
+const Tab = createMaterialTopTabNavigator();
 
 const styles = StyleSheet.create({
   container: {
@@ -45,66 +42,6 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: colors.white,
     alignItems: 'center',
-  },
-  tab: {
-    backgroundColor: colors.white,
-    height: 90,
-    paddingTop: 16,
-    paddingHorizontal: 20,
-    paddingBottom: 24,
-  },
-  tabTitle: {
-    ...appStyles.medium18,
-    lineHeight: 26,
-    color: colors.gray2,
-  },
-  selectedTabTitle: {
-    ...appStyles.bold18Text,
-    color: colors.black,
-  },
-  toolTipBox: {
-    backgroundColor: colors.black,
-    paddingTop: 16,
-    paddingBottom: 20,
-    height: '100%',
-  },
-  toolTipTitleFrame: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: 36,
-    marginBottom: 12,
-  },
-  toolTipTitleText: {
-    ...appStyles.bold14Text,
-    color: colors.white,
-    lineHeight: 20,
-    marginLeft: 16,
-  },
-  btnCancel: {
-    padding: 8,
-    marginRight: 8,
-  },
-  toolTipBody: {
-    marginLeft: 16,
-    paddingRight: 30,
-  },
-  toolTipBodyText: {
-    ...appStyles.normal14Text,
-    color: colors.white,
-    lineHeight: 20,
-  },
-  cautionBtn: {
-    width: 24,
-    height: 24,
-    marginTop: 2,
-  },
-  toolTipStyle: {
-    borderRadius: 5,
-  },
-  arrowStyle: {
-    borderTopColor: colors.black,
-    zIndex: 10,
   },
 });
 
@@ -149,22 +86,14 @@ type CountryScreenProps = {
 
 // type ProdDataType = {title: string; data: RkbProduct[]};
 
-type TabRouteKey = 'daily' | 'total';
-type TabRoute = {
-  key: TabRouteKey;
-  title: string;
-};
-
 const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const {navigation, route, product} = props;
-  const {localOpList, prodByLocalOp, prodList, prodByPartner} = product;
+  const {localOpList, prodByPartner} = product;
 
-  const [prodData, setProdData] = useState<RkbProduct[][]>([[], []]);
+  const [prodData, setProdData] = useState<RkbProduct[][]>([]);
   const [imageUrl, setImageUrl] = useState<string>();
   const [localOpDetails, setLocalOpDetails] = useState<string>();
   const [partnerId, setPartnerId] = useState<string>();
-  const [index, setIndex] = useState<number>();
-  const [showTip, setTip] = useState(false);
   const isTop = useRef(true);
   const blockAnimation = useRef(false);
   const headerTitle = useMemo(
@@ -172,67 +101,21 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     [localOpList, route.params?.partner],
   );
   const animatedValue = useRef(new Animated.Value(150)).current;
-  const routes = useMemo(
-    () =>
-      [
-        {
-          key: 'daily',
-          title: i18n.t('country:daily'),
-        },
-        {
-          key: 'total',
-          title: i18n.t('country:total'),
-        },
-      ] as TabRoute[],
-    [],
-  );
 
   useEffect(() => {
-    retrieveData('LocalProdTooltip').then((elm) => {
-      setTimeout(() => {
-        setTip(elm !== 'closed');
-      }, 1000);
+    if (route.params?.partner) {
+      const partnerIds = route.params.partner;
 
-      storeData('LocalProdTooltip', 'closed');
-    });
-  }, []);
+      const localOp = localOpList.get(partnerIds[0]);
+      setPartnerId(partnerIds[0]);
 
-  const runAnimation = useCallback(() => {
-    if (!blockAnimation.current) {
-      blockAnimation.current = true;
-      Animated.timing(animatedValue, {
-        toValue: isTop.current ? 150 : 0,
-        duration: 500,
-        useNativeDriver: false,
-      }).start(() => {
-        blockAnimation.current = false;
-      });
-    }
-  }, [animatedValue]);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      if (route.params?.partner) {
-        const partnerIds = route.params.partner;
-
-        const localOp = localOpList.get(partnerIds[0]);
-        setPartnerId(partnerIds[0]);
-
-        setImageUrl(localOp?.imageUrl);
-        setLocalOpDetails(localOp?.detail);
-        if (partnerIds.every((elm) => prodByPartner.has(elm))) {
-          const data = makeProdData(prodByPartner, partnerIds);
-          setProdData(data);
-          if (data[0].length === 0) setIndex(1);
-          else setIndex(0);
-        }
+      setImageUrl(localOp?.imageUrl);
+      setLocalOpDetails(localOp?.detail);
+      if (partnerIds.every((elm) => prodByPartner.has(elm))) {
+        setProdData(makeProdData(prodByPartner, partnerIds));
       }
-    }, [localOpList, prodByPartner, route.params.partner]),
-  );
-
-  const onIndexChange = useCallback((idx: number) => {
-    setIndex(idx);
-  }, []);
+    }
+  }, [localOpList, prodByPartner, route.params.partner]);
 
   const onPress = useCallback(
     (prod: RkbProduct) =>
@@ -248,78 +131,36 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     [imageUrl, localOpDetails, navigation, partnerId],
   );
 
-  const renderScene = useCallback(
-    ({route}: {route: TabRoute}) => (
-      <ProdByType
-        prodData={prodData[route.key === 'daily' ? 0 : 1]}
-        onTop={(v: boolean) => {
-          isTop.current = v;
-          runAnimation();
-        }}
-        onPress={onPress}
-        isCharge={false}
-      />
-    ),
-    [onPress, prodData, runAnimation],
+  const onTop = useCallback(
+    (v: boolean) => {
+      isTop.current = v;
+
+      if (!blockAnimation.current) {
+        blockAnimation.current = true;
+        Animated.timing(animatedValue, {
+          toValue: isTop.current ? 150 : 0,
+          duration: 500,
+          useNativeDriver: false,
+        }).start(() => {
+          blockAnimation.current = false;
+        });
+      }
+    },
+    [animatedValue],
   );
 
-  const renderToolTip = useCallback(
-    () => (
-      <Tooltip
-        isVisible={showTip}
-        backgroundColor="rgba(0,0,0,0)"
-        contentStyle={styles.toolTipBox}
-        tooltipStyle={styles.toolTipStyle}
-        arrowStyle={styles.arrowStyle}
-        backgroundStyle={{opacity: 0.92}}
-        disableShadow
-        arrowSize={{width: 20, height: 12}}
-        content={
-          <View>
-            <View style={styles.toolTipTitleFrame}>
-              <AppText style={styles.toolTipTitleText}>
-                {i18n.t('local:noticeBox:title')}
-              </AppText>
-              <AppButton
-                style={styles.btnCancel}
-                iconName="btnCancelWhite"
-                onPress={() => setTip(false)}
-              />
-            </View>
-            <View style={styles.toolTipBody}>
-              {[1, 2].map((k) => (
-                <View key={k} style={{flexDirection: 'row'}}>
-                  <AppText
-                    style={[
-                      appStyles.normal14Text,
-                      {marginHorizontal: 5, marginTop: 3, color: colors.white},
-                    ]}>
-                    •
-                  </AppText>
-                  <AppText style={styles.toolTipBodyText}>
-                    {i18n.t(`local:noticeBox:body${k}`)}
-                  </AppText>
-                </View>
-              ))}
-            </View>
-          </View>
-        }
-        onClose={() => {
-          setTip(false);
-        }}
-        placement="bottom">
-        <AppSvgIcon
-          style={styles.cautionBtn}
-          onPress={() => {
-            storeData('LocalProdTooltip', 'closed');
-            setTip(true);
-          }}
-          name="btnChargeCaution"
+  const renderProdType = useCallback(
+    (key: 'daily' | 'total') => () =>
+      (
+        <ProdByType
+          prodData={prodData[key === 'daily' ? 0 : 1]}
+          prodType={key}
+          onTop={onTop}
+          onPress={onPress}
+          isCharge={false}
         />
-        {/* {showTip && <View style={styles.triangle} />} */}
-      </Tooltip>
-    ),
-    [showTip],
+      ),
+    [onPress, onTop, prodData],
   );
 
   return (
@@ -333,8 +174,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           }}
         />
         {(headerTitle.includes('(로컬망)') ||
-          headerTitle.includes('(local)')) &&
-          renderToolTip()}
+          headerTitle.includes('(local)')) && <ToolTip />}
       </View>
 
       {imageUrl && (
@@ -346,27 +186,22 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         </Animated.View>
       )}
 
-      {index !== undefined && (
-        <View style={{backgroundColor: colors.white, flex: 1}}>
-          <AppTabHeader
-            index={index}
-            routes={routes}
-            onIndexChange={onIndexChange}
-            style={styles.tab}
-            tintColor={colors.black}
-            titleStyle={styles.tabTitle}
-            seletedStyle={styles.selectedTabTitle}
-          />
+      {prodData.length > 0 ? (
+        <Tab.Navigator
+          initialRouteName={prodData[0].length === 0 ? 'total' : 'daily'}
+          tabBar={(props) => <TabBar {...props} />}
+          sceneContainerStyle={{backgroundColor: colors.white}}>
+          {['daily', 'total'].map((k) => (
+            <Tab.Screen
+              key={k}
+              name={k}
+              component={renderProdType(k)}
+              options={{lazy: true, title: i18n.t(`country:${k}`)}}
+            />
+          ))}
+        </Tab.Navigator>
+      ) : null}
 
-          <TabView
-            sceneContainerStyle={{flex: 1}}
-            navigationState={{index, routes}}
-            renderScene={renderScene}
-            onIndexChange={onIndexChange}
-            renderTabBar={() => null}
-          />
-        </View>
-      )}
       <AppActivityIndicator visible={props.pending} />
       <ChatTalk visible bottom={isIOS ? 100 : 70} />
     </SafeAreaView>

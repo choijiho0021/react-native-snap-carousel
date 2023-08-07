@@ -229,7 +229,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [cmiStatus, setCmiStatus] = useState({});
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const isFocused = useIsFocused();
-  const flatListRef = useRef<FlatList>();
+  const flatListRef = useRef<FlatList>(null);
   const tabBarHeight = useBottomTabBarHeight();
 
   const subsData = useMemo(
@@ -272,7 +272,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   useEffect(() => {
     if (isFocused) {
-      onRefresh(isEditMode, true);
+      onRefresh(isEditMode, false);
       setIsFirstLoad(true);
     }
   }, [action.order, isEditMode, isFocused, onRefresh]);
@@ -567,14 +567,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     });
   }, [navigation, subs]);
 
-  console.log(
-    'aaaaa subs',
-    isEditMode
-      ? order.subs
-      : order.subs?.filter(
-          (elm) => !elm.hide, // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨길 수 없도록 한다.
-        ),
-  );
   return (
     <SafeAreaView style={styles.container}>
       <View style={[appStyles.header, styles.esimHeader]}>
@@ -611,8 +603,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         keyExtractor={(item) => item.nid}
         ListHeaderComponent={isEditMode ? undefined : info}
         renderItem={renderSubs}
-        // onRefresh={this.onRefresh}
-        // refreshing={refreshing}
         extraData={[isEditMode]}
         contentContainerStyle={[
           {paddingBottom: 34},

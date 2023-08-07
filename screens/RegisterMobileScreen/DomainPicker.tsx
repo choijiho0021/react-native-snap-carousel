@@ -24,7 +24,7 @@ const DomainPicker = ({
       color:
         Appearance.getColorScheme() === 'dark' ? colors.white : colors.black,
     };
-    return (
+    return visible ? (
       <Picker
         ref={ref}
         onBlur={() => onOkClose(domain === 'direct' ? '' : domain)}
@@ -41,8 +41,8 @@ const DomainPicker = ({
           <Picker.Item key={k} label={v} value={k} style={style} />
         ))}
       </Picker>
-    );
-  }, [domain, onOkClose]);
+    ) : null;
+  }, [domain, onOkClose, visible]);
 
   useEffect(() => {
     if (Platform.OS === 'android') {

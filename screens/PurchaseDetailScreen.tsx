@@ -32,6 +32,7 @@ import {
   actions as orderActions,
   OrderAction,
   getCountItems,
+  OrderModelState,
 } from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import {API} from '@/redux/api';
@@ -227,6 +228,7 @@ type PurchaseDetailScreenProps = {
   route: PurchaseDetailScreenRouteProp;
 
   account: AccountModelState;
+  orders: OrderModelState['orders'];
 
   pending: boolean;
 
@@ -256,13 +258,11 @@ export const countRokebiCash = (order: RkbOrder) => {
   }
 };
 
-const isUseNotiState = (state: OrderState) =>
-  ['validation', 'completed'].includes(state);
-
 const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   navigation,
   route,
   account,
+  orders,
   pending,
 }) => {
   const [showPayment, setShowPayment] = useState(true);
@@ -277,18 +277,21 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   );
 
   useEffect(() => {
-    const {detail} = route.params;
+    const {orderId} = route.params;
 
     Analytics.trackEvent('Page_View_Count', {page: 'Purchase Detail'});
 
-    setOrder(detail);
-    setBillingAmt(utils.addCurrency(detail?.totalPrice, detail?.dlvCost));
-    setMethod(
-      detail?.paymentList?.find((item) => !isRokebiCash(item.paymentGateway)),
-    );
+    const detail = orders.get(Number(orderId));
+    if (detail) {
+      setOrder(detail);
+      setBillingAmt(utils.addCurrency(detail.totalPrice, detail.dlvCost));
+      setMethod(
+        detail.paymentList?.find((item) => !isRokebiCash(item.paymentGateway)),
+      );
 
-    setBalanceCharge(countRokebiCash(detail));
-  }, [account, route.params]);
+      setBalanceCharge(countRokebiCash(detail));
+    }
+  }, [account, orders, route.params]);
 
   const paymentInfo = useCallback(() => {
     if (!order) return null;
@@ -438,26 +441,19 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   );
 
   const headerNoti = useCallback(() => {
-    if (
-      !order ||
-      !order.orderItems ||
-      order?.orderType !== 'refundable' ||
-      !isUseNotiState(order?.state)
-    )
+    if (!order || !order.orderItems || order?.orderType !== 'refundable')
       return <View />;
 
-    const isValidate = order?.state === 'validation';
+    const noti =
+      order?.state === 'validation'
+        ? i18n.t('his:draftBeforeNoti')
+        : order?.state === 'completed'
+        ? i18n.t('his:draftAfterNoti')
+        : '';
 
-    const getNoti = () => {
-      switch (order?.state) {
-        case 'validation':
-          return i18n.t('his:draftBeforeNoti');
-        case 'completed':
-          return i18n.t('his:draftAfterNoti');
-        default:
-          return '';
-      }
-    };
+    if (!noti) return <View />;
+
+    const isValidate = order?.state === 'validation';
 
     return (
       <View
@@ -472,13 +468,11 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           style={{marginRight: 9}}
         />
         <AppStyledText
-          text={getNoti()}
-          textStyle={[
-            styles.headerNotiText,
-            {
-              color: isValidate ? colors.redError : colors.blue,
-            },
-          ]}
+          text={noti}
+          textStyle={{
+            ...styles.headerNotiText,
+            color: isValidate ? colors.redError : colors.blue,
+          }}
           format={{
             b: [
               styles.headerNotiBoldText,
@@ -493,7 +487,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   }, [order]);
 
   const getColor = useCallback((state?: OrderState) => {
-    console.log('state : ', state);
     switch (state) {
       case 'canceled':
         return colors.redError;
@@ -629,8 +622,9 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
 };
 
 export default connect(
-  ({account, status}: RootState) => ({
+  ({account, status, order}: RootState) => ({
     account,
+    orders: order.orders,
     pending:
       status.pending[orderActions.getOrders.typePrefix] ||
       status.pending[orderActions.cancelDraftOrder.typePrefix] ||

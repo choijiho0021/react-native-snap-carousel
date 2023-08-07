@@ -168,10 +168,10 @@ const PymButtonList: React.FC<PymButtonListParams> = ({selected, onPress}) => {
           selected={selected}
           onPress={onPress}
           bottom
+          right
           topColor={selected === 'pym:naver'}
-          leftColor={selected === 'pym:bank'}
         />
-        <PymButton
+        {/* <PymButton
           btnKey="pym:vbank"
           selected={selected}
           onPress={onPress}
@@ -182,6 +182,11 @@ const PymButtonList: React.FC<PymButtonListParams> = ({selected, onPress}) => {
             selected ===
             (Platform.OS === 'android' ? 'pym:samsung' : 'pym:applepay')
           }
+        /> */}
+        <PymButton
+          btnKey="pym:null"
+          topColor={selected === 'pym:ssgpay'}
+          left={selected === 'pym:samsung' || selected === 'pym:applepay'}
         />
         <PymButton
           btnKey="pym:null"

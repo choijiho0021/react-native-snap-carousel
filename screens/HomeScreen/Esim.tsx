@@ -242,18 +242,18 @@ const Esim: React.FC<EsimProps> = ({
       ] as TabViewRoute[],
     [],
   );
-  const [popUpVisible, setPopUpVisible] = useState();
+  const [popUpVisible, setPopUpVisible] = useState<boolean>();
   const [isClosedPopUp, setIsClosedPopUp] = useState<boolean>(false);
   const [popupDisabled, setPopupDisabled] = useState(true);
   const [needUpdate, setNeedUpdate] = useState(false);
   const [appUpdate, setAppUpdate] = useState('');
   const [appUpdateVisible, setAppUpdateVisible] = useState<boolean>();
   const [popUpList, setPopUpList] = useState<RkbPromotion[]>();
-  const [isTop, setIsTop] = useState<boolean>(true);
+  const isTop = useRef(true);
   const initialized = useRef(false);
   const initNoti = useRef(false);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
-  const [bannerHeight, setBannerHeight] = useState<number>(150);
+  const bannerHeight = useRef(150);
   const appState = useRef('unknown');
   const tabBarHeight = useBottomTabBarHeight();
   const [isShowBack, setIsShowBack] = useState(false);
@@ -296,26 +296,29 @@ const Esim: React.FC<EsimProps> = ({
         API.default.httpImageUrl(promotion[0].imageUrl),
         (width, height) => {
           // 배너 높이 = 이미지 높이 * 비율 + 30(여백)
-          setBannerHeight(
-            Math.ceil(
-              height * (dimensions.width / width) +
-                (promotion?.length > 1 ? 30 : 0),
-            ),
+          bannerHeight.current = Math.ceil(
+            height * (dimensions.width / width) +
+              (promotion?.length > 1 ? 30 : 0),
           );
+          animatedValue.setValue(bannerHeight.current);
         },
       );
     } else {
-      setBannerHeight(0);
+      bannerHeight.current = 0;
     }
-  }, [dimensions.width, promotion]);
+  }, [animatedValue, dimensions.width, promotion]);
 
-  useEffect(() => {
-    Animated.timing(animatedValue, {
-      toValue: isTop ? bannerHeight : 0,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-  }, [animatedValue, bannerHeight, isTop]);
+  const runAnimation = useCallback(
+    (v: boolean) => {
+      isTop.current = v;
+      Animated.timing(animatedValue, {
+        toValue: isTop.current ? bannerHeight.current : 0,
+        duration: 500,
+        useNativeDriver: false,
+      }).start();
+    },
+    [animatedValue],
+  );
 
   const setNotiModal = useCallback(() => {
     const popUpPromoList = promotion?.filter(
@@ -469,20 +472,19 @@ const Esim: React.FC<EsimProps> = ({
         onPress={onPressItem}
         localOpList={product.localOpList}
         width={dimensions.width}
-        onScroll={({nativeEvent}) => {
+        onScrollEndDrag={({nativeEvent}) => {
           const {y} = nativeEvent.contentOffset;
-          if (isTop && y > bannerHeight) setIsTop(false);
-          else if (!isTop && y <= 0) setIsTop(true);
+          if (isTop.current && y > bannerHeight.current) runAnimation(false);
+          else if (!isTop.current && y <= 0) runAnimation(true);
         }}
       />
     ),
     [
-      bannerHeight,
       dimensions.width,
-      isTop,
       onPressItem,
       product.localOpList,
       product.priceInfo,
+      runAnimation,
     ],
   );
 
@@ -938,7 +940,7 @@ const Esim: React.FC<EsimProps> = ({
       <ScreenHeader
         title={`${i18n.t('esim')}${esimGlobal ? ' Store' : ''}`}
         showIcon={false}
-        isStackTop={true}
+        isStackTop
         renderRight={
           <View
             style={{

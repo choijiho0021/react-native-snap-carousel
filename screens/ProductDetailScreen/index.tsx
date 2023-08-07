@@ -310,7 +310,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         />
         {account.loggedIn && (
           <AppCartButton
-            onPress={() => navigation.navigate('Cart')}
+            onPress={() => navigation.navigate('Cart', {showHeader: true})}
             iconName="btnHeaderCart"
           />
         )}

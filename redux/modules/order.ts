@@ -13,10 +13,13 @@ import {
   RkbOrder,
 } from '@/redux/api/orderApi';
 import {
+  getMoment,
+  groupPartner,
   RkbSubscription,
   sortSubs,
   STATUS_USED,
   SubscriptionParam,
+  toStatus,
 } from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {reflectWithToast, Toast} from './toast';
@@ -53,7 +56,23 @@ const getSubs = createAsyncThunk(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
     )(param, {
-      fulfillWithValue: (value) => value,
+      fulfillWithValue: (resp) => {
+        if (resp.result === 0) {
+          resp.objects = resp.objects.map((o) => ({
+            ...o,
+            provDate: getMoment(o.provDate),
+            cnt: parseInt(o.cnt || '0', 10),
+            lastExpireDate: getMoment(o.lastExpireDate),
+            startDate: getMoment(o.startDate),
+            promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
+            partner: groupPartner(o.partner),
+            status: toStatus(o.field_status),
+            purchaseDate: getMoment(o.purchaseDate),
+            expireDate: getMoment(o.expireDate),
+          }));
+        }
+        return resp;
+      },
     });
   },
 );

@@ -49,7 +49,7 @@ const SelectCard = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView
         style={{flex: 1}}
-        onScroll={({
+        onScrollEndDrag={({
           nativeEvent: {
             contentOffset: {y},
           },
