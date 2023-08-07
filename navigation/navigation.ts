@@ -78,7 +78,9 @@ export type HomeStackParamList = {
   Tutorial: {stack: string; screen: string};
   StoreSearch: undefined;
   Store: undefined;
-  Cart: undefined;
+  Cart: {
+    showHeader?: boolean;
+  };
   ProductDetail: {
     title?: string;
     img?: string;
