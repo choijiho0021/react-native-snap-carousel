@@ -184,10 +184,17 @@ export type GetOrdersParam = {
   user?: string;
   token?: string;
   page?: number;
+  orderId?: string;
   state?: 'all' | 'validation';
 };
 
-const getOrders = ({user, token, page = 0, state = 'all'}: GetOrdersParam) => {
+const getOrders = ({
+  user,
+  token,
+  page = 0,
+  state = 'all',
+  orderId = 'all',
+}: GetOrdersParam) => {
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
   if (!user)
@@ -197,7 +204,7 @@ const getOrders = ({user, token, page = 0, state = 'all'}: GetOrdersParam) => {
     `${api.httpUrl(
       api.path.order,
       '',
-    )}/${user}/all/${state}?_format=json&page=${page}`,
+    )}/${user}/${orderId}/${state}?_format=json&page=${page}`,
     (resp) => toOrder(resp, page),
     api.withToken(token, 'json'),
   );

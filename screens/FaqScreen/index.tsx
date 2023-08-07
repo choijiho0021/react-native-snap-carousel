@@ -2,13 +2,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootState} from '@reduxjs/toolkit';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {
-  Dimensions,
-  StyleSheet,
-  SafeAreaView,
-  Platform,
-  View,
-} from 'react-native';
+import {StyleSheet, SafeAreaView, Platform, View} from 'react-native';
 import {TabView} from 'react-native-tab-view';
 import {connect, DispatchProp} from 'react-redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
@@ -20,6 +14,7 @@ import i18n from '@/utils/i18n';
 import FaqList from './components/FaqList';
 import AppTabHeader from '@/components/AppTabHeader';
 import {appStyles} from '@/constants/Styles';
+import {windowWidth} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   container: {
@@ -165,7 +160,7 @@ const FaqScreen: React.FC<FaqScreenProps & DispatchProp> = ({
         navigationState={{index, routes}}
         renderScene={renderScene}
         onIndexChange={onIndexChange}
-        initialLayout={{width: Dimensions.get('window').width}}
+        initialLayout={{width: windowWidth}}
         renderTabBar={() => null}
       />
     </SafeAreaView>

@@ -104,9 +104,10 @@ const styles = StyleSheet.create({
     color: colors.warmGrey,
   },
   reasonButton: {
-    width: 161,
+    flex: 1,
     height: 52,
     borderWidth: 1,
+    borderRadius: 3,
     borderColor: colors.lightGrey,
   },
   reasonButtonFrame: {
@@ -269,7 +270,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           />
         ),
     });
-  }, [navigation, step]);
+  }, [navigation, onBackStep, step]);
 
   useEffect(() => {
     if (route?.params?.order) {
@@ -370,7 +371,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                   justifyContent: 'space-between',
                   alignContent: 'space-between',
                 }}>
-                {key.map((btn) => (
+                {key.map((btn, idx) => (
                   <AppButton
                     key={`${btn}button`}
                     style={[
@@ -379,6 +380,8 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                         backgroundColor: colors.blue,
                         borderWidth: 0,
                       },
+
+                      idx === 0 && {marginRight: 12},
                       index === 0 && {marginBottom: 12},
                     ]}
                     titleStyle={[

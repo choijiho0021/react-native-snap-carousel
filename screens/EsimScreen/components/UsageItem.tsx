@@ -1,4 +1,3 @@
-import Analytics from 'appcenter-analytics';
 import React, {
   useCallback,
   useEffect,
@@ -6,31 +5,26 @@ import React, {
   useState,
   useMemo,
   Fragment,
+  memo,
 } from 'react';
-import {StyleSheet, TouchableOpacity, View, ViewStyle} from 'react-native';
+import {StyleSheet, View, ViewStyle} from 'react-native';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
-import {connect} from 'react-redux';
 import Video from 'react-native-video';
-import _ from 'underscore';
 import Lottie from 'lottie-react-native';
 import moment from 'moment-timezone';
 import * as RNLocalize from 'react-native-localize';
-import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
-import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {code, RkbSubscription, RkbSubsUsage} from '@/redux/api/subscriptionApi';
-import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import Env from '@/environment';
 import AppIcon from '@/components/AppIcon';
 import TextWithDot from './TextWithDot';
 import AppSvgIcon from '@/components/AppSvgIcon';
-// import moment from 'moment';
 import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
@@ -46,10 +40,6 @@ const styles = StyleSheet.create({
   activeContainer: {
     alignItems: 'center',
     marginVertical: 20,
-  },
-  circular: {
-    marginLeft: 12,
-    marginRight: 40,
   },
   usageTitleBold: {
     ...appStyles.bold20Text,
@@ -93,6 +83,7 @@ const styles = StyleSheet.create({
   },
   cautionContainer: {
     marginHorizontal: 20,
+    marginTop: 20,
     marginBottom: 12,
     paddingVertical: 10,
     paddingHorizontal: 12,
@@ -150,34 +141,26 @@ function getStatusColor(statusCd: string) {
 
 type UsageItemProps = {
   item: RkbSubscription;
-  onPress: () => void;
   showSnackbar: () => void;
   cmiPending: Boolean;
   usage?: RkbSubsUsage;
   cmiStatusCd?: string;
   endTime?: string;
-
-  account: AccountModelState;
 };
 
 const UsageItem: React.FC<UsageItemProps> = ({
   item,
   showSnackbar,
-  onPress,
   cmiPending,
   usage,
   cmiStatusCd,
   endTime,
-  account: {token},
 }) => {
   const [disableBtn, setDisableBtn] = useState(false);
   const [isOverUsed, setIsOverUsed] = useState(false);
-  const [quota, setQuota] = useState<number | undefined>(usage?.quota);
-  const [used, setUsed] = useState<number | undefined>(usage?.used);
-  const isExhausted = useMemo(
-    () => (quota || 0) - (used || 0) <= 0,
-    [quota, used],
-  );
+  const [quota, setQuota] = useState<number>(usage?.quota || 0);
+  const [used, setUsed] = useState<number>(usage?.used || 0);
+  const isExhausted = useMemo(() => quota - used <= 0, [quota, used]);
   const circularProgress = useRef();
   const overCircularProgress = useRef();
 
@@ -295,7 +278,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
   const renderDailyUsage = useCallback(
     () => (
-      <View style={{flexDirection: 'row', marginTop: 8, marginBottom: 20}}>
+      <View style={{flexDirection: 'row', marginTop: 8}}>
         <AppText style={{...appStyles.bold14Text, textAlign: 'center'}}>
           {i18n.t('esim:dailyUsageAmount')}
         </AppText>
@@ -368,7 +351,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
       return (
         <AnimatedCircularProgress
           ref={circularProgress}
-          style={styles.circular}
           size={140}
           width={10}
           fill={0}
@@ -407,7 +389,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
     return (
       <AnimatedCircularProgress
         ref={overCircularProgress}
-        style={styles.circular}
         size={140}
         width={10}
         prefill={0}
@@ -563,7 +544,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
     getStatusColor(statusCd);
 
   return (
-    <TouchableOpacity onPress={onPress}>
+    <View>
       <View style={styles.usageListContainer}>
         <View style={styles.titleLine}>
           <AppText key={i18n.t('esim:checkUsage')} style={appStyles.bold18Text}>
@@ -594,8 +575,8 @@ const UsageItem: React.FC<UsageItemProps> = ({
           statusBox(statusCd)
         )}
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 
-export default connect(({account}: RootState) => ({account}))(UsageItem);
+export default memo(UsageItem);

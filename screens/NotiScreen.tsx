@@ -245,20 +245,25 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
 
           case notiActions.NOTI_TYPE_PYM:
             // read orders if not read before
-            Promise.resolve(
-              action.order.checkAndGetOrderById({
-                user: mobile,
-                token,
-                orderId: utils.stringToNumber(orderId),
-              }),
-            ).then(() => {
-              const ord = order.orders.get(Number(orderId));
-              if (ord) {
-                navigation.navigate('PurchaseDetail', {
-                  detail: ord,
+            if (orderId) {
+              navigation.navigate('PurchaseDetail', {orderId});
+            } else {
+              action.order
+                .getOrders({
+                  user: mobile,
+                  token,
+                  orderId,
+                  page: 0,
+                })
+                .then(({payload}) => {
+                  const {result, objects} = payload;
+                  if (result === 0 && objects?.length > 0) {
+                    navigation.navigate('PurchaseDetail', {
+                      orderId: objects[0]?.orderId,
+                    });
+                  }
                 });
-              }
-            });
+            }
             break;
 
           case notiActions.NOTI_TYPE_PROVISION:
@@ -312,7 +317,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
       eventBoard.list,
       mode,
       navigation,
-      order.orders,
+      order,
       promotion.event,
     ],
   );
@@ -335,7 +340,9 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
 
   return (
     <SafeAreaView key="container" style={styles.container}>
-      <ScreenHeader title={i18n.t('set:noti')} />
+      <ScreenHeader
+        title={mode === 'info' ? i18n.t('set:notice') : i18n.t('set:noti')}
+      />
       {!pending && (
         <FlatList
           data={data}

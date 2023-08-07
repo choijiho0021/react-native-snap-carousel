@@ -63,7 +63,7 @@ import {
   ModalAction,
 } from '@/redux/modules/modal';
 import AppButton from '@/components/AppButton';
-
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 const {esimGlobal, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
@@ -229,8 +229,16 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [cmiStatus, setCmiStatus] = useState({});
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const isFocused = useIsFocused();
-  const flatListRef = useRef<FlatList>();
+  const flatListRef = useRef<FlatList>(null);
   const tabBarHeight = useBottomTabBarHeight();
+
+  const subsData = useMemo(
+    () =>
+      order.subs?.filter((elm) =>
+        isEditMode ? elm.statusCd === 'U' : !elm.hide,
+      ), // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨길 수 없도록 한다.
+    [isEditMode, order.subs],
+  );
 
   const onRefresh = useCallback(
     // hidden : true (used 상태인 것들 모두) , false (pending, reserve 상태 포함 하여 hidden이 false 것들만)
@@ -264,13 +272,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   useEffect(() => {
     if (isFocused) {
-      onRefresh(isEditMode, true);
+      onRefresh(isEditMode, false);
       setIsFirstLoad(true);
     }
   }, [action.order, isEditMode, isFocused, onRefresh]);
 
   const empty = useCallback(() => {
-    return _.isEmpty(order.drafts) ? (
+    return _.isEmpty(order.drafts) || isEditMode ? (
       <View style={styles.nolist}>
         <AppIcon name="emptyESIM" size={176} />
         <AppText style={styles.blueText}>
@@ -404,13 +412,17 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         flatListRef={flatListRef}
         index={index}
         mainSubs={item}
-        showDetail={index === 0 && item.purchaseDate.isAfter(days14ago)}
+        showDetail={
+          index === subsData.findIndex((elm) => elm.statusCd === 'U') &&
+          item.statusCd === 'U' &&
+          item.purchaseDate.isAfter(days14ago)
+        }
         onPressUsage={onPressUsage}
         setShowModal={setShowModal}
         isEditMode={isEditMode}
       />
     ),
-    [days14ago, isEditMode, onPressUsage],
+    [days14ago, isEditMode, onPressUsage, subsData],
   );
 
   const renderDraft = useCallback(
@@ -515,6 +527,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   useEffect(() => {
+    // 편집모드 on/off 시 항상 스크롤은 가장 위로 이동
+    if (isEditMode || !isEditMode) {
+      flatListRef.current?.scrollToOffset({animated: false, offset: 0});
+    }
+  }, [isEditMode]);
+
+  useEffect(() => {
     if (route && route.params) {
       if (route.params.iccid) {
         const main = order.subs?.find(
@@ -543,6 +562,19 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       }
     }
   }, [iccid, moveToHistory, order.subs, route, token]);
+
+  BackbuttonHandler({
+    navigation,
+    onBack: () => {
+      if (isEditMode) {
+        setIsEditMode(false);
+        action.modal.showTabbar();
+      } else if (navigation.canGoBack()) {
+        navigation.goBack();
+      }
+      return true;
+    },
+  });
 
   const navigateToChargeType = useCallback(() => {
     setShowModal(false);
@@ -586,24 +618,18 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           </View>
         )}
       </View>
+
       <FlatList
         ref={flatListRef}
-        data={
-          isEditMode
-            ? order.subs
-            : order.subs?.filter(
-                (elm) => !elm.hide, // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨실 수 없도록 한다.
-              )
-        }
+        data={subsData}
         keyExtractor={(item) => item.nid}
         ListHeaderComponent={isEditMode ? undefined : info}
         renderItem={renderSubs}
-        // onRefresh={this.onRefresh}
-        // refreshing={refreshing}
         extraData={[isEditMode]}
         contentContainerStyle={[
           {paddingBottom: 34},
-          _.isEmpty(order.subs) && _.isEmpty(order.drafts) && {flex: 1},
+          _.isEmpty(order.subs) &&
+            (_.isEmpty(order.drafts) || isEditMode) && {flex: 1},
         ]}
         ListEmptyComponent={empty}
         onScrollToIndexFailed={(rsp) => {

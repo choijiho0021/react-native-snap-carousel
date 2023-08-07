@@ -19,7 +19,7 @@ import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {HomeStackParamList} from '@/navigation/navigation';
+import {HomeStackParamList, navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {actions as infoActions, InfoAction} from '@/redux/modules/info';
 import {AccountModelState} from '@/redux/modules/account';
@@ -310,7 +310,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         />
         {account.loggedIn && (
           <AppCartButton
-            onPress={() => navigation.navigate('Cart')}
+            onPress={() => navigation.navigate('Cart', {showHeader: true})}
             iconName="btnHeaderCart"
           />
         )}

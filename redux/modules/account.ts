@@ -11,6 +11,7 @@ import {
 import _ from 'underscore';
 import {batch} from 'react-redux';
 import messaging from '@react-native-firebase/messaging';
+import {Moment} from 'moment';
 import {API} from '@/redux/api';
 import {removeData, retrieveData, storeData, utils} from '@/utils/utils';
 import {RkbFile, RkbImage} from '@/redux/api/accountApi';
@@ -115,10 +116,10 @@ export type CashHistory = {
   account_id: string;
   after: string;
   before: string;
-  create_dt: string;
+  create_dt: Moment;
   created: string;
   diff: number;
-  expire_dt: string;
+  expire_dt: Moment;
   field: string;
   id: string;
   inc: string;
@@ -130,8 +131,8 @@ export type CashHistory = {
 };
 
 export type CashExpire = {
-  create_dt: string;
-  expire_dt: string;
+  create_dt: Moment;
+  expire_dt: Moment;
   point: string;
 };
 
@@ -511,7 +512,7 @@ const slice = createSlice({
 
       if (result === 0 && objects && objects.length > 0) {
         const group = objects.reduce((acc, cur) => {
-          const year = cur.create_dt.slice(0, 4);
+          const year = cur.create_dt?.format('YYYY');
           const idx = acc.findIndex((elm) => elm.title === year);
 
           if (idx <= -1) {
