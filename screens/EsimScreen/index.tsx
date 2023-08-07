@@ -64,6 +64,7 @@ import {
 } from '@/redux/modules/modal';
 import AppButton from '@/components/AppButton';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
+
 const {esimGlobal, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
@@ -187,9 +188,6 @@ export const USAGE_TIME_INTERVAL = {
   quadcell: 1,
   billionconnect: 1,
 };
-
-// state 값에 저장? 위치 고민하기
-const SUBS_COUNT = 10;
 
 export const renderInfo = (navigation) => (
   <Pressable
@@ -516,14 +514,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   }, [isEditMode]);
 
   useEffect(() => {
-    if (route && route.params) {
+    if (route?.params) {
       const {iccid} = route.params;
       if (iccid) {
         const main = order.subs?.find((s) => s.subsIccid === iccid);
 
         if (main) {
-          const {lastExpireDate} = main;
-
+          // 처리가 끝나서 iccid는 삭제함
           navigation.setParams({iccid: undefined});
 
           navigation.navigate('ChargeHistory', {
@@ -533,8 +530,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               'YYYY.MM.DD',
             ),
             onPressUsage,
-            isChargeable: !moment(main?.expireDate).isBefore(moment()),
-            expireTime: lastExpireDate,
+            isChargeable: !main.expireDate?.isBefore(moment()),
           });
         }
       }
