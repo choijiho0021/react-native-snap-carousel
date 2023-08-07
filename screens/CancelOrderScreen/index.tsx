@@ -559,6 +559,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           visible={showSnackBar !== ''}
           onClose={() => setShowSnackBar('')}
           textMessage={showSnackBar}
+          bottom={20}
           hideCancel
         />
       </View>

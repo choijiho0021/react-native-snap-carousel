@@ -268,6 +268,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
         visible={showSnackBar !== ''}
         onClose={() => setShowSnackBar('')}
         textMessage={showSnackBar}
+        bottom={20}
         hideCancel
       />
 
