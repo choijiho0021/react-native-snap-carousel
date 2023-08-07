@@ -126,7 +126,7 @@ export const sortSubs = (a: RkbSubscription, b: RkbSubscription) => {
   return checkTimeOrder(a, b);
 };
 
-const toStatus = (v?: string) => {
+export const toStatus = (v?: string) => {
   return code[v] ? i18n.t(`his:${code[v]}`) : v;
 };
 
@@ -190,13 +190,13 @@ export type RkbSubscription = {
   startDate?: Moment;
 };
 
-const groupPartner = (partner: string) => {
+export const groupPartner = (partner: string) => {
   if (partner.startsWith('cmi')) return 'cmi';
   if (partner.startsWith('quadcell')) return 'quadcell';
   return partner;
 };
 
-const getMoment = (str: string) => (str ? moment(str) : undefined);
+export const getMoment = (str: string) => (str ? moment(str) : undefined);
 
 const toSubscription = (
   data: DrupalNode[] | DrupalNodeJsonApi,
