@@ -182,15 +182,6 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
     action.order.getOrders({user: mobile, token});
   }, [account, action.order]);
 
-  const onPressOrderDetail = useCallback(
-    (orderId: number) => {
-      navigation.navigate('PurchaseDetail', {
-        detail: order.orders.get(orderId),
-      });
-    },
-    [navigation, order],
-  );
-
   const changePhoto = useCallback(async () => {
     const checkNewPermission = await checkPhotoPermission();
 
@@ -245,11 +236,11 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
       return orderItem ? (
         <OrderItem
           item={orderItem}
-          onPress={() => onPressOrderDetail(orderItem.orderId)}
+          onPress={() => navigation.navigate('PurchaseDetail', {orderId: item})}
         />
       ) : null;
     },
-    [onPressOrderDetail, order],
+    [navigation, order.orders],
   );
 
   return (

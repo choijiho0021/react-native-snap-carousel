@@ -246,28 +246,23 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
           case notiActions.NOTI_TYPE_PYM:
             // read orders if not read before
             if (orderId) {
-              const ord = order.orders.get(Number(orderId));
-              if (ord) {
-                navigation.navigate('PurchaseDetail', {
-                  detail: ord,
+              navigation.navigate('PurchaseDetail', {orderId});
+            } else {
+              action.order
+                .getOrders({
+                  user: mobile,
+                  token,
+                  orderId,
+                  page: 0,
+                })
+                .then(({payload}) => {
+                  const {result, objects} = payload;
+                  if (result === 0 && objects?.length > 0) {
+                    navigation.navigate('PurchaseDetail', {
+                      orderId: objects[0]?.orderId,
+                    });
+                  }
                 });
-              } else {
-                action.order
-                  .getOrders({
-                    user: mobile,
-                    token,
-                    orderId,
-                    page: 0,
-                  })
-                  .then(({payload}) => {
-                    const {result, objects} = payload;
-                    if (result === 0 && objects?.length > 0) {
-                      navigation.navigate('PurchaseDetail', {
-                        detail: objects[0],
-                      });
-                    }
-                  });
-              }
             }
             break;
 

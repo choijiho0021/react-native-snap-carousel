@@ -373,12 +373,9 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           style={styles.sectionItemContainer}
           onPress={() => {
             if (item.order_id) {
-              const ord = order.orders.get(Number(item.order_id));
-              if (ord) {
-                navigation.navigate('PurchaseDetail', {
-                  detail: ord,
-                });
-              }
+              navigation.navigate('PurchaseDetail', {
+                orderId: item.order_id,
+              });
             }
           }}>
           <AppText
