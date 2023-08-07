@@ -46,8 +46,8 @@ const DomainPicker = ({
 
   useEffect(() => {
     if (Platform.OS === 'android') {
-      if (visible) ref.current.focus();
-      else ref.current.blur();
+      if (visible) ref?.current?.focus();
+      else ref?.current?.blur();
     }
   }, [visible]);
 

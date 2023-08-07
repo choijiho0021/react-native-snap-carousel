@@ -5,7 +5,7 @@ import {
   Dimensions,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
+  Pressable,
   View,
   SafeAreaView,
   Keyboard,
@@ -256,26 +256,11 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const [chatVisible, setChatVisible] = useState(true);
 
-  // useEffect(() => {
-  //   action.product.getProdCountry();
-  // }, [action.product]);
-
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {
       setDimensions(window);
     });
     return () => subscription?.remove();
-  }, []);
-
-  const getSearchHist = useCallback(async () => {
-    const searchHist = await retrieveData('searchHist');
-    // searchHist 저장 형식 : ex) 대만,중국,일본
-
-    setSearchList(
-      _.isNull(searchHist)
-        ? []
-        : searchHist.split(',').slice(0, MAX_HISTORY_LENGTH),
-    );
   }, []);
 
   const rmSearchHist = useCallback(
@@ -333,35 +318,27 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
     [action.product, navigation, searchWord],
   );
 
-  const search = useCallback(async (word: string, isSearching = false) => {
-    setSearchWord(word);
+  const search = useCallback(
+    (word: string, isSearching = false) => {
+      setSearchWord(word);
 
-    // 중복 제거 후 최대 7개까지 저장한다. 저장 형식 : ex) 대만,중국,일본
-    if (isSearching && word && !word.match(',')) {
-      // 최근 검색 기록
-      const oldsearchHist: string | null = await retrieveData('searchHist');
-
-      if (!_.isNull(oldsearchHist)) {
-        const oldHist = oldsearchHist.split(',');
-        const wordIdx = oldHist.findIndex((elm) => elm === word);
-
-        if (wordIdx < 0) {
-          const hist = `${word},${oldHist
-            .slice(0, MAX_HISTORY_LENGTH - 1)
-            .join(',')}`;
-          storeData('searchHist', hist);
-          setSearchList(hist?.split(','));
-        } else if (wordIdx >= 1) {
-          const hist = `${word},${oldsearchHist.replace(`,${word}`, '')}`;
-          storeData('searchHist', hist);
-          setSearchList(hist?.split(','));
+      // 중복 제거 후 최대 7개까지 저장한다. 저장 형식 : ex) 대만,중국,일본
+      if (isSearching && word && !word.match(',')) {
+        if (searchList.length > 0) {
+          const wordIdx = searchList.findIndex((elm) => elm === word);
+          const hist = [word].concat(
+            wordIdx < 0 ? searchList : searchList.filter((h) => h !== word),
+          );
+          storeData('searchHist', hist.join(','));
+          setSearchList(hist);
+        } else {
+          storeData('searchHist', word);
+          setSearchList(word?.split(','));
         }
-      } else {
-        storeData('searchHist', word);
-        setSearchList(word?.split(','));
       }
-    }
-  }, []);
+    },
+    [searchList],
+  );
 
   const renderSearchWord = useCallback(() => {
     const recommendCountryList = recommendCountry
@@ -387,7 +364,7 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
           </View>
         ) : (
           searchList.map((elm) => (
-            <TouchableOpacity
+            <Pressable
               key={elm}
               style={styles.searchList}
               onPress={() => search(elm, true)}>
@@ -400,7 +377,7 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
                   rmSearchHist(elm);
                 }}
               />
-            </TouchableOpacity>
+            </Pressable>
           ))
         )}
         <View style={styles.recommendHeader}>
@@ -412,12 +389,12 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
           <View key={elm.key} style={styles.recommendRow}>
             {elm.data.map((elm2, idx) =>
               elm2 ? (
-                <TouchableOpacity
+                <Pressable
                   key={utils.generateKey(elm2 + idx)}
                   style={styles.recommebdItem}
                   onPress={() => search(elm2, true)}>
                   <AppText style={styles.recommendText}>{elm2}</AppText>
-                </TouchableOpacity>
+                </Pressable>
               ) : (
                 <View
                   key={utils.generateKey(elm2 + idx)}
@@ -472,8 +449,18 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
 
     Analytics.trackEvent('Page_View_Count', {page: 'Country Search'});
 
-    getSearchHist();
-  }, [getRecommendation, getSearchHist, navigation, search]);
+    retrieveData('searchHist').then((hist) => {
+      // searchHist 저장 형식 : ex) 대만,중국,일본
+      setSearchList(
+        _.isNull(hist)
+          ? []
+          : hist
+              .split(',')
+              .filter((h, i, arr) => i === arr.findIndex((a) => a === h))
+              .slice(0, MAX_HISTORY_LENGTH),
+      );
+    });
+  }, [getRecommendation]);
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
