@@ -225,7 +225,7 @@ const ExtraCouponScreen = () => {
         renderItem={renderItem}
         onScrollEndDrag={({nativeEvent}) => {
           const {y} = nativeEvent.contentOffset;
-          if (isTop.current && y > bannerHeight) runAnimation(false);
+          if (isTop.current && y > 30) runAnimation(false);
           else if (!isTop.current && y <= 0) runAnimation(true);
         }}
       />
