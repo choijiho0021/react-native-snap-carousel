@@ -251,7 +251,7 @@ const slice = createSlice({
       return initialState;
     },
 
-    empty: (state) => {
+    resetOffset: (state) => {
       state.subsOffset = 0;
     },
 
@@ -476,17 +476,9 @@ const slice = createSlice({
   },
 });
 
-const resetOffset = createAsyncThunk(
-  'order/resetOffset',
-  (params, {dispatch}) => {
-    dispatch(slice.actions.empty());
-  },
-);
-
 export const actions = {
   ...slice.actions,
   getSubsWithToast,
-  resetOffset,
   init,
   getSubs,
   getNotiSubs,
