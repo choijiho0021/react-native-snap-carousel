@@ -622,7 +622,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         extraData={[isEditMode]}
         contentContainerStyle={[
           {paddingBottom: 34},
-          _.isEmpty(order.subs) &&
+          _.isEmpty(subsData) &&
             (_.isEmpty(order.drafts) || isEditMode) && {flex: 1},
         ]}
         ListEmptyComponent={empty}
