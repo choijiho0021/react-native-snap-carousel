@@ -288,6 +288,7 @@ const slice = createSlice({
         state.subs = state.subs.concat(
           subs.map((o) => ({
             ...o,
+            purchaseDate: moment(),
             statusCd: o?.field_status,
             flagImage: o?.field_flag_image,
             prodName: utils.extractProdName(o?.title),
