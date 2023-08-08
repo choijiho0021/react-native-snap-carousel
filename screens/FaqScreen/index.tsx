@@ -127,10 +127,6 @@ const FaqScreen: React.FC<FaqScreenProps & DispatchProp> = ({
 
   useEffect(() => {
     const {key, num} = route.params || {};
-    navigation.setOptions({
-      headerShown: false,
-    });
-
     const idx = routes.findIndex((item) => item.key === key);
     if (idx >= 0) {
       setIndex(idx);

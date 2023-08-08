@@ -126,14 +126,6 @@ const GlobalUserGuideScreen: React.FC<UserGuideScreenProps> = ({
     return () => subscription?.remove();
   }, []);
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerShown: false,
-      // headerRight: () => <AppBackButton title={i18n.t('board:title')} />,
-    });
-  }, [navigation]);
-
   const renderModalHeader = useCallback(
     (index: number) => (
       <View

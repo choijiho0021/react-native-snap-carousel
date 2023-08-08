@@ -316,10 +316,6 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
   useEffect(() => {
     const {params} = route;
 
-    navigation.setOptions({
-      headerShown: false,
-    });
-
     if (params.mode) setMode(params.mode);
     setLoading(params.mode !== 'text');
   }, [navigation, route]);

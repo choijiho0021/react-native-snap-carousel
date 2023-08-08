@@ -64,6 +64,7 @@ import {
 } from '@/redux/modules/modal';
 import AppButton from '@/components/AppButton';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
+
 const {esimGlobal, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
@@ -190,9 +191,6 @@ export const USAGE_TIME_INTERVAL = {
   billionconnect: 1,
 };
 
-// state 값에 저장? 위치 고민하기
-const SUBS_COUNT = 10;
-
 export const renderInfo = (navigation) => (
   <Pressable
     style={styles.usrGuideBtn}
@@ -233,12 +231,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const isFocused = useIsFocused();
   const flatListRef = useRef<FlatList>(null);
   const tabBarHeight = useBottomTabBarHeight();
-
-  const subsData = useMemo(
-    () =>
-      order.subs?.filter((elm) =>
+  const [subsData, firstUsedIdx] = useMemo(
+    () => {
+      const list = order.subs?.filter((elm) =>
         isEditMode ? elm.statusCd === 'U' : !elm.hide,
-      ), // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨길 수 없도록 한다.
+      );
+      return [list, list.findIndex((o) => o.statusCd === 'U')];
+    }, // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨길 수 없도록 한다.
     [isEditMode, order.subs],
   );
 
@@ -415,7 +414,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         index={index}
         mainSubs={item}
         showDetail={
-          index === subsData.findIndex((elm) => elm.statusCd === 'U') &&
+          index === firstUsedIdx &&
           item.statusCd === 'U' &&
           item.purchaseDate.isAfter(days14ago)
         }
@@ -424,7 +423,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         isEditMode={isEditMode}
       />
     ),
-    [days14ago, isEditMode, onPressUsage, subsData],
+    [days14ago, firstUsedIdx, isEditMode, onPressUsage],
   );
 
   const renderDraft = useCallback(
@@ -497,12 +496,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   useEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  }, [iccid, mobile, navigation, route, token]);
-
-  useEffect(() => {
     async function checkShowModal() {
       const item = await AsyncStorage.getItem('gift.show.modal');
       const tm = moment(item, 'YYYY-MM-DD HH:mm:ss');
@@ -523,14 +516,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   }, [isEditMode]);
 
   useEffect(() => {
-    if (route && route.params) {
+    if (route?.params) {
       const {iccid} = route.params;
       if (iccid) {
         const main = order.subs?.find((s) => s.subsIccid === iccid);
 
         if (main) {
-          const {lastExpireDate} = main;
-
+          // 처리가 끝나서 iccid는 삭제함
           navigation.setParams({iccid: undefined});
 
           navigation.navigate('ChargeHistory', {
@@ -540,8 +532,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               'YYYY.MM.DD',
             ),
             onPressUsage,
-            isChargeable: !moment(main?.expireDate).isBefore(moment()),
-            expireTime: lastExpireDate,
+            isChargeable: !main.expireDate?.isBefore(moment()),
           });
         }
       }

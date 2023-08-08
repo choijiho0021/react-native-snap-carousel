@@ -1,4 +1,4 @@
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Map as ImmutableMap} from 'immutable';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
@@ -7,9 +7,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
-import {RouteProp} from '@react-navigation/native';
 import AppAlert from '@/components/AppAlert';
-import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
