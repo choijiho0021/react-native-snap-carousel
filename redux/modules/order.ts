@@ -2,7 +2,7 @@
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import _ from 'underscore';
+import _, {object} from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import moment, {Moment} from 'moment';
 import {API} from '@/redux/api';
@@ -42,6 +42,39 @@ const draftOrder = createAsyncThunk('order/draftOrder', API.Order.draftOrder);
 const cancelOrder = createAsyncThunk(
   'order/cancelOrder',
   API.Order.cancelOrder,
+);
+
+const getNotiSubs = createAsyncThunk(
+  'order/getNotiSubs',
+  async (param: SubscriptionParam, {getState}) => {
+    if (param.offset === undefined) {
+      const {order} = getState() as RootState;
+      param.offset = order.subsOffset;
+    }
+
+    return cachedApi(
+      `cache.subs.${param?.iccid}`,
+      API.Subscription.getSubscription,
+    )(param, {
+      fulfillWithValue: (resp) => {
+        if (resp.result === 0) {
+          resp.objects = resp.objects.map((o) => ({
+            ...o,
+            provDate: getMoment(o.provDate),
+            cnt: parseInt(o.cnt || '0', 10),
+            lastExpireDate: getMoment(o.lastExpireDate),
+            startDate: getMoment(o.startDate),
+            promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
+            partner: groupPartner(o.partner),
+            status: toStatus(o.field_status),
+            purchaseDate: getMoment(o.purchaseDate),
+            expireDate: getMoment(o.expireDate),
+          }));
+        }
+        return resp;
+      },
+    });
+  },
 );
 
 const getSubs = createAsyncThunk(
@@ -140,7 +173,7 @@ const getOrders = createAsyncThunk(
   (param: GetOrdersParam, {getState}) => {
     if (param.page === undefined) {
       const {order} = getState() as RootState;
-      param.page = (order.page || 0) + 1;
+      param.page = order.page ? order.page + 1 : 0;
     }
 
     return API.Order.getOrders(param);
@@ -171,7 +204,6 @@ const mergeSubs = (org: RkbSubscription[], subs: RkbSubscription[]) => {
     return org;
   }
 
-  // Map으로 하는게 나을지도 모르겠다.
   const subsMap: Record<string, string> = subs.reduce((acc, sub) => {
     acc[sub.nid] = sub.nid;
     return acc;
@@ -219,7 +251,7 @@ const slice = createSlice({
       return initialState;
     },
 
-    empty: (state) => {
+    resetOffset: (state) => {
       state.subsOffset = 0;
     },
 
@@ -256,6 +288,7 @@ const slice = createSlice({
         state.subs = state.subs.concat(
           subs.map((o) => ({
             ...o,
+            purchaseDate: moment(),
             statusCd: o?.field_status,
             flagImage: o?.field_flag_image,
             prodName: utils.extractProdName(o?.title),
@@ -378,61 +411,55 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(getSubs.fulfilled, (state, action) => {
+    builder.addCase(getNotiSubs.fulfilled, (state, action) => {
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
 
-      const {count = PAGINATION_SUBS_COUNT, offset, uuid} = action?.meta?.arg;
-
       if (result === 0 && objects) {
-        // uuid param이 있으면 특정 상품 조회, offset 처리를 넘긴다.
-        if (!uuid) {
-          // count default 10 설정되어 있음
-          if (objects?.length === count) {
-            state.subsOffset += count;
-            state.subsIsLast = false;
-          } else state.subsIsLast = true;
-
-          if (offset === 0) {
-            state.subs = objects;
-          } else {
-            // offset이 0이 아니라면 페이지네이션 중이니 merge로 한다
-            state.subs = mergeSubs(state.subs, objects);
-          }
-        }
-        // uuid 가 있는 경우, 특정 상품 조회
-        else if (objects?.length > 1) {
-          // 기존 데이터를 가져와서 cnt가 1 이상인 것
+        if (objects?.length > 1) {
           const maxExpiredDate: Moment = objects.reduce(
             (maxDate, obj) =>
-              obj.lastExpireDate && obj.lastExpireDate.isAfter(maxDate)
-                ? obj.lastExpireDate
-                : maxDate, //  maxDate,
+              obj.expireDate && obj.expireDate.isAfter(maxDate)
+                ? obj.expireDate
+                : maxDate,
             moment('1900-01-01'),
           );
 
-          const nidListByServer = objects.map((obj) => obj.nid);
+          const {subsIccid} = objects[0];
 
-          const mainSubs = {
-            ...state.subs.find((sub) => {
-              return nidListByServer.includes(sub.nid) && sub?.cnt > 0;
-            }),
-            lastExpireDate: maxExpiredDate,
-          };
+          state.subs = state.subs.reduce((acc, cur) => {
+            if (cur.statusCd === STATUS_USED && cur.subsIccid === subsIccid) {
+              return acc.concat([{...cur, lastExpireDate: maxExpiredDate}]);
+            }
 
-          const filtered = state.subs.filter((sub) => {
-            return !(
-              nidListByServer.includes(sub.nid) &&
-              (!mainSubs.nid || sub.nid === mainSubs.nid)
-            );
-          });
+            if (objects.find((obj) => obj.nid === cur.nid)) return acc;
 
-          state.subs = mergeSubs(
-            filtered,
-            mainSubs?.nid ? [...filtered, mainSubs] : filtered,
-          );
+            return acc.concat([cur]);
+          }, [] as RkbSubscription[]);
 
           // 1개일 땐 해당 상품 그대로 merge
         } else state.subs = mergeSubs(state.subs, objects);
+      }
+    });
+
+    builder.addCase(getSubs.fulfilled, (state, action) => {
+      const {result, objects}: {objects: RkbSubscription[]} = action.payload;
+
+      const {count = PAGINATION_SUBS_COUNT, offset} = action?.meta?.arg;
+
+      if (result === 0 && objects) {
+        // uuid param이 있으면 특정 상품 조회, offset 처리를 넘긴다.
+        // count default 10 설정되어 있음
+        if (objects?.length === count) {
+          state.subsOffset += count;
+          state.subsIsLast = false;
+        } else state.subsIsLast = true;
+
+        if (offset === 0) {
+          state.subs = objects;
+        } else {
+          // offset이 0이 아니라면 페이지네이션 중이니 merge로 한다
+          state.subs = mergeSubs(state.subs, objects);
+        }
       }
     });
 
@@ -449,19 +476,12 @@ const slice = createSlice({
   },
 });
 
-const resetOffset = createAsyncThunk(
-  'order/resetOffset',
-  (params, {dispatch}) => {
-    dispatch(slice.actions.empty());
-  },
-);
-
 export const actions = {
   ...slice.actions,
   getSubsWithToast,
-  resetOffset,
   init,
   getSubs,
+  getNotiSubs,
   getOrders,
   updateSubsInfo,
   updateSubsAndOrderTag,

@@ -14,10 +14,10 @@ import {
   FlatList,
   Image,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import moment from 'moment';
+import {StackNavigationProp} from '@react-navigation/stack';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -41,6 +41,7 @@ import {
   isDraft,
 } from '@/redux/modules/order';
 import {AccountModelState} from '@/redux/modules/account';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -286,19 +287,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const EsimSubs = ({
-  flatListRef,
-  index,
-  mainSubs,
-  showDetail = false,
-  isEditMode = false,
-  onPressUsage,
-  setShowModal,
+type EsimSubsNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'EsimSubs'
+>;
 
-  account: {token},
-  product,
-  action,
-}: {
+type EsimSubsProps = {
+  navigation: EsimSubsNavigationProp;
   flatListRef?: MutableRefObject<FlatList<any> | undefined>;
   index: number;
   mainSubs: RkbSubscription;
@@ -312,8 +307,22 @@ const EsimSubs = ({
   action: {
     order: OrderAction;
   };
+};
+
+const EsimSubs: React.FC<EsimSubsProps> = ({
+  navigation,
+  flatListRef,
+  index,
+  mainSubs,
+  showDetail = false,
+  isEditMode = false,
+  onPressUsage,
+  setShowModal,
+
+  account: {token},
+  product,
+  action,
 }) => {
-  const navigation = useNavigation();
   const [
     isTypeDraft,
     isCharged,
@@ -365,7 +374,7 @@ const EsimSubs = ({
           chargeablePeriod,
           onPressUsage,
           isChargeable: !isChargeExpired,
-        });
+        } as HomeStackParamList['ChargeHistory']);
       } else if (!isBc) {
         navigation.navigate('ChargeType', {
           mainSubs: item,

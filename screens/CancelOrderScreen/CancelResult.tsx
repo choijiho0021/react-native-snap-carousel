@@ -101,7 +101,7 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
     navigation,
     onBack: () => {
       navigation.navigate('PurchaseDetail', {
-        detail: orderResult,
+        orderId: orderResult?.orderId,
       });
       return true;
     },

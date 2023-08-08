@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   proudctFrame: {
-    marginHorizontal: 20,
+    paddingHorizontal: 20,
   },
   product: {
     marginBottom: 40,
