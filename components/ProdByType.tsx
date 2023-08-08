@@ -56,7 +56,7 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
   const data = useMemo(
     () =>
       filter === 'all' ? prodData : prodData.filter((p) => p.volume === filter),
-    [],
+    [filter, prodData],
   );
   const renderEmpty = useCallback(() => {
     return (
@@ -89,7 +89,7 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
     <FlatList
       data={data}
       ListEmptyComponent={renderEmpty}
-      extraData={prodData}
+      extraData={data}
       ListHeaderComponent={
         prodType === 'daily' && prodData.length > 0 ? (
           <DailyProdFilter onValueChange={setFilter} />
