@@ -481,7 +481,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
                     />
                   </View>
                 </View>
-                <View style={styles.shadowFrame}>
+                <View>
                   {order.drafts?.map((item, idx) =>
                     renderDraft(item, order.drafts?.length === idx + 1),
                   )}

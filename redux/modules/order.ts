@@ -44,6 +44,39 @@ const cancelOrder = createAsyncThunk(
   API.Order.cancelOrder,
 );
 
+const getNotiSubs = createAsyncThunk(
+  'order/getNotiSubs',
+  async (param: SubscriptionParam, {getState}) => {
+    if (param.offset === undefined) {
+      const {order} = getState() as RootState;
+      param.offset = order.subsOffset;
+    }
+
+    return cachedApi(
+      `cache.subs.${param?.iccid}`,
+      API.Subscription.getSubscription,
+    )(param, {
+      fulfillWithValue: (resp) => {
+        if (resp.result === 0) {
+          resp.objects = resp.objects.map((o) => ({
+            ...o,
+            provDate: getMoment(o.provDate),
+            cnt: parseInt(o.cnt || '0', 10),
+            lastExpireDate: getMoment(o.lastExpireDate),
+            startDate: getMoment(o.startDate),
+            promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
+            partner: groupPartner(o.partner),
+            status: toStatus(o.field_status),
+            purchaseDate: getMoment(o.purchaseDate),
+            expireDate: getMoment(o.expireDate),
+          }));
+        }
+        return resp;
+      },
+    });
+  },
+);
+
 const getSubs = createAsyncThunk(
   'order/getSubs',
   async (param: SubscriptionParam, {getState}) => {
@@ -377,29 +410,11 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(getSubs.fulfilled, (state, action) => {
+    builder.addCase(getNotiSubs.fulfilled, (state, action) => {
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
 
-      const {count = PAGINATION_SUBS_COUNT, offset, uuid} = action?.meta?.arg;
-
       if (result === 0 && objects) {
-        // uuid param이 있으면 특정 상품 조회, offset 처리를 넘긴다.
-        if (!uuid) {
-          // count default 10 설정되어 있음
-          if (objects?.length === count) {
-            state.subsOffset += count;
-            state.subsIsLast = false;
-          } else state.subsIsLast = true;
-
-          if (offset === 0) {
-            state.subs = objects;
-          } else {
-            // offset이 0이 아니라면 페이지네이션 중이니 merge로 한다
-            state.subs = mergeSubs(state.subs, objects);
-          }
-        }
-        // uuid 가 있는 경우, 특정 상품 조회
-        else if (objects?.length > 1) {
+        if (objects?.length > 1) {
           const maxExpiredDate: Moment = objects.reduce(
             (maxDate, obj) =>
               obj.expireDate && obj.expireDate.isAfter(maxDate)
@@ -409,26 +424,41 @@ const slice = createSlice({
           );
 
           const {subsIccid} = objects[0];
-          const isMainSubs = (stateSubs: RkbSubscription) =>
-            stateSubs.subsIccid === subsIccid &&
-            stateSubs.statusCd === STATUS_USED;
 
-          const updatedSubs = state.subs.map((sub) => {
-            if (isMainSubs(sub))
-              return {...sub, lastExpireDate: maxExpiredDate};
-            return sub;
-          });
+          state.subs = state.subs.reduce((acc, cur) => {
+            if (cur.statusCd === STATUS_USED && cur.subsIccid === subsIccid) {
+              return acc.concat([{...cur, lastExpireDate: maxExpiredDate}]);
+            }
 
-          const filteredSubs = updatedSubs.filter((sub) => {
-            return (
-              !objects.map((obj) => obj.nid).includes(sub.nid) ||
-              isMainSubs(sub)
-            );
-          });
+            if (objects.find((obj) => obj.nid === cur.nid)) return acc;
 
-          state.subs = filteredSubs;
+            return acc.concat([cur]);
+          }, [] as RkbSubscription[]);
+
           // 1개일 땐 해당 상품 그대로 merge
         } else state.subs = mergeSubs(state.subs, objects);
+      }
+    });
+
+    builder.addCase(getSubs.fulfilled, (state, action) => {
+      const {result, objects}: {objects: RkbSubscription[]} = action.payload;
+
+      const {count = PAGINATION_SUBS_COUNT, offset} = action?.meta?.arg;
+
+      if (result === 0 && objects) {
+        // uuid param이 있으면 특정 상품 조회, offset 처리를 넘긴다.
+        // count default 10 설정되어 있음
+        if (objects?.length === count) {
+          state.subsOffset += count;
+          state.subsIsLast = false;
+        } else state.subsIsLast = true;
+
+        if (offset === 0) {
+          state.subs = objects;
+        } else {
+          // offset이 0이 아니라면 페이지네이션 중이니 merge로 한다
+          state.subs = mergeSubs(state.subs, objects);
+        }
       }
     });
 
