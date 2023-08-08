@@ -14,7 +14,6 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import moment from 'moment';
 import _ from 'underscore';
-import AppBackButton from '@/components/AppBackButton';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -23,10 +22,7 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {RkbNoti} from '@/redux/api/notiApi';
 import utils from '@/redux/api/utils';
-import {
-  AccountModelState,
-  actions as accountActions,
-} from '@/redux/modules/account';
+import {AccountModelState} from '@/redux/modules/account';
 import {actions as boardActions, BoardAction} from '@/redux/modules/board';
 import {
   actions as infoActions,
@@ -38,11 +34,6 @@ import {
   NotiAction,
   NotiModelState,
 } from '@/redux/modules/noti';
-import {
-  actions as orderActions,
-  OrderAction,
-  OrderModelState,
-} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import {PromotionModelState} from '@/redux/modules/promotion';
 import {
@@ -167,24 +158,22 @@ type NotiScreenProps = {
   navigation: NotiScreenNavigationProp;
   route: NotiScreenRouteProp;
   pending: boolean;
-  order: OrderModelState;
   account: AccountModelState;
   noti: NotiModelState;
   info: InfoModelState;
   promotion: PromotionModelState;
   eventBoard: EventBoardModelState;
+
   action: {
     noti: NotiAction;
     board: BoardAction;
     eventBoard: EventBoardAction;
-    order: OrderAction;
     info: InfoAction;
   };
 };
 
 const NotiScreen: React.FC<NotiScreenProps> = ({
   account,
-  order,
   info,
   noti,
   promotion,
@@ -247,37 +236,17 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             // read orders if not read before
             if (orderId) {
               navigation.navigate('PurchaseDetail', {orderId});
-            } else {
-              action.order
-                .getOrders({
-                  user: mobile,
-                  token,
-                  orderId,
-                  page: 0,
-                })
-                .then(({payload}) => {
-                  const {result, objects} = payload;
-                  if (result === 0 && objects?.length > 0) {
-                    navigation.navigate('PurchaseDetail', {
-                      orderId: objects[0]?.orderId,
-                    });
-                  }
-                });
             }
             break;
 
           case notiActions.NOTI_TYPE_PROVISION:
             navigation.popToTop();
-            if (orderId) {
-              navigation.navigate('EsimStack', {
-                screen: 'Esim',
-                params: {
-                  iccid: orderId,
-                },
-              });
-              break;
-            }
-            navigation.navigate('EsimStack', {screen: 'Esim'});
+            navigation.navigate('EsimStack', {
+              screen: 'Esim',
+              params: {
+                iccid: orderId,
+              },
+            });
             break;
 
           case notiActions.NOTI_TYPE_EVENT:
@@ -310,16 +279,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
         }
       }
     },
-    [
-      account,
-      action.noti,
-      action.order,
-      eventBoard.list,
-      mode,
-      navigation,
-      order,
-      promotion.event,
-    ],
+    [account, action.noti, eventBoard.list, mode, navigation, promotion.event],
   );
 
   const onRefresh = useCallback(() => {
@@ -365,18 +325,8 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
 };
 
 export default connect(
-  ({
+  ({account, board, noti, info, status, promotion, eventBoard}: RootState) => ({
     account,
-    order,
-    board,
-    noti,
-    info,
-    status,
-    promotion,
-    eventBoard,
-  }: RootState) => ({
-    account,
-    order,
     board,
     noti,
     info,
@@ -389,10 +339,8 @@ export default connect(
   }),
   (dispatch) => ({
     action: {
-      order: bindActionCreators(orderActions, dispatch),
       board: bindActionCreators(boardActions, dispatch),
       eventBoard: bindActionCreators(eventBoardActions, dispatch),
-      account: bindActionCreators(accountActions, dispatch),
       noti: bindActionCreators(notiActions, dispatch),
       info: bindActionCreators(infoActions, dispatch),
     },

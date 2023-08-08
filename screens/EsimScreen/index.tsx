@@ -144,12 +144,14 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     borderWidth: 1,
     borderColor: colors.whiteFive,
-    shadowColor: colors.shadow2,
-    shadowRadius: 10,
-    shadowOpacity: 1,
+
+    elevation: 12,
+    shadowColor: colors.shadow3,
+    shadowRadius: 12,
+    shadowOpacity: 0.15,
     shadowOffset: {
-      width: 0,
       height: 4,
+      width: 0,
     },
   },
   draftTitleFrame: {
@@ -229,12 +231,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const isFocused = useIsFocused();
   const flatListRef = useRef<FlatList>(null);
   const tabBarHeight = useBottomTabBarHeight();
-
-  const subsData = useMemo(
-    () =>
-      order.subs?.filter((elm) =>
+  const [subsData, firstUsedIdx] = useMemo(
+    () => {
+      const list = order.subs?.filter((elm) =>
         isEditMode ? elm.statusCd === 'U' : !elm.hide,
-      ), // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨길 수 없도록 한다.
+      );
+      return [list, list.findIndex((o) => o.statusCd === 'U')];
+    }, // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨길 수 없도록 한다.
     [isEditMode, order.subs],
   );
 
@@ -411,7 +414,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         index={index}
         mainSubs={item}
         showDetail={
-          index === subsData.findIndex((elm) => elm.statusCd === 'U') &&
+          index === firstUsedIdx &&
           item.statusCd === 'U' &&
           item.purchaseDate.isAfter(days14ago)
         }
@@ -420,15 +423,16 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         isEditMode={isEditMode}
       />
     ),
-    [days14ago, isEditMode, onPressUsage, subsData],
+    [days14ago, firstUsedIdx, isEditMode, onPressUsage],
   );
 
   const renderDraft = useCallback(
-    (item: RkbOrder) => {
+    (item: RkbOrder, isLast) => {
       return (
         <EsimDraftSubs
           key={item.key}
           draftOrder={item}
+          isLast={isLast}
           onClick={(currentOrder) => {
             navigate(navigation, route, 'EsimStack', {
               tab: 'MyPageStack',
@@ -476,7 +480,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
                     />
                   </View>
                 </View>
-                <View>{order.drafts?.map((item) => renderDraft(item))}</View>
+                <View>
+                  {order.drafts?.map((item, idx) =>
+                    renderDraft(item, order.drafts?.length === idx + 1),
+                  )}
+                </View>
               </View>
 
               <View style={styles.divider10} />
@@ -486,12 +494,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       ),
     [balance, expDate, iccid, navigation, order.drafts, renderDraft],
   );
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  }, [iccid, mobile, navigation, route, token]);
 
   useEffect(() => {
     async function checkShowModal() {

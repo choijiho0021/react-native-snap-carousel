@@ -195,6 +195,8 @@ export type HomeStackParamList = {
     guideOption: GuideOption;
     region: GuideRegion;
   };
+  EsimSubs: {};
+  CashHistory: {};
 };
 
 export const navigate = (

@@ -7,11 +7,11 @@ import {
   SectionList,
   Animated,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
+import {StackNavigationProp} from '@react-navigation/stack';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
@@ -34,6 +34,7 @@ import AppSnackBar from '@/components/AppSnackBar';
 import AppPrice from '@/components/AppPrice';
 import Env from '@/environment';
 import AppButton from '@/components/AppButton';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const {esimCurrency} = Env.get();
 
@@ -194,8 +195,13 @@ const styles = StyleSheet.create({
   },
 });
 
+type CashHistoryScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'CashHistory'
+>;
+
 type CashHistoryScreenProps = {
-  navigation: CashHistoryScreenProps;
+  navigation: CashHistoryScreenNavigationProp;
   account: AccountModelState;
   order: OrderModelState;
   pending: boolean;
@@ -209,6 +215,7 @@ type CashHistoryScreenProps = {
 type OrderType = 'latest' | 'old';
 
 const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
+  navigation,
   action,
   account,
   order,
@@ -222,7 +229,6 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     cashExpire,
     expirePt = 0,
   } = account;
-  const navigation = useNavigation();
 
   const [orderType, setOrderType] = useState<OrderType>('latest');
   const [dataFilter, setDataFilter] = useState<string>('A');
