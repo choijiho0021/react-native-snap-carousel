@@ -69,10 +69,9 @@ export const bcStatusCd = {
 };
 
 export const isDisabled = (item: RkbSubscription) => {
-  return (
-    item.giftStatusCd === 'S' ||
-    (item.expireDate && item.expireDate.isBefore(moment()))
-  );
+  return item.giftStatusCd === 'S' || item?.cnt > 1
+    ? item.lastExpireDate && item.lastExpireDate.isBefore(moment())
+    : item.expireDate && item.expireDate.isBefore(moment());
 };
 
 const checkTimeOrder = (a: RkbSubscription, b: RkbSubscription) => {
