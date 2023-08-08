@@ -143,12 +143,14 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     borderWidth: 1,
     borderColor: colors.whiteFive,
-    shadowColor: colors.shadow2,
-    shadowRadius: 10,
-    shadowOpacity: 1,
+
+    elevation: 12,
+    shadowColor: colors.shadow3,
+    shadowRadius: 12,
+    shadowOpacity: 0.15,
     shadowOffset: {
-      width: 0,
       height: 4,
+      width: 0,
     },
   },
   draftTitleFrame: {
@@ -426,11 +428,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   const renderDraft = useCallback(
-    (item: RkbOrder) => {
+    (item: RkbOrder, isLast) => {
       return (
         <EsimDraftSubs
           key={item.key}
           draftOrder={item}
+          isLast={isLast}
           onClick={(currentOrder) => {
             navigate(navigation, route, 'EsimStack', {
               tab: 'MyPageStack',
@@ -478,7 +481,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
                     />
                   </View>
                 </View>
-                <View>{order.drafts?.map((item) => renderDraft(item))}</View>
+                <View style={styles.shadowFrame}>
+                  {order.drafts?.map((item, idx) =>
+                    renderDraft(item, order.drafts?.length === idx + 1),
+                  )}
+                </View>
               </View>
 
               <View style={styles.divider10} />
