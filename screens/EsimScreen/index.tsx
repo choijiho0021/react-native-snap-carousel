@@ -508,6 +508,24 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     checkShowModal();
   }, [isFocused, isPressClose]);
 
+  const moveToHistory = useCallback(
+    (mainSubs: RkbSubscription, chargedSubsParam?: RkbSubscription[]) => {
+      const {lastExpireDate, expireDate} = mainSubs;
+
+      navigation.setParams({iccid: undefined});
+
+      navigation.navigate('ChargeHistory', {
+        mainSubs,
+        chargeablePeriod: utils.toDateString(expireDate, 'YYYY.MM.DD'),
+        onPressUsage,
+        isChargeable: !moment(expireDate).isBefore(moment()),
+        expireTime: lastExpireDate || expireDate,
+        chargedSubsParam,
+      });
+    },
+    [navigation, onPressUsage],
+  );
+
   useEffect(() => {
     // 편집모드 on/off 시 항상 스크롤은 가장 위로 이동
     if (isEditMode || !isEditMode) {
@@ -537,7 +555,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         }
       }
     }
-  }, [navigation, onPressUsage, order.subs, route]);
+  }, [iccid, moveToHistory, order.subs, route, token]);
 
   BackbuttonHandler({
     navigation,
