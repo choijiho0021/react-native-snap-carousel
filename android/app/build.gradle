@@ -397,14 +397,12 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:31.1.1')
     implementation project(path: ":@react-native-firebase_dynamic-links")
     implementation 'com.google.firebase:firebase-analytics'
-    implementation group: 'com.kakao.sdk', name: 'usermgmt', version: '1.27.0'
-    implementation group: 'com.kakao.sdk', name: 'kakaotalk', version: '1.27.0'
-    implementation group: 'com.kakao.sdk', name: 'kakaolink', version: '1.27.0'
-    implementation group: 'com.kakao.sdk', name: 'plusfriend', version: '1.27.0'
-    implementation "com.kakao.sdk:v2-user:2.11.0" // 카카오 로그인
-    implementation "com.kakao.sdk:v2-talk:2.11.0" // 친구, 메시지(카카오톡)
-    implementation "com.kakao.sdk:v2-share:2.11.0" // 메시지(카카오톡 공유)
-//    implementation "com.kakao.sdk:v2-link:2.9.0" // 메시지(카카오톡 공유)
+
+    implementation "com.kakao.sdk:v2-user:2.15.0" // 카카오 로그인
+    implementation "com.kakao.sdk:v2-talk:2.15.0" // 친구, 메시지(카카오톡)
+    implementation "com.kakao.sdk:v2-share:2.15.0" // 메시지(카카오톡 공유)
+    implementation "com.kakao.sdk:v2-friend:2.15.0" // 카카오톡 소셜 피커, 리소스 번들 파일 포함
+
     implementation 'com.google.android.gms:play-services-analytics:10.0.1'
     implementation project(':@react-native-community_cameraroll')
     implementation project(path: ":@react-native-firebase_messaging")
