@@ -12,13 +12,9 @@ import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import moment from 'moment';
 import AsyncStorage from '@react-native-community/async-storage';
-import {
-  NavigationProp,
-  ParamListBase,
-  RouteProp,
-  useIsFocused,
-} from '@react-navigation/native';
+import {RouteProp, useIsFocused} from '@react-navigation/native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import {StackNavigationProp} from '@react-navigation/stack';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
@@ -26,7 +22,7 @@ import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {navigate} from '@/navigation/navigation';
+import {HomeStackParamList, navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {
@@ -166,11 +162,13 @@ const styles = StyleSheet.create({
   },
 });
 
-type EsimScreenProps = {
-  navigation: NavigationProp<any>;
-  route: RouteProp<ParamListBase, string>;
+type EsimScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Esim'>;
+type EsimScreenRouteProp = RouteProp<HomeStackParamList, 'Esim'>;
 
-  loginPending: boolean;
+type EsimScreenProps = {
+  navigation: EsimScreenNavigationProp;
+  route: EsimScreenRouteProp;
+
   pending: boolean;
   account: AccountModelState;
   modal: ModalModelState;
@@ -213,7 +211,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   account: {iccid, mobile, token, balance, expDate},
   order,
   pending,
-  loginPending,
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -501,18 +498,16 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     checkShowModal();
   }, [isFocused, isPressClose]);
 
-  useEffect(() => {
-    // 편집모드 on/off 시 항상 스크롤은 가장 위로 이동
-    if (isEditMode || !isEditMode) {
-      flatListRef.current?.scrollToOffset({animated: false, offset: 0});
-    }
-  }, [isEditMode]);
+  const setEditMode = useCallback((v: boolean) => {
+    setIsEditMode(v);
+    flatListRef.current?.scrollToOffset({animated: false, offset: 0});
+  }, []);
 
   useEffect(() => {
     if (route?.params) {
-      const {iccid} = route.params;
-      if (iccid) {
-        const main = order.subs?.find((s) => s.subsIccid === iccid);
+      const {iccid: subsIccid} = route.params;
+      if (subsIccid) {
+        const main = order.subs?.find((s) => s.subsIccid === subsIccid);
 
         if (main) {
           // 처리가 끝나서 iccid는 삭제함
@@ -536,7 +531,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     navigation,
     onBack: () => {
       if (isEditMode) {
-        setIsEditMode(false);
+        setEditMode(false);
         action.modal.showTabbar();
       } else if (navigation.canGoBack()) {
         navigation.goBack();
@@ -567,7 +562,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             <Pressable
               onPress={() => {
                 action.modal.hideTabbar();
-                setIsEditMode(true);
+                setEditMode(true);
               }}>
               <AppText style={styles.eidtMode}>
                 {i18n.t('esim:editMode')}
@@ -625,9 +620,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         }
       />
 
-      <AppActivityIndicator
-        visible={isFirstLoad && (pending || loginPending || refreshing)}
-      />
+      <AppActivityIndicator visible={isFirstLoad && (pending || refreshing)} />
       <EsimModal
         visible={showModal}
         subs={subs}
@@ -668,7 +661,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           )}
           onPress={() => {
             action.modal.showTabbar();
-            setIsEditMode(false);
+            setEditMode(false);
           }}
           type="primary"
         />
@@ -683,11 +676,9 @@ export default connect(
     order,
     account,
     modal,
-    loginPending:
+    pending:
       status.pending[accountActions.logInAndGetAccount.typePrefix] ||
       status.pending[accountActions.getAccount.typePrefix] ||
-      false,
-    pending:
       status.pending[orderActions.getSubs.typePrefix] ||
       status.pending[orderActions.cmiGetSubsUsage.typePrefix] ||
       false,
