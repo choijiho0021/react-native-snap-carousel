@@ -489,6 +489,7 @@ export const actions = {
   resetOffset,
   init,
   getSubs,
+  getNotiSubs,
   getOrders,
   updateSubsInfo,
   updateSubsAndOrderTag,

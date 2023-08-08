@@ -12,7 +12,11 @@ class HandleProvisionPushNoti extends HandlePushNoti {
 
         if (subsIccid) {
           // foreground 일 때
-          this.getSubs({iccid: this.iccid, token: this.token, uuid: subsIccid});
+          this.getNotiSubs({
+            iccid: this.iccid,
+            token: this.token,
+            uuid: subsIccid,
+          });
         }
       }
     }
