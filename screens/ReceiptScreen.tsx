@@ -12,7 +12,7 @@ import Share from 'react-native-share';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import ViewShot from 'react-native-view-shot';
-import CameraRoll from '@react-native-community/cameraroll';
+import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {
   PERMISSIONS,
