@@ -9,7 +9,6 @@ import ProductDetailInfo from './ProductDetailInfo';
 const styles = StyleSheet.create({
   notiContainer: {
     marginTop: 20,
-    elevation: 12,
   },
   cancelItemFrame: {
     paddingHorizontal: 16,
@@ -22,13 +21,13 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 12,
 
     elevation: 12,
-    shadowColor: colors.shadow2,
+    shadowColor: colors.shadow4,
     shadowOffset: {
       width: 0,
       height: 4,
     },
     shadowRadius: 10,
-    shadowOpacity: 1,
+    shadowOpacity: 0.3,
   },
   cancelItem: {
     paddingVertical: 24,
@@ -98,7 +97,9 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
   );
 
   return (
-    <View key="container" style={style}>
+    <View
+      key="container"
+      style={[{backgroundColor: 'white', borderColor: '#000'}, style]}>
       <View key="noti" style={styles.notiContainer}>
         {notiComponent}
 
