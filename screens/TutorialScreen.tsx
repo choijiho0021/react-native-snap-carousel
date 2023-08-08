@@ -119,10 +119,6 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
 
   useEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-
     getTrackingStatus().then(setStatus);
   }, [navigation]);
 

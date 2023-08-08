@@ -489,12 +489,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   useEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  }, [iccid, mobile, navigation, route, token]);
-
-  useEffect(() => {
     async function checkShowModal() {
       const item = await AsyncStorage.getItem('gift.show.modal');
       const tm = moment(item, 'YYYY-MM-DD HH:mm:ss');

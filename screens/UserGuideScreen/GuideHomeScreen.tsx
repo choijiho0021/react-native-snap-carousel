@@ -30,13 +30,6 @@ const GuideHomeScreen = () => {
   const navigation = useNavigation();
   const [guideOption, setGuideOption] = useState<GuideOption>('esimReg');
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerShown: false,
-    });
-  }, [navigation]);
-
   return (
     <SafeAreaView style={styles.container}>
       <GuideHeader onPress={() => navigation.goBack()} />

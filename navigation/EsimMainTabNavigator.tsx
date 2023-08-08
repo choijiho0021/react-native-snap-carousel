@@ -149,7 +149,11 @@ function HomeStackComponent() {
         component={NotiScreen}
         options={{headerShown: false}}
       />
-      <HomeStack.Screen name="SimpleText" component={SimpleTextScreen} />
+      <HomeStack.Screen
+        name="SimpleText"
+        component={SimpleTextScreen}
+        options={{headerShown: false}}
+      />
       <HomeStack.Screen
         name="Contact"
         component={ContactScreen}
@@ -170,7 +174,11 @@ function HomeStackComponent() {
         options={{headerShown: false}}
       />
       <HomeStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />
-      <HomeStack.Screen name="Faq" component={FaqScreen} />
+      <HomeStack.Screen
+        name="Faq"
+        component={FaqScreen}
+        options={{headerShown: false}}
+      />
       <HomeStack.Screen
         name="Country"
         component={CountryScreen}
@@ -180,11 +188,20 @@ function HomeStackComponent() {
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
       <HomeStack.Group
         screenOptions={{animationEnabled: true, presentation: 'modal'}}>
-        <HomeStack.Screen name="SimpleTextModal" component={SimpleTextScreen} />
-        <HomeStack.Screen name="UserGuideStep" component={UserGuideScreen} />
+        <HomeStack.Screen
+          name="SimpleTextModal"
+          component={SimpleTextScreen}
+          options={{headerShown: false}}
+        />
+        <HomeStack.Screen
+          name="UserGuideStep"
+          component={UserGuideScreen}
+          options={{headerShown: false}}
+        />
         <HomeStack.Screen
           name="UserGuide"
           component={esimGlobal ? GlobalGuideScreen : GuideHomeScreen}
+          options={{headerShown: false}}
         />
         <HomeStack.Screen
           name="UserGuideSelectRegion"
@@ -230,10 +247,18 @@ function CartStackComponent() {
       />
       <CartStack.Screen name="Payment" component={PaymentScreen} />
       <CartStack.Screen name="PymMethod" component={PymMethodScreen} />
-      <CartStack.Screen name="SimpleText" component={SimpleTextScreen} />
+      <CartStack.Screen
+        name="SimpleText"
+        component={SimpleTextScreen}
+        options={{headerShown: false}}
+      />
       <CartStack.Group
         screenOptions={{animationEnabled: true, presentation: 'modal'}}>
-        <CartStack.Screen name="SimpleTextModal" component={SimpleTextScreen} />
+        <CartStack.Screen
+          name="SimpleTextModal"
+          component={SimpleTextScreen}
+          options={{headerShown: false}}
+        />
       </CartStack.Group>
       <CartStack.Screen
         name="PaymentResult"
@@ -254,12 +279,20 @@ function CartStackComponent() {
 function EsimStackComponent() {
   return (
     <EsimStack.Navigator screenOptions={screenOptions}>
-      <EsimStack.Screen name="Esim" component={EsimScreen} />
+      <EsimStack.Screen
+        name="Esim"
+        component={EsimScreen}
+        options={{headerShown: false}}
+      />
       <EsimStack.Screen name="Gift" component={GiftScreen} />
       <EsimStack.Screen name="RedirectHK" component={RedirectHKScreen} />
       <EsimStack.Group
         screenOptions={{animationEnabled: true, presentation: 'modal'}}>
-        <EsimStack.Screen name="SimpleTextModal" component={SimpleTextScreen} />
+        <EsimStack.Screen
+          name="SimpleTextModal"
+          component={SimpleTextScreen}
+          options={{headerShown: false}}
+        />
       </EsimStack.Group>
       <EsimStack.Screen
         name="ChargeType"
@@ -293,10 +326,15 @@ function EsimStackComponent() {
       />
       <EsimStack.Screen name="QrInfo" component={QrInfoScreen} />
       <EsimStack.Group screenOptions={{animationEnabled: true}}>
-        <EsimStack.Screen name="UserGuideStep" component={UserGuideScreen} />
+        <EsimStack.Screen
+          name="UserGuideStep"
+          component={UserGuideScreen}
+          options={{headerShown: false}}
+        />
         <EsimStack.Screen
           name="UserGuide"
           component={esimGlobal ? GlobalGuideScreen : GuideHomeScreen}
+          options={{headerShown: false}}
         />
         <EsimStack.Screen
           name="UserGuideSelectRegion"
@@ -340,12 +378,17 @@ function MyPageStackComponent() {
         component={PurchaseDetailScreen}
         options={{headerShown: false}}
       />
-      <MyPageStack.Screen name="SimpleText" component={SimpleTextScreen} />
+      <MyPageStack.Screen
+        name="SimpleText"
+        component={SimpleTextScreen}
+        options={{headerShown: false}}
+      />
       <MyPageStack.Group
         screenOptions={{animationEnabled: true, presentation: 'modal'}}>
         <MyPageStack.Screen
           name="SimpleTextModal"
           component={SimpleTextScreen}
+          options={{headerShown: false}}
         />
       </MyPageStack.Group>
       <MyPageStack.Screen name="Recharge" component={RechargeScreen} />
