@@ -834,7 +834,7 @@ const Esim: React.FC<EsimProps> = ({
         <ExitModal
           devList={product.devList}
           onOkClose={() => exitApp('exit')}
-          visible
+          visible={modalType === 'unSupported'}
         />
         <AppVerModal
           visible={modalType === 'update' || needUpdate}
