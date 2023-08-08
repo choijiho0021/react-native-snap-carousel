@@ -768,7 +768,7 @@ const Esim: React.FC<EsimProps> = ({
           count: PAGINATION_SUBS_COUNT,
         });
 
-        action.order.empty();
+        action.order.resetOffset();
       }
 
       appState.current = nextAppState;
