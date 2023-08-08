@@ -281,25 +281,32 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
 
     Analytics.trackEvent('Page_View_Count', {page: 'Purchase Detail'});
 
-    const detail = orders.get(Number(orderId));
-    if (detail) {
-      setOrder(detail);
-      setMethod(
-        detail.paymentList?.find((item) => !isRokebiCash(item.paymentGateway)),
-      );
+    if (orderId) {
+      const detail = orders.get(Number(orderId));
+      if (detail) {
+        setOrder(detail);
+        setMethod(
+          detail.paymentList?.find(
+            (item) => !isRokebiCash(item.paymentGateway),
+          ),
+        );
 
-      setBalanceCharge(countRokebiCash(detail));
+        setBalanceCharge(countRokebiCash(detail));
+      } else {
+        // order를 못찾으면, 다시 읽어온다.
+        const {mobile, token} = account;
+
+        action.order.getOrders({
+          user: mobile,
+          token,
+          orderId,
+        });
+      }
     } else {
-      // order를 못찾으면, 다시 읽어온다.
-      const {mobile, token} = account;
-
-      action.order.getOrders({
-        user: mobile,
-        token,
-        orderId,
-      });
+      AppAlert.info(i18n.t('his:orderNotFound'));
+      navigation.goBack();
     }
-  }, [account, action.order, orders, route.params]);
+  }, [account, action.order, navigation, orders, route.params]);
 
   const paymentInfo = useCallback(() => {
     if (!order) return null;

@@ -444,6 +444,7 @@
 
   "his:cancelOrderFail2Title": "구매 취소\n실패하였습니다.",
   "his:cancelOrderFail2Body": "고객센터로 문의해주세요.",
+  "his:orderNotFound": "주문 정보를 찾을 수 없습니다.",
 
   "contact:title": "도움이 필요해요!",
   "contact:notice": "공지사항",
