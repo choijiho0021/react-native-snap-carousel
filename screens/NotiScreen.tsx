@@ -208,10 +208,9 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
   // 공지사항의 경우 notiType이 없으므로 Notice/0으로 기본값 설정
   const onPress = useCallback(
     async ({uuid, isRead, bodyTitle, body, notiType = 'Notice/0'}: RkbNoti) => {
-      const {mobile, token} = account;
+      const {token} = account;
       const split = notiType.split('/');
       const type = split[0];
-      const orderId = split[1];
 
       Analytics.trackEvent('Page_View_Count', {page: 'Noti Detail'});
 
@@ -223,7 +222,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
         switch (type) {
           case notiActions.NOTI_TYPE_REPLY:
             navigation.navigate('BoardMsgResp', {
-              uuid: orderId,
+              uuid: split[1],
               status: 'Closed',
             });
             break;
@@ -234,24 +233,26 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
 
           case notiActions.NOTI_TYPE_PYM:
             // read orders if not read before
-            if (orderId) {
-              navigation.navigate('PurchaseDetail', {orderId});
+            if (split[1]) {
+              navigation.navigate('PurchaseDetail', {orderId: split[1]});
             }
             break;
 
           case notiActions.NOTI_TYPE_PROVISION:
+            // format : provision/{iccid}/{nid}
             navigation.popToTop();
             navigation.navigate('EsimStack', {
               screen: 'Esim',
               params: {
-                iccid: orderId,
+                iccid: split[1],
+                nid: split[2],
               },
             });
             break;
 
           case notiActions.NOTI_TYPE_EVENT:
             navigation.navigate('EventResult', {
-              issue: eventBoard.list.find((elm) => elm.key === orderId),
+              issue: eventBoard.list.find((elm) => elm.key === split[1]),
               title: i18n.t('event:list'),
               showStatus: true,
               eventList: promotion.event,

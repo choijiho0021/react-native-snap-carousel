@@ -17,7 +17,6 @@ import {
   StatusBar,
   StyleSheet,
   View,
-  ScrollView,
   Linking,
   Animated,
   SafeAreaView,
@@ -39,7 +38,6 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {isFolderOpen} from '@/constants/SliderEntry.style';
 import AppButton from '@/components/AppButton';
-import AppModal from '@/components/AppModal';
 import AppText from '@/components/AppText';
 import StoreList from '@/components/StoreList';
 import {colors} from '@/constants/Colors';
@@ -81,13 +79,13 @@ import NotiModal from './component/NotiModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
 import RCTNetworkInfo from '@/components/NativeModule/NetworkInfo';
-import AppStyledText from '@/components/AppStyledText';
 import {retrieveData, storeData, utils} from '@/utils/utils';
 import LocalModal from './component/LocalModal';
 import ChatTalk from '@/components/ChatTalk';
 import ScreenHeader from '@/components/ScreenHeader';
 import AppSnackBar from '@/components/AppSnackBar';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
+import ExitModal from './component/ExitModal';
 
 const {esimGlobal, isIOS, cachePrefix} = Env.get();
 
@@ -109,29 +107,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     marginHorizontal: 18,
-  },
-  normal16BlueText: {
-    ...appStyles.normal16Text,
-    color: colors.clearBlue,
-  },
-  modalTitle: {
-    ...appStyles.normal20Text,
-    marginHorizontal: 20,
-  },
-  modalBody: {
-    marginHorizontal: 20,
-    marginVertical: 20,
-  },
-  supportDevTitle: {
-    ...appStyles.bold16Text,
-    marginTop: 30,
-    marginBottom: 10,
-  },
-  deviceScrollView: {
-    backgroundColor: colors.whiteTwo,
-    height: 250,
-    paddingBottom: 15,
-    paddingHorizontal: 15,
   },
   showSearchBar: {
     marginBottom: 12,
@@ -592,61 +567,6 @@ const Esim: React.FC<EsimProps> = ({
     );
   }, [index, onIndexChange, routes]);
 
-  const modalBody = useCallback(
-    () => (
-      <View style={styles.modalBody}>
-        {isIOS ? (
-          <View>
-            <View style={{marginBottom: 10}}>
-              <AppStyledText
-                text={i18n.t('home:unsupportedBody2')}
-                textStyle={appStyles.normal16Text}
-                format={{b: styles.normal16BlueText}}
-              />
-            </View>
-            <AppText style={styles.supportDevTitle}>
-              {i18n.t('home:supportedDevice')}
-            </AppText>
-
-            <ScrollView
-              style={styles.deviceScrollView}
-              showsVerticalScrollIndicator={false}>
-              <AppText style={[appStyles.normal16Text, {lineHeight: 24}]}>
-                {product.devList?.join(', ')}
-                {i18n.t('home:supportedDeviceBody')}
-              </AppText>
-            </ScrollView>
-          </View>
-        ) : (
-          <View style={{marginBottom: 10}}>
-            <AppStyledText
-              text={i18n.t('home:unsupportedBody1')}
-              textStyle={appStyles.normal16Text}
-              format={{b: styles.normal16BlueText}}
-            />
-            <AppStyledText
-              text={i18n.t('home:unsupportedBody2')}
-              textStyle={{...appStyles.normal16Text, marginTop: 30}}
-              format={{b: styles.normal16BlueText}}
-            />
-            <AppText style={[appStyles.normal16Text, {marginVertical: 30}]}>
-              {i18n.t('home:unsupportedBody3')}
-            </AppText>
-            <AppStyledText
-              text={i18n.t('home:unsupportedBody4')}
-              textStyle={appStyles.normal16Text}
-              format={{b: styles.normal16BlueText}}
-            />
-            <AppText style={[appStyles.normal16Text, {marginTop: 30}]}>
-              {i18n.t('home:unsupportedBody5')}
-            </AppText>
-          </View>
-        )}
-      </View>
-    ),
-    [product.devList],
-  );
-
   useEffect(() => {
     navigation?.setOptions({
       title: null,
@@ -848,7 +768,7 @@ const Esim: React.FC<EsimProps> = ({
           count: PAGINATION_SUBS_COUNT,
         });
 
-        action.order.resetOffset();
+        action.order.empty();
       }
 
       appState.current = nextAppState;
@@ -911,16 +831,11 @@ const Esim: React.FC<EsimProps> = ({
             setPopUpVisible(false);
           }}
         />
-        <AppModal
-          title={i18n.t('home:unsupportedTitle')}
-          okButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}
-          titleStyle={styles.modalTitle}
-          type="close"
+        <ExitModal
+          devList={product.devList}
           onOkClose={() => exitApp('exit')}
-          onRequestClose={() => BackHandler.exitApp()}
-          visible={modalType === 'unSupported'}>
-          {modalBody()}
-        </AppModal>
+          visible={modalType === 'unSupported'}
+        />
         <AppVerModal
           visible={modalType === 'update' || needUpdate}
           option={needUpdate ? 'O' : appUpdate}
@@ -932,7 +847,7 @@ const Esim: React.FC<EsimProps> = ({
         />
       </>
     ),
-    [appUpdate, exitApp, modalBody, modalType, needUpdate, popUpList],
+    [appUpdate, exitApp, modalType, needUpdate, popUpList, product.devList],
   );
 
   return (

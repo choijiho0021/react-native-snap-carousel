@@ -128,7 +128,7 @@ export type HomeStackParamList = {
   Settings: undefined;
   Auth: {screen: string};
   HeaderTitle: undefined;
-  Esim: {clickPromotion?: boolean};
+  Esim: {clickPromotion?: boolean; iccid?: string; nid?: string};
 
   MyPage: undefined;
   Recharge: {mode: string};
