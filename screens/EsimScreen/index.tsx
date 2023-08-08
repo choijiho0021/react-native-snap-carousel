@@ -140,12 +140,14 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     borderWidth: 1,
     borderColor: colors.whiteFive,
-    shadowColor: colors.shadow2,
-    shadowRadius: 10,
-    shadowOpacity: 1,
+
+    elevation: 12,
+    shadowColor: colors.shadow3,
+    shadowRadius: 12,
+    shadowOpacity: 0.15,
     shadowOffset: {
-      width: 0,
       height: 4,
+      width: 0,
     },
   },
   draftTitleFrame: {
@@ -422,11 +424,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   const renderDraft = useCallback(
-    (item: RkbOrder) => {
+    (item: RkbOrder, isLast) => {
       return (
         <EsimDraftSubs
           key={item.key}
           draftOrder={item}
+          isLast={isLast}
           onClick={(currentOrder) => {
             navigate(navigation, route, 'EsimStack', {
               tab: 'MyPageStack',
@@ -474,7 +477,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
                     />
                   </View>
                 </View>
-                <View>{order.drafts?.map((item) => renderDraft(item))}</View>
+                <View>
+                  {order.drafts?.map((item, idx) =>
+                    renderDraft(item, order.drafts?.length === idx + 1),
+                  )}
+                </View>
               </View>
 
               <View style={styles.divider10} />
@@ -497,6 +504,24 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     }
     checkShowModal();
   }, [isFocused, isPressClose]);
+
+  const moveToHistory = useCallback(
+    (mainSubs: RkbSubscription, chargedSubsParam?: RkbSubscription[]) => {
+      const {lastExpireDate, expireDate} = mainSubs;
+
+      navigation.setParams({iccid: undefined});
+
+      navigation.navigate('ChargeHistory', {
+        mainSubs,
+        chargeablePeriod: utils.toDateString(expireDate, 'YYYY.MM.DD'),
+        onPressUsage,
+        isChargeable: !moment(expireDate).isBefore(moment()),
+        expireTime: lastExpireDate || expireDate,
+        chargedSubsParam,
+      });
+    },
+    [navigation, onPressUsage],
+  );
 
   const setEditMode = useCallback((v: boolean) => {
     setIsEditMode(v);
@@ -525,7 +550,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         }
       }
     }
-  }, [navigation, onPressUsage, order.subs, route]);
+  }, [
+    iccid,
+    moveToHistory,
+    navigation,
+    onPressUsage,
+    order.subs,
+    route,
+    token,
+  ]);
 
   BackbuttonHandler({
     navigation,

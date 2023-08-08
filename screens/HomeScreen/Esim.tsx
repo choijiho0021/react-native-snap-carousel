@@ -617,7 +617,7 @@ const Esim: React.FC<EsimProps> = ({
         isForeground,
         isRegister: type === 'register',
         updateAccount: action.account.updateAccount,
-        getSubs: action.order.getSubs,
+        getNotiSubs: action.order.getNotiSubs,
         token: account?.token,
         clearCurrentAccount: () => {
           Promise.all([

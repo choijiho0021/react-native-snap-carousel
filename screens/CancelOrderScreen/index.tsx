@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   },
 
   stepFrame: {
-    marginHorizontal: 20,
+    paddingHorizontal: 20,
   },
   notiFrame: {
     flexDirection: 'row',
@@ -329,23 +329,31 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
   const renderStep1 = useCallback(() => {
     return (
-      <ScrollView style={styles.stepFrame}>
-        <ProductDetailList
-          prods={prods}
-          listTitle={i18n
-            .t('his:cancelHeaderTitle2')
-            .replace('%', getCountItems(order?.orderItems, false))}
-          notiComponent={
-            <View style={styles.notiFrame}>
-              <AppSvgIcon style={styles.bannerCheck} name="bannerCheck" />
-              <AppStyledText
-                text={i18n.t('his:cancelHeaderTitle')}
-                textStyle={styles.notiText}
-                format={{b: [appStyles.bold14Text, {color: colors.violet500}]}}
-              />
-            </View>
-          }
-        />
+      <ScrollView>
+        <View
+          style={{
+            paddingHorizontal: 20,
+            paddingBottom: 20,
+          }}>
+          <ProductDetailList
+            prods={prods}
+            listTitle={i18n
+              .t('his:cancelHeaderTitle2')
+              .replace('%', getCountItems(order?.orderItems, false))}
+            notiComponent={
+              <View style={styles.notiFrame}>
+                <AppSvgIcon style={styles.bannerCheck} name="bannerCheck" />
+                <AppStyledText
+                  text={i18n.t('his:cancelHeaderTitle')}
+                  textStyle={styles.notiText}
+                  format={{
+                    b: [appStyles.bold14Text, {color: colors.violet500}],
+                  }}
+                />
+              </View>
+            }
+          />
+        </View>
       </ScrollView>
     );
   }, [order?.orderItems, prods]);

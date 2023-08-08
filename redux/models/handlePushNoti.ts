@@ -9,7 +9,7 @@ class HandlePushNoti {
   protected isRegister: boolean;
   protected isNoticed: boolean;
   protected updateAccount: any;
-  protected getSubs: any;
+  protected getNotiSubs: any;
   protected token: string;
   protected clearCurrentAccount: any;
   protected checkAndGetOrderById: any;
@@ -27,7 +27,7 @@ class HandlePushNoti {
       isForeground,
       isRegister,
       updateAccount,
-      getSubs,
+      getNotiSubs,
       token,
       clearCurrentAccount,
       checkAndGetOrderById,
@@ -39,7 +39,7 @@ class HandlePushNoti {
       isForeground: boolean;
       isRegister: boolean;
       updateAccount: any;
-      getSubs: any;
+      getNotiSubs: any;
       token: string;
       clearCurrentAccount: any;
       checkAndGetOrderById: any;
@@ -53,7 +53,7 @@ class HandlePushNoti {
     this.isRegister = isRegister;
     this.isNoticed = false;
     this.updateAccount = updateAccount;
-    this.getSubs = getSubs;
+    this.getNotiSubs = getNotiSubs;
     this.token = token;
     this.clearCurrentAccount = clearCurrentAccount;
     this.checkAndGetOrderById = checkAndGetOrderById;

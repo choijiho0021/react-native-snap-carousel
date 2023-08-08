@@ -44,22 +44,17 @@ type NotiModalProps = {
   onOkClose?: (v: string, item: RkbPromotion) => void;
   onCancelClose?: () => void;
   visible: boolean;
-  // closeType?: 'redirect' | 'close' | 'exit';
   // popUp?: RkbPromotion;
   popUpList: RkbPromotion[];
 };
 const NotiModal: React.FC<NotiModalProps> = ({
   popUpList,
   // popUp,
-  // closeType,
   visible,
   onOkClose,
   onCancelClose,
 }) => {
   const [checked, setChecked] = useState(false);
-  const [closeType, setCloseType] = useState<'close' | 'exit' | 'redirect'>(
-    'redirect',
-  );
   const [imageHeight, setImageHeight] = useState(450);
   const [activeSlide, setActiveSlide] = useState(-1);
 
@@ -93,8 +88,6 @@ const NotiModal: React.FC<NotiModalProps> = ({
 
   const renderItem = useCallback(
     ({item}: {item: RkbPromotion}) => {
-      setCloseType(item.rule ? 'redirect' : 'close');
-
       const uri = API.default.httpImageUrl(item?.notice?.image?.noti);
       const thumbnail = API.default.httpImageUrl(
         item?.notice?.image?.thumbnail,
@@ -108,9 +101,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
               marginBottom: 18,
             }}
             onPress={() => {
-              if (closeType === 'redirect') {
-                onOkClose?.(closeType, item);
-              }
+              onOkClose?.('redirect', item);
             }}>
             <ProgressiveImage
               style={{width: '100%', height: imageHeight}}
@@ -122,7 +113,7 @@ const NotiModal: React.FC<NotiModalProps> = ({
         </View>
       );
     },
-    [closeType, imageHeight, modalImageSize, onOkClose],
+    [imageHeight, modalImageSize, onOkClose],
   );
 
   useEffect(() => {
@@ -149,10 +140,10 @@ const NotiModal: React.FC<NotiModalProps> = ({
         width: '100%',
       }}
       titleViewStyle={{marginTop: 20}}
-      okButtonTitle={i18n.t(closeType || 'close')}
-      type={closeType === 'redirect' ? closeType : 'close'}
+      okButtonTitle={i18n.t('redirect')}
+      type="redirect"
       onOkClose={() => {
-        onOkClose?.(closeType, popUpList[activeSlide]);
+        onOkClose?.('redirect', popUpList[activeSlide]);
         setPopupDisabled();
       }}
       onCancelClose={() => {
