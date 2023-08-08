@@ -415,29 +415,36 @@ const slice = createSlice({
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
 
       if (result === 0 && objects) {
-        if (objects?.length > 1) {
-          const maxExpiredDate: Moment = objects.reduce(
-            (maxDate, obj) =>
-              obj.expireDate && obj.expireDate.isAfter(maxDate)
-                ? obj.expireDate
-                : maxDate,
-            moment('1900-01-01'),
-          );
+        const maxExpiredDate: Moment = objects.reduce(
+          (maxDate, obj) =>
+            obj.expireDate && obj.expireDate.isAfter(maxDate)
+              ? obj.expireDate
+              : maxDate,
+          moment('1900-01-01'),
+        );
 
-          const {subsIccid} = objects[0];
+        const {subsIccid} = objects[0];
 
+        if (objects.length > 1) {
+          // 충전-연장 상품이 아닌 경우를 처리하지 못함.
           state.subs = state.subs.reduce((acc, cur) => {
-            if (cur.statusCd === STATUS_USED && cur.subsIccid === subsIccid) {
-              return acc.concat([{...cur, lastExpireDate: maxExpiredDate}]);
-            }
-
-            if (objects.find((obj) => obj.nid === cur.nid)) return acc;
+            if (cur.statusCd === STATUS_USED) {
+              if (cur.subsIccid === subsIccid) {
+                return acc.concat([{...cur, lastExpireDate: maxExpiredDate}]);
+              }
+            } else if (objects.find((obj) => obj.nid === cur.nid)) return acc;
 
             return acc.concat([cur]);
           }, [] as RkbSubscription[]);
-
-          // 1개일 땐 해당 상품 그대로 merge
-        } else state.subs = mergeSubs(state.subs, objects);
+        } else {
+          state.subs = state.subs
+            .map((sub) =>
+              sub.nid === objects[0].nid
+                ? {...objects[0], lastExpireDate: maxExpiredDate}
+                : sub,
+            )
+            .sort(sortSubs);
+        }
       }
     });
 
