@@ -196,6 +196,7 @@ export type HomeStackParamList = {
     region: GuideRegion;
   };
   EsimSubs: {};
+  CashHistory: {};
 };
 
 export const navigate = (
