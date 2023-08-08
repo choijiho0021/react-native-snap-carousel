@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useState, useMemo} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -53,7 +53,11 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
   onTop = () => {},
 }) => {
   const [filter, setFilter] = useState<DailyProdFilterList>('all');
-
+  const data = useMemo(
+    () =>
+      filter === 'all' ? prodData : prodData.filter((p) => p.volume === filter),
+    [],
+  );
   const renderEmpty = useCallback(() => {
     return (
       <View style={styles.emptyData}>
@@ -75,19 +79,15 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
         key={item.sku}
         item={item}
         onPress={() => onPress(item)}
-        position={position(index, prodData)}
+        position={position(index, data)}
       />
     ),
-    [onPress, prodData],
+    [data, onPress],
   );
 
   return (
     <FlatList
-      data={
-        filter === 'all'
-          ? prodData
-          : prodData.filter((p) => p.volume === filter)
-      }
+      data={data}
       ListEmptyComponent={renderEmpty}
       extraData={prodData}
       ListHeaderComponent={
