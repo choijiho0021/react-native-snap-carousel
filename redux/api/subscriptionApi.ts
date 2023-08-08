@@ -189,12 +189,6 @@ export type RkbSubscription = {
   startDate?: Moment;
 };
 
-export const groupPartner = (partner: string) => {
-  if (partner.startsWith('cmi')) return 'cmi';
-  if (partner.startsWith('quadcell')) return 'quadcell';
-  return partner;
-};
-
 export const getMoment = (str: string) => (str ? moment(str) : undefined);
 
 const toSubscription = (
@@ -308,28 +302,7 @@ const getSubscription = ({
     hidden ? '' : '&hidden=0'
   }&iccid=${iccid}&count=${count}&offset=${offset}`;
 
-  return api.callHttpGet(
-    url,
-    (resp) => {
-      // if (resp.result === 0) {
-      //   resp.objects = resp.objects.map((o) => ({
-      //     ...o,
-      //     key: o.uuid,
-      //     provDate: getMoment(o.provDate),
-      //     cnt: parseInt(o.cnt || '0', 10),
-      //     lastExpireDate: getMoment(o.lastExpireDate),
-      //     startDate: getMoment(o.startDate),
-      //     promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
-      //     partner: groupPartner(o.partner),
-      //     status: toStatus(o.field_status),
-      //     purchaseDate: getMoment(o.purchaseDate),
-      //     expireDate: getMoment(o.expireDate),
-      //   }));
-      // }
-      return resp;
-    },
-    api.withToken(token, 'json'),
-  );
+  return api.callHttpGet(url, (resp) => resp, api.withToken(token, 'json'));
 };
 
 const updateSubscriptionInfo = ({

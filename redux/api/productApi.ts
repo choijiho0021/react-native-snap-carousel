@@ -13,6 +13,7 @@ import {RkbPriceInfo} from '../modules/product';
 import {colors} from '@/constants/Colors';
 import Env from '@/environment';
 import {parseJson} from '@/utils/utils';
+import {groupPartner} from '../modules/order';
 
 const {specialCategories} = Env.get();
 
@@ -213,12 +214,6 @@ export type RkbLocalOp = {
 
 export type RkbProdCountry = {
   keyword: string;
-};
-
-const groupPartner = (partner: string) => {
-  if (partner.startsWith('cmi')) return 'cmi';
-  if (partner.startsWith('quadcell')) return 'quadcell';
-  return partner;
 };
 
 const toLocalOp = (data: DrupalLocalOp[]): ApiResult<RkbLocalOp> => {
