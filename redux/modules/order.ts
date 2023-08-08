@@ -140,7 +140,7 @@ const getOrders = createAsyncThunk(
   (param: GetOrdersParam, {getState}) => {
     if (param.page === undefined) {
       const {order} = getState() as RootState;
-      param.page = (order.page || 0) + 1;
+      param.page = order.page ? order.page + 1 : 0;
     }
 
     return API.Order.getOrders(param);

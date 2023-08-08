@@ -264,9 +264,9 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   account,
   orders,
   pending,
+  action,
 }) => {
   const [showPayment, setShowPayment] = useState(true);
-  const [billingAmt, setBillingAmt] = useState<Currency>();
   const [method, setMethod] = useState<RkbPayment>();
   const [balanceCharge, setBalanceCharge] = useState<Currency>();
   const [order, setOrder] = useState<RkbOrder>();
@@ -284,14 +284,22 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     const detail = orders.get(Number(orderId));
     if (detail) {
       setOrder(detail);
-      setBillingAmt(utils.addCurrency(detail.totalPrice, detail.dlvCost));
       setMethod(
         detail.paymentList?.find((item) => !isRokebiCash(item.paymentGateway)),
       );
 
       setBalanceCharge(countRokebiCash(detail));
+    } else {
+      // order를 못찾으면, 다시 읽어온다.
+      const {mobile, token} = account;
+
+      action.order.getOrders({
+        user: mobile,
+        token,
+        orderId,
+      });
     }
-  }, [account, orders, route.params]);
+  }, [account, action.order, orders, route.params]);
 
   const paymentInfo = useCallback(() => {
     if (!order) return null;
@@ -389,7 +397,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         )}
       </View>
     );
-  }, [balanceCharge, method?.amount, navigation, order]);
+  }, [balanceCharge?.value, navigation, order, paidAmount]);
 
   const pymId = useMemo(
     () =>
