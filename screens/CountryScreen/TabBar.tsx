@@ -63,6 +63,7 @@ const TabBar = ({state, descriptors, navigation}) => {
 
         return (
           <AppButton
+            key={route.key}
             style={[
               styles.tab,
               {
