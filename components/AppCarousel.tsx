@@ -6,12 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  FlatList,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  Platform,
-} from 'react-native';
+import {FlatList, NativeScrollEvent, NativeSyntheticEvent} from 'react-native';
 import {useInterval} from '@/utils/useInterval';
 
 export type AppCarouselRef = {
