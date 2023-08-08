@@ -9,21 +9,26 @@ import ProductDetailInfo from './ProductDetailInfo';
 const styles = StyleSheet.create({
   notiContainer: {
     marginTop: 20,
+    elevation: 12,
   },
   cancelItemFrame: {
+    paddingHorizontal: 16,
     borderWidth: 1,
+    backgroundColor: colors.white,
     borderColor: colors.whiteFive,
     borderBottomLeftRadius: 3,
     borderBottomRightRadius: 3,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
+
+    elevation: 12,
     shadowColor: colors.shadow2,
-    shadowRadius: 10,
-    shadowOpacity: 0.16,
     shadowOffset: {
       width: 0,
       height: 4,
     },
+    shadowRadius: 10,
+    shadowOpacity: 1,
   },
   cancelItem: {
     paddingVertical: 24,
@@ -45,44 +50,6 @@ const styles = StyleSheet.create({
     shadowOffset: {
       width: 0,
       height: 4,
-    },
-
-    cancelCountNotiGradientFrame: {
-      backgroundColor: 'transparent',
-      alignItems: 'center',
-      borderBottomLeftRadius: 12,
-      borderBottomRightRadius: 12,
-      borderTopLeftRadius: 3,
-      borderTopRightRadius: 3,
-      paddingVertical: 12,
-      shadowColor: colors.shadow2,
-      shadowRadius: 10,
-      shadowOpacity: 0.16,
-      shadowOffset: {
-        width: 0,
-        height: 4,
-      },
-    },
-    cancelItemFrame: {
-      paddingHorizontal: 16,
-      borderWidth: 1,
-      borderColor: colors.whiteFive,
-      borderBottomLeftRadius: 3,
-      borderBottomRightRadius: 3,
-      borderTopLeftRadius: 12,
-      borderTopRightRadius: 12,
-      shadowColor: colors.shadow2,
-      shadowRadius: 10,
-      shadowOpacity: 0.16,
-      shadowOffset: {
-        width: 0,
-        height: 4,
-      },
-    },
-    cancelItem: {
-      paddingVertical: 24,
-      borderBottomWidth: 1,
-      borderColor: colors.whiteFive,
     },
   },
 });

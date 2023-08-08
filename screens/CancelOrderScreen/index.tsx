@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   },
 
   stepFrame: {
-    marginHorizontal: 20,
+    paddingHorizontal: 20,
   },
   notiFrame: {
     flexDirection: 'row',
