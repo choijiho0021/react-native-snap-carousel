@@ -427,11 +427,11 @@ const slice = createSlice({
           const {subsIccid} = objects[0];
 
           state.subs = state.subs.reduce((acc, cur) => {
-            if (cur.statusCd === STATUS_USED && cur.subsIccid === subsIccid) {
-              return acc.concat([{...cur, lastExpireDate: maxExpiredDate}]);
-            }
-
-            if (objects.find((obj) => obj.nid === cur.nid)) return acc;
+            if (cur.statusCd === STATUS_USED) {
+              if (cur.subsIccid === subsIccid) {
+                return acc.concat([{...cur, lastExpireDate: maxExpiredDate}]);
+              }
+            } else if (objects.find((obj) => obj.nid === cur.nid)) return acc;
 
             return acc.concat([cur]);
           }, [] as RkbSubscription[]);
