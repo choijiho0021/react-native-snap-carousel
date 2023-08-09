@@ -384,7 +384,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             <AppButton
               style={styles.cancelDraftBtn}
               onPress={() => {
-                navigation.navigate('CancelOrder', {order});
+                navigation.navigate('CancelOrder', {orderId: order?.orderId});
               }}
               disabled={order.state !== 'validation'}
               disabledCanOnPress
@@ -626,7 +626,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             type="primary"
             title={i18n.t('his:draftRequest')}
             onPress={() => {
-              navigation.navigate('Draft', {order});
+              navigation.navigate('Draft', {orderId: order?.orderId});
             }}
           />
         )}

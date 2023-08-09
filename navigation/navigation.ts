@@ -136,9 +136,9 @@ export type HomeStackParamList = {
   InvitePromo: undefined;
   GiftGuide: undefined;
 
-  Draft: {order: RkbOrder};
+  Draft: {orderId: number};
   DraftResult: {isSuccess: boolean; prods: ProdDesc[]};
-  CancelOrder: {order: RkbOrder};
+  CancelOrder: {orderId: number};
   CancelResult: {isSuccess: boolean; orderId: number; prods: ProdDesc[]};
 
   Gift: {mainSubs: RkbSubscription};
