@@ -191,7 +191,7 @@ const EsimDraftSubs = ({
         )}
       </View>
     );
-  }, [draftOrder.orderDate, draftOrder.orderNo, expiredDate, draftOrder.type]);
+  }, [draftOrder.orderDate, draftOrder.orderNo, draftOrder.type]);
 
   const renderDraftBtn = useCallback(() => {
     return (
