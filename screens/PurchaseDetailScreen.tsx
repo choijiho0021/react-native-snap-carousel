@@ -389,10 +389,12 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
               disabled={order.state !== 'validation'}
               disabledCanOnPress
               disabledOnPress={() => {
-                if (['completed', 'canceled'].includes(order?.state)) {
+                if (order?.state === 'completed') {
                   setShowSnackBar(
-                    i18n.t(`his:draftButtonAlert:${order?.state}`),
+                    i18n.t(`his:draftButtonAlert:${order?.orderType}`),
                   );
+                } else if (order?.state === 'canceled') {
+                  setShowSnackBar(i18n.t(`his:draftButtonAlert:canceled`));
                 }
               }}
               disableStyle={styles.cancelDraftBtnDisabled}
