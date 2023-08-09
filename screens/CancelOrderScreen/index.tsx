@@ -47,6 +47,7 @@ import AppSnackBar from '@/components/AppSnackBar';
 import ProductDetailList from './component/ProductDetailList';
 import GuideBox from './component/GuideBox';
 import FloatCheckButton from './component/FloatCheckButton';
+import AppAlert from '@/components/AppAlert';
 
 const {esimCurrency} = Env.get();
 
@@ -628,7 +629,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                   .replace('%', REASON_MIN_LENGTH.toString()),
               );
             } else if (step === 2 && !checked) {
-              setShowSnackBar(i18n.t('his:cancelReasonAlert3'));
+              AppAlert.info(i18n.t('his:cancelReasonAlert3'));
             }
           }}
           disabledCanOnPress
