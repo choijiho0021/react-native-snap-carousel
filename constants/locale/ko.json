@@ -84,6 +84,8 @@
   "home:guide": "로밍도깨비 사용가이드 !",
   "home:checkGuide": "확인하기",
   "home:unsupportedTitle": "eSIM 미지원 단말",
+  "home:maintenanceTitle": "서비스 일시 중단 안내",
+  "home:maintenance": "시스템 유지 보수로 서비스가 일시 중단됩니다. 잠시 후 다시 이용해주세요.",
   "home:supportedDevice": "서비스 이용 가능 단말",
   "home:supportedDeviceBody": "이외 해외 구매한 eSIM 사용가능 단말",
   "home:unsupportedBody1": "<b>고객님의 단말은 eSIM을 지원하지 않습니다.</b>",

@@ -164,10 +164,14 @@ export interface ProductModelState {
   prodByPartner: ImmutableMap<string, RkbProduct[]>;
   cmiProdByPartner: ImmutableMap<string, RkbProduct[]>;
   prodCountry: string[];
-  rule: Record<string, string> & {
+  rule: {
     timestamp_prod: string;
     timestamp_dev: string;
     inicis_enabled: string;
+    maintenance: {
+      state: string;
+      message?: string;
+    };
   };
   devList: string[];
 }
@@ -189,6 +193,9 @@ const initialState: ProductModelState = {
     timestamp_dev: '',
     timestamp_prod: '',
     inicis_enabled: '1',
+    maintenance: {
+      state: '0',
+    },
   },
   devList: [],
 };

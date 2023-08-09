@@ -233,7 +233,10 @@ const Esim: React.FC<EsimProps> = ({
   const tabBarHeight = useBottomTabBarHeight();
   const [isShowBack, setIsShowBack] = useState(false);
 
-  const isSupport = useMemo(() => account.isSupportDev, [account.isSupportDev]);
+  const isSupport = useMemo(
+    () => account.isSupportDev && product.rule.maintenance.state === '0',
+    [account.isSupportDev, product.rule.maintenance.state],
+  );
 
   const modalType = useMemo(() => {
     if (
@@ -417,6 +420,9 @@ const Esim: React.FC<EsimProps> = ({
           } else {
             Linking.openURL('https://www.rokebi.com');
           }
+          break;
+        case 'maintenance':
+          Linking.openURL('https://www.rokebi.com');
           break;
         default:
       }
@@ -768,7 +774,7 @@ const Esim: React.FC<EsimProps> = ({
           count: PAGINATION_SUBS_COUNT,
         });
 
-        action.order.empty();
+        action.order.resetOffset();
       }
 
       appState.current = nextAppState;
@@ -832,6 +838,7 @@ const Esim: React.FC<EsimProps> = ({
           }}
         />
         <ExitModal
+          maintenance={product.rule.maintenance}
           devList={product.devList}
           onOkClose={() => exitApp('exit')}
           visible={modalType === 'unSupported'}
@@ -847,7 +854,15 @@ const Esim: React.FC<EsimProps> = ({
         />
       </>
     ),
-    [appUpdate, exitApp, modalType, needUpdate, popUpList, product.devList],
+    [
+      appUpdate,
+      exitApp,
+      modalType,
+      needUpdate,
+      popUpList,
+      product.devList,
+      product.rule.maintenance,
+    ],
   );
 
   return (
