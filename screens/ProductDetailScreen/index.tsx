@@ -270,7 +270,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const onPressBtnRegCard = useCallback(() => {
     Analytics.trackEvent('Click_regCard');
 
-    navigation.navigate('Auth');
+    navigation.navigate('RegisterMobile', {goBack: () => navigation.goBack()});
   }, [navigation]);
 
   const onPressBtnPurchase = useCallback(() => {
@@ -278,7 +278,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     Analytics.trackEvent('Click_purchase');
 
     if (!loggedIn) {
-      return navigation.navigate('Auth');
+      navigation.navigate('RegisterMobile', {
+        goBack: () => navigation.goBack(),
+      });
     }
 
     // 구매 품목을 갱신한다.
