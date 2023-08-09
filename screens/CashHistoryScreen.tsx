@@ -387,7 +387,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           <AppText
             style={[
               appStyles.medium14,
-              {marginRight: 23, width: 50, lineHeight: 30},
+              {marginRight: 23, width: 50, lineHeight: 30, color: colors.black},
             ]}>
             {index > 0 && predate === date ? '' : date}
           </AppText>
