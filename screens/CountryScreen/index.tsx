@@ -1,5 +1,5 @@
 /* eslint-disable consistent-return */
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useIsFocused} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState, useMemo, useRef} from 'react';
 import {Animated, SafeAreaView, StyleSheet, View} from 'react-native';
@@ -96,11 +96,15 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const [partnerId, setPartnerId] = useState<string>();
   const isTop = useRef(true);
   const blockAnimation = useRef(false);
+  const [routeName, setRoutename] = useState<string>();
+
   const headerTitle = useMemo(
     () => API.Product.getTitle(localOpList.get(route.params?.partner[0])),
     [localOpList, route.params?.partner],
   );
   const animatedValue = useRef(new Animated.Value(150)).current;
+
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     if (route.params?.partner) {
@@ -112,10 +116,16 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       setImageUrl(localOp?.imageUrl);
       setLocalOpDetails(localOp?.detail);
       if (partnerIds.every((elm) => prodByPartner.has(elm))) {
-        setProdData(makeProdData(prodByPartner, partnerIds));
+        const pData = makeProdData(prodByPartner, partnerIds);
+        setProdData(pData);
+        setRoutename(pData[0]?.length === 0 ? 'total' : 'daily');
       }
     }
   }, [localOpList, prodByPartner, route.params.partner]);
+
+  const onTabPress = useCallback((name: string) => {
+    setRoutename(name);
+  }, []);
 
   const onPress = useCallback(
     (prod: RkbProduct) =>
@@ -186,10 +196,10 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         </Animated.View>
       )}
 
-      {prodData.length > 0 ? (
+      {prodData.length > 0 && routeName && isFocused ? (
         <Tab.Navigator
-          initialRouteName={prodData[0].length === 0 ? 'total' : 'daily'}
-          tabBar={(props) => <TabBar {...props} />}
+          initialRouteName={routeName}
+          tabBar={(props) => <TabBar {...props} onTabPress={onTabPress} />}
           sceneContainerStyle={{backgroundColor: colors.white}}>
           {['daily', 'total'].map((k) => (
             <Tab.Screen
