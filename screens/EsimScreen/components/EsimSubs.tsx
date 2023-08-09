@@ -356,7 +356,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [showSubs, setShowSubs] = useState<boolean>(!mainSubs.hide);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
-  const navigation = useNavigation();
+  const navigation = useNavigation<EsimSubsNavigationProp>();
 
   useEffect(() => {
     if (showDetail) setShowMoreInfo(showDetail);
@@ -376,7 +376,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           chargeablePeriod,
           onPressUsage,
           isChargeable: !isChargeExpired,
-        } as HomeStackParamList['ChargeHistory']);
+        });
       } else if (!isBc) {
         navigation.navigate('ChargeType', {
           mainSubs: item,
@@ -633,10 +633,10 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           style={styles.redirectHK}
           onPress={() =>
             navigation.navigate('RedirectHK', {
-              iccid: mainSubs.subsIccid,
-              orderNo: mainSubs.subsOrderNo,
-              uuid: mainSubs.uuid,
-              imsi: mainSubs.imsi,
+              iccid: mainSubs?.subsIccid!,
+              orderNo: mainSubs?.subsOrderNo!,
+              uuid: mainSubs?.uuid,
+              imsi: mainSubs?.imsi!,
             })
           }>
           <View style={styles.row}>
