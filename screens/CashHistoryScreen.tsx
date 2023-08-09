@@ -373,12 +373,20 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
       const predate =
         index > 0 ? section.data[index - 1].create_dt.format('MM.DD') : '';
       const date = item.create_dt.format('MM.DD');
+      // 상품 구매, 캐시 충전, 구매 취소의 경우에만 터치 가능
+      const pressable = [
+        'cash_deduct',
+        'point_deduct',
+        'cash_recharge',
+        'cash_refund',
+        'point_refund',
+      ].includes(item.type);
 
       return (
         <Pressable
           style={styles.sectionItemContainer}
           onPress={() => {
-            if (item.order_id) {
+            if (item.order_id && pressable) {
               navigation.navigate('PurchaseDetail', {
                 orderId: item.order_id,
               });
@@ -396,7 +404,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               <AppText style={[appStyles.bold16Text, {lineHeight: 30}]}>
                 {i18n.t(`cashHistory:type:${item.type}`)}
               </AppText>
-              {order.orders.get(Number(item.order_id)) && (
+              {pressable && (
                 <AppSvgIcon name="rightAngleBracket" style={{marginLeft: 4}} />
               )}
             </View>
