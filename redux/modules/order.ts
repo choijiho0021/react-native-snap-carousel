@@ -2,7 +2,7 @@
 import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
-import _, {object} from 'underscore';
+import _ from 'underscore';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import moment, {Moment} from 'moment';
 import {API} from '@/redux/api';
@@ -14,7 +14,6 @@ import {
 } from '@/redux/api/orderApi';
 import {
   getMoment,
-  groupPartner,
   RkbSubscription,
   sortSubs,
   STATUS_USED,
@@ -25,6 +24,14 @@ import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {reflectWithToast, Toast} from './toast';
 import api, {cachedApi} from '@/redux/api/api';
 import Env from '@/environment';
+
+export const groupPartner = (partner: string) => {
+  if (partner) {
+    if (partner.startsWith('cmi')) return 'cmi';
+    if (partner.startsWith('quadcell')) return 'quadcell';
+  }
+  return partner;
+};
 
 const {specialCategories} = Env.get();
 

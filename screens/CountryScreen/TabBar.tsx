@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const TabBar = ({state, descriptors, navigation}) => {
+const TabBar = ({state, descriptors, navigation, onTabPress}) => {
   return (
     <View style={styles.container}>
       <View key="left" style={styles.separator} />
@@ -54,6 +54,8 @@ const TabBar = ({state, descriptors, navigation}) => {
             target: route.key,
             canPreventDefault: true,
           });
+
+          onTabPress(route.name);
 
           if (!isFocused && !event.defaultPrevented) {
             // The `merge: true` option makes sure that the params inside the tab screen are preserved
