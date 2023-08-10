@@ -180,7 +180,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
   const getNextOrder = useCallback(() => {
     const {mobile, token} = account;
     const {page} = order;
-    action.order.getOrders({user: mobile, token, page: page + 1});
+    action.order.getOrders({user: mobile, token});
   }, [account, action.order, order]);
 
   const changePhoto = useCallback(async () => {

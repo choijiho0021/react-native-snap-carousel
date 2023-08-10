@@ -300,6 +300,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           user: mobile,
           token,
           orderId,
+          page: 0,
         });
       }
     } else {
