@@ -1,4 +1,4 @@
-import React, {useCallback, useState, useMemo} from 'react';
+import React, {useCallback, useState, useMemo, useEffect} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -45,6 +45,8 @@ type ProdByTypeProps = {
   onTop?: (v: boolean) => void;
 };
 
+const DEFAULT_FILTER_LIST = ['500', '1024', '2048'];
+
 const ProdByType: React.FC<ProdByTypeProps> = ({
   prodData,
   prodType,
@@ -53,6 +55,7 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
   onTop = () => {},
 }) => {
   const [filter, setFilter] = useState<DailyProdFilterList>('all');
+  const [list, setList] = useState<DailyProdFilterList[]>([]);
   const data = useMemo(
     () =>
       filter === 'all' ? prodData : prodData.filter((p) => p.volume === filter),
@@ -85,6 +88,14 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
     [data, onPress],
   );
 
+  useEffect(() => {
+    setList(
+      DEFAULT_FILTER_LIST.filter((r) =>
+        prodData.find((prod) => prod.volume === r),
+      ) as DailyProdFilterList[],
+    );
+  }, [prodData]);
+
   return (
     <FlatList
       data={data}
@@ -92,7 +103,10 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
       extraData={data}
       ListHeaderComponent={
         prodType === 'daily' && prodData.length > 0 ? (
-          <DailyProdFilter onValueChange={setFilter} />
+          <DailyProdFilter
+            filterList={list?.length > 1 ? ['all', ...list] : []}
+            onValueChange={setFilter}
+          />
         ) : null
       }
       renderItem={renderItem}
