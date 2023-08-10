@@ -51,17 +51,17 @@ const ExitModal = ({
   onOkClose: (v: string) => void;
 }) => {
   const maintenanceMode = useMemo(
-    () => maintenance.state === '1',
-    [maintenance.state],
+    () => maintenance?.state === '1',
+    [maintenance?.state],
   );
 
   const showMaintenanceMode = useCallback(
     () => (
       <View style={styles.modalBody}>
-        <AppText>{maintenance.message || i18n.t('home:maintenance')}</AppText>
+        <AppText>{maintenance?.message || i18n.t('home:maintenance')}</AppText>
       </View>
     ),
-    [maintenance.message],
+    [maintenance?.message],
   );
 
   const showDevList = useCallback(

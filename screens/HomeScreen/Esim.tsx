@@ -234,8 +234,8 @@ const Esim: React.FC<EsimProps> = ({
   const [isShowBack, setIsShowBack] = useState(false);
 
   const isSupport = useMemo(
-    () => account.isSupportDev && product.rule.maintenance.state === '0',
-    [account.isSupportDev, product.rule.maintenance.state],
+    () => account.isSupportDev && product?.rule?.maintenance?.state === '0',
+    [account.isSupportDev, product?.rule?.maintenance?.state],
   );
 
   const modalType = useMemo(() => {
