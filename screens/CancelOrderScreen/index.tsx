@@ -138,6 +138,9 @@ const styles = StyleSheet.create({
     overflow: 'scroll',
     padding: 16,
     paddingTop: 16,
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
+    marginTop: 6,
   },
   orderItemContainer: {
     marginBottom: 25,
@@ -426,7 +429,12 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         </View>
 
         <AppTextInput
-          style={styles.reasonDetailBox}
+          style={[
+            styles.reasonDetailBox,
+            inputText
+              ? {borderColor: colors.black, backgroundColor: colors.white}
+              : undefined,
+          ]}
           maxLength={REASON_MAX_LENGTH}
           onChangeText={(v) => {
             setInputText(v);
