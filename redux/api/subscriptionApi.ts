@@ -536,8 +536,10 @@ const bcGetSubsUsage = ({
   if (!orderId)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: orderId');
 
-  return api.callHttpGet(
-    `${api.rokHttpUrl(`${api.path.rokApi.pv.bc}/dataUsage`)}&${api.queryString({
+  return api.callHttpGet<Usage>(
+    `${api.rokHttpUrl(
+      `${api.path.rokApi.pv.bc}/usage/quota`,
+    )}&${api.queryString({
       iccid: subsIccid,
       orderId,
     })}`,

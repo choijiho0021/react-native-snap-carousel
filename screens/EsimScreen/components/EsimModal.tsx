@@ -77,30 +77,6 @@ const EsimModal: React.FC<EsimModalProps> = ({
 
   const modalBody = useCallback(() => {
     if (!subs) return null;
-    // const cmiUsage = {
-    //   subscriberQuota: {
-    //     qtavalue: '512000',
-    //     qtabalance: '73042',
-    //     qtaconsumption: '438958',
-    //   },
-    //   // 여기가 []면 미사용
-    //   historyQuota: [
-    //     {time: '20211222', qtaconsumption: '376.44', mcc: '452'},
-    //     {time: '20211221', qtaconsumption: '1454.78', mcc: '452'},
-    //   ],
-    //   result: {code: 0},
-    //   // 여기가 []면 미사용
-    //   trajectoriesList: [
-    //     {
-    //       mcc: '452',
-    //       country: 'Vietnam',
-    //       beginTime: '20211221',
-    //       useTime: '20220120',
-    //       himsi: '454120382118109',
-    //     },
-    //   ],
-    // };
-
     const quota = cmiUsage?.quota;
     const used = cmiUsage?.used;
     const statusCd =

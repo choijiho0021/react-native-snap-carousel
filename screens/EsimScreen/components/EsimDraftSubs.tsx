@@ -164,10 +164,7 @@ const EsimDraftSubs = ({
   }, [draftOrder.orderItems, showMoreInfo]);
 
   const topInfoDraft = useCallback(() => {
-    const time = `${utils.toDateString(
-      draftOrder.orderDate,
-      'YYYY-MM-DD',
-    )} 구매`;
+    const time = `${utils.toDateString(draftOrder.orderDate, 'YYYY.MM.DD')}`;
 
     return (
       <View style={styles.topInfo}>
@@ -225,7 +222,7 @@ const EsimDraftSubs = ({
           <AppText style={styles.draftExpireText}>
             {`${i18n.t('esim:draftExpire')} | ${utils.toDateString(
               expiredDate,
-              'YYYY.MM.DD HH:MM:SS',
+              'YYYY.MM.DD HH:mm:ss',
             )}`}
           </AppText>
         </View>

@@ -4,27 +4,37 @@ import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import AppIcon from '@/components/AppIcon';
 import {appStyles} from '@/constants/Styles';
+import {sliderWidth} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
-  checkFrame: {
-    padding: 20,
-    marginBottom: 20,
-    borderRadius: 3,
+  agreement: {
+    marginBottom: 12,
+    marginHorizontal: 8,
+    position: 'absolute',
+    bottom: 0,
     backgroundColor: colors.white,
-    shadowColor: 'rgba(166, 168, 172, 0.44)',
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowRadius: 10,
-    shadowOpacity: 1,
-    borderStyle: 'solid',
+    padding: 20,
+    display: 'flex',
+    flexDirection: 'row',
+    width: sliderWidth - 15,
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.whiteFive,
-  },
+    borderRadius: 3,
 
-  checkText: {
+    elevation: 10,
+    shadowColor: 'rgb(166, 168, 172)',
+    shadowRadius: 10,
+    shadowOpacity: 0.44,
+    shadowOffset: {
+      height: 0,
+      width: 0,
+    },
+  },
+  agreementText: {
+    marginRight: 28,
     ...appStyles.semiBold16Text,
+    lineHeight: 20,
   },
 });
 
@@ -44,16 +54,14 @@ const FloatCheckButton: React.FC<FloatCheckButtonPros> = ({
       onPress={() => {
         onCheck();
       }}
-      style={styles.checkFrame}>
-      <View style={{flexDirection: 'row', alignItems: 'center', width: '90%'}}>
-        <AppIcon
-          style={{marginRight: 20}}
-          name="btnCheck2"
-          checked={checked}
-          size={22}
-        />
-        <AppText style={styles.checkText}>{checkText}</AppText>
-      </View>
+      style={styles.agreement}>
+      <AppIcon
+        style={{marginRight: 12}}
+        name="btnCheck2"
+        checked={checked}
+        size={22}
+      />
+      <AppText style={styles.agreementText}>{checkText}</AppText>
     </Pressable>
   );
 };

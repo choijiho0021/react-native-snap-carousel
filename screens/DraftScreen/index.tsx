@@ -266,8 +266,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
         </View>
       </ScrollView>
 
-      {renderCheckButton()}
-
+      <View>{renderCheckButton()}</View>
       <View style={styles.buttonFrame}>
         <AppButton
           style={styles.button}

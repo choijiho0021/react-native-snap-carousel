@@ -9,7 +9,7 @@ import {colors} from '@/constants/Colors';
 const styles = StyleSheet.create({
   refundGuideFrame: {
     paddingTop: 41,
-    paddingBottom: 20,
+    paddingBottom: 120,
     paddingHorizontal: 20,
     backgroundColor: colors.backGrey,
   },

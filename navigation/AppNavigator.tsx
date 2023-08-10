@@ -173,11 +173,11 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         const {loggedIn, userId, token} = store.getState().account;
 
         if (loggedIn) {
-          API.User.registeRecommender({
-            token,
-            recommender: json?.recommender,
-            uuid: userId,
-          });
+          // API.User.registeRecommender({
+          //   token,
+          //   recommender: json?.recommender,
+          //   uuid: userId,
+          // });
 
           if (userId !== json?.recommender) {
             store.dispatch(

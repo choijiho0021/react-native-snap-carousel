@@ -333,38 +333,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       item: RkbSubscription,
     ): Promise<{status: StatusObj; usage: UsageObj}> => {
       if (item?.subsIccid) {
-        const resp = await API.Subscription.bcGetSubsUsage({
+        const {result, objects} = await API.Subscription.bcGetSubsUsage({
           subsIccid: item.subsIccid,
           orderId: item.subsOrderNo,
         });
 
-        if (
-          resp?.result === 0 &&
-          resp?.objects?.tradeCode === '1000' &&
-          resp?.objects?.tradeData?.subOrderList?.length > 0
-        ) {
-          const planInfo = resp.objects.tradeData?.subOrderList[0];
-
-          const bcStatus: StatusObj = {
-            statusCd: bcStatusCd[planInfo.planStatus],
-            endTime: moment(planInfo.planEndTime, 'YYYY-MM-DD HH:mm:ss')
-              .add(USAGE_TIME_INTERVAL.billionconnect, 'h')
-              .format('YYYY-MM-DD HH:mm:ss'),
-          };
-
-          const usage = planInfo.usageInfoList.reduce(
-            (acc, cur) => acc + Number(cur.usageAmt),
-            0,
-          );
-
-          const bcUsage: UsageObj = {
-            quota: Number(planInfo.highFlowSize) / 1024 || 0, // Mb
-            used: usage / 1024 || 0, // Mb
-          };
-
-          return {status: bcStatus, usage: bcUsage};
-        }
+        if (result === 0 && objects.length > 0) return objects[0];
       }
+
       return {
         status: {statusCd: undefined, endTime: undefined},
         usage: {quota: undefined, used: undefined},
@@ -534,7 +510,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       if (subsIccid) {
         const main = order.subs?.find((s) => s.subsIccid === subsIccid);
 
-        if (main) {
+        if (main && (main.cnt || 0) > 1) {
           // 처리가 끝나서 iccid는 삭제함
           navigation.setParams({iccid: undefined});
 

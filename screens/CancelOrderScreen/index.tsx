@@ -120,7 +120,10 @@ const styles = StyleSheet.create({
     alignContent: 'center',
   },
   reasonButtonText: {
-    ...appStyles.bold18Text,
+    ...appStyles.medium18,
+    color: colors.black,
+    lineHeight: 26,
+    letterSpacing: 0,
   },
   reasonDetailTitle: {
     ...appStyles.semiBold14Text,
@@ -134,9 +137,13 @@ const styles = StyleSheet.create({
     height: 208,
     ...appStyles.normal16Text,
     textAlignVertical: 'top',
-    backgroundColor: colors.whiteFive,
+    backgroundColor: colors.backGrey,
     overflow: 'scroll',
     padding: 16,
+    paddingTop: 16,
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
+    marginTop: 6,
   },
   orderItemContainer: {
     marginBottom: 25,
@@ -425,7 +432,12 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         </View>
 
         <AppTextInput
-          style={styles.reasonDetailBox}
+          style={[
+            styles.reasonDetailBox,
+            inputText
+              ? {borderColor: colors.black, backgroundColor: colors.white}
+              : undefined,
+          ]}
           maxLength={REASON_MAX_LENGTH}
           onChangeText={(v) => {
             setInputText(v);
