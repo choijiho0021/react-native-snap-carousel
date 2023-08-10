@@ -510,7 +510,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       if (subsIccid) {
         const main = order.subs?.find((s) => s.subsIccid === subsIccid);
 
-        if (main) {
+        if (main && (main.cnt || 0) > 1) {
           // 처리가 끝나서 iccid는 삭제함
           navigation.setParams({iccid: undefined});
 
