@@ -183,6 +183,7 @@ export const appStyles = StyleSheet.create({
   },
   medium14: {
     // fontFamily: "AppleSDGothicNeo",
+    color: colors.black,
     fontSize: 14,
     fontWeight: '500',
     fontStyle: 'normal',

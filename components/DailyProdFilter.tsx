@@ -15,13 +15,15 @@ const styles = StyleSheet.create({
 
 export type DailyProdFilterList = 'all' | '500' | '1024' | '2048';
 
-const filterList: DailyProdFilterList[] = ['all', '500', '1024', '2048'];
-
 type DailyProdFilterProps = {
   onValueChange: (v: DailyProdFilterList) => void;
+  filterList: DailyProdFilterList[];
 };
 
-const DailyProdFilter: React.FC<DailyProdFilterProps> = ({onValueChange}) => {
+const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
+  onValueChange,
+  filterList,
+}) => {
   const [filter, setFilter] = useState<DailyProdFilterList>('all');
 
   return (

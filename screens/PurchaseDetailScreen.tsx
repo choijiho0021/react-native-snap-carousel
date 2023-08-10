@@ -33,6 +33,7 @@ import {
   OrderAction,
   getCountItems,
   OrderModelState,
+  isExpiredDraft,
 } from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import {API} from '@/redux/api';
@@ -276,6 +277,16 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     [method?.amount],
   );
 
+  const isValidate = useMemo(
+    () => order?.state === 'validation',
+    [order?.state],
+  );
+
+  const isValidation = useMemo(
+    () => isValidate && !isExpiredDraft(order?.orderDate),
+    [isValidate, order?.orderDate],
+  );
+
   useEffect(() => {
     const {orderId} = route.params;
 
@@ -387,7 +398,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
               onPress={() => {
                 navigation.navigate('CancelOrder', {orderId: order?.orderId});
               }}
-              disabled={order.state !== 'validation'}
+              disabled={!isValidation}
               disabledCanOnPress
               disabledOnPress={() => {
                 if (order?.state === 'completed') {
@@ -396,6 +407,8 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
                   );
                 } else if (order?.state === 'canceled') {
                   setShowSnackBar(i18n.t(`his:draftButtonAlert:canceled`));
+                } else if (isValidate && isExpiredDraft(order?.orderDate)) {
+                  setShowSnackBar(i18n.t(`his:draftButtonAlert:auto`));
                 }
               }}
               disableStyle={styles.cancelDraftBtnDisabled}
@@ -407,7 +420,14 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         )}
       </View>
     );
-  }, [balanceCharge?.value, navigation, order, paidAmount]);
+  }, [
+    balanceCharge?.value,
+    isValidate,
+    isValidation,
+    navigation,
+    order,
+    paidAmount,
+  ]);
 
   const pymId = useMemo(
     () =>
@@ -458,51 +478,61 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     [account.token, navigation, order],
   );
 
+  const getNotiText = useCallback((orderParam: RkbOrder) => {
+    switch (orderParam?.state) {
+      case 'validation':
+        return isExpiredDraft(orderParam?.orderDate)
+          ? i18n.t('his:draftAutoNoti')
+          : i18n.t('his:draftBeforeNoti');
+
+      case 'completed':
+        return i18n.t('his:draftAfterNoti');
+      default:
+        return '';
+    }
+  }, []);
+
   const headerNoti = useCallback(() => {
     if (!order || !order.orderItems || order?.orderType !== 'refundable')
       return <View />;
 
-    const noti =
-      order?.state === 'validation'
-        ? i18n.t('his:draftBeforeNoti')
-        : order?.state === 'completed'
-        ? i18n.t('his:draftAfterNoti')
-        : '';
+    const noti = getNotiText(order);
 
     if (!noti) return <View />;
-
-    const isValidate = order?.state === 'validation';
 
     return (
       <View
         style={[
           styles.hearNotiFrame,
           {
-            backgroundColor: isValidate ? colors.backRed : colors.backGrey,
+            backgroundColor: isValidation ? colors.backRed : colors.backGrey,
           },
         ]}>
-        <AppSvgIcon
-          name={isValidate ? 'bannerMark' : 'bannerCheckBlue'}
-          style={{marginRight: 9}}
-        />
+        {
+          // 자동 발권 처리 대기 상태는 아이콘 미표시
+          <AppSvgIcon
+            name={isValidation ? 'bannerMark' : 'bannerCheckBlue'}
+            style={{marginRight: 9}}
+          />
+        }
         <AppStyledText
           text={noti}
           textStyle={{
             ...styles.headerNotiText,
-            color: isValidate ? colors.redError : colors.blue,
+            color: isValidation ? colors.redError : colors.blue,
           }}
           format={{
             b: [
               styles.headerNotiBoldText,
               {
-                color: isValidate ? colors.redError : colors.blue,
+                color: isValidation ? colors.redError : colors.blue,
               },
             ],
           }}
         />
       </View>
     );
-  }, [order]);
+  }, [getNotiText, isValidation, order]);
 
   const getColor = useCallback((state?: OrderState) => {
     switch (state) {
@@ -623,7 +653,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           onPress={() => showReciept(pymId)}
         />
 
-        {order?.state === 'validation' && (
+        {isValidation && (
           <AppButton
             style={styles.button}
             type="primary"

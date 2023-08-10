@@ -10,6 +10,9 @@ const styles = StyleSheet.create({
   notiContainer: {
     marginTop: 20,
   },
+
+  notiText: {...appStyles.normal20Text, color: colors.white, lineHeight: 28},
+  notiBoldText: {...appStyles.bold20Text, color: colors.white, lineHeight: 28},
   cancelItemFrame: {
     paddingHorizontal: 16,
     borderWidth: 1,
@@ -32,6 +35,7 @@ const styles = StyleSheet.create({
   cancelItem: {
     paddingVertical: 24,
     borderBottomWidth: 1,
+    marginBottom: 8,
     borderColor: colors.whiteFive,
   },
 
@@ -86,7 +90,14 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
               <ProductDetailInfo
                 key={`${item.title}_${index}_${listTitle}`}
                 item={item}
-                style={[styles.cancelItem, isLast && {borderBottomWidth: 0}]}
+                style={[
+                  styles.cancelItem,
+                  isLast &&
+                    index === item?.qty - 1 && {
+                      marginBottom: 0,
+                      borderBottomWidth: 0,
+                    },
+                ]}
               />
             );
           })}
@@ -112,8 +123,8 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
             <View>
               <AppStyledText
                 text={listTitle}
-                textStyle={{...appStyles.normal20Text, color: colors.white}}
-                format={{b: {...appStyles.bold20Text, color: colors.white}}}
+                textStyle={styles.notiText}
+                format={{b: styles.notiBoldText}}
               />
             </View>
           </LinearGradient>
@@ -122,8 +133,8 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
             <View>
               <AppStyledText
                 text={listTitle}
-                textStyle={{...appStyles.normal20Text, color: colors.white}}
-                format={{b: {...appStyles.bold20Text, color: colors.white}}}
+                textStyle={styles.notiText}
+                format={{b: styles.notiBoldText}}
               />
             </View>
           </View>
@@ -131,12 +142,10 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
       </View>
 
       <View key="cancelFrame" style={styles.cancelItemFrame}>
-        <View
-          key="cancelList"
-          style={{paddingHorizontal: 16, justifyContent: 'center'}}>
-          {prods.map((r, index) =>
-            renderItem({item: r, isLast: index === prods.length - 1}),
-          )}
+        <View key="cancelList" style={{justifyContent: 'center'}}>
+          {prods.map((r, index) => {
+            return renderItem({item: r, isLast: index === prods.length - 1});
+          })}
         </View>
         {footerComponent}
       </View>
