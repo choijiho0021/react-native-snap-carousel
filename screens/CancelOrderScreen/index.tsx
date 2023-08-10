@@ -120,7 +120,10 @@ const styles = StyleSheet.create({
     alignContent: 'center',
   },
   reasonButtonText: {
-    ...appStyles.bold18Text,
+    ...appStyles.medium18,
+    color: colors.black,
+    lineHeight: 26,
+    letterSpacing: 0,
   },
   reasonDetailTitle: {
     ...appStyles.semiBold14Text,
