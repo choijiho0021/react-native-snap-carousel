@@ -19,7 +19,7 @@ import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {HomeStackParamList, navigate} from '@/navigation/navigation';
+import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {actions as infoActions, InfoAction} from '@/redux/modules/info';
 import {AccountModelState} from '@/redux/modules/account';
@@ -28,10 +28,13 @@ import AppSnackBar from '@/components/AppSnackBar';
 import AppButton from '@/components/AppButton';
 import api, {ApiResult} from '@/redux/api/api';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
-import {actions as cartActions, CartAction} from '@/redux/modules/cart';
+import {
+  actions as cartActions,
+  CartAction,
+  CartModelState,
+} from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
 import ChatTalk from '@/components/ChatTalk';
-import {CartModelState} from '../../redux/modules/cart';
 
 const {esimGlobal, webViewHost, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -270,7 +273,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const onPressBtnRegCard = useCallback(() => {
     Analytics.trackEvent('Click_regCard');
 
-    navigation.navigate('Auth');
+    navigation.navigate('RegisterMobile', {goBack: () => navigation.goBack()});
   }, [navigation]);
 
   const onPressBtnPurchase = useCallback(() => {
@@ -278,7 +281,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     Analytics.trackEvent('Click_purchase');
 
     if (!loggedIn) {
-      return navigation.navigate('Auth');
+      navigation.navigate('RegisterMobile', {
+        goBack: () => navigation.goBack(),
+      });
     }
 
     // 구매 품목을 갱신한다.

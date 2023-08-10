@@ -1,4 +1,4 @@
-import React, {memo, useCallback} from 'react';
+import React, {memo, useCallback, useMemo} from 'react';
 import {BackHandler, ScrollView, StyleSheet, View} from 'react-native';
 import AppModal from '@/components/AppModal';
 import {appStyles} from '@/constants/Styles';
@@ -39,13 +39,32 @@ const styles = StyleSheet.create({
 const ExitModal = ({
   visible,
   devList,
+  maintenance,
   onOkClose,
 }: {
   visible: boolean;
   devList: string[];
+  maintenance: {
+    state: string;
+    message?: string;
+  };
   onOkClose: (v: string) => void;
 }) => {
-  const modalBody = useCallback(
+  const maintenanceMode = useMemo(
+    () => maintenance.state === '1',
+    [maintenance.state],
+  );
+
+  const showMaintenanceMode = useCallback(
+    () => (
+      <View style={styles.modalBody}>
+        <AppText>{maintenance.message || i18n.t('home:maintenance')}</AppText>
+      </View>
+    ),
+    [maintenance.message],
+  );
+
+  const showDevList = useCallback(
     () => (
       <View style={styles.modalBody}>
         {isIOS ? (
@@ -102,15 +121,16 @@ const ExitModal = ({
 
   return (
     <AppModal
-      title={i18n.t('home:unsupportedTitle')}
+      title={i18n.t(
+        maintenanceMode ? 'home:maintenanceTitle' : 'home:unsupportedTitle',
+      )}
       okButtonTitle={isIOS ? i18n.t('ok') : i18n.t('exitAndOpenLink')}
       titleStyle={styles.modalTitle}
       type="close"
-      onOkClose={() => onOkClose?.('exit')}
+      onOkClose={() => onOkClose?.(maintenanceMode ? 'maintenance' : 'exit')}
       onRequestClose={() => BackHandler.exitApp()}
-      // visible={modalType === 'unSupported'}
       visible={visible}>
-      {modalBody()}
+      {maintenanceMode ? showMaintenanceMode() : showDevList()}
     </AppModal>
   );
 };

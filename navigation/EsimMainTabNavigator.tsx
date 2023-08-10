@@ -70,6 +70,7 @@ import DraftResultScreen from '@/screens/DraftScreen/DraftResult';
 import CancelOrderScreen from '@/screens/CancelOrderScreen';
 import CancelResultScreen from '@/screens/CancelOrderScreen/CancelResult';
 import {ModalModelState} from '@/redux/modules/modal';
+import RegisterMobileScreen from '@/screens/RegisterMobileScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -233,6 +234,12 @@ function HomeStackComponent() {
       <HomeStack.Screen name="CancelOrder" component={CancelOrderScreen} />
       <HomeStack.Screen name="CancelResult" component={CancelResultScreen} />
       <HomeStack.Screen name="Receipt" component={ReceiptScreen} />
+
+      <HomeStack.Screen
+        name="RegisterMobile"
+        component={RegisterMobileScreen}
+        options={{headerShown: true}}
+      />
     </HomeStack.Navigator>
   );
 }

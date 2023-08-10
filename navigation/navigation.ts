@@ -123,7 +123,7 @@ export type HomeStackParamList = {
   CustomerProfile: undefined;
   AddProfile: undefined;
   PurchaseDetail: PurchaseDetailParams;
-  RegisterMobile: {screen: string};
+  RegisterMobile: {screen?: string; goBack?: () => void};
   Main: undefined;
   Settings: undefined;
   Auth: {screen: string};
