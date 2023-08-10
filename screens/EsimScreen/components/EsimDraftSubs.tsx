@@ -125,10 +125,10 @@ const EsimDraftSubs = ({
 }) => {
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   // 발권 생성 7일 지난게 오늘보다 전이라면? 발권기한이 지났다.
-  const expiredDate = useMemo(
-    () => draftOrder.orderDate?.add(7, 'day'),
-    [draftOrder.orderDate],
-  );
+  const expiredDate = useMemo(() => {
+    // clone으로 orderDate에 add(7,'day')가 적용되는 현상 방지
+    return draftOrder.orderDate?.clone()?.add(7, 'day');
+  }, [draftOrder.orderDate]);
 
   const titleDraft = useCallback(() => {
     return (

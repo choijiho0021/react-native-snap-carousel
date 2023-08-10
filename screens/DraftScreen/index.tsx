@@ -25,6 +25,7 @@ import {
   actions as orderActions,
   OrderAction,
   getCountItems,
+  OrderModelState,
 } from '@/redux/modules/order';
 import {
   actions as productActions,
@@ -35,6 +36,7 @@ import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList'
 import GuideBox from '../CancelOrderScreen/component/GuideBox';
 import FloatCheckButton from '../CancelOrderScreen/component/FloatCheckButton';
 import AppSnackBar from '@/components/AppSnackBar';
+import AppAlert from '@/components/AppAlert';
 
 const styles = StyleSheet.create({
   container: {
@@ -96,7 +98,7 @@ type DraftScreenProps = {
 
   account: AccountModelState;
   product: ProductModelState;
-
+  order: OrderModelState;
   pending: boolean;
 
   action: {
@@ -117,9 +119,10 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   account: {token},
   action,
   product,
+  order,
   pending,
 }) => {
-  const [order, setOrder] = useState<RkbOrder>();
+  const [draftOrder, setDraftOrder] = useState<RkbOrder>();
   const [prods, setProds] = useState<ProdDesc[]>([]);
   const loading = useRef(false);
   const [checked, setChecked] = useState<boolean>(false);
@@ -135,8 +138,9 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   }, [navigation]);
 
   useEffect(() => {
-    if (route?.params?.order) setOrder(route.params?.order);
-  }, [route?.params?.order]);
+    if (route?.params?.orderId)
+      setDraftOrder(order.orders.get(route.params?.orderId));
+  }, [order.orders, route.params?.orderId]);
 
   const onCheck = useCallback(() => {
     if (!checked) scrollRef?.current.scrollToEnd();
@@ -147,7 +151,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   const onClickButton = useCallback(() => {
     action.order
       .changeDraft({
-        orderId: order?.orderId,
+        orderId: draftOrder?.orderId,
         token,
       })
       .then((r) => {
@@ -155,12 +159,12 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
           isSuccess: r?.payload?.result === 0,
         });
       });
-  }, [action.order, order?.orderId, token, navigation]);
+  }, [action.order, draftOrder?.orderId, token, navigation]);
 
   //
   const getProdDate = useCallback(() => {
-    if (!loading.current && order?.orderItems?.length > 0) {
-      order?.orderItems?.forEach((i) => {
+    if (!loading.current && draftOrder?.orderItems?.length > 0) {
+      draftOrder?.orderItems?.forEach((i) => {
         if (!product.prodList.has(i.uuid)) {
           // 해당 Uuid로 없다면 서버에서 가져온다.
           action?.product.getProdByUuid(i.uuid);
@@ -168,12 +172,12 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
         }
       });
     }
-  }, [action?.product, order?.orderItems, product.prodList]);
+  }, [action?.product, draftOrder?.orderItems, product.prodList]);
 
   useEffect(() => {
-    if (!order?.orderItems) return;
+    if (!draftOrder?.orderItems) return;
 
-    const prodList: ProdDesc[] = order.orderItems.map((r) => {
+    const prodList: ProdDesc[] = draftOrder.orderItems.map((r) => {
       const prod = product.prodList.get(r.uuid);
       if (prod)
         return {
@@ -190,7 +194,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
 
     if (isNeedUpdate) getProdDate();
     else setProds(prodList);
-  }, [getProdDate, order, product.prodList]);
+  }, [draftOrder?.orderItems, getProdDate, product.prodList]);
 
   const renderCheckButton = useCallback(() => {
     return (
@@ -213,7 +217,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   }, []);
 
   const headerNoti = useCallback(() => {
-    if (!order || !order.orderItems) return <View />;
+    if (!draftOrder || !draftOrder?.orderItems) return <View />;
 
     return (
       <View>
@@ -232,9 +236,9 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
         </View>
       </View>
     );
-  }, [order, renderDashedDiv]);
+  }, [draftOrder, renderDashedDiv]);
 
-  if (!order || !order.orderItems) return <View />;
+  if (!draftOrder || !draftOrder?.orderItems) return <View />;
 
   // [physical] shipmentState : draft(취소 가능) / ready shipped (취소 불가능)
   // [draft] state = validation && status = inactive , reserved (취소 가능)
@@ -248,7 +252,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
             prods={prods}
             listTitle={i18n
               .t('his:draftItemText')
-              .replace('%', getCountItems(order?.orderItems, false))}
+              .replace('%', getCountItems(draftOrder?.orderItems, false))}
             footerComponent={headerNoti()}
             isGradient
           />
@@ -261,14 +265,6 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
           />
         </View>
       </ScrollView>
-
-      <AppSnackBar
-        visible={showSnackBar !== ''}
-        onClose={() => setShowSnackBar('')}
-        textMessage={showSnackBar}
-        bottom={20}
-        hideCancel
-      />
 
       {renderCheckButton()}
 
@@ -286,7 +282,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
           }}
           disabledCanOnPress
           disabledOnPress={() => {
-            setShowSnackBar(i18n.t('his:draftAlert'));
+            AppAlert.info(i18n.t('his:draftAlert'));
           }}
         />
       </View>
@@ -296,9 +292,10 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
 };
 
 export default connect(
-  ({account, product}: RootState) => ({
+  ({account, product, order}: RootState) => ({
     account,
     product,
+    order,
     pending: false,
   }),
   (dispatch) => ({

@@ -436,7 +436,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               initial: false,
               screen: 'Draft',
               params: {
-                order: currentOrder,
+                orderId: currentOrder?.orderId,
               },
             });
           }}

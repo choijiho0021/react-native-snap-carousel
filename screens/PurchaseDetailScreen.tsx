@@ -384,15 +384,17 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             <AppButton
               style={styles.cancelDraftBtn}
               onPress={() => {
-                navigation.navigate('CancelOrder', {order});
+                navigation.navigate('CancelOrder', {orderId: order?.orderId});
               }}
               disabled={order.state !== 'validation'}
               disabledCanOnPress
               disabledOnPress={() => {
-                if (['completed', 'canceled'].includes(order?.state)) {
+                if (order?.state === 'completed') {
                   setShowSnackBar(
-                    i18n.t(`his:draftButtonAlert:${order?.state}`),
+                    i18n.t(`his:draftButtonAlert:${order?.orderType}`),
                   );
+                } else if (order?.state === 'canceled') {
+                  setShowSnackBar(i18n.t(`his:draftButtonAlert:canceled`));
                 }
               }}
               disableStyle={styles.cancelDraftBtnDisabled}
@@ -626,7 +628,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             type="primary"
             title={i18n.t('his:draftRequest')}
             onPress={() => {
-              navigation.navigate('Draft', {order});
+              navigation.navigate('Draft', {orderId: order?.orderId});
             }}
           />
         )}

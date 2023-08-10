@@ -18,6 +18,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import moment from 'moment';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {useNavigation} from '@react-navigation/native';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -293,7 +294,7 @@ type EsimSubsNavigationProp = StackNavigationProp<
 >;
 
 type EsimSubsProps = {
-  navigation: EsimSubsNavigationProp;
+  // navigation: EsimSubsNavigationProp;
   flatListRef?: MutableRefObject<FlatList<any> | undefined>;
   index: number;
   mainSubs: RkbSubscription;
@@ -310,7 +311,7 @@ type EsimSubsProps = {
 };
 
 const EsimSubs: React.FC<EsimSubsProps> = ({
-  navigation,
+  // navigation,
   flatListRef,
   index,
   mainSubs,
@@ -355,6 +356,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [showSubs, setShowSubs] = useState<boolean>(!mainSubs.hide);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
+  const navigation = useNavigation<EsimSubsNavigationProp>();
 
   useEffect(() => {
     if (showDetail) setShowMoreInfo(showDetail);
@@ -374,7 +376,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           chargeablePeriod,
           onPressUsage,
           isChargeable: !isChargeExpired,
-        } as HomeStackParamList['ChargeHistory']);
+        });
       } else if (!isBc) {
         navigation.navigate('ChargeType', {
           mainSubs: item,
@@ -631,10 +633,10 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           style={styles.redirectHK}
           onPress={() =>
             navigation.navigate('RedirectHK', {
-              iccid: mainSubs.subsIccid,
-              orderNo: mainSubs.subsOrderNo,
-              uuid: mainSubs.uuid,
-              imsi: mainSubs.imsi,
+              iccid: mainSubs?.subsIccid!,
+              orderNo: mainSubs?.subsOrderNo!,
+              uuid: mainSubs?.uuid,
+              imsi: mainSubs?.imsi!,
             })
           }>
           <View style={styles.row}>

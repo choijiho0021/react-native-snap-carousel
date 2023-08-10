@@ -399,9 +399,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
 
     implementation "com.kakao.sdk:v2-user:2.15.0" // 카카오 로그인
-    implementation "com.kakao.sdk:v2-talk:2.15.0" // 친구, 메시지(카카오톡)
     implementation "com.kakao.sdk:v2-share:2.15.0" // 메시지(카카오톡 공유)
-    implementation "com.kakao.sdk:v2-friend:2.15.0" // 카카오톡 소셜 피커, 리소스 번들 파일 포함
+
+//    implementation "com.kakao.sdk:v2-talk:2.15.0" // 친구, 메시지(카카오톡)
+//    implementation "com.kakao.sdk:v2-friend:2.15.0" // 카카오톡 소셜 피커, 리소스 번들 파일 포함
 
     implementation 'com.google.android.gms:play-services-analytics:10.0.1'
     implementation project(path: ":@react-native-firebase_messaging")

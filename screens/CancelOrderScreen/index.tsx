@@ -29,6 +29,7 @@ import {
   actions as orderActions,
   OrderAction,
   getCountItems,
+  OrderModelState,
 } from '@/redux/modules/order';
 import {
   actions as productActions,
@@ -47,6 +48,7 @@ import AppSnackBar from '@/components/AppSnackBar';
 import ProductDetailList from './component/ProductDetailList';
 import GuideBox from './component/GuideBox';
 import FloatCheckButton from './component/FloatCheckButton';
+import AppAlert from '@/components/AppAlert';
 
 const {esimCurrency} = Env.get();
 
@@ -207,6 +209,7 @@ type CancelOrderScreenProps = {
 
   account: AccountModelState;
   product: ProductModelState;
+  order: OrderModelState;
 
   pending: boolean;
 
@@ -221,13 +224,14 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   navigation,
   route,
   account: {token},
+  order,
   action,
   product,
   pending,
 }) => {
   const REASON_MAX_LENGTH = 500;
   const REASON_MIN_LENGTH = 10;
-  const [order, setOrder] = useState<RkbOrder>();
+  const [selectedOrder, setSelectedOrder] = useState<RkbOrder>();
   const [prods, setProds] = useState<ProdDesc[]>([]);
   const [step, setStep] = useState(0);
   const [balanceCharge, setBalanceCharge] = useState<Currency>();
@@ -273,20 +277,23 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   }, [navigation, onBackStep, step]);
 
   useEffect(() => {
-    if (route?.params?.order) {
-      setOrder(route.params.order);
+    if (route?.params?.orderId) {
+      const foundOrder = order?.orders.get(route.params.orderId);
+      setSelectedOrder(foundOrder);
       setMethod(
-        order?.paymentList?.find((item) => !isRokebiCash(item.paymentGateway)),
+        foundOrder?.paymentList?.find(
+          (item) => !isRokebiCash(item.paymentGateway),
+        ),
       );
 
       console.log('method : ', method);
     }
-  }, [method, order?.paymentList, route.params.order]);
+  }, [method, order?.orders, route.params.orderId]);
 
   // 함수로 묶기
   const getProdDate = useCallback(() => {
-    if (!loading.current && (order?.orderItems?.length || 0) > 0) {
-      order.orderItems.forEach((i) => {
+    if (!loading.current && (selectedOrder?.orderItems?.length || 0) > 0) {
+      selectedOrder.orderItems.forEach((i) => {
         if (!product.prodList.has(i.uuid)) {
           // 해당 Uuid로 없다면 서버에서 가져온다.
           action.product.getProdByUuid(i.uuid);
@@ -294,7 +301,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         }
       });
     }
-  }, [action?.product, order?.orderItems, product.prodList]);
+  }, [action.product, selectedOrder?.orderItems, product.prodList]);
 
   const onCheck = useCallback(() => {
     if (!checked) scrollRef.current.scrollToEnd();
@@ -303,12 +310,12 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   }, [checked]);
 
   useEffect(() => {
-    if (!order?.orderItems) return;
+    if (!selectedOrder?.orderItems) return;
 
-    setBalanceCharge(countRokebiCash(order));
+    setBalanceCharge(countRokebiCash(selectedOrder));
     getProdDate();
 
-    const prodList: ProdDesc[] = order.orderItems.map((r) => {
+    const prodList: ProdDesc[] = selectedOrder.orderItems.map((r) => {
       const prod = product.prodList.get(r.uuid);
 
       if (prod)
@@ -325,7 +332,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
     if (isNeedUpdate) getProdDate();
     else setProds(prodList);
-  }, [getProdDate, order, product.prodList]);
+  }, [getProdDate, product.prodList, selectedOrder]);
 
   const renderStep1 = useCallback(() => {
     return (
@@ -339,7 +346,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
             prods={prods}
             listTitle={i18n
               .t('his:cancelHeaderTitle2')
-              .replace('%', getCountItems(order?.orderItems, false))}
+              .replace('%', getCountItems(selectedOrder?.orderItems, false))}
             notiComponent={
               <View style={styles.notiFrame}>
                 <AppSvgIcon style={styles.bannerCheck} name="bannerCheck" />
@@ -356,7 +363,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         </View>
       </ScrollView>
     );
-  }, [order?.orderItems, prods]);
+  }, [selectedOrder?.orderItems, prods]);
 
   const renderStep2 = useCallback(() => {
     return (
@@ -477,7 +484,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
               labelStyle={[appStyles.bold14Text, {color: colors.black}]}
               format="price"
               valueStyle={appStyles.roboto16Text}
-              value={order?.totalPrice}
+              value={selectedOrder?.totalPrice}
               currencyStyle={[appStyles.bold14Text, {color: colors.black}]}
               balanceStyle={[appStyles.robotoBold16Text, {color: colors.black}]}
             />
@@ -518,7 +525,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
               labelStyle={appStyles.bold16Text}
               format="price"
               valueStyle={appStyles.roboto16Text}
-              value={order?.totalPrice}
+              value={selectedOrder?.totalPrice}
               currencyStyle={styles.totalCashCurrencyText}
               balanceStyle={styles.totalCashCurrencyText}
               color={colors.blue}
@@ -528,12 +535,12 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         <View>{renderGuide()}</View>
       </ScrollView>
     );
-  }, [balanceCharge, method, order?.totalPrice, renderGuide]);
+  }, [balanceCharge, method, renderGuide, selectedOrder?.totalPrice]);
 
   const cancelOrder = useCallback(() => {
     action.order
       .cancelDraftOrder({
-        orderId: order?.orderId,
+        orderId: selectedOrder?.orderId,
         token,
         reason: `${keyword}:${inputText}`,
       })
@@ -541,7 +548,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         navigation.navigate('CancelResult', {
           isSuccess: resp?.result === 0,
           prods,
-          orderId: order?.orderId,
+          orderId: selectedOrder?.orderId,
         });
       });
   }, [
@@ -549,12 +556,12 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
     inputText,
     keyword,
     navigation,
-    order?.orderId,
     prods,
+    selectedOrder?.orderId,
     token,
   ]);
 
-  if (!order || !order.orderItems) return <View />;
+  if (!selectedOrder || !selectedOrder.orderItems) return <View />;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -628,7 +635,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                   .replace('%', REASON_MIN_LENGTH.toString()),
               );
             } else if (step === 2 && !checked) {
-              setShowSnackBar(i18n.t('his:cancelReasonAlert3'));
+              AppAlert.info(i18n.t('his:cancelReasonAlert3'));
             }
           }}
           disabledCanOnPress
@@ -646,9 +653,10 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 };
 
 export default connect(
-  ({account, product}: RootState) => ({
+  ({account, product, order}: RootState) => ({
     account,
     product,
+    order,
     pending: false,
   }),
   (dispatch) => ({
