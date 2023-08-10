@@ -163,6 +163,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
   const isExhausted = useMemo(() => quota - used <= 0, [quota, used]);
   const circularProgress = useRef();
   const overCircularProgress = useRef();
+  const [isAnimated, setIsAnimated] = useState<boolean>(false);
 
   // const showUsage = useMemo(
   //   () =>
@@ -195,10 +196,18 @@ const UsageItem: React.FC<UsageItemProps> = ({
         const overProgress =
           used >= 0 ? Math.floor(((used - quota) / quota) * 100) : 0;
 
-        if (isOverUsed) {
-          overCircularProgress.current?.reAnimate(0, overProgress, 3000, null);
-        } else {
-          circularProgress.current?.reAnimate(0, progress, 3000, null);
+        if (!isAnimated) {
+          if (isOverUsed) {
+            setIsAnimated(true);
+            overCircularProgress.current?.reAnimate(
+              0,
+              overProgress,
+              3000,
+              null,
+            );
+          } else {
+            circularProgress.current?.reAnimate(0, progress, 3000, null);
+          }
         }
       }
     }
@@ -206,7 +215,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
       console.log('@@ show snackbar');
       showSnackbar();
     }
-  }, [cmiStatusCd, isOverUsed, quota, showSnackbar, usage, used]);
+  }, [cmiStatusCd, isAnimated, isOverUsed, quota, showSnackbar, usage, used]);
 
   const renderResetTimeRow = useCallback(
     (key: string, rowStyle: ViewStyle = {}) => {
@@ -232,7 +241,9 @@ const UsageItem: React.FC<UsageItemProps> = ({
   // data는 esim:Mb usim:kb 단위
   const toGb = useCallback((data: number) => {
     if (data === 0) return 0;
-    return (esimApp ? data / 1024 : data / 1024 / 1024)?.toFixed(2);
+    return (
+      Math.round((esimApp ? data / 1024 : data / 1024 / 1024) * 100) / 100
+    )?.toFixed(2);
   }, []);
 
   const renderCaution = useCallback(() => {
