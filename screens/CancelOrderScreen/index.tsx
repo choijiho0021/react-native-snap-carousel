@@ -134,9 +134,10 @@ const styles = StyleSheet.create({
     height: 208,
     ...appStyles.normal16Text,
     textAlignVertical: 'top',
-    backgroundColor: colors.whiteFive,
+    backgroundColor: colors.backGrey,
     overflow: 'scroll',
     padding: 16,
+    paddingTop: 16,
   },
   orderItemContainer: {
     marginBottom: 25,
