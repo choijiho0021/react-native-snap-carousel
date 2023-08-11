@@ -4,11 +4,12 @@ import HandleAccountPushNoti from './handleAccountPushNoti';
 import HandleNormalPushNoti from './handleNormalPushNoti';
 import HandleProvisionPushNoti from './handleProvisionPushNoti';
 import HandleEventPushNoti from './handleEventPushNoti';
+import {HandlePushNotiOptions} from './handlePushNoti';
 
 export default function createHandlePushNoti(
   navigation,
   payload,
-  options = {},
+  options: HandlePushNotiOptions = {},
 ) {
   if (options.isRegister) {
     return new HandleRegisterPushNoti(navigation, payload, options);

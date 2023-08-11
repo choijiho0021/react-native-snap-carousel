@@ -149,28 +149,13 @@ export interface OrderModelState {
   subsIsLast: boolean;
 }
 
-const updateOrders = (state, orders, page) => {
-  state.orders = orders;
-  state.orderList = orders
+const getOrderList = (orders) => {
+  // state.orders = orders;
+  return orders
     .sort((a, b) => utils.cmpMomentDesc(a.orderDate, b.orderDate))
     .keySeq()
     .toArray();
-  state.page = page;
 };
-
-const checkAndGetOrderById = createAsyncThunk(
-  'order/checkAndGetOrderById',
-  (
-    {user, token, orderId}: {user?: string; token?: string; orderId?: number},
-    {dispatch, getState},
-  ) => {
-    const {order} = getState() as RootState;
-
-    if (orderId && !order.orders.has(orderId))
-      return dispatch(getOrderById({user, token, orderId}));
-    return undefined;
-  },
-);
 
 // 질문 필요 reflectWithToast
 const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
@@ -272,9 +257,9 @@ const slice = createSlice({
         payload ? parseJson(payload).map((o) => [o.orderId, o]) : [],
       ).merge(state.page === 0 ? [] : state.orders);
 
-      if (orders) {
-        updateOrders(state, orders, 0);
-      }
+      state.orders = orders;
+      state.orderList = getOrderList(orders);
+      state.page = 0;
     });
 
     builder.addCase(draftOrder.fulfilled, (state, action) => {
@@ -343,14 +328,24 @@ const slice = createSlice({
           JSON.stringify(orderCache),
         );
 
-        updateOrders(state, orders, action.meta.arg.page);
+        state.orders = orders;
+        state.orderList = getOrderList(orders);
+
+        const {orderId, page} = action.meta.arg;
+        if (!orderId && page !== undefined) state.page = page;
       }
     });
 
-    builder.addCase(getOrderById.fulfilled, (state) => {
-      // return updateOrders(state, action);
-      // TODO: 다시 구현 필요
-      return state;
+    builder.addCase(getOrderById.fulfilled, (state, action) => {
+      const {objects, result} = action.payload;
+      if (result === 0 && objects.length > 0) {
+        const orders = ImmutableMap(state.orders).merge(
+          objects.map((o) => [o.orderId, o]),
+        );
+
+        state.orders = orders;
+        state.orderList = getOrderList(orders);
+      }
     });
 
     builder.addCase(cancelOrder.fulfilled, (state, action) => {
@@ -497,11 +492,11 @@ export const actions = {
   getSubs,
   getNotiSubs,
   getOrders,
+  getOrderById,
   updateSubsInfo,
   updateSubsAndOrderTag,
   updateSubsGiftStatus,
   cancelDraftOrder,
-  checkAndGetOrderById,
   changeDraft,
   cmiGetSubsUsage,
 };

@@ -179,9 +179,8 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
 
   const getNextOrder = useCallback(() => {
     const {mobile, token} = account;
-    const {page} = order;
     action.order.getOrders({user: mobile, token});
-  }, [account, action.order, order]);
+  }, [account, action.order]);
 
   const changePhoto = useCallback(async () => {
     const checkNewPermission = await checkPhotoPermission();
