@@ -1,21 +1,35 @@
-import {Platform} from 'react-native';
-import _ from 'underscore';
-// import {API} from '@/redux/api';
+export type HandlePushNotiOptions = {
+  isForeground: boolean;
+  isRegister: boolean;
+  updateAccount: any;
+  getNotiSubs: any;
+  token?: string;
+  mobile?: string;
+  iccid?: string;
+  clearCurrentAccount: () => void;
+};
 
 class HandlePushNoti {
   protected navigation: any;
+
   protected payload: any;
+
   protected isForeground: boolean;
+
   protected isRegister: boolean;
+
   protected isNoticed: boolean;
+
   protected updateAccount: any;
+
   protected getNotiSubs: any;
+
   protected token: string;
+
   protected clearCurrentAccount: any;
-  protected checkAndGetOrderById: any;
-  protected order: any;
-  protected auth: any;
+
   protected mobile: any;
+
   protected iccid: any;
 
   constructor(
@@ -30,22 +44,7 @@ class HandlePushNoti {
       getNotiSubs,
       token,
       clearCurrentAccount,
-      checkAndGetOrderById,
-      auth,
-      order,
-    }: {
-      mobile: any;
-      iccid: any;
-      isForeground: boolean;
-      isRegister: boolean;
-      updateAccount: any;
-      getNotiSubs: any;
-      token: string;
-      clearCurrentAccount: any;
-      checkAndGetOrderById: any;
-      auth: any;
-      order: any;
-    },
+    }: HandlePushNotiOptions,
   ) {
     this.navigation = navigation;
     this.payload = payload;
@@ -56,22 +55,8 @@ class HandlePushNoti {
     this.getNotiSubs = getNotiSubs;
     this.token = token;
     this.clearCurrentAccount = clearCurrentAccount;
-    this.checkAndGetOrderById = checkAndGetOrderById;
-    this.order = order;
-    this.auth = auth;
     this.mobile = mobile;
     this.iccid = iccid;
-  }
-
-  sendLog() {
-    if (this.mobile && _.size(this.payload.data) > 0) {
-      if (Platform.OS === 'ios') {
-        // API.Noti.sendLog({
-        //   mobile: this.mobile,
-        //   message: JSON.stringify(this.payload.data),
-        // });
-      }
-    }
   }
 }
 export default HandlePushNoti;
