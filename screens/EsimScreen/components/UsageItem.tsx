@@ -240,7 +240,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
   // data는 esim:Mb usim:kb 단위
   const toGb = useCallback((data: number) => {
-    if (data === 0) return 0;
+    if (data <= 0) return 0;
     return (
       Math.round((esimApp ? data / 1024 : data / 1024 / 1024) * 100) / 100
     )?.toFixed(2);
