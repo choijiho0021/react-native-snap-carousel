@@ -325,40 +325,23 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     getHistory();
   }, [getHistory]);
 
-  const showDetail = useCallback(
-    (item: CashHistory) => {
-      if (item.order_id) {
-        const orderItems =
-          order.orders.get(Number(item.order_id))?.orderItems || [];
+  const showDetail = useCallback((item: CashHistory) => {
+    if (item.order_id) {
+      return <AppText>{item.order_title || ''}</AppText>;
+    }
 
-        if (orderItems.length === 0) return null;
-        if (orderItems.length === 1)
-          return <AppText>{orderItems[0]?.title || ''}</AppText>;
-        return (
-          <AppText>
-            {i18n.t(`cashHistory:detail:etcCnt`, {
-              prodName: orderItems[0]?.title || '',
-              // 해당 부분은 확인 필요
-              cnt: getCountItems(orderItems, true),
-            })}
-          </AppText>
-        );
-      }
+    if (item.expire_dt) {
+      return (
+        <AppText>
+          {i18n.t(`cashHistory:detail:expDate`, {
+            date: item.expire_dt.format('YYYY.MM.DD'),
+          })}
+        </AppText>
+      );
+    }
 
-      if (item.expire_dt) {
-        return (
-          <AppText>
-            {i18n.t(`cashHistory:detail:expDate`, {
-              date: item.expire_dt.format('YYYY.MM.DD'),
-            })}
-          </AppText>
-        );
-      }
-
-      return null;
-    },
-    [order.orders],
-  );
+    return null;
+  }, []);
 
   const renderSectionItem = useCallback(
     ({
@@ -438,7 +421,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         </Pressable>
       );
     },
-    [navigation, order.orders, showDetail],
+    [navigation, showDetail],
   );
 
   const renderEmpty = useCallback(() => {
