@@ -272,6 +272,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   const [balanceCharge, setBalanceCharge] = useState<Currency>();
   const [order, setOrder] = useState<RkbOrder>();
   const [showSnackBar, setShowSnackBar] = useState<string>('');
+  const [loading, setLoading] = useState(false);
   const paidAmount = useMemo(
     () => method?.amount || utils.toCurrency(0, esimCurrency),
     [method?.amount],
@@ -295,6 +296,10 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     if (orderId) {
       const detail = orders.get(Number(orderId));
       if (detail) {
+        // order 조회에 성공하면, state.order.orders redux store 값이 변경되기 때문에
+        // useEffect()에 의해 이루틴이 다시 실행된다.
+        // 그때는 detail 값이 존재하기 때문에, 상세 정보 처리가 가능해진다.
+
         setOrder(detail);
         setMethod(
           detail.paymentList?.find(
@@ -307,12 +312,23 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         // order를 못찾으면, 다시 읽어온다.
         const {mobile, token} = account;
 
-        action.order.getOrders({
-          user: mobile,
-          token,
-          orderId,
-          page: 0,
-        });
+        setLoading(true);
+
+        action.order
+          .getOrderById({
+            user: mobile,
+            token,
+            orderId,
+          })
+          .then(({payload}) => {
+            const {result} = payload || {};
+            if (result !== 0) {
+              // order 조회 실패하는 경우
+              AppAlert.info(i18n.t('his:orderNotFound'));
+              navigation.goBack();
+            }
+          })
+          .finally(() => setLoading(false));
       }
     } else {
       AppAlert.info(i18n.t('his:orderNotFound'));
@@ -597,7 +613,13 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     );
   }, [getColor, method?.paymentMethod, order]);
 
-  if (!order || !order.orderItems) return <View />;
+  if (!order || !order.orderItems) {
+    return (
+      <View style={styles.container}>
+        <AppActivityIndicator visible={pending || loading} />
+      </View>
+    );
+  }
 
   // [physical] shipmentState : draft(취소 가능) / ready shipped (취소 불가능)
   // [draft] state = validation && status = inactive , reserved (취소 가능)
@@ -664,7 +686,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           />
         )}
       </View>
-      <AppActivityIndicator visible={pending} />
+      <AppActivityIndicator visible={pending || loading} />
     </SafeAreaView>
   );
 };

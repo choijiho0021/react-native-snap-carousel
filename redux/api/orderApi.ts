@@ -217,17 +217,17 @@ const getOrderById = ({
 }: {
   user?: string;
   token?: string;
-  orderId?: number;
+  orderId?: string;
 }) => {
   if (!user)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
-  if (!_.isNumber(orderId))
+  if (!orderId)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: orderId');
 
   return api.callHttpGet(
-    `${api.httpUrl(api.path.order, '')}/${user}/${orderId}?_format=json`,
+    `${api.httpUrl(api.path.order, '')}/${user}/${orderId}/all?_format=json`,
     (resp) => toOrder(resp),
     api.withToken(token, 'json'),
   );
