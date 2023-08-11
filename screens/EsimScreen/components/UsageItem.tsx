@@ -328,7 +328,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           </AppText>
         </View>
 
-        {item.daily === 'daily' && (
+        {item.daily === 'daily' && item.partner !== 'billionconnect' && (
           <Fragment>
             <View style={styles.timeDivider} />
 
@@ -355,7 +355,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         )}
       </View>
     );
-  }, [endTime, item.daily, renderResetTimeRow]);
+  }, [endTime, item.daily, item.partner, renderResetTimeRow]);
 
   const renderAnimatedCircularProgress = useCallback(() => {
     if (!isOverUsed) {
