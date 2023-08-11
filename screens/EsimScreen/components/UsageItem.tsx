@@ -248,12 +248,15 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
   const renderCaution = useCallback(() => {
     let key = '';
-    if (isExhausted) {
+
+    if (!showUsage) {
+      key = 'notShow';
+    } else if (item.daily === 'total') {
+      key = '';
+    } else if (isExhausted) {
       key = 'exhausted';
     } else if (used && quota && Math.floor((used / quota) * 100) >= 80) {
       key = 'reqCharge';
-    } else if (!showUsage) {
-      key = 'notShow';
     }
 
     const isNotShow = key === 'notShow';
@@ -285,7 +288,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
     ) : (
       <View style={{height: 20}} />
     );
-  }, [isExhausted, quota, showUsage, used]);
+  }, [isExhausted, item.daily, quota, showUsage, used]);
 
   const renderDailyUsage = useCallback(
     () => (
