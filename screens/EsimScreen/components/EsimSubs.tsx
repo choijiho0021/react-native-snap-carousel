@@ -551,8 +551,9 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       <View style={styles.activeBottomBox}>
         <AppButton
           style={{
+            flex: 1,
+            marginRight: 8,
             backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
-            paddingHorizontal: 12,
             paddingVertical: 8,
             borderRadius: 3,
           }}
@@ -575,9 +576,10 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
         <AppButton
           style={{
+            flex: 1,
             backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
-            paddingHorizontal: 12,
             paddingVertical: 8,
+            marginRight: 8,
             borderRadius: 3,
           }}
           titleStyle={{
@@ -590,8 +592,8 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
         <AppButton
           style={{
+            flex: 1,
             backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
-            paddingHorizontal: 12,
             paddingVertical: 8,
             borderRadius: 3,
           }}
