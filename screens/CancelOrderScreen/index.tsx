@@ -51,6 +51,7 @@ import ProductDetailList from './component/ProductDetailList';
 import GuideBox from './component/GuideBox';
 import FloatCheckButton from './component/FloatCheckButton';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const {esimCurrency} = Env.get();
 
@@ -265,6 +266,18 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   const onBackStep = useCallback(() => {
     setStep((prev) => (prev - 1 <= 0 ? 0 : prev - 1));
   }, []);
+
+  // 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
+  BackbuttonHandler({
+    navigation,
+    onBack: () => {
+      if (step === 0) navigation.goBack();
+      else {
+        onBackStep();
+      }
+      return true;
+    },
+  });
 
   useEffect(() => {
     navigation.setOptions({
