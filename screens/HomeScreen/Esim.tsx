@@ -234,7 +234,7 @@ const Esim: React.FC<EsimProps> = ({
   const [isShowBack, setIsShowBack] = useState(false);
 
   const isSupport = useMemo(
-    () => account.isSupportDev && product?.rule?.maintenance?.state === '0',
+    () => account.isSupportDev && product?.rule?.maintenance?.state !== '1',
     [account.isSupportDev, product?.rule?.maintenance?.state],
   );
 
@@ -638,7 +638,6 @@ const Esim: React.FC<EsimProps> = ({
           });
         },
       });
-      pushNotiHandler.sendLog();
       pushNotiHandler.handleNoti();
     },
     [
@@ -838,7 +837,7 @@ const Esim: React.FC<EsimProps> = ({
           }}
         />
         <ExitModal
-          maintenance={product.rule.maintenance}
+          maintenance={product.rule?.maintenance}
           devList={product.devList}
           onOkClose={() => exitApp('exit')}
           visible={modalType === 'unSupported'}
@@ -861,7 +860,7 @@ const Esim: React.FC<EsimProps> = ({
       needUpdate,
       popUpList,
       product.devList,
-      product.rule.maintenance,
+      product.rule?.maintenance,
     ],
   );
 
