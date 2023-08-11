@@ -206,7 +206,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
               null,
             );
           } else {
-            circularProgress.current?.reAnimate(0, progress, 3000, null);
+            circularProgress.current?.reAnimate(0.01, progress, 3000, null);
           }
         }
       }
@@ -365,11 +365,11 @@ const UsageItem: React.FC<UsageItemProps> = ({
       return (
         <AnimatedCircularProgress
           ref={circularProgress}
-          size={140}
-          width={10}
+          size={160}
+          width={6}
           fill={0}
           rotation={0}
-          backgroundWidth={10}
+          backgroundWidth={6}
           tintColor={colors.gray3}
           // onAnimationComplete={() => setIsOverUsed(isExhausted)}
           backgroundColor={colors.clearBlue}>
@@ -403,12 +403,12 @@ const UsageItem: React.FC<UsageItemProps> = ({
     return (
       <AnimatedCircularProgress
         ref={overCircularProgress}
-        size={140}
-        width={10}
+        size={160}
+        width={6}
         prefill={0}
         fill={0}
         rotation={0}
-        backgroundWidth={10}
+        backgroundWidth={6}
         tintColor={colors.redError}
         // onAnimationComplete={() => setIsOverUsed(true)}
         backgroundColor={colors.gray3}>
