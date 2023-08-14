@@ -97,12 +97,14 @@ type LinkInputProps = {
   value: string[];
   onChangeValue: (v: string[]) => void;
   required?: boolean;
+  inputRef: any;
 };
 
 const LinkInput: React.FC<LinkInputProps> = ({
   value,
   onChangeValue,
   required = false,
+  inputRef,
 }) => {
   const [linkList, setLinkList] = useState(['']);
   const [linkCount, setLinkCount] = useState(1);
@@ -203,6 +205,7 @@ const LinkInput: React.FC<LinkInputProps> = ({
               ]}>
               <AppTextInput
                 // autoFocus={idx > 0}
+                ref={inputRef}
                 style={{flex: 1, height: 56, ...appStyles.normal16Text}}
                 maxLength={1000}
                 onChangeText={(v) => {
