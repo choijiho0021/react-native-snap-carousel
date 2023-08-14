@@ -572,10 +572,16 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     ],
   );
 
-  const onPressFilter = useCallback((key: string) => {
-    setDataFilter(key);
-    sectionRef.current?.scrollToLocation({itemIndex: 0, sectionIndex: 0});
-  }, []);
+  const onPressFilter = useCallback(
+    (key: string) => {
+      setDataFilter(key);
+
+      // 데이터 없을 때 호출하면 앱이 죽음
+      if (sectionData?.length > 0)
+        sectionRef.current?.scrollToLocation({itemIndex: 0, sectionIndex: 0});
+    },
+    [sectionData?.length],
+  );
 
   const renderFilter = useCallback(
     () => (

@@ -282,6 +282,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
   );
   const scrollRef = useRef();
   const keybd = useRef();
+  const linkKeybd = useRef();
 
   useEffect(() => {
     if (paramNid) {
@@ -596,6 +597,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
 
           {selectedEvent && (
             <LinkInput
+              inputRef={linkKeybd}
               value={linkParam}
               onChangeValue={setLinkParam}
               required={selectedEvent?.rule?.link}
@@ -609,6 +611,10 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
             attachment={attachment}
             setAttachment={setAttachment}
             imageQuality={selectedEvent?.rule?.imageQuality}
+            onPress={() => {
+              keybd.current?.blur();
+              linkKeybd.current?.blur();
+            }}
           />
         </View>
       </KeyboardAwareScrollView>

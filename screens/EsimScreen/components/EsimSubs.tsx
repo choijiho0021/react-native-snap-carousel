@@ -79,8 +79,13 @@ const styles = StyleSheet.create({
   },
   infoRadiusBorderTop: {
     paddingHorizontal: 16,
-    paddingBottom: 10,
-    paddingTop: 10,
+    paddingVertical: 10,
+  },
+
+  infoRadiusBorderTopDraft: {
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+    paddingTop: 0,
   },
 
   infoCardBottom: {
@@ -143,9 +148,8 @@ const styles = StyleSheet.create({
   },
   expiredText: {
     ...appStyles.extraBold12,
-    width: 42,
     height: 16,
-    textAlign: 'right',
+    textAlign: 'center',
     color: colors.warmGrey,
   },
   expiredBg: {
@@ -154,7 +158,6 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     paddingLeft: 6,
     paddingRight: 6,
-
     marginTop: 4,
     justifyContent: 'center',
   },
@@ -454,11 +457,9 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       <View
         style={
           notCardInfo
-            ? {
-                ...styles.infoRadiusBorderTop,
-                paddingTop: isTypeDraft ? 0 : 10,
-                paddingBottom: isTypeDraft ? 8 : 10,
-              }
+            ? isTypeDraft
+              ? styles.infoRadiusBorderTopDraft
+              : styles.infoRadiusBorderTop
             : styles.infoCardTop
         }>
         {isTypeDraft && (

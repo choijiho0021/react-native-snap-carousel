@@ -1,5 +1,12 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Image, Platform, Pressable, StyleSheet, View} from 'react-native';
+import {
+  Image,
+  Keyboard,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {
   PERMISSIONS,
   RESULTS,
@@ -85,6 +92,7 @@ type AttachmentBoxProps = {
   attachment: List<CropImage>;
   setAttachment: (v: List<CropImage>) => void;
   imageQuality?: number;
+  onPress: () => void;
 };
 
 const AttachmentBox: React.FC<AttachmentBoxProps> = ({
@@ -94,6 +102,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
   attachment,
   setAttachment,
   imageQuality,
+  onPress,
 }) => {
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
   const dispatch = useDispatch();
@@ -113,6 +122,8 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
 
   const addAttachment = useCallback(async () => {
     let checkNewPermission = false;
+
+    onPress();
 
     if (!hasPhotoPermission) {
       const permission =
@@ -146,7 +157,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
         ok: () => openSettings(),
       });
     }
-  }, [hasPhotoPermission, imageQuality, setAttachment]);
+  }, [hasPhotoPermission, imageQuality, onPress, setAttachment]);
 
   const renderModal = useCallback(
     ({imgUrl, att}: {imgUrl?: string; att?: CropImage}) => {

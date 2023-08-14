@@ -162,9 +162,12 @@ const UsageItem: React.FC<UsageItemProps> = ({
   const [used, setUsed] = useState<number>(usage?.used || 0);
   const isExhausted = useMemo(() => quota - used <= 0, [quota, used]);
   const circularProgress = useRef();
-  const overCircularProgress = useRef();
   const [isAnimated, setIsAnimated] = useState<boolean>(false);
 
+  const overProgress = useMemo(
+    () => (quota > 0 ? Math.floor(((used - quota) / quota) * 100) : 0),
+    [quota, used],
+  );
   // const showUsage = useMemo(
   //   () =>
   //     item.partner !== 'billionconnect' ||
@@ -188,26 +191,15 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
   useEffect(() => {
     if (cmiStatusCd === 'A') {
-      if (usage) {
+      if (usage && usage.quota && usage.used) {
         setQuota(usage.quota);
         setUsed(usage.used);
 
-        const progress = used >= 0 ? Math.floor((used / quota) * 100) : 0;
-        const overProgress =
-          used >= 0 ? Math.floor(((used - quota) / quota) * 100) : 0;
+        const progress = quota > 0 ? Math.floor((used / quota) * 100) : 0;
 
-        if (!isAnimated) {
-          if (isOverUsed) {
-            setIsAnimated(true);
-            overCircularProgress.current?.reAnimate(
-              0,
-              overProgress,
-              3000,
-              null,
-            );
-          } else {
-            circularProgress.current?.reAnimate(0.01, progress, 3000, null);
-          }
+        if (!isAnimated && progress > 0) {
+          setIsAnimated(true);
+          circularProgress.current?.reAnimate(0.01, progress, 3000, null);
         }
       }
     }
@@ -361,81 +353,46 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [endTime, item.daily, item.partner, renderResetTimeRow]);
 
   const renderAnimatedCircularProgress = useCallback(() => {
-    if (!isOverUsed) {
-      return (
-        <AnimatedCircularProgress
-          ref={circularProgress}
-          size={160}
-          width={6}
-          fill={0}
-          rotation={0}
-          backgroundWidth={6}
-          tintColor={colors.gray3}
-          // onAnimationComplete={() => setIsOverUsed(isExhausted)}
-          backgroundColor={colors.clearBlue}>
-          {(fill) => {
-            if (fill > 100) setIsOverUsed(isExhausted);
-            return (
-              <View style={{alignItems: 'center'}}>
-                <View style={{width: 24, height: 24}}>
-                  <Lottie
-                    autoPlay={isExhausted}
-                    loop
-                    source={require('@/assets/images/lottie/lightning.json')}
-                  />
-                </View>
-                <AppText style={{...appStyles.bold14Text, textAlign: 'center'}}>
-                  {i18n.t('esim:remainAmount')}
-                </AppText>
-                <AppText
-                  style={{
-                    ...appStyles.bold24Text,
-                    color: isExhausted ? colors.redError : colors.clearBlue,
-                  }}>
-                  {`${toGb(quota - used || 0)}GB`}
-                </AppText>
-              </View>
-            );
-          }}
-        </AnimatedCircularProgress>
-      );
-    }
     return (
       <AnimatedCircularProgress
-        ref={overCircularProgress}
+        ref={circularProgress}
         size={160}
         width={6}
-        prefill={0}
         fill={0}
         rotation={0}
         backgroundWidth={6}
-        tintColor={colors.redError}
-        // onAnimationComplete={() => setIsOverUsed(true)}
-        backgroundColor={colors.gray3}>
-        {(fill) => (
-          <View style={{alignItems: 'center'}}>
-            <View style={{width: 24, height: 24}}>
-              <Lottie
-                autoPlay={isExhausted}
-                loop
-                source={require('@/assets/images/lottie/lightning.json')}
-              />
+        tintColor={isOverUsed ? colors.redError : colors.gray3}
+        backgroundColor={isOverUsed ? colors.gray3 : colors.clearBlue}>
+        {(fill) => {
+          if (fill > 100) {
+            setIsOverUsed(isExhausted);
+            circularProgress.current?.reAnimate(0.1, overProgress, 3000, null);
+          }
+          return (
+            <View style={{alignItems: 'center'}}>
+              <View style={{width: 24, height: 24}}>
+                <Lottie
+                  autoPlay={isExhausted}
+                  loop
+                  source={require('@/assets/images/lottie/lightning.json')}
+                />
+              </View>
+              <AppText style={{...appStyles.bold14Text, textAlign: 'center'}}>
+                {i18n.t('esim:remainAmount')}
+              </AppText>
+              <AppText
+                style={{
+                  ...appStyles.bold24Text,
+                  color: isExhausted ? colors.redError : colors.clearBlue,
+                }}>
+                {`${toGb(quota - used || 0)}GB`}
+              </AppText>
             </View>
-            <AppText style={{...appStyles.bold14Text, textAlign: 'center'}}>
-              {i18n.t('esim:remainAmount')}
-            </AppText>
-            <AppText
-              style={{
-                ...appStyles.bold24Text,
-                color: isExhausted ? colors.redError : colors.clearBlue,
-              }}>
-              {`${toGb(quota - used || 0)}GB`}
-            </AppText>
-          </View>
-        )}
+          );
+        }}
       </AnimatedCircularProgress>
     );
-  }, [isExhausted, isOverUsed, quota, toGb, used]);
+  }, [isExhausted, isOverUsed, overProgress, quota, toGb, used]);
 
   const renderWarning = useCallback(() => {
     return (
