@@ -148,9 +148,8 @@ const styles = StyleSheet.create({
   },
   expiredText: {
     ...appStyles.extraBold12,
-    width: 42,
     height: 16,
-    textAlign: 'right',
+    textAlign: 'center',
     color: colors.warmGrey,
   },
   expiredBg: {
@@ -159,7 +158,6 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     paddingLeft: 6,
     paddingRight: 6,
-
     marginTop: 4,
     justifyContent: 'center',
   },
