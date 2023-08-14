@@ -79,7 +79,8 @@ const styles = StyleSheet.create({
   },
   infoRadiusBorderTop: {
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingBottom: 10,
+    paddingTop: 10,
   },
 
   infoCardBottom: {
@@ -451,7 +452,15 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
     return (
       <View
-        style={notCardInfo ? styles.infoRadiusBorderTop : styles.infoCardTop}>
+        style={
+          notCardInfo
+            ? {
+                ...styles.infoRadiusBorderTop,
+                paddingTop: isTypeDraft ? 0 : 10,
+                paddingBottom: isTypeDraft ? 8 : 10,
+              }
+            : styles.infoCardTop
+        }>
         {isTypeDraft && (
           <View style={styles.draftFrame}>
             <AppText style={styles.drafting}>{i18n.t('esim:reserved')}</AppText>
@@ -816,7 +825,12 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         style={{opacity: isEditMode ? 0.6 : 1}}>
         <View
           style={
-            notCardInfo ? styles.infoRadiusBorderBottom : styles.infoCardBottom
+            notCardInfo
+              ? {
+                  ...styles.infoRadiusBorderBottom,
+                  paddingTop: isTypeDraft ? 0 : 6,
+                }
+              : styles.infoCardBottom
           }>
           {isTypeDraft ? <View /> : notCardInfo ? QRnCopyInfo() : topInfo()}
         </View>
