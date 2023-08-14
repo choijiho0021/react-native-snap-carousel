@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
   },
   draftTitleFrame: {
     marginHorizontal: 16,
+    borderRadius: 3,
     marginTop: 24,
     marginBottom: 8,
   },
@@ -161,6 +162,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backGrey,
     paddingHorizontal: 16,
     paddingVertical: 8,
+    alignItems: 'center',
+    borderRadius: 3,
   },
   draftNotiText: {
     ...appStyles.normal14Text,
