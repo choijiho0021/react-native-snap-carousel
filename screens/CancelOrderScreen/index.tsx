@@ -147,6 +147,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.whiteFive,
     marginTop: 6,
+    borderRadius: 3,
   },
   orderItemContainer: {
     marginBottom: 25,

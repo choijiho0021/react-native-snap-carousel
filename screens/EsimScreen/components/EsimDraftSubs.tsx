@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
     ...appStyles.bold14Text,
     color: colors.clearBlue,
     fontSize: isDeviceSize('small') ? 12 : 14,
+    marginBottom: 4,
   },
   draftButton: {
     flex: 1,
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   expiredDateFrame: {
-    marginBottom: 12,
+    marginBottom: 4,
   },
   inactiveContainer: {
     flexDirection: 'row',
@@ -94,7 +95,6 @@ const styles = StyleSheet.create({
   ticketFrame: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
   },
   ticket: {
     width: 40,
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   topInfo: {
     marginTop: 16,
   },
-  draftTitleMainText: appStyles.bold16Text,
+  draftTitleMainText: {...appStyles.bold16Text, width: '70%'},
   draftTitleSubText: appStyles.normal16Text,
   arrow: {
     width: 26,

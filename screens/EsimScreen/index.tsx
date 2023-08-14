@@ -162,6 +162,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
+  draftNotiText: {
+    ...appStyles.normal14Text,
+    lineHeight: 22,
+  },
+  draftNotiBoldText: {
+    ...appStyles.bold14Text,
+    color: colors.redError,
+    lineHeight: 22,
+  },
 });
 
 type EsimScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Esim'>;
@@ -442,13 +451,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
                     {i18n.t('esim:draftTitle')}
                   </AppText>
                   <View style={styles.draftTitle}>
-                    <AppSvgIcon name="bell" />
+                    <AppSvgIcon style={{marginRight: 8}} name="bell" />
 
                     <AppStyledText
                       text={i18n.t(`esim:draftNotice`)}
-                      textStyle={{...appStyles.normal14Text}}
+                      textStyle={styles.draftNotiText}
                       format={{
-                        b: [appStyles.bold14Text, {color: colors.redError}],
+                        b: styles.draftNotiBoldText,
                       }}
                     />
                   </View>

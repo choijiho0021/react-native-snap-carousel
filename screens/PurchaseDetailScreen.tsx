@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     marginTop: 20,
     padding: 16,
+    marginHorizontal:20,
   },
   headerNotiBoldText: {
     ...appStyles.bold14Text,
