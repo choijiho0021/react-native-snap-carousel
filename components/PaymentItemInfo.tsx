@@ -112,13 +112,13 @@ const styles = StyleSheet.create({
   },
   esimInfo: {
     ...appStyles.normal14Text,
-    color: colors.redError,
+    color: colors.clearBlue,
     lineHeight: 20,
     width: width - 72,
   },
   esimInfoBold: {
     ...appStyles.bold14Text,
-    color: colors.redError,
+    color: colors.clearBlue,
     lineHeight: 20,
     width: width - 72,
   },
@@ -268,7 +268,7 @@ const PaymentItemInfo = ({
             marginTop: 20,
           }}>
           <AppSvgIcon
-            name="cautionIcon"
+            name="bannerCheckBlue"
             style={{
               marginRight: 8,
               justifyContent: 'center',
