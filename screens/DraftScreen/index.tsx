@@ -133,7 +133,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   const [prods, setProds] = useState<ProdDesc[]>([]);
   const loading = useRef(false);
   const [checked, setChecked] = useState<boolean>(false);
-  const [showSnackBar, setShowSnackBar] = useState('');
+  const [isClickButton, setIsClickButton] = useState(false);
 
   const scrollRef = useRef<ScrollView>();
 
@@ -156,6 +156,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   }, [checked]);
 
   const onClickButton = useCallback(() => {
+    setIsClickButton(true);
     action.order
       .changeDraft({
         orderId: draftOrder?.orderId,
@@ -281,26 +282,28 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
           pressedStyle={{
             backgroundColor: checked ? colors.clearBlue : colors.gray,
           }}
-          disabled={!checked}
+          disabled={!checked || isClickButton}
           title={i18n.t('his:draftRequest')}
           onPress={() => {
             onClickButton();
           }}
           disabledCanOnPress
           disabledOnPress={() => {
-            action.modal.renderModal(() => (
-              <AppModalContent
-                type="info"
-                onOkClose={() => {
-                  action.modal.closeModal();
-                }}>
-                <View style={{marginLeft: 30}}>
-                  <AppText style={styles.modalText}>
-                    {i18n.t('his:draftAlert')}
-                  </AppText>
-                </View>
-              </AppModalContent>
-            ));
+            if (isClickButton) console.log('중복클릭');
+            else
+              action.modal.renderModal(() => (
+                <AppModalContent
+                  type="info"
+                  onOkClose={() => {
+                    action.modal.closeModal();
+                  }}>
+                  <View style={{marginLeft: 30}}>
+                    <AppText style={styles.modalText}>
+                      {i18n.t('his:draftAlert')}
+                    </AppText>
+                  </View>
+                </AppModalContent>
+              ));
           }}
         />
       </View>

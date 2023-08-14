@@ -79,8 +79,7 @@ const styles = StyleSheet.create({
   },
   infoRadiusBorderTop: {
     paddingHorizontal: 16,
-    paddingBottom: 10,
-    paddingTop: 10,
+    paddingVertical: 10,
   },
 
   infoRadiusBorderTopDraft: {
