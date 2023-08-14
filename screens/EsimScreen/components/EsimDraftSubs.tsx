@@ -104,8 +104,8 @@ const styles = StyleSheet.create({
   topInfo: {
     marginTop: 16,
   },
-  draftTitleMainText: {...appStyles.bold16Text, width: '70%'},
-  draftTitleSubText: appStyles.normal16Text,
+  draftTitleMainText: {...appStyles.bold16Text},
+  draftTitleSubText: {...appStyles.normal16Text, alignSelf: 'flex-end'},
   arrow: {
     width: 26,
     height: 26,
@@ -141,19 +141,25 @@ const EsimDraftSubs = ({
         <View>
           <View style={styles.ticketFrame}>
             <AppSvgIcon name="ticket" style={styles.ticket} />
-            <AppText
-              style={styles.draftTitleMainText}
-              numberOfLines={2}
-              ellipsizeMode="tail">
-              {`${draftOrder.orderItems[0].title} `}
-            </AppText>
-            {draftOrder.orderItems?.length > 1 && (
-              <AppText style={styles.draftTitleSubText}>
-                {i18n
-                  .t('esim:etcCnt')
-                  .replace('%%', getCountItems(draftOrder?.orderItems, true))}
+            <View
+              style={{
+                flexDirection: 'row',
+                width: '70%',
+              }}>
+              <AppText
+                style={styles.draftTitleMainText}
+                numberOfLines={2}
+                ellipsizeMode="tail">
+                {`${draftOrder.orderItems[0].title} `}
               </AppText>
-            )}
+              {draftOrder.orderItems?.length > 1 && (
+                <AppText style={styles.draftTitleSubText}>
+                  {i18n
+                    .t('esim:etcCnt')
+                    .replace('%%', getCountItems(draftOrder?.orderItems, true))}
+                </AppText>
+              )}
+            </View>
           </View>
         </View>
         <View style={styles.arrow}>
