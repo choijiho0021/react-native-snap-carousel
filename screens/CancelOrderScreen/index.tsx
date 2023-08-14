@@ -260,6 +260,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   const [showSnackBar, setShowSnackBar] = useState('');
   const keybd = useRef();
   const scrollRef = useRef<ScrollView>();
+  const [isClickButton, setIsClickButton] = useState(false);
 
   const [method, setMethod] = useState<RkbPayment>();
   const [checked, setChecked] = useState<boolean>(false);
@@ -316,8 +317,6 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           (item) => !isRokebiCash(item.paymentGateway),
         ),
       );
-
-      console.log('method : ', method);
     }
   }, [method, order?.orders, route.params.orderId]);
 
@@ -574,6 +573,8 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   }, [balanceCharge, method, renderGuide, selectedOrder?.totalPrice]);
 
   const cancelOrder = useCallback(() => {
+    setIsClickButton(true);
+
     action.order
       .cancelDraftOrder({
         orderId: selectedOrder?.orderId,
@@ -655,7 +656,8 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
               inputText?.length < REASON_MIN_LENGTH &&
               keyword === 'etc') ||
             (step === 1 && !keyword) ||
-            (step === 2 && !checked)
+            (step === 2 && !checked) ||
+            isClickButton
           }
           disabledOnPress={() => {
             if (step === 1 && !keyword) {
@@ -688,10 +690,13 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           }}
           disabledCanOnPress
           onPress={() => {
-            if (step === 2 && checked) {
-              cancelOrder();
+            if (isClickButton) console.log('중복 클릭');
+            else {
+              if (step === 2 && checked) {
+                cancelOrder();
+              }
+              setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
             }
-            setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
           }}
         />
       </View>

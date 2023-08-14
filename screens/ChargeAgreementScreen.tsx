@@ -31,16 +31,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     flex: 1,
   },
-  header: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.white,
-  },
-  headerTitle: {
-    height: 56,
-    marginRight: 8,
-  },
   chargeProd: {
     borderWidth: 2,
     borderColor: colors.clearBlue,
