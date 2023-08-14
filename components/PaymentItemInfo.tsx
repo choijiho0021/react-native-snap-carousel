@@ -114,13 +114,13 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     color: colors.clearBlue,
     lineHeight: 20,
-    width: width - 72,
+    width: width - 112,
   },
   esimInfoBold: {
     ...appStyles.bold14Text,
     color: colors.clearBlue,
     lineHeight: 20,
-    width: width - 72,
+    width: width - 112,
   },
 });
 
@@ -266,6 +266,8 @@ const PaymentItemInfo = ({
             flexDirection: 'row',
             marginHorizontal: 20,
             marginTop: 20,
+            backgroundColor: colors.backGrey,
+            padding: 20,
           }}>
           <AppSvgIcon
             name="bannerCheckBlue"
@@ -281,9 +283,6 @@ const PaymentItemInfo = ({
           />
         </View>
       )}
-      <View
-        style={[styles.divider, screen === 'PaymentResult' && {marginTop: 0}]}
-      />
     </View>
   );
 };
