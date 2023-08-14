@@ -67,7 +67,6 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
 
-  // paddingTop: 16
   usageListContainer: {
     marginTop: 24,
     marginHorizontal: 20,
@@ -543,7 +542,6 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
   const topInfo = useCallback(() => {
     return (
-      // check 1
       <View style={[styles.topInfo, !notCardInfo && {marginVertical: 16}]}>
         {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
           <View style={styles.inactiveContainer}>
