@@ -83,6 +83,12 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
 
+  infoRadiusBorderTopDraft: {
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+    paddingTop: 0,
+  },
+
   infoCardBottom: {
     paddingHorizontal: 20,
     paddingTop: 10,
@@ -454,11 +460,9 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       <View
         style={
           notCardInfo
-            ? {
-                ...styles.infoRadiusBorderTop,
-                paddingTop: isTypeDraft ? 0 : 10,
-                paddingBottom: isTypeDraft ? 8 : 10,
-              }
+            ? isTypeDraft
+              ? styles.infoRadiusBorderTopDraft
+              : styles.infoRadiusBorderTop
             : styles.infoCardTop
         }>
         {isTypeDraft && (
