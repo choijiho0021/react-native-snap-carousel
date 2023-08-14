@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   },
   result: {
     justifyContent: 'center',
-    paddingVertical: 60,
+    height: isDeviceSize('small') ? 160 : 215,
   },
   resultText: {
     ...appStyles.normal16Text,
