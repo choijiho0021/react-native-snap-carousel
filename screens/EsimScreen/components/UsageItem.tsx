@@ -206,7 +206,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
               null,
             );
           } else {
-            circularProgress.current?.reAnimate(0, progress, 3000, null);
+            circularProgress.current?.reAnimate(0.01, progress, 3000, null);
           }
         }
       }
@@ -240,7 +240,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
   // data는 esim:Mb usim:kb 단위
   const toGb = useCallback((data: number) => {
-    if (data === 0) return 0;
+    if (data <= 0) return 0;
     return (
       Math.round((esimApp ? data / 1024 : data / 1024 / 1024) * 100) / 100
     )?.toFixed(2);
@@ -248,12 +248,15 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
   const renderCaution = useCallback(() => {
     let key = '';
-    if (isExhausted) {
+
+    if (!showUsage) {
+      key = 'notShow';
+    } else if (item.daily === 'total') {
+      key = '';
+    } else if (isExhausted) {
       key = 'exhausted';
     } else if (used && quota && Math.floor((used / quota) * 100) >= 80) {
       key = 'reqCharge';
-    } else if (!showUsage) {
-      key = 'notShow';
     }
 
     const isNotShow = key === 'notShow';
@@ -285,7 +288,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
     ) : (
       <View style={{height: 20}} />
     );
-  }, [isExhausted, quota, showUsage, used]);
+  }, [isExhausted, item.daily, quota, showUsage, used]);
 
   const renderDailyUsage = useCallback(
     () => (
@@ -328,7 +331,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           </AppText>
         </View>
 
-        {item.daily === 'daily' && (
+        {item.daily === 'daily' && item.partner !== 'billionconnect' && (
           <Fragment>
             <View style={styles.timeDivider} />
 
@@ -355,18 +358,18 @@ const UsageItem: React.FC<UsageItemProps> = ({
         )}
       </View>
     );
-  }, [endTime, item.daily, renderResetTimeRow]);
+  }, [endTime, item.daily, item.partner, renderResetTimeRow]);
 
   const renderAnimatedCircularProgress = useCallback(() => {
     if (!isOverUsed) {
       return (
         <AnimatedCircularProgress
           ref={circularProgress}
-          size={140}
-          width={10}
+          size={160}
+          width={6}
           fill={0}
           rotation={0}
-          backgroundWidth={10}
+          backgroundWidth={6}
           tintColor={colors.gray3}
           // onAnimationComplete={() => setIsOverUsed(isExhausted)}
           backgroundColor={colors.clearBlue}>
@@ -400,12 +403,12 @@ const UsageItem: React.FC<UsageItemProps> = ({
     return (
       <AnimatedCircularProgress
         ref={overCircularProgress}
-        size={140}
-        width={10}
+        size={160}
+        width={6}
         prefill={0}
         fill={0}
         rotation={0}
-        backgroundWidth={10}
+        backgroundWidth={6}
         tintColor={colors.redError}
         // onAnimationComplete={() => setIsOverUsed(true)}
         backgroundColor={colors.gray3}>

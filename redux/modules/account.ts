@@ -124,7 +124,9 @@ export type CashHistory = {
   id: string;
   inc: string;
   log_id: string;
+  order: string;
   order_id: string;
+  order_title: string;
   point_id: string;
   product: string;
   type: string;

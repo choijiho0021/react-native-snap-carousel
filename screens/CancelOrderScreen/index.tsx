@@ -31,6 +31,8 @@ import {
   getCountItems,
   OrderModelState,
 } from '@/redux/modules/order';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
+
 import {
   actions as productActions,
   ProductModelState,
@@ -48,7 +50,8 @@ import AppSnackBar from '@/components/AppSnackBar';
 import ProductDetailList from './component/ProductDetailList';
 import GuideBox from './component/GuideBox';
 import FloatCheckButton from './component/FloatCheckButton';
-import AppAlert from '@/components/AppAlert';
+import AppModalContent from '@/components/ModalContent/AppModalContent';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const {esimCurrency} = Env.get();
 
@@ -144,6 +147,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.whiteFive,
     marginTop: 6,
+    borderRadius: 3,
   },
   orderItemContainer: {
     marginBottom: 25,
@@ -153,6 +157,13 @@ const styles = StyleSheet.create({
     paddingVertical: 25,
     borderColor: colors.lightGrey,
     borderBottomWidth: 1,
+  },
+
+  modalText: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 26,
+    letterSpacing: -0.32,
+    color: colors.black,
   },
 
   item: {
@@ -222,6 +233,7 @@ type CancelOrderScreenProps = {
 
   action: {
     order: OrderAction;
+    modal: ModalAction;
   };
 };
 
@@ -255,6 +267,18 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   const onBackStep = useCallback(() => {
     setStep((prev) => (prev - 1 <= 0 ? 0 : prev - 1));
   }, []);
+
+  // 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
+  BackbuttonHandler({
+    navigation,
+    onBack: () => {
+      if (step === 0) navigation.goBack();
+      else {
+        onBackStep();
+      }
+      return true;
+    },
+  });
 
   useEffect(() => {
     navigation.setOptions({
@@ -647,7 +671,19 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                   .replace('%', REASON_MIN_LENGTH.toString()),
               );
             } else if (step === 2 && !checked) {
-              AppAlert.info(i18n.t('his:cancelReasonAlert3'));
+              action.modal.renderModal(() => (
+                <AppModalContent
+                  type="info"
+                  onOkClose={() => {
+                    action.modal.closeModal();
+                  }}>
+                  <View style={{marginLeft: 30}}>
+                    <AppText style={styles.modalText}>
+                      {i18n.t('his:cancelReasonAlert3')}
+                    </AppText>
+                  </View>
+                </AppModalContent>
+              ));
             }
           }}
           disabledCanOnPress
@@ -675,6 +711,7 @@ export default connect(
     action: {
       order: bindActionCreators(orderActions, dispatch),
       product: bindActionCreators(productActions, dispatch),
+      modal: bindActionCreators(modalActions, dispatch),
     },
   }),
 )(CancelOrderScreen);

@@ -35,8 +35,8 @@ import i18n from '@/utils/i18n';
 import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
 import GuideBox from '../CancelOrderScreen/component/GuideBox';
 import FloatCheckButton from '../CancelOrderScreen/component/FloatCheckButton';
-import AppSnackBar from '@/components/AppSnackBar';
-import AppAlert from '@/components/AppAlert';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
+import AppModalContent from '@/components/ModalContent/AppModalContent';
 
 const styles = StyleSheet.create({
   container: {
@@ -83,6 +83,12 @@ const styles = StyleSheet.create({
   product: {
     marginBottom: 40,
   },
+  modalText: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 26,
+    letterSpacing: -0.32,
+    color: colors.black,
+  },
 });
 
 type DraftScreenNavigationProp = StackNavigationProp<
@@ -103,6 +109,7 @@ type DraftScreenProps = {
 
   action: {
     order: OrderAction;
+    modal: ModalAction;
   };
 };
 
@@ -281,7 +288,19 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
           }}
           disabledCanOnPress
           disabledOnPress={() => {
-            AppAlert.info(i18n.t('his:draftAlert'));
+            action.modal.renderModal(() => (
+              <AppModalContent
+                type="info"
+                onOkClose={() => {
+                  action.modal.closeModal();
+                }}>
+                <View style={{marginLeft: 30}}>
+                  <AppText style={styles.modalText}>
+                    {i18n.t('his:draftAlert')}
+                  </AppText>
+                </View>
+              </AppModalContent>
+            ));
           }}
         />
       </View>
@@ -301,6 +320,7 @@ export default connect(
     action: {
       order: bindActionCreators(orderActions, dispatch),
       product: bindActionCreators(productActions, dispatch),
+      modal: bindActionCreators(modalActions, dispatch),
     },
   }),
 )(DraftScreen);

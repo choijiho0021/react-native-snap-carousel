@@ -25,7 +25,12 @@ import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
-import {isDisabled, RkbSubscription} from '@/redux/api/subscriptionApi';
+import {
+  isDisabled,
+  RkbSubscription,
+  STATUS_PENDING,
+  STATUS_RESERVED,
+} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -58,29 +63,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 8,
-    paddingBottom: 16,
+    paddingTop: 6,
+    paddingBottom: 24,
   },
+
   usageListContainer: {
     marginTop: 24,
     marginHorizontal: 20,
+    paddingTop: 16,
     backgroundColor: colors.white,
   },
   infoCardTop: {
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 10,
   },
   infoRadiusBorderTop: {
     paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingBottom: 10,
+    paddingTop: 10,
   },
+
   infoCardBottom: {
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 10,
+    paddingBottom: 8,
   },
   infoRadiusBorderBottom: {
     paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingTop: 6,
   },
   giftButton: {
     flex: 1,
@@ -103,7 +113,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     // alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 10,
+    paddingVertical: 0,
   },
   inactiveContainer: {
     marginBottom: 6,
@@ -115,20 +125,37 @@ const styles = StyleSheet.create({
   usageTitleNormal: {
     ...appStyles.normal16Text,
     fontSize: isDeviceSize('small') ? 18 : 20,
+    lineHeight: isDeviceSize('small') ? 26 : 28,
     color: colors.warmGrey,
   },
   usageTitleBold: {
     ...appStyles.normal16Text,
     fontSize: isDeviceSize('small') ? 18 : 20,
+    lineHeight: isDeviceSize('small') ? 26 : 28,
     fontWeight: 'bold',
+  },
+  reservedSubsTitle: {
+    ...appStyles.normal16Text,
+    fontSize: 16,
+    fontStyle: 'normal',
+    fontWeight: '700',
+    lineHeight: 24,
+  },
+  expiredText: {
+    ...appStyles.extraBold12,
+    width: 42,
+    height: 16,
+    textAlign: 'right',
+    color: colors.warmGrey,
   },
   expiredBg: {
     backgroundColor: colors.whiteThree,
+    height: 20,
     borderRadius: 3,
-    paddingBottom: 2,
-    paddingTop: 2,
     paddingLeft: 6,
     paddingRight: 6,
+
+    marginTop: 4,
     justifyContent: 'center',
   },
   normal14Gray: {
@@ -198,7 +225,7 @@ const styles = StyleSheet.create({
   },
   moreInfoContent: {
     backgroundColor: 'white',
-    paddingBottom: 20,
+    paddingBottom: 24,
     paddingLeft: 20,
     paddingRight: 20,
     borderTopWidth: 1,
@@ -218,7 +245,7 @@ const styles = StyleSheet.create({
   },
   draftFrame: {
     flexDirection: 'row',
-    marginTop: 10,
+    marginBottom: 12,
   },
   cautionBox: {
     justifyContent: 'center',
@@ -422,9 +449,18 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
   const title = useCallback(() => {
     const country = mainSubs.prodName?.split(' ')?.[0];
+
     return (
       <View
-        style={notCardInfo ? styles.infoRadiusBorderTop : styles.infoCardTop}>
+        style={
+          notCardInfo
+            ? {
+                ...styles.infoRadiusBorderTop,
+                paddingTop: isTypeDraft ? 0 : 10,
+                paddingBottom: isTypeDraft ? 8 : 10,
+              }
+            : styles.infoCardTop
+        }>
         {isTypeDraft && (
           <View style={styles.draftFrame}>
             <AppText style={styles.drafting}>{i18n.t('esim:reserved')}</AppText>
@@ -442,7 +478,8 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           }}>
           {isEditMode
             ? renderSwitch()
-            : mainSubs.flagImage !== '' && (
+            : mainSubs.flagImage !== '' &&
+              notCardInfo && (
                 <Image
                   source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
                   style={{
@@ -461,13 +498,14 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               renderPromoFlag(mainSubs.promoFlag || [], mainSubs.isStore)
             }
             style={[
-              expired || mainSubs.giftStatusCd === 'S'
+              [STATUS_RESERVED, STATUS_PENDING].includes(mainSubs.statusCd)
+                ? styles.reservedSubsTitle
+                : expired || mainSubs.giftStatusCd === 'S'
                 ? styles.usageTitleNormal
                 : styles.usageTitleBold,
               {
                 alignSelf: 'center',
-                lineHeight: isDeviceSize('small') ? 26 : 28,
-                marginRight: 8,
+                marginRight: mainSubs.isStore ? 8 : 0,
               },
             ]}
             numberOfLines={2}
@@ -481,7 +519,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
           {expired || mainSubs.giftStatusCd === 'S' ? (
             <View style={styles.expiredBg}>
-              <AppText key={mainSubs.nid} style={appStyles.normal12Text}>
+              <AppText key={mainSubs.nid} style={styles.expiredText}>
                 {mainSubs.giftStatusCd === 'S'
                   ? i18n.t('esim:S2')
                   : i18n.t('esim:expired')}
@@ -513,7 +551,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
   const topInfo = useCallback(() => {
     return (
-      <View style={[styles.topInfo, !notCardInfo && {marginTop: 28}]}>
+      <View style={[styles.topInfo, !notCardInfo && {marginVertical: 16}]}>
         {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
           <View style={styles.inactiveContainer}>
             <AppText style={styles.normal14Gray}>
@@ -551,8 +589,9 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       <View style={styles.activeBottomBox}>
         <AppButton
           style={{
+            flex: 1,
+            marginRight: 8,
             backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
-            paddingHorizontal: 12,
             paddingVertical: 8,
             borderRadius: 3,
           }}
@@ -575,9 +614,10 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
         <AppButton
           style={{
+            flex: 1,
             backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
-            paddingHorizontal: 12,
             paddingVertical: 8,
+            marginRight: 8,
             borderRadius: 3,
           }}
           titleStyle={{
@@ -590,8 +630,8 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
         <AppButton
           style={{
+            flex: 1,
             backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
-            paddingHorizontal: 12,
             paddingVertical: 8,
             borderRadius: 3,
           }}
@@ -777,6 +817,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         expired || mainSubs.giftStatusCd === 'S'
           ? styles.cardExpiredBg
           : styles.shadow,
+        isTypeDraft && {paddingBottom: 16},
       ]}>
       {title()}
       <View
@@ -784,7 +825,12 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         style={{opacity: isEditMode ? 0.6 : 1}}>
         <View
           style={
-            notCardInfo ? styles.infoRadiusBorderBottom : styles.infoCardBottom
+            notCardInfo
+              ? {
+                  ...styles.infoRadiusBorderBottom,
+                  paddingTop: isTypeDraft ? 0 : 6,
+                }
+              : styles.infoCardBottom
           }>
           {isTypeDraft ? <View /> : notCardInfo ? QRnCopyInfo() : topInfo()}
         </View>
