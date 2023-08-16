@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     marginTop: 20,
     padding: 16,
-    marginHorizontal:20,
+    marginHorizontal: 20,
   },
   headerNotiBoldText: {
     ...appStyles.bold14Text,
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   secondaryButton: {
     flex: 1,
     height: 52,
-    backgroundColor: colors.white,
+    backgroundColor: colors.clearBlue,
     borderColor: colors.lightGrey,
     borderWidth: 1,
     color: colors.white,
@@ -200,6 +200,7 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     ...appStyles.normal18Text,
     textAlign: 'center',
+    color: colors.white,
   },
   button: {
     ...appStyles.normal16Text,
