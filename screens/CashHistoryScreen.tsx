@@ -193,6 +193,10 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: colors.black,
   },
+  detailText: {
+    ...appStyles.medium14,
+    color: colors.warmGrey,
+  },
 });
 
 type CashHistoryScreenNavigationProp = StackNavigationProp<
@@ -331,9 +335,13 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     if (order_id || expire_dt) {
       return (
         <View>
-          {item.order_id && <AppText>{item.order_title || ''}</AppText>}
+          {item.order_id && (
+            <AppText style={styles.detailText}>
+              {item.order_title || ''}
+            </AppText>
+          )}
           {item.expire_dt && (
-            <AppText>
+            <AppText style={styles.detailText}>
               {i18n.t(`cashHistory:detail:expDate`, {
                 date: item.expire_dt.format('YYYY.MM.DD'),
               })}
