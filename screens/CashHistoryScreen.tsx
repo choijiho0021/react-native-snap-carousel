@@ -326,17 +326,20 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   }, [getHistory]);
 
   const showDetail = useCallback((item: CashHistory) => {
-    if (item.order_id) {
-      return <AppText>{item.order_title || ''}</AppText>;
-    }
+    const {order_id, expire_dt} = item;
 
-    if (item.expire_dt) {
+    if (order_id || expire_dt) {
       return (
-        <AppText>
-          {i18n.t(`cashHistory:detail:expDate`, {
-            date: item.expire_dt.format('YYYY.MM.DD'),
-          })}
-        </AppText>
+        <View>
+          {item.order_id && <AppText>{item.order_title || ''}</AppText>}
+          {item.expire_dt && (
+            <AppText>
+              {i18n.t(`cashHistory:detail:expDate`, {
+                date: item.expire_dt.format('YYYY.MM.DD'),
+              })}
+            </AppText>
+          )}
+        </View>
       );
     }
 
