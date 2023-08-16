@@ -296,13 +296,20 @@ const slice = createSlice({
     });
 
     builder.addCase(getOrders.fulfilled, (state, action) => {
-      const {objects = [], result} = action.payload;
+      const {objects, result} = action.payload;
 
       if (action.meta.arg?.state === 'validation') {
-        // objects 없는 경우 drafts 초기화
-        state.drafts = objects
-          .filter((r) => !isExpiredDraft(r.orderDate))
-          .sort((a, b) => utils.cmpMomentDesc(a.orderDate, b.orderDate));
+        if (objects) {
+          state.drafts =
+            objects
+              .filter((r) => !isExpiredDraft(r.orderDate))
+              .sort((a, b) => utils.cmpMomentDesc(a.orderDate, b.orderDate)) ||
+            [];
+
+          // 데이터가 빈 경우 [] 처리하기
+        } else if (result === api.E_NOT_FOUND) {
+          state.drafts = [];
+        }
       } else if (result === 0 && objects.length > 0) {
         // 기존에 있던 order에 새로운 order로 갱신
         const orders = ImmutableMap(state.orders).merge(

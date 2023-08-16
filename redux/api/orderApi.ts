@@ -149,7 +149,7 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
     );
   }
 
-  return api.failure(api.E_NOT_FOUND);
+  return api.failure(data?.result || api.E_NOT_FOUND, data?.desc || '');
 };
 
 const draftOrder = ({orderId, token}: {orderId?: number; token?: string}) => {
