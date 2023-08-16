@@ -299,15 +299,16 @@ const slice = createSlice({
       const {objects, result} = action.payload;
 
       if (action.meta.arg?.state === 'validation') {
-        // 이전과 달리 동작하는 이유, 2번째 object undefined 일때  undefined.filter 시도
-        // promise rejection으로 2번째 undefined을 state.drafts에 저장 안함
-        // 2번 호출 원인 분석 필요
         if (objects) {
           state.drafts =
             objects
               .filter((r) => !isExpiredDraft(r.orderDate))
               .sort((a, b) => utils.cmpMomentDesc(a.orderDate, b.orderDate)) ||
             [];
+
+          // 데이터가 빈 경우 [] 처리하기
+        } else if (result === api.E_NOT_FOUND) {
+          state.drafts = [];
         }
 
         // 기존 코드도 마찬가지, undefined.length 시도 -> promise rejection
