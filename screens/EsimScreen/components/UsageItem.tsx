@@ -191,7 +191,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
   useEffect(() => {
     if (cmiStatusCd === 'A') {
-      if (usage && usage.quota && usage.used) {
+      if (usage && usage.quota >= 0 && usage.used >= 0) {
         setQuota(usage.quota);
         setUsed(usage.used);
 
