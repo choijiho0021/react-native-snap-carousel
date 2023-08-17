@@ -310,7 +310,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         enableOnAndroid
         enableResetScrollToCoords={false}>
         <PaymentItemInfo
-          cart={cart.purchaseItems}
+          purchaseItems={cart.purchaseItems}
           pymReq={cart.pymReq}
           mode="method"
           pymPrice={pymPrice}

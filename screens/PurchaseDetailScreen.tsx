@@ -279,8 +279,8 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   );
 
   const isValidate = useMemo(
-    () => order?.state === 'validation',
-    [order?.state],
+    () => order?.orderType === 'refundable' && order?.state === 'validation',
+    [order?.orderType, order?.state],
   );
 
   const isValidation = useMemo(

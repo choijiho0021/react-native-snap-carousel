@@ -496,7 +496,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
     return (
       <FloatCheckButton
         onCheck={onCheck}
-        checkText={i18n.t('his:draftAgree')}
+        checkText={i18n.t('his:cancelAgree')}
         checked={checked}
       />
     );

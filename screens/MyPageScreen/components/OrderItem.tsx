@@ -41,14 +41,12 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
     if (item.state === 'canceled')
       return [i18n.t('his:cancel'), colors.tomato, true];
 
-    if (item.orderType === 'refundable') {
-      if (item.state === 'validation')
-        return [i18n.t('his:draft'), colors.clearBlue, false];
+    if (item.orderType === 'refundable' && item.state === 'validation')
+      return [i18n.t('his:draft'), colors.clearBlue, false];
 
-      // 기존 상품 대기중은?
-      if (item.usageList.find((v) => isDraft(v.status)))
-        return [i18n.t('his:ready'), colors.clearBlue, false];
-    }
+    // 기존 상품 대기중은?
+    if (item.usageList.find((v) => isDraft(v.status)))
+      return [i18n.t('his:ready'), colors.clearBlue, false];
 
     return [undefined];
   }, [item.orderType, item.state, item.usageList]);

@@ -133,6 +133,7 @@ const styles = StyleSheet.create({
   emptyPage: {
     marginTop: 60,
     textAlign: 'center',
+    color: colors.black,
   },
   emptyViewPage: {
     width: '100%',
