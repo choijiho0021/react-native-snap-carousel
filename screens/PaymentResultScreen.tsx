@@ -211,7 +211,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
         </View>
         <View style={styles.container}>
           <PaymentItemInfo
-            cart={oldCart?.purchaseItems || []}
+            purchaseItems={oldCart?.purchaseItems || []}
             pymReq={oldCart?.pymReq}
             mode="result"
             pymPrice={

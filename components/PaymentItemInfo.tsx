@@ -7,6 +7,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import React, {memo, useMemo} from 'react';
+import {connect} from 'react-redux';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
@@ -14,11 +15,12 @@ import Env from '@/environment';
 import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
-import {PaymentReq} from '@/redux/modules/cart';
+import {CartModelState, PaymentReq} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
 import AppText from './AppText';
+import {RootState} from '@/redux';
 
 const {width} = Dimensions.get('window');
 
@@ -167,23 +169,32 @@ const PaymentItem = memo(PaymentItem0);
 
 const PaymentItemInfo = ({
   cart,
+  purchaseItems,
   pymReq = [],
   deduct,
   pymPrice,
   screen,
   mode = 'method',
 }: {
-  cart: PurchaseItem[];
+  cart: CartModelState;
+  purchaseItems: PurchaseItem[];
   pymReq?: PaymentReq[];
   deduct?: Currency;
   pymPrice?: Currency;
   screen?: string;
   mode?: PaymentItemMode;
 }) => {
+  const {mainSubsId} = cart;
   const isRecharge = useMemo(
-    () => cart.findIndex((item) => item.type === 'rch') >= 0,
-    [cart],
+    () => purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
+    [purchaseItems],
   );
+
+  const isImmediateOrder =
+    mainSubsId ||
+    purchaseItems.findIndex((item) =>
+      ['add_on_product', 'rch'].includes(item.type),
+    ) >= 0;
 
   return (
     <View>
@@ -199,7 +210,7 @@ const PaymentItemInfo = ({
           styles.productPriceInfo,
           !isRecharge && styles.borderBottomGrey,
         ]}>
-        {cart.map((item) => {
+        {purchaseItems.map((item) => {
           const [qty, price] =
             item.qty === undefined
               ? ['', item.price]
@@ -260,7 +271,7 @@ const PaymentItemInfo = ({
         ]}
         value={utils.price(pymPrice)}
       />
-      {mode !== 'result' && esimApp && (
+      {mode !== 'result' && esimApp && !isImmediateOrder && (
         <View
           style={{
             flexDirection: 'row',
@@ -287,4 +298,6 @@ const PaymentItemInfo = ({
   );
 };
 
-export default memo(PaymentItemInfo);
+export default connect(({cart}: RootState) => ({
+  cart,
+}))(memo(PaymentItemInfo));
