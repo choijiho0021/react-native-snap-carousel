@@ -1209,8 +1209,9 @@
   "cashHistory:empty:Y": "No Cash log of topup or reward!",
   "cashHistory:empty:N": "No Cash log of payment!",
 
-  "cashHistory:detail:expDate": "Expire date : {{date}}",
+  "cashHistory:detail:expDate": "Point | Expire date : {{date}}",
   "cashHistory:detail:etcCnt": "{{cnt}} more cases including {{prodName}}",
+  "cashHistory:detail:refund": "refund cash",
   "cashHistory:type:cash_add": "cash_add",
   "cashHistory:type:cash_recharge": "cash_recharge",
   "cashHistory:type:cash_refund": "cash_refund",
