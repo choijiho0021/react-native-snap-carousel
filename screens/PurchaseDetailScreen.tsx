@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     marginTop: 20,
     padding: 16,
-    marginHorizontal:20,
+    marginHorizontal: 20,
   },
   headerNotiBoldText: {
     ...appStyles.bold14Text,
@@ -192,9 +192,8 @@ const styles = StyleSheet.create({
   secondaryButton: {
     flex: 1,
     height: 52,
-    backgroundColor: colors.white,
     borderColor: colors.lightGrey,
-    borderWidth: 1,
+    borderTopWidth: 1,
     color: colors.white,
   },
   secondaryButtonText: {
@@ -667,10 +666,16 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
       />
       <View style={{flexDirection: 'row'}}>
         <AppButton
-          style={styles.secondaryButton}
+          style={[
+            styles.secondaryButton,
+            {backgroundColor: isValidation ? colors.white : colors.clearBlue},
+          ]}
           type="secondary"
           title={i18n.t('his:receipt')}
-          titleStyle={styles.secondaryButtonText}
+          titleStyle={[
+            styles.secondaryButtonText,
+            {color: isValidation ? colors.black : colors.white},
+          ]}
           disabled={!pymId}
           disableStyle={{borderWidth: 0}}
           onPress={() => showReciept(pymId)}
