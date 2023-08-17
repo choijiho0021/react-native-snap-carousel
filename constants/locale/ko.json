@@ -366,6 +366,7 @@
   "his:draftButtonAlert:canceled": "이미 구매 취소 처리된 주문입니다.",
   "his:draftButtonAlert:immediate_order": "구매 취소 및 환불 불가한 상품입니다.",
   "his:draftButtonAlert:refundable": "발권 완료되어 구매 취소 및 환불 불가한 상품입니다.",
+  "his:draftButtonAlert:default": "발권 완료되어 구매 취소 및 환불 불가한 상품입니다.",
   "his:draftButtonAlert:auto": "구매 취소 및 환불 불가한 상품입니다.",
   "his:memo": "배송 메모",
   "his:input": "직접 입력",

@@ -73,7 +73,7 @@ export type OrderItemType = {
   uuid: string;
 };
 
-export type OrderPolicyType = 'immediate_order' | 'refundable';
+export type OrderPolicyType = 'immediate_order' | 'refundable' | 'default';
 
 export type RkbOrder = {
   key: string;
