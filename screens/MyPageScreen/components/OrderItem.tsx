@@ -1,11 +1,11 @@
-import React, {memo} from 'react';
+import React, {memo, useMemo} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import _ from 'underscore';
 import LabelText from '@/components/LabelText';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
-import {OrderState, RkbOrder} from '@/redux/api/orderApi';
+import {RkbOrder} from '@/redux/api/orderApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import {getCountItems, isDraft} from '@/redux/modules/order';
@@ -26,32 +26,39 @@ const styles = StyleSheet.create({
   },
 });
 
-const getStatus = (state?: OrderState, reserved?: string) => {
-  if (state === 'canceled') return [i18n.t('his:cancel'), colors.tomato];
-  if (state === 'validation') return [i18n.t('his:draft'), colors.clearBlue];
-
-  // 기존 상품 대기중은?
-  if (reserved) return [i18n.t('his:ready'), colors.clearBlue];
-  return [undefined];
-};
-
 const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
-  let label = '';
-  if (_.isEmpty(item.orderItems)) return <View />;
+  const label = useMemo(() => {
+    let str = item.orderItems[0].title;
+    if (item.orderItems && item.orderItems.length > 1) {
+      str += i18n
+        .t('his:etcCnt')
+        .replace('%%', getCountItems(item?.orderItems, true));
+    }
+    return str;
+  }, [item.orderItems]);
 
-  label = item.orderItems[0].title;
-  if (item.orderItems && item.orderItems.length > 1) {
-    label += i18n
-      .t('his:etcCnt')
-      .replace('%%', getCountItems(item?.orderItems, true));
-  }
+  const [status, statusColor, isCanceled] = useMemo(() => {
+    if (item.state === 'canceled')
+      return [i18n.t('his:cancel'), colors.tomato, true];
 
-  const isCanceled = item.state === 'canceled';
-  const [status, statusColor] = getStatus(
-    item?.state,
-    item.usageList.find((v) => isDraft(v.status))?.status,
+    if (item.orderType === 'refundable') {
+      if (item.state === 'validation')
+        return [i18n.t('his:draft'), colors.clearBlue, false];
+
+      // 기존 상품 대기중은?
+      if (item.usageList.find((v) => isDraft(v.status)))
+        return [i18n.t('his:ready'), colors.clearBlue, false];
+    }
+
+    return [undefined];
+  }, [item.orderType, item.state, item.usageList]);
+
+  const billingAmt = useMemo(
+    () => utils.addCurrency(item.totalPrice, item.dlvCost),
+    [item.dlvCost, item.totalPrice],
   );
-  const billingAmt = utils.addCurrency(item.totalPrice, item.dlvCost);
+
+  if (_.isEmpty(item.orderItems)) return <View />;
 
   return (
     <Pressable onPress={onPress}>
@@ -92,10 +99,4 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
   );
 };
 
-export default memo(
-  OrderItem,
-  (prevProps, nextProps) =>
-    prevProps.item.state === nextProps.item.state &&
-    JSON.stringify(prevProps.item.usageList) ===
-      JSON.stringify(nextProps.item.usageList),
-);
+export default memo(OrderItem);
