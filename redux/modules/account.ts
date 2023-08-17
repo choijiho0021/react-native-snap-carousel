@@ -12,6 +12,8 @@ import _ from 'underscore';
 import {batch} from 'react-redux';
 import messaging from '@react-native-firebase/messaging';
 import {Moment} from 'moment';
+import VersionCheck from 'react-native-version-check';
+import DeviceInfo from 'react-native-device-info';
 import {API} from '@/redux/api';
 import {removeData, retrieveData, storeData} from '@/utils/utils';
 import {RkbFile, RkbImage} from '@/redux/api/accountApi';
@@ -196,6 +198,7 @@ const changeNotiToken = createAsyncThunk(
       field_device_token: Platform.OS === 'ios' ? pushToken : '',
       field_fcm_token: Platform.OS === 'android' ? pushToken : '',
       field_device_model: deviceModel,
+      field_app_version: `${VersionCheck.getCurrentVersion()}(${DeviceInfo.getBuildNumber()})`,
     };
 
     return dispatch(changeUserAttr({uid, attributes, token})).then(
