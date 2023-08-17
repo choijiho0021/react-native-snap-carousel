@@ -330,7 +330,6 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   }, [getHistory]);
 
   const showDetail = useCallback((item: CashHistory) => {
-    console.log('aaaaa type', item.type);
     const {order_id, expire_dt} = item;
 
     if (order_id || expire_dt) {
@@ -410,7 +409,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
                 <AppText style={[appStyles.bold16Text, {lineHeight: 30}]}>
                   {i18n.t(`cashHistory:type:${item.type}`)}
                 </AppText>
-                {pressable && (
+                {item.order_id && pressable && (
                   <AppSvgIcon
                     name="rightAngleBracket"
                     style={{marginLeft: 4}}
