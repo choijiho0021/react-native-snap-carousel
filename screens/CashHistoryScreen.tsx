@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   sectionItemContainer: {
-    flexDirection: 'row',
+    // flexDirection: 'row',
     marginHorizontal: 20,
     paddingVertical: 12,
     marginBottom: 8,
@@ -330,11 +330,12 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   }, [getHistory]);
 
   const showDetail = useCallback((item: CashHistory) => {
+    console.log('aaaaa type', item.type);
     const {order_id, expire_dt} = item;
 
     if (order_id || expire_dt) {
       return (
-        <View>
+        <View style={{marginLeft: 73}}>
           {item.order_id && (
             <AppText style={styles.detailText}>
               {item.order_title || ''}
@@ -345,6 +346,11 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               {i18n.t(`cashHistory:detail:expDate`, {
                 date: item.expire_dt.format('YYYY.MM.DD'),
               })}
+            </AppText>
+          )}
+          {item.type === 'cash_refund' && (
+            <AppText style={styles.detailText}>
+              {i18n.t('cashHistory:detail:refund')}
             </AppText>
           )}
         </View>
@@ -386,49 +392,53 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               });
             }
           }}>
-          <AppText
-            style={[
-              appStyles.medium14,
-              {marginRight: 23, width: 50, lineHeight: 30, color: colors.black},
-            ]}>
-            {index > 0 && predate === date ? '' : date}
-          </AppText>
-          <View style={{flex: 1}}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <AppText style={[appStyles.bold16Text, {lineHeight: 30}]}>
-                {i18n.t(`cashHistory:type:${item.type}`)}
-              </AppText>
-              {pressable && (
-                <AppSvgIcon name="rightAngleBracket" style={{marginLeft: 4}} />
-              )}
-            </View>
+          <View style={{flexDirection: 'row'}}>
             <AppText
               style={[
                 appStyles.medium14,
-                {color: colors.warmGrey, lineHeight: 20, marginTop: 3},
+                {
+                  marginRight: 23,
+                  width: 50,
+                  lineHeight: 30,
+                  color: colors.black,
+                },
               ]}>
-              {showDetail(item)}
+              {index > 0 && predate === date ? '' : date}
             </AppText>
-          </View>
+            <View style={{flex: 1}}>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <AppText style={[appStyles.bold16Text, {lineHeight: 30}]}>
+                  {i18n.t(`cashHistory:type:${item.type}`)}
+                </AppText>
+                {pressable && (
+                  <AppSvgIcon
+                    name="rightAngleBracket"
+                    style={{marginLeft: 4}}
+                  />
+                )}
+              </View>
+            </View>
 
-          <AppPrice
-            price={utils.toCurrency(item.diff, esimCurrency)}
-            balanceStyle={[
-              appStyles.bold18Text,
-              {
-                color: item.inc === 'Y' ? colors.clearBlue : colors.redError,
-                lineHeight: 30,
-              },
-            ]}
-            currencyStyle={[
-              appStyles.bold16Text,
-              {
-                color: item.inc === 'Y' ? colors.clearBlue : colors.redError,
-                lineHeight: 30,
-              },
-            ]}
-            showPlus
-          />
+            <AppPrice
+              price={utils.toCurrency(item.diff, esimCurrency)}
+              balanceStyle={[
+                appStyles.bold18Text,
+                {
+                  color: item.inc === 'Y' ? colors.clearBlue : colors.redError,
+                  lineHeight: 30,
+                },
+              ]}
+              currencyStyle={[
+                appStyles.bold16Text,
+                {
+                  color: item.inc === 'Y' ? colors.clearBlue : colors.redError,
+                  lineHeight: 30,
+                },
+              ]}
+              showPlus
+            />
+          </View>
+          {showDetail(item)}
         </Pressable>
       );
     },
