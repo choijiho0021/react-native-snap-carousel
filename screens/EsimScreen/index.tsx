@@ -267,6 +267,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
                 user: mobile,
                 token,
                 state: 'validation',
+                orderType: 'refundable',
                 page: 0,
               });
             }

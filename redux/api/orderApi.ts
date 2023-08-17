@@ -83,9 +83,6 @@ export type RkbOrder = {
   orderType?: OrderPolicyType;
   totalPrice?: Currency;
   profileId?: string;
-  trackingCode?: string;
-  trackingCompany?: string;
-  shipmentState?: string;
   memo?: string;
   state?: OrderState;
   orderItems: OrderItemType[];
@@ -119,9 +116,6 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
             orderType: item.type,
             totalPrice,
             profileId: item.profile_id,
-            trackingCode: item.tracking_code,
-            trackingCompany: item.tracking_company,
-            shipmentState: item.shipment_state,
             memo: item.memo || '',
             state: item.state,
             orderItems: (parseJson(item.order_items) || []).map((value) => ({
@@ -186,6 +180,7 @@ export type GetOrdersParam = {
   page?: number;
   orderId?: string;
   state?: 'all' | 'validation';
+  orderType?: 'all' | 'refundable';
 };
 
 const getOrders = ({
@@ -194,6 +189,7 @@ const getOrders = ({
   page = 0,
   state = 'all',
   orderId = 'all',
+  orderType = 'all',
 }: GetOrdersParam) => {
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
@@ -204,7 +200,7 @@ const getOrders = ({
     `${api.httpUrl(
       api.path.order,
       '',
-    )}/${user}/${orderId}/${state}?_format=json&page=${page}`,
+    )}/${user}/${orderId}/${state}/${orderType}?_format=json&page=${page}`,
     (resp) => toOrder(resp, page),
     api.withToken(token, 'json'),
   );
