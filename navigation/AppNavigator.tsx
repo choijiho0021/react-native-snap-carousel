@@ -60,6 +60,7 @@ import {colors} from '@/constants/Colors';
 import {API} from '@/redux/api';
 import ProgressiveImage from '@/components/ProgressiveImage';
 import i18n from '@/utils/i18n';
+import {isFolderOpen} from '@/constants/SliderEntry.style';
 
 const {isIOS, esimGlobal} = Env.get();
 const MainStack = createStackNavigator();
@@ -500,7 +501,13 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
               API.default.httpImageUrl(popUp?.notice?.image?.noti),
               (width, height) => {
                 setImageHeight(
-                  Math.ceil(height * ((dimensions.width - 40) / width)),
+                  Math.ceil(
+                    height *
+                      ((isFolderOpen(dimensions.width)
+                        ? 420
+                        : dimensions.width - 40) /
+                        width),
+                  ),
                 );
               },
             );
