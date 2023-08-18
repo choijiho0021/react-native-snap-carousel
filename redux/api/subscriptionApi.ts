@@ -2,10 +2,7 @@ import _, {isArray} from 'underscore';
 import moment, {Moment} from 'moment';
 import i18n from '@/utils/i18n';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
-import Env from '@/environment';
 import {isDraft} from '../modules/order';
-
-const {specialCategories} = Env.get();
 
 const STATUS_ACTIVE = 'A'; // 사용중
 const STATUS_INACTIVE = 'I'; // 미사용
@@ -69,9 +66,12 @@ export const bcStatusCd = {
 };
 
 export const isDisabled = (item: RkbSubscription) => {
-  return item.giftStatusCd === 'S' || item?.cnt > 1
-    ? item.lastExpireDate && item.lastExpireDate.isBefore(moment())
-    : item.expireDate && item.expireDate.isBefore(moment());
+  return (
+    item.giftStatusCd === 'S' ||
+    (item?.cnt > 1
+      ? item.lastExpireDate && item.lastExpireDate.isBefore(moment())
+      : item.expireDate && item.expireDate.isBefore(moment()))
+  );
 };
 
 const checkTimeOrder = (a: RkbSubscription, b: RkbSubscription) => {
