@@ -304,6 +304,7 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
           style={styles.textInput}
           clearButtonMode="while-editing"
           placeholder={i18n.t('prodDetailOp:search')}
+          placeholderTextColor={colors.greyish}
           onChangeText={(val: string) => {
             setSearchWord(val);
           }}
