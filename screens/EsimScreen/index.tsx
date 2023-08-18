@@ -282,11 +282,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   useEffect(() => {
-    if (isFocused) {
-      onRefresh(isEditMode, false);
-      setIsFirstLoad(true);
-    }
-  }, [action.order, isEditMode, isFocused, onRefresh]);
+    // 첫번째로 로딩 시 숨긴 subs를 제외하고 10개만 가져오도록 함
+    onRefresh(false, true);
+    setIsFirstLoad(true);
+  }, [onRefresh]);
 
   const empty = useCallback(() => {
     return _.isEmpty(order.drafts) || isEditMode ? (
@@ -512,10 +511,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [navigation, onPressUsage],
   );
 
-  const setEditMode = useCallback((v: boolean) => {
-    setIsEditMode(v);
-    flatListRef.current?.scrollToOffset({animated: false, offset: 0});
-  }, []);
+  const setEditMode = useCallback(
+    (v: boolean) => {
+      flatListRef.current?.scrollToOffset({animated: false, offset: 0});
+      setIsEditMode(v);
+      onRefresh(v, true);
+    },
+    [onRefresh],
+  );
 
   useEffect(() => {
     if (route?.params) {
