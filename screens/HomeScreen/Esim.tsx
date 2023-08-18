@@ -764,15 +764,6 @@ const Esim: React.FC<EsimProps> = ({
           nextAppState,
         );
         action.product.refresh();
-
-        // 백그라운드 복귀 시 설정을 어떻게 할지 고민
-        action.order.getSubs({
-          iccid,
-          token,
-          offset: 0,
-          count: PAGINATION_SUBS_COUNT,
-        });
-
         action.order.resetOffset();
       }
 
