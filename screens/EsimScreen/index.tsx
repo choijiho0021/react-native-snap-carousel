@@ -6,6 +6,7 @@ import {
   View,
   Pressable,
   SafeAreaView,
+  AppState,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -41,6 +42,7 @@ import {
   actions as orderActions,
   OrderAction,
   OrderModelState,
+  PAGINATION_SUBS_COUNT,
 } from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import CardInfo from './components/CardInfo';
@@ -240,6 +242,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const isFocused = useIsFocused();
   const flatListRef = useRef<FlatList>(null);
   const tabBarHeight = useBottomTabBarHeight();
+  const appState = useRef('unknown');
   const [subsData, firstUsedIdx] = useMemo(
     () => {
       const list = order.subs?.filter((elm) =>
@@ -249,6 +252,32 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     }, // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨길 수 없도록 한다.
     [isEditMode, order.subs],
   );
+
+  useEffect(() => {
+    // EsimScreen 에서만 getSubs 초기화
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active' &&
+        isFocused
+      ) {
+        action.order.getSubs({
+          iccid,
+          token,
+          offset: 0,
+          count: PAGINATION_SUBS_COUNT,
+          hidden: isEditMode,
+        });
+        action.order.resetOffset();
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [action.order, iccid, isEditMode, isFocused, token]);
 
   const onRefresh = useCallback(
     // hidden : true (used 상태인 것들 모두) , false (pending, reserve 상태 포함 하여 hidden이 false 것들만)
@@ -282,11 +311,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   useEffect(() => {
-    if (isFocused) {
-      onRefresh(isEditMode, false);
-      setIsFirstLoad(true);
-    }
-  }, [action.order, isEditMode, isFocused, onRefresh]);
+    // 첫번째로 로딩 시 숨긴 subs를 제외하고 10개만 가져오도록 함
+    onRefresh(false, true);
+    setIsFirstLoad(true);
+  }, [onRefresh]);
 
   const empty = useCallback(() => {
     return _.isEmpty(order.drafts) || isEditMode ? (
@@ -512,10 +540,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [navigation, onPressUsage],
   );
 
-  const setEditMode = useCallback((v: boolean) => {
-    setIsEditMode(v);
-    flatListRef.current?.scrollToOffset({animated: false, offset: 0});
-  }, []);
+  const setEditMode = useCallback(
+    (v: boolean) => {
+      flatListRef.current?.scrollToOffset({animated: false, offset: 0});
+      setIsEditMode(v);
+      onRefresh(v, true);
+    },
+    [onRefresh],
+  );
 
   useEffect(() => {
     if (route?.params) {
@@ -523,23 +555,63 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       if (subsIccid) {
         const main = order.subs?.find((s) => s.subsIccid === subsIccid);
 
-        if (main && (main.cnt || 0) > 1) {
-          // 처리가 끝나서 iccid는 삭제함
-          navigation.setParams({iccid: undefined});
+        if (main) {
+          if ((main.cnt || 0) > 1) {
+            // 처리가 끝나서 iccid는 삭제함
+            navigation.setParams({iccid: undefined});
 
-          navigation.navigate('ChargeHistory', {
-            mainSubs: main,
-            chargeablePeriod: utils.toDateString(
-              main?.expireDate,
-              'YYYY.MM.DD',
-            ),
-            onPressUsage,
-            isChargeable: !main.expireDate?.isBefore(moment()),
-          });
+            navigation.navigate('ChargeHistory', {
+              mainSubs: main,
+              chargeablePeriod: utils.toDateString(
+                main?.expireDate,
+                'YYYY.MM.DD',
+              ),
+              onPressUsage,
+              isChargeable: !main.expireDate?.isBefore(moment()),
+            });
+          } else {
+            // 처리가 끝나서 iccid는 삭제함
+            navigation.setParams({iccid: undefined});
+          }
+        } else {
+          action.order
+            .getNotiSubs({
+              iccid: iccid!,
+              token: token!,
+              uuid: subsIccid,
+            })
+            .then((elm) => {
+              const subsList: RkbSubscription[] = elm.payload.objects;
+
+              if (subsList.length > 1) {
+                const mainSubs = subsList.reduce(
+                  (min, current) =>
+                    current.type === 'esim_product' &&
+                    moment(current.purchaseDate).isBefore(
+                      moment(min.purchaseDate),
+                    )
+                      ? current
+                      : min,
+                  subsList[0],
+                );
+
+                navigation.navigate('ChargeHistory', {
+                  mainSubs: mainSubs!,
+                  chargeablePeriod: utils.toDateString(
+                    mainSubs?.expireDate,
+                    'YYYY.MM.DD',
+                  ),
+                  onPressUsage,
+                  isChargeable: !mainSubs?.expireDate?.isBefore(moment()),
+                });
+              }
+            });
+          navigation.setParams({iccid: undefined});
         }
       }
     }
   }, [
+    action.order,
     iccid,
     moveToHistory,
     navigation,
