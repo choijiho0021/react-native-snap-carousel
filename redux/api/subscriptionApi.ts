@@ -76,7 +76,9 @@ export const isDisabled = (item: RkbSubscription) => {
 
 const checkTimeOrder = (a: RkbSubscription, b: RkbSubscription) => {
   // a가 b보다 최신이라면 정배열, 그대로 둔다.
-  return (a.provDate || a.purchaseDate).isAfter(b.provDate || b.purchaseDate)
+  return (a.lastProvDate || a.purchaseDate).isAfter(
+    b.lastProvDate || b.purchaseDate,
+  )
     ? -1
     : 1;
 };
@@ -152,6 +154,7 @@ export type RkbSubscription = {
   purchaseDate: Moment;
   expireDate: Moment;
   provDate?: Moment;
+  lastProvDate?: Moment;
   statusCd: string;
   status: string;
   giftStatusCd: string;
