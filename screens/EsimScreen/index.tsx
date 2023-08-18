@@ -555,23 +555,63 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       if (subsIccid) {
         const main = order.subs?.find((s) => s.subsIccid === subsIccid);
 
-        if (main && (main.cnt || 0) > 1) {
-          // 처리가 끝나서 iccid는 삭제함
-          navigation.setParams({iccid: undefined});
+        if (main) {
+          if ((main.cnt || 0) > 1) {
+            // 처리가 끝나서 iccid는 삭제함
+            navigation.setParams({iccid: undefined});
 
-          navigation.navigate('ChargeHistory', {
-            mainSubs: main,
-            chargeablePeriod: utils.toDateString(
-              main?.expireDate,
-              'YYYY.MM.DD',
-            ),
-            onPressUsage,
-            isChargeable: !main.expireDate?.isBefore(moment()),
-          });
+            navigation.navigate('ChargeHistory', {
+              mainSubs: main,
+              chargeablePeriod: utils.toDateString(
+                main?.expireDate,
+                'YYYY.MM.DD',
+              ),
+              onPressUsage,
+              isChargeable: !main.expireDate?.isBefore(moment()),
+            });
+          } else {
+            // 처리가 끝나서 iccid는 삭제함
+            navigation.setParams({iccid: undefined});
+          }
+        } else {
+          action.order
+            .getNotiSubs({
+              iccid: iccid!,
+              token: token!,
+              uuid: subsIccid,
+            })
+            .then((elm) => {
+              const subsList: RkbSubscription[] = elm.payload.objects;
+
+              if (subsList.length > 1) {
+                const mainSubs = subsList.reduce(
+                  (min, current) =>
+                    current.type === 'esim_product' &&
+                    moment(current.purchaseDate).isBefore(
+                      moment(min.purchaseDate),
+                    )
+                      ? current
+                      : min,
+                  subsList[0],
+                );
+
+                navigation.navigate('ChargeHistory', {
+                  mainSubs: mainSubs!,
+                  chargeablePeriod: utils.toDateString(
+                    mainSubs?.expireDate,
+                    'YYYY.MM.DD',
+                  ),
+                  onPressUsage,
+                  isChargeable: !mainSubs?.expireDate?.isBefore(moment()),
+                });
+              }
+            });
+          navigation.setParams({iccid: undefined});
         }
       }
     }
   }, [
+    action.order,
     iccid,
     moveToHistory,
     navigation,
