@@ -68,6 +68,7 @@ const getNotiSubs = createAsyncThunk(
           resp.objects = resp.objects.map((o) => ({
             ...o,
             provDate: getMoment(o.provDate),
+            lastProvDate: getMoment(o.lastProvDate),
             cnt: parseInt(o.cnt || '0', 10),
             lastExpireDate: getMoment(o.lastExpireDate),
             startDate: getMoment(o.startDate),
@@ -101,6 +102,7 @@ const getSubs = createAsyncThunk(
           resp.objects = resp.objects.map((o) => ({
             ...o,
             provDate: getMoment(o.provDate),
+            lastProvDate: getMoment(o.lastProvDate),
             cnt: parseInt(o.cnt || '0', 10),
             lastExpireDate: getMoment(o.lastExpireDate),
             startDate: getMoment(o.startDate),
