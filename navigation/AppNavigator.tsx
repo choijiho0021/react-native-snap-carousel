@@ -135,12 +135,20 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   actions,
 }) => {
   const navigationRef = useNavigationContainerRef();
-  const [iamgeHight, setImageHeight] = useState(450);
+  const [imageHeight, setImageHeight] = useState(450);
   const [checked, setChecked] = useState(false);
   const [popUpPromo, setPopUpPromo] = useState<RkbPromotion>();
   const [closedPopUp, setClosedPopUp] = useState<string[]>([]);
   const [lastRouteName, setLastRouteName] = useState<string>();
-  const dimensions = useMemo(() => Dimensions.get('window'), []);
+  const [dimensions, setDimensions] = useState(Dimensions.get('window'));
+  const [savedPopup, setSavedPopup] = useState();
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({window}) => {
+      setDimensions(window);
+    });
+    return () => subscription?.remove();
+  }, []);
 
   const refNavigate = useCallback(
     ({
@@ -453,10 +461,10 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
             <View
               style={{
                 backgroundColor: colors.white,
-                height: iamgeHight + 88 + (rule?.display?.closeWeek ? 37 : 0), // 88 = 52(버튼) + 20 (아래여백) + 16(위 여백)
+                height: imageHeight + 88 + (rule?.display?.closeWeek ? 37 : 0), // 88 = 52(버튼) + 20 (아래여백) + 16(위 여백)
               }}>
               <ProgressiveImage
-                style={{width: '100%', height: iamgeHight}}
+                style={{width: '100%', height: imageHeight}}
                 thumbnailSource={{
                   uri: API.default.httpImageUrl(notice?.image?.thumbnail),
                 }}
@@ -475,7 +483,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         </Pressable>
       );
     },
-    [actions.modal, iamgeHight, renderBtn, renderCloseWeek],
+    [actions.modal, imageHeight, renderBtn, renderCloseWeek],
   );
 
   const showPopUp = useCallback(
@@ -495,6 +503,8 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         }
 
         if (popUp) {
+          setSavedPopup(popUp);
+
           if (popUp.notice?.image?.noti) {
             setPopUpPromo(popUp);
             Image.getSize(
@@ -517,6 +527,25 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     },
     [dimensions.width, link, promotion?.popUpPromotionMap],
   );
+
+  useEffect(() => {
+    if (dimensions && savedPopup) {
+      Image.getSize(
+        API.default.httpImageUrl(savedPopup?.notice?.image?.noti),
+        (width, height) => {
+          setImageHeight(
+            Math.ceil(
+              height *
+                ((isFolderOpen(dimensions.width)
+                  ? 420
+                  : dimensions.width - 40) /
+                  width),
+            ),
+          );
+        },
+      );
+    }
+  }, [dimensions, savedPopup]);
 
   useEffect(() => {
     if (
