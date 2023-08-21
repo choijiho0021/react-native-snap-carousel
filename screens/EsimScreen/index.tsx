@@ -279,6 +279,21 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     };
   }, [action.order, iccid, isEditMode, isFocused, token]);
 
+  const getOrders = useCallback(
+    (hidden: boolean) => {
+      if (!hidden) {
+        action.order.getOrders({
+          user: mobile,
+          token,
+          state: 'validation',
+          orderType: 'refundable',
+          page: 0,
+        });
+      }
+    },
+    [action.order, mobile, token],
+  );
+
   const onRefresh = useCallback(
     // hidden : true (used 상태인 것들 모두) , false (pending, reserve 상태 포함 하여 hidden이 false 것들만)
     (hidden: boolean, reset?: boolean) => {
@@ -291,15 +306,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           .getSubsWithToast({iccid, token, hidden})
           .then(() => {
             action.account.getAccount({iccid, token});
-            if (!hidden) {
-              action.order.getOrders({
-                user: mobile,
-                token,
-                state: 'validation',
-                orderType: 'refundable',
-                page: 0,
-              });
-            }
+            getOrders(hidden);
           })
           .finally(() => {
             setRefreshing(false);
@@ -307,8 +314,19 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           });
       }
     },
-    [action.account, action.order, iccid, mobile, token],
+    [action.account, action.order, getOrders, iccid, token],
   );
+
+  useEffect(() => {
+    if (isFocused) {
+      action.order.subsReload({
+        iccid,
+        token,
+        hidden: false,
+      });
+      getOrders(false);
+    }
+  }, [action.order, getOrders, iccid, isFocused, token]);
 
   useEffect(() => {
     // 첫번째로 로딩 시 숨긴 subs를 제외하고 10개만 가져오도록 함
