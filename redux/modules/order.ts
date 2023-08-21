@@ -119,6 +119,44 @@ const getSubs = createAsyncThunk(
   },
 );
 
+const subsReload = createAsyncThunk(
+  'order/getSubs',
+  async (param: SubscriptionParam, {getState, rejectWithValue}) => {
+    const {order} = getState() as RootState;
+    param.offset = 0;
+    param.count = order.subs.length;
+
+    // 현재 sub의 수가 0이라면 리로드할 필요가 없음
+    if (order.subs.length <= 0) {
+      return rejectWithValue('Need not to get subs reload');
+    }
+
+    return cachedApi(
+      `cache.subs.${param?.iccid}`,
+      API.Subscription.getSubscription,
+    )(param, {
+      fulfillWithValue: (resp) => {
+        if (resp.result === 0) {
+          resp.objects = resp.objects.map((o) => ({
+            ...o,
+            provDate: getMoment(o.provDate),
+            lastProvDate: getMoment(o.lastProvDate),
+            cnt: parseInt(o.cnt || '0', 10),
+            lastExpireDate: getMoment(o.lastExpireDate),
+            startDate: getMoment(o.startDate),
+            promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
+            partner: groupPartner(o.partner),
+            status: toStatus(o.field_status),
+            purchaseDate: getMoment(o.purchaseDate),
+            expireDate: getMoment(o.expireDate),
+          }));
+        }
+        return resp;
+      },
+    });
+  },
+);
+
 const getSubsUsage = createAsyncThunk(
   'order/getSubsUsage',
   API.Subscription.getSubsUsage,
@@ -491,6 +529,7 @@ export const actions = {
   getSubsWithToast,
   init,
   getSubs,
+  subsReload,
   getNotiSubs,
   getOrders,
   getOrderById,
