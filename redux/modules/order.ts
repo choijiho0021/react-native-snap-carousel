@@ -25,6 +25,8 @@ import {reflectWithToast, Toast} from './toast';
 import api, {cachedApi} from '@/redux/api/api';
 import Env from '@/environment';
 
+const {specialCategories} = Env.get();
+
 export const groupPartner = (partner: string) => {
   if (partner) {
     if (partner.startsWith('cmi')) return 'cmi';
@@ -33,7 +35,24 @@ export const groupPartner = (partner: string) => {
   return partner;
 };
 
-const {specialCategories} = Env.get();
+const subsFulfillWithValue = (resp) => {
+  if (resp.result === 0) {
+    resp.objects = resp.objects.map((o) => ({
+      ...o,
+      provDate: getMoment(o.provDate),
+      lastProvDate: getMoment(o.lastProvDate),
+      cnt: parseInt(o.cnt || '0', 10),
+      lastExpireDate: getMoment(o.lastExpireDate),
+      startDate: getMoment(o.startDate),
+      promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
+      partner: groupPartner(o.partner),
+      status: toStatus(o.field_status),
+      purchaseDate: getMoment(o.purchaseDate),
+      expireDate: getMoment(o.expireDate),
+    }));
+  }
+  return resp;
+};
 
 const init = createAsyncThunk('order/init', async (mobile?: string) => {
   const oldData = await retrieveData(`${API.Order.KEY_INIT_ORDER}.${mobile}`);
@@ -63,24 +82,7 @@ const getNotiSubs = createAsyncThunk(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
     )(param, {
-      fulfillWithValue: (resp) => {
-        if (resp.result === 0) {
-          resp.objects = resp.objects.map((o) => ({
-            ...o,
-            provDate: getMoment(o.provDate),
-            lastProvDate: getMoment(o.lastProvDate),
-            cnt: parseInt(o.cnt || '0', 10),
-            lastExpireDate: getMoment(o.lastExpireDate),
-            startDate: getMoment(o.startDate),
-            promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
-            partner: groupPartner(o.partner),
-            status: toStatus(o.field_status),
-            purchaseDate: getMoment(o.purchaseDate),
-            expireDate: getMoment(o.expireDate),
-          }));
-        }
-        return resp;
-      },
+      fulfillWithValue: subsFulfillWithValue,
     });
   },
 );
@@ -97,24 +99,7 @@ const getSubs = createAsyncThunk(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
     )(param, {
-      fulfillWithValue: (resp) => {
-        if (resp.result === 0) {
-          resp.objects = resp.objects.map((o) => ({
-            ...o,
-            provDate: getMoment(o.provDate),
-            lastProvDate: getMoment(o.lastProvDate),
-            cnt: parseInt(o.cnt || '0', 10),
-            lastExpireDate: getMoment(o.lastExpireDate),
-            startDate: getMoment(o.startDate),
-            promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
-            partner: groupPartner(o.partner),
-            status: toStatus(o.field_status),
-            purchaseDate: getMoment(o.purchaseDate),
-            expireDate: getMoment(o.expireDate),
-          }));
-        }
-        return resp;
-      },
+      fulfillWithValue: subsFulfillWithValue,
     });
   },
 );
@@ -135,24 +120,7 @@ const subsReload = createAsyncThunk(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
     )(param, {
-      fulfillWithValue: (resp) => {
-        if (resp.result === 0) {
-          resp.objects = resp.objects.map((o) => ({
-            ...o,
-            provDate: getMoment(o.provDate),
-            lastProvDate: getMoment(o.lastProvDate),
-            cnt: parseInt(o.cnt || '0', 10),
-            lastExpireDate: getMoment(o.lastExpireDate),
-            startDate: getMoment(o.startDate),
-            promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
-            partner: groupPartner(o.partner),
-            status: toStatus(o.field_status),
-            purchaseDate: getMoment(o.purchaseDate),
-            expireDate: getMoment(o.expireDate),
-          }));
-        }
-        return resp;
-      },
+      fulfillWithValue: subsFulfillWithValue,
     });
   },
 );
