@@ -146,8 +146,10 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
 
   useEffect(() => {
     if (route?.params?.orderId)
-      setDraftOrder(order.orders.get(route.params?.orderId));
-  }, [order.orders, route.params?.orderId]);
+      setDraftOrder(
+        order.drafts.find((r) => r.orderId === route.params?.orderId),
+      );
+  }, [order.drafts, route.params?.orderId]);
 
   const onCheck = useCallback(() => {
     if (!checked) scrollRef?.current.scrollToEnd();
