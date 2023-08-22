@@ -250,9 +250,9 @@ const logInAndGetAccount = createAsyncThunk(
           const obj = objects[0];
           const token = obj.csrf_token;
 
-          storeData(API.User.KEY_MOBILE, obj.current_user.name);
-          storeData(API.User.KEY_PIN, pin);
-          storeData(API.User.KEY_TOKEN, obj.csrf_token);
+          storeData(API.User.KEY_MOBILE, obj.current_user.name, true);
+          storeData(API.User.KEY_PIN, pin, true);
+          storeData(API.User.KEY_TOKEN, obj.csrf_token, true);
 
           // Account 정보를 가져온 후 Token 값이 다르면 Disconnect
           const getAccountWithDisconnect = (account: {
