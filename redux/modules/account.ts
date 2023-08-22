@@ -463,7 +463,7 @@ const slice = createSlice({
     builder.addCase(registerMobile.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
       if (result === 0 && objects && objects.length > 0) {
-        storeData(API.User.KEY_ICCID, objects[0].iccid);
+        storeData(API.User.KEY_ICCID, objects[0].iccid, true);
         return updateAccountState(state, objects[0]);
       }
       return state;
@@ -482,7 +482,7 @@ const slice = createSlice({
               isUsedByOther: true,
             };
           }
-          storeData(API.User.KEY_ICCID, objects[0].iccid);
+          storeData(API.User.KEY_ICCID, objects[0].iccid, true);
           return updateAccountState(state, objects[0]);
         }
 

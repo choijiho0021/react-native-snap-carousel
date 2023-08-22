@@ -1,7 +1,6 @@
+import CryptoJS from 'crypto-js';
 import utils from '@/redux/api/utils';
 import AppAlert from '@/components/AppAlert';
-import CryptoJS from 'crypto-js';
-import 'react-native-get-random-values'
 import i18n from './i18n';
 
 const UniAsyncStorage =
@@ -24,11 +23,6 @@ const storeData = async (key: string, value: any, isEncrypt?: boolean) => {
 
 const retrieveData = async (key: string, isDecrypt?: boolean) => {
   try {
-    if (isDecrypt) {
-      const bytes = CryptoJS.AES.decrypt(key, key);
-      return bytes.toString(CryptoJS.enc.Utf8);
-    }
-
     const value = await UniAsyncStorage.getItem(key);
 
     if (isDecrypt) {
