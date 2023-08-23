@@ -1,21 +1,21 @@
 
-//#if RCT_DEV
-//#import <React/RCTDevLoadingView.h>
-//#endif
-//#import <AVFoundation/AVFoundation.h>
-//
-//#import <AppCenterReactNative.h>
-//#import <AppCenterReactNativeAnalytics.h>
-//#import <AppCenterReactNativeCrashes.h>
-//
-//#import <ChannelIOFront/ChannelIOFront-swift.h>
-//
-//#import "RNSplashScreen.h"  // here
-//#import <CodePush/CodePush.h>
-//
-//#ifdef TARGET_GLOBAL  // RokebiGlobal
-//#import <FBSDKCoreKit/FBSDKCoreKit-swift.h>
-//#endif
+#if RCT_DEV
+#import <React/RCTDevLoadingView.h>
+#endif
+#import <AVFoundation/AVFoundation.h>
+
+#import <AppCenterReactNative.h>
+#import <AppCenterReactNativeAnalytics.h>
+#import <AppCenterReactNativeCrashes.h>
+
+#import <ChannelIOFront/ChannelIOFront-swift.h>
+
+#import "RNSplashScreen.h"  // here
+#import <CodePush/CodePush.h>
+
+#ifdef TARGET_GLOBAL  // RokebiGlobal
+#import <FBSDKCoreKit/FBSDKCoreKit-swift.h>
+#endif
 
 // firebase
 #import <Firebase.h>
@@ -38,9 +38,13 @@
 #import <React/RCTBundleURLProvider.h>
 
 @implementation AppDelegate
+ 
+
 
 // 무슨 용도?
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
+
+ 
 
 
 //---- IOS Notification ------
@@ -86,7 +90,17 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 //Called when a notification is delivered to a foreground app.
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
+  // Still call the JS onNotification handler so it can display the new message right away
+  NSDictionary *userInfo = notification.request.content.userInfo;
+  
+  // With swizzling disabled you must let Messaging know about the message, for Analytics
+   [[FIRMessaging messaging] appDidReceiveMessage:userInfo];
+  
+//  [[RNFirebaseNotifications instance] didReceiveRemoteNotification:userInfo fetchCompletionHandler:^void (UIBackgroundFetchResult result){}];
+
+  // hide push notification
   completionHandler(UNNotificationPresentationOptionSound | UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge);
+
 }
 
 // -------- IOS Notification ---------
@@ -110,18 +124,18 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   [NaverTracker configure];
   
 
-//  [ChannelIO initialize:application];
-//
-//  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
-//  [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-//
-//  [AppCenterReactNative register];
-//  [AppCenterReactNativeAnalytics registerWithInitiallyEnabled:true];
-//  [AppCenterReactNativeCrashes registerWithAutomaticProcessing];
-//
-//  #ifdef TARGET_GLOBAL
-//    [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
-//  #endif
+  [ChannelIO initialize:application];
+
+  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
+  [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+
+  [AppCenterReactNative register];
+  [AppCenterReactNativeAnalytics registerWithInitiallyEnabled:true];
+  [AppCenterReactNativeCrashes registerWithAutomaticProcessing];
+
+  #ifdef TARGET_GLOBAL
+    [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
+  #endif
 
   
   // Define UNUserNotificationCenter
@@ -135,6 +149,17 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   
   return true;
 }
+
+
+- (NSDictionary *)prepareInitialProps
+{
+  NSMutableDictionary *initProps = [NSMutableDictionary new];
+#ifdef RCT_NEW_ARCH_ENABLED
+  initProps[kRNConcurrentRoot] = @([self concurrentRootEnabled]);
+#endif
+  return initProps;
+}
+
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
