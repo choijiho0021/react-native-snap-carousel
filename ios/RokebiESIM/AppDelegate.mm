@@ -1,35 +1,42 @@
-#import "AppDelegate.h"
-#import "RokebiESIM-Swift.h"
-#if RCT_DEV
-#import <React/RCTDevLoadingView.h>
-#endif
+//#import "AppDelegate.h"
+//#import "RokebiESIM-Swift.h"
+//#if RCT_DEV
+//#import <React/RCTDevLoadingView.h>
+//#endif
+//#import <AVFoundation/AVFoundation.h>
+//
+//#import <AppCenterReactNative.h>
+//#import <AppCenterReactNativeAnalytics.h>
+//#import <AppCenterReactNativeCrashes.h>
+//
+//#import <ChannelIOFront/ChannelIOFront-swift.h>
+//
+//#import "RNSplashScreen.h"  // here
+//#import <CodePush/CodePush.h>
+//
+//#ifdef TARGET_GLOBAL  // RokebiGlobal
+//#import <FBSDKCoreKit/FBSDKCoreKit-swift.h>
+//#endif
+//
+//
+//#import <React/RCTBundleURLProvider.h>
 
+// firebase
 #import <Firebase.h>
-#import <AVFoundation/AVFoundation.h>
 
-#import <AppCenterReactNative.h>
-#import <AppCenterReactNativeAnalytics.h>
-#import <AppCenterReactNativeCrashes.h>
-
-#import <ChannelIOFront/ChannelIOFront-swift.h>
-
-#import "RNSplashScreen.h"  // here
-#import <CodePush/CodePush.h>
-
-#ifdef TARGET_GLOBAL  // RokebiGlobal
-#import <FBSDKCoreKit/FBSDKCoreKit-swift.h>
-#endif
-
+// Notification Import
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
 
-#import <React/RCTBundleURLProvider.h>
 
-// 무슨 용도?
-static NSString *const kRNConcurrentRoot = @"concurrentRoot";
+#import "AppDelegate.h"
+
+#import <React/RCTBundleURLProvider.h>
 
 @implementation AppDelegate
 
+
+//---- IOS Notification ------
 // Required for the register event.
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
@@ -61,46 +68,47 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   
   [RNCPushNotificationIOS didReceiveNotificationResponse:response];
 }
+
+
 // IOS 4-10 Required for the localNotification event.
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
 //  [[RNFirebaseNotifications instance] didReceiveLocalNotification:notification];
 }
 
+//Called when a notification is delivered to a foreground app.
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+{
+  completionHandler(UNNotificationPresentationOptionSound | UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge);
+}
+
+// -------- IOS Notification ---------
+
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  [ChannelIO initialize:application];
-
   self.moduleName = @"RokebiESIM";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
   
-  if ([FIRApp defaultApp] == nil) {
-      [FIRApp configure];
-    }
-
-  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
-  [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-
-  [AppCenterReactNative register];
-  [AppCenterReactNativeAnalytics registerWithInitiallyEnabled:true];
-  [AppCenterReactNativeCrashes registerWithAutomaticProcessing];
-
-  #ifdef TARGET_GLOBAL
-    [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
-  #endif
-
+  // Define Firebase 
+  [FIRApp configure];
+  
+  // Define UNUserNotificationCenter
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
-  // [FIRMessaging messaging].delegate = self;
-
-  [NaverTracker configure];
-  [RNSplashScreen show];
-
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
+}
+
+- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
+{
+#if DEBUG
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+#else
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+#endif
 }
 
 /// This method controls whether the `concurrentRoot`feature of React18 is turned on or off.
@@ -112,42 +120,5 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 {
   return true;
 }
-
-// 출저 불명
-- (NSDictionary *)prepareInitialProps
-{
-  NSMutableDictionary *initProps = [NSMutableDictionary new];
-#ifdef RCT_NEW_ARCH_ENABLED
-  initProps[kRNConcurrentRoot] = @([self concurrentRootEnabled]);
-#endif
-  return initProps;
-}
-
-
-- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
-{
-#if DEBUG
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
-#else
-  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
-#endif
-}
-
-// Notification 을 위한 코드?
-// Called when a notification is delivered to a foreground app.
--(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
-{
-  // Still call the JS onNotification handler so it can display the new message right away
-  NSDictionary *userInfo = notification.request.content.userInfo;
-  
-  // With swizzling disabled you must let Messaging know about the message, for Analytics
-   [[FIRMessaging messaging] appDidReceiveMessage:userInfo];
-  
-//  [[RNFirebaseNotifications instance] didReceiveRemoteNotification:userInfo fetchCompletionHandler:^void (UIBackgroundFetchResult result){}];
-
-  // hide push notification
-  completionHandler(UNNotificationPresentationOptionSound | UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge);
-}
-
 
 @end
