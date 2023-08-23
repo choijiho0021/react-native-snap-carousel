@@ -1,5 +1,4 @@
-//#import "AppDelegate.h"
-//#import "RokebiESIM-Swift.h"
+
 //#if RCT_DEV
 //#import <React/RCTDevLoadingView.h>
 //#endif
@@ -17,9 +16,6 @@
 //#ifdef TARGET_GLOBAL  // RokebiGlobal
 //#import <FBSDKCoreKit/FBSDKCoreKit-swift.h>
 //#endif
-//
-//
-//#import <React/RCTBundleURLProvider.h>
 
 // firebase
 #import <Firebase.h>
@@ -28,12 +24,23 @@
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
 
+// Splash Screen
+#import <React/RCTRootView.h>
+#import "RNSplashScreen.h"
+
+// NAVER Tracker
+#import "RokebiESIM-Swift.h"
+
+
 
 #import "AppDelegate.h"
 
 #import <React/RCTBundleURLProvider.h>
 
 @implementation AppDelegate
+
+// 무슨 용도?
+static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 
 //---- IOS Notification ------
@@ -87,19 +94,46 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+
+  
   self.moduleName = @"RokebiESIM";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
   
-  // Define Firebase 
-  [FIRApp configure];
+  
+  // Define
+  if ([FIRApp defaultApp] == nil) {
+      [FIRApp configure];
+    }
+
+  [NaverTracker configure];
+  
+
+//  [ChannelIO initialize:application];
+//
+//  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
+//  [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+//
+//  [AppCenterReactNative register];
+//  [AppCenterReactNativeAnalytics registerWithInitiallyEnabled:true];
+//  [AppCenterReactNativeCrashes registerWithAutomaticProcessing];
+//
+//  #ifdef TARGET_GLOBAL
+//    [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
+//  #endif
+
   
   // Define UNUserNotificationCenter
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
 
-  return [super application:application didFinishLaunchingWithOptions:launchOptions];
+  [super application:application didFinishLaunchingWithOptions:launchOptions];
+
+  // didFinishLaunchingWithOptions 아래에 와야한다. 위에 있으면 RNSplashScreen은 연결할 RootView를 몰라서 에러 로그도 출력하지 않고 하얀화면만 실행된다
+  [RNSplashScreen show];
+  
+  return true;
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
