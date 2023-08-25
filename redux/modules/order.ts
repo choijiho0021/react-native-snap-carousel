@@ -25,6 +25,9 @@ import Env from '@/environment';
 
 const {specialCategories} = Env.get();
 
+export const isBillionConnect = (sub?: RkbSubscription) =>
+  sub?.partner === 'billionconnect';
+
 const init = createAsyncThunk('order/init', async (mobile?: string) => {
   const oldData = await retrieveData(`${API.Order.KEY_INIT_ORDER}.${mobile}`);
   return oldData;

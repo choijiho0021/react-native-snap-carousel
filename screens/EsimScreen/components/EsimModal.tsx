@@ -12,6 +12,7 @@ import AppButton from '@/components/AppButton';
 import {appStyles} from '@/constants/Styles';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
+import {isBillionConnect} from '@/redux/modules/order';
 
 const styles = StyleSheet.create({
   titleStyle: {
@@ -102,7 +103,8 @@ const EsimModal: React.FC<EsimModalProps> = ({
     const quota = Number(cmiUsage?.quota || 0);
     const used = Number(cmiUsage?.used || 0);
 
-    const isChargeable = onOkClose && cmiStatus.statusCd === 'A';
+    const isChargeable =
+      onOkClose && cmiStatus.statusCd === 'A' && !isBillionConnect(subs);
 
     return (
       <View style={{flexDirection: 'row'}}>
