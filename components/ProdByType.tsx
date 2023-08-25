@@ -43,6 +43,7 @@ type ProdByTypeProps = {
   isCharge?: boolean;
   onPress: (prod: RkbProduct) => void;
   onTop?: (v: boolean) => void;
+  isExtension?: boolean;
 };
 
 const DEFAULT_FILTER_LIST = ['500', '1024', '2048'];
@@ -53,6 +54,7 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
   isCharge = false,
   onPress,
   onTop = () => {},
+  isExtension = false,
 }) => {
   const [filter, setFilter] = useState<DailyProdFilterList>('all');
   const [list, setList] = useState<DailyProdFilterList[]>([]);
@@ -106,6 +108,7 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
           <DailyProdFilter
             filterList={['all', ...list]}
             onValueChange={setFilter}
+            isExtension={isExtension}
           />
         ) : null
       }

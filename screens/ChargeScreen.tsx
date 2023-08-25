@@ -166,6 +166,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
           onTop={onTop}
           onPress={onPress}
           isCharge={false}
+          isExtension
         />
       ),
     [onPress, onTop, prodData],

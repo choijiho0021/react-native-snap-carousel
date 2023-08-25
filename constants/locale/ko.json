@@ -53,8 +53,9 @@
   "latest": "최신",
   "sale": "할인",
   "hot": "추천",
-  "sizeup": "사이즈업",
-  "doubleSizeup": "더블 사이즈업",
+  "sizeup": "업",
+  "doubleSizeup": "더블업",
+  "tripleSizeup": "트리플업",
   "copy": "복사",
   "close": "닫기",
   "close:week": "일주일간 보지 않기",
@@ -1249,5 +1250,12 @@
   "daily:filter:all": "전체",
   "daily:filter:500": "500MB",
   "daily:filter:1024": "1GB",
-  "daily:filter:2048": "2GB"
+  "daily:filter:2048": "2GB",
+  "daily:filter:3072": "3GB",
+
+  "daily:day:filter:all": "전체",
+  "daily:day:filter:500": "일 500MB",
+  "daily:day:filter:1024": "일 1GB",
+  "daily:day:filter:2048": "일 2GB",
+  "daily:day:filter:3072": "일 3GB"
 }
