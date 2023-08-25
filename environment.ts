@@ -48,11 +48,20 @@ const specialCategories: Record<string, PromoFlag> = esimGlobal
         420: 'sizeup', // 사이즈업
         421: 'doubleSizeup', // 더블 사이즈업
       }
+  : isProduction
+  ? {
+      53: 'hot', // 운용자 추천
+      57: 'sale', // 할인
+      181: 'sizeup', // 사이즈업
+      182: 'doubleSizeup', // 더블 사이즈업
+      452: 'tripleSizeup', // 트리플 사이즈업
+    }
   : {
       53: 'hot', // 운용자 추천
       57: 'sale', // 할인
       181: 'sizeup', // 사이즈업
       182: 'doubleSizeup', // 더블 사이즈업
+      746: 'tripleSizeup', // 트리플 사이즈업
     };
 
 type Env = {
