@@ -13,12 +13,10 @@ import {
   RkbOrder,
 } from '@/redux/api/orderApi';
 import {
-  getMoment,
   RkbSubscription,
   sortSubs,
   STATUS_USED,
   SubscriptionParam,
-  toStatus,
 } from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {reflectWithToast, Toast} from './toast';
@@ -27,37 +25,15 @@ import Env from '@/environment';
 
 const {specialCategories} = Env.get();
 
-export const groupPartner = (partner: string) => {
-  if (partner) {
-    if (partner.startsWith('cmi')) return 'cmi';
-    if (partner.startsWith('quadcell')) return 'quadcell';
-  }
-  return partner;
-};
-
-const subsFulfillWithValue = (resp) => {
-  if (resp.result === 0) {
-    resp.objects = resp.objects.map((o) => ({
-      ...o,
-      provDate: getMoment(o.provDate),
-      lastProvDate: getMoment(o.lastProvDate),
-      cnt: parseInt(o.cnt || '0', 10),
-      lastExpireDate: getMoment(o.lastExpireDate),
-      startDate: getMoment(o.startDate),
-      promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
-      partner: groupPartner(o.partner),
-      status: toStatus(o.field_status),
-      purchaseDate: getMoment(o.purchaseDate),
-      expireDate: getMoment(o.expireDate),
-    }));
-  }
-  return resp;
-};
-
 const init = createAsyncThunk('order/init', async (mobile?: string) => {
   const oldData = await retrieveData(`${API.Order.KEY_INIT_ORDER}.${mobile}`);
   return oldData;
 });
+
+// cachedApi 수정한 후 지우기
+const defaultReturn = (resp) => {
+  return resp;
+};
 
 const getOrderById = createAsyncThunk(
   'order/getOrderById',
@@ -82,7 +58,7 @@ const getNotiSubs = createAsyncThunk(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
     )(param, {
-      fulfillWithValue: subsFulfillWithValue,
+      fulfillWithValue: defaultReturn,
     });
   },
 );
@@ -99,7 +75,7 @@ const getSubs = createAsyncThunk(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
     )(param, {
-      fulfillWithValue: subsFulfillWithValue,
+      fulfillWithValue: defaultReturn,
     });
   },
 );
@@ -120,7 +96,7 @@ const subsReload = createAsyncThunk(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
     )(param, {
-      fulfillWithValue: subsFulfillWithValue,
+      fulfillWithValue: defaultReturn,
     });
   },
 );
