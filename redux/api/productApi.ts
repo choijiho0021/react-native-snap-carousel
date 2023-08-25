@@ -13,7 +13,7 @@ import {RkbPriceInfo} from '../modules/product';
 import {colors} from '@/constants/Colors';
 import Env from '@/environment';
 import {parseJson} from '@/utils/utils';
-import {groupPartner} from '../modules/order';
+import {groupPartner} from './subscriptionApi';
 
 const {specialCategories} = Env.get();
 
