@@ -1,8 +1,8 @@
 apply plugin: "com.android.application"
+apply plugin: "com.facebook.react"
 apply plugin: "kotlin-android"
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
-apply plugin: "com.facebook.react"
-
+apply plugin: 'com.google.gms.google-services' // <- Add this line
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -53,7 +53,11 @@ react {
     // hermesFlags = ["-O", "-output-source-map"]
 }
 
-
+// 해결방법 아니였음..
+// project.ext.react = [
+//         enableHermes: true,
+//         bundleInRelease: false // Add this line
+// ]
 
 project.ext.envConfigFiles = [
         esimdebug: ".env.esim.debug",
@@ -95,15 +99,6 @@ def enableProguardInReleaseBuilds = false
 def jscFlavor = 'org.webkit:android-jsc:+'
 
 /**
- * Whether to enable the Hermes VM.
- *
- * This should be set on project.ext.react and mirrored here.  If it is not set
- * on project.ext.react, JavaScript will not be compiled to Hermes Bytecode
- * and the benefits of using Hermes will therefore be sharply reduced.
- */
-def enableHermes = project.ext.react.get("enableHermes", false);
-
-/**
  * Architectures to build native code for in debug.
  */
 def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitectures")
@@ -138,7 +133,7 @@ android {
 //        versionProps['VERSION_BUILD'] = versionBuild.toString()
 //        versionProps.store(versionPropsFile.newWriter(), null)
 
-    namespace "com.rokebi.rokebiesim"
+    namespace "com.rokebiesim"
     defaultConfig {
 //        missingDimensionStrategy 'react-native-camera', 'general'
         applicationId 'com.rokebiesim'
@@ -197,13 +192,12 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
-            if (nativeArchitectures) {
-                ndk {
-                    abiFilters nativeArchitectures.split(',')
-                }
-            }
+//            if (nativeArchitectures) {
+//                ndk {
+//                    abiFilters nativeArchitectures.split(',')
+//                }
+//            }
             resValue "string", "CodePushDeploymentKey", '_YZzzSzzOPPv3VSEbuTR8C58t2o8Br6nTSkp8'
-
         }
         staging {
             initWith release
@@ -256,13 +250,20 @@ dependencies {
 
     def appcompat_version = "1.1.0"
 
-    implementation 'androidx.core:core-ktx:1.3.2'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
+    if (hermesEnabled.toBoolean()) {
+        implementation("com.facebook.react:hermes-android")
+    } else {
+        implementation jscFlavor
+    }
 
-    implementation "androidx.appcompat:appcompat:$appcompat_version"
+    implementation ('androidx.core:core-ktx:1.3.2')
+    implementation ("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
+
+    implementation ("androidx.appcompat:appcompat:$appcompat_version")
     // For loading and tinting drawables on older versions of the platform
-    implementation "androidx.appcompat:appcompat-resources:$appcompat_version"
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    implementation ("androidx.appcompat:appcompat-resources:$appcompat_version")
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
 
 
@@ -287,49 +288,42 @@ dependencies {
     implementation project(':rn-fetch-blob')
    // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
-    implementation 'me.leolin:ShortcutBadger:1.1.21@aar'
-    implementation 'com.google.android.gms:play-services-gcm:17.0.0'
-    implementation "com.google.android.gms:play-services-auth:${safeExtGet('googlePlayServicesAuthVersion', '19.2.0')}"
-    implementation "com.google.android.gms:play-services-fitness:21.1.0"
-    implementation "androidx.annotation:annotation:1.1.0"
-    implementation 'com.facebook.android:facebook-android-sdk:[8,9)'
+    implementation ('me.leolin:ShortcutBadger:1.1.21@aar')
+    implementation ('com.google.android.gms:play-services-gcm:17.0.0')
+    implementation ("com.google.android.gms:play-services-auth:${safeExtGet('googlePlayServicesAuthVersion', '19.2.0')}")
+    implementation ("com.google.android.gms:play-services-fitness:21.1.0")
+    implementation ("androidx.annotation:annotation:1.1.0")
+    implementation ('com.facebook.android:facebook-android-sdk:[8,9)')
     implementation project(':@react-native-community-clipboard')
     implementation platform('com.google.firebase:firebase-bom:31.1.1')
     implementation project(path: ":@react-native-firebase_dynamic-links")
-    implementation 'com.google.firebase:firebase-analytics'
+    implementation ('com.google.firebase:firebase-analytics')
 
-    implementation "com.kakao.sdk:v2-user:2.15.0" // 카카오 로그인
-    implementation "com.kakao.sdk:v2-share:2.15.0" // 메시지(카카오톡 공유)
+    implementation ("com.kakao.sdk:v2-user:2.15.0") // 카카오 로그인
+    implementation ("com.kakao.sdk:v2-share:2.15.0") // 메시지(카카오톡 공유)
 
 //    implementation "com.kakao.sdk:v2-talk:2.15.0" // 친구, 메시지(카카오톡)
 //    implementation "com.kakao.sdk:v2-friend:2.15.0" // 카카오톡 소셜 피커, 리소스 번들 파일 포함
 
-    implementation 'com.google.android.gms:play-services-analytics:10.0.1'
+    implementation ('com.google.android.gms:play-services-analytics:10.0.1')
     implementation project(path: ":@react-native-firebase_messaging")
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation ('com.google.code.gson:gson:2.8.5')
     implementation project(':react-native-pager-view')
-    implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
-    implementation 'com.android.installreferrer:installreferrer:2.2'
+    implementation ('com.google.android.gms:play-services-ads-identifier:18.0.1')
+    implementation ('com.android.installreferrer:installreferrer:2.2')
     // Add the following if you are using the Adjust SDK inside web views on your app
-    implementation 'com.adjust.sdk:adjust-android-webbridge:4.33.5'
+    implementation ('com.adjust.sdk:adjust-android-webbridge:4.33.5')
     implementation project(':react-native-system-setting')
-    implementation 'com.facebook.fresco:animated-gif:2.5.0'
+    implementation ('com.facebook.fresco:animated-gif:2.5.0')
     implementation project(':react-native-linear-gradient')
     implementation project(':react-native-config')
 
     // naver sdk
-    implementation 'com.google.android.gms:play-services-appset:16.0.2'
-    implementation 'com.android.installreferrer:installreferrer:2.2'
-    implementation 'com.navercorp.ntracker:NTrackerSDKExt:1.0.0'
+    implementation ('com.google.android.gms:play-services-appset:16.0.2')
+    implementation ('com.android.installreferrer:installreferrer:2.2')
+    implementation ('com.navercorp.ntracker:NTrackerSDKExt:1.0.0')
 
     implementation project(':@react-native-camera-roll_camera-roll')
-
-    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
-    if (hermesEnabled.toBoolean()) {
-        implementation("com.facebook.react:hermes-android")
-    } else {
-        implementation jscFlavor
-    }
 
 //    addUnimodulesDependencies([exclude: ['expo-file-system','expo-image-loader','expo-permissions','expo-constants']])
 }
