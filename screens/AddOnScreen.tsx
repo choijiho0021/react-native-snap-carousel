@@ -6,13 +6,11 @@ import moment from 'moment';
 import {ScrollView} from 'react-native-gesture-handler';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
-import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
 import {RkbAddOnProd} from '@/redux/api/productApi';
 import {appStyles} from '@/constants/Styles';
 import ButtonWithPrice from './EsimScreen/components/ButtonWithPrice';
-import TextWithDot from './EsimScreen/components/TextWithDot';
 import AppStyledText from '@/components/AppStyledText';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {sliderWidth, windowHeight} from '@/constants/SliderEntry.style';
@@ -23,16 +21,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.white,
     flex: 1,
-  },
-  header: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.white,
-  },
-  headerTitle: {
-    height: 56,
-    marginRight: 8,
   },
   addOnFrame: {
     paddingHorizontal: 20,
