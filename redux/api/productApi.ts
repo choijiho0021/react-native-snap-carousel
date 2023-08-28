@@ -48,6 +48,10 @@ const flagColor = {
     backgroundColor: colors.lightSage,
     fontColor: colors.shamrock,
   },
+  tripleSizeup: {
+    backgroundColor: colors.lightYellow,
+    fontColor: colors.yellowSecond,
+  },
 };
 
 export const getPromoFlagColor = (key: string) => {

@@ -53,6 +53,8 @@ export const colors = {
   iceBlue: '#ECF5FF',
   veryLightPink: '#FFE3DD', // rgb 255 227 221
   shamrock: '#00AD50', // rgb 0 173 80
+  lightYellow: '#fff4d5', // rgb 255 244 213
+  yellowSecond: '#ff9900', // rgb 255 153 0
   lightSage: '#D6F3E3', // rgb 214 243ㄴㄴ 227
   veryLightBlue: '#DAEEFF', // rgb 218 238 255
   greyishBrown: '#575757',
