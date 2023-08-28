@@ -450,7 +450,7 @@ const slice = createSlice({
         } else state.subsIsLast = true;
 
         if (offset === 0) {
-          state.subs = objects;
+          state.subs = objects.sort(sortSubs);
         } else {
           // offset이 0이 아니라면 페이지네이션 중이니 merge로 한다
           state.subs = mergeSubs(state.subs, objects);
