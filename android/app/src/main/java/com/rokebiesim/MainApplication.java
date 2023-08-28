@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -42,7 +43,6 @@ import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
-import com.rokebiesim.newarchitecture.MainApplicationReactNativeHost;
 import com.horcrux.svg.SvgPackage;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
@@ -241,8 +241,6 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        // If you opted-in for the New Architecture, we enable the TurboModule system
-        ReactFeatureFlags.useTurboModules = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
         SoLoader.init(this, /* native exopackage */ false);
         AppCenter.start(this, "ff7d5d5a-8b74-4ec2-99be-4dfd81b4b0fd", Analytics.class);
         createNotificationChannel(this);
