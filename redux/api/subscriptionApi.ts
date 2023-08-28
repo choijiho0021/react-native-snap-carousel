@@ -306,7 +306,10 @@ const subsFulfillWithValue = (resp) => {
       cnt: parseInt(o.cnt || '0', 10),
       lastExpireDate: getMoment(o.lastExpireDate),
       startDate: getMoment(o.startDate),
-      promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
+      promoFlag: o?.promoFlag
+        ?.map((p: string) => specialCategories[p.trim()])
+        .filter((v) => !_.isEmpty(v)),
+
       partner: groupPartner(o.partner),
       status: toStatus(o.field_status),
       purchaseDate: getMoment(o.purchaseDate),
