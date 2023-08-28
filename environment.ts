@@ -33,7 +33,7 @@ const isProduction = Config.NODE_ENV === 'production';
 // test 계정
 impId = isProduction ? impId : 'imp54175831';
 
-type PromoFlag = 'hot' | 'sale' | 'sizeup' | 'doubleSizeup';
+type PromoFlag = 'hot' | 'sale' | 'sizeup' | 'doubleSizeup' | 'tripleSizeup';
 const specialCategories: Record<string, PromoFlag> = esimGlobal
   ? isProduction
     ? {
