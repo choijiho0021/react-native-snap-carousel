@@ -234,6 +234,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           language: payMethod?.language || i18n.locale,
           digital: true,
           paymentRule: product.rule,
+          mode,
         } as PaymentParams;
 
         setClickable(true);

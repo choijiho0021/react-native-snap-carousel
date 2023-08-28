@@ -2,7 +2,7 @@ import analytics from '@react-native-firebase/analytics';
 import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -134,12 +134,21 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     action.noti.getNotiList({mobile: account.mobile});
   }, [account, action.noti, action.order]);
 
+  const onNavigateScreen = useCallback(() => {
+    navigation.popToTop();
+
+    // 캐시 구매 -> 내 계정 화면으로 이동
+    if (params?.mode === 'recharge')
+      navigation.navigate('MyPageStack', {screen: 'MyPage'});
+    // 일반 상품, 충전 상품 -> eSIM 화면 이동
+    else navigation.navigate('EsimStack', {screen: 'Esim'});
+  }, [navigation, params?.mode]);
+
   // 결제 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
   BackbuttonHandler({
     navigation,
     onBack: () => {
-      navigation.popToTop();
-      navigation.navigate('HomeStack', {screen: 'Home'});
+      onNavigateScreen();
       return true;
     },
   });
@@ -238,12 +247,11 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
       </ScrollView>
       <AppButton
         style={styles.btnHome}
-        title={i18n.t('pym:toHome')}
+        title={i18n.t('pym:toCheck')}
         titleStyle={styles.btnHomeText}
         type="primary"
         onPress={() => {
-          navigation.popToTop();
-          navigation.navigate('HomeStack', {screen: 'Home'});
+          onNavigateScreen();
         }}
       />
     </SafeAreaView>

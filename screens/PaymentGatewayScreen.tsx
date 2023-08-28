@@ -119,7 +119,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
 
       if (status !== 'check' || pymResult) {
         // status = 'next', 'cancel' 이거나, pymResult = true인 경우 다음 페이지로 이동
-        navigation.replace('PaymentResult', {pymResult});
+        navigation.replace('PaymentResult', {pymResult, mode: params?.mode});
       }
     },
     [
@@ -127,6 +127,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       action.cart,
       navigation,
       params.card,
+      params?.mode,
       params.pay_method,
       params.paymentRule,
       pymInfo,
