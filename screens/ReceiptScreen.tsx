@@ -312,7 +312,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
           style={{
             ...styles.button,
             backgroundColor: 'white',
-            borderWidth: 1,
+            borderTopWidth: 1,
             borderColor: colors.lightGrey,
           }}
           titleStyle={{...appStyles.medium18, color: colors.black}}
