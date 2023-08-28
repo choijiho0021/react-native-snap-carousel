@@ -103,6 +103,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
     const quota = Number(cmiUsage?.quota || 0);
     const used = Number(cmiUsage?.used || 0);
 
+    // BC 상품은 충전 불가 추가
     const isChargeable =
       onOkClose && cmiStatus.statusCd === 'A' && !isBillionConnect(subs);
 
