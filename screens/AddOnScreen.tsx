@@ -220,7 +220,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
       if (n.isAfter(r)) resetTime.add(1, 'day');
     }
 
-    if (mainSubs.partner === 'quadcell' && status === 'R') {
+    if (mainSubs.partner?.startsWith('quadcell') && status === 'R') {
       return {
         text: i18n.t('esim:charge:addOn:usagePeriod:unUsed'),
         period: mainSubs.prodDays || '',
@@ -264,7 +264,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
       if (remainDaysProd.length > 0) {
         // 쿼드셀 무제한 (사용전), 쿼드셀 종량제의 경우 하루 충전 지원 x
         if (
-          mainSubs.partner === 'quadcell' &&
+          mainSubs.partner?.startsWith('quadcell') &&
           (status === 'R' || mainSubs.daily === 'total')
         ) {
           setAddOnTypeList(['remainDays']);
@@ -471,7 +471,8 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
                 chargeProd: selectedAddOnProd?.title || '',
                 noticeTitle: i18n.t('esim:charge:addOn:notice:title'),
                 noticeBody:
-                  mainSubs.partner === 'quadcell' && mainSubs.daily === 'daily'
+                  mainSubs.partner?.startsWith('quadcell') &&
+                  mainSubs.daily === 'daily'
                     ? i18n
                         .t('esim:charge:addOn:notice:body:quadcellD')
                         .split('\n')

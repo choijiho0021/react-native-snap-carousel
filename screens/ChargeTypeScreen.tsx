@@ -95,7 +95,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   // 쿼드셀 무제한 상품의 경우 남은 기간 충전은 1회로 제한 됨
   const quadAddonOverLimited = useMemo(
     () =>
-      mainSubs.partner === 'quadcell' &&
+      mainSubs.partner?.startsWith('quadcell') &&
       mainSubs.daily === 'daily' &&
       addOnData?.find((a) => Number(a.prodDays) > 1),
     [addOnData, mainSubs],
@@ -128,7 +128,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         rsp = await API.Subscription.cmiGetStatus({
           iccid: item?.subsIccid || '',
         });
-      } else if (item.partner === 'quadcell' && item.imsi) {
+      } else if (item.partner?.startsWith('quadcell') && item.imsi) {
         rsp = await API.Subscription.quadcellGetStatus({
           imsi: item.imsi,
         });
@@ -214,7 +214,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         // 남은 기간 충전에 대한 처리 건이 있으면 서버에서 하루 충전 상품만 내려줌
         // 사용전인 쿼드셀 무제한 상품의 경우 하루 충전은 지원하지 않음
         remainDaysProd.length < 1 &&
-        mainSubs.partner === 'quadcell' &&
+        mainSubs.partner?.startsWith('quadcell') &&
         status === 'R' &&
         mainSubs.daily === 'daily'
       ) {
