@@ -197,10 +197,11 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
   const getAddOnProduct = useCallback(async () => {
     setAddonLoading(true);
-    if (mainSubs.nid && remainDays && remainDays > 0) {
+    const subs = chargeableItem || mainSubs;
+    if (subs.nid && remainDays && remainDays > 0) {
       const data = await API.Product.getAddOnProduct(
-        mainSubs.nid,
-        mainSubs.daily === 'daily' ? remainDays.toString() : '1',
+        subs.nid,
+        subs.daily === 'daily' ? remainDays.toString() : '1',
       );
 
       const rsp = data.objects;
@@ -214,7 +215,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         // 남은 기간 충전에 대한 처리 건이 있으면 서버에서 하루 충전 상품만 내려줌
         // 사용전인 쿼드셀 무제한 상품의 경우 하루 충전은 지원하지 않음
         remainDaysProd.length < 1 &&
-        mainSubs.partner?.startsWith('quadcell') &&
+        subs.partner?.startsWith('quadcell') &&
         status === 'R' &&
         mainSubs.daily === 'daily'
       ) {
@@ -226,7 +227,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       }
     }
     setAddonLoading(false);
-  }, [mainSubs.daily, mainSubs.nid, mainSubs.partner, remainDays, status]);
+  }, [chargeableItem, mainSubs, remainDays, status]);
 
   useEffect(() => {
     // BC 상품 및 cmi 종량제 상품 미지원
