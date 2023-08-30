@@ -129,8 +129,10 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           iccid: item?.subsIccid || '',
         });
       } else if (item.partner?.startsWith('quadcell') && item.imsi) {
-        rsp = await API.Subscription.quadcellGetStatus({
+        rsp = await API.Subscription.quadcellGetUsage({
           imsi: item.imsi,
+          partner: item.partner,
+          usage: 'n',
         });
       }
       setStatusLoading(false);

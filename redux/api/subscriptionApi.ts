@@ -490,37 +490,29 @@ const quadcellGetData = ({
 
 const quadcellGetUsage = ({
   imsi,
-  query,
+  partner,
+  usage = 'y',
 }: {
   imsi: string;
-  query?: Record<string, string | number>;
+  partner: string;
+  usage?: string;
 }) => {
   if (!imsi)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
 
+  const path =
+    partner === 'quadcell2'
+      ? api.path.rokApi.pv.quadcell2
+      : api.path.rokApi.pv.quadcell;
+
   return api.callHttpGet<Usage>(
-    `${api.rokHttpUrl(
-      `${api.path.rokApi.pv.quadcell}/usage/quota`,
-    )}&imsi=${imsi}`,
+    `${api.rokHttpUrl(`${path}/usage/quota`)}&imsi=${imsi}&usage=${usage}`,
     (data) => {
       if (data?.result?.code === 0) {
         return api.success(data?.objects);
       }
       return data;
     },
-    new Headers({'Content-Type': 'application/json'}),
-  );
-};
-
-const quadcellGetStatus = ({imsi}: {imsi: string}) => {
-  if (!imsi)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
-
-  return api.callHttpGet<Usage>(
-    `${api.rokHttpUrl(
-      `${api.path.rokApi.pv.quadcell}/usage/quota`,
-    )}&imsi=${imsi}&usage=n`,
-    (data) => data,
     new Headers({'Content-Type': 'application/json'}),
   );
 };
@@ -607,7 +599,6 @@ export default {
   cmiGetSubsStatus,
   cmiGetStatus,
   quadcellGetData,
-  quadcellGetStatus,
   getHkRegStatus,
   bcGetSubsUsage,
   quadcellGetUsage,
