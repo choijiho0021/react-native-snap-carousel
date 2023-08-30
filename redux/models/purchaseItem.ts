@@ -12,6 +12,7 @@ export type PurchaseItem = {
   sku: string;
   imageUrl?: string;
   subsId?: string;
+  promoFlag?: string[];
 };
 
 export const createFromProduct = (prod: RkbProduct) => {
@@ -24,6 +25,7 @@ export const createFromProduct = (prod: RkbProduct) => {
     key: prod.uuid,
     sku: prod.sku,
     imageUrl: prod.imageUrl,
+    promoFlag: prod?.promoFlag,
   } as PurchaseItem;
 };
 
@@ -35,6 +37,7 @@ export const createFromAddOnProduct = (prod: RkbAddOnProd, subsId: string) => {
     qty: 1,
     key: prod.id,
     sku: prod.sku,
+    promoFlag: prod?.promoFlag,
     subsId,
   } as PurchaseItem;
 };

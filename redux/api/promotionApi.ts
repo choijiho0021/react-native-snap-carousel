@@ -6,6 +6,8 @@ import api, {ApiResult, DrupalNode, Langcode} from './api';
 import Env from '@/environment';
 import i18n from '@/utils/i18n';
 import {parseJson, retrieveData, utils} from '@/utils/utils';
+import {RkbProdByCountry} from './productApi';
+import {Country} from '.';
 
 const POPUP_DIS_DAYS = 7;
 const {bundleId, appStoreId, dynamicLink, webViewHost} = Env.get();
@@ -318,19 +320,78 @@ const inviteLink = (recommender: string, gift: string = '') => {
   }`;
 };
 
+const shareWebViewLink = (uuid: string, country: RkbProdByCountry) => {
+  // ofl localhost 직접 입력 시 firebase 콘솔에 설정된 보안 규칙에 어긋나서 동작 안함
+  return `${webViewHost}/esim/${country.country}/${
+    country.search?.split(',')[1]
+  }?partnerId=${country.partner}&uuid=${uuid}`;
+};
+
+const shareLink = (uuid: string) => {
+  return `${webViewHost}/product/link?uuid=${uuid}`;
+};
+
+// 다이나믹 링크를 활용한 초대링크 생성
+const buildShareLink = async ({
+  imageUrl,
+  prodName,
+  uuid,
+  country,
+  isShort = true,
+}: {
+  imageUrl: string;
+  prodName: string;
+  uuid: string;
+  counry: RkbProdByCountry;
+  isShort?: boolean;
+}) => {
+  const input = {
+    link: shareLink(uuid),
+    domainUriPrefix: dynamicLink,
+    otherPlatform: {
+      fallbackUrl: shareWebViewLink(uuid, country),
+    },
+    ios: {
+      bundleId,
+      appStoreId,
+    },
+    ofl: shareWebViewLink(uuid, country),
+    android: {
+      packageName: 'com.rokebiesim',
+    },
+    // 어떻게 바꿀지는 고민해보기
+    social: {
+      title: i18n.t('share:title'),
+      descriptionText: i18n.t('share:desc').replace('*', prodName),
+      imageUrl,
+    },
+    navigation: {
+      forcedRedirectEnabled: true,
+    },
+  };
+
+  const url = isShort
+    ? await dynamicLinks().buildShortLink(input)
+    : await dynamicLinks().buildLink(input);
+
+  return url;
+};
+
 // 다이나믹 링크를 활용한 초대링크 생성
 const buildLink = async ({
   recommender,
   cash,
   imageUrl,
   subsId = '',
+  isShort = true,
 }: {
   recommender: string;
   cash: string;
   imageUrl: string;
   subsId?: string;
+  isShort?: boolean;
 }) => {
-  const url = await dynamicLinks().buildShortLink({
+  const input = {
     link: inviteLink(recommender, subsId || ''),
     domainUriPrefix: dynamicLink,
     ios: {
@@ -340,6 +401,7 @@ const buildLink = async ({
     android: {
       packageName: 'com.rokebiesim',
     },
+    // 어떻게 바꿀지는 고민해보기
     social: {
       title: i18n
         .t('invite:title')
@@ -350,7 +412,11 @@ const buildLink = async ({
     navigation: {
       forcedRedirectEnabled: true,
     },
-  });
+  };
+
+  const url = isShort
+    ? await dynamicLinks().buildShortLink(input)
+    : await dynamicLinks().buildLink(input);
 
   return url;
 };
@@ -425,5 +491,6 @@ export default {
   check,
   invite,
   buildLink,
+  buildShareLink,
   getExtraCoupon,
 };
