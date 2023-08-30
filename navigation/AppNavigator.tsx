@@ -380,6 +380,37 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     ],
   );
 
+  // IOS 15 react-native-tracking-transparency 에러 방지
+  // App crash with error: Illegal callback invocation from native module. This callback type only permits a single invocation from native code. requestTrackingTrasnparency:rejector
+  useEffect(() => {
+    const permissionCheck = AppState.addEventListener(
+      'change',
+      async (nextAppState) => {
+        if (
+          appState.current.match(/inactive|background/) &&
+          nextAppState === 'active'
+        ) {
+          let isSupport = true;
+          if (isIOS) {
+            isSupport = checkSupportIos();
+          } else {
+            isSupport = await SimCardsManagerModule.isEsimSupported();
+          }
+
+          if (isSupport) {
+            requestPermission();
+          }
+        }
+
+        appState.current = nextAppState;
+      },
+    );
+
+    return () => {
+      permissionCheck.remove();
+    };
+  }, [checkSupportIos]);
+
   useEffect(() => {
     const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
     // When the component is unmounted, remove the listener
