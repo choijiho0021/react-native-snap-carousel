@@ -27,73 +27,92 @@ const CodePushScreen: React.FC = () => {
   const [syncMessage, setSyncMessage] = useState();
   const [downloadProgress, setDownloadProgress] = useState<DownloadProgress>();
 
-  const codePushSync = useCallback(() => {
+  const checkForUpdate = useCallback(async (): Promise<boolean> => {
     try {
-      codePush.sync(
-        {
-          updateDialog: false,
-          installMode: codePush.InstallMode.IMMEDIATE, // 업데이트 후 바로 재기동
-        },
-        (syncStatus) => {
-          let msg = '';
+      const remotePackage = await codePush.checkForUpdate();
+      console.log('I received the remote package: ', remotePackage);
+      if (remotePackage && !remotePackage?.failedInstall) {
+        return true;
+      }
+    } catch (e) {
+      // TODO - log error
+    }
+    return false;
+  }, []);
 
-          switch (syncStatus) {
-            case codePush.SyncStatus.CHECKING_FOR_UPDATE:
-              msg = i18n.t('codepush:checking');
-              break;
-            case codePush.SyncStatus.DOWNLOADING_PACKAGE:
-              msg = i18n.t('codepush:download');
-              break;
-            /*
+  const codePushSync = useCallback(async () => {
+    const needUpdate = await checkForUpdate();
+
+    if (needUpdate) {
+      try {
+        codePush.sync(
+          {
+            // installMode: codePush.InstallMode.IMMEDIATE,
+            // mandatoryInstallMode: codePush.InstallMode.IMMEDIATE,
+            updateDialog: false,
+            installMode: codePush.InstallMode.IMMEDIATE, // 업데이트 후 바로 재기동
+          },
+          (syncStatus) => {
+            let msg = '';
+
+            switch (syncStatus) {
+              case codePush.SyncStatus.CHECKING_FOR_UPDATE:
+                msg = i18n.t('codepush:checking');
+                break;
+              case codePush.SyncStatus.DOWNLOADING_PACKAGE:
+                msg = i18n.t('codepush:download');
+                break;
+              /*
             case codePush.SyncStatus.AWAITING_USER_ACTION:
               syncMessage = i18n.t('codepush:awaiting');
               break;
             */
-            case codePush.SyncStatus.INSTALLING_UPDATE:
-              msg = i18n.t('codepush:install');
-              break;
-            case codePush.SyncStatus.UP_TO_DATE:
-              msg = i18n.t('codepush:uptodate');
-              break;
-            case codePush.SyncStatus.UPDATE_IGNORED:
-              msg = i18n.t('codepush:ignore');
-              break;
-            /*
+              case codePush.SyncStatus.INSTALLING_UPDATE:
+                msg = i18n.t('codepush:install');
+                break;
+              case codePush.SyncStatus.UP_TO_DATE:
+                msg = i18n.t('codepush:uptodate');
+                break;
+              case codePush.SyncStatus.UPDATE_IGNORED:
+                msg = i18n.t('codepush:ignore');
+                break;
+              /*
             case codePush.SyncStatus.UPDATE_INSTALLED:
               syncMessage = i18n.t('codepush:nextresume');
               break;
             */
-            case codePush.SyncStatus.UNKNOWN_ERROR:
-              msg = i18n.t('codepush:error');
-              break;
+              case codePush.SyncStatus.UNKNOWN_ERROR:
+                msg = i18n.t('codepush:error');
+                break;
 
-            default:
-          }
+              default:
+            }
 
-          setSyncMessage(msg);
+            setSyncMessage(msg);
 
-          if (
-            [
-              codePush.SyncStatus.UP_TO_DATE,
-              codePush.SyncStatus.UPDATE_IGNORED,
-              codePush.SyncStatus.UPDATE_INSTALLED,
-              codePush.SyncStatus.UNKNOWN_ERROR,
-            ].includes(syncStatus)
-          ) {
-            setDownloadProgress(undefined);
-          }
-        },
-        (progress) => {
-          setDownloadProgress(progress);
-        },
-      );
-    } catch (error) {
-      AppAlert.error(i18n.t('codepush:failedToUpdate'), '', () =>
-        console.log('codepush error', error),
-      );
-      codePush.log(error);
+            if (
+              [
+                codePush.SyncStatus.UP_TO_DATE,
+                codePush.SyncStatus.UPDATE_IGNORED,
+                codePush.SyncStatus.UPDATE_INSTALLED,
+                codePush.SyncStatus.UNKNOWN_ERROR,
+              ].includes(syncStatus)
+            ) {
+              setDownloadProgress(undefined);
+            }
+          },
+          (progress) => {
+            setDownloadProgress(progress);
+          },
+        );
+      } catch (error) {
+        AppAlert.error(i18n.t('codepush:failedToUpdate'), '', () =>
+          console.log('codepush error', error),
+        );
+        codePush.log(error);
+      }
     }
-  }, []);
+  }, [checkForUpdate]);
 
   useEffect(() => {
     codePushSync();
