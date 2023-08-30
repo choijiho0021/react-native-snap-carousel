@@ -27,14 +27,6 @@ import Env from '@/environment';
 
 const {specialCategories} = Env.get();
 
-export const groupPartner = (partner: string) => {
-  if (partner) {
-    if (partner.startsWith('cmi')) return 'cmi';
-    if (partner.startsWith('quadcell')) return 'quadcell';
-  }
-  return partner;
-};
-
 const subsFulfillWithValue = (resp) => {
   if (resp.result === 0) {
     resp.objects = resp.objects.map((o) => ({
@@ -45,7 +37,7 @@ const subsFulfillWithValue = (resp) => {
       lastExpireDate: getMoment(o.lastExpireDate),
       startDate: getMoment(o.startDate),
       promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
-      partner: groupPartner(o.partner),
+      partner: o.partner,
       status: toStatus(o.field_status),
       purchaseDate: getMoment(o.purchaseDate),
       expireDate: getMoment(o.expireDate),
