@@ -144,6 +144,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 
   [super application:application didFinishLaunchingWithOptions:launchOptions];
 
+
+  [NaverTracker configure];
+
   // didFinishLaunchingWithOptions 아래에 와야한다. 위에 있으면 RNSplashScreen은 연결할 RootView를 몰라서 에러 로그도 출력하지 않고 하얀화면만 실행된다
   [RNSplashScreen show];
   
@@ -166,7 +169,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 #if DEBUG
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
 #else
-  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+//  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  return [CodePush bundleURL];
 #endif
 }
 
