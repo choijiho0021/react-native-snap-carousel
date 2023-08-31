@@ -18,13 +18,11 @@ export type DailyProdFilterList = 'all' | '500' | '1024' | '2048' | '3072';
 type DailyProdFilterProps = {
   onValueChange: (v: DailyProdFilterList) => void;
   filterList: DailyProdFilterList[];
-  isExtension?: boolean;
 };
 
 const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
   onValueChange,
   filterList,
-  isExtension = false,
 }) => {
   const [filter, setFilter] = useState<DailyProdFilterList>('all');
 
@@ -58,9 +56,7 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
               color: elm === filter ? 'white' : colors.warmGrey,
             },
           ]}
-          title={i18n.t(
-            isExtension ? `daily:day:filter:${elm}` : `daily:filter:${elm}`,
-          )}
+          title={i18n.t(`daily:filter:${elm}`)}
         />
       ))}
     </ScrollView>
