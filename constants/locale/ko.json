@@ -1256,11 +1256,5 @@
   "daily:filter:500": "500MB",
   "daily:filter:1024": "1GB",
   "daily:filter:2048": "2GB",
-  "daily:filter:3072": "3GB",
-
-  "daily:day:filter:all": "전체",
-  "daily:day:filter:500": "일 500MB",
-  "daily:day:filter:1024": "일 1GB",
-  "daily:day:filter:2048": "일 2GB",
-  "daily:day:filter:3072": "일 3GB"
+  "daily:filter:3072": "3GB"
 }
