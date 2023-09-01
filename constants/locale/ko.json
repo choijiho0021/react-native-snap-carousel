@@ -828,6 +828,7 @@
   "pym:fail": "결제에 실패하였습니다",
   "pym:toOrderList": "구매내역 보기",
   "pym:toHome": "홈으로 이동",
+  "pym:toCheck": "구매 상품 확인하기",
   "pym:selectMemo": "배송 메모를 선택해 주세요.",
   "pym:IputMemo": "배송 메모를 입력하세요.",
   "pym:notSelected": "선택 안함",

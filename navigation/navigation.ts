@@ -118,7 +118,7 @@ export type HomeStackParamList = {
   PaymentGateway: PaymentParams;
   PymMethod: {isPaid?: boolean; pymPrice?: number; mode?: PymMethodScreenMode};
   FindAddress: undefined;
-  PaymentResult: {pymResult: boolean; mode?: string};
+  PaymentResult: {pymResult: boolean; mode?: 'recharge' | string};
   CodePush: undefined;
   CustomerProfile: undefined;
   AddProfile: undefined;
