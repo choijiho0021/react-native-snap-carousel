@@ -150,6 +150,13 @@ export type Usage = {
   usage: UsageObj;
 };
 
+export enum AddOnOptionType {
+  NEVER = 'N',
+  ADD_ON = 'A',
+  EXTENSTION = 'E',
+  BOTH = 'B',
+}
+
 export type RkbSubscription = {
   nid: string;
   key: string;
@@ -193,7 +200,7 @@ export type RkbSubscription = {
   cnt?: number;
   lastExpireDate?: Moment;
   startDate?: Moment;
-  addOnOption?: string;
+  addOnOption?: AddOnOptionType;
   resetTime?: string;
 };
 
