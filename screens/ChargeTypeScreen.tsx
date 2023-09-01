@@ -66,6 +66,8 @@ type ChargeTypeScreenProps = {
   route: RouteProp<HomeStackParamList, 'ChargeType'>;
 };
 
+export const RESULT_OVER_LIMIT = 1;
+
 const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   navigation,
   route: {params},
@@ -215,7 +217,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           setAddonEnable(true);
           setAddonProds(objects);
         }
-      } else if (result === 1) {
+      } else if (result === RESULT_OVER_LIMIT) {
         // result : 1 쿼드셀 + 사용전 충전 횟수 끝난 상품으로 간주
         setAddonEnable(false);
         setAddOnDisReasen('overLimit');
