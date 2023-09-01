@@ -6,6 +6,8 @@ const UniAsyncStorage =
   require('@react-native-community/async-storage').default;
 
 const storeData = async (key: string, value: any, isEncrypt?: boolean) => {
+  if (!key) return undefined;
+
   try {
     if (isEncrypt) {
       await UniAsyncStorage.setItem(
@@ -21,8 +23,12 @@ const storeData = async (key: string, value: any, isEncrypt?: boolean) => {
 };
 
 const retrieveData = async (key: string, isDecrypt?: boolean) => {
+  if (!key) return undefined;
+
   try {
     const value = await UniAsyncStorage.getItem(key);
+
+    if (!value) return undefined;
 
     if (isDecrypt) {
       const bytes = CryptoJS.AES.decrypt(value, key);
@@ -37,6 +43,8 @@ const retrieveData = async (key: string, isDecrypt?: boolean) => {
 };
 
 const removeData = async (key: string) => {
+  if (!key) return undefined;
+
   try {
     await UniAsyncStorage.removeItem(key);
   } catch (error) {
