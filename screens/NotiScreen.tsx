@@ -232,8 +232,15 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             break;
 
           case notiActions.NOTI_TYPE_PYM:
+            // 발권 가능일 땐 앱 알림 클릭 시 - 구매 eSIM 목록 화면으로 이동
+            // const isRefundable = split[3] === 'refundable';
+
+            if (split[2] === 'refundable') {
+              navigation.popToTop();
+              navigation.navigate('EsimStack', {screen: 'Esim'});
+            }
             // read orders if not read before
-            if (split[1]) {
+            else if (split[1]) {
               navigation.navigate('PurchaseDetail', {orderId: split[1]});
             }
             break;
@@ -241,6 +248,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
           case notiActions.NOTI_TYPE_PROVISION:
             // format : provision/{iccid}/{nid}
             navigation.popToTop();
+
             navigation.navigate('EsimStack', {
               screen: 'Esim',
               params: {
