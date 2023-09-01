@@ -132,6 +132,7 @@ const path = {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage/quota',
       cmiStatus: 'api/v1/pvd/pv/cmi/v2/bundle/status',
       quadcell: 'api/v1/pvd/pv/quadcell',
+      quadcell2: 'api/v1/pvd/pv/quadcell2',
       bc: 'api/v1/pvd/pv/bc',
       hkRegStatus: 'api/v1/pvd/pv/cmi/v2/status',
     },
