@@ -677,7 +677,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             {color: isValidation ? colors.black : colors.white},
           ]}
           disabled={!pymId}
-          disableStyle={{borderWidth: 0}}
+          disableStyle={{borderWidth: 0, borderTopWidth: 0}}
           onPress={() => showReciept(pymId)}
         />
 
