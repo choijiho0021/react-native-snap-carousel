@@ -96,7 +96,8 @@ const styles = StyleSheet.create({
     height: 52,
     backgroundColor: colors.white,
     borderColor: colors.lightGrey,
-    borderWidth: 1,
+
+    borderTopWidth: 1,
     color: colors,
   },
   secondaryButtonText: {
