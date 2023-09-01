@@ -220,9 +220,10 @@ const UsageItem: React.FC<UsageItemProps> = ({
             {i18n.t(`esim:time:${key}`)}
           </AppText>
           <AppText style={{...appStyles.bold16Text, color: colors.black}}>
-            {item.partner === 'cmi'
-              ? moment(endTime).tz(tz).format('HH:mm:ss') || i18n.t('contact:q')
-              : moment('2023-01-01T01:00:00+0900').tz(tz).format('HH:mm:ss')}
+            {item.partner === 'quadcell'
+              ? moment('2023-01-01T01:00:00+0900').tz(tz).format('HH:mm:ss')
+              : moment(endTime).tz(tz).format('HH:mm:ss') ||
+                i18n.t('contact:q')}
           </AppText>
         </View>
       );
