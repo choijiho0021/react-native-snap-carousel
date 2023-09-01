@@ -53,8 +53,9 @@
   "latest": "최신",
   "sale": "할인",
   "hot": "추천",
-  "sizeup": "사이즈업",
-  "doubleSizeup": "더블 사이즈업",
+  "sizeup": "UP",
+  "doubleSizeup": "더블UP",
+  "tripleSizeup": "트리플UP",
   "copy": "복사",
   "close": "닫기",
   "close:week": "일주일간 보지 않기",
@@ -732,6 +733,8 @@
   "esim:charge:disReason:extension:unsupported": "상품 연장 기능 미지원 상품입니다.",
   "esim:charge:disReason:extension:expired": "연장 가능 기간이 만료된 상품입니다.",
 
+  "esim:charge:network:error": "시스템 사정으로 서비스가 원활하지 않습니다. \n잠시 후 다시 시도 하십시요.",
+
   "esim:charge:payment": "결제하기",
   "esim:charge:payment:agree": "동의 후 결제하기",
   "esim:charge:amount": "금액: ",
@@ -827,6 +830,7 @@
   "pym:fail": "결제에 실패하였습니다",
   "pym:toOrderList": "구매내역 보기",
   "pym:toHome": "홈으로 이동",
+  "pym:toCheck": "구매 상품 확인하기",
   "pym:selectMemo": "배송 메모를 선택해 주세요.",
   "pym:IputMemo": "배송 메모를 입력하세요.",
   "pym:notSelected": "선택 안함",
@@ -1249,5 +1253,6 @@
   "daily:filter:all": "전체",
   "daily:filter:500": "500MB",
   "daily:filter:1024": "1GB",
-  "daily:filter:2048": "2GB"
+  "daily:filter:2048": "2GB",
+  "daily:filter:3072": "3GB"
 }

@@ -138,12 +138,13 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
             }
             navigation.replace('PaymentResult', {
               pymResult: rsp[0]?.success,
+              mode: params?.mode,
             });
           });
         }
       });
     },
-    [action.cart, navigation, params.isPaid, pymInfo],
+    [action.cart, navigation, params.isPaid, params?.mode, pymInfo],
   );
 
   //  }, [callback, navigation, params]);

@@ -125,9 +125,9 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
   }, []);
 
   const login = useCallback(async () => {
-    const iccid = await retrieveData(API.User.KEY_ICCID);
-    const mobile = await retrieveData(API.User.KEY_MOBILE);
-    const pin = await retrieveData(API.User.KEY_PIN);
+    const iccid = await retrieveData(API.User.KEY_ICCID, true);
+    const mobile = await retrieveData(API.User.KEY_MOBILE, true);
+    const pin = await retrieveData(API.User.KEY_PIN, true);
 
     if (mobile && pin) {
       dispatch(accountActions.logInAndGetAccount({mobile, pin, iccid}));

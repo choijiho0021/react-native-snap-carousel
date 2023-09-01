@@ -3,6 +3,9 @@ import moment, {Moment} from 'moment';
 import i18n from '@/utils/i18n';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import {isDraft} from '../modules/order';
+import Env from '@/environment';
+
+const {specialCategories} = Env.get();
 
 const STATUS_ACTIVE = 'A'; // 사용중
 const STATUS_INACTIVE = 'I'; // 미사용
@@ -147,6 +150,13 @@ export type Usage = {
   usage: UsageObj;
 };
 
+export enum AddOnOptionType {
+  NEVER = 'N',
+  ADD_ON = 'A',
+  EXTENSTION = 'E',
+  BOTH = 'B',
+}
+
 export type RkbSubscription = {
   nid: string;
   key: string;
@@ -190,6 +200,8 @@ export type RkbSubscription = {
   cnt?: number;
   lastExpireDate?: Moment;
   startDate?: Moment;
+  addOnOption?: AddOnOptionType;
+  resetTime?: string;
 };
 
 export const getMoment = (str: string) => (str ? moment(str) : undefined);
@@ -286,6 +298,36 @@ export type SubscriptionParam = {
   offset?: number;
 };
 
+export const groupPartner = (partner: string) => {
+  if (partner) {
+    if (partner.startsWith('cmi')) return 'cmi';
+    if (partner.startsWith('quadcell')) return 'quadcell';
+  }
+  return partner;
+};
+
+const subsFulfillWithValue = (resp) => {
+  if (resp.result === 0) {
+    resp.objects = resp.objects.map((o) => ({
+      ...o,
+      provDate: getMoment(o.provDate),
+      lastProvDate: getMoment(o.lastProvDate),
+      cnt: parseInt(o.cnt || '0', 10),
+      lastExpireDate: getMoment(o.lastExpireDate),
+      startDate: getMoment(o.startDate),
+      promoFlag: o?.promoFlag
+        ?.map((p: string) => specialCategories[p.trim()])
+        .filter((v) => !_.isEmpty(v)),
+
+      partner: groupPartner(o.partner),
+      status: toStatus(o.field_status),
+      purchaseDate: getMoment(o.purchaseDate),
+      expireDate: getMoment(o.expireDate),
+    }));
+  }
+  return resp;
+};
+
 const getSubscription = ({
   uuid,
   iccid,
@@ -305,7 +347,11 @@ const getSubscription = ({
     hidden ? '' : '&hidden=0'
   }&iccid=${iccid}&count=${count}&offset=${offset}`;
 
-  return api.callHttpGet(url, (resp) => resp, api.withToken(token, 'json'));
+  return api.callHttpGet(
+    url,
+    (resp) => subsFulfillWithValue(resp),
+    api.withToken(token, 'json'),
+  );
 };
 
 const updateSubscriptionInfo = ({

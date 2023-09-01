@@ -1,33 +1,54 @@
+import CryptoJS from 'crypto-js';
 import utils from '@/redux/api/utils';
-import AppAlert from '@/components/AppAlert';
 import i18n from './i18n';
 
 const UniAsyncStorage =
   require('@react-native-community/async-storage').default;
 
-const storeData = async (key: string, value: any) => {
+const storeData = async (key: string, value: any, isEncrypt?: boolean) => {
+  if (!key) return undefined;
+
   try {
-    await UniAsyncStorage.setItem(key, value);
+    if (isEncrypt) {
+      await UniAsyncStorage.setItem(
+        key,
+        CryptoJS.AES.encrypt(value, key).toString(),
+      );
+    } else {
+      await UniAsyncStorage.setItem(key, value);
+    }
   } catch (error) {
-    AppAlert.error(i18n.t('util:storeDataFailed') + error);
+    console.log('@@ store error : ', i18n.t('util:storeDataFailed') + error);
   }
 };
 
-const retrieveData = async (key: string) => {
+const retrieveData = async (key: string, isDecrypt?: boolean) => {
+  if (!key) return undefined;
+
   try {
-    const val = await UniAsyncStorage.getItem(key);
-    return val;
+    const value = await UniAsyncStorage.getItem(key);
+
+    if (!value) return undefined;
+
+    if (isDecrypt) {
+      const bytes = CryptoJS.AES.decrypt(value, key);
+      return bytes.toString(CryptoJS.enc.Utf8);
+    }
+
+    return value;
   } catch (error) {
-    AppAlert.error(i18n.t('util:retrieveDataFailed') + error);
+    console.log('@@ read error : ', i18n.t('util:retrieveDataFailed') + error);
     return null;
   }
 };
 
 const removeData = async (key: string) => {
+  if (!key) return undefined;
+
   try {
     await UniAsyncStorage.removeItem(key);
   } catch (error) {
-    AppAlert.error(i18n.t('util:removeDataFailed') + error);
+    console.log('@@ remove error : ', i18n.t('util:removeDataFailed') + error);
   }
 };
 

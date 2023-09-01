@@ -303,6 +303,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   const renderAddOnProd = useCallback(
     (item: RkbAddOnProd, index: number) => {
       const volume = Number(item.volume);
+
       return (
         <Pressable
           style={[
@@ -314,7 +315,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
                   : colors.line,
             },
             {width: (sliderWidth - 61) / 3, marginBottom: 10},
-            {marginHorizontal: (index + 1) % 3 === 2 ? 10 : 0},
+            //  margin 확인 필요
           ]}
           onPress={() => setSelectedAddOnProd(item)}>
           <AppText
@@ -327,7 +328,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
                     : colors.black,
               },
             ]}>
-            {volume > 500 ? `${volume / 1024}GB` : `${volume}MB`}
+            {volume > 500 ? `일 ${volume / 1024}GB` : `일 ${volume}MB`}
           </AppText>
         </Pressable>
       );

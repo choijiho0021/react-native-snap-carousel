@@ -13,12 +13,10 @@ import {
   RkbOrder,
 } from '@/redux/api/orderApi';
 import {
-  getMoment,
   RkbSubscription,
   sortSubs,
   STATUS_USED,
   SubscriptionParam,
-  toStatus,
 } from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {reflectWithToast, Toast} from './toast';
@@ -27,29 +25,18 @@ import Env from '@/environment';
 
 const {specialCategories} = Env.get();
 
-const subsFulfillWithValue = (resp) => {
-  if (resp.result === 0) {
-    resp.objects = resp.objects.map((o) => ({
-      ...o,
-      provDate: getMoment(o.provDate),
-      lastProvDate: getMoment(o.lastProvDate),
-      cnt: parseInt(o.cnt || '0', 10),
-      lastExpireDate: getMoment(o.lastExpireDate),
-      startDate: getMoment(o.startDate),
-      promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
-      partner: o.partner,
-      status: toStatus(o.field_status),
-      purchaseDate: getMoment(o.purchaseDate),
-      expireDate: getMoment(o.expireDate),
-    }));
-  }
-  return resp;
-};
+export const isBillionConnect = (sub?: RkbSubscription) =>
+  sub?.partner === 'billionconnect';
 
 const init = createAsyncThunk('order/init', async (mobile?: string) => {
   const oldData = await retrieveData(`${API.Order.KEY_INIT_ORDER}.${mobile}`);
   return oldData;
 });
+
+// cachedApi 수정한 후 지우기
+const defaultReturn = (resp) => {
+  return resp;
+};
 
 const getOrderById = createAsyncThunk(
   'order/getOrderById',
@@ -74,7 +61,7 @@ const getNotiSubs = createAsyncThunk(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
     )(param, {
-      fulfillWithValue: subsFulfillWithValue,
+      fulfillWithValue: defaultReturn,
     });
   },
 );
@@ -91,7 +78,7 @@ const getSubs = createAsyncThunk(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
     )(param, {
-      fulfillWithValue: subsFulfillWithValue,
+      fulfillWithValue: defaultReturn,
     });
   },
 );
@@ -112,7 +99,7 @@ const subsReload = createAsyncThunk(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
     )(param, {
-      fulfillWithValue: subsFulfillWithValue,
+      fulfillWithValue: defaultReturn,
     });
   },
 );
@@ -463,7 +450,7 @@ const slice = createSlice({
         } else state.subsIsLast = true;
 
         if (offset === 0) {
-          state.subs = objects;
+          state.subs = objects.sort(sortSubs);
         } else {
           // offset이 0이 아니라면 페이지네이션 중이니 merge로 한다
           state.subs = mergeSubs(state.subs, objects);
