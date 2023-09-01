@@ -733,6 +733,8 @@
   "esim:charge:disReason:extension:unsupported": "상품 연장 기능 미지원 상품입니다.",
   "esim:charge:disReason:extension:expired": "연장 가능 기간이 만료된 상품입니다.",
 
+  "esim:charge:network:error": "시스템 사정으로 서비스가 원활하지 않습니다. \n잠시 후 다시 시도 하십시요.",
+
   "esim:charge:payment": "결제하기",
   "esim:charge:payment:agree": "동의 후 결제하기",
   "esim:charge:amount": "금액: ",
