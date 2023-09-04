@@ -234,7 +234,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   useEffect(() => {
     if (expireTime) {
       // cmi의 리셋타임은 활성화 시간 기준으로 변경 됨
-      if (mainSubs.partner === 'cmi')
+      if (mainSubs.partner === 'cmi' || mainSubs.partner === 'quadcell2')
         setDataResetTime(expireTime.zone(-540).format('HH:mm:ss'));
     }
   }, [expireTime, mainSubs.partner]);
