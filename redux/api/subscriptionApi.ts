@@ -545,12 +545,7 @@ const quadcellGetUsage = ({
 
   return api.callHttpGet<Usage>(
     `${api.rokHttpUrl(`${path}/usage/quota`)}&imsi=${imsi}&usage=${usage}`,
-    (data) => {
-      if (data?.result?.code === 0) {
-        return api.success(data?.objects);
-      }
-      return data;
-    },
+    (data) => data,
     new Headers({'Content-Type': 'application/json'}),
   );
 };
