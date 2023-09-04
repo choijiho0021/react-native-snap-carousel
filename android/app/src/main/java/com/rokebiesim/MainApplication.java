@@ -1,13 +1,10 @@
 package com.rokebiesim;
 
-import android.app.Activity;
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Build;
 import android.os.RemoteException;
 
@@ -27,7 +24,6 @@ import com.adjust.nativemodule.AdjustPackage;
 import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import cl.json.RNSharePackage;
 //import com.tkporter.sendsms.SendSMSPackage;
-import com.adjust.nativemodule.AdjustPackage;
 import com.reactnativesimcardsmanager.SimCardsManagerPackage;
 import com.github.amarcruz.rnshortcutbadge.RNAppBadgePackage;
 import com.facebook.react.modules.network.OkHttpClientProvider;
