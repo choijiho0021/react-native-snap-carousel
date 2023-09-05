@@ -212,6 +212,7 @@ android {
             // see https://facebook.github.io/react-native/docs/signed-apk-android.
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             resValue "string", "CodePushDeploymentKey", '8RzsDJP5_63nkcvGO5yKweJAGMA3zliSBo3Hp'
+            minifyEnabled true
         }
     }
 

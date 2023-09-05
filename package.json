@@ -19,7 +19,7 @@
     "lint": "eslint .",
     "android_esim_staging_apk": "cd android;./gradlew assembleEsimStaging;open ./app/build/outputs/apk/esim/staging",
     "android_esim_prod_apk": "cd android;./gradlew assembleEsimRelease;open ./app/build/outputs/apk/esim/release",
-    "android_esim_prod_bundle": "cd android;./gradlew bundleEsimRelease;open ./app/build/outputs/bundle/esim/release",
+    "android_esim_prod_bundle": "cd android;./gradlew bundleEsimRelease;open ./app/build/outputs/bundle/esimRelease",
     "android_global_staging_apk": "cd android;./gradlew assembleGlobalStaging;open ./app/build/outputs/apk/global/staging",
     "android_global_prod_apk": "cd android;./gradlew assembleGlobalRelease;open ./app/build/outputs/apk/global/release",
     "android_global_prod_bundle": "cd android;./gradlew bundleGlobalRelease;open ./app/build/outputs/bundle/global/release",
