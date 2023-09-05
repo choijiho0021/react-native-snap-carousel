@@ -66,6 +66,8 @@ type ChargeTypeScreenProps = {
   route: RouteProp<HomeStackParamList, 'ChargeType'>;
 };
 
+export const RESULT_OVER_LIMIT = 1;
+
 const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   navigation,
   route: {params},
@@ -198,15 +200,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         subs.daily === 'daily' ? remainDays.toString() : '1',
       );
 
-      // 성공 0 , 1  음수면 실패
-      // 네트워크 에러 메세지 , 시스템 사정으로 다시 이용해주세요 비슷한 내용? AppAlert -> 얼럿 띄우거나
-      // 비슷한 메세지 내용
-
-      // 0 이면 정상
-      // 1 사용전, 쿼드셀 남은 사용 기간 충전 해버린 상품 -> 토스트 메세지 띄우기
       const {result, objects} = rsp;
-
-      console.log('@@@@ getAddOnProduct rsp : ', rsp);
 
       if (result === 0) {
         if (rsp.length < 1) {
@@ -217,8 +211,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           setAddonEnable(true);
           setAddonProds(objects);
         }
-      } else if (result === 1) {
-        // result : 1 쿼드셀 + 사용전 충전 횟수 끝난 상품으로 간주
+      } else if (result === RESULT_OVER_LIMIT) {
+        // result : 1 쿼드셀 + 사용전 충전 횟수 끝난 상품으로 서버가 알려줌
         setAddonEnable(false);
         setAddOnDisReasen('overLimit');
       } else {
@@ -226,20 +220,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         AppAlert.alert(i18n.t('esim:charge:network:error'));
         setAddonEnable(false);
       }
-
-      // 이미 서버에서 처리중으로 추측 중
-      // else
-      // if (
-      //   // 남은 기간 충전에 대한 처리 건이 있으면 서버에서 하루 충전 상품만 내려줌
-      //   // 사용전인 쿼드셀 무제한 상품의 경우 하루 충전은 지원하지 않음
-      //   remainDaysProd.length < 1 &&
-      //   subs.partner?.startsWith('quadcell') &&
-      //   status === 'R' &&
-      //   mainSubs.daily === 'daily'
-      // ) {
-      //   setAddonEnable(false);
-      //   setAddOnDisReasen('overLimit');
-      // }
     }
     setAddonLoading(false);
   }, [chargeableItem, mainSubs, remainDays]);
@@ -257,8 +237,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   // 상품 비활성화 여부 체크하는 로직
   useEffect(() => {
     const {addOnOption} = mainSubs;
-
-    // 토스트메세지 띄워야함 기획서 참조하기
 
     if (addOnOption === AddOnOptionType.ADD_ON) {
       setAddonEnable(true);
@@ -287,23 +265,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         return;
       }
 
-      // 쿼드셀 무제한상품 사용전 남은 기간 충전 이력이 있을 경우
-      // 확인은 필요함
-      // if (quadAddonOverLimited && status === 'R') {
-      //   setAddonEnable(false);
-      //   setAddOnDisReasen('overLimit');
-      //   return;
-      // }
-
-      // cmi 무제한 상품 사용전 상태에는 충전은 불가하지만 다음 페이지에로 넘어가서 해당 내용 안내
-      // if (
-      //   status === 'R' &&
-      //   mainSubs.partner === 'cmi' &&
-      //   mainSubs.daily === 'daily'
-      // ) {
-      //   setAddonEnable(true);
-      //   return;
-      // }
+      // 쿼드셀 무제한상품 사용전 남은 기간 충전 이력이 있을 경우 -> 서버에서 rsp : RESULT_OVER_LIMIT 값으로 알려줌
+      // cmi 무제한 상품 전 상태, 다음 페이지에서 불가능 안내 -> 확인 완료
 
       // AddonEnable True일때만 도착함
       getAddOnProduct();
@@ -323,8 +286,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
               'checked',
             );
 
-            console.log('addOnDisReason : ', addOnDisReason);
-            console.log('extensionDisReason : ', extensionDisReason);
             dispatch(
               modalActions.renderModal(() => (
                 <ChargeTypeModal

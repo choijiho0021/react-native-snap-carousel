@@ -13,6 +13,7 @@ import {RkbPriceInfo} from '../modules/product';
 import {colors} from '@/constants/Colors';
 import Env from '@/environment';
 import {parseJson} from '@/utils/utils';
+import {RESULT_OVER_LIMIT} from '@/screens/ChargeTypeScreen';
 
 const {specialCategories} = Env.get();
 
@@ -283,6 +284,9 @@ const toColumnList = (v: RkbPriceInfo[]) => {
 const toAddOnProd = (data: DrupalAddonProd[]): ApiResult<RkbAddOnProd> => {
   if (data.result === 0) {
     return api.success(data.objects);
+  }
+  if (data.result === RESULT_OVER_LIMIT) {
+    return api.failure(RESULT_OVER_LIMIT);
   }
   return api.failure(api.E_NOT_FOUND);
 };
