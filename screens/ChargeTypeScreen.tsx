@@ -113,7 +113,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     async (item: RkbSubscription) => {
       setStatusLoading(true);
       let rsp;
-      if (item.partner === 'cmi' && item?.subsIccid) {
+      if (item.partner?.startsWith('cmi') && item?.subsIccid) {
         rsp = await API.Subscription.cmiGetStatus({
           iccid: item?.subsIccid || '',
         });
