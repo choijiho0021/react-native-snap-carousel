@@ -211,8 +211,9 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           setAddonEnable(true);
           setAddonProds(objects);
         }
-      } else if (result === RESULT_OVER_LIMIT) {
-        // result : 1 쿼드셀 + 사용전 충전 횟수 끝난 상품으로 서버가 알려줌
+      } else if (result === RESULT_OVER_LIMIT && status === 'A') {
+        // result : 1 쿼드셀 + 충전횟수가 끝난 상품
+        // "A" 사용중 여부 체크
         setAddonEnable(false);
         setAddOnDisReasen('overLimit');
       } else {
@@ -222,7 +223,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       }
     }
     setAddonLoading(false);
-  }, [chargeableItem, mainSubs, remainDays]);
+  }, [chargeableItem, mainSubs, remainDays, status]);
 
   const unsupportExtension = useCallback(() => {
     setExtensionEnable(false);
