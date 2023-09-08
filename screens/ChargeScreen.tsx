@@ -104,19 +104,20 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
 
   const prodData = useMemo(() => {
     if (partnerIds) {
-      const cmiPartnerIds = partnerIds.filter(
-        (partnerId) => localOpList.get(partnerId)?.partner === 'cmi',
+      const mainSubsPartnerIds = partnerIds.filter(
+        (partnerId) =>
+          localOpList.get(partnerId)?.partner === params?.mainSubs.partner,
       );
 
       // 중복 제거
-      const uniqueList = cmiPartnerIds.filter(
-        (item, i) => cmiPartnerIds.indexOf(item) === i,
+      const uniqueList = mainSubsPartnerIds.filter(
+        (item, i) => mainSubsPartnerIds.indexOf(item) === i,
       );
 
       return makeProdData(prodByPartner, uniqueList);
     }
     return [];
-  }, [localOpList, partnerIds, prodByPartner]);
+  }, [localOpList, params?.mainSubs.partner, partnerIds, prodByPartner]);
 
   useEffect(() => {
     action.product.getProdOfPartner(partnerIds);
