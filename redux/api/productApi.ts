@@ -286,7 +286,7 @@ const toAddOnProd = (data: DrupalAddonProd[]): ApiResult<RkbAddOnProd> => {
     return api.success(data.objects);
   }
   if (data.result === RESULT_OVER_LIMIT) {
-    return api.failure(RESULT_OVER_LIMIT);
+    return api.success(data?.objects, undefined, RESULT_OVER_LIMIT);
   }
   return api.failure(api.E_NOT_FOUND);
 };
