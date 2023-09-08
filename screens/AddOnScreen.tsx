@@ -234,12 +234,14 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   useEffect(() => {
     if (expireTime) {
       // cmi의 리셋타임은 활성화 시간 기준으로 변경 됨
-      if (mainSubs.partner === 'cmi')
+      if (mainSubs.partner?.startsWith('cmi'))
         setDataResetTime(expireTime.zone(-540).format('HH:mm:ss'));
     }
   }, [expireTime, mainSubs.partner]);
 
   useEffect(() => {
+    // 충전 가능 상품 있는 지 여부 확인
+
     if (addonProds) {
       const todayProd = addonProds.filter((r) => r.days === '1');
       const remainDaysProd = addonProds.filter((r) => r.days !== '1');
@@ -382,6 +384,15 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
     [dataResetTime, mainSubs.partner, renderUsagePrieod, selectedType],
   );
 
+  // Test 용
+  // useEffect(() => {
+  //   console.log('----상태보고서----');
+  //   console.log('파트너사 : ', mainSubs.partner);
+  //   console.log('상태 : ', status);
+  //   console.log('타입 : ', mainSubs.daily);
+  //   console.log('noProd : ', noProd);
+  // }, [mainSubs.daily, mainSubs.partner, noProd, status]);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScreenHeader title={i18n.t('esim:charge:type:addOn')} />
@@ -392,14 +403,14 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
           isAddOn
         />
 
-        {(mainSubs.partner === 'cmi' && status === 'R') || noProd ? (
+        {(mainSubs.partner?.startsWith('cmi') && status === 'R') || noProd ? (
           <View style={styles.flex}>
             <View style={styles.no}>
               <AppSvgIcon name="blueNotice" style={{marginBottom: 16}} />
               <AppStyledText
                 text={i18n.t(
                   `esim:charge:addOn:${
-                    mainSubs.partner === 'cmi' && status === 'R'
+                    mainSubs.partner?.startsWith('cmi') && status === 'R'
                       ? 'no'
                       : 'empty'
                   }:title`,
@@ -407,7 +418,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
                 textStyle={styles.noTitle}
                 format={{b: styles.noTitleBold}}
               />
-              {mainSubs.partner === 'cmi' && status === 'R' && (
+              {mainSubs.partner?.startsWith('cmi') && status === 'R' && (
                 <AppText style={styles.noBody}>
                   {i18n.t('esim:charge:addOn:no:body')}
                 </AppText>
@@ -440,7 +451,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
         )}
       </ScrollView>
 
-      {(mainSubs.partner === 'cmi' && status === 'R') || noProd ? (
+      {(mainSubs.partner?.startsWith('cmi') && status === 'R') || noProd ? (
         <Pressable style={styles.close} onPress={() => navigation.goBack()}>
           <AppText style={styles.closeText}>{i18n.t('close')}</AppText>
         </Pressable>
