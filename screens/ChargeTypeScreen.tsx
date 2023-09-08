@@ -121,8 +121,10 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           iccid: item?.subsIccid || '',
         });
       } else if (item.partner?.startsWith('quadcell') && item.imsi) {
-        rsp = await API.Subscription.quadcellGetStatus({
+        rsp = await API.Subscription.quadcellGetUsage({
           imsi: item.imsi,
+          partner: item.partner,
+          usage: 'n',
         });
       }
 
@@ -142,7 +144,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             setExpireTime(moment(rspStatus.endTime));
 
             // partner='cmi' -> 연장 상품이 가능하단 의미로 사용중이였음. extensionEnable로 변경
-
             if (extensionEnable) {
               if (chargedSubs) {
                 const i = chargedSubs.find((s) => {

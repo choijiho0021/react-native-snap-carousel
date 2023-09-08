@@ -298,14 +298,6 @@ export type SubscriptionParam = {
   offset?: number;
 };
 
-export const groupPartner = (partner: string) => {
-  if (partner) {
-    if (partner.startsWith('cmi')) return 'cmi';
-    if (partner.startsWith('quadcell')) return 'quadcell';
-  }
-  return partner;
-};
-
 const subsFulfillWithValue = (resp) => {
   if (resp.result === 0) {
     resp.objects = resp.objects.map((o) => ({
@@ -319,7 +311,7 @@ const subsFulfillWithValue = (resp) => {
         ?.map((p: string) => specialCategories[p.trim()])
         .filter((v) => !_.isEmpty(v)),
 
-      partner: groupPartner(o.partner),
+      partner: o.partner,
       status: toStatus(o.field_status),
       purchaseDate: getMoment(o.purchaseDate),
       expireDate: getMoment(o.expireDate),
@@ -536,36 +528,23 @@ const quadcellGetData = ({
 
 const quadcellGetUsage = ({
   imsi,
-  query,
+  partner,
+  usage = 'y',
 }: {
   imsi: string;
-  query?: Record<string, string | number>;
+  partner: string;
+  usage?: string;
 }) => {
   if (!imsi)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
 
-  return api.callHttpGet<Usage>(
-    `${api.rokHttpUrl(
-      `${api.path.rokApi.pv.quadcell}/usage/quota`,
-    )}&imsi=${imsi}`,
-    (data) => {
-      if (data?.result?.code === 0) {
-        return api.success(data?.objects);
-      }
-      return data;
-    },
-    new Headers({'Content-Type': 'application/json'}),
-  );
-};
-
-const quadcellGetStatus = ({imsi}: {imsi: string}) => {
-  if (!imsi)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
+  const path =
+    partner === 'quadcell2'
+      ? api.path.rokApi.pv.quadcell2
+      : api.path.rokApi.pv.quadcell;
 
   return api.callHttpGet<Usage>(
-    `${api.rokHttpUrl(
-      `${api.path.rokApi.pv.quadcell}/usage/quota`,
-    )}&imsi=${imsi}&usage=n`,
+    `${api.rokHttpUrl(`${path}/usage/quota`)}&imsi=${imsi}&usage=${usage}`,
     (data) => data,
     new Headers({'Content-Type': 'application/json'}),
   );
@@ -653,7 +632,6 @@ export default {
   cmiGetSubsStatus,
   cmiGetStatus,
   quadcellGetData,
-  quadcellGetStatus,
   getHkRegStatus,
   bcGetSubsUsage,
   quadcellGetUsage,

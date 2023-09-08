@@ -230,7 +230,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [showSnackBar, setShowSnackBar] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [subs, setSubs] = useState<RkbSubscription>();
   const [cmiPending, setCmiPending] = useState(false);
@@ -375,9 +374,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       if (item?.imsi) {
         const {result, objects} = await API.Subscription.quadcellGetUsage({
           imsi: item.imsi,
+          partner: item.partner!,
         });
 
-        if (result === 0 && objects.length > 0) return objects[0];
+        if (result?.code === 0 && objects.length > 0) return objects[0];
       }
       return {
         status: {statusCd: undefined, endTime: undefined},
@@ -758,12 +758,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           }}
         />
       )}
-      <AppSnackBar
-        visible={showSnackBar}
-        onClose={() => setShowSnackBar(false)}
-        textMessage={i18n.t('service:ready')}
-        bottom={10}
-      />
 
       {isEditMode && (
         <AppButton

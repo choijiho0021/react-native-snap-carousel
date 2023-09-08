@@ -1,6 +1,5 @@
 import CryptoJS from 'crypto-js';
 import utils from '@/redux/api/utils';
-import AppAlert from '@/components/AppAlert';
 import i18n from './i18n';
 
 const UniAsyncStorage =
@@ -19,7 +18,7 @@ const storeData = async (key: string, value: any, isEncrypt?: boolean) => {
       await UniAsyncStorage.setItem(key, value);
     }
   } catch (error) {
-    AppAlert.error(i18n.t('util:storeDataFailed') + error);
+    console.log('@@ store error : ', i18n.t('util:storeDataFailed') + error);
   }
 };
 
@@ -38,7 +37,7 @@ const retrieveData = async (key: string, isDecrypt?: boolean) => {
 
     return value;
   } catch (error) {
-    AppAlert.error(i18n.t('util:retrieveDataFailed') + error);
+    console.log('@@ read error : ', i18n.t('util:retrieveDataFailed') + error);
     return null;
   }
 };
@@ -49,7 +48,7 @@ const removeData = async (key: string) => {
   try {
     await UniAsyncStorage.removeItem(key);
   } catch (error) {
-    AppAlert.error(i18n.t('util:removeDataFailed') + error);
+    console.log('@@ remove error : ', i18n.t('util:removeDataFailed') + error);
   }
 };
 
