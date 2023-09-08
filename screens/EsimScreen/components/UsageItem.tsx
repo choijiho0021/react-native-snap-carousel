@@ -295,11 +295,11 @@ const UsageItem: React.FC<UsageItemProps> = ({
             textAlign: 'center',
             color: colors.redError,
           }}>
-          {` ${toGb(used || 0)}GB`}
+          {utils.toDataVolumeString(used)}
         </AppText>
       </View>
     ),
-    [toGb, used],
+    [used],
   );
 
   const renderTime = useCallback(() => {
@@ -386,14 +386,14 @@ const UsageItem: React.FC<UsageItemProps> = ({
                   ...appStyles.bold24Text,
                   color: isExhausted ? colors.redError : colors.clearBlue,
                 }}>
-                {`${toGb(quota - used || 0)}GB`}
+                {utils.toDataVolumeString(quota - used || 0)}
               </AppText>
             </View>
           );
         }}
       </AnimatedCircularProgress>
     );
-  }, [isExhausted, isOverUsed, overProgress, quota, toGb, used]);
+  }, [isExhausted, isOverUsed, overProgress, quota, used]);
 
   const renderWarning = useCallback(() => {
     return (
@@ -460,7 +460,9 @@ const UsageItem: React.FC<UsageItemProps> = ({
                   {item.prodName}
                 </AppText>
                 <AppText key={item.prodName} style={styles.bold14WarmGrey}>
-                  {i18n.t('esim:quota', {quota: toGb(quota || 0)})}
+                  {i18n.t('esim:quota', {
+                    quota: utils.toDataVolumeString(quota || 0),
+                  })}
                 </AppText>
               </View>
               {usageRender()}
