@@ -231,14 +231,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
     [endTime, item.partner],
   );
 
-  // data는 esim:Mb usim:kb 단위
-  const toGb = useCallback((data: number) => {
-    if (data <= 0) return 0;
-    return (
-      Math.round((esimApp ? data / 1024 : data / 1024 / 1024) * 100) / 100
-    )?.toFixed(2);
-  }, []);
-
   const renderCaution = useCallback(() => {
     let key = '';
 
@@ -507,7 +499,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         </View>
       );
     },
-    [item.key, item.partner, item.prodName, quota, toGb, usageRender],
+    [item.key, item.partner, item.prodName, quota, usageRender],
   );
 
   const [status, statusCd] = esimApp
