@@ -179,7 +179,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         Math.ceil(expireTime.diff(today, 'seconds') / (24 * 60 * 60)),
       );
     }
-  }, [expireTime, mainSubs, mainSubs.partner, status]);
+  }, [expireTime, mainSubs, status]);
 
   useEffect(() => {
     if (mainSubs) checkStatus(mainSubs);
@@ -193,7 +193,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       }
       setExtensionDisReason('unsupported');
     }
-  }, [extensionEnable, isChargeable, mainSubs.partner]);
+  }, [extensionEnable, isChargeable]);
 
   const getAddOnProduct = useCallback(async () => {
     setAddonLoading(true);
@@ -208,19 +208,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       const {result, objects} = rsp;
 
       // 기타 다른 이유로 용량 충전 가능한 상품이 없는 경우
-      if (result === 0) {
-        // 왜 objects가 아니라 rsp.length? 확인 필요
-        if (rsp.length < 1) {
-          // 상품 없음
-          setAddonEnable(false);
-          setAddOnDisReasen('noProd');
-        } else {
-          setAddonEnable(true);
-          setAddonProds(objects);
-        }
-
-        // result : 1 쿼드셀 + 충전횟수가 끝난 상품
-      } else if (result === RESULT_OVER_LIMIT) {
+      if (result === RESULT_OVER_LIMIT) {
         if (status === 'R') {
           // "A" 사용중 여부 체크
           setAddonEnable(false);
@@ -235,6 +223,18 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             setAddonProds(objects);
           }
         }
+      } else if (result === 0) {
+        // 왜 objects가 아니라 rsp.length? 확인 필요
+        if (rsp.length < 1) {
+          // 상품 없음
+          setAddonEnable(false);
+          setAddOnDisReasen('noProd');
+        } else {
+          setAddonEnable(true);
+          setAddonProds(objects);
+        }
+
+        // result : 1 쿼드셀 + 충전횟수가 끝난 상품
       } else {
         // 예외처리, AppAlert?
         AppAlert.alert(i18n.t('esim:charge:network:error'));
@@ -279,6 +279,12 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
     if (status) {
       // 모든 사용완료 상품은 충전 불가
+
+      if (status === 'A') {
+        setAddonEnable(false);
+        setAddOnDisReasen('reserved');
+      }
+
       if (status === 'U') {
         setAddonEnable(false);
         setAddOnDisReasen('used');
