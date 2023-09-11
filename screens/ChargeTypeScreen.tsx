@@ -143,8 +143,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           case 'A':
             setExpireTime(moment(rspStatus.endTime));
 
-            // partner='cmi' -> 연장 상품이 가능하단 의미로 사용중이였음. extensionEnable로 변경
-
             if (extensionEnable) {
               if (chargedSubs) {
                 const i = chargedSubs.find((s) => {
@@ -207,10 +205,12 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
       const {result, objects} = rsp;
 
-      // 기타 다른 이유로 용량 충전 가능한 상품이 없는 경우
+      // cmi 무제한 상품 전 상태, 다음 페이지에서 불가능 안내 -> 확인 완료
+
+      // 충전 가능 횟수 초과
+      // 충전 조건 4. 쿼드셀 상품 남은 기간 충전 이력이 있을 경우 -> 서버에서 rsp : RESULT_OVER_LIMIT 값으로 알려줌
       if (result === RESULT_OVER_LIMIT) {
         if (status === 'R') {
-          // "A" 사용중 여부 체크
           setAddonEnable(false);
           setAddOnDisReasen('overLimit');
         } else if (status === 'A') {
@@ -223,6 +223,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             setAddonProds(objects);
           }
         }
+
+        // 충전 조건 5. 다른 이유로 용량 충전 가능 상품이 없는 경운
       } else if (result === 0) {
         // 왜 objects가 아니라 rsp.length? 확인 필요
         if (rsp.length < 1) {
@@ -233,10 +235,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           setAddonEnable(true);
           setAddonProds(objects);
         }
-
-        // result : 1 쿼드셀 + 충전횟수가 끝난 상품
       } else {
-        // 예외처리, AppAlert?
+        // 네트워크 실패 예외처리
         AppAlert.alert(i18n.t('esim:charge:network:error'));
         setAddonEnable(false);
       }
@@ -258,6 +258,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   useEffect(() => {
     const {addOnOption} = mainSubs;
 
+    // 충전 조건 1. 용량 충전 불가능 상품
     if (addOnOption === AddOnOptionType.ADD_ON) {
       setAddonEnable(true);
       unsupportExtension();
@@ -278,23 +279,20 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     }
 
     if (status) {
-      // 모든 사용완료 상품은 충전 불가
-
-      if (status === 'A') {
+      // 충전 조건 2. 사용 전, 용량 충전 불가능 상품 구분
+      if (status === 'A' && mainSubs.partner?.startsWith('cmi')) {
         setAddonEnable(false);
         setAddOnDisReasen('reserved');
+        return;
       }
 
+      // 충존 조건 3. 모든 사용완료 상품은 충전 불가
       if (status === 'U') {
         setAddonEnable(false);
         setAddOnDisReasen('used');
         return;
       }
 
-      // 쿼드셀 무제한상품 사용전 남은 기간 충전 이력이 있을 경우 -> 서버에서 rsp : RESULT_OVER_LIMIT 값으로 알려줌
-      // cmi 무제한 상품 전 상태, 다음 페이지에서 불가능 안내 -> 확인 완료
-
-      // AddonEnable True일때만 도착함
       getAddOnProduct();
     }
   }, [getAddOnProduct, mainSubs, status, unsupportAddon, unsupportExtension]);
