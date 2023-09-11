@@ -43,29 +43,11 @@ export const giftCode = {
 //   E: 2,
 // };
 
-export const cmiStatusCd = {
+export const dataStatusCd = {
   1: 'R',
   2: 'E', // 사용여부와 관련 없이, 상품의 유효기간 만료
   3: 'A', // 사용완료된 상태여도 Active 리턴
   99: 'C',
-};
-
-export const quadcellStatusCd = {
-  '0': 'R', // Inactivate - Ready to use
-  '1': 'A', // Activated
-  '2': 'U', // In “top-up-awaiting” window
-  '3': 'U', // Locked
-  '4': 'U', // Expired
-
-  // '2': 'W', // In “top-up-awaiting” window
-  // '3': 'L', // Locked
-};
-
-export const bcStatusCd = {
-  0: 'R', // not used
-  1: 'A', // in use
-  2: 'U', // used
-  3: 'C', // cancelled
 };
 
 export const isDisabled = (item: RkbSubscription) => {
@@ -143,6 +125,8 @@ export type StatusObj = {
 export type UsageObj = {
   quota?: number;
   used?: number;
+  remain?: number;
+  totalUsed?: number;
 };
 
 export type Usage = {
@@ -272,13 +256,9 @@ const toCmiStatus = (data) => {
   return data;
 };
 
-export type RkbSubsUsage = {
-  quota: number;
-  used: number;
-};
 const toSubsUsage = (data: {
-  objects: {usage: RkbSubsUsage};
-}): ApiResult<RkbSubsUsage> => {
+  objects: {usage: UsageObj};
+}): ApiResult<UsageObj> => {
   if (data.objects && data.objects.usage) {
     return api.success([data.objects.usage]);
   }
@@ -609,7 +589,7 @@ export default {
   CALL_PRODUCT,
 
   code,
-  cmiStatusCd,
+  dataStatusCd,
 
   STATUS_ACTIVE,
   STATUS_INACTIVE,

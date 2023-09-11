@@ -27,7 +27,6 @@ import {HomeStackParamList, navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {
-  bcStatusCd,
   RkbSubscription,
   StatusObj,
   UsageObj,
@@ -232,11 +231,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [refreshing, setRefreshing] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [subs, setSubs] = useState<RkbSubscription>();
-  const [cmiPending, setCmiPending] = useState(false);
+  const [usageLoading, setUsageLoading] = useState(false);
   const [showGiftModal, setShowGiftModal] = useState(false);
   const [isPressClose, setIsPressClose] = useState(false);
-  const [cmiUsage, setCmiUsage] = useState({});
-  const [cmiStatus, setCmiStatus] = useState({});
+  const [dataUsage, setDataUsage] = useState({});
+  const [dataStatus, setDataStatus] = useState({});
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const isFocused = useIsFocused();
   const flatListRef = useRef<FlatList>(null);
@@ -363,7 +362,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       }
       return {
         status: {statusCd: undefined, endTime: undefined},
-        usage: {quota: undefined, used: undefined},
+        usage: {
+          quota: undefined,
+          used: undefined,
+          remain: undefined,
+          totalUsed: undefined,
+        },
       };
     },
     [],
@@ -381,7 +385,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       }
       return {
         status: {statusCd: undefined, endTime: undefined},
-        usage: {quota: undefined, used: undefined},
+        usage: {
+          quota: undefined,
+          used: undefined,
+          remain: undefined,
+          totalUsed: undefined,
+        },
       };
     },
     [],
@@ -402,7 +411,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
       return {
         status: {statusCd: undefined, endTime: undefined},
-        usage: {quota: undefined, used: undefined},
+        usage: {
+          quota: undefined,
+          used: undefined,
+          remain: undefined,
+          totalUsed: undefined,
+        },
       };
     },
     [],
@@ -410,7 +424,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const onPressUsage = useCallback(
     async (item: RkbSubscription) => {
-      setCmiPending(true);
+      setUsageLoading(true);
       setSubs(item);
 
       let result = {status: {}, usage: {}};
@@ -430,9 +444,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           result = await checkCmiData(item);
           break;
       }
-      setCmiStatus(result.status);
-      setCmiUsage(result.usage);
-      setCmiPending(false);
+
+      setDataStatus(result.status);
+      setDataUsage(result.usage);
+      setUsageLoading(false);
       return result;
     },
     [checkBcData, checkCmiData, checkQuadcellData],
@@ -656,9 +671,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const navigateToChargeType = useCallback(() => {
     setShowModal(false);
-    setCmiStatus({});
-    setCmiUsage({});
-    setCmiPending(false);
+    setDataStatus({});
+    setDataUsage({});
+    setUsageLoading(false);
 
     navigation.navigate('ChargeType', {
       mainSubs: subs,
@@ -738,14 +753,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       <EsimModal
         visible={showModal}
         subs={subs}
-        cmiPending={cmiPending}
-        cmiUsage={cmiUsage}
-        cmiStatus={cmiStatus}
+        usageLoading={usageLoading}
+        dataUsage={dataUsage}
+        dataStatus={dataStatus}
         onCancelClose={() => {
           setShowModal(false);
-          setCmiStatus({});
-          setCmiUsage({});
-          setCmiPending(false);
+          setDataStatus({});
+          setDataUsage({});
+          setUsageLoading(false);
         }}
         onOkClose={navigateToChargeType}
       />
