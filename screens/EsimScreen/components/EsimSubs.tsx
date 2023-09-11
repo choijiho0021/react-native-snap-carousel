@@ -373,7 +373,8 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       // mainSubs?.addOnOption 이 없는 경우도 NEVER
       (mainSubs.cnt || 0) > 1 &&
         mainSubs?.addOnOption &&
-        mainSubs.addOnOption !== AddOnOptionType.NEVER,
+        mainSubs.addOnOption !== AddOnOptionType.NEVER &&
+        !(mainSubs.expireDate && mainSubs.expireDate.isBefore(now)),
       expd,
       mainSubs.expireDate && mainSubs.expireDate.isBefore(now),
       utils.toDateString(mainSubs.expireDate, 'YYYY.MM.DD'),
@@ -708,9 +709,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     // 충전 내역 조회 -> 충전 내역이 있음
     // 상품별 충전 필드 조회 -> 용량 충전, 상품 연장이 1개 이상 Y인 경우
     // 충전 가능 기간 조회 -> 충전 가능 기간 내
-    const moveBtnList = [sendable, isCharged && !isChargeExpired].filter(
-      (elm) => elm,
-    );
+    const moveBtnList = [sendable, isCharged].filter((elm) => elm);
     if (moveBtnList.length === 0) return null;
 
     return (

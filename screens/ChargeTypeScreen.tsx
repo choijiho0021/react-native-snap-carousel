@@ -21,7 +21,6 @@ import {RkbAddOnProd} from '@/redux/api/productApi';
 import ChargeTypeModal from './HomeScreen/component/ChargeTypeModal';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import ScreenHeader from '@/components/ScreenHeader';
-import AppAlert from '@/components/AppAlert';
 
 const styles = StyleSheet.create({
   container: {
@@ -227,7 +226,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         // 충전 조건 5. 다른 이유로 용량 충전 가능 상품이 없는 경운
       } else if (result === 0) {
         // 왜 objects가 아니라 rsp.length? 확인 필요
-        if (rsp.length < 1) {
+        if ((rsp?.length || 0) < 1) {
           // 상품 없음
           setAddonEnable(false);
           setAddOnDisReasen('noProd');
@@ -235,11 +234,9 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           setAddonEnable(true);
           setAddonProds(objects);
         }
-      } else {
-        // 네트워크 실패 예외처리
-        AppAlert.alert(i18n.t('esim:charge:network:error'));
-        setAddonEnable(false);
       }
+
+      // 모종의 이유로 실패, 모든 분기 진입 못할 시 '잠시 후 다시 시도해주세요' 출력
     }
     setAddonLoading(false);
   }, [chargeableItem, mainSubs, remainDays, status]);
@@ -279,8 +276,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     }
 
     if (status) {
-      // 충전 조건 2. 사용 전, 용량 충전 불가능 상품 구분
-      if (status === 'A' && mainSubs.partner?.startsWith('cmi')) {
+      // 충전 조건 2. 사용 전, 용량 충전 가능한 상품 처리
+      if (status === 'R' && mainSubs.partner?.startsWith('cmi')) {
         setAddonEnable(false);
         setAddOnDisReasen('reserved');
         return;
