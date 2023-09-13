@@ -364,6 +364,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     chargeablePeriod,
     notCardInfo,
     sendable,
+    isChargeButton,
   ] = useMemo(() => {
     const now = moment();
     const expd = mainSubs.lastExpireDate?.isBefore(now) || false;
@@ -372,10 +373,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       isDraft(mainSubs?.statusCd),
 
       // mainSubs?.addOnOption 이 없는 경우도 NEVER
-      (mainSubs.cnt || 0) > 1 &&
-        mainSubs?.addOnOption &&
-        mainSubs.addOnOption !== AddOnOptionType.NEVER &&
-        !(mainSubs.expireDate && mainSubs.expireDate.isBefore(now)),
+      (mainSubs.cnt || 0) > 1,
       mainSubs.partner === 'billionconnect',
       expd,
       mainSubs.expireDate && mainSubs.expireDate.isBefore(now),
@@ -387,6 +385,9 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         !mainSubs.giftStatusCd &&
         (mainSubs.cnt || 0) === 1 &&
         !isDraft(mainSubs?.statusCd),
+      mainSubs?.addOnOption &&
+        mainSubs.addOnOption !== AddOnOptionType.NEVER &&
+        !(mainSubs.expireDate && mainSubs.expireDate.isBefore(now)),
     ];
   }, [mainSubs]);
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
@@ -716,17 +717,16 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
   const renderMoveBtn = useCallback(() => {
     const now = moment();
+
+    console.log('mainSubs?>addOnOption : ', mainSubs?.addOnOption);
+
     // 충전 버튼 출력 조건
     // 충전 내역 조회 -> 충전 내역이 있음
     // 상품별 충전 필드 조회 -> 용량 충전, 상품 연장이 1개 이상 Y인 경우
     // 충전 가능 기간 조회 -> 충전 가능 기간 내
     const moveBtnList = [
       sendable,
-      isCharged ||
-        (!isBC &&
-          mainSubs?.addOnOption &&
-          mainSubs.addOnOption !== AddOnOptionType.NEVER &&
-          !(mainSubs.expireDate && mainSubs.expireDate.isBefore(now))),
+      isCharged || (!isBC && isChargeButton),
     ].filter((elm) => elm);
     if (moveBtnList.length === 0) return null;
 
@@ -782,6 +782,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     );
   }, [
     isBC,
+    isChargeButton,
     isCharged,
     isEditMode,
     mainSubs,
