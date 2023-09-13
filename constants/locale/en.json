@@ -886,6 +886,8 @@
   "toast:failedToLoad": "Failed to load the data.\nPlease check your network connectivity.",
   "toast:copySuccess": "Copied Successfully.",
   "toast:sendSuccess": "Sent Gift Successfully.",
+  "toast:esim:hide": "구매 eSIM 목록에서 숨김 처리되어 있는 상품입니다.\n숨김 해제 후 사용량을 확인할 수 있습니다.",
+  "toast:esim:notExist": "구매 eSIM 목록에 없는 상품입니다.",
 
   "mypage:idCheckTitle": "ROKEBI Talk ID",
   "mypage:manualInput:body": "You can use below ID to login <color:'#2a7ff6'>ROKEBI Talk</color>.",

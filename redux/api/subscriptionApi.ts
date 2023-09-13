@@ -272,10 +272,12 @@ const toSubsUsage = (data: {
 export type SubscriptionParam = {
   iccid: string;
   token: string;
+  subsId?: string;
   uuid?: string;
   hidden?: boolean;
   count?: number;
   offset?: number;
+  reset?: boolean;
 };
 
 const subsFulfillWithValue = (resp) => {
@@ -303,8 +305,10 @@ const subsFulfillWithValue = (resp) => {
 const getSubscription = ({
   uuid,
   iccid,
+  subsId,
   token,
   hidden,
+  reset = false,
   count = 10,
   offset = 0,
 }: SubscriptionParam) => {
@@ -315,8 +319,8 @@ const getSubscription = ({
 
   const url = `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${
     uuid || '0'
-  }?_format=json${
-    hidden ? '' : '&hidden=0'
+  }?_format=json${hidden ? '' : '&hidden=0'}${
+    subsId ? `&subsId=${subsId}` : ''
   }&iccid=${iccid}&count=${count}&offset=${offset}`;
 
   return api.callHttpGet(
@@ -438,9 +442,11 @@ const getSubsUsage = ({id, token}: {id?: string; token?: string}) => {
 const cmiGetSubsUsage = ({
   iccid,
   orderId,
+  imsi,
 }: {
   iccid: string;
   orderId: string;
+  imsi?: string;
 }) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
@@ -450,7 +456,7 @@ const cmiGetSubsUsage = ({
   return api.callHttpGet<Usage>(
     `${api.rokHttpUrl(
       api.path.rokApi.pv.cmiUsage,
-    )}&iccid=${iccid}&orderId=${orderId}`,
+    )}&iccid=${iccid}&orderId=${orderId}&imsi=${imsi}`,
     (data) => data,
     new Headers({'Content-Type': 'application/json'}),
   );

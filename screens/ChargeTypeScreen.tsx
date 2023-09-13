@@ -131,6 +131,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
       if (rsp && rsp.result?.code === 0) {
         const rspStatus = rsp.objects[0]?.status;
+        // const rspStatus = {statusCd: 'A'};
+
         switch (rspStatus.statusCd) {
           // 사용 전
           case 'R':
