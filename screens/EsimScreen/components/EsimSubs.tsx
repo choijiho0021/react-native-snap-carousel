@@ -782,7 +782,16 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         })}
       </View>
     );
-  }, [isCharged, isEditMode, mainSubs, navigation, onPressRecharge, sendable]);
+  }, [
+    isBC,
+    isCharged,
+    isChargedVisible,
+    isEditMode,
+    mainSubs,
+    navigation,
+    onPressRecharge,
+    sendable,
+  ]);
 
   const renderCautionText = useCallback(
     (caution: string, subNum: number, hasPreDot: boolean) => (
