@@ -414,10 +414,10 @@ const UsageItem: React.FC<UsageItemProps> = ({
       <View style={styles.activeContainer}>
         {showUsage && renderAnimatedCircularProgress()}
 
-        {showUsage &&
+        {/* {showUsage &&
           isExhausted &&
           item.daily === 'daily' &&
-          renderDailyUsage()}
+          renderDailyUsage()} */}
 
         {!showUsage && (
           <AppSvgIcon style={{marginBottom: 20}} name="notShowEsimUsage" />
@@ -431,11 +431,8 @@ const UsageItem: React.FC<UsageItemProps> = ({
       </View>
     );
   }, [
-    isExhausted,
-    item.daily,
     renderAnimatedCircularProgress,
     renderCaution,
-    renderDailyUsage,
     renderTime,
     renderWarning,
     showUsage,
