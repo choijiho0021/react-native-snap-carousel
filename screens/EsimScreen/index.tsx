@@ -326,6 +326,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   useEffect(() => {
     const subsId = route?.params?.subsId;
+
     // 첫번째로 로딩 시 숨긴 subs를 제외하고 10개만 가져오도록 함
     if (isFirstLoad || subsId) onRefresh(false, true, subsId);
   }, [isFirstLoad, onRefresh, route?.params?.subsId]);
@@ -756,7 +757,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         // 종종 중복 호출이 발생
         onEndReachedThreshold={0.4}
         onEndReached={() => {
-          if (!order?.subsIsLast) {
+          if (!order?.subsIsLast && order?.subs?.length > 0) {
             navigation.setParams({subsId: undefined});
             onRefresh(isEditMode, false);
           }
