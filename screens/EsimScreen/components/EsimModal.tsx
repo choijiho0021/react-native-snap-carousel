@@ -61,51 +61,51 @@ type EsimModalProps = {
   subs?: RkbSubscription;
   onOkClose?: () => void;
   onCancelClose?: () => void;
-  cmiUsage: any;
-  cmiStatus: any;
-  cmiPending: boolean;
+  dataUsage: any;
+  dataStatus: any;
+  usageLoading: boolean;
 };
 const EsimModal: React.FC<EsimModalProps> = ({
   visible,
   subs,
   onOkClose,
   onCancelClose,
-  cmiUsage,
-  cmiStatus,
-  cmiPending,
+  dataUsage,
+  dataStatus,
+  usageLoading,
 }) => {
   const [showSnackBar, setShowSnackbar] = useState(false);
-
   const modalBody = useCallback(() => {
     if (!subs) return null;
-    const quota = cmiUsage?.quota;
-    const used = cmiUsage?.used;
+    const quota = dataUsage?.quota;
+    const used = dataUsage?.used;
     const statusCd =
-      _.isEmpty(quota) && !_.isEmpty(used) ? 'U' : cmiStatus?.statusCd;
-
+      _.isEmpty(quota) && !_.isEmpty(used) ? 'U' : dataStatus?.statusCd;
     // usage
     return (
-      cmiStatus &&
-      cmiUsage && (
+      dataStatus &&
+      dataUsage && (
         <UsageItem
           item={subs}
           showSnackbar={() => {}}
-          cmiPending={cmiPending}
-          usage={{quota, used}}
-          cmiStatusCd={statusCd}
-          endTime={cmiStatus?.endTime}
+          usageLoading={usageLoading}
+          usage={dataUsage}
+          dataStatusCd={statusCd}
+          endTime={dataStatus?.endTime}
         />
       )
     );
-  }, [cmiPending, cmiStatus, cmiUsage, subs]);
+  }, [usageLoading, dataStatus, dataUsage, subs]);
 
   const renderBottom = useCallback(() => {
-    const quota = Number(cmiUsage?.quota || 0);
-    const used = Number(cmiUsage?.used || 0);
+    const quota = Number(dataUsage?.quota || 0);
+    const used = Number(dataUsage?.used || 0);
+    const showSpeechBubble =
+      _.isNumber(quota) && _.isNumber(used) && quota > 0 && used / quota > 0.8;
 
     // BC 상품은 충전 불가 추가
     const isChargeable =
-      onOkClose && cmiStatus.statusCd === 'A' && !isBillionConnect(subs);
+      onOkClose && dataStatus.statusCd === 'A' && !isBillionConnect(subs);
 
     return (
       <View style={{flexDirection: 'row'}}>
@@ -118,25 +118,22 @@ const EsimModal: React.FC<EsimModalProps> = ({
         />
         {isChargeable && (
           <View style={{flex: 1, position: 'relative'}}>
-            {_.isNumber(quota) &&
-              _.isNumber(used) &&
-              quota > 0 &&
-              used / quota > 0.8 && (
-                <>
-                  <AppSvgIcon name="speechBubble2" style={styles.bubbleIcon} />
-                  <View style={styles.bubbleText}>
-                    <AppSvgIcon name="lightning" />
-                    <AppText
-                      style={{
-                        ...appStyles.bold12Text,
-                        lineHeight: 16,
-                        color: colors.white,
-                      }}>
-                      {i18n.t('esim:charge:speechBubble')}
-                    </AppText>
-                  </View>
-                </>
-              )}
+            {showSpeechBubble && (
+              <>
+                <AppSvgIcon name="speechBubble2" style={styles.bubbleIcon} />
+                <View style={styles.bubbleText}>
+                  <AppSvgIcon name="lightning" />
+                  <AppText
+                    style={{
+                      ...appStyles.bold12Text,
+                      lineHeight: 16,
+                      color: colors.white,
+                    }}>
+                    {i18n.t(`esim:charge:${subs?.daily}:speechBubble`)}
+                  </AppText>
+                </View>
+              </>
+            )}
             <AppButton
               style={styles.blueBtn}
               type="primary"
@@ -149,11 +146,12 @@ const EsimModal: React.FC<EsimModalProps> = ({
       </View>
     );
   }, [
-    cmiStatus.statusCd,
-    cmiUsage?.quota,
-    cmiUsage?.used,
+    dataStatus.statusCd,
+    dataUsage?.quota,
+    dataUsage?.used,
     onCancelClose,
     onOkClose,
+    subs,
   ]);
 
   return (

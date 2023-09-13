@@ -43,29 +43,11 @@ export const giftCode = {
 //   E: 2,
 // };
 
-export const cmiStatusCd = {
+export const dataStatusCd = {
   1: 'R',
   2: 'E', // 사용여부와 관련 없이, 상품의 유효기간 만료
   3: 'A', // 사용완료된 상태여도 Active 리턴
   99: 'C',
-};
-
-export const quadcellStatusCd = {
-  '0': 'R', // Inactivate - Ready to use
-  '1': 'A', // Activated
-  '2': 'U', // In “top-up-awaiting” window
-  '3': 'U', // Locked
-  '4': 'U', // Expired
-
-  // '2': 'W', // In “top-up-awaiting” window
-  // '3': 'L', // Locked
-};
-
-export const bcStatusCd = {
-  0: 'R', // not used
-  1: 'A', // in use
-  2: 'U', // used
-  3: 'C', // cancelled
 };
 
 export const isDisabled = (item: RkbSubscription) => {
@@ -143,6 +125,8 @@ export type StatusObj = {
 export type UsageObj = {
   quota?: number;
   used?: number;
+  remain?: number;
+  totalUsed?: number;
 };
 
 export type Usage = {
@@ -272,13 +256,9 @@ const toCmiStatus = (data) => {
   return data;
 };
 
-export type RkbSubsUsage = {
-  quota: number;
-  used: number;
-};
 const toSubsUsage = (data: {
-  objects: {usage: RkbSubsUsage};
-}): ApiResult<RkbSubsUsage> => {
+  objects: {usage: UsageObj};
+}): ApiResult<UsageObj> => {
   if (data.objects && data.objects.usage) {
     return api.success([data.objects.usage]);
   }
@@ -292,10 +272,12 @@ const toSubsUsage = (data: {
 export type SubscriptionParam = {
   iccid: string;
   token: string;
+  subsId?: string;
   uuid?: string;
   hidden?: boolean;
   count?: number;
   offset?: number;
+  reset?: boolean;
 };
 
 const subsFulfillWithValue = (resp) => {
@@ -323,8 +305,10 @@ const subsFulfillWithValue = (resp) => {
 const getSubscription = ({
   uuid,
   iccid,
+  subsId,
   token,
   hidden,
+  reset = false,
   count = 10,
   offset = 0,
 }: SubscriptionParam) => {
@@ -335,8 +319,8 @@ const getSubscription = ({
 
   const url = `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${
     uuid || '0'
-  }?_format=json${
-    hidden ? '' : '&hidden=0'
+  }?_format=json${hidden ? '' : '&hidden=0'}${
+    subsId ? `&subsId=${subsId}` : ''
   }&iccid=${iccid}&count=${count}&offset=${offset}`;
 
   return api.callHttpGet(
@@ -458,9 +442,11 @@ const getSubsUsage = ({id, token}: {id?: string; token?: string}) => {
 const cmiGetSubsUsage = ({
   iccid,
   orderId,
+  imsi,
 }: {
   iccid: string;
   orderId: string;
+  imsi?: string;
 }) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
@@ -470,7 +456,7 @@ const cmiGetSubsUsage = ({
   return api.callHttpGet<Usage>(
     `${api.rokHttpUrl(
       api.path.rokApi.pv.cmiUsage,
-    )}&iccid=${iccid}&orderId=${orderId}`,
+    )}&iccid=${iccid}&orderId=${orderId}&imsi=${imsi}`,
     (data) => data,
     new Headers({'Content-Type': 'application/json'}),
   );
@@ -609,7 +595,7 @@ export default {
   CALL_PRODUCT,
 
   code,
-  cmiStatusCd,
+  dataStatusCd,
 
   STATUS_ACTIVE,
   STATUS_INACTIVE,

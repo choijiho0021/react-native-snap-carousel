@@ -26,8 +26,8 @@ const styles = StyleSheet.create({
     right: 0,
   },
   content: {
-    backgroundColor: colors.warmGrey,
-    borderRadius: 10,
+    backgroundColor: colors.black,
+    // borderRadius: 10,
     padding: 10,
   },
   text: {

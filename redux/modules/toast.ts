@@ -15,6 +15,13 @@ interface ToastModelState {
   messages: string[];
 }
 
+type ToastObj = {
+  '1'?: string;
+  '-1001'?: string;
+  err?: string;
+  [key: string]: string | undefined;
+};
+
 const initialState: ToastModelState = {
   messages: [],
 };
@@ -39,19 +46,28 @@ const slice = createSlice({
 });
 
 export const reflectWithToast =
-  <T, S>(action: AsyncThunk<T, S, {}>, toastType: string) =>
+  <T, S>(
+    action: AsyncThunk<T, S, {}>,
+    toastType: string,
+    toastObj?: ToastObj,
+  ) =>
   (args: S) =>
   (dispatch: AppDispatch) =>
     dispatch(action(args)).then(
       (resp) => {
         const result = resp.payload ? resp.payload.result : resp.result;
-        if (result !== 0) {
+
+        if (result === 1) {
+          dispatch(slice.actions.push(toastObj?.[1] || toastType));
+        } else if (result === -1001) {
+          dispatch(slice.actions.push(toastObj?.['-1001'] || toastType));
+        } else if (result !== 0) {
           dispatch(slice.actions.push(toastType));
         }
         return resp;
       },
       (err) => {
-        dispatch(slice.actions.push(toastType));
+        dispatch(slice.actions.push(toastObj?.err || toastType));
         return err;
       },
     );
