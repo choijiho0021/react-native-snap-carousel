@@ -272,10 +272,12 @@ const toSubsUsage = (data: {
 export type SubscriptionParam = {
   iccid: string;
   token: string;
+  subsId?: string;
   uuid?: string;
   hidden?: boolean;
   count?: number;
   offset?: number;
+  reset?: boolean;
 };
 
 const subsFulfillWithValue = (resp) => {
@@ -303,8 +305,10 @@ const subsFulfillWithValue = (resp) => {
 const getSubscription = ({
   uuid,
   iccid,
+  subsId,
   token,
   hidden,
+  reset = false,
   count = 10,
   offset = 0,
 }: SubscriptionParam) => {
@@ -315,8 +319,8 @@ const getSubscription = ({
 
   const url = `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${
     uuid || '0'
-  }?_format=json${
-    hidden ? '' : '&hidden=0'
+  }?_format=json${hidden ? '' : '&hidden=0'}${
+    subsId ? `&subsId=${subsId}` : ''
   }&iccid=${iccid}&count=${count}&offset=${offset}`;
 
   return api.callHttpGet(

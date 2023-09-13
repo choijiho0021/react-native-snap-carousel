@@ -145,7 +145,10 @@ const getOrderList = (orders) => {
 };
 
 // 질문 필요 reflectWithToast
-const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
+const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED, {
+  '1': 'toast:esim:hide',
+  '-1001': 'toast:esim:notExist',
+});
 
 const getOrders = createAsyncThunk(
   'order/getOrders',
@@ -439,15 +442,18 @@ const slice = createSlice({
     builder.addCase(getSubs.fulfilled, (state, action) => {
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
 
-      const {count = PAGINATION_SUBS_COUNT, offset} = action?.meta?.arg;
+      const {count = PAGINATION_SUBS_COUNT, offset, reset} = action?.meta?.arg;
 
       if (result === 0 && objects) {
         // uuid param이 있으면 특정 상품 조회, offset 처리를 넘긴다.
         // count default 10 설정되어 있음
-        if (objects?.length === count) {
-          state.subsOffset += count;
+        if (objects?.length < count) {
+          state.subsIsLast = true;
+        } else {
+          if (reset) state.subsOffset = objects?.length;
+          else state.subsOffset += objects?.length;
           state.subsIsLast = false;
-        } else state.subsIsLast = true;
+        }
 
         if (offset === 0) {
           state.subs = objects.sort(sortSubs);

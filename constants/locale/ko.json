@@ -933,6 +933,8 @@
   "toast:copySuccess": "복사되었습니다.",
   "toast:sendSuccess": "상품을 선물하였습니다.",
   "toast:perm:gallery": "갤러리 접근 권한이 없습니다.",
+  "toast:esim:hide": "구매 eSIM 목록에서 숨김 처리되어 있는 상품입니다.\n숨김 해제 후 사용량을 확인할 수 있습니다.",
+  "toast:esim:notExist": "구매 eSIM 목록에 없는 상품입니다.",
 
   "mypage:idCheckTitle": "로깨비톡 ID 확인",
   "mypage:manualInput:body": "아래의 정보를 사용하여 <color:'#2a7ff6'>로깨비 톡</color>에 로그인할 수 있습니다",
