@@ -129,7 +129,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
       setStatusLoading(false);
 
-      if (rsp) {
+      if (rsp && rsp.result?.code === 0) {
         const rspStatus = rsp.objects[0]?.status;
         // const rspStatus = {statusCd: 'A'};
 
@@ -229,10 +229,18 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
       // cmi 무제한 상품 전 상태, 다음 페이지에서 불가능 안내 -> 확인 완료
 
-      if (info) {
-        if (info.charge === 'N') {
-          setAddOnDisReasen(info.msg.kr);
+      if (info?.charge === 'N') {
+        setAddOnDisReasen(info.msg.kr);
+        setAddonEnable(false);
+      } else if (result === 0) {
+        // 왜 objects가 아니라 rsp.length? 확인 필요
+        if ((rsp?.length || 0) < 1) {
+          // 상품 없음
           setAddonEnable(false);
+          setAddOnDisReasen('noProd');
+        } else {
+          setAddonEnable(true);
+          setAddonProds(objects);
         }
       }
 
