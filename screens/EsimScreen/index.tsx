@@ -353,6 +353,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       if (item?.subsIccid && item?.packageId) {
         const {result, objects} = await API.Subscription.cmiGetSubsUsage({
           iccid: item?.subsIccid,
+          imsi: item?.imsi,
           orderId: item?.subsOrderNo || 'noOrderId',
         });
 
