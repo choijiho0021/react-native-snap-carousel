@@ -345,10 +345,14 @@ const getProdCountry = () => {
   );
 };
 
-const getAddOnProduct = (subsId: string, remainDays: string) => {
+const getAddOnProduct = (
+  subsId: string,
+  remainDays: string,
+  status: string,
+) => {
   return api.callHttpGet<RkbAddOnProd>(
     api.httpUrl(
-      `${api.path.rokApi.rokebi.prodAddOn}/${subsId}?_format=json&days=${remainDays}`,
+      `${api.path.rokApi.rokebi.prodAddOn}/${subsId}?_format=json&days=${remainDays}&status=${status}`,
     ),
     toAddOnProd,
   );

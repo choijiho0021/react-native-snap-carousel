@@ -355,9 +355,20 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   product,
   action,
 }) => {
+  const isChargedVisible = useMemo(() => {
+    const now = moment();
+
+    return (
+      mainSubs?.addOnOption &&
+      mainSubs.addOnOption !== AddOnOptionType.NEVER &&
+      !(mainSubs.expireDate && mainSubs.expireDate.isBefore(now))
+    );
+  }, [mainSubs.addOnOption, mainSubs.expireDate]);
+
   const [
     isTypeDraft,
     isCharged,
+    isBC,
     expired,
     isChargeExpired,
     chargeablePeriod,
@@ -371,10 +382,8 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       isDraft(mainSubs?.statusCd),
 
       // mainSubs?.addOnOption 이 없는 경우도 NEVER
-      (mainSubs.cnt || 0) > 1 &&
-        mainSubs?.addOnOption &&
-        mainSubs.addOnOption !== AddOnOptionType.NEVER &&
-        !(mainSubs.expireDate && mainSubs.expireDate.isBefore(now)),
+      (mainSubs.cnt || 0) > 1 && isChargedVisible,
+      mainSubs.partner === 'billionconnect',
       expd,
       mainSubs.expireDate && mainSubs.expireDate.isBefore(now),
       utils.toDateString(mainSubs.expireDate, 'YYYY.MM.DD'),
@@ -386,7 +395,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         (mainSubs.cnt || 0) === 1 &&
         !isDraft(mainSubs?.statusCd),
     ];
-  }, [mainSubs]);
+  }, [isChargedVisible, mainSubs]);
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [showSubs, setShowSubs] = useState<boolean>(!mainSubs.hide);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
@@ -413,14 +422,21 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         });
       }
       // isBC 대신 애드온 옵션으로 처리하기로 결정됨
-      else
+      else if (!isBC)
         navigation.navigate('ChargeType', {
           mainSubs: item,
           chargeablePeriod,
           isChargeable: !isChargeExpired,
         });
     },
-    [chargeablePeriod, isChargeExpired, isCharged, navigation, onPressUsage],
+    [
+      chargeablePeriod,
+      isBC,
+      isChargeExpired,
+      isCharged,
+      navigation,
+      onPressUsage,
+    ],
   );
 
   const renderSwitch = useCallback(() => {
@@ -572,16 +588,17 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           )}`}</AppText>
         </View>
 
-        {/* isBC 있을 때만 출력하던 코드 분기 제거 후 문제없나 확인하기 */}
-        <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal14Gray}>
-            {i18n.t('esim:rechargeablePeriod')}
-          </AppText>
-          <AppText style={styles.normal14Gray}>{chargeablePeriod}</AppText>
-        </View>
+        {!isBC && (
+          <View style={styles.inactiveContainer}>
+            <AppText style={styles.normal14Gray}>
+              {i18n.t('esim:rechargeablePeriod')}
+            </AppText>
+            <AppText style={styles.normal14Gray}>{chargeablePeriod}</AppText>
+          </View>
+        )}
       </View>
     );
-  }, [chargeablePeriod, mainSubs, notCardInfo]);
+  }, [chargeablePeriod, mainSubs, isBC, notCardInfo]);
 
   const QRnCopyInfo = useCallback(() => {
     return (
@@ -709,7 +726,10 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     // 충전 내역 조회 -> 충전 내역이 있음
     // 상품별 충전 필드 조회 -> 용량 충전, 상품 연장이 1개 이상 Y인 경우
     // 충전 가능 기간 조회 -> 충전 가능 기간 내
-    const moveBtnList = [sendable, isCharged].filter((elm) => elm);
+    const moveBtnList = [
+      sendable,
+      isCharged || (!isBC && isChargedVisible),
+    ].filter((elm) => elm);
     if (moveBtnList.length === 0) return null;
 
     return (
