@@ -722,6 +722,7 @@
   "esim:chargeCaution:body8": "You can check recharge log in the ROKEBI App > eSIM tab > 'Recharge log' button",
   "esim:chargeCaution:body9": "Recharged product is <b>unexchangable and non refundable.</b>",
   "esim:charge:disReason:addOn:": "잠시 후 다시 시도해주세요.",
+  "esim:charge:disReason:addOn:inActive": "사용 중 상태에서 용량 충전 가능합니다.",
   "esim:charge:disReason:addOn:used": "사용 완료되어 용량 충전 불가합니다.",
   "esim:charge:disReason:addOn:overLimit": "충전 가능 횟수를 초과한 상품 입니다.",
   "esim:charge:disReason:addOn:unsupported": "용량 충전 기능 미지원 상품입니다.",
