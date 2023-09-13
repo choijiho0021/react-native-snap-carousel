@@ -129,7 +129,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
       setStatusLoading(false);
 
-      if (rsp && rsp.result?.code === 0) {
+      if (rsp) {
         const rspStatus = rsp.objects[0]?.status;
         // const rspStatus = {statusCd: 'A'};
 
@@ -196,43 +196,43 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     setAddonLoading(true);
     const subs = chargeableItem || mainSubs;
 
-    if (subs.nid && remainDays && remainDays > 0) {
+    // console.log('remainDays : ', remainDays);
+    // console.log('subs.nid : ', subs.nid);
+    // console.log('status : ', status);
+
+    // console.log('상품별 필드 조회  : ', subs.addOnOption);
+    // console.log('파트너사 : ', subs.partner);
+    // console.log('기존 상태값 : ', status);
+
+    if (subs.nid && status && remainDays && remainDays > 0) {
       const rsp = await API.Product.getAddOnProduct(
         subs.nid,
         subs.daily === 'daily' ? remainDays.toString() : '1',
+        status,
       );
 
-      const {result, objects} = rsp;
+      const {
+        result,
+        objects,
+        info,
+      }: {
+        result: number;
+        objects: RkbAddOnProd[];
+        info?: {charge: string; msg: {kr: string}};
+      } = rsp;
+
+      // console.log('충전 상품 있는 지 : ', objects);
+      // console.log(
+      //   '무제한/종량제 : ',
+      //   subs.daily === 'daily' ? '무제한' : '종량제',
+      // );
 
       // cmi 무제한 상품 전 상태, 다음 페이지에서 불가능 안내 -> 확인 완료
 
-      // 충전 가능 횟수 초과
-      // 충전 조건 4. 쿼드셀 상품 남은 기간 충전 이력이 있을 경우 -> 서버에서 rsp : RESULT_OVER_LIMIT 값으로 알려줌
-      if (result === RESULT_OVER_LIMIT) {
-        if (status === 'R') {
+      if (info) {
+        if (info.charge === 'N') {
+          setAddOnDisReasen(info.msg.kr);
           setAddonEnable(false);
-          setAddOnDisReasen('overLimit');
-        } else if (status === 'A') {
-          if (objects.length < 1) {
-            // 상품 없음
-            setAddonEnable(false);
-            setAddOnDisReasen('noProd');
-          } else {
-            setAddonEnable(true);
-            setAddonProds(objects);
-          }
-        }
-
-        // 충전 조건 5. 다른 이유로 용량 충전 가능 상품이 없는 경운
-      } else if (result === 0) {
-        // 왜 objects가 아니라 rsp.length? 확인 필요
-        if ((rsp?.length || 0) < 1) {
-          // 상품 없음
-          setAddonEnable(false);
-          setAddOnDisReasen('noProd');
-        } else {
-          setAddonEnable(true);
-          setAddonProds(objects);
         }
       }
 
@@ -275,15 +275,16 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       return;
     }
 
+    console.log('@@@@@ getStatus? : ', status);
     if (status) {
-      // 충전 조건 2. 사용 전, 용량 충전 가능한 상품 처리
+      // // 충전 조건 2. 사용 전, 용량 충전 가능한 상품 처리
       if (status === 'R' && mainSubs.partner?.startsWith('cmi')) {
         setAddonEnable(false);
         setAddOnDisReasen('reserved');
         return;
       }
 
-      // 충존 조건 3. 모든 사용완료 상품은 충전 불가
+      // // 충전 조건 3. 모든 사용완료 상품은 충전 불가
       if (status === 'U') {
         setAddonEnable(false);
         setAddOnDisReasen('used');
