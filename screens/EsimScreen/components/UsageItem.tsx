@@ -159,10 +159,12 @@ const UsageItem: React.FC<UsageItemProps> = ({
   const [disableBtn, setDisableBtn] = useState(false);
   const [quota, setQuota] = useState<number>(usage?.quota || 0);
   const [used, setUsed] = useState<number>(usage?.used || 0);
-  const isExhausted = useMemo(() => quota - used <= 0, [quota, used]);
+  const [remain, setRemain] = useState<number>(usage?.remain || 0);
+  const [totalUsed, setTotalUsed] = useState<number>(usage?.totalUsed || 0);
+  const isExhausted = useMemo(() => remain <= 0, [remain]);
   const isLowRemain = useMemo(
-    () => used && quota && Math.floor(used / quota) >= 0.8,
-    [quota, used],
+    () => remain && quota >= 0 && Math.floor(remain / quota) <= 0.2,
+    [quota, remain],
   );
   const circularProgress = useRef();
   const [isAnimated, setIsAnimated] = useState<boolean>(false);
@@ -190,15 +192,20 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
   useEffect(() => {
     if (dataStatusCd === 'A') {
-      if (usage?.quota && usage?.used) {
-        setQuota(usage.quota || -1);
-        setUsed(usage.used || -1);
+      if (
+        usage?.quota !== undefined &&
+        usage?.remain !== undefined &&
+        usage?.remain >= 0
+      ) {
+        setQuota(usage.quota || 0);
+        setUsed(usage.used || 0);
+        setRemain(usage.remain || 0);
+        setTotalUsed(usage.totalUsed || 0);
+        const progress =
+          quota > 0 ? Math.floor(((quota - remain) / quota) * 100) : 0.1;
 
-        const progress = quota > 0 ? Math.floor((used / quota) * 100) : 0;
-
-        if (!isAnimated && progress > 0) {
-          setIsAnimated(true);
-          circularProgress.current?.reAnimate(0.01, progress, 3000, null);
+        if (progress >= 0) {
+          circularProgress.current?.reAnimate(0, progress, 3000, null);
         }
       }
     }
@@ -206,7 +213,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
       console.log('@@ show snackbar');
       showSnackbar();
     }
-  }, [dataStatusCd, isAnimated, quota, showSnackbar, usage, used]);
+  }, [dataStatusCd, isAnimated, quota, remain, showSnackbar, usage, used]);
 
   const renderResetTimeRow = useCallback(
     (key: string, rowStyle: ViewStyle = {}) => {
@@ -284,11 +291,11 @@ const UsageItem: React.FC<UsageItemProps> = ({
             textAlign: 'center',
             color: colors.redError,
           }}>
-          {utils.toDataVolumeString(used)}
+          {utils.toDataVolumeString(totalUsed < quota ? quota : totalUsed)}
         </AppText>
       </View>
     ),
-    [used],
+    [quota, totalUsed],
   );
 
   const renderTime = useCallback(() => {
@@ -371,14 +378,14 @@ const UsageItem: React.FC<UsageItemProps> = ({
                   ...appStyles.bold24Text,
                   color: isExhausted ? colors.redError : colors.clearBlue,
                 }}>
-                {utils.toDataVolumeString(quota - used || 0)}
+                {utils.toDataVolumeString(remain || 0)}
               </AppText>
             </View>
           );
         }}
       </AnimatedCircularProgress>
     );
-  }, [isExhausted, quota, used]);
+  }, [isExhausted, remain]);
 
   const renderWarning = useCallback(() => {
     return (
