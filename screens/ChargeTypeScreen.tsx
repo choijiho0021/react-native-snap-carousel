@@ -131,8 +131,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
       if (rsp && rsp.result?.code === 0) {
         const rspStatus = rsp.objects[0]?.status;
-        // const rspStatus = {statusCd: 'A'};
-
         switch (rspStatus.statusCd) {
           // 사용 전
           case 'R':
@@ -161,6 +159,9 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           default:
             break;
         }
+      } else {
+        setAddOnDisReasen('');
+        setAddonEnable(false);
       }
     },
     [chargedSubs, extensionEnable, mainSubs],
@@ -242,6 +243,9 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           setAddonEnable(true);
           setAddonProds(objects);
         }
+      } else {
+        setAddonEnable(false);
+        setAddOnDisReasen('');
       }
 
       // 모종의 이유로 실패, 모든 분기 진입 못할 시 '잠시 후 다시 시도해주세요' 출력
