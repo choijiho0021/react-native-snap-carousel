@@ -450,8 +450,10 @@ const slice = createSlice({
         if (objects?.length < count) {
           state.subsIsLast = true;
         } else {
-          if (reset) state.subsOffset = objects?.length;
-          else state.subsOffset += objects?.length;
+          if (reset) {
+            state.subsOffset = objects?.length;
+            state.subsIsLast = false;
+          } else state.subsOffset += objects?.length;
           state.subsIsLast = false;
         }
 
