@@ -88,7 +88,7 @@ const subsReload = createAsyncThunk(
   async (param: SubscriptionParam, {getState, rejectWithValue}) => {
     const {order} = getState() as RootState;
     param.offset = 0;
-    param.count = order.subs.length;
+    param.count = order.subs.length < 10 ? 10 : order.subs.length + 1;
 
     // 현재 sub의 수가 0이라면 리로드할 필요가 없음
     if (order.subs.length <= 0) {
