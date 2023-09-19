@@ -234,7 +234,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         setAddOnDisReasen(info.msg.kr);
         setAddonEnable(false);
       } else if (result === 0) {
-        // 왜 objects가 아니라 rsp.length? 확인 필요
         if ((objects?.length || 0) < 1) {
           // 상품 없음
           setAddonEnable(false);
