@@ -45,7 +45,7 @@ type ProdByTypeProps = {
   onTop?: (v: boolean) => void;
 };
 
-const DEFAULT_FILTER_LIST = ['500', '1024', '2048'];
+const DEFAULT_FILTER_LIST = ['500', '1024', '2048', '3072'];
 
 const ProdByType: React.FC<ProdByTypeProps> = ({
   prodData,

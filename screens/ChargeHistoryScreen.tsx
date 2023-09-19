@@ -668,9 +668,9 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
       <EsimModal
         visible={showModal}
         subs={selectedSubs}
-        cmiPending={pending}
-        cmiUsage={usage}
-        cmiStatus={status}
+        usageLoading={pending}
+        dataUsage={usage}
+        dataStatus={status}
         onCancelClose={() => {
           setShowModal(false);
           setStatus({});

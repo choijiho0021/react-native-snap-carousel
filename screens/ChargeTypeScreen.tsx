@@ -12,7 +12,7 @@ import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
 import ChargeTypeButton from './EsimScreen/components/ChargeTypeButton';
 import {API} from '@/redux/api';
-import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {AddOnOptionType, RkbSubscription} from '@/redux/api/subscriptionApi';
 import {actions as modalActions} from '@/redux/modules/modal';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
@@ -65,6 +65,8 @@ type ChargeTypeScreenProps = {
   route: RouteProp<HomeStackParamList, 'ChargeType'>;
 };
 
+export const RESULT_OVER_LIMIT = 1;
+
 const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   navigation,
   route: {params},
@@ -87,18 +89,11 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [extensionDisReason, setExtensionDisReason] = useState('');
   const [addonProds, setAddonProds] = useState<RkbAddOnProd[]>([]);
   const dispatch = useDispatch();
-  const extensionEnable = useMemo(
-    () => mainSubs.partner === 'cmi' && isChargeable,
-    [isChargeable, mainSubs.partner],
-  );
 
-  // 쿼드셀 무제한 상품의 경우 남은 기간 충전은 1회로 제한 됨
-  const quadAddonOverLimited = useMemo(
-    () =>
-      mainSubs.partner?.startsWith('quadcell') &&
-      mainSubs.daily === 'daily' &&
-      addOnData?.find((a) => Number(a.prodDays) > 1),
-    [addOnData, mainSubs],
+  const [extensionEnable, setExtensionEnable] = useState(false);
+  const extensionExpireCheck = useMemo(
+    () => extensionEnable && isChargeable,
+    [extensionEnable, isChargeable],
   );
 
   useEffect(() => {
@@ -118,24 +113,23 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const checkStatus = useCallback(
     async (item: RkbSubscription) => {
       setStatusLoading(true);
+
       let rsp;
-      if (item.partner === 'cmi' && item?.subsIccid) {
-        // CMI 종량제 addOn 미지원
-        if (item.daily === 'total') {
-          setStatusLoading(false);
-          return;
-        }
+      if (item.partner?.startsWith('cmi') && item?.subsIccid) {
         rsp = await API.Subscription.cmiGetStatus({
           iccid: item?.subsIccid || '',
         });
       } else if (item.partner?.startsWith('quadcell') && item.imsi) {
-        rsp = await API.Subscription.quadcellGetStatus({
+        rsp = await API.Subscription.quadcellGetUsage({
           imsi: item.imsi,
+          partner: item.partner,
+          usage: 'n',
         });
       }
+
       setStatusLoading(false);
 
-      if (rsp && rsp.result.code === 0) {
+      if (rsp && rsp.result?.code === 0) {
         const rspStatus = rsp.objects[0]?.status;
         switch (rspStatus.statusCd) {
           // 사용 전
@@ -145,7 +139,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           // 사용중
           case 'A':
             setExpireTime(moment(rspStatus.endTime));
-            if (item.partner === 'cmi') {
+
+            if (extensionEnable) {
               if (chargedSubs) {
                 const i = chargedSubs.find((s) => {
                   return s.subsOrderNo === rspStatus?.orderId;
@@ -164,10 +159,25 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           default:
             break;
         }
+      } else {
+        setAddOnDisReasen('');
+        setAddonEnable(false);
       }
     },
-    [chargedSubs, mainSubs],
+    [chargedSubs, extensionEnable, mainSubs],
   );
+
+  useEffect(() => {
+    // 남은 사용기간 구하기
+    if (status === 'R' && mainSubs.prodDays) {
+      setRemainDays(Number(mainSubs.prodDays));
+    } else if (expireTime) {
+      const today = moment();
+      setRemainDays(
+        Math.ceil(expireTime.diff(today, 'seconds') / (24 * 60 * 60)),
+      );
+    }
+  }, [expireTime, mainSubs, status]);
 
   useEffect(() => {
     if (mainSubs) checkStatus(mainSubs);
@@ -181,102 +191,125 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       }
       setExtensionDisReason('unsupported');
     }
-  }, [extensionEnable, isChargeable, mainSubs.partner]);
-
-  useEffect(() => {
-    // 남은 사용기간 구하기
-    if (status === 'R' && mainSubs.prodDays) {
-      setRemainDays(Number(mainSubs.prodDays));
-    } else if (expireTime) {
-      const today = moment();
-      setRemainDays(
-        Math.ceil(expireTime.diff(today, 'seconds') / (24 * 60 * 60)),
-      );
-    }
-  }, [expireTime, mainSubs, mainSubs.partner, status]);
+  }, [extensionEnable, isChargeable]);
 
   const getAddOnProduct = useCallback(async () => {
     setAddonLoading(true);
     const subs = chargeableItem || mainSubs;
-    if (subs.nid && remainDays && remainDays > 0) {
-      const data = await API.Product.getAddOnProduct(
+
+    // console.log('remainDays : ', remainDays);
+    // console.log('subs.nid : ', subs.nid);
+    // console.log('status : ', status);
+
+    // console.log('상품별 필드 조회  : ', subs.addOnOption);
+    // console.log('파트너사 : ', subs.partner);
+    // console.log('기존 상태값 : ', status);
+
+    if (subs.nid && status && remainDays && remainDays > 0) {
+      const rsp = await API.Product.getAddOnProduct(
         subs.nid,
         subs.daily === 'daily' ? remainDays.toString() : '1',
+        status,
       );
 
-      const rsp = data.objects;
-      const remainDaysProd = rsp.filter((r) => r.days !== '1');
+      const {
+        result,
+        objects,
+        info,
+      }: {
+        result: number;
+        objects: RkbAddOnProd[];
+        info?: {charge: string; msg: {kr: string}};
+      } = rsp;
 
-      if (rsp.length < 1) {
-        // 상품 없음
+      // console.log('충전 상품 있는 지 : ', objects);
+      // console.log(
+      //   '무제한/종량제 : ',
+      //   subs.daily === 'daily' ? '무제한' : '종량제',
+      // );
+
+      // cmi 무제한 상품 전 상태, 다음 페이지에서 불가능 안내 -> 확인 완료
+
+      if (info?.charge === 'N') {
+        setAddOnDisReasen(info.msg.kr);
         setAddonEnable(false);
-        setAddOnDisReasen('noProd');
-      } else if (
-        // 남은 기간 충전에 대한 처리 건이 있으면 서버에서 하루 충전 상품만 내려줌
-        // 사용전인 쿼드셀 무제한 상품의 경우 하루 충전은 지원하지 않음
-        remainDaysProd.length < 1 &&
-        subs.partner?.startsWith('quadcell') &&
-        status === 'R' &&
-        mainSubs.daily === 'daily'
-      ) {
-        setAddonEnable(false);
-        setAddOnDisReasen('overLimit');
+      } else if (result === 0) {
+        if ((objects?.length || 0) < 1) {
+          // 상품 없음
+          setAddonEnable(false);
+          setAddOnDisReasen('noProd');
+        } else {
+          setAddonEnable(true);
+          setAddonProds(objects);
+        }
       } else {
-        setAddonEnable(true);
-        setAddonProds(rsp);
+        setAddonEnable(false);
+        setAddOnDisReasen('');
       }
+
+      // 모종의 이유로 실패, 모든 분기 진입 못할 시 '잠시 후 다시 시도해주세요' 출력
     }
     setAddonLoading(false);
   }, [chargeableItem, mainSubs, remainDays, status]);
 
+  const unsupportExtension = useCallback(() => {
+    setExtensionEnable(false);
+    setExtensionDisReason('unsupported');
+  }, []);
+
+  const unsupportAddon = useCallback(() => {
+    setAddonEnable(false);
+    setAddOnDisReasen('unsupported');
+  }, []);
+
+  // 상품 비활성화 여부 체크하는 로직
   useEffect(() => {
-    // BC 상품 및 cmi 종량제 상품 미지원
-    if (
-      mainSubs.partner === 'billionconnect' ||
-      (mainSubs.partner === 'cmi' && mainSubs.daily === 'total')
-    ) {
-      setAddonEnable(false);
-      setAddOnDisReasen('unsupported');
+    const {addOnOption} = mainSubs;
+
+    // 충전 조건 1. 용량 충전 불가능 상품
+    if (addOnOption === AddOnOptionType.ADD_ON) {
+      setAddonEnable(true);
+      unsupportExtension();
+    }
+    if (addOnOption === AddOnOptionType.BOTH) {
+      setAddonEnable(true);
+      setExtensionEnable(true);
+    }
+    if (addOnOption === AddOnOptionType.EXTENSTION) {
+      setExtensionEnable(true);
+      unsupportAddon();
       return;
     }
+    if (addOnOption === AddOnOptionType.NEVER) {
+      unsupportExtension();
+      unsupportAddon();
+      return;
+    }
+
+    console.log('@@@@@ getStatus? : ', status);
     if (status) {
-      // 모든 사용완료 상품은 충전 불가
+      // // 충전 조건 2. 사용 전, 용량 충전 가능한 상품 처리
+      if (status === 'R' && mainSubs.partner?.startsWith('cmi')) {
+        setAddonEnable(false);
+        setAddOnDisReasen('reserved');
+        return;
+      }
+
+      // // 충전 조건 3. 모든 사용완료 상품은 충전 불가
       if (status === 'U') {
         setAddonEnable(false);
         setAddOnDisReasen('used');
         return;
       }
 
-      // 쿼드셀 무제한상품 사용전 남은 기간 충전 이력이 있을 경우
-      if (quadAddonOverLimited && status === 'R') {
-        setAddonEnable(false);
-        setAddOnDisReasen('overLimit');
-        return;
-      }
-
-      // cmi 무제한 상품 사용전 상태에는 충전은 불가하지만 다음 페이지에로 넘어가서 해당 내용 안내
-      if (
-        status === 'R' &&
-        mainSubs.partner === 'cmi' &&
-        mainSubs.daily === 'daily'
-      ) {
-        setAddonEnable(true);
-        return;
-      }
       getAddOnProduct();
     }
-  }, [
-    getAddOnProduct,
-    mainSubs.daily,
-    mainSubs.partner,
-    quadAddonOverLimited,
-    status,
-  ]);
+  }, [getAddOnProduct, mainSubs, status, unsupportAddon, unsupportExtension]);
 
   const onPress = useCallback(
     async (type: string) => {
       if (type === 'extension') {
-        if (extensionEnable) {
+        if (extensionExpireCheck) {
           const checked = await AsyncStorage.getItem(
             'esim.charge.extension.modal.check',
           );
@@ -285,12 +318,13 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
               'esim.charge.extension.modal.check',
               'checked',
             );
+
             dispatch(
               modalActions.renderModal(() => (
                 <ChargeTypeModal
                   type={type}
                   onPress={() => onPress(type)}
-                  disabled={!extensionEnable}
+                  disabled={!extensionExpireCheck}
                   disReason={{
                     addOn: addOnDisReason,
                     extension: extensionDisReason,
@@ -357,7 +391,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       dispatch,
       expireTime,
       extensionDisReason,
-      extensionEnable,
+      extensionExpireCheck,
       mainSubs,
       navigation,
       status,
@@ -385,7 +419,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             onPress={() => onPress(t)}
             disabled={
               (t === 'addOn' && !addonEnable) ||
-              (t === 'extension' && !extensionEnable)
+              (t === 'extension' && !extensionExpireCheck)
             }
             disReason={{addOn: addOnDisReason, extension: extensionDisReason}}
           />

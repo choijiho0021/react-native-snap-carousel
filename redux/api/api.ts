@@ -132,6 +132,7 @@ const path = {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage/quota',
       cmiStatus: 'api/v1/pvd/pv/cmi/v2/bundle/status',
       quadcell: 'api/v1/pvd/pv/quadcell',
+      quadcell2: 'api/v1/pvd/pv/quadcell2',
       bc: 'api/v1/pvd/pv/bc',
       hkRegStatus: 'api/v1/pvd/pv/cmi/v2/status',
     },
@@ -333,8 +334,8 @@ const callHttp = async <T>(
       !url.includes('user/logout')
     ) {
       const key = {
-        user: await retrieveData(API.User.KEY_MOBILE),
-        pass: await retrieveData(API.User.KEY_PIN),
+        user: await retrieveData(API.User.KEY_MOBILE, true),
+        pass: await retrieveData(API.User.KEY_PIN, true),
         // token: await API.User.getToken(),
       };
       const isLoggedIn = await userApi.logIn(key);

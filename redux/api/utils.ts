@@ -338,8 +338,8 @@ const intentToUrl = (url: string): string => {
 };
 
 const toDataVolumeString = (dataVolume: number): string => {
-  if (dataVolume < 1024) return `${dataVolume}MB`;
-  return `${dataVolume / 1024}GB`;
+  if (dataVolume < 1024) return `${dataVolume.toFixed(0)}MB`;
+  return `${(dataVolume / 1024).toFixed(2)}GB`;
 };
 
 const toVersionStr = (version: string): number => {

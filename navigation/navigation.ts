@@ -118,7 +118,7 @@ export type HomeStackParamList = {
   PaymentGateway: PaymentParams;
   PymMethod: {isPaid?: boolean; pymPrice?: number; mode?: PymMethodScreenMode};
   FindAddress: undefined;
-  PaymentResult: {pymResult: boolean; mode?: string};
+  PaymentResult: {pymResult: boolean; mode?: 'recharge' | string};
   CodePush: undefined;
   CustomerProfile: undefined;
   AddProfile: undefined;
@@ -128,7 +128,12 @@ export type HomeStackParamList = {
   Settings: undefined;
   Auth: {screen: string};
   HeaderTitle: undefined;
-  Esim: {clickPromotion?: boolean; iccid?: string; nid?: string};
+  Esim: {
+    clickPromotion?: boolean;
+    iccid?: string;
+    nid?: string;
+    subsId?: string;
+  };
 
   MyPage: undefined;
   Recharge: {mode: string};

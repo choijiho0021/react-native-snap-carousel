@@ -42,6 +42,7 @@ import {
   actions as eventBoardActions,
 } from '@/redux/modules/eventBoard';
 import ScreenHeader from '@/components/ScreenHeader';
+import {NotiPymType} from '@/redux/api/orderApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -232,8 +233,15 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             break;
 
           case notiActions.NOTI_TYPE_PYM:
+            // 주문취소는 무족ㄴ 결제상세화면으로
+            if (split[3] === 'CANCEL_PAYMENT') {
+              navigation.navigate('PurchaseDetail', {orderId: split[1]});
+            } else if (split[2] === 'refundable') {
+              navigation.popToTop();
+              navigation.navigate('EsimStack', {screen: 'Esim'});
+            }
             // read orders if not read before
-            if (split[1]) {
+            else if (split[1]) {
               navigation.navigate('PurchaseDetail', {orderId: split[1]});
             }
             break;
@@ -241,6 +249,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
           case notiActions.NOTI_TYPE_PROVISION:
             // format : provision/{iccid}/{nid}
             navigation.popToTop();
+
             navigation.navigate('EsimStack', {
               screen: 'Esim',
               params: {
@@ -261,6 +270,15 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
 
           case notiActions.NOTI_TYPE_USIM:
             navigation.navigate('Usim');
+            break;
+
+          case notiActions.NOTI_TYPE_USAGE:
+            navigation.navigate('EsimStack', {
+              screen: 'Esim',
+              params: {
+                subsId: split[1],
+              },
+            });
             break;
 
           default:

@@ -13,12 +13,10 @@ import {
   RkbOrder,
 } from '@/redux/api/orderApi';
 import {
-  getMoment,
   RkbSubscription,
   sortSubs,
   STATUS_USED,
   SubscriptionParam,
-  toStatus,
 } from '@/redux/api/subscriptionApi';
 import {storeData, retrieveData, parseJson, utils} from '@/utils/utils';
 import {reflectWithToast, Toast} from './toast';
@@ -27,37 +25,18 @@ import Env from '@/environment';
 
 const {specialCategories} = Env.get();
 
-export const groupPartner = (partner: string) => {
-  if (partner) {
-    if (partner.startsWith('cmi')) return 'cmi';
-    if (partner.startsWith('quadcell')) return 'quadcell';
-  }
-  return partner;
-};
-
-const subsFulfillWithValue = (resp) => {
-  if (resp.result === 0) {
-    resp.objects = resp.objects.map((o) => ({
-      ...o,
-      provDate: getMoment(o.provDate),
-      lastProvDate: getMoment(o.lastProvDate),
-      cnt: parseInt(o.cnt || '0', 10),
-      lastExpireDate: getMoment(o.lastExpireDate),
-      startDate: getMoment(o.startDate),
-      promoFlag: o?.promoFlag?.map((p: string) => specialCategories[p]),
-      partner: groupPartner(o.partner),
-      status: toStatus(o.field_status),
-      purchaseDate: getMoment(o.purchaseDate),
-      expireDate: getMoment(o.expireDate),
-    }));
-  }
-  return resp;
-};
+export const isBillionConnect = (sub?: RkbSubscription) =>
+  sub?.partner === 'billionconnect';
 
 const init = createAsyncThunk('order/init', async (mobile?: string) => {
   const oldData = await retrieveData(`${API.Order.KEY_INIT_ORDER}.${mobile}`);
   return oldData;
 });
+
+// cachedApi 수정한 후 지우기
+const defaultReturn = (resp) => {
+  return resp;
+};
 
 const getOrderById = createAsyncThunk(
   'order/getOrderById',
@@ -82,7 +61,7 @@ const getNotiSubs = createAsyncThunk(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
     )(param, {
-      fulfillWithValue: subsFulfillWithValue,
+      fulfillWithValue: defaultReturn,
     });
   },
 );
@@ -95,11 +74,15 @@ const getSubs = createAsyncThunk(
       param.offset = order.subsOffset;
     }
 
+    if (param.reset) {
+      param.offset = 0;
+    }
+
     return cachedApi(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
     )(param, {
-      fulfillWithValue: subsFulfillWithValue,
+      fulfillWithValue: defaultReturn,
     });
   },
 );
@@ -109,7 +92,7 @@ const subsReload = createAsyncThunk(
   async (param: SubscriptionParam, {getState, rejectWithValue}) => {
     const {order} = getState() as RootState;
     param.offset = 0;
-    param.count = order.subs.length;
+    param.count = order.subs.length < 10 ? 10 : order.subs.length + 1;
 
     // 현재 sub의 수가 0이라면 리로드할 필요가 없음
     if (order.subs.length <= 0) {
@@ -120,7 +103,7 @@ const subsReload = createAsyncThunk(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
     )(param, {
-      fulfillWithValue: subsFulfillWithValue,
+      fulfillWithValue: defaultReturn,
     });
   },
 );
@@ -166,7 +149,10 @@ const getOrderList = (orders) => {
 };
 
 // 질문 필요 reflectWithToast
-const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED);
+const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED, {
+  '1': 'toast:esim:hide',
+  '-1001': 'toast:esim:notExist',
+});
 
 const getOrders = createAsyncThunk(
   'order/getOrders',
@@ -460,18 +446,23 @@ const slice = createSlice({
     builder.addCase(getSubs.fulfilled, (state, action) => {
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
 
-      const {count = PAGINATION_SUBS_COUNT, offset} = action?.meta?.arg;
+      const {count = PAGINATION_SUBS_COUNT, offset, reset} = action?.meta?.arg;
 
       if (result === 0 && objects) {
         // uuid param이 있으면 특정 상품 조회, offset 처리를 넘긴다.
         // count default 10 설정되어 있음
-        if (objects?.length === count) {
-          state.subsOffset += count;
+        if (objects?.length < count) {
+          state.subsIsLast = true;
+        } else {
+          if (reset) {
+            state.subsOffset = objects?.length;
+            state.subsIsLast = false;
+          } else state.subsOffset += objects?.length;
           state.subsIsLast = false;
-        } else state.subsIsLast = true;
+        }
 
         if (offset === 0) {
-          state.subs = objects;
+          state.subs = objects.sort(sortSubs);
         } else {
           // offset이 0이 아니라면 페이지네이션 중이니 merge로 한다
           state.subs = mergeSubs(state.subs, objects);

@@ -18,7 +18,7 @@ import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
-import {code, RkbSubscription, RkbSubsUsage} from '@/redux/api/subscriptionApi';
+import {code, RkbSubscription, UsageObj} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import Env from '@/environment';
@@ -142,32 +142,32 @@ function getStatusColor(statusCd: string) {
 type UsageItemProps = {
   item: RkbSubscription;
   showSnackbar: () => void;
-  cmiPending: Boolean;
-  usage?: RkbSubsUsage;
-  cmiStatusCd?: string;
+  usageLoading: Boolean;
+  usage?: UsageObj;
+  dataStatusCd?: string;
   endTime?: string;
 };
 
 const UsageItem: React.FC<UsageItemProps> = ({
   item,
   showSnackbar,
-  cmiPending,
+  usageLoading,
   usage,
-  cmiStatusCd,
+  dataStatusCd,
   endTime,
 }) => {
   const [disableBtn, setDisableBtn] = useState(false);
-  const [isOverUsed, setIsOverUsed] = useState(false);
   const [quota, setQuota] = useState<number>(usage?.quota || 0);
   const [used, setUsed] = useState<number>(usage?.used || 0);
-  const isExhausted = useMemo(() => quota - used <= 0, [quota, used]);
-  const circularProgress = useRef();
-  const [isAnimated, setIsAnimated] = useState<boolean>(false);
-
-  const overProgress = useMemo(
-    () => (quota > 0 ? Math.floor(((used - quota) / quota) * 100) : 0),
-    [quota, used],
+  const [remain, setRemain] = useState<number>(usage?.remain || 0);
+  const [totalUsed, setTotalUsed] = useState<number>(usage?.totalUsed || 0);
+  const isExhausted = useMemo(() => remain <= 0, [remain]);
+  const isLowRemain = useMemo(
+    () => quota >= 0 && remain / quota <= 0.2,
+    [quota, remain],
   );
+  const circularProgress = useRef();
+
   // const showUsage = useMemo(
   //   () =>
   //     item.partner !== 'billionconnect' ||
@@ -190,24 +190,29 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [disableBtn]);
 
   useEffect(() => {
-    if (cmiStatusCd === 'A') {
-      if (usage && usage.quota >= 0 && usage.used >= 0) {
-        setQuota(usage.quota);
-        setUsed(usage.used);
+    if (dataStatusCd === 'A') {
+      if (
+        usage?.quota !== undefined &&
+        usage?.remain !== undefined &&
+        usage?.remain >= 0
+      ) {
+        setQuota(usage.quota || 0);
+        setUsed(usage.used || 0);
+        setRemain(usage.remain || 0);
+        setTotalUsed(usage.totalUsed || 0);
+        const progress =
+          quota > 0 ? Math.floor(((quota - remain) / quota) * 100) : 0.1;
 
-        const progress = quota > 0 ? Math.floor((used / quota) * 100) : 0;
-
-        if (!isAnimated && progress > 0) {
-          setIsAnimated(true);
-          circularProgress.current?.reAnimate(0.01, progress, 3000, null);
+        if (progress >= 0) {
+          circularProgress.current?.reAnimate(0, progress, 3000, null);
         }
       }
     }
-    if (esimApp && !cmiStatusCd) {
+    if (esimApp && !dataStatusCd) {
       console.log('@@ show snackbar');
       showSnackbar();
     }
-  }, [cmiStatusCd, isAnimated, isOverUsed, quota, showSnackbar, usage, used]);
+  }, [dataStatusCd, quota, remain, showSnackbar, usage, used]);
 
   const renderResetTimeRow = useCallback(
     (key: string, rowStyle: ViewStyle = {}) => {
@@ -220,9 +225,10 @@ const UsageItem: React.FC<UsageItemProps> = ({
             {i18n.t(`esim:time:${key}`)}
           </AppText>
           <AppText style={{...appStyles.bold16Text, color: colors.black}}>
-            {item.partner === 'cmi'
-              ? moment(endTime).tz(tz).format('HH:mm:ss') || i18n.t('contact:q')
-              : moment('2023-01-01T01:00:00+0900').tz(tz).format('HH:mm:ss')}
+            {item.partner === 'quadcell'
+              ? moment('2023-01-01T01:00:00+0900').tz(tz).format('HH:mm:ss')
+              : moment(endTime).tz(tz).format('HH:mm:ss') ||
+                i18n.t('contact:q')}
           </AppText>
         </View>
       );
@@ -230,25 +236,15 @@ const UsageItem: React.FC<UsageItemProps> = ({
     [endTime, item.partner],
   );
 
-  // data는 esim:Mb usim:kb 단위
-  const toGb = useCallback((data: number) => {
-    if (data <= 0) return 0;
-    return (
-      Math.round((esimApp ? data / 1024 : data / 1024 / 1024) * 100) / 100
-    )?.toFixed(2);
-  }, []);
-
   const renderCaution = useCallback(() => {
     let key = '';
 
     if (!showUsage) {
       key = 'notShow';
-    } else if (item.daily === 'total') {
-      key = '';
     } else if (isExhausted) {
-      key = 'exhausted';
-    } else if (used && quota && Math.floor((used / quota) * 100) >= 80) {
-      key = 'reqCharge';
+      key = `${item.daily}:exhausted`;
+    } else if (isLowRemain) {
+      key = `${item.daily}:reqCharge`;
     }
 
     const isNotShow = key === 'notShow';
@@ -280,7 +276,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
     ) : (
       <View style={{height: 20}} />
     );
-  }, [isExhausted, item.daily, quota, showUsage, used]);
+  }, [isExhausted, isLowRemain, item.daily, showUsage]);
 
   const renderDailyUsage = useCallback(
     () => (
@@ -294,11 +290,11 @@ const UsageItem: React.FC<UsageItemProps> = ({
             textAlign: 'center',
             color: colors.redError,
           }}>
-          {` ${toGb(used || 0)}GB`}
+          {utils.toDataVolumeString(totalUsed < quota ? quota : totalUsed)}
         </AppText>
       </View>
     ),
-    [toGb, used],
+    [quota, totalUsed],
   );
 
   const renderTime = useCallback(() => {
@@ -361,13 +357,9 @@ const UsageItem: React.FC<UsageItemProps> = ({
         fill={0}
         rotation={0}
         backgroundWidth={6}
-        tintColor={isOverUsed ? colors.redError : colors.gray3}
-        backgroundColor={isOverUsed ? colors.gray3 : colors.clearBlue}>
+        tintColor={colors.gray3}
+        backgroundColor={colors.clearBlue}>
         {(fill) => {
-          if (fill > 100) {
-            setIsOverUsed(isExhausted);
-            circularProgress.current?.reAnimate(0.1, overProgress, 3000, null);
-          }
           return (
             <View style={{alignItems: 'center'}}>
               <View style={{width: 24, height: 24}}>
@@ -385,14 +377,14 @@ const UsageItem: React.FC<UsageItemProps> = ({
                   ...appStyles.bold24Text,
                   color: isExhausted ? colors.redError : colors.clearBlue,
                 }}>
-                {`${toGb(quota - used || 0)}GB`}
+                {utils.toDataVolumeString(remain || 0)}
               </AppText>
             </View>
           );
         }}
       </AnimatedCircularProgress>
     );
-  }, [isExhausted, isOverUsed, overProgress, quota, toGb, used]);
+  }, [isExhausted, remain]);
 
   const renderWarning = useCallback(() => {
     return (
@@ -421,10 +413,10 @@ const UsageItem: React.FC<UsageItemProps> = ({
       <View style={styles.activeContainer}>
         {showUsage && renderAnimatedCircularProgress()}
 
-        {showUsage &&
+        {/* {showUsage &&
           isExhausted &&
           item.daily === 'daily' &&
-          renderDailyUsage()}
+          renderDailyUsage()} */}
 
         {!showUsage && (
           <AppSvgIcon style={{marginBottom: 20}} name="notShowEsimUsage" />
@@ -438,11 +430,8 @@ const UsageItem: React.FC<UsageItemProps> = ({
       </View>
     );
   }, [
-    isExhausted,
-    item.daily,
     renderAnimatedCircularProgress,
     renderCaution,
-    renderDailyUsage,
     renderTime,
     renderWarning,
     showUsage,
@@ -459,7 +448,9 @@ const UsageItem: React.FC<UsageItemProps> = ({
                   {item.prodName}
                 </AppText>
                 <AppText key={item.prodName} style={styles.bold14WarmGrey}>
-                  {i18n.t('esim:quota', {quota: toGb(quota || 0)})}
+                  {i18n.t('esim:quota', {
+                    quota: utils.toDataVolumeString(quota || 0),
+                  })}
                 </AppText>
               </View>
               {usageRender()}
@@ -504,11 +495,11 @@ const UsageItem: React.FC<UsageItemProps> = ({
         </View>
       );
     },
-    [item.key, item.partner, item.prodName, quota, toGb, usageRender],
+    [item.key, item.partner, item.prodName, quota, usageRender],
   );
 
   const [status, statusCd] = esimApp
-    ? [i18n.t(`esim:${cmiStatusCd || 'R'}`), cmiStatusCd || 'R']
+    ? [i18n.t(`esim:${dataStatusCd || 'R'}`), dataStatusCd || 'R']
     : [item.status, item.statusCd];
 
   const {statusColor = colors.warmGrey, statusBackgroundColor} =
@@ -521,7 +512,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           <AppText key={i18n.t('esim:checkUsage')} style={appStyles.bold18Text}>
             {i18n.t('esim:checkUsage')}
           </AppText>
-          {!cmiPending && (
+          {!usageLoading && (
             <AppText
               key={item.nid}
               style={[
@@ -532,7 +523,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
             </AppText>
           )}
         </View>
-        {cmiPending ? (
+        {usageLoading ? (
           <View style={{paddingVertical: 30, height: 170}}>
             <Video
               source={loadingImg}

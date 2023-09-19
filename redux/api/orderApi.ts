@@ -52,6 +52,8 @@ const consentItem = {
 };
 export type CancelKeywordType = 'changed' | 'mistake' | 'complain' | 'etc' | '';
 
+export type NotiPymType = 'NOTI_PAYMENT' | 'CANCEL_PAYMENT';
+
 export type RkbPayment = {
   amount: Currency;
   paymentGateway: string;

@@ -3,6 +3,9 @@ import moment, {Moment} from 'moment';
 import i18n from '@/utils/i18n';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import {isDraft} from '../modules/order';
+import Env from '@/environment';
+
+const {specialCategories} = Env.get();
 
 const STATUS_ACTIVE = 'A'; // 사용중
 const STATUS_INACTIVE = 'I'; // 미사용
@@ -40,29 +43,11 @@ export const giftCode = {
 //   E: 2,
 // };
 
-export const cmiStatusCd = {
+export const dataStatusCd = {
   1: 'R',
   2: 'E', // 사용여부와 관련 없이, 상품의 유효기간 만료
   3: 'A', // 사용완료된 상태여도 Active 리턴
   99: 'C',
-};
-
-export const quadcellStatusCd = {
-  '0': 'R', // Inactivate - Ready to use
-  '1': 'A', // Activated
-  '2': 'U', // In “top-up-awaiting” window
-  '3': 'U', // Locked
-  '4': 'U', // Expired
-
-  // '2': 'W', // In “top-up-awaiting” window
-  // '3': 'L', // Locked
-};
-
-export const bcStatusCd = {
-  0: 'R', // not used
-  1: 'A', // in use
-  2: 'U', // used
-  3: 'C', // cancelled
 };
 
 export const isDisabled = (item: RkbSubscription) => {
@@ -140,12 +125,21 @@ export type StatusObj = {
 export type UsageObj = {
   quota?: number;
   used?: number;
+  remain?: number;
+  totalUsed?: number;
 };
 
 export type Usage = {
   status: StatusObj;
   usage: UsageObj;
 };
+
+export enum AddOnOptionType {
+  NEVER = 'N',
+  ADD_ON = 'A',
+  EXTENSTION = 'E',
+  BOTH = 'B',
+}
 
 export type RkbSubscription = {
   nid: string;
@@ -190,7 +184,7 @@ export type RkbSubscription = {
   cnt?: number;
   lastExpireDate?: Moment;
   startDate?: Moment;
-  addOnOption?: string;
+  addOnOption?: AddOnOptionType;
   resetTime?: string;
 };
 
@@ -262,13 +256,9 @@ const toCmiStatus = (data) => {
   return data;
 };
 
-export type RkbSubsUsage = {
-  quota: number;
-  used: number;
-};
 const toSubsUsage = (data: {
-  objects: {usage: RkbSubsUsage};
-}): ApiResult<RkbSubsUsage> => {
+  objects: {usage: UsageObj};
+}): ApiResult<UsageObj> => {
   if (data.objects && data.objects.usage) {
     return api.success([data.objects.usage]);
   }
@@ -282,17 +272,43 @@ const toSubsUsage = (data: {
 export type SubscriptionParam = {
   iccid: string;
   token: string;
+  subsId?: string;
   uuid?: string;
   hidden?: boolean;
   count?: number;
   offset?: number;
+  reset?: boolean;
+};
+
+const subsFulfillWithValue = (resp) => {
+  if (resp.result === 0) {
+    resp.objects = resp.objects.map((o) => ({
+      ...o,
+      provDate: getMoment(o.provDate),
+      lastProvDate: getMoment(o.lastProvDate),
+      cnt: parseInt(o.cnt || '0', 10),
+      lastExpireDate: getMoment(o.lastExpireDate),
+      startDate: getMoment(o.startDate),
+      promoFlag: o?.promoFlag
+        ?.map((p: string) => specialCategories[p.trim()])
+        .filter((v) => !_.isEmpty(v)),
+
+      partner: o.partner,
+      status: toStatus(o.field_status),
+      purchaseDate: getMoment(o.purchaseDate),
+      expireDate: getMoment(o.expireDate),
+    }));
+  }
+  return resp;
 };
 
 const getSubscription = ({
   uuid,
   iccid,
+  subsId,
   token,
   hidden,
+  reset = false,
   count = 10,
   offset = 0,
 }: SubscriptionParam) => {
@@ -303,11 +319,15 @@ const getSubscription = ({
 
   const url = `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${
     uuid || '0'
-  }?_format=json${
-    hidden ? '' : '&hidden=0'
+  }?_format=json${hidden ? '' : '&hidden=0'}${
+    subsId ? `&subsId=${subsId}` : ''
   }&iccid=${iccid}&count=${count}&offset=${offset}`;
 
-  return api.callHttpGet(url, (resp) => resp, api.withToken(token, 'json'));
+  return api.callHttpGet(
+    url,
+    (resp) => subsFulfillWithValue(resp),
+    api.withToken(token, 'json'),
+  );
 };
 
 const updateSubscriptionInfo = ({
@@ -422,9 +442,11 @@ const getSubsUsage = ({id, token}: {id?: string; token?: string}) => {
 const cmiGetSubsUsage = ({
   iccid,
   orderId,
+  imsi,
 }: {
   iccid: string;
   orderId: string;
+  imsi?: string;
 }) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
@@ -434,7 +456,7 @@ const cmiGetSubsUsage = ({
   return api.callHttpGet<Usage>(
     `${api.rokHttpUrl(
       api.path.rokApi.pv.cmiUsage,
-    )}&iccid=${iccid}&orderId=${orderId}`,
+    )}&iccid=${iccid}&orderId=${orderId}&imsi=${imsi}`,
     (data) => data,
     new Headers({'Content-Type': 'application/json'}),
   );
@@ -492,36 +514,23 @@ const quadcellGetData = ({
 
 const quadcellGetUsage = ({
   imsi,
-  query,
+  partner,
+  usage = 'y',
 }: {
   imsi: string;
-  query?: Record<string, string | number>;
+  partner: string;
+  usage?: string;
 }) => {
   if (!imsi)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
 
-  return api.callHttpGet<Usage>(
-    `${api.rokHttpUrl(
-      `${api.path.rokApi.pv.quadcell}/usage/quota`,
-    )}&imsi=${imsi}`,
-    (data) => {
-      if (data?.result?.code === 0) {
-        return api.success(data?.objects);
-      }
-      return data;
-    },
-    new Headers({'Content-Type': 'application/json'}),
-  );
-};
-
-const quadcellGetStatus = ({imsi}: {imsi: string}) => {
-  if (!imsi)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
+  const path =
+    partner === 'quadcell2'
+      ? api.path.rokApi.pv.quadcell2
+      : api.path.rokApi.pv.quadcell;
 
   return api.callHttpGet<Usage>(
-    `${api.rokHttpUrl(
-      `${api.path.rokApi.pv.quadcell}/usage/quota`,
-    )}&imsi=${imsi}&usage=n`,
+    `${api.rokHttpUrl(`${path}/usage/quota`)}&imsi=${imsi}&usage=${usage}`,
     (data) => data,
     new Headers({'Content-Type': 'application/json'}),
   );
@@ -586,7 +595,7 @@ export default {
   CALL_PRODUCT,
 
   code,
-  cmiStatusCd,
+  dataStatusCd,
 
   STATUS_ACTIVE,
   STATUS_INACTIVE,
@@ -609,7 +618,6 @@ export default {
   cmiGetSubsStatus,
   cmiGetStatus,
   quadcellGetData,
-  quadcellGetStatus,
   getHkRegStatus,
   bcGetSubsUsage,
   quadcellGetUsage,

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {ScrollView, StyleSheet, View} from 'react-native';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import AppButton from './AppButton';
@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type DailyProdFilterList = 'all' | '500' | '1024' | '2048';
+export type DailyProdFilterList = 'all' | '500' | '1024' | '2048' | '3072';
 
 type DailyProdFilterProps = {
   onValueChange: (v: DailyProdFilterList) => void;
@@ -27,12 +27,14 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
   const [filter, setFilter] = useState<DailyProdFilterList>('all');
 
   return (
-    <View
+    <ScrollView
       style={{
         flexDirection: 'row',
         marginHorizontal: 20,
         marginBottom: 24,
-      }}>
+      }}
+      horizontal
+      showsHorizontalScrollIndicator={false}>
       {filterList.map((elm, idx) => (
         <AppButton
           onPress={() => {
@@ -57,7 +59,7 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
           title={i18n.t(`daily:filter:${elm}`)}
         />
       ))}
-    </View>
+    </ScrollView>
   );
 };
 

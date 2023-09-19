@@ -27,7 +27,6 @@ import {HomeStackParamList, navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {
-  bcStatusCd,
   RkbSubscription,
   StatusObj,
   UsageObj,
@@ -230,14 +229,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [showSnackBar, setShowSnackBar] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [subs, setSubs] = useState<RkbSubscription>();
-  const [cmiPending, setCmiPending] = useState(false);
+  const [usageLoading, setUsageLoading] = useState(false);
   const [showGiftModal, setShowGiftModal] = useState(false);
   const [isPressClose, setIsPressClose] = useState(false);
-  const [cmiUsage, setCmiUsage] = useState({});
-  const [cmiStatus, setCmiStatus] = useState({});
+  const [dataUsage, setDataUsage] = useState({});
+  const [dataStatus, setDataStatus] = useState({});
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const isFocused = useIsFocused();
   const flatListRef = useRef<FlatList>(null);
@@ -296,14 +294,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const onRefresh = useCallback(
     // hidden : true (used 상태인 것들 모두) , false (pending, reserve 상태 포함 하여 hidden이 false 것들만)
-    (hidden: boolean, reset?: boolean) => {
+    (hidden: boolean, reset?: boolean, subsId?: string) => {
       if (iccid) {
         setRefreshing(true);
 
-        if (reset) action.order.resetOffset();
-
         action.order
-          .getSubsWithToast({iccid, token, hidden})
+          .getSubsWithToast({iccid, token, hidden, subsId, reset})
           .then(() => {
             action.account.getAccount({iccid, token});
             getOrders(hidden);
@@ -329,10 +325,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   }, [action.order, getOrders, iccid, isFocused, token]);
 
   useEffect(() => {
+    const subsId = route?.params?.subsId;
+
     // 첫번째로 로딩 시 숨긴 subs를 제외하고 10개만 가져오도록 함
-    onRefresh(false, true);
-    setIsFirstLoad(true);
-  }, [onRefresh]);
+    if (isFirstLoad || subsId) onRefresh(false, true, subsId);
+  }, [isFirstLoad, onRefresh, route?.params?.subsId]);
 
   const empty = useCallback(() => {
     return _.isEmpty(order.drafts) || isEditMode ? (
@@ -357,6 +354,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       if (item?.subsIccid && item?.packageId) {
         const {result, objects} = await API.Subscription.cmiGetSubsUsage({
           iccid: item?.subsIccid,
+          imsi: item?.imsi,
           orderId: item?.subsOrderNo || 'noOrderId',
         });
 
@@ -364,7 +362,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       }
       return {
         status: {statusCd: undefined, endTime: undefined},
-        usage: {quota: undefined, used: undefined},
+        usage: {
+          quota: undefined,
+          used: undefined,
+          remain: undefined,
+          totalUsed: undefined,
+        },
       };
     },
     [],
@@ -375,13 +378,19 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       if (item?.imsi) {
         const {result, objects} = await API.Subscription.quadcellGetUsage({
           imsi: item.imsi,
+          partner: item.partner!,
         });
 
-        if (result === 0 && objects.length > 0) return objects[0];
+        if (result?.code === 0 && objects.length > 0) return objects[0];
       }
       return {
         status: {statusCd: undefined, endTime: undefined},
-        usage: {quota: undefined, used: undefined},
+        usage: {
+          quota: undefined,
+          used: undefined,
+          remain: undefined,
+          totalUsed: undefined,
+        },
       };
     },
     [],
@@ -402,7 +411,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
       return {
         status: {statusCd: undefined, endTime: undefined},
-        usage: {quota: undefined, used: undefined},
+        usage: {
+          quota: undefined,
+          used: undefined,
+          remain: undefined,
+          totalUsed: undefined,
+        },
       };
     },
     [],
@@ -410,7 +424,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const onPressUsage = useCallback(
     async (item: RkbSubscription) => {
-      setCmiPending(true);
+      setUsageLoading(true);
       setSubs(item);
 
       let result = {status: {}, usage: {}};
@@ -430,13 +444,32 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           result = await checkCmiData(item);
           break;
       }
-      setCmiStatus(result.status);
-      setCmiUsage(result.usage);
-      setCmiPending(false);
+
+      setDataStatus(result.status);
+      setDataUsage(result.usage);
+      setUsageLoading(false);
       return result;
     },
     [checkBcData, checkCmiData, checkQuadcellData],
   );
+
+  useEffect(() => {
+    const index = subsData?.findIndex(
+      (elm) => elm.nid === route?.params?.subsId,
+    );
+
+    if (index >= 0 && !isEditMode) {
+      setShowModal(true);
+      onPressUsage(subsData[index]);
+      flatListRef?.current?.scrollToIndex({index, animated: true});
+    }
+  }, [isEditMode, navigation, onPressUsage, route?.params?.subsId, subsData]);
+
+  useEffect(() => {
+    if (!isFocused || (isEditMode && route?.params?.subsId)) {
+      navigation.setParams({subsId: undefined});
+    }
+  }, [isEditMode, isFocused, navigation, route?.params?.subsId]);
 
   const days14ago = useMemo(() => moment().subtract(14, 'days'), []);
 
@@ -448,16 +481,17 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         index={index}
         mainSubs={item}
         showDetail={
-          index === firstUsedIdx &&
-          item.statusCd === 'U' &&
-          item.purchaseDate.isAfter(days14ago)
+          (index === firstUsedIdx &&
+            item.statusCd === 'U' &&
+            item.purchaseDate.isAfter(days14ago)) ||
+          route?.params?.subsId === item.nid
         }
         onPressUsage={onPressUsage}
         setShowModal={setShowModal}
         isEditMode={isEditMode}
       />
     ),
-    [days14ago, firstUsedIdx, isEditMode, onPressUsage],
+    [days14ago, firstUsedIdx, isEditMode, onPressUsage, route?.params?.subsId],
   );
 
   const renderDraft = useCallback(
@@ -571,7 +605,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   useEffect(() => {
     if (route?.params) {
-      const {iccid: subsIccid} = route.params;
+      const {iccid: subsIccid} = route?.params;
       if (subsIccid) {
         const main = order.subs?.find((s) => s.subsIccid === subsIccid);
 
@@ -656,9 +690,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const navigateToChargeType = useCallback(() => {
     setShowModal(false);
-    setCmiStatus({});
-    setCmiUsage({});
-    setCmiPending(false);
+    setDataStatus({});
+    setDataUsage({});
+    setUsageLoading(false);
 
     navigation.navigate('ChargeType', {
       mainSubs: subs,
@@ -703,6 +737,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         keyExtractor={(item) => item.nid}
         ListHeaderComponent={isEditMode ? undefined : info}
         renderItem={renderSubs}
+        initialNumToRender={40}
         extraData={[isEditMode]}
         contentContainerStyle={[
           {paddingBottom: 34},
@@ -722,11 +757,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         // 종종 중복 호출이 발생
         onEndReachedThreshold={0.4}
         onEndReached={() => {
-          if (!order?.subsIsLast) onRefresh(isEditMode, false);
+          if (!order?.subsIsLast && order?.subs?.length > 0) {
+            navigation.setParams({subsId: undefined});
+            onRefresh(isEditMode, false);
+          }
         }}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing && !isFirstLoad}
+            refreshing={refreshing || pending}
             onRefresh={() => onRefresh(isEditMode, true)}
             colors={[colors.clearBlue]} // android 전용
             tintColor={colors.clearBlue} // ios 전용
@@ -734,18 +772,18 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         }
       />
 
-      <AppActivityIndicator visible={isFirstLoad && (pending || refreshing)} />
+      {/* <AppActivityIndicator visible={pending || refreshing} /> */}
       <EsimModal
         visible={showModal}
         subs={subs}
-        cmiPending={cmiPending}
-        cmiUsage={cmiUsage}
-        cmiStatus={cmiStatus}
+        usageLoading={usageLoading}
+        dataUsage={dataUsage}
+        dataStatus={dataStatus}
         onCancelClose={() => {
           setShowModal(false);
-          setCmiStatus({});
-          setCmiUsage({});
-          setCmiPending(false);
+          setDataStatus({});
+          setDataUsage({});
+          setUsageLoading(false);
         }}
         onOkClose={navigateToChargeType}
       />
@@ -758,12 +796,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           }}
         />
       )}
-      <AppSnackBar
-        visible={showSnackBar}
-        onClose={() => setShowSnackBar(false)}
-        textMessage={i18n.t('service:ready')}
-        bottom={10}
-      />
 
       {isEditMode && (
         <AppButton
