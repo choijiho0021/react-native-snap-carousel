@@ -74,6 +74,10 @@ const getSubs = createAsyncThunk(
       param.offset = order.subsOffset;
     }
 
+    if (param.reset) {
+      param.offset = 0;
+    }
+
     return cachedApi(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
