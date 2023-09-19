@@ -10,7 +10,7 @@ import {
   View,
   SafeAreaView,
 } from 'react-native';
-import {connect, useDispatch} from 'react-redux';
+import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import moment from 'moment';
 import _ from 'underscore';
@@ -42,7 +42,7 @@ import {
   actions as eventBoardActions,
 } from '@/redux/modules/eventBoard';
 import ScreenHeader from '@/components/ScreenHeader';
-import {API} from '@/redux/api';
+import {NotiPymType} from '@/redux/api/orderApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -185,7 +185,6 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
   pending,
 }) => {
   const [mode, setMode] = useState<'noti' | 'info'>('noti');
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (route.params?.mode === 'info' && !info.infoMap.has('info')) {
@@ -210,7 +209,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
   // 공지사항의 경우 notiType이 없으므로 Notice/0으로 기본값 설정
   const onPress = useCallback(
     async ({uuid, isRead, bodyTitle, body, notiType = 'Notice/0'}: RkbNoti) => {
-      const {token, mobile} = account;
+      const {token} = account;
       const split = notiType.split('/');
       const type = split[0];
 
@@ -234,30 +233,18 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             break;
 
           case notiActions.NOTI_TYPE_PYM:
-          // action.order
-          //   .getOrderById({
-          //     user: mobile,
-          //     token,
-          //     orderId: split[1],
-          //   })
-          //   .then(({payload}) => {
-          //     const {result} = payload || {};
-
-          //     console.log('@@@ result : ', result);
-
-          //     if (split[2] === 'refundable') {
-          //       navigation.popToTop();
-          //       navigation.navigate('EsimStack', {screen: 'Esim'});
-          //     }
-          //     // read orders if not read before
-          //     else if (split[1]) {
-          //       navigation.navigate('PurchaseDetail', {orderId: split[1]});
-          //     }
-          //   })
-          //   .finally(() => {});
-          // break;
-          // 발권 가능일 땐 앱 알림 클릭 시 - 구매 eSIM 목록 화면으로 이동
-          // const isRefundable = split[3] === 'refundable';
+            // 주문취소는 무족ㄴ 결제상세화면으로
+            if (split[3] === 'CANCEL_PAYMENT') {
+              navigation.navigate('PurchaseDetail', {orderId: split[1]});
+            } else if (split[2] === 'refundable') {
+              navigation.popToTop();
+              navigation.navigate('EsimStack', {screen: 'Esim'});
+            }
+            // read orders if not read before
+            else if (split[1]) {
+              navigation.navigate('PurchaseDetail', {orderId: split[1]});
+            }
+            break;
 
           case notiActions.NOTI_TYPE_PROVISION:
             // format : provision/{iccid}/{nid}
