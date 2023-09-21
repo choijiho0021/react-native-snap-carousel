@@ -241,6 +241,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const flatListRef = useRef<FlatList>(null);
   const tabBarHeight = useBottomTabBarHeight();
   const appState = useRef('unknown');
+  const [isChargeable, setIsChargeable] = useState(false);
+
   const [subsData, firstUsedIdx] = useMemo(
     () => {
       const list = order.subs?.filter((elm) =>
@@ -423,7 +425,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   const onPressUsage = useCallback(
-    async (item: RkbSubscription) => {
+    async (item: RkbSubscription, isChargeableParam?: boolean) => {
       setUsageLoading(true);
       setSubs(item);
 
@@ -445,6 +447,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           break;
       }
 
+      setIsChargeable(isChargeableParam);
       setDataStatus(result.status);
       setDataUsage(result.usage);
       setUsageLoading(false);
@@ -785,6 +788,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           setDataUsage({});
           setUsageLoading(false);
         }}
+        isChargeableData={isChargeable}
         onOkClose={navigateToChargeType}
       />
       {!esimGlobal && (

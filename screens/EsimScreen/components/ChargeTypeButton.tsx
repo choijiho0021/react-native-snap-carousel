@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
 });
 
 export type ChargeDisReason = {
-  addOn: string;
+  addOn: {title: string; isPlainText: boolean};
   extension: string;
 };
 

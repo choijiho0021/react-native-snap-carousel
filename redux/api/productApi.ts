@@ -283,10 +283,10 @@ const toColumnList = (v: RkbPriceInfo[]) => {
 
 const toAddOnProd = (data: DrupalAddonProd[]): ApiResult<RkbAddOnProd> => {
   if (data.result === 0) {
-    return api.success(data.objects);
+    return api.success(data?.objects, data?.info);
   }
   if (data.result === RESULT_OVER_LIMIT) {
-    return api.success(data?.objects, undefined, RESULT_OVER_LIMIT);
+    return api.success(data?.objects, data?.info, RESULT_OVER_LIMIT);
   }
   return api.failure(api.E_NOT_FOUND);
 };
