@@ -311,7 +311,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
                   onPress={() => onPress(type)}
                   disabled={!extensionExpireCheck}
                   disReason={{
-                    // 코드 정리 필요
                     addOn: addOnDisReasonText,
                     extension: extensionDisReason,
                   }}
@@ -346,7 +345,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
                 onPress={() => onPress(type)}
                 disabled={!addonEnable}
                 disReason={{
-                  // 코드 정리 필요
                   addOn: addOnDisReasonText,
                   extension: extensionDisReason,
                 }}
@@ -409,7 +407,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
               (t === 'extension' && !extensionExpireCheck)
             }
             disReason={{
-              // 코드 정리 필요
               addOn: addOnDisReasonText,
               extension: extensionDisReason,
             }}
