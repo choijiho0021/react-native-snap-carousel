@@ -197,14 +197,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     setAddonLoading(true);
     const subs = chargeableItem || mainSubs;
 
-    // console.log('remainDays : ', remainDays);
-    // console.log('subs.nid : ', subs.nid);
-    // console.log('status : ', status);
-
-    // console.log('상품별 필드 조회  : ', subs.addOnOption);
-    // console.log('파트너사 : ', subs.partner);
-    // console.log('기존 상태값 : ', status);
-
     if (subs.nid && status && remainDays && remainDays > 0) {
       const rsp = await API.Product.getAddOnProduct(
         subs.nid,
