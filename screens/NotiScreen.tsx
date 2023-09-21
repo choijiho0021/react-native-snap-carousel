@@ -276,7 +276,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             navigation.navigate('EsimStack', {
               screen: 'Esim',
               params: {
-                subsId: split[1],
+                // subsId: split[1],
               },
             });
             break;

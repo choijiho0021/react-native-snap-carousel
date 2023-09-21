@@ -173,6 +173,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
         width: '100%',
       }}
       onOkClose={onOkClose}
+      onCancelClose={onCancelClose}
       visible={visible}
       bottom={renderBottom}>
       {modalBody()}

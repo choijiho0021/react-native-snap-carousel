@@ -106,7 +106,8 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   onOkClose = () => {},
   onCancelClose = () => {},
   onRequestClose = () => {
-    onOkClose();
+    if (onCancelClose) onCancelClose();
+    else onOkClose();
   },
   bottom,
 }) => {
