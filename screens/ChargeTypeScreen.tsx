@@ -222,7 +222,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         result: number;
         objects: RkbAddOnProd[];
         info?: {charge: string; msg: {kr: string}};
-        links: {charge: string; msg: {kr: string}};
+        links?: {charge: string; msg: {kr: string}};
       } = rsp;
 
       if (info?.charge === 'N' || links?.charge === 'N') {

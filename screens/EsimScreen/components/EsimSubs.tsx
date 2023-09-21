@@ -654,11 +654,6 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           }}
           title={i18n.t('esim:checkUsage')}
           onPress={() => {
-            console.log(
-              '@@@ 출발한 param 값 isCharged : ',
-              !isBC && isChargeButton,
-            );
-
             if (isCharged) {
               onPressRecharge(mainSubs);
             } else {
@@ -736,14 +731,6 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       sendable,
       isCharged || (!isBC && isChargeButton),
     ].filter((elm) => elm);
-
-    console.log('@@@ subs.title : ', mainSubs.prodName);
-    console.log('@@@@ isCharged : ', isCharged);
-    console.log('@@@ isBC : ', isBC);
-    console.log('@@@@@isChargeButton : ', isChargeButton);
-    console.log('mainSubs?.addOnOption : ', mainSubs?.addOnOption);
-
-    console.log('(!isBC && isChargeButton : ', !isBC && isChargeButton);
 
     if (moveBtnList.length === 0) return null;
 
