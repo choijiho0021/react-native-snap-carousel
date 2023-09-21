@@ -84,8 +84,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [remainDays, setRemainDays] = useState(0);
   const [expireTime, setExpireTime] = useState<Moment>();
   const [status, setStatus] = useState<UsageStatusType>();
-  const [addOnDisReason, setAddOnDisReasen] = useState('');
-  const [addOnDisReasonText, setAddOnDisReasenText] = useState('');
+  const [addOnDisReasonText, setAddOnDisReasonText] = useState('');
   const [extensionDisReason, setExtensionDisReason] = useState('');
   const [addonProds, setAddonProds] = useState<RkbAddOnProd[]>([]);
   const dispatch = useDispatch();
@@ -160,7 +159,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             break;
         }
       } else {
-        setAddOnDisReasen('');
+        setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:`));
+
         setAddonEnable(false);
       }
     },
@@ -217,21 +217,20 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       } = rsp;
 
       if (info?.charge === 'N' || links?.charge === 'N') {
-        setAddOnDisReasen('server');
-        setAddOnDisReasenText(info?.msg?.kr || links?.msg?.kr);
+        setAddOnDisReasonText(info?.msg?.kr || links?.msg?.kr);
         setAddonEnable(false);
       } else if (result === 0 || result === 1) {
         if ((objects?.length || 0) < 1) {
           // 상품 없음
           setAddonEnable(false);
-          setAddOnDisReasen('noProd');
+          setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:noProd`));
         } else {
           setAddonEnable(true);
           setAddonProds(objects);
         }
       } else {
         setAddonEnable(false);
-        setAddOnDisReasen('');
+        setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:`));
       }
 
       // 모종의 이유로 실패, 모든 분기 진입 못할 시 '잠시 후 다시 시도해주세요' 출력
@@ -241,12 +240,12 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
   const unsupportExtension = useCallback(() => {
     setExtensionEnable(false);
-    setExtensionDisReason('unsupported');
+    setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:unsupported`));
   }, []);
 
   const unsupportAddon = useCallback(() => {
     setAddonEnable(false);
-    setAddOnDisReasen('unsupported');
+    setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:unsupported`));
   }, []);
 
   // 상품 비활성화 여부 체크하는 로직
@@ -277,14 +276,14 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       // // 충전 조건 2. 사용 전, 용량 충전 가능한 상품 처리
       if (status === 'R' && mainSubs.partner?.startsWith('cmi')) {
         setAddonEnable(false);
-        setAddOnDisReasen('reserved');
+        setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:reserved`));
         return;
       }
 
       // // 충전 조건 3. 모든 사용완료 상품은 충전 불가
       if (status === 'U') {
         setAddonEnable(false);
-        setAddOnDisReasen('used');
+        setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:used`));
         return;
       }
 
@@ -313,13 +312,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
                   disabled={!extensionExpireCheck}
                   disReason={{
                     // 코드 정리 필요
-                    addOn: {
-                      title:
-                        addOnDisReasonText !== ''
-                          ? addOnDisReasonText
-                          : addOnDisReason,
-                      isPlainText: addOnDisReasonText !== '',
-                    },
+                    addOn: addOnDisReasonText,
                     extension: extensionDisReason,
                   }}
                 />
@@ -354,13 +347,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
                 disabled={!addonEnable}
                 disReason={{
                   // 코드 정리 필요
-                  addOn: {
-                    title:
-                      addOnDisReasonText !== ''
-                        ? addOnDisReasonText
-                        : addOnDisReason,
-                    isPlainText: addOnDisReasonText !== '',
-                  },
+                  addOn: addOnDisReasonText,
                   extension: extensionDisReason,
                 }}
               />
@@ -374,21 +361,15 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             addonProds,
           });
         }
-      } else if (addOnDisReason === 'server') {
+      } else {
         setShowSnackBar({
           text: addOnDisReasonText,
           visible: true,
           type: 'addOn',
         });
-      } else
-        setShowSnackBar({
-          text: i18n.t(`esim:charge:disReason:addOn:${addOnDisReason}`),
-          visible: true,
-          type: 'addOn',
-        });
+      }
     },
     [
-      addOnDisReason,
       addOnDisReasonText,
       addonEnable,
       addonProds,
@@ -429,13 +410,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             }
             disReason={{
               // 코드 정리 필요
-              addOn: {
-                title:
-                  addOnDisReasonText !== ''
-                    ? addOnDisReasonText
-                    : addOnDisReason,
-                isPlainText: addOnDisReasonText !== '',
-              },
+              addOn: addOnDisReasonText,
               extension: extensionDisReason,
             }}
           />
@@ -448,7 +423,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           textMessage={showSnackBar.text}
           bottom={20}
           preIcon={
-            (showSnackBar.type === 'addOn' && addOnDisReason === '') ||
+            (showSnackBar.type === 'addOn' && addOnDisReasonText === '') ||
             (showSnackBar.type === 'extension' && extensionDisReason === '')
               ? undefined
               : 'cautionRed'
