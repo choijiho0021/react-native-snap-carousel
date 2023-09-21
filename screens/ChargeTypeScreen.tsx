@@ -86,6 +86,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [expireTime, setExpireTime] = useState<Moment>();
   const [status, setStatus] = useState<UsageStatusType>();
   const [addOnDisReason, setAddOnDisReasen] = useState('');
+  const [addOnDisReasonText, setAddOnDisReasenText] = useState('');
   const [extensionDisReason, setExtensionDisReason] = useState('');
   const [addonProds, setAddonProds] = useState<RkbAddOnProd[]>([]);
   const dispatch = useDispatch();
@@ -216,24 +217,19 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         result,
         objects,
         info,
+        links,
       }: {
         result: number;
         objects: RkbAddOnProd[];
         info?: {charge: string; msg: {kr: string}};
+        links?: {charge: string; msg: {kr: string}};
       } = rsp;
 
-      // console.log('충전 상품 있는 지 : ', objects);
-      // console.log(
-      //   '무제한/종량제 : ',
-      //   subs.daily === 'daily' ? '무제한' : '종량제',
-      // );
-
-      // cmi 무제한 상품 전 상태, 다음 페이지에서 불가능 안내 -> 확인 완료
-
-      if (info?.charge === 'N') {
-        setAddOnDisReasen(info.msg.kr);
+      if (info?.charge === 'N' || links?.charge === 'N') {
+        setAddOnDisReasen('server');
+        setAddOnDisReasenText(info?.msg?.kr || links?.msg?.kr);
         setAddonEnable(false);
-      } else if (result === 0) {
+      } else if (result === 0 || result === 1) {
         if ((objects?.length || 0) < 1) {
           // 상품 없음
           setAddonEnable(false);
@@ -280,7 +276,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       unsupportAddon();
       return;
     }
-    if (addOnOption === AddOnOptionType.NEVER) {
+    if (addOnOption === AddOnOptionType.NEVER || !addOnOption) {
       unsupportExtension();
       unsupportAddon();
       return;
@@ -374,16 +370,22 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             addonProds,
           });
         }
-      } else {
+      } else if (addOnDisReason === 'server') {
+        setShowSnackBar({
+          text: addOnDisReasonText,
+          visible: true,
+          type: 'addOn',
+        });
+      } else
         setShowSnackBar({
           text: i18n.t(`esim:charge:disReason:addOn:${addOnDisReason}`),
           visible: true,
           type: 'addOn',
         });
-      }
     },
     [
       addOnDisReason,
+      addOnDisReasonText,
       addonEnable,
       addonProds,
       chargeableItem,
