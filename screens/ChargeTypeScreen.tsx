@@ -76,8 +76,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     visible: boolean;
     type: string;
   }>({text: '', visible: false, type: ''});
-  const {mainSubs, chargeablePeriod, chargedSubs, isChargeable, addOnData} =
-    params || {};
+  const {mainSubs, chargeablePeriod, chargedSubs, isChargeable} = params || {};
   const [chargeableItem, setChargeableItem] = useState<RkbSubscription>();
   const [statusLoading, setStatusLoading] = useState(false);
   const [addonLoading, setAddonLoading] = useState(false);
@@ -282,7 +281,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       return;
     }
 
-    console.log('@@@@@ getStatus? : ', status);
     if (status) {
       // // 충전 조건 2. 사용 전, 용량 충전 가능한 상품 처리
       if (status === 'R' && mainSubs.partner?.startsWith('cmi')) {
@@ -322,7 +320,14 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
                   onPress={() => onPress(type)}
                   disabled={!extensionExpireCheck}
                   disReason={{
-                    addOn: addOnDisReason,
+                    // 코드 정리 필요
+                    addOn: {
+                      title:
+                        addOnDisReasonText !== ''
+                          ? addOnDisReasonText
+                          : addOnDisReason,
+                      isPlainText: addOnDisReasonText !== '',
+                    },
                     extension: extensionDisReason,
                   }}
                 />
@@ -356,7 +361,14 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
                 onPress={() => onPress(type)}
                 disabled={!addonEnable}
                 disReason={{
-                  addOn: addOnDisReason,
+                  // 코드 정리 필요
+                  addOn: {
+                    title:
+                      addOnDisReasonText !== ''
+                        ? addOnDisReasonText
+                        : addOnDisReason,
+                    isPlainText: addOnDisReasonText !== '',
+                  },
                   extension: extensionDisReason,
                 }}
               />
@@ -423,7 +435,17 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
               (t === 'addOn' && !addonEnable) ||
               (t === 'extension' && !extensionExpireCheck)
             }
-            disReason={{addOn: addOnDisReason, extension: extensionDisReason}}
+            disReason={{
+              // 코드 정리 필요
+              addOn: {
+                title:
+                  addOnDisReasonText !== ''
+                    ? addOnDisReasonText
+                    : addOnDisReason,
+                isPlainText: addOnDisReasonText !== '',
+              },
+              extension: extensionDisReason,
+            }}
           />
         ))}
         <AppSnackBar
