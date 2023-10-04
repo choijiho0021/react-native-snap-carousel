@@ -2300,9 +2300,15 @@
   integrity sha512-xUNRvNmCl3UGCPbbHvfyFMnpvLPoOjDCcp5bT9m2k+TF/ZBklEQwhPZlkrxRx2NhgFh1X3a5uL7mJ7ZR+8G7Qg==
 
 "@react-native/normalize-colors@*":
+<<<<<<< HEAD
   version "0.73.2"
   resolved "https://registry.yarnpkg.com/@react-native/normalize-colors/-/normalize-colors-0.73.2.tgz#cc8e48fbae2bbfff53e12f209369e8d2e4cf34ec"
   integrity sha512-bRBcb2T+I88aG74LMVHaKms2p/T8aQd8+BZ7LuuzXlRfog1bMWWn/C5i0HVuvW4RPtXQYgIlGiXVDy9Ir1So/w==
+=======
+  version "0.73.0"
+  resolved "https://registry.yarnpkg.com/@react-native/normalize-colors/-/normalize-colors-0.73.0.tgz#23e15cf2a2b73ac7e5e6df8d5b86b173cfb35a3f"
+  integrity sha512-EmSCmJ0djeMJadeFsms6Pl/R85i9xSJMc+tyJu/GEMkKXBVyYQyqanK4RHFU0v8MO90OWj+SiFXjCkKYiJ6mkg==
+>>>>>>> 59bb4bbf0f37404712a4476ed5b16a4c7d906f0e
 
 "@react-native/polyfills@1.0.0":
   version "1.0.0"
@@ -4611,7 +4617,20 @@ deprecated-react-native-prop-types@4.2.1:
     invariant "*"
     prop-types "*"
 
+<<<<<<< HEAD
 deprecated-react-native-prop-types@^2.2.0:
+=======
+deprecated-react-native-prop-types@4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/deprecated-react-native-prop-types/-/deprecated-react-native-prop-types-4.2.1.tgz#8cc990ff5319fec8306e7e8f30389a92978a7231"
+  integrity sha512-ef9AXisRrRhxuxd7d+noOEeGTtxIPVkfOQWf9WZUWuOqI+gs7P7hKTi49Rgb/dfvkmFULhwxO2UqAkH4nJsMfw==
+  dependencies:
+    "@react-native/normalize-colors" "*"
+    invariant "*"
+    prop-types "*"
+
+deprecated-react-native-prop-types@^2.2.0, deprecated-react-native-prop-types@^2.3.0:
+>>>>>>> 59bb4bbf0f37404712a4476ed5b16a4c7d906f0e
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/deprecated-react-native-prop-types/-/deprecated-react-native-prop-types-2.3.0.tgz#c10c6ee75ff2b6de94bb127f142b814e6e08d9ab"
   integrity sha512-pWD0voFtNYxrVqvBMYf5gq3NA2GCpfodS1yNynTPc93AYA/KEMGeWDqqeUB6R2Z9ZofVhks2aeJXiuQqKNpesA==

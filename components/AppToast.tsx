@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
   },
   content: {
     backgroundColor: colors.black,
+    width: '80%',
     // borderRadius: 10,
     padding: 10,
   },

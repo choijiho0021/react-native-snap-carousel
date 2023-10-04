@@ -64,6 +64,7 @@ type EsimModalProps = {
   dataUsage: any;
   dataStatus: any;
   usageLoading: boolean;
+  isChargeableData: boolean;
 };
 const EsimModal: React.FC<EsimModalProps> = ({
   visible,
@@ -73,6 +74,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
   dataUsage,
   dataStatus,
   usageLoading,
+  isChargeableData,
 }) => {
   const [showSnackBar, setShowSnackbar] = useState(false);
   const modalBody = useCallback(() => {
@@ -105,7 +107,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
 
     // BC 상품은 충전 불가 추가
     const isChargeable =
-      onOkClose && dataStatus.statusCd === 'A' && !isBillionConnect(subs);
+      onOkClose && isChargeableData && dataStatus.statusCd === 'A';
 
     return (
       <View style={{flexDirection: 'row'}}>
@@ -149,9 +151,10 @@ const EsimModal: React.FC<EsimModalProps> = ({
     dataStatus.statusCd,
     dataUsage?.quota,
     dataUsage?.used,
+    isChargeableData,
     onCancelClose,
     onOkClose,
-    subs,
+    subs?.daily,
   ]);
 
   return (
@@ -170,6 +173,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
         width: '100%',
       }}
       onOkClose={onOkClose}
+      onCancelClose={onCancelClose}
       visible={visible}
       bottom={renderBottom}>
       {modalBody()}

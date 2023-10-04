@@ -163,11 +163,10 @@ const UsageItem: React.FC<UsageItemProps> = ({
   const [totalUsed, setTotalUsed] = useState<number>(usage?.totalUsed || 0);
   const isExhausted = useMemo(() => remain <= 0, [remain]);
   const isLowRemain = useMemo(
-    () => remain && quota >= 0 && Math.floor(remain / quota) <= 0.2,
+    () => quota >= 0 && remain / quota <= 0.2,
     [quota, remain],
   );
   const circularProgress = useRef();
-  const [isAnimated, setIsAnimated] = useState<boolean>(false);
 
   // const showUsage = useMemo(
   //   () =>
@@ -213,7 +212,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
       console.log('@@ show snackbar');
       showSnackbar();
     }
-  }, [dataStatusCd, isAnimated, quota, remain, showSnackbar, usage, used]);
+  }, [dataStatusCd, quota, remain, showSnackbar, usage, used]);
 
   const renderResetTimeRow = useCallback(
     (key: string, rowStyle: ViewStyle = {}) => {
@@ -414,10 +413,10 @@ const UsageItem: React.FC<UsageItemProps> = ({
       <View style={styles.activeContainer}>
         {showUsage && renderAnimatedCircularProgress()}
 
-        {showUsage &&
+        {/* {showUsage &&
           isExhausted &&
           item.daily === 'daily' &&
-          renderDailyUsage()}
+          renderDailyUsage()} */}
 
         {!showUsage && (
           <AppSvgIcon style={{marginBottom: 20}} name="notShowEsimUsage" />
@@ -431,11 +430,8 @@ const UsageItem: React.FC<UsageItemProps> = ({
       </View>
     );
   }, [
-    isExhausted,
-    item.daily,
     renderAnimatedCircularProgress,
     renderCaution,
-    renderDailyUsage,
     renderTime,
     renderWarning,
     showUsage,

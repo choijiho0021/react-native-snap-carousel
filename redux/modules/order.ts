@@ -74,6 +74,10 @@ const getSubs = createAsyncThunk(
       param.offset = order.subsOffset;
     }
 
+    if (param.reset) {
+      param.offset = 0;
+    }
+
     return cachedApi(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
@@ -88,7 +92,7 @@ const subsReload = createAsyncThunk(
   async (param: SubscriptionParam, {getState, rejectWithValue}) => {
     const {order} = getState() as RootState;
     param.offset = 0;
-    param.count = order.subs.length;
+    param.count = order.subs.length < 10 ? 10 : order.subs.length + 1;
 
     // 현재 sub의 수가 0이라면 리로드할 필요가 없음
     if (order.subs.length <= 0) {
@@ -450,8 +454,10 @@ const slice = createSlice({
         if (objects?.length < count) {
           state.subsIsLast = true;
         } else {
-          if (reset) state.subsOffset = objects?.length;
-          else state.subsOffset += objects?.length;
+          if (reset) {
+            state.subsOffset = objects?.length;
+            state.subsIsLast = false;
+          } else state.subsOffset += objects?.length;
           state.subsIsLast = false;
         }
 

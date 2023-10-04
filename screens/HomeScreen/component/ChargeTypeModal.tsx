@@ -95,6 +95,17 @@ const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
     [],
   );
 
+  const getDisReasonText = useCallback(() => {
+    if (disabled) {
+      if (type === 'addOn') {
+        return disReason?.addOn;
+      }
+
+      return i18n.t(`esim:charge:disReason:extension:${disReason?.extension}`);
+    }
+    return undefined;
+  }, [disReason?.addOn, disReason?.extension, disabled, type]);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
@@ -152,17 +163,7 @@ const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
               if (!disabled) onPress(type);
             }}
             disabled={disabled}
-            title={
-              disabled
-                ? i18n.t(
-                    `esim:charge:disReason:${
-                      type === 'addOn' ? 'addOn' : 'extension'
-                    }:${
-                      type === 'addOn' ? disReason?.addOn : disReason?.extension
-                    }`,
-                  )
-                : undefined
-            }
+            title={getDisReasonText()}
           />
           <View style={{height: 20}} />
         </View>

@@ -42,6 +42,7 @@ import {
   actions as eventBoardActions,
 } from '@/redux/modules/eventBoard';
 import ScreenHeader from '@/components/ScreenHeader';
+import {NotiPymType} from '@/redux/api/orderApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -232,10 +233,10 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             break;
 
           case notiActions.NOTI_TYPE_PYM:
-            // 발권 가능일 땐 앱 알림 클릭 시 - 구매 eSIM 목록 화면으로 이동
-            // const isRefundable = split[3] === 'refundable';
-
-            if (split[2] === 'refundable') {
+            // 주문취소는 무족ㄴ 결제상세화면으로
+            if (split[3] === 'CANCEL_PAYMENT') {
+              navigation.navigate('PurchaseDetail', {orderId: split[1]});
+            } else if (split[2] === 'refundable') {
               navigation.popToTop();
               navigation.navigate('EsimStack', {screen: 'Esim'});
             }
@@ -275,7 +276,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             navigation.navigate('EsimStack', {
               screen: 'Esim',
               params: {
-                subsId: split[1],
+                // subsId: split[1],
               },
             });
             break;

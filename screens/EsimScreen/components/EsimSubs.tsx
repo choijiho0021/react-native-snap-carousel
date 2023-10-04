@@ -331,7 +331,10 @@ type EsimSubsProps = {
   mainSubs: RkbSubscription;
   showDetail: boolean;
   isEditMode: boolean;
-  onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
+  onPressUsage: (
+    subs: RkbSubscription,
+    isChargeableParam?: boolean,
+  ) => Promise<{usage: any; status: any}>;
   setShowModal: (visible: boolean) => void;
 
   account: AccountModelState;
@@ -360,7 +363,6 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     isCharged,
     isBC,
     expired,
-    isChargeExpired,
     chargeablePeriod,
     notCardInfo,
     sendable,
@@ -376,7 +378,6 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       (mainSubs.cnt || 0) > 1,
       mainSubs.partner === 'billionconnect',
       expd,
-      mainSubs.expireDate && mainSubs.expireDate.isBefore(now),
       utils.toDateString(mainSubs.expireDate, 'YYYY.MM.DD'),
       !expd &&
         mainSubs.giftStatusCd !== 'S' &&
@@ -407,12 +408,14 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
   const onPressRecharge = useCallback(
     (item: RkbSubscription) => {
+      // 기존 사용하던 isChargeExpired는 isChargeButton에 포함됨
+
       if (isCharged) {
         navigation.navigate('ChargeHistory', {
           mainSubs: item,
           chargeablePeriod,
           onPressUsage,
-          isChargeable: !isChargeExpired,
+          isChargeable: isChargeButton || false,
         });
       }
       // isBC 대신 애드온 옵션으로 처리하기로 결정됨
@@ -420,13 +423,13 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         navigation.navigate('ChargeType', {
           mainSubs: item,
           chargeablePeriod,
-          isChargeable: !isChargeExpired,
+          isChargeable: isChargeButton || false,
         });
     },
     [
       chargeablePeriod,
       isBC,
-      isChargeExpired,
+      isChargeButton,
       isCharged,
       navigation,
       onPressUsage,
@@ -655,13 +658,15 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               onPressRecharge(mainSubs);
             } else {
               setShowModal(true);
-              onPressUsage(mainSubs);
+              onPressUsage(mainSubs, !isBC && isChargeButton);
             }
           }}
         />
       </View>
     );
   }, [
+    isBC,
+    isChargeButton,
     isCharged,
     isEditMode,
     mainSubs,
@@ -716,10 +721,6 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   }, [expired, mainSubs, navigation]);
 
   const renderMoveBtn = useCallback(() => {
-    const now = moment();
-
-    console.log('mainSubs?>addOnOption : ', mainSubs?.addOnOption);
-
     // 충전 버튼 출력 조건
     // 충전 내역 조회 -> 충전 내역이 있음
     // 상품별 충전 필드 조회 -> 용량 충전, 상품 연장이 1개 이상 Y인 경우
@@ -728,6 +729,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       sendable,
       isCharged || (!isBC && isChargeButton),
     ].filter((elm) => elm);
+
     if (moveBtnList.length === 0) return null;
 
     return (
