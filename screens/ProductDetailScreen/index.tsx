@@ -327,7 +327,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           title={route.params?.title}
           style={{width: '70%', height: 56}}
         />
-        {account.loggedIn && (
+        {/* {account.loggedIn && (
           <Pressable
             onPress={() => {
               // 링크 테스트
@@ -360,7 +360,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               <AppSvgIcon name="btnHeaderCart" />
             </View>
           </Pressable>
-        )}
+        )} */}
         {account.loggedIn && (
           <AppCartButton
             onPress={() => navigation.navigate('Cart', {showHeader: true})}
