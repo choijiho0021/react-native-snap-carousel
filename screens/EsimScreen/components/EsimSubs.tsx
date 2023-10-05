@@ -721,8 +721,6 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   }, [expired, mainSubs, navigation]);
 
   const renderMoveBtn = useCallback(() => {
-    const now = moment();
-
     // 충전 버튼 출력 조건
     // 충전 내역 조회 -> 충전 내역이 있음
     // 상품별 충전 필드 조회 -> 용량 충전, 상품 연장이 1개 이상 Y인 경우

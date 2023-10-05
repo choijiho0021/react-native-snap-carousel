@@ -3,12 +3,19 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useState, useEffect, useCallback} from 'react';
 import Clipboard from '@react-native-community/clipboard';
-import {Platform, SafeAreaView, StyleSheet, View} from 'react-native';
+import {
+  Platform,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import Analytics from 'appcenter-analytics';
+import AppSvgIcon from '@/components/AppSvgIcon';
 import {Settings} from 'react-native-fbsdk-next';
 import {
   getTrackingStatus,
@@ -35,6 +42,9 @@ import {
 } from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
 import ChatTalk from '@/components/ChatTalk';
+import {API} from '@/redux/api';
+import {PromotionModelState} from '@/redux/modules/promotion';
+import {RkbProdByCountry} from '@/redux/api/productApi';
 
 const {esimGlobal, webViewHost, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -107,6 +117,8 @@ type ProductDetailScreenProps = {
 
   account: AccountModelState;
   cart: CartModelState;
+  promotion: PromotionModelState;
+  product: ProductModelState;
   action: {
     cart: CartAction;
     info: InfoAction;
@@ -118,6 +130,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   route,
   action,
   account,
+  product,
+  promotion,
   cart,
 }) => {
   const [showSnackBar, setShowSnackBar] = useState<{
@@ -313,6 +327,40 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           title={route.params?.title}
           style={{width: '70%', height: 56}}
         />
+        {/* {account.loggedIn && (
+          <Pressable
+            onPress={() => {
+              // 링크 테스트
+              // 해당 위치는 10월 업데이트 전 디자인 나오면 적용한다.
+
+              const selectedCountryData: RkbProdByCountry =
+                product.prodByCountry.find(
+                  (r) => r.partner === route?.params?.partnerId,
+                );
+              const {invite} = promotion;
+
+              API.Promotion.buildShareLink({
+                uuid: route.params?.uuid,
+                prodName: purchaseItems[0]?.title,
+                imageUrl: invite.rule?.share,
+                promoFlag: purchaseItems[0]?.promoFlag,
+                country: selectedCountryData,
+                isShort: false,
+              }).then((url) => {
+                if (url) {
+                  setShowSnackBar({
+                    text: i18n.t('prodDetail:copy:product'),
+                    visible: true,
+                  });
+                  Clipboard.setString(url);
+                }
+              });
+            }}>
+            <View style={styles.box}>
+              <AppSvgIcon name="btnHeaderCart" />
+            </View>
+          </Pressable>
+        )} */}
         {account.loggedIn && (
           <AppCartButton
             onPress={() => navigation.navigate('Cart', {showHeader: true})}
@@ -368,7 +416,12 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 };
 
 export default connect(
-  ({account, cart}: RootState) => ({account, cart}),
+  ({account, cart, promotion, product}: RootState) => ({
+    account,
+    cart,
+    promotion,
+    product,
+  }),
   (dispatch) => ({
     action: {
       info: bindActionCreators(infoActions, dispatch),

@@ -10,7 +10,7 @@ import {
 } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import SimCardsManagerModule from 'react-native-sim-cards-manager';
 import DeviceInfo from 'react-native-device-info';
 import {bindActionCreators} from 'redux';
@@ -26,6 +26,7 @@ import {
   Linking,
   Platform,
   Modal,
+  AppState,
 } from 'react-native';
 import {Adjust} from 'react-native-adjust';
 import Env from '@/environment';
@@ -61,6 +62,7 @@ import {API} from '@/redux/api';
 import ProgressiveImage from '@/components/ProgressiveImage';
 import i18n from '@/utils/i18n';
 import {isFolderOpen} from '@/constants/SliderEntry.style';
+import {ProductModelState} from '@/redux/modules/product';
 
 const {isIOS, esimGlobal} = Env.get();
 const MainStack = createStackNavigator();
@@ -121,6 +123,7 @@ type RegisterMobileScreenProps = {
   account: AccountModelState;
   link: LinkModelState;
   promotion: PromotionModelState;
+  product: ProductModelState;
   modal: ModalModelState;
   actions: {
     modal: ModalAction;
@@ -131,6 +134,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   store,
   modal,
   link,
+  product,
   promotion,
   actions,
 }) => {
@@ -142,6 +146,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   const [lastRouteName, setLastRouteName] = useState<string>();
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const [savedPopup, setSavedPopup] = useState();
+  const appState = useRef('unknown');
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {
@@ -325,7 +330,25 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         linkPath: params?.linkPath,
       });
 
-      if (isSupport || Platform.OS === 'ios') {
+      if (url?.indexOf('product') > -1 && params?.uuid) {
+        const prod = product.prodList.get(params.uuid);
+        const localOp = product.localOpList.get(params.uuid);
+
+        if (prod)
+          refNavigate({
+            stack: 'HomeStack',
+            screen: 'ProductDetail',
+            initial: false,
+            params: {
+              title: prod.name,
+              item: API.Product.toPurchaseItem(prod),
+              uuid: prod.uuid,
+              desc: prod.desc,
+              localOpDetails: localOp?.detail,
+              partnerId: params?.partnerId,
+            },
+          });
+      } else if (isSupport || Platform.OS === 'ios') {
         if (isFirst) {
           refNavigate({
             stack: `HomeStack`,
@@ -346,7 +369,15 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         }
       }
     },
-    [getIsSupport, gift, linkSave, navigationRef, refNavigate],
+    [
+      getIsSupport,
+      gift,
+      linkSave,
+      navigationRef,
+      product.localOpList,
+      product.prodList,
+      refNavigate,
+    ],
   );
 
   useEffect(() => {
@@ -656,9 +687,10 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
 };
 
 export default connect(
-  ({account, link, promotion, modal}: RootState) => ({
+  ({account, link, product, promotion, modal}: RootState) => ({
     account,
     promotion,
+    product,
     link,
     modal,
   }),
