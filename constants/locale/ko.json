@@ -918,6 +918,8 @@
   "prodDetail:KakaoPlus": "카카오톡 플러스 친구로\n 편하게 물어보세요!",
   "prodDetail:FacebookMessage": "페이스북 메신저로\n 편하게 물어보세요!",
   "prodDetail:copy": "APN이 복사되었습니다.",
+
+  "prodDetail:copy:product": "상품 링크가 복사되었습니다.",
   "prodDetailOp:title": "사용 가능 지역 및 통신사 확인하기",
   "prodDetailOp:subTitle": "해당 국가를 클릭하면 APN 정보가 보여요!",
   "prodDetailOp:search": "국가명을 검색해주세요",
@@ -947,6 +949,8 @@
 
   "invite:title": "로깨비캐시 *p를 보냈어요.",
   "invite:desc": "어쩌면 당신의 해외여행 데이터는 공짜!?",
+  "share:title": "로깨비 상품 공유 타이틀",
+  "share:desc": "* 상품을 공유했어요.",
   "invite:btn-1": "어쩌면 데이터가 공짜?",
   "invite:btn-2": "친구 초대하면 <b>무제한</b> 캐시 적립",
   "invite:promo:period": "{{from}} - {{to}}",
