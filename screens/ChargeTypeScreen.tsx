@@ -5,7 +5,7 @@ import {RouteProp} from '@react-navigation/native';
 import moment, {Moment} from 'moment';
 import {ScrollView} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-community/async-storage';
-import {useDispatch} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppBackButton from '@/components/AppBackButton';
@@ -21,6 +21,8 @@ import {RkbAddOnProd} from '@/redux/api/productApi';
 import ChargeTypeModal from './HomeScreen/component/ChargeTypeModal';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import ScreenHeader from '@/components/ScreenHeader';
+import {RootState} from '@reduxjs/toolkit';
+import {AccountModelState} from '@/redux/modules/account';
 
 const styles = StyleSheet.create({
   container: {
@@ -63,6 +65,7 @@ type ChargeTypeScreenNavigationProp = StackNavigationProp<
 type ChargeTypeScreenProps = {
   navigation: ChargeTypeScreenNavigationProp;
   route: RouteProp<HomeStackParamList, 'ChargeType'>;
+  account: AccountModelState;
 };
 
 export const RESULT_OVER_LIMIT = 1;
@@ -70,13 +73,14 @@ export const RESULT_OVER_LIMIT = 1;
 const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   navigation,
   route: {params},
+  account,
 }) => {
   const [showSnackBar, setShowSnackBar] = useState<{
     text: string;
     visible: boolean;
     type: string;
   }>({text: '', visible: false, type: ''});
-  const {mainSubs, chargeablePeriod, chargedSubs, isChargeable} = params || {};
+  const {mainSubs, chargeablePeriod, isChargeable} = params || {};
   const [chargeableItem, setChargeableItem] = useState<RkbSubscription>();
   const [statusLoading, setStatusLoading] = useState(false);
   const [addonLoading, setAddonLoading] = useState(false);
@@ -88,6 +92,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [addOnDisReasonText, setAddOnDisReasenText] = useState('');
   const [extensionDisReason, setExtensionDisReason] = useState('');
   const [addonProds, setAddonProds] = useState<RkbAddOnProd[]>([]);
+  const [chargedSubs, setChargedSubs] = useState([mainSubs]);
   const dispatch = useDispatch();
 
   const [extensionEnable, setExtensionEnable] = useState(false);
@@ -109,6 +114,19 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       ),
     });
   }, [navigation]);
+
+  useEffect(() => {
+    const {iccid, token} = account;
+    if (iccid && token && (mainSubs.cnt || 0 > 1)) {
+      API.Subscription.getSubscription({
+        iccid,
+        token,
+        uuid: mainSubs.subsIccid,
+      }).then((rsp) => {
+        setChargedSubs(rsp.objects);
+      });
+    }
+  }, [account, mainSubs.cnt, mainSubs.subsIccid]);
 
   const checkStatus = useCallback(
     async (item: RkbSubscription) => {
@@ -137,18 +155,17 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             setStatus('R');
             break;
           // 사용중
+          // 여기서 처리하는데, ChargeTypeScreen 빼고는 mainSubs 고정이다.
+          // ChargeTypeScreen 코드를 빼서 여기로 옮길 것
           case 'A':
             setExpireTime(moment(rspStatus.endTime));
 
             if (extensionEnable) {
-              if (chargedSubs) {
-                const i = chargedSubs.find((s) => {
-                  return s.subsOrderNo === rspStatus?.orderId;
-                });
-                setChargeableItem(i);
-              } else {
-                setChargeableItem(mainSubs);
-              }
+              const i = chargedSubs.find((s) => {
+                return s.subsOrderNo === rspStatus?.orderId;
+              });
+
+              setChargeableItem(i);
             }
             setStatus('A');
             break;
@@ -164,7 +181,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         setAddonEnable(false);
       }
     },
-    [chargedSubs, extensionEnable, mainSubs],
+    [chargedSubs, extensionEnable],
   );
 
   useEffect(() => {
@@ -467,4 +484,4 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   );
 };
 
-export default ChargeTypeScreen;
+export default connect(({account}: RootState) => ({account}))(ChargeTypeScreen);

@@ -495,18 +495,10 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
     navigation.navigate('ChargeType', {
       mainSubs,
       chargeablePeriod,
-      chargedSubs: prodData,
       isChargeable,
       addOnData,
     });
-  }, [
-    addOnData,
-    chargeablePeriod,
-    isChargeable,
-    mainSubs,
-    navigation,
-    prodData,
-  ]);
+  }, [addOnData, chargeablePeriod, isChargeable, mainSubs, navigation]);
 
   const renderItem = useCallback(
     ({item}: {item: RkbSubscription}) => {
