@@ -116,9 +116,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   }, [navigation]);
 
   useEffect(() => {
+    const {iccid, token} = account;
     if (iccid && token && (mainSubs.cnt || 0 > 1)) {
-      const {iccid, token} = account;
-
       API.Subscription.getSubscription({
         iccid,
         token,
