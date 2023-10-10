@@ -92,7 +92,7 @@ type AttachmentBoxProps = {
   attachment: List<CropImage>;
   setAttachment: (v: List<CropImage>) => void;
   imageQuality?: number;
-  onPress: () => void;
+  onPress?: () => void;
 };
 
 const AttachmentBox: React.FC<AttachmentBoxProps> = ({
@@ -123,7 +123,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
   const addAttachment = useCallback(async () => {
     let checkNewPermission = false;
 
-    onPress();
+    if (onPress) onPress();
 
     if (!hasPhotoPermission) {
       const permission =
