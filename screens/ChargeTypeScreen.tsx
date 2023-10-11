@@ -92,7 +92,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [addOnDisReasonText, setAddOnDisReasenText] = useState('');
   const [extensionDisReason, setExtensionDisReason] = useState('');
   const [addonProds, setAddonProds] = useState<RkbAddOnProd[]>([]);
-  const [chargedSubs, setChargedSubs] = useState<RkbSubscription[]>();
   const [chargeLoading, setChargeLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
 
@@ -116,27 +115,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     });
   }, [navigation]);
 
-  useEffect(() => {
-    const {iccid, token} = account;
-    if (iccid && token && (mainSubs.cnt || 0 > 1)) {
-      setChargeLoading(true);
-      API.Subscription.getSubscription({
-        iccid,
-        token,
-        uuid: mainSubs.subsIccid,
-      }).then((rsp) => {
-        setChargeLoading(false);
-        setChargedSubs(
-          (rsp?.objects as RkbSubscription[]).filter(
-            (r) => r?.type === 'esim_product', // 일반 구매, 연장 상품은 esim_product
-          ) || [mainSubs],
-        );
-      });
-    }
-  }, [account, mainSubs, mainSubs.cnt, mainSubs.subsIccid]);
-
   const checkStatus = useCallback(
-    async (item: RkbSubscription) => {
+    async (item: RkbSubscription, chargeSubsParam?: RkbSubscription[]) => {
       setStatusLoading(true);
 
       let rsp;
@@ -167,12 +147,14 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           case 'A':
             setExpireTime(moment(rspStatus.endTime));
 
-            if (extensionEnable && chargedSubs) {
-              const i = chargedSubs.find((s) => {
-                return s.subsOrderNo === rspStatus?.orderId;
-              });
+            if (extensionEnable) {
+              if (chargeSubsParam) {
+                const i = chargeSubsParam.find((s) => {
+                  return s.subsOrderNo === rspStatus?.orderId;
+                });
 
-              setChargeableItem(i || mainSubs);
+                setChargeableItem(i);
+              }
             }
 
             setStatus('A');
@@ -189,8 +171,28 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         setAddonEnable(false);
       }
     },
-    [chargedSubs, extensionEnable, mainSubs],
+    [extensionEnable],
   );
+
+  useEffect(() => {
+    if (mainSubs) {
+      const {iccid, token} = account;
+      if (iccid && token && (mainSubs.cnt || 0 > 1)) {
+        setChargeLoading(true);
+        API.Subscription.getSubscription({
+          iccid,
+          token,
+          uuid: mainSubs.subsIccid,
+        }).then((rsp) => {
+          setChargeLoading(false);
+          const chargeSubs = (rsp?.objects as RkbSubscription[]).filter(
+            (r) => r?.type === 'esim_product', // 일반 구매, 연장 상품은 esim_product
+          ) || [mainSubs];
+          checkStatus(mainSubs, chargeSubs);
+        });
+      } else checkStatus(mainSubs);
+    }
+  }, [account, checkStatus, mainSubs]);
 
   useEffect(() => {
     // 남은 사용기간 구하기
@@ -203,10 +205,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       );
     }
   }, [expireTime, mainSubs, status]);
-
-  useEffect(() => {
-    if (mainSubs) checkStatus(mainSubs);
-  }, [checkStatus, mainSubs]);
 
   useEffect(() => {
     if (!extensionEnable) {
