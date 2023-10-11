@@ -625,7 +625,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
           ListHeaderComponent={renderHeader}
           stickyHeaderIndices={[0]}
           showsVerticalScrollIndicator={false}
-          keyExtractor={(item, idx) => item.key + idx}
+          keyExtractor={(item, idx) => item.nid + idx}
           overScrollMode="always"
           refreshControl={
             // Android에서는 -y로 스크롤이 안되기 때문에 refresh로 대체
