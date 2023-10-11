@@ -4,8 +4,8 @@ import {getBundleId} from 'react-native-device-info';
 import {CurrencyCode} from './redux/api/productApi';
 
 const codePushLabel = {
-  stagingIOS: 'v2',
-  stagingAndroid: 'v2',
+  stagingIOS: "v118",
+  stagingAndroid: "v107",
   productionIOS: 'v47',
   productionAndroid: 'v40',
 };
