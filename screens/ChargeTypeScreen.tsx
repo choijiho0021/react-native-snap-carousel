@@ -93,6 +93,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [extensionDisReason, setExtensionDisReason] = useState('');
   const [addonProds, setAddonProds] = useState<RkbAddOnProd[]>([]);
   const [chargedSubs, setChargedSubs] = useState<RkbSubscription[]>();
+  const [chargeLoading, setChargeLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
 
   const [extensionEnable, setExtensionEnable] = useState(false);
@@ -118,12 +119,18 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   useEffect(() => {
     const {iccid, token} = account;
     if (iccid && token && (mainSubs.cnt || 0 > 1)) {
+      setChargeLoading(true);
       API.Subscription.getSubscription({
         iccid,
         token,
         uuid: mainSubs.subsIccid,
       }).then((rsp) => {
-        setChargedSubs((rsp?.objects as RkbSubscription[]) || [mainSubs]);
+        setChargeLoading(false);
+        setChargedSubs(
+          (rsp?.objects as RkbSubscription[]).filter(
+            (r) => r?.type === 'esim_product', // 일반 구매, 연장 상품은 esim_product
+          ) || [mainSubs],
+        );
       });
     }
   }, [account, mainSubs, mainSubs.cnt, mainSubs.subsIccid]);
@@ -426,7 +433,9 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <ScreenHeader title={i18n.t('esim:charge')} />
 
-      <AppActivityIndicator visible={statusLoading || addonLoading} />
+      <AppActivityIndicator
+        visible={statusLoading || addonLoading || chargeLoading}
+      />
       <ScrollView style={{flex: 1}}>
         <View style={styles.top}>
           <AppText style={styles.topText}>{i18n.t('esim:charge:type')}</AppText>
