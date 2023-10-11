@@ -265,13 +265,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   route: {params},
   account,
 }) => {
-  const {
-    mainSubs,
-    chargeablePeriod,
-    onPressUsage,
-    isChargeable,
-    chargedSubsParam,
-  } = params || {};
+  const {mainSubs, chargeablePeriod, onPressUsage, isChargeable} = params || {};
   const [showModal, setShowModal] = useState(false);
   const [selectedSubs, setSelectedSubs] = useState<RkbSubscription>(mainSubs);
   const [pending, setPending] = useState(false);
@@ -334,21 +328,17 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   }, []);
 
   useEffect(() => {
-    if (chargedSubsParam) {
-      setChargedSubs(chargedSubsParam);
-    } else {
-      const {iccid, token} = account;
-      if (iccid && token) {
-        API.Subscription.getSubscription({
-          iccid,
-          token,
-          uuid: mainSubs.subsIccid,
-        }).then((rsp) => {
-          setChargedSubs(rsp.objects);
-        });
-      }
+    const {iccid, token} = account;
+    if (iccid && token) {
+      API.Subscription.getSubscription({
+        iccid,
+        token,
+        uuid: mainSubs.subsIccid,
+      }).then((rsp) => {
+        setChargedSubs(rsp.objects);
+      });
     }
-  }, [account, chargedSubsParam, mainSubs.subsIccid]);
+  }, [account, mainSubs.subsIccid]);
 
   const renderTooltip = useCallback(() => {
     return (
