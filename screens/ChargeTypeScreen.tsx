@@ -92,7 +92,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [addOnDisReasonText, setAddOnDisReasenText] = useState('');
   const [extensionDisReason, setExtensionDisReason] = useState('');
   const [addonProds, setAddonProds] = useState<RkbAddOnProd[]>([]);
-  const [chargedSubs, setChargedSubs] = useState([mainSubs]);
+  const [chargedSubs, setChargedSubs] = useState<RkbSubscription[]>();
   const dispatch = useDispatch();
 
   const [extensionEnable, setExtensionEnable] = useState(false);
@@ -123,10 +123,10 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         token,
         uuid: mainSubs.subsIccid,
       }).then((rsp) => {
-        setChargedSubs(rsp.objects);
+        setChargedSubs((rsp?.objects as RkbSubscription[]) || [mainSubs]);
       });
     }
-  }, [account, mainSubs.cnt, mainSubs.subsIccid]);
+  }, [account, mainSubs, mainSubs.cnt, mainSubs.subsIccid]);
 
   const checkStatus = useCallback(
     async (item: RkbSubscription) => {
@@ -160,13 +160,14 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           case 'A':
             setExpireTime(moment(rspStatus.endTime));
 
-            if (extensionEnable) {
+            if (extensionEnable && chargedSubs) {
               const i = chargedSubs.find((s) => {
                 return s.subsOrderNo === rspStatus?.orderId;
               });
 
-              setChargeableItem(i);
+              setChargeableItem(i || mainSubs);
             }
+
             setStatus('A');
             break;
           // 사용 완료
@@ -181,7 +182,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         setAddonEnable(false);
       }
     },
-    [chargedSubs, extensionEnable],
+    [chargedSubs, extensionEnable, mainSubs],
   );
 
   useEffect(() => {
