@@ -182,7 +182,6 @@ const sendDisconnect = ({mobile, iccid}: {mobile: string; iccid: string}) => {
 
   const url = `${api.rokHttpUrl(
     `${api.path.rokApi.noti.user}/${mobile}/account/disconnect`,
-    isProduction ? undefined : 5200,
   )}`;
 
   const headers = new Headers(jsonContentType);

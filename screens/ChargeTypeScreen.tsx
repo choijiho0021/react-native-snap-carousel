@@ -91,7 +91,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [addOnDisReasonText, setAddOnDisReasonText] = useState('');
   const [extensionDisReason, setExtensionDisReason] = useState('');
   const [addonProds, setAddonProds] = useState<RkbAddOnProd[]>([]);
-  const [chargedSubs, setChargedSubs] = useState([mainSubs]);
+  const [chargeLoading, setChargeLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
 
   const [extensionEnable, setExtensionEnable] = useState(false);
@@ -114,22 +114,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     });
   }, [navigation]);
 
-  useEffect(() => {
-    const {iccid, token} = account;
-
-    if (iccid && token && (mainSubs.cnt || 0 > 1)) {
-      API.Subscription.getSubscription({
-        iccid,
-        token,
-        uuid: mainSubs.subsIccid,
-      }).then((rsp) => {
-        setChargedSubs(rsp.objects);
-      });
-    }
-  }, [account, mainSubs.cnt, mainSubs.subsIccid]);
-
   const checkStatus = useCallback(
-    async (item: RkbSubscription) => {
+    async (item: RkbSubscription, chargeSubsParam?: RkbSubscription[]) => {
       setStatusLoading(true);
 
       let rsp;
@@ -155,16 +141,21 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             setStatus('R');
             break;
           // 사용중
+          // 여기서 처리하는데, ChargeTypeScreen 빼고는 mainSubs 고정이다.
+          // ChargeTypeScreen 코드를 빼서 여기로 옮길 것
           case 'A':
             setExpireTime(moment(rspStatus.endTime));
 
             if (extensionEnable) {
-              const i = chargedSubs.find((s) => {
-                return s.subsOrderNo === rspStatus?.orderId;
-              });
+              if (chargeSubsParam) {
+                const i = chargeSubsParam.find((s) => {
+                  return s.subsOrderNo === rspStatus?.orderId;
+                });
 
-              setChargeableItem(i);
+                setChargeableItem(i);
+              }
             }
+
             setStatus('A');
             break;
           // 사용 완료
@@ -180,8 +171,28 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         setAddonEnable(false);
       }
     },
-    [chargedSubs, extensionEnable],
+    [extensionEnable],
   );
+
+  useEffect(() => {
+    if (mainSubs) {
+      const {iccid, token} = account;
+      if (iccid && token && (mainSubs.cnt || 0 > 1)) {
+        setChargeLoading(true);
+        API.Subscription.getSubscription({
+          iccid,
+          token,
+          uuid: mainSubs.subsIccid,
+        }).then((rsp) => {
+          setChargeLoading(false);
+          const chargeSubs = (rsp?.objects as RkbSubscription[]).filter(
+            (r) => r?.type === 'esim_product', // 일반 구매, 연장 상품은 esim_product
+          ) || [mainSubs];
+          checkStatus(mainSubs, chargeSubs);
+        });
+      } else checkStatus(mainSubs);
+    }
+  }, [account, checkStatus, mainSubs]);
 
   useEffect(() => {
     // 남은 사용기간 구하기
@@ -194,10 +205,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       );
     }
   }, [expireTime, mainSubs, status]);
-
-  useEffect(() => {
-    if (mainSubs) checkStatus(mainSubs);
-  }, [checkStatus, mainSubs]);
 
   useEffect(() => {
     if (!extensionEnable) {
@@ -403,7 +410,9 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <ScreenHeader title={i18n.t('esim:charge')} />
 
-      <AppActivityIndicator visible={statusLoading || addonLoading} />
+      <AppActivityIndicator
+        visible={statusLoading || addonLoading || chargeLoading}
+      />
       <ScrollView style={{flex: 1}}>
         <View style={styles.top}>
           <AppText style={styles.topText}>{i18n.t('esim:charge:type')}</AppText>
