@@ -115,9 +115,9 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   }, [navigation]);
 
   useEffect(() => {
-    if (iccid && token && (mainSubs.cnt || 0 > 1)) {
-      const {iccid, token} = account;
+    const {iccid, token} = account;
 
+    if (iccid && token && (mainSubs.cnt || 0 > 1)) {
       API.Subscription.getSubscription({
         iccid,
         token,
@@ -155,8 +155,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             setStatus('R');
             break;
           // 사용중
-          // 여기서 처리하는데, ChargeTypeScreen 빼고는 mainSubs 고정이다.
-          // ChargeTypeScreen 코드를 빼서 여기로 옮길 것
           case 'A':
             setExpireTime(moment(rspStatus.endTime));
 

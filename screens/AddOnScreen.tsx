@@ -191,20 +191,15 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   // quadcell 기준 기본 한국시간 1시
   const [dataResetTime, setDataResetTime] = useState('01:00:00');
   const [noProd, setNoProd] = useState(false);
+  const format = 'YYYY년 MM월 DD일 HH:mm:ss';
 
   const usagePeriod = useMemo(() => {
     const now = moment().zone(-540);
     const resetTime = moment(dataResetTime, 'HH:mm:ss');
 
     if (selectedType === 'today') {
-      const n = moment(
-        now.format('YYYY년 MM월 DD일 HH:mm:ss'),
-        'YYYY년 MM월 DD일 HH:mm:ss',
-      );
-      const r = moment(
-        resetTime.format('YYYY년 MM월 DD일 HH:mm:ss'),
-        'YYYY년 MM월 DD일 HH:mm:ss',
-      );
+      const n = moment(now.format(format), format);
+      const r = moment(resetTime.format(format), format);
       if (n.isAfter(r)) resetTime.add(1, 'day');
     }
 
@@ -219,8 +214,9 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
       period:
         selectedType === 'remainDays' ||
         (expireTime && expireTime.diff(now, 'hours') < 24)
-          ? expireTime?.zone(-540).format('YYYY년 MM월 DD일 HH:mm:ss') || ''
-          : resetTime.format('YYYY년 MM월 DD일 HH:mm:ss') || '',
+          ? expireTime?.zone(-540).format(format) || ''
+          : resetTime.format(format) || '',
+      format,
     };
   }, [
     dataResetTime,
@@ -467,9 +463,11 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
             navigation.navigate('ChargeAgreement', {
               title: i18n.t('esim:charge:type:addOn'),
               addOnProd: selectedAddOnProd,
+              type: 'addOn',
               usagePeriod,
               status,
               mainSubs,
+              expireTime,
               contents: {
                 chargeProd: selectedAddOnProd?.title || '',
                 noticeTitle: i18n.t('esim:charge:addOn:notice:title'),
