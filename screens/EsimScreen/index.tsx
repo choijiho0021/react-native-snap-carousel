@@ -579,24 +579,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     checkShowModal();
   }, [isFocused, isPressClose]);
 
-  const moveToHistory = useCallback(
-    (mainSubs: RkbSubscription, chargedSubsParam?: RkbSubscription[]) => {
-      const {lastExpireDate, expireDate} = mainSubs;
-
-      navigation.setParams({iccid: undefined});
-
-      navigation.navigate('ChargeHistory', {
-        mainSubs,
-        chargeablePeriod: utils.toDateString(expireDate, 'YYYY.MM.DD'),
-        onPressUsage,
-        isChargeable: !moment(expireDate).isBefore(moment()),
-        expireTime: lastExpireDate || expireDate,
-        chargedSubsParam,
-      });
-    },
-    [navigation, onPressUsage],
-  );
-
   const setEditMode = useCallback(
     (v: boolean) => {
       flatListRef.current?.scrollToOffset({animated: false, offset: 0});
@@ -667,16 +649,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         }
       }
     }
-  }, [
-    action.order,
-    iccid,
-    moveToHistory,
-    navigation,
-    onPressUsage,
-    order.subs,
-    route,
-    token,
-  ]);
+  }, [action.order, iccid, navigation, onPressUsage, order.subs, route, token]);
 
   BackbuttonHandler({
     navigation,
