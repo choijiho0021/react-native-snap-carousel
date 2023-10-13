@@ -422,10 +422,17 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [action.account, action.order, getOrders, iccid, token],
   );
 
+  const actionCallback = useCallback(() => {
+    const index = subsData?.findIndex((elm) => elm.nid === subsId);
+    if (index >= 0) {
+      setShowModal(true);
+      onPressUsage(subsData[index]);
+      flatListRef?.current?.scrollToIndex({index, animated: true});
+    }
+  }, [onPressUsage, subsData]);
+
   const getSubsAction = useCallback(
     async (subsId?: string, actionStr?: string, subsIccid?: string) => {
-      console.log('aaaaa param', isFirstLoad, subsId, actionStr, subsIccid);
-
       // 첫번째로 로딩 시 숨긴 subs를 제외하고 10개만 가져오도록 함
       if (isFirstLoad) {
         onRefresh(false, true, subsId, actionStr);
@@ -437,7 +444,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         });
         getOrders(false);
       } else if (actionStr === 'showUsage') {
-        console.log('aaaaa subsData1', subsData.length);
         const index = subsData?.findIndex((elm) => elm.nid === subsId);
         if (index >= 0) {
           setShowModal(true);
@@ -451,7 +457,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             subsId,
             reset: true,
           });
-          // ysjoung 스크롤 이동 및 사용량 조회 모달 보여주도록 추가 필요
+          // 스크롤 이동 및 사용량 조회 모달 보여주도록 추가 필요
+          if (rsp?.payload?.result === 0) {
+            actionCallback();
+          }
         }
       } else if (actionStr === 'navigate') {
         if (subsIccid) {
@@ -731,7 +740,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         ]}
         ListEmptyComponent={empty}
         onScrollToIndexFailed={(rsp) => {
-          console.log('aaaaa rsp', rsp);
           const wait = new Promise((resolve) => setTimeout(resolve, 500));
           wait.then(() => {
             flatListRef?.current?.scrollToIndex({
