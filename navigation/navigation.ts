@@ -133,6 +133,7 @@ export type HomeStackParamList = {
     iccid?: string;
     nid?: string;
     subsId?: string;
+    actionStr?: string;
   };
 
   MyPage: undefined;

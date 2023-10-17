@@ -386,6 +386,9 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
             } else {
               navigation.navigate('EsimStack', {
                 screen: 'Esim',
+                params: {
+                  actionStr: 'reload',
+                },
               });
             }
           } else navigation.goBack();

@@ -42,7 +42,6 @@ import {
   actions as eventBoardActions,
 } from '@/redux/modules/eventBoard';
 import ScreenHeader from '@/components/ScreenHeader';
-import {NotiPymType} from '@/redux/api/orderApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -238,7 +237,12 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
               navigation.navigate('PurchaseDetail', {orderId: split[1]});
             } else if (split[2] === 'refundable') {
               navigation.popToTop();
-              navigation.navigate('EsimStack', {screen: 'Esim'});
+              navigation.navigate('EsimStack', {
+                screen: 'Esim',
+                params: {
+                  actionStr: 'reload',
+                },
+              });
             }
             // read orders if not read before
             else if (split[1]) {
@@ -254,7 +258,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
               screen: 'Esim',
               params: {
                 iccid: split[1],
-                nid: split[2],
+                actionStr: 'navigate',
               },
             });
             break;
@@ -276,7 +280,8 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             navigation.navigate('EsimStack', {
               screen: 'Esim',
               params: {
-                // subsId: split[1],
+                subsId: split[1],
+                actionStr: 'showUsage',
               },
             });
             break;
