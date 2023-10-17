@@ -196,11 +196,11 @@ type EsimScreenProps = {
   };
 };
 
-export const USAGE_TIME_INTERVAL = {
-  cmi: 9,
-  quadcell: 1,
-  billionconnect: 1,
-};
+// export const USAGE_TIME_INTERVAL = {
+//   cmi: 9,
+//   quadcell: 1,
+//   billionconnect: 1,
+// };
 
 export const renderInfo = (navigation) => (
   <Pressable
@@ -293,61 +293,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     },
     [action.order, mobile, token],
   );
-
-  const onRefresh = useCallback(
-    // hidden : true (used 상태인 것들 모두) , false (pending, reserve 상태 포함 하여 hidden이 false 것들만)
-    (hidden: boolean, reset?: boolean, subsId?: string) => {
-      if (iccid) {
-        setRefreshing(true);
-
-        action.order
-          .getSubsWithToast({iccid, token, hidden, subsId, reset})
-          .then(() => {
-            action.account.getAccount({iccid, token});
-            getOrders(hidden);
-          })
-          .finally(() => {
-            setRefreshing(false);
-            setIsFirstLoad(false);
-          });
-      }
-    },
-    [action.account, action.order, getOrders, iccid, token],
-  );
-
-  useEffect(() => {
-    if (isFocused) {
-      action.order.subsReload({
-        iccid,
-        token,
-        hidden: false,
-      });
-      getOrders(false);
-    }
-  }, [action.order, getOrders, iccid, isFocused, token]);
-
-  useEffect(() => {
-    const subsId = route?.params?.subsId;
-
-    // 첫번째로 로딩 시 숨긴 subs를 제외하고 10개만 가져오도록 함
-    if (isFirstLoad || subsId) onRefresh(false, true, subsId);
-  }, [isFirstLoad, onRefresh, route?.params?.subsId]);
-
-  const empty = useCallback(() => {
-    return _.isEmpty(order.drafts) || isEditMode ? (
-      <View style={styles.nolist}>
-        <AppIcon name="emptyESIM" size={176} />
-        <AppText style={styles.blueText}>
-          {i18n.t(isEditMode ? 'his:edit:noUsage1' : 'his:noUsage1')}
-        </AppText>
-        <AppText style={{color: colors.warmGrey, textAlign: 'center'}}>
-          {i18n.t(isEditMode ? 'his:edit:noUsage2' : 'his:noUsage2')}
-        </AppText>
-      </View>
-    ) : (
-      <></>
-    );
-  }, [isEditMode, order.drafts]);
 
   const checkCmiData = useCallback(
     async (
@@ -447,7 +392,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           break;
       }
 
-      setIsChargeable(isChargeableParam);
+      setIsChargeable(isChargeableParam!);
       setDataStatus(result.status);
       setDataUsage(result.usage);
       setUsageLoading(false);
@@ -456,23 +401,159 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [checkBcData, checkCmiData, checkQuadcellData],
   );
 
-  useEffect(() => {
-    const index = subsData?.findIndex(
-      (elm) => elm.nid === route?.params?.subsId,
-    );
+  const onRefresh = useCallback(
+    // hidden : true (used 상태인 것들 모두) , false (pending, reserve 상태 포함 하여 hidden이 false 것들만)
+    (hidden: boolean, reset?: boolean, subsId?: string, actionStr?: string) => {
+      if (iccid) {
+        setRefreshing(true);
 
-    if (index >= 0 && !isEditMode) {
+        action.order
+          .getSubsWithToast({iccid, token, hidden, subsId, reset})
+          .then(() => {
+            action.account.getAccount({iccid, token});
+            getOrders(hidden);
+          })
+          .finally(() => {
+            setRefreshing(false);
+            setIsFirstLoad(false);
+          });
+      }
+    },
+    [action.account, action.order, getOrders, iccid, token],
+  );
+
+  const actionCallback = useCallback(() => {
+    const index = subsData?.findIndex((elm) => elm.nid === subsId);
+    if (index >= 0) {
       setShowModal(true);
       onPressUsage(subsData[index]);
       flatListRef?.current?.scrollToIndex({index, animated: true});
     }
-  }, [isEditMode, navigation, onPressUsage, route?.params?.subsId, subsData]);
+  }, [onPressUsage, subsData]);
+
+  const getSubsAction = useCallback(
+    async (subsId?: string, actionStr?: string, subsIccid?: string) => {
+      // 첫번째로 로딩 시 숨긴 subs를 제외하고 10개만 가져오도록 함
+      if (isFirstLoad) {
+        onRefresh(false, true, subsId, actionStr);
+      } else if (actionStr === 'reload') {
+        action.order.subsReload({
+          iccid: iccid!,
+          token: token!,
+          hidden: false,
+        });
+        getOrders(false);
+      } else if (actionStr === 'showUsage') {
+        const index = subsData?.findIndex((elm) => elm.nid === subsId);
+        if (index >= 0) {
+          setShowModal(true);
+          onPressUsage(subsData[index]);
+          flatListRef?.current?.scrollToIndex({index, animated: true});
+        } else {
+          const rsp = await action.order.getSubsWithToast({
+            iccid,
+            token,
+            hidden: false,
+            subsId,
+            reset: true,
+          });
+          // 스크롤 이동 및 사용량 조회 모달 보여주도록 추가 필요
+          if (rsp?.payload?.result === 0) {
+            actionCallback();
+          }
+        }
+      } else if (actionStr === 'navigate') {
+        if (subsIccid) {
+          const main = order.subs?.find((s) => s.subsIccid === subsIccid);
+
+          if (main) {
+            if ((main.cnt || 0) > 1) {
+              navigation.navigate('ChargeHistory', {
+                mainSubs: main,
+                chargeablePeriod: utils.toDateString(
+                  main?.expireDate,
+                  'YYYY.MM.DD',
+                ),
+                onPressUsage,
+                isChargeable: !main.expireDate?.isBefore(moment()),
+              });
+            }
+          } else {
+            action.order
+              .getNotiSubs({
+                iccid: iccid!,
+                token: token!,
+                uuid: subsIccid,
+              })
+              .then((elm) => {
+                const subsList: RkbSubscription[] = elm.payload.objects;
+
+                if (subsList.length > 1) {
+                  const mainSubs = subsList.reduce(
+                    (min, current) =>
+                      current.type === 'esim_product' &&
+                      moment(current.purchaseDate).isBefore(
+                        moment(min.purchaseDate),
+                      )
+                        ? current
+                        : min,
+                    subsList[0],
+                  );
+
+                  navigation.navigate('ChargeHistory', {
+                    mainSubs: mainSubs!,
+                    chargeablePeriod: utils.toDateString(
+                      mainSubs?.expireDate,
+                      'YYYY.MM.DD',
+                    ),
+                    onPressUsage,
+                    isChargeable: !mainSubs?.expireDate?.isBefore(moment()),
+                  });
+                }
+              });
+          }
+        }
+      }
+    },
+    [
+      action.order,
+      getOrders,
+      iccid,
+      isFirstLoad,
+      navigation,
+      onPressUsage,
+      onRefresh,
+      order.subs,
+      subsData,
+      token,
+    ],
+  );
 
   useEffect(() => {
-    if (!isFocused || (isEditMode && route?.params?.subsId)) {
-      navigation.setParams({subsId: undefined});
-    }
-  }, [isEditMode, isFocused, navigation, route?.params?.subsId]);
+    const {subsId, actionStr, iccid: subsIccid} = route?.params || {};
+
+    getSubsAction(subsId, actionStr, subsIccid);
+
+    // onRefresh(false, false, subsId, actionStr);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [route?.params, isFirstLoad]);
+
+  const empty = useCallback(() => {
+    return _.isEmpty(order.drafts) || isEditMode ? (
+      <View style={styles.nolist}>
+        <AppIcon name="emptyESIM" size={176} />
+        <AppText style={styles.blueText}>
+          {i18n.t(isEditMode ? 'his:edit:noUsage1' : 'his:noUsage1')}
+        </AppText>
+        <AppText style={{color: colors.warmGrey, textAlign: 'center'}}>
+          {i18n.t(isEditMode ? 'his:edit:noUsage2' : 'his:noUsage2')}
+        </AppText>
+      </View>
+    ) : (
+      <></>
+    );
+  }, [isEditMode, order.drafts]);
 
   const days14ago = useMemo(() => moment().subtract(14, 'days'), []);
 
@@ -588,69 +669,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [onRefresh],
   );
 
-  useEffect(() => {
-    if (route?.params) {
-      const {iccid: subsIccid} = route?.params;
-      if (subsIccid) {
-        const main = order.subs?.find((s) => s.subsIccid === subsIccid);
-
-        if (main) {
-          if ((main.cnt || 0) > 1) {
-            // 처리가 끝나서 iccid는 삭제함
-            navigation.setParams({iccid: undefined});
-
-            navigation.navigate('ChargeHistory', {
-              mainSubs: main,
-              chargeablePeriod: utils.toDateString(
-                main?.expireDate,
-                'YYYY.MM.DD',
-              ),
-              onPressUsage,
-              isChargeable: !main.expireDate?.isBefore(moment()),
-            });
-          } else {
-            // 처리가 끝나서 iccid는 삭제함
-            navigation.setParams({iccid: undefined});
-          }
-        } else {
-          action.order
-            .getNotiSubs({
-              iccid: iccid!,
-              token: token!,
-              uuid: subsIccid,
-            })
-            .then((elm) => {
-              const subsList: RkbSubscription[] = elm.payload.objects;
-
-              if (subsList.length > 1) {
-                const mainSubs = subsList.reduce(
-                  (min, current) =>
-                    current.type === 'esim_product' &&
-                    moment(current.purchaseDate).isBefore(
-                      moment(min.purchaseDate),
-                    )
-                      ? current
-                      : min,
-                  subsList[0],
-                );
-
-                navigation.navigate('ChargeHistory', {
-                  mainSubs: mainSubs!,
-                  chargeablePeriod: utils.toDateString(
-                    mainSubs?.expireDate,
-                    'YYYY.MM.DD',
-                  ),
-                  onPressUsage,
-                  isChargeable: !mainSubs?.expireDate?.isBefore(moment()),
-                });
-              }
-            });
-          navigation.setParams({iccid: undefined});
-        }
-      }
-    }
-  }, [action.order, iccid, navigation, onPressUsage, order.subs, route, token]);
-
   BackbuttonHandler({
     navigation,
     onBack: () => {
@@ -715,8 +733,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         keyExtractor={(item) => item.nid}
         ListHeaderComponent={isEditMode ? undefined : info}
         renderItem={renderSubs}
-        initialNumToRender={40}
-        extraData={[isEditMode]}
+        initialNumToRender={30}
+        extraData={[isEditMode, subsData]}
         contentContainerStyle={[
           {paddingBottom: 34},
           _.isEmpty(subsData) &&
@@ -736,7 +754,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         onEndReachedThreshold={0.4}
         onEndReached={() => {
           if (!order?.subsIsLast && order?.subs?.length > 0) {
-            navigation.setParams({subsId: undefined});
+            navigation.setParams({
+              subsId: undefined,
+              iccid: undefined,
+              actionStr: undefined,
+            });
             onRefresh(isEditMode, false);
           }
         }}

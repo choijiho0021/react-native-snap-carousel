@@ -141,7 +141,13 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     if (params?.mode === 'recharge')
       navigation.navigate('MyPageStack', {screen: 'MyPage'});
     // 일반 상품, 충전 상품 -> eSIM 화면 이동
-    else navigation.navigate('EsimStack', {screen: 'Esim'});
+    else
+      navigation.navigate('EsimStack', {
+        screen: 'Esim',
+        params: {
+          actionStr: 'reload',
+        },
+      });
   }, [navigation, params?.mode]);
 
   // 결제 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.

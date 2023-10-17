@@ -448,7 +448,7 @@ const slice = createSlice({
 
       const {count = PAGINATION_SUBS_COUNT, offset, reset} = action?.meta?.arg;
 
-      if (result === 0 && objects) {
+      if ([0, 1, -1001].includes(result) && objects) {
         // uuid param이 있으면 특정 상품 조회, offset 처리를 넘긴다.
         // count default 10 설정되어 있음
         if (objects?.length < count) {
