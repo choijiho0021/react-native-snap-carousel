@@ -127,6 +127,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
     (data: RkbProduct) =>
       navigation.navigate('ChargeAgreement', {
         title: i18n.t('esim:charge:type:extension'),
+        type: 'extension',
         extensionProd: data,
         mainSubs: params.mainSubs,
         contents: {

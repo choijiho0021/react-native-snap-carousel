@@ -688,6 +688,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     setDataUsage({});
     setUsageLoading(false);
 
+    // 사용량 모달 -> 충전하기
+    // 다른 충전하기 버튼과 덜라 cnt 2 이상이여도 달리 충전 이력 화면으로 안들어가고 있다.
     navigation.navigate('ChargeType', {
       mainSubs: subs,
       chargeablePeriod: utils.toDateString(subs?.expireDate, 'YYYY.MM.DD'),

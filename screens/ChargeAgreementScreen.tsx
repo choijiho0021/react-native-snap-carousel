@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {StyleSheet, SafeAreaView, View, Pressable} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
@@ -11,7 +11,6 @@ import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
-import AppBackButton from '@/components/AppBackButton';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
@@ -25,6 +24,7 @@ import AppStyledText from '@/components/AppStyledText';
 import {sliderWidth} from '@/constants/SliderEntry.style';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import ScreenHeader from '@/components/ScreenHeader';
+import AppModal from '@/components/AppModal';
 
 const styles = StyleSheet.create({
   container: {
@@ -129,12 +129,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  modalContent: {
+    maginHorizontal: 20,
+    width: '90%',
+    paddingTop: 25,
+    backgroundColor: 'white',
+  },
+  titleContent: {
+    marginHorizontal: 30,
+  },
+  modalOkText: {
+    borderRadius: 3,
+    backgroundColor: colors.clearBlue,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    lineHeight: 40,
+    color: 'white',
+    width: 120,
+    height: 40,
+    marginRight: 18,
+  },
   modalText: {
     ...appStyles.semiBold16Text,
     lineHeight: 26,
     letterSpacing: -0.32,
     color: colors.black,
   },
+  modalCloseStyle: {color: colors.black, marginRight: 108},
 });
 
 type ChargeAgreementScreenNavigationProp = StackNavigationProp<
@@ -159,6 +180,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
   action,
 }) => {
   const contents = useMemo(() => params.contents, [params.contents]);
+  const usagePeriod = params?.usagePeriod;
   const purchaseItems = useMemo(
     () =>
       params?.addOnProd
@@ -173,10 +195,44 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
   );
   const expPeriod = useMemo(() => moment().add(180, 'day'), []);
   const [isPressed, setIsPressed] = useState(false);
+  const [visible, setVisible] = useState<string>('');
 
-  useEffect(() => {}, []);
+  const validateTime = useCallback(() => {
+    if (!params?.expireTime) {
+      console.log('@@@ expireTime undefined');
+      return false;
+    }
 
-  const onPressBtnPurchase = useCallback(() => {
+    const expireTime = moment(usagePeriod?.period, usagePeriod?.format); // params?.expireTime;
+    const currentTime = moment();
+
+    const twentyMinuteAgoMoment = moment(expireTime.subtract(20, 'minutes'));
+    const hourAgoMoment = moment(expireTime.subtract(40, 'minutes'));
+    const remainDay =
+      params?.expireTime.diff(moment(), 'seconds') / (24 * 60 * 60);
+
+    const isWarningTime =
+      currentTime.isAfter(hourAgoMoment) &&
+      currentTime.isBefore(twentyMinuteAgoMoment);
+
+    const isBlockTime = currentTime.isAfter(twentyMinuteAgoMoment);
+
+    if (isWarningTime) {
+      setVisible('esim:charge:time:warning');
+      return false;
+    }
+
+    if (isBlockTime) {
+      setVisible(
+        remainDay < 1 ? 'esim:charge:time:reject' : 'esim:charge:time:reject2',
+      );
+      return false;
+    }
+
+    return true;
+  }, [params?.expireTime, usagePeriod?.format, usagePeriod?.period]);
+
+  const onPurchase = useCallback(() => {
     if (isPressed) {
       const {balance} = account;
       // 구매 품목을 갱신한다.
@@ -203,7 +259,70 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
         </AppModalContent>
       ));
     }
-  }, [account, action, isPressed, navigation, params.mainSubs, purchaseItems]);
+  }, [
+    account,
+    action.cart,
+    action.modal,
+    isPressed,
+    navigation,
+    params.mainSubs,
+    purchaseItems,
+  ]);
+
+  const onPressBtnPurchase = useCallback(() => {
+    // 충전하기만 시간 체크
+    if (params?.type === 'addOn') {
+      if (validateTime()) {
+        onPurchase();
+      }
+    } else onPurchase();
+  }, [onPurchase, params?.type, validateTime]);
+
+  const renderModal = useCallback(() => {
+    const isWarning = visible === 'esim:charge:time:warning';
+
+    const navigateEsim = () => {
+      navigation.popToTop();
+      navigation.navigate('EsimStack', {screen: 'Esim'});
+    };
+
+    return (
+      <AppModal
+        onCancelClose={() => {
+          setVisible('');
+          navigateEsim();
+        }}
+        type={isWarning ? 'normal' : 'info'}
+        onOkClose={() => {
+          // 결제 이어서 진행하기
+          setVisible('');
+          if (!isWarning) navigateEsim();
+        }}
+        contentStyle={styles.modalContent}
+        titleStyle={styles.titleContent}
+        visible={visible !== ''}
+        buttonBackgroundColor={colors.clearBlue}
+        cancelButtonTitle={i18n.t('no')}
+        cancelButtonStyle={styles.modalCloseStyle}
+        okButtonTitle={i18n.t(isWarning ? 'esim:charge:yes' : 'ok')}
+        okButtonStyle={styles.modalOkText}>
+        <View style={{marginHorizontal: 30}}>
+          <AppStyledText
+            text={i18n.t(visible)}
+            textStyle={[
+              appStyles.medium16,
+              {color: colors.black, textAlignVertical: 'center'},
+            ]}
+            format={{
+              red: [appStyles.bold16Text, {color: colors.redError}],
+              b: appStyles.bold16Text,
+            }}
+            data={{date: usagePeriod?.period}}
+          />
+        </View>
+      </AppModal>
+    );
+  }, [navigation, usagePeriod?.period, visible]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -236,8 +355,8 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
               textStyle={styles.expPeriodText}
               format={{b: styles.expPeriodTextBold}}
               data={{
-                period: params?.usagePeriod
-                  ? params?.usagePeriod.period
+                period: usagePeriod
+                  ? usagePeriod.period
                   : expPeriod.format('YYYY년 MM월 DD일'),
               }}
             />
@@ -287,6 +406,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
           title={i18n.t('esim:charge:payment:agree')}
         />
       </View>
+      {renderModal()}
     </SafeAreaView>
   );
 };

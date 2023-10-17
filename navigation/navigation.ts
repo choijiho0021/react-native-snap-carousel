@@ -177,8 +177,10 @@ export type HomeStackParamList = {
     extensionProd?: RkbProduct;
     title: string;
     contents: ChargeAgreementContents;
-    usagePeriod?: {text: string; period: string};
+    usagePeriod?: {text: string; period: string; format: string};
     status?: string;
+    expireTime?: Moment;
+    type: 'addOn' | 'extension';
   };
   AddOn: {
     mainSubs: RkbSubscription;

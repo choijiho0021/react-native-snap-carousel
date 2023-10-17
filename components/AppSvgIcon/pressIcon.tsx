@@ -2723,6 +2723,19 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  iconShare2: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path d="m7 9 6-4M7 12l6 4" stroke="#2C2C2C" strokeWidth="2" />
+      <Circle cx="4.5" cy="10.5" r="2.5" stroke="#2C2C2C" strokeWidth="2" />
+      <Circle cx="14.5" cy="3.5" r="2.5" stroke="#2C2C2C" strokeWidth="2" />
+      <Circle cx="14.5" cy="16.5" r="2.5" stroke="#2C2C2C" strokeWidth="2" />
+    </Svg>,
+  ],
   iconCopy: [
     <Svg
       width="21"
@@ -2824,6 +2837,46 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           <Stop stopColor="#BDD9FF" />
           <Stop offset="1" stopColor="#C8DFFF" stopOpacity=".24" />
         </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
+  grabber: [
+    <Svg
+      width="46"
+      height="10"
+      viewBox="0 0 46 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G filter="url(#csidtg60xa)">
+        <Path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M22.451 9.924a2 2 0 0 0 1.099 0l21-6A2 2 0 0 0 43.451.078L23.001 5.92 2.55.078a2 2 0 0 0-1.099 3.846l21 6z"
+          fill="#EFF1F3"
+        />
+      </G>
+      <Defs>
+        <filter
+          id="csidtg60xa"
+          x="0"
+          y="0"
+          width="46.001"
+          height="11.001"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB">
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+          <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+          <feColorMatrix
+            in="SourceAlpha"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+            result="hardAlpha"
+          />
+          <feOffset dy="1" />
+          <feGaussianBlur stdDeviation=".5" />
+          <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+          <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.08 0" />
+          <feBlend in2="shape" result="effect1_innerShadow_6420_6717" />
+        </filter>
       </Defs>
     </Svg>,
   ],
