@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {StyleSheet, SafeAreaView, View, Image} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
@@ -6,6 +6,7 @@ import moment, {Moment} from 'moment';
 import {ScrollView} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-community/async-storage';
 import {connect, useDispatch} from 'react-redux';
+import {RootState} from '@reduxjs/toolkit';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppBackButton from '@/components/AppBackButton';
@@ -21,7 +22,6 @@ import {RkbAddOnProd} from '@/redux/api/productApi';
 import ChargeTypeModal from './HomeScreen/component/ChargeTypeModal';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import ScreenHeader from '@/components/ScreenHeader';
-import {RootState} from '@reduxjs/toolkit';
 import {AccountModelState} from '@/redux/modules/account';
 
 const styles = StyleSheet.create({
@@ -93,12 +93,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [addonProds, setAddonProds] = useState<RkbAddOnProd[]>([]);
   const [chargeLoading, setChargeLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
-
-  const [extensionEnable, setExtensionEnable] = useState(false);
-  const extensionExpireCheck = useMemo(
-    () => extensionEnable && isChargeable,
-    [extensionEnable, isChargeable],
-  );
+  const extensionEnable = useRef(false);
+  const extensionExpireCheck = extensionEnable.current && isChargeable;
 
   useEffect(() => {
     navigation.setOptions({
@@ -146,7 +142,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           case 'A':
             setExpireTime(moment(rspStatus.endTime));
 
-            if (extensionEnable) {
+            if (extensionEnable.current) {
               if (chargeSubsParam) {
                 const i = chargeSubsParam.find((s) => {
                   return s.subsOrderNo === rspStatus?.orderId;
@@ -171,7 +167,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         setAddonEnable(false);
       }
     },
-    [extensionEnable],
+    [],
   );
 
   useEffect(() => {
@@ -207,14 +203,14 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   }, [expireTime, mainSubs, status]);
 
   useEffect(() => {
-    if (!extensionEnable) {
+    if (!extensionEnable.current) {
       if (!isChargeable) {
         setExtensionDisReason('expired');
         return;
       }
       setExtensionDisReason('unsupported');
     }
-  }, [extensionEnable, isChargeable]);
+  }, [isChargeable]);
 
   const getAddOnProduct = useCallback(async () => {
     setAddonLoading(true);
@@ -262,7 +258,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   }, [chargeableItem, mainSubs, remainDays, status]);
 
   const unsupportExtension = useCallback(() => {
-    setExtensionEnable(false);
+    extensionEnable.current = false;
     setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:unsupported`));
   }, []);
 
@@ -282,10 +278,10 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     }
     if (addOnOption === AddOnOptionType.BOTH) {
       setAddonEnable(true);
-      setExtensionEnable(true);
+      extensionEnable.current = true;
     }
     if (addOnOption === AddOnOptionType.EXTENSTION) {
-      setExtensionEnable(true);
+      extensionEnable.current = true;
       unsupportAddon();
       return;
     }
