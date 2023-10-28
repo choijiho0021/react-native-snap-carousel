@@ -222,19 +222,21 @@ const reduceProdByLocalOp = (state, action) => {
   }
 };
 
+const updateProdList = (state, action) => {
+  const {result, objects} = action.payload;
+
+  if (result === 0 && objects.length > 0) {
+    state.prodList = state.prodList.merge(
+      ImmutableMap(objects.map((item) => [item.key, item])),
+    );
+  }
+};
+
 const slice = createSlice({
   name: 'product',
   initialState,
   reducers: {
-    updateProduct: (state, action) => {
-      const {result, objects} = action.payload;
-
-      if (result === 0 && objects.length > 0) {
-        state.prodList = state.prodList.merge(
-          ImmutableMap(objects.map((item) => [item.key, item])),
-        );
-      }
-    },
+    updateProduct: updateProdList,
     updatePriceInfo: (state) => {
       state.priceInfo = state.prodByCountry
         .reduce((acc, cur) => {
@@ -285,35 +287,11 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(getProd.fulfilled, (state, action) => {
-      const {result, objects} = action.payload;
+    builder.addCase(getProd.fulfilled, updateProdList);
 
-      if (result === 0 && objects.length > 0) {
-        state.prodList = state.prodList.merge(
-          ImmutableMap(objects.map((item) => [item.key, item])),
-        );
-      }
-    });
+    builder.addCase(getProdBySku.fulfilled, updateProdList);
 
-    builder.addCase(getProdBySku.fulfilled, (state, action) => {
-      const {result, objects} = action.payload;
-
-      if (result === 0 && objects.length > 0) {
-        state.prodList = state.prodList.merge(
-          ImmutableMap(objects.map((item) => [item.key, item])),
-        );
-      }
-    });
-
-    builder.addCase(getProdByUuid.fulfilled, (state, action) => {
-      const {result, objects} = action.payload;
-
-      if (result === 0 && objects.length > 0) {
-        state.prodList = state.prodList.merge(
-          ImmutableMap(objects.map((item) => [item.key, item])),
-        );
-      }
-    });
+    builder.addCase(getProdByUuid.fulfilled, updateProdList);
 
     builder.addCase(getProdCountry.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
