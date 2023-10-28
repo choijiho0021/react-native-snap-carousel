@@ -79,7 +79,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
   product,
   action,
 }) => {
-  const {localOpList, prodByPartner} = product;
+  const {localOpList, prodByLocalOp, prodList} = product;
   const isTop = useRef(true);
   const blockAnimation = useRef(false);
   const animatedValue = useRef(new Animated.Value(264)).current;
@@ -114,10 +114,16 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
         (item, i) => mainSubsPartnerIds.indexOf(item) === i,
       );
 
-      return makeProdData(prodByPartner, uniqueList);
+      return makeProdData(prodList, prodByLocalOp, uniqueList);
     }
     return [];
-  }, [localOpList, params?.mainSubs.partner, partnerIds, prodByPartner]);
+  }, [
+    localOpList,
+    params?.mainSubs.partner,
+    partnerIds,
+    prodByLocalOp,
+    prodList,
+  ]);
 
   useEffect(() => {
     action.product.getProdOfPartner(partnerIds);

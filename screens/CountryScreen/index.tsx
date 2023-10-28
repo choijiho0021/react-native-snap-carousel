@@ -46,11 +46,12 @@ const styles = StyleSheet.create({
 });
 
 export const makeProdData = (
-  prodByPartner: ImmutableMap<string, RkbProduct[]>,
+  prodList: ImmutableMap<string, RkbProduct>,
+  prodByLocalOp: ImmutableMap<string, string[]>,
   partnerIds: string[],
 ) => {
   const prodByPartners = partnerIds.map((partnerId) =>
-    prodByPartner.get(partnerId),
+    prodByLocalOp.get(partnerId)?.map((k) => prodList.get(k)),
   );
 
   const list: RkbProduct[][] = prodByPartners
@@ -88,7 +89,7 @@ type CountryScreenProps = {
 
 const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const {navigation, route, product} = props;
-  const {localOpList, prodByPartner} = product;
+  const {localOpList, prodByLocalOp, prodList} = product;
 
   const [prodData, setProdData] = useState<RkbProduct[][]>([]);
   const [imageUrl, setImageUrl] = useState<string>();
@@ -111,11 +112,11 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
 
       setImageUrl(localOp?.imageUrl);
       setLocalOpDetails(localOp?.detail);
-      if (partnerIds.every((elm) => prodByPartner.has(elm))) {
-        setProdData(makeProdData(prodByPartner, partnerIds));
+      if (partnerIds.every((elm) => prodByLocalOp.has(elm))) {
+        setProdData(makeProdData(prodList, prodByLocalOp, partnerIds));
       }
     }
-  }, [localOpList, prodByPartner, route.params.partner]);
+  }, [localOpList, prodByLocalOp, prodList, route.params.partner]);
 
   const onPress = useCallback(
     (prod: RkbProduct) =>

@@ -161,8 +161,6 @@ export interface ProductModelState {
   prodByCountry: RkbProdByCountry[];
   priceInfo: ImmutableMap<string, RkbPriceInfo[][]>;
   prodByLocalOp: ImmutableMap<string, string[]>;
-  prodByPartner: ImmutableMap<string, RkbProduct[]>;
-  cmiProdByPartner: ImmutableMap<string, RkbProduct[]>;
   prodCountry: string[];
   rule: {
     timestamp_prod: string;
@@ -186,8 +184,6 @@ const initialState: ProductModelState = {
   prodByCountry: [],
   priceInfo: ImmutableMap(),
   prodByLocalOp: ImmutableMap(),
-  prodByPartner: ImmutableMap(),
-  cmiProdByPartner: ImmutableMap(),
   prodCountry: [],
   rule: {
     timestamp_dev: '',
@@ -202,27 +198,27 @@ const initialState: ProductModelState = {
 
 const reduceProdByLocalOp = (state, action) => {
   const {result, objects} = action.payload;
+  const updateAll = action.meta.arg === 'all';
 
-  if (result === 0 && objects.length > 0) {
-    const group = objects.reduce(
-      (acc, cur) =>
-        acc.update(cur.partnerId, (prev) =>
-          prev ? prev.concat(cur.key) : [cur.key],
-        ),
-      ImmutableMap<string, string[]>(),
-    );
+  if (result === 0) {
+    if (objects.length > 0) {
+      const group = objects.reduce(
+        (acc, cur) =>
+          acc.update(cur.partnerId, (prev) =>
+            prev ? prev.concat(cur.key) : [cur.key],
+          ),
+        ImmutableMap<string, string[]>(),
+      );
+      state.prodByLocalOp = updateAll
+        ? group
+        : state.prodByLocalOp.merge(group);
 
-    state.prodByLocalOp = state.prodByLocalOp.merge(group);
-    state.prodList = state.prodList.merge(
-      ImmutableMap(objects.map((o) => [o.key, o])),
-    );
-
-    const prodListbyPartner = group.map((v) =>
-      v.map((k) => state.prodList.get(k)),
-    );
-    state.prodByPartner = state.prodByPartner.merge(prodListbyPartner);
-  } else if (action.meta.arg !== 'all') {
-    state.prodByPartner = state.prodByPartner.set(action.meta.arg, []);
+      const prodList = ImmutableMap(objects.map((o) => [o.key, o]));
+      state.prodList = updateAll ? prodList : state.prodList.merge(prodList);
+    } else if (!updateAll) {
+      // update the product list of given local operator empty
+      state.prodByLocalOp = state.prodByLocalOp.set(action.meta.arg, []);
+    }
   }
 };
 
