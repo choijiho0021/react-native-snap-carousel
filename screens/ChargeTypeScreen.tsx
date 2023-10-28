@@ -435,9 +435,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         ))}
         <AppSnackBar
           visible={showSnackBar.visible}
-          onClose={() =>
-            setShowSnackBar((pre) => ({text: pre.text, visible: false}))
-          }
+          onClose={() => setShowSnackBar((pre) => ({...pre, visible: false}))}
           textMessage={showSnackBar.text}
           bottom={20}
           preIcon={
