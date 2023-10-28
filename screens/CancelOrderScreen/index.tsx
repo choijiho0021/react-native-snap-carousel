@@ -34,6 +34,7 @@ import {
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 
 import {
+  ProductAction,
   actions as productActions,
   ProductModelState,
 } from '@/redux/modules/product';
@@ -235,6 +236,7 @@ type CancelOrderScreenProps = {
   action: {
     order: OrderAction;
     modal: ModalAction;
+    product: ProductAction;
   };
 };
 
@@ -324,7 +326,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   // 함수로 묶기
   const getProdDate = useCallback(() => {
     if (!loading.current && (selectedOrder?.orderItems?.length || 0) > 0) {
-      selectedOrder.orderItems.forEach((i) => {
+      selectedOrder?.orderItems.forEach((i) => {
         if (!product.prodList.has(i.uuid)) {
           // 해당 Uuid로 없다면 서버에서 가져온다.
           action.product.getProdByUuid(i.uuid);
@@ -335,7 +337,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   }, [action.product, selectedOrder?.orderItems, product.prodList]);
 
   const onCheck = useCallback(() => {
-    if (!checked) scrollRef.current.scrollToEnd();
+    if (!checked) scrollRef.current?.scrollToEnd();
 
     setChecked((prev) => !prev);
   }, [checked]);
