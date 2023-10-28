@@ -220,9 +220,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
 };
 
 export default connect(
-  ({product}: RootState) => ({
-    product,
-  }),
+  ({product}: RootState) => ({product}),
   (dispatch) => ({
     action: {
       product: bindActionCreators(productActions, dispatch),
