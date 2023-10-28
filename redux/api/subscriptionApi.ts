@@ -186,6 +186,7 @@ export type RkbSubscription = {
   startDate?: Moment;
   addOnOption?: AddOnOptionType;
   resetTime?: string;
+  localOpId?: string;
 };
 
 export const getMoment = (str: string) => (str ? moment(str) : undefined);

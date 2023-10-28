@@ -79,55 +79,24 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
   product,
   action,
 }) => {
-  const {localOpList, prodByLocalOp, prodList} = product;
+  const {prodByLocalOp, prodList} = product;
+  const {mainSubs, chargeablePeriod} = params || {};
   const isTop = useRef(true);
   const blockAnimation = useRef(false);
   const animatedValue = useRef(new Animated.Value(264)).current;
 
-  const partnerIds = useMemo(
-    () =>
-      product.prodByCountry.reduce((acc: string[], cur) => {
-        const curArr = cur.country.split(',');
-        const mainCntryArr = params?.mainSubs?.country || [];
-
-        if (
-          curArr.length === mainCntryArr.length &&
-          curArr.filter((elm) => mainCntryArr.includes(elm)).length ===
-            curArr.length
-        )
-          acc.push(cur.partner);
-
-        return acc;
-      }, []),
-    [params?.mainSubs?.country, product.prodByCountry],
-  );
-
   const prodData = useMemo(() => {
-    if (partnerIds) {
-      const mainSubsPartnerIds = partnerIds.filter(
-        (partnerId) =>
-          localOpList.get(partnerId)?.partner === params?.mainSubs.partner,
-      );
-
-      // 중복 제거
-      const uniqueList = mainSubsPartnerIds.filter(
-        (item, i) => mainSubsPartnerIds.indexOf(item) === i,
-      );
-
-      return makeProdData(prodList, prodByLocalOp, uniqueList);
+    if (mainSubs?.localOpId) {
+      return makeProdData(prodList, prodByLocalOp, [mainSubs?.localOpId]);
     }
     return [];
-  }, [
-    localOpList,
-    params?.mainSubs.partner,
-    partnerIds,
-    prodByLocalOp,
-    prodList,
-  ]);
+  }, [mainSubs?.localOpId, prodByLocalOp, prodList]);
 
   useEffect(() => {
-    action.product.getProdOfPartner(partnerIds);
-  }, [action.product, partnerIds]);
+    if (mainSubs?.localOpId) {
+      action.product.getProdOfPartner([mainSubs?.localOpId]);
+    }
+  }, [action.product, mainSubs?.localOpId]);
 
   const onPress = useCallback(
     (data: RkbProduct) =>
@@ -135,7 +104,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
         title: i18n.t('esim:charge:type:extension'),
         type: 'extension',
         extensionProd: data,
-        mainSubs: params.mainSubs,
+        mainSubs,
         contents: {
           chargeProd: data.name,
           noticeTitle: i18n.t('esim:charge:extension:notice:title'),
@@ -144,7 +113,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
           ),
         },
       }),
-    [navigation, params.mainSubs],
+    [navigation, mainSubs],
   );
 
   const onTop = useCallback(
@@ -185,8 +154,8 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
 
       <Animated.View style={{height: animatedValue}}>
         <SelectedProdTitle
-          isdaily={params?.mainSubs?.daily === 'daily'}
-          prodName={params?.mainSubs?.prodName || ''}
+          isdaily={mainSubs?.daily === 'daily'}
+          prodName={mainSubs?.prodName || ''}
         />
         <View style={styles.whiteBox}>
           <View style={styles.greyBox}>
@@ -197,7 +166,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
               format={{b: styles.chargeablePeriodTextBold}}
               data={{
                 chargeablePeriod:
-                  moment(params?.chargeablePeriod, 'YYYY.MM.DD').format(
+                  moment(chargeablePeriod, 'YYYY.MM.DD').format(
                     'YYYY년 MM월 DD일',
                   ) || '',
               }}
