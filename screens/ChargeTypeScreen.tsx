@@ -310,66 +310,61 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     }
   }, [getAddOnProduct, mainSubs, status, unsupportAddon, unsupportExtension]);
 
-  const onPress = useCallback(
-    async (type: string) => {
-      if (type === 'extension') {
-        if (extensionExpireCheck) {
-          const checked = await AsyncStorage.getItem(
-            'esim.charge.extension.modal.check',
-          );
-          if (checked !== 'checked') {
-            AsyncStorage.setItem(
-              'esim.charge.extension.modal.check',
-              'checked',
-            );
+  const renderChargeModal = useCallback((type: 'addOn' | 'extension', onPress, disabed, reason) => {
+    dispatch(
+      modalActions.renderModal(() => (
+        <ChargeTypeModal
+          type={type}
+          onPress={onPress}
+          disabled={disabed}
+          disReason={reason}
+        />
+      )),
+    );
+  } , [])
 
-            dispatch(
-              modalActions.renderModal(() => (
-                <ChargeTypeModal
-                  type={type}
-                  onPress={() => onPress(type)}
-                  disabled={!extensionExpireCheck}
-                  disReason={{
-                    addOn: addOnDisReasonText,
-                    extension: extensionDisReason,
-                  }}
-                />
-              )),
-            );
-          } else {
-            navigation.navigate('Charge', {
-              mainSubs,
-              chargeablePeriod,
-            });
-          }
-        } else {
-          setShowSnackBar({
-            text: i18n.t(
-              `esim:charge:disReason:extension:${extensionDisReason}`,
-            ),
-            visible: true,
-            type: 'extension',
-          });
-        }
-      } else if (addonEnable) {
+  // 연장하기
+  const onPressExtension = useCallback(async () => {
+    if (extensionExpireCheck) {
+      const checked = await AsyncStorage.getItem(
+        'esim.charge.extension.modal.check',
+      );
+      if (checked !== 'checked') {
+        AsyncStorage.setItem(
+          'esim.charge.extension.modal.check',
+          'checked',
+        );
+
+        renderChargeModal('extension', onPressExtension, !extensionExpireCheck, extensionDisReason)
+
+      } else {
+        navigation.navigate('Charge', {
+          mainSubs,
+          chargeablePeriod,
+        });
+      }
+    } else {
+      setShowSnackBar({
+        text: i18n.t(
+          `esim:charge:disReason:extension:${extensionDisReason}`,
+        ),
+        visible: true,
+        type: 'extension',
+      });
+    }
+
+    // 이따 노트북 받고 적용
+  }, [])
+
+  const onPressAddon = useCallback(
+    async () => {
+        if (addonEnable) {
         const checked = await AsyncStorage.getItem(
           'esim.charge.addon.modal.check',
         );
         if (checked !== 'checked') {
           AsyncStorage.setItem('esim.charge.addon.modal.check', 'checked');
-          dispatch(
-            modalActions.renderModal(() => (
-              <ChargeTypeModal
-                type={type}
-                onPress={() => onPress(type)}
-                disabled={!addonEnable}
-                disReason={{
-                  addOn: addOnDisReasonText,
-                  extension: extensionDisReason,
-                }}
-              />
-            )),
-          );
+          renderChargeModal('addOn', onPressAddon, !addonEnable, addOnDisReasonText)
         } else {
           navigation.navigate('AddOn', {
             mainSubs: chargeableItem || mainSubs,
@@ -391,16 +386,14 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       addonEnable,
       addonProds,
       chargeableItem,
-      chargeablePeriod,
       dispatch,
       expireTime,
       extensionDisReason,
-      extensionExpireCheck,
       mainSubs,
       navigation,
       status,
     ],
-  );
+  ); 
 
   return (
     <SafeAreaView style={styles.container}>
@@ -418,21 +411,22 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
             resizeMode="stretch"
           />
         </View>
-        {['addOn', 'extension'].map((t) => (
-          <ChargeTypeButton
-            key={t}
-            type={t}
-            onPress={() => onPress(t)}
-            disabled={
-              (t === 'addOn' && !addonEnable) ||
-              (t === 'extension' && !extensionExpireCheck)
-            }
-            disReason={{
-              addOn: addOnDisReasonText,
-              extension: extensionDisReason,
-            }}
+           <ChargeTypeButton
+           type="addOn"
+            key="addOn:button"
+            title={i18n.t(`esim:charge:type:$addOn:detail`)}
+            onPress={() => onPressAddon}
+            disabled={!addonEnable}
+            disReason={addOnDisReasonText}
           />
-        ))}
+           <ChargeTypeButton
+           type="extension"
+            key="extension:button"
+            title={i18n.t(`esim:charge:type:$addOn:extesion`)}
+            onPress={() => onPressExtension}
+            disabled={!extensionExpireCheck}
+            disReason={extensionDisReason}
+          />
         <AppSnackBar
           visible={showSnackBar.visible}
           onClose={() => setShowSnackBar((pre) => ({...pre, visible: false}))}
@@ -444,7 +438,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
               ? undefined
               : 'cautionRed'
           }
-        />
+        />     
       </ScrollView>
     </SafeAreaView>
   );

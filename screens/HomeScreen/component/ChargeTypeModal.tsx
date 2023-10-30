@@ -68,15 +68,15 @@ const styles = StyleSheet.create({
 });
 
 type ChargeTypeModalProps = {
-  type: string;
-  onPress: (type: string) => void;
+  onPress: () => void;
+  type: 'addOn' | 'extension'
   disabled: boolean;
-  disReason?: ChargeDisReason;
+  disReason?: string;
 };
 
 const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
-  type,
   onPress,
+  type,
   disabled,
   disReason,
 }) => {
@@ -97,14 +97,15 @@ const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
 
   const getDisReasonText = useCallback(() => {
     if (disabled) {
-      if (type === 'addOn') {
-        return disReason?.addOn;
-      }
+      return disReason
+      // if (type === 'addOn') {
+      //   return disReason?.addOn;
+      // }
 
-      return i18n.t(`esim:charge:disReason:extension:${disReason?.extension}`);
+      // return i18n.t(`esim:charge:disReason:extension:${disReason?.extension}`);
     }
     return undefined;
-  }, [disReason?.addOn, disReason?.extension, disabled, type]);
+  }, [disReason, disabled, type]);
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -157,13 +158,13 @@ const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
             )}
           </View>
           <ChargeBottomButton
-            type={type}
+            // title={ i18n.t(`esim:charge:type:${type}`)}
+            title={getDisReasonText()}
             onPress={() => {
               dispatch(modalActions.closeModal());
-              if (!disabled) onPress(type);
+              if (!disabled) onPress();
             }}
             disabled={disabled}
-            title={getDisReasonText()}
           />
           <View style={{height: 20}} />
         </View>
