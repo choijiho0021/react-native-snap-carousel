@@ -32,7 +32,7 @@ const ChargeBottomButton = ({
 
   return (
     <Pressable
-      onPress={() => onPress}
+      onPress={onPress}
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}
       style={[
@@ -45,9 +45,7 @@ const ChargeBottomButton = ({
             : colors.clearBlue,
         },
       ]}>
-      <AppText style={styles.typeText}>
-        {title}
-      </AppText>
+      <AppText style={styles.typeText}>{title}</AppText>
     </Pressable>
   );
 };

@@ -1,4 +1,4 @@
-import React, {memo, useCallback} from 'react';
+import React, {memo, useCallback, useEffect} from 'react';
 import {Pressable, SafeAreaView, StyleSheet, View, Image} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {actions as modalActions} from '@/redux/modules/modal';
@@ -160,7 +160,7 @@ const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
 
           <ChargeBottomButton
             // title={ i18n.t(`esim:charge:type:${type}`)}
-            title={disabled ? disReason : undefined}
+            title={disabled ? disReason : i18n.t(`esim:charge:type:${type}`)}
             onPress={() => {
               dispatch(modalActions.closeModal());
               if (!disabled) onPress();

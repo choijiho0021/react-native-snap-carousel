@@ -332,6 +332,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       const checked = await AsyncStorage.getItem(
         'esim.charge.extension.modal.check',
       );
+
       if (checked !== 'checked') {
         AsyncStorage.setItem('esim.charge.extension.modal.check', 'checked');
 
@@ -339,7 +340,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           'extension',
           onPressExtension,
           !extensionExpireCheck,
-          extensionDisReason,
+          i18n.t(`esim:charge:disReason:extension:${extensionDisReason}`),
         );
       } else {
         navigation.navigate('Charge', {
@@ -424,16 +425,16 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         <ChargeTypeButton
           type="addOn"
           key="addOn:button"
-          title={i18n.t(`esim:charge:type:$addOn:detail`)}
-          onPress={() => onPressAddon}
+          title={i18n.t(`esim:charge:type:addOn:detail`)}
+          onPress={onPressAddon}
           disabled={!addonEnable}
           disReason={addOnDisReasonText}
         />
         <ChargeTypeButton
           type="extension"
           key="extension:button"
-          title={i18n.t(`esim:charge:type:$addOn:extesion`)}
-          onPress={() => onPressExtension}
+          title={i18n.t(`esim:charge:type:extension:detail`)}
+          onPress={onPressExtension}
           disabled={!extensionExpireCheck}
           disReason={extensionDisReason}
         />

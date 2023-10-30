@@ -54,8 +54,8 @@ const ChargeTypeButton = ({
   disabled = false,
   disReason,
 }: {
-  type: 'addOn' | 'extension'
-  title:   string;
+  type: 'addOn' | 'extension';
+  title: string;
   onPress: () => void;
   disabled: boolean;
   disReason?: string;
@@ -67,7 +67,7 @@ const ChargeTypeButton = ({
       modalActions.renderModal(() => (
         <ChargeTypeModal
           type={type}
-          onPress={() => onPress}
+          onPress={onPress}
           disabled={disabled}
           disReason={disReason}
         />
@@ -88,9 +88,9 @@ const ChargeTypeButton = ({
         {/* {i18n.t(`esim:charge:type:${type}:detail`)} */}
         {title}
       </AppText>
-      <ChargeBottomButton 
-      title={i18n.t(`esim:charge:type:${type}`)}
-        onPress={() => onPress()}
+      <ChargeBottomButton
+        title={i18n.t(`esim:charge:type:${type}`)}
+        onPress={onPress}
         disabled={disabled}
       />
     </View>
