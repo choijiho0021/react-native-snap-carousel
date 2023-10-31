@@ -1,4 +1,4 @@
-import React, {memo, useCallback} from 'react';
+import React, {memo, useCallback, useEffect} from 'react';
 import {Pressable, SafeAreaView, StyleSheet, View, Image} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {actions as modalActions} from '@/redux/modules/modal';
@@ -68,15 +68,15 @@ const styles = StyleSheet.create({
 });
 
 type ChargeTypeModalProps = {
-  type: string;
-  onPress: (type: string) => void;
+  onPress: () => void;
+  type: 'addOn' | 'extension';
   disabled: boolean;
-  disReason?: ChargeDisReason;
+  disReason?: string;
 };
 
 const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
-  type,
   onPress,
+  type,
   disabled,
   disReason,
 }) => {
@@ -95,16 +95,17 @@ const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
     [],
   );
 
-  const getDisReasonText = useCallback(() => {
-    if (disabled) {
-      if (type === 'addOn') {
-        return disReason?.addOn;
-      }
+  // const getDisReasonText = useCallback(() => {
+  //   if (disabled) {
+  //     return disReason;
+  //     // if (type === 'addOn') {
+  //     //   return disReason?.addOn;
+  //     // }
 
-      return i18n.t(`esim:charge:disReason:extension:${disReason?.extension}`);
-    }
-    return undefined;
-  }, [disReason?.addOn, disReason?.extension, disabled, type]);
+  //     // return i18n.t(`esim:charge:disReason:extension:${disReason?.extension}`);
+  //   }
+  //   return undefined;
+  // }, [disReason, disabled]);
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -156,14 +157,15 @@ const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
               textWithCheck(i18n.t(`esim:charge:type:${type}:modal:box${n}`)),
             )}
           </View>
+
           <ChargeBottomButton
-            type={type}
+            // title={ i18n.t(`esim:charge:type:${type}`)}
+            title={disabled ? disReason : i18n.t(`esim:charge:type:${type}`)}
             onPress={() => {
               dispatch(modalActions.closeModal());
-              if (!disabled) onPress(type);
+              if (!disabled) onPress();
             }}
             disabled={disabled}
-            title={getDisReasonText()}
           />
           <View style={{height: 20}} />
         </View>

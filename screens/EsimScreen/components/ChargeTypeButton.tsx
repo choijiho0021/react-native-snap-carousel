@@ -49,14 +49,16 @@ export type ChargeDisReason = {
 
 const ChargeTypeButton = ({
   type,
+  title,
   onPress,
   disabled = false,
   disReason,
 }: {
-  type: string;
-  onPress: (type: string) => void;
+  type: 'addOn' | 'extension';
+  title: string;
+  onPress: () => void;
   disabled: boolean;
-  disReason?: ChargeDisReason;
+  disReason?: string;
 }) => {
   const dispatch = useDispatch();
 
@@ -65,7 +67,7 @@ const ChargeTypeButton = ({
       modalActions.renderModal(() => (
         <ChargeTypeModal
           type={type}
-          onPress={() => onPress(type)}
+          onPress={onPress}
           disabled={disabled}
           disReason={disReason}
         />
@@ -83,11 +85,12 @@ const ChargeTypeButton = ({
         <AppSvgIcon name="info" onPress={onPressInfo} />
       </View>
       <AppText style={[styles.detailText, {opacity: disabled ? 0.64 : 1}]}>
-        {i18n.t(`esim:charge:type:${type}:detail`)}
+        {/* {i18n.t(`esim:charge:type:${type}:detail`)} */}
+        {title}
       </AppText>
       <ChargeBottomButton
-        type={type}
-        onPress={() => onPress(type)}
+        title={i18n.t(`esim:charge:type:${type}`)}
+        onPress={onPress}
         disabled={disabled}
       />
     </View>

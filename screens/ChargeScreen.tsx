@@ -12,6 +12,7 @@ import {
   actions as productActions,
   ProductAction,
   ProductModelState,
+  isGetAllProduct,
 } from '@/redux/modules/product';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
@@ -93,10 +94,14 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
   }, [mainSubs?.localOpId, prodByLocalOp, prodList]);
 
   useEffect(() => {
+    console.log('@@@@@@@ chargeScreen');
     if (mainSubs?.localOpId) {
-      action.product.getProdOfPartner([mainSubs?.localOpId]);
+      if (
+        isGetAllProduct([mainSubs?.localOpId], product.prodByLocalOpCheckList)
+      )
+        action.product.getProdOfPartner([mainSubs?.localOpId]);
     }
-  }, [action.product, mainSubs?.localOpId]);
+  }, [action.product, mainSubs?.localOpId, product.prodByLocalOpCheckList]);
 
   const onPress = useCallback(
     (data: RkbProduct) =>

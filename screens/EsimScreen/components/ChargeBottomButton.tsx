@@ -20,13 +20,11 @@ const styles = StyleSheet.create({
 });
 
 const ChargeBottomButton = ({
-  type,
   onPress,
   disabled = false,
   title,
 }: {
-  type: string;
-  onPress: (t: string) => void;
+  onPress: () => void;
   disabled: boolean;
   title?: string;
 }) => {
@@ -34,7 +32,7 @@ const ChargeBottomButton = ({
 
   return (
     <Pressable
-      onPress={() => onPress(type)}
+      onPress={onPress}
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}
       style={[
@@ -47,9 +45,7 @@ const ChargeBottomButton = ({
             : colors.clearBlue,
         },
       ]}>
-      <AppText style={styles.typeText}>
-        {title || i18n.t(`esim:charge:type:${type}`)}
-      </AppText>
+      <AppText style={styles.typeText}>{title}</AppText>
     </Pressable>
   );
 };
