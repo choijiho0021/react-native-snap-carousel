@@ -78,21 +78,6 @@ const getAllProduct = createAsyncThunk(
   reloadOrCallApi('cache.allProd', 'all', API.Product.getProductByLocalOp),
 );
 
-const getProdOfPartner = createAsyncThunk(
-  'product/getProdOfPartner',
-  (partnerId: string[], {dispatch, getState}) => {
-    const {
-      product: {prodByLocalOp},
-    } = getState() as RootState;
-
-    for (let i = 0; i < partnerId.length; i++) {
-      if (!prodByLocalOp.has(partnerId[i])) {
-        dispatch(getProductByLocalOp(partnerId[i]));
-      }
-    }
-  },
-);
-
 const init = createAsyncThunk(
   'product/init',
   async (reloadAll: boolean, {dispatch}) => {
@@ -161,6 +146,7 @@ export interface ProductModelState {
   prodByCountry: RkbProdByCountry[];
   priceInfo: ImmutableMap<string, RkbPriceInfo[][]>;
   prodByLocalOp: ImmutableMap<string, string[]>;
+  prodByLocalOpCheckList: ImmutableMap<string, boolean>;
   prodCountry: string[];
   rule: {
     timestamp_prod: string;
@@ -184,6 +170,7 @@ const initialState: ProductModelState = {
   prodByCountry: [],
   priceInfo: ImmutableMap(),
   prodByLocalOp: ImmutableMap(),
+  prodByLocalOpCheckList: ImmutableMap(),
   prodCountry: [],
   rule: {
     timestamp_dev: '',
@@ -232,11 +219,71 @@ const updateProdList = (state, action) => {
   }
 };
 
+// const isGetAllProduct = createAsyncThunk(
+//   'product/isGetAllProudct',
+//   (partnerId: string[], {getState}) => {
+//     const {
+//       product: {prodByLocalOpCheckList},
+//     } = getState() as RootState;
+
+//     let isGetAll = true;
+//     // prodByLocalOpCheckList
+//     for (let i = 0; i < partnerId.length; i++) {
+//       // partnerId가 boolean false 인 경우에만 동작
+//       if (prodByLocalOpCheckList.get(partnerId[i])) {
+//         isGetAll = false;
+//       }
+//     }
+//     return isGetAll;
+//   },
+// );
+
+export const isGetAllProduct = (
+  partnerId: string[],
+  prodByLocalOpCheckList: ImmutableMap<string, boolean>,
+) => {
+  let isGetAll = true;
+  // prodByLocalOpCheckList
+  for (let i = 0; i < partnerId.length; i++) {
+    // partnerId가 boolean false 인 경우에만 동작
+    if (prodByLocalOpCheckList.get(partnerId[i])) {
+      isGetAll = false;
+    }
+  }
+  return isGetAll;
+};
+
+const getProdOfPartner = createAsyncThunk(
+  'product/getProdOfPartner',
+  (partnerId: string[], {dispatch, getState}) => {
+    const {
+      product: {prodByLocalOp, prodByLocalOpCheckList},
+    } = getState() as RootState;
+
+    // prodByLocalOpCheckList
+    for (let i = 0; i < partnerId.length; i++) {
+      if (!prodByLocalOp.has(partnerId[i])) {
+        dispatch(getProductByLocalOp(partnerId[i]));
+      }
+    }
+
+    const updateCheckList = prodByLocalOpCheckList.merge(
+      ImmutableMap(partnerId.map((r) => [r, true])),
+    );
+
+    return updateCheckList;
+  },
+);
+
 const slice = createSlice({
   name: 'product',
   initialState,
   reducers: {
     updateProduct: updateProdList,
+    updateCheckList: (state, action) => {
+      const {list} = action.payload;
+      state.prodByLocalOpCheckList = list;
+    },
     updatePriceInfo: (state) => {
       state.priceInfo = state.prodByCountry
         .reduce((acc, cur) => {
@@ -348,6 +395,10 @@ const slice = createSlice({
 
     builder.addCase(getPaymentRule.fulfilled, (state, {payload}) => {
       state.rule = payload;
+    });
+
+    builder.addCase(getProdOfPartner.fulfilled, (state, {payload}) => {
+      state.prodByLocalOpCheckList = payload;
     });
 
     builder.addCase(getDevList.fulfilled, (state, {payload}) => {
