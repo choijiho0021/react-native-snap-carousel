@@ -37,8 +37,6 @@ import {
 import {
   actions as productActions,
   ProductAction,
-  isGetAllProduct,
-  ProductModelState,
 } from '@/redux/modules/product';
 import {
   actions as infoActions,
@@ -100,7 +98,6 @@ type SimpleTextScreenProps = {
   route: SimpleTextScreenRouteProp;
   info: InfoModelState;
   account: AccountModelState;
-  product: ProductModelState;
   eventStatus: EventStatus;
   isProdEvent: boolean;
 
@@ -120,7 +117,6 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     route,
     info,
     account,
-    product,
     eventStatus,
     isProdEvent,
     pending,
@@ -185,8 +181,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
           else if (cmd.value) partnerList = cmd.value.split(',');
 
           if (cmd.value || cmd.ios || cmd.aos) {
-            if (isGetAllProduct(partnerList, product.prodByLocalOpCheckList))
-              action.product.getProdOfPartner(partnerList);
+            action.product.getProdOfPartner(partnerList);
             navigation.navigate('Country', {partner: partnerList});
           }
 
@@ -455,10 +450,9 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
 
 // export default SimpleTextScreen;
 export default connect(
-  ({info, account, product, status}: RootState) => ({
+  ({info, account, status}: RootState) => ({
     info,
     account,
-    product,
     pending:
       status.pending[infoActions.getInfoList.typePrefix] ||
       status.pending[infoActions.getInfoByTitle.typePrefix] ||
