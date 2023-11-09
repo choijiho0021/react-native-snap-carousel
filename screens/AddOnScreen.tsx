@@ -329,12 +329,13 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
                     : colors.black,
               },
             ]}>
-            {volume > 500 ? `일 ${volume / 1024}GB` : `일 ${volume}MB`}
+            {mainSubs.daily === 'daily' ? `${'일 '}` : ``}
+            {volume > 500 ? `${volume / 1024}GB` : `${volume}MB`}
           </AppText>
         </Pressable>
       );
     },
-    [selectedAddOnProd?.sku],
+    [mainSubs.daily, selectedAddOnProd?.sku],
   );
 
   const renderUsagePrieod = useCallback(
