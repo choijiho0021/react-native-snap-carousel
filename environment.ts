@@ -4,8 +4,8 @@ import {getBundleId} from 'react-native-device-info';
 import {CurrencyCode} from './redux/api/productApi';
 
 const codePushLabel = {
-  stagingIOS: "v118",
-  stagingAndroid: "v107",
+  stagingIOS: 'v118',
+  stagingAndroid: 'v107',
   productionIOS: 'v47',
   productionAndroid: 'v40',
 };
@@ -28,7 +28,7 @@ const appStoreId = esimGlobal ? '' : '1525664178';
 // Dynamic Link
 const dynamicLink = 'https://rokebi.page.link';
 
-const isProduction = Config.NODE_ENV === 'production';
+const isProduction = true; // Config.NODE_ENV === 'production';
 
 // test 계정
 impId = isProduction ? impId : 'imp54175831';
@@ -150,8 +150,8 @@ function get() {
       : codePushLabel.productionAndroid;
   } else {
     env.label = env.isIOS
-      ? codePushLabel.stagingIOS
-      : codePushLabel.stagingAndroid;
+      ? codePushLabel.productionIOS
+      : codePushLabel.productionAndroid;
   }
 
   // if (appId === 'esim' || appId === 'global') {
@@ -165,12 +165,12 @@ function get() {
         : 'https://www.rokebi.com';
       break;
     default:
-      env.scheme = 'http';
-      env.rokApiUrl = 'tb-svcapp.rokebi.com';
-      env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'tb-esim.rokebi.com';
+      env.scheme = 'https';
+      env.rokApiUrl = 'svcapp.rokebi.com';
+      env.apiUrl = esimGlobal ? 'global.rokebi.com' : 'esim.rokebi.com';
       env.webViewHost = esimGlobal
-        ? 'http://tb.rokebi.com/us'
-        : 'http://tb.rokebi.com';
+        ? 'https://www.rokebi.com/us'
+        : 'https://www.rokebi.com';
       break;
   }
   return env;
