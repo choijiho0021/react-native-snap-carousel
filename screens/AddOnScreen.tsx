@@ -301,6 +301,17 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
     [remainDaysAddOnProd, selectedType, todayAddOnProd],
   );
 
+  const prodTitle = useCallback(
+    (volume: number) => {
+      const dailyPrefix =
+        mainSubs.daily === 'daily' ? `${i18n.t(`days`)} ` : '';
+      return `${dailyPrefix}${
+        volume > 500 ? `${volume / 1024}GB` : `${volume}MB`
+      }`;
+    },
+    [mainSubs.daily],
+  );
+
   const renderAddOnProd = useCallback(
     (item: RkbAddOnProd, index: number) => {
       const volume = Number(item.volume);
@@ -329,12 +340,12 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
                     : colors.black,
               },
             ]}>
-            {volume > 500 ? `일 ${volume / 1024}GB` : `일 ${volume}MB`}
+            {prodTitle(volume)}
           </AppText>
         </Pressable>
       );
     },
-    [selectedAddOnProd?.sku],
+    [prodTitle, selectedAddOnProd?.sku],
   );
 
   const renderUsagePrieod = useCallback(
