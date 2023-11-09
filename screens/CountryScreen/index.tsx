@@ -107,7 +107,7 @@ export const makeProdData = (
 };
 
 const CountryScreen: React.FC<CountryScreenProps> = (props) => {
-  const {navigation, route, product, action} = props;
+  const {navigation, route, product, action, startTime} = props;
   const {localOpList, prodByLocalOp, prodList} = product;
 
   const [prodData, setProdData] = useState<RkbProduct[][]>([]);
@@ -198,6 +198,29 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     [onPress, onTop, prodData],
   );
 
+  const renderCountryItemTab = useCallback(() => {
+    console.log(
+      'main -> country end : ',
+      performance.now() - route?.params?.startTime,
+    );
+
+    return prodData.length > 0 ? (
+      <Tab.Navigator
+        initialRouteName={prodData[0].length === 0 ? 'total' : 'daily'}
+        tabBar={(props) => <TabBar {...props} />}
+        sceneContainerStyle={{backgroundColor: colors.white}}>
+        {['daily', 'total'].map((k) => (
+          <Tab.Screen
+            key={k}
+            name={k}
+            component={renderProdType(k)}
+            options={{lazy: true, title: i18n.t(`country:${k}`)}}
+          />
+        ))}
+      </Tab.Navigator>
+    ) : null;
+  }, [prodData, renderProdType, route?.params?.startTime]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -220,22 +243,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           />
         </Animated.View>
       )}
-
-      {prodData.length > 0 ? (
-        <Tab.Navigator
-          initialRouteName={prodData[0].length === 0 ? 'total' : 'daily'}
-          tabBar={(props) => <TabBar {...props} />}
-          sceneContainerStyle={{backgroundColor: colors.white}}>
-          {['daily', 'total'].map((k) => (
-            <Tab.Screen
-              key={k}
-              name={k}
-              component={renderProdType(k)}
-              options={{lazy: true, title: i18n.t(`country:${k}`)}}
-            />
-          ))}
-        </Tab.Navigator>
-      ) : null}
+      {renderCountryItemTab()}
 
       <AppActivityIndicator visible={props.pending} />
       <ChatTalk visible bottom={isIOS ? 100 : 70} />
