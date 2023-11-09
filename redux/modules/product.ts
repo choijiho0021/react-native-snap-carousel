@@ -246,59 +246,16 @@ const slice = createSlice({
   initialState,
   reducers: {
     updateProduct: updateProdList,
-    makeProdData: (state, {payload}) => {
+    updateCacheProdData: (state, {payload}) => {
       const {
-        prodList,
-        prodByLocalOp,
-        partnerIds,
+        key,
+        result,
       }: {
-        prodList: ImmutableMap<string, RkbProduct>;
-        prodByLocalOp: ImmutableMap<string, string[]>;
-        partnerIds: string[];
+        key: string;
+        result: RkbProduct[][];
       } = payload;
 
-      const key = partnerIds.sort().toString();
-      const data = state.prodDataSliceDaily.get(key);
-
-      console.log('@@@@ slice.makeProdData');
-      console.log(
-        'state.prodDataSliceDaily : ',
-        state.prodDataSliceDaily.keys(),
-      );
-      console.log('prodList : ', prodList);
-      console.log('data : ', data);
-
-      if (data) {
-        state.prodData = data;
-      } else {
-        console.log('@@@@@ 복잡한 연산 진입');
-        const prodByPartners = partnerIds.map((partnerId) =>
-          prodByLocalOp.get(partnerId)?.map((k) => prodList.get(k)),
-        );
-
-        const list: RkbProduct[][] = prodByPartners
-          ?.reduce(
-            (acc, cur) => (cur ? acc.concat(cur.filter((c) => !!c)) : acc),
-            [],
-          )
-          ?.reduce(
-            (acc, cur) =>
-              cur?.field_daily === 'daily'
-                ? [acc[0].concat(cur), acc[1]]
-                : [acc[0], acc[1].concat(cur)],
-            [[], []],
-          ) || [[], []];
-
-        const result: RkbProduct[][] = [
-          list[0].sort((a, b) => b.weight - a.weight) || [],
-          list[1].sort((a, b) => b.weight - a.weight) || [],
-        ];
-
-        console.log('@@@ result  :', result);
-
-        state.prodDataSliceDaily = state.prodDataSliceDaily.set(key, result);
-        state.prodData = result;
-      }
+      state.prodDataSliceDaily = state.prodDataSliceDaily.set(key, result);
     },
     updatePriceInfo: (state) => {
       state.priceInfo = state.prodByCountry
