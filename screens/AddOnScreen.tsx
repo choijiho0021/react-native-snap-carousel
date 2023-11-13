@@ -381,17 +381,25 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
             name="checkGreySmall"
             style={{marginRight: 4, alignSelf: 'center'}}
           />
-          <AppStyledText
-            text={i18n.t(`esim:charge:addOn:resetTime:${mainSubs.partner}`)}
-            textStyle={styles.noticeBodyText}
-            format={{b: styles.noticeBodyTextBold}}
-            data={{expireTime: dataResetTime || ''}}
-          />
+          {mainSubs.daily === 'daily' && (
+            <AppStyledText
+              text={i18n.t(`esim:charge:addOn:resetTime:${mainSubs.partner}`)}
+              textStyle={styles.noticeBodyText}
+              format={{b: styles.noticeBodyTextBold}}
+              data={{expireTime: dataResetTime || ''}}
+            />
+          )}
         </View>
         <View style={styles.noticeBox}>{renderUsagePrieod()}</View>
       </View>
     ),
-    [dataResetTime, mainSubs.partner, renderUsagePrieod, selectedType],
+    [
+      dataResetTime,
+      mainSubs.daily,
+      mainSubs.partner,
+      renderUsagePrieod,
+      selectedType,
+    ],
   );
 
   // Test 용
