@@ -555,6 +555,7 @@
   "cart:cashChanged": "Due to ROKEBI cash issue, payment process is stopped. \nPlease try it again, after checking your balance.",
   "cart:notToCart": "Due to out of stock, can't add to the cart.",
   "cart:systemError": "Due to system error, The service does not work properly. \nPlease try again in a few min.",
+  "cart:unpublishedError": "현재 판매 중지된 상품이 포함된 주문입니다.\n앱 재실행 후 상품을 다시 선택해 주세요.",
 
   "usim:toRokebiCash": "Exchange Amount\n",
   "usim:balance": "ROKEBI Cash",

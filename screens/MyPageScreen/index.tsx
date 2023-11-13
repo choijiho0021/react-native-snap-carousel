@@ -116,10 +116,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
   useEffect(() => {
     async function didMount() {
       const perm = await checkPhotoPermission();
-
       setHasPhotoPermission(perm);
-
-      // if (this.props.uid) this.props.action.order.getOrders(this.props.auth)
     }
 
     navigation.setOptions({
@@ -140,7 +137,9 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
 
     // Logout시에 mount가 새로 되는데 login 페이지로 안가기 위해서 isFocused 조건 추가
     if (!account.loggedIn && navigation.isFocused()) {
-      navigation.navigate('Auth');
+      navigation.navigate('RegisterMobile', {
+        goBack: () => navigation.goBack(),
+      });
     } else {
       didMount();
     }
@@ -150,12 +149,14 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
     React.useCallback(() => {
       const {loggedIn, mobile, token} = account;
       if (!loggedIn) {
-        navigation.navigate('Auth');
+        navigation.navigate('RegisterMobile', {
+          goBack: () => navigation.goBack(),
+        });
       } else {
         action.order.getOrders({user: mobile, token, page: 0});
         flatListRef.current?.scrollToOffset({animated: false, offset: 0});
       }
-    }, [account, action.order, navigation]),
+    }, [account, navigation, action.order]),
   );
 
   const onRefresh = useCallback(() => {
@@ -179,14 +180,17 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
 
   const getNextOrder = useCallback(() => {
     const {mobile, token} = account;
-    action.order.getOrders({user: mobile, token});
-  }, [account, action.order]);
+    if (order.orderList.length > 0)
+      action.order.getOrders({user: mobile, token});
+  }, [account, action.order, order.orderList.length]);
 
   const changePhoto = useCallback(async () => {
     const checkNewPermission = await checkPhotoPermission();
 
     if (!uid) {
-      navigation.navigate('Auth');
+      navigation.navigate('RegisterMobile', {
+        goBack: () => navigation.goBack(),
+      });
     } else if (hasPhotoPermission || checkNewPermission) {
       if (ImagePicker) {
         ImagePicker.openPicker({

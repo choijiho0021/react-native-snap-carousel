@@ -241,6 +241,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
       const [key, value] = event.nativeEvent.data.split(',');
+      const k = route.params.item?.key;
+
       switch (key) {
         case 'showButton':
           setShowButton(true);
@@ -281,10 +283,13 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           setShowSnackBar({text: i18n.t('prodDetail:copy'), visible: true});
           break;
         case 'apn':
-          navigation.navigate('ProductDetailOp', {
-            title: route.params?.title,
-            ...route.params.desc,
-          });
+          if (k)
+            API.Product.getProductDesc(k).then((desc) => {
+              navigation.navigate('ProductDetailOp', {
+                title: route.params?.title,
+                ...desc.objects,
+              });
+            });
           break;
         // 기본적으로 화면 크기 가져오도록 함
         default:
@@ -292,7 +297,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           break;
       }
     },
-    [action.info, navigation, route.params.desc, route.params?.title],
+    [action.info, navigation, route.params.item?.key, route.params?.title],
   );
 
   const renderWebView = useCallback(

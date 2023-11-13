@@ -298,6 +298,12 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     marginLeft: 6,
   },
+  greenText: {
+    ...appStyles.medium16,
+    color: colors.shamrock,
+    lineHeight: 26,
+    marginLeft: 6,
+  },
   newIcon: {
     position: 'absolute',
     top: -9,
@@ -678,6 +684,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   ]);
 
   const renderHkBtn = useCallback(() => {
+    const isSuccess = mainSubs.tag?.includes('HA');
     if (
       !expired &&
       mainSubs.giftStatusCd !== 'S' &&
@@ -685,7 +692,12 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     )
       return (
         <Pressable
-          style={styles.redirectHK}
+          style={[
+            styles.redirectHK,
+            {
+              backgroundColor: isSuccess ? colors.backGrey : colors.white,
+            },
+          ]}
           onPress={() =>
             navigation.navigate('RedirectHK', {
               iccid: mainSubs?.subsIccid!,
@@ -695,24 +707,24 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
             })
           }>
           <View style={styles.row}>
-            <AppSvgIcon name="hkIcon" style={{marginTop: 1}} />
+            <AppSvgIcon name="redirectFlag" style={{marginTop: 1}} />
             <AppText style={styles.redirectText}>
               {i18n.t('esim:redirectHK2')}
             </AppText>
           </View>
-          {mainSubs.tag?.includes('HA') ? (
+          {isSuccess ? (
             <View style={[styles.row, {justifyContent: 'flex-end'}]}>
-              <AppSvgIcon name="checkedBlueSmall" />
-              <AppText style={styles.blueText}>
+              <AppText style={styles.greenText}>
                 {i18n.t('esim:redirectHK:done')}
               </AppText>
+              <AppSvgIcon name="checkGreenSmall" />
             </View>
           ) : (
             <View style={[styles.row, {justifyContent: 'flex-end'}]}>
               <AppText style={styles.redirectButtonText}>
                 {i18n.t('esim:redirectHK2:button')}
               </AppText>
-              <AppSvgIcon name="rightArrow" />
+              <AppSvgIcon name="bluePlus" />
             </View>
           )}
         </Pressable>

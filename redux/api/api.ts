@@ -63,6 +63,7 @@ const path = {
   promotion: 'json/promotion/list',
   event: 'json/event/list',
   productDetails: 'json/product/details',
+  prodDesc: 'json/product/getDesc',
   localopBody: 'json/localop',
   esimDev: 'json/esim/dev/list',
   file: 'json/file',

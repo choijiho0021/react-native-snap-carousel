@@ -420,9 +420,12 @@ const makeOrder = ({
       body: JSON.stringify(body),
     },
     (resp) => {
-      if (resp.order_id.length > 0) {
+      if (resp.order_id?.length > 0) {
         // order_id 값이 있으면 성공한 것으로 간주한다.
         return api.success([resp]);
+      }
+      if (resp.result === api.E_STATUS_EXPIRED) {
+        return api.failure<PurchaseItem>(resp.result, resp.desc);
       }
       return api.failure<PurchaseItem>(-1, 'no result');
     },
@@ -455,7 +458,7 @@ const calculateTotal = ({
       }),
     },
     (resp) => {
-      if (resp.order_id.length > 0) {
+      if (resp.order_id?.length > 0) {
         // order_id 값이 있으면 성공한 것으로 간주한다.
         return api.success([resp]);
       }

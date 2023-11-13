@@ -517,6 +517,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     },
     [
       action.order,
+      actionCallback,
       getOrders,
       iccid,
       isFirstLoad,
@@ -532,12 +533,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   useEffect(() => {
     const {subsId, actionStr, iccid: subsIccid} = route?.params || {};
 
-    getSubsAction(subsId, actionStr, subsIccid);
+    if (iccid) getSubsAction(subsId, actionStr, subsIccid);
 
     // onRefresh(false, false, subsId, actionStr);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [route?.params, isFirstLoad]);
+  }, [route?.params, isFirstLoad, iccid]);
 
   const empty = useCallback(() => {
     return _.isEmpty(order.drafts) || isEditMode ? (

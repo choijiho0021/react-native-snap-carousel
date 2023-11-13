@@ -210,6 +210,23 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
             setClickable(true);
             if (resp.result === api.E_RESOURCE_NOT_FOUND) {
               AppAlert.info(i18n.t('cart:soldOut'));
+            } else if (resp.result === api.E_STATUS_EXPIRED) {
+              const {orderId} = cart;
+              const orderItems = cart?.orderItems.filter((elm) =>
+                resp?.message.split(',').includes(elm.prod.sku),
+              );
+              const orderItemIds = orderItems.map((elm) => elm.orderItemId);
+              orderItemIds.forEach((orderItemId) => {
+                if (orderItemId && orderId) {
+                  action.cart.cartRemove({
+                    orderId,
+                    orderItemId,
+                  });
+                }
+              });
+              AppAlert.info(i18n.t('cart:unpublishedError'), '', () =>
+                navigation.goBack(),
+              );
             } else {
               AppAlert.info(i18n.t('cart:systemError'));
             }

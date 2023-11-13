@@ -112,7 +112,8 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
 
       setImageUrl(localOp?.imageUrl);
       setLocalOpDetails(localOp?.detail);
-      if (partnerIds.every((elm) => prodByLocalOp.has(elm))) {
+
+      if (partnerIds.some((elm) => prodByLocalOp.has(elm))) {
         setProdData(makeProdData(prodList, prodByLocalOp, partnerIds));
       }
     }
