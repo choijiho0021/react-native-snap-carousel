@@ -123,6 +123,14 @@ const toPurchaseAddOnItem = (subsId: string, prod?: RkbAddOnProd) => {
   return prod ? createFromAddOnProduct(prod, subsId) : undefined;
 };
 
+const toProdDesc = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
+  if (_.isArray(data) && data.length > 0) {
+    return api.success(parseJson(data[0].field_desc.replace(/&quot;/g, '"')));
+  }
+
+  return api.failure(api.E_NOT_FOUND);
+};
+
 const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
   const testProductReg = /test/;
 
@@ -311,6 +319,13 @@ const getProductByLocalOp = (partnerId: string) => {
   );
 };
 
+const getProductDesc = (prodUuid: string) => {
+  return api.callHttpGet(
+    api.httpUrl(`${api.path.prodDesc}/${prodUuid}?_format=hal_json`),
+    toProdDesc,
+  );
+};
+
 const getProductBySku = (sku: string) => {
   if (_.isEmpty(sku))
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: sku');
@@ -385,6 +400,7 @@ export default {
   getTitle,
   getProduct,
   getProductByLocalOp,
+  getProductDesc,
   getProductBySku,
   getLocalOp,
   getProdCountry,
