@@ -70,41 +70,6 @@ type CountryScreenProps = {
 };
 
 // type ProdDataType = {title: string; data: RkbProduct[]};
-export const makeProdData = (
-  prodList: ImmutableMap<string, RkbProduct>,
-  prodByLocalOp: ImmutableMap<string, string[]>,
-  partnerIds: string[],
-  action: ProductAction,
-  prodDataSliceDaily: ImmutableMap<string, RkbProduct[][]>,
-) => {
-  const key = partnerIds.sort().toString();
-  const data = prodDataSliceDaily.get(key);
-
-  if (data) return data;
-
-  const prodByPartners = partnerIds.map((partnerId) =>
-    prodByLocalOp.get(partnerId)?.map((k) => prodList.get(k)),
-  );
-
-  const list: RkbProduct[][] = prodByPartners
-    ?.reduce((acc, cur) => (cur ? acc.concat(cur.filter((c) => !!c)) : acc), [])
-    ?.reduce(
-      (acc, cur) =>
-        cur?.field_daily === 'daily'
-          ? [acc[0].concat(cur), acc[1]]
-          : [acc[0], acc[1].concat(cur)],
-      [[], []],
-    ) || [[], []];
-
-  const result: RkbProduct[][] = [
-    list[0].sort((a, b) => b.weight - a.weight) || [],
-    list[1].sort((a, b) => b.weight - a.weight) || [],
-  ];
-
-  action.updateCacheProdData({result, key});
-
-  return result;
-};
 
 const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const {navigation, route, product, action} = props;
@@ -132,15 +97,8 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       setImageUrl(localOp?.imageUrl);
       setLocalOpDetails(localOp?.detail);
       if (partnerIds.every((elm) => prodByLocalOp.has(elm))) {
-        setProdData(
-          makeProdData(
-            prodList,
-            prodByLocalOp,
-            partnerIds,
-            action.product,
-            product.prodDataSliceDaily,
-          ),
-        );
+        action.product.makeProdData({prodList, prodByLocalOp, partnerIds});
+        // setProdData(makeProdData(prodList, prodByLocalOp, partnerIds));
       }
     }
   }, [
@@ -148,9 +106,12 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     localOpList,
     prodByLocalOp,
     prodList,
-    product.prodDataSliceDaily,
     route.params.partner,
   ]);
+
+  useEffect(() => {
+    setProdData(product.prodData);
+  }, [product.prodData]);
 
   const onPress = useCallback(
     (prod: RkbProduct) =>
