@@ -12,7 +12,6 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {Map as ImmutableMap} from 'immutable';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -23,6 +22,7 @@ import {
   getTrackingStatus,
   TrackingStatus,
 } from 'react-native-tracking-transparency';
+import Share from 'react-native-share';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
@@ -48,12 +48,11 @@ import {API} from '@/redux/api';
 import {PromotionModelState} from '@/redux/modules/promotion';
 import {Currency, RkbProdByCountry} from '@/redux/api/productApi';
 import AppIcon from '@/components/AppIcon';
-import {MAX_WIDTH} from '@/constants/SliderEntry.style';
 import AppText from '@/components/AppText';
 import InputNumber from '@/components/InputNumber';
-import Share from 'react-native-share';
 import utils from '@/redux/api/utils';
 import AppPrice from '@/components/AppPrice';
+import {ProductModelState} from '@/redux/modules/product';
 
 const {esimGlobal, webViewHost, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -367,8 +366,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           purchaseItems: [item],
         })
         .then(({payload: resp}) => {
-          console.log('stock check는 한건가??  : ', resp);
-
           if (resp.result === 0) {
             setShowSnackBar({text: i18n.t('country:addCart'), visible: true});
             if (
