@@ -14,18 +14,13 @@ import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {RkbProduct} from '@/redux/api/productApi';
 import {actions as cartActions} from '@/redux/modules/cart';
-import {
-  ProductAction,
-  actions as productActions,
-  ProductModelState,
-} from '@/redux/modules/product';
+import {ProductModelState} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import ProductImg from '@/components/ProductImg';
 import ProdByType from '@/components/ProdByType';
 import ChatTalk from '@/components/ChatTalk';
 import Env from '@/environment';
 import TabBar from './TabBar';
-import {bindActionCreators} from 'redux';
 import ToolTip from './ToolTip';
 
 const {isIOS} = Env.get();
@@ -50,6 +45,31 @@ const styles = StyleSheet.create({
   },
 });
 
+export const makeProdData = (
+  prodList: ImmutableMap<string, RkbProduct>,
+  prodByLocalOp: ImmutableMap<string, string[]>,
+  partnerIds: string[],
+) => {
+  const prodByPartners = partnerIds.map((partnerId) =>
+    prodByLocalOp.get(partnerId)?.map((k) => prodList.get(k)),
+  );
+
+  const list: RkbProduct[][] = prodByPartners
+    ?.reduce((acc, cur) => (cur ? acc.concat(cur.filter((c) => !!c)) : acc), [])
+    ?.reduce(
+      (acc, cur) =>
+        cur?.field_daily === 'daily'
+          ? [acc[0].concat(cur), acc[1]]
+          : [acc[0], acc[1].concat(cur)],
+      [[], []],
+    ) || [[], []];
+
+  return [
+    list[0].sort((a, b) => b.weight - a.weight) || [],
+    list[1].sort((a, b) => b.weight - a.weight) || [],
+  ];
+};
+
 type CountryScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
   'Country'
@@ -63,16 +83,12 @@ type CountryScreenProps = {
 
   product: ProductModelState;
   pending: boolean;
-
-  action: {
-    product: ProductAction;
-  };
 };
 
 // type ProdDataType = {title: string; data: RkbProduct[]};
 
 const CountryScreen: React.FC<CountryScreenProps> = (props) => {
-  const {navigation, route, product, action} = props;
+  const {navigation, route, product} = props;
   const {localOpList, prodByLocalOp, prodList} = product;
 
   const [prodData, setProdData] = useState<RkbProduct[][]>([]);
@@ -97,21 +113,10 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       setImageUrl(localOp?.imageUrl);
       setLocalOpDetails(localOp?.detail);
       if (partnerIds.every((elm) => prodByLocalOp.has(elm))) {
-        action.product.makeProdData({prodList, prodByLocalOp, partnerIds});
-        // setProdData(makeProdData(prodList, prodByLocalOp, partnerIds));
+        setProdData(makeProdData(prodList, prodByLocalOp, partnerIds));
       }
     }
-  }, [
-    action.product,
-    localOpList,
-    prodByLocalOp,
-    prodList,
-    route.params.partner,
-  ]);
-
-  useEffect(() => {
-    setProdData(product.prodData);
-  }, [product.prodData]);
+  }, [localOpList, prodByLocalOp, prodList, route.params.partner]);
 
   const onPress = useCallback(
     (prod: RkbProduct) =>
@@ -204,17 +209,10 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   );
 };
 
-export default connect(
-  ({product, status}: RootState) => ({
-    product,
-    pending:
-      status.pending[cartActions.cartAddAndGet.typePrefix] ||
-      status.pending[cartActions.checkStockAndPurchase.typePrefix] ||
-      false,
-  }),
-  (dispatch) => ({
-    action: {
-      product: bindActionCreators(productActions, dispatch),
-    },
-  }),
-)(CountryScreen);
+export default connect(({product, status}: RootState) => ({
+  product,
+  pending:
+    status.pending[cartActions.cartAddAndGet.typePrefix] ||
+    status.pending[cartActions.checkStockAndPurchase.typePrefix] ||
+    false,
+}))(CountryScreen);
