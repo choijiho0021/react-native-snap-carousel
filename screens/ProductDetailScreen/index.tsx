@@ -5,6 +5,7 @@ import React, {useState, useEffect, useCallback} from 'react';
 import Clipboard from '@react-native-community/clipboard';
 import {
   Image,
+  Modal,
   Platform,
   Pressable,
   SafeAreaView,
@@ -51,6 +52,8 @@ import {MAX_WIDTH} from '@/constants/SliderEntry.style';
 import AppText from '@/components/AppText';
 import InputNumber from '@/components/InputNumber';
 import Share from 'react-native-share';
+import utils from '@/redux/api/utils';
+import AppPrice from '@/components/AppPrice';
 
 const {esimGlobal, webViewHost, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -130,12 +133,9 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
   },
   modalContainer: {
-    marginHorizontal: 0,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    backgroundColor: 'white',
-    maxWidth: MAX_WIDTH, // MAX WIDTH는 왜 있는거지?
-    width: '100%',
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalFrame: {
     marginHorizontal: 20,
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   countBoxFrame: {
-    width: 335,
+    width: '100%',
     height: 72,
     flexDirection: 'row',
     backgroundColor: '#f7f8fa',
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
   },
   priceBoxFrame: {
-    width: 335,
+    width: '100%',
     height: 30,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     lineHeight: 30,
   },
   priceValueText: {
-    ...appStyles.bold16Text,
+    ...appStyles.bold18Text,
     lineHeight: 30,
     color: colors.clearBlue,
   },
@@ -358,8 +358,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       // 이미 카트에 있는 경우엔 어떻게 해야할까?
       setShowSnackBar({text: i18n.t('country:existInCart'), visible: true});
     } else if (!isButtonDisabled) {
-      console.log('qty  :', qty);
-
       const item = {...purchaseItems[0], qty};
 
       action.cart
@@ -572,22 +570,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           />
         </View>
       )}
-
-      {showModal && (
-        <View justifyContent="flex-end" contentStyle={styles.modalContainer}>
-          <View style={styles.modalFrame}>
-            <Pressable
-              onPress={() => {
-                setShowModal(false);
-              }}>
-              <View style={styles.headerFrame}>
-                <Image
-                  style={{width: 46, height: 10}}
-                  source={require('@/assets/images/esim/grabber.png')}
-                  resizeMode="stretch"
-                />
-              </View>
-            </Pressable>
+      {/* {showModal && (
+        <View style={{flex: 1}}>
+          <AppModal visible={showModal}>
             <View style={styles.countBoxFrame}>
               <AppText style={appStyles.medium16}>
                 {i18n.t('cart:count')}
@@ -605,29 +590,87 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
                 />
               </View>
             </View>
-            <View style={styles.priceBoxFrame}>
-              <AppText style={styles.priceText}>
-                {i18n.t('cart:proudctTotalPrice')}
-              </AppText>
-              <AppText
-                style={
-                  styles.priceValueText
-                  // eslint-disable-next-line react-native/no-raw-text
-                }>{`${price?.value} ${price?.currency}`}</AppText>
-            </View>
-          </View>
-          {purchaseNumberTab()}
+          </AppModal>
         </View>
+      )} */}
+      {showModal && (
+        <Modal
+          transparent
+          animationType="fade"
+          visible={showModal}
+          onRequestClose={() => setShowModal(false)}>
+          <Pressable
+            onPress={() => setShowModal(false)}
+            style={styles.modalContainer}>
+            <Pressable style={{backgroundColor: colors.white}}>
+              <View style={styles.modalFrame}>
+                <Pressable
+                  onPress={() => {
+                    setShowModal(false);
+                  }}>
+                  <View style={styles.headerFrame}>
+                    <Image
+                      style={{width: 46, height: 10}}
+                      source={require('@/assets/images/esim/grabber.png')}
+                      resizeMode="stretch"
+                    />
+                  </View>
+                </Pressable>
+                <View style={styles.countBoxFrame}>
+                  <AppText style={appStyles.medium16}>
+                    {i18n.t('cart:count')}
+                  </AppText>
+                  <View>
+                    <InputNumber
+                      value={qty}
+                      fontStyle={appStyles.bold16Text}
+                      boxStyle={{width: 60}}
+                      boldIcon
+                      onChange={(value) =>
+                        onChangeQty(
+                          purchaseItems[0]?.key,
+                          purchaseItems[0]?.orderItemId,
+                          value,
+                        )
+                      }
+                    />
+                  </View>
+                </View>
+                <View style={styles.priceBoxFrame}>
+                  <AppText style={styles.priceText}>
+                    {i18n.t('cart:proudctTotalPrice')}
+                  </AppText>
+                  <AppPrice
+                    price={utils.toCurrency(price?.value || 0, price?.currency)}
+                    balanceStyle={styles.priceValueText}
+                    currencyStyle={styles.priceValueText}
+                    // style={styles.priceValueText}
+                  />
+
+                  {/* <AppText
+                    style={
+                      styles.priceValueText
+                      // eslint-disable-next-line react-native/no-raw-text
+                    }>
+                      {`${price?.value} ${i18n.t(price?.currency)}`}
+                      </AppText> */}
+                </View>
+              </View>
+              {purchaseNumberTab()}
+            </Pressable>
+          </Pressable>
+          <AppSnackBar
+            visible={showSnackBar.visible}
+            onClose={() =>
+              setShowSnackBar((pre) => ({text: pre.text, visible: false}))
+            }
+            textMessage={showSnackBar.text}
+            bottom={showModal ? 86 : 10}
+          />
+          <SafeAreaView style={{backgroundColor: 'white'}} />
+        </Modal>
       )}
       <ChatTalk visible bottom={isIOS ? 100 : 70} />
-      <AppSnackBar
-        visible={showSnackBar.visible}
-        onClose={() =>
-          setShowSnackBar((pre) => ({text: pre.text, visible: false}))
-        }
-        textMessage={showSnackBar.text}
-        bottom={showModal ? 86 : 10}
-      />
     </SafeAreaView>
   );
 };
