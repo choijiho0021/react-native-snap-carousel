@@ -82,8 +82,6 @@ export const makeProdData = (
 
   if (data) return data;
 
-  const startTime = performance.now();
-
   const prodByPartners = partnerIds.map((partnerId) =>
     prodByLocalOp.get(partnerId)?.map((k) => prodList.get(k)),
   );
@@ -103,11 +101,7 @@ export const makeProdData = (
     list[1].sort((a, b) => b.weight - a.weight) || [],
   ];
 
-  console.log('계산시간 : ', performance.now() - startTime);
-
   action.updateCacheProdData({result, key});
-
-  console.log('update : ', performance.now() - startTime);
 
   return result;
 };
