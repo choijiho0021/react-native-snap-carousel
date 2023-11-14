@@ -341,7 +341,7 @@ type EsimSubsProps = {
     subs: RkbSubscription,
     isChargeableParam?: boolean,
   ) => Promise<{usage: any; status: any}>;
-  setShowModal: (visible: boolean) => void;
+  setShowUsageModal: (visible: boolean) => void;
 
   account: AccountModelState;
   product: ProductModelState;
@@ -358,7 +358,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   showDetail = false,
   isEditMode = false,
   onPressUsage,
-  setShowModal,
+  setShowUsageModal,
 
   account: {token},
   product,
@@ -663,7 +663,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
             if (isCharged) {
               onPressRecharge(mainSubs);
             } else {
-              setShowModal(true);
+              setShowUsageModal(true);
               onPressUsage(mainSubs, !isBC && isChargeButton);
             }
           }}
@@ -680,7 +680,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     onPressRecharge,
     onPressUsage,
     product.prodList,
-    setShowModal,
+    setShowUsageModal,
   ]);
 
   const renderHkBtn = useCallback(() => {
