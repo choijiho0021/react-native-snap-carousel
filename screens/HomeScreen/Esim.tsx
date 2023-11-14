@@ -316,11 +316,9 @@ const Esim: React.FC<EsimProps> = ({
 
   const navToCountry = useCallback(
     (info: RkbPriceInfo) => {
-      console.log('-----------');
       action.product.getProdOfPartner(info.partnerList);
       navigation.navigate('Country', {
         partner: info.partnerList,
-        startTime: performance.now(),
       });
     },
     [action.product, navigation],
