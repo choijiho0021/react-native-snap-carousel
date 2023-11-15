@@ -173,6 +173,7 @@ const getCashExpire = ({
         ? api.success(
             rsp.objects.map((o) => ({
               ...o,
+              create_dt: o.create_dt ? moment(o.create_dt) : undefined,
               expire_dt: o.expire_dt ? moment(o.expire_dt) : undefined,
             })) || [],
           )
