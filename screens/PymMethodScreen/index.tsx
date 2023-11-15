@@ -39,8 +39,13 @@ import AppModal from '@/components/AppModal';
 import AppStyledText from '@/components/AppStyledText';
 import PymButtonList from '@/components/AppPaymentGateway/PymButtonList';
 import DropDownHeader from './DropDownHeader';
-import {ProductModelState} from '@/redux/modules/product';
 import PolicyChecker from './PolicyChecker';
+import {
+  actions as productActions,
+  ProductAction,
+  ProductModelState,
+} from '@/redux/modules/product';
+import {actions} from '@/redux/modules/toast';
 
 const infoKey = 'pym:benefit';
 
@@ -123,6 +128,7 @@ type PymMethodScreenProps = {
   action: {
     cart: CartAction;
     info: InfoAction;
+    product: ProductAction;
   };
 };
 
@@ -224,8 +230,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
                   });
                 }
               });
+
+              action.product.getAllProduct(true);
+
               AppAlert.info(i18n.t('cart:unpublishedError'), '', () =>
-                navigation.goBack(),
+                navigation.popToTop(),
               );
             } else {
               AppAlert.info(i18n.t('cart:systemError'));
@@ -387,6 +396,7 @@ export default connect(
       account: bindActionCreators(accountActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
       info: bindActionCreators(infoActions, dispatch),
+      product: bindActionCreators(productActions, dispatch),
     },
   }),
 )(PymMethodScreen);

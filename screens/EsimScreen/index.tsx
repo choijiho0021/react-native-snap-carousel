@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {RouteProp, useIsFocused} from '@react-navigation/native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {isDefined} from 'validate.js';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
@@ -229,10 +230,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [showUsageModal, setShowUsageModal] = useState<boolean | undefined>();
   const [subs, setSubs] = useState<RkbSubscription>();
   const [usageLoading, setUsageLoading] = useState(false);
-  const [showGiftModal, setShowGiftModal] = useState(false);
+  const [showGiftModal, setShowGiftModal] = useState<boolean | undefined>();
   const [isPressClose, setIsPressClose] = useState(false);
   const [dataUsage, setDataUsage] = useState({});
   const [dataStatus, setDataStatus] = useState({});
@@ -242,6 +243,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const tabBarHeight = useBottomTabBarHeight();
   const appState = useRef('unknown');
   const [isChargeable, setIsChargeable] = useState(false);
+  const [selectedIdx, setSelectedIdx] = useState(0);
 
   const [subsData, firstUsedIdx] = useMemo(
     () => {
@@ -252,6 +254,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     }, // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨길 수 없도록 한다.
     [isEditMode, order.subs],
   );
+
+  const showModal = useMemo(() => {
+    if (showUsageModal && isDefined(showGiftModal)) return 'usage';
+    if (showGiftModal && isDefined(showUsageModal)) return 'gift';
+    return 'noModal';
+  }, [showGiftModal, showUsageModal]);
 
   useEffect(() => {
     // EsimScreen 에서만 getSubs 초기화
@@ -425,7 +433,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const actionCallback = useCallback(() => {
     const index = subsData?.findIndex((elm) => elm.nid === subsId);
     if (index >= 0) {
-      setShowModal(true);
+      setShowUsageModal(true);
       onPressUsage(subsData[index]);
       flatListRef?.current?.scrollToIndex({index, animated: true});
     }
@@ -446,7 +454,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       } else if (actionStr === 'showUsage') {
         const index = subsData?.findIndex((elm) => elm.nid === subsId);
         if (index >= 0) {
-          setShowModal(true);
+          setSelectedIdx(index);
+          setShowUsageModal(true);
           onPressUsage(subsData[index]);
           flatListRef?.current?.scrollToIndex({index, animated: true});
         } else {
@@ -566,17 +575,24 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         index={index}
         mainSubs={item}
         showDetail={
-          (index === firstUsedIdx &&
+          ((index === firstUsedIdx || index === selectedIdx) &&
             item.statusCd === 'U' &&
             item.purchaseDate.isAfter(days14ago)) ||
           route?.params?.subsId === item.nid
         }
         onPressUsage={onPressUsage}
-        setShowModal={setShowModal}
+        setShowUsageModal={setShowUsageModal}
         isEditMode={isEditMode}
       />
     ),
-    [days14ago, firstUsedIdx, isEditMode, onPressUsage, route?.params?.subsId],
+    [
+      days14ago,
+      firstUsedIdx,
+      isEditMode,
+      onPressUsage,
+      route?.params?.subsId,
+      selectedIdx,
+    ],
   );
 
   const renderDraft = useCallback(
@@ -684,18 +700,19 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   });
 
   const navigateToChargeType = useCallback(() => {
-    setShowModal(false);
+    setShowUsageModal(false);
     setDataStatus({});
     setDataUsage({});
     setUsageLoading(false);
 
     // 사용량 모달 -> 충전하기
     // 다른 충전하기 버튼과 덜라 cnt 2 이상이여도 달리 충전 이력 화면으로 안들어가고 있다.
-    navigation.navigate('ChargeType', {
-      mainSubs: subs,
-      chargeablePeriod: utils.toDateString(subs?.expireDate, 'YYYY.MM.DD'),
-      isChargeable: !subs?.expireDate.isBefore(moment()),
-    });
+    if (subs)
+      navigation.navigate('ChargeType', {
+        mainSubs: subs,
+        chargeablePeriod: utils.toDateString(subs?.expireDate, 'YYYY.MM.DD'),
+        isChargeable: !subs?.expireDate.isBefore(moment()),
+      });
   }, [navigation, subs]);
 
   return (
@@ -735,7 +752,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         ListHeaderComponent={isEditMode ? undefined : info}
         renderItem={renderSubs}
         initialNumToRender={30}
-        extraData={[isEditMode, subsData]}
+        extraData={[isEditMode, subsData, selectedIdx]}
         contentContainerStyle={[
           {paddingBottom: 34},
           _.isEmpty(subsData) &&
@@ -775,13 +792,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
       {/* <AppActivityIndicator visible={pending || refreshing} /> */}
       <EsimModal
-        visible={showModal}
+        visible={showModal === 'usage'}
         subs={subs}
         usageLoading={usageLoading}
         dataUsage={dataUsage}
         dataStatus={dataStatus}
         onCancelClose={() => {
-          setShowModal(false);
+          setShowUsageModal(false);
           setDataStatus({});
           setDataUsage({});
           setUsageLoading(false);
@@ -791,7 +808,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       />
       {!esimGlobal && (
         <GiftModal
-          visible={showGiftModal}
+          visible={showModal === 'gift'}
           onOkClose={() => {
             setShowGiftModal(false);
             setIsPressClose(true);
