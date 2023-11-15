@@ -282,7 +282,7 @@ export type SubscriptionParam = {
 };
 
 const subsFulfillWithValue = (resp) => {
-  if (resp.result === 0) {
+  if ([0, 1].includes(resp.result)) {
     resp.objects = resp.objects.map((o) => ({
       ...o,
       provDate: getMoment(o.provDate),

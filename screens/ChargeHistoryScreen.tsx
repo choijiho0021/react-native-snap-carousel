@@ -484,11 +484,19 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
 
     navigation.navigate('ChargeType', {
       mainSubs,
+      chargedSubs,
       chargeablePeriod,
       isChargeable,
       addOnData,
     });
-  }, [addOnData, chargeablePeriod, isChargeable, mainSubs, navigation]);
+  }, [
+    addOnData,
+    chargeablePeriod,
+    chargedSubs,
+    isChargeable,
+    mainSubs,
+    navigation,
+  ]);
 
   const renderItem = useCallback(
     ({item}: {item: RkbSubscription}) => {
@@ -653,6 +661,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         usageLoading={pending}
         dataUsage={usage}
         dataStatus={status}
+        isChargeableData={isChargeable}
         onCancelClose={() => {
           setShowModal(false);
           setStatus({});

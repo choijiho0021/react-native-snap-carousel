@@ -455,16 +455,14 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     (id?: string) => {
       async function getReceipt() {
         let receipt = null;
-        if (id?.startsWith('r_')) {
-          // rokebi receipt
-          if (id && account.token) {
-            const rsp = await API.Payment.getRokebiPaymentReceipt({
-              key: id,
-              token: account.token,
-            });
-            if (rsp.result === 0 && rsp.objects[0]) {
-              receipt = rsp.objects[0];
-            }
+        // rokebi receipt
+        if (id && account.token) {
+          const rsp = await API.Payment.getRokebiPaymentReceipt({
+            key: id,
+            token: account.token,
+          });
+          if (rsp.result === 0 && rsp.objects[0]) {
+            receipt = rsp.objects[0];
           }
         }
 
