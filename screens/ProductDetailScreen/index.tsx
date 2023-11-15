@@ -371,15 +371,15 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     setShowModal(false);
 
     if (!isButtonDisabled) {
-      const isOverCart = cartNumber + qty > 10;
+      const isOverCart = cartNumber + qty > PURCHASE_LIMIT;
 
       // 10개 초과 시 카트에 10개 담는 추가 요청사항
       const item = isOverCart
-        ? {...purchaseItems[0], qty: 10 - cartNumber}
+        ? {...purchaseItems[0], qty: PURCHASE_LIMIT - cartNumber}
         : {...purchaseItems[0], qty};
 
       // qty 0 인 경우도 1개 담게 되어 있어서 예외처리 추가
-      if (isOverCart && 10 - cartNumber === 0) {
+      if (isOverCart && PURCHASE_LIMIT - cartNumber === 0) {
         setShowSnackBar({
           text: i18n.t('country:overInCart'),
           visible: true,
