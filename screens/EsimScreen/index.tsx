@@ -19,7 +19,6 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {isDefined} from 'validate.js';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppIcon from '@/components/AppIcon';
-import AppSnackBar from '@/components/AppSnackBar';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -442,9 +441,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const getSubsAction = useCallback(
     async (subsId?: string, actionStr?: string, subsIccid?: string) => {
       // 첫번째로 로딩 시 숨긴 subs를 제외하고 10개만 가져오도록 함
-      if (isFirstLoad) {
-        onRefresh(false, true, subsId, actionStr);
-      } else if (actionStr === 'reload') {
+      if (actionStr === 'reload') {
         action.order.subsReload({
           iccid: iccid!,
           token: token!,
@@ -529,10 +526,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       actionCallback,
       getOrders,
       iccid,
-      isFirstLoad,
       navigation,
       onPressUsage,
-      onRefresh,
       order.subs,
       subsData,
       token,
@@ -542,9 +537,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   useEffect(() => {
     const {subsId, actionStr, iccid: subsIccid} = route?.params || {};
 
-    if (iccid) getSubsAction(subsId, actionStr, subsIccid);
-
-    // onRefresh(false, false, subsId, actionStr);
+    if (isFirstLoad) onRefresh(false, true, subsId, actionStr);
+    else if (iccid) getSubsAction(subsId, actionStr, subsIccid);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [route?.params, isFirstLoad, iccid]);
