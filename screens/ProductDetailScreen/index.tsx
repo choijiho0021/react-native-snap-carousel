@@ -237,6 +237,21 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     }
   }, [purchaseItems]);
 
+  const onChangeQty = useCallback(
+    (key: string, orderItemId: number, cnt: number) => {
+      setQty(cnt);
+      setPrice({
+        value: Math.round(cnt * purchaseItems[0].price?.value * 100) / 100,
+        currency: purchaseItems[0].price?.currency,
+      });
+    },
+    [purchaseItems],
+  );
+
+  const resetModalInfo = useCallback(() => {
+    onChangeQty(purchaseItems[0]?.key, purchaseItems[0]?.orderItemId, 1);
+  }, [onChangeQty, purchaseItems]);
+
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
       const [key, value] = event.nativeEvent.data.split(',');
@@ -349,13 +364,15 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       return navigation.navigate('Auth');
     }
 
-    const existInCart = cart.orderItems
-      ?.map((elm) => elm.key)
-      .includes(purchaseItems[0].key);
+    const cartNumber =
+      cart.orderItems.find((elm) => elm.key === purchaseItems[0].key)?.qty || 0;
 
-    if (existInCart) {
+    resetModalInfo();
+    setShowModal(false);
+
+    if (cartNumber + qty > 10) {
       // 이미 카트에 있는 경우엔 어떻게 해야할까?
-      setShowSnackBar({text: i18n.t('country:existInCart'), visible: true});
+      setShowSnackBar({text: i18n.t('country:overInCart'), visible: true});
     } else if (!isButtonDisabled) {
       const item = {...purchaseItems[0], qty};
 
@@ -391,6 +408,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     navigation,
     purchaseItems,
     qty,
+    resetModalInfo,
     route.params.item?.key,
     soldOut,
     status,
@@ -416,6 +434,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         balance,
       })
       .then(({payload: resp}) => {
+        resetModalInfo();
         if (resp.result === 0) {
           navigation.navigate('PymMethod', {
             mode: 'roaming_product',
@@ -427,7 +446,15 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       .catch((err) => {
         console.log('failed to check stock', err);
       });
-  }, [account, action.cart, navigation, purchaseItems, qty, soldOut]);
+  }, [
+    account,
+    action.cart,
+    navigation,
+    purchaseItems,
+    qty,
+    resetModalInfo,
+    soldOut,
+  ]);
 
   const onPressBtnRegCard = useCallback(() => {
     Analytics.trackEvent('Click_regCard');
@@ -438,17 +465,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   useEffect(() => {
     console.log('price : ', price);
   }, [price]);
-
-  const onChangeQty = useCallback(
-    (key: string, orderItemId: number, cnt: number) => {
-      setQty(cnt);
-      setPrice({
-        value: Math.round(cnt * purchaseItems[0].price?.value * 100) / 100,
-        currency: purchaseItems[0].price?.currency,
-      });
-    },
-    [purchaseItems],
-  );
 
   const onShare = useCallback(async (link) => {
     await Share.open({
@@ -550,10 +566,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           />
         )}
       </View>
-
       {renderWebView(route.params?.uuid)}
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
-
       {account.loggedIn ? (
         purchaseButtonTab()
       ) : (
@@ -597,7 +611,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           visible={showModal}
           onRequestClose={() => setShowModal(false)}>
           <Pressable
-            onPress={() => setShowModal(false)}
+            onPress={() => {
+              resetModalInfo();
+              setShowModal(false);
+            }}
             style={styles.modalContainer}>
             <Pressable style={{backgroundColor: colors.white}}>
               <View style={styles.modalFrame}>
@@ -656,18 +673,19 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               {purchaseNumberTab()}
             </Pressable>
           </Pressable>
-          <AppSnackBar
-            visible={showSnackBar.visible}
-            onClose={() =>
-              setShowSnackBar((pre) => ({text: pre.text, visible: false}))
-            }
-            textMessage={showSnackBar.text}
-            bottom={showModal ? 86 : 10}
-          />
+
           <SafeAreaView style={{backgroundColor: 'white'}} />
         </Modal>
       )}
       <ChatTalk visible bottom={isIOS ? 100 : 70} />
+      <AppSnackBar
+        visible={showSnackBar.visible}
+        onClose={() =>
+          setShowSnackBar((pre) => ({text: pre.text, visible: false}))
+        }
+        textMessage={showSnackBar.text}
+        bottom={showModal ? 86 : 10}
+      />
     </SafeAreaView>
   );
 };
