@@ -370,32 +370,51 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     resetModalInfo();
     setShowModal(false);
 
-    if (cartNumber + qty > 10) {
-      // 이미 카트에 있는 경우엔 어떻게 해야할까?
-      setShowSnackBar({text: i18n.t('country:overInCart'), visible: true});
-    } else if (!isButtonDisabled) {
-      const item = {...purchaseItems[0], qty};
+    if (!isButtonDisabled) {
+      const isOverCart = cartNumber + qty > 10;
 
-      action.cart
-        .cartAddAndGet({
-          // purchaseItems: {...purchaseItems, qty: qty.get(purchaseItems[0].key)},
-          // purchaseItems: {...purchaseItems},
-          purchaseItems: [item],
-        })
-        .then(({payload: resp}) => {
-          if (resp.result === 0) {
-            setShowSnackBar({text: i18n.t('country:addCart'), visible: true});
-            if (
-              resp.objects[0].orderItems.find(
-                (v) => v.key === route.params.item?.key,
-              ).qty >= PURCHASE_LIMIT
-            ) {
-              setDisabled(true);
-            }
-          } else {
-            soldOut(resp, 'cart:notToCart');
-          }
+      // 10개 초과 시 카트에 10개 담는 추가 요청사항
+      const item = isOverCart
+        ? {...purchaseItems[0], qty: 10 - cartNumber}
+        : {...purchaseItems[0], qty};
+
+      // qty 0 인 경우도 1개 담게 되어 있어서 예외처리 추가
+      if (isOverCart && 10 - cartNumber === 0) {
+        setShowSnackBar({
+          text: i18n.t('country:overInCart'),
+          visible: true,
         });
+      } else {
+        action.cart
+          .cartAddAndGet({
+            // purchaseItems: {...purchaseItems, qty: qty.get(purchaseItems[0].key)},
+            // purchaseItems: {...purchaseItems},
+            purchaseItems: [item],
+          })
+          .then(({payload: resp}) => {
+            if (resp.result === 0) {
+              if (isOverCart) {
+                setShowSnackBar({
+                  text: i18n.t('country:overInCart'),
+                  visible: true,
+                });
+              } else
+                setShowSnackBar({
+                  text: i18n.t('country:addCart'),
+                  visible: true,
+                });
+              if (
+                resp.objects[0].orderItems.find(
+                  (v) => v.key === route.params.item?.key,
+                ).qty >= PURCHASE_LIMIT
+              ) {
+                setDisabled(true);
+              }
+            } else {
+              soldOut(resp, 'cart:notToCart');
+            }
+          });
+      }
     }
     return setTimeout(() => {
       setIsButtonDisabled(false);
