@@ -203,23 +203,25 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
       return false;
     }
 
-    const expireTime = moment(usagePeriod?.period, usagePeriod?.format); // params?.expireTime;
-    const currentTime = moment();
-
-    const twentyMinuteAgoMoment = moment(expireTime.subtract(20, 'minutes'));
-    const hourAgoMoment = moment(expireTime.subtract(40, 'minutes'));
     const remainDay =
       params?.expireTime.diff(moment(), 'seconds') / (24 * 60 * 60);
 
+    const expireTime = moment(
+      usagePeriod?.period,
+      usagePeriod?.format,
+    ).utcOffset('+09:00', true); // params?.expireTime;
+    const currentTime = moment().utcOffset('+09:00');
+
+    const twentyMinuteAgoMoment = moment(expireTime.subtract(20, 'minutes')); // 20분 전
+    const hourAgoMoment = moment(expireTime.subtract(40, 'minutes')); //  20분 뺀 expireTime에 40분을 뺐으니 1시간 전이다.
+    const isBlockTime = currentTime.isAfter(twentyMinuteAgoMoment);
     const isWarningTime =
       currentTime.isAfter(hourAgoMoment) &&
       currentTime.isBefore(twentyMinuteAgoMoment);
 
-    const isBlockTime = currentTime.isAfter(twentyMinuteAgoMoment);
-
     if (isWarningTime) {
       setVisible('esim:charge:time:warning');
-      return false;
+      return true;
     }
 
     if (isBlockTime) {
