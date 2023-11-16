@@ -238,7 +238,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   }, [purchaseItems]);
 
   const onChangeQty = useCallback(
-    (key: string, orderItemId: number, cnt: number) => {
+    (cnt: number) => {
       setQty(cnt);
       setPrice({
         value: Math.round(cnt * purchaseItems[0].price?.value * 100) / 100,
@@ -249,8 +249,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   );
 
   const resetModalInfo = useCallback(() => {
-    onChangeQty(purchaseItems[0]?.key, purchaseItems[0]?.orderItemId, 1);
-  }, [onChangeQty, purchaseItems]);
+    onChangeQty(1);
+  }, [onChangeQty]);
 
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
@@ -659,13 +659,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
                       fontStyle={appStyles.bold16Text}
                       boxStyle={{width: 60}}
                       boldIcon
-                      onChange={(value) =>
-                        onChangeQty(
-                          purchaseItems[0]?.key,
-                          purchaseItems[0]?.orderItemId,
-                          value,
-                        )
-                      }
+                      onChange={(value) => onChangeQty(value)}
                     />
                   </View>
                 </View>
