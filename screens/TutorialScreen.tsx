@@ -4,6 +4,7 @@ import React, {useCallback, useState, useEffect, useRef, useMemo} from 'react';
 import {
   Dimensions,
   Image,
+  Platform,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -42,11 +43,20 @@ const tutorialImages = esimGlobal
       step2: require(`../assets/images/en/esim/t2.png`),
       step3: require(`../assets/images/en/esim/t3.png`),
     }
+  : Platform.OS === 'ios'
+  ? {
+      step1: require(`../assets/images/esim/tutorial/esimTutorial_1.png`),
+      step2: require(`../assets/images/esim/tutorial/esimTutorial_2.png`),
+      step3: require(`../assets/images/esim/tutorial/esimTutorial_3.png`),
+      step4: require(`../assets/images/esim/tutorial/esimTutorial_4.png`),
+      step5: require(`../assets/images/esim/tutorial/esimTutorial_5.png`),
+    }
   : {
-      step1: require(`../assets/images/esim/tutorial/esimTutorial1.png`),
-      step2: require(`../assets/images/esim/tutorial/esimTutorial2.png`),
-      step3: require(`../assets/images/esim/tutorial/esimTutorial3.png`),
-      step4: require(`../assets/images/esim/tutorial/esimTutorial4.png`),
+      step1: require(`../assets/images/esim/tutorial/esimTutorial_1_AOS.png`),
+      step2: require(`../assets/images/esim/tutorial/esimTutorial_2_AOS.png`),
+      step3: require(`../assets/images/esim/tutorial/esimTutorial_3.png`),
+      step4: require(`../assets/images/esim/tutorial/esimTutorial_4.png`),
+      step5: require(`../assets/images/esim/tutorial/esimTutorial_5.png`),
     };
 
 const styles = StyleSheet.create({
@@ -108,7 +118,7 @@ type TutorialScreenProps = {
   };
 };
 
-type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4';
+type CarouselIndex = 'step1' | 'step2' | 'step3' | 'step4' | 'step5';
 
 const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
   const {navigation} = props;

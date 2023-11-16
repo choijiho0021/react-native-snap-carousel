@@ -5,13 +5,13 @@ import React, {useState, useEffect, useCallback} from 'react';
 import Clipboard from '@react-native-community/clipboard';
 import {
   Image,
+  Modal,
   Platform,
   Pressable,
   SafeAreaView,
   StyleSheet,
   View,
 } from 'react-native';
-import {Map as ImmutableMap} from 'immutable';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -22,6 +22,7 @@ import {
   getTrackingStatus,
   TrackingStatus,
 } from 'react-native-tracking-transparency';
+import Share from 'react-native-share';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
@@ -47,10 +48,11 @@ import {API} from '@/redux/api';
 import {PromotionModelState} from '@/redux/modules/promotion';
 import {Currency, RkbProdByCountry} from '@/redux/api/productApi';
 import AppIcon from '@/components/AppIcon';
-import {MAX_WIDTH} from '@/constants/SliderEntry.style';
 import AppText from '@/components/AppText';
 import InputNumber from '@/components/InputNumber';
-import Share from 'react-native-share';
+import utils from '@/redux/api/utils';
+import AppPrice from '@/components/AppPrice';
+import {ProductModelState} from '@/redux/modules/product';
 
 const {esimGlobal, webViewHost, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -130,12 +132,9 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
   },
   modalContainer: {
-    marginHorizontal: 0,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    backgroundColor: 'white',
-    maxWidth: MAX_WIDTH, // MAX WIDTH는 왜 있는거지?
-    width: '100%',
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalFrame: {
     marginHorizontal: 20,
@@ -148,7 +147,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   countBoxFrame: {
-    width: 335,
+    width: '100%',
     height: 72,
     flexDirection: 'row',
     backgroundColor: '#f7f8fa',
@@ -158,7 +157,7 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
   },
   priceBoxFrame: {
-    width: 335,
+    width: '100%',
     height: 30,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -173,7 +172,7 @@ const styles = StyleSheet.create({
     lineHeight: 30,
   },
   priceValueText: {
-    ...appStyles.bold16Text,
+    ...appStyles.bold18Text,
     lineHeight: 30,
     color: colors.clearBlue,
   },
@@ -237,6 +236,21 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       setPrice(purchaseItems[0]?.price);
     }
   }, [purchaseItems]);
+
+  const onChangeQty = useCallback(
+    (key: string, orderItemId: number, cnt: number) => {
+      setQty(cnt);
+      setPrice({
+        value: Math.round(cnt * purchaseItems[0].price?.value * 100) / 100,
+        currency: purchaseItems[0].price?.currency,
+      });
+    },
+    [purchaseItems],
+  );
+
+  const resetModalInfo = useCallback(() => {
+    onChangeQty(purchaseItems[0]?.key, purchaseItems[0]?.orderItemId, 1);
+  }, [onChangeQty, purchaseItems]);
 
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
@@ -350,40 +364,57 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       return navigation.navigate('Auth');
     }
 
-    const existInCart = cart.orderItems
-      ?.map((elm) => elm.key)
-      .includes(purchaseItems[0].key);
+    const cartNumber =
+      cart.orderItems.find((elm) => elm.key === purchaseItems[0].key)?.qty || 0;
 
-    if (existInCart) {
-      // 이미 카트에 있는 경우엔 어떻게 해야할까?
-      setShowSnackBar({text: i18n.t('country:existInCart'), visible: true});
-    } else if (!isButtonDisabled) {
-      console.log('qty  :', qty);
+    resetModalInfo();
+    setShowModal(false);
 
-      const item = {...purchaseItems[0], qty};
+    if (!isButtonDisabled) {
+      const isOverCart = cartNumber + qty > 10;
 
-      action.cart
-        .cartAddAndGet({
-          // purchaseItems: {...purchaseItems, qty: qty.get(purchaseItems[0].key)},
-          // purchaseItems: {...purchaseItems},
-          purchaseItems: [item],
-        })
-        .then(({payload: resp}) => {
-          console.log('stock check는 한건가??  : ', resp);
+      // 10개 초과 시 카트에 10개 담는 추가 요청사항
+      const item = isOverCart
+        ? {...purchaseItems[0], qty: 10 - cartNumber}
+        : {...purchaseItems[0], qty};
 
-          if (resp.result === 0) {
-            setShowSnackBar({text: i18n.t('country:addCart'), visible: true});
-            if (
-              resp.objects[0].orderItems.find(
-                (v) => v.key === route.params.item?.key,
-              ).qty >= PURCHASE_LIMIT
-            ) {
-              setDisabled(true);
-            }
-          } else {
-            soldOut(resp, 'cart:notToCart');
-          }
+      // qty 0 인 경우도 1개 담게 되어 있어서 예외처리 추가
+      if (isOverCart && 10 - cartNumber === 0) {
+        setShowSnackBar({
+          text: i18n.t('country:overInCart'),
+          visible: true,
         });
+      } else {
+        action.cart
+          .cartAddAndGet({
+            // purchaseItems: {...purchaseItems, qty: qty.get(purchaseItems[0].key)},
+            // purchaseItems: {...purchaseItems},
+            purchaseItems: [item],
+          })
+          .then(({payload: resp}) => {
+            if (resp.result === 0) {
+              if (isOverCart) {
+                setShowSnackBar({
+                  text: i18n.t('country:overInCart'),
+                  visible: true,
+                });
+              } else
+                setShowSnackBar({
+                  text: i18n.t('country:addCart'),
+                  visible: true,
+                });
+              if (
+                resp.objects[0].orderItems.find(
+                  (v) => v.key === route.params.item?.key,
+                ).qty >= PURCHASE_LIMIT
+              ) {
+                setDisabled(true);
+              }
+            } else {
+              soldOut(resp, 'cart:notToCart');
+            }
+          });
+      }
     }
     return setTimeout(() => {
       setIsButtonDisabled(false);
@@ -396,6 +427,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     navigation,
     purchaseItems,
     qty,
+    resetModalInfo,
     route.params.item?.key,
     soldOut,
     status,
@@ -421,6 +453,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         balance,
       })
       .then(({payload: resp}) => {
+        resetModalInfo();
         if (resp.result === 0) {
           navigation.navigate('PymMethod', {
             mode: 'roaming_product',
@@ -432,7 +465,15 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       .catch((err) => {
         console.log('failed to check stock', err);
       });
-  }, [account, action.cart, navigation, purchaseItems, qty, soldOut]);
+  }, [
+    account,
+    action.cart,
+    navigation,
+    purchaseItems,
+    qty,
+    resetModalInfo,
+    soldOut,
+  ]);
 
   const onPressBtnRegCard = useCallback(() => {
     Analytics.trackEvent('Click_regCard');
@@ -443,17 +484,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   useEffect(() => {
     console.log('price : ', price);
   }, [price]);
-
-  const onChangeQty = useCallback(
-    (key: string, orderItemId: number, cnt: number) => {
-      setQty(cnt);
-      setPrice({
-        value: Math.round(cnt * purchaseItems[0].price?.value * 100) / 100,
-        currency: purchaseItems[0].price?.currency,
-      });
-    },
-    [purchaseItems],
-  );
 
   const onShare = useCallback(async (link) => {
     await Share.open({
@@ -555,10 +585,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           />
         )}
       </View>
-
       {renderWebView(route.params?.uuid)}
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
-
       {account.loggedIn ? (
         purchaseButtonTab()
       ) : (
@@ -572,22 +600,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           />
         </View>
       )}
-
-      {showModal && (
-        <View justifyContent="flex-end" contentStyle={styles.modalContainer}>
-          <View style={styles.modalFrame}>
-            <Pressable
-              onPress={() => {
-                setShowModal(false);
-              }}>
-              <View style={styles.headerFrame}>
-                <Image
-                  style={{width: 46, height: 10}}
-                  source={require('@/assets/images/esim/grabber.png')}
-                  resizeMode="stretch"
-                />
-              </View>
-            </Pressable>
+      {/* {showModal && (
+        <View style={{flex: 1}}>
+          <AppModal visible={showModal}>
             <View style={styles.countBoxFrame}>
               <AppText style={appStyles.medium16}>
                 {i18n.t('cart:count')}
@@ -605,19 +620,81 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
                 />
               </View>
             </View>
-            <View style={styles.priceBoxFrame}>
-              <AppText style={styles.priceText}>
-                {i18n.t('cart:proudctTotalPrice')}
-              </AppText>
-              <AppText
-                style={
-                  styles.priceValueText
-                  // eslint-disable-next-line react-native/no-raw-text
-                }>{`${price?.value} ${price?.currency}`}</AppText>
-            </View>
-          </View>
-          {purchaseNumberTab()}
+          </AppModal>
         </View>
+      )} */}
+      {showModal && (
+        <Modal
+          transparent
+          animationType="fade"
+          visible={showModal}
+          onRequestClose={() => setShowModal(false)}>
+          <Pressable
+            onPress={() => {
+              resetModalInfo();
+              setShowModal(false);
+            }}
+            style={styles.modalContainer}>
+            <Pressable style={{backgroundColor: colors.white}}>
+              <View style={styles.modalFrame}>
+                <Pressable
+                  onPress={() => {
+                    setShowModal(false);
+                  }}>
+                  <View style={styles.headerFrame}>
+                    <Image
+                      style={{width: 46, height: 10}}
+                      source={require('@/assets/images/esim/grabber.png')}
+                      resizeMode="stretch"
+                    />
+                  </View>
+                </Pressable>
+                <View style={styles.countBoxFrame}>
+                  <AppText style={appStyles.medium16}>
+                    {i18n.t('cart:count')}
+                  </AppText>
+                  <View>
+                    <InputNumber
+                      value={qty}
+                      fontStyle={appStyles.bold16Text}
+                      boxStyle={{width: 60}}
+                      boldIcon
+                      onChange={(value) =>
+                        onChangeQty(
+                          purchaseItems[0]?.key,
+                          purchaseItems[0]?.orderItemId,
+                          value,
+                        )
+                      }
+                    />
+                  </View>
+                </View>
+                <View style={styles.priceBoxFrame}>
+                  <AppText style={styles.priceText}>
+                    {i18n.t('cart:proudctTotalPrice')}
+                  </AppText>
+                  <AppPrice
+                    price={utils.toCurrency(price?.value || 0, price?.currency)}
+                    balanceStyle={styles.priceValueText}
+                    currencyStyle={styles.priceValueText}
+                    // style={styles.priceValueText}
+                  />
+
+                  {/* <AppText
+                    style={
+                      styles.priceValueText
+                      // eslint-disable-next-line react-native/no-raw-text
+                    }>
+                      {`${price?.value} ${i18n.t(price?.currency)}`}
+                      </AppText> */}
+                </View>
+              </View>
+              {purchaseNumberTab()}
+            </Pressable>
+          </Pressable>
+
+          <SafeAreaView style={{backgroundColor: 'white'}} />
+        </Modal>
       )}
       <ChatTalk visible bottom={isIOS ? 100 : 70} />
       <AppSnackBar

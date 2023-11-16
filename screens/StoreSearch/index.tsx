@@ -32,7 +32,6 @@ import {
   ProductAction,
   ProductModelState,
   RkbPriceInfo,
-  isGetAllProduct,
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {retrieveData, storeData, utils} from '@/utils/utils';
@@ -313,12 +312,11 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
           AppEventsLogger.logEvent('fb_mobile_search', params);
         }
       }
-      if (isGetAllProduct(info.partnerList, product.prodByLocalOpCheckList)) {
-        action.product.getProdOfPartner(info.partnerList);
-        navigation.navigate('Country', {partner: info.partnerList});
-      }
+
+      action.product.getProdOfPartner(info.partnerList);
+      navigation.navigate('Country', {partner: info.partnerList});
     },
-    [action.product, navigation, product.prodByLocalOpCheckList, searchWord],
+    [action.product, navigation, searchWord],
   );
 
   const search = useCallback(

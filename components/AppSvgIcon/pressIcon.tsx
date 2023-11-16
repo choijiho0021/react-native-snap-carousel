@@ -335,6 +335,36 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Rect x="8" y="11.5" width="8" height="1" rx=".5" fill="#D8D8D8" />
     </Svg>,
   ],
+  boldMinus: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M13 8H3"
+        stroke="#2C2C2C"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </Svg>,
+  ],
+  boldPlus: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M9 4a1 1 0 0 0-2 0v3H4a1 1 0 1 0 0 2h3v3a1 1 0 1 0 2 0V9h3a1 1 0 1 0 0-2H9V4z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
   bottomArrow: [
     <Svg
       width="10"

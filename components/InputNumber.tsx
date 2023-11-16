@@ -1,4 +1,11 @@
-import {Pressable, StyleSheet, View} from 'react-native';
+import {
+  Pressable,
+  StyleProp,
+  StyleSheet,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
 import React, {memo, useCallback, useState} from 'react';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
@@ -43,11 +50,17 @@ const InputNumber = ({
   onChange,
   minValue = 1,
   maxValue = 10,
+  boldIcon = false,
+  fontStyle,
+  boxStyle,
 }: {
   value: number;
   minValue?: number;
   maxValue?: number;
   onChange: (v: number) => void;
+  boldIcon?: boolean;
+  fontStyle?: StyleProp<TextStyle>;
+  boxStyle?: StyleProp<ViewStyle>;
 }) => {
   const [inputValue, setInputValue] = useState(value);
 
@@ -76,18 +89,24 @@ const InputNumber = ({
       <Pressable
         onPress={() => delValue(inputValue - 1)}
         disabled={inputValue <= minValue}>
-        <View style={styles.box}>
-          <AppSvgIcon name="minus" disabled={inputValue <= minValue} />
+        <View style={[styles.box, fontStyle]}>
+          <AppSvgIcon
+            name={boldIcon ? 'boldMinus' : 'minus'}
+            disabled={inputValue <= minValue}
+          />
         </View>
       </Pressable>
-      <View style={styles.boxCenter}>
-        <AppText style={styles.text}>{inputValue}</AppText>
+      <View style={[styles.boxCenter, boxStyle]}>
+        <AppText style={[styles.text, fontStyle]}>{inputValue}</AppText>
       </View>
       <Pressable
         onPress={() => addValue(inputValue + 1)}
         disabled={inputValue >= maxValue}>
-        <View style={styles.box}>
-          <AppSvgIcon name="plus" disabled={inputValue >= maxValue} />
+        <View style={[styles.box, fontStyle]}>
+          <AppSvgIcon
+            name={boldIcon ? 'boldPlus' : 'plus'}
+            disabled={inputValue >= maxValue}
+          />
         </View>
       </Pressable>
     </View>

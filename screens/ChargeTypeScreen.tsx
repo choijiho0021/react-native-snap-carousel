@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {StyleSheet, SafeAreaView, View, Image} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
@@ -28,15 +28,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.white,
     flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.white,
-  },
-  headerTitle: {
-    height: 56,
-    marginRight: 8,
   },
   top: {
     marginTop: 50,
@@ -85,30 +76,24 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [statusLoading, setStatusLoading] = useState(false);
   const [addonLoading, setAddonLoading] = useState(false);
   const [addonEnable, setAddonEnable] = useState(false);
-  const [remainDays, setRemainDays] = useState(0);
+  // const [remainDays, setRemainDays] = useState(0);
   const [expireTime, setExpireTime] = useState<Moment>();
   const [status, setStatus] = useState<UsageStatusType>();
   const [addOnDisReasonText, setAddOnDisReasonText] = useState('');
-  const [extensionDisReason, setExtensionDisReason] = useState('');
   const [addonProds, setAddonProds] = useState<RkbAddOnProd[]>([]);
   const [chargeLoading, setChargeLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
   const extensionEnable = useRef(false);
   const extensionExpireCheck = extensionEnable.current && isChargeable;
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <View style={styles.header}>
-          <AppBackButton
-            title={i18n.t('esim:charge')}
-            style={styles.headerTitle}
-          />
-        </View>
-      ),
-    });
-  }, [navigation]);
+  const extensionDisReason = useMemo(() => {
+    if (!extensionEnable.current) {
+      if (!isChargeable) {
+        return 'expired';
+      }
+      return 'unsupported';
+    }
+    return '';
+  }, [isChargeable]);
 
   const checkStatus = useCallback(
     async (item: RkbSubscription, chargeSubsParam?: RkbSubscription[]) => {
@@ -130,40 +115,26 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       setStatusLoading(false);
 
       if (rsp && rsp.result?.code === 0) {
-        const rspStatus = rsp.objects[0]?.status;
-        switch (rspStatus.statusCd) {
-          // 사용 전
-          case 'R':
-            setStatus('R');
-            break;
-          // 사용중
-          // 여기서 처리하는데, ChargeTypeScreen 빼고는 mainSubs 고정이다.
-          // ChargeTypeScreen 코드를 빼서 여기로 옮길 것
-          case 'A':
-            setExpireTime(moment(rspStatus.endTime));
+        const {statusCd, endTime, orderId} = rsp.objects[0]?.status;
+
+        if (statusCd) {
+          setStatus(statusCd as UsageStatusType);
+          if (statusCd === 'A') {
+            setExpireTime(moment(endTime));
 
             if (extensionEnable.current) {
               if (chargeSubsParam) {
                 const i = chargeSubsParam.find((s) => {
-                  return s.subsOrderNo === rspStatus?.orderId;
+                  return s.subsOrderNo === orderId;
                 });
 
-                setChargeableItem(i);
+                setChargeableItem(i || item);
               }
             }
-
-            setStatus('A');
-            break;
-          // 사용 완료
-          case 'U':
-            setStatus('U');
-            break;
-          default:
-            break;
+          }
         }
       } else {
         setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:`));
-
         setAddonEnable(false);
       }
     },
@@ -172,51 +143,28 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
   useEffect(() => {
     if (mainSubs) {
-      const {iccid, token} = account;
-      if (iccid && token && (mainSubs.cnt || 0 > 1)) {
-        setChargeLoading(true);
-        API.Subscription.getSubscription({
-          iccid,
-          token,
-          uuid: mainSubs.subsIccid,
-        }).then((rsp) => {
-          setChargeLoading(false);
-          const chargeSubs = (rsp?.objects as RkbSubscription[]).filter(
-            (r) => r?.type === 'esim_product', // 일반 구매, 연장 상품은 esim_product
-          ) || [mainSubs];
-          checkStatus(mainSubs, chargeSubs);
-        });
-      } else checkStatus(mainSubs);
+      checkStatus(mainSubs, params?.chargedSubs);
     }
-  }, [account, checkStatus, mainSubs]);
+  }, [checkStatus, mainSubs, params?.chargedSubs]);
 
-  useEffect(() => {
+  const getRemainDays = useCallback(() => {
     // 남은 사용기간 구하기
     if (status === 'R' && mainSubs.prodDays) {
-      setRemainDays(Number(mainSubs.prodDays));
-    } else if (expireTime) {
+      return Number(mainSubs.prodDays);
+    }
+    if (expireTime) {
       const today = moment();
-      setRemainDays(
-        Math.ceil(expireTime.diff(today, 'seconds') / (24 * 60 * 60)),
-      );
+      return Math.ceil(expireTime.diff(today, 'seconds') / (24 * 60 * 60));
     }
-  }, [expireTime, mainSubs, status]);
-
-  useEffect(() => {
-    if (!extensionEnable.current) {
-      if (!isChargeable) {
-        setExtensionDisReason('expired');
-        return;
-      }
-      setExtensionDisReason('unsupported');
-    }
-  }, [isChargeable]);
+    return 0;
+  }, [expireTime, mainSubs.prodDays, status]);
 
   const getAddOnProduct = useCallback(async () => {
     setAddonLoading(true);
     const subs = chargeableItem || mainSubs;
+    const remainDays = getRemainDays();
 
-    if (subs.nid && status && remainDays && remainDays > 0) {
+    if (subs.nid && status && remainDays > 0) {
       const rsp = await API.Product.getAddOnProduct(
         subs.nid,
         subs.daily === 'daily' ? remainDays.toString() : '1',
@@ -255,7 +203,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       // 모종의 이유로 실패, 모든 분기 진입 못할 시 '잠시 후 다시 시도해주세요' 출력
     }
     setAddonLoading(false);
-  }, [chargeableItem, mainSubs, remainDays, status]);
+  }, [chargeableItem, getRemainDays, mainSubs, status]);
 
   const unsupportExtension = useCallback(() => {
     extensionEnable.current = false;

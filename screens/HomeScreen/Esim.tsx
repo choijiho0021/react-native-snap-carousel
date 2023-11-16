@@ -71,7 +71,6 @@ import {
   ProductAction,
   ProductModelState,
   RkbPriceInfo,
-  isGetAllProduct,
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
@@ -317,13 +316,12 @@ const Esim: React.FC<EsimProps> = ({
 
   const navToCountry = useCallback(
     (info: RkbPriceInfo) => {
-      if (isGetAllProduct(info.partnerList, product.prodByLocalOpCheckList))
-        action.product.getProdOfPartner(info.partnerList);
+      action.product.getProdOfPartner(info.partnerList);
       navigation.navigate('Country', {
         partner: info.partnerList,
       });
     },
-    [action.product, navigation, product.prodByLocalOpCheckList],
+    [action.product, navigation],
   );
 
   const onPressItem = useCallback(
