@@ -384,7 +384,9 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           title={i18n.t(`esim:charge:type:extension:detail`)}
           onPress={onPressExtension}
           disabled={!extensionExpireCheck}
-          disReason={extensionDisReason}
+          disReason={i18n.t(
+            `esim:charge:disReason:extension:${extensionDisReason}`,
+          )}
         />
         <AppSnackBar
           visible={showSnackBar.visible}
