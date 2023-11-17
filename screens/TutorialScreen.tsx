@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import {AppEventsLogger, Settings} from 'react-native-fbsdk-next';
 import {Pagination} from 'react-native-snap-carousel';
+
+import LinearGradient from 'react-native-linear-gradient';
 import {
   getTrackingStatus,
   TrackingStatus,
@@ -84,12 +86,6 @@ const styles = StyleSheet.create({
     maxWidth: MAX_WIDTH,
     height: '100%',
   },
-  bottomText: {
-    ...appStyles.normal16Text,
-    letterSpacing: 0.22,
-    marginHorizontal: 30,
-    textAlignVertical: 'center',
-  },
   bottom: {
     flex: 1,
     flexDirection: 'row',
@@ -116,6 +112,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 26,
     letterSpacing: 0,
+  },
+  gradientStyle: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: -52,
   },
 });
 
@@ -236,23 +238,45 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
           containerStyle={styles.pagination}
         />
       </View>
+      {/* <LinearGradient
+        colors={['rgba(255, 255, 255, 0)', 'red']} // 투명에서 흰색으로 그라디언트 색상 설정
+        style={styles.gradientStyle}>
+        <View
+          style={{
+            height: 30,
+
+            // overflow: 'hidden',
+            // backgroundColor: 'linear-gradient(to bottom, transparent, white)',
+            backgroundColor: 'red',
+          }}
+        />
+      </LinearGradient> */}
+
       <View
         style={{
-          flexDirection: 'row',
+          flexDirection: 'column',
           justifyContent: 'space-between',
           height: 52,
           marginBottom: 20,
         }}>
         {activeSlide === images.length - 1 ? (
-          <View style={styles.bottom}>
-            <AppButton
-              style={[styles.reasonButton, {backgroundColor: colors.clearBlue}]}
-              title={i18n.t('tutorial:close')}
-              titleStyle={[styles.boldText, {color: 'white'}]}
-              disableStyle={{borderWidth: 0}}
-              onPress={() => completed()}
+          <>
+            <LinearGradient
+              colors={['rgba(255, 255, 255, 0)', 'white']} // 투명에서 흰색으로 그라디언트 색상 설정
+              style={[styles.gradientStyle]}
             />
-            {/* <Pressable
+            <View style={styles.bottom}>
+              <AppButton
+                style={[
+                  styles.reasonButton,
+                  {backgroundColor: colors.clearBlue},
+                ]}
+                title={i18n.t('tutorial:close')}
+                titleStyle={[styles.boldText, {color: 'white'}]}
+                disableStyle={{borderWidth: 0}}
+                onPress={() => completed()}
+              />
+              {/* <Pressable
               style={[styles.touchableOpacity, {flex: 1, alignItems: 'center'}]}
               onPress={() => completed()}>
               
@@ -260,37 +284,47 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
                 {i18n.t('tutorial:close')}
               </AppText>
             </Pressable> */}
-          </View>
+            </View>
+          </>
         ) : (
-          <View style={[styles.bottom, {justifyContent: 'space-between'}]}>
-            {/* <Pressable style={styles.touchableOpacity} onPress={() => skip()}>
+          <>
+            <LinearGradient
+              colors={['rgba(255, 255, 255, 0)', 'white']} // 투명에서 흰색으로 그라디언트 색상 설정
+              style={[styles.gradientStyle]}
+            />
+            <View style={[styles.bottom, {justifyContent: 'space-between'}]}>
+              {/* <Pressable style={styles.touchableOpacity} onPress={() => skip()}>
               <AppText style={styles.bottomText}>
                 {i18n.t('tutorial:skip')}
               </AppText>
             </Pressable> */}
-            <AppButton
-              key={`buttonSkip`}
-              style={[styles.reasonButton, {marginRight: 12}]}
-              titleStyle={[styles.reasonButtonText]}
-              onPress={() => skip()}
-              title={i18n.t('tutorial:skip')}
-            />
+              <AppButton
+                key={`buttonSkip`}
+                style={[styles.reasonButton, {marginRight: 12}]}
+                titleStyle={[styles.reasonButtonText]}
+                onPress={() => skip()}
+                title={i18n.t('tutorial:skip')}
+              />
 
-            <AppButton
-              key={`buttonNext`}
-              style={[styles.reasonButton, {backgroundColor: colors.clearBlue}]}
-              titleStyle={[styles.boldText, {color: 'white'}]}
-              onPress={() => carouselRef.current?.snapToNext()}
-              title={i18n.t('tutorial:next')}
-            />
-            {/* <Pressable
+              <AppButton
+                key={`buttonNext`}
+                style={[
+                  styles.reasonButton,
+                  {backgroundColor: colors.clearBlue},
+                ]}
+                titleStyle={[styles.boldText, {color: 'white'}]}
+                onPress={() => carouselRef.current?.snapToNext()}
+                title={i18n.t('tutorial:next')}
+              />
+              {/* <Pressable
               style={styles.touchableOpacity}
               onPress={() => carouselRef.current?.snapToNext()}>
               <AppText style={[styles.bottomText, {color: colors.clearBlue}]}>
                 {i18n.t('tutorial:next')}
               </AppText>
             </Pressable> */}
-          </View>
+            </View>
+          </>
         )}
       </View>
     </SafeAreaView>
