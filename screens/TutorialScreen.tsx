@@ -34,6 +34,7 @@ import {LinkModelState} from '../redux/modules/link';
 import AppCarousel, {AppCarouselRef} from '@/components/AppCarousel';
 import {MAX_WIDTH, sliderWidth} from '@/constants/SliderEntry.style';
 import {ModalAction} from '@/redux/modules/modal';
+import AppButton from '@/components/AppButton';
 
 const {esimGlobal} = Env.get();
 
@@ -93,10 +94,28 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingHorizontal: 20,
   },
-  touchableOpacity: {
-    height: '100%',
-    justifyContent: 'center',
+
+  reasonButtonText: {
+    ...appStyles.medium18,
+    color: colors.black,
+    lineHeight: 26,
+    letterSpacing: 0,
+  },
+  reasonButton: {
+    flex: 1,
+    height: 52,
+    borderWidth: 1,
+    borderRadius: 3,
+    borderColor: colors.lightGrey,
+  },
+
+  boldText: {
+    ...appStyles.bold18Text,
+    textAlign: 'center',
+    lineHeight: 26,
+    letterSpacing: 0,
   },
 });
 
@@ -194,7 +213,7 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
   }, []);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View style={{flex: 1}}>
         <AppCarousel
           carouselRef={carouselRef}
@@ -222,31 +241,55 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           height: 52,
+          marginBottom: 20,
         }}>
         {activeSlide === images.length - 1 ? (
           <View style={styles.bottom}>
-            <Pressable
+            <AppButton
+              style={[styles.reasonButton, {backgroundColor: colors.clearBlue}]}
+              title={i18n.t('tutorial:close')}
+              titleStyle={[styles.boldText, {color: 'white'}]}
+              disableStyle={{borderWidth: 0}}
+              onPress={() => completed()}
+            />
+            {/* <Pressable
               style={[styles.touchableOpacity, {flex: 1, alignItems: 'center'}]}
               onPress={() => completed()}>
+              
               <AppText style={styles.bottomText}>
                 {i18n.t('tutorial:close')}
               </AppText>
-            </Pressable>
+            </Pressable> */}
           </View>
         ) : (
           <View style={[styles.bottom, {justifyContent: 'space-between'}]}>
-            <Pressable style={styles.touchableOpacity} onPress={() => skip()}>
+            {/* <Pressable style={styles.touchableOpacity} onPress={() => skip()}>
               <AppText style={styles.bottomText}>
                 {i18n.t('tutorial:skip')}
               </AppText>
-            </Pressable>
-            <Pressable
+            </Pressable> */}
+            <AppButton
+              key={`buttonSkip`}
+              style={[styles.reasonButton, {marginRight: 12}]}
+              titleStyle={[styles.reasonButtonText]}
+              onPress={() => skip()}
+              title={i18n.t('tutorial:skip')}
+            />
+
+            <AppButton
+              key={`buttonNext`}
+              style={[styles.reasonButton, {backgroundColor: colors.clearBlue}]}
+              titleStyle={[styles.boldText, {color: 'white'}]}
+              onPress={() => carouselRef.current?.snapToNext()}
+              title={i18n.t('tutorial:next')}
+            />
+            {/* <Pressable
               style={styles.touchableOpacity}
               onPress={() => carouselRef.current?.snapToNext()}>
               <AppText style={[styles.bottomText, {color: colors.clearBlue}]}>
                 {i18n.t('tutorial:next')}
               </AppText>
-            </Pressable>
+            </Pressable> */}
           </View>
         )}
       </View>
