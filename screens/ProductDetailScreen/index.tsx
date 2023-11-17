@@ -514,10 +514,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               isShort: true,
             }).then((url) => {
               if (url) {
-                setShowSnackBar({
-                  text: i18n.t('prodDetail:copy:product'),
-                  visible: true,
-                });
                 // Clipboard.setString(url);
                 onShare(url);
               }
