@@ -1,4 +1,6 @@
-import dynamicLinks from '@react-native-firebase/dynamic-links';
+import dynamicLinks, {
+  FirebaseDynamicLinksTypes,
+} from '@react-native-firebase/dynamic-links';
 import Share from 'react-native-share';
 import _ from 'underscore';
 import moment from 'moment';
@@ -345,19 +347,24 @@ const buildShareLink = async ({
   counry: RkbProdByCountry;
   isShort?: boolean;
 }) => {
+  const webLink = shareWebViewLink(uuid, country);
+
+  console.log('@@@ webLink : ', webLink);
+
   const input = {
     link: shareLink(uuid),
     domainUriPrefix: dynamicLink,
     otherPlatform: {
-      fallbackUrl: shareWebViewLink(uuid, country),
+      fallbackUrl: webLink,
     },
     ios: {
       bundleId,
       appStoreId,
+      fallbackUrl: webLink,
     },
-    ofl: shareWebViewLink(uuid, country),
     android: {
       packageName: 'com.rokebiesim',
+      fallbackUrl: webLink,
     },
     // 어떻게 바꿀지는 고민해보기
     social: {

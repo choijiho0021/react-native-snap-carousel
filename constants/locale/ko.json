@@ -911,7 +911,7 @@
 
   "tutorial:skip": "건너뛰기",
   "tutorial:next": "다음",
-  "tutorial:close": "완료",
+  "tutorial:close": "시작하기",
 
   "util:storeDataFailed": "데이터 저장 실패:",
   "util:retrieveDataFailed": "데이터 조회 실패:",
@@ -961,7 +961,7 @@
 
   "invite:title": "로깨비캐시 *p를 보냈어요.",
   "invite:desc": "어쩌면 당신의 해외여행 데이터는 공짜!?",
-  "share:title": "로깨비 상품 공유 타이틀",
+  "share:title": "로밍도깨비 eSIM",
   "share:desc": "* 상품을 공유했어요.",
   "invite:btn-1": "어쩌면 데이터가 공짜?",
   "invite:btn-2": "친구 초대하면 <b>무제한</b> 캐시 적립",

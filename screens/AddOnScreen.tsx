@@ -376,20 +376,21 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
           </View>
         </View>
         <View style={styles.divider} />
-        <View style={styles.noticeBody}>
-          <AppSvgIcon
-            name="checkGreySmall"
-            style={{marginRight: 4, alignSelf: 'center'}}
-          />
-          {mainSubs.daily === 'daily' && (
+        {mainSubs.daily === 'daily' && (
+          <View style={styles.noticeBody}>
+            <AppSvgIcon
+              name="checkGreySmall"
+              style={{marginRight: 4, alignSelf: 'center'}}
+            />
+
             <AppStyledText
               text={i18n.t(`esim:charge:addOn:resetTime:${mainSubs.partner}`)}
               textStyle={styles.noticeBodyText}
               format={{b: styles.noticeBodyTextBold}}
               data={{expireTime: dataResetTime || ''}}
             />
-          )}
-        </View>
+          </View>
+        )}
         <View style={styles.noticeBox}>{renderUsagePrieod()}</View>
       </View>
     ),
