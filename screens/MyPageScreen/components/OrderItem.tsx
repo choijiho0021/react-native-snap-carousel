@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
 
 const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
   const label = useMemo(() => {
-    let str = item.orderItems[0].title;
+    let str = item.orderItems[0]?.title;
     if (item.orderItems && item.orderItems.length > 1) {
       str += i18n
         .t('his:etcCnt')
