@@ -274,8 +274,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           offset: 0,
           count: PAGINATION_SUBS_COUNT,
           hidden: isEditMode,
+          reset: true,
         });
-        action.order.resetOffset();
       }
 
       appState.current = nextAppState;
