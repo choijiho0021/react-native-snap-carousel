@@ -123,7 +123,7 @@ type ProdDesc = {
 const DraftScreen: React.FC<DraftScreenProps> = ({
   navigation,
   route,
-  account: {token},
+  account: {iccid, token},
   action,
   product,
   order,
@@ -166,11 +166,16 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
         token,
       })
       .then((r) => {
+        action.order.subsReload({
+          iccid: iccid!,
+          token: token!,
+          hidden: false,
+        });
         navigation.navigate('DraftResult', {
           isSuccess: r?.payload?.result === 0,
         });
       });
-  }, [action.order, draftOrder?.orderId, token, navigation]);
+  }, [action.order, draftOrder?.orderId, token, iccid, navigation]);
 
   //
   const getProdDate = useCallback(() => {
