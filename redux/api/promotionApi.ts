@@ -349,6 +349,8 @@ const buildShareLink = async ({
 }) => {
   const webLink = shareWebViewLink(uuid, country);
 
+  console.log('@@@ webLink : ', webLink);
+
   const input = {
     link: shareLink(uuid),
     domainUriPrefix: dynamicLink,
@@ -360,7 +362,6 @@ const buildShareLink = async ({
       appStoreId,
       fallbackUrl: webLink,
     },
-    ofl: webLink,
     android: {
       packageName: 'com.rokebiesim',
       fallbackUrl: webLink,
