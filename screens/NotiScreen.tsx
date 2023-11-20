@@ -186,14 +186,17 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
   const [mode, setMode] = useState<'noti' | 'info'>('noti');
 
   useEffect(() => {
-    if (route.params?.mode === 'info' && !info.infoMap.has('info')) {
-      action.info.getInfoList('info');
-    }
+    if (account.loggedIn) {
+      if (route.params?.mode === 'info' && !info.infoMap.has('info')) {
+        action.info.getInfoList('info');
+      }
 
-    action.board.getIssueList();
-    action.eventBoard.getIssueList();
-    setMode(route.params?.mode);
+      action.board.getIssueList();
+      action.eventBoard.getIssueList();
+      setMode(route.params?.mode);
+    }
   }, [
+    account.loggedIn,
     action.board,
     action.eventBoard,
     action.info,
