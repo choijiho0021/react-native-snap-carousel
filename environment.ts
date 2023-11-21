@@ -4,8 +4,8 @@ import {getBundleId} from 'react-native-device-info';
 import {CurrencyCode} from './redux/api/productApi';
 
 const codePushLabel = {
-  stagingIOS: "v118",
-  stagingAndroid: "v107",
+  stagingIOS: 'v118',
+  stagingAndroid: 'v107',
   productionIOS: 'v47',
   productionAndroid: 'v40',
 };
@@ -24,6 +24,10 @@ const esimGlobal = Config.APP_ID === 'global';
 // global / esim 계정
 let impId = esimGlobal ? 'imp60215393' : 'imp53913318';
 const appStoreId = esimGlobal ? '' : '1525664178';
+
+const iosBundleId = esimGlobal
+  ? 'com.uangel.rokebi-global'
+  : 'com.uangel.rokebi-ESIM';
 
 // Dynamic Link
 const dynamicLink = 'https://rokebi.page.link';
@@ -70,7 +74,8 @@ type Env = {
   apiUrl?: string;
   rokApiUrl?: string;
   webViewHost?: string;
-  bundleId: string;
+  iosBundleId: string; // android에서 참조용
+  bundleId: string; // 현재 핸드폰의 번들 id
   appId: string;
   impId: string;
   appStoreId: string;
@@ -103,6 +108,7 @@ type Env = {
 
 const env: Env = {
   bundleId,
+  iosBundleId,
   appId,
   impId,
   appStoreId,
