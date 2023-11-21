@@ -10,9 +10,10 @@ import i18n from '@/utils/i18n';
 import {parseJson, retrieveData, utils} from '@/utils/utils';
 import {RkbProdByCountry} from './productApi';
 import {Country} from '.';
+import {Platform} from 'react-native';
 
 const POPUP_DIS_DAYS = 7;
-const {bundleId, appStoreId, dynamicLink, webViewHost} = Env.get();
+const {bundleId, appStoreId, dynamicLink, webViewHost, iosBundleId} = Env.get();
 
 export type RkbPromotion = {
   uuid: string;
@@ -322,11 +323,19 @@ const inviteLink = (recommender: string, gift: string = '') => {
   }`;
 };
 
-const shareWebViewLink = (uuid: string, country: RkbProdByCountry) => {
+const shareWebViewLink = (
+  uuid: string,
+  country: RkbProdByCountry,
+  isOfl = false,
+) => {
   // ofl localhost 직접 입력 시 firebase 콘솔에 설정된 보안 규칙에 어긋나서 동작 안함
+
+  const param = `partnerId=${country.partner}&uuid=${uuid}`;
+
+  // ofl 값만 encode를 안합니다. 그래서 파라미터 uuid가 잘리는 현상이 발견됨 (Android 일때만).
   return `${webViewHost}/esim/${country.country}/${
     country.search?.split(',')[1]
-  }?partnerId=${country.partner}&uuid=${uuid}`;
+  }?${Platform.OS === 'android' && isOfl ? encodeURIComponent(param) : param}`;
 };
 
 const shareLink = (uuid: string) => {
@@ -349,23 +358,21 @@ const buildShareLink = async ({
 }) => {
   const webLink = shareWebViewLink(uuid, country);
 
-  console.log('@@@ webLink : ', webLink);
-
   const input = {
     link: shareLink(uuid),
     domainUriPrefix: dynamicLink,
     otherPlatform: {
-      fallbackUrl: webLink,
+      fallbackUrl: shareWebViewLink(uuid, country, true),
     },
     ios: {
-      bundleId,
-      appStoreId,
+      bundleId: Platform.OS === 'ios' ? bundleId : iosBundleId,
       fallbackUrl: webLink,
     },
     android: {
       packageName: 'com.rokebiesim',
       fallbackUrl: webLink,
     },
+
     // 어떻게 바꿀지는 고민해보기
     social: {
       title: i18n.t('share:title'),
@@ -402,13 +409,12 @@ const buildLink = async ({
     link: inviteLink(recommender, subsId || ''),
     domainUriPrefix: dynamicLink,
     ios: {
-      bundleId,
+      bundleId: Platform.OS === 'ios' ? bundleId : iosBundleId, // bundleId가 안 맞으면 link만 동작, ifl 미동작
       appStoreId,
     },
     android: {
       packageName: 'com.rokebiesim',
     },
-    // 어떻게 바꿀지는 고민해보기
     social: {
       title: i18n
         .t('invite:title')
