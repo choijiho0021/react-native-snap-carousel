@@ -351,6 +351,12 @@ const buildShareLink = async ({
 
   console.log('@@@ webLink : ', webLink);
 
+  console.log('@@@ dynamicLink : ', dynamicLink);
+  console.log('@@@ bundleID : ', bundleId);
+  console.log('@@@ shareLink(uuid) : ', shareLink(uuid));
+
+  console.log('com.rokebiesim  === bundleId?: ', bundleId === 'com.rokebiesim');
+
   const input = {
     link: shareLink(uuid),
     domainUriPrefix: dynamicLink,
@@ -359,13 +365,14 @@ const buildShareLink = async ({
     },
     ios: {
       bundleId,
-      appStoreId,
+      // appStoreId,
       fallbackUrl: webLink,
     },
     android: {
-      packageName: 'com.rokebiesim',
+      packageName: bundleId, // 'com.rokebiesim',
       fallbackUrl: webLink,
     },
+
     // 어떻게 바꿀지는 고민해보기
     social: {
       title: i18n.t('share:title'),
