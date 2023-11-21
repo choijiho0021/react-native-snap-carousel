@@ -69,6 +69,7 @@ const BoardScreen: React.FC<BoardScreenProps> = ({pending, title, routes}) => {
         onIndexChange={(idx) => setIndex(idx)}
         style={styles.tab}
         tintColor={colors.black}
+        disabledTintColor={colors.whiteSix}
         titleStyle={styles.tabTitle}
         seletedStyle={styles.selectedTabTitle}
       />
