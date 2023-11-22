@@ -291,6 +291,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         enableResetScrollToCoords={false}
         // resetScrollToCoords={{x: 0, y: 0}}
         contentContainerStyle={styles.modalInner}
+        showsVerticalScrollIndicator={false}
         extraScrollHeight={extraHeight}
         innerRef={(ref) => {
           scrollRef.current = ref;
