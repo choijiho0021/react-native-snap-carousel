@@ -1,7 +1,7 @@
 /* eslint-disable no-plusplus */
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, useMemo} from 'react';
 import Clipboard from '@react-native-community/clipboard';
 import {
   Image,
@@ -217,7 +217,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   }>({text: '', visible: false});
   const [disabled, setDisabled] = useState(false);
   const [status, setStatus] = useState<TrackingStatus>();
-  const [purchaseItems, setPurchaseItems] = useState<PurchaseItem[]>([]);
+  const purchaseItems = useMemo(
+    () => (route.params.item ? [route.params.item] : []),
+    [route.params.item],
+  );
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [showButton, setShowButton] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -225,9 +228,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [price, setPrice] = useState<Currency>();
 
   useEffect(() => {
-    setPurchaseItems(route.params.item ? [route.params.item] : []);
     getTrackingStatus().then((elm) => setStatus(elm));
-  }, [route.params.item]);
+  }, []);
 
   useEffect(() => {
     if (purchaseItems) {
@@ -241,8 +243,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     (cnt: number) => {
       setQty(cnt);
       setPrice({
-        value: Math.round(cnt * purchaseItems[0].price?.value * 100) / 100,
-        currency: purchaseItems[0].price?.currency,
+        value: Math.round(cnt * purchaseItems[0]?.price?.value * 100) / 100,
+        currency: purchaseItems[0]?.price?.currency,
       });
     },
     [purchaseItems],
@@ -476,6 +478,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   ]);
 
   const onPressBtnRegCard = useCallback(() => {
+    setShowModal(false);
+    resetModalInfo();
     Analytics.trackEvent('Click_regCard');
 
     navigation.navigate('RegisterMobile', {goBack: () => navigation.goBack()});
@@ -553,19 +557,25 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           <AppButton
             style={[styles.secondaryButton, {marginRight: 12}]}
             title={i18n.t('cart:saveCart')}
-            onPress={onPressBtnCart}
+            onPress={!account.loggedIn ? onPressBtnRegCard : onPressBtnCart}
             titleStyle={[appStyles.medium18, {color: colors.black}]}
           />
           <AppButton
             style={styles.mainButton}
             title={i18n.t('cart:purchaseNow')}
-            onPress={onPressBtnPurchase}
+            onPress={!account.loggedIn ? onPressBtnRegCard : onPressBtnPurchase}
             titleStyle={appStyles.medium18}
           />
         </View>
       </View>
     );
-  }, [showButton, onPressBtnCart, onPressBtnPurchase]);
+  }, [
+    showButton,
+    account.loggedIn,
+    onPressBtnRegCard,
+    onPressBtnCart,
+    onPressBtnPurchase,
+  ]);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -583,19 +593,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       </View>
       {renderWebView(route.params?.uuid)}
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
-      {account.loggedIn ? (
-        purchaseButtonTab()
-      ) : (
-        <View style={styles.buttonBox}>
-          <AppButton
-            style={styles.regCardView}
-            title={i18n.t('err:login')}
-            titleStyle={styles.regCard}
-            onPress={onPressBtnRegCard}
-            type="secondary"
-          />
-        </View>
-      )}
+      {purchaseButtonTab()}
       {/* {showModal && (
         <View style={{flex: 1}}>
           <AppModal visible={showModal}>
