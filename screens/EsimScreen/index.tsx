@@ -237,6 +237,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [dataUsage, setDataUsage] = useState({});
   const [dataStatus, setDataStatus] = useState({});
   const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const [showUsageSubsId, setShowUsageSubsId] = useState<string | undefined>();
   const isFocused = useIsFocused();
   const flatListRef = useRef<FlatList>(null);
   const tabBarHeight = useBottomTabBarHeight();
@@ -256,7 +257,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const showModal = useMemo(() => {
     if (showUsageModal && isDefined(showGiftModal)) return 'usage';
-    if (showGiftModal && isDefined(showUsageModal)) return 'gift';
+    if (showGiftModal) return 'gift';
     return 'noModal';
   }, [showGiftModal, showUsageModal]);
 
@@ -429,14 +430,21 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [action.account, action.order, getOrders, iccid, token],
   );
 
-  const actionCallback = useCallback(() => {
-    const index = subsData?.findIndex((elm) => elm.nid === subsId);
-    if (index >= 0) {
-      setShowUsageModal(true);
-      onPressUsage(subsData[index]);
-      flatListRef?.current?.scrollToIndex({index, animated: true});
+  useEffect(() => {
+    const {actionStr} = route?.params || {};
+
+    if (actionStr === 'showUsage' && showUsageSubsId) {
+      const index = subsData?.findIndex((elm) => elm.nid === showUsageSubsId);
+      if (index >= 0) {
+        setShowUsageModal(true);
+        onPressUsage(subsData[index]);
+        navigation.setParams({
+          actionStr: undefined,
+        });
+        flatListRef?.current?.scrollToIndex({index, animated: true});
+      }
     }
-  }, [onPressUsage, subsData]);
+  }, [navigation, onPressUsage, route?.params, showUsageSubsId, subsData]);
 
   const getSubsAction = useCallback(
     async (subsId?: string, actionStr?: string, subsIccid?: string) => {
@@ -463,9 +471,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             subsId,
             reset: true,
           });
+
           // 스크롤 이동 및 사용량 조회 모달 보여주도록 추가 필요
-          if (rsp?.payload?.result === 0) {
-            actionCallback();
+          if (rsp?.payload?.result >= 0) {
+            setShowUsageSubsId(subsId);
           }
         }
       } else if (actionStr === 'navigate') {
@@ -523,7 +532,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     },
     [
       action.order,
-      actionCallback,
       getOrders,
       iccid,
       navigation,
@@ -754,7 +762,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         ]}
         ListEmptyComponent={empty}
         onScrollToIndexFailed={(rsp) => {
-          const wait = new Promise((resolve) => setTimeout(resolve, 500));
+          const wait = new Promise((resolve) => setTimeout(resolve, 1500));
           wait.then(() => {
             flatListRef?.current?.scrollToIndex({
               index: rsp.index,

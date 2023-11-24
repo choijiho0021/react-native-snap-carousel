@@ -784,6 +784,7 @@
   "pym:naver": "Naver Pay",
   "pym:payco": "Payco",
   "pym:samsung": "Samsung Pay",
+  "pym:applepay": "Apple Pay",
   "pym:ssgpay": "SSG Pay",
   "pym:lpay": "L.Pay",
   "pym:balPurchase": "It will be paid from ROKEBI Cash.",
