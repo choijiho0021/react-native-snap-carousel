@@ -65,7 +65,7 @@ const tutorialImages = esimGlobal
 const styles = StyleSheet.create({
   pagination: {
     position: 'absolute',
-    bottom: 0,
+    top: 0,
     right: 0,
     left: 0,
   },
@@ -73,13 +73,13 @@ const styles = StyleSheet.create({
     width: 20,
     height: 6,
     borderRadius: 3.5,
-    backgroundColor: colors.goldenYellow,
+    backgroundColor: colors.clearBlue,
   },
   inactiveDotStyle: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: colors.white,
+    backgroundColor: colors.lightGrey,
   },
   image: {
     width: '100%',
@@ -224,11 +224,10 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
           onSnapToItem={setActiveSlide}
           sliderWidth={dimensions.width}
         />
-
         <Pagination
           dotsLength={images.length}
           activeDotIndex={activeSlide}
-          dotContainerStyle={{width: 10, height: 15}}
+          dotContainerStyle={{width: 5, height: 15}}
           dotStyle={styles.dotStyle}
           inactiveDotStyle={styles.inactiveDotStyle}
           inactiveDotOpacity={0.4}
