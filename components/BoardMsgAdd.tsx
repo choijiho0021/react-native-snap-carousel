@@ -75,10 +75,10 @@ const styles = StyleSheet.create({
   },
   notiView: {
     flexDirection: 'row',
-    marginBottom: 30,
-    paddingVertical: 15,
+    marginBottom: 8,
+    paddingVertical: 16,
     paddingHorizontal: 20,
-    backgroundColor: colors.whiteTwo,
+    backgroundColor: colors.white,
     alignItems: 'center',
   },
   noti: {
