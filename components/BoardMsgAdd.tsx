@@ -299,7 +299,9 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         {!account.loggedIn && renderContact()}
         <View style={{flex: 1}}>
           <View style={styles.notiView}>
-            <AppText style={styles.noti}>{i18n.t('board:noti')}</AppText>
+            <AppText style={styles.noti}>
+              {i18n.t(account.loggedIn ? 'board:noti' : 'board:noti:notLogin')}
+            </AppText>
           </View>
           <AppTextInput
             style={[
