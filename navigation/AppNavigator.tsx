@@ -330,7 +330,12 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         linkPath: params?.linkPath,
       });
 
-      if (url?.indexOf('product') > -1 && params?.uuid) {
+      if (
+        url?.indexOf('product') > -1 &&
+        params?.uuid &&
+        product.prodList.size > 0 &&
+        product.localOpList.size > 0
+      ) {
         const prod = product.prodList.get(params.uuid);
         const localOp = product.localOpList.get(params.uuid);
 
@@ -387,10 +392,12 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   }, [handleDynamicLink]);
 
   useEffect(() => {
-    dynamicLinks()
-      .getInitialLink()
-      .then((l) => handleDynamicLink(l));
-  }, [handleDynamicLink]);
+    if (product.ready) {
+      dynamicLinks()
+        .getInitialLink()
+        .then((l) => handleDynamicLink(l));
+    }
+  }, [handleDynamicLink, product.ready]);
 
   const setPopupDisabled = useCallback(
     (popUp?: RkbPromotion) => {
