@@ -32,6 +32,9 @@ import AppButton from './AppButton';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
 import AttachmentBox from '@/screens/BoardScreen/AttachmentBox';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   passwordInput: {
@@ -290,7 +293,8 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
         enableOnAndroid
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+        extraScrollHeight={isIOS ? -100 : -300}>
         {!account.loggedIn && renderContact()}
         <View style={{flex: 1}}>
           <View style={styles.notiView}>
@@ -368,7 +372,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
           )}
         </View>
 
-        {Platform.OS === 'ios' ? (
+        {isIOS ? (
           <InputAccessoryView nativeID={inputAccessoryViewID}>
             <AppButton
               style={styles.inputAccessory}
