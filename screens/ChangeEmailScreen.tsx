@@ -155,11 +155,10 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
   }, [actions.account, newEmail, showModal]);
 
   return (
-    <KeyboardAvoidingView
-      style={{flex: 1}}
-      behavior={isIOS ? 'padding' : undefined}
-      keyboardVerticalOffset={isDeviceSize('medium') ? 65 : 90}>
-      <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        style={{flex: 1}}
+        behavior={isIOS ? 'padding' : undefined}>
         <ScreenHeader title={i18n.t('set:changeMail')} />
         <View
           style={{
@@ -206,8 +205,8 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
           onPress={changeEmail}
           type="primary"
         />
-      </SafeAreaView>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 

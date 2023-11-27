@@ -3,8 +3,10 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   findNodeHandle,
   InputAccessoryView,
+  KeyboardAvoidingView,
   Platform,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
@@ -30,6 +32,9 @@ import AppButton from './AppButton';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
 import AttachmentBox from '@/screens/BoardScreen/AttachmentBox';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   passwordInput: {
@@ -59,7 +64,7 @@ const styles = StyleSheet.create({
   confirm: {
     ...appStyles.normal18Text,
     ...appStyles.confirm,
-    marginTop: 30,
+    justifyContent: 'flex-end',
   },
   inputBox: {
     ...appStyles.normal14Text,
@@ -75,10 +80,10 @@ const styles = StyleSheet.create({
   },
   notiView: {
     flexDirection: 'row',
-    marginBottom: 30,
-    paddingVertical: 15,
+    marginBottom: 8,
+    paddingVertical: 16,
     paddingHorizontal: 20,
-    backgroundColor: colors.whiteTwo,
+    backgroundColor: colors.white,
     alignItems: 'center',
   },
   noti: {
@@ -288,18 +293,14 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
         enableOnAndroid
-        enableResetScrollToCoords={false}
-        // resetScrollToCoords={{x: 0, y: 0}}
-        contentContainerStyle={styles.modalInner}
         showsVerticalScrollIndicator={false}
-        extraScrollHeight={extraHeight}
-        innerRef={(ref) => {
-          scrollRef.current = ref;
-        }}>
+        extraScrollHeight={isIOS ? -100 : -300}>
         {!account.loggedIn && renderContact()}
         <View style={{flex: 1}}>
           <View style={styles.notiView}>
-            <AppText style={styles.noti}>{i18n.t('board:noti')}</AppText>
+            <AppText style={styles.noti}>
+              {i18n.t(account.loggedIn ? 'board:noti' : 'board:noti:notLogin')}
+            </AppText>
           </View>
           <AppTextInput
             style={[
@@ -370,22 +371,21 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
             renderPass()
           )}
         </View>
+
+        {isIOS ? (
+          <InputAccessoryView nativeID={inputAccessoryViewID}>
+            <AppButton
+              style={styles.inputAccessory}
+              title={i18n.t('done')}
+              titleStyle={[
+                styles.inputAccessoryText,
+                {color: _.isEmpty(msg) ? colors.white : colors.blue},
+              ]}
+              onPress={() => keybd.current?.blur()}
+            />
+          </InputAccessoryView>
+        ) : null}
       </KeyboardAwareScrollView>
-
-      {Platform.OS === 'ios' ? (
-        <InputAccessoryView nativeID={inputAccessoryViewID}>
-          <AppButton
-            style={styles.inputAccessory}
-            title={i18n.t('done')}
-            titleStyle={[
-              styles.inputAccessoryText,
-              {color: _.isEmpty(msg) ? colors.white : colors.blue},
-            ]}
-            onPress={() => keybd.current?.blur()}
-          />
-        </InputAccessoryView>
-      ) : null}
-
       <AppButton
         style={styles.confirm}
         title={i18n.t('board:new')}
