@@ -3,8 +3,10 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   findNodeHandle,
   InputAccessoryView,
+  KeyboardAvoidingView,
   Platform,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
@@ -59,7 +61,7 @@ const styles = StyleSheet.create({
   confirm: {
     ...appStyles.normal18Text,
     ...appStyles.confirm,
-    marginTop: 30,
+    justifyContent: 'flex-end',
   },
   inputBox: {
     ...appStyles.normal14Text,
@@ -288,14 +290,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
         enableOnAndroid
-        enableResetScrollToCoords={false}
-        // resetScrollToCoords={{x: 0, y: 0}}
-        contentContainerStyle={styles.modalInner}
-        showsVerticalScrollIndicator={false}
-        extraScrollHeight={extraHeight}
-        innerRef={(ref) => {
-          scrollRef.current = ref;
-        }}>
+        showsVerticalScrollIndicator={false}>
         {!account.loggedIn && renderContact()}
         <View style={{flex: 1}}>
           <View style={styles.notiView}>
@@ -372,22 +367,21 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
             renderPass()
           )}
         </View>
+
+        {Platform.OS === 'ios' ? (
+          <InputAccessoryView nativeID={inputAccessoryViewID}>
+            <AppButton
+              style={styles.inputAccessory}
+              title={i18n.t('done')}
+              titleStyle={[
+                styles.inputAccessoryText,
+                {color: _.isEmpty(msg) ? colors.white : colors.blue},
+              ]}
+              onPress={() => keybd.current?.blur()}
+            />
+          </InputAccessoryView>
+        ) : null}
       </KeyboardAwareScrollView>
-
-      {Platform.OS === 'ios' ? (
-        <InputAccessoryView nativeID={inputAccessoryViewID}>
-          <AppButton
-            style={styles.inputAccessory}
-            title={i18n.t('done')}
-            titleStyle={[
-              styles.inputAccessoryText,
-              {color: _.isEmpty(msg) ? colors.white : colors.blue},
-            ]}
-            onPress={() => keybd.current?.blur()}
-          />
-        </InputAccessoryView>
-      ) : null}
-
       <AppButton
         style={styles.confirm}
         title={i18n.t('board:new')}
