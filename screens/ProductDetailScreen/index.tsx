@@ -487,17 +487,18 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     navigation.navigate('RegisterMobile', {goBack: () => navigation.goBack()});
   }, [navigation, resetModalInfo]);
 
-  useEffect(() => {
-    console.log('price : ', price);
-  }, [price]);
-
   const onShare = useCallback(async (link) => {
-    setIsShareDisabled(true);
-
-    await Share.open({
-      title: i18n.t('rcpt:title'),
-      url: link,
-    }).then((r) => setIsShareDisabled(false));
+    try {
+      await Share.open({
+        title: i18n.t('rcpt:title'),
+        url: link,
+      }).then((r) => {
+        setIsShareDisabled(false);
+      });
+    } catch (e) {
+      console.log('onShare fail : ', e);
+      setIsShareDisabled(false);
+    }
   }, []);
 
   const purchaseButtonTab = useCallback(() => {
@@ -512,6 +513,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
                 (r) => r.partner === route?.params?.partnerId,
               );
             const {invite} = promotion;
+            setIsShareDisabled(true);
 
             API.Promotion.buildShareLink({
               uuid: route.params?.uuid,
@@ -523,7 +525,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             }).then((url) => {
               if (url) {
                 // Clipboard.setString(url);
-                if (isShareDisabled) onShare(url);
+                if (!isShareDisabled) onShare(url);
               }
             });
           }}>
@@ -599,29 +601,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       {renderWebView(route.params?.uuid)}
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       {purchaseButtonTab()}
-      {/* {showModal && (
-        <View style={{flex: 1}}>
-          <AppModal visible={showModal}>
-            <View style={styles.countBoxFrame}>
-              <AppText style={appStyles.medium16}>
-                {i18n.t('cart:count')}
-              </AppText>
-              <View>
-                <InputNumber
-                  value={qty}
-                  onChange={(value) =>
-                    onChangeQty(
-                      purchaseItems[0]?.key,
-                      purchaseItems[0]?.orderItemId,
-                      value,
-                    )
-                  }
-                />
-              </View>
-            </View>
-          </AppModal>
-        </View>
-      )} */}
+
       {showModal && (
         <Modal
           transparent
