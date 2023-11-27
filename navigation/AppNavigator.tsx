@@ -345,7 +345,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
               uuid: prod.uuid,
               desc: prod.desc,
               localOpDetails: localOp?.detail,
-              partnerId: params?.partnerId,
+              partnerId: prod?.partnerId,
             },
           });
       } else if (isSupport || Platform.OS === 'ios') {
