@@ -221,6 +221,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     () => (route.params.item ? [route.params.item] : []),
     [route.params.item],
   );
+
+  const [isShareDisabled, setIsShareDisabled] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [showButton, setShowButton] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -483,17 +485,19 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     Analytics.trackEvent('Click_regCard');
 
     navigation.navigate('RegisterMobile', {goBack: () => navigation.goBack()});
-  }, [navigation]);
+  }, [navigation, resetModalInfo]);
 
   useEffect(() => {
     console.log('price : ', price);
   }, [price]);
 
   const onShare = useCallback(async (link) => {
+    setIsShareDisabled(true);
+
     await Share.open({
       title: i18n.t('rcpt:title'),
       url: link,
-    });
+    }).then((r) => setIsShareDisabled(false));
   }, []);
 
   const purchaseButtonTab = useCallback(() => {
@@ -519,7 +523,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             }).then((url) => {
               if (url) {
                 // Clipboard.setString(url);
-                onShare(url);
+                if (isShareDisabled) onShare(url);
               }
             });
           }}>
@@ -538,6 +542,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       </View>
     );
   }, [
+    isShareDisabled,
     onShare,
     product.prodByCountry,
     promotion,
