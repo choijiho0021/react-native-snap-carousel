@@ -198,11 +198,6 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
   const [visible, setVisible] = useState<string>('');
 
   const validateTime = useCallback(() => {
-    if (!params?.expireTime) {
-      console.log('@@@ expireTime undefined');
-      return false;
-    }
-
     const remainDay =
       params?.expireTime.diff(moment(), 'seconds') / (24 * 60 * 60);
 
@@ -232,7 +227,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
     }
 
     return true;
-  }, [params?.expireTime, usagePeriod?.format, usagePeriod?.period]);
+  }, [params, usagePeriod?.format, usagePeriod?.period]);
 
   const onPurchase = useCallback(() => {
     if (isPressed) {
@@ -273,12 +268,12 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
 
   const onPressBtnPurchase = useCallback(() => {
     // 충전하기만 시간 체크
-    if (params?.type === 'addOn') {
+    if (params?.type === 'addOn' && params?.expireTime) {
       if (validateTime()) {
         onPurchase();
       }
     } else onPurchase();
-  }, [onPurchase, params?.type, validateTime]);
+  }, [onPurchase, params?.expireTime, params?.type, validateTime]);
 
   const renderModal = useCallback(() => {
     const isWarning = visible === 'esim:charge:time:warning';
