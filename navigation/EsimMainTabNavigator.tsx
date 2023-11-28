@@ -354,6 +354,11 @@ function EsimStackComponent() {
         options={{headerShown: false}}
       />
       <EsimStack.Screen
+        name="Cart"
+        component={CartScreen}
+        options={{headerShown: false}}
+      />
+      <EsimStack.Screen
         name="ProductDetailOp"
         component={ProductDetailOpScreen}
         options={{headerShown: false}}
