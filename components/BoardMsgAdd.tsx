@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   },
   passwordBox: {
     flexDirection: 'row',
-    marginTop: 30,
+    marginVertical: 30,
     marginHorizontal: 20,
   },
   inputAccessoryText: {
