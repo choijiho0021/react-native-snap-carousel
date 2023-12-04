@@ -182,11 +182,10 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
 
   const move = useCallback(() => {
     const {params} = props?.route;
-    const {stack, screen} = params || {};
-
+    const {stack, screen, navigateParams} = params || {};
     if (stack && screen) {
       navigation.popToTop();
-      navigation.navigate(stack, {screen});
+      navigation.navigate(stack, {screen, params: navigateParams});
     } else {
       navigation.navigate('Home');
     }

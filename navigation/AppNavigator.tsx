@@ -314,12 +314,58 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     [store],
   );
 
+  const getNaviParams = useCallback(
+    (
+      url?: string,
+      params?: urlParamObj,
+    ): {stack?: string; screen?: string; naviParams?: any} => {
+      const canNavigate =
+        params?.hasOwnProperty('stack') && params?.hasOwnProperty('screen');
+
+      console.log('aaaaa params', params);
+      if (
+        url?.indexOf('product') > -1 &&
+        params?.uuid &&
+        product.prodList.size > 0 &&
+        product.localOpList.size > 0
+      ) {
+        const prod = product.prodList.get(params.uuid);
+        const localOp = product.localOpList.get(params.uuid);
+
+        console.log('aaaaa prod', prod);
+
+        if (prod)
+          return {
+            stack: 'HomeStack',
+            screen: 'ProductDetail',
+            naviParams: {
+              title: prod.name,
+              item: API.Product.toPurchaseItem(prod),
+              uuid: prod.uuid,
+              desc: prod.desc,
+              localOpDetails: localOp?.detail,
+              partnerId: prod?.partnerId,
+            },
+          };
+      }
+      if (canNavigate) {
+        console.log('aaaaa canNavigate', canNavigate);
+        return {
+          stack: `${params?.stack}Stack`,
+          screen: params?.screen,
+          naviParams: {},
+        };
+      }
+
+      return {stack: undefined, screen: undefined, naviParams: undefined};
+    },
+    [product.localOpList, product.prodList],
+  );
+
   const handleDynamicLink = useCallback(
     async (dLink: FirebaseDynamicLinksTypes.DynamicLink | null) => {
       const url = dLink?.url;
       const params: urlParamObj = utils.getParam(url);
-      const canNavigate =
-        params.hasOwnProperty('stack') && params.hasOwnProperty('screen');
       const isSupport = await getIsSupport();
       const isFirst = await checkFistLaunch();
 
@@ -330,59 +376,29 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         linkPath: params?.linkPath,
       });
 
-      if (
-        url?.indexOf('product') > -1 &&
-        params?.uuid &&
-        product.prodList.size > 0 &&
-        product.localOpList.size > 0
-      ) {
-        const prod = product.prodList.get(params.uuid);
-        const localOp = product.localOpList.get(params.uuid);
+      const {stack, screen, naviParams} = getNaviParams(url, params);
 
-        if (prod)
-          refNavigate({
-            stack: 'HomeStack',
-            screen: 'ProductDetail',
-            initial: false,
-            params: {
-              title: prod.name,
-              item: API.Product.toPurchaseItem(prod),
-              uuid: prod.uuid,
-              desc: prod.desc,
-              localOpDetails: localOp?.detail,
-              partnerId: prod?.partnerId,
-            },
-          });
-      } else if (isSupport || Platform.OS === 'ios') {
+      if (isSupport || Platform.OS === 'ios') {
         if (isFirst) {
           refNavigate({
             stack: `HomeStack`,
             screen: 'Tutorial',
             initial: false,
-            params: canNavigate
-              ? {stack: `${params?.stack}Stack`, screen: params?.screen}
-              : undefined,
+            params: {stack, screen, naviParams},
           });
-        } else if (canNavigate && navigationRef?.current) {
+        } else if (stack && screen && navigationRef?.current) {
           refNavigate({
-            stack: `${params?.stack}Stack`,
-            screen: params?.screen,
+            stack,
+            screen,
             initial: false,
+            params: naviParams,
           });
         } else if (url) {
           gift(url, params);
         }
       }
     },
-    [
-      getIsSupport,
-      gift,
-      linkSave,
-      navigationRef,
-      product.localOpList,
-      product.prodList,
-      refNavigate,
-    ],
+    [getIsSupport, getNaviParams, gift, linkSave, navigationRef, refNavigate],
   );
 
   useEffect(() => {
