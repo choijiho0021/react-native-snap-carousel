@@ -151,6 +151,16 @@ export type RkbPriceInfo = Partial<RkbProdByCountry> & {
 
 export type ProdDataType = {title: string; data: RkbProduct[]};
 
+export type PaymentRule = {
+  timestamp_prod: string;
+  timestamp_dev: string;
+  inicis_enabled: string;
+  maintenance: {
+    state: string;
+    message?: string;
+  };
+};
+
 export interface ProductModelState {
   prodList: ImmutableMap<string, RkbProduct>; // uuid -> RkbProduct
   localOpList: ImmutableMap<string, RkbLocalOp>;
@@ -162,15 +172,7 @@ export interface ProductModelState {
   priceInfo: ImmutableMap<string, RkbPriceInfo[][]>;
   prodByLocalOp: ImmutableMap<string, string[]>;
   prodCountry: string[];
-  rule: {
-    timestamp_prod: string;
-    timestamp_dev: string;
-    inicis_enabled: string;
-    maintenance: {
-      state: string;
-      message?: string;
-    };
-  };
+  rule: PaymentRule;
   devList: string[];
 }
 
