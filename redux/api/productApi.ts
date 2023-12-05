@@ -52,6 +52,10 @@ const flagColor = {
     backgroundColor: colors.lightYellow,
     fontColor: colors.yellowSecond,
   },
+  fiveG: {
+    backgroundColor: colors.purplyBlue,
+    fontColor: colors.errorText,
+  },
 };
 
 export const getPromoFlagColor = (key: string) => {
