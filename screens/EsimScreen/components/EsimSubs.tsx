@@ -625,6 +625,8 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               navigation.navigate('ProductDetail', {
                 title: prod.name,
                 item: API.Product.toPurchaseItem(prod),
+                price: prod.price,
+                listPrice: prod.listPrice,
                 uuid: prod.uuid,
                 desc: prod.desc,
               });

@@ -623,6 +623,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           partnerId: route?.params?.partnerId,
           uuid: route?.params?.uuid,
           img: route?.params?.img,
+          listPrice: route.params?.listPrice,
+          price: route.params?.price,
         }}
       />
 

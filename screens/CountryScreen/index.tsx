@@ -127,6 +127,8 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         img: imageUrl,
         uuid: prod.uuid,
         desc: prod.desc,
+        price: prod.price,
+        listPrice: prod.listPrice,
         localOpDetails,
         partnerId,
       }),
