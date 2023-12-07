@@ -286,7 +286,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         let updateStatus = true;
 
         if (method === MESSAGE) {
-          result = await Linking.openURL(`sms:${SMSDivider}body=${body}`);
+          result = await Linking.openURL(`sms:${SMSDivider()}body=${body}`);
         } else {
           // kakao
           const resp = await KakaoSDK.KakaoShareLink.sendCustom({

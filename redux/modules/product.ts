@@ -93,6 +93,10 @@ const getProdOfPartner = createAsyncThunk(
   },
 );
 
+export const getDiscountRate = (finalPrice: number, listPrice: number) => {
+  return Math.floor(((listPrice - finalPrice) / listPrice) * 100);
+};
+
 const init = createAsyncThunk(
   'product/init',
   async (reloadAll: boolean, {dispatch}) => {
