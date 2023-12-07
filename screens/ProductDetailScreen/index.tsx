@@ -619,7 +619,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           setShowShareModal(false);
         }}
         purchaseItem={purchaseItems[0]}
-        param={{
+        params={{
           partnerId: route?.params?.partnerId,
           uuid: route?.params?.uuid,
           img: route?.params?.img,

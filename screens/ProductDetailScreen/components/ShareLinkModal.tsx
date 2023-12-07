@@ -24,6 +24,7 @@ import KakaoSDK from '@/components/NativeModule/KakaoSDK';
 import {ProductModelState, getDiscountRate} from '@/redux/modules/product';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
+import {shareWebViewLink} from '@/redux/api/promotionApi';
 
 const {isProduction} = Env.get();
 
@@ -77,7 +78,7 @@ type ShareLinkModalProps = {
   visible: boolean;
   onClose: () => void;
   purchaseItem: PurchaseItem;
-  param: {
+  params: {
     partnerId?: string;
     uuid?: string;
     img?: string;
@@ -90,15 +91,19 @@ type ShareLinkModalProps = {
 const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
   visible,
   onClose,
-  param,
+  params,
   purchaseItem,
   product,
 }) => {
   // uuid 체크하는거 넣어줘야하나?
   const {partnerId, uuid, img, price, listPrice} = useMemo(
-    () => param,
-    [param],
+    () => params,
+    [params],
   );
+
+  useEffect(() => {
+    console.log('@@@ params : ', params);
+  }, [params]);
   const [isShareDisabled, setIsShareDisabled] = useState(false);
 
   const onShare = useCallback(async (link) => {
@@ -126,23 +131,8 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
 
   const onPressShareKakao = useCallback(
     async (country: RkbProdByCountry, imgUrl: string, dynamicLink: string) => {
-      // 추가로 필요한 정보가 있다.
-      // ex.
-      // 제목 : 호주 무제한 2일
-      // 설명 : 터치 한 번으로 eSIM 구매부터 사용까지 뚝딱😉
-
-      console.log(
-        '@@@ 결과나 확인하기 카카오톡에서 쓸 링크 : ',
-        dynamicLink.replace('https://rokebi.page.link/', ''),
-      );
-
-      console.log('purchaseItem : ', purchaseItem);
-
       const resp = await KakaoSDK.KakaoShareLink.sendCustom({
-        // kakao template 상용: 67017, TB: 70053
-
-        // 상용 카카오톡 템플릿도 만들어야함
-        templateId: isProduction ? 101518 : 101630,
+        templateId: isProduction ? 101678 : 101630,
         templateArgs: [
           {
             key: 'uuid',
@@ -179,6 +169,10 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
           {
             key: 'dynamicLink',
             value: dynamicLink.replace('https://rokebi.page.link/', ''),
+          },
+          {
+            key: 'webLink',
+            value: shareWebViewLink(uuid, country, false, false),
           },
         ],
       });
@@ -258,12 +252,7 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
                       if (type === 'more') {
                         onPressShareMore(url);
                       } else if (type === 'kakao') {
-                        onPressShareKakao(
-                          selectedCountryData,
-                          uuid,
-                          imageUrl,
-                          url,
-                        );
+                        onPressShareKakao(selectedCountryData, imageUrl, url);
                       } else if (type === 'sms') {
                         onPressShareMessage(url);
                       }
