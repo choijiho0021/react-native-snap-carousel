@@ -571,6 +571,10 @@
   "cart:systemError": "시스템 사정으로 서비스가 원활하지 않습니다. \n잠시 후 다시 시도 하십시요.",
   "cart:unpublishedError": "현재 판매 중지된 상품이 포함된 주문입니다.\n확인 버튼을 눌러 상품 정보 업데이트 후 다시 주문 부탁드립니다.😊",
 
+  "cart:share:kakao": "카카오",
+  "cart:share:message": "메세지",
+  "cart:share:more": "더보기",
+
   "usim:toRokebiCash": "전환금액",
   "usim:balance": "로깨비캐시",
   "usim:usageAmount": "사용량",
