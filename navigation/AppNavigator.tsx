@@ -322,7 +322,6 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       const canNavigate =
         params?.hasOwnProperty('stack') && params?.hasOwnProperty('screen');
 
-      console.log('aaaaa params', params);
       if (
         url?.indexOf('product') > -1 &&
         params?.uuid &&
@@ -331,8 +330,6 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       ) {
         const prod = product.prodList.get(params.uuid);
         const localOp = product.localOpList.get(params.uuid);
-
-        console.log('aaaaa prod', prod);
 
         if (prod)
           return {
@@ -349,7 +346,6 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
           };
       }
       if (canNavigate) {
-        console.log('aaaaa canNavigate', canNavigate);
         return {
           stack: `${params?.stack}Stack`,
           screen: params?.screen,

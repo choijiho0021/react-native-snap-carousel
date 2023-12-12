@@ -35,6 +35,8 @@ const category = {
   multi: '67',
 };
 
+type PromoFlag = 'sizeup' | 'doubleSizeup' | 'tripleSizeup' | 'hot' | 'fiveG';
+
 const flagColor = {
   hot: {
     backgroundColor: colors.veryLightPink,
@@ -53,8 +55,8 @@ const flagColor = {
     fontColor: colors.yellowSecond,
   },
   fiveG: {
-    backgroundColor: colors.purplyBlue,
-    fontColor: colors.errorText,
+    // backgroundColor: colors.purplyBlue,
+    fontColor: colors.purplyBlue,
   },
 };
 
@@ -65,6 +67,34 @@ export const getPromoFlagColor = (key: string) => {
       fontColor: colors.tomato,
     }
   );
+};
+
+export const promoFlagSort = (arr: string[]) => {
+  const promoFlags: PromoFlag[] = [];
+
+  arr.forEach((elm) => {
+    if (
+      ['sizeup', 'doubleSizeup', 'tripleSizeup', 'hot', 'fiveG'].includes(elm)
+    )
+      promoFlags.push(elm as PromoFlag);
+  });
+
+  // 정렬 규칙을 정의하는 비교 함수
+  const customComparator = (a: PromoFlag, b: PromoFlag): number => {
+    const order = {
+      sizeup: 1,
+      doubleSizeup: 2,
+      tripleSizeup: 3,
+      hot: 4,
+      fiveG: 5,
+    };
+
+    const orderA = order[a] ?? 0;
+
+    return orderA - order[b];
+  };
+
+  return promoFlags.sort(customComparator);
 };
 
 type DrupalProduct = {
@@ -84,6 +114,7 @@ type DrupalProduct = {
   field_weight: string;
   field_desc: string;
   sku: string;
+  field_network: string;
 };
 
 export type CurrencyCode = 'KRW' | 'USD';
@@ -117,6 +148,7 @@ export type RkbProduct = {
   pricePerDay?: Currency;
   cntry?: Set<string>;
   imageUrl?: string;
+  network?: string;
 };
 
 const toPurchaseItem = (prod?: RkbProduct) => {
@@ -167,6 +199,7 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
           desc: item.field_desc
             ? parseJson(item.field_desc.replace(/&quot;/g, '"'))
             : {},
+          network: item.field_network,
         })),
     );
   }

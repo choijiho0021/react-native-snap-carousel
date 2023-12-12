@@ -4048,6 +4048,33 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  fiveG: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M11.626 8.768c.197-.27.371-.528.508-.766 2.384-4.13-.074-6.954-.074-6.954S8.384.33 6 4.46c-.144.25-.278.505-.404.763C4.574 5.306 2.544 6.008 2 8.25l2.42.17c-.123.45-.212.832-.272 1.11a.768.768 0 0 0 .188.68l-.509.603a.203.203 0 0 0 .032.293c.34.261 1.122.849 1.715 1.191.592.342 1.492.726 1.888.89.108.044.23-.01.27-.12l.272-.756a.792.792 0 0 0 .678-.225c.195-.196.452-.458.74-.76l1.34 1.983c1.62-1.545 1.286-3.576.864-4.541zM5.658 14.22c-.448.776-1.815 1.06-1.815 1.06s-.438-1.325.01-2.102c.449-.776 1.013-.82 1.511-.533.499.287.742.799.294 1.575zM9.566 5.38a1 1 0 1 0 1-1.732 1 1 0 0 0-1 1.732z"
+        fill="url(#j6pb3bswia)"
+      />
+      <Defs>
+        <LinearGradient
+          id="j6pb3bswia"
+          x1="10.87"
+          y1=".979"
+          x2="4.819"
+          y2="16.08"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#5B16EF" />
+          <Stop offset="1" stopColor="#2A7FF6" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
 };
 
 export default pressIcons;
