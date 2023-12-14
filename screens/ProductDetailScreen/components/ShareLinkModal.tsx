@@ -152,11 +152,12 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
           },
           {
             key: 'discountPrice',
-            value: price?.value.toString() || '0',
+            value: price?.value.toString(),
           },
           {
             key: 'discount',
-            value: getDiscountRate(price?.value, listPrice?.value).toString(),
+            value:
+              getDiscountRate(price?.value, listPrice?.value).toString() || '0',
           },
           {
             key: 'title',
@@ -186,8 +187,12 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
   const onPressShareMessage = useCallback(
     async (dynamicLink: string) => {
       // encode 필요한가
+      // const text = encodeURIComponent(
+      //   `${dynamicLink}\n[로밍도깨비 eSIM] ${purchaseItem?.title}상품어때요?\n\n터치 한 번으로 eSIM 구매부터 사용까지 뚝딱!\n로밍도깨비 앱에서 더 다양한 상품을 만나보세요 😉`,
+      // );
+
       const text = encodeURIComponent(
-        `${dynamicLink}\n[로밍도깨비 eSIM] ${purchaseItem?.title}상품어때요?\n\n터치 한 번으로 eSIM 구매부터 사용까지 뚝딱!\n로밍도깨비 앱에서 더 다양한 상품을 만나보세요 😉`,
+        `${dynamicLink}\n이번 여행은 로밍도깨비 ${purchaseItem?.title} eSIM 어때요?`,
       );
 
       const result = await Linking.openURL(`sms:${SMSDivider()}body=${text}`);
