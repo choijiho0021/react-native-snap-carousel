@@ -146,7 +146,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
           prodType={key}
           onTop={onTop}
           onPress={onPress}
-          isCharge={false}
+          isCharge
         />
       ),
     [onPress, onTop, prodData],
