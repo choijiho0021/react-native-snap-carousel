@@ -22,7 +22,6 @@ import {
   getTrackingStatus,
   TrackingStatus,
 } from 'react-native-tracking-transparency';
-import Share from 'react-native-share';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
@@ -45,14 +44,14 @@ import {
 import AppCartButton from '@/components/AppCartButton';
 import ChatTalk from '@/components/ChatTalk';
 import {API} from '@/redux/api';
-import {PromotionModelState} from '@/redux/modules/promotion';
-import {Currency, RkbProdByCountry} from '@/redux/api/productApi';
+import {Currency} from '@/redux/api/productApi';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import InputNumber from '@/components/InputNumber';
 import utils from '@/redux/api/utils';
 import AppPrice from '@/components/AppPrice';
 import {ProductModelState} from '@/redux/modules/product';
+import ShareLinkModal from './components/ShareLinkModal';
 
 const {esimGlobal, webViewHost, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -74,19 +73,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal18Text,
     textAlign: 'center',
     color: colors.white,
-  },
-  regCard: {
-    ...appStyles.normal18Text,
-    textAlign: 'center',
-    textAlignVertical: 'bottom',
-    width: '100%',
-  },
-  regCardView: {
-    width: '100%',
-    height: 52,
-    justifyContent: 'center',
-    borderTopWidth: 1,
-    borderColor: colors.lightGrey,
   },
   header: {
     flexDirection: 'row',
@@ -194,7 +180,6 @@ type ProductDetailScreenProps = {
 
   account: AccountModelState;
   cart: CartModelState;
-  promotion: PromotionModelState;
   product: ProductModelState;
   action: {
     cart: CartAction;
@@ -207,8 +192,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   route,
   action,
   account,
-  promotion,
-  product,
   cart,
 }) => {
   const [showSnackBar, setShowSnackBar] = useState<{
@@ -222,10 +205,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     [route.params.item],
   );
 
-  const [isShareDisabled, setIsShareDisabled] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [showButton, setShowButton] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [qty, setQty] = useState(1);
   const [price, setPrice] = useState<Currency>();
 
@@ -487,20 +470,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     navigation.navigate('RegisterMobile', {goBack: () => navigation.goBack()});
   }, [navigation, resetModalInfo]);
 
-  const onShare = useCallback(async (link) => {
-    try {
-      await Share.open({
-        title: i18n.t('rcpt:title'),
-        url: link,
-      }).then((r) => {
-        setIsShareDisabled(false);
-      });
-    } catch (e) {
-      console.log('onShare fail : ', e);
-      setIsShareDisabled(false);
-    }
-  }, []);
-
   const purchaseButtonTab = useCallback(() => {
     if (!showButton || showModal) return <></>;
 
@@ -508,26 +477,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       <View style={styles.buttonBox}>
         <Pressable
           onPress={() => {
-            const selectedCountryData: RkbProdByCountry =
-              product.prodByCountry.find(
-                (r) => r.partner === route?.params?.partnerId,
-              );
-            const {invite} = promotion;
-            setIsShareDisabled(true);
+            console.log('@@@@ images 조회 가능한 지 확인하기 : ');
+            console.log('purchaseItems[0]. images : ', purchaseItems[0]);
 
-            API.Promotion.buildShareLink({
-              uuid: route.params?.uuid,
-              prodName: purchaseItems[0]?.title,
-              imageUrl: invite?.rule?.share, // ? rule은 뭐지
-              promoFlag: purchaseItems[0]?.promoFlag,
-              country: selectedCountryData,
-              isShort: true,
-            }).then((url) => {
-              if (url) {
-                // Clipboard.setString(url);
-                if (!isShareDisabled) onShare(url);
-              }
-            });
+            setShowShareModal(true);
           }}>
           <AppIcon name="iconShare2" style={styles.shareIconBox} />
         </Pressable>
@@ -543,17 +496,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         />
       </View>
     );
-  }, [
-    isShareDisabled,
-    onShare,
-    product.prodByCountry,
-    promotion,
-    purchaseItems,
-    route.params?.partnerId,
-    route.params?.uuid,
-    showButton,
-    showModal,
-  ]);
+  }, [purchaseItems, showButton, showModal]);
 
   const purchaseNumberTab = useCallback(() => {
     if (!showButton) return <></>;
@@ -669,6 +612,22 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           <SafeAreaView style={{backgroundColor: 'white'}} />
         </Modal>
       )}
+
+      <ShareLinkModal
+        visible={showShareModal}
+        onClose={() => {
+          setShowShareModal(false);
+        }}
+        purchaseItem={purchaseItems[0]}
+        params={{
+          partnerId: route?.params?.partnerId,
+          uuid: route?.params?.uuid,
+          img: route?.params?.img,
+          listPrice: route.params?.listPrice,
+          price: route.params?.price,
+        }}
+      />
+
       <ChatTalk visible bottom={isIOS ? 100 : 70} />
       <AppSnackBar
         visible={showSnackBar.visible}
@@ -683,11 +642,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 };
 
 export default connect(
-  ({account, cart, promotion, product}: RootState) => ({
+  ({account, cart}: RootState) => ({
     account,
     cart,
-    promotion,
-    product,
   }),
   (dispatch) => ({
     action: {

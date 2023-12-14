@@ -9,7 +9,7 @@ import {RkbInfo} from '@/redux/api/pageApi';
 import {BoardMsgStatus} from '@/redux/api/boardApi';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
-import {RkbAddOnProd, RkbProduct} from '@/redux/api/productApi';
+import {Currency, RkbAddOnProd, RkbProduct} from '@/redux/api/productApi';
 import {RkbReceipt} from '@/screens/ReceiptScreen';
 import {GuideOption} from '@/screens/UserGuideScreen/GuideHomeScreen';
 import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
@@ -89,6 +89,8 @@ export type HomeStackParamList = {
     localOpDetails?: string;
     partnerId?: string;
     desc?: Record<string, string>;
+    price?: Currency;
+    listPrice?: Currency;
   };
   ProductDetailOp: {
     title: string;

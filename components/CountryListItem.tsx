@@ -8,6 +8,7 @@ import i18n from '@/utils/i18n';
 import AppPrice from '@/components/AppPrice';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
+import {getDiscountRate} from '@/redux/modules/product';
 
 const styles = StyleSheet.create({
   card: {
@@ -204,12 +205,7 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
                       color: colors.redError,
                     },
                   ]}>
-                  {Math.floor(
-                    ((item.listPrice?.value - item.price.value) /
-                      item.listPrice?.value) *
-                      100,
-                  )}
-                  %
+                  {getDiscountRate(item?.price?.value, item?.listPrice?.value)}%
                 </AppText>
               </View>
             )}
