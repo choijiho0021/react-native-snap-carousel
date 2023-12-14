@@ -477,9 +477,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       <View style={styles.buttonBox}>
         <Pressable
           onPress={() => {
-            console.log('@@@@ images 조회 가능한 지 확인하기 : ');
-            console.log('purchaseItems[0]. images : ', purchaseItems[0]);
-
             setShowShareModal(true);
           }}>
           <AppIcon name="iconShare2" style={styles.shareIconBox} />
@@ -496,7 +493,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         />
       </View>
     );
-  }, [purchaseItems, showButton, showModal]);
+  }, [showButton, showModal]);
 
   const purchaseNumberTab = useCallback(() => {
     if (!showButton) return <></>;
@@ -556,57 +553,64 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               resetModalInfo();
               setShowModal(false);
             }}
-            style={styles.modalContainer}>
-            <Pressable style={{backgroundColor: colors.white}}>
-              <View style={styles.modalFrame}>
-                <Pressable
-                  onPress={() => {
-                    setShowModal(false);
-                  }}>
-                  <View style={styles.headerFrame}>
-                    <Image
-                      style={{width: 46, height: 10}}
-                      source={require('@/assets/images/esim/grabber.png')}
-                      resizeMode="stretch"
-                    />
+            style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.3)'}}
+            // style={styles.modalContainer}
+          >
+            <View style={styles.modalContainer}>
+              <Pressable style={{backgroundColor: colors.white}}>
+                <View style={styles.modalFrame}>
+                  <Pressable
+                    onPress={() => {
+                      setShowModal(false);
+                    }}>
+                    <View style={styles.headerFrame}>
+                      <Image
+                        style={{width: 46, height: 10}}
+                        source={require('@/assets/images/esim/grabber.png')}
+                        resizeMode="stretch"
+                      />
+                    </View>
+                  </Pressable>
+                  <View style={styles.countBoxFrame}>
+                    <AppText style={appStyles.medium16}>
+                      {i18n.t('cart:count')}
+                    </AppText>
+                    <View>
+                      <InputNumber
+                        value={qty}
+                        fontStyle={appStyles.bold16Text}
+                        boxStyle={{width: 60}}
+                        boldIcon
+                        onChange={(value) => onChangeQty(value)}
+                      />
+                    </View>
                   </View>
-                </Pressable>
-                <View style={styles.countBoxFrame}>
-                  <AppText style={appStyles.medium16}>
-                    {i18n.t('cart:count')}
-                  </AppText>
-                  <View>
-                    <InputNumber
-                      value={qty}
-                      fontStyle={appStyles.bold16Text}
-                      boxStyle={{width: 60}}
-                      boldIcon
-                      onChange={(value) => onChangeQty(value)}
+                  <View style={styles.priceBoxFrame}>
+                    <AppText style={styles.priceText}>
+                      {i18n.t('cart:proudctTotalPrice')}
+                    </AppText>
+                    <AppPrice
+                      price={utils.toCurrency(
+                        price?.value || 0,
+                        price?.currency,
+                      )}
+                      balanceStyle={styles.priceValueText}
+                      currencyStyle={styles.priceValueText}
+                      // style={styles.priceValueText}
                     />
-                  </View>
-                </View>
-                <View style={styles.priceBoxFrame}>
-                  <AppText style={styles.priceText}>
-                    {i18n.t('cart:proudctTotalPrice')}
-                  </AppText>
-                  <AppPrice
-                    price={utils.toCurrency(price?.value || 0, price?.currency)}
-                    balanceStyle={styles.priceValueText}
-                    currencyStyle={styles.priceValueText}
-                    // style={styles.priceValueText}
-                  />
 
-                  {/* <AppText
+                    {/* <AppText
                     style={
                       styles.priceValueText
                       // eslint-disable-next-line react-native/no-raw-text
                     }>
                       {`${price?.value} ${i18n.t(price?.currency)}`}
                       </AppText> */}
+                  </View>
                 </View>
-              </View>
-              {purchaseNumberTab()}
-            </Pressable>
+                {purchaseNumberTab()}
+              </Pressable>
+            </View>
           </Pressable>
 
           <SafeAreaView style={{backgroundColor: 'white'}} />
