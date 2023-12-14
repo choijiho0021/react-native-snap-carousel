@@ -30,7 +30,7 @@ import {appStyles} from '@/constants/Styles';
 import {retrieveData, storeData, utils} from '@/utils/utils';
 import {windowWidth} from '@/constants/SliderEntry.style';
 import EsimModal from './EsimScreen/components/EsimModal';
-import {getPromoFlagColor} from '@/redux/api/productApi';
+import {getPromoFlagColor, promoFlagSort} from '@/redux/api/productApi';
 import SplitText from '@/components/SplitText';
 import Triangle from '@/components/Triangle';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
 export const renderPromoFlag = (flags: string[], isStore: boolean) => {
   return (
     <Fragment>
-      {flags
+      {promoFlagSort(flags)
         .filter((elm) => elm !== 'hot')
         .map((elm) => {
           const badgeColor = getPromoFlagColor(elm);
@@ -225,14 +225,19 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => {
                   marginRight: 8,
                 },
               ]}>
-              <AppText
-                key="name"
-                style={[
-                  styles.badgeText,
-                  {color: badgeColor.fontColor, top: -1},
-                ]}>
-                {i18n.t(elm)}
-              </AppText>
+              <View style={{flexDirection: 'row'}}>
+                {elm === 'fiveG' && (
+                  <AppSvgIcon name="fiveG" style={{justifyContent: 'center'}} />
+                )}
+                <AppText
+                  key="name"
+                  style={[
+                    styles.badgeText,
+                    {color: badgeColor.fontColor, top: -1},
+                  ]}>
+                  {i18n.t(elm)}
+                </AppText>
+              </View>
             </View>
           );
         })}

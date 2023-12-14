@@ -87,10 +87,14 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
 
   const prodData = useMemo(() => {
     if (mainSubs?.localOpId) {
-      return makeProdData(prodList, prodByLocalOp, [mainSubs?.localOpId]);
+      return makeProdData(
+        prodList,
+        prodByLocalOp,
+        [mainSubs?.localOpId].concat(mainSubs?.extLocalOps || []),
+      );
     }
     return [];
-  }, [mainSubs?.localOpId, prodByLocalOp, prodList]);
+  }, [mainSubs.extLocalOps, mainSubs?.localOpId, prodByLocalOp, prodList]);
 
   useEffect(() => {
     if (mainSubs?.localOpId) {
@@ -142,7 +146,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
           prodType={key}
           onTop={onTop}
           onPress={onPress}
-          isCharge={false}
+          isCharge
         />
       ),
     [onPress, onTop, prodData],
