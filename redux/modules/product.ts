@@ -118,7 +118,8 @@ const init = createAsyncThunk(
     await dispatch(getLocalOp(reload));
     await dispatch(getProdCountry(reload));
     await dispatch(getProductByCountry(reload));
-    await dispatch(getAllProduct(false));
+
+    await dispatch(getAllProduct(reload));
 
     await dispatch(PromotionActions.getPromotion(reload));
     await dispatch(PromotionActions.getGiftBgImages(reload));
