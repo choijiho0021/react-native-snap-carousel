@@ -118,6 +118,7 @@ const init = createAsyncThunk(
     await dispatch(getLocalOp(reload));
     await dispatch(getProdCountry(reload));
     await dispatch(getProductByCountry(reload));
+    await dispatch(getAllProduct(false));
 
     await dispatch(PromotionActions.getPromotion(reload));
     await dispatch(PromotionActions.getGiftBgImages(reload));
@@ -347,7 +348,8 @@ const slice = createSlice({
     });
 
     builder.addCase(init.fulfilled, (state) => {
-      state.ready = state.prodByCountry.length !== 0;
+      state.ready =
+        state.prodByCountry.length !== 0 && state.prodList?.size !== 0;
     });
 
     builder.addCase(getPaymentRule.fulfilled, (state, {payload}) => {
