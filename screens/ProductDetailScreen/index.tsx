@@ -1,9 +1,10 @@
 /* eslint-disable no-plusplus */
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useState, useEffect, useCallback, useMemo} from 'react';
+import React, {useState, useEffect, useCallback, useMemo, useRef} from 'react';
 import Clipboard from '@react-native-community/clipboard';
 import {
+  AppState,
   Image,
   Modal,
   Platform,
@@ -201,8 +202,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [disabled, setDisabled] = useState(false);
   const [status, setStatus] = useState<TrackingStatus>();
   const purchaseItems = useMemo(
-    () => (route.params.item ? [route.params.item] : []),
-    [route.params.item],
+    () => (route.params?.item ? [route.params.item] : []),
+    [route.params?.item],
   );
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -210,6 +211,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [showModal, setShowModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [qty, setQty] = useState(1);
+  const appState = useRef('unknown');
   const [price, setPrice] = useState<Currency>();
 
   useEffect(() => {
@@ -239,10 +241,26 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     onChangeQty(1);
   }, [onChangeQty]);
 
+  useEffect(() => {
+    // EsimScreen 에서만 getSubs 초기화
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (['inactive', 'background'].includes(nextAppState)) {
+        console.log('App has background');
+        setShowShareModal(false);
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
       const [key, value] = event.nativeEvent.data.split(',');
-      const k = route.params.item?.key;
+      const k = route.params?.item?.key;
 
       switch (key) {
         case 'showButton':
@@ -415,7 +433,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     purchaseItems,
     qty,
     resetModalInfo,
-    route.params.item?.key,
+    route.params?.item?.key,
     soldOut,
     status,
   ]);

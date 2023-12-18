@@ -112,18 +112,15 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
         title: i18n.t('rcpt:title'),
         url: link,
       }).then((r) => {
-        setIsShareDisabled(false);
+        console.log('onShare success ');
       });
     } catch (e) {
       console.log('onShare fail : ', e);
-      setIsShareDisabled(false);
     }
   }, []);
 
   const onPressShareMore = useCallback(
     (shareLink) => {
-      setIsShareDisabled(true);
-
       if (!isShareDisabled && shareLink) onShare(shareLink);
     },
     [isShareDisabled, onShare],
@@ -237,6 +234,8 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
                 <AppSvgIcon
                   key="closeModal"
                   onPress={() => {
+                    setIsShareDisabled(true);
+
                     const selectedCountryData: RkbProdByCountry =
                       product.prodByCountry.find(
                         (r) => r.partner === partnerId,
@@ -254,6 +253,8 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
                       country: selectedCountryData,
                       isShort: true,
                     }).then((url) => {
+                      setIsShareDisabled(false);
+
                       if (type === 'more') {
                         onPressShareMore(url);
                       } else if (type === 'kakao') {
