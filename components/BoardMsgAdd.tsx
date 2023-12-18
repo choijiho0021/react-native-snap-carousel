@@ -138,6 +138,15 @@ const validationRule: ValidationRule = {
       message: i18n.t('board:noMsg'),
     },
   },
+  mobile: {
+    presence: {
+      message: i18n.t('reg:noMobilea'),
+    },
+    format: {
+      pattern: /^\d{3}-\d{3,4}-\d{3,4}$/,
+      message: i18n.t('reg:noMobile'),
+    },
+  },
 };
 
 const inputAccessoryViewID = 'doneKbd';

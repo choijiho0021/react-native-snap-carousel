@@ -19,6 +19,7 @@ const NOTI_TYPE_EVENT = 'event';
 const NOTI_TYPE_USIM = 'usim';
 const NOTI_TYPE_NOTI = 'noti';
 const NOTI_TYPE_URI = 'uri';
+const NOTI_TYPE_PUSH = 'push';
 const NOTI_TYPE_USAGE = 'usage';
 
 const initNotiList = createAsyncThunk(
@@ -186,6 +187,7 @@ export const actions = {
   NOTI_TYPE_INVITE,
   NOTI_TYPE_USIM,
   NOTI_TYPE_EVENT,
+  NOTI_TYPE_PUSH,
   NOTI_TYPE_USAGE,
   sendLog,
   getNotiList,

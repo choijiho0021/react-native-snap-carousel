@@ -433,7 +433,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   useEffect(() => {
     const {actionStr} = route?.params || {};
 
-    if (actionStr === 'showUsage' && showUsageSubsId) {
+    if (actionStr === 'showUsage' && showUsageSubsId && !isEditMode) {
       const index = subsData?.findIndex((elm) => elm.nid === showUsageSubsId);
       if (index >= 0) {
         setShowUsageModal(true);
@@ -444,7 +444,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         flatListRef?.current?.scrollToIndex({index, animated: true});
       }
     }
-  }, [navigation, onPressUsage, route?.params, showUsageSubsId, subsData]);
+  }, [
+    isEditMode,
+    navigation,
+    onPressUsage,
+    route?.params,
+    showUsageSubsId,
+    subsData,
+  ]);
 
   const getSubsAction = useCallback(
     async (subsId?: string, actionStr?: string, subsIccid?: string) => {
@@ -473,7 +480,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           });
 
           // 스크롤 이동 및 사용량 조회 모달 보여주도록 추가 필요
-          if (rsp?.payload?.result >= 0) {
+          if (rsp?.payload?.result === 0) {
             setShowUsageSubsId(subsId);
           }
         }
