@@ -115,7 +115,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   checkNeedUpdate,
 }) => {
   const navigation = useNavigation();
-  const [activeSlide, setActiveSlide] = useState(0);
+  const [activeSlide, setActiveSlide] = useState(promotion.length - 1);
 
   const onPress = useCallback(
     (item: RkbPromotion) => {
