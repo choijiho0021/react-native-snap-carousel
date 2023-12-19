@@ -155,8 +155,8 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
           contentOffset: {y},
         },
       }) => {
-        if (y < -25) onTop(true);
-        else if (y > 25) onTop(false);
+        if (y <= 0) onTop(true);
+        else if (y > 150) onTop(false);
       }}
       showsVerticalScrollIndicator={false}
     />
