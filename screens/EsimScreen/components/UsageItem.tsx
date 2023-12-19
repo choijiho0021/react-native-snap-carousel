@@ -168,11 +168,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
   );
   const circularProgress = useRef();
 
-  const isError = useMemo(
-    () => usage?.remain === -1 || dataStatusCd === 'E',
-    [dataStatusCd, usage?.remain],
-  );
-
   // const showUsage = useMemo(
   //   () =>
   //     item.partner !== 'billionconnect' ||
@@ -182,6 +177,10 @@ const UsageItem: React.FC<UsageItemProps> = ({
   //     ),
   //   [item.country, item.daily, item.partner],
   // );
+
+  const isError = useMemo(() => {
+    return dataStatusCd === 'E';
+  }, [dataStatusCd]);
 
   const showUsage = useMemo(
     () => item.partner !== 'billionconnect',
@@ -504,11 +503,11 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
       if (['R', 'U'].includes(statusCd))
         return (
-          <View key={v}>
-            <AppIcon style={{alignItems: 'center'}} name={`usage${v}`} />
+          <View>
+            <AppIcon style={{alignItems: 'center'}} name={`usage${statusCd}`} />
             <View style={{marginTop: 15, marginBottom: 25}}>
               <AppStyledText
-                text={i18n.t(`esim:${code[v]}Info`)}
+                text={i18n.t(`esim:${code[statusCd]}Info`)}
                 textStyle={{
                   ...appStyles.normal16Text,
                   textAlign: 'center',
@@ -535,9 +534,10 @@ const UsageItem: React.FC<UsageItemProps> = ({
             )}
           </View>
         );
+
       return null;
     },
-    [isError, item.key, item.partner, item.prodName, quota, usageRender],
+    [dataStatusCd, item.key, item.partner, item.prodName, quota, usageRender],
   );
 
   const [status, statusCd] = esimApp
