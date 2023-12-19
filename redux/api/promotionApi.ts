@@ -334,9 +334,10 @@ export const shareWebViewLink = (
   const param = `partnerId=${country.partner}&uuid=${uuid}`;
 
   // ofl 값만 encode를 안합니다. 그래서 파라미터 uuid가 잘리는 현상이 발견됨 (Android 일때만).
-  return `${needDomain ? `${webViewHost}/` : ''}esim/${country.country}/${
-    country.search?.split(',')[1]
-  }?${Platform.OS === 'android' && isOfl ? encodeURIComponent(param) : param}`;
+  // IOS는 WebLink에 한글 들어가면 동작 안함
+  return `${needDomain ? `${webViewHost}/` : ''}esim/${
+    country.country
+  }/page?${param}`;
 };
 
 const shareLink = (uuid: string) => {
@@ -373,8 +374,6 @@ const buildShareLink = async ({
       packageName: 'com.rokebiesim',
       fallbackUrl: webLink,
     },
-
-    // 어떻게 바꿀지는 고민해보기
     social: {
       title: i18n.t('share:title'),
       descriptionText: i18n.t('share:desc').replace('*', prodName),
