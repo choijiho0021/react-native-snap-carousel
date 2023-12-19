@@ -207,6 +207,11 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
     ).utcOffset('+09:00', true); // params?.expireTime;
     const currentTime = moment().utcOffset('+09:00');
 
+    // console.log('currentTime : ', currentTime);
+    // console.log('currentTime.format : ', currentTime.format());
+    // console.log('expireTime : ', expireTime);
+    // console.log('expireTIme.format : ', expireTime.format());
+
     const twentyMinuteAgoMoment = moment(expireTime.subtract(20, 'minutes')); // 20분 전
     const hourAgoMoment = moment(expireTime.subtract(40, 'minutes')); //  20분 뺀 expireTime에 40분을 뺐으니 1시간 전이다.
     const isBlockTime = currentTime.isAfter(twentyMinuteAgoMoment);
@@ -214,9 +219,18 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
       currentTime.isAfter(hourAgoMoment) &&
       currentTime.isBefore(twentyMinuteAgoMoment);
 
+    // console.log(
+    //   '@@@ twentyMinuteAgoMoment : ',
+    //   twentyMinuteAgoMoment.format('YYYY-MM-DD hh:mm:ss'),
+    // );
+    // console.log(
+    //   '@@@ hourAgoMoment : ',
+    //   hourAgoMoment.format('YYYY-MM-DD hh:mm:ss'),
+    // );
+
     if (isWarningTime) {
       setVisible('esim:charge:time:warning');
-      return true;
+      return false;
     }
 
     if (isBlockTime) {
@@ -294,6 +308,9 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
           // 결제 이어서 진행하기
           setVisible('');
           if (!isWarning) navigateEsim();
+          else {
+            onPurchase();
+          }
         }}
         contentStyle={styles.modalContent}
         titleStyle={styles.titleContent}
@@ -319,7 +336,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
         </View>
       </AppModal>
     );
-  }, [navigation, usagePeriod?.period, visible]);
+  }, [navigation, onPurchase, usagePeriod?.period, visible]);
 
   return (
     <SafeAreaView style={styles.container}>
