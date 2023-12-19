@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     ...appStyles.bold24Text,
     lineHeight: 24,
     color: colors.black,
-    marginTop: 10,
+    marginTop: 12,
     marginBottom: 30,
   },
   info: {
