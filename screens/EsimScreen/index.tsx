@@ -229,7 +229,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [showUsageModal, setShowUsageModal] = useState<boolean | undefined>();
+  const [showUsageModal, setShowUsageModal] = useState<boolean | undefined>(
+    route?.params?.actionStr === 'showUsage',
+  );
   const [subs, setSubs] = useState<RkbSubscription>();
   const [usageLoading, setUsageLoading] = useState(false);
   const [showGiftModal, setShowGiftModal] = useState<boolean | undefined>();
@@ -257,10 +259,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const showModal = useMemo(() => {
     if (showUsageModal && isDefined(showGiftModal)) return 'usage';
-    if (showGiftModal) return 'gift';
+    if (!showUsageModal && showGiftModal) return 'gift';
     return 'noModal';
   }, [showGiftModal, showUsageModal]);
-
+  
   useEffect(() => {
     // EsimScreen 에서만 getSubs 초기화
     const subscription = AppState.addEventListener('change', (nextAppState) => {
