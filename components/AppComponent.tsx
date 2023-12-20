@@ -245,14 +245,19 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
   useEffect(() => {
     login();
     setTimeout(() => {
-      store.dispatch(syncActions.skip());
-      setShowSplash(false);
-    }, 3000);
-    setTimeout(() => {
       setNetworkErr(true);
     }, 120000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if(product?.ready) {
+      setTimeout(() => {
+        store.dispatch(syncActions.skip());
+        setShowSplash(false);
+      }, 3000);
+    }
+  },[product?.ready])
 
   useEffect(() => {
     codePush

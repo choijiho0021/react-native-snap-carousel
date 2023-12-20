@@ -160,7 +160,9 @@ const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
 
           <ChargeBottomButton
             // title={ i18n.t(`esim:charge:type:${type}`)}
-            title={disabled ? disReason : i18n.t(`esim:charge:type:${type}`)}
+            title={
+              disabled ? disReason : i18n.t(`esim:charge:modal:type:${type}`)
+            }
             onPress={() => {
               dispatch(modalActions.closeModal());
               if (!disabled) onPress();

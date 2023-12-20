@@ -316,7 +316,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           break;
       }
     },
-    [action.info, navigation, route.params.item?.key, route.params?.title],
+    [action.info, navigation, route.params?.item?.key, route.params?.title],
   );
 
   const renderWebView = useCallback(
