@@ -128,51 +128,89 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
 
   const onPressShareKakao = useCallback(
     async (country: RkbProdByCountry, imgUrl: string, dynamicLink: string) => {
+      const discount =
+        getDiscountRate(price?.value, listPrice?.value).toString() || '0';
+
       const resp = await KakaoSDK.KakaoShareLink.sendCustom({
         templateId: isProduction ? 101678 : 101630,
-        templateArgs: [
-          {
-            key: 'uuid',
-            value: uuid || '',
-          },
-          {
-            key: 'country',
-            value: country.country,
-          },
-          {
-            key: 'partnerId',
-            value: country.partner,
-          },
-          {
-            key: 'price',
-            value: listPrice?.value.toString() || '0',
-          },
-          {
-            key: 'discountPrice',
-            value: price?.value.toString(),
-          },
-          {
-            key: 'discount',
-            value:
-              getDiscountRate(price?.value, listPrice?.value).toString() || '0',
-          },
-          {
-            key: 'title',
-            value: purchaseItem?.title,
-          },
-          {
-            key: 'image',
-            value: imgUrl,
-          },
-          {
-            key: 'dynamicLink',
-            value: dynamicLink.replace('https://rokebi.page.link/', ''),
-          },
-          {
-            key: 'webLink',
-            value: shareWebViewLink(uuid, country, false, false),
-          },
-        ],
+        templateArgs:
+          discount === '0'
+            ? [
+                {
+                  key: 'uuid',
+                  value: uuid || '',
+                },
+                {
+                  key: 'country',
+                  value: country.country,
+                },
+                {
+                  key: 'partnerId',
+                  value: country.partner,
+                },
+                {
+                  key: 'price',
+                  value: listPrice?.value.toString() || '0',
+                },
+                {
+                  key: 'title',
+                  value: purchaseItem?.title,
+                },
+                {
+                  key: 'image',
+                  value: imgUrl,
+                },
+                {
+                  key: 'dynamicLink',
+                  value: dynamicLink.replace('https://rokebi.page.link/', ''),
+                },
+                {
+                  key: 'webLink',
+                  value: shareWebViewLink(uuid, country, false, false),
+                },
+              ]
+            : [
+                {
+                  key: 'uuid',
+                  value: uuid || '',
+                },
+                {
+                  key: 'country',
+                  value: country.country,
+                },
+                {
+                  key: 'partnerId',
+                  value: country.partner,
+                },
+                {
+                  key: 'price',
+                  value: listPrice?.value.toString() || '0',
+                },
+                {
+                  key: 'discountPrice',
+                  value: price?.value.toString(),
+                },
+                {
+                  key: 'discount',
+                  value: discount,
+                },
+                {
+                  key: 'title',
+                  value: purchaseItem?.title,
+                },
+                {
+                  key: 'image',
+                  value: imgUrl,
+                },
+                {
+                  key: 'dynamicLink',
+                  value: dynamicLink.replace('https://rokebi.page.link/', ''),
+                },
+                {
+                  key: 'webLink',
+                  value: shareWebViewLink(uuid, country, false, false),
+                },
+              ],
       });
 
       console.log('@@@ onPressKakao Result : ', resp);
