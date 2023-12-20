@@ -316,7 +316,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   const [prodData, addOnData] = useMemo(() => {
     const prod: RkbSubscription[] = [];
     const addOn: RkbSubscription[] = [];
-    data.forEach((d) => {
+    data?.forEach((d) => {
       if (d?.type === 'esim_product') {
         prod.push(d);
       } else if (d?.type === 'add_on_product') {
@@ -340,7 +340,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         token,
         uuid: mainSubs.subsIccid,
       }).then((rsp) => {
-        setChargedSubs(rsp.objects);
+        if (rsp.result === 0) setChargedSubs(rsp.objects);
       });
     }
   }, [account, mainSubs.subsIccid]);
