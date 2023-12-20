@@ -75,7 +75,7 @@ type PurchaseDetailParams = {orderId: string};
 
 export type HomeStackParamList = {
   Home: undefined;
-  Tutorial: {stack: string; screen: string; navigateParams: object};
+  Tutorial: {stack: string; screen: string; naviParams: object};
   StoreSearch: undefined;
   Store: undefined;
   Cart: {

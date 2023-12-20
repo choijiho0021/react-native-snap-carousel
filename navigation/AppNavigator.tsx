@@ -374,8 +374,8 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         linkPath: params?.linkPath,
       });
 
+      
       const {stack, screen, naviParams} = getNaviParams(url, params);
-
       if (isSupport || Platform.OS === 'ios') {
         if (isFirst) {
           refNavigate({
