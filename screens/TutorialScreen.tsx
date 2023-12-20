@@ -5,7 +5,6 @@ import {
   Dimensions,
   Image,
   Platform,
-  Pressable,
   SafeAreaView,
   StyleSheet,
   View,
@@ -22,7 +21,6 @@ import {connect} from 'react-redux';
 import {bindActionCreators, RootState} from 'redux';
 import {RouteProp} from '@react-navigation/native';
 import i18n from '@/utils/i18n';
-import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
@@ -173,7 +171,7 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
         <Image
           style={styles.image}
           source={tutorialImages[item]}
-          resizeMode="cover"
+          resizeMode="contain"
         />
       </View>
     ),
