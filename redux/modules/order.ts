@@ -38,6 +38,29 @@ const defaultReturn = (resp) => {
   return resp;
 };
 
+const subsReturn = (resp) => {
+  if (
+    resp.objects &&
+    resp.objects.length > 0 &&
+    typeof resp.objects[0].purchaseDate === 'string'
+  ) {
+    return {
+      ...resp,
+      objects: resp.objects.map((elm) => ({
+        ...elm,
+        purchaseDate: moment(elm.purchaseDate),
+        expireDate: moment(elm.expireDate),
+        provDate: moment(elm.provDate),
+        startDate: moment(elm.startDate),
+        lastExpireDate: moment(elm.lastExpireDate),
+        lastProvDate: moment(elm.lastProvDate),
+      })),
+    };
+  }
+
+  return resp;
+};
+
 const getOrderById = createAsyncThunk(
   'order/getOrderById',
   API.Order.getOrderById,
@@ -82,7 +105,7 @@ const getSubs = createAsyncThunk(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
     )(param, {
-      fulfillWithValue: defaultReturn,
+      fulfillWithValue: subsReturn,
     });
   },
 );
