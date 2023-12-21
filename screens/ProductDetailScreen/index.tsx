@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
   modalFrame: {
     marginHorizontal: 20,
@@ -207,9 +207,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   );
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [showButton, setShowButton] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+
+  const [showWebModal, setShowWebModal] = useState(false);
+
   const [qty, setQty] = useState(1);
   const appState = useRef('unknown');
   const [price, setPrice] = useState<Currency>();
@@ -264,11 +266,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
       switch (key) {
         case 'showButton':
-          setShowButton(true);
+          setShowWebModal(false);
           break;
         case 'hideButton':
-          setShowButton(false);
           setShowModal(false);
+          setShowWebModal(true);
           break;
 
         case 'moveToPage':
@@ -489,7 +491,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   }, [navigation, resetModalInfo]);
 
   const purchaseButtonTab = useCallback(() => {
-    if (!showButton || showModal) return <></>;
+    if (showWebModal || showModal) return <></>;
 
     return (
       <View style={styles.buttonBox}>
@@ -511,10 +513,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         />
       </View>
     );
-  }, [showButton, showModal]);
+  }, [showModal, showWebModal]);
 
   const purchaseNumberTab = useCallback(() => {
-    if (!showButton) return <></>;
+    if (showWebModal) return <></>;
 
     return (
       <View style={styles.bottomButtonContainer}>
@@ -535,7 +537,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       </View>
     );
   }, [
-    showButton,
+    showWebModal,
     account.loggedIn,
     onPressBtnRegCard,
     onPressBtnCart,
@@ -544,14 +546,23 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.screen}>
-      <View style={styles.header}>
+      <View
+        style={[
+          styles.header,
+          showWebModal ? {backgroundColor: 'rgba(0,0,0,0.3)'} : {},
+        ]}>
         <AppBackButton
           title={route.params?.title}
           style={{width: '70%', height: 56}}
+          disable={showWebModal}
         />
         {account.loggedIn && (
           <AppCartButton
-            onPress={() => navigation.navigate('Cart', {showHeader: true})}
+            onPress={() =>
+              showWebModal
+                ? {}
+                : navigation.navigate('Cart', {showHeader: true})
+            }
             iconName="btnHeaderCart"
           />
         )}
