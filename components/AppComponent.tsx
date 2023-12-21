@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useEffect, useState} from 'react';
+import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
 import {
   BackHandler,
   Platform,
@@ -113,6 +113,7 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
   const [networkErr, setNetworkErr] = useState(false);
   const [loadingTextSec, setloadingTextSec] = useState(1);
   const [muteMode, setMuteMode] = useState<boolean>(false);
+  const showLoadingTxt = useRef(false);
 
   useEffect(() => {
     if (Platform.OS === 'android') {
@@ -193,13 +194,13 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
             mixWithOthers="mix"
             muted={muteMode}
           />
-          {!showSplash && !esimGlobal && (
+          {showLoadingTxt.current && !esimGlobal && (
             <Image
               source={require('../assets/images/esim_loading.gif')}
               style={styles.loadingVideo}
             />
           )}
-          {!showSplash && (
+          {showLoadingTxt.current && (
             <Text style={styles.loadingText}>
               {i18n.t(`loading:text${loadingTextSec % 2}`)}
             </Text>
@@ -247,17 +248,20 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
     setTimeout(() => {
       setNetworkErr(true);
     }, 120000);
+    setTimeout(() => {
+      showLoadingTxt.current = true;
+    }, 1500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if(product?.ready) {
+    if (product?.ready) {
       setTimeout(() => {
         store.dispatch(syncActions.skip());
         setShowSplash(false);
       }, 3000);
     }
-  },[product?.ready])
+  }, [product?.ready]);
 
   useEffect(() => {
     codePush
