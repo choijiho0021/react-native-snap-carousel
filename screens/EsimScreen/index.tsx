@@ -31,6 +31,7 @@ import {
   StatusObj,
   UsageObj,
   Usage,
+  AddOnOptionType,
 } from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
@@ -262,7 +263,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     if (!showUsageModal && showGiftModal) return 'gift';
     return 'noModal';
   }, [showGiftModal, showUsageModal]);
-  
+
   useEffect(() => {
     // EsimScreen 에서만 getSubs 초기화
     const subscription = AppState.addEventListener('change', (nextAppState) => {
@@ -432,14 +433,24 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [action.account, action.order, getOrders, iccid, token],
   );
 
+  const getIsChargeable = useCallback((sub: RkbSubscription) => {
+    return (
+      sub?.addOnOption &&
+      sub.addOnOption !== AddOnOptionType.NEVER &&
+      !(sub.expireDate && sub.expireDate.isBefore(moment())) &&
+      sub.partner !== 'billionconnect'
+    );
+  }, []);
+
   useEffect(() => {
     const {actionStr} = route?.params || {};
 
     if (actionStr === 'showUsage' && showUsageSubsId && !isEditMode) {
       const index = subsData?.findIndex((elm) => elm.nid === showUsageSubsId);
+
       if (index >= 0) {
         setShowUsageModal(true);
-        onPressUsage(subsData[index]);
+        onPressUsage(subsData[index], getIsChargeable(subsData[index]));
         navigation.setParams({
           actionStr: undefined,
         });
@@ -447,6 +458,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       }
     }
   }, [
+    getIsChargeable,
     isEditMode,
     navigation,
     onPressUsage,
@@ -470,7 +482,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         if (index >= 0) {
           setSelectedIdx(index);
           setShowUsageModal(true);
-          onPressUsage(subsData[index]);
+          onPressUsage(subsData[index], getIsChargeable(subsData[index]));
           flatListRef?.current?.scrollToIndex({index, animated: true});
         } else {
           const rsp = await action.order.getSubsWithToast({
