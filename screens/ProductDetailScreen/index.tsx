@@ -328,9 +328,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       return (
         <WebView
           // automaticallyAdjustContentInsets={true}
+          // scalesPageToFit
           javaScriptEnabled
           domStorageEnabled
-          // scalesPageToFit
           startInLoadingState
           decelerationRate="normal"
           scrollEnabled
@@ -571,9 +571,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               resetModalInfo();
               setShowModal(false);
             }}
-            style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.3)'}}
-            // style={styles.modalContainer}
-          >
+            style={{flex: 1}}>
             <View style={styles.modalContainer}>
               <Pressable style={{backgroundColor: colors.white}}>
                 <View style={styles.modalFrame}>
