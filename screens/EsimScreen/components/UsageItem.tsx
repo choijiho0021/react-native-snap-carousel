@@ -537,7 +537,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
       return null;
     },
-    [dataStatusCd, item.key, item.partner, item.prodName, quota, usageRender],
+    [isError, item.key, item.partner, item.prodName, quota, usageRender],
   );
 
   const [status, statusCd] = esimApp

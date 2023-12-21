@@ -146,6 +146,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   const [lastRouteName, setLastRouteName] = useState<string>();
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const [savedPopup, setSavedPopup] = useState();
+  const runDynamicLink = useRef(false);
   const appState = useRef('unknown');
 
   useEffect(() => {
@@ -374,7 +375,6 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         linkPath: params?.linkPath,
       });
 
-      
       const {stack, screen, naviParams} = getNaviParams(url, params);
       if (isSupport || Platform.OS === 'ios') {
         if (isFirst) {
@@ -406,7 +406,8 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   }, [handleDynamicLink]);
 
   useEffect(() => {
-    if (product?.ready) {
+    if (product?.ready && !runDynamicLink.current) {
+      runDynamicLink.current = true;
       dynamicLinks()
         .getInitialLink()
         .then((l) => handleDynamicLink(l));
