@@ -85,6 +85,7 @@ export type RkbOrder = {
   orderType?: OrderPolicyType;
   totalPrice?: Currency;
   profileId?: string;
+  partner?: string;
   memo?: string;
   state?: OrderState;
   orderItems: OrderItemType[];
@@ -118,6 +119,7 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
             orderType: item.type,
             totalPrice,
             profileId: item.profile_id,
+            partner: item.field_ref_partner,
             memo: item.memo || '',
             state: item.state,
             orderItems: (parseJson(item.order_items) || []).map((value) => ({
