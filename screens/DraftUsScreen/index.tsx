@@ -9,6 +9,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import {appStyles} from '@/constants/Styles';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
@@ -33,6 +34,7 @@ import AppModalContent from '@/components/ModalContent/AppModalContent';
 import {Moment} from 'moment';
 import moment from 'moment';
 import DraftStartPage from './component/DraftStartPage';
+import AppText from '@/components/AppText';
 
 const styles = StyleSheet.create({
   container: {
@@ -90,9 +92,17 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   useEffect(() => {
     navigation.setOptions({
       title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('his:draftTitle')} />,
+      headerLeft: () => (
+        <AppBackButton
+          title={i18n.t('his:draftTitle')}
+          onPress={() => {
+            if (step === 0) goBack(navigation, route);
+            else setStep((prev) => prev - 1);
+          }}
+        />
+      ),
     });
-  }, [navigation]);
+  }, [navigation, route, step]);
 
   useEffect(() => {
     console.log('@@@ draftOrder : ', draftOrder);
@@ -107,8 +117,8 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   }, [order.drafts, order.orders, route.params?.orderId]);
 
   const onClickStart = useCallback(() => {
-    navigation.navigate('DraftStep');
-  }, [navigation]);
+    setStep((prev) => prev + 1);
+  }, []);
 
   //
   const getProdDate = useCallback(() => {
@@ -165,6 +175,21 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
           draftOrder={draftOrder}
           onClick={onClickStart}
         />
+      )}
+      {step === 1 && (
+        <>
+          <View style={{paddingHorizontal: 20}}>
+            <View style={{marginTop: 24, width: '50%'}}>
+              <AppText style={appStyles.bold24Text}>
+                {'상품 사용 시작일을 선택해주세요!'}
+              </AppText>
+            </View>
+            <View>
+              <AppText>{'상품 사용 시작일'}</AppText>
+              <View>{/* 캘린더 컴포넌트 */}</View>
+            </View>
+          </View>
+        </>
       )}
       <AppActivityIndicator visible={pending} />
     </SafeAreaView>
