@@ -145,6 +145,7 @@ export type HomeStackParamList = {
   GiftGuide: undefined;
 
   Draft: {orderId: number};
+  DraftUs: {orderId: number};
   DraftResult: {isSuccess: boolean; prods: ProdDesc[]};
   CancelOrder: {orderId: number};
   CancelResult: {isSuccess: boolean; orderId: number; prods: ProdDesc[]};
