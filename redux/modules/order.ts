@@ -54,6 +54,7 @@ const subsReturn = (resp) => {
         startDate: moment(elm.startDate),
         lastExpireDate: moment(elm.lastExpireDate),
         lastProvDate: moment(elm.lastProvDate),
+        activationDate: moment(elm?.activationDate),
       })),
     };
   }

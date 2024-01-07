@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   inactiveContainer: {
     marginBottom: 6,
     flexDirection: 'row',
-    alignItems: 'center',
+    // alignItems: 'center',
     width: '100%',
     justifyContent: 'space-between',
   },
@@ -568,6 +568,41 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   ]);
 
   const topInfo = useCallback(() => {
+    if (mainSubs.partner === 'ht') {
+      return (
+        <View style={[styles.topInfo, !notCardInfo && {marginVertical: 16}]}>
+          {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
+            <View style={styles.inactiveContainer}>
+              <AppText style={styles.normal14Gray}>{i18n.t('eid')}</AppText>
+              <AppText
+                style={[
+                  styles.normal14Gray,
+                  {marginLeft: 80, textAlign: 'right', flex: 1},
+                ]}>
+                {mainSubs.eid}
+              </AppText>
+            </View>
+          )}
+          <View style={styles.inactiveContainer}>
+            <AppText style={styles.normal14Gray}>
+              {i18n.t('imei2:esim')}
+            </AppText>
+            <AppText style={styles.normal14Gray}>{mainSubs.imei2}</AppText>
+          </View>
+
+          {!isBC && (
+            <View style={styles.inactiveContainer}>
+              <AppText style={styles.normal14Gray}>
+                {i18n.t('esim:activationDate')}
+              </AppText>
+              <AppText style={styles.normal14Gray}>
+                {mainSubs.activationDate?.format('YYYY.MM.DD')}
+              </AppText>
+            </View>
+          )}
+        </View>
+      );
+    }
     return (
       <View style={[styles.topInfo, !notCardInfo && {marginVertical: 16}]}>
         {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
@@ -633,21 +668,23 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           }}
         />
 
-        <AppButton
-          style={{
-            flex: 1,
-            backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
-            paddingVertical: 8,
-            marginRight: 8,
-            borderRadius: 3,
-          }}
-          titleStyle={{
-            ...styles.esimButton,
-            color: isEditMode ? colors.lightGrey : colors.black,
-          }}
-          title={i18n.t('esim:showQR')}
-          onPress={() => navigation.navigate('QrInfo', {mainSubs})}
-        />
+        {mainSubs.partner !== 'ht' && (
+          <AppButton
+            style={{
+              flex: 1,
+              backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
+              paddingVertical: 8,
+              marginRight: 8,
+              borderRadius: 3,
+            }}
+            titleStyle={{
+              ...styles.esimButton,
+              color: isEditMode ? colors.lightGrey : colors.black,
+            }}
+            title={i18n.t('esim:showQR')}
+            onPress={() => navigation.navigate('QrInfo', {mainSubs})}
+          />
+        )}
 
         <AppButton
           style={{

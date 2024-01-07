@@ -78,6 +78,8 @@
   "localNet": " (Local Network)",
   "link": "Link",
   "new": "New",
+  "eid": "EID",
+  "imei2:esim": "IMEI2(eSIM)",
 
   "purchase:date": "{{date}}",
 
@@ -640,6 +642,7 @@
   "esim:ErrorShowUsage3": "자세한 내용은 고객센터로 문의하세요.",
   "esim:remainAmount": "Remain Amount",
   "esim:dailyUsageAmount": "Daily Usage",
+  "esim:activationDate": "상품 사용 시작일",
   "esim:charge": "Recharge",
   "esim:charge:recommend": "이런 분들께 추천해요!",
   "esim:charge:selected:prod": "선택 상품",

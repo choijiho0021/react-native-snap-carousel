@@ -149,6 +149,7 @@ export type RkbSubscription = {
   expireDate: Moment;
   provDate?: Moment;
   lastProvDate?: Moment;
+  activationDate?: Moment;
   statusCd: string;
   status: string;
   giftStatusCd: string;
@@ -166,6 +167,8 @@ export type RkbSubscription = {
   smdpAddr?: string;
   qrCode?: string;
   imsi?: string;
+  imei2?: string;
+  eid?: string;
   subsIccid?: string;
   packageId?: string;
   subsOrderNo?: string;
@@ -190,7 +193,8 @@ export type RkbSubscription = {
   extLocalOps?: string[];
 };
 
-export const getMoment = (str: string) => (str ? moment(str) : undefined);
+export const getMoment = (str: string) =>
+  str ? moment(str).tz('Asia/Seoul') : undefined;
 
 const toSubscription = (
   data: DrupalNode[] | DrupalNodeJsonApi,
@@ -288,6 +292,7 @@ const subsFulfillWithValue = (resp) => {
       ...o,
       provDate: getMoment(o.provDate),
       lastProvDate: getMoment(o.lastProvDate),
+      activationDate: getMoment(o.activationDate),
       cnt: parseInt(o.cnt || '0', 10),
       lastExpireDate: getMoment(o.lastExpireDate),
       startDate: getMoment(o.startDate),
