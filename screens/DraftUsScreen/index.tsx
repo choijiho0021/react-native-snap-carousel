@@ -2,20 +2,15 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
+import {Calendar, LocaleConfig} from 'react-native-calendars';
 import {appStyles} from '@/constants/Styles';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
-import {HomeStackParamList, navigate} from '@/navigation/navigation';
+import {HomeStackParamList, goBack, navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {AccountModelState} from '@/redux/modules/account';
@@ -30,16 +25,46 @@ import {
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
-import AppModalContent from '@/components/ModalContent/AppModalContent';
 import {Moment} from 'moment';
 import moment from 'moment';
 import DraftStartPage from './component/DraftStartPage';
 import AppText from '@/components/AppText';
+import AppButton from '@/components/AppButton';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
+  },
+
+  button: {
+    ...appStyles.normal16Text,
+    flex: 1,
+    height: 52,
+    backgroundColor: colors.clearBlue,
+    textAlign: 'center',
+    color: colors.white,
+  },
+
+  modalText: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 26,
+    letterSpacing: -0.32,
+    color: colors.black,
+  },
+
+  secondaryButton: {
+    flex: 1,
+    height: 52,
+    backgroundColor: colors.white,
+    borderColor: colors.lightGrey,
+
+    borderTopWidth: 1,
+    color: colors,
+  },
+  secondaryButtonText: {
+    ...appStyles.normal18Text,
+    textAlign: 'center',
   },
 });
 
@@ -87,6 +112,8 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   const [draftOrder, setDraftOrder] = useState<RkbOrder>();
   const [prods, setProds] = useState<UsProdDesc[]>([]);
   const loading = useRef(false);
+  const [showSnackBar, setShowSnackBar] = useState('');
+  const [showPicker, setShowPicker] = useState(false);
   const [step, setStep] = useState(0);
 
   useEffect(() => {
@@ -162,6 +189,37 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
     else setProds(prodList);
   }, [draftOrder?.orderItems, getProdDate, product.prodList]);
 
+  const renderBottomButtns = useCallback(() => {
+    return (
+      <View style={{flexDirection: 'row'}}>
+        {step !== 0 && (
+          <AppButton
+            style={styles.secondaryButton}
+            type="secondary"
+            title={i18n.t('his:backStep')}
+            titleStyle={styles.secondaryButtonText}
+            disabled={step === 0}
+            disableStyle={{borderWidth: 0}}
+            onPress={() => {
+              setStep((prev) => (prev - 1 <= 0 ? 0 : prev - 1));
+            }}
+          />
+        )}
+        <AppButton
+          style={styles.button}
+          type="primary"
+          title={i18n.t('his:nextStep')}
+          disabledOnPress={() => {}}
+          disabledCanOnPress
+          onPress={() => {
+            // 사용 시작일 등록 안했으면 막아야함
+            setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
+          }}
+        />
+      </View>
+    );
+  }, [step]);
+
   if (!draftOrder || !draftOrder?.orderItems) return <View />;
 
   // [physical] shipmentState : draft(취소 가능) / ready shipped (취소 불가능)
@@ -178,7 +236,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
       )}
       {step === 1 && (
         <>
-          <View style={{paddingHorizontal: 20}}>
+          <View style={{paddingHorizontal: 20, flex: 1}}>
             <View style={{marginTop: 24, width: '50%'}}>
               <AppText style={appStyles.bold24Text}>
                 {'상품 사용 시작일을 선택해주세요!'}
@@ -186,9 +244,20 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
             </View>
             <View>
               <AppText>{'상품 사용 시작일'}</AppText>
-              <View>{/* 캘린더 컴포넌트 */}</View>
+              <Calendar
+                onDayPress={(day) => {
+                  console.log('selected day', day);
+                }}
+              />
             </View>
           </View>
+          {renderBottomButtns()}
+        </>
+      )}
+      {step === 2 && (
+        <>
+          <View style={{flex: 1}}></View>
+          {renderBottomButtns()}
         </>
       )}
       <AppActivityIndicator visible={pending} />
