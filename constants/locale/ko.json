@@ -594,6 +594,8 @@
 
   "sim:until": "까지",
 
+  "esim:draftStart": "시작하기",
+
   "esim:R": "사용전",
   "esim:A": "사용중",
   "esim:U": "사용완료",
