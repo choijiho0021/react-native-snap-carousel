@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     textAlign: 'left',
     color: colors.warmGrey,
+    flex: 1,
   },
   warningDot: {
     ...appStyles.normal14Text,
@@ -477,11 +478,13 @@ const UsageItem: React.FC<UsageItemProps> = ({
               <AppText key={item.key} style={styles.usageTitleBold}>
                 {item.prodName}
               </AppText>
-              <AppText key={item.prodName} style={styles.bold14WarmGrey}>
-                {i18n.t('esim:quota', {
-                  quota: utils.toDataVolumeString(quota || 0),
-                })}
-              </AppText>
+              {item.partner !== 'ht' && (
+                <AppText key={item.prodName} style={styles.bold14WarmGrey}>
+                  {i18n.t('esim:quota', {
+                    quota: utils.toDataVolumeString(quota || 0),
+                  })}
+                </AppText>
+              )}
             </View>
             {usageRender()}
           </View>
