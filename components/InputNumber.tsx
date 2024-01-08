@@ -51,6 +51,7 @@ const InputNumber = ({
   minValue = 1,
   maxValue = 10,
   boldIcon = false,
+  disabled = false,
   fontStyle,
   boxStyle,
 }: {
@@ -59,6 +60,7 @@ const InputNumber = ({
   maxValue?: number;
   onChange: (v: number) => void;
   boldIcon?: boolean;
+  disabled?: boolean;
   fontStyle?: StyleProp<TextStyle>;
   boxStyle?: StyleProp<ViewStyle>;
 }) => {
@@ -70,22 +72,22 @@ const InputNumber = ({
 
   const addValue = useCallback(
     (v: number) => {
-      if (v <= maxValue) {
+      if (v <= maxValue && !disabled) {
         setInputValue(v);
         onChange(v);
       }
     },
-    [maxValue, onChange],
+    [disabled, maxValue, onChange],
   );
 
   const delValue = useCallback(
     (v: number) => {
-      if (v >= minValue) {
+      if (v >= minValue && !disabled) {
         setInputValue(v);
         onChange(v);
       }
     },
-    [minValue, onChange],
+    [disabled, minValue, onChange],
   );
 
   return (
@@ -97,6 +99,7 @@ const InputNumber = ({
           <AppSvgIcon
             name={boldIcon ? 'boldMinus' : 'minus'}
             disabled={inputValue <= minValue}
+            style={{opacity: disabled ? 0.4 : 1}}
           />
         </View>
       </Pressable>
@@ -110,6 +113,7 @@ const InputNumber = ({
           <AppSvgIcon
             name={boldIcon ? 'boldPlus' : 'plus'}
             disabled={inputValue >= maxValue}
+            style={{opacity: disabled ? 0.4 : 1}}
           />
         </View>
       </Pressable>
