@@ -626,6 +626,8 @@
   "esim:copyMsg": "Copied the information",
   "esim:checkUsage": "Check Usage",
   "esim:quota": "quota : {{quota}}",
+  "esim:howToCall": "통화 방법",
+  "esim:howToCall:check": "확인하기",
   "esim:time:usable": "상품 사용기간",
   "esim:time:dataReset": "데이터 리셋 시간",
   "esim:time:korea": "한국시간",

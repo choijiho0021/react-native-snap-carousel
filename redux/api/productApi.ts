@@ -122,6 +122,16 @@ export type Currency = {
   value: number;
   currency: CurrencyCode;
 };
+export type ProdDesc = {
+  desc1?: string;
+  desc2?: string;
+  apn?: string;
+  ftr?: string;
+  showVoice?: string;
+  caution?: string;
+  email_notice?: string;
+};
+
 export type RkbProduct = {
   key: string;
   uuid: string;
@@ -141,7 +151,7 @@ export type RkbProduct = {
   body: any;
   hotspot: boolean;
   weight: number;
-  desc: {desc1: string; desc2: string; apn: string};
+  desc: ProdDesc;
   // additional
   ccodeStr?: string;
   search?: string;
@@ -159,7 +169,7 @@ const toPurchaseAddOnItem = (subsId: string, prod?: RkbAddOnProd) => {
   return prod ? createFromAddOnProduct(prod, subsId) : undefined;
 };
 
-const toProdDesc = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
+const toProdDesc = (data: DrupalProduct[]): ApiResult<ProdDesc> => {
   if (_.isArray(data) && data.length > 0) {
     return api.success(parseJson(data[0].field_desc.replace(/&quot;/g, '"')));
   }
@@ -173,7 +183,7 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
   if (_.isArray(data) && data.length > 0) {
     return api.success(
       data
-        .filter((elm) => !testProductReg.test(elm.sku))
+        // .filter((elm) => !testProductReg.test(elm.sku))
         .map((item, idx) => ({
           key: item.uuid,
           uuid: item.uuid,

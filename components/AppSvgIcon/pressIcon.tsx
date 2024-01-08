@@ -1110,6 +1110,22 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  rightBlueBracket: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="m6.4 3.2 4.525 4.526L6.4 12.25"
+        stroke="#2A7FF6"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
   imgBoard: [
     <Svg
       width="26"
@@ -4324,6 +4340,22 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           <Stop offset="1" stopColor="#2A7FF6" />
         </LinearGradient>
       </Defs>
+    </Svg>,
+  ],
+  phone: [
+    <Svg
+      width="26"
+      height="26"
+      viewBox="0 0 26 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="13" cy="13" r="12" fill="#00AD50" />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="m15.796 14.095-1.131 1.132c-.319.319-.814.39-1.189.138a10.448 10.448 0 0 1-2.836-2.838c-.252-.374-.182-.87.136-1.189l1.132-1.131c.479-.48.479-1.257 0-1.737l-2.11-2.11a1.226 1.226 0 0 0-1.735 0l-1.31 1.31-.39.39a1.212 1.212 0 0 0-.346 1.06c.09.512.207 1.016.356 1.506a13.496 13.496 0 0 0 8.977 8.98c.5.153 1.011.28 1.533.376a1.21 1.21 0 0 0 1.065-.347l.71-.709.982-.984c.48-.48.48-1.257 0-1.736l-2.109-2.11a1.227 1.227 0 0 0-1.735 0z"
+        fill="#fff"
+      />
     </Svg>,
   ],
 };

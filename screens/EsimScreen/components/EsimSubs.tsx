@@ -365,6 +365,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   action,
 }) => {
   const [
+    isht,
     isTypeDraft,
     isCharged,
     isBC,
@@ -376,8 +377,8 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   ] = useMemo(() => {
     const now = moment();
     const expd = mainSubs.lastExpireDate?.isBefore(now) || false;
-
     return [
+      mainSubs.partner === 'ht',
       isDraft(mainSubs?.statusCd),
 
       // mainSubs?.addOnOption 이 없는 경우도 NEVER
@@ -568,7 +569,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   ]);
 
   const topInfo = useCallback(() => {
-    if (mainSubs.partner === 'ht') {
+    if (isht) {
       return (
         <View style={[styles.topInfo, !notCardInfo && {marginVertical: 16}]}>
           {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
@@ -636,7 +637,19 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         )}
       </View>
     );
-  }, [chargeablePeriod, mainSubs, isBC, notCardInfo]);
+  }, [
+    isht,
+    notCardInfo,
+    mainSubs.type,
+    mainSubs.subsIccid,
+    mainSubs.purchaseDate,
+    mainSubs?.lastExpireDate,
+    mainSubs.eid,
+    mainSubs.imei2,
+    mainSubs.activationDate,
+    isBC,
+    chargeablePeriod,
+  ]);
 
   const QRnCopyInfo = useCallback(() => {
     return (
@@ -668,7 +681,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           }}
         />
 
-        {mainSubs.partner !== 'ht' && (
+        {!isht && (
           <AppButton
             style={{
               flex: 1,
@@ -714,6 +727,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     isChargeButton,
     isCharged,
     isEditMode,
+    isht,
     mainSubs,
     navigation,
     onPressRecharge,
@@ -770,6 +784,37 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       );
     return null;
   }, [expired, mainSubs, navigation]);
+
+  const renderHowToCall = useCallback(() => {
+    const showVoice = product.prodList.get(mainSubs?.prodId!)?.desc?.showVoice;
+
+    if (showVoice)
+      return (
+        <Pressable
+          style={[
+            styles.redirectHK,
+            {
+              backgroundColor: colors.white,
+            },
+          ]}
+          onPress={() => {}}>
+          <View style={styles.row}>
+            <AppSvgIcon name="phone" style={{marginTop: 1}} />
+            <AppText style={styles.redirectText}>
+              {i18n.t('esim:howToCall')}
+            </AppText>
+          </View>
+
+          <View style={[styles.row, {justifyContent: 'flex-end'}]}>
+            <AppText style={styles.blueText}>
+              {i18n.t('esim:howToCall:check')}
+            </AppText>
+            <AppSvgIcon name="rightBlueBracket" />
+          </View>
+        </Pressable>
+      );
+    return null;
+  }, [mainSubs?.prodId, product.prodList]);
 
   const renderMoveBtn = useCallback(() => {
     // 충전 버튼 출력 조건
@@ -930,12 +975,14 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
                 </View>
               </View>
             ) : (
-              <View style={{height: 40}} />
+              <View style={{height: 30}} />
             )}
 
             {renderHkBtn()}
 
-            {renderMoveBtn()}
+            {renderHowToCall()}
+
+            {!isht && renderMoveBtn()}
           </View>
         )}
       </View>
