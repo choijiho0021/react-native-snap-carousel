@@ -31,6 +31,9 @@ import DraftStartPage from './component/DraftStartPage';
 import AppText from '@/components/AppText';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
+import AppSnackBar from '@/components/AppSnackBar';
+import DatePickerModal from './component/DatePickerModal';
+import AppNotiBox from '@/components/AppNotiBox';
 
 const styles = StyleSheet.create({
   container: {
@@ -125,6 +128,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   const [showSnackBar, setShowSnackBar] = useState('');
   const [showPicker, setShowPicker] = useState(false);
   const [step, setStep] = useState(0);
+  const [actDate, setActDate] = useState('');
 
   useEffect(() => {
     navigation.setOptions({
@@ -199,36 +203,65 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
     else setProds(prodList);
   }, [draftOrder?.orderItems, getProdDate, product.prodList]);
 
-  const renderBottomButtns = useCallback(() => {
-    return (
-      <View style={{flexDirection: 'row'}}>
-        {step !== 0 && (
+  const renderBottomBtn = useCallback(
+    (onClick?: () => void) => {
+      return (
+        <View style={{flexDirection: 'row'}}>
+          {step !== 0 && (
+            <AppButton
+              style={styles.secondaryButton}
+              type="secondary"
+              title={i18n.t('his:backStep')}
+              titleStyle={styles.secondaryButtonText}
+              disabled={step === 0}
+              disableStyle={{borderWidth: 0}}
+              onPress={() => {
+                setStep((prev) => (prev - 1 <= 0 ? 0 : prev - 1));
+              }}
+            />
+          )}
           <AppButton
-            style={styles.secondaryButton}
-            type="secondary"
-            title={i18n.t('his:backStep')}
-            titleStyle={styles.secondaryButtonText}
-            disabled={step === 0}
-            disableStyle={{borderWidth: 0}}
+            style={styles.button}
+            type="primary"
+            title={i18n.t('his:nextStep')}
+            disabledOnPress={() => {}}
+            disabledCanOnPress
             onPress={() => {
-              setStep((prev) => (prev - 1 <= 0 ? 0 : prev - 1));
+              console.log('onClick : ', onClick);
+              if (onClick) {
+                onClick();
+              } else {
+                setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
+              }
             }}
           />
-        )}
-        <AppButton
-          style={styles.button}
-          type="primary"
-          title={i18n.t('his:nextStep')}
-          disabledOnPress={() => {}}
-          disabledCanOnPress
-          onPress={() => {
-            // 사용 시작일 등록 안했으면 막아야함
-            setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
+        </View>
+      );
+    },
+    [step],
+  );
+
+  useEffect(() => {
+    console.log('@@@@@ snackbar working : ', showSnackBar);
+  }, [showSnackBar]);
+
+  const renderModalBody = useCallback(() => {
+    return (
+      <View>
+        <AppNotiBox
+          backgroundColor={colors.backGrey}
+          textColor={colors.black}
+          text={i18n.t('us:modal:selectDate:text')}
+          iconName="emojiCheck"
+        />
+        <Calendar
+          onDayPress={(day) => {
+            console.log('selected day', day);
           }}
         />
       </View>
     );
-  }, [step]);
+  }, []);
 
   if (!draftOrder || !draftOrder?.orderItems) return <View />;
 
@@ -244,11 +277,13 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
           onClick={onClickStart}
         />
       )}
+
+      {/* 스텝 1도 컴포넌트로 분리하기 */}
       {step === 1 && (
         <>
           <View style={{paddingHorizontal: 20, flex: 1}}>
             <View style={{marginVertical: 24, width: '50%'}}>
-              <AppText style={[appStyles.bold24Text]}>
+              <AppText style={appStyles.bold24Text}>
                 {i18n.t('us:step1:title')}
               </AppText>
             </View>
@@ -262,7 +297,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
                 style={styles.DateBoxBtnFrame}
                 onPress={() => {
                   console.log('@@@ onPress 클릭');
-                  // 이거 누르면 상품 사용 시작일 캘린더가 뜨게 만들어야한다.
+                  setShowPicker(true);
                 }}>
                 <AppText
                   style={[appStyles.normal16Text, {color: colors.greyish}]}>
@@ -273,23 +308,36 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
                   name="iconCalendar"
                 />
               </Pressable>
-
-              <Calendar
-                onDayPress={(day) => {
-                  console.log('selected day', day);
-                }}
-              />
             </View>
           </View>
-          {renderBottomButtns()}
+          {renderBottomBtn(() => {
+            if (actDate === '') setShowSnackBar(i18n.t('us:alert:selectDate'));
+            else setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
+          })}
         </>
       )}
       {step === 2 && (
         <>
           <View style={{flex: 1}}></View>
-          {renderBottomButtns()}
+          {renderBottomBtn()}
         </>
       )}
+
+      <DatePickerModal
+        visible={showPicker}
+        isCloseBtn={false}
+        onClose={() => setShowPicker(false)}
+        // title={i18n.t('us:modal:selectDate:title')}
+        body={renderModalBody()}
+      />
+
+      <AppSnackBar
+        visible={showSnackBar !== ''}
+        onClose={() => setShowSnackBar('')}
+        textMessage={showSnackBar}
+        bottom={70}
+        hideCancel
+      />
       <AppActivityIndicator visible={pending} />
     </SafeAreaView>
   );

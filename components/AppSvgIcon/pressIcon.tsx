@@ -3294,6 +3294,48 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  emojiCheck: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#qw3fyn9bxa)">
+        <Rect
+          x=".5"
+          y=".5"
+          width="19"
+          height="19"
+          rx="2.5"
+          fill="url(#cyjnezbiab)"
+          stroke="#00CE2D"
+        />
+        <Path
+          d="m14 6-4.444 8L6 10"
+          stroke="#fff"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </G>
+      <Defs>
+        <LinearGradient
+          id="cyjnezbiab"
+          x1="10"
+          y1="0"
+          x2="10"
+          y2="17.917"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#69FFAE" />
+          <Stop offset="1" stopColor="#00CE2D" />
+        </LinearGradient>
+        <ClipPath id="qw3fyn9bxa">
+          <Path fill="#fff" d="M0 0h20v20H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
   check20: [
     <Svg
       width="20"

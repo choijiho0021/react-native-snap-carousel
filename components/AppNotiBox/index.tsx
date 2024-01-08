@@ -39,21 +39,20 @@ type AppNotiBoxProps = {
 };
 
 const AppNotiBox: React.FC<AppNotiBoxProps> = ({
-  containerStyle,
   backgroundColor,
+  containerStyle = [
+    styles.hearNotiFrame,
+    {
+      backgroundColor,
+    },
+  ],
   textStyle,
   textColor,
   iconName = 'bannerMark',
   text = '',
 }) => {
   return (
-    <View
-      style={[
-        styles.hearNotiFrame,
-        {
-          backgroundColor: backgroundColor,
-        },
-      ]}>
+    <View style={containerStyle}>
       {
         // 자동 발권 처리 대기 상태는 아이콘 미표시
         <AppSvgIcon name={iconName} style={{marginRight: 9}} />
