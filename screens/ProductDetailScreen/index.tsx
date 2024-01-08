@@ -216,6 +216,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const appState = useRef('unknown');
   const [price, setPrice] = useState<Currency>();
 
+  const isht = useMemo(
+    () => route?.params?.partner === 'ht',
+    [route?.params?.partner],
+  );
+
   useEffect(() => {
     getTrackingStatus().then((elm) => setStatus(elm));
   }, []);
@@ -521,12 +526,14 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     return (
       <View style={styles.bottomButtonContainer}>
         <View style={styles.bottomButtonFrame}>
-          <AppButton
-            style={[styles.secondaryButton, {marginRight: 12}]}
-            title={i18n.t('cart:saveCart')}
-            onPress={!account.loggedIn ? onPressBtnRegCard : onPressBtnCart}
-            titleStyle={[appStyles.medium18, {color: colors.black}]}
-          />
+          {!isht && (
+            <AppButton
+              style={[styles.secondaryButton, {marginRight: 12}]}
+              title={i18n.t('cart:saveCart')}
+              onPress={!account.loggedIn ? onPressBtnRegCard : onPressBtnCart}
+              titleStyle={[appStyles.medium18, {color: colors.black}]}
+            />
+          )}
           <AppButton
             style={styles.mainButton}
             title={i18n.t('cart:purchaseNow')}
@@ -538,6 +545,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     );
   }, [
     showWebModal,
+    isht,
     account.loggedIn,
     onPressBtnRegCard,
     onPressBtnCart,
@@ -609,6 +617,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
                         boxStyle={{width: 60}}
                         boldIcon
                         onChange={(value) => onChangeQty(value)}
+                        disabled={isht}
                       />
                     </View>
                   </View>

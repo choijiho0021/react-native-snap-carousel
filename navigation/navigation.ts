@@ -91,6 +91,7 @@ export type HomeStackParamList = {
     desc?: Record<string, string>;
     price?: Currency;
     listPrice?: Currency;
+    partner?: string;
   };
   ProductDetailOp: {
     title: string;
