@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     textAlign: 'left',
     color: colors.warmGrey,
+    flex: 1,
   },
   warningDot: {
     ...appStyles.normal14Text,
@@ -183,7 +184,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [dataStatusCd]);
 
   const showUsage = useMemo(
-    () => item.partner !== 'billionconnect',
+    () => item.partner !== 'billionconnect' && item.partner !== 'ht',
     [item.partner],
   );
 
@@ -323,7 +324,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           </AppText>
         </View>
 
-        {item.daily === 'daily' && item.partner !== 'billionconnect' && (
+        {item.daily === 'daily' && showUsage && (
           <Fragment>
             <View style={styles.timeDivider} />
 
@@ -390,6 +391,39 @@ const UsageItem: React.FC<UsageItemProps> = ({
     );
   }, [isExhausted, remain]);
 
+  const warningDotTxt = useCallback(() => {
+    switch (item?.partner) {
+      case 'ht':
+        return (
+          <View style={{width: '100%', marginTop: 16}}>
+            <View style={{flexDirection: 'row'}}>
+              <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
+              <AppText style={styles.warning}>
+                {i18n.t('esim:caution:ht:time1')}
+              </AppText>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+              <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
+              <AppText style={styles.warning}>
+                {i18n.t('esim:caution:ht:time2')}
+              </AppText>
+            </View>
+          </View>
+        );
+      default:
+        return (
+          <View style={{width: '100%', marginTop: 16}}>
+            <View style={{flexDirection: 'row'}}>
+              <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
+              <AppText style={styles.warning}>
+                {i18n.t('esim:caution:time')}
+              </AppText>
+            </View>
+          </View>
+        );
+    }
+  }, [item?.partner]);
+
   const renderWarning = useCallback(() => {
     return (
       <View style={{width: '100%', marginTop: 16}}>
@@ -401,16 +435,10 @@ const UsageItem: React.FC<UsageItemProps> = ({
             </AppText>
           </View>
         )}
-
-        <View style={{flexDirection: 'row'}}>
-          <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
-          <AppText style={styles.warning}>
-            {i18n.t('esim:caution:time')}
-          </AppText>
-        </View>
+        {warningDotTxt()}
       </View>
     );
-  }, [showUsage]);
+  }, [showUsage, warningDotTxt]);
 
   const usageRender = useCallback(() => {
     return (
@@ -450,11 +478,13 @@ const UsageItem: React.FC<UsageItemProps> = ({
               <AppText key={item.key} style={styles.usageTitleBold}>
                 {item.prodName}
               </AppText>
-              <AppText key={item.prodName} style={styles.bold14WarmGrey}>
-                {i18n.t('esim:quota', {
-                  quota: utils.toDataVolumeString(quota || 0),
-                })}
-              </AppText>
+              {item.partner !== 'ht' && (
+                <AppText key={item.prodName} style={styles.bold14WarmGrey}>
+                  {i18n.t('esim:quota', {
+                    quota: utils.toDataVolumeString(quota || 0),
+                  })}
+                </AppText>
+              )}
             </View>
             {usageRender()}
           </View>
@@ -554,7 +584,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           <AppText key={i18n.t('esim:checkUsage')} style={appStyles.bold18Text}>
             {i18n.t('esim:checkUsage')}
           </AppText>
-          {!usageLoading && !isError && (
+          {!usageLoading && !isError && item?.partner !== 'ht' && (
             <AppText
               key={item.nid}
               style={[

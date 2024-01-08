@@ -398,6 +398,18 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         case 'billionconnect':
           result = await checkBcData(item);
           break;
+        case 'ht':
+          result = {
+            status: {
+              statusCd: 'A',
+              endTime: moment(item.activationDate)
+                ?.tz('EST')
+                ?.add(Number(item.prodDays) - 1, 'days')
+                ?.startOf('day'),
+            },
+            usage: {quota: 0, used: 0, remain: 0, totalUsed: 0},
+          };
+          break;
         default:
           result = await checkCmiData(item);
           break;
