@@ -1327,6 +1327,21 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  iconCalendar: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4.923.23a1 1 0 0 1 1 1v.231h4.154v-.23a1 1 0 1 1 2 0v.23h.692a3 3 0 0 1 3 3v8.308a3 3 0 0 1-3 3H3.231a3 3 0 0 1-3-3V4.46a3 3 0 0 1 3-3h.692v-.23a1 1 0 0 1 1-1zm5.154 3.231v.231a1 1 0 1 0 2 0v-.23h.692a1 1 0 0 1 1 1v1.307H2.231V4.46a1 1 0 0 1 1-1h.692v.231a1 1 0 0 0 2 0v-.23h4.154zM2.231 7.77v5a1 1 0 0 0 1 1h9.538a1 1 0 0 0 1-1v-5H2.231zm4.923 2.692a1 1 0 0 1-1 1h-1.23a1 1 0 1 1 0-2h1.23a1 1 0 0 1 1 1zm3.923 1a1 1 0 1 0 0-2h-1.23a1 1 0 1 0 0 2h1.23z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
   iconArrowRight: [
     <Svg
       width="10"

@@ -761,6 +761,11 @@
   "esim:editMode:confirm": "편집 완료",
   "esim:editMode:confirm:noList": "목록으로 돌아가기",
 
+  "us:step1:title": "상품 사용 시작일을 선택해주세요!",
+  "us:date:text": "상품 사용 시작일",
+  "us:date:placeHolder": "시작일 선택",
+  "us:date:alert": "상품 사용 시작일을 선택해주세요!",
+
   "redirectHK": "Real Name Registration",
   "redirectHK:info1": "Due to Hong Kong government’s policy, those (both domestic and foreign users) who wish to use Hong Kong’s local data service <b>may use the service after real-name authentication</b> in local cellular service provider’s webpage.",
   "redirectHK:info3": "Please take a look at the guide, ICCID, Order Number and tap the Go Verify Real-Name button below. ",

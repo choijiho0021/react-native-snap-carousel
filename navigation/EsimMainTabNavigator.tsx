@@ -439,7 +439,7 @@ function MyPageStackComponent() {
         options={{headerShown: false}}
       />
       <MyPageStack.Screen name="Draft" component={DraftScreen} />
-      <HomeStack.Screen name="DraftUs" component={DraftUsScreen} />
+      <MyPageStack.Screen name="DraftUs" component={DraftUsScreen} />
       <MyPageStack.Screen name="DraftResult" component={DraftResultScreen} />
       <MyPageStack.Screen name="CancelOrder" component={CancelOrderScreen} />
       <MyPageStack.Screen name="CancelResult" component={CancelResultScreen} />

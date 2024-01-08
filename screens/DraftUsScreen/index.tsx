@@ -2,7 +2,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 import {Calendar, LocaleConfig} from 'react-native-calendars';
 import {appStyles} from '@/constants/Styles';
 import {connect} from 'react-redux';
@@ -30,6 +30,7 @@ import moment from 'moment';
 import DraftStartPage from './component/DraftStartPage';
 import AppText from '@/components/AppText';
 import AppButton from '@/components/AppButton';
+import AppIcon from '@/components/AppIcon';
 
 const styles = StyleSheet.create({
   container: {
@@ -60,11 +61,20 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
 
     borderTopWidth: 1,
-    color: colors,
   },
   secondaryButtonText: {
     ...appStyles.normal18Text,
     textAlign: 'center',
+  },
+
+  DateBoxBtnFrame: {
+    padding: 16,
+    gap: 8,
+    borderColor: colors.lightGrey,
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 });
 
@@ -237,13 +247,33 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
       {step === 1 && (
         <>
           <View style={{paddingHorizontal: 20, flex: 1}}>
-            <View style={{marginTop: 24, width: '50%'}}>
-              <AppText style={appStyles.bold24Text}>
-                {'상품 사용 시작일을 선택해주세요!'}
+            <View style={{marginVertical: 24, width: '50%'}}>
+              <AppText style={[appStyles.bold24Text]}>
+                {i18n.t('us:step1:title')}
               </AppText>
             </View>
-            <View>
-              <AppText>{'상품 사용 시작일'}</AppText>
+            <View style={{gap: 8}}>
+              <AppText
+                style={[appStyles.normal14Text, {color: colors.greyish}]}>
+                {i18n.t('us:date:text')}
+              </AppText>
+
+              <Pressable
+                style={styles.DateBoxBtnFrame}
+                onPress={() => {
+                  console.log('@@@ onPress 클릭');
+                  // 이거 누르면 상품 사용 시작일 캘린더가 뜨게 만들어야한다.
+                }}>
+                <AppText
+                  style={[appStyles.normal16Text, {color: colors.greyish}]}>
+                  {i18n.t('us:date:placeHolder')}
+                </AppText>
+                <AppIcon
+                  style={{alignSelf: 'center', justifyContent: 'center'}}
+                  name="iconCalendar"
+                />
+              </Pressable>
+
               <Calendar
                 onDayPress={(day) => {
                   console.log('selected day', day);
