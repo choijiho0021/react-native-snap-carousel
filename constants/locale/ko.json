@@ -783,6 +783,8 @@
   "esim:caution": "주의사항",
   "esim:caution:usage": "실 사용량과 차이가 있을 수 있습니다.",
   "esim:caution:time": "사용기간은 한국 표준 시(KST)를 기준으로 합니다.",
+  "esim:caution:ht:time1": "사용기간은 미국 동부 표준시(EST, 뉴욕)를 기준으로 합니다.",
+  "esim:caution:ht:time2": "선택하신 시작일 00시~12시(EST) 사이에 eSIM이 순차적으로 자동 개통됩니다.",
 
   "esim:editMode": "목록편집",
   "esim:editMode:confirm": "편집 완료",
