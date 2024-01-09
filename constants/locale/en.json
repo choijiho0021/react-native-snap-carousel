@@ -79,6 +79,7 @@
   "link": "Link",
   "new": "New",
   "eid": "EID",
+  "example": "Example) ",
   "imei2:esim": "IMEI2(eSIM)",
 
   "purchase:date": "{{date}}",

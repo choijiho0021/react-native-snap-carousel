@@ -163,7 +163,12 @@ const draftOrder = ({orderId, token}: {orderId?: number; token?: string}) => {
     '',
   )}/${orderId}?_format=json`;
 
-  const body = JSON.stringify({status: 'R'});
+  const body = JSON.stringify({
+    status: 'R',
+    eid: 'test122',
+    activation_date: '2024-01-25 00:00:00',
+    imei2: 'test312',
+  });
 
   return api.callHttp(
     url,

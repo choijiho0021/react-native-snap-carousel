@@ -4358,6 +4358,19 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  verLine: [
+    <Svg
+      width="8"
+      height="144"
+      viewBox="0 0 8 144"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect width="8" height="144" rx="4" fill="#2A7FF6" />
+      <Circle cx="4" cy="4" r="2" fill="#fff" />
+      <Circle cx="4" cy="72" r="2" fill="#fff" />
+      <Circle cx="4" cy="140" r="2" fill="#fff" />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

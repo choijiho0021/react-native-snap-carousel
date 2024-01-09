@@ -62,6 +62,7 @@ import {
 } from '@/redux/modules/modal';
 import AppButton from '@/components/AppButton';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
+import HowToCallModal from './components/HowToCallModal';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -850,6 +851,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           }}
         />
       )}
+
+      <HowToCallModal visible={true} clMtd={'dtac'} />
 
       {isEditMode && (
         <AppButton
