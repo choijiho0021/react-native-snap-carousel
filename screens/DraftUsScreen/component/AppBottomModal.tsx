@@ -62,7 +62,7 @@ type AppBottomModalProps = {
 const AppBottomModal: React.FC<AppBottomModalProps> = ({
   visible,
   isCloseBtn,
-  onClose = true,
+  onClose,
   title,
   body,
   height,

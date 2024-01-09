@@ -36,6 +36,8 @@ import AppNotiBox from '@/components/AppNotiBox';
 import DraftDateInputPage from './component/DraftDateInputPage';
 import AppBottomModal from './component/AppBottomModal';
 import DatePickerModal from './component/DatePickerModal';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import DraftDeviceInputPage from './component/DraftDeviceInputPage';
 
 const styles = StyleSheet.create({
   container: {
@@ -70,16 +72,6 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     ...appStyles.normal18Text,
     textAlign: 'center',
-  },
-
-  DateBoxBtnFrame: {
-    padding: 16,
-    gap: 8,
-    borderColor: colors.lightGrey,
-    borderWidth: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   },
 });
 
@@ -213,7 +205,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
             <AppButton
               style={styles.secondaryButton}
               type="secondary"
-              title={i18n.t('his:backStep')}
+              title={i18n.t('us:btn:back')}
               titleStyle={styles.secondaryButtonText}
               disabled={step === 0}
               disableStyle={{borderWidth: 0}}
@@ -225,7 +217,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
           <AppButton
             style={styles.button}
             type="primary"
-            title={i18n.t('his:nextStep')}
+            title={i18n.t('us:btn:next')}
             disabledOnPress={() => {}}
             disabledCanOnPress
             onPress={() => {
@@ -271,7 +263,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
       )}
       {step === 2 && (
         <>
-          <View style={{flex: 1}}></View>
+          <DraftDeviceInputPage selected={selected} onClick={setShowPicker} />
           {renderBottomBtn()}
         </>
       )}

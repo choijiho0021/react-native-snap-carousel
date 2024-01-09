@@ -254,6 +254,41 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  alarmFill: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="10" cy="10" r="9" fill="#AAA" />
+      <Rect
+        x="11"
+        y="15"
+        width="2"
+        height="7"
+        rx="1"
+        transform="rotate(-180 11 15)"
+        fill="#fff"
+      />
+      <Circle cx="10" cy="6" r="1" transform="rotate(-180 10 6)" fill="#fff" />
+    </Svg>,
+  ],
+  plusWhite: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M11 6a1 1 0 1 0-2 0v3H6a1 1 0 1 0 0 2h3v3a1 1 0 1 0 2 0v-3h3a1 1 0 1 0 0-2h-3V6z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
   plus: [
     <Svg
       width="24"

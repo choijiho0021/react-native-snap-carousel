@@ -22,6 +22,50 @@ type DatePickerModalProps = {
   onSelected: (val: string) => void;
 };
 
+LocaleConfig.locales['ko'] = {
+  monthNames: [
+    '1월',
+    '2월',
+    '3월',
+    '4월',
+    '5월',
+    '6월',
+    '7월',
+    '8월',
+    '9월',
+    '10월',
+    '11월',
+    '12월',
+  ],
+  monthNamesShort: [
+    '1월',
+    '2월',
+    '3월',
+    '4월',
+    '5월',
+    '6월',
+    '7월',
+    '8월',
+    '9월',
+    '10월',
+    '11월',
+    '12월',
+  ],
+  dayNames: [
+    '월요일',
+    '화요일',
+    '수요일',
+    '목요일',
+    '금요일',
+    '토요일',
+    '일요일',
+  ],
+  dayNamesShort: ['월', '화', '수', '목', '금', '토', '일'],
+  today: '오늘',
+};
+
+LocaleConfig.defaultLocale = 'ko';
+
 // TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
 const DatePickerModal: React.FC<DatePickerModalProps> = ({
   visible,
@@ -30,61 +74,6 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
   onSelected,
 }) => {
   const [month, setMonth] = useState('');
-
-  LocaleConfig.locales['ko'] = {
-    monthNames: [
-      '1월',
-      '2월',
-      '3월',
-      '4월',
-      '5월',
-      '6월',
-      '7월',
-      '8월',
-      '9월',
-      '10월',
-      '11월',
-      '12월',
-    ],
-    monthNamesShort: [
-      '1월',
-      '2월',
-      '3월',
-      '4월',
-      '5월',
-      '6월',
-      '7월',
-      '8월',
-      '9월',
-      '10월',
-      '11월',
-      '12월',
-    ],
-    dayNames: [
-      '월요일',
-      '화요일',
-      '수요일',
-      '목요일',
-      '금요일',
-      '토요일',
-      '일요일',
-    ],
-    dayNamesShort: ['월', '화', '수', '목', '금', '토', '일'],
-    today: '오늘',
-  };
-
-  LocaleConfig.defaultLocale = 'ko';
-
-  useEffect(() => {
-    console.log('@@@ selected : ', selected);
-  }, [selected]);
-
-  useEffect(() => {
-    console.log(
-      "@@@ moment().add(1, 'days').format('YYYY-MM-DD') :",
-      moment().utcOffset('-05:00').add(1, 'days').format('YYYY-MM-DD'),
-    );
-  }, []);
 
   const modalBody = useMemo(() => {
     const minDate = moment()
@@ -110,7 +99,6 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
             onClose();
           }}
           onMonthChange={(date) => {
-            console.log('month changed', date);
             setMonth(date.dateString);
           }}
           monthFormat="yyyy년 MMMM"
