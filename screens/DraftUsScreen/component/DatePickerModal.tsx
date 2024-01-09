@@ -1,127 +1,113 @@
-import React, {
-  ReactNode,
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-import {
-  Linking,
-  Modal,
-  Platform,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import React, {useCallback, useEffect, useMemo} from 'react';
+import {StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
-import AppSvgIcon from '@/components/AppSvgIcon';
-import {Currency, RkbProdByCountry} from '@/redux/api/productApi';
-import {API} from '@/redux/api';
-import {PurchaseItem} from '@/redux/models/purchaseItem';
 import i18n from '@/utils/i18n';
-import Env from '@/environment';
-import AppText from '@/components/AppText';
 
-import {ProductModelState, getDiscountRate} from '@/redux/modules/product';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
+import AppNotiBox from '@/components/AppNotiBox';
+import {Calendar, LocaleConfig} from 'react-native-calendars';
+import AppBottomModal from './AppBottomModal';
 
-const styles = StyleSheet.create({
-  storeBox: {
-    position: 'absolute',
-    paddingTop: 20,
-    paddingBottom: 40,
-    backgroundColor: 'white',
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    borderColor: colors.line,
-    shadowColor: colors.black8,
-    height: 272,
-    bottom: 0,
-    width: '100%',
-  },
-  modalClose: {
-    justifyContent: 'center',
-    // height: 56,
-    alignItems: 'flex-end',
-    width: 26,
-    height: 26,
-  },
-  head: {
-    height: 74,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignContent: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 28,
-    gap: 6,
-  },
-  store: {
-    paddingTop: 32,
-    paddingBottom: 48,
-    height: 164,
-    flexDirection: 'row',
-    alignItems: 'center',
-    display: 'flex',
-    justifyContent: 'space-between',
-  },
-  storeName: {
-    ...appStyles.medium18,
-    color: colors.black,
-  },
-});
+const styles = StyleSheet.create({});
 
 type DatePickerModalProps = {
   visible: boolean;
-  isCloseBtn: boolean;
-  onClose: () => void;
-  title: string;
-  body: ReactNode;
-  height: number;
+  onClose: (val: boolean) => void;
 };
 
 // TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
 const DatePickerModal: React.FC<DatePickerModalProps> = ({
   visible,
-  isCloseBtn,
-  onClose = true,
-  title,
-  body,
-  height,
+  onClose,
 }) => {
+  LocaleConfig.locales['ko'] = {
+    monthNames: [
+      '1월',
+      '2월',
+      '3월',
+      '4월',
+      '5월',
+      '6월',
+      '7월',
+      '8월',
+      '9월',
+      '10월',
+      '11월',
+      '12월',
+    ],
+    monthNamesShort: [
+      '1월',
+      '2월',
+      '3월',
+      '4월',
+      '5월',
+      '6월',
+      '7월',
+      '8월',
+      '9월',
+      '10월',
+      '11월',
+      '12월',
+    ],
+    dayNames: [
+      '월요일',
+      '화요일',
+      '수요일',
+      '목요일',
+      '금요일',
+      '토요일',
+      '일요일',
+    ],
+    dayNamesShort: ['월', '화', '수', '목', '금', '토', '일'],
+    today: '오늘',
+  };
+
+  LocaleConfig.defaultLocale = 'ko';
+
+  const modalBody = useMemo(() => {
+    console.log('@@@ why not return');
+
+    return (
+      <View>
+        <AppNotiBox
+          backgroundColor={colors.backGrey}
+          textColor={colors.black}
+          text={i18n.t('us:modal:selectDate:text')}
+          iconName="emojiCheck"
+        />
+        <Calendar
+          onDayPress={(day) => {
+            console.log('selected day', day);
+          }}
+          monthFormat="yyyy년 MMMM"
+          theme={{
+            textDayFontFamily: 'AppleSDGothicNeo',
+            textMonthFontFamily: 'AppleSDGothicNeo',
+            textDayHeaderFontFamily: 'AppleSDGothicNeo',
+            textDayFontWeight: '500',
+            textMonthFontWeight: 'bold',
+            textDayHeaderFontWeight: '600',
+            textDayFontSize: 20,
+            textMonthFontSize: 16,
+            textDayHeaderFontSize: 14,
+          }}
+        />
+      </View>
+    );
+  }, []);
+
   return (
-    <Modal visible={visible} transparent>
-      <Pressable
-        style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.3)'}}
-        onPress={onClose}>
-        <SafeAreaView key="modal" style={[styles.storeBox, {height}]}>
-          {title && (
-            <View style={styles.head}>
-              <AppText style={appStyles.bold18Text}>{title}</AppText>
-              {isCloseBtn && (
-                <View style={styles.modalClose}>
-                  <AppSvgIcon
-                    name="closeModal"
-                    key="closeModal"
-                    onPress={onClose}
-                  />
-                </View>
-              )}
-            </View>
-          )}
-          {body}
-        </SafeAreaView>
-      </Pressable>
-    </Modal>
+    <AppBottomModal
+      visible={visible}
+      isCloseBtn={false}
+      onClose={onClose}
+      body={modalBody}
+    />
   );
 };
 
 // export default memo(DatePickerModal);
 
-export default connect(({product}: RootState) => ({
-  product,
-}))(DatePickerModal);
+export default DatePickerModal;

@@ -32,8 +32,10 @@ import AppText from '@/components/AppText';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
-import DatePickerModal from './component/DatePickerModal';
 import AppNotiBox from '@/components/AppNotiBox';
+import DraftDateInputPage from './component/DraftDateInputPage';
+import AppBottomModal from './component/AppBottomModal';
+import DatePickerModal from './component/DatePickerModal';
 
 const styles = StyleSheet.create({
   container: {
@@ -129,50 +131,6 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   const [showPicker, setShowPicker] = useState(false);
   const [step, setStep] = useState(0);
   const [actDate, setActDate] = useState('');
-
-  LocaleConfig.locales['ko'] = {
-    monthNames: [
-      '1월',
-      '2월',
-      '3월',
-      '4월',
-      '5월',
-      '6월',
-      '7월',
-      '8월',
-      '9월',
-      '10월',
-      '11월',
-      '12월',
-    ],
-    monthNamesShort: [
-      '1월',
-      '2월',
-      '3월',
-      '4월',
-      '5월',
-      '6월',
-      '7월',
-      '8월',
-      '9월',
-      '10월',
-      '11월',
-      '12월',
-    ],
-    dayNames: [
-      '월요일',
-      '화요일',
-      '수요일',
-      '목요일',
-      '금요일',
-      '토요일',
-      '일요일',
-    ],
-    dayNamesShort: ['월', '화', '수', '목', '금', '토', '일'],
-    today: '오늘',
-  };
-
-  LocaleConfig.defaultLocale = 'ko';
 
   useEffect(() => {
     navigation.setOptions({
@@ -289,29 +247,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
     console.log('@@@@@ snackbar working : ', showSnackBar);
   }, [showSnackBar]);
 
-  const renderModalBody = useCallback(() => {
-    return (
-      <View>
-        <AppNotiBox
-          backgroundColor={colors.backGrey}
-          textColor={colors.black}
-          text={i18n.t('us:modal:selectDate:text')}
-          iconName="emojiCheck"
-        />
-        <Calendar
-          onDayPress={(day) => {
-            console.log('selected day', day);
-          }}
-          monthFormat="yyyy년 MMMM"
-        />
-      </View>
-    );
-  }, []);
-
   if (!draftOrder || !draftOrder?.orderItems) return <View />;
-
-  // [physical] shipmentState : draft(취소 가능) / ready shipped (취소 불가능)
-  // [draft] state = validation && status = inactive , reserved (취소 가능)
 
   return (
     <SafeAreaView style={styles.container}>
@@ -326,35 +262,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
       {/* 스텝 1도 컴포넌트로 분리하기 */}
       {step === 1 && (
         <>
-          <View style={{paddingHorizontal: 20, flex: 1}}>
-            <View style={{marginVertical: 24, width: '50%'}}>
-              <AppText style={appStyles.bold24Text}>
-                {i18n.t('us:step1:title')}
-              </AppText>
-            </View>
-            <View style={{gap: 8}}>
-              <AppText
-                style={[appStyles.normal14Text, {color: colors.greyish}]}>
-                {i18n.t('us:date:text')}
-              </AppText>
-
-              <Pressable
-                style={styles.DateBoxBtnFrame}
-                onPress={() => {
-                  console.log('@@@ onPress 클릭');
-                  setShowPicker(true);
-                }}>
-                <AppText
-                  style={[appStyles.normal16Text, {color: colors.greyish}]}>
-                  {i18n.t('us:date:placeHolder')}
-                </AppText>
-                <AppIcon
-                  style={{alignSelf: 'center', justifyContent: 'center'}}
-                  name="iconCalendar"
-                />
-              </Pressable>
-            </View>
-          </View>
+          <DraftDateInputPage onClick={setShowPicker} />
           {renderBottomBtn(() => {
             if (actDate === '') setShowSnackBar(i18n.t('us:alert:selectDate'));
             else setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
@@ -370,10 +278,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
 
       <DatePickerModal
         visible={showPicker}
-        isCloseBtn={false}
         onClose={() => setShowPicker(false)}
-        // title={i18n.t('us:modal:selectDate:title')}
-        body={renderModalBody()}
       />
 
       <AppSnackBar
