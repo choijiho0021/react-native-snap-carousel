@@ -3294,6 +3294,72 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  leftCalendarIcon: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="m12 16-5.657-5.657L12 4.686"
+        stroke="#2C2C2C"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
+
+  leftCalendarDisabledIcon: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="m12 16-5.657-5.657L12 4.686"
+        stroke="#AAA"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
+  rightCalendarIcon: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="m8 4 5.657 5.657L8 15.314"
+        stroke="#2C2C2C"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
+
+  rightCalendarDisabledIcon: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="m8 4 5.657 5.657L8 15.314"
+        stroke="#AAA"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
   emojiCheck: [
     <Svg
       width="20"
