@@ -67,10 +67,6 @@ const AppBottomModal: React.FC<AppBottomModalProps> = ({
   body,
   height,
 }) => {
-  useEffect(() => {
-    console.log('body : ', body);
-  }, [body]);
-
   return (
     <Modal visible={visible} transparent>
       <Pressable

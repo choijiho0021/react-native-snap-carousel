@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useMemo} from 'react';
-import {StyleSheet, View} from 'react-native';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import i18n from '@/utils/i18n';
@@ -9,19 +9,28 @@ import {appStyles} from '@/constants/Styles';
 import AppNotiBox from '@/components/AppNotiBox';
 import {Calendar, LocaleConfig} from 'react-native-calendars';
 import AppBottomModal from './AppBottomModal';
+import AppText from '@/components/AppText';
+import moment from 'moment';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({});
 
 type DatePickerModalProps = {
   visible: boolean;
   onClose: (val: boolean) => void;
+  selected: string;
+  onSelected: (val: string) => void;
 };
 
 // TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
 const DatePickerModal: React.FC<DatePickerModalProps> = ({
   visible,
   onClose,
+  selected,
+  onSelected,
 }) => {
+  const [month, setMonth] = useState('');
+
   LocaleConfig.locales['ko'] = {
     monthNames: [
       '1월',
@@ -66,8 +75,24 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
 
   LocaleConfig.defaultLocale = 'ko';
 
+  useEffect(() => {
+    console.log('@@@ selected : ', selected);
+  }, [selected]);
+
+  useEffect(() => {
+    console.log(
+      "@@@ moment().add(1, 'days').format('YYYY-MM-DD') :",
+      moment().utcOffset('-05:00').add(1, 'days').format('YYYY-MM-DD'),
+    );
+  }, []);
+
   const modalBody = useMemo(() => {
-    console.log('@@@ why not return');
+    const minDate = moment()
+      .utcOffset('-05:00')
+      .add(1, 'days')
+      .format('YYYY-MM-DD');
+
+    const isLeftDisable = moment(month).isBefore(minDate);
 
     return (
       <View>
@@ -78,11 +103,49 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
           iconName="emojiCheck"
         />
         <Calendar
+          minDate={minDate}
           onDayPress={(day) => {
             console.log('selected day', day);
+            onSelected(day.dateString);
+            onClose();
+          }}
+          onMonthChange={(date) => {
+            console.log('month changed', date);
+            setMonth(date.dateString);
           }}
           monthFormat="yyyy년 MMMM"
+          renderArrow={(direction) =>
+            direction === 'left' ? (
+              isLeftDisable ? (
+                <AppSvgIcon name="leftCalendarDisabledIcon" />
+              ) : (
+                <AppSvgIcon name="leftCalendarIcon" />
+              )
+            ) : (
+              <AppSvgIcon name="rightCalendarIcon" />
+            )
+          }
+          disableArrowLeft={isLeftDisable}
           theme={{
+            'stylesheet.day.basic': {
+              base: {
+                width: 40,
+                height: 40,
+                alignItems: 'center',
+                justifyContent: 'center',
+              },
+
+              today: {
+                backgroundColor: colors.clearBlue,
+                width: 40,
+                height: 40,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 100,
+              },
+            },
+            todayBackgroundColor: colors.clearBlue,
+            todayTextColor: colors.white,
             textDayFontFamily: 'AppleSDGothicNeo',
             textMonthFontFamily: 'AppleSDGothicNeo',
             textDayHeaderFontFamily: 'AppleSDGothicNeo',
@@ -96,7 +159,7 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
         />
       </View>
     );
-  }, []);
+  }, [month, onClose, onSelected]);
 
   return (
     <AppBottomModal

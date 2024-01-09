@@ -6,30 +6,16 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {
-  Linking,
-  Modal,
-  Platform,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
-import AppSvgIcon from '@/components/AppSvgIcon';
-import {Currency, RkbProdByCountry} from '@/redux/api/productApi';
-import {API} from '@/redux/api';
-import {PurchaseItem} from '@/redux/models/purchaseItem';
 import i18n from '@/utils/i18n';
-import Env from '@/environment';
 import AppText from '@/components/AppText';
 
-import {ProductModelState, getDiscountRate} from '@/redux/modules/product';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {LocaleConfig} from 'react-native-calendars';
 import AppIcon from '@/components/AppIcon';
+import moment from 'moment';
 
 const styles = StyleSheet.create({
   DateBoxBtnFrame: {
@@ -45,10 +31,14 @@ const styles = StyleSheet.create({
 
 type DraftDateInputPageProps = {
   onClick: (val: boolean) => void;
+  selected: string;
 };
 
 // TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
-const DraftDateInputPage: React.FC<DraftDateInputPageProps> = ({onClick}) => {
+const DraftDateInputPage: React.FC<DraftDateInputPageProps> = ({
+  onClick,
+  selected,
+}) => {
   return (
     <>
       <View style={{paddingHorizontal: 20, flex: 1}}>
@@ -69,8 +59,14 @@ const DraftDateInputPage: React.FC<DraftDateInputPageProps> = ({onClick}) => {
               onClick(true);
               //   setShowPicker(true);
             }}>
-            <AppText style={[appStyles.normal16Text, {color: colors.greyish}]}>
-              {i18n.t('us:date:placeHolder')}
+            <AppText
+              style={[
+                appStyles.normal16Text,
+                {color: selected === '' ? colors.greyish : colors.black},
+              ]}>
+              {selected === ''
+                ? i18n.t('us:date:placeHolder')
+                : moment(selected).format('YYYY년 MM월 DD일')}
             </AppText>
             <AppIcon
               style={{alignSelf: 'center', justifyContent: 'center'}}

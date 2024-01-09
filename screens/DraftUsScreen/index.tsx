@@ -130,7 +130,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   const [showSnackBar, setShowSnackBar] = useState('');
   const [showPicker, setShowPicker] = useState(false);
   const [step, setStep] = useState(0);
-  const [actDate, setActDate] = useState('');
+  const [selected, setSelected] = useState('');
 
   useEffect(() => {
     navigation.setOptions({
@@ -262,9 +262,9 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
       {/* 스텝 1도 컴포넌트로 분리하기 */}
       {step === 1 && (
         <>
-          <DraftDateInputPage onClick={setShowPicker} />
+          <DraftDateInputPage selected={selected} onClick={setShowPicker} />
           {renderBottomBtn(() => {
-            if (actDate === '') setShowSnackBar(i18n.t('us:alert:selectDate'));
+            if (selected === '') setShowSnackBar(i18n.t('us:alert:selectDate'));
             else setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
           })}
         </>
@@ -279,6 +279,8 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
       <DatePickerModal
         visible={showPicker}
         onClose={() => setShowPicker(false)}
+        selected={selected}
+        onSelected={setSelected}
       />
 
       <AppSnackBar
