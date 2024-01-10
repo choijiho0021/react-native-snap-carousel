@@ -261,6 +261,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const showModal = useMemo(() => {
     if (showUsageModal && isDefined(showGiftModal)) return 'usage';
     if (!showUsageModal && showGiftModal) return 'gift';
+
     return 'noModal';
   }, [showGiftModal, showUsageModal]);
 
@@ -565,6 +566,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     },
     [
       action.order,
+      getIsChargeable,
       getOrders,
       iccid,
       navigation,

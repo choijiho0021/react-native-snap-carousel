@@ -127,7 +127,7 @@ export type ProdDesc = {
   desc2?: string;
   apn?: string;
   ftr?: string;
-  showVoice?: string;
+  clMtd?: string;
   caution?: string;
   email_notice?: string;
 };

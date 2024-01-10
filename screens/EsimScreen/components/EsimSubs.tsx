@@ -49,6 +49,8 @@ import {
 } from '@/redux/modules/order';
 import {AccountModelState} from '@/redux/modules/account';
 import {HomeStackParamList} from '@/navigation/navigation';
+import HowToCallModal from './HowToCallModal';
+import HtQrModal from './HtQrModal';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -401,6 +403,8 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [showSubs, setShowSubs] = useState<boolean>(!mainSubs.hide);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
+  const [showHtcModal, setShowHtcModal] = useState<boolean>(false);
+  const [showHtQrModal, setShowHtQrModal] = useState<boolean>(false);
   const navigation = useNavigation<EsimSubsNavigationProp>();
 
   useEffect(() => {
@@ -787,35 +791,61 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   }, [expired, mainSubs, navigation]);
 
   const renderHowToCall = useCallback(() => {
-    const showVoice = product.prodList.get(mainSubs?.prodId!)?.desc?.showVoice;
-
-    if (showVoice)
+    const clMtd = mainSubs?.clMtd;
+    if (clMtd)
       return (
-        <Pressable
-          style={[
-            styles.redirectHK,
-            {
-              backgroundColor: colors.white,
-            },
-          ]}
-          onPress={() => {}}>
-          <View style={styles.row}>
-            <AppSvgIcon name="phone" style={{marginTop: 1}} />
-            <AppText style={styles.redirectText}>
-              {i18n.t('esim:howToCall')}
-            </AppText>
-          </View>
+        <View>
+          <Pressable
+            style={[
+              styles.redirectHK,
+              {
+                backgroundColor: colors.white,
+              },
+            ]}
+            onPress={() => {
+              if (mainSubs?.clMtd) setShowHtcModal(true);
+            }}>
+            <View style={styles.row}>
+              <AppSvgIcon name="phone" style={{marginTop: 1}} />
+              <AppText style={styles.redirectText}>
+                {i18n.t('esim:howToCall')}
+              </AppText>
+            </View>
 
-          <View style={[styles.row, {justifyContent: 'flex-end'}]}>
-            <AppText style={styles.blueText}>
-              {i18n.t('esim:howToCall:check')}
-            </AppText>
-            <AppSvgIcon name="rightBlueBracket" />
-          </View>
-        </Pressable>
+            <View style={[styles.row, {justifyContent: 'flex-end'}]}>
+              <AppText style={styles.blueText}>
+                {i18n.t('esim:howToCall:check')}
+              </AppText>
+              <AppSvgIcon name="rightBlueBracket" />
+            </View>
+          </Pressable>
+        </View>
       );
     return null;
-  }, [mainSubs?.prodId, product.prodList]);
+  }, [mainSubs?.clMtd]);
+
+  const renderMvHtQr = useCallback(() => {
+    if (mainSubs.daily === 'daily' && mainSubs.partner === 'ht')
+      return (
+        <Pressable
+          style={{
+            justifyContent: 'center',
+            backgroundColor: colors.white,
+            flexDirection: 'row',
+            marginTop: 4,
+          }}
+          onPress={() => {
+            setShowHtQrModal(true);
+          }}>
+          <AppText style={styles.drafting}>
+            {i18n.t('esim:howToCall:moveToQr')}
+          </AppText>
+          <AppSvgIcon name="rightBlueBracket" />
+        </Pressable>
+      );
+
+    return null;
+  }, [mainSubs.daily, mainSubs.partner]);
 
   const renderMoveBtn = useCallback(() => {
     // 충전 버튼 출력 조건
@@ -983,10 +1013,27 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
             {renderHowToCall()}
 
+            {renderMvHtQr()}
+
             {!isht && renderMoveBtn()}
           </View>
         )}
       </View>
+
+      {mainSubs?.clMtd && (
+        <>
+          <HowToCallModal
+            visible={showHtcModal}
+            clMtd={mainSubs?.clMtd}
+            onOkClose={() => setShowHtcModal(false)}
+          />
+          <HtQrModal
+            visible={showHtQrModal}
+            onOkClose={() => setShowHtQrModal(false)}
+          />
+        </>
+      )}
+
       <AppModal
         type="info"
         buttonStyle={styles.btnStyle}
