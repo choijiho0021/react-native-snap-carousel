@@ -62,7 +62,6 @@ import {
 } from '@/redux/modules/modal';
 import AppButton from '@/components/AppButton';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
-import HowToCallModal from './components/HowToCallModal';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -262,6 +261,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const showModal = useMemo(() => {
     if (showUsageModal && isDefined(showGiftModal)) return 'usage';
     if (!showUsageModal && showGiftModal) return 'gift';
+
     return 'noModal';
   }, [showGiftModal, showUsageModal]);
 
@@ -566,6 +566,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     },
     [
       action.order,
+      getIsChargeable,
       getOrders,
       iccid,
       navigation,
@@ -851,8 +852,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           }}
         />
       )}
-
-      <HowToCallModal visible={true} clMtd={'dtac'} />
 
       {isEditMode && (
         <AppButton

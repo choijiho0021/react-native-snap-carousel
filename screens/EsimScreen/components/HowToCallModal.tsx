@@ -1,24 +1,11 @@
-import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {
-  Dimensions,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import AsyncStorage from '@react-native-community/async-storage';
-import moment from 'moment';
+import React, {memo, useCallback, useMemo} from 'react';
+import {ScrollView, StyleSheet, View} from 'react-native';
 import AppModal from '@/components/AppModal';
-import AppIcon from '@/components/AppIcon';
-import AppButton from '@/components/AppButton';
 import {colors} from '@/constants/Colors';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import AppText from '@/components/AppText';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {navigate} from '@/navigation/navigation';
-import {MAX_WIDTH} from '@/constants/SliderEntry.style';
 import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
@@ -33,7 +20,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 20,
+    padding: 20,
   },
   title: {
     ...appStyles.bold20Text,
@@ -103,7 +90,7 @@ const styles = StyleSheet.create({
 type HowToCallModalProps = {
   visible: boolean;
   clMtd: string; // ”ais” | ”ustotal” | ”usdaily” | ”dtac"
-  onOkClose?: () => void;
+  onOkClose: () => void;
 };
 
 const HowToCallModal: React.FC<HowToCallModalProps> = ({
@@ -111,10 +98,8 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
   clMtd,
   onOkClose,
 }) => {
-  const navigation = useNavigation();
-  const route = useRoute();
   const callCntry = useMemo(
-    () => (clMtd.startsWith('us') ? 'usa' : 'thailand'),
+    () => (clMtd?.startsWith('us') ? 'usa' : 'thailand'),
     [clMtd],
   );
 
@@ -328,17 +313,22 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
       onOkClose={() => {}}
       onCancelClose={() => {}}
       visible={visible}>
+      <View style={styles.header}>
+        <AppText style={{...appStyles.bold18Text}}>
+          {i18n.t('esim:howToCall')}
+        </AppText>
+        <AppSvgIcon
+          key="closeModal"
+          onPress={() => {
+            onOkClose();
+          }}
+          name="closeModal"
+        />
+      </View>
       <ScrollView
         style={{
           paddingHorizontal: 20,
         }}>
-        <View style={styles.header}>
-          <AppText style={{...appStyles.bold18Text}}>
-            {i18n.t('esim:howToCall')}
-          </AppText>
-          <AppSvgIcon key="closeModal" onPress={() => {}} name="closeModal" />
-        </View>
-
         <AppText style={styles.title}>
           {i18n.t(`esim:howToCall:title:${clMtd}`)}
         </AppText>

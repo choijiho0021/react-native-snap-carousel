@@ -4,6 +4,8 @@ import i18n from '@/utils/i18n';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import {isDraft} from '../modules/order';
 import Env from '@/environment';
+import {parseJson} from '@/utils/utils';
+import {ProdDesc} from './productApi';
 
 const {specialCategories} = Env.get();
 
@@ -179,6 +181,7 @@ export type RkbSubscription = {
   noticeOption: string[];
   daily?: string;
   dataVolume?: string;
+  desc?: ProdDesc;
 
   refSubs?: string;
   flagImage?: string;
@@ -301,6 +304,7 @@ const subsFulfillWithValue = (resp) => {
         .filter((v) => !_.isEmpty(v)),
 
       partner: o.partner,
+      desc: parseJson(o.desc),
       status: toStatus(o.field_status),
       purchaseDate: getMoment(o.purchaseDate),
       expireDate: getMoment(o.expireDate),

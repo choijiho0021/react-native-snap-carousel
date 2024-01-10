@@ -49,6 +49,7 @@ import {
 } from '@/redux/modules/order';
 import {AccountModelState} from '@/redux/modules/account';
 import {HomeStackParamList} from '@/navigation/navigation';
+import HowToCallModal from './HowToCallModal';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -401,6 +402,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [showSubs, setShowSubs] = useState<boolean>(!mainSubs.hide);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
+  const [showHtcModal, setShowHtcModal] = useState<boolean>(false);
   const navigation = useNavigation<EsimSubsNavigationProp>();
 
   useEffect(() => {
@@ -787,9 +789,8 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   }, [expired, mainSubs, navigation]);
 
   const renderHowToCall = useCallback(() => {
-    const showVoice = product.prodList.get(mainSubs?.prodId!)?.desc?.showVoice;
-
-    if (showVoice)
+    const clMtd = mainSubs.desc?.clMtd;
+    if (clMtd)
       return (
         <Pressable
           style={[
@@ -798,7 +799,9 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               backgroundColor: colors.white,
             },
           ]}
-          onPress={() => {}}>
+          onPress={() => {
+            if (mainSubs?.desc?.clMtd) setShowHtcModal(true);
+          }}>
           <View style={styles.row}>
             <AppSvgIcon name="phone" style={{marginTop: 1}} />
             <AppText style={styles.redirectText}>
@@ -815,7 +818,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         </Pressable>
       );
     return null;
-  }, [mainSubs?.prodId, product.prodList]);
+  }, [mainSubs.desc?.clMtd]);
 
   const renderMoveBtn = useCallback(() => {
     // 충전 버튼 출력 조건
@@ -987,6 +990,13 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           </View>
         )}
       </View>
+
+      <HowToCallModal
+        visible={showHtcModal}
+        clMtd={mainSubs?.desc?.clMtd}
+        onOkClose={() => setShowHtcModal(false)}
+      />
+
       <AppModal
         type="info"
         buttonStyle={styles.btnStyle}
