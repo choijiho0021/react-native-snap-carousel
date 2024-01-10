@@ -1,35 +1,26 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
+import React, {
+  ReactNode,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {Image, Pressable, StyleSheet, View} from 'react-native';
+import {connect} from 'react-redux';
+import {RootState} from '@reduxjs/toolkit';
 import i18n from '@/utils/i18n';
+import AppText from '@/components/AppText';
 
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import AppBottomModal from './AppBottomModal';
-import AppText from '@/components/AppText';
+import AppIcon from '@/components/AppIcon';
 import moment from 'moment';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import AppStyledText from '@/components/AppStyledText';
+import AppBottomModal from './AppBottomModal';
 
 const styles = StyleSheet.create({
-  DeviceBoxBtnFrame: {
-    padding: 16,
-    gap: 8,
-    borderRadius: 3,
-    backgroundColor: colors.clearBlue,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  modalNotiText: {
-    ...appStyles.semiBold14Text,
-    color: colors.black,
-    lineHeight: 22,
-  },
-  modalNotiTextBold: {
-    ...appStyles.semiBold14Text,
-    color: colors.clearBlue,
-    lineHeight: 22,
-  },
-
   modalText: {
     ...appStyles.bold18Text,
     color: colors.black,
@@ -43,25 +34,32 @@ const styles = StyleSheet.create({
     ...appStyles.bold14Text,
     color: colors.warmGrey,
   },
+  modalNotiText: {
+    ...appStyles.semiBold14Text,
+    color: colors.black,
+    lineHeight: 22,
+  },
+  modalNotiTextBold: {
+    ...appStyles.semiBold14Text,
+    color: colors.clearBlue,
+    lineHeight: 22,
+  },
+
   guideImg: {
     width: 335,
     height: 79,
   },
 });
 
-type DatePickerModalProps = {
+type UsDeviceInputModalProps = {
   visible: boolean;
-  onClose: (val: boolean) => void;
-  selected: string;
-  onSelected: (val: string) => void;
+  setVisible: (val: boolean) => void;
 };
 
 // TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
-const DatePickerModal: React.FC<DatePickerModalProps> = ({
+const UsDeviceInputModal: React.FC<UsDeviceInputModalProps> = ({
+  setVisible,
   visible,
-  onClose,
-  selected,
-  onSelected,
 }) => {
   const modalTitle = useMemo(() => {
     return (
@@ -149,58 +147,21 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
         </View>
       </View>
     );
-  }, []);
+  }, [setVisible]);
 
   return (
-    <>
-      <View style={{marginVertical: 24, width: '50%'}}>
-        <AppText style={appStyles.bold24Text}>
-          {i18n.t('us:device:title')}
-        </AppText>
-      </View>
-      <View style={{gap: 8, marginBottom: 40}}>
-        <View style={{flexDirection: 'row', gap: 6, alignItems: 'center'}}>
-          <AppText
-            style={[
-              appStyles.bold16Text,
-              {color: colors.black, lineHeight: 22},
-            ]}>
-            {i18n.t('us:device:info')}
-          </AppText>
-
-          <AppSvgIcon name="alarmFill" onPress={() => setVisible(true)} />
-        </View>
-
-        <Pressable
-          style={styles.DeviceBoxBtnFrame}
-          onPress={() => {
-            console.log('@@@ 단말 정보 업로드 클릭 했을 때 모달 출력 ');
-            setUploadModalVisible(true);
-            //   setShowPicker(true);
-          }}>
-          <AppText style={[appStyles.medium18, {color: colors.white}]}>
-            {i18n.t('us:device:upload')}
-          </AppText>
-          <AppIcon
-            style={{alignSelf: 'center', justifyContent: 'center'}}
-            name="plusWhite"
-          />
-        </Pressable>
-
-        <AppBottomModal
-          visible={visible}
-          isCloseBtn={false}
-          onClose={() => {
-            setVisible(false);
-          }}
-          title={modalTitle}
-          body={modalBody}
-        />
-      </View>
-    </>
+    <AppBottomModal
+      visible={visible}
+      isCloseBtn={false}
+      onClose={() => {
+        setVisible(false);
+      }}
+      title={modalTitle}
+      body={modalBody}
+    />
   );
 };
 
-// export default memo(DatePickerModal);
-
-export default DatePickerModal;
+export default connect(({product}: RootState) => ({
+  product,
+}))(UsDeviceInputModal);

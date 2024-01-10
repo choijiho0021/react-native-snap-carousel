@@ -33,6 +33,7 @@ import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppNotiBox from '@/components/AppNotiBox';
+import DraftDateInputPage from './component/DraftDateInputPage';
 import AppBottomModal from './component/AppBottomModal';
 import DatePickerModal from './component/DatePickerModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -253,17 +254,14 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
       {/* 스텝 1도 컴포넌트로 분리하기 */}
       {step === 1 && (
         <>
-          <DraftInputPage selected={selected} onClick={setShowPicker} />
+          <DraftInputPage
+            selected={selected}
+            setDateModalVisible={setShowPicker}
+          />
           {renderBottomBtn(() => {
             if (selected === '') setShowSnackBar(i18n.t('us:alert:selectDate'));
             else setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
           })}
-        </>
-      )}
-      {step === 2 && (
-        <>
-          <DraftInputPage selected={selected} onClick={setShowPicker} />
-          {renderBottomBtn()}
         </>
       )}
 
