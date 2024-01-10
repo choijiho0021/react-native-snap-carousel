@@ -50,6 +50,7 @@ import {
 import {AccountModelState} from '@/redux/modules/account';
 import {HomeStackParamList} from '@/navigation/navigation';
 import HowToCallModal from './HowToCallModal';
+import HtQrModal from './HtQrModal';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -403,6 +404,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   const [showSubs, setShowSubs] = useState<boolean>(!mainSubs.hide);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
   const [showHtcModal, setShowHtcModal] = useState<boolean>(false);
+  const [showHtQrModal, setShowHtQrModal] = useState<boolean>(false);
   const navigation = useNavigation<EsimSubsNavigationProp>();
 
   useEffect(() => {
@@ -792,30 +794,47 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     const clMtd = mainSubs.desc?.clMtd;
     if (clMtd)
       return (
-        <Pressable
-          style={[
-            styles.redirectHK,
-            {
-              backgroundColor: colors.white,
-            },
-          ]}
-          onPress={() => {
-            if (mainSubs?.desc?.clMtd) setShowHtcModal(true);
-          }}>
-          <View style={styles.row}>
-            <AppSvgIcon name="phone" style={{marginTop: 1}} />
-            <AppText style={styles.redirectText}>
-              {i18n.t('esim:howToCall')}
-            </AppText>
-          </View>
+        <View>
+          <Pressable
+            style={[
+              styles.redirectHK,
+              {
+                backgroundColor: colors.white,
+              },
+            ]}
+            onPress={() => {
+              if (mainSubs?.desc?.clMtd) setShowHtcModal(true);
+            }}>
+            <View style={styles.row}>
+              <AppSvgIcon name="phone" style={{marginTop: 1}} />
+              <AppText style={styles.redirectText}>
+                {i18n.t('esim:howToCall')}
+              </AppText>
+            </View>
 
-          <View style={[styles.row, {justifyContent: 'flex-end'}]}>
-            <AppText style={styles.blueText}>
-              {i18n.t('esim:howToCall:check')}
+            <View style={[styles.row, {justifyContent: 'flex-end'}]}>
+              <AppText style={styles.blueText}>
+                {i18n.t('esim:howToCall:check')}
+              </AppText>
+              <AppSvgIcon name="rightBlueBracket" />
+            </View>
+          </Pressable>
+          <Pressable
+            style={{
+              justifyContent: 'center',
+              backgroundColor: colors.white,
+              flexDirection: 'row',
+              marginTop: 4,
+            }}
+            onPress={() => {
+              setShowHtQrModal(true);
+            }}>
+            <AppText style={styles.drafting}>
+              {i18n.t('esim:howToCall:moveToQr')}
             </AppText>
             <AppSvgIcon name="rightBlueBracket" />
-          </View>
-        </Pressable>
+          </Pressable>
+        </View>
       );
     return null;
   }, [mainSubs.desc?.clMtd]);
@@ -991,11 +1010,19 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         )}
       </View>
 
-      <HowToCallModal
-        visible={showHtcModal}
-        clMtd={mainSubs?.desc?.clMtd}
-        onOkClose={() => setShowHtcModal(false)}
-      />
+      {mainSubs?.desc?.clMtd && (
+        <>
+          <HowToCallModal
+            visible={showHtcModal}
+            clMtd={mainSubs?.desc?.clMtd}
+            onOkClose={() => setShowHtcModal(false)}
+          />
+          <HtQrModal
+            visible={showHtQrModal}
+            onOkClose={() => setShowHtQrModal(false)}
+          />
+        </>
+      )}
 
       <AppModal
         type="info"

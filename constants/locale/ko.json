@@ -83,6 +83,8 @@
   "eid": "EID",
   "example": "예) ",
   "imei2:esim": "IMEI2(eSIM)",
+  "android": "안드로이드폰",
+  "ios": "아이폰",
 
   "purchase:date": "{{date}} 구매",
 
@@ -651,6 +653,9 @@
   "esim:howToCall": "통화 방법",
   "esim:howToCall:check": "확인하기",
   "esim:howToCall:moveToQr": "eSIM 추가가 안 되나요?",
+  "esim:howToCall:moveToQr:txt": "eSIM 추가 시 자동 설치·개통되지 않고,\n<b>eSIM 추가 방법 선택 화면으로 넘어가는 경우\n아래 QR코드를 스캔</b>하여 eSIM을 추가해보세요.",
+  "esim:howToCall:moveToQr:txt:ios": "설정>셀룰러>eSIM 추가>QR 코드 사용 버튼 클릭!",
+  "esim:howToCall:moveToQr:txt:android": "설정>연결>SIM 관리자>eSIM 추가>QR 코드 스캔 버튼 클릭!",
   "esim:howToCall:title:ais": "태국 로컬망 데이터 종량제 상품\n통신사:AIS",
   "esim:howToCall:title:ustotal": "미국 로컬망 데이터 종량제 상품",
   "esim:howToCall:title:usdaily": "미국 로컬망 데이터 무제한 상품",

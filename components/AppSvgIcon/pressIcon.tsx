@@ -4371,6 +4371,23 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Circle cx="4" cy="140" r="2" fill="#fff" />
     </Svg>,
   ],
+  triangleCaution: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M11.135 3.495a1 1 0 0 1 1.73 0l9.266 16.004A1 1 0 0 1 21.266 21H2.734a1 1 0 0 1-.865-1.501l9.266-16.004z"
+        fill="#ED4847"
+      />
+      <Path
+        d="M13 18a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM11 9.857c0-.473.448-.857 1-.857s1 .384 1 .857v4.286c0 .473-.448.857-1 .857s-1-.384-1-.857V9.857z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;
