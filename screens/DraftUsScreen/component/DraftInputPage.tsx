@@ -78,14 +78,14 @@ const styles = StyleSheet.create({
   },
 });
 
-type DraftDeviceInputPageProps = {
+type DraftInputPageProps = {
   selected: string;
   onClick: (val: boolean) => void;
   setSnackBar: (val: string) => void;
 };
 
 // TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
-const DraftDeviceInputPage: React.FC<DraftDeviceInputPageProps> = ({
+const DraftInputPage: React.FC<DraftInputPageProps> = ({
   selected,
   onClick,
   setSnackBar,
@@ -262,14 +262,9 @@ const DraftDeviceInputPage: React.FC<DraftDeviceInputPageProps> = ({
     );
   }, []);
 
-  return (
-    <>
-      <View style={{paddingHorizontal: 20, flex: 1}}>
-        <View style={{marginVertical: 24, width: '50%'}}>
-          <AppText style={appStyles.bold24Text}>
-            {i18n.t('us:device:title')}
-          </AppText>
-        </View>
+  const renderDeviceInput = useCallback(() => {
+    return (
+      <>
         <View style={{gap: 8, marginBottom: 40}}>
           <View style={{flexDirection: 'row', gap: 6, alignItems: 'center'}}>
             <AppText
@@ -297,6 +292,20 @@ const DraftDeviceInputPage: React.FC<DraftDeviceInputPageProps> = ({
             />
           </Pressable>
         </View>
+      </>
+    );
+  }, []);
+
+  return (
+    <>
+      <View style={{paddingHorizontal: 20, flex: 1}}>
+        <View style={{marginVertical: 24, width: '50%'}}>
+          <AppText style={appStyles.bold24Text}>
+            {i18n.t(selected ? 'us:device:title' : 'us:step1:title')}
+          </AppText>
+        </View>
+
+        {selected && renderDeviceInput()}
 
         <View style={{gap: 8, marginBottom: 8}}>
           <AppText style={[appStyles.normal14Text, {color: colors.greyish}]}>
@@ -328,7 +337,14 @@ const DraftDeviceInputPage: React.FC<DraftDeviceInputPageProps> = ({
                   justifyContent: 'center',
                 },
               ]}>
-              {i18n.t('modify')}
+              {selected ? (
+                i18n.t('modify')
+              ) : (
+                <AppIcon
+                  style={{alignSelf: 'center', justifyContent: 'center'}}
+                  name="iconCalendar"
+                />
+              )}
             </AppText>
           </Pressable>
         </View>
@@ -346,6 +362,7 @@ const DraftDeviceInputPage: React.FC<DraftDeviceInputPageProps> = ({
           ))}
         </View>
       </View>
+
       <AppBottomModal
         visible={visible}
         isCloseBtn={false}
@@ -371,4 +388,4 @@ const DraftDeviceInputPage: React.FC<DraftDeviceInputPageProps> = ({
 
 export default connect(({product}: RootState) => ({
   product,
-}))(DraftDeviceInputPage);
+}))(DraftInputPage);

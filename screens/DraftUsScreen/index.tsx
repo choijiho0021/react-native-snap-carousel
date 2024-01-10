@@ -33,11 +33,10 @@ import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppNotiBox from '@/components/AppNotiBox';
-import DraftDateInputPage from './component/DraftDateInputPage';
 import AppBottomModal from './component/AppBottomModal';
 import DatePickerModal from './component/DatePickerModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import DraftDeviceInputPage from './component/DraftDeviceInputPage';
+import DraftInputPage from './component/DraftInputPage';
 
 const styles = StyleSheet.create({
   container: {
@@ -254,7 +253,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
       {/* 스텝 1도 컴포넌트로 분리하기 */}
       {step === 1 && (
         <>
-          <DraftDateInputPage selected={selected} onClick={setShowPicker} />
+          <DraftInputPage selected={selected} onClick={setShowPicker} />
           {renderBottomBtn(() => {
             if (selected === '') setShowSnackBar(i18n.t('us:alert:selectDate'));
             else setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
@@ -263,7 +262,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
       )}
       {step === 2 && (
         <>
-          <DraftDeviceInputPage selected={selected} onClick={setShowPicker} />
+          <DraftInputPage selected={selected} onClick={setShowPicker} />
           {renderBottomBtn()}
         </>
       )}
