@@ -64,11 +64,11 @@ const styles = StyleSheet.create({
     color: colors.black,
     lineHeight: 22,
   },
-  modalNotiText: {
+  modalNotiText2: {
     ...appStyles.medium14,
     color: colors.warmGrey,
   },
-  modalNotiBoldText: {
+  modalNotiTextBold2: {
     ...appStyles.bold14Text,
     color: colors.warmGrey,
   },
@@ -91,6 +91,88 @@ const DraftDeviceInputPage: React.FC<DraftDeviceInputPageProps> = ({
   setSnackBar,
 }) => {
   const [visible, setVisible] = useState(false);
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
+
+  const uploadModalTitle = useMemo(() => {
+    return (
+      <View style={{paddingVertical: 24, paddingHorizontal: 4}}>
+        <AppText style={appStyles.bold24Text}>{'단말 정보 업로드'}</AppText>
+      </View>
+    );
+  }, []);
+
+  const uploadModalBody = useMemo(() => {
+    return (
+      <View style={{paddingHorizontal: 20}}>
+        <Image
+          style={{width: '100%', marginBottom: 8}}
+          source={require('@/assets/images/esim/deviceInfoUpload.png')}
+          resizeMode="contain"
+        />
+
+        <View style={{marginBottom: 48}}>
+          <AppStyledText
+            text={
+              '다이얼에서 <b>*#06#</b>을 누르면 나오는 단말 정보 화면을 준비해 주세요.'
+            }
+            textStyle={[appStyles.medium16, {color: colors.black}]}
+            format={{b: [appStyles.bold16Text, {color: colors.clearBlue}]}}
+          />
+        </View>
+
+        <View style={{gap: 16}}>
+          <Pressable
+            onPress={() => setVisible(false)}
+            style={{
+              alignItems: 'center',
+              paddingVertical: 15,
+              backgroundColor: colors.clearBlue,
+            }}>
+            <AppText
+              style={[
+                appStyles.medium18,
+                {color: colors.white, lineHeight: 26},
+              ]}>
+              {'바코드로 스캔하기(디자인 안나옴)'}
+            </AppText>
+          </Pressable>
+
+          <Pressable
+            onPress={() => setVisible(false)}
+            style={{
+              alignItems: 'center',
+              paddingVertical: 15,
+              backgroundColor: colors.clearBlue,
+            }}>
+            <AppText
+              style={[
+                appStyles.medium18,
+                {color: colors.white, lineHeight: 26},
+              ]}>
+              {'캡처 화면 업로드하기'}
+            </AppText>
+          </Pressable>
+
+          <Pressable
+            onPress={() => setVisible(false)}
+            style={{
+              alignItems: 'center',
+              paddingVertical: 15,
+              borderWidth: 1,
+              borderColor: colors.clearBlue,
+            }}>
+            <AppText
+              style={[
+                appStyles.medium18,
+                {color: colors.clearBlue, lineHeight: 26},
+              ]}>
+              {'수동 직접 입력하기'}
+            </AppText>
+          </Pressable>
+        </View>
+      </View>
+    );
+  }, []);
 
   const modalTitle = useMemo(() => {
     return (
@@ -107,7 +189,7 @@ const DraftDeviceInputPage: React.FC<DraftDeviceInputPageProps> = ({
       <View style={{paddingHorizontal: 20, marginTop: 24}}>
         <View style={{gap: 8, marginBottom: 24}}>
           <AppText style={styles.modalText}>
-            {'단말 정보 등록 전\nIMEI2가 사용 가능한 SIM인지 확인해주세요!'}
+            {i18n.t('us:device:modal:noti1')}
           </AppText>
           <View
             style={{
@@ -116,11 +198,9 @@ const DraftDeviceInputPage: React.FC<DraftDeviceInputPageProps> = ({
               borderColor: colors.lightGrey,
             }}>
             <AppStyledText
-              text={
-                'IMEI2에 연결된 USIM 또는 eSIM이 있으면 미국 현지 도착 시 <b>eSIM 상품이 연결되지 않을 수 있습니다.</b>'
-              }
-              textStyle={styles.modalNotiText}
-              format={{b: styles.modalNotiBoldText}}
+              text={i18n.t('us:device:modal:noti2')}
+              textStyle={styles.modalNotiText2}
+              format={{b: styles.modalNotiTextBold2}}
             />
           </View>
         </View>
@@ -206,8 +286,7 @@ const DraftDeviceInputPage: React.FC<DraftDeviceInputPageProps> = ({
           <Pressable
             style={styles.DeviceBoxBtnFrame}
             onPress={() => {
-              console.log('@@@ onPress 클릭');
-              //   setShowPicker(true);
+              setUploadModalVisible(true);
             }}>
             <AppText style={[appStyles.medium18, {color: colors.white}]}>
               {i18n.t('us:device:upload')}
@@ -275,6 +354,16 @@ const DraftDeviceInputPage: React.FC<DraftDeviceInputPageProps> = ({
         }}
         title={modalTitle}
         body={modalBody}
+      />
+
+      <AppBottomModal
+        visible={uploadModalVisible}
+        isCloseBtn={false}
+        onClose={() => {
+          setUploadModalVisible(false);
+        }}
+        title={uploadModalTitle}
+        body={uploadModalBody}
       />
     </>
   );
