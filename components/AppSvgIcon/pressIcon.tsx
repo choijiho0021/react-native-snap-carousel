@@ -2999,6 +2999,22 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Path d="m8 20 8-8-8-8" stroke="#fff" strokeLinecap="round" />
     </Svg>,
   ],
+  arrowRightBlue16: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="m6.4 3.2 4.525 4.526L6.4 12.25"
+        stroke="#2A7FF6"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
   imgFaq: [
     <Svg
       width="59"

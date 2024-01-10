@@ -16,52 +16,28 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppStyledText from '@/components/AppStyledText';
 import AppBottomModal from './AppBottomModal';
+import {UsDeviceInputType} from './DraftInputPage';
 
-const styles = StyleSheet.create({
-  modalText: {
-    ...appStyles.bold18Text,
-    color: colors.black,
-    lineHeight: 22,
-  },
-  modalNotiText2: {
-    ...appStyles.medium14,
-    color: colors.warmGrey,
-  },
-  modalNotiTextBold2: {
-    ...appStyles.bold14Text,
-    color: colors.warmGrey,
-  },
-  modalNotiText: {
-    ...appStyles.semiBold14Text,
-    color: colors.black,
-    lineHeight: 22,
-  },
-  modalNotiTextBold: {
-    ...appStyles.semiBold14Text,
-    color: colors.clearBlue,
-    lineHeight: 22,
-  },
-
-  guideImg: {
-    width: 335,
-    height: 79,
-  },
-});
+const styles = StyleSheet.create({});
 
 type UsDeviceInputModalProps = {
   visible: boolean;
   setVisible: (val: boolean) => void;
+  onClickButton: (val: UsDeviceInputType) => void;
 };
 
 // TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
 const UsDeviceInputModal: React.FC<UsDeviceInputModalProps> = ({
   setVisible,
   visible,
+  onClickButton,
 }) => {
   const uploadModalTitle = useMemo(() => {
     return (
       <View style={{paddingVertical: 24, paddingHorizontal: 4}}>
-        <AppText style={appStyles.bold24Text}>{'단말 정보 업로드'}</AppText>
+        <AppText style={appStyles.bold24Text}>
+          {i18n.t('us:device:modal:input:title')}
+        </AppText>
       </View>
     );
   }, []);
@@ -77,67 +53,42 @@ const UsDeviceInputModal: React.FC<UsDeviceInputModalProps> = ({
 
         <View style={{marginBottom: 48}}>
           <AppStyledText
-            text={
-              '다이얼에서 <b>*#06#</b>을 누르면 나오는 단말 정보 화면을 준비해 주세요.'
-            }
+            text={i18n.t('us:device:modal:input:text')}
             textStyle={[appStyles.medium16, {color: colors.black}]}
             format={{b: [appStyles.bold16Text, {color: colors.clearBlue}]}}
           />
         </View>
 
         <View style={{gap: 16}}>
-          <Pressable
-            onPress={() => setVisible(false)}
-            style={{
-              alignItems: 'center',
-              paddingVertical: 15,
-              backgroundColor: colors.clearBlue,
-            }}>
-            <AppText
-              style={[
-                appStyles.medium18,
-                {color: colors.white, lineHeight: 26},
-              ]}>
-              {'바코드로 스캔하기(디자인 안나옴)'}
-            </AppText>
-          </Pressable>
-
-          <Pressable
-            onPress={() => setVisible(false)}
-            style={{
-              alignItems: 'center',
-              paddingVertical: 15,
-              backgroundColor: colors.clearBlue,
-            }}>
-            <AppText
-              style={[
-                appStyles.medium18,
-                {color: colors.white, lineHeight: 26},
-              ]}>
-              {'캡처 화면 업로드하기'}
-            </AppText>
-          </Pressable>
-
-          <Pressable
-            onPress={() => setVisible(false)}
-            style={{
-              alignItems: 'center',
-              paddingVertical: 15,
-              borderWidth: 1,
-              borderColor: colors.clearBlue,
-            }}>
-            <AppText
-              style={[
-                appStyles.medium18,
-                {color: colors.clearBlue, lineHeight: 26},
-              ]}>
-              {'수동 직접 입력하기'}
-            </AppText>
-          </Pressable>
+          {['barcode', 'capture', 'manual'].map((type) => (
+            <Pressable
+              onPress={() => {
+                onClickButton(type);
+              }}
+              style={{
+                alignItems: 'center',
+                paddingVertical: 15,
+                borderWidth: type === 'capture' ? 0 : 1,
+                borderColor: colors.clearBlue,
+                backgroundColor:
+                  type === 'capture' ? colors.clearBlue : colors.white,
+              }}>
+              <AppText
+                style={[
+                  appStyles.medium18,
+                  {
+                    color: type === 'capture' ? colors.white : colors.clearBlue,
+                    lineHeight: 26,
+                  },
+                ]}>
+                {i18n.t(`us:device:modal:input:button:${type}`)}
+              </AppText>
+            </Pressable>
+          ))}
         </View>
       </View>
     );
-  }, [setVisible]);
+  }, [onClickButton]);
 
   return (
     <AppBottomModal
