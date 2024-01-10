@@ -809,6 +809,12 @@
   "us:btn:back": "이전",
   "us:btn:next": "다음",
 
+  "us:device:modal:input:title": "단말 정보 업로드",
+  "us:device:modal:input:text": "다이얼에서 <b>*#06#</b>을 누르면 나오는 단말 정보 화면을 준비해 주세요.",
+  "us:device:modal:input:button:barcode": "바코드로 스캔하기",
+  "us:device:modal:input:button:capture": "캡처 화면 업로드하기",
+  "us:device:modal:input:button:manual": "수동 직접 입력하기",
+
   "redirectHK": "실명 인증",
   "redirectHK:info1": "홍콩·대만 정부의 통신 정책 변경으로, <b>홍콩·대만 현지 데이터를 사용하고자 하는 모든 사용자</b>(내/외국인 포함)는 <b>실명 인증을 필수로 진행</b>하셔야 합니다.\n현지 도착 후 곧바로 데이터를 사용하기 위해, <b>한국에서 실명 인증을 완료해주세요!</b>",
   "redirectHK:info3": "하단의 실명 인증 가이드와 ICCID를 확인하신 후,\n실명 인증 등록하기 버튼을 눌러주세요.",

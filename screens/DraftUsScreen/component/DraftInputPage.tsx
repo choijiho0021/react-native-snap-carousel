@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
@@ -20,6 +20,8 @@ type DraftInputPageProps = {
   setSnackBar: (val: string) => void;
 };
 
+export type UsDeviceInputType = 'none' | 'barcode' | 'capture' | 'manual';
+
 // TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
 const DraftInputPage: React.FC<DraftInputPageProps> = ({
   selected,
@@ -28,6 +30,17 @@ const DraftInputPage: React.FC<DraftInputPageProps> = ({
 }) => {
   const [infoModalVisible, setInfoModalVisible] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [deviceInputType, setDeviceInputType] =
+    useState<UsDeviceInputType>('none');
+
+  const onClickDeviceInputBtn = useCallback((type: UsDeviceInputType) => {
+    setDeviceInputType(type);
+    setUploadModalVisible(false);
+  }, []);
+
+  useEffect(() => {
+    console.log('deviceInputType : ', deviceInputType);
+  }, [deviceInputType]);
 
   return (
     <>
@@ -42,6 +55,7 @@ const DraftInputPage: React.FC<DraftInputPageProps> = ({
           <UsDeviceInput
             onClickInfo={setInfoModalVisible}
             onClickButton={setUploadModalVisible}
+            inputType={deviceInputType}
           />
         )}
         <UsDateInput selected={selected} onClick={setDateModalVisible} />
@@ -55,6 +69,7 @@ const DraftInputPage: React.FC<DraftInputPageProps> = ({
       <UsDeviceInputModal
         visible={uploadModalVisible}
         setVisible={setUploadModalVisible}
+        onClickButton={onClickDeviceInputBtn}
       />
     </>
   );
