@@ -643,7 +643,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             navigate(navigation, route, 'EsimStack', {
               tab: 'MyPageStack',
               initial: false,
-              screen: 'Draft',
+              screen:
+                currentOrder.partner?.toLowerCase() === 'ht'
+                  ? 'DraftUs'
+                  : 'Draft',
               params: {
                 orderId: currentOrder?.orderId,
               },

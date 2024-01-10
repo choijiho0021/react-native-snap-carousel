@@ -71,6 +71,7 @@ type ProductDetailListPros = {
   notiComponent?: any;
   footerComponent?: any;
   isGradient?: boolean;
+  isFooter?: boolean;
 };
 
 const ProductDetailList: React.FC<ProductDetailListPros> = ({
@@ -80,6 +81,7 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
   notiComponent,
   footerComponent,
   isGradient = false,
+  isFooter = true,
 }) => {
   const renderItem = useCallback(
     ({item, isLast}: {item: ProdDesc; isLast?: boolean}) => {
@@ -147,7 +149,7 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
             return renderItem({item: r, isLast: index === prods.length - 1});
           })}
         </View>
-        {footerComponent}
+        {isFooter && footerComponent}
       </View>
     </View>
   );

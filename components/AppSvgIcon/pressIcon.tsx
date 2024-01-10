@@ -254,6 +254,41 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  alarmFill: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="10" cy="10" r="9" fill="#AAA" />
+      <Rect
+        x="11"
+        y="15"
+        width="2"
+        height="7"
+        rx="1"
+        transform="rotate(-180 11 15)"
+        fill="#fff"
+      />
+      <Circle cx="10" cy="6" r="1" transform="rotate(-180 10 6)" fill="#fff" />
+    </Svg>,
+  ],
+  plusWhite: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M11 6a1 1 0 1 0-2 0v3H6a1 1 0 1 0 0 2h3v3a1 1 0 1 0 2 0v-3h3a1 1 0 1 0 0-2h-3V6z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
   plus: [
     <Svg
       width="24"
@@ -1323,6 +1358,21 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         fillRule="evenodd"
         clipRule="evenodd"
         d="M1 3h3.18l2.84 14.196A1 1 0 0 0 8 18h12a1 1 0 0 0 .94-.658l4-11A1 1 0 0 0 24 5H6.62l-.64-3.196A1 1 0 0 0 5 1H1v2zm7.82 13-1.8-9h15.552L19.3 16H8.82zM10 21a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-3 1A3 3 0 1 1 13 22 3 3 0 0 1 7 22zm11-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-3 1A3 3 0 1 1 21 22 3 3 0 0 1 15 22z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
+  iconCalendar: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4.923.23a1 1 0 0 1 1 1v.231h4.154v-.23a1 1 0 1 1 2 0v.23h.692a3 3 0 0 1 3 3v8.308a3 3 0 0 1-3 3H3.231a3 3 0 0 1-3-3V4.46a3 3 0 0 1 3-3h.692v-.23a1 1 0 0 1 1-1zm5.154 3.231v.231a1 1 0 1 0 2 0v-.23h.692a1 1 0 0 1 1 1v1.307H2.231V4.46a1 1 0 0 1 1-1h.692v.231a1 1 0 0 0 2 0v-.23h4.154zM2.231 7.77v5a1 1 0 0 0 1 1h9.538a1 1 0 0 0 1-1v-5H2.231zm4.923 2.692a1 1 0 0 1-1 1h-1.23a1 1 0 1 1 0-2h1.23a1 1 0 0 1 1 1zm3.923 1a1 1 0 1 0 0-2h-1.23a1 1 0 1 0 0 2h1.23z"
         fill="#2C2C2C"
       />
     </Svg>,
@@ -3275,6 +3325,114 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Defs>
         <ClipPath id="1dajot839a">
           <Path fill="#fff" d="M0 0h24v44H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
+  leftCalendarIcon: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="m12 16-5.657-5.657L12 4.686"
+        stroke="#2C2C2C"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
+
+  leftCalendarDisabledIcon: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="m12 16-5.657-5.657L12 4.686"
+        stroke="#AAA"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
+  rightCalendarIcon: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="m8 4 5.657 5.657L8 15.314"
+        stroke="#2C2C2C"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
+
+  rightCalendarDisabledIcon: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="m8 4 5.657 5.657L8 15.314"
+        stroke="#AAA"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
+  emojiCheck: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#qw3fyn9bxa)">
+        <Rect
+          x=".5"
+          y=".5"
+          width="19"
+          height="19"
+          rx="2.5"
+          fill="url(#cyjnezbiab)"
+          stroke="#00CE2D"
+        />
+        <Path
+          d="m14 6-4.444 8L6 10"
+          stroke="#fff"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </G>
+      <Defs>
+        <LinearGradient
+          id="cyjnezbiab"
+          x1="10"
+          y1="0"
+          x2="10"
+          y2="17.917"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#69FFAE" />
+          <Stop offset="1" stopColor="#00CE2D" />
+        </LinearGradient>
+        <ClipPath id="qw3fyn9bxa">
+          <Path fill="#fff" d="M0 0h20v20H0z" />
         </ClipPath>
       </Defs>
     </Svg>,
