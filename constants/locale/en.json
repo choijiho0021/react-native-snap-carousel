@@ -829,6 +829,20 @@
   "us:btn:back": "이전",
   "us:btn:next": "다음",
 
+  "us:device:modal:input:title": "단말 정보 업로드",
+  "us:device:modal:input:text": "다이얼에서 <b>*#06#</b>을 누르면 나오는 단말 정보 화면을 준비해 주세요.",
+  "us:device:modal:input:button:barcode": "바코드로 스캔하기",
+  "us:device:modal:input:button:capture": "캡처 화면 업로드하기",
+  "us:device:modal:input:button:manual": "수동 직접 입력하기",
+
+  "us:device:upload:another": "다른 업로드 방법",
+  "us:device:eid": "EID",
+  "us:device:imei2": "IMEI2(eSIM)",
+  "us:device:placeholder": "단말 정보를 입력하세요.",
+  "us:device:validate:empty": "캡처 화면 업로드 또는 직접 입력해 주세요.",
+  "us:device:validate:eid": "EID 32자리를 모두 입력해 주세요.",
+  "us:device:validate:imei2": "IMEI 15자리를 모두 입력해 주세요.",
+
   "redirectHK": "Real Name Registration",
   "redirectHK:info1": "Due to Hong Kong government’s policy, those (both domestic and foreign users) who wish to use Hong Kong’s local data service <b>may use the service after real-name authentication</b> in local cellular service provider’s webpage.",
   "redirectHK:info3": "Please take a look at the guide, ICCID, Order Number and tap the Go Verify Real-Name button below. ",

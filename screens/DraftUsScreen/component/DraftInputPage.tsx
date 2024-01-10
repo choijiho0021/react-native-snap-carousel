@@ -14,6 +14,11 @@ import UsDeviceInput from './UsDeviceInput';
 
 const styles = StyleSheet.create({});
 
+export type DeviceDataType = {
+  eid: string;
+  imei2: string;
+};
+
 type DraftInputPageProps = {
   selected: string;
   setDateModalVisible: (val: boolean) => void;
@@ -32,6 +37,11 @@ const DraftInputPage: React.FC<DraftInputPageProps> = ({
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [deviceInputType, setDeviceInputType] =
     useState<UsDeviceInputType>('none');
+
+  const [deviceData, setDeviceData] = useState<DeviceDataType>({
+    eid: '',
+    imei2: '',
+  });
 
   const onClickDeviceInputBtn = useCallback((type: UsDeviceInputType) => {
     setDeviceInputType(type);
@@ -56,6 +66,8 @@ const DraftInputPage: React.FC<DraftInputPageProps> = ({
             onClickInfo={setInfoModalVisible}
             onClickButton={setUploadModalVisible}
             inputType={deviceInputType}
+            value={deviceData}
+            setValue={setDeviceData}
           />
         )}
         <UsDateInput selected={selected} onClick={setDateModalVisible} />

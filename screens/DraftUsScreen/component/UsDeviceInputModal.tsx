@@ -60,7 +60,7 @@ const UsDeviceInputModal: React.FC<UsDeviceInputModalProps> = ({
         </View>
 
         <View style={{gap: 16}}>
-          {['barcode', 'capture', 'manual'].map((type) => (
+          {['capture', 'manual'].map((type) => (
             <Pressable
               onPress={() => {
                 onClickButton(type);
