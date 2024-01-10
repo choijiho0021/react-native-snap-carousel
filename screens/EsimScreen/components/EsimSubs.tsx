@@ -791,7 +791,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   }, [expired, mainSubs, navigation]);
 
   const renderHowToCall = useCallback(() => {
-    const clMtd = mainSubs.desc?.clMtd;
+    const clMtd = mainSubs?.clMtd;
     if (clMtd)
       return (
         <View>
@@ -803,7 +803,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               },
             ]}
             onPress={() => {
-              if (mainSubs?.desc?.clMtd) setShowHtcModal(true);
+              if (mainSubs?.clMtd) setShowHtcModal(true);
             }}>
             <View style={styles.row}>
               <AppSvgIcon name="phone" style={{marginTop: 1}} />
@@ -819,25 +819,33 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               <AppSvgIcon name="rightBlueBracket" />
             </View>
           </Pressable>
-          <Pressable
-            style={{
-              justifyContent: 'center',
-              backgroundColor: colors.white,
-              flexDirection: 'row',
-              marginTop: 4,
-            }}
-            onPress={() => {
-              setShowHtQrModal(true);
-            }}>
-            <AppText style={styles.drafting}>
-              {i18n.t('esim:howToCall:moveToQr')}
-            </AppText>
-            <AppSvgIcon name="rightBlueBracket" />
-          </Pressable>
         </View>
       );
     return null;
-  }, [mainSubs.desc?.clMtd]);
+  }, [mainSubs?.clMtd]);
+
+  const renderMvHtQr = useCallback(() => {
+    if (mainSubs.daily === 'daily' && mainSubs.partner === 'ht')
+      return (
+        <Pressable
+          style={{
+            justifyContent: 'center',
+            backgroundColor: colors.white,
+            flexDirection: 'row',
+            marginTop: 4,
+          }}
+          onPress={() => {
+            setShowHtQrModal(true);
+          }}>
+          <AppText style={styles.drafting}>
+            {i18n.t('esim:howToCall:moveToQr')}
+          </AppText>
+          <AppSvgIcon name="rightBlueBracket" />
+        </Pressable>
+      );
+
+    return null;
+  }, [mainSubs.daily, mainSubs.partner]);
 
   const renderMoveBtn = useCallback(() => {
     // 충전 버튼 출력 조건
@@ -1005,16 +1013,18 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
             {renderHowToCall()}
 
+            {renderMvHtQr()}
+
             {!isht && renderMoveBtn()}
           </View>
         )}
       </View>
 
-      {mainSubs?.desc?.clMtd && (
+      {mainSubs?.clMtd && (
         <>
           <HowToCallModal
             visible={showHtcModal}
-            clMtd={mainSubs?.desc?.clMtd}
+            clMtd={mainSubs?.clMtd}
             onOkClose={() => setShowHtcModal(false)}
           />
           <HtQrModal

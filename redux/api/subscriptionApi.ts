@@ -181,7 +181,7 @@ export type RkbSubscription = {
   noticeOption: string[];
   daily?: string;
   dataVolume?: string;
-  desc?: ProdDesc;
+  clMtd?: string;
 
   refSubs?: string;
   flagImage?: string;
@@ -304,7 +304,7 @@ const subsFulfillWithValue = (resp) => {
         .filter((v) => !_.isEmpty(v)),
 
       partner: o.partner,
-      desc: parseJson(o.desc),
+      clMtd: o.clMtd,
       status: toStatus(o.field_status),
       purchaseDate: getMoment(o.purchaseDate),
       expireDate: getMoment(o.expireDate),
