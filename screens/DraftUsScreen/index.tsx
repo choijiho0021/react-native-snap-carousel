@@ -18,6 +18,7 @@ import {
   actions as orderActions,
   OrderAction,
   OrderModelState,
+  getCountItems,
 } from '@/redux/modules/order';
 import {
   actions as productActions,
@@ -38,6 +39,8 @@ import AppBottomModal from './component/AppBottomModal';
 import DatePickerModal from './component/DatePickerModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import DraftInputPage from './component/DraftInputPage';
+import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
+import FloatCheckButton from '../CancelOrderScreen/component/FloatCheckButton';
 
 const styles = StyleSheet.create({
   container: {
@@ -73,6 +76,21 @@ const styles = StyleSheet.create({
     ...appStyles.normal18Text,
     textAlign: 'center',
   },
+
+  proudctFrame: {
+    paddingHorizontal: 20,
+  },
+  product: {
+    marginBottom: 40,
+  },
+
+  divider2: {
+    height: 1,
+    marginTop: 40,
+    marginBottom: 28,
+    backgroundColor: colors.line,
+    width: '100%',
+  },
 });
 
 type DraftUsScreenNavigationProp = StackNavigationProp<
@@ -95,6 +113,11 @@ type DraftUsScreenProps = {
     order: OrderAction;
     modal: ModalAction;
   };
+};
+
+export type DeviceDataType = {
+  eid: string;
+  imei2: string;
 };
 
 export type UsProdDesc = {
@@ -123,6 +146,12 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   const [showPicker, setShowPicker] = useState(false);
   const [step, setStep] = useState(0);
   const [selected, setSelected] = useState('');
+  const [checked, setChecked] = useState<boolean>(false);
+
+  const [deviceData, setDeviceData] = useState<DeviceDataType>({
+    eid: '',
+    imei2: '',
+  });
 
   useEffect(() => {
     navigation.setOptions({
@@ -235,6 +264,22 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
     [step],
   );
 
+  const onCheck = useCallback(() => {
+    if (!checked) scrollRef?.current.scrollToEnd();
+
+    setChecked((prev) => !prev);
+  }, [checked]);
+
+  const renderCheckButton = useCallback(() => {
+    return (
+      <FloatCheckButton
+        onCheck={onCheck}
+        checkText={i18n.t('his:draftAgree')}
+        checked={checked}
+      />
+    );
+  }, [checked, onCheck]);
+
   useEffect(() => {
     console.log('@@@@@ snackbar working : ', showSnackBar);
   }, [showSnackBar]);
@@ -257,7 +302,109 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
           <DraftInputPage
             selected={selected}
             setDateModalVisible={setShowPicker}
+            deviceData={deviceData}
+            setDeviceData={setDeviceData}
           />
+          {renderBottomBtn(() => {
+            if (selected === '') setShowSnackBar(i18n.t('us:alert:selectDate'));
+            else setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
+          })}
+        </>
+      )}
+
+      {step === 2 && (
+        <>
+          <View style={{paddingHorizontal: 20, flex: 1}}>
+            <View style={{marginVertical: 24}}>
+              <AppText style={appStyles.bold20Text}>
+                {'입력한 정보 및 발권 전 유의사항을 확인해 주세요.'}
+              </AppText>
+              <View style={styles.proudctFrame}>
+                <ProductDetailList
+                  style={styles.product}
+                  prods={prods}
+                  isHeader={false}
+                  isBody
+                  bodyComponent={
+                    <View
+                      style={{
+                        borderTopWidth: 1,
+                        borderColor: colors.whiteFive,
+                        paddingVertical: 24,
+                      }}>
+                      <View style={{gap: 4, flexDirection: 'row'}}>
+                        <AppText
+                          style={[appStyles.bold16Text, {lineHeight: 24}]}>
+                          {'필수 정보'}
+                        </AppText>
+                        <AppSvgIcon name="star" />
+                      </View>
+                      <View style={{gap: 6, marginTop: 10}}>
+                        <AppText
+                          style={[
+                            appStyles.extraBold12,
+                            {color: colors.greyish},
+                          ]}>
+                          {'상품 사용 시작일'}
+                        </AppText>
+                        <AppText
+                          style={[
+                            appStyles.semiBold16Text,
+                            {color: colors.black, lineHeight: 24},
+                          ]}>
+                          {'2023년 3월 14일'}
+                        </AppText>
+                      </View>
+
+                      <View style={{marginTop: 16, gap: 6}}>
+                        <AppText
+                          style={[
+                            appStyles.extraBold12,
+                            {color: colors.greyish},
+                          ]}>
+                          {'사용할 단말 정보'}
+                        </AppText>
+                        <View>
+                          <AppText
+                            style={[
+                              appStyles.bold14Text,
+                              {color: colors.greyish},
+                            ]}>
+                            {'EID'}
+                          </AppText>
+                          <AppText
+                            style={[
+                              appStyles.semiBold16Text,
+                              {color: colors.black},
+                            ]}>
+                            {'123124123123213'}
+                          </AppText>
+                        </View>
+                        <View>
+                          <AppText
+                            style={[
+                              appStyles.bold14Text,
+                              {color: colors.greyish},
+                            ]}>
+                            {'IMEI2(eSIM)'}
+                          </AppText>
+                          <AppText
+                            style={[
+                              appStyles.semiBold16Text,
+                              {color: colors.black},
+                            ]}>
+                            {'00 00000 00000 0'}
+                          </AppText>
+                        </View>
+                      </View>
+                    </View>
+                  }
+                />
+              </View>
+            </View>
+          </View>
+          <View>{renderCheckButton()}</View>
+
           {renderBottomBtn(() => {
             if (selected === '') setShowSnackBar(i18n.t('us:alert:selectDate'));
             else setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));

@@ -23,6 +23,8 @@ type DraftInputPageProps = {
   selected: string;
   setDateModalVisible: (val: boolean) => void;
   setSnackBar: (val: string) => void;
+  deviceData: DeviceDataType;
+  setDeviceData: (val: DeviceDataType) => void;
 };
 
 export type UsDeviceInputType = 'none' | 'barcode' | 'capture' | 'manual';
@@ -32,16 +34,13 @@ const DraftInputPage: React.FC<DraftInputPageProps> = ({
   selected,
   setDateModalVisible,
   setSnackBar,
+  deviceData,
+  setDeviceData,
 }) => {
   const [infoModalVisible, setInfoModalVisible] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [deviceInputType, setDeviceInputType] =
     useState<UsDeviceInputType>('none');
-
-  const [deviceData, setDeviceData] = useState<DeviceDataType>({
-    eid: '',
-    imei2: '',
-  });
 
   const onClickDeviceInputBtn = useCallback((type: UsDeviceInputType) => {
     setDeviceInputType(type);
