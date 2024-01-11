@@ -37,6 +37,8 @@ interface UsDraftStep3Props {
   onClick: () => void;
   actDate: string;
   deviceData: DeviceDataType;
+  checked: boolean;
+  setChecked: (val: boolean) => void;
 }
 
 const UsDraftStep3: React.FC<UsDraftStep3Props> = ({
@@ -45,15 +47,16 @@ const UsDraftStep3: React.FC<UsDraftStep3Props> = ({
   onClick,
   actDate,
   deviceData,
+  checked,
+  setChecked,
 }) => {
   const scrollRef = useRef(null);
-  const [checked, setChecked] = useState<boolean>(false);
 
   const onCheck = useCallback(() => {
     if (!checked) scrollRef?.current.scrollToEnd();
 
     setChecked((prev) => !prev);
-  }, [checked]);
+  }, [checked, setChecked]);
 
   const renderCheckButton = useCallback(() => {
     return (

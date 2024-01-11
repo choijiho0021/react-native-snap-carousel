@@ -90,18 +90,20 @@ const UsDateInput: React.FC<UsDateInputProps> = ({onClick, actDate}) => {
         </Pressable>
       </View>
 
-      <View style={{gap: 6}}>
-        {['1', '2'].map((i) => (
-          <View style={{gap: 6, flexDirection: 'row'}}>
-            <AppSvgIcon name="checkedBlueSmall" />
-            <AppStyledText
-              text={i18n.t(`us:device:notice${i}`)}
-              textStyle={styles.notiText}
-              format={{b: styles.notiTextBold}}
-            />
-          </View>
-        ))}
-      </View>
+      {actDate && (
+        <View style={{gap: 6}}>
+          {['1', '2'].map((i) => (
+            <View style={{gap: 6, flexDirection: 'row'}}>
+              <AppSvgIcon name="checkedBlueSmall" />
+              <AppStyledText
+                text={i18n.t(`us:device:notice${i}`)}
+                textStyle={styles.notiText}
+                format={{b: styles.notiTextBold}}
+              />
+            </View>
+          ))}
+        </View>
+      )}
     </>
   );
 };

@@ -1,7 +1,7 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {appStyles} from '@/constants/Styles';
 import {connect} from 'react-redux';
@@ -32,6 +32,8 @@ import DatePickerModal from './component/DatePickerModal';
 import UsDraftStep1 from './component/UsDraftStep1';
 import UsDraftStep2 from './component/UsDraftStep2';
 import UsDraftStep3 from './component/UsDraftStep3';
+import AppAlert from '@/components/AppAlert';
+import api from '@/redux/api/api';
 
 const styles = StyleSheet.create({
   container: {
@@ -115,11 +117,35 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   const [showPicker, setShowPicker] = useState(false);
   const [step, setStep] = useState(0);
   const [actDate, setActDate] = useState('');
+  const [checked, setChecked] = useState<boolean>(false);
+  const [isClickButton, setIsClickButton] = useState(false);
 
   const [deviceData, setDeviceData] = useState<DeviceDataType>({
     eid: '',
     imei2: '',
   });
+
+  const disabled = useCallback(
+    (isAlert: boolean) => {
+      if (step === 1) {
+        if (actDate === '') {
+          if (isAlert) setShowSnackBar(i18n.t('us:validate:date'));
+          return true;
+        }
+        if (deviceData.eid.length < 32 || deviceData.imei2.length < 15) {
+          if (isAlert) setShowSnackBar(i18n.t('us:validate:device'));
+          return true;
+        }
+      } else if (step === 2) {
+        if (!checked) {
+          if (isAlert) AppAlert.info(i18n.t('us:validate:checked'));
+          return true;
+        }
+      }
+      return false;
+    },
+    [actDate, deviceData, step, checked],
+  );
 
   useEffect(() => {
     navigation.setOptions({
@@ -194,6 +220,53 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
     else setProds(prodList);
   }, [draftOrder?.orderItems, getProdDate, product.prodList]);
 
+  const requestDraft = useCallback(() => {
+    setIsClickButton(true);
+
+    // 발권하기 API
+    action.order
+      .changeDraft({
+        orderId: draftOrder?.orderId,
+        eid: deviceData.eid,
+        activation_date: `${actDate} 00:00:00`,
+        imei2: deviceData.imei2,
+        token,
+      })
+      .then((result) => {
+        if (result?.payload?.result !== 0)
+          AppAlert.info(
+            [api.E_INVALID_PARAMETER, api.E_RESOURCE_NOT_FOUND].includes(
+              result?.payload?.result,
+            )
+              ? result?.payload?.desc
+              : '알 수 없는 오류로 발권에 실패했습니다.',
+            '',
+            () => {
+              if (result?.payloa) setStep(1);
+              setIsClickButton(false);
+            },
+          );
+        else {
+          action.order.subsReload({
+            iccid: iccid!,
+            token: token!,
+            hidden: false,
+          });
+          navigation.navigate('DraftResult', {
+            isSuccess: result?.payload?.result === 0,
+          });
+        }
+      });
+  }, [
+    actDate,
+    action.order,
+    deviceData,
+    draftOrder?.orderId,
+    iccid,
+    navigation,
+    token,
+  ]);
+
   const renderBottomBtn = useCallback(
     (onClick?: () => void) => {
       return (
@@ -204,8 +277,6 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
               type="secondary"
               title={i18n.t('us:btn:back')}
               titleStyle={styles.secondaryButtonText}
-              disabled={step === 0}
-              disableStyle={{borderWidth: 0}}
               onPress={() => {
                 setStep((prev) => (prev - 1 <= 0 ? 0 : prev - 1));
               }}
@@ -214,8 +285,11 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
           <AppButton
             style={styles.button}
             type="primary"
-            title={i18n.t('us:btn:next')}
-            disabledOnPress={() => {}}
+            title={i18n.t(step === 2 ? 'his:draftTitle' : 'us:btn:next')}
+            disabled={disabled(false) || isClickButton}
+            disabledOnPress={() => {
+              disabled(true);
+            }}
             disabledCanOnPress
             onPress={() => {
               console.log('onClick : ', onClick);
@@ -229,13 +303,8 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
         </View>
       );
     },
-    [step],
+    [disabled, step, isClickButton],
   );
-
-  useEffect(() => {
-    console.log('@@@@@ snackbar working : ', showSnackBar);
-    console.log('@@@@ actDate : ', actDate);
-  }, [showSnackBar, actDate]);
 
   if (!draftOrder || !draftOrder?.orderItems) return <View />;
 
@@ -249,7 +318,6 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
         />
       )}
 
-      {/* 스텝 1도 컴포넌트로 분리하기 */}
       {step === 1 && (
         <>
           <UsDraftStep2
@@ -259,8 +327,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
             setDeviceData={setDeviceData}
           />
           {renderBottomBtn(() => {
-            if (actDate === '') setShowSnackBar(i18n.t('us:alert:selectDate'));
-            else setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
+            setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
           })}
         </>
       )}
@@ -271,10 +338,12 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
             actDate={actDate}
             deviceData={deviceData}
             prods={prods}
+            checked={checked}
+            setChecked={setChecked}
+            draftOrder={draftOrder}
           />
           {renderBottomBtn(() => {
-            if (actDate === '') setShowSnackBar(i18n.t('us:alert:selectDate'));
-            else setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
+            requestDraft();
           })}
         </>
       )}
