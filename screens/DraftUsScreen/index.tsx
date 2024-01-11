@@ -126,8 +126,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   const [showSnackBar, setShowSnackBar] = useState('');
   const [showPicker, setShowPicker] = useState(false);
   const [step, setStep] = useState(0);
-  const [selected, setSelected] = useState('');
-  const [checked, setChecked] = useState<boolean>(false);
+  const [actDate, setActDate] = useState('');
 
   const [deviceData, setDeviceData] = useState<DeviceDataType>({
     eid: '',
@@ -247,7 +246,8 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
 
   useEffect(() => {
     console.log('@@@@@ snackbar working : ', showSnackBar);
-  }, [showSnackBar]);
+    console.log('@@@@ actDate : ', actDate);
+  }, [showSnackBar, actDate]);
 
   if (!draftOrder || !draftOrder?.orderItems) return <View />;
 
@@ -265,13 +265,13 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
       {step === 1 && (
         <>
           <DraftInputPage
-            selected={selected}
+            actDate={actDate}
             setDateModalVisible={setShowPicker}
             deviceData={deviceData}
             setDeviceData={setDeviceData}
           />
           {renderBottomBtn(() => {
-            if (selected === '') setShowSnackBar(i18n.t('us:alert:selectDate'));
+            if (actDate === '') setShowSnackBar(i18n.t('us:alert:selectDate'));
             else setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
           })}
         </>
@@ -279,9 +279,13 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
 
       {step === 2 && (
         <>
-          <UsDraftResultPage prods={prods} />
+          <UsDraftResultPage
+            actDate={actDate}
+            deviceData={deviceData}
+            prods={prods}
+          />
           {renderBottomBtn(() => {
-            if (selected === '') setShowSnackBar(i18n.t('us:alert:selectDate'));
+            if (actDate === '') setShowSnackBar(i18n.t('us:alert:selectDate'));
             else setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
           })}
         </>
@@ -290,8 +294,8 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
       <DatePickerModal
         visible={showPicker}
         onClose={() => setShowPicker(false)}
-        selected={selected}
-        onSelected={setSelected}
+        selected={actDate}
+        onSelected={setActDate}
       />
 
       <AppSnackBar

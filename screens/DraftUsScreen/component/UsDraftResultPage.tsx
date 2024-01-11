@@ -1,29 +1,22 @@
 import {ScrollView} from 'react-native-gesture-handler';
-import {Platform, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import React, {useCallback, useRef, useState} from 'react';
-import AppButton from '@/components/AppButton';
-import AppNotiBox from '@/components/AppNotiBox';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RkbOrder} from '@/redux/api/orderApi';
-import {getCountItems} from '@/redux/modules/order';
 import ProductDetailList from '@/screens/CancelOrderScreen/component/ProductDetailList';
 import i18n from '@/utils/i18n';
-import {UsProdDesc} from '..';
+import {DeviceDataType, UsProdDesc} from '..';
 import GuideBox from '@/screens/CancelOrderScreen/component/GuideBox';
 import FloatCheckButton from '@/screens/CancelOrderScreen/component/FloatCheckButton';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import moment from 'moment';
 
 const styles = StyleSheet.create({
-  buttonFrame: {flexDirection: 'row'},
-  button: {
-    ...appStyles.normal16Text,
+  container: {
+    paddingHorizontal: 20,
     flex: 1,
-    height: 52,
-    backgroundColor: colors.clearBlue,
-    textAlign: 'center',
-    color: colors.white,
   },
   proudctFrame: {
     paddingHorizontal: 0,
@@ -31,18 +24,27 @@ const styles = StyleSheet.create({
   product: {
     marginBottom: 40,
   },
+  bodyFrame: {
+    borderTopWidth: 1,
+    borderColor: colors.whiteFive,
+    paddingVertical: 24,
+  },
 });
 
 interface UsDraftResultPageProps {
   prods: UsProdDesc;
   draftOrder: RkbOrder;
   onClick: () => void;
+  actDate: string;
+  deviceData: DeviceDataType;
 }
 
 const UsDraftResultPage: React.FC<UsDraftResultPageProps> = ({
   prods,
   draftOrder,
   onClick,
+  actDate,
+  deviceData,
 }) => {
   const scrollRef = useRef(null);
   const [checked, setChecked] = useState<boolean>(false);
@@ -65,7 +67,7 @@ const UsDraftResultPage: React.FC<UsDraftResultPageProps> = ({
 
   return (
     <>
-      <ScrollView ref={scrollRef} style={{paddingHorizontal: 20, flex: 1}}>
+      <ScrollView ref={scrollRef} style={styles.container}>
         <View style={{marginVertical: 24}}>
           <AppText style={appStyles.bold20Text}>
             {i18n.t('us:result:title')}
@@ -77,12 +79,7 @@ const UsDraftResultPage: React.FC<UsDraftResultPageProps> = ({
               isHeader={false}
               isBody
               bodyComponent={
-                <View
-                  style={{
-                    borderTopWidth: 1,
-                    borderColor: colors.whiteFive,
-                    paddingVertical: 24,
-                  }}>
+                <View style={styles.bodyFrame}>
                   <View style={{gap: 4, flexDirection: 'row'}}>
                     <AppText style={[appStyles.bold16Text, {lineHeight: 24}]}>
                       {i18n.t('us:req')}
@@ -99,7 +96,7 @@ const UsDraftResultPage: React.FC<UsDraftResultPageProps> = ({
                         appStyles.semiBold16Text,
                         {color: colors.black, lineHeight: 24},
                       ]}>
-                      {'2023년 3월 14일'}
+                      {moment(actDate).format('YYYY년 MM월 MM일')}
                     </AppText>
                   </View>
 
@@ -108,32 +105,24 @@ const UsDraftResultPage: React.FC<UsDraftResultPageProps> = ({
                       style={[appStyles.extraBold12, {color: colors.greyish}]}>
                       {i18n.t('us:deviceInfo')}
                     </AppText>
-                    <View>
-                      <AppText
-                        style={[appStyles.bold14Text, {color: colors.greyish}]}>
-                        {i18n.t('us:eid')}
-                      </AppText>
-                      <AppText
-                        style={[
-                          appStyles.semiBold16Text,
-                          {color: colors.black},
-                        ]}>
-                        {'123124123123213'}
-                      </AppText>
-                    </View>
-                    <View>
-                      <AppText
-                        style={[appStyles.bold14Text, {color: colors.greyish}]}>
-                        {i18n.t('us:imei2')}
-                      </AppText>
-                      <AppText
-                        style={[
-                          appStyles.semiBold16Text,
-                          {color: colors.black},
-                        ]}>
-                        {'00 00000 00000 0'}
-                      </AppText>
-                    </View>
+                    {['eid', 'imei2'].map((r) => (
+                      <View>
+                        <AppText
+                          style={[
+                            appStyles.bold14Text,
+                            {color: colors.greyish},
+                          ]}>
+                          {i18n.t(`us:${r}`)}
+                        </AppText>
+                        <AppText
+                          style={[
+                            appStyles.semiBold16Text,
+                            {color: colors.black},
+                          ]}>
+                          {r === 'eid' ? deviceData.eid : deviceData.imei2}
+                        </AppText>
+                      </View>
+                    ))}
                   </View>
                 </View>
               }

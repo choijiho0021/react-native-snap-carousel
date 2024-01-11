@@ -14,13 +14,8 @@ import UsDeviceInput from './UsDeviceInput';
 
 const styles = StyleSheet.create({});
 
-export type DeviceDataType = {
-  eid: string;
-  imei2: string;
-};
-
 type DraftInputPageProps = {
-  selected: string;
+  actDate: string;
   setDateModalVisible: (val: boolean) => void;
   setSnackBar: (val: string) => void;
   deviceData: DeviceDataType;
@@ -31,7 +26,7 @@ export type UsDeviceInputType = 'none' | 'barcode' | 'capture' | 'manual';
 
 // TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
 const DraftInputPage: React.FC<DraftInputPageProps> = ({
-  selected,
+  actDate,
   setDateModalVisible,
   setSnackBar,
   deviceData,
@@ -56,11 +51,11 @@ const DraftInputPage: React.FC<DraftInputPageProps> = ({
       <View style={{paddingHorizontal: 20, flex: 1}}>
         <View style={{marginVertical: 24, width: '50%'}}>
           <AppText style={appStyles.bold24Text}>
-            {i18n.t(selected ? 'us:device:title' : 'us:step1:title')}
+            {i18n.t(actDate ? 'us:device:title' : 'us:step1:title')}
           </AppText>
         </View>
 
-        {selected && (
+        {actDate && (
           <UsDeviceInput
             onClickInfo={setInfoModalVisible}
             onClickButton={setUploadModalVisible}
@@ -69,7 +64,7 @@ const DraftInputPage: React.FC<DraftInputPageProps> = ({
             setValue={setDeviceData}
           />
         )}
-        <UsDateInput selected={selected} onClick={setDateModalVisible} />
+        <UsDateInput actDate={actDate} onClick={setDateModalVisible} />
       </View>
 
       <UsDeviceInfoModal

@@ -41,11 +41,11 @@ const styles = StyleSheet.create({
 
 type UsDateInputProps = {
   onClick: (val: boolean) => void;
-  selected: string;
+  actDate: string;
 };
 
 // TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
-const UsDateInput: React.FC<UsDateInputProps> = ({onClick, selected}) => {
+const UsDateInput: React.FC<UsDateInputProps> = ({onClick, actDate}) => {
   return (
     <>
       <View style={{gap: 8, marginBottom: 8}}>
@@ -63,11 +63,11 @@ const UsDateInput: React.FC<UsDateInputProps> = ({onClick, selected}) => {
           <AppText
             style={[
               appStyles.normal16Text,
-              {color: selected === '' ? colors.greyish : colors.black},
+              {color: actDate === '' ? colors.greyish : colors.black},
             ]}>
-            {selected === ''
+            {actDate === ''
               ? i18n.t('us:date:placeHolder')
-              : moment(selected).format('YYYY년 MM월 DD일')}
+              : moment(actDate).format('YYYY년 MM월 DD일')}
           </AppText>
           <AppText
             style={[
@@ -78,7 +78,7 @@ const UsDateInput: React.FC<UsDateInputProps> = ({onClick, selected}) => {
                 justifyContent: 'center',
               },
             ]}>
-            {selected ? (
+            {actDate ? (
               i18n.t('modify')
             ) : (
               <AppIcon
