@@ -71,7 +71,7 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
               appStyles.bold16Text,
               {color: colors.black, lineHeight: 22},
             ]}>
-            {i18n.t('us:device:info')}
+            {i18n.t('us:deviceInfo')}
           </AppText>
 
           <AppSvgIcon name="alarmFill" onPress={() => onClickInfo(true)} />
@@ -126,7 +126,7 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
             <View style={{marginTop: isEid ? 8 : 24, gap: 6}}>
               <AppText
                 style={[appStyles.normal14Text, {color: colors.greyish}]}>
-                {i18n.t(`us:device:${r}`)}
+                {i18n.t(`us:${r}`)}
               </AppText>
 
               <AppTextInput

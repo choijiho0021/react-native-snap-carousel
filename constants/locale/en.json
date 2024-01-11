@@ -815,12 +815,10 @@
   "esim:editMode:confirm:noList": "목록으로 돌아가기",
 
   "us:step1:title": "상품 사용 시작일을 선택해주세요!",
-  "us:date:text": "상품 사용 시작일",
   "us:date:placeHolder": "시작일 선택",
   "us:alert:selectDate": "상품 사용 시작일을 선택해주세요!",
   "us:alert:deviceInfo": "단말 정보를 업로드해 주세요.",
   "us:device:title": "사용할 단말 정보를 등록해주세요!",
-  "us:device:info": "사용할 단말 정보",
   "us:device:upload": "정보 업로드 하기",
   "us:device:notice1": "선택하신 <b>시작일 00시~12시(EST) 사이</b>에 eSIM이 순차적으로 <b>자동 개통</b>됩니다.",
   "us:device:notice2": "<b>낮 12시(EST) 이전에 여행을 시작</b>하시는 일정이라면, 안정적인 사용을 위해 <b>여행 시작 일자를 하루 전으로 설정</b>하시는 것을 추천드려요!",
@@ -829,19 +827,26 @@
   "us:btn:back": "이전",
   "us:btn:next": "다음",
 
-  "us:device:modal:input:title": "단말 정보 업로드",
   "us:device:modal:input:text": "다이얼에서 <b>*#06#</b>을 누르면 나오는 단말 정보 화면을 준비해 주세요.",
   "us:device:modal:input:button:barcode": "바코드로 스캔하기",
   "us:device:modal:input:button:capture": "캡처 화면 업로드하기",
   "us:device:modal:input:button:manual": "수동 직접 입력하기",
 
   "us:device:upload:another": "다른 업로드 방법",
-  "us:device:eid": "EID",
-  "us:device:imei2": "IMEI2(eSIM)",
   "us:device:placeholder": "단말 정보를 입력하세요.",
   "us:device:validate:empty": "캡처 화면 업로드 또는 직접 입력해 주세요.",
   "us:device:validate:eid": "EID 32자리를 모두 입력해 주세요.",
   "us:device:validate:imei2": "IMEI 15자리를 모두 입력해 주세요.",
+
+  "us:draftCheckNotiTitle": "발권 전 꼭 확인해주세요!",
+  "us:draftCheckNotiBody": "• 사용하시려는 단말이 <b>eSIM 지원 단말인지 확인</b>해주세요.\n• <b>발권은 주문 건별로 진행</b>되며, 부분 발권은 불가합니다.\n• <b>발권 후에는 교환·환불이 불가</b>합니다.\n• 미국(로컬) 상품은 발권 시 상품 사용 시작일과 사용할 단말 정보를 필수로 입력해야 하는 상품입니다. <b>입력한 정보는 발권 후 수정 불가</b>하니 유의해주세요!\n• <b>미국(로컬) 상품은 자동 발권 대상에서 제외됩니다. 상품 구매일로부터 7일 경과 후 자동 취소 처리</b>되며, 최초 결제했던 결제 수단으로 환불됩니다. 결제 수단에 따라 최종 환불까지는 3-5영업일이 소요될 수 있습니다.\n• 발권 전 취소·환불을 원하시는 경우, 주문 건별로 취소·환불 신청하실 수 있습니다. 부분 취소·환불은 불가합니다.\n• 선물하기 기능은 발권 후 이용하실 수 있습니다.",
+
+  "us:result:title": "입력한 정보 및 발권 전 유의사항을 확인해 주세요.",
+  "us:req": "필수 정보",
+  "us:actDate": "상품 사용 시작일",
+  "us:deviceInfo": "사용할 단말 정보",
+  "us:eid": "EID",
+  "us:imei2": "IMEI2(eSIM)",
 
   "redirectHK": "Real Name Registration",
   "redirectHK:info1": "Due to Hong Kong government’s policy, those (both domestic and foreign users) who wish to use Hong Kong’s local data service <b>may use the service after real-name authentication</b> in local cellular service provider’s webpage.",

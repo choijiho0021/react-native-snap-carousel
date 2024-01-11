@@ -50,7 +50,7 @@ const UsDateInput: React.FC<UsDateInputProps> = ({onClick, selected}) => {
     <>
       <View style={{gap: 8, marginBottom: 8}}>
         <AppText style={[appStyles.normal14Text, {color: colors.greyish}]}>
-          {i18n.t('us:date:text')}
+          {i18n.t('us:actDate')}
         </AppText>
 
         <Pressable
