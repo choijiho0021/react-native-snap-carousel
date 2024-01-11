@@ -13,13 +13,6 @@ import i18n from '@/utils/i18n';
 import {UsProdDesc} from '..';
 
 const styles = StyleSheet.create({
-  headerNoti: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    borderColor: colors.lightGrey,
-  },
-
   buttonFrame: {flexDirection: 'row'},
   button: {
     ...appStyles.normal16Text,
@@ -28,24 +21,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
     color: colors.white,
-  },
-  headerNotiText: {
-    ...appStyles.bold16Text,
-    color: colors.redError,
-  },
-  dashContainer: {
-    overflow: 'hidden',
-  },
-  dashFrame: {
-    borderStyle: 'dashed',
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
-    margin: -1,
-    height: 0,
-    marginBottom: 0,
-  },
-  dash: {
-    width: '100%',
   },
   proudctFrame: {
     paddingHorizontal: 20,
@@ -66,37 +41,6 @@ const DraftStartPage: React.FC<DraftStartPageProps> = ({
   draftOrder,
   onClick,
 }) => {
-  const renderDashedDiv = useCallback(() => {
-    return (
-      <View style={styles.dashContainer}>
-        <View style={styles.dashFrame}>
-          <View style={styles.dash} />
-        </View>
-      </View>
-    );
-  }, []);
-  const headerNoti = useCallback(() => {
-    if (!draftOrder || !draftOrder?.orderItems) return <View />;
-
-    return (
-      <View>
-        {Platform.OS === 'ios' && renderDashedDiv()}
-        <View
-          style={[
-            styles.headerNoti,
-            Platform.OS === 'android' && {
-              borderStyle: 'dashed',
-              borderTopWidth: 1,
-            },
-          ]}>
-          <AppText style={styles.headerNotiText}>
-            {i18n.t('his:draftNoti')}
-          </AppText>
-        </View>
-      </View>
-    );
-  }, [draftOrder, renderDashedDiv]);
-
   return (
     <>
       <ScrollView style={{flex: 1}}>
@@ -113,7 +57,6 @@ const DraftStartPage: React.FC<DraftStartPageProps> = ({
             listTitle={i18n
               .t('his:draftItemText')
               .replace('%', getCountItems(draftOrder?.orderItems, false))}
-            footerComponent={headerNoti()}
             isGradient
             isFooter={false}
           />
