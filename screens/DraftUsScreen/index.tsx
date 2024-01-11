@@ -2,15 +2,14 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
-import {Calendar, LocaleConfig} from 'react-native-calendars';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {appStyles} from '@/constants/Styles';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
-import {HomeStackParamList, goBack, navigate} from '@/navigation/navigation';
+import {HomeStackParamList, goBack} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {AccountModelState} from '@/redux/modules/account';
@@ -18,7 +17,6 @@ import {
   actions as orderActions,
   OrderAction,
   OrderModelState,
-  getCountItems,
 } from '@/redux/modules/order';
 import {
   actions as productActions,
@@ -28,22 +26,12 @@ import i18n from '@/utils/i18n';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import {Moment} from 'moment';
 import moment from 'moment';
-import DraftStartPage from './component/DraftStartPage';
-import AppText from '@/components/AppText';
 import AppButton from '@/components/AppButton';
-import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
-import AppNotiBox from '@/components/AppNotiBox';
-import DraftDateInputPage from './component/DraftDateInputPage';
-import AppBottomModal from './component/AppBottomModal';
 import DatePickerModal from './component/DatePickerModal';
-import AppSvgIcon from '@/components/AppSvgIcon';
-import DraftInputPage from './component/DraftInputPage';
-import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
-import FloatCheckButton from '../CancelOrderScreen/component/FloatCheckButton';
-import {ScrollView} from 'react-native-gesture-handler';
-import GuideBox from '../CancelOrderScreen/component/GuideBox';
-import UsDraftResultPage from './component/UsDraftResultPage';
+import UsDraftStep1 from './component/UsDraftStep1';
+import UsDraftStep2 from './component/UsDraftStep2';
+import UsDraftStep3 from './component/UsDraftStep3';
 
 const styles = StyleSheet.create({
   container: {
@@ -254,7 +242,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       {step === 0 && (
-        <DraftStartPage
+        <UsDraftStep1
           prods={prods}
           draftOrder={draftOrder}
           onClick={onClickStart}
@@ -264,7 +252,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
       {/* 스텝 1도 컴포넌트로 분리하기 */}
       {step === 1 && (
         <>
-          <DraftInputPage
+          <UsDraftStep2
             actDate={actDate}
             setDateModalVisible={setShowPicker}
             deviceData={deviceData}
@@ -279,7 +267,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
 
       {step === 2 && (
         <>
-          <UsDraftResultPage
+          <UsDraftStep3
             actDate={actDate}
             deviceData={deviceData}
             prods={prods}

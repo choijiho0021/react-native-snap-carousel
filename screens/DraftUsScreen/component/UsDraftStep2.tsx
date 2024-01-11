@@ -11,10 +11,11 @@ import UsDateInput from './UsDateInput';
 import UsDeviceInfoModal from './UsDeviceInfoModal';
 import UsDeviceInputModal from './UsDeviceInputModal';
 import UsDeviceInput from './UsDeviceInput';
+import {DeviceDataType} from '..';
 
 const styles = StyleSheet.create({});
 
-type DraftInputPageProps = {
+type UsDraftStep2Props = {
   actDate: string;
   setDateModalVisible: (val: boolean) => void;
   setSnackBar: (val: string) => void;
@@ -25,7 +26,7 @@ type DraftInputPageProps = {
 export type UsDeviceInputType = 'none' | 'barcode' | 'capture' | 'manual';
 
 // TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
-const DraftInputPage: React.FC<DraftInputPageProps> = ({
+const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
   actDate,
   setDateModalVisible,
   setSnackBar,
@@ -83,4 +84,4 @@ const DraftInputPage: React.FC<DraftInputPageProps> = ({
 
 export default connect(({product}: RootState) => ({
   product,
-}))(DraftInputPage);
+}))(UsDraftStep2);

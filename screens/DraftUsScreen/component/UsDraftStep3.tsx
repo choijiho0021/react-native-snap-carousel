@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   },
 });
 
-interface UsDraftResultPageProps {
+interface UsDraftStep3Props {
   prods: UsProdDesc;
   draftOrder: RkbOrder;
   onClick: () => void;
@@ -39,7 +39,7 @@ interface UsDraftResultPageProps {
   deviceData: DeviceDataType;
 }
 
-const UsDraftResultPage: React.FC<UsDraftResultPageProps> = ({
+const UsDraftStep3: React.FC<UsDraftStep3Props> = ({
   prods,
   draftOrder,
   onClick,
@@ -142,4 +142,4 @@ const UsDraftResultPage: React.FC<UsDraftResultPageProps> = ({
   );
 };
 
-export default UsDraftResultPage;
+export default UsDraftStep3;

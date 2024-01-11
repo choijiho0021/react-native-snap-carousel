@@ -9,7 +9,7 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppIcon from '@/components/AppIcon';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {DeviceDataType, UsDeviceInputType} from './DraftInputPage';
+import {DeviceDataType, UsDeviceInputType} from './UsDraftStep2';
 import AppTextInput from '@/components/AppTextInput';
 
 const styles = StyleSheet.create({

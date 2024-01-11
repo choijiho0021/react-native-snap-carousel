@@ -16,7 +16,7 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppStyledText from '@/components/AppStyledText';
 import AppBottomModal from './AppBottomModal';
-import {UsDeviceInputType} from './DraftInputPage';
+import {UsDeviceInputType} from './UsDraftStep2';
 
 const styles = StyleSheet.create({});
 

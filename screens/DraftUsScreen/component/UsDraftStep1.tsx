@@ -1,9 +1,8 @@
 import {ScrollView} from 'react-native-gesture-handler';
-import {Platform, StyleSheet, View} from 'react-native';
-import React, {useCallback} from 'react';
+import {StyleSheet, View} from 'react-native';
+import React from 'react';
 import AppButton from '@/components/AppButton';
 import AppNotiBox from '@/components/AppNotiBox';
-import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RkbOrder} from '@/redux/api/orderApi';
@@ -30,13 +29,13 @@ const styles = StyleSheet.create({
   },
 });
 
-interface DraftStartPageProps {
+interface UsDraftStep1Props {
   prods: UsProdDesc;
   draftOrder: RkbOrder;
   onClick: () => void;
 }
 
-const DraftStartPage: React.FC<DraftStartPageProps> = ({
+const UsDraftStep1: React.FC<UsDraftStep1Props> = ({
   prods,
   draftOrder,
   onClick,
@@ -80,4 +79,4 @@ const DraftStartPage: React.FC<DraftStartPageProps> = ({
   );
 };
 
-export default DraftStartPage;
+export default UsDraftStep1;

@@ -1,13 +1,5 @@
-import React, {ReactNode, useEffect} from 'react';
-import {
-  Linking,
-  Modal,
-  Platform,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import React, {ReactNode} from 'react';
+import {Modal, Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import AppSvgIcon from '@/components/AppSvgIcon';
