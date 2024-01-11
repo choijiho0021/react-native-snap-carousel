@@ -123,7 +123,7 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
           const text = isEid ? value.eid : value.imei2;
 
           return (
-            <View style={{marginTop: isEid ? 8 : 24, gap: 6}}>
+            <View key={r} style={{marginTop: isEid ? 8 : 24, gap: 6}}>
               <AppText
                 style={[appStyles.normal14Text, {color: colors.greyish}]}>
                 {i18n.t(`us:${r}`)}

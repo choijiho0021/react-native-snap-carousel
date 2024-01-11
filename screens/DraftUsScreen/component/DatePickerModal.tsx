@@ -150,6 +150,7 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
       isCloseBtn={false}
       onClose={onClose}
       body={modalBody}
+      isCloseTouch={false}
     />
   );
 };

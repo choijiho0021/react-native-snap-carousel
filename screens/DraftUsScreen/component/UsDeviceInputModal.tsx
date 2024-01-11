@@ -99,6 +99,7 @@ const UsDeviceInputModal: React.FC<UsDeviceInputModalProps> = ({
       }}
       title={uploadModalTitle}
       body={uploadModalBody}
+      isCloseTouch={false}
     />
   );
 };
