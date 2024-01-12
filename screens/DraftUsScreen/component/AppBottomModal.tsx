@@ -51,7 +51,6 @@ type AppBottomModalProps = {
   isCloseTouch: boolean;
 };
 
-// TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
 const AppBottomModal: React.FC<AppBottomModalProps> = ({
   visible,
   isCloseBtn,

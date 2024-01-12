@@ -34,6 +34,7 @@ import UsDraftStep2 from './component/UsDraftStep2';
 import UsDraftStep3 from './component/UsDraftStep3';
 import AppAlert from '@/components/AppAlert';
 import api from '@/redux/api/api';
+import {ProdDesc} from '../CancelOrderScreen/CancelResult';
 
 const styles = StyleSheet.create({
   container: {
@@ -91,16 +92,6 @@ export type DeviceDataType = {
   imei2: string;
 };
 
-export type UsProdDesc = {
-  title: string;
-  field_description: string;
-  promoFlag: string[];
-  qty: number;
-  activateDate: Moment;
-  eid: string;
-  imei2: string;
-};
-
 const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   navigation,
   route,
@@ -111,7 +102,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   pending,
 }) => {
   const [draftOrder, setDraftOrder] = useState<RkbOrder>();
-  const [prods, setProds] = useState<UsProdDesc[]>([]);
+  const [prods, setProds] = useState<ProdDesc[]>([]);
   const loading = useRef(false);
   const [showSnackBar, setShowSnackBar] = useState('');
   const [showPicker, setShowPicker] = useState(false);
@@ -119,6 +110,8 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   const [actDate, setActDate] = useState('');
   const [checked, setChecked] = useState<boolean>(false);
   const [isClickButton, setIsClickButton] = useState(false);
+  const [deviceInputType, setDeviceInputType] =
+    useState<UsDeviceInputType>('none');
 
   const [deviceData, setDeviceData] = useState<DeviceDataType>({
     eid: '',
@@ -205,11 +198,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
           field_description: prod.field_description,
           promoFlag: prod.promoFlag,
           qty: r.qty,
-          // test 임시 데이터
-          eid: 'eid2',
-          activateDate: moment(),
-          imei2: 'imei2test',
-        } as UsProdDesc;
+        } as ProdDesc;
 
       return null;
     });
@@ -242,8 +231,9 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
               : '알 수 없는 오류로 발권에 실패했습니다.',
             '',
             () => {
-              if (result?.payloa) setStep(1);
+              setStep(1);
               setIsClickButton(false);
+              setChecked(false);
             },
           );
         else {
@@ -325,6 +315,8 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
             setDateModalVisible={setShowPicker}
             deviceData={deviceData}
             setDeviceData={setDeviceData}
+            deviceInputType={deviceInputType}
+            setDeviceInputType={setDeviceInputType}
           />
           {renderBottomBtn(() => {
             setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));

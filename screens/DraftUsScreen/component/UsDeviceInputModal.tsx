@@ -62,6 +62,7 @@ const UsDeviceInputModal: React.FC<UsDeviceInputModalProps> = ({
         <View style={{gap: 16}}>
           {['capture', 'manual'].map((type) => (
             <Pressable
+              key={type}
               onPress={() => {
                 onClickButton(type);
               }}

@@ -18,9 +18,10 @@ const styles = StyleSheet.create({});
 type UsDraftStep2Props = {
   actDate: string;
   setDateModalVisible: (val: boolean) => void;
-  setSnackBar: (val: string) => void;
   deviceData: DeviceDataType;
   setDeviceData: (val: DeviceDataType) => void;
+  deviceInputType: UsDeviceInputType;
+  setDeviceInputType: (val: UsDeviceInputType) => void;
 };
 
 export type UsDeviceInputType = 'none' | 'barcode' | 'capture' | 'manual';
@@ -29,19 +30,21 @@ export type UsDeviceInputType = 'none' | 'barcode' | 'capture' | 'manual';
 const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
   actDate,
   setDateModalVisible,
-  setSnackBar,
   deviceData,
   setDeviceData,
+  deviceInputType,
+  setDeviceInputType,
 }) => {
   const [infoModalVisible, setInfoModalVisible] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
-  const [deviceInputType, setDeviceInputType] =
-    useState<UsDeviceInputType>('none');
 
-  const onClickDeviceInputBtn = useCallback((type: UsDeviceInputType) => {
-    setDeviceInputType(type);
-    setUploadModalVisible(false);
-  }, []);
+  const onClickDeviceInputBtn = useCallback(
+    (type: UsDeviceInputType) => {
+      setDeviceInputType(type);
+      setUploadModalVisible(false);
+    },
+    [setDeviceInputType],
+  );
 
   useEffect(() => {
     console.log('deviceInputType : ', deviceInputType);
