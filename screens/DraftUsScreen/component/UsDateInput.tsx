@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Animated, Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import i18n from '@/utils/i18n';
@@ -42,12 +42,17 @@ const styles = StyleSheet.create({
 type UsDateInputProps = {
   onClick: (val: boolean) => void;
   actDate: string;
+  animatedValue: Animated.value;
 };
 
 // TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
-const UsDateInput: React.FC<UsDateInputProps> = ({onClick, actDate}) => {
+const UsDateInput: React.FC<UsDateInputProps> = ({
+  onClick,
+  actDate,
+  animatedValue,
+}) => {
   return (
-    <>
+    <Animated.View>
       <View style={{gap: 8, marginBottom: 8}}>
         <AppText style={[appStyles.normal14Text, {color: colors.greyish}]}>
           {i18n.t('us:actDate')}
@@ -104,7 +109,7 @@ const UsDateInput: React.FC<UsDateInputProps> = ({onClick, actDate}) => {
           ))}
         </View>
       )}
-    </>
+    </Animated.View>
   );
 };
 

@@ -1,5 +1,5 @@
-import React, {useCallback} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import React, {useCallback, useRef} from 'react';
+import {Animated, Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import i18n from '@/utils/i18n';
@@ -48,6 +48,7 @@ type UsDeviceInputProps = {
   inputType: UsDeviceInputType;
   value: DeviceDataType;
   setValue: (val: DeviceDataType) => void;
+  animatedValue: Animated.Value;
 };
 
 // TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
@@ -57,6 +58,7 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
   inputType,
   value,
   setValue,
+  animatedValue,
 }) => {
   const renderTitle = useCallback(() => {
     return (
@@ -185,7 +187,15 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
     }
   }, [inputType, renderManualButton, renderUploadButton]);
 
-  return <>{renderContent()}</>;
+  return (
+    <Animated.View
+      style={{
+        height: animatedValue,
+        overflow: 'hidden',
+      }}>
+      {renderContent()}
+    </Animated.View>
+  );
 };
 
 export default connect(({product}: RootState) => ({

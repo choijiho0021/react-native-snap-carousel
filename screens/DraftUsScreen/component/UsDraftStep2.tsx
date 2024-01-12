@@ -1,11 +1,10 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {Animated, Easing, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
 
-import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import UsDateInput from './UsDateInput';
 import UsDeviceInfoModal from './UsDeviceInfoModal';
@@ -38,6 +37,9 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
   const [infoModalVisible, setInfoModalVisible] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
 
+  const blockAnimation = useRef(false);
+  const animatedValue = useRef(new Animated.Value(40)).current;
+
   const onClickDeviceInputBtn = useCallback(
     (type: UsDeviceInputType) => {
       setDeviceInputType(type);
@@ -50,6 +52,26 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
     console.log('deviceInputType : ', deviceInputType);
   }, [deviceInputType]);
 
+  useEffect(() => {
+    if (actDate !== '') {
+      const showTop = () => {
+        if (!blockAnimation.current) {
+          blockAnimation.current = true;
+          Animated.timing(animatedValue, {
+            toValue: deviceInputType === 'none' ? 140 : 300,
+            duration: deviceInputType === 'none' ? 600 : 0,
+            easing: Easing.ease,
+            useNativeDriver: false,
+          }).start(() => {
+            blockAnimation.current = false;
+          });
+        }
+      };
+
+      showTop(true);
+    }
+  }, [actDate, animatedValue, deviceInputType]);
+
   return (
     <>
       <View style={{paddingHorizontal: 20, flex: 1}}>
@@ -61,6 +83,7 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
 
         {actDate && (
           <UsDeviceInput
+            animatedValue={animatedValue}
             onClickInfo={setInfoModalVisible}
             onClickButton={setUploadModalVisible}
             inputType={deviceInputType}
@@ -68,7 +91,11 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
             setValue={setDeviceData}
           />
         )}
-        <UsDateInput actDate={actDate} onClick={setDateModalVisible} />
+        <UsDateInput
+          animatedValue={animatedValue}
+          actDate={actDate}
+          onClick={setDateModalVisible}
+        />
       </View>
 
       <UsDeviceInfoModal
