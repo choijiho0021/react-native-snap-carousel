@@ -192,8 +192,20 @@ const getOrders = createAsyncThunk(
 
 const changeDraft = createAsyncThunk(
   'order/draftOrder',
-  ({orderId, token}: {orderId: number; token?: string}) => {
-    return API.Order.draftOrder({orderId, token});
+  ({
+    orderId,
+    token,
+    eid,
+    imei2,
+    activation_date,
+  }: {
+    orderId: number;
+    token?: string;
+    eid?: string;
+    imei2?: string;
+    activation_date?: string;
+  }) => {
+    return API.Order.draftOrder({orderId, token, eid, imei2, activation_date});
   },
 );
 

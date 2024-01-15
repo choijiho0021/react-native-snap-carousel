@@ -152,7 +152,6 @@ const UsDeviceInfoModal: React.FC<UsDeviceInfoModalProps> = ({
   return (
     <AppBottomModal
       visible={visible}
-      isCloseBtn={false}
       onClose={() => {
         setVisible(false);
       }}

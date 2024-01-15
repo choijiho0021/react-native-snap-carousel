@@ -1,13 +1,5 @@
-import React, {ReactNode, useEffect} from 'react';
-import {
-  Linking,
-  Modal,
-  Platform,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import React, {ReactNode} from 'react';
+import {Modal, Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -56,9 +48,9 @@ type AppBottomModalProps = {
   title?: string;
   body: ReactNode;
   height: number;
+  isCloseTouch: boolean;
 };
 
-// TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
 const AppBottomModal: React.FC<AppBottomModalProps> = ({
   visible,
   isCloseBtn,
@@ -66,28 +58,31 @@ const AppBottomModal: React.FC<AppBottomModalProps> = ({
   title,
   body,
   height,
+  isCloseTouch = true,
 }) => {
   return (
-    <Modal visible={visible} transparent>
+    <Modal visible={visible} transparent animationType="fade">
       <Pressable
         style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.3)'}}
-        onPress={onClose}>
+        onPress={isCloseTouch ? onClose : () => {}}>
         <SafeAreaView key="modal" style={[styles.storeBox, {height}]}>
-          {title && (
-            <View style={styles.head}>
-              <AppText style={appStyles.bold18Text}>{title}</AppText>
-              {isCloseBtn && (
-                <View style={styles.modalClose}>
-                  <AppSvgIcon
-                    name="closeModal"
-                    key="closeModal"
-                    onPress={onClose}
-                  />
-                </View>
-              )}
-            </View>
-          )}
-          {body}
+          <Pressable>
+            {title && (
+              <View style={styles.head}>
+                <AppText style={appStyles.bold18Text}>{title}</AppText>
+                {isCloseBtn && (
+                  <View style={styles.modalClose}>
+                    <AppSvgIcon
+                      name="closeModal"
+                      key="closeModal"
+                      onPress={onClose}
+                    />
+                  </View>
+                )}
+              </View>
+            )}
+            {body}
+          </Pressable>
         </SafeAreaView>
       </Pressable>
     </Modal>

@@ -1,4 +1,4 @@
-import React, {memo} from 'react';
+import React, {memo, useEffect} from 'react';
 import {StyleSheet, ViewStyle, View, StyleProp} from 'react-native';
 import {colors} from '@/constants/Colors';
 import SplitText from '@/components/SplitText';
@@ -49,7 +49,6 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
           style={[
             appStyles.medium14,
             {
-              flex: 1,
               color: colors.warmGrey,
               fontSize: isDeviceSize('medium') ? 14 : 16,
               lineHeight: isDeviceSize('medium') ? 20 : 22,
