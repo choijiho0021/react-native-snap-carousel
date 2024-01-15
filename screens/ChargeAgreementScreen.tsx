@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {StyleSheet, SafeAreaView, View, Pressable} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
@@ -198,6 +198,13 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
   const [visible, setVisible] = useState<string>('');
 
   const validateTime = useCallback(() => {
+    if (
+      params?.mainSubs?.partner?.startsWith('quadcell') &&
+      params?.status === 'R'
+    ) {
+      return true;
+    }
+
     const remainDay =
       params?.expireTime.diff(moment(), 'seconds') / (24 * 60 * 60);
 
