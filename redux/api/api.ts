@@ -128,6 +128,7 @@ const path = {
       paymentRule: 'rokebi/payment/rule',
       calculateTotal: 'rokebi/order/calc',
       prodAddOn: 'rokebi/prod/addon',
+      coupon: 'rokebi/coupon',
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage/quota',

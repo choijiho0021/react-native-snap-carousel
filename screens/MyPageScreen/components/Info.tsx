@@ -158,14 +158,14 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
 
       <View style={styles.rowBtn}>
         <AppButton
-          title={i18n.t('contact:board')}
+          title={i18n.t('mypage:coupon')}
           style={styles.btnContactBoard}
           titleStyle={appStyles.normal16Text}
           type="secondary"
           onPress={() =>
             navigate(navigation, route, 'MyPageStack', {
-              tab: 'HomeStack',
-              screen: 'ContactBoard',
+              tab: 'MyPageStack',
+              screen: 'Coupon',
               params: {index: 1},
             })
           }

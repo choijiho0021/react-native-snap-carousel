@@ -71,6 +71,7 @@ import CancelOrderScreen from '@/screens/CancelOrderScreen';
 import CancelResultScreen from '@/screens/CancelOrderScreen/CancelResult';
 import {ModalModelState} from '@/redux/modules/modal';
 import RegisterMobileScreen from '@/screens/RegisterMobileScreen';
+import CouponScreen from '@/screens/CouponScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -435,6 +436,11 @@ function MyPageStackComponent() {
       <MyPageStack.Screen name="DraftResult" component={DraftResultScreen} />
       <MyPageStack.Screen name="CancelOrder" component={CancelOrderScreen} />
       <MyPageStack.Screen name="CancelResult" component={CancelResultScreen} />
+      <MyPageStack.Screen
+        name="Coupon"
+        component={CouponScreen}
+        options={{headerShown: false}}
+      />
 
       <MyPageStack.Group screenOptions={{animationEnabled: true}}>
         <MyPageStack.Screen

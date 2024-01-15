@@ -20,6 +20,13 @@ export type RkbAccount = {
   iccid?: string;
 };
 
+export type RkbCoupon = {
+  id: string;
+  promo: string;
+  startDate: moment.Moment;
+  endDate?: moment.Moment;
+};
+
 const toAccount = (
   data: DrupalNode[] | DrupalNodeJsonApi,
 ): ApiResult<RkbAccount> => {
@@ -94,6 +101,32 @@ const toAccount = (
   }
 
   return api.failure(data.result || api.E_NOT_FOUND, data.desc || '', 200);
+};
+
+const toCoupon = (
+  resp: ApiResult<{
+    id: string;
+    promo: string;
+    start_date: string;
+    end_date: string;
+  }>,
+): ApiResult<RkbCoupon> => {
+  // REST API json/account/list/{id}로 조회하는 경우
+  if (resp.result === 0 && resp.objects) {
+    return api.success(
+      resp.objects.map(
+        (item) =>
+          ({
+            id: item.id,
+            promo: item.promo,
+            startDate: moment(item.start_date),
+            endDate: moment(item.end_date),
+          } as RkbCoupon),
+      ),
+    );
+  }
+
+  return api.failure(resp.result);
 };
 
 export type RkbFile = {
@@ -306,6 +339,15 @@ const uploadPicture = ({
   );
 };
 
+// get my coupons
+const getMyCoupon = ({token}: {token: string}) => {
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.rokApi.rokebi.coupon)}/0?_format=json`,
+    toCoupon,
+    api.withToken(token, 'json'),
+  );
+};
+
 export default {
   toAccount,
   toFile,
@@ -316,4 +358,5 @@ export default {
   getByUser,
   registerMobile,
   uploadPicture,
+  getMyCoupon,
 };
