@@ -195,6 +195,4 @@ const ChargeInfoModal: React.FC<ChargeInfoModalProps> = ({
   );
 };
 
-export default connect(({product}: RootState) => ({
-  product,
-}))(ChargeInfoModal);
+export default ChargeInfoModal;

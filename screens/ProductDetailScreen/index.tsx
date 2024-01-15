@@ -25,6 +25,7 @@ import {
   TrackingStatus,
 } from 'react-native-tracking-transparency';
 import {ScrollView} from 'react-native-gesture-handler';
+import RenderHtml from 'react-native-render-html';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
@@ -58,6 +59,7 @@ import ShareLinkModal from './components/ShareLinkModal';
 import AppStyledText from '@/components/AppStyledText';
 import ChargeInfoModal from './components/ChargeInfoModal';
 import TextWithDot from '../EsimScreen/components/TextWithDot';
+import BodyHtml from './components/BodyHtml';
 
 const {esimGlobal, webViewHost, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -752,6 +754,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           {renderSixIcon(isDaily, volume, volumeUnit)}
           {(noticeList.length > 0 || cautionList.length > 0) &&
             renderNotice(noticeList, cautionList)}
+          <BodyHtml body={descData.body} />
         </ScrollView>
       )
     );
