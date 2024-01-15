@@ -187,7 +187,7 @@ export type HomeStackParamList = {
     type: 'addOn' | 'extension';
   };
   AddOn: {
-    mainSubs: RkbSubscription;
+    chargeableItem: RkbSubscription;
     status?: string;
     expireTime?: Moment;
     addonProds?: RkbAddOnProd[];
