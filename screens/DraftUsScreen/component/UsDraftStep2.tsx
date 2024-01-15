@@ -11,6 +11,7 @@ import UsDeviceInfoModal from './UsDeviceInfoModal';
 import UsDeviceInputModal from './UsDeviceInputModal';
 import UsDeviceInput from './UsDeviceInput';
 import {DeviceDataType} from '..';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 const styles = StyleSheet.create({});
 
@@ -74,7 +75,10 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
 
   return (
     <>
-      <View style={{paddingHorizontal: 20, flex: 1}}>
+      <KeyboardAwareScrollView
+        enableOnAndroid
+        showsVerticalScrollIndicator={false}
+        style={{paddingHorizontal: 20, flex: 1}}>
         <View style={{marginVertical: 24, width: '50%'}}>
           <AppText style={appStyles.bold24Text}>
             {i18n.t(actDate ? 'us:device:title' : 'us:step1:title')}
@@ -96,7 +100,7 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
           actDate={actDate}
           onClick={setDateModalVisible}
         />
-      </View>
+      </KeyboardAwareScrollView>
 
       <UsDeviceInfoModal
         visible={infoModalVisible}

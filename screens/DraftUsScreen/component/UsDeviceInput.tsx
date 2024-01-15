@@ -1,4 +1,4 @@
-import React, {useCallback, useRef} from 'react';
+import React, {useCallback} from 'react';
 import {Animated, Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
@@ -9,8 +9,9 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppIcon from '@/components/AppIcon';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {DeviceDataType, UsDeviceInputType} from './UsDraftStep2';
+import {UsDeviceInputType} from './UsDraftStep2';
 import AppTextInput from '@/components/AppTextInput';
+import {DeviceDataType} from '..';
 
 const styles = StyleSheet.create({
   DeviceBoxBtnFrame: {
@@ -139,6 +140,9 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
                 ]}
                 maxLength={isEid ? 32 : 15}
                 multiline
+                enablesReturnKeyAutomatically
+                clearTextOnFocus={false}
+                autoCorrect={false}
                 keyboardType="numeric"
                 value={text}
                 onChangeText={(str) => {

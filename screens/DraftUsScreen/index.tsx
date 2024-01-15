@@ -24,13 +24,11 @@ import {
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
-import {Moment} from 'moment';
-import moment from 'moment';
 import AppButton from '@/components/AppButton';
 import AppSnackBar from '@/components/AppSnackBar';
 import DatePickerModal from './component/DatePickerModal';
 import UsDraftStep1 from './component/UsDraftStep1';
-import UsDraftStep2 from './component/UsDraftStep2';
+import UsDraftStep2, {UsDeviceInputType} from './component/UsDraftStep2';
 import UsDraftStep3 from './component/UsDraftStep3';
 import AppAlert from '@/components/AppAlert';
 import api from '@/redux/api/api';
