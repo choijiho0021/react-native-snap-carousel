@@ -61,26 +61,28 @@ const AppBottomModal: React.FC<AppBottomModalProps> = ({
   isCloseTouch = true,
 }) => {
   return (
-    <Modal visible={visible} transparent>
+    <Modal visible={visible} transparent animationType="fade">
       <Pressable
         style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.3)'}}
         onPress={isCloseTouch ? onClose : () => {}}>
         <SafeAreaView key="modal" style={[styles.storeBox, {height}]}>
-          {title && (
-            <View style={styles.head}>
-              <AppText style={appStyles.bold18Text}>{title}</AppText>
-              {isCloseBtn && (
-                <View style={styles.modalClose}>
-                  <AppSvgIcon
-                    name="closeModal"
-                    key="closeModal"
-                    onPress={onClose}
-                  />
-                </View>
-              )}
-            </View>
-          )}
-          {body}
+          <Pressable>
+            {title && (
+              <View style={styles.head}>
+                <AppText style={appStyles.bold18Text}>{title}</AppText>
+                {isCloseBtn && (
+                  <View style={styles.modalClose}>
+                    <AppSvgIcon
+                      name="closeModal"
+                      key="closeModal"
+                      onPress={onClose}
+                    />
+                  </View>
+                )}
+              </View>
+            )}
+            {body}
+          </Pressable>
         </SafeAreaView>
       </Pressable>
     </Modal>
