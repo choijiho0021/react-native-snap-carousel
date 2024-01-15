@@ -658,7 +658,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               setShowSnackBar((pre) => ({text: pre.text, visible: false}))
             }
             textMessage={showSnackBar.text}
-            bottom={showModal ? 86 : 10}
+            bottom={86}
           />
           <SafeAreaView style={{backgroundColor: 'white'}} />
         </Modal>
@@ -686,7 +686,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           setShowSnackBar((pre) => ({text: pre.text, visible: false}))
         }
         textMessage={showSnackBar.text}
-        bottom={showModal || isht ? 86 : 10}
+        bottom={86}
       />
     </SafeAreaView>
   );
