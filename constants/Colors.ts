@@ -71,4 +71,5 @@ export const colors = {
   red: '#F1694F',
   violet500: '#5b16ef',
   violetbg: '#F3EDFF',
+  darkNavy: '#263867',
 };

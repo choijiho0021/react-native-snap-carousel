@@ -4890,6 +4890,21 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  iconNoticeRed24: [
+    <Svg
+      width="24"
+      height="18"
+      viewBox="0 0 24 18"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M10.366 1.815a2 2 0 0 1 3.268 0l8.14 11.532c.935 1.325-.012 3.153-1.634 3.153H3.86c-1.622 0-2.57-1.829-1.634-3.153l8.14-11.532z"
+        fill="#ED4847"
+      />
+      <Rect x="11" y="5.5" width="2" height="6" rx="1" fill="#fff" />
+      <Rect x="11" y="12.5" width="2" height="2" rx="1" fill="#fff" />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;
