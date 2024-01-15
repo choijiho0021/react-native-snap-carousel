@@ -56,6 +56,7 @@ import AppPrice from '@/components/AppPrice';
 import {ProductModelState} from '@/redux/modules/product';
 import ShareLinkModal from './components/ShareLinkModal';
 import AppStyledText from '@/components/AppStyledText';
+import ChargeInfoModal from './components/ChargeInfoModal';
 
 const {esimGlobal, webViewHost, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -321,6 +322,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [qty, setQty] = useState(1);
   const appState = useRef('unknown');
   const [price, setPrice] = useState<Currency>();
+  const [showChargeInfoModal, setShowChargeInfoModal] = useState(false);
 
   const isht = useMemo(
     () => route?.params?.partner === 'ht',
@@ -498,7 +500,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const renderChargeIcon = useCallback(() => {
     const isChargeOff = descData?.addonOption === 'N' || !descData?.addonOption;
     return (
-      <View style={styles.iconWithText}>
+      <Pressable
+        style={styles.iconWithText}
+        onPress={() => setShowChargeInfoModal((prev) => !prev)}>
         <AppIcon name={isChargeOff ? 'iconChargeOff' : 'iconCharge'} />
         <View style={styles.row}>
           <AppText style={styles.iconText}>
@@ -512,7 +516,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               {[
                 {
                   icon: descData?.addonOption === 'E' ? 'iconX' : 'iconOk',
-                  text: i18n.t('prodDetail:icon:charge:capacity'),
+                  text: i18n.t('prodDetail:icon:charge:addOn'),
                 },
                 {
                   icon: descData?.addonOption === 'A' ? 'iconX' : 'iconOk',
@@ -522,7 +526,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             </View>
           )}
         </View>
-      </View>
+      </Pressable>
     );
   }, [descData?.addonOption, renderChargeDetail]);
 
@@ -936,6 +940,12 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           <SafeAreaView style={{backgroundColor: 'white'}} />
         </Modal>
       )}
+      <ChargeInfoModal
+        visible={showChargeInfoModal}
+        onClose={() => {
+          setShowChargeInfoModal(false);
+        }}
+      />
 
       <ShareLinkModal
         visible={showShareModal}
