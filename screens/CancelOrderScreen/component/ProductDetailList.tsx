@@ -1,10 +1,12 @@
 import React, {Fragment, memo, useCallback} from 'react';
-import {StyleSheet, ViewStyle, View, StyleProp} from 'react-native';
+import {StyleSheet, ViewStyle, View, StyleProp, Platform} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppStyledText from '@/components/AppStyledText';
 import ProductDetailInfo from './ProductDetailInfo';
+import AppText from '@/components/AppText';
+import i18n from '@/utils/i18n';
 
 const styles = StyleSheet.create({
   notiContainer: {
@@ -55,7 +57,63 @@ const styles = StyleSheet.create({
       height: 4,
     },
   },
+  dashContainer: {
+    overflow: 'hidden',
+  },
+  dashFrame: {
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    margin: -1,
+    height: 0,
+    marginBottom: 0,
+  },
+  dash: {
+    width: '100%',
+  },
+
+  headerNotiText: {
+    ...appStyles.bold16Text,
+    color: colors.redError,
+  },
+
+  headerNoti: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    borderColor: colors.lightGrey,
+  },
 });
+
+const DefaultFooter = () => {
+  const renderDashedDiv = useCallback(() => {
+    return (
+      <View style={styles.dashContainer}>
+        <View style={styles.dashFrame}>
+          <View style={styles.dash} />
+        </View>
+      </View>
+    );
+  }, []);
+
+  return (
+    <View>
+      {Platform.OS === 'ios' && renderDashedDiv()}
+      <View
+        style={[
+          styles.headerNoti,
+          Platform.OS === 'android' && {
+            borderStyle: 'dashed',
+            borderTopWidth: 1,
+          },
+        ]}>
+        <AppText style={styles.headerNotiText}>
+          {i18n.t('his:draftNoti')}
+        </AppText>
+      </View>
+    </View>
+  );
+};
 
 type ProdDesc = {
   title: string;
@@ -66,12 +124,15 @@ type ProdDesc = {
 
 type ProductDetailListPros = {
   prods: ProdDesc[];
-  listTitle: string;
+  listTitle?: string;
   style?: StyleProp<ViewStyle>;
   notiComponent?: any;
   footerComponent?: any;
+  bodyComponent?: any;
   isGradient?: boolean;
   isFooter?: boolean;
+  isHeader?: boolean;
+  isBody?: boolean;
 };
 
 const ProductDetailList: React.FC<ProductDetailListPros> = ({
@@ -79,9 +140,12 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
   style,
   listTitle,
   notiComponent,
-  footerComponent,
+  footerComponent = <DefaultFooter />,
+  bodyComponent,
   isGradient = false,
   isFooter = true,
+  isHeader = true,
+  isBody = false,
 }) => {
   const renderItem = useCallback(
     ({item, isLast}: {item: ProdDesc; isLast?: boolean}) => {
@@ -114,32 +178,35 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
       key="container"
       style={[{backgroundColor: 'white', borderColor: '#000'}, style]}>
       <View key="noti" style={styles.notiContainer}>
-        {notiComponent}
-
-        {isGradient ? (
-          <LinearGradient
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            colors={[colors.clearBlue, colors.purplyBlue]}
-            style={styles.cancelCountNotiFrame}>
-            <View>
-              <AppStyledText
-                text={listTitle}
-                textStyle={styles.notiText}
-                format={{b: styles.notiBoldText}}
-              />
-            </View>
-          </LinearGradient>
-        ) : (
-          <View style={styles.cancelCountNotiFrame}>
-            <View>
-              <AppStyledText
-                text={listTitle}
-                textStyle={styles.notiText}
-                format={{b: styles.notiBoldText}}
-              />
-            </View>
-          </View>
+        {isHeader && (
+          <>
+            {notiComponent}
+            {isGradient ? (
+              <LinearGradient
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 0}}
+                colors={[colors.clearBlue, colors.purplyBlue]}
+                style={styles.cancelCountNotiFrame}>
+                <View>
+                  <AppStyledText
+                    text={listTitle}
+                    textStyle={styles.notiText}
+                    format={{b: styles.notiBoldText}}
+                  />
+                </View>
+              </LinearGradient>
+            ) : (
+              <View style={styles.cancelCountNotiFrame}>
+                <View>
+                  <AppStyledText
+                    text={listTitle}
+                    textStyle={styles.notiText}
+                    format={{b: styles.notiBoldText}}
+                  />
+                </View>
+              </View>
+            )}
+          </>
         )}
       </View>
 
@@ -149,6 +216,7 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
             return renderItem({item: r, isLast: index === prods.length - 1});
           })}
         </View>
+        {isBody && bodyComponent}
         {isFooter && footerComponent}
       </View>
     </View>

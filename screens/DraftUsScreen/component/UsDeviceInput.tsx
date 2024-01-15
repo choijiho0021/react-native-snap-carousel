@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Animated, Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import i18n from '@/utils/i18n';
@@ -9,7 +9,9 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppIcon from '@/components/AppIcon';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {UsDeviceInputType} from './DraftInputPage';
+import {UsDeviceInputType} from './UsDraftStep2';
+import AppTextInput from '@/components/AppTextInput';
+import {DeviceDataType} from '..';
 
 const styles = StyleSheet.create({
   DeviceBoxBtnFrame: {
@@ -28,9 +30,12 @@ const styles = StyleSheet.create({
     color: colors.clearBlue,
   },
   eidFrame: {
+    ...appStyles.medium16,
+    lineHeight: 24,
     padding: 16,
     gap: 8,
     borderColor: colors.lightGrey,
+    borderRadius: 3,
     borderWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',
@@ -42,6 +47,9 @@ type UsDeviceInputProps = {
   onClickInfo: (val: boolean) => void;
   onClickButton: (val: boolean) => void;
   inputType: UsDeviceInputType;
+  value: DeviceDataType;
+  setValue: (val: DeviceDataType) => void;
+  animatedValue: Animated.Value;
 };
 
 // TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
@@ -49,6 +57,9 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
   onClickInfo,
   onClickButton,
   inputType,
+  value,
+  setValue,
+  animatedValue,
 }) => {
   const renderTitle = useCallback(() => {
     return (
@@ -63,7 +74,7 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
               appStyles.bold16Text,
               {color: colors.black, lineHeight: 22},
             ]}>
-            {i18n.t('us:device:info')}
+            {i18n.t('us:deviceInfo')}
           </AppText>
 
           <AppSvgIcon name="alarmFill" onPress={() => onClickInfo(true)} />
@@ -73,7 +84,9 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
           <Pressable
             style={{flexDirection: 'row', gap: 4, alignItems: 'center'}}
             onPress={() => onClickButton(true)}>
-            <AppText style={styles.uploadText}>{'다른 업로드 방법'}</AppText>
+            <AppText style={styles.uploadText}>
+              {i18n.t(`us:device:upload:another`)}
+            </AppText>
             <AppSvgIcon name="arrowRightBlue16" />
           </Pressable>
         )}
@@ -108,35 +121,66 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
       <View style={{marginBottom: 40}}>
         {renderTitle()}
 
-        <View style={{marginTop: 8}}>
-          <AppText style={[appStyles.normal14Text, {color: colors.greyish}]}>
-            {'EID'}
-          </AppText>
+        {['eid', 'imei2'].map((r) => {
+          const isEid = r === 'eid';
+          const text = isEid ? value.eid : value.imei2;
 
-          <Pressable
-            style={styles.eidFrame}
-            onPress={() => {
-              console.log('@@@ onPress 클릭');
-            }}>
-            <AppText style={[appStyles.normal16Text, {color: colors.greyish}]}>
-              {'글자'}
-            </AppText>
-            <AppText
-              style={[
-                appStyles.semiBold14Text,
-                {
-                  color: colors.clearBlue,
-                  alignSelf: 'center',
-                  justifyContent: 'center',
-                },
-              ]}>
-              {'글자테스트'}
-            </AppText>
-          </Pressable>
-        </View>
+          return (
+            <View key={r} style={{marginTop: isEid ? 8 : 24, gap: 6}}>
+              <AppText
+                style={[appStyles.normal14Text, {color: colors.greyish}]}>
+                {i18n.t(`us:${r}`)}
+              </AppText>
+
+              <AppTextInput
+                key={r}
+                style={[
+                  styles.eidFrame,
+                  {borderColor: text > 0 ? colors.clearBlue : colors.lightGrey},
+                ]}
+                maxLength={isEid ? 32 : 15}
+                multiline
+                enablesReturnKeyAutomatically
+                clearTextOnFocus={false}
+                autoCorrect={false}
+                keyboardType="numeric"
+                value={text}
+                onChangeText={(str) => {
+                  setValue(
+                    isEid ? {...value, eid: str} : {...value, imei2: str},
+                  );
+                }}
+                placeholder={i18n.t(`us:device:placeholder`)}
+              />
+
+              {((isEid && text.length !== 32) ||
+                (!isEid && text.length !== 15)) && (
+                <View
+                  style={{gap: 6, flexDirection: 'row', alignItems: 'center'}}>
+                  {text.length > 0 && <AppSvgIcon name="checkRedSmall" />}
+                  <AppText
+                    style={[
+                      appStyles.medium14,
+                      {
+                        color:
+                          text.length > 0 ? colors.redError : colors.clearBlue,
+                        lineHeight: 20,
+                      },
+                    ]}>
+                    {i18n.t(
+                      text.length > 0
+                        ? `us:device:validate:${r}`
+                        : `us:device:validate:empty`,
+                    )}
+                  </AppText>
+                </View>
+              )}
+            </View>
+          );
+        })}
       </View>
     );
-  }, [renderTitle]);
+  }, [renderTitle, setValue, value]);
 
   const renderContent = useCallback(() => {
     switch (inputType) {
@@ -147,7 +191,15 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
     }
   }, [inputType, renderManualButton, renderUploadButton]);
 
-  return <>{renderContent()}</>;
+  return (
+    <Animated.View
+      style={{
+        height: animatedValue,
+        overflow: 'hidden',
+      }}>
+      {renderContent()}
+    </Animated.View>
+  );
 };
 
 export default connect(({product}: RootState) => ({

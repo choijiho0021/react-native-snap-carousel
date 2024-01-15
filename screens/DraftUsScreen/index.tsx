@@ -1,16 +1,15 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
-import {Calendar, LocaleConfig} from 'react-native-calendars';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {appStyles} from '@/constants/Styles';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
-import {HomeStackParamList, goBack, navigate} from '@/navigation/navigation';
+import {HomeStackParamList, goBack} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {AccountModelState} from '@/redux/modules/account';
@@ -25,19 +24,15 @@ import {
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
-import {Moment} from 'moment';
-import moment from 'moment';
-import DraftStartPage from './component/DraftStartPage';
-import AppText from '@/components/AppText';
 import AppButton from '@/components/AppButton';
-import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
-import AppNotiBox from '@/components/AppNotiBox';
-import DraftDateInputPage from './component/DraftDateInputPage';
-import AppBottomModal from './component/AppBottomModal';
 import DatePickerModal from './component/DatePickerModal';
-import AppSvgIcon from '@/components/AppSvgIcon';
-import DraftInputPage from './component/DraftInputPage';
+import UsDraftStep1 from './component/UsDraftStep1';
+import UsDraftStep2, {UsDeviceInputType} from './component/UsDraftStep2';
+import UsDraftStep3 from './component/UsDraftStep3';
+import AppAlert from '@/components/AppAlert';
+import api from '@/redux/api/api';
+import {ProdDesc} from '../CancelOrderScreen/CancelResult';
 
 const styles = StyleSheet.create({
   container: {
@@ -52,13 +47,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
     color: colors.white,
-  },
-
-  modalText: {
-    ...appStyles.semiBold16Text,
-    lineHeight: 26,
-    letterSpacing: -0.32,
-    color: colors.black,
   },
 
   secondaryButton: {
@@ -97,12 +85,7 @@ type DraftUsScreenProps = {
   };
 };
 
-export type UsProdDesc = {
-  title: string;
-  field_description: string;
-  promoFlag: string[];
-  qty: number;
-  activateDate: Moment;
+export type DeviceDataType = {
   eid: string;
   imei2: string;
 };
@@ -117,12 +100,43 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   pending,
 }) => {
   const [draftOrder, setDraftOrder] = useState<RkbOrder>();
-  const [prods, setProds] = useState<UsProdDesc[]>([]);
+  const [prods, setProds] = useState<ProdDesc[]>([]);
   const loading = useRef(false);
   const [showSnackBar, setShowSnackBar] = useState('');
   const [showPicker, setShowPicker] = useState(false);
   const [step, setStep] = useState(0);
-  const [selected, setSelected] = useState('');
+  const [actDate, setActDate] = useState('');
+  const [checked, setChecked] = useState<boolean>(false);
+  const [isClickButton, setIsClickButton] = useState(false);
+  const [deviceInputType, setDeviceInputType] =
+    useState<UsDeviceInputType>('none');
+
+  const [deviceData, setDeviceData] = useState<DeviceDataType>({
+    eid: '',
+    imei2: '',
+  });
+
+  const disabled = useCallback(
+    (isAlert: boolean) => {
+      if (step === 1) {
+        if (actDate === '') {
+          if (isAlert) setShowSnackBar(i18n.t('us:validate:date'));
+          return true;
+        }
+        if (deviceData.eid.length < 32 || deviceData.imei2.length < 15) {
+          if (isAlert) setShowSnackBar(i18n.t('us:validate:device'));
+          return true;
+        }
+      } else if (step === 2) {
+        if (!checked) {
+          if (isAlert) AppAlert.info(i18n.t('us:validate:checked'));
+          return true;
+        }
+      }
+      return false;
+    },
+    [actDate, deviceData, step, checked],
+  );
 
   useEffect(() => {
     navigation.setOptions({
@@ -182,11 +196,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
           field_description: prod.field_description,
           promoFlag: prod.promoFlag,
           qty: r.qty,
-          // test 임시 데이터
-          eid: 'eid2',
-          activateDate: moment(),
-          imei2: 'imei2test',
-        } as UsProdDesc;
+        } as ProdDesc;
 
       return null;
     });
@@ -196,6 +206,54 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
     if (isNeedUpdate) getProdDate();
     else setProds(prodList);
   }, [draftOrder?.orderItems, getProdDate, product.prodList]);
+
+  const requestDraft = useCallback(() => {
+    setIsClickButton(true);
+
+    // 발권하기 API
+    action.order
+      .changeDraft({
+        orderId: draftOrder?.orderId,
+        eid: deviceData.eid,
+        activation_date: `${actDate} 00:00:00`,
+        imei2: deviceData.imei2,
+        token,
+      })
+      .then((result) => {
+        if (result?.payload?.result !== 0)
+          AppAlert.info(
+            [api.E_INVALID_PARAMETER, api.E_RESOURCE_NOT_FOUND].includes(
+              result?.payload?.result,
+            )
+              ? result?.payload?.desc
+              : '알 수 없는 오류로 발권에 실패했습니다.',
+            '',
+            () => {
+              setStep(1);
+              setIsClickButton(false);
+              setChecked(false);
+            },
+          );
+        else {
+          action.order.subsReload({
+            iccid: iccid!,
+            token: token!,
+            hidden: false,
+          });
+          navigation.navigate('DraftResult', {
+            isSuccess: result?.payload?.result === 0,
+          });
+        }
+      });
+  }, [
+    actDate,
+    action.order,
+    deviceData,
+    draftOrder?.orderId,
+    iccid,
+    navigation,
+    token,
+  ]);
 
   const renderBottomBtn = useCallback(
     (onClick?: () => void) => {
@@ -207,8 +265,6 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
               type="secondary"
               title={i18n.t('us:btn:back')}
               titleStyle={styles.secondaryButtonText}
-              disabled={step === 0}
-              disableStyle={{borderWidth: 0}}
               onPress={() => {
                 setStep((prev) => (prev - 1 <= 0 ? 0 : prev - 1));
               }}
@@ -217,8 +273,11 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
           <AppButton
             style={styles.button}
             type="primary"
-            title={i18n.t('us:btn:next')}
-            disabledOnPress={() => {}}
+            title={i18n.t(step === 2 ? 'his:draftTitle' : 'us:btn:next')}
+            disabled={disabled(false) || isClickButton}
+            disabledOnPress={() => {
+              disabled(true);
+            }}
             disabledCanOnPress
             onPress={() => {
               console.log('onClick : ', onClick);
@@ -232,35 +291,49 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
         </View>
       );
     },
-    [step],
+    [disabled, step, isClickButton],
   );
-
-  useEffect(() => {
-    console.log('@@@@@ snackbar working : ', showSnackBar);
-  }, [showSnackBar]);
 
   if (!draftOrder || !draftOrder?.orderItems) return <View />;
 
   return (
     <SafeAreaView style={styles.container}>
       {step === 0 && (
-        <DraftStartPage
+        <UsDraftStep1
           prods={prods}
           draftOrder={draftOrder}
           onClick={onClickStart}
         />
       )}
 
-      {/* 스텝 1도 컴포넌트로 분리하기 */}
       {step === 1 && (
         <>
-          <DraftInputPage
-            selected={selected}
+          <UsDraftStep2
+            actDate={actDate}
             setDateModalVisible={setShowPicker}
+            deviceData={deviceData}
+            setDeviceData={setDeviceData}
+            deviceInputType={deviceInputType}
+            setDeviceInputType={setDeviceInputType}
           />
           {renderBottomBtn(() => {
-            if (selected === '') setShowSnackBar(i18n.t('us:alert:selectDate'));
-            else setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
+            setStep((prev) => (prev + 1 >= 2 ? 2 : prev + 1));
+          })}
+        </>
+      )}
+
+      {step === 2 && (
+        <>
+          <UsDraftStep3
+            actDate={actDate}
+            deviceData={deviceData}
+            prods={prods}
+            checked={checked}
+            setChecked={setChecked}
+            draftOrder={draftOrder}
+          />
+          {renderBottomBtn(() => {
+            requestDraft();
           })}
         </>
       )}
@@ -268,8 +341,8 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
       <DatePickerModal
         visible={showPicker}
         onClose={() => setShowPicker(false)}
-        selected={selected}
-        onSelected={setSelected}
+        selected={actDate}
+        onSelected={setActDate}
       />
 
       <AppSnackBar

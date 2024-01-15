@@ -1,15 +1,11 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {connect} from 'react-redux';
-import {RootState} from '@reduxjs/toolkit';
+import React, {useMemo, useState} from 'react';
+import {StyleSheet, View} from 'react-native';
 import i18n from '@/utils/i18n';
 
 import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
 import AppNotiBox from '@/components/AppNotiBox';
 import {Calendar, LocaleConfig} from 'react-native-calendars';
 import AppBottomModal from './AppBottomModal';
-import AppText from '@/components/AppText';
 import moment from 'moment';
 import AppSvgIcon from '@/components/AppSvgIcon';
 
@@ -70,7 +66,6 @@ LocaleConfig.defaultLocale = 'ko';
 const DatePickerModal: React.FC<DatePickerModalProps> = ({
   visible,
   onClose,
-  selected,
   onSelected,
 }) => {
   const [month, setMonth] = useState('');
