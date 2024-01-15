@@ -235,13 +235,17 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   const onChangeQty = useCallback(
     (cnt: number) => {
-      setQty(cnt);
-      setPrice({
-        value: Math.round(cnt * purchaseItems[0]?.price?.value * 100) / 100,
-        currency: purchaseItems[0]?.price?.currency,
-      });
+      if (isht) {
+        setShowSnackBar({text: i18n.t('prodDetail:qtyLimit'), visible: true});
+      } else {
+        setQty(cnt);
+        setPrice({
+          value: Math.round(cnt * purchaseItems[0]?.price?.value * 100) / 100,
+          currency: purchaseItems[0]?.price?.currency,
+        });
+      }
     },
-    [purchaseItems],
+    [isht, purchaseItems],
   );
 
   const resetModalInfo = useCallback(() => {
@@ -648,7 +652,14 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               </Pressable>
             </View>
           </Pressable>
-
+          <AppSnackBar
+            visible={showSnackBar.visible}
+            onClose={() =>
+              setShowSnackBar((pre) => ({text: pre.text, visible: false}))
+            }
+            textMessage={showSnackBar.text}
+            bottom={showModal ? 86 : 10}
+          />
           <SafeAreaView style={{backgroundColor: 'white'}} />
         </Modal>
       )}
@@ -675,7 +686,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           setShowSnackBar((pre) => ({text: pre.text, visible: false}))
         }
         textMessage={showSnackBar.text}
-        bottom={showModal ? 86 : 10}
+        bottom={showModal || isht ? 86 : 10}
       />
     </SafeAreaView>
   );
