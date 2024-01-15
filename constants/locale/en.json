@@ -943,6 +943,27 @@
   "appCenter:cart": "Click the 'Add to Cart' button",
   "appCenter:purchase": "Click the 'buy it now' button",
 
+  "prodDetail:title:daily": "데이터 무제한 <b>{data}</b>일",
+  "prodDetail:title:total": "데이터 종량제 <b>{data}</b>{unit}",
+
+  "prodDetail:body:daily": "하루에 {{data1}}를 사용하면 속도가\n{{data2}}로 제한됩니다.",
+  "prodDetail:body:total": "{{data1}}를 최대 {{data2}}일간 사용하실 수 있는\n종량제 상품입니다.",
+
+  "prodDetail:bottom": "여러 국가를 여행할 때도\n로밍도깨비 eSIM으로 자유롭게!",
+  "prodDetail:local": "[로컬망]",
+  "prodDetail:roaming": "[로밍]",
+
+  "prodDetail:icon:dataOnly": "데이터 ONLY",
+  "prodDetail:icon:clock": "사용기간 {{days}}일",
+  "prodDetail:icon:speed": "일 {{data}} 소진 시\n속도 제한",
+  "prodDetail:icon:timer": "{{data}}소진 시\n사용 종료",
+  "prodDetail:icon:wifi": "핫스팟 테더링\n가능",
+  "prodDetail:icon:wifiOff": "핫스팟 테더링\n가능",
+  "prodDetail:icon:charge": "충전 가능",
+  "prodDetail:icon:chargeOff": "충전 미지원",
+  "prodDetail:icon:charge:capacity": "용량 충전",
+  "prodDetail:icon:charge:extension": "상품 연장",
+
   "prodDetail:ProdInfo": "Info",
   "prodDetail:Caution": "Caution",
   "prodDetail:Tip": "Tip",

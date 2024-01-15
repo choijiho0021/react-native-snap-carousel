@@ -132,6 +132,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         localOpDetails,
         partnerId,
         partner: localOpList.get(prod.partnerId)?.partner,
+        prod,
       }),
     [imageUrl, localOpDetails, localOpList, navigation, partnerId],
   );

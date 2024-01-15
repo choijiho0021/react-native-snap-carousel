@@ -46,6 +46,7 @@ export const colors = {
   blue: '#2A7FF6',
   goldenYellow: '#ffc61b',
   paleBlue: '#eaf3fe',
+  paleBlue2: '#f4f9fe',
   pinkishGrey: '#bcbcbc',
   purplyBlue: '#5b16ef',
   babyBlue: '#B7D8FF',

@@ -115,6 +115,7 @@ type DrupalProduct = {
   field_desc: string;
   sku: string;
   field_network: string;
+  field_fup_speed?: string;
 };
 
 export type CurrencyCode = 'KRW' | 'USD';
@@ -159,6 +160,7 @@ export type RkbProduct = {
   cntry?: Set<string>;
   imageUrl?: string;
   network?: string;
+  fup?: string;
 };
 
 const toPurchaseItem = (prod?: RkbProduct) => {
@@ -210,6 +212,7 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
             ? parseJson(item.field_desc.replace(/&quot;/g, '"'))
             : {},
           network: item.field_network,
+          fup: item.field_fup_speed,
         })),
     );
   }
@@ -366,6 +369,12 @@ const getProductByLocalOp = (partnerId: string) => {
   );
 };
 
+const getProductDescDetail = (prodUuid: string) => {
+  return api.callHttpGet(
+    api.httpUrl(`${api.path.prodDescDetail}/${prodUuid}?_format=hal_json`),
+  );
+};
+
 const getProductDesc = (prodUuid: string) => {
   return api.callHttpGet(
     api.httpUrl(`${api.path.prodDesc}/${prodUuid}?_format=hal_json`),
@@ -447,6 +456,7 @@ export default {
   getTitle,
   getProduct,
   getProductByLocalOp,
+  getProductDescDetail,
   getProductDesc,
   getProductBySku,
   getLocalOp,
