@@ -78,6 +78,7 @@
   "localNet": " (로컬망)",
   "link": "링크",
   "new": "새로워진",
+  "unit": "{{unit}} 장",
 
   "purchase:date": "{{date}} 구매",
 
@@ -878,6 +879,10 @@
   "pym:purchaseInfo": "eSIM 상품은 <b>결제와 동시에 상품 정보가 발송</b>되는 관계로 <b>교환·환불이 불가</b>합니다.",
   "pym:receipt": "영수증",
   "pym:noAppScheme": "앱 실행에 실패했습니다. 설치가 되어있지 않은 경우 설치하기 버튼을 눌러주세요.",
+
+  "pym:discount": "할인 적용",
+  "pym:coupon": "할인 쿠폰",
+  "pym:selectCoupon": "쿠폰 선택 >",
 
   "err:login": "로그인 후 상품 구매하기",
   "err:body": "본문이 없습니다",

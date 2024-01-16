@@ -6,7 +6,12 @@ import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
 import Env from '@/environment';
-import {PaymentInfo, RkbOrderItem} from '@/redux/api/cartApi';
+import {
+  CouponInfo,
+  OrderPromo,
+  PaymentInfo,
+  RkbOrderItem,
+} from '@/redux/api/cartApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import api from '@/redux/api/api';
 import {Currency} from '@/redux/api/productApi';
@@ -82,6 +87,27 @@ const init = createAsyncThunk(
   },
 );
 
+const prepareOrder = createAsyncThunk(
+  'cart/prepareOrder',
+  (coupon: CouponInfo, {getState}) => {
+    const {account, cart} = getState() as RootState;
+    const {token, iccid, email, mobile} = account;
+    const {purchaseItems, orderId, esimIccid, mainSubsId} = cart;
+
+    return API.Cart.makeOrder({
+      orderId,
+      items: purchaseItems,
+      token,
+      iccid,
+      esimIccid,
+      mainSubsId,
+      user: mobile,
+      mail: email,
+      coupon,
+    });
+  },
+);
+
 export type PaymentReq = {key: string; title: string; amount: Currency};
 
 export interface CartModelState {
@@ -97,6 +123,7 @@ export interface CartModelState {
   deduct?: Currency;
   esimIccid?: string;
   mainSubsId?: string;
+  promo?: OrderPromo[];
 }
 
 const onSuccess = (state, action) => {
@@ -280,11 +307,20 @@ const slice = createSlice({
     // },
 
     builder.addCase(makeOrder.fulfilled, (state, action) => {
-      const {result, objects = []} = action.payload;
+      const {result, objects} = action.payload;
 
       if (result === 0) {
         // update orderId
-        state.orderId = objects[0]?.order_id[0]?.value;
+        state.orderId = objects[0]?.order_id;
+      }
+    });
+
+    builder.addCase(prepareOrder.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      if (result === 0 && objects[0]) {
+        state.orderId = objects[0].order_id;
+        state.promo = objects[0].promo;
       }
     });
   },
@@ -446,6 +482,7 @@ export const actions = {
   init,
   initCart,
   checkStockAndMakeOrder,
+  prepareOrder,
   updateOrder,
   makeEmpty,
   calculateTotal,

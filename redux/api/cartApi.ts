@@ -324,6 +324,18 @@ export type PaymentInfo = {
   captured: boolean;
 };
 
+export type CouponInfo = {
+  id: string[];
+};
+
+// order에 promotion(coupon)을 적용한 결과
+export type OrderPromo = {
+  coupon_id: string; // coupon id
+  promo_id: string;
+  total: Currency;
+  adj: Currency;
+};
+
 const makeOrder = ({
   items,
   info,
@@ -334,9 +346,10 @@ const makeOrder = ({
   esimIccid,
   orderId,
   mainSubsId,
+  coupon,
 }: {
   items: PurchaseItem[];
-  info: PaymentInfo;
+  info?: PaymentInfo;
   user?: string;
   mail?: string;
   token?: string;
@@ -344,12 +357,10 @@ const makeOrder = ({
   esimIccid?: string;
   orderId?: number;
   mainSubsId?: string;
+  coupon?: CouponInfo;
 }) => {
   if (_.isEmpty(items))
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: items');
-
-  if (_.isEmpty(info))
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: info');
 
   if (!user)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
@@ -383,7 +394,6 @@ const makeOrder = ({
     order: {
       orderId,
       type: orderType,
-      field_memo: info.memo,
       order_items: items.map((item) => ({
         quantity: item.qty,
         purchased_entity: {
@@ -391,25 +401,25 @@ const makeOrder = ({
         },
       })),
     },
-    profile: {
-      uuid: info.profile_uuid, // 주문에 사용된 profile id
-    },
     user: {
       mail,
       name: user,
     },
-    payment: {
-      gateway: 'iamport',
-      type: info.payment_type,
-      details: {
-        merchant_uid: info.merchant_uid,
-        captured: info.captured,
-      },
-      amount: info.amount,
-      rokebi_cash: info.rokebi_cash,
-      shipping_cost: info.dlvCost,
-      currency_code: info.currency_code || esimCurrency,
-    },
+    payment: info
+      ? {
+          gateway: 'iamport',
+          type: info.payment_type,
+          details: {
+            merchant_uid: info.merchant_uid,
+            captured: info.captured,
+          },
+          amount: info.amount,
+          rokebi_cash: info.rokebi_cash,
+          shipping_cost: info.dlvCost,
+          currency_code: info.currency_code || esimCurrency,
+        }
+      : null,
+    coupon,
   };
 
   return api.callHttp(
@@ -420,9 +430,22 @@ const makeOrder = ({
       body: JSON.stringify(body),
     },
     (resp) => {
-      if (resp.order_id?.length > 0) {
+      if (resp.result === 0 && resp.objects?.order_id) {
         // order_id 값이 있으면 성공한 것으로 간주한다.
-        return api.success([resp]);
+        return api.success([
+          {
+            order_id: resp.objects.order_id,
+            promo: Object.entries(resp.objects.promo).map(
+              ([k, v]) =>
+                ({
+                  coupon_id: v.id,
+                  promo_id: k,
+                  total: utils.stringToCurrency(v.total),
+                  adj: utils.stringToCurrency(v.adj),
+                } as OrderPromo),
+            ),
+          },
+        ]);
       }
       if (resp.result === api.E_STATUS_EXPIRED) {
         return api.failure<PurchaseItem>(resp.result, resp.desc);

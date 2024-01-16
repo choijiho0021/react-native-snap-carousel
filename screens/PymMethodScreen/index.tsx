@@ -45,7 +45,7 @@ import {
   ProductAction,
   ProductModelState,
 } from '@/redux/modules/product';
-import {actions} from '@/redux/modules/toast';
+import Discount from './Discount';
 
 const infoKey = 'pym:benefit';
 
@@ -158,6 +158,12 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   }, [action.info, info.infoMap]);
 
   useEffect(() => {
+    action.cart.prepareOrder({
+      id: account.coupon.map((a) => a.id),
+    });
+  }, [account.coupon, action.cart]);
+
+  useEffect(() => {
     navigation.setOptions({
       title: null,
       headerLeft: () => (
@@ -217,11 +223,14 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
             if (resp.result === api.E_RESOURCE_NOT_FOUND) {
               AppAlert.info(i18n.t('cart:soldOut'));
             } else if (resp.result === api.E_STATUS_EXPIRED) {
+              // product status is changed.
               const {orderId} = cart;
               const orderItems = cart?.orderItems.filter((elm) =>
                 resp?.message.split(',').includes(elm.prod.sku),
               );
               const orderItemIds = orderItems.map((elm) => elm.orderItemId);
+
+              // remove it from the cart
               orderItemIds.forEach((orderItemId) => {
                 if (orderItemId && orderId) {
                   action.cart.cartRemove({
@@ -270,6 +279,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     [
       account,
       action.cart,
+      action.product,
+      cart,
       clickable,
       deduct,
       mode,
@@ -343,6 +354,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           pymPrice={pymPrice}
           deduct={deduct}
         />
+
+        <Discount promo={cart.promo} />
 
         {pymPrice?.value !== 0 ? (
           method()
