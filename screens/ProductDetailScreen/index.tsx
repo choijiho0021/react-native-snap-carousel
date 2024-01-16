@@ -6,6 +6,7 @@ import Clipboard from '@react-native-community/clipboard';
 import {
   AppState,
   Image,
+  ImageBackground,
   Modal,
   Platform,
   Pressable,
@@ -23,6 +24,8 @@ import {
   getTrackingStatus,
   TrackingStatus,
 } from 'react-native-tracking-transparency';
+import {ScrollView} from 'react-native-gesture-handler';
+import RenderHtml from 'react-native-render-html';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
@@ -53,6 +56,10 @@ import utils from '@/redux/api/utils';
 import AppPrice from '@/components/AppPrice';
 import {ProductModelState} from '@/redux/modules/product';
 import ShareLinkModal from './components/ShareLinkModal';
+import AppStyledText from '@/components/AppStyledText';
+import ChargeInfoModal from './components/ChargeInfoModal';
+import TextWithDot from '../EsimScreen/components/TextWithDot';
+import BodyHtml from './components/BodyHtml';
 
 const {esimGlobal, webViewHost, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -163,6 +170,131 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     color: colors.clearBlue,
   },
+  bg: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    height: 288,
+    paddingTop: 40,
+    paddingBottom: 32,
+    paddingLeft: 20,
+  },
+  titleTop: {
+    display: 'flex',
+    gap: 8,
+  },
+  prodTitle: {
+    ...appStyles.semiBold24Text,
+    lineHeight: 42,
+    color: colors.white,
+  },
+  prodTitleBold: {
+    ...appStyles.bold32Text,
+    lineHeight: 42,
+    color: colors.white,
+  },
+  prodBody: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
+    color: colors.white,
+  },
+  locaTag: {
+    ...appStyles.bold16Text,
+    lineHeight: 24,
+    color: colors.white,
+    marginBottom: 4,
+  },
+  bottomText: {
+    ...appStyles.normal16Text,
+    color: colors.white,
+    lineHeight: 24,
+  },
+  iconBox: {
+    backgroundColor: colors.paleBlue2,
+    paddingTop: 48,
+    paddingBottom: 10,
+    paddingHorizontal: 20,
+    gap: 32,
+  },
+  iconBoxLine: {
+    display: 'flex',
+    flexDirection: 'row',
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  iconWithText: {
+    width: 110,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+  },
+  iconText: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 18,
+    textAlign: 'center',
+  },
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  chargeBoxFrame: {
+    height: 48,
+    width: 79,
+  },
+  chargeBox: {
+    borderWidth: 1,
+    borderColor: colors.veryLightBlue,
+    borderRadius: 3,
+    width: '100%',
+    height: '100%',
+    backgroundColor: colors.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 2,
+  },
+  chargeBoxText: {
+    ...appStyles.bold12Text,
+    lineHeight: 16,
+    color: colors.black,
+  },
+  noticeBox: {
+    paddingVertical: 17,
+    paddingHorizontal: 20,
+    backgroundColor: colors.darkNavy,
+  },
+  noticeHeader: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 4,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  noticeHeaderText: {
+    ...appStyles.normal16Text,
+    lineHeight: 20,
+    color: colors.white,
+  },
+  dot: {
+    ...appStyles.bold14Text,
+    marginHorizontal: 5,
+    lineHeight: 20,
+    color: colors.white,
+  },
+  noticeText: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
+    color: colors.white,
+    marginRight: 20,
+  },
+  noticeTextBold: {
+    ...appStyles.bold14Text,
+    lineHeight: 20,
+    color: colors.white,
+  },
 });
 
 type ProductDetailScreenNavigationProp = StackNavigationProp<
@@ -188,6 +320,15 @@ type ProductDetailScreenProps = {
   };
 };
 
+type addonOptionType = 'N' | 'A' | 'E' | 'B' | undefined;
+type DescData = {
+  fieldNoticeOption: any; // 리스트, 배열 상관없이 받도록
+  fieldCaution: string;
+  fieldCautionList: string[];
+  body: string;
+  addonOption?: addonOptionType;
+};
+
 const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   navigation,
   route,
@@ -206,20 +347,44 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     [route.params?.item],
   );
 
+  const prod = useMemo(() => route.params?.prod, [route.params?.prod]);
+
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
 
   const [showWebModal, setShowWebModal] = useState(false);
+  const [descData, setDescData] = useState<DescData>();
 
   const [qty, setQty] = useState(1);
   const appState = useRef('unknown');
   const [price, setPrice] = useState<Currency>();
+  const [showChargeInfoModal, setShowChargeInfoModal] = useState(false);
 
   const isht = useMemo(
     () => route?.params?.partner === 'ht',
     [route?.params?.partner],
   );
+
+  useEffect(() => {
+    if (prod)
+      API.Product.getProductDescDetail(prod.key).then((rsp) => {
+        const data = rsp[0];
+        if (data) {
+          setDescData({
+            fieldNoticeOption: data.field_notice_option, // 리스트, 배열 상관없이 받도록
+            fieldCaution: data.field_caution || '',
+            fieldCautionList: data.field_caution_list || [],
+            addonOption: data.field_addon_option,
+            body: data.body,
+          });
+        }
+      });
+  }, [prod]);
+
+  useEffect(() => {
+    console.log('@@@@ descData', descData);
+  }, [descData]);
 
   useEffect(() => {
     getTrackingStatus().then((elm) => setStatus(elm));
@@ -352,6 +517,252 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     },
     [onMessage],
   );
+
+  const renderTopInfo = useCallback(
+    (isDaily: boolean, volume: string, volumeUnit: string) => (
+      <ImageBackground
+        source={
+          isDaily
+            ? require('@/assets/images/esim/img_bg_1.png')
+            : require('@/assets/images/esim/img_bg_2.png')
+        }
+        style={styles.bg}>
+        <View style={styles.titleTop}>
+          <AppStyledText
+            text={i18n.t(`prodDetail:title:${isDaily ? 'daily' : 'total'}`)}
+            textStyle={styles.prodTitle}
+            format={{b: styles.prodTitleBold}}
+            data={{
+              data: isDaily ? prod?.days.toString() || '' : volume || '',
+              unit: volumeUnit,
+            }}
+          />
+
+          <AppText style={styles.prodBody}>
+            {i18n.t(`prodDetail:body:${isDaily ? 'daily' : 'total'}`, {
+              data1: isDaily ? `${volume}${volumeUnit}` : '',
+              data2: isDaily
+                ? `${
+                    (Number(prod?.fup) < 1000
+                      ? prod?.fup
+                      : (Number(prod?.fup) / 1024).toString()) || ''
+                  }${Number(prod?.fup) < 1000 ? 'Kbps' : 'Mbps' || ''}`
+                : '',
+            })}
+          </AppText>
+        </View>
+        <View>
+          <AppText style={styles.locaTag}>
+            {i18n.t(
+              `prodDetail:${
+                ['로컬', 'local'].find((i) => prod?.name.includes(i))
+                  ? 'local'
+                  : 'roaming'
+              }`,
+            )}
+          </AppText>
+          <AppText style={styles.bottomText}>
+            {i18n.t('prodDetail:bottom')}
+          </AppText>
+        </View>
+      </ImageBackground>
+    ),
+    [prod],
+  );
+
+  const renderIconWithText = useCallback(
+    (icon: string, text: string) => (
+      <View style={styles.iconWithText} key={`${icon}${text}`}>
+        <AppIcon name={icon} />
+        <AppText style={styles.iconText}>{text}</AppText>
+      </View>
+    ),
+    [],
+  );
+
+  const renderChargeDetail = useCallback(
+    (icon: string, text: string) => (
+      <View style={styles.row} key={`${icon}${text}`}>
+        <AppText style={styles.chargeBoxText}>{text}</AppText>
+        <AppIcon name={icon} />
+      </View>
+    ),
+    [],
+  );
+
+  const renderChargeIcon = useCallback(() => {
+    const isChargeOff = descData?.addonOption === 'N' || !descData?.addonOption;
+    return (
+      <Pressable
+        style={styles.iconWithText}
+        onPress={() => setShowChargeInfoModal((prev) => !prev)}>
+        <AppIcon name={isChargeOff ? 'iconChargeOff' : 'iconCharge'} />
+        <View style={styles.row}>
+          <AppText style={styles.iconText}>
+            {i18n.t(`prodDetail:icon:charge${isChargeOff ? 'Off' : ''}`)}
+          </AppText>
+          <AppIcon name="iconChargeInfo" />
+        </View>
+        <View style={styles.chargeBoxFrame}>
+          {!isChargeOff && (
+            <View style={styles.chargeBox}>
+              {[
+                {
+                  icon: descData?.addonOption === 'E' ? 'iconX' : 'iconOk',
+                  text: i18n.t('prodDetail:icon:charge:addOn'),
+                },
+                {
+                  icon: descData?.addonOption === 'A' ? 'iconX' : 'iconOk',
+                  text: i18n.t('prodDetail:icon:charge:extension'),
+                },
+              ].map((i) => renderChargeDetail(i.icon, i.text))}
+            </View>
+          )}
+        </View>
+      </Pressable>
+    );
+  }, [descData?.addonOption, renderChargeDetail]);
+
+  const renderSixIcon = useCallback(
+    (isDaily: boolean, volume: string, volumeUnit: string) => (
+      <View style={styles.iconBox}>
+        <View style={styles.iconBoxLine}>
+          {[
+            {
+              icon: 'iconDataOnly',
+              text: i18n.t('prodDetail:icon:dataOnly'),
+            },
+            {
+              icon: 'iconClock',
+              text: i18n.t('prodDetail:icon:clock', {
+                days: prod?.days,
+              }),
+            },
+            {
+              icon:
+                prod?.network === '5G/LTE/3G'
+                  ? 'icon5G'
+                  : prod?.network === '3G'
+                  ? 'icon3G'
+                  : 'iconLTE',
+              text: prod?.network || '',
+            },
+          ].map((i) => renderIconWithText(i.icon, i.text))}
+        </View>
+        <View style={styles.iconBoxLine}>
+          {[
+            {
+              icon: isDaily ? 'iconSpeed' : 'iconTimer',
+              text: i18n.t(`prodDetail:icon:${isDaily ? 'speed' : 'timer'}`, {
+                data: `${volume}${volumeUnit}`,
+              }),
+            },
+            {
+              icon: prod?.hotspot ? 'iconWifi' : 'conWifiOff',
+              text: i18n.t(
+                `prodDetail:icon:${prod?.hotspot ? 'wifi' : 'wifiOff'}`,
+              ),
+            },
+          ].map((i) => renderIconWithText(i.icon, i.text))}
+          {renderChargeIcon()}
+        </View>
+      </View>
+    ),
+    [prod, renderChargeIcon, renderIconWithText],
+  );
+
+  const renderNoticeOption = useCallback(
+    (noticeOption: string) => (
+      <TextWithDot
+        key={noticeOption}
+        dotStyle={styles.dot}
+        textStyle={styles.noticeText}
+        boldStyle={styles.noticeTextBold}
+        text={i18n.t(`prodDetail:noticeOption:${noticeOption}`)}
+      />
+    ),
+    [],
+  );
+
+  const renderCautionList = useCallback((caution: string) => {
+    const cautionText = caution.substring(
+      caution.startsWith('ios:') ? 4 : caution.startsWith('android:') ? 8 : 0,
+    );
+    return (
+      <TextWithDot
+        key={caution}
+        dotStyle={styles.dot}
+        textStyle={styles.noticeText}
+        boldStyle={styles.noticeTextBold}
+        text={cautionText}
+      />
+    );
+  }, []);
+
+  const renderNotice = useCallback(
+    (noticeList: string[], cautionList: string[]) => {
+      return (
+        <View style={styles.noticeBox}>
+          <View style={styles.noticeHeader}>
+            <AppIcon name="iconNoticeRed24" />
+            <AppText style={styles.noticeHeaderText}>
+              {i18n.t('prodDetail:Caution')}
+            </AppText>
+          </View>
+          {noticeList.map((i) => renderNoticeOption(i))}
+          {cautionList.map((i) => renderCautionList(i))}
+        </View>
+      );
+    },
+    [renderCautionList, renderNoticeOption],
+  );
+
+  const renderProdDetail = useCallback(() => {
+    const isDaily = prod?.field_daily === 'daily';
+    const volume =
+      Number(prod?.volume) > 500
+        ? (Number(prod?.volume) / 1024).toString()
+        : prod?.volume || '';
+    const volumeUnit = Number(prod?.volume) > 500 ? 'GB' : 'MB';
+
+    const noticeOption = descData?.fieldNoticeOption || [];
+    let noticeOptionList: string[] = [];
+    if (typeof noticeOption === 'string') {
+      noticeOptionList = noticeOption.replace(' ', '').split(',');
+    } else {
+      noticeOptionList = noticeOption;
+    }
+
+    const drupalList = ['I', 'A', 'K', 'N', 'H'];
+
+    const noticeList: string[] = drupalList.reduce(
+      (acc: string[], curr: string) => {
+        if (noticeOptionList.includes(curr)) {
+          acc.push(curr);
+        }
+        return acc;
+      },
+      [],
+    );
+
+    const cautionList: string[] =
+      descData?.fieldCautionList.filter((c) =>
+        isIOS ? !c.includes('android:') : !c.includes('ios:'),
+      ) || [];
+
+    return (
+      prod &&
+      descData && (
+        <ScrollView style={{flex: 1}}>
+          {renderTopInfo(isDaily, volume, volumeUnit)}
+          {renderSixIcon(isDaily, volume, volumeUnit)}
+          {(noticeList.length > 0 || cautionList.length > 0) &&
+            renderNotice(noticeList, cautionList)}
+          <BodyHtml body={descData.body} />
+        </ScrollView>
+      )
+    );
+  }, [descData, prod, renderNotice, renderSixIcon, renderTopInfo]);
 
   const soldOut = useCallback((payload: ApiResult<any>, message: string) => {
     if (payload.result === api.E_RESOURCE_NOT_FOUND) {
@@ -579,7 +990,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           />
         )}
       </View>
-      {renderWebView(route.params?.uuid)}
+      {/* {renderWebView(route.params?.uuid)} */}
+      {renderProdDetail()}
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       {purchaseButtonTab()}
 
@@ -663,6 +1075,12 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           <SafeAreaView style={{backgroundColor: 'white'}} />
         </Modal>
       )}
+      <ChargeInfoModal
+        visible={showChargeInfoModal}
+        onClose={() => {
+          setShowChargeInfoModal(false);
+        }}
+      />
 
       <ShareLinkModal
         visible={showShareModal}
