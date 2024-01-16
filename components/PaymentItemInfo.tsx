@@ -107,11 +107,6 @@ const styles = StyleSheet.create({
     // flexDirection: 'row',
     // flexWrap: 'wrap'
   },
-  divider: {
-    marginTop: 30,
-    height: 10,
-    backgroundColor: colors.whiteTwo,
-  },
   esimInfo: {
     ...appStyles.normal14Text,
     color: colors.clearBlue,
