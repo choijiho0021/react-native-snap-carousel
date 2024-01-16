@@ -223,11 +223,12 @@ const renderTipList = (
   id: string,
   list: 'dot' | 'num' = 'num',
   boldRed = false,
+  array: number[] = [1, 2],
 ) => (
   <View style={styles.tipContainer}>
     {renderTips()}
     <View style={{alignItems: 'flex-start'}}>
-      {[1, 2].map((k) => (
+      {array.map((k) => (
         <View key={k} style={styles.tipTextContainer}>
           {list === 'num' ? (
             <View style={styles.step}>
@@ -710,7 +711,8 @@ export const getGuideImages = (
           key: 'page3',
           title: renderText(`userGuide:stepsTitle2:galaxy`),
           step: 2,
-          tip: () => renderTipList('userGuide:tipPage2:galaxy'),
+          tip: () =>
+            renderTipList('userGuide:tipPage2:galaxy', 'num', false, [1, 2, 3]),
         },
         {
           key: 'page4',
