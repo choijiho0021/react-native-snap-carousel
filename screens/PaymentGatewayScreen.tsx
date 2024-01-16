@@ -139,7 +139,6 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       action.cart
         .checkStockAndMakeOrder(pymInfo)
         .then(({payload: resp}) => {
-          setIsOrderReady(true);
           if (!resp || resp.result < 0) {
             let text = 'cart:systemError';
             if (resp?.result === api.E_RESOURCE_NOT_FOUND)
@@ -149,6 +148,8 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
 
             AppAlert.info(i18n.t(text));
             navigation.goBack();
+          } else {
+            setIsOrderReady(true);
           }
         })
         .catch(() => {
