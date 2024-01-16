@@ -470,7 +470,7 @@ export const getGuideImages = (
             key: 'page3',
             title: renderText(`userGuide:stepsTitle2:ios`),
             step: 2,
-            tip: () => renderTipList('userGuide:tipPage3'),
+            tip: () => renderTipList('userGuide:tipPage3', 'num', false, 3),
           },
           {
             key: 'page4',
@@ -557,7 +557,7 @@ export const getGuideImages = (
             key: 'page3',
             title: renderText(`userGuide:stepsTitle2:ios`),
             step: 2,
-            tip: () => renderTipList('userGuide:tipPage3'),
+            tip: () => renderTipList('userGuide:tipPage3', 'num', false, 3),
           },
           {
             key: 'page4',
