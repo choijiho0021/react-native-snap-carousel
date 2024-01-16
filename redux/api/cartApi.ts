@@ -332,8 +332,9 @@ export type CouponInfo = {
 export type OrderPromo = {
   coupon_id: string; // coupon id
   promo_id: string;
+  title?: string;
   total: Currency;
-  adj: Currency;
+  adj?: Currency;
 };
 
 const makeOrder = ({
@@ -435,15 +436,18 @@ const makeOrder = ({
         return api.success([
           {
             order_id: resp.objects.order_id,
-            promo: Object.entries(resp.objects.promo).map(
-              ([k, v]) =>
-                ({
-                  coupon_id: v.id,
-                  promo_id: k,
-                  total: utils.stringToCurrency(v.total),
-                  adj: utils.stringToCurrency(v.adj),
-                } as OrderPromo),
-            ),
+            promo: Object.entries(resp.objects.promo)
+              .map(
+                ([k, v]) =>
+                  ({
+                    promo_id: k,
+                    coupon_id: v.id,
+                    title: v.title,
+                    total: utils.stringToCurrency(v.total),
+                    adj: utils.stringToCurrency(v.adj),
+                  } as OrderPromo),
+              )
+              .filter((d) => !!d.adj),
           },
         ]);
       }

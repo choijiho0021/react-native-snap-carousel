@@ -88,7 +88,7 @@ const dlvCost = (totalPrice: Currency): Currency => {
 
 // 숫자만 입력 받기
 const stringToCurrency = (value?: string): Currency | undefined => {
-  if (value === undefined) return undefined;
+  if (!value) return undefined;
 
   if (value.startsWith('USD')) {
     return {value: stringToNumber(value.substring(3)) || 0, currency: 'USD'};

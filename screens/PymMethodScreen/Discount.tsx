@@ -37,9 +37,10 @@ const styles = StyleSheet.create({
 type DiscountProps = {
   account: AccountModelState;
   promo?: OrderPromo[];
+  onPress?: () => void;
 };
 
-const Discount: React.FC<DiscountProps> = ({account, promo}) => {
+const Discount: React.FC<DiscountProps> = ({account, promo, onPress}) => {
   const maxPromo = useMemo(
     () =>
       promo?.reduce((acc, cur) => {
@@ -60,7 +61,7 @@ const Discount: React.FC<DiscountProps> = ({account, promo}) => {
       </View>
       <View style={styles.row}>
         <AppPrice price={maxPromo?.adj} />
-        <AppButton title={i18n.t('pym:selectCoupon')} />
+        <AppButton title={i18n.t('pym:selectCoupon')} onPress={onPress} />
       </View>
     </View>
   );

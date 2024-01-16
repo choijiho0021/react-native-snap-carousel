@@ -124,6 +124,7 @@ export interface CartModelState {
   esimIccid?: string;
   mainSubsId?: string;
   promo?: OrderPromo[];
+  couponToApply?: string; // selected coupon
 }
 
 const onSuccess = (state, action) => {
@@ -245,6 +246,10 @@ const slice = createSlice({
         (item) => purchaseItems.findIndex((p) => p.key === item.key) < 0,
       );
     },
+
+    applyCoupon: (state, action) => {
+      state.couponToApply = action.payload;
+    },
   },
 
   extraReducers: (builder) => {
@@ -321,6 +326,10 @@ const slice = createSlice({
       if (result === 0 && objects[0]) {
         state.orderId = objects[0].order_id;
         state.promo = objects[0].promo;
+        state.couponToApply = state.promo?.reduce((acc, cur) => {
+          if (!acc || cur.adj?.value < acc.adj?.value) return cur;
+          return acc;
+        }, undefined)?.coupon_id;
       }
     });
   },

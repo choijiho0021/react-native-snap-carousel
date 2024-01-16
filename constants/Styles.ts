@@ -88,7 +88,7 @@ export const appStyles = StyleSheet.create({
 
   header: {
     flexDirection: 'row',
-    height: 44,
+    height: 56,
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'white',

@@ -164,20 +164,10 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   }, [account.coupon, action.cart]);
 
   useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          title={i18n.t('payment')}
-          disabled={route.params.isPaid}
-          showIcon={!route.params.isPaid}
-        />
-      ),
-    });
     Analytics.trackEvent('Page_View_Count', {
       page: `Payment - ${route.params?.mode}`,
     });
-  }, [navigation, route.params]);
+  }, [route.params]);
 
   const onSubmit = useCallback(
     (passingAlert: boolean) => {
@@ -342,6 +332,13 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={appStyles.header}>
+        <AppBackButton
+          title={i18n.t('payment')}
+          disabled={route.params.isPaid}
+          showIcon={!route.params.isPaid}
+        />
+      </View>
       <KeyboardAwareScrollView
         contentContainerStyle={{minHeight: '100%'}}
         showsVerticalScrollIndicator={false}
@@ -355,7 +352,10 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           deduct={deduct}
         />
 
-        <Discount promo={cart.promo} />
+        <Discount
+          promo={cart.promo}
+          onPress={() => navigation.navigate('SelectCoupon')}
+        />
 
         {pymPrice?.value !== 0 ? (
           method()

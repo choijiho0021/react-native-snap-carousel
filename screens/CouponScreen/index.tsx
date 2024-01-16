@@ -21,19 +21,12 @@ import {
 } from '@/redux/modules/account';
 import AppText from '@/components/AppText';
 import {RkbCoupon} from '@/redux/api/accountApi';
+import {appStyles} from '@/constants/Styles';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-  },
-  header: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-between',
-    backgroundColor: colors.white,
-    alignItems: 'center',
-    height: 56,
   },
   coupon: {
     height: 56,
@@ -62,7 +55,6 @@ type CouponProps = {
 };
 
 const CouponScreen: React.FC<CouponProps> = ({
-  navigation,
   action,
   account: {token, coupon},
 }) => {
@@ -81,7 +73,7 @@ const CouponScreen: React.FC<CouponProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+      <View style={appStyles.header}>
         <AppBackButton title={i18n.t('mypage:coupon')} />
       </View>
       <FlatList
