@@ -1,11 +1,4 @@
-import React, {
-  ReactNode,
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, {useMemo} from 'react';
 import {Image, Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
@@ -14,8 +7,6 @@ import AppText from '@/components/AppText';
 
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import AppIcon from '@/components/AppIcon';
-import moment from 'moment';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
 import AppBottomModal from './AppBottomModal';

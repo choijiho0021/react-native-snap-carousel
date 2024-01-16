@@ -22,6 +22,7 @@ import ChargeTypeModal from './HomeScreen/component/ChargeTypeModal';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import ScreenHeader from '@/components/ScreenHeader';
 import {AccountModelState} from '@/redux/modules/account';
+import api from '@/redux/api/api';
 
 const styles = StyleSheet.create({
   container: {
@@ -64,6 +65,8 @@ type ChargeTypeScreenProps = {
   route: RouteProp<HomeStackParamList, 'ChargeType'>;
   account: AccountModelState;
 };
+
+export const EXCEED_CHARGE_QUADCELL_RSP = 1;
 
 const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   navigation,
@@ -118,54 +121,31 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         };
       } = rsp;
 
-      console.log('@@@@ rsp : ', rsp);
-      console.log('@@@ links : ', links);
-
       if (links?.charge === 'N') {
         setAddOnDisReasonText(links?.msg?.kr);
         setAddonEnable(false);
-      } else if (result === 0 || result === 1) {
-        if ((objects?.length || 0) < 1) {
-          // 상품 없음
-          setAddonEnable(false);
-          setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:noProd`));
-        } else {
-          // 최초 충전의 경우는 chargedSubs가 없어서 mainSubs로
-          const chargedItem = params?.chargedSubs
-            ? params?.chargedSubs?.find((r) => r.nid === links.refSubs.id)
-            : subs;
 
-          if (!chargedItem) {
-            setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:`));
-            return;
-          }
+        // 1일 때도 진입하게 하기?
+      } else if (result === 0 || result === api.E_INVALID_STATUS) {
+        // 최초 충전의 경우는 chargedSubs가 없어서 mainSubs로
+        const chargedItem = params?.chargedSubs
+          ? params?.chargedSubs?.find((r) => r.nid === links.refSubs.id)
+          : subs;
 
-          const statusCd = links.refSubs.status;
-          const endTime = links.refSubs.expireTime;
-
-          setExpireTime(moment(endTime));
-          setStatus(statusCd);
-
-          // // 충전 조건 2. 사용 전, 용량 충전 가능한 상품 처리
-          if (statusCd === 'R' && chargedItem.partner?.startsWith('cmi')) {
-            setAddonEnable(false);
-            setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:reserved`));
-            return;
-          }
-
-          // // 충전 조건 3. 모든 사용완료 상품은 충전 불가
-          if (statusCd === 'U') {
-            setAddonEnable(false);
-            setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:used`));
-            return;
-          }
-
-          console.log('@@@@@ 뭐야 여기로 진입 왜 안해?? : ', chargedItem);
-
-          setChargeableItem(chargedItem);
-          setAddonEnable(true);
-          setAddonProds(objects);
+        if (!chargedItem) {
+          setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:`));
+          return;
         }
+
+        const statusCd = links.refSubs.status;
+        const endTime = links.refSubs.expireTime;
+
+        setExpireTime(moment(endTime));
+        setStatus(statusCd);
+
+        setChargeableItem(chargedItem);
+        setAddonEnable(true);
+        setAddonProds(objects);
       } else {
         setAddonEnable(false);
         setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:`));
@@ -210,7 +190,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       return;
     }
 
-    console.log('@@@@ getAddOnProudct working?');
     getAddOnProduct();
   }, [getAddOnProduct, mainSubs, unsupportAddon, unsupportExtension]);
 

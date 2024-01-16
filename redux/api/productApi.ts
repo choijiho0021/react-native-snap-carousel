@@ -13,6 +13,7 @@ import {RkbPriceInfo} from '../modules/product';
 import {colors} from '@/constants/Colors';
 import Env from '@/environment';
 import {parseJson} from '@/utils/utils';
+import {EXCEED_CHARGE_QUADCELL_RSP} from '@/screens/ChargeTypeScreen';
 
 const {specialCategories} = Env.get();
 
@@ -339,7 +340,10 @@ const toAddOnProd = (data: DrupalAddonProd[]): ApiResult<RkbAddOnProd> => {
   if (data.result === 0) {
     return api.success(data?.objects, data?.info);
   }
-  if (data.result === api.E_INVALID_STATUS) {
+  if (
+    data.result === api.E_INVALID_STATUS ||
+    data.result === EXCEED_CHARGE_QUADCELL_RSP
+  ) {
     return api.success(data?.objects, data?.info, data?.result);
   }
   return api.failure(api.E_NOT_FOUND);
