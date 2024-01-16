@@ -185,6 +185,7 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
   const renderContent = useCallback(() => {
     switch (inputType) {
       case 'manual':
+      case 'capture':
         return renderManualButton();
       default:
         return renderUploadButton();
