@@ -12,10 +12,9 @@ import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
-import {CartModelState, PaymentReq} from '@/redux/modules/cart';
+import {CartModelState} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
@@ -45,27 +44,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 0,
   },
-  total: {
-    height: 52,
-    paddingHorizontal: 20,
-    borderTopColor: colors.black,
-    borderTopWidth: 1,
-    backgroundColor: colors.whiteTwo,
-    alignItems: 'center',
-  },
-  resultTotal: {
-    backgroundColor: colors.white,
-    height: 60,
-    marginTop: 20,
-  },
   mrgBottom0: {
     marginBottom: 0,
-  },
-  brdrBottom0: {
-    borderBottomWidth: 0,
-  },
-  colorClearBlue: {
-    color: colors.clearBlue,
   },
   colorWarmGrey: {
     color: colors.warmGrey,
@@ -79,22 +59,10 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.lightGrey,
     borderBottomWidth: 1,
   },
-  priceInfo: {
-    marginVertical: 11,
-    marginHorizontal: 20,
-  },
   normalText16: {
     ...appStyles.normal16Text,
     fontWeight: 'normal',
     color: colors.black,
-    fontSize: isDeviceSize('small') ? 14 : 16,
-  },
-  boldText16: {
-    ...appStyles.bold16Text,
-    fontSize: isDeviceSize('small') ? 14 : 16,
-  },
-  boldText18: {
-    ...appStyles.bold18Text,
     fontSize: isDeviceSize('small') ? 14 : 16,
   },
   productPriceTitle: {
@@ -121,7 +89,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type PaymentItemMode = 'method' | 'result';
+export type PaymentItemMode = 'method' | 'result';
 
 const PaymentItem0 = ({
   style,
@@ -160,23 +128,16 @@ const PaymentItem0 = ({
     </View>
   );
 };
-const PaymentItem = memo(PaymentItem0);
+
+export const PaymentItem = memo(PaymentItem0);
 
 const PaymentItemInfo = ({
   cart,
   purchaseItems,
-  pymReq = [],
-  deduct,
-  pymPrice,
-  screen,
   mode = 'method',
 }: {
   cart: CartModelState;
   purchaseItems: PurchaseItem[];
-  pymReq?: PaymentReq[];
-  deduct?: Currency;
-  pymPrice?: Currency;
-  screen?: string;
   mode?: PaymentItemMode;
 }) => {
   const {mainSubsId} = cart;
@@ -231,41 +192,6 @@ const PaymentItemInfo = ({
         })}
       </View>
 
-      {!isRecharge && (
-        <View style={styles.priceInfo}>
-          {pymReq.map((item) => (
-            <PaymentItem
-              key={item.key}
-              title={item.title}
-              value={utils.price(item.amount)}
-              mode={mode}
-            />
-          ))}
-          <PaymentItem
-            key="deductBalance"
-            title={i18n.t('cart:deductBalance')}
-            value={`- ${utils.price(deduct)}`}
-            mode={mode}
-          />
-        </View>
-      )}
-
-      <PaymentItem
-        key="totalCost"
-        style={[
-          styles.row,
-          styles.total,
-          styles.brdrBottom0,
-          mode === 'result' && styles.resultTotal,
-        ]}
-        titleStyle={mode === 'result' ? styles.boldText16 : styles.normalText16}
-        title={`${i18n.t('cart:totalCost')} `}
-        valueStyle={[
-          mode === 'result' ? styles.boldText18 : styles.boldText16,
-          styles.colorClearBlue,
-        ]}
-        value={utils.price(pymPrice)}
-      />
       {mode !== 'result' && esimApp && !isImmediateOrder && (
         <View
           style={{

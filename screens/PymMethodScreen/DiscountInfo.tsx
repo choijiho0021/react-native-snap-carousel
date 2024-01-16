@@ -1,5 +1,6 @@
 import {RootState} from '@reduxjs/toolkit';
-import React, {memo, useMemo} from 'react';
+import {bindActionCreators} from 'redux';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {AccountModelState} from '@/redux/modules/account';
@@ -9,9 +10,17 @@ import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppButton from '@/components/AppButton';
-import {OrderPromo} from '@/redux/api/cartApi';
 import AppPrice from '@/components/AppPrice';
-import {CartModelState} from '@/redux/modules/cart';
+import {
+  CartAction,
+  CartModelState,
+  actions as cartActions,
+} from '@/redux/modules/cart';
+import Env from '@/environment';
+import AppTextInput from '@/components/AppTextInput';
+import {utils} from '@/utils/utils';
+
+const {esimCurrency} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -39,29 +48,74 @@ type DiscountProps = {
   account: AccountModelState;
   cart: CartModelState;
   onPress?: () => void;
+
+  action: {
+    cart: CartAction;
+  };
 };
 
-const DiscountInfo: React.FC<DiscountProps> = ({account, cart, onPress}) => {
-  const adj = useMemo(
-    () => cart.promo?.find((p) => p.coupon_id === cart.couponToApply)?.adj,
-    [cart.couponToApply, cart.promo],
+const DiscountInfo: React.FC<DiscountProps> = ({
+  account,
+  cart,
+  onPress,
+  action,
+}) => {
+  const discount = useMemo(() => cart.pymReq?.discount, [cart.pymReq]);
+  const [rokebiCash, setRokebiCash] = useState('');
+  const updateRokebiCash = useCallback(
+    (v: string) => {
+      const min = Math.min(account.balance || 0, utils.stringToNumber(v) || 0);
+      action.cart.deductRokebiCash(min);
+    },
+    [account.balance, action.cart],
   );
+  useEffect(() => {
+    setRokebiCash(utils.numberToCommaString(cart.pymReq?.rkbcash?.value || 0));
+  }, [cart.pymReq?.rkbcash]);
 
   return (
     <View style={styles.container}>
       <AppText style={styles.title}>{i18n.t('pym:discount')}</AppText>
-      <View style={styles.row}>
+      <View key="coupon" style={styles.row}>
         <AppText>{i18n.t('pym:coupon')}</AppText>
         <AppText>{i18n.t('unit', {unit: account.coupon?.length || 0})}</AppText>
       </View>
-      <View style={styles.row}>
-        <AppPrice price={adj} />
+      <View key="select" style={styles.row}>
+        <AppPrice price={discount} />
         <AppButton title={i18n.t('pym:selectCoupon')} onPress={onPress} />
+      </View>
+      <View key="cash" style={styles.row}>
+        <AppText>{i18n.t('acc:balance')}</AppText>
+        <AppPrice
+          price={{value: account.balance || 0, currency: esimCurrency}}
+        />
+      </View>
+      <View key="selcash" style={styles.row}>
+        <AppTextInput
+          style={{flex: 1}}
+          keyboardType="numeric"
+          returnKeyType="done"
+          enablesReturnKeyAutomatically
+          onChangeText={setRokebiCash}
+          value={rokebiCash}
+          onSubmitEditing={() => updateRokebiCash(rokebiCash)}
+        />
+        <AppButton
+          title={i18n.t('pym:deductAll')}
+          onPress={() => action.cart.deductRokebiCash(account.balance)}
+        />
       </View>
     </View>
   );
 };
 
 export default memo(
-  connect(({account, cart}: RootState) => ({account, cart}))(DiscountInfo),
+  connect(
+    ({account, cart}: RootState) => ({account, cart}),
+    (dispatch) => ({
+      action: {
+        cart: bindActionCreators(cartActions, dispatch),
+      },
+    }),
+  )(DiscountInfo),
 );

@@ -550,6 +550,7 @@
   "cart:deductBalance": "로깨비캐시 차감",
   "cart:currentBalance": "현재 로깨비캐시",
   "cart:afterDeductBalance": "남은 로깨비캐시",
+  "cart:couponDiscount": "할인쿠폰 사용",
   "cart:dlvCost": "배송비",
   "cart:totalCost": "총 결제 금액",
   "cart:totalCntX": "총 %% 개",
@@ -886,6 +887,10 @@
 
   "pym:sel:coupon:title": "쿠폰 선택하기",
   "pym:sel:coupon:apply": "선택 쿠폰 사용하기",
+  "pym:item:subtotal": "상품 금액",
+  "pym:item:discount": "할인쿠폰 사용",
+  "pym:item:rkbcash": "로깨비캐시 사용",
+  "pym:deductAll": "모두 사용",
 
   "err:login": "로그인 후 상품 구매하기",
   "err:body": "본문이 없습니다",

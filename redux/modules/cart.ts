@@ -3,6 +3,7 @@ import {Reducer} from 'redux-actions';
 import {List as ImmutableList} from 'immutable';
 import {AnyAction} from 'redux';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
+import _ from 'underscore';
 import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
 import Env from '@/environment';
@@ -108,7 +109,10 @@ const prepareOrder = createAsyncThunk(
   },
 );
 
-export type PaymentReq = {key: string; title: string; amount: Currency};
+export type PaymentReq = Record<
+  'subtotal' | 'discount' | 'rkbcash',
+  Currency | undefined
+>;
 
 export interface CartModelState {
   result: number;
@@ -116,11 +120,10 @@ export interface CartModelState {
   orderItems: RkbOrderItem[];
   uuid?: string;
   purchaseItems: PurchaseItem[];
-  pymReq?: PaymentReq[];
+  pymReq?: PaymentReq;
   pymResult?: object;
   lastTab: ImmutableList<string>;
-  pymPrice?: Currency;
-  deduct?: Currency;
+  pymPrice?: Currency; // total amount to pay
   esimIccid?: string;
   mainSubsId?: string;
   promo?: OrderPromo[];
@@ -156,7 +159,6 @@ const initialState: CartModelState = {
   orderItems: [],
   uuid: undefined,
   purchaseItems: [],
-  pymReq: undefined,
   pymResult: undefined,
   lastTab: ImmutableList<string>(['Home']),
 };
@@ -183,57 +185,22 @@ const slice = createSlice({
 
     // 구매할 품목을 저장한다.
     purchase: (state, {payload}) => {
-      const {
-        esimIccid,
-        purchaseItems,
-        dlvCost = false,
-        balance = 0,
-        mainSubsId,
-      } = payload;
-      const total = ((purchaseItems as PurchaseItem[]) || []).reduce(
-        (acc, cur) =>
-          utils.toCurrency(
-            acc.value + cur.price.value * (cur.qty || 1),
-            cur.price.currency,
-          ),
-        utils.toCurrency(0, esimCurrency),
-      );
-      const pymReq = [
-        {
-          key: 'total',
-          title: i18n.t('price'),
-          amount: total,
-        },
-      ];
+      const {esimIccid, purchaseItems, mainSubsId} = payload;
 
-      if (dlvCost)
-        pymReq.push({
-          key: 'dlvCost',
-          title: i18n.t('cart:dlvCost'),
-          amount: utils.dlvCost(total),
-        });
-
-      // 배송비 포함 상품 합계
-      const totalPrice = utils.addCurrency(
-        total,
-        dlvCost ? utils.dlvCost(total) : utils.toCurrency(0, total.currency),
+      const subtotal = utils.toCurrency(
+        ((purchaseItems as PurchaseItem[]) || []).reduce(
+          (acc, cur) => acc + cur.price.value * (cur.qty || 1),
+          0,
+        ),
+        esimCurrency,
       );
-      // 계산해야하는 총액
-      // 잔액 차감
 
       state.esimIccid = esimIccid;
       state.mainSubsId = mainSubsId;
       // purchaseItems에는 key, qty, price, title 정보 필요
       state.purchaseItems = purchaseItems;
-      state.pymReq = pymReq;
-      state.pymPrice = utils.toCurrency(
-        totalPrice.value > balance ? totalPrice.value - balance : 0,
-        totalPrice.currency,
-      );
-      state.deduct = utils.toCurrency(
-        totalPrice.value > balance ? balance : totalPrice.value,
-        totalPrice.currency,
-      );
+      state.pymReq = {subtotal} as PaymentReq;
+      state.pymPrice = subtotal;
     },
 
     // 결제 결과를 저장한다.
@@ -249,6 +216,44 @@ const slice = createSlice({
 
     applyCoupon: (state, action) => {
       state.couponToApply = action.payload;
+
+      // couponToApply == undefined 이면, discount도 undefined로 설정된다.
+      const promo = state.promo?.find(
+        (p) => p.coupon_id === state.couponToApply,
+      );
+
+      state.pymReq = {
+        ...state.pymReq,
+        discount: promo?.adj,
+      };
+
+      state.pymPrice = utils.toCurrency(
+        (state.pymReq?.subtotal?.value || 0) +
+          (state.pymReq?.discount?.value || 0) -
+          (state.pymReq?.rkbcash?.value || 0),
+        esimCurrency,
+      );
+    },
+
+    deductRokebiCash: (state, action) => {
+      const cash = action.payload;
+      if (_.isNumber(cash)) {
+        const total =
+          (state.pymReq?.subtotal?.value || 0) +
+          (state.pymReq?.discount?.value || 0);
+
+        const min = Math.min(cash, total);
+
+        state.pymReq = {
+          ...state.pymReq,
+          rkbcash: utils.toCurrency(min, esimCurrency),
+        };
+
+        state.pymPrice = utils.toCurrency(
+          total - (state.pymReq?.rkbcash?.value || 0),
+          esimCurrency,
+        );
+      }
     },
   },
 

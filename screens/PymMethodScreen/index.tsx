@@ -46,6 +46,7 @@ import {
   ProductModelState,
 } from '@/redux/modules/product';
 import DiscountInfo from './DiscountInfo';
+import PaymentSummary from '@/components/PaymentSummary';
 
 const infoKey = 'pym:benefit';
 
@@ -344,15 +345,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         showsVerticalScrollIndicator={false}
         enableOnAndroid
         enableResetScrollToCoords={false}>
-        <PaymentItemInfo
-          purchaseItems={cart.purchaseItems}
-          pymReq={cart.pymReq}
-          mode="method"
-          pymPrice={pymPrice}
-          deduct={deduct}
-        />
+        <PaymentItemInfo purchaseItems={cart.purchaseItems} mode="method" />
 
         <DiscountInfo onPress={() => navigation.navigate('SelectCoupon')} />
+
+        <PaymentSummary mode="method" />
 
         {pymPrice?.value !== 0 ? (
           method()
