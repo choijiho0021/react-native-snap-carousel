@@ -2,16 +2,17 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Animated, Easing, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import ImagePicker from 'react-native-image-crop-picker';
+import MlkitOcr from 'react-native-mlkit-ocr';
 import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
-
 import {appStyles} from '@/constants/Styles';
 import UsDateInput from './UsDateInput';
 import UsDeviceInfoModal from './UsDeviceInfoModal';
 import UsDeviceInputModal from './UsDeviceInputModal';
 import UsDeviceInput from './UsDeviceInput';
 import {DeviceDataType} from '..';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 const styles = StyleSheet.create({});
 
@@ -41,12 +42,71 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
   const blockAnimation = useRef(false);
   const animatedValue = useRef(new Animated.Value(40)).current;
 
+  const extractTextFromImage = useCallback(
+    async (imagePath: string) => {
+      try {
+        if (MlkitOcr) {
+          let imei2 = '';
+          let eid = '';
+          const result = await MlkitOcr.detectFromFile(imagePath);
+
+          result.forEach((r, i) => {
+            const {text} = r;
+            let temp = '';
+            if (text.includes('IMEI2')) {
+              if (text.length > 10) {
+                temp = text.split('IMEI2')[1].replace(/\s/g, '');
+              } else {
+                temp = result[i + 1].text
+                  .replace(/\s/g, '')
+                  .replace(/\n/g, '')
+                  .split('/')[0]
+                  .replace(/o/g, '0');
+              }
+              if (temp.length === 15 && !Number.isNaN(temp)) imei2 = temp;
+            } else if (text.includes('EID')) {
+              if (text.length > 10) {
+                temp = text.split('EID')[1].replace(/\s/g, '');
+              } else {
+                temp = result[i + 1].text
+                  .replace(/\s/g, '')
+                  .replace(/\n/g, '')
+                  .split('/')[0]
+                  .replace(/o/g, '0');
+              }
+              if (temp.length === 32 && !Number.isNaN(temp)) eid = temp;
+            }
+          });
+
+          setDeviceData({eid, imei2});
+        } else {
+          console.error('@@@@ MlkitOcr is null or undefined');
+        }
+      } catch (error) {
+        console.log('@@@@ error', error);
+      }
+    },
+    [setDeviceData],
+  );
+
   const onClickDeviceInputBtn = useCallback(
-    (type: UsDeviceInputType) => {
+    async (type: UsDeviceInputType) => {
+      if (type === 'capture') {
+        if (ImagePicker) {
+          const image = await ImagePicker.openPicker({
+            includeBase64: true,
+            writeTempFile: false,
+            mediaType: 'photo',
+            forceJpb: true,
+            compressImageQuality: 0.1,
+          });
+          await extractTextFromImage(image.path);
+        }
+      }
       setDeviceInputType(type);
       setUploadModalVisible(false);
     },
-    [setDeviceInputType],
+    [extractTextFromImage, setDeviceInputType],
   );
 
   useEffect(() => {
