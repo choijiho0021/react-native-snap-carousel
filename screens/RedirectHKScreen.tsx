@@ -26,13 +26,12 @@ import {sliderWidth, MAX_WIDTH} from '@/constants/SliderEntry.style';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
-import {getImage} from '@/utils/utils';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import {AccountModelState} from '@/redux/modules/account';
 import {API} from '@/redux/api';
 import HkStatusLottie from './EsimScreen/components/HkStatusLottie';
 import AppModal from '@/components/AppModal';
-import {removeData, retrieveData, storeData, utils} from '@/utils/utils';
+import {retrieveData, storeData, getImage} from '@/utils/utils';
 
 const {width} = Dimensions.get('window');
 

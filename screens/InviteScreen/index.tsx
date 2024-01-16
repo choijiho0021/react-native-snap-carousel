@@ -213,13 +213,6 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
   const [showSnackBar, setShowSnackbar] = useState(false);
 
   useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('inv:title')} />,
-    });
-  }, [navigation]);
-
-  useEffect(() => {
     if (navigation.isFocused()) {
       if (account.loggedIn) {
         action.promotion.getPromotionStat();
@@ -330,6 +323,9 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={appStyles.header}>
+        <AppBackButton title={i18n.t('inv:title')} />
+      </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         {showPromo && (
           <Pressable onPress={joinPromo} style={styles.promoBtn}>

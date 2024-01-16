@@ -19,6 +19,7 @@ import {AccountModelState} from '@/redux/modules/account';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
 
 const loading = require('../assets/images/loading_1.mp4');
 
@@ -83,19 +84,6 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       } as PaymentInfo),
     [params],
   );
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          title={i18n.t(params?.isPaid ? 'his:paymentCompleted' : 'payment')}
-          disabled={params.isPaid}
-          showIcon={!params.isPaid}
-        />
-      ),
-    });
-  }, [navigation, params.isPaid]);
 
   const callback = useCallback(
     async (status: PaymentResultCallbackParam) => {
@@ -176,6 +164,13 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <View style={appStyles.header}>
+        <AppBackButton
+          title={i18n.t(params?.isPaid ? 'his:paymentCompleted' : 'payment')}
+          disabled={params.isPaid}
+          showIcon={!params.isPaid}
+        />
+      </View>
       {isOrderReady ? (
         <AppPaymentGateway info={params} callback={callback} />
       ) : (

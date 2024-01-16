@@ -138,13 +138,6 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   const scrollRef = useRef<ScrollView>();
 
   useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('his:draftTitle')} />,
-    });
-  }, [navigation]);
-
-  useEffect(() => {
     if (route?.params?.orderId)
       setDraftOrder(
         order.drafts.find((r) => r.orderId === route.params?.orderId) ||
@@ -261,6 +254,9 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={appStyles.header}>
+        <AppBackButton title={i18n.t('his:draftTitle')} />
+      </View>
       <ScrollView ref={scrollRef} style={{flex: 1}}>
         <View style={styles.proudctFrame}>
           <ProductDetailList

@@ -65,13 +65,6 @@ const DraftResultScreen: React.FC<DraftResultScreenProps> = ({
 }) => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: null,
-    });
-  }, [navigation]);
-
   // 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
   BackbuttonHandler({
     navigation,
@@ -119,6 +112,7 @@ const DraftResultScreen: React.FC<DraftResultScreenProps> = ({
     ),
     [isSuccess],
   );
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={{marginHorizontal: 20, flex: 1}}>

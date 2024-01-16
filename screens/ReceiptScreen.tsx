@@ -136,11 +136,6 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
   const ref = useRef<ViewShot>();
 
   useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('pym:receipt')} />,
-    });
-
     setOrder(params?.order);
     setReceipt(params?.receipt);
   }, [navigation, params?.order, params?.receipt]);
@@ -191,6 +186,9 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={appStyles.header}>
+        <AppBackButton title={i18n.t('pym:receipt')} />
+      </View>
       <ScrollView style={{flex: 1}}>
         <ViewShot ref={ref} style={{backgroundColor: colors.whiteTwo}}>
           <View style={styles.title}>

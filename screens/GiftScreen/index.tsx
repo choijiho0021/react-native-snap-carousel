@@ -223,13 +223,6 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     if (!promotion.stat.signupGift) promotionActions.getPromotionStat();
   }, [promotion.stat.signupGift]);
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('gift:title')} />,
-    });
-  }, [navigation]);
-
   const createLink = useCallback(
     async (item: RkbSubscription) => {
       const image = bgImages[num]?.title;
@@ -413,6 +406,9 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={appStyles.header}>
+        <AppBackButton title={i18n.t('gift:title')} />
+      </View>
       <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
         style={styles.container}>

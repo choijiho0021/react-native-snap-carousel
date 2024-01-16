@@ -163,13 +163,6 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
   );
 
   useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('settings')} />,
-    });
-  }, [navigation]);
-
-  useEffect(() => {
     async function perm() {
       const pushPermission = await messaging().requestPermission();
       if (pushPermission === PUSH_ENABLED) {
@@ -272,6 +265,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
 
   return (
     <View style={styles.container}>
+      <View style={appStyles.header}>
+        <AppBackButton title={i18n.t('settings')} />
+      </View>
       <FlatList
         data={data}
         renderItem={renderItem}

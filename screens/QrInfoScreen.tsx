@@ -150,13 +150,6 @@ const QrInfoScreen = () => {
 
   const navigation = useNavigation();
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('esim:qrInfo')} />,
-    });
-  }, [navigation]);
-
   const copyToClipboard = useCallback((value?: string) => {
     if (value) Clipboard.setString(value);
   }, []);
@@ -184,6 +177,9 @@ const QrInfoScreen = () => {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
+      <View style={appStyles.header}>
+        <AppBackButton title={i18n.t('esim:qrInfo')} />
+      </View>
       <ScrollView style={styles.container}>
         <View style={styles.guideBanner}>{renderInfo(navigation)}</View>
         <View style={styles.box}>
