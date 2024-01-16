@@ -75,6 +75,8 @@ const InputNumber = ({
       if (v <= maxValue && !disabled) {
         setInputValue(v);
         onChange(v);
+      } else {
+        onChange(v);
       }
     },
     [disabled, maxValue, onChange],
@@ -84,6 +86,8 @@ const InputNumber = ({
     (v: number) => {
       if (v >= minValue && !disabled) {
         setInputValue(v);
+        onChange(v);
+      } else {
         onChange(v);
       }
     },
