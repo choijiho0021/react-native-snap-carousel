@@ -379,7 +379,7 @@ const UserGuideScreen = () => {
             </View>
             {isCheckLocal && data.localTitle ? data.localTitle : data.title}
           </View>
-
+          {data.caution && data.caution(isCheckLocal)}
           {data.tip ? (
             <View
               style={

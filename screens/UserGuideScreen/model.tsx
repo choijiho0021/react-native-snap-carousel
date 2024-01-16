@@ -15,8 +15,9 @@ import {GuideOption} from './GuideHomeScreen';
 import {GuideRegion} from './GuideSelectRegionScreen';
 import AppSvgIcon from '@/components/AppSvgIcon';
 
-const {isIOS} = Env.get();
+// const {isIOS} = Env.get();
 
+const isIOS = false;
 const dir = '../../assets/images/esim/userGuide';
 
 const styles = StyleSheet.create({
@@ -245,6 +246,62 @@ const renderTipList = (
   </View>
 );
 
+const renderCaution = ({
+  title,
+  body,
+  isShow,
+}: {
+  title: string;
+  body: string[];
+  isShow: boolean;
+}) => {
+  console.log('aaaaa isshow', isShow);
+  if (!isShow) return null;
+
+  return (
+    <View style={{width: '100%', marginBottom: 16}}>
+      <View
+        style={{
+          backgroundColor: colors.veryLightBlue,
+          borderRadius: 16,
+          marginHorizontal: 30,
+          alignContent: 'center',
+          justifyContent: 'center',
+          paddingHorizontal: 20,
+          paddingVertical: 10,
+        }}>
+        <AppStyledText
+          text={i18n.t(title)}
+          textStyle={{
+            ...appStyles.bold14Text,
+            color: colors.clearBlue,
+            lineHeight: 18,
+          }}
+          format={{b: {fontWeight: '600'}}}
+        />
+        {body.length > 1
+          ? body.map((b) => (
+              <View style={{flexDirection: 'row'}}>
+                <AppText>{i18n.t('middleDot')}</AppText>
+                <AppStyledText
+                  text={i18n.t(b)}
+                  textStyle={{...appStyles.normal14Text, lineHeight: 18}}
+                  format={{b: {fontWeight: '600'}}}
+                />
+              </View>
+            ))
+          : body.map((b) => (
+              <AppStyledText
+                text={i18n.t(b)}
+                textStyle={styles.noticeBoxBody}
+                format={{b: {fontWeight: '600'}}}
+              />
+            ))}
+      </View>
+    </View>
+  );
+};
+
 const renderNoticeBox = (title: string, body: string) => (
   <View style={styles.noticeBox}>
     <AppText style={styles.noticeBoxTitle}>{i18n.t(title)}</AppText>
@@ -373,6 +430,7 @@ export const getImageList = (
       page1: [require(`${dir}/iconLocalCheck.png`)],
       page2: [require(`${dir}/android/checkSetting/img_3.png`)],
       page3: [require(`${dir}/android/checkSetting/img_4.png`)],
+      page3Local: [require(`${dir}/android/checkSetting/img_4_2.png`)],
       page4: [require(`${dir}/android/checkSetting/img_5.png`)],
       page5: [require(`${dir}/android/checkSetting/img_6.png`)],
       page5Local: [require(`${dir}/android/checkSetting/localNet/img_6.png`)],
@@ -389,6 +447,7 @@ export type GuideImage = {
   isHeader?: boolean;
   stepPreText?: string;
   tip?: () => JSX.Element | null;
+  caution?: (isCheckLocal: boolean) => JSX.Element | null;
   noticeBox?: () => JSX.Element | null;
   isLocalBox?: () => JSX.Element | null;
   caption?: string;
@@ -809,9 +868,18 @@ export const getGuideImages = (
       },
       {
         key: 'page3',
-        title: renderText(`userGuide:stepsTitle5:galaxy:checkSetting`),
+        title: renderText(`userGuide:stepsTitle5:galaxy:checkSetting`), // ysjoung
         step: 2,
         stepPreText: 'local',
+        caution: (isCheckLocal: boolean) =>
+          renderCaution({
+            title: 'userGuide:stepsTitle5:galaxy:caution:title',
+            body: [
+              'userGuide:stepsTitle5:galaxy:caution:body1',
+              'userGuide:stepsTitle5:galaxy:caution:body2',
+            ],
+            isShow: isCheckLocal, // 현지(로컬망)인 경우에 보여주도록 함
+          }),
       },
       {
         key: 'page4',
@@ -828,6 +896,12 @@ export const getGuideImages = (
         stepPreText: 'local',
         tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}),
         localTip: () => tipView({id: 'userGuide:tipPage7:galaxy:localNet'}),
+        caution: (isCheckLocal: boolean) =>
+          renderCaution({
+            title: 'userGuide:stepsTitle7:galaxy:caution:title',
+            body: ['userGuide:stepsTitle7:galaxy:caution:body'],
+            isShow: isCheckLocal,
+          }),
       },
       {
         key: 'page6',
