@@ -92,6 +92,7 @@ export type HomeStackParamList = {
     price?: Currency;
     listPrice?: Currency;
     partner?: string;
+    prod?: RkbProduct;
   };
   ProductDetailOp: {
     title: string;
