@@ -884,6 +884,9 @@
   "pym:coupon": "할인 쿠폰",
   "pym:selectCoupon": "쿠폰 선택 >",
 
+  "pym:sel:coupon:title": "쿠폰 선택하기",
+  "pym:sel:coupon:apply": "선택 쿠폰 사용하기",
+
   "err:login": "로그인 후 상품 구매하기",
   "err:body": "본문이 없습니다",
 

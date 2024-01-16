@@ -11,6 +11,7 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppButton from '@/components/AppButton';
 import {OrderPromo} from '@/redux/api/cartApi';
 import AppPrice from '@/components/AppPrice';
+import {CartModelState} from '@/redux/modules/cart';
 
 const styles = StyleSheet.create({
   container: {
@@ -36,20 +37,14 @@ const styles = StyleSheet.create({
 
 type DiscountProps = {
   account: AccountModelState;
-  promo?: OrderPromo[];
+  cart: CartModelState;
   onPress?: () => void;
 };
 
-const Discount: React.FC<DiscountProps> = ({account, promo, onPress}) => {
-  const maxPromo = useMemo(
-    () =>
-      promo?.reduce((acc, cur) => {
-        if (acc && acc.adj.amount > cur.adj.amount) {
-          return cur;
-        }
-        return cur;
-      }, undefined),
-    [promo],
+const DiscountInfo: React.FC<DiscountProps> = ({account, cart, onPress}) => {
+  const adj = useMemo(
+    () => cart.promo?.find((p) => p.coupon_id === cart.couponToApply)?.adj,
+    [cart.couponToApply, cart.promo],
   );
 
   return (
@@ -60,11 +55,13 @@ const Discount: React.FC<DiscountProps> = ({account, promo, onPress}) => {
         <AppText>{i18n.t('unit', {unit: account.coupon?.length || 0})}</AppText>
       </View>
       <View style={styles.row}>
-        <AppPrice price={maxPromo?.adj} />
+        <AppPrice price={adj} />
         <AppButton title={i18n.t('pym:selectCoupon')} onPress={onPress} />
       </View>
     </View>
   );
 };
 
-export default memo(connect(({account}: RootState) => ({account}))(Discount));
+export default memo(
+  connect(({account, cart}: RootState) => ({account, cart}))(DiscountInfo),
+);

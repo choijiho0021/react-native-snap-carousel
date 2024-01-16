@@ -45,7 +45,7 @@ import {
   ProductAction,
   ProductModelState,
 } from '@/redux/modules/product';
-import Discount from './Discount';
+import DiscountInfo from './DiscountInfo';
 
 const infoKey = 'pym:benefit';
 
@@ -352,10 +352,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           deduct={deduct}
         />
 
-        <Discount
-          promo={cart.promo}
-          onPress={() => navigation.navigate('SelectCoupon')}
-        />
+        <DiscountInfo onPress={() => navigation.navigate('SelectCoupon')} />
 
         {pymPrice?.value !== 0 ? (
           method()

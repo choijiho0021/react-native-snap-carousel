@@ -71,17 +71,20 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
     cart.couponToApply,
   );
 
-  const renderCoupon = useCallback(({item}: {item: OrderPromo}) => {
-    return (
-      <Pressable
-        style={styles.coupon}
-        onPress={() => setCouponId(item.coupon_id)}>
-        <AppText>{item.coupon_id}</AppText>
-        <AppText>{item.title}</AppText>
-        <AppPrice price={item.adj} />
-      </Pressable>
-    );
-  }, []);
+  const renderCoupon = useCallback(
+    ({item}: {item: OrderPromo}) => {
+      return (
+        <Pressable
+          style={styles.coupon}
+          onPress={() => setCouponId(item.coupon_id)}>
+          <AppText>{item.coupon_id === couponId ? 'Selected' : ''}</AppText>
+          <AppText>{item.title}</AppText>
+          <AppPrice price={item.adj} />
+        </Pressable>
+      );
+    },
+    [couponId],
+  );
 
   const applyCoupon = useCallback(() => {
     action.cart.applyCoupon(couponId);
@@ -98,7 +101,11 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
         data={cart.promo || []}
         keyExtractor={(item) => item.coupon_id}
         renderItem={renderCoupon}
+        ListHeaderComponent={
+          <AppButton title="No Coupon" onPress={() => setCouponId(undefined)} />
+        }
         ItemSeparatorComponent={<View style={styles.separator} />}
+        extraData={couponId}
       />
       <AppButton
         title={i18n.t('pym:sel:coupon:apply')}
