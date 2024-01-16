@@ -9,7 +9,6 @@ import {connect, useDispatch} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
-import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
 import ChargeTypeButton from './EsimScreen/components/ChargeTypeButton';
 import {API} from '@/redux/api';
@@ -23,6 +22,7 @@ import ChargeTypeModal from './HomeScreen/component/ChargeTypeModal';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import ScreenHeader from '@/components/ScreenHeader';
 import {AccountModelState} from '@/redux/modules/account';
+import api from '@/redux/api/api';
 
 const styles = StyleSheet.create({
   container: {
@@ -48,6 +48,13 @@ const styles = StyleSheet.create({
 // U: 사용완료
 export type UsageStatusType = 'A' | 'R' | 'U' | undefined;
 
+export type RefSubsType = {
+  expireTime: string;
+  id: string;
+  orderId: string;
+  status: string;
+};
+
 type ChargeTypeScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
   'ChargeType'
@@ -59,7 +66,7 @@ type ChargeTypeScreenProps = {
   account: AccountModelState;
 };
 
-export const RESULT_OVER_LIMIT = 1;
+export const EXCEED_CHARGE_QUADCELL_RSP = 1;
 
 const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   navigation,
@@ -73,10 +80,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   }>({text: '', visible: false, type: ''});
   const {mainSubs, chargeablePeriod, isChargeable} = params || {};
   const [chargeableItem, setChargeableItem] = useState<RkbSubscription>();
-  const [statusLoading, setStatusLoading] = useState(false);
   const [addonLoading, setAddonLoading] = useState(false);
   const [addonEnable, setAddonEnable] = useState(false);
-  // const [remainDays, setRemainDays] = useState(0);
   const [expireTime, setExpireTime] = useState<Moment>();
   const [status, setStatus] = useState<UsageStatusType>();
   const [addOnDisReasonText, setAddOnDisReasonText] = useState('');
@@ -95,106 +100,52 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     return '';
   }, [isChargeable]);
 
-  const checkStatus = useCallback(
-    async (item: RkbSubscription, chargeSubsParam?: RkbSubscription[]) => {
-      setStatusLoading(true);
-
-      let rsp;
-      if (item.partner?.startsWith('cmi') && item?.subsIccid) {
-        rsp = await API.Subscription.cmiGetStatus({
-          iccid: item?.subsIccid || '',
-        });
-      } else if (item.partner?.startsWith('quadcell') && item.imsi) {
-        rsp = await API.Subscription.quadcellGetUsage({
-          imsi: item.imsi,
-          partner: item.partner,
-          usage: 'n',
-        });
-      }
-
-      setStatusLoading(false);
-
-      if (rsp && rsp.result?.code === 0) {
-        const {statusCd, endTime, orderId} = rsp.objects[0]?.status;
-
-        if (statusCd) {
-          setStatus(statusCd as UsageStatusType);
-          if (statusCd === 'A') {
-            setExpireTime(moment(endTime));
-
-            if (extensionEnable.current) {
-              if (chargeSubsParam) {
-                const i = chargeSubsParam.find((s) => {
-                  return s.subsOrderNo === orderId;
-                });
-
-                setChargeableItem(i || item);
-              }
-            }
-          }
-        }
-      } else {
-        setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:`));
-        setAddonEnable(false);
-      }
-    },
-    [],
-  );
-
-  useEffect(() => {
-    if (mainSubs) {
-      checkStatus(mainSubs, params?.chargedSubs);
-    }
-  }, [checkStatus, mainSubs, params?.chargedSubs]);
-
-  const getRemainDays = useCallback(() => {
-    // 남은 사용기간 구하기
-    if (status === 'R' && mainSubs.prodDays) {
-      return Number(mainSubs.prodDays);
-    }
-    if (expireTime) {
-      const today = moment();
-      return Math.ceil(expireTime.diff(today, 'seconds') / (24 * 60 * 60));
-    }
-    return 0;
-  }, [expireTime, mainSubs.prodDays, status]);
-
   const getAddOnProduct = useCallback(async () => {
     setAddonLoading(true);
-    const subs = chargeableItem || mainSubs;
-    const remainDays = getRemainDays();
+    const subs = mainSubs;
 
-    if (subs.nid && status && remainDays > 0) {
-      const rsp = await API.Product.getAddOnProduct(
-        subs.nid,
-        subs.daily === 'daily' ? remainDays.toString() : '1',
-        status,
-      );
+    if (subs.nid) {
+      const rsp = await API.Product.getAddOnProduct(subs.nid);
 
       const {
         result,
         objects,
-        info,
         links,
       }: {
         result: number;
         objects: RkbAddOnProd[];
-        info?: {charge: string; msg: {kr: string}};
-        links?: {charge: string; msg: {kr: string}};
+        links?: {
+          charge: string;
+          msg: {kr: string};
+          refSubs: RefSubsType;
+        };
       } = rsp;
 
-      if (info?.charge === 'N' || links?.charge === 'N') {
-        setAddOnDisReasonText(info?.msg?.kr || links?.msg?.kr);
+      if (links?.charge === 'N') {
+        setAddOnDisReasonText(links?.msg?.kr);
         setAddonEnable(false);
-      } else if (result === 0 || result === 1) {
-        if ((objects?.length || 0) < 1) {
-          // 상품 없음
-          setAddonEnable(false);
-          setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:noProd`));
-        } else {
-          setAddonEnable(true);
-          setAddonProds(objects);
+
+        // 1일 때도 진입하게 하기?
+      } else if (result === 0 || result === api.E_INVALID_STATUS) {
+        // 최초 충전의 경우는 chargedSubs가 없어서 mainSubs로
+        const chargedItem = params?.chargedSubs
+          ? params?.chargedSubs?.find((r) => r.nid === links.refSubs.id)
+          : subs;
+
+        if (!chargedItem) {
+          setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:`));
+          return;
         }
+
+        const statusCd = links.refSubs.status;
+        const endTime = links.refSubs.expireTime;
+
+        setExpireTime(moment(endTime));
+        setStatus(statusCd);
+
+        setChargeableItem(chargedItem);
+        setAddonEnable(true);
+        setAddonProds(objects);
       } else {
         setAddonEnable(false);
         setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:`));
@@ -203,7 +154,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       // 모종의 이유로 실패, 모든 분기 진입 못할 시 '잠시 후 다시 시도해주세요' 출력
     }
     setAddonLoading(false);
-  }, [chargeableItem, getRemainDays, mainSubs, status]);
+  }, [mainSubs, params?.chargedSubs]);
 
   const unsupportExtension = useCallback(() => {
     extensionEnable.current = false;
@@ -239,24 +190,8 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       return;
     }
 
-    if (status) {
-      // // 충전 조건 2. 사용 전, 용량 충전 가능한 상품 처리
-      if (status === 'R' && mainSubs.partner?.startsWith('cmi')) {
-        setAddonEnable(false);
-        setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:reserved`));
-        return;
-      }
-
-      // // 충전 조건 3. 모든 사용완료 상품은 충전 불가
-      if (status === 'U') {
-        setAddonEnable(false);
-        setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:used`));
-        return;
-      }
-
-      getAddOnProduct();
-    }
-  }, [getAddOnProduct, mainSubs, status, unsupportAddon, unsupportExtension]);
+    getAddOnProduct();
+  }, [getAddOnProduct, mainSubs, unsupportAddon, unsupportExtension]);
 
   const renderChargeModal = useCallback(
     (type: 'addOn' | 'extension', onPress, disabed, reason) => {
@@ -303,8 +238,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         type: 'extension',
       });
     }
-
-    // 이따 노트북 받고 적용
   }, [
     chargeablePeriod,
     extensionDisReason,
@@ -329,7 +262,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         );
       } else {
         navigation.navigate('AddOn', {
-          mainSubs: chargeableItem || mainSubs,
+          chargeableItem,
           status,
           expireTime,
           addonProds,
@@ -348,7 +281,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     addonProds,
     chargeableItem,
     expireTime,
-    mainSubs,
     navigation,
     renderChargeModal,
     status,
@@ -358,9 +290,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <ScreenHeader title={i18n.t('esim:charge')} />
 
-      <AppActivityIndicator
-        visible={statusLoading || addonLoading || chargeLoading}
-      />
+      <AppActivityIndicator visible={addonLoading || chargeLoading} />
       <ScrollView style={{flex: 1}}>
         <View style={styles.top}>
           <AppText style={styles.topText}>{i18n.t('esim:charge:type')}</AppText>

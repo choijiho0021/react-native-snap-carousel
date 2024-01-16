@@ -13,7 +13,7 @@ import {RkbPriceInfo} from '../modules/product';
 import {colors} from '@/constants/Colors';
 import Env from '@/environment';
 import {parseJson} from '@/utils/utils';
-import {RESULT_OVER_LIMIT} from '@/screens/ChargeTypeScreen';
+import {EXCEED_CHARGE_QUADCELL_RSP} from '@/screens/ChargeTypeScreen';
 
 const {specialCategories} = Env.get();
 
@@ -340,8 +340,11 @@ const toAddOnProd = (data: DrupalAddonProd[]): ApiResult<RkbAddOnProd> => {
   if (data.result === 0) {
     return api.success(data?.objects, data?.info);
   }
-  if (data.result === RESULT_OVER_LIMIT) {
-    return api.success(data?.objects, data?.info, RESULT_OVER_LIMIT);
+  if (
+    data.result === api.E_INVALID_STATUS ||
+    data.result === EXCEED_CHARGE_QUADCELL_RSP
+  ) {
+    return api.success(data?.objects, data?.info, data?.result);
   }
   return api.failure(api.E_NOT_FOUND);
 };
@@ -407,15 +410,9 @@ const getProdCountry = () => {
   );
 };
 
-const getAddOnProduct = (
-  subsId: string,
-  remainDays: string,
-  status: string,
-) => {
+const getAddOnProduct = (subsId: string) => {
   return api.callHttpGet<RkbAddOnProd>(
-    api.httpUrl(
-      `${api.path.rokApi.rokebi.prodAddOn}/${subsId}?_format=json&days=${remainDays}&status=${status}`,
-    ),
+    api.httpUrl(`${api.path.rokApi.rokebi.prodAddOn}/${subsId}?_format=json`),
     toAddOnProd,
   );
 };
