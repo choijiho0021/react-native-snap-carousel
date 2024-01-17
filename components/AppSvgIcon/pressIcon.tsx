@@ -1525,6 +1525,50 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  iconArrowDown11: [
+    <Svg
+      width="11"
+      height="10"
+      viewBox="0 0 11 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#6ns27kvo6a)">
+        <Path
+          d="m1 3 4.5 4.5L10 3"
+          stroke="#979797"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="6ns27kvo6a">
+          <Path fill="#fff" transform="translate(.5)" d="M0 0h10v10H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
+  iconArrowUp11: [
+    <Svg
+      width="11"
+      height="10"
+      viewBox="0 0 11 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#8lah2dn7ma)">
+        <Path
+          d="M1 5 5.5.5 10 5"
+          stroke="#777"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="8lah2dn7ma">
+          <Path fill="#fff" transform="translate(.5)" d="M0 0h10v10H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
   iconArrowRightBlack: [
     <Svg
       width="10"
@@ -4987,6 +5031,38 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
       <Rect x="11" y="5.5" width="2" height="6" rx="1" fill="#fff" />
       <Rect x="11" y="12.5" width="2" height="2" rx="1" fill="#fff" />
+    </Svg>,
+  ],
+  iconM: [
+    <Svg
+      width="27"
+      height="26"
+      viewBox="0 0 27 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="13.5" cy="13" r="12" fill="#5B16EF" />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M19 7C20.1046 7 21 7.89543 21 9V19.7929C21 20.2383 20.4614 20.4614 20.1464 20.1464L18.2929 18.2929C18.1054 18.1054 17.851 18 17.5858 18H7.99985C6.89528 18 5.99985 17.1046 5.99985 16V9C5.99985 7.89543 6.89528 7 7.99985 7H19ZM17 13.5C16.4477 13.5 16 13.0523 16 12.5C16 11.9477 16.4477 11.5 17 11.5C17.5523 11.5 18 11.9477 18 12.5C18 13.0523 17.5523 13.5 17 13.5ZM12.5 12.5C12.5 13.0523 12.9477 13.5 13.5 13.5C14.0523 13.5 14.5 13.0523 14.5 12.5C14.5 11.9477 14.0523 11.5 13.5 11.5C12.9477 11.5 12.5 11.9477 12.5 12.5ZM10 13.5C9.44771 13.5 9 13.0523 9 12.5C9 11.9477 9.44771 11.5 10 11.5C10.5523 11.5 11 11.9477 11 12.5C11 13.0523 10.5523 13.5 10 13.5Z"
+        fill="white"
+      />
+    </Svg>,
+  ],
+  iconV: [
+    <Svg
+      width="26"
+      height="26"
+      viewBox="0 0 26 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="13" cy="13" r="12" fill="#00AD50" />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="m15.796 14.095-1.131 1.132c-.319.319-.814.39-1.189.138a10.448 10.448 0 0 1-2.836-2.838c-.252-.374-.182-.87.136-1.189l1.132-1.131c.479-.48.479-1.257 0-1.737l-2.11-2.11a1.226 1.226 0 0 0-1.735 0l-1.31 1.31-.39.39a1.212 1.212 0 0 0-.346 1.06c.09.512.207 1.016.356 1.506a13.496 13.496 0 0 0 8.977 8.98c.5.153 1.011.28 1.533.376a1.21 1.21 0 0 0 1.065-.347l.71-.709.982-.984c.48-.48.48-1.257 0-1.736l-2.109-2.11a1.227 1.227 0 0 0-1.735 0z"
+        fill="#fff"
+      />
     </Svg>,
   ],
 };

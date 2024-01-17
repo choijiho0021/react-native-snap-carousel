@@ -60,6 +60,7 @@ import ChargeInfoModal from './components/ChargeInfoModal';
 import TextWithDot from '../EsimScreen/components/TextWithDot';
 import BodyHtml from './components/BodyHtml';
 import {parseJson} from '@/utils/utils';
+import TextWithCheck from '../HomeScreen/component/TextWithCheck';
 
 const {esimGlobal, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -295,6 +296,95 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: colors.white,
   },
+  callMethod: {
+    paddingHorizontal: 20,
+    paddingTop: 42,
+  },
+  callMethodTitle: {
+    ...appStyles.normal20Text,
+    // fontWeight: '500',
+    lineHeight: 22,
+    color: colors.black,
+    marginBottom: 16,
+  },
+  callMethodBox: {
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    backgroundColor: colors.white,
+    borderRadius: 3,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  callMethodBoxTop: {
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderColor: colors.whiteFive,
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  callMethodContents: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 4,
+    marginTop: 8,
+    paddingVertical: 12,
+  },
+  callMethodBoxBottom: {
+    paddingTop: 9,
+    paddingBottom: 6,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 6,
+  },
+  featureWithText: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+    width: '50%',
+  },
+  featureText: {
+    ...appStyles.semiBold18Text,
+    lineHeight: 22,
+    color: colors.black,
+  },
+  callMethodBoxBold: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 24,
+    color: colors.black,
+  },
+  callMethodBoxText: {
+    ...appStyles.normal16Text,
+    lineHeight: 24,
+    color: colors.black,
+  },
+  showDetail: {
+    ...appStyles.bold14Text,
+    lineHeight: 24,
+    letterSpacing: -0.5,
+    color: colors.warmGrey,
+  },
+  ustotalDetailBox: {
+    marginLeft: 24,
+  },
+  countryBox: {
+    padding: 8,
+    backgroundColor: colors.backGrey,
+    borderRadius: 3,
+    marginVertical: 2,
+  },
+  countryBoxText: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 22,
+    color: colors.black,
+  },
+  countryBoxNotice: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 22,
+    color: colors.warmGrey,
+  },
 });
 
 type ProductDetailScreenNavigationProp = StackNavigationProp<
@@ -365,6 +455,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const appState = useRef('unknown');
   const [price, setPrice] = useState<Currency>();
   const [showChargeInfoModal, setShowChargeInfoModal] = useState(false);
+  const [showCallDetail, setShowCallDetail] = useState(false);
 
   const isht = useMemo(
     () => route?.params?.partner === 'ht',
@@ -698,6 +789,117 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     [renderCautionList, renderNoticeOption],
   );
 
+  const renderFeature = useCallback((feature: string) => {
+    const key = `icon${feature}`;
+    return (
+      <View style={styles.featureWithText} key={key}>
+        {feature === 'M' && <View style={{width: 20}} />}
+        <AppIcon name={key} />
+        <AppText style={styles.featureText}>
+          {i18n.t(`prodDetail:callMethod:box:feature:${feature}`)}
+        </AppText>
+      </View>
+    );
+  }, []);
+
+  const renderUsTotalCountryBox = useCallback(
+    () => (
+      <View style={styles.ustotalDetailBox}>
+        <View style={styles.countryBox}>
+          <AppText style={styles.countryBoxText}>
+            {i18n.t('prodDetail:callMethod:box:detail:ustotal:country')}
+          </AppText>
+        </View>
+        <AppText style={styles.countryBoxNotice}>
+          {i18n.t('prodDetail:callMethod:box:detail:ustotal:notice')}
+        </AppText>
+      </View>
+    ),
+    [],
+  );
+
+  const getDetailList = useCallback((clMtd: string) => {
+    switch (clMtd) {
+      case 'usdaily':
+      case 'mvtotal':
+        return [1];
+      case 'ustotal':
+      case 'ais':
+        return [1, 2];
+      case 'dtac':
+        return [1, 2, 3, 4];
+      default:
+        return [];
+    }
+  }, []);
+
+  const renderCallMethod = useCallback(
+    (clMtd: string) => {
+      const ftrList =
+        descData?.desc?.ftr?.toLowerCase() === 'm' ? ['V', 'M'] : ['V'];
+      const isUS = clMtd.includes('us');
+      const defaultList = ['ustotal', 'mvtotal'].includes(clMtd) ? [1, 2] : [1];
+      const detailList = getDetailList(clMtd);
+
+      return (
+        <View style={styles.callMethod}>
+          <AppText style={styles.callMethodTitle}>
+            {i18n.t('prodDetail:callMethod:title')}
+          </AppText>
+          <View style={styles.callMethodBox}>
+            <View style={styles.callMethodBoxTop}>
+              {ftrList.map((f) => renderFeature(f))}
+            </View>
+            <View style={styles.callMethodContents}>
+              {defaultList.map((i) => (
+                <TextWithCheck
+                  text={i18n.t(
+                    `prodDetail:callMethod:box:contents:default${i}:${
+                      isUS ? 'us' : clMtd
+                    }`,
+                  )}
+                  textStyle={styles.callMethodBoxBold}
+                />
+              ))}
+              {showCallDetail &&
+                detailList.length > 0 &&
+                detailList.map((i) => (
+                  <View>
+                    <TextWithCheck
+                      text={i18n.t(
+                        `prodDetail:callMethod:box:contents:detail${i}:${clMtd}`,
+                      )}
+                      textStyle={styles.callMethodBoxText}
+                    />
+                    {clMtd === 'ustotal' &&
+                      i === 1 &&
+                      renderUsTotalCountryBox()}
+                  </View>
+                ))}
+            </View>
+            <Pressable
+              style={styles.callMethodBoxBottom}
+              onPress={() => setShowCallDetail((prev) => !prev)}>
+              <AppText style={styles.showDetail}>
+                {i18n.t(showCallDetail ? 'close' : 'pym:detail')}
+              </AppText>
+              <AppIcon
+                name={showCallDetail ? 'iconArrowUp11' : 'iconArrowDown11'}
+              />
+            </Pressable>
+          </View>
+        </View>
+      );
+    },
+    [
+      descData?.desc?.ftr,
+      getDetailList,
+      renderFeature,
+      renderUsTotalCountryBox,
+      showCallDetail,
+    ],
+  );
+
   const renderProdDetail = useCallback(() => {
     const isDaily = prod?.field_daily === 'daily';
     const volume =
@@ -731,6 +933,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         isIOS ? !c.includes('android:') : !c.includes('ios:'),
       ) || [];
 
+    const clMtd = descData?.desc?.clMtd;
     return (
       prod &&
       descData && (
@@ -739,11 +942,22 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           {renderSixIcon(volume, volumeUnit)}
           {(noticeList.length > 0 || cautionList.length > 0) &&
             renderNotice(noticeList, cautionList)}
+          {clMtd &&
+            ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(clMtd) &&
+            renderCallMethod(clMtd)}
           <BodyHtml body={descData.body} onMessage={onMessage} />
         </ScrollView>
       )
     );
-  }, [descData, onMessage, prod, renderNotice, renderSixIcon, renderTopInfo]);
+  }, [
+    descData,
+    onMessage,
+    prod,
+    renderCallMethod,
+    renderNotice,
+    renderSixIcon,
+    renderTopInfo,
+  ]);
 
   const soldOut = useCallback((payload: ApiResult<any>, message: string) => {
     if (payload.result === api.E_RESOURCE_NOT_FOUND) {

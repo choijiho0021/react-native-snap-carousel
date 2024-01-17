@@ -9,6 +9,7 @@ import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import TextWithDot from '@/screens/EsimScreen/components/TextWithDot';
+import TextWithCheck from '@/screens/HomeScreen/component/TextWithCheck';
 
 const styles = StyleSheet.create({
   conatainer: {
@@ -75,12 +76,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backGrey,
     marginBottom: 4,
   },
-  boxText: {
-    ...appStyles.semiBold14Text,
-    lineHeight: 22,
-    letterSpacing: -0.28,
-    marginRight: 32,
-  },
   row: {
     display: 'flex',
     flexDirection: 'row',
@@ -97,72 +92,58 @@ const ChargeInfoModal: React.FC<ChargeInfoModalProps> = ({
   visible,
   onClose,
 }) => {
-  const textWithCheck = useCallback(
-    (text: string) => (
-      <View style={styles.row} key={text}>
-        <AppSvgIcon
-          style={{marginRight: 8, alignSelf: 'flex-start', marginTop: 3}}
-          name="checkedBlueSmall"
-        />
-        <AppText style={styles.boxText}>{text}</AppText>
-      </View>
-    ),
-    [],
-  );
-
-  const renderInfo = useCallback(
-    (type: string) => {
-      return (
-        <View>
-          <View style={styles.infoHeader}>
-            <AppText style={styles.infoHeaderText}>
-              {i18n.t(`prodDetail:charge:modal:${type}:header:title`)}
-            </AppText>
-          </View>
-          <Image
-            style={styles.mainImg}
-            source={
-              type === 'addOn'
-                ? require('@/assets/images/esim/addOnModal.png')
-                : require('@/assets/images/esim/extensionModal.png')
-            }
-            resizeMode="stretch"
-          />
-          <View style={styles.notice}>
-            {type === 'addOn'
-              ? [1, 2].map((n) => (
-                  <TextWithDot
-                    key={n}
-                    dotStyle={styles.dot}
-                    textStyle={styles.noticeText}
-                    text={i18n.t(`esim:charge:type:addOn:modal:notice${n}`)}
-                  />
-                ))
-              : [1, 2, 3].map((n) => (
-                  <TextWithDot
-                    key={n}
-                    dotStyle={styles.dot}
-                    textStyle={styles.noticeText}
-                    text={i18n.t(`esim:charge:type:extension:modal:notice${n}`)}
-                  />
-                ))}
-          </View>
-          <View style={[styles.row, {marginBottom: 10}]}>
-            <AppSvgIcon style={{marginRight: 4}} name="fire" />
-            <AppText style={styles.recommendText}>
-              {i18n.t('esim:charge:recommend')}
-            </AppText>
-          </View>
-          <View style={styles.box}>
-            {[1, 2].map((n) =>
-              textWithCheck(i18n.t(`esim:charge:type:${type}:modal:box${n}`)),
-            )}
-          </View>
+  const renderInfo = useCallback((type: string) => {
+    return (
+      <View>
+        <View style={styles.infoHeader}>
+          <AppText style={styles.infoHeaderText}>
+            {i18n.t(`prodDetail:charge:modal:${type}:header:title`)}
+          </AppText>
         </View>
-      );
-    },
-    [textWithCheck],
-  );
+        <Image
+          style={styles.mainImg}
+          source={
+            type === 'addOn'
+              ? require('@/assets/images/esim/addOnModal.png')
+              : require('@/assets/images/esim/extensionModal.png')
+          }
+          resizeMode="stretch"
+        />
+        <View style={styles.notice}>
+          {type === 'addOn'
+            ? [1, 2].map((n) => (
+                <TextWithDot
+                  key={n}
+                  dotStyle={styles.dot}
+                  textStyle={styles.noticeText}
+                  text={i18n.t(`esim:charge:type:addOn:modal:notice${n}`)}
+                />
+              ))
+            : [1, 2, 3].map((n) => (
+                <TextWithDot
+                  key={n}
+                  dotStyle={styles.dot}
+                  textStyle={styles.noticeText}
+                  text={i18n.t(`esim:charge:type:extension:modal:notice${n}`)}
+                />
+              ))}
+        </View>
+        <View style={[styles.row, {marginBottom: 10}]}>
+          <AppSvgIcon style={{marginRight: 4}} name="fire" />
+          <AppText style={styles.recommendText}>
+            {i18n.t('esim:charge:recommend')}
+          </AppText>
+        </View>
+        <View style={styles.box}>
+          {[1, 2].map((n) => (
+            <TextWithCheck
+              text={i18n.t(`esim:charge:type:${type}:modal:box${n}`)}
+            />
+          ))}
+        </View>
+      </View>
+    );
+  }, []);
 
   return (
     <AppModal
