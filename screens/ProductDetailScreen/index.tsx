@@ -47,7 +47,7 @@ import {
 import AppCartButton from '@/components/AppCartButton';
 import ChatTalk from '@/components/ChatTalk';
 import {API} from '@/redux/api';
-import {Currency} from '@/redux/api/productApi';
+import {Currency, ProdDesc} from '@/redux/api/productApi';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import InputNumber from '@/components/InputNumber';
@@ -59,6 +59,7 @@ import AppStyledText from '@/components/AppStyledText';
 import ChargeInfoModal from './components/ChargeInfoModal';
 import TextWithDot from '../EsimScreen/components/TextWithDot';
 import BodyHtml from './components/BodyHtml';
+import {parseJson} from '@/utils/utils';
 
 const {esimGlobal, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -326,6 +327,7 @@ type DescData = {
   fieldCautionList: string[];
   body: string;
   addonOption?: addonOptionType;
+  desc?: ProdDesc;
 };
 
 const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
@@ -380,14 +382,13 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             fieldCautionList: data.field_caution_list || [],
             addonOption: data.field_addon_option,
             body: data.body,
+            desc: data.field_desc
+              ? parseJson(data.field_desc.replace(/&quot;/g, '"'))
+              : {},
           });
         }
       });
   }, [prod]);
-
-  useEffect(() => {
-    console.log('@@@@ descData', descData);
-  }, [descData]);
 
   useEffect(() => {
     getTrackingStatus().then((elm) => setStatus(elm));
@@ -604,50 +605,54 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   }, [descData?.addonOption, renderChargeDetail]);
 
   const renderSixIcon = useCallback(
-    (isDaily: boolean, volume: string, volumeUnit: string) => (
-      <View style={styles.iconBox}>
-        <View style={styles.iconBoxLine}>
-          {[
-            {
-              icon: 'iconDataOnly',
-              text: i18n.t('prodDetail:icon:dataOnly'),
-            },
-            {
-              icon: 'iconClock',
-              text: i18n.t('prodDetail:icon:clock', {
-                days: prod?.days,
-              }),
-            },
-            {
-              icon:
-                prod?.network === '5G/LTE/3G'
-                  ? 'icon5G'
-                  : prod?.network === '3G'
-                  ? 'icon3G'
-                  : 'iconLTE',
-              text: prod?.network || '',
-            },
-          ].map((i) => renderIconWithText(i.icon, i.text))}
+    (isDaily: boolean, volume: string, volumeUnit: string) => {
+      const feature = descData?.desc?.ftr?.toUpperCase() || 'Only';
+
+      return (
+        <View style={styles.iconBox}>
+          <View style={styles.iconBoxLine}>
+            {[
+              {
+                icon: `iconData${feature}`,
+                text: i18n.t(`prodDetail:icon:data${feature}`),
+              },
+              {
+                icon: 'iconClock',
+                text: i18n.t('prodDetail:icon:clock', {
+                  days: prod?.days,
+                }),
+              },
+              {
+                icon:
+                  prod?.network === '5G/LTE/3G'
+                    ? 'icon5G'
+                    : prod?.network === '3G'
+                    ? 'icon3G'
+                    : 'iconLTE',
+                text: prod?.network || '',
+              },
+            ].map((i) => renderIconWithText(i.icon, i.text))}
+          </View>
+          <View style={styles.iconBoxLine}>
+            {[
+              {
+                icon: noFup ? 'iconTimer' : 'iconSpeed',
+                text: i18n.t(`prodDetail:icon:${noFup ? 'timer' : 'speed'}`, {
+                  data: `${volume}${volumeUnit}`,
+                }),
+              },
+              {
+                icon: prod?.hotspot ? 'iconWifi' : 'conWifiOff',
+                text: i18n.t(
+                  `prodDetail:icon:${prod?.hotspot ? 'wifi' : 'wifiOff'}`,
+                ),
+              },
+            ].map((i) => renderIconWithText(i.icon, i.text))}
+            {renderChargeIcon()}
+          </View>
         </View>
-        <View style={styles.iconBoxLine}>
-          {[
-            {
-              icon: noFup ? 'iconTimer' : 'iconSpeed',
-              text: i18n.t(`prodDetail:icon:${noFup ? 'timer' : 'speed'}`, {
-                data: `${volume}${volumeUnit}`,
-              }),
-            },
-            {
-              icon: prod?.hotspot ? 'iconWifi' : 'conWifiOff',
-              text: i18n.t(
-                `prodDetail:icon:${prod?.hotspot ? 'wifi' : 'wifiOff'}`,
-              ),
-            },
-          ].map((i) => renderIconWithText(i.icon, i.text))}
-          {renderChargeIcon()}
-        </View>
-      </View>
-    ),
+      );
+    },
     [noFup, prod, renderChargeIcon, renderIconWithText],
   );
 
@@ -697,10 +702,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     [renderCautionList, renderNoticeOption],
   );
 
-  useEffect(() => {
-    console.log('@@@@ descData', descData);
-  }, [descData]);
-
   const renderProdDetail = useCallback(() => {
     const isDaily = prod?.field_daily === 'daily';
     const volume =
@@ -742,7 +743,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           {renderSixIcon(isDaily, volume, volumeUnit)}
           {(noticeList.length > 0 || cautionList.length > 0) &&
             renderNotice(noticeList, cautionList)}
-
           <BodyHtml body={descData.body} onMessage={onMessage} />
         </ScrollView>
       )
