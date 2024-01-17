@@ -215,7 +215,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     text: string;
     visible: boolean;
   }>({text: '', visible: false});
-  const [disabled, setDisabled] = useState(false);
   const [status, setStatus] = useState<TrackingStatus>();
   const [purchaseItems, setPurchaseItems] = useState<PurchaseItem[]>([]);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -232,7 +231,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   useEffect(() => {
     if (purchaseItems) {
       setQty(purchaseItems[0]?.qty);
-
       setPrice(purchaseItems[0]?.price);
     }
   }, [purchaseItems]);
@@ -403,13 +401,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
                   text: i18n.t('country:addCart'),
                   visible: true,
                 });
-              if (
-                resp.objects[0].orderItems.find(
-                  (v) => v.key === route.params.item?.key,
-                ).qty >= PURCHASE_LIMIT
-              ) {
-                setDisabled(true);
-              }
             } else {
               soldOut(resp, 'cart:notToCart');
             }
@@ -428,7 +419,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     purchaseItems,
     qty,
     resetModalInfo,
-    route.params.item?.key,
     soldOut,
     status,
   ]);
@@ -448,10 +438,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
     // 구매 품목을 갱신한다.
     return action.cart
-      .checkStockAndPurchase({
-        purchaseItems: [item],
-        balance,
-      })
+      .checkStockAndPurchase({purchaseItems: [item], isCart: false})
       .then(({payload: resp}) => {
         resetModalInfo();
         if (resp.result === 0) {

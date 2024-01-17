@@ -5,7 +5,6 @@ import {AnyAction} from 'redux';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import _ from 'underscore';
 import {API} from '@/redux/api';
-import i18n from '@/utils/i18n';
 import Env from '@/environment';
 import {
   CouponInfo,
@@ -93,10 +92,10 @@ const prepareOrder = createAsyncThunk(
   (coupon: CouponInfo, {getState}) => {
     const {account, cart} = getState() as RootState;
     const {token, iccid, email, mobile} = account;
-    const {purchaseItems, orderId, esimIccid, mainSubsId} = cart;
+    const {purchaseItems, orderId, esimIccid, mainSubsId, isCart} = cart;
 
     return API.Cart.makeOrder({
-      orderId,
+      orderId: isCart ? orderId : undefined,
       items: purchaseItems,
       token,
       iccid,
@@ -115,10 +114,13 @@ export type PaymentReq = Record<
 >;
 
 export interface CartModelState {
-  result: number;
+  // cart data
+  cartId?: number;
+  cartItems: RkbOrderItem[];
+  cartUuid?: string;
+
+  // purchase data
   orderId?: number;
-  orderItems: RkbOrderItem[];
-  uuid?: string;
   purchaseItems: PurchaseItem[];
   pymReq?: PaymentReq;
   pymResult?: object;
@@ -128,38 +130,12 @@ export interface CartModelState {
   mainSubsId?: string;
   promo?: OrderPromo[];
   couponToApply?: string; // selected coupon
+  isCart?: boolean; // true if purchased by cart, false if one time purchase
 }
 
-const onSuccess = (state, action) => {
-  const {result, objects} = action.payload;
-
-  if (objects)
-    storeData(
-      `${API.Cart.KEY_INIT_CART}.${action?.meta?.arg?.mobile}`,
-      JSON.stringify(objects),
-    );
-
-  state.result = result;
-  if (result === 0 && objects.length > 0) {
-    state.orderId = objects[0].orderId;
-    state.orderItems = objects[0].orderItems.filter(
-      (i) => i.type === 'esim_product',
-    );
-    state.uuid = objects[0].uuid;
-  } else {
-    state.orderId = undefined;
-    state.orderItems = [];
-    state.uuid = undefined;
-  }
-};
-
 const initialState: CartModelState = {
-  result: 0,
-  orderId: undefined,
-  orderItems: [],
-  uuid: undefined,
+  cartItems: [],
   purchaseItems: [],
-  pymResult: undefined,
   lastTab: ImmutableList<string>(['Home']),
 };
 
@@ -185,7 +161,7 @@ const slice = createSlice({
 
     // 구매할 품목을 저장한다.
     purchase: (state, {payload}) => {
-      const {esimIccid, purchaseItems, mainSubsId} = payload;
+      const {esimIccid, purchaseItems, mainSubsId, isCart} = payload;
 
       const subtotal = utils.toCurrency(
         ((purchaseItems as PurchaseItem[]) || []).reduce(
@@ -201,15 +177,16 @@ const slice = createSlice({
       state.purchaseItems = purchaseItems;
       state.pymReq = {subtotal} as PaymentReq;
       state.pymPrice = subtotal;
+      state.isCart = isCart;
     },
 
     // 결제 결과를 저장한다.
     pymResult: (state, action) => {
-      const {purchaseItems, orderItems} = state;
+      const {purchaseItems, cartItems} = state;
 
       // orderItems에서 purchaseItem에 포함된 상품은 모두 제거한다.
       state.pymResult = action.payload;
-      state.orderItems = orderItems.filter(
+      state.cartItems = cartItems.filter(
         (item) => purchaseItems.findIndex((p) => p.key === item.key) < 0,
       );
     },
@@ -261,15 +238,36 @@ const slice = createSlice({
     builder.addCase(initCart.fulfilled, (state, {payload}) => {
       if (payload) {
         const obj = parseJson(payload);
-        state.orderId = obj[0].orderId;
-        state.orderItems = obj[0].orderItems.filter(
+        state.cartId = obj[0].orderId;
+        state.cartItems = obj[0].orderItems.filter(
           (i) => i.type === 'esim_product',
         );
-        state.uuid = obj[0].uuid;
+        state.cartUuid = obj[0].uuid;
       }
     });
 
-    builder.addCase(cartFetch.fulfilled, onSuccess);
+    builder.addCase(cartFetch.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      if (objects) {
+        storeData(
+          `${API.Cart.KEY_INIT_CART}.${action?.meta?.arg?.mobile}`,
+          JSON.stringify(objects),
+        );
+      }
+
+      if (result === 0 && objects.length > 0) {
+        state.cartId = objects[0].orderId;
+        state.cartItems = objects[0].orderItems.filter(
+          (i) => i.type === 'esim_product',
+        );
+        state.cartUuid = objects[0].uuid;
+      } else {
+        state.cartId = undefined;
+        state.cartItems = [];
+        state.cartUuid = undefined;
+      }
+    });
 
     // onfailure ->api 실패
     // onsuccess
@@ -283,14 +281,10 @@ const slice = createSlice({
 
     builder.addCase(cartRemove.fulfilled, (state, action) => {
       const {result, objects = []} = action.payload;
-      const {orderId, orderItems} = state;
+      const {cartId, cartItems} = state;
 
-      if (
-        result === 0 &&
-        objects.length > 0 &&
-        objects[0].orderId === orderId
-      ) {
-        state.orderItems = orderItems.filter(
+      if (result === 0 && objects.length > 0 && objects[0].orderId === cartId) {
+        state.cartItems = cartItems.filter(
           (item) => item.orderItemId !== objects[0].orderItemId,
         );
       }
@@ -298,14 +292,10 @@ const slice = createSlice({
 
     builder.addCase(cartUpdateQty.fulfilled, (state, action) => {
       const {result, objects = []} = action.payload;
-      const {orderId} = state;
+      const {cartId} = state;
 
-      if (
-        result === 0 &&
-        objects.length > 0 &&
-        objects[0].orderId === orderId
-      ) {
-        state.orderItems = objects[0].orderItems.filter(
+      if (result === 0 && objects.length > 0 && objects[0].orderId === cartId) {
+        state.cartItems = objects[0].orderItems.filter(
           (i) => i.type === 'esim_product',
         );
       }
@@ -335,6 +325,23 @@ const slice = createSlice({
           if (!acc || cur.adj?.value < acc.adj?.value) return cur;
           return acc;
         }, undefined)?.coupon_id;
+
+        // couponToApply == undefined 이면, discount도 undefined로 설정된다.
+        const promo = state.promo?.find(
+          (p) => p.coupon_id === state.couponToApply,
+        );
+
+        state.pymReq = {
+          ...state.pymReq,
+          discount: promo?.adj,
+        };
+
+        state.pymPrice = utils.toCurrency(
+          (state.pymReq?.subtotal?.value || 0) +
+            (state.pymReq?.discount?.value || 0) -
+            (state.pymReq?.rkbcash?.value || 0),
+          esimCurrency,
+        );
       }
     });
   },
@@ -345,7 +352,8 @@ const checkStockAndMakeOrder = createAsyncThunk(
   (info: PaymentInfo, {dispatch, getState}) => {
     const {account, cart} = getState() as RootState;
     const {token, iccid, email, mobile} = account;
-    const {purchaseItems, orderId, esimIccid, mainSubsId} = cart;
+    const {purchaseItems, cartId, orderId, esimIccid, mainSubsId, isCart} =
+      cart;
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
@@ -355,7 +363,7 @@ const checkStockAndMakeOrder = createAsyncThunk(
           // 충전, 구매 모두 order 생성
           return dispatch(
             makeOrder({
-              orderId,
+              orderId: isCart ? cartId : orderId,
               items: purchaseItems,
               info,
               token,
@@ -367,20 +375,7 @@ const checkStockAndMakeOrder = createAsyncThunk(
             }),
           )
             .then((rsp) => {
-              if (rsp.payload.status === api.API_STATUS_PREFAILED) {
-                dispatch(accountAction.getAccount({iccid, token})).then(() => {
-                  const {
-                    account: {balance},
-                  } = getState() as RootState;
-                  dispatch(
-                    slice.actions.purchase({
-                      purchaseItems,
-                      dlvCost: false,
-                      balance,
-                    }),
-                  );
-                });
-              }
+              dispatch(slice.actions.purchase({purchaseItems}));
               return rsp.payload;
             })
             .catch((err) => {
@@ -447,17 +442,12 @@ const payNorder = createAsyncThunk(
 const checkStockAndPurchase = createAsyncThunk(
   'cart/checkStockAndPurchase',
   (
-    {
-      purchaseItems,
-      balance,
-      dlvCost = false,
-    }: {purchaseItems: PurchaseItem[]; balance?: number; dlvCost?: boolean},
+    {purchaseItems, isCart}: {purchaseItems: PurchaseItem[]; isCart: boolean},
     {dispatch},
   ) => {
     return dispatch(checkStock({purchaseItems})).then(({payload: resp}) => {
-      console.log('@@@ check', resp);
       if (resp.result === 0) {
-        dispatch(slice.actions.purchase({purchaseItems, dlvCost, balance}));
+        dispatch(slice.actions.purchase({purchaseItems, isCart}));
       }
       // 처리 결과는 reducer에 보내서 처리하지만, 결과는 resp를 반환한다.
       return resp;

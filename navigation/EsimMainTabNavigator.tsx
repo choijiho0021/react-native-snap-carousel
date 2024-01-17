@@ -374,7 +374,7 @@ const TabNavigator = ({
           tabBarStyle: {
             display:
               !!loggedIn &&
-              cart?.orderItems?.length === 0 &&
+              cart?.cartItems?.length === 0 &&
               (getFocusedRouteNameFromRoute(route) || 'Cart') === 'Cart'
                 ? 'flex'
                 : 'none',

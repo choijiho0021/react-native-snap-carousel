@@ -216,7 +216,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
             } else if (resp.result === api.E_STATUS_EXPIRED) {
               // product status is changed.
               const {orderId} = cart;
-              const orderItems = cart?.orderItems.filter((elm) =>
+              const orderItems = cart?.cartItems.filter((elm) =>
                 resp?.message.split(',').includes(elm.prod.sku),
               );
               const orderItemIds = orderItems.map((elm) => elm.orderItemId);

@@ -31,7 +31,6 @@ const styles = StyleSheet.create({
   },
   title: {
     ...appStyles.bold18Text,
-    // fontFamily: "AppleSDGothicNeo",
     marginTop: 20,
     marginBottom: isDeviceSize('small') ? 10 : 20,
     marginHorizontal: 20,
