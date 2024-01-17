@@ -4799,6 +4799,20 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  iconAllday: [
+    <Svg
+      width="33"
+      height="32"
+      viewBox="0 0 33 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M12.166 12a5.657 5.657 0 1 0 0 8l8-8a5.657 5.657 0 1 1 0 8l-4-4-4-4z"
+        stroke="#2A7FF6"
+        strokeWidth="2"
+      />
+    </Svg>,
+  ],
   iconTimer: [
     <Svg
       width="33"

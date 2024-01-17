@@ -980,6 +980,7 @@
   "prodDetail:icon:dataM": "데이터\n&통화·문자",
   "prodDetail:icon:dataV": "데이터&통화",
   "prodDetail:icon:clock": "사용기간 {{days}}일",
+  "prodDetail:icon:allday": "속도 제한 없는\n올데이 무제한",
   "prodDetail:icon:speed": "일 {{data}} 소진 시\n속도 제한",
   "prodDetail:icon:timer": "{{data}}소진 시\n사용 종료",
   "prodDetail:icon:wifi": "핫스팟 테더링\n가능",

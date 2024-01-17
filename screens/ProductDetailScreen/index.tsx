@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
   },
   iconWithText: {
     width: 110,
@@ -519,18 +519,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             }}
           />
 
-          <AppText style={styles.prodBody}>
-            {i18n.t(`prodDetail:body:${isDaily ? 'daily' : 'total'}`, {
-              data1: isDaily ? `${volume}${volumeUnit}` : '',
-              data2: isDaily
-                ? `${
-                    (Number(prod?.fup) < 1000
-                      ? prod?.fup
-                      : (Number(prod?.fup) / 1024).toString()) || ''
-                  }${Number(prod?.fup) < 1000 ? 'Kbps' : 'Mbps' || ''}`
-                : '',
-            })}
-          </AppText>
+          <AppText style={styles.prodBody}>{descData?.desc?.desc1}</AppText>
         </View>
         <View>
           <AppText style={styles.locaTag}>
@@ -542,13 +531,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               }`,
             )}
           </AppText>
-          <AppText style={styles.bottomText}>
-            {i18n.t('prodDetail:bottom')}
-          </AppText>
+          <AppText style={styles.bottomText}>{descData?.desc?.desc2}</AppText>
         </View>
       </ImageBackground>
     ),
-    [prod],
+    [descData, prod],
   );
 
   const renderIconWithText = useCallback(
@@ -605,9 +592,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   }, [descData?.addonOption, renderChargeDetail]);
 
   const renderSixIcon = useCallback(
-    (isDaily: boolean, volume: string, volumeUnit: string) => {
+    (volume: string, volumeUnit: string) => {
       const feature = descData?.desc?.ftr?.toUpperCase() || 'Only';
 
+      console.log('@@@@ noFup', noFup);
+      console.log('@@@@ volume', volume);
       return (
         <View style={styles.iconBox}>
           <View style={styles.iconBoxLine}>
@@ -636,10 +625,19 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           <View style={styles.iconBoxLine}>
             {[
               {
-                icon: noFup ? 'iconTimer' : 'iconSpeed',
-                text: i18n.t(`prodDetail:icon:${noFup ? 'timer' : 'speed'}`, {
-                  data: `${volume}${volumeUnit}`,
-                }),
+                icon: noFup
+                  ? volume === '1000'
+                    ? 'iconAllday'
+                    : 'iconTimer'
+                  : 'iconSpeed',
+                text: i18n.t(
+                  `prodDetail:icon:${
+                    noFup ? (volume === '1000' ? 'allday' : 'timer') : 'speed'
+                  }`,
+                  {
+                    data: `${volume}${volumeUnit}`,
+                  },
+                ),
               },
               {
                 icon: prod?.hotspot ? 'iconWifi' : 'conWifiOff',
@@ -648,7 +646,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
                 ),
               },
             ].map((i) => renderIconWithText(i.icon, i.text))}
-            {renderChargeIcon()}
+            {descData?.addonOption && renderChargeIcon()}
           </View>
         </View>
       );
@@ -740,7 +738,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       descData && (
         <ScrollView style={{flex: 1}}>
           {renderTopInfo(isDaily, volume, volumeUnit)}
-          {renderSixIcon(isDaily, volume, volumeUnit)}
+          {renderSixIcon(volume, volumeUnit)}
           {(noticeList.length > 0 || cautionList.length > 0) &&
             renderNotice(noticeList, cautionList)}
           <BodyHtml body={descData.body} onMessage={onMessage} />
