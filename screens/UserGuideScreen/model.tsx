@@ -15,9 +15,8 @@ import {GuideOption} from './GuideHomeScreen';
 import {GuideRegion} from './GuideSelectRegionScreen';
 import AppSvgIcon from '@/components/AppSvgIcon';
 
-// const {isIOS} = Env.get();
+const {isIOS} = Env.get();
 
-const isIOS = false;
 const dir = '../../assets/images/esim/userGuide';
 
 const styles = StyleSheet.create({
