@@ -653,7 +653,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         </View>
       );
     },
-    [noFup, prod, renderChargeIcon, renderIconWithText],
+    [descData, noFup, prod, renderChargeIcon, renderIconWithText],
   );
 
   const renderNoticeOption = useCallback(
