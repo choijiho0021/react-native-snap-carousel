@@ -595,8 +595,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     (volume: string, volumeUnit: string) => {
       const feature = descData?.desc?.ftr?.toUpperCase() || 'Only';
 
-      console.log('@@@@ noFup', noFup);
-      console.log('@@@@ volume', volume);
       return (
         <View style={styles.iconBox}>
           <View style={styles.iconBoxLine}>
