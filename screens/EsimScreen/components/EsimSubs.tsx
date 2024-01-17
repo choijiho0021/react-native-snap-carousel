@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import React, {
   MutableRefObject,
   useCallback,
@@ -378,9 +377,16 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     isChargeButton,
   ] = useMemo(() => {
     const now = moment();
-    const expd = mainSubs.lastExpireDate?.isBefore(now) || false;
+    const checkHt = mainSubs.partner === 'ht';
+    const expd =
+      (checkHt
+        ? moment(mainSubs.activationDate)
+            ?.add(mainSubs.prodDays, 'days')
+            .isBefore(moment())
+        : mainSubs.lastExpireDate?.isBefore(now)) || false;
+
     return [
-      mainSubs.partner === 'ht',
+      checkHt,
       isDraft(mainSubs?.statusCd),
 
       // mainSubs?.addOnOption 이 없는 경우도 NEVER
@@ -400,6 +406,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         !(mainSubs.expireDate && mainSubs.expireDate.isBefore(now)),
     ];
   }, [mainSubs]);
+
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [showSubs, setShowSubs] = useState<boolean>(!mainSubs.hide);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
