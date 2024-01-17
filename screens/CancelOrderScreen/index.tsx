@@ -23,7 +23,6 @@ import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {CancelKeywordType, RkbOrder, RkbPayment} from '@/redux/api/orderApi';
-import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import {
   actions as orderActions,
@@ -41,11 +40,10 @@ import {
 import i18n from '@/utils/i18n';
 import AppStyledText from '@/components/AppStyledText';
 import LabelText from '@/components/LabelText';
-import {countRokebiCash, isRokebiCash} from '../PurchaseDetailScreen';
+import {isRokebiCash} from '../PurchaseDetailScreen';
 import AppTextInput from '@/components/AppTextInput';
 import Env from '@/environment';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {Currency} from '@/redux/api/productApi';
 import {ProdDesc} from './CancelResult';
 import AppSnackBar from '@/components/AppSnackBar';
 import ProductDetailList from './component/ProductDetailList';
@@ -256,7 +254,6 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   const [selectedOrder, setSelectedOrder] = useState<RkbOrder>();
   const [prods, setProds] = useState<ProdDesc[]>([]);
   const [step, setStep] = useState(0);
-  const [balanceCharge, setBalanceCharge] = useState<Currency>();
   const loading = useRef(false);
   const [inputText, setInputText] = useState('');
   const [keyword, setKeyword] = useState<CancelKeywordType>();
@@ -345,7 +342,6 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   useEffect(() => {
     if (!selectedOrder?.orderItems) return;
 
-    setBalanceCharge(countRokebiCash(selectedOrder));
     getProdDate();
 
     const prodList: ProdDesc[] = selectedOrder.orderItems.map((r) => {
@@ -541,7 +537,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                 color={colors.warmGrey}
               />
             )}
-            {balanceCharge !== utils.toCurrency(0, esimCurrency) && (
+            {selectedOrder?.deductBalance?.value != 0 && (
               <LabelText
                 key="deductBalance"
                 style={[styles.item, {marginTop: method ? 0 : 10}]}
@@ -549,7 +545,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                 format="price"
                 labelStyle={styles.label2}
                 valueStyle={styles.itemCashText}
-                value={balanceCharge?.value}
+                value={selectedOrder?.deductBalance?.value}
                 balanceStyle={styles.itemCashCurrencyText}
                 currencyStyle={styles.itemCashCurrencyText}
                 color={colors.warmGrey}
@@ -573,7 +569,12 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         <View>{renderGuide()}</View>
       </ScrollView>
     );
-  }, [balanceCharge, method, renderGuide, selectedOrder?.totalPrice]);
+  }, [
+    method,
+    renderGuide,
+    selectedOrder?.deductBalance?.value,
+    selectedOrder?.totalPrice,
+  ]);
 
   const cancelOrder = useCallback(() => {
     setIsClickButton(true);

@@ -547,7 +547,6 @@
   "cart:totalPrice": "상품 금액 합계",
   "cart:count": "수량",
   "cart:proudctTotalPrice": "총 상품 금액",
-  "cart:deductBalance": "로깨비캐시 차감",
   "cart:currentBalance": "현재 로깨비캐시",
   "cart:afterDeductBalance": "남은 로깨비캐시",
   "cart:couponDiscount": "할인쿠폰 사용",

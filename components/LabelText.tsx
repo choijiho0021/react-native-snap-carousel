@@ -12,7 +12,6 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
-import i18n from '@/utils/i18n';
 import AppPrice from './AppPrice';
 import AppText from './AppText';
 
@@ -47,7 +46,6 @@ export type LabelTextProps = {
 const LabelText = ({
   label,
   value,
-  deduct,
   style,
   format,
   color = colors.black,
@@ -57,21 +55,19 @@ const LabelText = ({
   currencyStyle,
 }: LabelTextProps) => {
   const renderValue = useCallback(() => {
-    const isDeduct = label === i18n.t('cart:deductBalance');
-    const val = typeof value === 'object' ? value.value : Number(value);
-    const currency = typeof value === 'object' ? value.currency : esimCurrency;
+    const [val, currency] =
+      typeof value === 'object'
+        ? [value.value, value.currency]
+        : [Number(value), esimCurrency];
 
     return (
       <AppPrice
-        price={utils.toCurrency(
-          isDeduct && deduct ? -deduct : val || 0,
-          currency,
-        )}
+        price={utils.toCurrency(val, currency)}
         balanceStyle={[balanceStyle, {color}]}
         currencyStyle={[currencyStyle, {color}]}
       />
     );
-  }, [balanceStyle, color, currencyStyle, deduct, label, value]);
+  }, [balanceStyle, color, currencyStyle, value]);
 
   return (
     <View
@@ -87,10 +83,6 @@ const LabelText = ({
         style={[{maxWidth: '70%'}, labelStyle || styles.label]}>
         {label}
       </AppText>
-      {/* {
-          isDeduct &&
-          <AppText style={[styles.label, {marginLeft: 18}]}>{`(${i18n.t('cart:currentBalance')}:${utils.numberToCommaString(value) + ' ' + i18n.t('won')}) `}</AppText>
-        } */}
       {format === 'price' ? (
         renderValue()
       ) : (
