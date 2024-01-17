@@ -64,7 +64,7 @@ const UsDeviceInfoModal: React.FC<UsDeviceInfoModalProps> = ({
 
   const modalBody = useMemo(() => {
     return (
-      <View style={{paddingHorizontal: 20, marginTop: 24}}>
+      <View style={{paddingHorizontal: 20, marginTop: 24, paddingBottom: 20}}>
         <View style={{gap: 8, marginBottom: 24}}>
           <AppText style={styles.modalText}>
             {i18n.t('us:device:modal:noti1')}

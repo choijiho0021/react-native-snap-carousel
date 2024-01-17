@@ -124,13 +124,11 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       if (links?.charge === 'N') {
         setAddOnDisReasonText(links?.msg?.kr);
         setAddonEnable(false);
-
-        // 1일 때도 진입하게 하기?
       } else if (result === 0 || result === api.E_INVALID_STATUS) {
         // 최초 충전의 경우는 chargedSubs가 없어서 mainSubs로
         const chargedItem = params?.chargedSubs
           ? params?.chargedSubs?.find((r) => r.nid === links.refSubs.id)
-          : subs;
+          : undefined;
 
         if (!chargedItem) {
           setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:`));

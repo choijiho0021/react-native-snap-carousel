@@ -44,7 +44,7 @@ const UsDeviceInputModal: React.FC<UsDeviceInputModalProps> = ({
 
   const uploadModalBody = useMemo(() => {
     return (
-      <View style={{paddingHorizontal: 20}}>
+      <View style={{paddingHorizontal: 20, paddingBottom: 20}}>
         <Image
           style={{width: '100%', marginBottom: 8}}
           source={require('@/assets/images/esim/deviceInfoUpload.png')}
