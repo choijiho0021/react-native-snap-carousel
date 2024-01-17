@@ -347,6 +347,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   );
 
   const prod = useMemo(() => route.params?.prod, [route.params?.prod]);
+  const noFup = useMemo(
+    () => prod?.fup === 'N/A' || prod?.fup === '0',
+    [prod?.fup],
+  );
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -628,8 +632,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         <View style={styles.iconBoxLine}>
           {[
             {
-              icon: isDaily ? 'iconSpeed' : 'iconTimer',
-              text: i18n.t(`prodDetail:icon:${isDaily ? 'speed' : 'timer'}`, {
+              icon: noFup ? 'iconTimer' : 'iconSpeed',
+              text: i18n.t(`prodDetail:icon:${noFup ? 'timer' : 'speed'}`, {
                 data: `${volume}${volumeUnit}`,
               }),
             },
@@ -644,7 +648,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         </View>
       </View>
     ),
-    [prod, renderChargeIcon, renderIconWithText],
+    [noFup, prod, renderChargeIcon, renderIconWithText],
   );
 
   const renderNoticeOption = useCallback(
@@ -693,6 +697,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     [renderCautionList, renderNoticeOption],
   );
 
+  useEffect(() => {
+    console.log('@@@@ descData', descData);
+  }, [descData]);
+
   const renderProdDetail = useCallback(() => {
     const isDaily = prod?.field_daily === 'daily';
     const volume =
@@ -734,6 +742,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           {renderSixIcon(isDaily, volume, volumeUnit)}
           {(noticeList.length > 0 || cautionList.length > 0) &&
             renderNotice(noticeList, cautionList)}
+
           <BodyHtml body={descData.body} onMessage={onMessage} />
         </ScrollView>
       )
