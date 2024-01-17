@@ -381,7 +381,9 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     const expd =
       (checkHt
         ? moment(mainSubs.activationDate)
-            ?.add(mainSubs.prodDays, 'days')
+            ?.add(Number(mainSubs.prodDays) - 1, 'days')
+            .tz('EST')
+            .endOf('day')
             .isBefore(moment())
         : mainSubs.lastExpireDate?.isBefore(now)) || false;
 
