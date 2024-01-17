@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type GuideRegion = 'korea' | 'local';
+export type GuideRegion = 'korea' | 'local' | 'us';
 
 const GuideSelectRegionScreen = () => {
   const dispatch = useDispatch();
@@ -110,14 +110,14 @@ const GuideSelectRegionScreen = () => {
           />
         ))}
 
-        <View style={{marginTop: 102}}>
+        <View style={{marginTop: 102, marginBottom: 40}}>
           <GuideButton
             key={'us'}
             item={'us'}
             onPress={() => {
               navigation?.navigate('UserGuideStep', {
                 guideOption,
-                region: 'korea',
+                region: 'us',
               });
             }}
             isHome={false}
