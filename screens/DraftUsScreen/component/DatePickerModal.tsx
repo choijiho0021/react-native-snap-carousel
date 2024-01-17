@@ -79,7 +79,7 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
     const isLeftDisable = moment(month).isBefore(minDate);
 
     return (
-      <View>
+      <View style={{paddingBottom: 20}}>
         <AppNotiBox
           backgroundColor={colors.backGrey}
           textColor={colors.black}

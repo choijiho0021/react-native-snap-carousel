@@ -5,6 +5,7 @@ import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import AppText from '@/components/AppText';
+import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
   btn: {
@@ -63,11 +64,15 @@ const GuideButton = ({
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}>
       <View>
-        <AppText style={styles.btnTitle}>
-          {isHome
-            ? i18n.t(`userGuide:${item}:title`)
-            : i18n.t(`userGuide:selectRegion:${item}`)}
-        </AppText>
+        <AppStyledText
+          textStyle={styles.btnTitle}
+          text={
+            isHome
+              ? i18n.t(`userGuide:${item}:title`)
+              : i18n.t(`userGuide:selectRegion:${item}`)
+          }
+          format={{b: {fontWeight: 'bold'}}}
+        />
         {isHome && (
           <View style={{marginTop: 4}}>
             <AppText style={styles.btnBody}>
