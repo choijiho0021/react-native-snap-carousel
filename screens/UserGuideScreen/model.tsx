@@ -223,11 +223,12 @@ const renderTipList = (
   id: string,
   list: 'dot' | 'num' = 'num',
   boldRed = false,
+  num: number = 2,
 ) => (
   <View style={styles.tipContainer}>
     {renderTips()}
     <View style={{alignItems: 'flex-start'}}>
-      {[1, 2].map((k) => (
+      {Array.from({length: num}, (_, index) => index + 1).map((k) => (
         <View key={k} style={styles.tipTextContainer}>
           {list === 'num' ? (
             <View style={styles.step}>
@@ -245,16 +246,60 @@ const renderTipList = (
   </View>
 );
 
-const renderNoticeBox = (title: string, body: string) => (
-  <View style={styles.noticeBox}>
-    <AppText style={styles.noticeBoxTitle}>{i18n.t(title)}</AppText>
-    <AppStyledText
-      text={i18n.t(body)}
-      textStyle={styles.noticeBoxBody}
-      format={{b: {fontWeight: '600', color: colors.deepDarkBlue}}}
-    />
-  </View>
-);
+const renderNoticeBox = ({
+  title,
+  body,
+  isShow,
+}: {
+  title: string;
+  body: string[];
+  isShow: boolean;
+}) => {
+  if (!isShow) return null;
+
+  return (
+    <View style={{width: '100%', marginBottom: 16}}>
+      <View
+        style={{
+          backgroundColor: colors.veryLightBlue,
+          borderRadius: 16,
+          marginHorizontal: 30,
+          alignContent: 'center',
+          justifyContent: 'center',
+          paddingHorizontal: 20,
+          paddingVertical: 10,
+        }}>
+        <AppStyledText
+          text={i18n.t(title)}
+          textStyle={{
+            ...appStyles.bold14Text,
+            color: colors.clearBlue,
+            lineHeight: 18,
+          }}
+          format={{b: {fontWeight: '600'}}}
+        />
+        {body.length > 1
+          ? body.map((b) => (
+              <View style={{flexDirection: 'row'}}>
+                <AppText>{i18n.t('middleDot')}</AppText>
+                <AppStyledText
+                  text={i18n.t(b)}
+                  textStyle={{...appStyles.normal14Text, lineHeight: 18}}
+                  format={{b: {fontWeight: '600'}}}
+                />
+              </View>
+            ))
+          : body.map((b) => (
+              <AppStyledText
+                text={i18n.t(b)}
+                textStyle={styles.noticeBoxBody}
+                format={{b: {fontWeight: '600'}}}
+              />
+            ))}
+      </View>
+    </View>
+  );
+};
 
 const renderIsLocalBox = () => (
   <View style={[styles.isLocalBox, !isIOS && {paddingHorizontal: 24}]}>
@@ -373,6 +418,7 @@ export const getImageList = (
       page1: [require(`${dir}/iconLocalCheck.png`)],
       page2: [require(`${dir}/android/checkSetting/img_3.png`)],
       page3: [require(`${dir}/android/checkSetting/img_4.png`)],
+      page3Local: [require(`${dir}/android/checkSetting/img_4_2.png`)],
       page4: [require(`${dir}/android/checkSetting/img_5.png`)],
       page5: [require(`${dir}/android/checkSetting/img_6.png`)],
       page5Local: [require(`${dir}/android/checkSetting/localNet/img_6.png`)],
@@ -389,7 +435,7 @@ export type GuideImage = {
   isHeader?: boolean;
   stepPreText?: string;
   tip?: () => JSX.Element | null;
-  noticeBox?: () => JSX.Element | null;
+  noticeBox?: (isCheckLocal: boolean) => JSX.Element | null;
   isLocalBox?: () => JSX.Element | null;
   caption?: string;
   localTitle?: JSX.Element;
@@ -467,10 +513,11 @@ export const getGuideImages = (
             step: 8,
             tip: () => tipView({id: 'userGuide:tipPage10_1'}),
             noticeBox: () =>
-              renderNoticeBox(
-                'userGuide:noticeBox:local:title',
-                'userGuide:noticeBox:local:body1',
-              ),
+              renderNoticeBox({
+                title: 'userGuide:noticeBox:local:title',
+                body: ['userGuide:noticeBox:local:body1'],
+                isShow: true,
+              }),
           },
           {
             key: 'page11',
@@ -478,10 +525,11 @@ export const getGuideImages = (
             step: 9,
             tip: () => tipView({id: 'userGuide:tipPage11_1'}),
             noticeBox: () =>
-              renderNoticeBox(
-                'userGuide:noticeBox:local:title',
-                'userGuide:noticeBox:local:body2',
-              ),
+              renderNoticeBox({
+                title: 'userGuide:noticeBox:local:title',
+                body: ['userGuide:noticeBox:local:body2'],
+                isShow: true,
+              }),
           },
           {
             key: 'page12',
@@ -557,10 +605,11 @@ export const getGuideImages = (
             title: renderText('userGuide:stepsTitle11:ios:local'),
             step: 9,
             noticeBox: () =>
-              renderNoticeBox(
-                'userGuide:noticeBox:local:title',
-                'userGuide:noticeBox:local:body3',
-              ),
+              renderNoticeBox({
+                title: 'userGuide:noticeBox:local:title',
+                body: ['userGuide:noticeBox:local:body3'],
+                isShow: true,
+              }),
           },
           {
             key: 'page12',
@@ -682,10 +731,11 @@ export const getGuideImages = (
           step: 6,
           tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}, true),
           noticeBox: () =>
-            renderNoticeBox(
-              'userGuide:noticeBox:local:title',
-              'userGuide:noticeBox:local:body4',
-            ),
+            renderNoticeBox({
+              title: 'userGuide:noticeBox:local:title',
+              body: ['userGuide:noticeBox:local:body4'],
+              isShow: true,
+            }),
         },
         {
           key: 'page9',
@@ -693,10 +743,11 @@ export const getGuideImages = (
           step: 7,
           tip: () => tipView({id: 'userGuide:tipPage10_1'}),
           noticeBox: () =>
-            renderNoticeBox(
-              'userGuide:noticeBox:local:title',
-              'userGuide:noticeBox:local:body1',
-            ),
+            renderNoticeBox({
+              title: 'userGuide:noticeBox:local:title',
+              body: ['userGuide:noticeBox:local:body1'],
+              isShow: true,
+            }),
         },
         {
           key: 'page10',
@@ -726,7 +777,8 @@ export const getGuideImages = (
           key: 'page3',
           title: renderText(`userGuide:stepsTitle2:galaxy`),
           step: 2,
-          tip: () => renderTipList('userGuide:tipPage2:galaxy'),
+          tip: () =>
+            renderTipList('userGuide:tipPage2:galaxy', 'num', false, 3),
         },
         {
           key: 'page4',
@@ -755,10 +807,11 @@ export const getGuideImages = (
           step: 6,
           tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}, true),
           noticeBox: () =>
-            renderNoticeBox(
-              'userGuide:noticeBox:local:title',
-              'userGuide:noticeBox:local:body4',
-            ),
+            renderNoticeBox({
+              title: 'userGuide:noticeBox:local:title',
+              body: ['userGuide:noticeBox:local:body4'],
+              isShow: true,
+            }),
         },
         {
           key: 'page9',
@@ -809,9 +862,18 @@ export const getGuideImages = (
       },
       {
         key: 'page3',
-        title: renderText(`userGuide:stepsTitle5:galaxy:checkSetting`),
+        title: renderText(`userGuide:stepsTitle5:galaxy:checkSetting`), // ysjoung
         step: 2,
         stepPreText: 'local',
+        noticeBox: (isCheckLocal: boolean) =>
+          renderNoticeBox({
+            title: 'userGuide:stepsTitle5:galaxy:caution:title',
+            body: [
+              'userGuide:stepsTitle5:galaxy:caution:body1',
+              'userGuide:stepsTitle5:galaxy:caution:body2',
+            ],
+            isShow: isCheckLocal, // 현지(로컬망)인 경우에 보여주도록 함
+          }),
       },
       {
         key: 'page4',
@@ -828,6 +890,12 @@ export const getGuideImages = (
         stepPreText: 'local',
         tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}),
         localTip: () => tipView({id: 'userGuide:tipPage7:galaxy:localNet'}),
+        noticeBox: (isCheckLocal: boolean) =>
+          renderNoticeBox({
+            title: 'userGuide:stepsTitle7:galaxy:caution:title',
+            body: ['userGuide:stepsTitle7:galaxy:caution:body'],
+            isShow: isCheckLocal,
+          }),
       },
       {
         key: 'page6',

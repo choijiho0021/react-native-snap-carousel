@@ -380,6 +380,8 @@ const UserGuideScreen = () => {
             {isCheckLocal && data.localTitle ? data.localTitle : data.title}
           </View>
 
+          {data.noticeBox && data.noticeBox(isCheckLocal)}
+
           {data.tip ? (
             <View
               style={
@@ -393,10 +395,6 @@ const UserGuideScreen = () => {
             <View style={{height: 23}} />
           ) : (
             guideOption === 'checkSetting' && <View style={{height: 79}} />
-          )}
-
-          {data.noticeBox && (
-            <View style={{marginBottom: 9}}>{data.noticeBox()}</View>
           )}
 
           <View
