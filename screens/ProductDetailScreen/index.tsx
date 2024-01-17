@@ -14,7 +14,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import WebView, {WebViewMessageEvent} from 'react-native-webview';
+import {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import analytics, {firebase} from '@react-native-firebase/analytics';
@@ -60,7 +60,7 @@ import ChargeInfoModal from './components/ChargeInfoModal';
 import TextWithDot from '../EsimScreen/components/TextWithDot';
 import BodyHtml from './components/BodyHtml';
 
-const {esimGlobal, webViewHost, isIOS} = Env.get();
+const {esimGlobal, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
 
 const styles = StyleSheet.create({

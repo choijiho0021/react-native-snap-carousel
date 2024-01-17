@@ -1,7 +1,5 @@
 import React, {useCallback} from 'react';
 import {Image, StyleSheet, View} from 'react-native';
-import {connect} from 'react-redux';
-import {RootState} from '@reduxjs/toolkit';
 
 import {ScrollView} from 'react-native-gesture-handler';
 import AppModal from '@/components/AppModal';
@@ -174,8 +172,9 @@ const ChargeInfoModal: React.FC<ChargeInfoModalProps> = ({
       onOkClose={() => onClose(false)}
       onCancelClose={() => onClose(false)}
       visible={visible}
-      bottom={() => null}>
-      <View style={{flex: 1, height: '70%'}}>
+      bottom={() => null}
+      maxWidth="100%">
+      <View style={{flex: 1}}>
         <View style={styles.header}>
           <AppText style={styles.headerTitleText}>
             {i18n.t('prodDetail:charge:modal:header:title')}
