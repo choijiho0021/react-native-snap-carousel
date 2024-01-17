@@ -864,7 +864,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               {showCallDetail &&
                 detailList.length > 0 &&
                 detailList.map((i) => (
-                  <View>
+                  <View key={`detail${clMtd}${i}`}>
                     <TextWithCheck
                       text={i18n.t(
                         `prodDetail:callMethod:box:contents:detail${i}:${clMtd}`,
