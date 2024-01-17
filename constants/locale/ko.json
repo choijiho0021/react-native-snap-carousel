@@ -1048,7 +1048,10 @@
   "prodDetail:roaming": "[로밍]",
 
   "prodDetail:icon:dataOnly": "데이터 ONLY",
+  "prodDetail:icon:dataM": "데이터\n&통화·문자",
+  "prodDetail:icon:dataV": "데이터&통화",
   "prodDetail:icon:clock": "사용기간 {{days}}일",
+  "prodDetail:icon:allday": "속도 제한 없는\n올데이 무제한",
   "prodDetail:icon:speed": "일 {{data}} 소진 시\n속도 제한",
   "prodDetail:icon:timer": "{{data}}소진 시\n사용 종료",
   "prodDetail:icon:wifi": "핫스팟 테더링\n가능",
@@ -1057,6 +1060,31 @@
   "prodDetail:icon:chargeOff": "충전 미지원",
   "prodDetail:icon:charge:addOn": "용량 충전",
   "prodDetail:icon:charge:extension": "상품 연장",
+
+  "prodDetail:callMethod:title": "통화·문자 정책",
+  "prodDetail:callMethod:box:feature:M": "문자가능",
+  "prodDetail:callMethod:box:feature:V": "통화가능",
+
+  "prodDetail:callMethod:box:contents:default1:us": "미국 내 통화·문자 발신 무제한",
+  "prodDetail:callMethod:box:contents:default2:us": "국제 통화 발신 무제한",
+  "prodDetail:callMethod:box:contents:default1:ais": "기본 제공 50바트",
+  "prodDetail:callMethod:box:contents:default1:dtac": "기본 제공 15바트",
+  "prodDetail:callMethod:box:contents:default1:mvtotal": "몰디브 내 통화 150분 무료",
+  "prodDetail:callMethod:box:contents:default2:mvtotal": "몰디브 내 문자 150건 무료",
+
+  "prodDetail:callMethod:box:contents:detail1:usdaily": "국제 통화·문자 발신 미지원 상품입니다.",
+  "prodDetail:callMethod:box:contents:detail1:ustotal": "국제 통화 지원 국가",
+  "prodDetail:callMethod:box:contents:detail2:ustotal": "국제 문자 발신 미지원 상품입니다.",
+  "prodDetail:callMethod:box:contents:detail1:ais": "태국 내 1분 = 1바트 / 국제 1분 = 4바트",
+  "prodDetail:callMethod:box:contents:detail2:ais": "문자 미지원 상품입니다.",
+  "prodDetail:callMethod:box:contents:detail1:dtac": "한국, 인도, 베트남으로 30분간 무료 통화 발신 가능",
+  "prodDetail:callMethod:box:contents:detail2:dtac": "태국 내 DTAC 번호끼리 무제한 통화 가능",
+  "prodDetail:callMethod:box:contents:detail3:dtac": "태국 내 타통신사 1분 = 1바트 / 국제 1분 = 4바트",
+  "prodDetail:callMethod:box:contents:detail4:dtac": "문자 미지원 상품입니다.",
+  "prodDetail:callMethod:box:contents:detail1:mvtotal": "국제 통화·문자 발신 미지원 상품입니다.",
+
+  "prodDetail:callMethod:box:detail:ustotal:country": "한국, 멕시코, 싱가포르, 이스라엘, 인도, 중국, 파키스탄, 포르투갈, 폴란드, 홍콩",
+  "prodDetail:callMethod:box:detail:ustotal:notice": "※ 이 외 국가로 국제 통화 발신 불가합니다.",
 
   "prodDetail:charge:modal:header:title": "충전 기능?",
   "prodDetail:charge:modal:header:body": "로밍도깨비 eSIM이 제공하는 충전 기능은 크게 용량 충전하기와 상품 연장하기로 나뉘어요.\n상품마다 지원하는 충전 기능이 다르니,  용량 충전·상품 연장 지원 여부를 확인 후 구매하시는 걸 추천해요!",
