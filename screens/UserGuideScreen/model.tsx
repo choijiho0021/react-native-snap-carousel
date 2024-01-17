@@ -182,6 +182,7 @@ const renderTipText = (
     textStyle={style}
     format={{
       b: boldRed ? styles.tipBoldRedText : styles.tipBoldText,
+      r: styles.tipBoldRedText,
       s: {...styles.tipBoldText, color: colors.tomato},
     }}
   />
@@ -343,16 +344,16 @@ export const getImageList = (
         };
       } else if (region === 'us') {
         imageList = {
-          page1: [require(`${dir}/iconLocalSmall.png`)],
-          page2: [require(`${dir}/ios/esimReg/img_1.png`)],
-          page3: [require(`${dir}/ios/esimReg/img_2.png`)],
-          page4: [require(`${dir}/ios/esimReg/img_3.png`)],
-          page5: [require(`${dir}/ios/esimReg/img_4.png`)],
-          page6: [require(`${dir}/ios/esimReg/img_5.png`)],
-          page7: [require(`${dir}/ios/esimReg/img_6.png`)],
-          page8: [require(`${dir}/ios/esimReg/img_7.png`)],
-          page9: [require(`${dir}/ios/esimReg/img_8.png`)],
-          page10: [require(`${dir}/ios/esimReg/img_9.png`)],
+          page1: [require(`${dir}/iconUsSmall.png`)],
+          page2: [require(`${dir}/ios/esimReg/us/img_1.png`)],
+          page3: [require(`${dir}/ios/esimReg/us/img_2.png`)],
+          page4: [require(`${dir}/ios/esimReg/us/img_3.png`)],
+          page5: [require(`${dir}/ios/esimReg/us/img_4.png`)],
+          page6: [require(`${dir}/ios/esimReg/us/img_5.png`)],
+          page7: [require(`${dir}/ios/esimReg/us/img_6.png`)],
+          page8: [require(`${dir}/ios/esimReg/us/img_7.png`)],
+          page9: [require(`${dir}/ios/esimReg/us/img_8.png`)],
+          page10: [require(`${dir}/ios/esimReg/us/img_9.png`)],
           page11: [require(`${dir}/ios/esimReg/local/img_10.png`)],
           pageLast: [require(`${dir}/iconRokebiLast.png`)],
         };
@@ -587,67 +588,58 @@ export const getGuideImages = (
           },
           {
             key: 'page2',
-            title: renderText(`userGuide:stepsTitle1:ios`),
+            title: renderText(`userGuide:stepsTitle1:us:ios`),
             step: 1,
           },
           {
             key: 'page3',
-            title: renderText(`userGuide:stepsTitle2:ios`),
+            title: renderText(`userGuide:stepsTitle2:us:ios`),
             step: 2,
-            tip: () => renderTipList('userGuide:tipPage3', 'num', false, 3),
           },
           {
             key: 'page4',
-            title: renderText('userGuide:stepsTitle3:ios'),
-            step: 2,
-            tip: () => tipView({id: 'userGuide:tipPage4_1'}),
-            caption: i18n.t('userGuide:step3:caption'),
+            title: renderText('userGuide:stepsTitle3:us:ios'),
+            step: 3,
+            tip: () => renderTipList('userGuide:us:tipPage4', 'dot'),
           },
           {
             key: 'page5',
-            title: renderText('userGuide:stepsTitle4:ios'),
-            step: 3,
+            title: renderText('userGuide:stepsTitle4:us:ios'),
+            step: 4,
+            tip: () => renderTipList('userGuide:us:tipPage5', 'dot', false, 3),
           },
           {
             key: 'page6',
-            title: renderText('userGuide:stepsTitle5:ios'),
-            step: 4,
-            tip: () => renderTipList('userGuide:tipPage5', 'dot'),
+            title: renderText('userGuide:stepsTitle5:us:ios'),
+            step: 5,
+            tip: () => tipView({id: 'userGuide:us:tipPage6_2'}, true),
           },
           {
             key: 'page7',
-            title: renderText('userGuide:stepsTitle6:ios'),
-            step: 5,
-            tip: () => tipView({id: 'userGuide:tipPage7_1'}, false),
+            title: renderText('userGuide:stepsTitle6:us:ios'),
+            step: 6,
+            tip: () => renderTipList('userGuide:us:tipPage6', 'dot', false),
           },
           {
             key: 'page8',
-            title: renderText('userGuide:stepsTitle8:ios'),
-            tip: () => tipView({id: 'userGuide:tipPage7_1'}, false),
-            step: 6,
+            title: renderText('userGuide:stepsTitle7:us:ios'),
+            step: 7,
           },
           {
             key: 'page9',
-            title: renderText('userGuide:stepsTitle9:ios'),
-            step: 7,
-            tip: () => renderTipList('userGuide:tipPage9', 'dot'),
+            title: renderText('userGuide:stepsTitle8:us:ios'),
+            step: 8,
+            noticeBox: () =>
+              renderNoticeBox({
+                title: 'userGuide:us:ios:caution:title',
+                body: ['userGuide:us:ios:caution:body'],
+                isShow: true,
+              }),
           },
           {
             key: 'page10',
-            title: renderText('userGuide:stepsTitle10:ios'),
-            step: 8,
-            tip: () => tipView({id: 'userGuide:tipPage10_1'}),
-          },
-          {
-            key: 'page11',
-            title: renderText('userGuide:stepsTitle11:ios:local'),
+            title: renderText('userGuide:stepsTitle9:us:ios'),
             step: 9,
-            noticeBox: () =>
-              renderNoticeBox({
-                title: 'userGuide:noticeBox:local:title',
-                body: ['userGuide:noticeBox:local:body3'],
-                isShow: true,
-              }),
           },
           {
             key: 'page12',

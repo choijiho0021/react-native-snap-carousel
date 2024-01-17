@@ -47,12 +47,13 @@ const styles = StyleSheet.create({
 });
 
 export type GuideRegion = 'korea' | 'local' | 'us';
+export type GuideOption = 'esimReg' | 'checkSetting';
 
 const GuideSelectRegionScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const route = useRoute();
-  const guideOption = useMemo(
+  const guideOption: GuideOption = useMemo(
     () => route.params?.guideOption,
     [route.params?.guideOption],
   );
@@ -110,19 +111,21 @@ const GuideSelectRegionScreen = () => {
           />
         ))}
 
-        <View style={{marginTop: 102, marginBottom: 40}}>
-          <GuideButton
-            key={'us'}
-            item={'us'}
-            onPress={() => {
-              navigation?.navigate('UserGuideStep', {
-                guideOption,
-                region: 'us',
-              });
-            }}
-            isHome={false}
-          />
-        </View>
+        {guideOption === 'esimReg' && (
+          <View style={{marginTop: 80, marginBottom: 40}}>
+            <GuideButton
+              key={'us'}
+              item={'us'}
+              onPress={() => {
+                navigation?.navigate('UserGuideStep', {
+                  guideOption,
+                  region: 'us',
+                });
+              }}
+              isHome={false}
+            />
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
