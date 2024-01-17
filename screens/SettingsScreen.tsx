@@ -3,7 +3,14 @@ import messaging from '@react-native-firebase/messaging';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {FlatList, Pressable, StyleSheet, View, Platform} from 'react-native';
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  View,
+  Platform,
+  SafeAreaView,
+} from 'react-native';
 import Config from 'react-native-config';
 import {openSettings} from 'react-native-permissions';
 import VersionCheck from 'react-native-version-check';
@@ -264,7 +271,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={appStyles.header}>
         <AppBackButton title={i18n.t('settings')} />
       </View>
@@ -287,7 +294,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
         textMessage={i18n.t('settings:deniedPush')}
       />
       <AppActivityIndicator visible={pending} />
-    </View>
+    </SafeAreaView>
   );
 };
 
