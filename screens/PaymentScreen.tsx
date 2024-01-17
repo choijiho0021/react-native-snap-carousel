@@ -87,8 +87,6 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
         merchant_uid: params.merchant_uid,
         amount: params.amount,
         rokebi_cash: params.rokebi_cash,
-        dlvCost: params.dlvCost,
-        profile_uuid: params.profile_uuid,
         memo: params.memo,
         captured: false,
       } as PaymentInfo),

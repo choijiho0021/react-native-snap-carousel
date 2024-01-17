@@ -149,7 +149,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [showModalMethod, setShowModalMethod] = useState(true);
   const [policyChecked, setPolicyChecked] = useState(false);
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
-  const {pymPrice, deduct} = useMemo(() => cart, [cart]);
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
 
   useEffect(() => {
@@ -182,24 +181,20 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       setClickable(false);
 
       const payMethod = API.Payment.method[selected];
-      if (!payMethod && pymPrice?.value !== 0) return;
+      if (!payMethod && cart.pymPrice?.value !== 0) return;
 
       const {mobile, email} = account;
       const scheme = esimGlobal ? 'RokebiGlobal' : 'RokebiEsim';
 
       // 로깨비캐시 결제
-      if (pymPrice?.value === 0) {
+      if (cart.pymPrice?.value === 0) {
         // if the payment amount is zero, call the old API payNorder
         const pymInfo = createPaymentInfoForRokebiCash({
           impId,
           mobile,
-          deduct,
           digital: true,
+          deduct: cart.pymReq?.rkbcash,
         });
-
-        // const adjustRokebiCashEvent = new AdjustEvent(adjustRokebiCash);
-        // adjustRokebiCashEvent.setRevenue(info.rokebi_cash, 'KRW');
-        // Adjust.trackEvent(adjustRokebiCashEvent);
 
         // payNorder에서 재고 확인 - resp.result값으로 비교
         action.cart.payNorder(pymInfo).then(({payload: resp}) => {
@@ -215,21 +210,20 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               AppAlert.info(i18n.t('cart:soldOut'));
             } else if (resp.result === api.E_STATUS_EXPIRED) {
               // product status is changed.
-              const {orderId} = cart;
-              const orderItems = cart?.cartItems.filter((elm) =>
-                resp?.message.split(',').includes(elm.prod.sku),
-              );
-              const orderItemIds = orderItems.map((elm) => elm.orderItemId);
-
-              // remove it from the cart
-              orderItemIds.forEach((orderItemId) => {
-                if (orderItemId && orderId) {
-                  action.cart.cartRemove({
-                    orderId,
-                    orderItemId,
+              const skuList = resp?.message.split(',');
+              if (skuList?.length > 0 && cart.cartId) {
+                cart?.cartItems
+                  .filter((elm) => skuList.includes(elm.prod.sku))
+                  .forEach((elm) => {
+                    // remove it from the cart
+                    if (elm.orderItemId) {
+                      action.cart.cartRemove({
+                        orderId: cart.cartId,
+                        orderItemId: elm.orderItemId,
+                      });
+                    }
                   });
-                }
-              });
+              }
 
               action.product.getAllProduct(true);
 
@@ -250,8 +244,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
             product.rule.inicis_enabled === '1' ? 'r_' : 'i_'
           }${mobile}_${new Date().getTime()}`,
           name: i18n.t('appTitle'),
-          amount: pymPrice?.value, // 실제 결제 금액 (로깨비캐시 제외)
-          rokebi_cash: deduct?.value, // balance 차감 금액
+          amount: cart.pymPrice?.value, // 실제 결제 금액 (로깨비캐시 제외)
+          rokebi_cash: cart.pymReq?.rkbcash?.value, // balance 차감 금액
           buyer_tel: mobile,
           buyer_name: mobile,
           buyer_email: email,
@@ -271,13 +265,14 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       account,
       action.cart,
       action.product,
-      cart,
+      cart.cartId,
+      cart?.cartItems,
+      cart.pymPrice?.value,
+      cart.pymReq?.rkbcash,
       clickable,
-      deduct,
       mode,
       navigation,
       product.rule,
-      pymPrice?.value,
       selected,
     ],
   );
@@ -351,7 +346,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         <PaymentSummary mode="method" />
 
-        {pymPrice?.value !== 0 ? (
+        {cart.pymPrice?.value !== 0 ? (
           method()
         ) : (
           <View style={styles.result} key="result">
@@ -368,7 +363,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         <AppButton
           title={i18n.t('payment')}
           titleStyle={appStyles.medium18}
-          disabled={(pymPrice?.value !== 0 && !selected) || !policyChecked}
+          disabled={(cart.pymPrice?.value !== 0 && !selected) || !policyChecked}
           key={i18n.t('payment')}
           onPress={() => onSubmit(false)}
           style={appStyles.confirm}

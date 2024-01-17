@@ -90,7 +90,6 @@ export type RkbOrder = {
   orderItems: OrderItemType[];
   usageList: {status: string; nid: string}[];
   paymentList: RkbPayment[];
-  dlvCost: Currency;
   balanceCharge: Currency;
 };
 
@@ -136,7 +135,6 @@ const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
               paymentMethod: value.payment_method, // 결제 수단
               remote_id: value.remote_id,
             })),
-            dlvCost: utils.stringToCurrency(item.dlv_cost),
             balanceCharge: utils.toCurrency(balanceCharge, totalPrice.currency),
           } as RkbOrder;
         })

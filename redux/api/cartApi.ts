@@ -314,12 +314,10 @@ const updateQty = ({
  */
 export type PaymentInfo = {
   memo?: string;
-  profile_uuid?: string;
   payment_type: string;
   merchant_uid: string;
   amount: number;
   rokebi_cash: number;
-  dlvCost?: number;
   currency_code?: CurrencyCode;
   captured: boolean;
 };
@@ -416,7 +414,6 @@ const makeOrder = ({
           },
           amount: info.amount,
           rokebi_cash: info.rokebi_cash,
-          shipping_cost: info.dlvCost,
           currency_code: info.currency_code || esimCurrency,
         }
       : null,

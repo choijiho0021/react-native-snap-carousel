@@ -363,7 +363,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     }
 
     const cartNumber =
-      cart.orderItems.find((elm) => elm.key === purchaseItems[0].key)?.qty || 0;
+      cart.cartItems.find((elm) => elm.key === purchaseItems[0].key)?.qty || 0;
 
     resetModalInfo();
     setShowModal(false);
@@ -413,7 +413,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   }, [
     account,
     action.cart,
-    cart.orderItems,
+    cart.cartItems,
     isButtonDisabled,
     navigation,
     purchaseItems,
@@ -424,11 +424,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   ]);
 
   const onPressBtnPurchase = useCallback(() => {
-    const {loggedIn, balance} = account;
     Analytics.trackEvent('Click_purchase');
     setShowModal(false);
 
-    if (!loggedIn) {
+    if (!account.loggedIn) {
       navigation.navigate('RegisterMobile', {
         goBack: () => navigation.goBack(),
       });
@@ -453,7 +452,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         console.log('failed to check stock', err);
       });
   }, [
-    account,
+    account.loggedIn,
     action.cart,
     navigation,
     purchaseItems,

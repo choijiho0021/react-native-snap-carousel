@@ -92,10 +92,11 @@ const prepareOrder = createAsyncThunk(
   (coupon: CouponInfo, {getState}) => {
     const {account, cart} = getState() as RootState;
     const {token, iccid, email, mobile} = account;
-    const {purchaseItems, orderId, esimIccid, mainSubsId, isCart} = cart;
+    const {purchaseItems, orderId, cartId, esimIccid, mainSubsId, isCart} =
+      cart;
 
     return API.Cart.makeOrder({
-      orderId: isCart ? orderId : undefined,
+      orderId: isCart ? cartId : orderId,
       items: purchaseItems,
       token,
       iccid,
@@ -123,7 +124,7 @@ export interface CartModelState {
   orderId?: number;
   purchaseItems: PurchaseItem[];
   pymReq?: PaymentReq;
-  pymResult?: object;
+  pymResult?: PaymentInfo;
   lastTab: ImmutableList<string>;
   pymPrice?: Currency; // total amount to pay
   esimIccid?: string;
@@ -354,6 +355,9 @@ const checkStockAndMakeOrder = createAsyncThunk(
     const {token, iccid, email, mobile} = account;
     const {purchaseItems, cartId, orderId, esimIccid, mainSubsId, isCart} =
       cart;
+    const coupon = cart.couponToApply
+      ? ({id: [cart.couponToApply]} as CouponInfo)
+      : undefined;
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
@@ -372,6 +376,7 @@ const checkStockAndMakeOrder = createAsyncThunk(
               mainSubsId,
               user: mobile,
               mail: email,
+              coupon,
             }),
           )
             .then((rsp) => {
