@@ -25,7 +25,6 @@ import {
   TrackingStatus,
 } from 'react-native-tracking-transparency';
 import {ScrollView} from 'react-native-gesture-handler';
-import RenderHtml from 'react-native-render-html';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
@@ -495,29 +494,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     [action.info, navigation, route.params?.item?.key, route.params?.title],
   );
 
-  const renderWebView = useCallback(
-    (uuid?: string) => {
-      if (!uuid) return null;
-
-      const uri = `${webViewHost}/product/${uuid}`;
-
-      return (
-        <WebView
-          // automaticallyAdjustContentInsets={true}
-          // scalesPageToFit
-          javaScriptEnabled
-          domStorageEnabled
-          startInLoadingState
-          decelerationRate="normal"
-          scrollEnabled
-          onMessage={onMessage}
-          source={{uri}}
-        />
-      );
-    },
-    [onMessage],
-  );
-
   const renderTopInfo = useCallback(
     (isDaily: boolean, volume: string, volumeUnit: string) => (
       <ImageBackground
@@ -758,11 +734,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           {renderSixIcon(isDaily, volume, volumeUnit)}
           {(noticeList.length > 0 || cautionList.length > 0) &&
             renderNotice(noticeList, cautionList)}
-          <BodyHtml body={descData.body} />
+          <BodyHtml body={descData.body} onMessage={onMessage} />
         </ScrollView>
       )
     );
-  }, [descData, prod, renderNotice, renderSixIcon, renderTopInfo]);
+  }, [descData, onMessage, prod, renderNotice, renderSixIcon, renderTopInfo]);
 
   const soldOut = useCallback((payload: ApiResult<any>, message: string) => {
     if (payload.result === api.E_RESOURCE_NOT_FOUND) {
@@ -990,8 +966,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           />
         )}
       </View>
-      {/* {renderWebView(route.params?.uuid)} */}
-      {renderProdDetail()}
+
+      <View style={{flex: 1}}>{renderProdDetail()}</View>
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       {purchaseButtonTab()}
 
