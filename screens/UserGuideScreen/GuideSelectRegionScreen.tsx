@@ -1,5 +1,11 @@
 import React, {memo, useEffect, useMemo} from 'react';
-import {StyleSheet, SafeAreaView, View, Pressable} from 'react-native';
+import {
+  StyleSheet,
+  SafeAreaView,
+  View,
+  Pressable,
+  ScrollView,
+} from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
 import {colors} from '@/constants/Colors';
@@ -60,48 +66,64 @@ const GuideSelectRegionScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <GuideHeader onPress={() => navigation?.goBack()} />
-      <GuideTitle
-        title={i18n.t(`userGuide:selectRegion:${guideOption}:title`)}
-      />
-      <View style={{height: 6}} />
-      {guideOption === 'esimReg' ? (
-        <Pressable
-          style={styles.box}
-          onPress={() =>
-            dispatch(
-              modalActions.renderModal(() => (
-                <GuideModal guideOption={guideOption} isHome={false} />
-              )),
-            )
-          }>
-          <AppSvgIcon name="noticeFlag" style={{marginRight: 8}} />
-          <View>
-            <AppText style={styles.boxTitle}>
-              {i18n.t('userGuide:selectRegion:esimReg:notice:title')}
-            </AppText>
-            <AppText style={styles.boxBody}>
-              {i18n.t('userGuide:selectRegion:esimReg:notice:body')}
-            </AppText>
-          </View>
-          <AppSvgIcon name="rightArrow" style={{marginLeft: 'auto'}} />
-        </Pressable>
-      ) : (
-        <View style={{height: 40}} />
-      )}
-      {['korea', 'local'].map((v) => (
-        <GuideButton
-          key={v}
-          item={v}
-          onPress={() => {
-            navigation?.navigate('UserGuideStep', {
-              guideOption,
-              region: v,
-            });
-          }}
-          isHome={false}
+      <ScrollView>
+        <GuideHeader onPress={() => navigation?.goBack()} />
+        <GuideTitle
+          title={i18n.t(`userGuide:selectRegion:${guideOption}:title`)}
         />
-      ))}
+        <View style={{height: 6}} />
+        {guideOption === 'esimReg' ? (
+          <Pressable
+            style={styles.box}
+            onPress={() =>
+              dispatch(
+                modalActions.renderModal(() => (
+                  <GuideModal guideOption={guideOption} isHome={false} />
+                )),
+              )
+            }>
+            <AppSvgIcon name="noticeFlag" style={{marginRight: 8}} />
+            <View>
+              <AppText style={styles.boxTitle}>
+                {i18n.t('userGuide:selectRegion:esimReg:notice:title')}
+              </AppText>
+              <AppText style={styles.boxBody}>
+                {i18n.t('userGuide:selectRegion:esimReg:notice:body')}
+              </AppText>
+            </View>
+            <AppSvgIcon name="rightArrow" style={{marginLeft: 'auto'}} />
+          </Pressable>
+        ) : (
+          <View style={{height: 40}} />
+        )}
+        {['korea', 'local'].map((v) => (
+          <GuideButton
+            key={v}
+            item={v}
+            onPress={() => {
+              navigation?.navigate('UserGuideStep', {
+                guideOption,
+                region: v,
+              });
+            }}
+            isHome={false}
+          />
+        ))}
+
+        <View style={{marginTop: 102}}>
+          <GuideButton
+            key={'us'}
+            item={'us'}
+            onPress={() => {
+              navigation?.navigate('UserGuideStep', {
+                guideOption,
+                region: 'korea',
+              });
+            }}
+            isHome={false}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
