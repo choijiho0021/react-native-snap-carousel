@@ -683,7 +683,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   }, [descData?.addonOption, renderChargeDetail]);
 
   const renderSixIcon = useCallback(
-    (volume: string, volumeUnit: string) => {
+    (isDaily: boolean, volume: string, volumeUnit: string) => {
       const feature = descData?.desc?.ftr?.toUpperCase() || 'Only';
 
       return (
@@ -722,6 +722,12 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
                 text: i18n.t(
                   `prodDetail:icon:${
                     noFup ? (volume === '1000' ? 'allday' : 'timer') : 'speed'
+                  }${
+                    noFup && volume === '1000'
+                      ? ''
+                      : isDaily
+                      ? ':daily'
+                      : ':total'
                   }`,
                   {
                     data: `${volume}${volumeUnit}`,
@@ -939,7 +945,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       descData && (
         <ScrollView style={{flex: 1}}>
           {renderTopInfo(isDaily, volume, volumeUnit)}
-          {renderSixIcon(volume, volumeUnit)}
+          {renderSixIcon(isDaily, volume, volumeUnit)}
           {(noticeList.length > 0 || cautionList.length > 0) &&
             renderNotice(noticeList, cautionList)}
           {clMtd &&
