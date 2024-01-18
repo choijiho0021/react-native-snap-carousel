@@ -10,6 +10,7 @@ import TextWithDot from '@/screens/EsimScreen/components/TextWithDot';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import ChargeBottomButton from '@/screens/EsimScreen/components/ChargeBottomButton';
 import {ChargeDisReason} from '@/screens/EsimScreen/components/ChargeTypeButton';
+import TextWithCheck from './TextWithCheck';
 
 const styles = StyleSheet.create({
   container: {
@@ -59,12 +60,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backGrey,
     marginBottom: 4,
   },
-  boxText: {
-    ...appStyles.semiBold14Text,
-    lineHeight: 22,
-    letterSpacing: -0.28,
-    marginRight: 32,
-  },
 });
 
 type ChargeTypeModalProps = {
@@ -81,19 +76,6 @@ const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
   disReason,
 }) => {
   const dispatch = useDispatch();
-
-  const textWithCheck = useCallback(
-    (text: string) => (
-      <View style={styles.row} key={text}>
-        <AppSvgIcon
-          style={{marginRight: 8, alignSelf: 'flex-start', marginTop: 3}}
-          name="checkedBlueSmall"
-        />
-        <AppText style={styles.boxText}>{text}</AppText>
-      </View>
-    ),
-    [],
-  );
 
   // const getDisReasonText = useCallback(() => {
   //   if (disabled) {
@@ -153,9 +135,11 @@ const ChargeTypeModal: React.FC<ChargeTypeModalProps> = ({
             </AppText>
           </View>
           <View style={styles.box}>
-            {[1, 2].map((n) =>
-              textWithCheck(i18n.t(`esim:charge:type:${type}:modal:box${n}`)),
-            )}
+            {[1, 2].map((n) => (
+              <TextWithCheck
+                text={i18n.t(`esim:charge:type:${type}:modal:box${n}`)}
+              />
+            ))}
           </View>
 
           <ChargeBottomButton

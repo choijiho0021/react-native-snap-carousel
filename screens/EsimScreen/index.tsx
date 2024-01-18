@@ -406,7 +406,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               endTime: moment(item.activationDate)
                 ?.tz('EST')
                 ?.add(Number(item.prodDays) - 1, 'days')
-                ?.startOf('day'),
+                ?.endOf('day'),
             },
             usage: {quota: 0, used: 0, remain: 0, totalUsed: 0},
           };

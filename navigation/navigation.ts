@@ -15,6 +15,7 @@ import {GuideOption} from '@/screens/UserGuideScreen/GuideHomeScreen';
 import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
 import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 import {ProdDesc} from '@/screens/CancelOrderScreen/CancelResult';
+import {PaymentRule} from '@/redux/modules/product';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti';
 export type PymMethodScreenMode =
@@ -48,7 +49,7 @@ export type PaymentParams = {
   isPaid?: boolean;
   mode?: string;
   card?: string;
-  paymentRule?: Record<string, string>;
+  paymentRule?: PaymentRule;
 };
 
 type ChargeAgreementContents = {

@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
 
 export interface AppModalProps {
   visible: boolean;
+  maxWidth?: string | number;
   type?: 'normal' | 'close' | 'info' | 'redirect';
   justifyContent?: 'center' | 'flex-end';
   title?: string;
@@ -85,6 +86,7 @@ export interface AppModalProps {
 }
 
 const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
+  maxWidth,
   title,
   titleStyle,
   titleViewStyle,
@@ -248,7 +250,11 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
             alignItems: 'center',
             marginHorizontal: contentStyle?.marginHorizontal,
           }}>
-          <View style={[contentStyle || styles.inner, {maxWidth: MAX_WIDTH}]}>
+          <View
+            style={[
+              contentStyle || styles.inner,
+              {maxWidth: maxWidth || MAX_WIDTH},
+            ]}>
             {titleIcon && (
               <AppIcon
                 name={titleIcon}

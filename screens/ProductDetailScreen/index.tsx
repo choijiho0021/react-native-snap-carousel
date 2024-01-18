@@ -14,7 +14,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import WebView, {WebViewMessageEvent} from 'react-native-webview';
+import {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import analytics, {firebase} from '@react-native-firebase/analytics';
@@ -25,7 +25,6 @@ import {
   TrackingStatus,
 } from 'react-native-tracking-transparency';
 import {ScrollView} from 'react-native-gesture-handler';
-import RenderHtml from 'react-native-render-html';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
@@ -48,7 +47,7 @@ import {
 import AppCartButton from '@/components/AppCartButton';
 import ChatTalk from '@/components/ChatTalk';
 import {API} from '@/redux/api';
-import {Currency} from '@/redux/api/productApi';
+import {Currency, ProdDesc} from '@/redux/api/productApi';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import InputNumber from '@/components/InputNumber';
@@ -60,8 +59,10 @@ import AppStyledText from '@/components/AppStyledText';
 import ChargeInfoModal from './components/ChargeInfoModal';
 import TextWithDot from '../EsimScreen/components/TextWithDot';
 import BodyHtml from './components/BodyHtml';
+import {parseJson} from '@/utils/utils';
+import TextWithCheck from '../HomeScreen/component/TextWithCheck';
 
-const {esimGlobal, webViewHost, isIOS} = Env.get();
+const {esimGlobal, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
 
 const styles = StyleSheet.create({
@@ -219,7 +220,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
   },
   iconWithText: {
     width: 110,
@@ -295,6 +296,95 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: colors.white,
   },
+  callMethod: {
+    paddingHorizontal: 20,
+    paddingTop: 42,
+  },
+  callMethodTitle: {
+    ...appStyles.normal20Text,
+    // fontWeight: '500',
+    lineHeight: 22,
+    color: colors.black,
+    marginBottom: 16,
+  },
+  callMethodBox: {
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    backgroundColor: colors.white,
+    borderRadius: 3,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  callMethodBoxTop: {
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderColor: colors.whiteFive,
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  callMethodContents: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 4,
+    marginTop: 8,
+    paddingVertical: 12,
+  },
+  callMethodBoxBottom: {
+    paddingTop: 9,
+    paddingBottom: 6,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 6,
+  },
+  featureWithText: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+    width: '50%',
+  },
+  featureText: {
+    ...appStyles.semiBold18Text,
+    lineHeight: 22,
+    color: colors.black,
+  },
+  callMethodBoxBold: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 24,
+    color: colors.black,
+  },
+  callMethodBoxText: {
+    ...appStyles.normal16Text,
+    lineHeight: 24,
+    color: colors.black,
+  },
+  showDetail: {
+    ...appStyles.bold14Text,
+    lineHeight: 24,
+    letterSpacing: -0.5,
+    color: colors.warmGrey,
+  },
+  ustotalDetailBox: {
+    marginLeft: 24,
+  },
+  countryBox: {
+    padding: 8,
+    backgroundColor: colors.backGrey,
+    borderRadius: 3,
+    marginVertical: 2,
+  },
+  countryBoxText: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 22,
+    color: colors.black,
+  },
+  countryBoxNotice: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 22,
+    color: colors.warmGrey,
+  },
 });
 
 type ProductDetailScreenNavigationProp = StackNavigationProp<
@@ -327,6 +417,7 @@ type DescData = {
   fieldCautionList: string[];
   body: string;
   addonOption?: addonOptionType;
+  desc?: ProdDesc;
 };
 
 const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
@@ -348,6 +439,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   );
 
   const prod = useMemo(() => route.params?.prod, [route.params?.prod]);
+  const noFup = useMemo(
+    () => prod?.fup === 'N/A' || prod?.fup === '0',
+    [prod?.fup],
+  );
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -360,6 +455,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const appState = useRef('unknown');
   const [price, setPrice] = useState<Currency>();
   const [showChargeInfoModal, setShowChargeInfoModal] = useState(false);
+  const [showCallDetail, setShowCallDetail] = useState(false);
 
   const isht = useMemo(
     () => route?.params?.partner === 'ht',
@@ -377,14 +473,13 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             fieldCautionList: data.field_caution_list || [],
             addonOption: data.field_addon_option,
             body: data.body,
+            desc: data.field_desc
+              ? parseJson(data.field_desc.replace(/&quot;/g, '"'))
+              : {},
           });
         }
       });
   }, [prod]);
-
-  useEffect(() => {
-    console.log('@@@@ descData', descData);
-  }, [descData]);
 
   useEffect(() => {
     getTrackingStatus().then((elm) => setStatus(elm));
@@ -495,29 +590,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     [action.info, navigation, route.params?.item?.key, route.params?.title],
   );
 
-  const renderWebView = useCallback(
-    (uuid?: string) => {
-      if (!uuid) return null;
-
-      const uri = `${webViewHost}/product/${uuid}`;
-
-      return (
-        <WebView
-          // automaticallyAdjustContentInsets={true}
-          // scalesPageToFit
-          javaScriptEnabled
-          domStorageEnabled
-          startInLoadingState
-          decelerationRate="normal"
-          scrollEnabled
-          onMessage={onMessage}
-          source={{uri}}
-        />
-      );
-    },
-    [onMessage],
-  );
-
   const renderTopInfo = useCallback(
     (isDaily: boolean, volume: string, volumeUnit: string) => (
       <ImageBackground
@@ -538,18 +610,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             }}
           />
 
-          <AppText style={styles.prodBody}>
-            {i18n.t(`prodDetail:body:${isDaily ? 'daily' : 'total'}`, {
-              data1: isDaily ? `${volume}${volumeUnit}` : '',
-              data2: isDaily
-                ? `${
-                    (Number(prod?.fup) < 1000
-                      ? prod?.fup
-                      : (Number(prod?.fup) / 1024).toString()) || ''
-                  }${Number(prod?.fup) < 1000 ? 'Kbps' : 'Mbps' || ''}`
-                : '',
-            })}
-          </AppText>
+          <AppText style={styles.prodBody}>{descData?.desc?.desc1}</AppText>
         </View>
         <View>
           <AppText style={styles.locaTag}>
@@ -561,13 +622,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               }`,
             )}
           </AppText>
-          <AppText style={styles.bottomText}>
-            {i18n.t('prodDetail:bottom')}
-          </AppText>
+          <AppText style={styles.bottomText}>{descData?.desc?.desc2}</AppText>
         </View>
       </ImageBackground>
     ),
-    [prod],
+    [descData, prod],
   );
 
   const renderIconWithText = useCallback(
@@ -624,51 +683,70 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   }, [descData?.addonOption, renderChargeDetail]);
 
   const renderSixIcon = useCallback(
-    (isDaily: boolean, volume: string, volumeUnit: string) => (
-      <View style={styles.iconBox}>
-        <View style={styles.iconBoxLine}>
-          {[
-            {
-              icon: 'iconDataOnly',
-              text: i18n.t('prodDetail:icon:dataOnly'),
-            },
-            {
-              icon: 'iconClock',
-              text: i18n.t('prodDetail:icon:clock', {
-                days: prod?.days,
-              }),
-            },
-            {
-              icon:
-                prod?.network === '5G/LTE/3G'
-                  ? 'icon5G'
-                  : prod?.network === '3G'
-                  ? 'icon3G'
-                  : 'iconLTE',
-              text: prod?.network || '',
-            },
-          ].map((i) => renderIconWithText(i.icon, i.text))}
+    (isDaily: boolean, volume: string, volumeUnit: string) => {
+      const feature = descData?.desc?.ftr?.toUpperCase() || 'Only';
+
+      return (
+        <View style={styles.iconBox}>
+          <View style={styles.iconBoxLine}>
+            {[
+              {
+                icon: `iconData${feature}`,
+                text: i18n.t(`prodDetail:icon:data${feature}`),
+              },
+              {
+                icon: 'iconClock',
+                text: i18n.t('prodDetail:icon:clock', {
+                  days: prod?.days,
+                }),
+              },
+              {
+                icon:
+                  prod?.network === '5G/LTE/3G'
+                    ? 'icon5G'
+                    : prod?.network === '3G'
+                    ? 'icon3G'
+                    : 'iconLTE',
+                text: prod?.network || '',
+              },
+            ].map((i) => renderIconWithText(i.icon, i.text))}
+          </View>
+          <View style={styles.iconBoxLine}>
+            {[
+              {
+                icon: noFup
+                  ? volume === '1000'
+                    ? 'iconAllday'
+                    : 'iconTimer'
+                  : 'iconSpeed',
+                text: i18n.t(
+                  `prodDetail:icon:${
+                    noFup ? (volume === '1000' ? 'allday' : 'timer') : 'speed'
+                  }${
+                    noFup && volume === '1000'
+                      ? ''
+                      : isDaily
+                      ? ':daily'
+                      : ':total'
+                  }`,
+                  {
+                    data: `${volume}${volumeUnit}`,
+                  },
+                ),
+              },
+              {
+                icon: prod?.hotspot ? 'iconWifi' : 'conWifiOff',
+                text: i18n.t(
+                  `prodDetail:icon:${prod?.hotspot ? 'wifi' : 'wifiOff'}`,
+                ),
+              },
+            ].map((i) => renderIconWithText(i.icon, i.text))}
+            {descData?.addonOption && renderChargeIcon()}
+          </View>
         </View>
-        <View style={styles.iconBoxLine}>
-          {[
-            {
-              icon: isDaily ? 'iconSpeed' : 'iconTimer',
-              text: i18n.t(`prodDetail:icon:${isDaily ? 'speed' : 'timer'}`, {
-                data: `${volume}${volumeUnit}`,
-              }),
-            },
-            {
-              icon: prod?.hotspot ? 'iconWifi' : 'conWifiOff',
-              text: i18n.t(
-                `prodDetail:icon:${prod?.hotspot ? 'wifi' : 'wifiOff'}`,
-              ),
-            },
-          ].map((i) => renderIconWithText(i.icon, i.text))}
-          {renderChargeIcon()}
-        </View>
-      </View>
-    ),
-    [prod, renderChargeIcon, renderIconWithText],
+      );
+    },
+    [descData, noFup, prod, renderChargeIcon, renderIconWithText],
   );
 
   const renderNoticeOption = useCallback(
@@ -717,6 +795,117 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     [renderCautionList, renderNoticeOption],
   );
 
+  const renderFeature = useCallback((feature: string) => {
+    const key = `icon${feature}`;
+    return (
+      <View style={styles.featureWithText} key={key}>
+        {feature === 'M' && <View style={{width: 20}} />}
+        <AppIcon name={key} />
+        <AppText style={styles.featureText}>
+          {i18n.t(`prodDetail:callMethod:box:feature:${feature}`)}
+        </AppText>
+      </View>
+    );
+  }, []);
+
+  const renderUsTotalCountryBox = useCallback(
+    () => (
+      <View style={styles.ustotalDetailBox}>
+        <View style={styles.countryBox}>
+          <AppText style={styles.countryBoxText}>
+            {i18n.t('prodDetail:callMethod:box:detail:ustotal:country')}
+          </AppText>
+        </View>
+        <AppText style={styles.countryBoxNotice}>
+          {i18n.t('prodDetail:callMethod:box:detail:ustotal:notice')}
+        </AppText>
+      </View>
+    ),
+    [],
+  );
+
+  const getDetailList = useCallback((clMtd: string) => {
+    switch (clMtd) {
+      case 'usdaily':
+      case 'mvtotal':
+        return [1];
+      case 'ustotal':
+      case 'ais':
+        return [1, 2];
+      case 'dtac':
+        return [1, 2, 3, 4];
+      default:
+        return [];
+    }
+  }, []);
+
+  const renderCallMethod = useCallback(
+    (clMtd: string) => {
+      const ftrList =
+        descData?.desc?.ftr?.toLowerCase() === 'm' ? ['V', 'M'] : ['V'];
+      const isUS = clMtd.includes('us');
+      const defaultList = ['ustotal', 'mvtotal'].includes(clMtd) ? [1, 2] : [1];
+      const detailList = getDetailList(clMtd);
+
+      return (
+        <View style={styles.callMethod}>
+          <AppText style={styles.callMethodTitle}>
+            {i18n.t('prodDetail:callMethod:title')}
+          </AppText>
+          <View style={styles.callMethodBox}>
+            <View style={styles.callMethodBoxTop}>
+              {ftrList.map((f) => renderFeature(f))}
+            </View>
+            <View style={styles.callMethodContents}>
+              {defaultList.map((i) => (
+                <TextWithCheck
+                  text={i18n.t(
+                    `prodDetail:callMethod:box:contents:default${i}:${
+                      isUS ? 'us' : clMtd
+                    }`,
+                  )}
+                  textStyle={styles.callMethodBoxBold}
+                />
+              ))}
+              {showCallDetail &&
+                detailList.length > 0 &&
+                detailList.map((i) => (
+                  <View key={`detail${clMtd}${i}`}>
+                    <TextWithCheck
+                      text={i18n.t(
+                        `prodDetail:callMethod:box:contents:detail${i}:${clMtd}`,
+                      )}
+                      textStyle={styles.callMethodBoxText}
+                    />
+                    {clMtd === 'ustotal' &&
+                      i === 1 &&
+                      renderUsTotalCountryBox()}
+                  </View>
+                ))}
+            </View>
+            <Pressable
+              style={styles.callMethodBoxBottom}
+              onPress={() => setShowCallDetail((prev) => !prev)}>
+              <AppText style={styles.showDetail}>
+                {i18n.t(showCallDetail ? 'close' : 'pym:detail')}
+              </AppText>
+              <AppIcon
+                name={showCallDetail ? 'iconArrowUp11' : 'iconArrowDown11'}
+              />
+            </Pressable>
+          </View>
+        </View>
+      );
+    },
+    [
+      descData?.desc?.ftr,
+      getDetailList,
+      renderFeature,
+      renderUsTotalCountryBox,
+      showCallDetail,
+    ],
+  );
+
   const renderProdDetail = useCallback(() => {
     const isDaily = prod?.field_daily === 'daily';
     const volume =
@@ -750,6 +939,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         isIOS ? !c.includes('android:') : !c.includes('ios:'),
       ) || [];
 
+    const clMtd = descData?.desc?.clMtd;
     return (
       prod &&
       descData && (
@@ -758,11 +948,22 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           {renderSixIcon(isDaily, volume, volumeUnit)}
           {(noticeList.length > 0 || cautionList.length > 0) &&
             renderNotice(noticeList, cautionList)}
-          <BodyHtml body={descData.body} />
+          {clMtd &&
+            ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(clMtd) &&
+            renderCallMethod(clMtd)}
+          <BodyHtml body={descData.body} onMessage={onMessage} />
         </ScrollView>
       )
     );
-  }, [descData, prod, renderNotice, renderSixIcon, renderTopInfo]);
+  }, [
+    descData,
+    onMessage,
+    prod,
+    renderCallMethod,
+    renderNotice,
+    renderSixIcon,
+    renderTopInfo,
+  ]);
 
   const soldOut = useCallback((payload: ApiResult<any>, message: string) => {
     if (payload.result === api.E_RESOURCE_NOT_FOUND) {
@@ -990,8 +1191,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           />
         )}
       </View>
-      {/* {renderWebView(route.params?.uuid)} */}
-      {renderProdDetail()}
+
+      <View style={{flex: 1}}>{renderProdDetail()}</View>
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       {purchaseButtonTab()}
 
