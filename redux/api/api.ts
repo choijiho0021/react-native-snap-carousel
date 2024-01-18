@@ -76,7 +76,6 @@ const path = {
 
   simCard: 'json/smc/list',
   cart: 'cart',
-  order: 'commerce/order',
   uploadFile: 'file/upload',
   board: 'json/contactboard',
   eventBoard: 'json/event/board',
