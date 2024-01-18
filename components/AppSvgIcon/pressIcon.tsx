@@ -1568,16 +1568,16 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       viewBox="0 0 11 10"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
-      <G clipPath="url(#8lah2dn7ma)">
+      <G clipPath="url(#ndtvnmo3ma)">
         <Path
-          d="M1 5 5.5.5 10 5"
+          d="m1 7 4.5-4.5L10 7"
           stroke="#777"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
       </G>
       <Defs>
-        <ClipPath id="8lah2dn7ma">
+        <ClipPath id="ndtvnmo3ma">
           <Path fill="#fff" transform="translate(.5)" d="M0 0h10v10H0z" />
         </ClipPath>
       </Defs>
