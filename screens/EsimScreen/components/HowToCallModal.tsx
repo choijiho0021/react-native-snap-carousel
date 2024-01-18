@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
 });
 type HowToCallModalProps = {
   visible: boolean;
-  clMtd: string; // ”ais” | ”ustotal” | ”usdaily” | ”dtac"
+  clMtd: string; // ”ustotal” | ”usdaily” | ”ais” | ”dtac"  | "mvtotal"
   onOkClose: () => void;
 };
 
@@ -98,11 +98,6 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
   clMtd,
   onOkClose,
 }) => {
-  const callCntry = useMemo(
-    () => (clMtd?.startsWith('us') ? 'usa' : 'thailand'),
-    [clMtd],
-  );
-
   const renderNumCheck = useCallback(
     () => (
       <>
@@ -156,11 +151,11 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
     () => (
       <>
         <AppText style={styles.subtitle}>
-          {i18n.t(`esim:howToCall:domestic:${callCntry}`)}
+          {i18n.t(`esim:howToCall:domestic:${clMtd}`)}
         </AppText>
         <View style={styles.greyBox}>
           <AppText style={{...appStyles.bold18Text}}>
-            {i18n.t(`esim:howToCall:domestic:${callCntry}:txt`)}
+            {i18n.t(`esim:howToCall:domestic:${clMtd}:txt`)}
           </AppText>
         </View>
         <AppText
@@ -169,11 +164,11 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
             marginLeft: 12,
             color: colors.warmGrey,
           }}>
-          {i18n.t(`esim:howToCall:domestic:${callCntry}:ex`)}
+          {i18n.t(`esim:howToCall:domestic:${clMtd}:ex`)}
         </AppText>
       </>
     ),
-    [callCntry],
+    [clMtd],
   );
 
   const renderStep = useCallback(
@@ -213,7 +208,7 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
     return (
       <>
         <AppText style={styles.subtitle}>
-          {i18n.t(`esim:howToCall:international:${callCntry}`)}
+          {i18n.t(`esim:howToCall:international:${clMtd}`)}
         </AppText>
         <View
           style={{
@@ -263,7 +258,7 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
         </View>
       </>
     );
-  }, [callCntry, clMtd, renderIntGreyBox]);
+  }, [clMtd, renderIntGreyBox]);
 
   const renderEtcInfo = useCallback(
     () => (
@@ -280,25 +275,29 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
             <AppSvgIcon name="checkGreySmall" style={{marginRight: 4}} />
             <View>
               <AppText style={styles.darkblueBold14}>
-                {i18n.t(`esim:howToCall:etcInfo:dataUsage`)}
+                {i18n.t(`esim:howToCall:etcInfo:subtitle1:${clMtd}:title`)}
               </AppText>
-              <AppText style={styles.darkblueBold14}>
-                {i18n.t(`esim:howToCall:etcInfo:dataUsage:${clMtd}`)}
+              <AppText
+                style={{...appStyles.bold14Text, color: colors.warmGrey}}>
+                {i18n.t(`esim:howToCall:etcInfo:subtitle1:${clMtd}:txt`)}
               </AppText>
             </View>
           </View>
 
-          <View style={{flexDirection: 'row', marginTop: 12}}>
-            <AppSvgIcon name="checkGreySmall" style={{marginRight: 4}} />
-            <View>
-              <AppText style={{...styles.darkblueBold14, marginBottom: 4}}>
-                {i18n.t(`esim:howToCall:etcInfo:balance`)}
-              </AppText>
-              <AppText style={styles.darkblueBold14}>
-                {i18n.t(`esim:howToCall:etcInfo:balance:${clMtd}`)}
-              </AppText>
+          {['ais', 'dtac'].includes(clMtd) && (
+            <View style={{flexDirection: 'row', marginTop: 12}}>
+              <AppSvgIcon name="checkGreySmall" style={{marginRight: 4}} />
+              <View>
+                <AppText style={{...styles.darkblueBold14, marginBottom: 4}}>
+                  {i18n.t(`esim:howToCall:etcInfo:subtitle2:${clMtd}:title`)}
+                </AppText>
+                <AppText
+                  style={{...appStyles.bold14Text, color: colors.warmGrey}}>
+                  {i18n.t(`esim:howToCall:etcInfo:subtitle2:${clMtd}:txt`)}
+                </AppText>
+              </View>
             </View>
-          </View>
+          )}
         </View>
       </>
     ),
@@ -337,9 +336,9 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
 
         {rednerDomestic()}
 
-        {clMtd !== 'usdaily' && rednerInternational()}
+        {['ais', 'dtac', 'ustotal'].includes(clMtd) && rednerInternational()}
 
-        {callCntry === 'thailand' && renderEtcInfo()}
+        {['ais', 'dtac', 'mvtotal'].includes(clMtd) && renderEtcInfo()}
       </ScrollView>
     </AppModal>
   );
