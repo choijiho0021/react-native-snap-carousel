@@ -11,6 +11,7 @@ import {PaymentParams} from '@/navigation/navigation';
 import utils from '@/redux/api/utils';
 import AppAlert from '@/components/AppAlert';
 import {hectoWebViewHtml} from './ConfigHecto';
+import VBank from './VBank';
 
 export type PaymentResultCallbackParam = 'next' | 'cancel' | 'check';
 
@@ -147,6 +148,12 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
       injected.current = true;
     }
   }, []);
+
+  console.log('@@@ info', info);
+
+  if (info.pay_method === 'vbank') {
+    return <VBank info={info} />;
+  }
 
   return (
     <>
