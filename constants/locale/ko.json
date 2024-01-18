@@ -1095,11 +1095,11 @@
   "prodDetail:callMethod:box:contents:detail1:usdaily": "국제 통화·문자 발신 미지원 상품입니다.",
   "prodDetail:callMethod:box:contents:detail1:ustotal": "국제 통화 지원 국가",
   "prodDetail:callMethod:box:contents:detail2:ustotal": "국제 문자 발신 미지원 상품입니다.",
-  "prodDetail:callMethod:box:contents:detail1:ais": "태국 내 1분 = 1바트 / 국제 1분 = 4바트",
+  "prodDetail:callMethod:box:contents:detail1:ais": "태국 내 1분 = 1바트\n국제 1분 = 4바트",
   "prodDetail:callMethod:box:contents:detail2:ais": "문자 미지원 상품입니다.",
   "prodDetail:callMethod:box:contents:detail1:dtac": "한국, 인도, 베트남으로 30분간 무료 통화 발신 가능",
   "prodDetail:callMethod:box:contents:detail2:dtac": "태국 내 DTAC 번호끼리 무제한 통화 가능",
-  "prodDetail:callMethod:box:contents:detail3:dtac": "태국 내 타통신사 1분 = 1바트 / 국제 1분 = 4바트",
+  "prodDetail:callMethod:box:contents:detail3:dtac": "태국 내 타통신사 1분 = 1바트\n국제 1분 = 4바트",
   "prodDetail:callMethod:box:contents:detail4:dtac": "문자 미지원 상품입니다.",
   "prodDetail:callMethod:box:contents:detail1:mvtotal": "국제 통화·문자 발신 미지원 상품입니다.",
 
