@@ -124,8 +124,13 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
       if (links?.charge === 'N') {
         setAddOnDisReasonText(links?.msg?.kr);
         setAddonEnable(false);
-      } else if (result === 0 || result === api.E_INVALID_STATUS) {
+      } else if (
+        result === 0 ||
+        result === api.E_INVALID_STATUS ||
+        result === EXCEED_CHARGE_QUADCELL_RSP
+      ) {
         let chargedItem;
+
         if (mainSubs.partner?.startsWith('quadcell')) chargedItem = mainSubs;
         else if (params?.chargedSubs) {
           chargedItem = params?.chargedSubs?.find(
