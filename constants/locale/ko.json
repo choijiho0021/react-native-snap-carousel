@@ -1531,6 +1531,7 @@
   "daily:filter:1024": "1GB",
   "daily:filter:2048": "2GB",
   "daily:filter:3072": "3GB",
+  "daily:filter:1024000": "1TB",
 
   "network:filter:fiveG": "5G속도",
   "network:filter:else": "LTE/3G"
