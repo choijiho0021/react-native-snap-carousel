@@ -126,12 +126,16 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         setAddonEnable(false);
       } else if (result === 0 || result === api.E_INVALID_STATUS) {
         // 최초 충전의 경우는 chargedSubs가 없어서 mainSubs로
-        const chargedItem = params?.chargedSubs
-          ? params?.chargedSubs?.find((r) => r.nid === links.refSubs.id)
-          : undefined;
+        const chargedItem =
+          (params?.chargedSubs
+            ? params?.chargedSubs?.find((r) => r.nid === links.refSubs.id)
+            : undefined) ||
+          (mainSubs.nid === links?.refSubs.id ? mainSubs : undefined);
 
         if (!chargedItem) {
           setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:`));
+          setAddonEnable(false);
+          setAddonLoading(false);
           return;
         }
 
