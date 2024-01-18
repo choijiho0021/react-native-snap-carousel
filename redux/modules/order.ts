@@ -38,6 +38,30 @@ const defaultReturn = (resp) => {
   return resp;
 };
 
+const subsReturn = (resp) => {
+  if (
+    resp.objects &&
+    resp.objects.length > 0 &&
+    typeof resp.objects[0].purchaseDate === 'string'
+  ) {
+    return {
+      ...resp,
+      objects: resp.objects.map((elm) => ({
+        ...elm,
+        purchaseDate: moment(elm.purchaseDate),
+        expireDate: moment(elm.expireDate),
+        provDate: moment(elm.provDate),
+        startDate: moment(elm.startDate),
+        lastExpireDate: moment(elm.lastExpireDate),
+        lastProvDate: moment(elm.lastProvDate),
+        activationDate: moment(elm?.activationDate),
+      })),
+    };
+  }
+
+  return resp;
+};
+
 const getOrderById = createAsyncThunk(
   'order/getOrderById',
   API.Order.getOrderById,
@@ -82,7 +106,7 @@ const getSubs = createAsyncThunk(
       `cache.subs.${param?.iccid}`,
       API.Subscription.getSubscription,
     )(param, {
-      fulfillWithValue: defaultReturn,
+      fulfillWithValue: subsReturn,
     });
   },
 );
@@ -168,8 +192,20 @@ const getOrders = createAsyncThunk(
 
 const changeDraft = createAsyncThunk(
   'order/draftOrder',
-  ({orderId, token}: {orderId: number; token?: string}) => {
-    return API.Order.draftOrder({orderId, token});
+  ({
+    orderId,
+    token,
+    eid,
+    imei2,
+    activation_date,
+  }: {
+    orderId: number;
+    token?: string;
+    eid?: string;
+    imei2?: string;
+    activation_date?: string;
+  }) => {
+    return API.Order.draftOrder({orderId, token, eid, imei2, activation_date});
   },
 );
 
@@ -291,6 +327,7 @@ const slice = createSlice({
 
     builder.addCase(getOrders.fulfilled, (state, action) => {
       const {objects, result} = action.payload;
+      const {orderId, page} = action.meta.arg;
 
       if (action.meta.arg?.state === 'validation') {
         if (objects) {
@@ -306,9 +343,9 @@ const slice = createSlice({
         }
       } else if (result === 0 && objects.length > 0) {
         // 기존에 있던 order에 새로운 order로 갱신
-        const orders = ImmutableMap(state.orders).merge(
-          objects.map((o) => [o.orderId, o]),
-        );
+        const orders = ImmutableMap(
+          page === 0 ? undefined : state.orders,
+        ).merge(objects.map((o) => [o.orderId, o]));
 
         const orderCache = orders
           .sort((a, b) => utils.cmpMomentDesc(a.orderDate, b.orderDate))
@@ -324,7 +361,6 @@ const slice = createSlice({
         state.orders = orders;
         state.orderList = getOrderList(orders);
 
-        const {orderId, page} = action.meta.arg;
         if (!orderId && page !== undefined) state.page = page;
       }
     });

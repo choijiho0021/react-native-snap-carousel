@@ -13,7 +13,7 @@ import {RkbPriceInfo} from '../modules/product';
 import {colors} from '@/constants/Colors';
 import Env from '@/environment';
 import {parseJson} from '@/utils/utils';
-import {RESULT_OVER_LIMIT} from '@/screens/ChargeTypeScreen';
+import {EXCEED_CHARGE_QUADCELL_RSP} from '@/screens/ChargeTypeScreen';
 
 const {specialCategories} = Env.get();
 
@@ -35,6 +35,8 @@ const category = {
   multi: '67',
 };
 
+type PromoFlag = 'sizeup' | 'doubleSizeup' | 'tripleSizeup' | 'hot' | 'fiveG';
+
 const flagColor = {
   hot: {
     backgroundColor: colors.veryLightPink,
@@ -52,6 +54,10 @@ const flagColor = {
     backgroundColor: colors.lightYellow,
     fontColor: colors.yellowSecond,
   },
+  fiveG: {
+    // backgroundColor: colors.purplyBlue,
+    fontColor: colors.purplyBlue,
+  },
 };
 
 export const getPromoFlagColor = (key: string) => {
@@ -61,6 +67,34 @@ export const getPromoFlagColor = (key: string) => {
       fontColor: colors.tomato,
     }
   );
+};
+
+export const promoFlagSort = (arr: string[]) => {
+  const promoFlags: PromoFlag[] = [];
+
+  arr.forEach((elm) => {
+    if (
+      ['sizeup', 'doubleSizeup', 'tripleSizeup', 'hot', 'fiveG'].includes(elm)
+    )
+      promoFlags.push(elm as PromoFlag);
+  });
+
+  // 정렬 규칙을 정의하는 비교 함수
+  const customComparator = (a: PromoFlag, b: PromoFlag): number => {
+    const order = {
+      sizeup: 1,
+      doubleSizeup: 2,
+      tripleSizeup: 3,
+      hot: 4,
+      fiveG: 5,
+    };
+
+    const orderA = order[a] ?? 0;
+
+    return orderA - order[b];
+  };
+
+  return promoFlags.sort(customComparator);
 };
 
 type DrupalProduct = {
@@ -80,6 +114,8 @@ type DrupalProduct = {
   field_weight: string;
   field_desc: string;
   sku: string;
+  field_network: string;
+  field_fup_speed?: string;
 };
 
 export type CurrencyCode = 'KRW' | 'USD';
@@ -87,6 +123,16 @@ export type Currency = {
   value: number;
   currency: CurrencyCode;
 };
+export type ProdDesc = {
+  desc1?: string;
+  desc2?: string;
+  apn?: string;
+  ftr?: string;
+  clMtd?: string;
+  caution?: string;
+  email_notice?: string;
+};
+
 export type RkbProduct = {
   key: string;
   uuid: string;
@@ -106,13 +152,15 @@ export type RkbProduct = {
   body: any;
   hotspot: boolean;
   weight: number;
-  desc: {desc1: string; desc2: string; apn: string};
+  desc: ProdDesc;
   // additional
   ccodeStr?: string;
   search?: string;
   pricePerDay?: Currency;
   cntry?: Set<string>;
   imageUrl?: string;
+  network?: string;
+  fup?: string;
 };
 
 const toPurchaseItem = (prod?: RkbProduct) => {
@@ -123,7 +171,7 @@ const toPurchaseAddOnItem = (subsId: string, prod?: RkbAddOnProd) => {
   return prod ? createFromAddOnProduct(prod, subsId) : undefined;
 };
 
-const toProdDesc = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
+const toProdDesc = (data: DrupalProduct[]): ApiResult<ProdDesc> => {
   if (_.isArray(data) && data.length > 0) {
     return api.success(parseJson(data[0].field_desc.replace(/&quot;/g, '"')));
   }
@@ -137,7 +185,7 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
   if (_.isArray(data) && data.length > 0) {
     return api.success(
       data
-        .filter((elm) => !testProductReg.test(elm.sku))
+        // .filter((elm) => !testProductReg.test(elm.sku))
         .map((item, idx) => ({
           key: item.uuid,
           uuid: item.uuid,
@@ -163,6 +211,8 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
           desc: item.field_desc
             ? parseJson(item.field_desc.replace(/&quot;/g, '"'))
             : {},
+          network: item.field_network,
+          fup: item.field_fup_speed,
         })),
     );
   }
@@ -293,8 +343,11 @@ const toAddOnProd = (data: DrupalAddonProd[]): ApiResult<RkbAddOnProd> => {
   if (data.result === 0) {
     return api.success(data?.objects, data?.info);
   }
-  if (data.result === RESULT_OVER_LIMIT) {
-    return api.success(data?.objects, data?.info, RESULT_OVER_LIMIT);
+  if (
+    data.result === api.E_INVALID_STATUS ||
+    data.result === EXCEED_CHARGE_QUADCELL_RSP
+  ) {
+    return api.success(data?.objects, data?.info, data?.result);
   }
   return api.failure(api.E_NOT_FOUND);
 };
@@ -316,6 +369,12 @@ const getProductByLocalOp = (partnerId: string) => {
   return api.callHttpGet(
     api.httpUrl(`${api.path.prodByLocalOp}/${partnerId}?_format=hal_json`),
     toProduct,
+  );
+};
+
+const getProductDescDetail = (prodUuid: string) => {
+  return api.callHttpGet(
+    api.httpUrl(`${api.path.prodDescDetail}/${prodUuid}?_format=hal_json`),
   );
 };
 
@@ -360,15 +419,9 @@ const getProdCountry = () => {
   );
 };
 
-const getAddOnProduct = (
-  subsId: string,
-  remainDays: string,
-  status: string,
-) => {
+const getAddOnProduct = (subsId: string) => {
   return api.callHttpGet<RkbAddOnProd>(
-    api.httpUrl(
-      `${api.path.rokApi.rokebi.prodAddOn}/${subsId}?_format=json&days=${remainDays}&status=${status}`,
-    ),
+    api.httpUrl(`${api.path.rokApi.rokebi.prodAddOn}/${subsId}?_format=json`),
     toAddOnProd,
   );
 };
@@ -400,6 +453,7 @@ export default {
   getTitle,
   getProduct,
   getProductByLocalOp,
+  getProductDescDetail,
   getProductDesc,
   getProductBySku,
   getLocalOp,

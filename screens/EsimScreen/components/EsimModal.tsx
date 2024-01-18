@@ -84,6 +84,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
     const statusCd =
       _.isEmpty(quota) && !_.isEmpty(used) ? 'U' : dataStatus?.statusCd;
     // usage
+
     return (
       dataStatus &&
       dataUsage && (

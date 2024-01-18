@@ -9,7 +9,7 @@ import {RkbInfo} from '@/redux/api/pageApi';
 import {BoardMsgStatus} from '@/redux/api/boardApi';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
-import {RkbAddOnProd, RkbProduct} from '@/redux/api/productApi';
+import {Currency, RkbAddOnProd, RkbProduct} from '@/redux/api/productApi';
 import {RkbReceipt} from '@/screens/ReceiptScreen';
 import {GuideOption} from '@/screens/UserGuideScreen/GuideHomeScreen';
 import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
@@ -76,7 +76,7 @@ type PurchaseDetailParams = {orderId: string};
 
 export type HomeStackParamList = {
   Home: undefined;
-  Tutorial: {stack: string; screen: string};
+  Tutorial: {stack: string; screen: string; naviParams: object};
   StoreSearch: undefined;
   Store: undefined;
   Cart: {
@@ -90,6 +90,10 @@ export type HomeStackParamList = {
     localOpDetails?: string;
     partnerId?: string;
     desc?: Record<string, string>;
+    price?: Currency;
+    listPrice?: Currency;
+    partner?: string;
+    prod?: RkbProduct;
   };
   ProductDetailOp: {
     title: string;
@@ -144,6 +148,7 @@ export type HomeStackParamList = {
   GiftGuide: undefined;
 
   Draft: {orderId: number};
+  DraftUs: {orderId: number};
   DraftResult: {isSuccess: boolean; prods: ProdDesc[]};
   CancelOrder: {orderId: number};
   CancelResult: {isSuccess: boolean; orderId: number; prods: ProdDesc[]};
@@ -184,7 +189,7 @@ export type HomeStackParamList = {
     type: 'addOn' | 'extension';
   };
   AddOn: {
-    mainSubs: RkbSubscription;
+    chargeableItem: RkbSubscription;
     status?: string;
     expireTime?: Moment;
     addonProds?: RkbAddOnProd[];

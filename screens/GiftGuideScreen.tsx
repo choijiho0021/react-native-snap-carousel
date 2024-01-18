@@ -27,6 +27,7 @@ import AppTextJoin from '@/components/AppTextJoin';
 import {API} from '@/redux/api';
 import AppStyledText from '@/components/AppStyledText';
 import ScreenHeader from '@/components/ScreenHeader';
+import LinearGradient from 'react-native-linear-gradient';
 
 const {width} = Dimensions.get('window');
 
@@ -50,6 +51,8 @@ const styles = StyleSheet.create({
     width: 57,
     height: 25,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.white,
     backgroundColor: colors.black,
   },
   text: {
@@ -88,7 +91,7 @@ const Step0: React.FC<PropsWithChildren<Step0Props>> = ({
     <AppIcon
       name={`giftGuideStep${step}`}
       style={{marginTop: 22}}
-      size={[width, (width * 404) / 375]}
+      size={[width, (width * 444) / 375]}
     />
   </View>
 );
@@ -116,7 +119,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
         textStyle={styles.text}
         data={formatText('b', {
           text: i18n.t(key),
-          viewStyle: appStyles.underline,
+          textStyle: {...appStyles.bold16Text, color: colors.clearBlue},
         })}
       />
     ),
@@ -176,18 +179,27 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
             {renderText('gift:guide2-3-2')}
           </Step>
         </View>
-        <View style={{backgroundColor: colors.whiteTwo, paddingHorizontal: 20}}>
+
+        <LinearGradient
+          start={{x: 0, y: 0}}
+          end={{x: 0, y: 1}}
+          colors={['#112D6E', '#02050C']}
+          style={{paddingHorizontal: 20}}>
           <View style={styles.tip}>
             <AppText
               style={[
                 appStyles.bold16Text,
-                {color: 'white', flex: 1, textAlign: 'center'},
+                {color: 'white', flex: 1, textAlign: 'center', opacity: 0.7},
               ]}>
               Tip.
             </AppText>
           </View>
           <AppStyledText
-            textStyle={{...appStyles.normal20Text, marginTop: 16}}
+            textStyle={{
+              ...appStyles.normal20Text,
+              marginTop: 16,
+              color: colors.white,
+            }}
             text={i18n.t('gift:tip-1')}
             format={{b: appStyles.extraBold20, n: appStyles.normal20Text}}
           />
@@ -195,14 +207,14 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
             textStyle={{
               ...appStyles.normal24,
               lineHeight: 45,
-              color: colors.clearBlue,
+              color: colors.white,
               marginTop: 12,
               textAlignVertical: 'bottom',
             }}
             text={i18n.t('gift:tip-3')}
             format={{
-              cash: {...appStyles.robotoBold38, color: colors.clearBlue},
-              b: {...appStyles.semiBold24Text, color: colors.clearBlue},
+              cash: {...appStyles.robotoBold38, color: colors.white},
+              b: {...appStyles.semiBold24Text, color: colors.white},
               n: {fontWeight: 'normal'},
             }}
             data={{cash: gift}}
@@ -218,21 +230,18 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
               marginTop: 0,
             }}>
             <AppSvgIcon name="pin" style={{marginLeft: 8, marginRight: 6}} />
-            <AppText style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
+            <AppText style={[appStyles.normal14Text, {color: colors.white}]}>
               {i18n.t('gift:tip-5')}
             </AppText>
           </ImageBackground>
-          <AppText style={[appStyles.normal13, {marginTop: 16}]}>
-            {i18n.t('gift:tip-6')}
-          </AppText>
           <AppButton
             title={i18n.t('gift:btn')}
-            titleStyle={appStyles.medium18}
+            titleStyle={[appStyles.bold18Text, {color: colors.clearBlue}]}
             style={{
-              marginTop: 32,
-              marginBottom: 40,
-              backgroundColor: colors.clearBlue,
+              marginVertical: 32,
+              backgroundColor: colors.white,
               height: 62,
+              borderRadius: 1000,
             }}
             type="primary"
             onPress={() => {
@@ -240,15 +249,44 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
               navigation.navigate('HomeStack', {screen: 'Home'});
             }}
           />
+          <View style={{flexDirection: 'row'}}>
+            <AppText style={{color: colors.white}}>
+              {i18n.t('middleDot')}
+            </AppText>
+            <AppText
+              style={[appStyles.normal13, {color: colors.white, opacity: 0.7}]}>
+              {i18n.t('gift:tip-6')}
+            </AppText>
+          </View>
+          <View style={{flexDirection: 'row'}}>
+            <AppText style={{color: colors.white}}>
+              {i18n.t('middleDot')}
+            </AppText>
+            <AppText
+              style={[
+                appStyles.normal13,
+                {marginBottom: 40, color: colors.white, opacity: 0.7},
+              ]}>
+              {i18n.t('gift:tip-7')}
+            </AppText>
+          </View>
+          {/* <AppText
+            style={[
+              appStyles.normal13,
+              {marginBottom: 40, color: colors.white, opacity: 0.7},
+            ]}>
+            {i18n.t('gift:tip-6')}
+          </AppText> */}
+
           <AppIcon
-            name="giftCoin"
+            name="gift"
             style={{
               position: 'absolute',
               top: 34,
               right: 20,
             }}
           />
-        </View>
+        </LinearGradient>
       </ScrollView>
     </SafeAreaView>
   );

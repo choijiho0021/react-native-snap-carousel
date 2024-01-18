@@ -224,7 +224,6 @@ const Esim: React.FC<EsimProps> = ({
   const [appUpdate, setAppUpdate] = useState('');
   const [appUpdateVisible, setAppUpdateVisible] = useState<boolean>();
   const [popUpList, setPopUpList] = useState<RkbPromotion[]>();
-  const isTop = useRef(true);
   const initialized = useRef(false);
   const initNoti = useRef(false);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
@@ -287,10 +286,9 @@ const Esim: React.FC<EsimProps> = ({
   }, [animatedValue, dimensions.width, promotion]);
 
   const runAnimation = useCallback(
-    (v: boolean) => {
-      isTop.current = v;
+    (isTop: boolean) => {
       Animated.timing(animatedValue, {
-        toValue: isTop.current ? bannerHeight.current : 0,
+        toValue: isTop ? bannerHeight.current : 0,
         duration: 500,
         useNativeDriver: false,
       }).start();
@@ -455,8 +453,8 @@ const Esim: React.FC<EsimProps> = ({
         width={dimensions.width}
         onScrollEndDrag={({nativeEvent}) => {
           const {y} = nativeEvent.contentOffset;
-          if (isTop.current && y > bannerHeight.current) runAnimation(false);
-          else if (!isTop.current && y <= 0) runAnimation(true);
+          if (y > 0) runAnimation(false);
+          else if (y <= 0) runAnimation(true);
         }}
       />
     ),
@@ -891,6 +889,7 @@ const Esim: React.FC<EsimProps> = ({
         }
       />
       <StatusBar barStyle="dark-content" />
+
       {renderCarousel()}
 
       {renderTabHeader()}

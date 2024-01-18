@@ -685,7 +685,10 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             type="primary"
             title={i18n.t('his:draftRequest')}
             onPress={() => {
-              navigation.navigate('Draft', {orderId: order?.orderId});
+              navigation.navigate(
+                order.partner?.toLowerCase() === 'ht' ? 'DraftUs' : 'Draft',
+                {orderId: order?.orderId},
+              );
             }}
           />
         )}
