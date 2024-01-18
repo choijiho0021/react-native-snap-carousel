@@ -1290,6 +1290,10 @@
   "userGuide:noticeBox:local:body2": "현지 도착 후 여행용 회선을 켜고, ‘메인’과 ‘여행용’ <b>모두 데이터 로밍 OFF</b>인지 확인해주세요.",
   "userGuide:noticeBox:local:body3": "‘메인'과 ‘여행용’ <b>모두 데이터 로밍 OFF</b> 해주세요.",
   "userGuide:noticeBox:local:body4": "<b>데이터 로밍 OFF</b> 해주세요.",
+
+  "userGuide:noticeBox:us:title": "",
+  "userGuide:noticeBox:us:body1": "<b>해당 국가 도착 시 </b>설정>연결>해외 로밍에서 <b>데이터 로밍을 ON</b> 해주세요.",
+
   "userGuide:tail:notice": "현지 공항 도착 후 설정 방법이 궁금하다면!",
   "userGuide:tail:contact:title": "등록 시 어려운 점이 있으신가요?",
   "userGuide:tail:contact:title:checkSetting": "eSIM 설정에 어려운 점이 있나요?",
@@ -1299,8 +1303,15 @@
   "userGuide:checkInfo1": "반드시 <b>네트워크가 연결된 곳</b>에서 eSIM을 등록해주세요.",
   "userGuide:checkInfo2": "상품 등록 후에는 <b>기기변경이 불가</b>해요.\n여행가서 사용할 단말에 상품을 등록해주세요!",
   "userGuide:checkInfo3": "등록하신 <b>이메일</b> 또는 하단 탭의 <b>구매 eSIM 목록</b>을 통해 구매하신 eSIM 정보를 확인하실 수 있어요.",
+
+  "userGuide:us:checkInfo1": "발권 시 상품 사용 시작일과 사용할 단말 정보를 필수로 입력해야 하는 상품입니다. 정보를 입력하지 않은 경우, 개통이 어려우므로 <b>반드시 출국 전 발권 완료</b>해주세요.",
+  "userGuide:us:checkInfo2": "반드시 <b>네트워크가 연결된 환경에서 eSIM을 등록</b>해주세요. <b>미국 현지 도착 후 단말을 5분 이상 껐다가 켜고, 와이파이를 연결</b>하시는 걸 추천드려요!",
+  "userGuide:us:checkInfo3": "<b>발권 시 정보 입력한 단말에서만</b> 상품을 사용하실 수 있습니다.",
+  "userGuide:us:checkInfo4": "선택하신 시작일 <b>00시~12시(EST) 사이</b>에 eSIM이 순차적으로 <b>자동 개통</b>됩니다.",
+
   "userGuide:slideLeft": "화면을 밀어주세요",
   "userGuide:ios:esimReg:korea:stepTitle0": "<b>한국 등록</b> 가이드",
+  "userGuide:ios:esimReg:us:stepTitle0": "<b>미국 (로컬망) 현지 등록</b> 가이드",
   "userGuide:ios:esimReg:local:stepTitle0": "<b>현지 등록</b> 가이드",
   "userGuide:ios:checkSetting:korea:stepTitle0": "고객님의 기존 유심 요금제를\n<b>한국</b>에서 사용하기 위해서는\n<b>설정이 잘 되어있는지 확인</b>해야해요.\n\n\n다음 가이드를 확인해보세요!",
   "userGuide:ios:checkSetting:local:stepTitle0": "<b>여행지에 도착</b>하셨군요!\n\n\n설레는 여행을 시작하기 전,\n<b>eSIM 설정을 확인</b>해보세요.",
@@ -1308,6 +1319,29 @@
   "userGuide:stepsTitle0": "<b>로밍도깨비 eSIM</b>\n사용가이드",
   "userGuide:stepsTitle0:galaxy": "갤럭시 ver.",
   "userGuide:stepsTitle0:pixel": "픽셀 ver.",
+  "userGuide:stepsTitle1:us:ios": "<b>설정 > 셀룰러 > eSIM 추가</b>\n 버튼을 눌러주세요.\n\n\n",
+  "userGuide:stepsTitle2:us:ios": "셀룰러 설정을 완료해주세요.\n",
+  "userGuide:stepsTitle3:us:ios": "<b>셀룰러 요금제 레이블</b>을\n지정해주세요.",
+  "userGuide:stepsTitle4:us:ios": "기본 회선을 <b>‘메인’</b>또는 <b>‘여행용’</b>으로\n 설정해주세요.",
+  "userGuide:stepsTitle5:us:ios": "iMessage 및 FaceTime을\n<b>‘메인’</b>으로 설정해주세요.",
+  "userGuide:stepsTitle6:us:ios": "셀룰러 데이터를\n<b>‘여행용’</b>으로 설정해주세요.",
+  "userGuide:stepsTitle7:us:ios": "<b>설정 > 셀룰러</b> 화면에서 상품이\n정상적으로 설치되었는지 확인해주세요.",
+  "userGuide:stepsTitle8:us:ios": "<b>‘메인’</b>의 데이터 로밍은 <b>OFF</b>해주세요.",
+  "userGuide:stepsTitle9:us:ios": "<b>eSIM 활성화가 완료</b>되면\n<b>통신사 안내 문자</b>가 전송됩니다.\n",
+
+  "userGuide:us:tipPage4_1": "셀룰러 요금제 레이블을 설정하면, 각 요금제를 구별하기 쉬워요.",
+  "userGuide:us:tipPage4_2": "<b>가이드 상에서는 편의를 위해 새로 추가한 로밍도깨비 eSIM을 ‘여행용’으로 설정했어요.</b>",
+
+  "userGuide:us:tipPage5_1": "<b>‘메인’</b>으로 설정 시 <b>기존 유심으로 통화·문자</b> 사용됩니다.",
+  "userGuide:us:tipPage5_2": "<b>‘여행용’</b>으로 설정 시 <b>추가한 로밍도깨비 eSIM으로 통화·문자</b> 사용됩니다.",
+  "userGuide:us:tipPage5_3": "기기에 따라 본 화면은 생략될 수 있습니다.",
+
+  "userGuide:us:tipPage6_1": "셀룰러 데이터 전환을 허용하게 되는 경우, <b>자동 데이터 전환으로 기존 유심에서 로밍비가 발생할 수 있습니다.</b> <r>반드시 OFF로 설정해주세요.</r>",
+  "userGuide:us:tipPage6_2": "기기에 따라 본 화면은 생략될 수 있습니다.",
+
+  "userGuide:us:ios:caution:title": "※미국(로컬) 무제한 상품의 경우!",
+  "userGuide:us:ios:caution:body": "<b>캐나다·멕시코</b> 방문 예정이라면, 해당국가\n<b>도착 시 ‘여행용’의 데이터 로밍을 ON</b>해주세요.",
+
   "userGuide:stepsTitle1:ios": "<b>설정 > 셀룰러 > eSIM 추가</b>\n> <b>QR 코드 사용</b> 버튼을 눌러주세요.",
   "userGuide:stepsTitle1:ios:checkSetting": "설정 > 셀룰러 > ‘여행용’ 선택 후\n<b>이 회선 켜기를 OFF</b>로 바꿔주세요.",
   "userGuide:stepsTitle2:ios": "<b>QR코드</b> 혹은 <b>세부사항 직접 입력</b>을 \n이용하여 요금제를 추가해주세요.",
@@ -1331,6 +1365,14 @@
   "userGuide:stepsTitle11:ios": "<b>한국</b>에서는 <b>여행용 회선을 꺼주세요.</b>",
   "userGuide:stepsTitle11:ios:local": "<b>‘여행용’</b>의 데이터 로밍은 <b>ON</b>,\n<b>‘메인’</b>의 데이터 로밍은 <b>OFF</b>해주세요.",
   "userGuide:stepsTitle12:ios": "한국에서의\n<b>eSIM 상품 등록이</b>\n<b>완료되었습니다!</b>",
+
+  "userGuide:stepsTitle1:us:android": "요금제 추가를 완료해주세요.\n\n",
+  "userGuide:stepsTitle2:us:android": "요금제 추가를 완료해주세요.\n\n",
+  "userGuide:stepsTitle3:us:android": "<b>설정 > 연결 > SIM 관리자</b>\n화면에서 새로 추가된\n<b>eSIM 1을 확인</b>해주세요.",
+  "userGuide:stepsTitle4:us:android": "<b>모바일 데이터</b>를 <b>eSIM 1</b>으로\n변경해주세요.\n",
+  "userGuide:stepsTitle5:us:android": "<b>eSIM 활성화가 완료</b>되면\n<b>통신사 안내 문자</b>가 전송됩니다.\n",
+  "userGuide:stepsTitle6:us:android": "<b>미국(로컬) 무제한 상품</b>구입 후\n<b>캐나다·멕시코 방문 예정</b>이신가요?\n",
+
   "userGuide::checkSetting:done": "한국에서의\n<b>eSIM 상품 설정이</b>\n<b>완료되었습니다!</b>",
   "userGuide:stepsTitle12:ios:local": "<b>eSIM 상품 등록이</b>\n<b>완료되었습니다!</b>\n로밍도깨비와 즐거운 여행 되세요.",
   "userGuide:stepsTitle1:ios15": "<b>설정 > 셀룰러 > 셀룰러 요금제 추가</b>\n버튼을 눌러주세요.",

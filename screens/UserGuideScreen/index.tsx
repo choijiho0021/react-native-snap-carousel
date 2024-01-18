@@ -36,6 +36,7 @@ import {ContactListItem} from '../ContactScreen';
 import ChatTalk from '@/components/ChatTalk';
 
 const {isIOS} = Env.get();
+// const isIOS = false;
 
 const styles = StyleSheet.create({
   container: {
@@ -186,6 +187,7 @@ const UserGuideScreen = () => {
     () => route?.params || {},
     [route?.params],
   );
+
   const contactData = useMemo(
     () => [
       {
@@ -261,7 +263,7 @@ const UserGuideScreen = () => {
                 {i18n.t('userGuide:checkInfo')}
               </AppText>
               <View style={{marginTop: 8}}>
-                {[1, 2, 3].map((k) => (
+                {(region === 'us' ? [1, 2, 3, 4] : [1, 2, 3]).map((k) => (
                   <View key={k} style={{flexDirection: 'row'}}>
                     <AppText
                       style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
@@ -270,7 +272,11 @@ const UserGuideScreen = () => {
                     <View style={{flex: 1}}>
                       <AppStyledText
                         textStyle={styles.checkInfoText}
-                        text={i18n.t(`userGuide:checkInfo${k}`)}
+                        text={i18n.t(
+                          `userGuide${
+                            region === 'us' ? ':us' : ''
+                          }:checkInfo${k}`,
+                        )}
                         format={{
                           b: [appStyles.bold14Text, {color: colors.clearBlue}],
                         }}
@@ -372,9 +378,10 @@ const UserGuideScreen = () => {
               ]}>
               <AppText style={styles.stepText}>
                 {/* eslint-disable-next-line react-native/no-raw-text */}
-                {`${data.stepPreText ? i18n.t(data.stepPreText) : 'Step.'}${
-                  data.stepPreText ? '_' : ' '
-                }${data.step}${isCheckLocal ? i18n.t('localNet') : ''}`}
+                {data.stepTitle ||
+                  `${data.stepPreText ? i18n.t(data.stepPreText) : 'Step.'}${
+                    data.stepPreText ? '_' : ' '
+                  }${data.step}${isCheckLocal ? i18n.t('localNet') : ''}`}
               </AppText>
             </View>
             {isCheckLocal && data.localTitle ? data.localTitle : data.title}
