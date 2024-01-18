@@ -16,6 +16,7 @@ import {GuideRegion} from './GuideSelectRegionScreen';
 import AppSvgIcon from '@/components/AppSvgIcon';
 
 const {isIOS} = Env.get();
+// const isIOS = false;
 
 const dir = '../../assets/images/esim/userGuide';
 
@@ -181,6 +182,7 @@ const renderTipText = (
     textStyle={style}
     format={{
       b: boldRed ? styles.tipBoldRedText : styles.tipBoldText,
+      r: styles.tipBoldRedText,
       s: {...styles.tipBoldText, color: colors.tomato},
     }}
   />
@@ -251,7 +253,7 @@ const renderNoticeBox = ({
   body,
   isShow,
 }: {
-  title: string;
+  title?: string;
   body: string[];
   isShow: boolean;
 }) => {
@@ -269,15 +271,17 @@ const renderNoticeBox = ({
           paddingHorizontal: 20,
           paddingVertical: 10,
         }}>
-        <AppStyledText
-          text={i18n.t(title)}
-          textStyle={{
-            ...appStyles.bold14Text,
-            color: colors.clearBlue,
-            lineHeight: 18,
-          }}
-          format={{b: {fontWeight: '600'}}}
-        />
+        {title && (
+          <AppStyledText
+            text={i18n.t(title)}
+            textStyle={{
+              ...appStyles.bold14Text,
+              color: colors.clearBlue,
+              lineHeight: 18,
+            }}
+            format={{b: {fontWeight: '600'}}}
+          />
+        )}
         {body.length > 1
           ? body.map((b) => (
               <View style={{flexDirection: 'row'}}>
@@ -338,6 +342,21 @@ export const getImageList = (
           page11: [require(`${dir}/ios/esimReg/korea/img_10.png`)],
           pageLast: [require(`${dir}/iconRokebiLast.png`)],
         };
+      } else if (region === 'us') {
+        imageList = {
+          page1: [require(`${dir}/iconUsSmall.png`)],
+          page2: [require(`${dir}/ios/esimReg/us/img_1.png`)],
+          page3: [require(`${dir}/ios/esimReg/us/img_2.png`)],
+          page4: [require(`${dir}/ios/esimReg/us/img_3.png`)],
+          page5: [require(`${dir}/ios/esimReg/us/img_4.png`)],
+          page6: [require(`${dir}/ios/esimReg/us/img_5.png`)],
+          page7: [require(`${dir}/ios/esimReg/us/img_6.png`)],
+          page8: [require(`${dir}/ios/esimReg/us/img_7.png`)],
+          page9: [require(`${dir}/ios/esimReg/us/img_8.png`)],
+          page10: [require(`${dir}/ios/esimReg/us/img_9.png`)],
+          page11: [require(`${dir}/ios/esimReg/local/img_10.png`)],
+          pageLast: [require(`${dir}/iconRokebiLast.png`)],
+        };
       } else {
         imageList = {
           page1: [require(`${dir}/iconLocalSmall.png`)],
@@ -354,7 +373,9 @@ export const getImageList = (
           pageLast: [require(`${dir}/iconRokebiLast.png`)],
         };
       }
-    } else if (region === 'korea') {
+    }
+    // 상품 설정
+    else if (region === 'korea') {
       imageList = {
         page1: [require(`${dir}/iconKoreaCheck.png`)],
         page2: [require(`${dir}/ios/checkSetting/img_1.png`)],
@@ -378,7 +399,9 @@ export const getImageList = (
         pageLast: [require(`${dir}/iconRokebiLast.png`)],
       };
     }
-  } else if (guideOption === 'esimReg') {
+  }
+  // Android 일 때
+  else if (guideOption === 'esimReg') {
     if (region === 'korea') {
       imageList = {
         page1: [require(`${dir}/iconKoreaSmall.png`)],
@@ -391,6 +414,19 @@ export const getImageList = (
         page8: [require(`${dir}/android/esimReg/img_7.png`)],
         page9: [require(`${dir}/android/esimReg/img_8.png`)],
         page10: [require(`${dir}/android/esimReg/img_9.png`)],
+        pageLast: [require(`${dir}/iconRokebiLast.png`)],
+      };
+    } else if (region === 'us') {
+      imageList = {
+        page1: [require(`${dir}/iconUsSmall.png`)],
+        page2: [require(`${dir}/android/esimReg/img_1.png`)],
+        page3: [require(`${dir}/android/esimReg/img_4.png`)],
+        page4: [require(`${dir}/android/esimReg/img_5.png`)],
+        page5: [require(`${dir}/android/esimReg/img_6.png`)],
+        page6: [require(`${dir}/android/esimReg/us/img_5.png`)],
+        page7: [require(`${dir}/android/esimReg/us/img_6.png`)],
+        page8: [require(`${dir}/android/esimReg/img_7.png`)],
+        page9: [require(`${dir}/android/esimReg/img_8.png`)],
         pageLast: [require(`${dir}/iconRokebiLast.png`)],
       };
     } else {
@@ -407,7 +443,9 @@ export const getImageList = (
         pageLast: [require(`${dir}/iconRokebiLast.png`)],
       };
     }
-  } else if (region === 'korea') {
+  }
+  // 상품 설정
+  else if (region === 'korea') {
     imageList = {
       page1: [require(`${dir}/iconKoreaCheck.png`)],
       page2: [require(`${dir}/android/checkSetting/img_1.png`)],
@@ -440,6 +478,7 @@ export type GuideImage = {
   caption?: string;
   localTitle?: JSX.Element;
   localTip?: () => JSX.Element | null;
+  stepTitle?: string;
 };
 
 export const getGuideImages = (
@@ -537,7 +576,80 @@ export const getGuideImages = (
             step: 99,
           },
         ];
-      } else {
+      } else if (region === 'us') {
+        guideImages = [
+          {
+            key: 'page1',
+            title: renderText(
+              `userGuide:ios:${guideOption}:${region}:stepTitle0`,
+              true,
+            ),
+            step: 0,
+          },
+          {
+            key: 'page2',
+            title: renderText(`userGuide:stepsTitle1:us:ios`),
+            step: 1,
+          },
+          {
+            key: 'page3',
+            title: renderText(`userGuide:stepsTitle2:us:ios`),
+            step: 2,
+          },
+          {
+            key: 'page4',
+            title: renderText('userGuide:stepsTitle3:us:ios'),
+            step: 3,
+            tip: () => renderTipList('userGuide:us:tipPage4', 'dot'),
+          },
+          {
+            key: 'page5',
+            title: renderText('userGuide:stepsTitle4:us:ios'),
+            step: 4,
+            tip: () => renderTipList('userGuide:us:tipPage5', 'dot', false, 3),
+          },
+          {
+            key: 'page6',
+            title: renderText('userGuide:stepsTitle5:us:ios'),
+            step: 5,
+            tip: () => tipView({id: 'userGuide:us:tipPage6_2'}, true),
+          },
+          {
+            key: 'page7',
+            title: renderText('userGuide:stepsTitle6:us:ios'),
+            step: 6,
+            tip: () => renderTipList('userGuide:us:tipPage6', 'dot', false),
+          },
+          {
+            key: 'page8',
+            title: renderText('userGuide:stepsTitle7:us:ios'),
+            step: 7,
+          },
+          {
+            key: 'page9',
+            title: renderText('userGuide:stepsTitle8:us:ios'),
+            step: 8,
+            noticeBox: () =>
+              renderNoticeBox({
+                title: 'userGuide:us:ios:caution:title',
+                body: ['userGuide:us:ios:caution:body'],
+                isShow: true,
+              }),
+          },
+          {
+            key: 'page10',
+            title: renderText('userGuide:stepsTitle9:us:ios'),
+            step: 9,
+          },
+          {
+            key: 'page12',
+            title: renderText('userGuide:stepsTitle12:ios:local'),
+            step: 99,
+          },
+        ];
+      }
+      // 현지 등록
+      else {
         guideImages = [
           {
             key: 'page1',
@@ -685,7 +797,9 @@ export const getGuideImages = (
         },
       ];
     }
-  } else if (guideOption === 'esimReg') {
+  }
+  // Android
+  else if (guideOption === 'esimReg') {
     if (region === 'korea') {
       guideImages = [
         {
@@ -762,7 +876,60 @@ export const getGuideImages = (
           step: 6,
         },
       ];
-    } else {
+    } else if (region === 'us') {
+      guideImages = [
+        {
+          key: 'page1',
+          title: renderText('userGuide:ios:esimReg:us:stepTitle0'),
+          step: 0,
+        },
+        {
+          key: 'page2',
+          title: renderText(`userGuide:stepsTitle1:galaxy`),
+          step: 1,
+        },
+        {
+          key: 'page3',
+          title: renderText(`userGuide:stepsTitle2:us:android`),
+          step: 2,
+        },
+        {
+          key: 'page4',
+          title: renderText(`userGuide:stepsTitle3:us:android`),
+          step: 3,
+        },
+        {
+          key: 'page5',
+          title: renderText(`userGuide:stepsTitle4:us:android`),
+          step: 4,
+        },
+        {
+          key: 'page6',
+          title: renderText(`userGuide:stepsTitle5:us:android`),
+          step: 5,
+        },
+        {
+          key: 'page7',
+          title: renderText(`userGuide:stepsTitle6:us:android`),
+          step: 6,
+          tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}, true),
+          noticeBox: () =>
+            renderNoticeBox({
+              body: ['userGuide:noticeBox:us:body1'],
+              isShow: true,
+            }),
+          stepTitle: 'Bonus',
+        },
+        {
+          key: 'page8',
+          title: renderText(`userGuide:stepsTitle10:galaxy:local`),
+          step: 6,
+          tip: () => renderTipList('userGuide:tipPageLast', 'dot'),
+        },
+      ];
+    }
+    // 현지 등록
+    else {
       guideImages = [
         {
           key: 'page1',
@@ -828,7 +995,9 @@ export const getGuideImages = (
         },
       ];
     }
-  } else if (region === 'korea') {
+  }
+  // 설정
+  else if (region === 'korea') {
     guideImages = [
       {
         key: 'page1',
@@ -844,6 +1013,63 @@ export const getGuideImages = (
       {
         key: 'page3',
         title: renderText(`userGuide::checkSetting:done`),
+        step: 6,
+      },
+    ];
+  } else if (region === 'us') {
+    guideImages = [
+      {
+        key: 'page1',
+        title: renderText('userGuide:galaxy:checkSetting:local:stepTitle0'),
+        step: 0,
+        isLocalBox: () => renderIsLocalBox(),
+      },
+      {
+        key: 'page2',
+        title: renderText(`userGuide:stepsTitle4:galaxy:checkSetting`),
+        step: 1,
+        stepPreText: 'local',
+      },
+      {
+        key: 'page3',
+        title: renderText(`userGuide:stepsTitle5:galaxy:checkSetting`), // ysjoung
+        step: 2,
+        stepPreText: 'local',
+        noticeBox: (isCheckLocal: boolean) =>
+          renderNoticeBox({
+            title: 'userGuide:stepsTitle5:galaxy:caution:title',
+            body: [
+              'userGuide:stepsTitle5:galaxy:caution:body1',
+              'userGuide:stepsTitle5:galaxy:caution:body2',
+            ],
+            isShow: isCheckLocal, // 현지(로컬망)인 경우에 보여주도록 함
+          }),
+      },
+      {
+        key: 'page4',
+        title: renderText(`userGuide:stepsTitle6:galaxy:checkSetting`),
+        step: 3,
+        stepPreText: 'local',
+      },
+      {
+        key: 'page5',
+        title: renderText(`userGuide:stepsTitle7:galaxy`),
+        localTitle: renderText(`userGuide:stepsTitle7:galaxy:localNet`),
+
+        step: 4,
+        stepPreText: 'local',
+        tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}),
+        localTip: () => tipView({id: 'userGuide:tipPage7:galaxy:localNet'}),
+        noticeBox: (isCheckLocal: boolean) =>
+          renderNoticeBox({
+            title: 'userGuide:stepsTitle7:galaxy:caution:title',
+            body: ['userGuide:stepsTitle7:galaxy:caution:body'],
+            isShow: isCheckLocal,
+          }),
+      },
+      {
+        key: 'page6',
+        title: renderText(`userGuide:stepsTitle10:galaxy:checkSetting`),
         step: 6,
       },
     ];

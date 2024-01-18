@@ -327,6 +327,7 @@ const slice = createSlice({
 
     builder.addCase(getOrders.fulfilled, (state, action) => {
       const {objects, result} = action.payload;
+      const {orderId, page} = action.meta.arg;
 
       if (action.meta.arg?.state === 'validation') {
         if (objects) {
@@ -342,9 +343,9 @@ const slice = createSlice({
         }
       } else if (result === 0 && objects.length > 0) {
         // 기존에 있던 order에 새로운 order로 갱신
-        const orders = ImmutableMap(state.orders).merge(
-          objects.map((o) => [o.orderId, o]),
-        );
+        const orders = ImmutableMap(
+          page === 0 ? undefined : state.orders,
+        ).merge(objects.map((o) => [o.orderId, o]));
 
         const orderCache = orders
           .sort((a, b) => utils.cmpMomentDesc(a.orderDate, b.orderDate))
@@ -360,7 +361,6 @@ const slice = createSlice({
         state.orders = orders;
         state.orderList = getOrderList(orders);
 
-        const {orderId, page} = action.meta.arg;
         if (!orderId && page !== undefined) state.page = page;
       }
     });
