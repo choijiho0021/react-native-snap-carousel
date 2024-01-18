@@ -1069,8 +1069,11 @@
   "prodDetail:icon:dataV": "데이터&통화",
   "prodDetail:icon:clock": "사용기간 {{days}}일",
   "prodDetail:icon:allday": "속도 제한 없는\n올데이 무제한",
-  "prodDetail:icon:speed": "일 {{data}} 소진 시\n속도 제한",
-  "prodDetail:icon:timer": "{{data}}소진 시\n사용 종료",
+  "prodDetail:icon:speed:daily": "일 {{data}} 소진 시\n속도 제한",
+  "prodDetail:icon:speed:total": "{{data}} 소진 시\n속도 제한",
+  "prodDetail:icon:timer:daily": "일 {{data}} 소진 시\n사용 종료",
+  "prodDetail:icon:timer:total": "{{data}}소진 시\n사용 종료",
+
   "prodDetail:icon:wifi": "핫스팟 테더링\n가능",
   "prodDetail:icon:wifiOff": "핫스팟 테더링\n가능",
   "prodDetail:icon:charge": "충전 가능",
