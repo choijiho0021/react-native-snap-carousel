@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     textAlign: 'left',
     color: colors.warmGrey,
+    flex: 1,
   },
   warningDot: {
     ...appStyles.normal14Text,
@@ -178,8 +179,12 @@ const UsageItem: React.FC<UsageItemProps> = ({
   //   [item.country, item.daily, item.partner],
   // );
 
+  const isError = useMemo(() => {
+    return dataStatusCd === 'E';
+  }, [dataStatusCd]);
+
   const showUsage = useMemo(
-    () => item.partner !== 'billionconnect',
+    () => item.partner !== 'billionconnect' && item.partner !== 'ht',
     [item.partner],
   );
 
@@ -319,7 +324,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           </AppText>
         </View>
 
-        {item.daily === 'daily' && item.partner !== 'billionconnect' && (
+        {item.daily === 'daily' && showUsage && (
           <Fragment>
             <View style={styles.timeDivider} />
 
@@ -386,6 +391,39 @@ const UsageItem: React.FC<UsageItemProps> = ({
     );
   }, [isExhausted, remain]);
 
+  const warningDotTxt = useCallback(() => {
+    switch (item?.partner) {
+      case 'ht':
+        return (
+          <View style={{width: '100%', marginTop: 16}}>
+            <View style={{flexDirection: 'row'}}>
+              <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
+              <AppText style={styles.warning}>
+                {i18n.t('esim:caution:ht:time1')}
+              </AppText>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+              <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
+              <AppText style={styles.warning}>
+                {i18n.t('esim:caution:ht:time2')}
+              </AppText>
+            </View>
+          </View>
+        );
+      default:
+        return (
+          <View style={{width: '100%', marginTop: 16}}>
+            <View style={{flexDirection: 'row'}}>
+              <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
+              <AppText style={styles.warning}>
+                {i18n.t('esim:caution:time')}
+              </AppText>
+            </View>
+          </View>
+        );
+    }
+  }, [item?.partner]);
+
   const renderWarning = useCallback(() => {
     return (
       <View style={{width: '100%', marginTop: 16}}>
@@ -397,16 +435,10 @@ const UsageItem: React.FC<UsageItemProps> = ({
             </AppText>
           </View>
         )}
-
-        <View style={{flexDirection: 'row'}}>
-          <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
-          <AppText style={styles.warning}>
-            {i18n.t('esim:caution:time')}
-          </AppText>
-        </View>
+        {warningDotTxt()}
       </View>
     );
-  }, [showUsage]);
+  }, [showUsage, warningDotTxt]);
 
   const usageRender = useCallback(() => {
     return (
@@ -439,63 +471,103 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
   const statusBox = useCallback(
     (statusCd: string) => {
-      return (
-        <View>
-          {statusCd === 'A' && (
+      if (statusCd === 'A')
+        return (
+          <View>
             <View>
-              <View>
-                <AppText key={item.key} style={styles.usageTitleBold}>
-                  {item.prodName}
-                </AppText>
+              <AppText key={item.key} style={styles.usageTitleBold}>
+                {item.prodName}
+              </AppText>
+              {item.partner !== 'ht' && (
                 <AppText key={item.prodName} style={styles.bold14WarmGrey}>
                   {i18n.t('esim:quota', {
                     quota: utils.toDataVolumeString(quota || 0),
                   })}
                 </AppText>
-              </View>
-              {usageRender()}
+              )}
             </View>
-          )}
-          {['R', 'U'].map((v) => {
-            return (
-              statusCd === v && (
-                <View key={v}>
-                  <AppIcon style={{alignItems: 'center'}} name={`usage${v}`} />
-                  <View style={{marginTop: 15, marginBottom: 25}}>
-                    <AppStyledText
-                      text={i18n.t(`esim:${code[v]}Info`)}
-                      textStyle={{
-                        ...appStyles.normal16Text,
-                        textAlign: 'center',
-                      }}
-                      format={{
-                        b: {
-                          ...appStyles.bold16Text,
-                          textAlign: 'center',
-                          color: colors.clearBlue,
-                        },
-                        r: {
-                          ...appStyles.bold16Text,
-                          textAlign: 'center',
-                          color: colors.redError,
-                        },
-                      }}
-                    />
-                  </View>
-                  {item.partner === 'billionconnect' && (
-                    <TextWithDot
-                      text={i18n.t('quadcell:usageInfo')}
-                      textStyle={styles.noticeText}
-                    />
-                  )}
-                </View>
-              )
-            );
-          })}
-        </View>
-      );
+            {usageRender()}
+          </View>
+        );
+
+      if (isError)
+        return (
+          <View style={{justifyContent: 'center'}}>
+            <AppText key={item.key} style={styles.usageTitleBold}>
+              {item.prodName}
+            </AppText>
+            <AppIcon
+              style={{alignItems: 'center', marginBottom: 16}}
+              name="usageE"
+            />
+            <AppText
+              key={item.key}
+              style={[
+                appStyles.bold16Text,
+                {color: colors.redError, alignSelf: 'center'},
+              ]}>
+              {i18n.t('esim:ErrorShowUsage1')}
+            </AppText>
+            <AppText
+              key={item.key}
+              style={[
+                appStyles.medium16,
+                {color: colors.black, alignSelf: 'center'},
+              ]}>
+              {i18n.t('esim:ErrorShowUsage2')}
+            </AppText>
+            <AppText
+              key={item.key}
+              style={[
+                appStyles.medium14,
+                {
+                  color: colors.warmGrey,
+                  alignSelf: 'center',
+                  marginTop: 12,
+                },
+              ]}>
+              {i18n.t('esim:ErrorShowUsage3')}
+            </AppText>
+          </View>
+        );
+
+      if (['R', 'U'].includes(statusCd))
+        return (
+          <View>
+            <AppIcon style={{alignItems: 'center'}} name={`usage${statusCd}`} />
+            <View style={{marginTop: 15, marginBottom: 25}}>
+              <AppStyledText
+                text={i18n.t(`esim:${code[statusCd]}Info`)}
+                textStyle={{
+                  ...appStyles.normal16Text,
+                  textAlign: 'center',
+                }}
+                format={{
+                  b: {
+                    ...appStyles.bold16Text,
+                    textAlign: 'center',
+                    color: colors.clearBlue,
+                  },
+                  r: {
+                    ...appStyles.bold16Text,
+                    textAlign: 'center',
+                    color: colors.redError,
+                  },
+                }}
+              />
+            </View>
+            {item.partner === 'billionconnect' && (
+              <TextWithDot
+                text={i18n.t('quadcell:usageInfo')}
+                textStyle={styles.noticeText}
+              />
+            )}
+          </View>
+        );
+
+      return null;
     },
-    [item.key, item.partner, item.prodName, quota, usageRender],
+    [isError, item.key, item.partner, item.prodName, quota, usageRender],
   );
 
   const [status, statusCd] = esimApp
@@ -512,7 +584,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           <AppText key={i18n.t('esim:checkUsage')} style={appStyles.bold18Text}>
             {i18n.t('esim:checkUsage')}
           </AppText>
-          {!usageLoading && (
+          {!usageLoading && !isError && item?.partner !== 'ht' && (
             <AppText
               key={item.nid}
               style={[

@@ -31,6 +31,7 @@ import {
   StatusObj,
   UsageObj,
   Usage,
+  AddOnOptionType,
 } from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
@@ -229,7 +230,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [showUsageModal, setShowUsageModal] = useState<boolean | undefined>();
+  const [showUsageModal, setShowUsageModal] = useState<boolean | undefined>(
+    route?.params?.actionStr === 'showUsage',
+  );
   const [subs, setSubs] = useState<RkbSubscription>();
   const [usageLoading, setUsageLoading] = useState(false);
   const [showGiftModal, setShowGiftModal] = useState<boolean | undefined>();
@@ -237,6 +240,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [dataUsage, setDataUsage] = useState({});
   const [dataStatus, setDataStatus] = useState({});
   const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const [showUsageSubsId, setShowUsageSubsId] = useState<string | undefined>();
   const isFocused = useIsFocused();
   const flatListRef = useRef<FlatList>(null);
   const tabBarHeight = useBottomTabBarHeight();
@@ -256,7 +260,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const showModal = useMemo(() => {
     if (showUsageModal && isDefined(showGiftModal)) return 'usage';
-    if (showGiftModal && isDefined(showUsageModal)) return 'gift';
+    if (!showUsageModal && showGiftModal) return 'gift';
+
     return 'noModal';
   }, [showGiftModal, showUsageModal]);
 
@@ -394,6 +399,18 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         case 'billionconnect':
           result = await checkBcData(item);
           break;
+        case 'ht':
+          result = {
+            status: {
+              statusCd: 'A',
+              endTime: moment(item.activationDate)
+                ?.tz('EST')
+                ?.add(Number(item.prodDays) - 1, 'days')
+                ?.endOf('day'),
+            },
+            usage: {quota: 0, used: 0, remain: 0, totalUsed: 0},
+          };
+          break;
         default:
           result = await checkCmiData(item);
           break;
@@ -429,14 +446,39 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [action.account, action.order, getOrders, iccid, token],
   );
 
-  const actionCallback = useCallback(() => {
-    const index = subsData?.findIndex((elm) => elm.nid === subsId);
-    if (index >= 0) {
-      setShowUsageModal(true);
-      onPressUsage(subsData[index]);
-      flatListRef?.current?.scrollToIndex({index, animated: true});
+  const getIsChargeable = useCallback((sub: RkbSubscription) => {
+    return (
+      sub?.addOnOption &&
+      sub.addOnOption !== AddOnOptionType.NEVER &&
+      !(sub.expireDate && sub.expireDate.isBefore(moment())) &&
+      sub.partner !== 'billionconnect'
+    );
+  }, []);
+
+  useEffect(() => {
+    const {actionStr} = route?.params || {};
+
+    if (actionStr === 'showUsage' && showUsageSubsId && !isEditMode) {
+      const index = subsData?.findIndex((elm) => elm.nid === showUsageSubsId);
+
+      if (index >= 0) {
+        setShowUsageModal(true);
+        onPressUsage(subsData[index], getIsChargeable(subsData[index]));
+        navigation.setParams({
+          actionStr: undefined,
+        });
+        flatListRef?.current?.scrollToIndex({index, animated: true});
+      }
     }
-  }, [onPressUsage, subsData]);
+  }, [
+    getIsChargeable,
+    isEditMode,
+    navigation,
+    onPressUsage,
+    route?.params,
+    showUsageSubsId,
+    subsData,
+  ]);
 
   const getSubsAction = useCallback(
     async (subsId?: string, actionStr?: string, subsIccid?: string) => {
@@ -453,7 +495,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         if (index >= 0) {
           setSelectedIdx(index);
           setShowUsageModal(true);
-          onPressUsage(subsData[index]);
+          onPressUsage(subsData[index], getIsChargeable(subsData[index]));
           flatListRef?.current?.scrollToIndex({index, animated: true});
         } else {
           const rsp = await action.order.getSubsWithToast({
@@ -463,9 +505,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             subsId,
             reset: true,
           });
+
           // 스크롤 이동 및 사용량 조회 모달 보여주도록 추가 필요
           if (rsp?.payload?.result === 0) {
-            actionCallback();
+            setShowUsageSubsId(subsId);
           }
         }
       } else if (actionStr === 'navigate') {
@@ -523,7 +566,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     },
     [
       action.order,
-      actionCallback,
+      getIsChargeable,
       getOrders,
       iccid,
       navigation,
@@ -600,7 +643,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             navigate(navigation, route, 'EsimStack', {
               tab: 'MyPageStack',
               initial: false,
-              screen: 'Draft',
+              screen:
+                currentOrder.partner?.toLowerCase() === 'ht'
+                  ? 'DraftUs'
+                  : 'Draft',
               params: {
                 orderId: currentOrder?.orderId,
               },
@@ -754,7 +800,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         ]}
         ListEmptyComponent={empty}
         onScrollToIndexFailed={(rsp) => {
-          const wait = new Promise((resolve) => setTimeout(resolve, 500));
+          const wait = new Promise((resolve) => setTimeout(resolve, 1500));
           wait.then(() => {
             flatListRef?.current?.scrollToIndex({
               index: rsp.index,

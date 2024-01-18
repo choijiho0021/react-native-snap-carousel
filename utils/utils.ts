@@ -1,6 +1,7 @@
 import CryptoJS from 'crypto-js';
 import utils from '@/redux/api/utils';
 import i18n from './i18n';
+import {Platform} from 'react-native';
 
 const UniAsyncStorage =
   require('@react-native-community/async-storage').default;
@@ -72,6 +73,8 @@ export const getImage = (
   }
   return null;
 };
+
+export const SMSDivider = () => (Platform.OS === 'android' ? '?' : '&');
 
 export {utils};
 export {storeData, retrieveData, removeData, parseJson};

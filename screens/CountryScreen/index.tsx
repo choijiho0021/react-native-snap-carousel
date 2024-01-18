@@ -127,10 +127,14 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         img: imageUrl,
         uuid: prod.uuid,
         desc: prod.desc,
+        price: prod.price,
+        listPrice: prod.listPrice,
         localOpDetails,
         partnerId,
+        partner: localOpList.get(prod.partnerId)?.partner,
+        prod,
       }),
-    [imageUrl, localOpDetails, navigation, partnerId],
+    [imageUrl, localOpDetails, localOpList, navigation, partnerId],
   );
 
   const onTop = useCallback(

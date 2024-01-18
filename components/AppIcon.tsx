@@ -32,7 +32,7 @@ const images: Record<string, any[]> = {
   giftGuideStep1: [require(`${giftPath}img_step1.png`)],
   giftGuideStep2: [require(`${giftPath}img_step2.png`)],
   giftGuideStep3: [require(`${giftPath}img_step3.png`)],
-  giftCoin: [require(`${giftPath}coin.png`)],
+  gift: [require(`${giftPath}img_gift.png`)],
 };
 
 interface AppIconProps {

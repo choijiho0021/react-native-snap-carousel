@@ -4,8 +4,8 @@ import {getBundleId} from 'react-native-device-info';
 import {CurrencyCode} from './redux/api/productApi';
 
 const codePushLabel = {
-  stagingIOS: "v118",
-  stagingAndroid: "v107",
+  stagingIOS: 'v118',
+  stagingAndroid: 'v107',
   productionIOS: 'v47',
   productionAndroid: 'v40',
 };
@@ -25,6 +25,10 @@ const esimGlobal = Config.APP_ID === 'global';
 let impId = esimGlobal ? 'imp60215393' : 'imp53913318';
 const appStoreId = esimGlobal ? '' : '1525664178';
 
+const iosBundleId = esimGlobal
+  ? 'com.uangel.rokebi-global'
+  : 'com.uangel.rokebi-ESIM';
+
 // Dynamic Link
 const dynamicLink = 'https://rokebi.page.link';
 
@@ -33,7 +37,13 @@ const isProduction = Config.NODE_ENV === 'production';
 // test 계정
 impId = isProduction ? impId : 'imp54175831';
 
-type PromoFlag = 'hot' | 'sale' | 'sizeup' | 'doubleSizeup' | 'tripleSizeup';
+type PromoFlag =
+  | 'hot'
+  | 'sale'
+  | 'sizeup'
+  | 'doubleSizeup'
+  | 'tripleSizeup'
+  | 'fiveG';
 const specialCategories: Record<string, PromoFlag> = esimGlobal
   ? isProduction
     ? {
@@ -55,6 +65,7 @@ const specialCategories: Record<string, PromoFlag> = esimGlobal
       181: 'sizeup', // 사이즈업
       182: 'doubleSizeup', // 더블 사이즈업
       452: 'tripleSizeup', // 트리플 사이즈업
+      459: 'fiveG', // 5G
     }
   : {
       53: 'hot', // 운용자 추천
@@ -62,6 +73,7 @@ const specialCategories: Record<string, PromoFlag> = esimGlobal
       181: 'sizeup', // 사이즈업
       182: 'doubleSizeup', // 더블 사이즈업
       746: 'tripleSizeup', // 트리플 사이즈업
+      749: 'fiveG', // 5G
     };
 
 type Env = {
@@ -70,7 +82,8 @@ type Env = {
   apiUrl?: string;
   rokApiUrl?: string;
   webViewHost?: string;
-  bundleId: string;
+  iosBundleId: string; // android에서 참조용
+  bundleId: string; // 현재 핸드폰의 번들 id
   appId: string;
   impId: string;
   appStoreId: string;
@@ -103,6 +116,7 @@ type Env = {
 
 const env: Env = {
   bundleId,
+  iosBundleId,
   appId,
   impId,
   appStoreId,

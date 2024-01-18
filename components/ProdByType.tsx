@@ -1,4 +1,10 @@
-import React, {useCallback, useState, useMemo, useEffect} from 'react';
+import React, {
+  useCallback,
+  useState,
+  useMemo,
+  useEffect,
+  Fragment,
+} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -8,6 +14,8 @@ import AppText from '@/components/AppText';
 import {RkbProduct} from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';
 import DailyProdFilter, {DailyProdFilterList} from './DailyProdFilter';
+import NetworkFilter, {NetworkFilterList} from './NetworkFilter';
+import {contains} from 'underscore';
 
 const styles = StyleSheet.create({
   emptyImage: {
@@ -45,7 +53,7 @@ type ProdByTypeProps = {
   onTop?: (v: boolean) => void;
 };
 
-const DEFAULT_FILTER_LIST = ['500', '1024', '2048', '3072'];
+const DEFAULT_FILTER_LIST = ['all', '500', '1024', '2048', '3072'];
 
 const ProdByType: React.FC<ProdByTypeProps> = ({
   prodData,
@@ -55,17 +63,41 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
   onTop = () => {},
 }) => {
   const [filter, setFilter] = useState<DailyProdFilterList>('all');
+  const [networkFilter, setNetworkFileter] = useState<NetworkFilterList[]>([
+    'fiveG',
+    'else',
+  ]);
   const [list, setList] = useState<DailyProdFilterList[]>([]);
+
+  const toNetworkFileter = useCallback((network?: string) => {
+    if (network === '5G/LTE') return 'fiveG';
+    return 'else';
+  }, []);
+
   const data = useMemo(
     () =>
-      filter === 'all' ? prodData : prodData.filter((p) => p.volume === filter),
-    [filter, prodData],
+      prodData.filter((p) => {
+        const networkMatch = networkFilter.includes(
+          toNetworkFileter(p.network),
+        );
+        const volumeMatch = filter === 'all' || p.volume === filter;
+        return networkMatch && volumeMatch;
+      }),
+    [filter, networkFilter, prodData, toNetworkFileter],
   );
+
+  const showNetFilter = useMemo(
+    () =>
+      prodData.length > 1 &&
+      prodData.some((elm) => toNetworkFileter(elm.network) === 'fiveG') &&
+      prodData.some((elm) => toNetworkFileter(elm.network) === 'else'),
+    [prodData, toNetworkFileter],
+  );
+
   const renderEmpty = useCallback(() => {
     return (
       <View style={styles.emptyData}>
         <AppSvgIcon name="threeDots" style={styles.emptyImage} />
-
         <AppText style={styles.emptyText1}>
           {i18n.t(isCharge ? 'esim:charge:noProd1' : 'country:noProd1')}
         </AppText>
@@ -102,12 +134,20 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
       ListEmptyComponent={renderEmpty}
       extraData={data}
       ListHeaderComponent={
-        prodType === 'daily' && prodData.length > 0 ? (
-          <DailyProdFilter
-            filterList={['all', ...list]}
-            onValueChange={setFilter}
-          />
-        ) : null
+        <Fragment>
+          {prodType === 'daily' && prodData.length > 0 ? (
+            <DailyProdFilter
+              filterList={['all', ...list]}
+              onValueChange={setFilter}
+            />
+          ) : null}
+          {showNetFilter ? (
+            <NetworkFilter
+              filterList={['fiveG', 'else']}
+              onValueChange={setNetworkFileter}
+            />
+          ) : null}
+        </Fragment>
       }
       renderItem={renderItem}
       onScrollEndDrag={({
@@ -115,8 +155,8 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
           contentOffset: {y},
         },
       }) => {
-        if (y < -25) onTop(true);
-        else if (y > 25) onTop(false);
+        if (y <= 0) onTop(true);
+        else if (y > 150) onTop(false);
       }}
       showsVerticalScrollIndicator={false}
     />

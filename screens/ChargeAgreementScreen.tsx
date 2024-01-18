@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {StyleSheet, SafeAreaView, View, Pressable} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
@@ -198,18 +198,21 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
   const [visible, setVisible] = useState<string>('');
 
   const validateTime = useCallback(() => {
-    if (!params?.expireTime) {
-      console.log('@@@ expireTime undefined');
-      return false;
+    if (
+      params?.mainSubs?.partner?.startsWith('quadcell') &&
+      params?.status === 'R'
+    ) {
+      return true;
     }
 
     const remainDay =
       params?.expireTime.diff(moment(), 'seconds') / (24 * 60 * 60);
 
+    // usagePeroid.period는 KST, 값 변경 없이 뒤에 +09:00를 붙임
     const expireTime = moment(
       usagePeriod?.period,
       usagePeriod?.format,
-    ).utcOffset('+09:00', true); // params?.expireTime;
+    ).utcOffset('+09:00', true);
     const currentTime = moment().utcOffset('+09:00');
 
     const twentyMinuteAgoMoment = moment(expireTime.subtract(20, 'minutes')); // 20분 전
@@ -221,7 +224,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
 
     if (isWarningTime) {
       setVisible('esim:charge:time:warning');
-      return true;
+      return false;
     }
 
     if (isBlockTime) {
@@ -232,7 +235,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
     }
 
     return true;
-  }, [params?.expireTime, usagePeriod?.format, usagePeriod?.period]);
+  }, [params, usagePeriod?.format, usagePeriod?.period]);
 
   const onPurchase = useCallback(() => {
     if (isPressed) {
@@ -273,12 +276,12 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
 
   const onPressBtnPurchase = useCallback(() => {
     // 충전하기만 시간 체크
-    if (params?.type === 'addOn') {
+    if (params?.type === 'addOn' && params?.expireTime) {
       if (validateTime()) {
         onPurchase();
       }
     } else onPurchase();
-  }, [onPurchase, params?.type, validateTime]);
+  }, [onPurchase, params?.expireTime, params?.type, validateTime]);
 
   const renderModal = useCallback(() => {
     const isWarning = visible === 'esim:charge:time:warning';
@@ -299,6 +302,9 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
           // 결제 이어서 진행하기
           setVisible('');
           if (!isWarning) navigateEsim();
+          else {
+            onPurchase();
+          }
         }}
         contentStyle={styles.modalContent}
         titleStyle={styles.titleContent}
@@ -324,7 +330,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
         </View>
       </AppModal>
     );
-  }, [navigation, usagePeriod?.period, visible]);
+  }, [navigation, onPurchase, usagePeriod?.period, visible]);
 
   return (
     <SafeAreaView style={styles.container}>

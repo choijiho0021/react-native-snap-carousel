@@ -22,6 +22,7 @@ const E_RESOURCE_NOT_FOUND = -1006;
 const E_REQUEST_FAILED = -1007;
 const E_ABORTED = -1008;
 const E_DECODING_FAILED = -1009;
+const E_INVALID_PARAMETER = -1016;
 const API_STATUS_PREFAILED = 412;
 const API_STATUS_INIT = 0;
 const API_STATUS_TRYING = 1;
@@ -63,6 +64,7 @@ const path = {
   promotion: 'json/promotion/list',
   event: 'json/event/list',
   productDetails: 'json/product/details',
+  prodDescDetail: 'json/product/desc',
   prodDesc: 'json/product/desc/only',
   localopBody: 'json/localop',
   esimDev: 'json/esim/dev/list',
@@ -455,6 +457,7 @@ export default {
   E_STATUS_EXPIRED,
   E_INVALID_ARGUMENT,
   E_RESOURCE_NOT_FOUND,
+  E_INVALID_PARAMETER,
   E_REQUEST_FAILED,
   E_ABORTED,
   E_DECODING_FAILED,
