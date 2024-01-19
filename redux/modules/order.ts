@@ -284,7 +284,12 @@ const slice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(init.fulfilled, (state, {payload}) => {
       const orders = ImmutableMap(
-        payload ? parseJson(payload).map((o) => [o.orderId, o]) : [],
+        payload
+          ? parseJson(payload).map((o) => [
+              o.orderId,
+              {...o, orderDate: moment(o.orderDate)},
+            ])
+          : [],
       ).merge(state.page === 0 ? [] : state.orders);
 
       state.orders = orders;
