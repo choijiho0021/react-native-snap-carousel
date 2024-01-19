@@ -122,6 +122,7 @@ export type Currency = {
   value: number;
   currency: CurrencyCode;
 };
+export type addonOptionType = 'N' | 'A' | 'E' | 'B' | undefined;
 export type ProdDesc = {
   desc1?: string;
   desc2?: string;

@@ -561,7 +561,7 @@ const BodyHtml: React.FC<BodyHtmlProps> = ({body, onMessage}) => {
     
     <body>
     <div class="wrap_data">
-    ${unescape(body.replace(/<br \/>/g, ''))}
+    ${unescape(body?.replace(/<br \/>/g, ''))}
     </div>
     </body>
     </html>

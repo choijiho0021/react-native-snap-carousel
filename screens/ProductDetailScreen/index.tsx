@@ -47,7 +47,7 @@ import {
 import AppCartButton from '@/components/AppCartButton';
 import ChatTalk from '@/components/ChatTalk';
 import {API} from '@/redux/api';
-import {Currency, ProdDesc} from '@/redux/api/productApi';
+import {Currency, ProdDesc, addonOptionType} from '@/redux/api/productApi';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import InputNumber from '@/components/InputNumber';
@@ -410,7 +410,6 @@ type ProductDetailScreenProps = {
   };
 };
 
-type addonOptionType = 'N' | 'A' | 'E' | 'B' | undefined;
 type DescData = {
   fieldNoticeOption: any; // 리스트, 배열 상관없이 받도록
   fieldCaution: string;
@@ -943,7 +942,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     );
 
     const cautionList: string[] =
-      descData?.fieldCautionList.filter((c) =>
+      descData?.fieldCautionList?.filter((c) =>
         isIOS ? !c.includes('android:') : !c.includes('ios:'),
       ) || [];
 
