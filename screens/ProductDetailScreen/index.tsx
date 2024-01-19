@@ -15,7 +15,7 @@ import {
   View,
 } from 'react-native';
 import {WebViewMessageEvent} from 'react-native-webview';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import Analytics from 'appcenter-analytics';
@@ -46,20 +46,21 @@ import {
 } from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
 import ChatTalk from '@/components/ChatTalk';
-import {API} from '@/redux/api';
-import {Currency, ProdDesc, addonOptionType} from '@/redux/api/productApi';
+import {Currency, DescData} from '@/redux/api/productApi';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import InputNumber from '@/components/InputNumber';
 import utils from '@/redux/api/utils';
 import AppPrice from '@/components/AppPrice';
-import {ProductModelState} from '@/redux/modules/product';
+import {
+  actions as productAction,
+  ProductModelState,
+} from '@/redux/modules/product';
 import ShareLinkModal from './components/ShareLinkModal';
 import AppStyledText from '@/components/AppStyledText';
 import ChargeInfoModal from './components/ChargeInfoModal';
 import TextWithDot from '../EsimScreen/components/TextWithDot';
 import BodyHtml from './components/BodyHtml';
-import {parseJson} from '@/utils/utils';
 import TextWithCheck from '../HomeScreen/component/TextWithCheck';
 
 const {esimGlobal, isIOS} = Env.get();
@@ -410,16 +411,8 @@ type ProductDetailScreenProps = {
   };
 };
 
-type DescData = {
-  fieldNoticeOption: any; // 리스트, 배열 상관없이 받도록
-  fieldCaution: string;
-  fieldCautionList: string[];
-  body: string;
-  addonOption?: addonOptionType;
-  desc?: ProdDesc;
-};
-
 const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
+  product,
   navigation,
   route,
   action,
@@ -448,13 +441,17 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [showShareModal, setShowShareModal] = useState(false);
 
   const [showWebModal, setShowWebModal] = useState(false);
-  const [descData, setDescData] = useState<DescData>();
 
   const [qty, setQty] = useState(1);
   const appState = useRef('unknown');
   const [price, setPrice] = useState<Currency>();
   const [showChargeInfoModal, setShowChargeInfoModal] = useState(false);
   const [showCallDetail, setShowCallDetail] = useState(false);
+  const dispatch = useDispatch();
+  const descData: DescData = useMemo(
+    () => product.descData.get(prod?.key),
+    [prod?.key, product.descData],
+  );
 
   const isht = useMemo(
     () => route?.params?.partner === 'ht',
@@ -462,23 +459,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   );
 
   useEffect(() => {
-    if (prod)
-      API.Product.getProductDesc(prod.key).then((rsp) => {
-        const data = rsp[0];
-        if (data) {
-          setDescData({
-            fieldNoticeOption: data.field_notice_option, // 리스트, 배열 상관없이 받도록
-            fieldCaution: data.field_caution || '',
-            fieldCautionList: data.field_caution_list || [],
-            addonOption: data.field_addon_option,
-            body: data.body,
-            desc: data.field_desc
-              ? parseJson(data.field_desc.replace(/&quot;/g, '"'))
-              : {},
-          });
-        }
-      });
-  }, [prod]);
+    if (!product.descData.get(prod?.key))
+      dispatch(productAction.getProdDesc(prod.key));
+  }, [dispatch, prod, product.descData]);
 
   useEffect(() => {
     getTrackingStatus().then((elm) => setStatus(elm));
@@ -1321,7 +1304,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 };
 
 export default connect(
-  ({account, cart}: RootState) => ({
+  ({product, account, cart}: RootState) => ({
+    product,
     account,
     cart,
   }),
