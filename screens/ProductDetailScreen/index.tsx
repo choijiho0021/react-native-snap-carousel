@@ -1047,7 +1047,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     purchaseItems,
     qty,
     resetModalInfo,
-    route.params?.item?.key,
     soldOut,
     status,
   ]);
