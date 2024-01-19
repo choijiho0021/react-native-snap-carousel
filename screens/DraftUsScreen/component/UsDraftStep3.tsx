@@ -1,6 +1,6 @@
 import {ScrollView} from 'react-native-gesture-handler';
 import {StyleSheet, View} from 'react-native';
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -33,8 +33,6 @@ const styles = StyleSheet.create({
 
 interface UsDraftStep3Props {
   prods: UsProdDesc;
-  draftOrder: RkbOrder;
-  onClick: () => void;
   actDate: string;
   deviceData: DeviceDataType;
   checked: boolean;
@@ -43,14 +41,18 @@ interface UsDraftStep3Props {
 
 const UsDraftStep3: React.FC<UsDraftStep3Props> = ({
   prods,
-  draftOrder,
-  onClick,
   actDate,
   deviceData,
   checked,
   setChecked,
 }) => {
   const scrollRef = useRef(null);
+
+  useEffect(() => {
+    console.log('@@@@ actDate : ', actDate);
+    console.log('@@@@@ moment(actDate) : ', moment(actDate));
+    console.log('@@@@@ moment(actDate) : ', moment(actDate).format());
+  }, [actDate]);
 
   const onCheck = useCallback(() => {
     if (!checked) scrollRef?.current.scrollToEnd();
@@ -99,7 +101,7 @@ const UsDraftStep3: React.FC<UsDraftStep3Props> = ({
                         appStyles.semiBold16Text,
                         {color: colors.black, lineHeight: 24},
                       ]}>
-                      {moment(actDate).format('YYYY년 MM월 MM일')}
+                      {moment(actDate).format('YYYY년 MM월 DD일')}
                     </AppText>
                   </View>
 
