@@ -211,6 +211,22 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
   action,
 }) => {
   const [showSnackBar, setShowSnackbar] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: null,
+      headerLeft: () => <AppBackButton title={i18n.t('inv:title')} />,
+    });
+  }, [navigation]);
+
+  useEffect(() => {
+    if (isSending) {
+      setTimeout(() => {
+        setIsSending(false);
+      }, 3000);
+    }
+  }, [isSending]);
 
   useEffect(() => {
     if (navigation.isFocused()) {
@@ -369,9 +385,12 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
             title={i18n.t('inv:share')}
             titleStyle={appStyles.medium18}
             type="primary"
-            onPress={() =>
-              sendLink('share', promotion, account, setShowSnackbar)
-            }
+            onPress={() => {
+              if (!isSending) {
+                setIsSending(true);
+                sendLink('share', promotion, account, setShowSnackbar);
+              }
+            }}
             viewStyle={styles.rowCenter}
             style={{
               height: 62,

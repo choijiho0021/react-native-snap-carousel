@@ -4,6 +4,8 @@ import i18n from '@/utils/i18n';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import {isDraft} from '../modules/order';
 import Env from '@/environment';
+import {parseJson} from '@/utils/utils';
+import {ProdDesc} from './productApi';
 
 const {specialCategories} = Env.get();
 
@@ -53,6 +55,10 @@ export const dataStatusCd = {
 export const isDisabled = (item: RkbSubscription) => {
   return (
     item.giftStatusCd === 'S' ||
+    (item.partner === 'ht' &&
+      moment(item.activationDate)
+        ?.add(item.prodDays, 'days')
+        .isBefore(moment())) ||
     (item?.cnt > 1
       ? item.lastExpireDate && item.lastExpireDate.isBefore(moment())
       : item.expireDate && item.expireDate.isBefore(moment()))
@@ -149,6 +155,7 @@ export type RkbSubscription = {
   expireDate: Moment;
   provDate?: Moment;
   lastProvDate?: Moment;
+  activationDate?: Moment;
   statusCd: string;
   status: string;
   giftStatusCd: string;
@@ -166,6 +173,8 @@ export type RkbSubscription = {
   smdpAddr?: string;
   qrCode?: string;
   imsi?: string;
+  imei2?: string;
+  eid?: string;
   subsIccid?: string;
   packageId?: string;
   subsOrderNo?: string;
@@ -176,6 +185,7 @@ export type RkbSubscription = {
   noticeOption: string[];
   daily?: string;
   dataVolume?: string;
+  clMtd?: string;
 
   refSubs?: string;
   flagImage?: string;
@@ -187,9 +197,11 @@ export type RkbSubscription = {
   addOnOption?: AddOnOptionType;
   resetTime?: string;
   localOpId?: string;
+  extLocalOps?: string[];
 };
 
-export const getMoment = (str: string) => (str ? moment(str) : undefined);
+export const getMoment = (str: string) =>
+  str ? moment(str).tz('Asia/Seoul') : undefined;
 
 const toSubscription = (
   data: DrupalNode[] | DrupalNodeJsonApi,
@@ -287,6 +299,7 @@ const subsFulfillWithValue = (resp) => {
       ...o,
       provDate: getMoment(o.provDate),
       lastProvDate: getMoment(o.lastProvDate),
+      activationDate: getMoment(o.activationDate),
       cnt: parseInt(o.cnt || '0', 10),
       lastExpireDate: getMoment(o.lastExpireDate),
       startDate: getMoment(o.startDate),
@@ -295,6 +308,7 @@ const subsFulfillWithValue = (resp) => {
         .filter((v) => !_.isEmpty(v)),
 
       partner: o.partner,
+      clMtd: o.clMtd,
       status: toStatus(o.field_status),
       purchaseDate: getMoment(o.purchaseDate),
       expireDate: getMoment(o.expireDate),

@@ -5,6 +5,7 @@ import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import AppText from '@/components/AppText';
+import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
   btn: {
@@ -63,11 +64,23 @@ const GuideButton = ({
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}>
       <View>
-        <AppText style={styles.btnTitle}>
-          {isHome
-            ? i18n.t(`userGuide:${item}:title`)
-            : i18n.t(`userGuide:selectRegion:${item}`)}
-        </AppText>
+        <View style={{flexDirection: 'row', alignItems: 'center', gap: 6}}>
+          {item === 'us' && <AppSvgIcon name="cautionIconClearBlue" />}
+          <AppStyledText
+            textStyle={styles.btnTitle}
+            text={
+              isHome
+                ? i18n.t(`userGuide:${item}:title`)
+                : i18n.t(`userGuide:selectRegion:${item}`)
+            }
+            format={{
+              b: {
+                ...appStyles.bold16Text,
+                color: colors.clearBlue,
+              },
+            }}
+          />
+        </View>
         {isHome && (
           <View style={{marginTop: 4}}>
             <AppText style={styles.btnBody}>

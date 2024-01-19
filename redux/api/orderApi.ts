@@ -167,7 +167,19 @@ const toOrder = (
   return api.failure(data?.result || api.E_NOT_FOUND, data?.desc || '');
 };
 
-const draftOrder = ({orderId, token}: {orderId?: number; token?: string}) => {
+const draftOrder = ({
+  orderId,
+  token,
+  eid,
+  imei2,
+  activation_date,
+}: {
+  orderId?: number;
+  token?: string;
+  eid?: string;
+  imei2?: string;
+  activation_date?: string;
+}) => {
   if (!orderId) {
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter : orderId');
   }
@@ -180,10 +192,17 @@ const draftOrder = ({orderId, token}: {orderId?: number; token?: string}) => {
     '',
   )}/${orderId}?_format=json`;
 
+  const body = JSON.stringify({
+    status: 'R',
+    eid,
+    imei2,
+    activation_date,
+  });
+
   return api.callHttp(url, {
     method: 'PATCH',
     headers: api.withToken(token, 'json'),
-    body: JSON.stringify({status: 'R'}),
+    body,
   });
 };
 

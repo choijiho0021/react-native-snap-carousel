@@ -2,7 +2,6 @@
 import _ from 'underscore';
 import {Set} from 'immutable';
 import {Platform} from 'react-native';
-import DeviceInfo from 'react-native-device-info';
 import utils from '@/redux/api/utils';
 import {
   createFromAddOnProduct,
@@ -13,7 +12,7 @@ import {RkbPriceInfo} from '../modules/product';
 import {colors} from '@/constants/Colors';
 import Env from '@/environment';
 import {parseJson} from '@/utils/utils';
-import {RESULT_OVER_LIMIT} from '@/screens/ChargeTypeScreen';
+import {EXCEED_CHARGE_QUADCELL_RSP} from '@/screens/ChargeTypeScreen';
 
 const {specialCategories} = Env.get();
 
@@ -35,6 +34,8 @@ const category = {
   multi: '67',
 };
 
+type PromoFlag = 'sizeup' | 'doubleSizeup' | 'tripleSizeup' | 'hot' | 'fiveG';
+
 const flagColor = {
   hot: {
     backgroundColor: colors.veryLightPink,
@@ -52,6 +53,10 @@ const flagColor = {
     backgroundColor: colors.lightYellow,
     fontColor: colors.yellowSecond,
   },
+  fiveG: {
+    // backgroundColor: colors.purplyBlue,
+    fontColor: colors.purplyBlue,
+  },
 };
 
 export const getPromoFlagColor = (key: string) => {
@@ -61,6 +66,34 @@ export const getPromoFlagColor = (key: string) => {
       fontColor: colors.tomato,
     }
   );
+};
+
+export const promoFlagSort = (arr: string[]) => {
+  const promoFlags: PromoFlag[] = [];
+
+  arr.forEach((elm) => {
+    if (
+      ['sizeup', 'doubleSizeup', 'tripleSizeup', 'hot', 'fiveG'].includes(elm)
+    )
+      promoFlags.push(elm as PromoFlag);
+  });
+
+  // 정렬 규칙을 정의하는 비교 함수
+  const customComparator = (a: PromoFlag, b: PromoFlag): number => {
+    const order = {
+      sizeup: 1,
+      doubleSizeup: 2,
+      tripleSizeup: 3,
+      hot: 4,
+      fiveG: 5,
+    };
+
+    const orderA = order[a] ?? 0;
+
+    return orderA - order[b];
+  };
+
+  return promoFlags.sort(customComparator);
 };
 
 type DrupalProduct = {
@@ -80,6 +113,8 @@ type DrupalProduct = {
   field_weight: string;
   field_desc: string;
   sku: string;
+  field_network: string;
+  field_fup_speed?: string;
 };
 
 export type CurrencyCode = 'KRW' | 'USD';
@@ -87,6 +122,16 @@ export type Currency = {
   value: number;
   currency: CurrencyCode;
 };
+export type ProdDesc = {
+  desc1?: string;
+  desc2?: string;
+  apn?: string;
+  ftr?: string;
+  clMtd?: string;
+  caution?: string;
+  email_notice?: string;
+};
+
 export type RkbProduct = {
   key: string;
   uuid: string;
@@ -106,13 +151,15 @@ export type RkbProduct = {
   body: any;
   hotspot: boolean;
   weight: number;
-  desc: {desc1: string; desc2: string; apn: string};
+  desc: ProdDesc;
   // additional
   ccodeStr?: string;
   search?: string;
   pricePerDay?: Currency;
   cntry?: Set<string>;
   imageUrl?: string;
+  network?: string;
+  fup?: string;
 };
 
 const toPurchaseItem = (prod?: RkbProduct) => {
@@ -123,7 +170,7 @@ const toPurchaseAddOnItem = (subsId: string, prod?: RkbAddOnProd) => {
   return prod ? createFromAddOnProduct(prod, subsId) : undefined;
 };
 
-const toProdDesc = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
+const toProdDesc = (data: DrupalProduct[]): ApiResult<ProdDesc> => {
   if (_.isArray(data) && data.length > 0) {
     return api.success(parseJson(data[0].field_desc.replace(/&quot;/g, '"')));
   }
@@ -137,7 +184,7 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
   if (_.isArray(data) && data.length > 0) {
     return api.success(
       data
-        .filter((elm) => !testProductReg.test(elm.sku))
+        // .filter((elm) => !testProductReg.test(elm.sku))
         .map((item, idx) => ({
           key: item.uuid,
           uuid: item.uuid,
@@ -163,7 +210,67 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
           desc: item.field_desc
             ? parseJson(item.field_desc.replace(/&quot;/g, '"'))
             : {},
+          network: item.field_network,
+          fup: item.field_fup_speed,
         })),
+    );
+  }
+
+  return api.failure(api.E_NOT_FOUND);
+};
+
+type RkbAllProdJson = {
+  tt: string;
+  uid: string;
+  sku: string;
+  pr: string;
+  lpr: string;
+  da: string;
+  vol: string;
+  dys: string;
+  fup: string;
+  pid: string;
+  ct: string;
+  ctl: string;
+  var: string;
+  dsc: string;
+  desc: string;
+  sp: string[];
+  hot: string;
+  w: string;
+  adn?: string;
+  tpe: string;
+  net: string;
+};
+
+const toAllProduct = (data: RkbAllProdJson[]): ApiResult<RkbProduct> => {
+  if (data && data.length > 0) {
+    return api.success(
+      data.map((item, idx) => ({
+        key: item.uid,
+        uuid: item.uid,
+        name: item.tt,
+        listPrice: utils.stringToCurrency(item.lpr),
+        price: utils.stringToCurrency(item.pr),
+        field_daily: item.da,
+        volume: item.vol,
+        partnerId: item.pid,
+        categoryId: item.ct,
+        days: utils.stringToNumber(item.dys) || 0,
+        variationId: item.var,
+        field_description: item.dsc,
+        promoFlag: item.sp
+          .map((v) => specialCategories[v.trim()])
+          .filter((v) => !_.isEmpty(v)),
+        sku: item.sku,
+        idx,
+        hotspot: item.hot === '1',
+        weight: utils.stringToNumber(item.w),
+        network: item.net,
+        fup: item.fup,
+        body: '',
+        desc: '',
+      })),
     );
   }
 
@@ -215,11 +322,11 @@ export type RkbLocalOp = {
   key: string;
   name: string;
   ccode: string[];
-  apn: string;
+  apn?: string;
   imageUrl: string;
   network: string;
   weight: number;
-  detail: string;
+  detail?: string;
   partner: string;
   notice?: string;
 };
@@ -228,21 +335,33 @@ export type RkbProdCountry = {
   keyword: string;
 };
 
-const toLocalOp = (data: DrupalLocalOp[]): ApiResult<RkbLocalOp> => {
+type RkbLocalOpJson = {
+  tt: string; // title
+  co: string[]; // country code
+  img: string; // image URL
+  mc: string[]; // mcc mnc
+  nt: string; // network
+  w: string; // weight
+  id: string; // nid
+  mg: string;
+  pt: string; // partner
+  n?: string; // notice option
+  b?: string; // block list
+};
+
+const toLocalOp = (data: RkbLocalOpJson[]): ApiResult<RkbLocalOp> => {
   if (_.isArray(data)) {
     return api.success(
       data.map((item) => ({
-        key: item.nid,
-        name: item.title,
-        ccode: item.field_country.sort(),
-        mccmnc: item.field_mcc_mnc,
-        apn: item.field_apn_setting,
-        imageUrl: item.field_image,
-        network: item.field_network,
-        weight: utils.stringToNumber(item.field_weight) || 0,
-        detail: item.body,
-        partner: item.field_ref_partner.toLowerCase(),
-        notice: item.field_notice,
+        key: item.id,
+        name: item.tt,
+        ccode: item.co.sort(),
+        mccmnc: item.mc,
+        imageUrl: item.img,
+        network: item.nt,
+        weight: utils.stringToNumber(item.w) || 0,
+        partner: item.pt.toLowerCase(),
+        notice: item.n,
       })),
     );
   }
@@ -293,8 +412,11 @@ const toAddOnProd = (data: DrupalAddonProd[]): ApiResult<RkbAddOnProd> => {
   if (data.result === 0) {
     return api.success(data?.objects, data?.info);
   }
-  if (data.result === RESULT_OVER_LIMIT) {
-    return api.success(data?.objects, data?.info, RESULT_OVER_LIMIT);
+  if (
+    data.result === api.E_INVALID_STATUS ||
+    data.result === EXCEED_CHARGE_QUADCELL_RSP
+  ) {
+    return api.success(data?.objects, data?.info, data?.result);
   }
   return api.failure(api.E_NOT_FOUND);
 };
@@ -316,6 +438,19 @@ const getProductByLocalOp = (partnerId: string) => {
   return api.callHttpGet(
     api.httpUrl(`${api.path.prodByLocalOp}/${partnerId}?_format=hal_json`),
     toProduct,
+  );
+};
+
+const getAllProduct = () => {
+  return api.callHttpGet(
+    api.httpUrl(`${api.path.rokApi.rokebi.config}/allprod?_format=json`),
+    toAllProduct,
+  );
+};
+
+const getProductDescDetail = (prodUuid: string) => {
+  return api.callHttpGet(
+    api.httpUrl(`${api.path.prodDescDetail}/${prodUuid}?_format=hal_json`),
   );
 };
 
@@ -346,29 +481,23 @@ const getProductByUuid = (uuid: string) => {
   );
 };
 
-const getLocalOp = (op?: string) => {
+const getLocalOp = () => {
   return api.callHttpGet<RkbLocalOp>(
-    api.httpUrl(`${api.path.localOp + (op ? `/${op}` : '')}?_format=hal_json`),
+    api.httpUrl(`${api.path.rokApi.rokebi.config}/localop?_format=json`),
     toLocalOp,
   );
 };
 
 const getProdCountry = () => {
   return api.callHttpGet<RkbProdCountry>(
-    api.httpUrl(`${api.path.prodCountry}?_format=hal_json`),
+    api.httpUrl(`${api.path.rokApi.rokebi.config}/country?_format=json`),
     toProdCountry,
   );
 };
 
-const getAddOnProduct = (
-  subsId: string,
-  remainDays: string,
-  status: string,
-) => {
+const getAddOnProduct = (subsId: string) => {
   return api.callHttpGet<RkbAddOnProd>(
-    api.httpUrl(
-      `${api.path.rokApi.rokebi.prodAddOn}/${subsId}?_format=json&days=${remainDays}&status=${status}`,
-    ),
+    api.httpUrl(`${api.path.rokApi.rokebi.prodAddOn}/${subsId}?_format=json`),
     toAddOnProd,
   );
 };
@@ -382,13 +511,41 @@ export type RkbProdByCountry = {
   search?: string;
   tags?: string;
 };
+
+type RkbProdByCntryJson = {
+  ct: string;
+  pt: string;
+  co: string;
+  pr: string;
+  dis: string;
+  tgs: string;
+};
+
+const toProdByCntry = (
+  data: RkbProdByCntryJson[],
+): ApiResult<RkbProdByCountry> => {
+  if (_.isArray(data)) {
+    return api.success(
+      data.map((item) => ({
+        category: item.ct,
+        country: item.co,
+        partner: item.pt,
+        price: item.pr,
+        max_discount: item.dis,
+        tags: item.tgs,
+      })),
+    );
+  }
+
+  return api.failure(api.E_NOT_FOUND);
+};
+
 const productByCountry = () => {
   return api.callHttpGet<RkbProdByCountry>(
     api.httpUrl(
-      `${api.path.rokApi.rokebi.prodByCountry}?_format=json&platform=${
-        Platform.OS
-      }&deviceid=${DeviceInfo.getModel()}`,
+      `${api.path.rokApi.rokebi.config}/bycntry_${Platform.OS}?_format=json`,
     ),
+    toProdByCntry,
   );
 };
 
@@ -400,6 +557,8 @@ export default {
   getTitle,
   getProduct,
   getProductByLocalOp,
+  getAllProduct,
+  getProductDescDetail,
   getProductDesc,
   getProductBySku,
   getLocalOp,

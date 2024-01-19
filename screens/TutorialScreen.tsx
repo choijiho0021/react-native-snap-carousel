@@ -5,7 +5,6 @@ import {
   Dimensions,
   Image,
   Platform,
-  Pressable,
   SafeAreaView,
   StyleSheet,
   View,
@@ -22,7 +21,6 @@ import {connect} from 'react-redux';
 import {bindActionCreators, RootState} from 'redux';
 import {RouteProp} from '@react-navigation/native';
 import i18n from '@/utils/i18n';
-import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
@@ -65,7 +63,7 @@ const tutorialImages = esimGlobal
 const styles = StyleSheet.create({
   pagination: {
     position: 'absolute',
-    bottom: 0,
+    top: 0,
     right: 0,
     left: 0,
   },
@@ -73,13 +71,13 @@ const styles = StyleSheet.create({
     width: 20,
     height: 6,
     borderRadius: 3.5,
-    backgroundColor: colors.goldenYellow,
+    backgroundColor: colors.clearBlue,
   },
   inactiveDotStyle: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: colors.white,
+    backgroundColor: colors.lightGrey,
   },
   image: {
     width: '100%',
@@ -173,7 +171,7 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
         <Image
           style={styles.image}
           source={tutorialImages[item]}
-          resizeMode="cover"
+          resizeMode="contain"
         />
       </View>
     ),
@@ -182,11 +180,10 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
 
   const move = useCallback(() => {
     const {params} = props?.route;
-    const {stack, screen} = params || {};
-
+    const {stack, screen, naviParams} = params || {};
     if (stack && screen) {
       navigation.popToTop();
-      navigation.navigate(stack, {screen});
+      navigation.navigate(stack, {screen, params: naviParams});
     } else {
       navigation.navigate('Home');
     }
@@ -224,11 +221,10 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
           onSnapToItem={setActiveSlide}
           sliderWidth={dimensions.width}
         />
-
         <Pagination
           dotsLength={images.length}
           activeDotIndex={activeSlide}
-          dotContainerStyle={{width: 10, height: 15}}
+          dotContainerStyle={{width: 5, height: 15}}
           dotStyle={styles.dotStyle}
           inactiveDotStyle={styles.inactiveDotStyle}
           inactiveDotOpacity={0.4}

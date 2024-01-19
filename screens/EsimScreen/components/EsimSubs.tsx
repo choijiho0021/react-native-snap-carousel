@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import React, {
   MutableRefObject,
   useCallback,
@@ -49,6 +48,8 @@ import {
 } from '@/redux/modules/order';
 import {AccountModelState} from '@/redux/modules/account';
 import {HomeStackParamList} from '@/navigation/navigation';
+import HowToCallModal from './HowToCallModal';
+import HtQrModal from './HtQrModal';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
   inactiveContainer: {
     marginBottom: 6,
     flexDirection: 'row',
-    alignItems: 'center',
+    // alignItems: 'center',
     width: '100%',
     justifyContent: 'space-between',
   },
@@ -365,6 +366,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   action,
 }) => {
   const [
+    isht,
     isTypeDraft,
     isCharged,
     isBC,
@@ -375,9 +377,18 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     isChargeButton,
   ] = useMemo(() => {
     const now = moment();
-    const expd = mainSubs.lastExpireDate?.isBefore(now) || false;
+    const checkHt = mainSubs.partner === 'ht';
+    const expd =
+      (checkHt
+        ? moment(mainSubs.activationDate)
+            ?.add(Number(mainSubs.prodDays) - 1, 'days')
+            .tz('EST')
+            .endOf('day')
+            .isBefore(moment())
+        : mainSubs.lastExpireDate?.isBefore(now)) || false;
 
     return [
+      checkHt,
       isDraft(mainSubs?.statusCd),
 
       // mainSubs?.addOnOption 이 없는 경우도 NEVER
@@ -397,9 +408,12 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         !(mainSubs.expireDate && mainSubs.expireDate.isBefore(now)),
     ];
   }, [mainSubs]);
+
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [showSubs, setShowSubs] = useState<boolean>(!mainSubs.hide);
   const [expiredModalVisible, setExpiredModalVisible] = useState(false);
+  const [showHtcModal, setShowHtcModal] = useState<boolean>(false);
+  const [showHtQrModal, setShowHtQrModal] = useState<boolean>(false);
   const navigation = useNavigation<EsimSubsNavigationProp>();
 
   useEffect(() => {
@@ -568,6 +582,41 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   ]);
 
   const topInfo = useCallback(() => {
+    if (isht) {
+      return (
+        <View style={[styles.topInfo, !notCardInfo && {marginVertical: 16}]}>
+          {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
+            <View style={styles.inactiveContainer}>
+              <AppText style={styles.normal14Gray}>{i18n.t('eid')}</AppText>
+              <AppText
+                style={[
+                  styles.normal14Gray,
+                  {marginLeft: 80, textAlign: 'right', flex: 1},
+                ]}>
+                {mainSubs.eid}
+              </AppText>
+            </View>
+          )}
+          <View style={styles.inactiveContainer}>
+            <AppText style={styles.normal14Gray}>
+              {i18n.t('imei2:esim')}
+            </AppText>
+            <AppText style={styles.normal14Gray}>{mainSubs.imei2}</AppText>
+          </View>
+
+          {!isBC && (
+            <View style={styles.inactiveContainer}>
+              <AppText style={styles.normal14Gray}>
+                {i18n.t('esim:activationDate')}
+              </AppText>
+              <AppText style={styles.normal14Gray}>
+                {mainSubs.activationDate?.format('YYYY.MM.DD')}
+              </AppText>
+            </View>
+          )}
+        </View>
+      );
+    }
     return (
       <View style={[styles.topInfo, !notCardInfo && {marginVertical: 16}]}>
         {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
@@ -601,7 +650,19 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         )}
       </View>
     );
-  }, [chargeablePeriod, mainSubs, isBC, notCardInfo]);
+  }, [
+    isht,
+    notCardInfo,
+    mainSubs.type,
+    mainSubs.subsIccid,
+    mainSubs.purchaseDate,
+    mainSubs?.lastExpireDate,
+    mainSubs.eid,
+    mainSubs.imei2,
+    mainSubs.activationDate,
+    isBC,
+    chargeablePeriod,
+  ]);
 
   const QRnCopyInfo = useCallback(() => {
     return (
@@ -625,27 +686,33 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               navigation.navigate('ProductDetail', {
                 title: prod.name,
                 item: API.Product.toPurchaseItem(prod),
+                price: prod.price,
+                listPrice: prod.listPrice,
                 uuid: prod.uuid,
                 desc: prod.desc,
+                partner: mainSubs.partner,
+                prod,
               });
           }}
         />
 
-        <AppButton
-          style={{
-            flex: 1,
-            backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
-            paddingVertical: 8,
-            marginRight: 8,
-            borderRadius: 3,
-          }}
-          titleStyle={{
-            ...styles.esimButton,
-            color: isEditMode ? colors.lightGrey : colors.black,
-          }}
-          title={i18n.t('esim:showQR')}
-          onPress={() => navigation.navigate('QrInfo', {mainSubs})}
-        />
+        {!isht && (
+          <AppButton
+            style={{
+              flex: 1,
+              backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
+              paddingVertical: 8,
+              marginRight: 8,
+              borderRadius: 3,
+            }}
+            titleStyle={{
+              ...styles.esimButton,
+              color: isEditMode ? colors.lightGrey : colors.black,
+            }}
+            title={i18n.t('esim:showQR')}
+            onPress={() => navigation.navigate('QrInfo', {mainSubs})}
+          />
+        )}
 
         <AppButton
           style={{
@@ -675,6 +742,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     isChargeButton,
     isCharged,
     isEditMode,
+    isht,
     mainSubs,
     navigation,
     onPressRecharge,
@@ -731,6 +799,63 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       );
     return null;
   }, [expired, mainSubs, navigation]);
+
+  const renderHowToCall = useCallback(() => {
+    const clMtd = mainSubs?.clMtd;
+    if (clMtd)
+      return (
+        <View>
+          <Pressable
+            style={[
+              styles.redirectHK,
+              {
+                backgroundColor: colors.white,
+              },
+            ]}
+            onPress={() => {
+              if (mainSubs?.clMtd) setShowHtcModal(true);
+            }}>
+            <View style={styles.row}>
+              <AppSvgIcon name="phone" style={{marginTop: 1}} />
+              <AppText style={styles.redirectText}>
+                {i18n.t('esim:howToCall')}
+              </AppText>
+            </View>
+
+            <View style={[styles.row, {justifyContent: 'flex-end'}]}>
+              <AppText style={styles.blueText}>
+                {i18n.t('esim:howToCall:check')}
+              </AppText>
+              <AppSvgIcon name="rightBlueBracket" />
+            </View>
+          </Pressable>
+        </View>
+      );
+    return null;
+  }, [mainSubs?.clMtd]);
+
+  const renderMvHtQr = useCallback(() => {
+    if (mainSubs.daily === 'daily' && mainSubs.partner === 'ht')
+      return (
+        <Pressable
+          style={{
+            justifyContent: 'center',
+            backgroundColor: colors.white,
+            flexDirection: 'row',
+            marginTop: 4,
+          }}
+          onPress={() => {
+            setShowHtQrModal(true);
+          }}>
+          <AppText style={styles.drafting}>
+            {i18n.t('esim:howToCall:moveToQr')}
+          </AppText>
+          <AppSvgIcon name="rightBlueBracket" />
+        </Pressable>
+      );
+
+    return null;
+  }, [mainSubs.daily, mainSubs.partner]);
 
   const renderMoveBtn = useCallback(() => {
     // 충전 버튼 출력 조건
@@ -891,15 +1016,34 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
                 </View>
               </View>
             ) : (
-              <View style={{height: 40}} />
+              <View style={{height: 30}} />
             )}
 
             {renderHkBtn()}
 
-            {renderMoveBtn()}
+            {renderHowToCall()}
+
+            {renderMvHtQr()}
+
+            {!isht && renderMoveBtn()}
           </View>
         )}
       </View>
+
+      {mainSubs?.clMtd && (
+        <>
+          <HowToCallModal
+            visible={showHtcModal}
+            clMtd={mainSubs?.clMtd}
+            onOkClose={() => setShowHtcModal(false)}
+          />
+          <HtQrModal
+            visible={showHtQrModal}
+            onOkClose={() => setShowHtQrModal(false)}
+          />
+        </>
+      )}
+
       <AppModal
         type="info"
         buttonStyle={styles.btnStyle}

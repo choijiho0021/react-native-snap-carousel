@@ -388,6 +388,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                 />
               </View>
             }
+            isFooter={false}
           />
         </View>
       </ScrollView>

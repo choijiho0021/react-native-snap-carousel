@@ -1,10 +1,12 @@
 /* eslint-disable no-plusplus */
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, useMemo, useRef} from 'react';
 import Clipboard from '@react-native-community/clipboard';
 import {
+  AppState,
   Image,
+  ImageBackground,
   Modal,
   Platform,
   Pressable,
@@ -12,7 +14,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import WebView, {WebViewMessageEvent} from 'react-native-webview';
+import {WebViewMessageEvent} from 'react-native-webview';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import analytics, {firebase} from '@react-native-firebase/analytics';
@@ -22,7 +24,7 @@ import {
   getTrackingStatus,
   TrackingStatus,
 } from 'react-native-tracking-transparency';
-import Share from 'react-native-share';
+import {ScrollView} from 'react-native-gesture-handler';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
@@ -45,16 +47,22 @@ import {
 import AppCartButton from '@/components/AppCartButton';
 import ChatTalk from '@/components/ChatTalk';
 import {API} from '@/redux/api';
-import {PromotionModelState} from '@/redux/modules/promotion';
-import {Currency, RkbProdByCountry} from '@/redux/api/productApi';
+import {Currency, ProdDesc} from '@/redux/api/productApi';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import InputNumber from '@/components/InputNumber';
 import utils from '@/redux/api/utils';
 import AppPrice from '@/components/AppPrice';
 import {ProductModelState} from '@/redux/modules/product';
+import ShareLinkModal from './components/ShareLinkModal';
+import AppStyledText from '@/components/AppStyledText';
+import ChargeInfoModal from './components/ChargeInfoModal';
+import TextWithDot from '../EsimScreen/components/TextWithDot';
+import BodyHtml from './components/BodyHtml';
+import {parseJson} from '@/utils/utils';
+import TextWithCheck from '../HomeScreen/component/TextWithCheck';
 
-const {esimGlobal, webViewHost, isIOS} = Env.get();
+const {esimGlobal, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
 
 const styles = StyleSheet.create({
@@ -74,19 +82,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal18Text,
     textAlign: 'center',
     color: colors.white,
-  },
-  regCard: {
-    ...appStyles.normal18Text,
-    textAlign: 'center',
-    textAlignVertical: 'bottom',
-    width: '100%',
-  },
-  regCardView: {
-    width: '100%',
-    height: 52,
-    justifyContent: 'center',
-    borderTopWidth: 1,
-    borderColor: colors.lightGrey,
   },
   header: {
     flexDirection: 'row',
@@ -134,7 +129,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
   modalFrame: {
     marginHorizontal: 20,
@@ -176,6 +171,220 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     color: colors.clearBlue,
   },
+  bg: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    height: 288,
+    paddingTop: 40,
+    paddingBottom: 32,
+    paddingLeft: 20,
+  },
+  titleTop: {
+    display: 'flex',
+    gap: 8,
+  },
+  prodTitle: {
+    ...appStyles.semiBold24Text,
+    lineHeight: 42,
+    color: colors.white,
+  },
+  prodTitleBold: {
+    ...appStyles.bold32Text,
+    lineHeight: 42,
+    color: colors.white,
+  },
+  prodBody: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
+    color: colors.white,
+  },
+  locaTag: {
+    ...appStyles.bold16Text,
+    lineHeight: 24,
+    color: colors.white,
+    marginBottom: 4,
+  },
+  bottomText: {
+    ...appStyles.normal16Text,
+    color: colors.white,
+    lineHeight: 24,
+  },
+  iconBox: {
+    backgroundColor: colors.paleBlue2,
+    paddingTop: 48,
+    paddingBottom: 10,
+    paddingHorizontal: 20,
+    gap: 32,
+  },
+  iconBoxLine: {
+    display: 'flex',
+    flexDirection: 'row',
+    flex: 1,
+    justifyContent: 'space-around',
+  },
+  iconWithText: {
+    width: 110,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+  },
+  iconText: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 18,
+    textAlign: 'center',
+  },
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  chargeBoxFrame: {
+    height: 48,
+    width: 79,
+  },
+  chargeBox: {
+    borderWidth: 1,
+    borderColor: colors.veryLightBlue,
+    borderRadius: 3,
+    width: '100%',
+    height: '100%',
+    backgroundColor: colors.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 2,
+  },
+  chargeBoxText: {
+    ...appStyles.bold12Text,
+    lineHeight: 16,
+    color: colors.black,
+  },
+  noticeBox: {
+    paddingVertical: 17,
+    paddingHorizontal: 20,
+    backgroundColor: colors.darkNavy,
+  },
+  noticeHeader: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 4,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  noticeHeaderText: {
+    ...appStyles.normal16Text,
+    lineHeight: 20,
+    color: colors.white,
+  },
+  dot: {
+    ...appStyles.bold14Text,
+    marginHorizontal: 5,
+    lineHeight: 20,
+    color: colors.white,
+  },
+  noticeText: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
+    color: colors.white,
+    marginRight: 20,
+  },
+  noticeTextBold: {
+    ...appStyles.bold14Text,
+    lineHeight: 20,
+    color: colors.white,
+  },
+  callMethod: {
+    paddingHorizontal: 20,
+    paddingTop: 42,
+  },
+  callMethodTitle: {
+    ...appStyles.normal20Text,
+    // fontWeight: '500',
+    lineHeight: 22,
+    color: colors.black,
+    marginBottom: 16,
+  },
+  callMethodBox: {
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    backgroundColor: colors.white,
+    borderRadius: 3,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  callMethodBoxTop: {
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderColor: colors.whiteFive,
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  callMethodContents: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 4,
+    marginTop: 8,
+    paddingVertical: 12,
+  },
+  callMethodBoxBottom: {
+    paddingTop: 9,
+    paddingBottom: 6,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 6,
+  },
+  featureWithText: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+    width: '50%',
+  },
+  featureText: {
+    ...appStyles.semiBold18Text,
+    lineHeight: 22,
+    color: colors.black,
+  },
+  callMethodBoxBold: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 24,
+    color: colors.black,
+  },
+  callMethodBoxText: {
+    ...appStyles.normal16Text,
+    lineHeight: 24,
+    color: colors.black,
+  },
+  showDetail: {
+    ...appStyles.bold14Text,
+    lineHeight: 24,
+    letterSpacing: -0.5,
+    color: colors.warmGrey,
+  },
+  ustotalDetailBox: {
+    marginLeft: 24,
+  },
+  countryBox: {
+    padding: 8,
+    backgroundColor: colors.backGrey,
+    borderRadius: 3,
+    marginVertical: 2,
+  },
+  countryBoxText: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 22,
+    color: colors.black,
+  },
+  countryBoxNotice: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 22,
+    color: colors.warmGrey,
+  },
 });
 
 type ProductDetailScreenNavigationProp = StackNavigationProp<
@@ -194,7 +403,6 @@ type ProductDetailScreenProps = {
 
   account: AccountModelState;
   cart: CartModelState;
-  promotion: PromotionModelState;
   product: ProductModelState;
   action: {
     cart: CartAction;
@@ -202,13 +410,21 @@ type ProductDetailScreenProps = {
   };
 };
 
+type addonOptionType = 'N' | 'A' | 'E' | 'B' | undefined;
+type DescData = {
+  fieldNoticeOption: any; // 리스트, 배열 상관없이 받도록
+  fieldCaution: string;
+  fieldCautionList: string[];
+  body: string;
+  addonOption?: addonOptionType;
+  desc?: ProdDesc;
+};
+
 const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   navigation,
   route,
   action,
   account,
-  promotion,
-  product,
   cart,
 }) => {
   const [showSnackBar, setShowSnackBar] = useState<{
@@ -216,17 +432,57 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     visible: boolean;
   }>({text: '', visible: false});
   const [status, setStatus] = useState<TrackingStatus>();
-  const [purchaseItems, setPurchaseItems] = useState<PurchaseItem[]>([]);
+  const purchaseItems = useMemo(
+    () => (route.params?.item ? [route.params.item] : []),
+    [route.params?.item],
+  );
+
+  const prod = useMemo(() => route.params?.prod, [route.params?.prod]);
+  const noFup = useMemo(
+    () => prod?.fup === 'N/A' || prod?.fup === '0',
+    [prod?.fup],
+  );
+
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [showButton, setShowButton] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+
+  const [showWebModal, setShowWebModal] = useState(false);
+  const [descData, setDescData] = useState<DescData>();
+
   const [qty, setQty] = useState(1);
+  const appState = useRef('unknown');
   const [price, setPrice] = useState<Currency>();
+  const [showChargeInfoModal, setShowChargeInfoModal] = useState(false);
+  const [showCallDetail, setShowCallDetail] = useState(false);
+
+  const isht = useMemo(
+    () => route?.params?.partner === 'ht',
+    [route?.params?.partner],
+  );
 
   useEffect(() => {
-    setPurchaseItems(route.params.item ? [route.params.item] : []);
+    if (prod)
+      API.Product.getProductDescDetail(prod.key).then((rsp) => {
+        const data = rsp[0];
+        if (data) {
+          setDescData({
+            fieldNoticeOption: data.field_notice_option, // 리스트, 배열 상관없이 받도록
+            fieldCaution: data.field_caution || '',
+            fieldCautionList: data.field_caution_list || [],
+            addonOption: data.field_addon_option,
+            body: data.body,
+            desc: data.field_desc
+              ? parseJson(data.field_desc.replace(/&quot;/g, '"'))
+              : {},
+          });
+        }
+      });
+  }, [prod]);
+
+  useEffect(() => {
     getTrackingStatus().then((elm) => setStatus(elm));
-  }, [route.params.item]);
+  }, []);
 
   useEffect(() => {
     if (purchaseItems) {
@@ -237,31 +493,51 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   const onChangeQty = useCallback(
     (cnt: number) => {
-      setQty(cnt);
-      setPrice({
-        value: Math.round(cnt * purchaseItems[0].price?.value * 100) / 100,
-        currency: purchaseItems[0].price?.currency,
-      });
+      if (isht) {
+        setShowSnackBar({text: i18n.t('prodDetail:qtyLimit'), visible: true});
+      } else {
+        setQty(cnt);
+        setPrice({
+          value: Math.round(cnt * purchaseItems[0]?.price?.value * 100) / 100,
+          currency: purchaseItems[0]?.price?.currency,
+        });
+      }
     },
-    [purchaseItems],
+    [isht, purchaseItems],
   );
 
   const resetModalInfo = useCallback(() => {
     onChangeQty(1);
   }, [onChangeQty]);
 
+  useEffect(() => {
+    // EsimScreen 에서만 getSubs 초기화
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (['inactive', 'background'].includes(nextAppState)) {
+        console.log('App has background');
+        setShowShareModal(false);
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
       const [key, value] = event.nativeEvent.data.split(',');
-      const k = route.params.item?.key;
+      const k = route.params?.item?.key;
 
       switch (key) {
         case 'showButton':
-          setShowButton(true);
+          setShowWebModal(false);
           break;
         case 'hideButton':
-          setShowButton(false);
           setShowModal(false);
+          setShowWebModal(true);
           break;
 
         case 'moveToPage':
@@ -309,31 +585,383 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           break;
       }
     },
-    [action.info, navigation, route.params.item?.key, route.params?.title],
+    [action.info, navigation, route.params?.item?.key, route.params?.title],
   );
 
-  const renderWebView = useCallback(
-    (uuid?: string) => {
-      if (!uuid) return null;
+  const renderTopInfo = useCallback(
+    (isDaily: boolean, volume: string, volumeUnit: string) => (
+      <ImageBackground
+        source={
+          isDaily
+            ? require('@/assets/images/esim/img_bg_1.png')
+            : require('@/assets/images/esim/img_bg_2.png')
+        }
+        style={styles.bg}>
+        <View style={styles.titleTop}>
+          <AppStyledText
+            text={i18n.t(`prodDetail:title:${isDaily ? 'daily' : 'total'}`)}
+            textStyle={styles.prodTitle}
+            format={{b: styles.prodTitleBold}}
+            data={{
+              data: isDaily ? prod?.days.toString() || '' : volume || '',
+              unit: volumeUnit,
+            }}
+          />
 
-      const uri = `${webViewHost}/product/${uuid}`;
+          <AppText style={styles.prodBody}>{descData?.desc?.desc1}</AppText>
+        </View>
+        <View>
+          <AppText style={styles.locaTag}>
+            {i18n.t(
+              `prodDetail:${
+                ['로컬', 'local'].find((i) => prod?.name.includes(i))
+                  ? 'local'
+                  : 'roaming'
+              }`,
+            )}
+          </AppText>
+          <AppText style={styles.bottomText}>{descData?.desc?.desc2}</AppText>
+        </View>
+      </ImageBackground>
+    ),
+    [descData, prod],
+  );
+
+  const renderIconWithText = useCallback(
+    (icon: string, text: string) => (
+      <View style={styles.iconWithText} key={`${icon}${text}`}>
+        <AppIcon name={icon} />
+        <AppText style={styles.iconText}>{text}</AppText>
+      </View>
+    ),
+    [],
+  );
+
+  const renderChargeDetail = useCallback(
+    (icon: string, text: string) => (
+      <View style={styles.row} key={`${icon}${text}`}>
+        <AppText style={styles.chargeBoxText}>{text}</AppText>
+        <AppIcon name={icon} />
+      </View>
+    ),
+    [],
+  );
+
+  const renderChargeIcon = useCallback(() => {
+    const isChargeOff = descData?.addonOption === 'N' || !descData?.addonOption;
+    return (
+      <Pressable
+        style={styles.iconWithText}
+        onPress={() => setShowChargeInfoModal((prev) => !prev)}>
+        <AppIcon name={isChargeOff ? 'iconChargeOff' : 'iconCharge'} />
+        <View style={styles.row}>
+          <AppText style={styles.iconText}>
+            {i18n.t(`prodDetail:icon:charge${isChargeOff ? 'Off' : ''}`)}
+          </AppText>
+          <AppIcon name="iconChargeInfo" />
+        </View>
+        <View style={styles.chargeBoxFrame}>
+          {!isChargeOff && (
+            <View style={styles.chargeBox}>
+              {[
+                {
+                  icon: descData?.addonOption === 'E' ? 'iconX' : 'iconOk',
+                  text: i18n.t('prodDetail:icon:charge:addOn'),
+                },
+                {
+                  icon: descData?.addonOption === 'A' ? 'iconX' : 'iconOk',
+                  text: i18n.t('prodDetail:icon:charge:extension'),
+                },
+              ].map((i) => renderChargeDetail(i.icon, i.text))}
+            </View>
+          )}
+        </View>
+      </Pressable>
+    );
+  }, [descData?.addonOption, renderChargeDetail]);
+
+  const renderSixIcon = useCallback(
+    (isDaily: boolean, volume: string, volumeUnit: string) => {
+      const feature = descData?.desc?.ftr?.toUpperCase() || 'Only';
 
       return (
-        <WebView
-          // automaticallyAdjustContentInsets={true}
-          javaScriptEnabled
-          domStorageEnabled
-          // scalesPageToFit
-          startInLoadingState
-          decelerationRate="normal"
-          scrollEnabled
-          onMessage={onMessage}
-          source={{uri}}
-        />
+        <View style={styles.iconBox}>
+          <View style={styles.iconBoxLine}>
+            {[
+              {
+                icon: `iconData${feature}`,
+                text: i18n.t(`prodDetail:icon:data${feature}`),
+              },
+              {
+                icon: 'iconClock',
+                text: i18n.t('prodDetail:icon:clock', {
+                  days: prod?.days,
+                }),
+              },
+              {
+                icon:
+                  prod?.network === '5G/LTE/3G'
+                    ? 'icon5G'
+                    : prod?.network === '3G'
+                    ? 'icon3G'
+                    : 'iconLTE',
+                text: prod?.network || '',
+              },
+            ].map((i) => renderIconWithText(i.icon, i.text))}
+          </View>
+          <View style={styles.iconBoxLine}>
+            {[
+              {
+                icon: noFup
+                  ? volume === '1000'
+                    ? 'iconAllday'
+                    : 'iconTimer'
+                  : 'iconSpeed',
+                text: i18n.t(
+                  `prodDetail:icon:${
+                    noFup ? (volume === '1000' ? 'allday' : 'timer') : 'speed'
+                  }${
+                    noFup && volume === '1000'
+                      ? ''
+                      : isDaily
+                      ? ':daily'
+                      : ':total'
+                  }`,
+                  {
+                    data: `${volume}${volumeUnit}`,
+                  },
+                ),
+              },
+              {
+                icon: prod?.hotspot ? 'iconWifi' : 'conWifiOff',
+                text: i18n.t(
+                  `prodDetail:icon:${prod?.hotspot ? 'wifi' : 'wifiOff'}`,
+                ),
+              },
+            ].map((i) => renderIconWithText(i.icon, i.text))}
+            {descData?.addonOption && renderChargeIcon()}
+          </View>
+        </View>
       );
     },
-    [onMessage],
+    [descData, noFup, prod, renderChargeIcon, renderIconWithText],
   );
+
+  const renderNoticeOption = useCallback(
+    (noticeOption: string) => (
+      <TextWithDot
+        key={noticeOption}
+        dotStyle={styles.dot}
+        textStyle={styles.noticeText}
+        boldStyle={styles.noticeTextBold}
+        text={i18n.t(`prodDetail:noticeOption:${noticeOption}`)}
+      />
+    ),
+    [],
+  );
+
+  const renderCautionList = useCallback((caution: string) => {
+    const cautionText = caution.substring(
+      caution.startsWith('ios:') ? 4 : caution.startsWith('android:') ? 8 : 0,
+    );
+    return (
+      <TextWithDot
+        key={caution}
+        dotStyle={styles.dot}
+        textStyle={styles.noticeText}
+        boldStyle={styles.noticeTextBold}
+        text={cautionText}
+      />
+    );
+  }, []);
+
+  const renderNotice = useCallback(
+    (noticeList: string[], cautionList: string[]) => {
+      return (
+        <View style={styles.noticeBox}>
+          <View style={styles.noticeHeader}>
+            <AppIcon name="iconNoticeRed24" />
+            <AppText style={styles.noticeHeaderText}>
+              {i18n.t('prodDetail:Caution')}
+            </AppText>
+          </View>
+          {noticeList.map((i) => renderNoticeOption(i))}
+          {cautionList.map((i) => renderCautionList(i))}
+        </View>
+      );
+    },
+    [renderCautionList, renderNoticeOption],
+  );
+
+  const renderFeature = useCallback((feature: string) => {
+    const key = `icon${feature}`;
+    return (
+      <View style={styles.featureWithText} key={key}>
+        {feature === 'M' && <View style={{width: 20}} />}
+        <AppIcon name={key} />
+        <AppText style={styles.featureText}>
+          {i18n.t(`prodDetail:callMethod:box:feature:${feature}`)}
+        </AppText>
+      </View>
+    );
+  }, []);
+
+  const renderUsTotalCountryBox = useCallback(
+    () => (
+      <View style={styles.ustotalDetailBox}>
+        <View style={styles.countryBox}>
+          <AppText style={styles.countryBoxText}>
+            {i18n.t('prodDetail:callMethod:box:detail:ustotal:country')}
+          </AppText>
+        </View>
+        <AppText style={styles.countryBoxNotice}>
+          {i18n.t('prodDetail:callMethod:box:detail:ustotal:notice')}
+        </AppText>
+      </View>
+    ),
+    [],
+  );
+
+  const getDetailList = useCallback((clMtd: string) => {
+    switch (clMtd) {
+      case 'usdaily':
+      case 'mvtotal':
+        return [1];
+      case 'ustotal':
+      case 'ais':
+        return [1, 2];
+      case 'dtac':
+        return [1, 2, 3, 4];
+      default:
+        return [];
+    }
+  }, []);
+
+  const renderCallMethod = useCallback(
+    (clMtd: string) => {
+      const ftrList =
+        descData?.desc?.ftr?.toLowerCase() === 'm' ? ['V', 'M'] : ['V'];
+      const isUS = clMtd.includes('us');
+      const defaultList = ['ustotal', 'mvtotal'].includes(clMtd) ? [1, 2] : [1];
+      const detailList = getDetailList(clMtd);
+
+      return (
+        <View style={styles.callMethod}>
+          <AppText style={styles.callMethodTitle}>
+            {i18n.t('prodDetail:callMethod:title')}
+          </AppText>
+          <View style={styles.callMethodBox}>
+            <View style={styles.callMethodBoxTop}>
+              {ftrList.map((f) => renderFeature(f))}
+            </View>
+            <View style={styles.callMethodContents}>
+              {defaultList.map((i) => (
+                <TextWithCheck
+                  text={i18n.t(
+                    `prodDetail:callMethod:box:contents:default${i}:${
+                      isUS ? 'us' : clMtd
+                    }`,
+                  )}
+                  textStyle={styles.callMethodBoxBold}
+                />
+              ))}
+              {showCallDetail &&
+                detailList.length > 0 &&
+                detailList.map((i) => (
+                  <View key={`detail${clMtd}${i}`}>
+                    <TextWithCheck
+                      text={i18n.t(
+                        `prodDetail:callMethod:box:contents:detail${i}:${clMtd}`,
+                      )}
+                      textStyle={styles.callMethodBoxText}
+                    />
+                    {clMtd === 'ustotal' &&
+                      i === 1 &&
+                      renderUsTotalCountryBox()}
+                  </View>
+                ))}
+            </View>
+            <Pressable
+              style={styles.callMethodBoxBottom}
+              onPress={() => setShowCallDetail((prev) => !prev)}>
+              <AppText style={styles.showDetail}>
+                {i18n.t(showCallDetail ? 'close' : 'pym:detail')}
+              </AppText>
+              <AppIcon
+                name={showCallDetail ? 'iconArrowUp11' : 'iconArrowDown11'}
+              />
+            </Pressable>
+          </View>
+        </View>
+      );
+    },
+    [
+      descData?.desc?.ftr,
+      getDetailList,
+      renderFeature,
+      renderUsTotalCountryBox,
+      showCallDetail,
+    ],
+  );
+
+  const renderProdDetail = useCallback(() => {
+    const isDaily = prod?.field_daily === 'daily';
+    const volume =
+      Number(prod?.volume) > 500
+        ? (Number(prod?.volume) / 1024).toString()
+        : prod?.volume || '';
+    const volumeUnit = Number(prod?.volume) > 500 ? 'GB' : 'MB';
+
+    const noticeOption = descData?.fieldNoticeOption || [];
+    let noticeOptionList: string[] = [];
+    if (typeof noticeOption === 'string') {
+      noticeOptionList = noticeOption.replace(' ', '').split(',');
+    } else {
+      noticeOptionList = noticeOption;
+    }
+
+    const drupalList = ['I', 'A', 'K', 'N', 'H'];
+
+    const noticeList: string[] = drupalList.reduce(
+      (acc: string[], curr: string) => {
+        if (noticeOptionList.includes(curr)) {
+          acc.push(curr);
+        }
+        return acc;
+      },
+      [],
+    );
+
+    const cautionList: string[] =
+      descData?.fieldCautionList.filter((c) =>
+        isIOS ? !c.includes('android:') : !c.includes('ios:'),
+      ) || [];
+
+    const clMtd = descData?.desc?.clMtd;
+    return (
+      prod &&
+      descData && (
+        <ScrollView style={{flex: 1}}>
+          {renderTopInfo(isDaily, volume, volumeUnit)}
+          {renderSixIcon(isDaily, volume, volumeUnit)}
+          {(noticeList.length > 0 || cautionList.length > 0) &&
+            renderNotice(noticeList, cautionList)}
+          {clMtd &&
+            ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(clMtd) &&
+            renderCallMethod(clMtd)}
+          <BodyHtml body={descData.body} onMessage={onMessage} />
+        </ScrollView>
+      )
+    );
+  }, [
+    descData,
+    onMessage,
+    prod,
+    renderCallMethod,
+    renderNotice,
+    renderSixIcon,
+    renderTopInfo,
+  ]);
 
   const soldOut = useCallback((payload: ApiResult<any>, message: string) => {
     if (payload.result === api.E_RESOURCE_NOT_FOUND) {
@@ -419,6 +1047,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     purchaseItems,
     qty,
     resetModalInfo,
+    route.params?.item?.key,
     soldOut,
     status,
   ]);
@@ -462,48 +1091,21 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   ]);
 
   const onPressBtnRegCard = useCallback(() => {
+    setShowModal(false);
+    resetModalInfo();
     Analytics.trackEvent('Click_regCard');
 
     navigation.navigate('RegisterMobile', {goBack: () => navigation.goBack()});
-  }, [navigation]);
-
-  useEffect(() => {
-    console.log('price : ', price);
-  }, [price]);
-
-  const onShare = useCallback(async (link) => {
-    await Share.open({
-      title: i18n.t('rcpt:title'),
-      url: link,
-    });
-  }, []);
+  }, [navigation, resetModalInfo]);
 
   const purchaseButtonTab = useCallback(() => {
-    if (!showButton || showModal) return <></>;
+    if (showWebModal || showModal) return <></>;
 
     return (
       <View style={styles.buttonBox}>
         <Pressable
           onPress={() => {
-            const selectedCountryData: RkbProdByCountry =
-              product.prodByCountry.find(
-                (r) => r.partner === route?.params?.partnerId,
-              );
-            const {invite} = promotion;
-
-            API.Promotion.buildShareLink({
-              uuid: route.params?.uuid,
-              prodName: purchaseItems[0]?.title,
-              imageUrl: invite?.rule?.share, // ? rule은 뭐지
-              promoFlag: purchaseItems[0]?.promoFlag,
-              country: selectedCountryData,
-              isShort: true,
-            }).then((url) => {
-              if (url) {
-                // Clipboard.setString(url);
-                onShare(url);
-              }
-            });
+            setShowShareModal(true);
           }}>
           <AppIcon name="iconShare2" style={styles.shareIconBox} />
         </Pressable>
@@ -519,92 +1121,68 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         />
       </View>
     );
-  }, [
-    onShare,
-    product.prodByCountry,
-    promotion,
-    purchaseItems,
-    route.params?.partnerId,
-    route.params?.uuid,
-    showButton,
-    showModal,
-  ]);
+  }, [showModal, showWebModal]);
 
   const purchaseNumberTab = useCallback(() => {
-    if (!showButton) return <></>;
+    if (showWebModal) return <></>;
 
     return (
       <View style={styles.bottomButtonContainer}>
         <View style={styles.bottomButtonFrame}>
-          <AppButton
-            style={[styles.secondaryButton, {marginRight: 12}]}
-            title={i18n.t('cart:saveCart')}
-            onPress={onPressBtnCart}
-            titleStyle={[appStyles.medium18, {color: colors.black}]}
-          />
+          {!isht && (
+            <AppButton
+              style={[styles.secondaryButton, {marginRight: 12}]}
+              title={i18n.t('cart:saveCart')}
+              onPress={!account.loggedIn ? onPressBtnRegCard : onPressBtnCart}
+              titleStyle={[appStyles.medium18, {color: colors.black}]}
+            />
+          )}
           <AppButton
             style={styles.mainButton}
             title={i18n.t('cart:purchaseNow')}
-            onPress={onPressBtnPurchase}
+            onPress={!account.loggedIn ? onPressBtnRegCard : onPressBtnPurchase}
             titleStyle={appStyles.medium18}
           />
         </View>
       </View>
     );
-  }, [showButton, onPressBtnCart, onPressBtnPurchase]);
+  }, [
+    showWebModal,
+    isht,
+    account.loggedIn,
+    onPressBtnRegCard,
+    onPressBtnCart,
+    onPressBtnPurchase,
+  ]);
 
   return (
     <SafeAreaView style={styles.screen}>
-      <View style={styles.header}>
+      <View
+        style={[
+          styles.header,
+          showWebModal ? {backgroundColor: 'rgba(0,0,0,0.3)'} : {},
+        ]}>
         <AppBackButton
           title={route.params?.title}
           style={{width: '70%', height: 56}}
+          disable={showWebModal}
         />
         {account.loggedIn && (
           <AppCartButton
-            onPress={() => navigation.navigate('Cart', {showHeader: true})}
+            onPress={() =>
+              showWebModal
+                ? {}
+                : navigation.navigate('Cart', {showHeader: true})
+            }
             iconName="btnHeaderCart"
           />
         )}
       </View>
-      {renderWebView(route.params?.uuid)}
+
+      <View style={{flex: 1}}>{renderProdDetail()}</View>
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
-      {account.loggedIn ? (
-        purchaseButtonTab()
-      ) : (
-        <View style={styles.buttonBox}>
-          <AppButton
-            style={styles.regCardView}
-            title={i18n.t('err:login')}
-            titleStyle={styles.regCard}
-            onPress={onPressBtnRegCard}
-            type="secondary"
-          />
-        </View>
-      )}
-      {/* {showModal && (
-        <View style={{flex: 1}}>
-          <AppModal visible={showModal}>
-            <View style={styles.countBoxFrame}>
-              <AppText style={appStyles.medium16}>
-                {i18n.t('cart:count')}
-              </AppText>
-              <View>
-                <InputNumber
-                  value={qty}
-                  onChange={(value) =>
-                    onChangeQty(
-                      purchaseItems[0]?.key,
-                      purchaseItems[0]?.orderItemId,
-                      value,
-                    )
-                  }
-                />
-              </View>
-            </View>
-          </AppModal>
-        </View>
-      )} */}
+      {purchaseButtonTab()}
+
       {showModal && (
         <Modal
           transparent
@@ -616,62 +1194,97 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               resetModalInfo();
               setShowModal(false);
             }}
-            style={styles.modalContainer}>
-            <Pressable style={{backgroundColor: colors.white}}>
-              <View style={styles.modalFrame}>
-                <Pressable
-                  onPress={() => {
-                    setShowModal(false);
-                  }}>
-                  <View style={styles.headerFrame}>
-                    <Image
-                      style={{width: 46, height: 10}}
-                      source={require('@/assets/images/esim/grabber.png')}
-                      resizeMode="stretch"
-                    />
+            style={{flex: 1}}>
+            <View style={styles.modalContainer}>
+              <Pressable style={{backgroundColor: colors.white}}>
+                <View style={styles.modalFrame}>
+                  <Pressable
+                    onPress={() => {
+                      setShowModal(false);
+                    }}>
+                    <View style={styles.headerFrame}>
+                      <Image
+                        style={{width: 46, height: 10}}
+                        source={require('@/assets/images/esim/grabber.png')}
+                        resizeMode="stretch"
+                      />
+                    </View>
+                  </Pressable>
+                  <View style={styles.countBoxFrame}>
+                    <AppText style={appStyles.medium16}>
+                      {i18n.t('cart:count')}
+                    </AppText>
+                    <View>
+                      <InputNumber
+                        value={qty}
+                        fontStyle={appStyles.bold16Text}
+                        boxStyle={{width: 60}}
+                        boldIcon
+                        onChange={(value) => onChangeQty(value)}
+                        disabled={isht}
+                      />
+                    </View>
                   </View>
-                </Pressable>
-                <View style={styles.countBoxFrame}>
-                  <AppText style={appStyles.medium16}>
-                    {i18n.t('cart:count')}
-                  </AppText>
-                  <View>
-                    <InputNumber
-                      value={qty}
-                      fontStyle={appStyles.bold16Text}
-                      boxStyle={{width: 60}}
-                      boldIcon
-                      onChange={(value) => onChangeQty(value)}
+                  <View style={styles.priceBoxFrame}>
+                    <AppText style={styles.priceText}>
+                      {i18n.t('cart:proudctTotalPrice')}
+                    </AppText>
+                    <AppPrice
+                      price={utils.toCurrency(
+                        price?.value || 0,
+                        price?.currency,
+                      )}
+                      balanceStyle={styles.priceValueText}
+                      currencyStyle={styles.priceValueText}
+                      // style={styles.priceValueText}
                     />
-                  </View>
-                </View>
-                <View style={styles.priceBoxFrame}>
-                  <AppText style={styles.priceText}>
-                    {i18n.t('cart:proudctTotalPrice')}
-                  </AppText>
-                  <AppPrice
-                    price={utils.toCurrency(price?.value || 0, price?.currency)}
-                    balanceStyle={styles.priceValueText}
-                    currencyStyle={styles.priceValueText}
-                    // style={styles.priceValueText}
-                  />
 
-                  {/* <AppText
+                    {/* <AppText
                     style={
                       styles.priceValueText
                       // eslint-disable-next-line react-native/no-raw-text
                     }>
                       {`${price?.value} ${i18n.t(price?.currency)}`}
                       </AppText> */}
+                  </View>
                 </View>
-              </View>
-              {purchaseNumberTab()}
-            </Pressable>
+                {purchaseNumberTab()}
+              </Pressable>
+            </View>
           </Pressable>
-
+          <AppSnackBar
+            visible={showSnackBar.visible}
+            onClose={() =>
+              setShowSnackBar((pre) => ({text: pre.text, visible: false}))
+            }
+            textMessage={showSnackBar.text}
+            bottom={86}
+          />
           <SafeAreaView style={{backgroundColor: 'white'}} />
         </Modal>
       )}
+      <ChargeInfoModal
+        visible={showChargeInfoModal}
+        onClose={() => {
+          setShowChargeInfoModal(false);
+        }}
+      />
+
+      <ShareLinkModal
+        visible={showShareModal}
+        onClose={() => {
+          setShowShareModal(false);
+        }}
+        purchaseItem={purchaseItems[0]}
+        params={{
+          partnerId: route?.params?.partnerId,
+          uuid: route?.params?.uuid,
+          img: route?.params?.img,
+          listPrice: route.params?.listPrice,
+          price: route.params?.price,
+        }}
+      />
+
       <ChatTalk visible bottom={isIOS ? 100 : 70} />
       <AppSnackBar
         visible={showSnackBar.visible}
@@ -679,18 +1292,16 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           setShowSnackBar((pre) => ({text: pre.text, visible: false}))
         }
         textMessage={showSnackBar.text}
-        bottom={showModal ? 86 : 10}
+        bottom={86}
       />
     </SafeAreaView>
   );
 };
 
 export default connect(
-  ({account, cart, promotion, product}: RootState) => ({
+  ({account, cart}: RootState) => ({
     account,
     cart,
-    promotion,
-    product,
   }),
   (dispatch) => ({
     action: {

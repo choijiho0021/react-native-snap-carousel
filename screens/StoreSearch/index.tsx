@@ -397,10 +397,7 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
                   <AppText style={styles.recommendText}>{elm2}</AppText>
                 </Pressable>
               ) : (
-                <View
-                  key={utils.generateKey(elm2 + idx)}
-                  style={styles.recommebdEmpty}
-                />
+                <View style={styles.recommebdEmpty} />
               ),
             )}
           </View>

@@ -73,6 +73,7 @@ import {ModalModelState} from '@/redux/modules/modal';
 import RegisterMobileScreen from '@/screens/RegisterMobileScreen';
 import CouponScreen from '@/screens/CouponScreen';
 import SelectCouponScreen from '@/screens/SelectCouponScreen';
+import DraftUsScreen from '@/screens/DraftUsScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -171,6 +172,7 @@ function HomeStackComponent() {
       />
       <HomeStack.Screen name="ExtraCoupon" component={ExtraCouponScreen} />
       <HomeStack.Screen name="Draft" component={DraftScreen} />
+      <HomeStack.Screen name="DraftUs" component={DraftUsScreen} />
       <HomeStack.Screen name="DraftResult" component={DraftResultScreen} />
       <HomeStack.Screen
         name="CancelOrder"
@@ -250,6 +252,7 @@ function EsimStackComponent() {
         />
       </EsimStack.Group>
       <EsimStack.Screen name="ProductDetail" component={ProductDetailScreen} />
+      <EsimStack.Screen name="Cart" component={CartScreen} />
       <EsimStack.Screen
         name="ProductDetailOp"
         component={ProductDetailOpScreen}
@@ -310,6 +313,7 @@ function MyPageStackComponent() {
       <MyPageStack.Screen name="Receipt" component={ReceiptScreen} />
       <MyPageStack.Screen name="CashHistory" component={CashHistoryScreen} />
       <MyPageStack.Screen name="Draft" component={DraftScreen} />
+      <MyPageStack.Screen name="DraftUs" component={DraftUsScreen} />
       <MyPageStack.Screen name="DraftResult" component={DraftResultScreen} />
       <MyPageStack.Screen name="CancelOrder" component={CancelOrderScreen} />
       <MyPageStack.Screen name="CancelResult" component={CancelResultScreen} />

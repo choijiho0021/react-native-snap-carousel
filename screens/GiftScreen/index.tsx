@@ -39,6 +39,7 @@ import AppSnackBar from '@/components/AppSnackBar';
 import KakaoSDK from '@/components/NativeModule/KakaoSDK';
 import AppModal from '@/components/AppModal';
 import AppStyledText from '@/components/AppStyledText';
+import {SMSDivider} from '@/utils/utils';
 
 const styles = StyleSheet.create({
   container: {
@@ -188,7 +189,6 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   action,
 }) => {
   const deviceModel = useMemo(() => DeviceInfo.getModel(), []);
-  const SMSDivider = useMemo(() => (Platform.OS === 'android' ? '?' : '&'), []);
   const methodList = useMemo(() => {
     // pixcel인 경우 sms로 선물하기 제거
     if (esimGlobal && !isIOS && !deviceModel.startsWith('SM')) return [];
@@ -279,7 +279,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         let updateStatus = true;
 
         if (method === MESSAGE) {
-          result = await Linking.openURL(`sms:${SMSDivider}body=${body}`);
+          result = await Linking.openURL(`sms:${SMSDivider()}body=${body}`);
         } else {
           // kakao
           const resp = await KakaoSDK.KakaoShareLink.sendCustom({
@@ -304,7 +304,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         console.error(e);
       }
     },
-    [SMSDivider, afterSend, createLink],
+    [afterSend, createLink],
   );
 
   const info = useCallback(

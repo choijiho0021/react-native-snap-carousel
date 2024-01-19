@@ -75,7 +75,7 @@ const getProductByLocalOp = createAsyncThunk(
 
 const getAllProduct = createAsyncThunk(
   'product/getAllProduct',
-  reloadOrCallApi('cache.allProd', 'all', API.Product.getProductByLocalOp),
+  reloadOrCallApi('cache.allProd', 'all', API.Product.getAllProduct),
 );
 
 const getProdOfPartner = createAsyncThunk(
@@ -92,6 +92,10 @@ const getProdOfPartner = createAsyncThunk(
     }
   },
 );
+
+export const getDiscountRate = (finalPrice: number, listPrice: number) => {
+  return Math.floor(((listPrice - finalPrice) / listPrice) * 100);
+};
 
 const init = createAsyncThunk(
   'product/init',
@@ -114,6 +118,8 @@ const init = createAsyncThunk(
     await dispatch(getLocalOp(reload));
     await dispatch(getProdCountry(reload));
     await dispatch(getProductByCountry(reload));
+
+    await dispatch(getAllProduct(reload));
 
     await dispatch(PromotionActions.getPromotion(reload));
     await dispatch(PromotionActions.getGiftBgImages(reload));
@@ -345,7 +351,8 @@ const slice = createSlice({
     });
 
     builder.addCase(init.fulfilled, (state) => {
-      state.ready = state.prodByCountry.length !== 0;
+      state.ready =
+        state.prodByCountry.length !== 0 && state.prodList?.size !== 0;
     });
 
     builder.addCase(getPaymentRule.fulfilled, (state, {payload}) => {

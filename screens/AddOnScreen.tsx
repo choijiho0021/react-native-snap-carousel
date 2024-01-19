@@ -180,7 +180,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   navigation,
   route: {params},
 }) => {
-  const {mainSubs, status, expireTime, addonProds} = params || {};
+  const {chargeableItem, status, expireTime, addonProds} = params || {};
   const [todayAddOnProd, setTodayAddOnProd] = useState<RkbAddOnProd[]>([]);
   const [remainDaysAddOnProd, setRemainDaysAddOnProd] = useState<
     RkbAddOnProd[]
@@ -195,7 +195,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
 
   const usagePeriod = useMemo(() => {
     const now = moment().zone(-540);
-    const resetTime = moment(dataResetTime, 'HH:mm:ss');
+    const resetTime = moment.tz(dataResetTime, 'HH:mm:ss', 'Asia/Seoul');
 
     if (selectedType === 'today') {
       const n = moment(now.format(format), format);
@@ -203,10 +203,10 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
       if (n.isAfter(r)) resetTime.add(1, 'day');
     }
 
-    if (mainSubs.partner?.startsWith('quadcell') && status === 'R') {
+    if (chargeableItem.partner?.startsWith('quadcell') && status === 'R') {
       return {
         text: i18n.t('esim:charge:addOn:usagePeriod:unUsed'),
-        period: mainSubs.prodDays || '',
+        period: chargeableItem.prodDays || '',
       };
     }
     return {
@@ -221,8 +221,8 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   }, [
     dataResetTime,
     expireTime,
-    mainSubs.partner,
-    mainSubs.prodDays,
+    chargeableItem.partner,
+    chargeableItem.prodDays,
     selectedType,
     status,
   ]);
@@ -231,12 +231,12 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
     if (expireTime) {
       // cmi의 리셋타임은 활성화 시간 기준으로 변경 됨
       if (
-        mainSubs.partner?.startsWith('cmi') ||
-        mainSubs.partner === 'quadcell2'
+        chargeableItem.partner?.startsWith('cmi') ||
+        chargeableItem.partner === 'quadcell2'
       )
         setDataResetTime(expireTime.zone(-540).format('HH:mm:ss'));
     }
-  }, [expireTime, mainSubs.partner]);
+  }, [expireTime, chargeableItem.partner]);
 
   useEffect(() => {
     // 충전 가능 상품 있는 지 여부 확인
@@ -253,8 +253,8 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
       if (remainDaysProd.length > 0) {
         // 쿼드셀 무제한 (사용전), 쿼드셀 종량제의 경우 하루 충전 지원 x
         if (
-          mainSubs.partner?.startsWith('quadcell') &&
-          (status === 'R' || mainSubs.daily === 'total')
+          chargeableItem.partner?.startsWith('quadcell') &&
+          (status === 'R' || chargeableItem.daily === 'total')
         ) {
           setAddOnTypeList(['remainDays']);
           setSelectedType('remainDays');
@@ -272,7 +272,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
     } else {
       setNoProd(true);
     }
-  }, [addonProds, mainSubs.daily, mainSubs.partner, status]);
+  }, [addonProds, chargeableItem.daily, chargeableItem.partner, status]);
 
   const renderTypeBtn = useCallback(
     (type: AddOnType) => (
@@ -304,12 +304,12 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   const prodTitle = useCallback(
     (volume: number) => {
       const dailyPrefix =
-        mainSubs.daily === 'daily' ? `${i18n.t(`days`)} ` : '';
+        chargeableItem.daily === 'daily' ? `${i18n.t(`days`)} ` : '';
       return `${dailyPrefix}${
         volume > 500 ? `${volume / 1024}GB` : `${volume}MB`
       }`;
     },
-    [mainSubs.daily],
+    [chargeableItem.daily],
   );
 
   const renderAddOnProd = useCallback(
@@ -376,7 +376,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
           </View>
         </View>
         <View style={styles.divider} />
-        {mainSubs.daily === 'daily' && (
+        {chargeableItem.daily === 'daily' && (
           <View style={styles.noticeBody}>
             <AppSvgIcon
               name="checkGreySmall"
@@ -384,7 +384,9 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
             />
 
             <AppStyledText
-              text={i18n.t(`esim:charge:addOn:resetTime:${mainSubs.partner}`)}
+              text={i18n.t(
+                `esim:charge:addOn:resetTime:${chargeableItem.partner}`,
+              )}
               textStyle={styles.noticeBodyText}
               format={{b: styles.noticeBodyTextBold}}
               data={{expireTime: dataResetTime || ''}}
@@ -396,40 +398,32 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
     ),
     [
       dataResetTime,
-      mainSubs.daily,
-      mainSubs.partner,
+      chargeableItem.daily,
+      chargeableItem.partner,
       renderUsagePrieod,
       selectedType,
     ],
   );
-
-  // Test 용
-  // useEffect(() => {
-  //   console.log('----상태보고서----');
-  //   console.log('파트너사 : ', mainSubs.partner);
-  //   console.log('상태 : ', status);
-  //   console.log('타입 : ', mainSubs.daily);
-  //   console.log('noProd : ', noProd);
-  // }, [mainSubs.daily, mainSubs.partner, noProd, status]);
 
   return (
     <SafeAreaView style={styles.container}>
       <ScreenHeader title={i18n.t('esim:charge:type:addOn')} />
       <ScrollView style={{flex: 1}}>
         <SelectedProdTitle
-          isdaily={mainSubs.daily === 'daily'}
-          prodName={mainSubs.prodName || ''}
+          isdaily={chargeableItem.daily === 'daily'}
+          prodName={chargeableItem.prodName || ''}
           isAddOn
         />
 
-        {(mainSubs.partner?.startsWith('cmi') && status === 'R') || noProd ? (
+        {(chargeableItem.partner?.startsWith('cmi') && status === 'R') ||
+        noProd ? (
           <View style={styles.flex}>
             <View style={styles.no}>
               <AppSvgIcon name="blueNotice" style={{marginBottom: 16}} />
               <AppStyledText
                 text={i18n.t(
                   `esim:charge:addOn:${
-                    mainSubs.partner?.startsWith('cmi') && status === 'R'
+                    chargeableItem.partner?.startsWith('cmi') && status === 'R'
                       ? 'no'
                       : 'empty'
                   }:title`,
@@ -437,7 +431,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
                 textStyle={styles.noTitle}
                 format={{b: styles.noTitleBold}}
               />
-              {mainSubs.partner?.startsWith('cmi') && status === 'R' && (
+              {chargeableItem.partner?.startsWith('cmi') && status === 'R' && (
                 <AppText style={styles.noBody}>
                   {i18n.t('esim:charge:addOn:no:body')}
                 </AppText>
@@ -470,7 +464,8 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
         )}
       </ScrollView>
 
-      {(mainSubs.partner?.startsWith('cmi') && status === 'R') || noProd ? (
+      {(chargeableItem.partner?.startsWith('cmi') && status === 'R') ||
+      noProd ? (
         <Pressable style={styles.close} onPress={() => navigation.goBack()}>
           <AppText style={styles.closeText}>{i18n.t('close')}</AppText>
         </Pressable>
@@ -486,14 +481,14 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
               type: 'addOn',
               usagePeriod,
               status,
-              mainSubs,
+              mainSubs: chargeableItem,
               expireTime,
               contents: {
                 chargeProd: selectedAddOnProd?.title || '',
                 noticeTitle: i18n.t('esim:charge:addOn:notice:title'),
                 noticeBody:
-                  mainSubs.partner?.startsWith('quadcell') &&
-                  mainSubs.daily === 'daily'
+                  chargeableItem.partner?.startsWith('quadcell') &&
+                  chargeableItem.daily === 'daily'
                     ? i18n
                         .t('esim:charge:addOn:notice:body:quadcellD')
                         .split('\n')

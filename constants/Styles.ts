@@ -339,6 +339,17 @@ export const appStyles = StyleSheet.create({
     padding: 0,
     margin: 0,
   },
+  semiBold18Text: {
+    //        fontFamily: "AppleSDGothicNeo",
+    fontSize: 18,
+    fontWeight: '600',
+    fontStyle: 'normal',
+    lineHeight: 22,
+    letterSpacing: 0,
+    color: colors.black,
+    padding: 0,
+    margin: 0,
+  },
   bold17: {
     //        fontFamily: "AppleSDGothicNeo",
     fontSize: 17,

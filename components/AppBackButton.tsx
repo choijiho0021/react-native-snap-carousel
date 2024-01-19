@@ -14,6 +14,7 @@ const AppBackButton = ({
   style,
   imageStyle,
   textProps,
+  disable,
 }: {
   title?: string;
   disabled?: boolean;
@@ -22,6 +23,7 @@ const AppBackButton = ({
   style?: ViewStyle;
   imageStyle?: ImageStyle;
   textProps?: TextProps;
+  disable?: boolean;
 }) => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -30,6 +32,7 @@ const AppBackButton = ({
     <Pressable
       style={{justifyContent: 'center', ...style}}
       onPress={() => {
+        if (disable) return;
         if (onPress) onPress();
         else goBack(navigation, route);
       }}

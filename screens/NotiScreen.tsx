@@ -183,24 +183,24 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
   action,
   pending,
 }) => {
-  const [mode, setMode] = useState<'noti' | 'info'>('noti');
+  const mode = useMemo(() => {
+    return route.params?.mode || 'info';
+  }, [route.params?.mode]);
 
   useEffect(() => {
-    if (account.loggedIn) {
-      if (route.params?.mode === 'info' && !info.infoMap.has('info')) {
-        action.info.getInfoList('info');
-      }
-
-      action.board.getIssueList();
-      action.eventBoard.getIssueList();
-      setMode(route.params?.mode);
+    if (route.params?.mode === 'info' && !info.infoMap.has('info')) {
+      action.info.getInfoList('info');
     }
+
+    action.board.getIssueList();
+    if (account.loggedIn) action.eventBoard.getIssueList();
   }, [
     account.loggedIn,
     action.board,
     action.eventBoard,
     action.info,
     info.infoMap,
+    mode,
     route.params?.mode,
   ]);
 
@@ -295,7 +295,8 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
               key: 'noti',
               title:
                 type === notiActions.NOTI_TYPE_NOTI ||
-                type === notiActions.NOTI_TYPE_ACCOUNT
+                type === notiActions.NOTI_TYPE_ACCOUNT ||
+                type === notiActions.NOTI_TYPE_PUSH
                   ? i18n.t('set:noti')
                   : i18n.t('contact:noticeDetail'),
               bodyTitle,
