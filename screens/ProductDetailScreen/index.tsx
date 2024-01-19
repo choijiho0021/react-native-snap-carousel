@@ -464,7 +464,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   useEffect(() => {
     if (prod)
-      API.Product.getProductDescDetail(prod.key).then((rsp) => {
+      API.Product.getProductDesc(prod.key).then((rsp) => {
         const data = rsp[0];
         if (data) {
           setDescData({
@@ -574,12 +574,12 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           break;
         case 'apn':
           if (k)
-            API.Product.getProductDesc(k).then((desc) => {
+            if (descData?.desc?.apn)
               navigation.navigate('ProductDetailOp', {
                 title: route.params?.title,
-                ...desc.objects,
+                apn: descData?.desc?.apn,
               });
-            });
+
           break;
         // 기본적으로 화면 크기 가져오도록 함
         default:
@@ -587,7 +587,13 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           break;
       }
     },
-    [action.info, navigation, route.params?.item?.key, route.params?.title],
+    [
+      action.info,
+      descData?.desc?.apn,
+      navigation,
+      route.params?.item?.key,
+      route.params?.title,
+    ],
   );
 
   const renderTopInfo = useCallback(

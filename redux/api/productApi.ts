@@ -448,16 +448,9 @@ const getAllProduct = () => {
   );
 };
 
-const getProductDescDetail = (prodUuid: string) => {
-  return api.callHttpGet(
-    api.httpUrl(`${api.path.prodDescDetail}/${prodUuid}?_format=hal_json`),
-  );
-};
-
 const getProductDesc = (prodUuid: string) => {
   return api.callHttpGet(
     api.httpUrl(`${api.path.prodDesc}/${prodUuid}?_format=hal_json`),
-    toProdDesc,
   );
 };
 
@@ -558,7 +551,6 @@ export default {
   getProduct,
   getProductByLocalOp,
   getAllProduct,
-  getProductDescDetail,
   getProductDesc,
   getProductBySku,
   getLocalOp,
