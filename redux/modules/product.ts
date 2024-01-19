@@ -75,7 +75,7 @@ const getProductByLocalOp = createAsyncThunk(
 
 const getAllProduct = createAsyncThunk(
   'product/getAllProduct',
-  reloadOrCallApi('cache.allProd', 'all', API.Product.getProductByLocalOp),
+  reloadOrCallApi('cache.allProd', 'all', API.Product.getAllProduct),
 );
 
 const getProdOfPartner = createAsyncThunk(

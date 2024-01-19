@@ -490,7 +490,7 @@ const getLocalOp = () => {
 
 const getProdCountry = () => {
   return api.callHttpGet<RkbProdCountry>(
-    api.httpUrl(`${api.path.prodCountry}?_format=hal_json`),
+    api.httpUrl(`${api.path.rokApi.rokebi.config}/country?_format=json`),
     toProdCountry,
   );
 };
