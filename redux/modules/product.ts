@@ -6,7 +6,10 @@ import {Map as ImmutableMap} from 'immutable';
 import moment from 'moment';
 import {API, Country} from '@/redux/api';
 import {
+  addonOptionType,
   Currency,
+  DescData,
+  ProdDesc,
   RkbLocalOp,
   RkbProdByCountry,
   RkbProduct,
@@ -46,6 +49,10 @@ const getProdDetailCommon = createAsyncThunk(
 const getProdDetailInfo = createAsyncThunk(
   'product/getProdDetailInfo',
   API.Page.getProductDetailsBody,
+);
+const getProdDesc = createAsyncThunk(
+  'product/getProdDesc',
+  API.Product.getProductDesc,
 );
 
 const getProductByCountry = createAsyncThunk(
@@ -180,9 +187,11 @@ export interface ProductModelState {
   prodCountry: string[];
   rule: PaymentRule;
   devList: string[];
+  descData: ImmutableMap<string, DescData>;
 }
 
 const initialState: ProductModelState = {
+  descData: ImmutableMap(),
   prodList: ImmutableMap(),
   localOpList: ImmutableMap(),
   detailInfo: '',
@@ -365,6 +374,17 @@ const slice = createSlice({
         state.devList = objects;
       }
     });
+
+    builder.addCase(getProdDesc.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+      if (result === 0) {
+        state.descData = state.descData.merge(
+          ImmutableMap({
+            [objects.uuid]: objects,
+          }),
+        );
+      }
+    });
   },
 });
 
@@ -383,6 +403,7 @@ export const actions = {
   getProdByUuid,
   getAllProduct,
   getDevList,
+  getProdDesc,
 };
 export type ProductAction = typeof actions;
 
