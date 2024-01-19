@@ -94,7 +94,7 @@ const ChargeInfoModal: React.FC<ChargeInfoModalProps> = ({
 }) => {
   const renderInfo = useCallback((type: string) => {
     return (
-      <View>
+      <View key={type}>
         <View style={styles.infoHeader}>
           <AppText style={styles.infoHeaderText}>
             {i18n.t(`prodDetail:charge:modal:${type}:header:title`)}
@@ -136,9 +136,11 @@ const ChargeInfoModal: React.FC<ChargeInfoModalProps> = ({
         </View>
         <View style={styles.box}>
           {[1, 2].map((n) => (
-            <TextWithCheck
-              text={i18n.t(`esim:charge:type:${type}:modal:box${n}`)}
-            />
+            <View key={`box${n}`}>
+              <TextWithCheck
+                text={i18n.t(`esim:charge:type:${type}:modal:box${n}`)}
+              />
+            </View>
           ))}
         </View>
       </View>

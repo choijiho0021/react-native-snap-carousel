@@ -561,7 +561,7 @@ const BodyHtml: React.FC<BodyHtmlProps> = ({body, onMessage}) => {
     
     <body>
     <div class="wrap_data">
-    ${unescape(body.replace(/<br \/>/g, ''))}
+    ${unescape(body?.replace(/<br \/>/g, ''))}
     </div>
     </body>
     </html>
@@ -580,7 +580,7 @@ const BodyHtml: React.FC<BodyHtmlProps> = ({body, onMessage}) => {
   }, []);
 
   return (
-    <View style={{height: webviewHeight}}>
+    <View style={{height: webviewHeight}} renderToHardwareTextureAndroid>
       <WebView
         ref={ref}
         javaScriptEnabled
