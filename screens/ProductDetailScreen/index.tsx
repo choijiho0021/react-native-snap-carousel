@@ -864,14 +864,16 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             </View>
             <View style={styles.callMethodContents}>
               {defaultList.map((i) => (
-                <TextWithCheck
-                  text={i18n.t(
-                    `prodDetail:callMethod:box:contents:default${i}:${
-                      isUS ? 'us' : clMtd
-                    }`,
-                  )}
-                  textStyle={styles.callMethodBoxBold}
-                />
+                <View key={`default${clMtd}${i}`}>
+                  <TextWithCheck
+                    text={i18n.t(
+                      `prodDetail:callMethod:box:contents:default${i}:${
+                        isUS ? 'us' : clMtd
+                      }`,
+                    )}
+                    textStyle={styles.callMethodBoxBold}
+                  />
+                </View>
               ))}
               {showCallDetail &&
                 detailList.length > 0 &&
@@ -946,6 +948,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       ) || [];
 
     const clMtd = descData?.desc?.clMtd;
+    const ftr = descData?.desc?.ftr;
     return (
       prod &&
       descData && (
@@ -955,6 +958,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           {(noticeList.length > 0 || cautionList.length > 0) &&
             renderNotice(noticeList, cautionList)}
           {clMtd &&
+            ftr &&
             ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(clMtd) &&
             renderCallMethod(clMtd)}
           <BodyHtml body={descData.body} onMessage={onMessage} />
