@@ -580,7 +580,7 @@ const BodyHtml: React.FC<BodyHtmlProps> = ({body, onMessage}) => {
   }, []);
 
   return (
-    <View style={{height: webviewHeight}}>
+    <View style={{height: webviewHeight}} renderToHardwareTextureAndroid>
       <WebView
         ref={ref}
         javaScriptEnabled
