@@ -174,11 +174,7 @@ function HomeStackComponent() {
       <HomeStack.Screen name="Draft" component={DraftScreen} />
       <HomeStack.Screen name="DraftUs" component={DraftUsScreen} />
       <HomeStack.Screen name="DraftResult" component={DraftResultScreen} />
-      <HomeStack.Screen
-        name="CancelOrder"
-        component={CancelOrderScreen}
-        options={{headerShown: true}}
-      />
+      <HomeStack.Screen name="CancelOrder" component={CancelOrderScreen} />
       <HomeStack.Screen name="CancelResult" component={CancelResultScreen} />
       <HomeStack.Screen name="Receipt" component={ReceiptScreen} />
 
