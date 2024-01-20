@@ -58,6 +58,7 @@ import validationUtil from '@/utils/validationUtil';
 import {eventToken} from '@/constants/Adjust';
 import {LinkModelState} from '@/redux/modules/link';
 import DomainPicker from './DomainPicker';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const {esimGlobal, isProduction, isIOS} = Env.get();
 
@@ -686,28 +687,18 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     [authorized, confirm, newUser],
   );
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          title={i18n.t('mobile:header')}
-          onPress={() => {
-            initState();
-
-            if (!socialLogin) {
-              navigation.goBack();
-            }
-          }}
-        />
-      ),
-    });
-  }, [initState, loggedIn, navigation, route?.params?.screen, socialLogin]);
-
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-
+      <ScreenHeader
+        title={i18n.t('mobile:header')}
+        backHandler={() => {
+          initState();
+          if (!socialLogin) {
+            navigation.goBack();
+          }
+        }}
+      />
       <KeyboardAwareScrollView
         enableOnAndroid
         enableResetScrollToCoords={false}
