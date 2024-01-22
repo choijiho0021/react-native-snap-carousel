@@ -96,9 +96,7 @@ const InputNumber = ({
 
   return (
     <View style={styles.container}>
-      <Pressable
-        onPress={() => delValue(inputValue - 1)}
-        disabled={inputValue <= minValue}>
+      <Pressable onPress={() => delValue(inputValue - 1)}>
         <View style={[styles.box, fontStyle]}>
           <AppSvgIcon
             name={boldIcon ? 'boldMinus' : 'minus'}
@@ -110,9 +108,7 @@ const InputNumber = ({
       <View style={[styles.boxCenter, boxStyle]}>
         <AppText style={[styles.text, fontStyle]}>{inputValue}</AppText>
       </View>
-      <Pressable
-        onPress={() => addValue(inputValue + 1)}
-        disabled={inputValue >= maxValue}>
+      <Pressable onPress={() => addValue(inputValue + 1)}>
         <View style={[styles.box, fontStyle]}>
           <AppSvgIcon
             name={boldIcon ? 'boldPlus' : 'plus'}
