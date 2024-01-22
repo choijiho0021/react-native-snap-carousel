@@ -88,7 +88,7 @@ export type RkbOrder = {
   totalPrice: Currency;
   state?: OrderState;
   orderItems: OrderItemType[];
-  usageList: {status: string; nid: string}[];
+  usageList: {status: string; nid: string; pid: string}[];
   paymentList: RkbPayment[];
 };
 
