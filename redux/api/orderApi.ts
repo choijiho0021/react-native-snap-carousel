@@ -2,12 +2,11 @@ import _ from 'underscore';
 import moment, {Moment} from 'moment';
 import i18n from '@/utils/i18n';
 import utils from '@/redux/api/utils';
-import api, {ApiResult, DrupalNode} from './api';
+import api, {ApiResult} from './api';
 import {Currency} from './productApi';
-import {parseJson} from '@/utils/utils';
 import Env from '@/environment';
 
-const {cachePrefix} = Env.get();
+const {cachePrefix, esimCurrency} = Env.get();
 
 const ORDER_PAGE_ITEMS = 10;
 const KEY_INIT_ORDER = `${cachePrefix}order.init`;
@@ -83,63 +82,81 @@ export type RkbOrder = {
   orderNo: string;
   orderDate?: Moment;
   orderType?: OrderPolicyType;
-  totalPrice?: Currency;
-  profileId?: string;
-  partner?: string;
-  memo?: string;
+  subtotal: Currency;
+  discount: Currency;
+  deductBalance: Currency;
+  totalPrice: Currency;
   state?: OrderState;
   orderItems: OrderItemType[];
-  usageList: {status: string; nid: string}[];
+  usageList: {status: string; nid: string; pid: string}[];
   paymentList: RkbPayment[];
-  dlvCost: Currency;
-  balanceCharge: Currency;
 };
 
-const toOrder = (data: DrupalNode[], page?: number): ApiResult<RkbOrder> => {
-  if (_.isArray(data) && data.length > 0) {
+// server response format
+type RkbOrderJson = {
+  id: string;
+  no: string;
+  placed: string;
+  type: string;
+  state: string;
+  subtotal: string;
+  adj: string;
+  total: string;
+  item: {
+    title: string;
+    qty: number;
+    price: number;
+    uuid: string;
+    type: string;
+  }[];
+  pym: {
+    amt: string;
+    pg: string;
+    pm: string;
+    id: string;
+  }[];
+  subs: {
+    nid: string;
+    status: string;
+  }[];
+};
+
+const toOrder = (
+  data: ApiResult<RkbOrderJson>,
+  page?: number,
+): ApiResult<RkbOrder> => {
+  if (data.result === 0) {
     return api.success(
-      data
+      data.objects
         .map((item) => {
-          const paymentList = parseJson(item.payment_list) || [];
-          const balanceCharge = paymentList
+          const deductBalance = item.pym
             .filter((value) =>
-              ['rokebi_cash', 'rokebi_point'].includes(value.payment_gateway),
+              ['rokebi_cash', 'rokebi_point'].includes(value.pg),
             )
             .reduce(
-              (acc, cur) => acc + utils.stringToNumber(cur.amount__number),
+              (acc, cur) => acc + (utils.stringToNumber(cur.amt) || 0),
               0,
             );
-          const totalPrice = utils.stringToCurrency(item.total_price__number); // 배송비 불포함 금액
 
           return {
-            key: item.order_id || '',
-            orderId: utils.stringToNumber(item.order_id) || 0,
-            orderNo: item.order_number || '',
+            key: item.id || '',
+            orderId: utils.stringToNumber(item.id) || 0,
+            orderNo: item.no || '',
             orderDate: item.placed ? moment(item.placed) : undefined,
             orderType: item.type,
-            totalPrice,
-            profileId: item.profile_id,
-            partner: item.field_ref_partner,
-            memo: item.memo || '',
             state: item.state,
-            orderItems: (parseJson(item.order_items) || []).map((value) => ({
-              title: value.title,
-              qty: parseInt(value.quantity, 10),
-              price: utils.stringToNumber(value.total_price__number),
-              uuid: value?.uuid,
+            subtotal: utils.stringToCurrency(item.subtotal),
+            discount: utils.stringToCurrency(item.adj),
+            deductBalance: utils.toCurrency(deductBalance, esimCurrency),
+            totalPrice: utils.stringToCurrency(item.total),
+            orderItems: item.item,
+            usageList: item.subs,
+            paymentList: item.pym.map((p) => ({
+              amount: utils.stringToCurrency(p.amt),
+              paymentGateway: p.pg,
+              paymentMethod: p.pm,
+              remote_id: p.id,
             })),
-            usageList: (parseJson(item.usage_list) || []).map((value) => ({
-              status: value.field_status,
-              nid: value.nid,
-            })),
-            paymentList: paymentList.map((value) => ({
-              amount: utils.stringToCurrency(value.amount__number),
-              paymentGateway: value.payment_gateway,
-              paymentMethod: value.payment_method, // 결제 수단
-              remote_id: value.remote_id,
-            })),
-            dlvCost: utils.stringToCurrency(item.dlv_cost),
-            balanceCharge: utils.toCurrency(balanceCharge, totalPrice.currency),
           } as RkbOrder;
         })
         .sort((a, b) => utils.cmpMomentDesc(a.orderDate, b.orderDate)),
@@ -182,17 +199,11 @@ const draftOrder = ({
     activation_date,
   });
 
-  return api.callHttp(
-    url,
-    {
-      method: 'PATCH',
-      headers: api.withToken(token, 'json'),
-      body,
-    },
-    (resp) => {
-      return resp;
-    },
-  );
+  return api.callHttp(url, {
+    method: 'PATCH',
+    headers: api.withToken(token, 'json'),
+    body,
+  });
 };
 
 export type GetOrdersParam = {
@@ -209,7 +220,7 @@ const getOrders = ({
   token,
   page = 0,
   state = 'all',
-  orderId = 'all',
+  orderId = '0',
   orderType = 'all',
 }: GetOrdersParam) => {
   if (!token)
@@ -219,9 +230,9 @@ const getOrders = ({
 
   return api.callHttpGet(
     `${api.httpUrl(
-      api.path.order,
+      api.path.commerce.order,
       '',
-    )}/${user}/${orderId}/${state}/${orderType}?_format=json&page=${page}`,
+    )}/${orderId}?_format=json&page=${page}&state=${state}&type=${orderType}`,
     (resp) => toOrder(resp, page),
     api.withToken(token, 'json'),
   );
@@ -244,7 +255,7 @@ const getOrderById = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: orderId');
 
   return api.callHttpGet(
-    `${api.httpUrl(api.path.order, '')}/${user}/${orderId}/all?_format=json`,
+    `${api.httpUrl(api.path.commerce.order, '')}/${orderId}?_format=json`,
     (resp) => toOrder(resp),
     api.withToken(token, 'json'),
   );
@@ -267,12 +278,7 @@ const cancelOrder = ({orderId, token, reason}: CancelOrderParam) => {
     {
       method: 'DELETE',
       headers: api.withToken(token, 'json'),
-      body: JSON.stringify({
-        reason,
-      }),
-    },
-    (resp) => {
-      return resp;
+      body: JSON.stringify({reason}),
     },
   );
 };

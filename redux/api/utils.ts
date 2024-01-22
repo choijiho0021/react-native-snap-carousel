@@ -230,12 +230,17 @@ const toDateString = (
   return '';
 };
 
-const cmpMomentDesc = (a: Moment, b: Moment) => {
-  return a.isBefore(b) ? 1 : -1;
+const cmpMomentAsc = (a?: Moment, b?: Moment) => {
+  if (a) {
+    // check if a is defined
+    if (b) return a.isBefore(b) ? -1 : 1;
+    return -1;
+  }
+  return 1;
 };
 
-const cmpMomentAsc = (a: Moment, b: Moment) => {
-  return a.isBefore(b) ? -1 : 1;
+const cmpMomentDesc = (a?: Moment, b?: Moment) => {
+  return cmpMomentAsc(a, b) * -1;
 };
 
 const convertURLtoRkbImage = async (url: string) => {

@@ -215,7 +215,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
       .changeDraft({
         orderId: draftOrder?.orderId,
         eid: deviceData.eid,
-        activation_date: `${actDate} 00:00:00`,
+        activation_date: `${actDate}T00:00:00`,
         imei2: deviceData.imei2,
         token,
       })
@@ -330,7 +330,6 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
             prods={prods}
             checked={checked}
             setChecked={setChecked}
-            draftOrder={draftOrder}
           />
           {renderBottomBtn(() => {
             requestDraft();
