@@ -302,8 +302,7 @@ const styles = StyleSheet.create({
     paddingTop: 42,
   },
   callMethodTitle: {
-    ...appStyles.normal20Text,
-    // fontWeight: '500',
+    ...appStyles.medium20,
     lineHeight: 22,
     color: colors.black,
     marginBottom: 16,
