@@ -1,10 +1,9 @@
 import {ScrollView} from 'react-native-gesture-handler';
 import {StyleSheet, View} from 'react-native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef} from 'react';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {RkbOrder} from '@/redux/api/orderApi';
 import ProductDetailList from '@/screens/CancelOrderScreen/component/ProductDetailList';
 import i18n from '@/utils/i18n';
 import {DeviceDataType, UsProdDesc} from '..';
