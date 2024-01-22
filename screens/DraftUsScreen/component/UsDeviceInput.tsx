@@ -12,6 +12,7 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import {UsDeviceInputType} from './UsDraftStep2';
 import AppTextInput from '@/components/AppTextInput';
 import {DeviceDataType} from '..';
+import AppButton from '@/components/AppButton';
 
 const styles = StyleSheet.create({
   DeviceBoxBtnFrame: {
@@ -29,17 +30,25 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.clearBlue,
   },
-  eidFrame: {
-    ...appStyles.medium16,
-    lineHeight: 24,
-    padding: 16,
-    gap: 8,
+  textInputFrame: {
+    flexDirection: 'row',
     borderColor: colors.lightGrey,
     borderRadius: 3,
     borderWidth: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  },
+  eidFrame: {
+    flex: 1,
+    ...appStyles.medium16,
+    lineHeight: 24,
+    gap: 8,
+    padding: 16,
+    // flexDirection: 'row',
+    // alignItems: 'center',
+    // justifyContent: 'space-between',
+  },
+  showSearchBar: {
+    paddingRight: 10,
+    justifyContent: 'flex-end',
   },
 });
 
@@ -132,27 +141,47 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
                 {i18n.t(`us:${r}`)}
               </AppText>
 
-              <AppTextInput
-                key={r}
+              <View
                 style={[
-                  styles.eidFrame,
-                  {borderColor: text > 0 ? colors.clearBlue : colors.lightGrey},
-                ]}
-                maxLength={isEid ? 32 : 15}
-                multiline
-                enablesReturnKeyAutomatically
-                clearTextOnFocus={false}
-                autoCorrect={false}
-                keyboardType="numeric"
-                value={text}
-                onChangeText={(str) => {
-                  setValue(
-                    isEid ? {...value, eid: str} : {...value, imei2: str},
-                  );
-                }}
-                placeholder={i18n.t(`us:device:placeholder`)}
-              />
-
+                  styles.textInputFrame,
+                  {
+                    borderColor:
+                      text.length > 0 ? colors.clearBlue : colors.lightGrey,
+                  },
+                ]}>
+                <AppTextInput
+                  key={r}
+                  style={styles.eidFrame}
+                  maxLength={isEid ? 32 : 15}
+                  multiline
+                  enablesReturnKeyAutomatically
+                  clearTextOnFocus={false}
+                  autoCorrect={false}
+                  keyboardType="numeric"
+                  value={text}
+                  onChangeText={(str) => {
+                    setValue(
+                      isEid ? {...value, eid: str} : {...value, imei2: str},
+                    );
+                  }}
+                  placeholder={i18n.t(`us:device:placeholder`)}
+                />
+                {text.length > 0 && (
+                  <View style={{flexDirection: 'row'}}>
+                    <AppButton
+                      style={[styles.showSearchBar, {paddingRight: 20}]}
+                      onPress={() => {
+                        setValue(
+                          isEid ? {...value, eid: ''} : {...value, imei2: ''},
+                        );
+                        // search('', false);
+                        // setWord('');
+                      }}
+                      iconName="btnSearchCancel"
+                    />
+                  </View>
+                )}
+              </View>
               {((isEid && text.length !== 32) ||
                 (!isEid && text.length !== 15)) && (
                 <View

@@ -115,6 +115,11 @@ type DrupalProduct = {
   sku: string;
   field_network: string;
   field_fup_speed?: string;
+  field_notice_option?: string;
+  field_caution?: string;
+  field_caution_list?: string[];
+  field_addon_option?: addonOptionType;
+  desc?: ProdDesc;
 };
 
 export type CurrencyCode = 'KRW' | 'USD';
@@ -122,6 +127,7 @@ export type Currency = {
   value: number;
   currency: CurrencyCode;
 };
+export type addonOptionType = 'N' | 'A' | 'E' | 'B' | undefined;
 export type ProdDesc = {
   desc1?: string;
   desc2?: string;
@@ -170,9 +176,22 @@ const toPurchaseAddOnItem = (subsId: string, prod?: RkbAddOnProd) => {
   return prod ? createFromAddOnProduct(prod, subsId) : undefined;
 };
 
-const toProdDesc = (data: DrupalProduct[]): ApiResult<ProdDesc> => {
+const toProdDesc = (data: DrupalProduct[]): ApiResult<DescData> => {
   if (_.isArray(data) && data.length > 0) {
-    return api.success(parseJson(data[0].field_desc.replace(/&quot;/g, '"')));
+    const d = data[0];
+    if (d) {
+      return api.success({
+        uuid: d.uuid,
+        fieldNoticeOption: d.field_notice_option,
+        fieldCaution: d.field_caution || '',
+        fieldCautionList: d.field_caution_list || [],
+        addonOption: d.field_addon_option,
+        body: d.body,
+        desc: d.field_desc
+          ? parseJson(d.field_desc.replace(/&quot;/g, '"'))
+          : {},
+      });
+    }
   }
 
   return api.failure(api.E_NOT_FOUND);
@@ -349,6 +368,16 @@ type RkbLocalOpJson = {
   b?: string; // block list
 };
 
+export type DescData = {
+  uuid?: string;
+  fieldNoticeOption?: any; // 리스트, 배열 상관없이 받도록
+  fieldCaution?: string;
+  fieldCautionList?: string[];
+  body?: string;
+  addonOption?: addonOptionType;
+  desc?: ProdDesc;
+};
+
 const toLocalOp = (data: RkbLocalOpJson[]): ApiResult<RkbLocalOp> => {
   if (_.isArray(data)) {
     return api.success(
@@ -445,12 +474,6 @@ const getAllProduct = () => {
   return api.callHttpGet(
     api.httpUrl(`${api.path.rokApi.rokebi.config}/allprod?_format=json`),
     toAllProduct,
-  );
-};
-
-const getProductDescDetail = (prodUuid: string) => {
-  return api.callHttpGet(
-    api.httpUrl(`${api.path.prodDescDetail}/${prodUuid}?_format=hal_json`),
   );
 };
 
@@ -558,7 +581,6 @@ export default {
   getProduct,
   getProductByLocalOp,
   getAllProduct,
-  getProductDescDetail,
   getProductDesc,
   getProductBySku,
   getLocalOp,

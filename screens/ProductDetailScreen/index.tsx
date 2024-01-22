@@ -15,7 +15,7 @@ import {
   View,
 } from 'react-native';
 import {WebViewMessageEvent} from 'react-native-webview';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import Analytics from 'appcenter-analytics';
@@ -46,20 +46,21 @@ import {
 } from '@/redux/modules/cart';
 import AppCartButton from '@/components/AppCartButton';
 import ChatTalk from '@/components/ChatTalk';
-import {API} from '@/redux/api';
-import {Currency, ProdDesc} from '@/redux/api/productApi';
+import {Currency, DescData} from '@/redux/api/productApi';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import InputNumber from '@/components/InputNumber';
 import utils from '@/redux/api/utils';
 import AppPrice from '@/components/AppPrice';
-import {ProductModelState} from '@/redux/modules/product';
+import {
+  actions as productAction,
+  ProductModelState,
+} from '@/redux/modules/product';
 import ShareLinkModal from './components/ShareLinkModal';
 import AppStyledText from '@/components/AppStyledText';
 import ChargeInfoModal from './components/ChargeInfoModal';
 import TextWithDot from '../EsimScreen/components/TextWithDot';
 import BodyHtml from './components/BodyHtml';
-import {parseJson} from '@/utils/utils';
 import TextWithCheck from '../HomeScreen/component/TextWithCheck';
 
 const {esimGlobal, isIOS} = Env.get();
@@ -301,8 +302,7 @@ const styles = StyleSheet.create({
     paddingTop: 42,
   },
   callMethodTitle: {
-    ...appStyles.normal20Text,
-    // fontWeight: '500',
+    ...appStyles.medium20,
     lineHeight: 22,
     color: colors.black,
     marginBottom: 16,
@@ -410,17 +410,8 @@ type ProductDetailScreenProps = {
   };
 };
 
-type addonOptionType = 'N' | 'A' | 'E' | 'B' | undefined;
-type DescData = {
-  fieldNoticeOption: any; // 리스트, 배열 상관없이 받도록
-  fieldCaution: string;
-  fieldCautionList: string[];
-  body: string;
-  addonOption?: addonOptionType;
-  desc?: ProdDesc;
-};
-
 const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
+  product,
   navigation,
   route,
   action,
@@ -449,13 +440,17 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [showShareModal, setShowShareModal] = useState(false);
 
   const [showWebModal, setShowWebModal] = useState(false);
-  const [descData, setDescData] = useState<DescData>();
 
   const [qty, setQty] = useState(1);
   const appState = useRef('unknown');
   const [price, setPrice] = useState<Currency>();
   const [showChargeInfoModal, setShowChargeInfoModal] = useState(false);
   const [showCallDetail, setShowCallDetail] = useState(false);
+  const dispatch = useDispatch();
+  const descData: DescData = useMemo(
+    () => product.descData.get(prod?.key),
+    [prod?.key, product.descData],
+  );
 
   const isht = useMemo(
     () => route?.params?.partner === 'ht',
@@ -463,23 +458,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   );
 
   useEffect(() => {
-    if (prod)
-      API.Product.getProductDescDetail(prod.key).then((rsp) => {
-        const data = rsp[0];
-        if (data) {
-          setDescData({
-            fieldNoticeOption: data.field_notice_option, // 리스트, 배열 상관없이 받도록
-            fieldCaution: data.field_caution || '',
-            fieldCautionList: data.field_caution_list || [],
-            addonOption: data.field_addon_option,
-            body: data.body,
-            desc: data.field_desc
-              ? parseJson(data.field_desc.replace(/&quot;/g, '"'))
-              : {},
-          });
-        }
-      });
-  }, [prod]);
+    if (!product.descData.get(prod?.key))
+      dispatch(productAction.getProdDesc(prod.key));
+  }, [dispatch, prod, product.descData]);
 
   useEffect(() => {
     getTrackingStatus().then((elm) => setStatus(elm));
@@ -574,12 +555,12 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           break;
         case 'apn':
           if (k)
-            API.Product.getProductDesc(k).then((desc) => {
+            if (descData?.desc?.apn)
               navigation.navigate('ProductDetailOp', {
                 title: route.params?.title,
-                ...desc.objects,
+                apn: descData?.desc?.apn,
               });
-            });
+
           break;
         // 기본적으로 화면 크기 가져오도록 함
         default:
@@ -587,7 +568,13 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           break;
       }
     },
-    [action.info, navigation, route.params?.item?.key, route.params?.title],
+    [
+      action.info,
+      descData?.desc?.apn,
+      navigation,
+      route.params?.item?.key,
+      route.params?.title,
+    ],
   );
 
   const renderTopInfo = useCallback(
@@ -858,14 +845,16 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             </View>
             <View style={styles.callMethodContents}>
               {defaultList.map((i) => (
-                <TextWithCheck
-                  text={i18n.t(
-                    `prodDetail:callMethod:box:contents:default${i}:${
-                      isUS ? 'us' : clMtd
-                    }`,
-                  )}
-                  textStyle={styles.callMethodBoxBold}
-                />
+                <View key={`default${clMtd}${i}`}>
+                  <TextWithCheck
+                    text={i18n.t(
+                      `prodDetail:callMethod:box:contents:default${i}:${
+                        isUS ? 'us' : clMtd
+                      }`,
+                    )}
+                    textStyle={styles.callMethodBoxBold}
+                  />
+                </View>
               ))}
               {showCallDetail &&
                 detailList.length > 0 &&
@@ -935,11 +924,12 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     );
 
     const cautionList: string[] =
-      descData?.fieldCautionList.filter((c) =>
+      descData?.fieldCautionList?.filter((c) =>
         isIOS ? !c.includes('android:') : !c.includes('ios:'),
       ) || [];
 
     const clMtd = descData?.desc?.clMtd;
+    const ftr = descData?.desc?.ftr;
     return (
       prod &&
       descData && (
@@ -949,6 +939,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           {(noticeList.length > 0 || cautionList.length > 0) &&
             renderNotice(noticeList, cautionList)}
           {clMtd &&
+            ftr &&
             ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(clMtd) &&
             renderCallMethod(clMtd)}
           <BodyHtml body={descData.body} onMessage={onMessage} />
@@ -1312,7 +1303,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 };
 
 export default connect(
-  ({account, cart}: RootState) => ({
+  ({product, account, cart}: RootState) => ({
+    product,
     account,
     cart,
   }),
