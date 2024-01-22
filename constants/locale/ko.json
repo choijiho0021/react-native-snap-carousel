@@ -889,7 +889,7 @@
   "us:device:validate:imei2": "IMEI 15자리를 모두 입력해 주세요.",
 
   "us:draftCheckNotiTitle": "발권 전 꼭 확인해주세요!",
-  "us:draftCheckNotiBody": "• 사용하시려는 단말이 <b>eSIM 지원 단말인지 확인</b>해주세요.\n• <b>발권은 주문 건별로 진행</b>되며, 부분 발권은 불가합니다.\n• <b>발권 후에는 교환·환불이 불가</b>합니다.\n• 미국(로컬) 상품은 발권 시 상품 사용 시작일과 사용할 단말 정보를 필수로 입력해야 하는 상품입니다. <b>입력한 정보는 발권 후 수정 불가</b>하니 유의해주세요!\n• <b>미국(로컬) 상품은 자동 발권 대상에서 제외됩니다. 상품 구매일로부터 7일 경과 후 자동 취소 처리</b>되며, 최초 결제했던 결제 수단으로 환불됩니다. 결제 수단에 따라 최종 환불까지는 3-5영업일이 소요될 수 있습니다.\n• 발권 전 취소·환불을 원하시는 경우, 주문 건별로 취소·환불 신청하실 수 있습니다. 부분 취소·환불은 불가합니다.\n• 선물하기 기능은 발권 후 이용하실 수 있습니다.",
+  "us:draftCheckNotiBody": "• 사용하시려는 단말이 <b>eSIM 지원 단말인지 확인</b>해주세요.\n• <b>발권은 주문 건별로 진행</b>되며, 부분 발권은 불가합니다.\n• <b>발권 후에는 교환·환불이 불가</b>합니다.\n• 미국(로컬) 상품은 발권 시 상품 사용 시작일과 사용할 단말 정보를 필수로 입력해야 하는 상품입니다. <b>입력한 정보는 발권 후 수정 불가</b>하니 유의해주세요!\n• <b>미국(로컬) 상품은 자동 발권 대상에서 제외됩니다. 상품 구매일로부터 7일 경과 후 자동 취소 처리</b>되며, 최초 결제했던 결제 수단으로 환불됩니다. 결제 수단에 따라 최종 환불까지는 3-5영업일이 소요될 수 있습니다.\n• 발권 전 취소·환불을 원하시는 경우, 주문 건별로 취소·환불 신청하실 수 있습니다. 부분 취소·환불은 불가합니다.",
 
   "us:result:title": "입력한 정보 및 발권 전 유의사항을 확인해 주세요.",
   "us:req": "필수 정보",
@@ -899,8 +899,8 @@
   "us:imei2": "IMEI2(eSIM)",
 
   "us:validate:checked": "발권 전 유의사항 확인 후 동의해주세요.",
-  "us:validate:date": "날짜를 입력하세요.",
-  "us:validate:device": "단말 정보를 입력하세요.",
+  "us:validate:date": "상품 사용 시작일을 선택해 주세요.",
+  "us:validate:device": "단말 정보를 업로드해 주세요.",
 
   "redirectHK": "실명 인증",
   "redirectHK:info1": "홍콩·대만 정부의 통신 정책 변경으로, <b>홍콩·대만 현지 데이터를 사용하고자 하는 모든 사용자</b>(내/외국인 포함)는 <b>실명 인증을 필수로 진행</b>하셔야 합니다.\n현지 도착 후 곧바로 데이터를 사용하기 위해, <b>한국에서 실명 인증을 완료해주세요!</b>",
@@ -1111,7 +1111,7 @@
   "prodDetail:callMethod:box:contents:detail2:ais": "문자 미지원 상품입니다.",
   "prodDetail:callMethod:box:contents:detail1:dtac": "한국, 인도, 베트남으로 30분간 무료 통화 발신 가능",
   "prodDetail:callMethod:box:contents:detail2:dtac": "태국 내 DTAC 번호끼리 무제한 통화 가능",
-  "prodDetail:callMethod:box:contents:detail3:dtac": "태국 내 타통신사 1분 = 1바트 / 국제 1분 = 4바트",
+  "prodDetail:callMethod:box:contents:detail3:dtac": "태국 내 1분 = 1바트 / 국제 1분 = 4바트",
   "prodDetail:callMethod:box:contents:detail4:dtac": "문자 미지원 상품입니다.",
   "prodDetail:callMethod:box:contents:detail1:mvtotal": "국제 통화·문자 발신 미지원 상품입니다.",
 
@@ -1544,6 +1544,7 @@
   "daily:filter:1024": "1GB",
   "daily:filter:2048": "2GB",
   "daily:filter:3072": "3GB",
+  "daily:filter:1024000": "올데이",
 
   "network:filter:fiveG": "5G속도",
   "network:filter:else": "LTE/3G"

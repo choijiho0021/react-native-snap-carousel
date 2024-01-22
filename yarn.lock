@@ -5878,9 +5878,7 @@
     "path-is-absolute" "^1.0.0"
 
 "glob@^8.0.1":
-  "integrity" "sha512-r8hpEjiQEYlF2QU0df3dS+nxxSIreXQS1qRhMJM0Q5NDdR386C7jb7Hwwod8Fgiuex+k0GFjgft18yvxm5XoCQ=="
-  "resolved" "https://registry.npmjs.org/glob/-/glob-8.1.0.tgz"
-  "version" "8.1.0"
+  "version" "8.0.3"
   dependencies:
     "fs.realpath" "^1.0.0"
     "inflight" "^1.0.4"
@@ -8743,10 +8741,15 @@
   dependencies:
     "brace-expansion" "^1.1.7"
 
-"minimatch@^5.0.1", "minimatch@^5.1.0":
+"minimatch@^5.0.1":
   "integrity" "sha512-lKwV/1brpG6mBUFHtb7NUmtABCb2WZZmm2wNiOA5hAb8VdCS4B3dtMWyvcoViccwAW/COERjXLt0zP1zXUN26g=="
   "resolved" "https://registry.npmjs.org/minimatch/-/minimatch-5.1.6.tgz"
   "version" "5.1.6"
+  dependencies:
+    "brace-expansion" "^2.0.1"
+
+"minimatch@^5.1.0":
+  "version" "5.1.0"
   dependencies:
     "brace-expansion" "^2.0.1"
 
@@ -10291,6 +10294,11 @@
   "integrity" "sha512-EZETlC1ZlW/4g6xfsNCwAkAw5BDL2A6zk/08JjFR/GRGxYuKRD7iP1hHn1+h6DEu+xROjPpoNeXfMER2vkTVIQ=="
   "resolved" "https://registry.npmjs.org/react-native-localize/-/react-native-localize-2.2.6.tgz"
   "version" "2.2.6"
+
+"react-native-mlkit-ocr@^0.3.0":
+  "integrity" "sha512-8oNJwNMGsUup41nWlKA01iW6xiNkCcXM3ANDsOKKijvsrd3eWNs7kL0Yhpt3Cq64zSyjoeqkdTdOCDiI6Pv6KA=="
+  "resolved" "https://registry.npmjs.org/react-native-mlkit-ocr/-/react-native-mlkit-ocr-0.3.0.tgz"
+  "version" "0.3.0"
 
 "react-native-pager-view@*", "react-native-pager-view@>= 4.0.0", "react-native-pager-view@6.2.0":
   "integrity" "sha512-pf9OnL/Tkr+5s4Gjmsn7xh91PtJLDa6qxYa/bmtUhd/+s4cQdWQ8DIFoOFghwZIHHHwVdWtoXkp6HtpjN+r20g=="
