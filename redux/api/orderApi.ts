@@ -193,7 +193,7 @@ const draftOrder = ({
   )}/${orderId}?_format=json`;
 
   const body = JSON.stringify({
-    status: 'R',
+    status: eid ? 'A' : 'R',
     eid,
     imei2,
     activation_date,
