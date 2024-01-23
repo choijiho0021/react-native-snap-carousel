@@ -22,7 +22,8 @@ export type RkbAccount = {
 
 export type RkbCoupon = {
   id: string;
-  promo: string;
+  prName: string;
+  prDisp: string;
   startDate: moment.Moment;
   endDate?: moment.Moment;
 };
@@ -106,7 +107,8 @@ const toAccount = (
 const toCoupon = (
   resp: ApiResult<{
     id: string;
-    promo: string;
+    pr_name: string;
+    pr_disp: string;
     start_date: string;
     end_date: string;
   }>,
@@ -118,9 +120,10 @@ const toCoupon = (
         (item) =>
           ({
             id: item.id,
-            promo: item.promo,
-            startDate: moment(item.start_date),
-            endDate: moment(item.end_date),
+            prName: item.pr_name,
+            prDisp: item.pr_disp,
+            startDate: item.start_date ? moment(item.start_date) : undefined,
+            endDate: item.end_date ? moment(item.end_date) : undefined,
           } as RkbCoupon),
       ),
     );

@@ -29,7 +29,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   coupon: {
-    height: 56,
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
@@ -65,7 +64,8 @@ const CouponScreen: React.FC<CouponProps> = ({
   const renderCoupon = useCallback(({item}: {item: RkbCoupon}) => {
     return (
       <View style={styles.coupon}>
-        <AppText>{item.promo}</AppText>
+        <AppText>{item.prName}</AppText>
+        <AppText>{item.prDisp}</AppText>
         <AppText>{item.startDate.toString()}</AppText>
       </View>
     );
