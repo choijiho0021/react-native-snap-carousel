@@ -4,7 +4,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import {goBack} from '@/navigation/navigation';
 
 type BackHandlerParam = {
-  navigation: any;
+  navigation?: any;
   route?: any;
   onBack?: () => boolean;
 };

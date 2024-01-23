@@ -16,6 +16,7 @@ import AppButton from './AppButton';
 import AppIcon from './AppIcon';
 import AppText from './AppText';
 import {MAX_WIDTH} from '@/constants/SliderEntry.style';
+import BackbuttonHandler from './BackbuttonHandler';
 
 const styles = StyleSheet.create({
   button: {
@@ -231,6 +232,13 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
     titleViewStyle,
     type,
   ]);
+
+  BackbuttonHandler({
+    onBack: () => {
+      onCancelClose();
+      return true;
+    },
+  });
 
   return visible ? (
     <Modal
