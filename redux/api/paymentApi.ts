@@ -184,7 +184,7 @@ const getRokebiPayment = ({
   token: string;
 }) => {
   return api.callHttpPost(
-    `${api.httpUrl(api.path.rokApi.rokebi.payment, '')}?_format=json`,
+    `${api.httpUrl(api.path.rokApi.rokebi.payment)}?_format=json`,
     JSON.stringify({pym_id: key, pg}),
     api.withToken(token, 'json'),
   );
@@ -198,7 +198,7 @@ const reqRokebiPaymentVBank = ({
   token?: string;
 }) => {
   return api.callHttpPost(
-    `${api.httpUrl(api.path.rokApi.rokebi.vbank, '')}?_format=json`,
+    `${api.httpUrl(api.path.rokApi.rokebi.vbank)}?_format=json`,
     JSON.stringify(params),
     api.withToken(token, 'json'),
   );
@@ -206,7 +206,7 @@ const reqRokebiPaymentVBank = ({
 
 const getRokebiPaymentRule = () => {
   return api.callHttpGet(
-    `${api.httpUrl(api.path.rokApi.rokebi.paymentRule, '')}?_format=json`,
+    `${api.httpUrl(api.path.rokApi.rokebi.paymentRule)}?_format=json`,
   );
 };
 
@@ -218,7 +218,7 @@ const getRokebiPaymentReceipt = ({
   token: string;
 }) => {
   return api.callHttpPost(
-    `${api.httpUrl(api.path.rokApi.rokebi.payment, '')}?_format=json`,
+    `${api.httpUrl(api.path.rokApi.rokebi.payment)}?_format=json`,
     JSON.stringify({pym_id: key, receipt: true}),
     api.withToken(token, 'json'),
     (rsp) => {

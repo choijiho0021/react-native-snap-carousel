@@ -244,7 +244,7 @@ const cmpMomentDesc = (a?: Moment, b?: Moment) => {
 };
 
 const convertURLtoRkbImage = async (url: string) => {
-  if (!url) return Promise.reject(new Error('invalid URL'));
+  if (_.isEmpty(url)) return Promise.reject(new Error(`invalid URL:${url}`));
 
   try {
     const response = await RNFetchBlob.fetch('GET', url);

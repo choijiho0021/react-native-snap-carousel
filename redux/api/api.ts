@@ -142,7 +142,7 @@ const path = {
   },
 };
 
-const httpUrl = (path0: string, lang: string = esimGlobal ? 'en' : 'ko') => {
+const httpUrl = (path0: string, lang: string = '') => {
   return lang == ''
     ? `${scheme}://${apiUrl}/${path0}`
     : `${scheme}://${apiUrl}/${lang}/${path0}`;
@@ -336,16 +336,13 @@ const callHttp = async <T>(
       !url.includes('user/login') &&
       !url.includes('user/logout')
     ) {
-      const key = {
-        user: await retrieveData(API.User.KEY_MOBILE, true),
-        pass: await retrieveData(API.User.KEY_PIN, true),
-        // token: await API.User.getToken(),
-      };
-      const isLoggedIn = await userApi.logIn(key);
+      const user = await retrieveData(API.User.KEY_MOBILE, true);
+      const pass = await retrieveData(API.User.KEY_PIN, true);
+      const isLoggedIn = await userApi.logIn({user, pass});
       if (isLoggedIn.result === 0) {
         // get new x-csrf-token
         const {headers} = param;
-        if (headers.has('X-CSRF-Token')) {
+        if (headers?.has('X-CSRF-Token')) {
           const xcsrftoken = await API.User.getToken();
           headers.set('X-CSRF-Token', xcsrftoken);
         }

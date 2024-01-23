@@ -379,12 +379,15 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       if (resp?.result === 0) {
         utils.adjustEventadd(eventToken.Login);
         actions.cart.cartFetch();
-        const profileImage: RkbImage = await utils.convertURLtoRkbImage(
-          profileImageUrl!,
-        );
-        if (profileImage) {
-          actions.account.uploadAndChangePicture(profileImage);
-        }
+
+        utils
+          .convertURLtoRkbImage(profileImageUrl!)
+          .then((profileImage: RkbImage) => {
+            actions.account.uploadAndChangePicture(profileImage);
+          })
+          .catch((ex) =>
+            console.log('@@@ failed to convert image', profileImageUrl, ex),
+          );
       }
       return resp;
     },

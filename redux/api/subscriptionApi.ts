@@ -332,7 +332,7 @@ const getSubscription = ({
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
-  const url = `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${
+  const url = `${api.httpUrl(api.path.rokApi.rokebi.subs)}/${
     uuid || '0'
   }?_format=json${hidden ? '' : '&hidden=0'}${
     subsId ? `&subsId=${subsId}` : ''
@@ -362,7 +362,7 @@ const updateSubscriptionInfo = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
   return api.callHttp(
-    `${api.httpUrl(api.path.rokApi.rokebi.subs, '')}/${uuid}?_format=json`,
+    `${api.httpUrl(api.path.rokApi.rokebi.subs)}/${uuid}?_format=json`,
     {
       method: 'PATCH',
       headers: api.withToken(token, 'json'),
@@ -389,7 +389,7 @@ const updateSubscriptionAndOrderTag = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
   return api.callHttp(
-    `${api.httpUrl(api.path.rokApi.rokebi.tag, '')}/${uuid}?_format=json`,
+    `${api.httpUrl(api.path.rokApi.rokebi.tag)}/${uuid}?_format=json`,
     {
       method: 'PATCH',
       headers: api.withToken(token, 'json'),
