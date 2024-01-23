@@ -157,10 +157,8 @@ const logIn0 = async ({user, pass}: {user: string; pass: string}) => {
   if (!pass)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: pass');
 
-  console.log('@@@ logout');
   await logOut();
 
-  console.log('@@@ login once');
   const rsp = await logInOnce({user, pass});
   if (rsp.result == 0) return Promise.resolve(rsp);
 
