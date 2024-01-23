@@ -679,7 +679,7 @@ const Esim: React.FC<EsimProps> = ({
         if (reload)
           storeData(
             `${cachePrefix}cache.timestamp.dev`,
-            moment().zone(-540).format(),
+            moment().utcOffset(-540).format(),
           );
       }
 
@@ -741,7 +741,7 @@ const Esim: React.FC<EsimProps> = ({
       if (reload) {
         storeData(
           `${cachePrefix}cache.timestamp.prod`,
-          moment().zone(-540).format(),
+          moment().utcOffset(-540).format(),
         );
       }
     };
