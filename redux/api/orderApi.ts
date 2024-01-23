@@ -187,10 +187,7 @@ const draftOrder = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter : token');
   }
 
-  const url = `${api.httpUrl(
-    api.path.commerce.order,
-    '',
-  )}/${orderId}?_format=json`;
+  const url = `${api.httpUrl(api.path.commerce.order)}/${orderId}?_format=json`;
 
   const body = JSON.stringify({
     status: eid ? 'A' : 'R',
@@ -231,7 +228,6 @@ const getOrders = ({
   return api.callHttpGet(
     `${api.httpUrl(
       api.path.commerce.order,
-      '',
     )}/${orderId}?_format=json&page=${page}&state=${state}&type=${orderType}`,
     (resp) => toOrder(resp, page),
     api.withToken(token, 'json'),
@@ -255,7 +251,7 @@ const getOrderById = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: orderId');
 
   return api.callHttpGet(
-    `${api.httpUrl(api.path.commerce.order, '')}/${orderId}?_format=json`,
+    `${api.httpUrl(api.path.commerce.order)}/${orderId}?_format=json`,
     (resp) => toOrder(resp),
     api.withToken(token, 'json'),
   );
@@ -274,7 +270,7 @@ const cancelOrder = ({orderId, token, reason}: CancelOrderParam) => {
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: orderId');
 
   return api.callHttp(
-    `${api.httpUrl(api.path.commerce.order, '')}/${orderId}?_format=json`,
+    `${api.httpUrl(api.path.commerce.order)}/${orderId}?_format=json`,
     {
       method: 'DELETE',
       headers: api.withToken(token, 'json'),

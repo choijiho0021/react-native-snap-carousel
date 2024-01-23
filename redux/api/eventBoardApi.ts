@@ -251,7 +251,6 @@ const uploadAttachment = ({
 
   const url = `${api.httpUrl(
     api.path.uploadFile,
-    '',
   )}/node/event_board/field_images?_format=hal_json`;
 
   const posts = images.map((image) => {

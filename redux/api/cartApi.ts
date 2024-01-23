@@ -105,7 +105,7 @@ const toStock =
 
 const get = () => {
   return api.callHttpGet(
-    `${api.httpUrl(api.path.cart, '')}?_format=json`,
+    `${api.httpUrl(api.path.cart)}?_format=json`,
     toCart,
     api.headers('hal+json'),
   );
@@ -128,7 +128,7 @@ const add = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
   return api.callHttp(
-    `${api.httpUrl(api.path.cart, '')}/add?_format=json`,
+    `${api.httpUrl(api.path.cart)}/add?_format=json`,
     {
       method: 'POST',
       headers: api.withToken(token, 'json'),
@@ -154,7 +154,7 @@ const checkStock = async ({purchaseItems}: {purchaseItems: PurchaseItem[]}) => {
   const token = await API.User.getToken();
 
   return api.callHttp(
-    `${api.httpUrl(api.path.cart, '')}/stock?_format=json`,
+    `${api.httpUrl(api.path.cart)}/stock?_format=json`,
     {
       method: 'POST',
       headers: api.withToken(token, 'json'),
@@ -179,7 +179,6 @@ const remove = ({
 }) => {
   const url = `${api.httpUrl(
     api.path.cart,
-    '',
   )}/${orderId}/items/${orderItemId}?_format=json`;
   const headers = api.headers('json');
 
@@ -213,7 +212,7 @@ const updateQty = ({
   qty: number;
   abortController: AbortController;
 }) => {
-  const url = `${api.httpUrl(api.path.cart, '')}/${orderId}/items?_format=json`;
+  const url = `${api.httpUrl(api.path.cart)}/${orderId}/items?_format=json`;
   const headers = api.headers('json');
   const body = {
     [orderItemId]: {quantity: qty},
@@ -413,7 +412,7 @@ const makeOrder = ({
   };
 
   return api.callHttp(
-    `${api.httpUrl(api.path.commerce.order, '')}?_format=json`,
+    `${api.httpUrl(api.path.commerce.order)}?_format=json`,
     {
       method: 'POST',
       headers: api.withToken(token, 'json'),
@@ -445,7 +444,7 @@ const calculateTotal = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
   return api.callHttp(
-    `${api.httpUrl(api.path.rokApi.rokebi.calculateTotal, '')}?_format=json`,
+    `${api.httpUrl(api.path.rokApi.rokebi.calculateTotal)}?_format=json`,
     {
       method: 'POST',
       headers: api.withToken(token, 'json'),
