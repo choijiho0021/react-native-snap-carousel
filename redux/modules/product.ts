@@ -119,7 +119,10 @@ const init = createAsyncThunk(
     }
 
     if (reload) {
-      storeData(`${cachePrefix}cache.timestamp`, moment().zone(-540).format());
+      storeData(
+        `${cachePrefix}cache.timestamp`,
+        moment().utcOffset(-540).format(),
+      );
     }
 
     await dispatch(getLocalOp(reload));
