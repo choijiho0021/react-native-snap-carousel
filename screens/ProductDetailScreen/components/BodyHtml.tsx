@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-unused-styles */
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {unescape} from 'underscore';
 import {View} from 'react-native';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
@@ -20,7 +20,13 @@ const BodyHtml: React.FC<BodyHtmlProps> = ({body, onMessage}) => {
   const injected = useRef(false);
   const [webviewHeight, setWebviewHeight] = useState(300);
 
-  const html = `
+  const unescapedBody = useMemo(
+    () => unescape(body?.replace(/<br \/>/g, '')),
+    [body],
+  );
+
+  const html = useMemo(
+    () => `
     <html>
     <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
@@ -561,16 +567,50 @@ const BodyHtml: React.FC<BodyHtmlProps> = ({body, onMessage}) => {
     
     <body>
     <div class="wrap_data">
-    ${unescape(body?.replace(/<br \/>/g, ''))}
+    ${unescapedBody}
     </div>
     </body>
     </html>
-`;
+`,
+    [unescapedBody],
+  );
 
-  const calcHeight = useCallback((event: WebViewMessageEvent) => {
-    const height = parseInt(event.nativeEvent.data, 10);
-    setWebviewHeight(height);
-  }, []);
+  const checkRepetition = useCallback(
+    (mainString: string, substring: string) => {
+      let count = 0;
+      let position = 0;
+
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        position = mainString.indexOf(substring, position);
+
+        if (position === -1) {
+          break;
+        }
+
+        count += 1;
+        position += substring.length;
+      }
+
+      return count;
+    },
+    [],
+  );
+
+  const calcHeight = useCallback(
+    (event: WebViewMessageEvent) => {
+      const repetition = checkRepetition(
+        unescapedBody,
+        '사용 가능 지역 및 통신사 확인하기',
+      );
+      const height = parseInt(event.nativeEvent.data, 10);
+
+      if (repetition > 1) {
+        setWebviewHeight(height / repetition);
+      } else setWebviewHeight(height);
+    },
+    [checkRepetition, unescapedBody],
+  );
 
   const onLoadEnd = useCallback(() => {
     if (!injected.current) {
