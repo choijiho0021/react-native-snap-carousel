@@ -657,6 +657,18 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
             });
             break;
           default:
+            // 이게 맞나... 따로 붙여야할 것 같음.
+            if (params?.orderId) {
+              refNavigate({
+                stack: 'EsimStack',
+                screen: 'esim',
+                initial: false,
+                params: {
+                  actionStr: 'reload',
+                },
+              });
+            }
+
             break;
         }
       }
