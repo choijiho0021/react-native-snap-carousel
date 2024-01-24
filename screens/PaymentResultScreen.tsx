@@ -25,7 +25,6 @@ import {
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import {eventToken} from '@/constants/Adjust';
 import ScreenHeader from '@/components/ScreenHeader';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 
@@ -188,7 +187,6 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
       payment: `${params?.mode} Payment${isSuccess ? ' Success' : ' Fail'}`,
     });
     if (cart?.pymPrice && cart?.pymPrice.value > 0 && isSuccess) {
-      utils.adjustEventadd(eventToken.Sales, cart?.pymPrice.value, 'KRW'); // pymPrice.value 실결제금액, deduct.value 로깨비캐시 차감금액
       analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_payment`);
     }
   }, [cart?.pymPrice, isSuccess, params?.mode]);

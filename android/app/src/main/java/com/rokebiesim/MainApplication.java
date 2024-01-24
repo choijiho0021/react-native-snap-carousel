@@ -20,7 +20,6 @@ import com.lugg.RNCConfig.RNCConfigPackage;
 import com.swmansion.gesturehandler.RNGestureHandlerPackage;
 import com.airbnb.android.react.lottie.LottiePackage;
 // import com.horcrux.svg.SvgPackage;
-import com.adjust.nativemodule.AdjustPackage;
 import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import cl.json.RNSharePackage;
 //import com.tkporter.sendsms.SendSMSPackage;
@@ -166,7 +165,6 @@ public class MainApplication extends Application implements ReactApplication {
             new LottiePackage(),
             new RNChannelIOPackage(),
             // new GoogleFitPackage(BuildConfig.APPLICATION_ID),
-            new AdjustPackage(),
             new RNSharePackage(),
             new CameraRollPackage(),
             new RNViewShotPackage(),

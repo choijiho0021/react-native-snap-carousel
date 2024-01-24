@@ -106,7 +106,6 @@
                 <data android:host="www.rokebi.com" android:pathPrefix="/gift" android:scheme="https"/>
                 <data android:host="tb.rokebi.com" android:path="/link" android:scheme="http"/>
                 <data android:host="tb.rokebi.com" android:pathPrefix="/gift" android:scheme="http"/>
-                <data android:host="app.adjust.com" android:scheme="https" android:pathPattern=".*"/>
                 <data android:scheme="rokebiesim" android:host="*"/>
             </intent-filter>
         </activity>
@@ -123,13 +122,6 @@
                     android:scheme="kakaof881469e3b4a140967dfaebe648ede8d" />
             </intent-filter>
         </activity>
-        <receiver android:name="com.adjust.sdk.AdjustReferrerReceiver"
-            android:permission="android.permission.INSTALL_PACKAGES"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="com.android.vending.INSTALL_REFERRER" />
-            </intent-filter>
-        </receiver>
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key"

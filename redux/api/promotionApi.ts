@@ -453,10 +453,6 @@ const invite = async (
     const result = await Share.open({
       url,
     });
-    if (result.action !== Share.dismissedAction) {
-      // adjust appEvent 앱 업데이트 추가
-      // Adjust.trackEvent(new AdjustEvent(adjustInvite));
-    }
 
     // if (result.action === Share.sharedAction) {
     //   if (result.activityType) {
