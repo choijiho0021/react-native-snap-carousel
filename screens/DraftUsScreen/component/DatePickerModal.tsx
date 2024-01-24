@@ -74,9 +74,27 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
     const minDate = moment()
       .utcOffset('-05:00')
       .add(1, 'days')
-      .format('YYYY-MM-DD');
+      .format('YYYY-MM-DD'); // 2024-01-27
+
+    const today = moment().isBefore(minDate);
 
     const isLeftDisable = moment(month).isBefore(minDate);
+
+    const markedDate = {
+      [minDate]: {
+        customStyles: {
+          container: {
+            backgroundColor: colors.clearBlue,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 100,
+          },
+          text: {
+            color: 'white',
+          },
+        },
+      },
+    };
 
     return (
       <View style={{paddingBottom: 20}}>
@@ -109,6 +127,8 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
             )
           }
           disableArrowLeft={isLeftDisable}
+          markingType={'custom'}
+          markedDates={markedDate}
           theme={{
             'stylesheet.day.basic': {
               base: {
@@ -116,19 +136,10 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
                 height: 40,
                 alignItems: 'center',
                 justifyContent: 'center',
-              },
-
-              today: {
-                backgroundColor: colors.clearBlue,
-                width: 40,
-                height: 40,
-                alignItems: 'center',
-                justifyContent: 'center',
                 borderRadius: 100,
               },
             },
-            todayBackgroundColor: colors.clearBlue,
-            todayTextColor: colors.white,
+            todayTextColor: today ? colors.lightGrey : colors.black,
             textDayFontWeight: '500',
             textMonthFontWeight: 'bold',
             textDayHeaderFontWeight: '600',
