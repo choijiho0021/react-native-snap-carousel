@@ -55,7 +55,6 @@ import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
-import {eventToken} from '@/constants/Adjust';
 import {LinkModelState} from '@/redux/modules/link';
 import DomainPicker from './DomainPicker';
 
@@ -377,7 +376,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       const {payload: resp} = await actions.account.logInAndGetAccount(auth);
 
       if (resp?.result === 0) {
-        utils.adjustEventadd(eventToken.Login);
         actions.cart.cartFetch();
 
         utils
@@ -440,7 +438,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
         if (resp.result === 0 && !_.isEmpty(resp.objects)) {
           if (status === 'authorized') {
-            utils.adjustEventadd(eventToken.SignUp);
             await firebase.analytics().setAnalyticsCollectionEnabled(true);
             await Settings.setAdvertiserTrackingEnabled(true);
             analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_sign_up`);

@@ -200,10 +200,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           digital: true,
         });
 
-        // const adjustRokebiCashEvent = new AdjustEvent(adjustRokebiCash);
-        // adjustRokebiCashEvent.setRevenue(info.rokebi_cash, 'KRW');
-        // Adjust.trackEvent(adjustRokebiCashEvent);
-
         // payNorder에서 재고 확인 - resp.result값으로 비교
         action.cart.payNorder(pymInfo).then(({payload: resp}) => {
           if (resp.result === 0) {

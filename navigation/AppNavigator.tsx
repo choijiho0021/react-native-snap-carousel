@@ -28,7 +28,6 @@ import {
   Modal,
   AppState,
 } from 'react-native';
-import {Adjust} from 'react-native-adjust';
 import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {
@@ -682,7 +681,6 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       const initialUrl = await Linking.getInitialURL();
 
       if (initialUrl) {
-        Adjust.appWillOpenUrl(initialUrl);
         deepLinkHandler(initialUrl);
       }
     };
