@@ -162,7 +162,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
             name="closeModal"
             style={styles.btnCnter}
             onPress={() => {
-              navigation.goBack();
+              goBack(navigation, route);
             }}
           />
         ),
