@@ -62,6 +62,7 @@ import ChargeInfoModal from './components/ChargeInfoModal';
 import TextWithDot from '../EsimScreen/components/TextWithDot';
 import BodyHtml from './components/BodyHtml';
 import TextWithCheck from '../HomeScreen/component/TextWithCheck';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const {esimGlobal, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -456,6 +457,15 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     () => route?.params?.partner === 'ht',
     [route?.params?.partner],
   );
+
+  BackbuttonHandler({
+    navigation,
+    route,
+    onBack: () => {
+      navigation.goBack();
+      return true;
+    },
+  });
 
   useEffect(() => {
     if (!product.descData.get(prod?.key))
