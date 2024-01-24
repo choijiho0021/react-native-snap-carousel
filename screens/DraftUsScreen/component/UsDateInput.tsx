@@ -98,7 +98,7 @@ const UsDateInput: React.FC<UsDateInputProps> = ({
       {actDate && (
         <View style={{gap: 6}}>
           {['1', '2'].map((i) => (
-            <View style={{gap: 6, flexDirection: 'row'}}>
+            <View style={{gap: 6, flexDirection: 'row', paddingRight: 20}}>
               <AppSvgIcon name="checkedBlueSmall" />
               <AppStyledText
                 text={i18n.t(`us:device:notice${i}`)}
