@@ -451,7 +451,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_sign_up`);
           }
 
-          signIn({mobile, pin});
+          signIn({mobile, pin}, profileImageUrl);
         } else {
           console.log('sign up failed', resp);
           throw new Error('failed to login');
@@ -477,6 +477,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     mobile,
     pending,
     pin,
+    profileImageUrl,
     recommender,
     signIn,
     status,
@@ -607,6 +608,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         setAuthorized(isAuthorized);
         setEmail(authEmail || '');
         setSocialLogin(true);
+        setProfileImageUrl(url || '');
 
         if (isNew) {
           // new login
