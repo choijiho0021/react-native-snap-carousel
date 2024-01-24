@@ -22,6 +22,7 @@ import ChatTalk from '@/components/ChatTalk';
 import Env from '@/environment';
 import TabBar from './TabBar';
 import ToolTip from './ToolTip';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const {isIOS} = Env.get();
 
@@ -168,6 +169,10 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       ),
     [onPress, onTop, prodData],
   );
+
+  BackbuttonHandler({
+    navigation,
+  });
 
   return (
     <SafeAreaView style={styles.container}>
