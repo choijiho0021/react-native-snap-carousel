@@ -194,7 +194,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
   const format = 'YYYY년 MM월 DD일 HH:mm:ss';
 
   const usagePeriod = useMemo(() => {
-    const now = moment().zone(-540);
+    const now = moment().utcOffset(9);
     const resetTime = moment.tz(dataResetTime, 'HH:mm:ss', 'Asia/Seoul');
 
     if (selectedType === 'today') {
@@ -214,7 +214,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
       period:
         selectedType === 'remainDays' ||
         (expireTime && expireTime.diff(now, 'hours') < 24)
-          ? expireTime?.zone(-540).format(format) || ''
+          ? expireTime?.utcOffset(9).format(format) || ''
           : resetTime.format(format) || '',
       format,
     };
@@ -233,8 +233,9 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
       if (
         chargeableItem.partner?.startsWith('cmi') ||
         chargeableItem.partner === 'quadcell2'
-      )
-        setDataResetTime(expireTime.zone(-540).format('HH:mm:ss'));
+      ) {
+        setDataResetTime(expireTime.utcOffset(9).format('HH:mm:ss'));
+      }
     }
   }, [expireTime, chargeableItem.partner]);
 

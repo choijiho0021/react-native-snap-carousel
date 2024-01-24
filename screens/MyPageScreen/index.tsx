@@ -132,42 +132,59 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
 
   useFocusEffect(
     React.useCallback(() => {
-      const {loggedIn, mobile, token} = account;
-      if (!loggedIn) {
+      if (!account.loggedIn) {
         navigation.navigate('RegisterMobile', {
           goBack: () => navigation.goBack(),
         });
       } else {
-        action.order.getOrders({user: mobile, token, page: 0});
+        action.order.getOrders({
+          user: account.mobile,
+          token: account.token,
+          page: 0,
+        });
         flatListRef.current?.scrollToOffset({animated: false, offset: 0});
       }
-    }, [account, navigation, action.order]),
+    }, [
+      account.loggedIn,
+      account.mobile,
+      account.token,
+      navigation,
+      action.order,
+    ]),
   );
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
 
-    const {mobile, token, iccid} = account;
-
     action.account.getUserId({
-      name: mobile,
-      token,
+      name: account.mobile,
+      token: account.token,
     });
 
-    action.order.getOrders({user: mobile, token, page: 0}).then((resp) => {
-      if (resp) {
-        action.account.getAccount({iccid, token}).then((r) => {
-          if (r) setRefreshing(false);
-        });
-      }
-    });
-  }, [account, action.account, action.order]);
+    action.order
+      .getOrders({user: account.mobile, token: account.token, page: 0})
+      .then((resp) => {
+        if (resp) {
+          action.account
+            .getAccount({iccid: account.iccid, token: account.token})
+            .then((r) => {
+              if (r) setRefreshing(false);
+            });
+        }
+      });
+  }, [
+    account.iccid,
+    account.mobile,
+    account.token,
+    action.account,
+    action.order,
+  ]);
 
   const getNextOrder = useCallback(() => {
-    const {mobile, token} = account;
-    if (order.orderList.length > 0)
-      action.order.getOrders({user: mobile, token});
-  }, [account, action.order, order.orderList.length]);
+    if (order.orderList.length > 0) {
+      action.order.getOrders({user: account.mobile, token: account.token});
+    }
+  }, [account.mobile, account.token, action.order, order.orderList.length]);
 
   const changePhoto = useCallback(async () => {
     const checkNewPermission = await checkPhotoPermission();

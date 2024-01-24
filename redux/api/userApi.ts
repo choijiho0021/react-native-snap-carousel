@@ -74,12 +74,9 @@ const toLogin =
   };
 
 const getToken = () => {
-  return api.callHttpGet(
-    api.httpUrl(api.path.token, ''),
-    undefined,
-    undefined,
-    {isJson: false},
-  ) as unknown as Promise<string>;
+  return api.callHttpGet(api.httpUrl(api.path.token), undefined, undefined, {
+    isJson: false,
+  }) as unknown as Promise<string>;
 };
 
 const clearCookies = () => {
@@ -113,9 +110,7 @@ const logOut = async () => {
 
   return api.callHttp(
     `${api.httpUrl(api.path.logout)}?token=${token}`,
-    {
-      method: 'POST',
-    },
+    {method: 'POST'},
     (a) => a,
     {ignoreError: true},
   );
@@ -141,22 +136,12 @@ const getByMail = ({mail}: {mail: string}) => {
   );
 };
 
-const logInOnce = ({
-  token,
-  user,
-  pass,
-}: {
-  token: string;
-  user: string;
-  pass: string;
-}) => {
+const logInOnce = ({user, pass}: {user: string; pass: string}) => {
   return api.callHttp(
     `${api.httpUrl(api.path.login)}?_format=json`,
     {
       method: 'POST',
-      headers: api.headers('json', {
-        'X-CSRF-Token': token,
-      }),
+      headers: api.headers('json'),
       body: JSON.stringify({
         name: user,
         pass,
@@ -166,15 +151,7 @@ const logInOnce = ({
   );
 };
 
-const logIn = async ({
-  user,
-  pass,
-  xcsrftoken,
-}: {
-  user: string;
-  pass: string;
-  xcsrftoken?: string;
-}) => {
+const logIn0 = async ({user, pass}: {user: string; pass: string}) => {
   if (!user)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
   if (!pass)
@@ -182,19 +159,38 @@ const logIn = async ({
 
   await logOut();
 
-  let token = xcsrftoken;
-  if (!token) {
-    token = await getToken();
-    console.log('@@@ try login', token);
-  }
-
-  const rsp = await logInOnce({token, user, pass});
+  const rsp = await logInOnce({user, pass});
   if (rsp.result == 0) return Promise.resolve(rsp);
 
   // 실패한 경우
   console.log('@@@ logout and try again');
   await logOut();
-  return logInOnce({token, user, pass});
+  return logInOnce({user, pass});
+};
+
+let lock = false;
+
+function acquireLock() {
+  return new Promise((resolve, reject) => {
+    if (!lock) {
+      lock = true;
+      resolve(true);
+    } else {
+      reject(new Error('Lock is already acquired'));
+    }
+  });
+}
+
+function releaseLock() {
+  lock = false;
+}
+
+const logIn = async ({user, pass}: {user: string; pass: string}) => {
+  return acquireLock()
+    .then(() => {
+      return logIn0({user, pass});
+    })
+    .finally(() => releaseLock());
 };
 
 const update = ({
@@ -213,7 +209,7 @@ const update = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: attributes');
 
   return api.callHttp(
-    api.httpUrl(api.path.rokApi.rokebi.user, ''),
+    api.httpUrl(api.path.rokApi.rokebi.user),
     {
       method: 'POST',
       body: JSON.stringify({uid, ...attributes}),
@@ -240,7 +236,7 @@ const registeRecommender = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
 
   return api.callHttp(
-    api.httpUrl(`${api.path.rokApi.rokebi.user}/${uuid}`, ''),
+    api.httpUrl(`${api.path.rokApi.rokebi.user}/${uuid}`),
     {
       method: 'PATCH',
       body: JSON.stringify({recommender}),
@@ -266,7 +262,7 @@ const changePicture = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: userPicture');
 
   return api.callHttp(
-    api.httpUrl(api.path.rokApi.rokebi.user, ''),
+    api.httpUrl(api.path.rokApi.rokebi.user),
     {
       method: 'POST',
       body: JSON.stringify({uid, userPicture}),

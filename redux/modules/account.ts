@@ -23,6 +23,7 @@ import {actions as orderActions} from './order';
 import {actions as promotionActions} from './promotion';
 import {actions as notiActions} from './noti';
 import Env from '@/environment';
+import userApi from '@/redux/api/userApi';
 
 const {cachePrefix} = Env.get();
 
@@ -250,15 +251,12 @@ const logInAndGetAccount = createAsyncThunk(
     } = getState() as RootState;
 
     return dispatch(logIn({user: mobile, pass: pin}))
-      .unwrap()
-      .then(async ({result, objects}) => {
+      .then(async ({payload: {result, objects}}) => {
         if (result === 0 && objects && objects.length > 0) {
           const obj = objects[0];
-          const token = obj.csrf_token;
 
-          storeData(API.User.KEY_MOBILE, obj.current_user.name, true);
-          storeData(API.User.KEY_PIN, pin, true);
-          storeData(API.User.KEY_TOKEN, obj.csrf_token, true);
+          await storeData(API.User.KEY_MOBILE, obj.current_user.name, true);
+          await storeData(API.User.KEY_PIN, pin, true);
 
           // Account 정보를 가져온 후 Token 값이 다르면 Disconnect
           const getAccountWithDisconnect = (account: {
@@ -284,6 +282,9 @@ const logInAndGetAccount = createAsyncThunk(
                 });
             });
           };
+
+          const token = await userApi.getToken();
+
           // get ICCID account info
           if (iccid) {
             getAccountWithDisconnect({iccid, token});
@@ -293,21 +294,21 @@ const logInAndGetAccount = createAsyncThunk(
             ).then(({payload: resp}) => {
               if (resp?.result === 0) {
                 if (sender && gift && resp?.objects[0]?.iccid) {
-                  dispatch(
-                    getUserId({name: resp?.objects[0]?.mobile, token}),
-                  ).then(({payload: resp2}) => {
-                    if (resp2?.result === 0) {
-                      if (resp2?.objects[0]?.id !== sender)
-                        dispatch(receiveAndGetGift({sender, gift}));
-                    }
-                  });
+                  dispatch(getUserId({name: resp?.objects[0]?.mobile})).then(
+                    ({payload: resp2}) => {
+                      if (resp2?.result === 0) {
+                        if (resp2?.objects[0]?.id !== sender)
+                          dispatch(receiveAndGetGift({sender, gift}));
+                      }
+                    },
+                  );
                 }
                 getAccountWithDisconnect({iccid: `00001111${mobile}`, token});
               }
             });
           }
 
-          dispatch(getUserId({name: obj.current_user.name, token}));
+          dispatch(getUserId({name: obj.current_user.name}));
           dispatch(notiActions.getNotiList({mobile: obj.current_user.name}));
           dispatch(getMyCoupon({token}));
           return api.success([]);

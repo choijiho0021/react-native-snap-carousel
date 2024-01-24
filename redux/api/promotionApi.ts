@@ -275,7 +275,7 @@ const createContent = ({
   }
 
   return api.callHttp<object>(
-    `${api.httpUrl(api.path.gift.content, '')}?_format=json`,
+    `${api.httpUrl(api.path.gift.content)}?_format=json`,
     {
       method: 'POST',
       headers: api.withToken(token, 'json', {Accept: 'application/json'}),

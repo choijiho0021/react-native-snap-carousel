@@ -331,7 +331,6 @@ const uploadPicture = ({
   return api.callHttp(
     `${api.httpUrl(
       api.path.uploadFile,
-      '',
     )}/user/user/user_picture?_format=hal_json`,
     {
       method: 'POST',

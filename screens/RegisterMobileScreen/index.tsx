@@ -374,22 +374,30 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   }, []);
 
   const signIn = useCallback(
-    async (auth: {mobile?: string; pin?: string}): Promise<ApiResult<any>> => {
+    async (
+      auth: {mobile?: string; pin?: string},
+      imageUrl?: string,
+    ): Promise<ApiResult<any>> => {
       const {payload: resp} = await actions.account.logInAndGetAccount(auth);
 
       if (resp?.result === 0) {
         utils.adjustEventadd(eventToken.Login);
         actions.cart.cartFetch();
-        const profileImage: RkbImage = await utils.convertURLtoRkbImage(
-          profileImageUrl!,
-        );
-        if (profileImage) {
-          actions.account.uploadAndChangePicture(profileImage);
+
+        if (imageUrl) {
+          utils
+            .convertURLtoRkbImage(imageUrl)
+            .then((profileImage: RkbImage) => {
+              actions.account.uploadAndChangePicture(profileImage);
+            })
+            .catch((ex) =>
+              console.log('@@@ failed to convert image', imageUrl, ex),
+            );
         }
       }
       return resp;
     },
-    [actions.account, actions.cart, profileImageUrl],
+    [actions.account, actions.cart],
   );
 
   const submitHandler = useCallback(async () => {
@@ -444,7 +452,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_sign_up`);
           }
 
-          signIn({mobile, pin});
+          signIn({mobile, pin}, profileImageUrl);
         } else {
           console.log('sign up failed', resp);
           throw new Error('failed to login');
@@ -470,6 +478,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     mobile,
     pending,
     pin,
+    profileImageUrl,
     recommender,
     signIn,
     status,
@@ -576,7 +585,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       email: authEmail,
       mobile: authMobile,
       token,
-      profileImageUrl: profile,
+      profileImageUrl: url,
       kind,
     }: SocialAuthInfo) => {
       setLoading(true);
@@ -600,7 +609,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         setAuthorized(isAuthorized);
         setEmail(authEmail || '');
         setSocialLogin(true);
-        setProfileImageUrl(profile || '');
+        setProfileImageUrl(url || '');
 
         if (isNew) {
           // new login
