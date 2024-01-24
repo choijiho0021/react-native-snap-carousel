@@ -102,7 +102,6 @@ const LocalModal: React.FC<LocalModalProps> = ({localOpKey, html, onPress}) => {
             source={{html}}
             onMessage={onMessage}
             onLoadEnd={onLoadEnd}
-            injectedJavaScript={injectedJavaScript}
           />
           <View style={styles.okBtnContainer}>
             <AppButton

@@ -219,6 +219,12 @@ const UsageItem: React.FC<UsageItemProps> = ({
     }
   }, [dataStatusCd, quota, remain, showSnackbar, usage, used]);
 
+  const getResetTime = useCallback((tz: string) => {
+    if (item.resetTime) return item.resetTime;
+    else if (endTime) return moment(endTime).tz(tz).format('HH:mm:ss');
+    else return i18n.t('contact:q');
+  }, []);
+
   const renderResetTimeRow = useCallback(
     (key: string, rowStyle: ViewStyle = {}) => {
       const tz = key === 'local' ? RNLocalize.getTimeZone() : 'Asia/Seoul';
@@ -230,10 +236,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
             {i18n.t(`esim:time:${key}`)}
           </AppText>
           <AppText style={{...appStyles.bold16Text, color: colors.black}}>
-            {item.partner === 'quadcell'
-              ? moment('2023-01-01T01:00:00+0900').tz(tz).format('HH:mm:ss')
-              : moment(endTime).tz(tz).format('HH:mm:ss') ||
-                i18n.t('contact:q')}
+            {getResetTime(tz)}
           </AppText>
         </View>
       );
@@ -305,7 +308,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
   const renderTime = useCallback(() => {
     const localTz = RNLocalize.getTimeZone();
     const isTzDiff = localTz !== 'Asia/Seoul';
-    // const nowKr = moment().tz('Asia/Seoul');
     // const nowKr = moment().tz('America/New_York');
 
     return (

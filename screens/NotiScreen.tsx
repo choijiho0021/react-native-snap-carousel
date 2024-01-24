@@ -188,6 +188,14 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
   }, [route.params?.mode]);
 
   useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (route.params?.mode === 'noti') onRefresh();
+    });
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
     if (route.params?.mode === 'info' && !info.infoMap.has('info')) {
       action.info.getInfoList('info');
     }

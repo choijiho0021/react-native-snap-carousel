@@ -25,7 +25,6 @@ import {
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import {eventToken} from '@/constants/Adjust';
 import ScreenHeader from '@/components/ScreenHeader';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 
@@ -138,17 +137,22 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     navigation.popToTop();
 
     // 캐시 구매 -> 내 계정 화면으로 이동
-    if (params?.mode === 'recharge')
+    if (params?.mode === 'recharge') {
+      action.order.subsReload({
+        iccid: account?.iccid!,
+        token: account?.token!,
+        hidden: false,
+      });
       navigation.navigate('MyPageStack', {screen: 'MyPage'});
-    // 일반 상품, 충전 상품 -> eSIM 화면 이동
-    else
+      // 일반 상품, 충전 상품 -> eSIM 화면 이동
+    } else
       navigation.navigate('EsimStack', {
         screen: 'Esim',
         params: {
           actionStr: 'reload',
         },
       });
-  }, [navigation, params?.mode]);
+  }, [account?.iccid, account?.token, action.order, navigation, params?.mode]);
 
   // 결제 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
   BackbuttonHandler({
@@ -183,7 +187,6 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
       payment: `${params?.mode} Payment${isSuccess ? ' Success' : ' Fail'}`,
     });
     if (cart?.pymPrice && cart?.pymPrice.value > 0 && isSuccess) {
-      utils.adjustEventadd(eventToken.Sales, cart?.pymPrice.value, 'KRW'); // pymPrice.value 실결제금액, deduct.value 로깨비캐시 차감금액
       analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_payment`);
     }
   }, [cart?.pymPrice, isSuccess, params?.mode]);

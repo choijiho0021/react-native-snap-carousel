@@ -33,6 +33,7 @@ import UsDraftStep3 from './component/UsDraftStep3';
 import AppAlert from '@/components/AppAlert';
 import api from '@/redux/api/api';
 import {ProdDesc} from '../CancelOrderScreen/CancelResult';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
   container: {
@@ -47,6 +48,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
     color: colors.white,
+  },
+  btnCnter: {
+    width: 40,
+    height: 40,
+    marginHorizontal: 18,
   },
 
   secondaryButton: {
@@ -150,6 +156,16 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
           }}
         />
       ),
+      headerRight: () =>
+        step !== 0 && (
+          <AppSvgIcon
+            name="closeModal"
+            style={styles.btnCnter}
+            onPress={() => {
+              goBack(navigation, route);
+            }}
+          />
+        ),
     });
   }, [navigation, route, step]);
 

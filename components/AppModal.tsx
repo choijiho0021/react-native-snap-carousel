@@ -2,6 +2,7 @@ import React, {memo, PropsWithChildren, useCallback} from 'react';
 import {
   ColorValue,
   Modal,
+  Pressable,
   SafeAreaView,
   StyleSheet,
   TextStyle,
@@ -15,6 +16,7 @@ import AppButton from './AppButton';
 import AppIcon from './AppIcon';
 import AppText from './AppText';
 import {MAX_WIDTH} from '@/constants/SliderEntry.style';
+import BackbuttonHandler from './BackbuttonHandler';
 
 const styles = StyleSheet.create({
   button: {
@@ -231,6 +233,13 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
     type,
   ]);
 
+  BackbuttonHandler({
+    onBack: () => {
+      onCancelClose();
+      return true;
+    },
+  });
+
   return visible ? (
     <Modal
       animationType="fade"
@@ -245,6 +254,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
           justifyContent ? {justifyContent} : undefined,
           {backgroundColor: safeAreaColor},
         ]}>
+        <Pressable onPress={() => onCancelClose()} style={{flex: 1}} />
         <View
           style={{
             alignItems: 'center',

@@ -6,6 +6,7 @@ import {API} from '@/redux/api';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {colors} from '@/constants/Colors';
 import {
+  isFolderOpen,
   sliderWidth,
   windowHeight,
   windowWidth,
@@ -57,7 +58,9 @@ const PreviewImageModal: React.FC<PreviewImageModalModalProps> = ({
   useEffect(() => {
     if (imgUrl)
       Image.getSize(API.default.httpImageUrl(imgUrl).toString(), (w, h) => {
-        setHeight(h * ((windowWidth * 0.8) / w));
+        const isFolder = isFolderOpen(w);
+
+        setHeight(h * ((windowWidth * 0.8) / (isFolder ? 420 : w)));
       });
   }, [attachment, imgUrl]);
 

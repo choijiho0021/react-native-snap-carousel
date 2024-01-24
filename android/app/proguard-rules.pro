@@ -15,10 +15,8 @@
 -keep class com.kakao.sdk.**.model.* { <fields>; }
 -keep class * extends com.google.gson.TypeAdapter
 
-# adjust config
 # RN, 난독화 때문에 추가
 -keep class com.rokebiesim.BuildConfig { *; }
--keep class com.adjust.sdk.** { *; }
 -keep class com.google.android.gms.common.ConnectionResult {
     int SUCCESS;
 }

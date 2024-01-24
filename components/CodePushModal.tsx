@@ -11,8 +11,6 @@ import {
 import i18n from '@/utils/i18n';
 import {RootState} from '@/redux';
 
-// const {adjustAppUpdate = ''} = Env.get();
-
 type CodePushModalProps = {
   sync: SyncModelState;
   action: {

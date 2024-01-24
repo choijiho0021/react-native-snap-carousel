@@ -12,7 +12,6 @@ import {
 import Video from 'react-native-video';
 import {connect, DispatchProp} from 'react-redux';
 import RNExitApp from 'react-native-exit-app';
-import {Adjust, AdjustConfig} from 'react-native-adjust';
 import messaging from '@react-native-firebase/messaging';
 import codePush from 'react-native-code-push';
 import Config from 'react-native-config';
@@ -41,7 +40,7 @@ const {width: viewportWidth, height: viewportHeight} = Dimensions.get('window');
 const windowHeight = viewportHeight;
 const windowWidth = viewportWidth;
 
-const {esimApp, esimGlobal, adjustToken, isProduction} = Env.get();
+const {esimApp, esimGlobal, isProduction} = Env.get();
 
 const SplashScreen = require('react-native-splash-screen').default;
 
@@ -136,22 +135,6 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
       dispatch(accountActions.getToken());
     }
   }, [dispatch]);
-
-  useEffect(() => {
-    const adjustConfig = new AdjustConfig(
-      adjustToken,
-      isProduction
-        ? AdjustConfig.EnvironmentProduction
-        : AdjustConfig.EnvironmentSandbox,
-    );
-    adjustConfig.setShouldLaunchDeeplink(true);
-    adjustConfig.setAllowiAdInfoReading(true);
-
-    Adjust.create(adjustConfig);
-    messaging()
-      .getToken()
-      .then((deviceToken) => Adjust.setPushToken(deviceToken));
-  }, []);
 
   useEffect(() => {
     if (loadingTextSec < 65)
