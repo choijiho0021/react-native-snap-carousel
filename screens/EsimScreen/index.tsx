@@ -644,7 +644,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               tab: 'MyPageStack',
               initial: false,
               screen:
-                currentOrder.partner?.toLowerCase() === 'ht'
+                currentOrder.usageList.findIndex((elm) => elm.pid === 'ht') >= 0
                   ? 'DraftUs'
                   : 'Draft',
               params: {

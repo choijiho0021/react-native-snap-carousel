@@ -475,8 +475,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   }, [purchaseItems]);
 
   const onChangeQty = useCallback(
-    (cnt: number) => {
-      if (isht) {
+    (cnt: number, showSnackbar: boolean = true) => {
+      if (isht && showSnackbar) {
         setShowSnackBar({text: i18n.t('prodDetail:qtyLimit'), visible: true});
       } else {
         setQty(cnt);
@@ -490,7 +490,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   );
 
   const resetModalInfo = useCallback(() => {
-    onChangeQty(1);
+    onChangeQty(1, false);
   }, [onChangeQty]);
 
   useEffect(() => {

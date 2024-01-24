@@ -584,9 +584,6 @@ const BodyHtml: React.FC<BodyHtmlProps> = ({body, onMessage}) => {
       <WebView
         ref={ref}
         javaScriptEnabled
-        domStorageEnabled
-        startInLoadingState
-        decelerationRate="normal"
         scrollEnabled={false}
         onMessage={(e) => {
           if (webviewHeight === 300) {
@@ -598,7 +595,6 @@ const BodyHtml: React.FC<BodyHtmlProps> = ({body, onMessage}) => {
         originWhitelist={['*']}
         source={{html}}
         style={{flex: 1}}
-        injectedJavaScript={injectedJavaScript}
       />
     </View>
   );

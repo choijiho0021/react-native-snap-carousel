@@ -1,7 +1,7 @@
 import CryptoJS from 'crypto-js';
+import {Platform} from 'react-native';
 import utils from '@/redux/api/utils';
 import i18n from './i18n';
-import {Platform} from 'react-native';
 
 const UniAsyncStorage =
   require('@react-native-community/async-storage').default;

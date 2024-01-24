@@ -57,7 +57,9 @@ const HtQrModal: React.FC<HtQrModalProps> = ({visible, onOkClose}) => {
       onOkClose={() => {
         onOkClose();
       }}
-      onCancelClose={() => {}}
+      onCancelClose={() => {
+        onOkClose();
+      }}
       visible={visible}>
       <View style={styles.header}>
         <AppSvgIcon
