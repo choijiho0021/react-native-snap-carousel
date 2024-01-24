@@ -190,7 +190,7 @@ const draftOrder = ({
   const url = `${api.httpUrl(api.path.commerce.order)}/${orderId}?_format=json`;
 
   const body = JSON.stringify({
-    status: eid ? 'A' : 'R',
+    status: 'R',
     eid,
     imei2,
     activation_date,
