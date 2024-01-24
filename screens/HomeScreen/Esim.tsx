@@ -613,11 +613,9 @@ const Esim: React.FC<EsimProps> = ({
 
   const notification = useCallback(
     (type: string, payload, isForeground = true) => {
-      const {mobile, iccid} = account;
-
       const pushNotiHandler = createHandlePushNoti(navigation, payload, {
-        mobile,
-        iccid,
+        mobile: account.mobile,
+        iccid: account.iccid,
         isForeground,
         isRegister: type === 'register',
         updateAccount: action.account.updateAccount,
@@ -639,7 +637,9 @@ const Esim: React.FC<EsimProps> = ({
       pushNotiHandler.handleNoti();
     },
     [
-      account,
+      account.iccid,
+      account.mobile,
+      account?.token,
       action.account,
       action.cart,
       action.noti,
@@ -674,13 +674,16 @@ const Esim: React.FC<EsimProps> = ({
     async function getDevList() {
       if (isIOS) {
         const tm = await retrieveData(`${cachePrefix}cache.timestamp.dev`);
-        const reload = product.rule.timestamp_dev > tm;
+        const reload = moment(product.rule.timestamp_dev)
+          .utcOffset(9, true)
+          .isAfter(tm);
         action.product.getDevList(reload);
-        if (reload)
+        if (reload) {
           storeData(
             `${cachePrefix}cache.timestamp.dev`,
-            moment().zone(-540).format(),
+            moment().utcOffset(9).format(),
           );
+        }
       }
 
       const deviceModel = DeviceInfo.getModel();
@@ -705,15 +708,13 @@ const Esim: React.FC<EsimProps> = ({
   }, [action.product, isSupport, product.rule.timestamp_dev]);
 
   useEffect(() => {
-    const {loggedIn} = account;
-
-    if (loggedIn && isSupport && !initialized.current) {
+    if (account.loggedIn && isSupport && !initialized.current) {
       initialized.current = true;
       pushNoti.add(notification, () =>
         action.noti.getNotiList({mobile: account.mobile}),
       );
     }
-  }, [account, action.noti, isSupport, notification]);
+  }, [account.loggedIn, account.mobile, action.noti, isSupport, notification]);
 
   useEffect(() => {
     if (
@@ -734,14 +735,16 @@ const Esim: React.FC<EsimProps> = ({
     // check timestamp
     const checkTimestamp = async () => {
       const tm = await retrieveData(`${cachePrefix}cache.timestamp.prod`);
-      const reload = !tm || product.rule.timestamp_prod > tm;
+      const reload =
+        !tm ||
+        moment(product.rule.timestamp_prod).utcOffset(9, true).isAfter(tm);
       // console.log('@@@ reload all prod', reload, tm);
       // reload data
       action.product.getAllProduct(reload);
       if (reload) {
         storeData(
           `${cachePrefix}cache.timestamp.prod`,
-          moment().zone(-540).format(),
+          moment().utcOffset(9).format(),
         );
       }
     };
@@ -749,7 +752,6 @@ const Esim: React.FC<EsimProps> = ({
   }, [action.product, product.rule.timestamp_prod]);
 
   useEffect(() => {
-    const {token, iccid} = account;
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (
         appState.current.match(/inactive|background/) &&
@@ -771,7 +773,7 @@ const Esim: React.FC<EsimProps> = ({
     return () => {
       subscription.remove();
     };
-  }, [account, action.order, action.product]);
+  }, [action.order, action.product]);
 
   BackbuttonHandler({
     navigation,
@@ -783,21 +785,27 @@ const Esim: React.FC<EsimProps> = ({
   });
 
   useEffect(() => {
-    const {mobile, loggedIn, iccid} = account;
-    if (iccid) {
+    if (account.iccid) {
       if (!initNoti.current) {
         initNoti.current = true;
 
-        if (loggedIn) {
-          action.noti.init({mobile});
-          action.cart.init({mobile});
-          action.order.init(mobile);
+        if (account.loggedIn) {
+          action.noti.init({mobile: account.mobile});
+          action.cart.init({mobile: account.mobile});
+          action.order.init(account.mobile);
         } else {
           action.noti.getNotiList({mobile: account.mobile});
         }
       }
     }
-  }, [account, action.cart, action.noti, action.order]);
+  }, [
+    account.iccid,
+    account.loggedIn,
+    account.mobile,
+    action.cart,
+    action.noti,
+    action.order,
+  ]);
 
   useEffect(() => {
     if (appUpdateVisible === undefined) {

@@ -4,6 +4,7 @@ import api, {ApiResult, DrupalNodeJsonApi} from './api';
 import {utils} from '@/utils/utils';
 import {RkbReceipt} from '@/screens/ReceiptScreen';
 import {PaymentParams} from '@/navigation/navigation';
+import {PaymentRule} from '../modules/product';
 
 const {esimGlobal, isProduction, impKey, impSecret} = Env.get();
 
@@ -207,7 +208,7 @@ const reqRokebiPaymentVBank = ({
 const getRokebiPaymentRule = () => {
   return api.callHttpGet(
     `${api.httpUrl(api.path.rokApi.rokebi.paymentRule)}?_format=json`,
-  );
+  ) as Promise<unknown> as Promise<PaymentRule>;
 };
 
 const getRokebiPaymentReceipt = ({
