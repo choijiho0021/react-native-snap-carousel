@@ -213,7 +213,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
       usagePeriod?.period,
       usagePeriod?.format,
     ).utcOffset('+09:00', true);
-    const currentTime = moment().utcOffset('+09:00');
+    const currentTime = moment().utcOffset(9);
 
     const twentyMinuteAgoMoment = moment(expireTime.subtract(20, 'minutes')); // 20분 전
     const hourAgoMoment = moment(expireTime.subtract(40, 'minutes')); //  20분 뺀 expireTime에 40분을 뺐으니 1시간 전이다.

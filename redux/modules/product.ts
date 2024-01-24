@@ -114,14 +114,19 @@ const init = createAsyncThunk(
       if (!timestamp) reload = true;
       else {
         const rsp = await dispatch(getPaymentRule()).unwrap();
-        if (rsp?.timestamp_prod > timestamp) reload = true;
+        if (
+          rsp?.timestamp_prod &&
+          moment(rsp?.timestamp_prod).utcOffset(9, true).isAfter(timestamp)
+        ) {
+          reload = true;
+        }
       }
     }
 
     if (reload) {
       storeData(
         `${cachePrefix}cache.timestamp`,
-        moment().utcOffset(-540).format(),
+        moment().utcOffset(9).format(),
       );
     }
 
@@ -147,7 +152,11 @@ const refresh = createAsyncThunk(
     if (!timestamp) reload = true;
     else {
       const rsp = await dispatch(getPaymentRule()).unwrap();
-      if (rsp?.timestamp_prod > timestamp) reload = true;
+      if (
+        rsp?.timestamp_prod &&
+        moment(rsp?.timestamp_prod).utcOffset(9, true).isAfter(timestamp)
+      )
+        reload = true;
     }
 
     if (reload) {
