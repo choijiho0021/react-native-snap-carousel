@@ -102,7 +102,6 @@ type Env = {
   fbUser?: string;
   channelId: string;
   sipServer: string;
-  adjustToken: string;
   impKey: string;
   impSecret: string;
   talkPluginKey: string;
@@ -133,7 +132,6 @@ const env: Env = {
   fbUser: secureData.fbUser,
   channelId: secureData.kakaoChannelId,
   sipServer: secureData.sipServer,
-  adjustToken: secureData.adjustToken,
   impKey: esimGlobal ? secureData.globalImpKey : secureData.esimImpKey,
   impSecret: esimGlobal ? secureData.globalImpSecret : secureData.esimImpSecret,
   talkPluginKey: secureData.talkPluginKey,

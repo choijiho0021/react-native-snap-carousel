@@ -12,7 +12,6 @@
 //#import "RNKakaoLogins.h"
 #import <React/RCTLinkingManager.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
-#import "Adjust.h"
 
 @implementation AppDelegate(Rokebi)
 

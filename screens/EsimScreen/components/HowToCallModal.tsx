@@ -309,8 +309,12 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
       justifyContent="flex-end"
       contentStyle={styles.content}
       bottom={() => null}
-      onOkClose={() => {}}
-      onCancelClose={() => {}}
+      onOkClose={() => {
+        onOkClose();
+      }}
+      onCancelClose={() => {
+        onOkClose();
+      }}
       visible={visible}>
       <View style={styles.header}>
         <AppText style={{...appStyles.bold18Text}}>

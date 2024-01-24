@@ -62,6 +62,7 @@ import ChargeInfoModal from './components/ChargeInfoModal';
 import TextWithDot from '../EsimScreen/components/TextWithDot';
 import BodyHtml from './components/BodyHtml';
 import TextWithCheck from '../HomeScreen/component/TextWithCheck';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const {esimGlobal, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -456,6 +457,15 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     [route?.params?.partner],
   );
 
+  BackbuttonHandler({
+    navigation,
+    route,
+    onBack: () => {
+      navigation.goBack();
+      return true;
+    },
+  });
+
   useEffect(() => {
     if (!product.descData.get(prod?.key))
       dispatch(productAction.getProdDesc(prod.key));
@@ -473,8 +483,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   }, [purchaseItems]);
 
   const onChangeQty = useCallback(
-    (cnt: number) => {
-      if (isht) {
+    (cnt: number, showSnackbar: boolean = true) => {
+      if (isht && showSnackbar) {
         setShowSnackBar({text: i18n.t('prodDetail:qtyLimit'), visible: true});
       } else {
         setQty(cnt);
@@ -488,7 +498,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   );
 
   const resetModalInfo = useCallback(() => {
-    onChangeQty(1);
+    onChangeQty(1, false);
   }, [onChangeQty]);
 
   useEffect(() => {

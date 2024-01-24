@@ -35,7 +35,6 @@ import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppAlert from '@/components/AppAlert';
 import Env from '@/environment';
-
 const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
@@ -135,6 +134,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
   const [order, setOrder] = useState<RkbOrder>();
   const [receipt, setReceipt] = useState<RkbReceipt>();
   const ref = useRef<ViewShot>();
+  const [isShareDisabled, setIsShareDisabled] = useState(false);
 
   useEffect(() => {
     setOrder(params?.order);
@@ -173,17 +173,25 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
   }, [action.toast, hasAndroidPermission]);
 
   const share = useCallback(async () => {
-    try {
-      ref.current?.capture().then(async (uri) => {
-        await Share.open({
-          title: i18n.t('rcpt:title'),
-          url: uri,
+    if (!isShareDisabled) {
+      setIsShareDisabled(true);
+
+      setTimeout(() => {
+        setIsShareDisabled(false);
+      }, 1000);
+
+      try {
+        ref.current?.capture().then(async (uri) => {
+          Share.open({
+            title: i18n.t('rcpt:title'),
+            url: uri,
+          });
         });
-      });
-    } catch (e) {
-      console.log('😻😻😻 snapshot failed', e);
+      } catch (e) {
+        console.log('😻😻😻 snapshot failed', e);
+      }
     }
-  }, []);
+  }, [isShareDisabled]);
 
   return (
     <SafeAreaView style={styles.container}>

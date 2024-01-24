@@ -28,7 +28,6 @@ import {
   Modal,
   AppState,
 } from 'react-native';
-import {Adjust} from 'react-native-adjust';
 import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
 import {
@@ -658,6 +657,18 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
             });
             break;
           default:
+            // 이게 맞나... 따로 붙여야할 것 같음.
+            if (params?.orderId) {
+              refNavigate({
+                stack: 'EsimStack',
+                screen: 'esim',
+                initial: false,
+                params: {
+                  actionStr: 'reload',
+                },
+              });
+            }
+
             break;
         }
       }
@@ -670,7 +681,6 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       const initialUrl = await Linking.getInitialURL();
 
       if (initialUrl) {
-        Adjust.appWillOpenUrl(initialUrl);
         deepLinkHandler(initialUrl);
       }
     };

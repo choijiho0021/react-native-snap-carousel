@@ -653,7 +653,9 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             title={i18n.t('his:draftRequest')}
             onPress={() => {
               navigation.navigate(
-                order.partner?.toLowerCase() === 'ht' ? 'DraftUs' : 'Draft',
+                order?.usageList.findIndex((elm) => elm.pid === 'ht') >= 0
+                  ? 'DraftUs'
+                  : 'Draft',
                 {orderId: order?.orderId},
               );
             }}

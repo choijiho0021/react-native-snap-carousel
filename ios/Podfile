@@ -81,8 +81,6 @@ ENVFILES = {
   pod 'Firebase/Analytics', :modular_headers => true
   pod 'Firebase/DynamicLinks', :modular_headers => true
 
-  #  pod 'Adjust', '~> 4.29.2'
-
   # use_flipper!({ "Flipper-DoubleConversion" => "3.2.0.1"})
   # use_flipper!({'Flipper' => '0.75.1', 'Flipper-Folly' => '2.5.3'})`
 

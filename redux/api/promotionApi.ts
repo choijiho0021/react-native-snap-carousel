@@ -337,7 +337,7 @@ export const shareWebViewLink = (
   // IOS는 WebLink에 한글 들어가면 동작 안함 -> 웹에서 search말고도 동작 되게 수정해야함
   return `${needDomain ? `${webViewHost}/` : ''}esim/${country.country}/${
     Platform.OS === 'android' ? country.search?.split(',')[1] : 'page'
-  }?${Platform.OS === 'android' ? encodeURIComponent(param) : param}`;
+  }?${param}`;
 };
 
 const shareLink = (uuid: string) => {
@@ -453,10 +453,6 @@ const invite = async (
     const result = await Share.open({
       url,
     });
-    if (result.action !== Share.dismissedAction) {
-      // adjust appEvent 앱 업데이트 추가
-      // Adjust.trackEvent(new AdjustEvent(adjustInvite));
-    }
 
     // if (result.action === Share.sharedAction) {
     //   if (result.activityType) {

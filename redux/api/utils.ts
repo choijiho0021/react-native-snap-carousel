@@ -3,7 +3,6 @@ import {Image, Platform} from 'react-native';
 import {getFontScale} from 'react-native-device-info';
 import RNFetchBlob from 'rn-fetch-blob';
 import _ from 'underscore';
-import {Adjust, AdjustEvent} from 'react-native-adjust';
 import {Image as CropImage} from 'react-native-image-crop-picker';
 import {Moment} from 'moment';
 import i18n from '@/utils/i18n';
@@ -284,14 +283,6 @@ const convertCropImageToRkbImage = ({
     data,
   } as RkbImage);
 
-const adjustEventadd = (key: string, pymAmount?: number, currency?: string) => {
-  const adjustEvent = new AdjustEvent(key);
-  if (pymAmount && currency) {
-    adjustEvent.setRevenue(pymAmount, currency);
-  }
-  Adjust.trackEvent(adjustEvent);
-};
-
 const removeBracketOfName = (str?: string) => {
   if (!str) return undefined;
   return str.slice(str.indexOf(']') + 1, str.length);
@@ -390,7 +381,6 @@ export default {
   currencyString,
   convertURLtoRkbImage,
   convertCropImageToRkbImage,
-  adjustEventadd,
   removeBracketOfName,
   generateKey,
   getParam,

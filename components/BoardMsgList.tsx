@@ -160,8 +160,15 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   }, [account?.mobile]);
 
   useEffect(() => {
-    if ((board.list.length || 0) > 0) setData(board.list || []);
-  }, [board.list]);
+    if ((board.list.length || 0) > 0) {
+      if (mobile) {
+        const number = mobile.replace(/-/g, '');
+        setData(
+          board.list.filter((item) => item.mobile.includes(number)) || [],
+        );
+      } else setData(board.list || []);
+    }
+  }, [board.list, mobile]);
 
   const onPress = useCallback(
     (uuid: string, st: string) => {
@@ -173,19 +180,12 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
     [navigation],
   );
 
-  const onSubmit = useCallback(
-    (value: string) => {
-      if (value) {
-        const number = value.replace(/-/g, '');
-
-        setData(
-          board.list.filter((item) => item.mobile.includes(number)) || [],
-        );
-        setMobile(number);
-      }
-    },
-    [board.list],
-  );
+  const onSubmit = useCallback((value: string) => {
+    if (value) {
+      const number = value.replace(/-/g, '');
+      setMobile(number);
+    }
+  }, []);
 
   // 응답 메시지 화면으로 이동한다.
   const onSubmitPin = useCallback(() => {
@@ -258,9 +258,13 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
         data={data}
         ListHeaderComponent={<InputMobile uid={uid} onSubmit={onSubmit} />}
         ListEmptyComponent={empty}
-        onScrollEndDrag={onEndReached} // 검색 시 onEndReached가 발생하는 버그가 Flatlist에 있어 끝까지 스크롤한 경우 list를 더 가져오도록 변경
+        // onScrollEndDrag={onEndReached} // 검색 시 onEndReached가 발생하는 버그가 Flatlist에 있어 끝까지 스크롤한 경우 list를 더 가져오도록 변경
         extraData={mobile}
         renderItem={renderItem}
+        onEndReachedThreshold={0.4}
+        onEndReached={() => {
+          onEndReached();
+        }}
         refreshControl={
           <RefreshControl
             refreshing={pending}

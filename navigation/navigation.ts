@@ -240,8 +240,8 @@ export const goBack = (
   route: RouteProp<ParamListBase, string>,
 ) => {
   navigation.goBack();
-  if (route.params?.returnRoute) {
-    const {tab, screen, params = {}} = route.params?.returnRoute;
+  if (route?.params?.returnRoute) {
+    const {tab, screen, params = {}} = route?.params?.returnRoute;
     if (tab) {
       navigation.navigate(tab, {
         screen,
