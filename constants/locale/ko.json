@@ -872,8 +872,8 @@
   "us:device:modal:noti2": "IMEI2에 연결된 USIM 또는 eSIM이 있으면 미국 현지 도착 시 <b>eSIM 상품이 연결되지 않을 수 있습니다.</b>",
   "us:modal:selectDate:title": "상품 사용 시작일",
   "us:modal:selectDate:text": "<b>미국 동부 표준시(EST, 뉴욕) 기준</b>으로 사용 시작일을 선택해 주세요. <b>(사용 당일 선택 불가)</b>",
-  "us:btn:back": "이전",
-  "us:btn:next": "다음",
+  "us:btn:back": "이전 단계",
+  "us:btn:next": "다음 단계",
 
   "us:device:modal:input:title": "단말 정보 업로드",
   "us:device:modal:input:text": "다이얼에서 <b>*#06#</b>을 누르면 나오는 단말 정보 화면을 준비해 주세요.",
