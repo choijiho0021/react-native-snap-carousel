@@ -577,7 +577,7 @@ const BodyHtml: React.FC<BodyHtmlProps> = ({body, onMessage}) => {
 
   const calcHeight = useCallback((event: WebViewMessageEvent) => {
     const height = parseInt(event.nativeEvent.data, 10);
-    setWebviewHeight(height);
+    setWebviewHeight(Math.min(height, 3000));
   }, []);
 
   const onLoadEnd = useCallback(() => {
