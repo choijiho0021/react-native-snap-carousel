@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-unused-styles */
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {unescape} from 'underscore';
 import {View} from 'react-native';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
@@ -20,7 +20,13 @@ const BodyHtml: React.FC<BodyHtmlProps> = ({body, onMessage}) => {
   const injected = useRef(false);
   const [webviewHeight, setWebviewHeight] = useState(300);
 
-  const html = `
+  const unescapedBody = useMemo(
+    () => unescape(body?.replace(/<br \/>/g, '')),
+    [body],
+  );
+
+  const html = useMemo(
+    () => `
     <html>
     <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
@@ -561,11 +567,13 @@ const BodyHtml: React.FC<BodyHtmlProps> = ({body, onMessage}) => {
     
     <body>
     <div class="wrap_data">
-    ${unescape(body?.replace(/<br \/>/g, ''))}
+    ${unescapedBody}
     </div>
     </body>
     </html>
-`;
+`,
+    [unescapedBody],
+  );
 
   const calcHeight = useCallback((event: WebViewMessageEvent) => {
     const height = parseInt(event.nativeEvent.data, 10);
