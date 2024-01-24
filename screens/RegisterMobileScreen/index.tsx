@@ -616,7 +616,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           emailRef.current?.focus();
         } else {
           // account exist. try login
-          signIn({mobile: drupalId, pin: pass}, url);
+          signIn({mobile: drupalId, pin: pass});
         }
       }
     },
