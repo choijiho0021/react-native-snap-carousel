@@ -877,6 +877,21 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  checkedDarkBlueSmall: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M11.9087 5.24676C12.3247 5.61001 12.3675 6.24173 12.0043 6.65774L8.18326 11.0337C8.00017 11.2434 7.73796 11.3673 7.45972 11.3756C7.18147 11.3838 6.91237 11.2758 6.71714 11.0773L4.28714 8.60733C3.89982 8.21363 3.90499 7.58048 4.29869 7.19316C4.69239 6.80584 5.32553 6.811 5.71286 7.2047L7.38629 8.90568L10.4977 5.34229C10.861 4.92628 11.4927 4.8835 11.9087 5.24676Z"
+        fill="#194C94"
+      />
+    </Svg>,
+  ],
   checkRedSmall: [
     <Svg
       width="16"

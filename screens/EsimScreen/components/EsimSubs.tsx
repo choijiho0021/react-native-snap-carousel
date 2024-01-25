@@ -587,7 +587,9 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         <View style={[styles.topInfo, !notCardInfo && {marginVertical: 16}]}>
           {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
             <View style={styles.inactiveContainer}>
-              <AppText style={styles.normal14Gray}>{i18n.t('eid')}</AppText>
+              <AppText style={{...styles.normal14Gray, fontWeight: '700'}}>
+                {i18n.t('eid')}
+              </AppText>
               <AppText
                 style={[
                   styles.normal14Gray,
@@ -598,7 +600,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
             </View>
           )}
           <View style={styles.inactiveContainer}>
-            <AppText style={styles.normal14Gray}>
+            <AppText style={{...styles.normal14Gray, fontWeight: '700'}}>
               {i18n.t('imei2:esim')}
             </AppText>
             <AppText style={styles.normal14Gray}>{mainSubs.imei2}</AppText>
@@ -606,7 +608,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
           {!isBC && (
             <View style={styles.inactiveContainer}>
-              <AppText style={styles.normal14Gray}>
+              <AppText style={{...styles.normal14Gray, fontWeight: '700'}}>
                 {i18n.t('esim:activationDate')}
               </AppText>
               <AppText style={styles.normal14Gray}>
@@ -850,7 +852,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           <AppText style={styles.drafting}>
             {i18n.t('esim:howToCall:moveToQr')}
           </AppText>
-          <AppSvgIcon name="rightBlueBracket" />
+          <AppSvgIcon name="rightBlueBracket" style={{marginTop: 2}} />
         </Pressable>
       );
 
