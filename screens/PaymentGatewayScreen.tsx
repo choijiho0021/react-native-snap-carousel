@@ -20,6 +20,7 @@ import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
+import VBank from '@/components/AppPaymentGateway/VBank';
 
 const loading = require('../assets/images/loading_1.mp4');
 
@@ -170,7 +171,11 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
         />
       </View>
       {isOrderReady ? (
-        <AppPaymentGateway info={params} callback={callback} />
+        params.pay_method === 'vbank' ? (
+          <VBank info={params} callback={callback} />
+        ) : (
+          <AppPaymentGateway info={params} callback={callback} />
+        )
       ) : (
         renderLoading()
       )}

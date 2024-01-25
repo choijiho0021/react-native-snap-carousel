@@ -1014,6 +1014,9 @@
   "pym:receipt": "영수증",
   "pym:noAppScheme": "앱 실행에 실패했습니다. 설치가 되어있지 않은 경우 설치하기 버튼을 눌러주세요.",
 
+  "pym:email": "발송 이메일 확인",
+  "pym:email:change": "이메일 변경",
+
   "pym:discount": "할인 적용",
   "pym:coupon": "할인 쿠폰",
   "pym:selectCoupon": "쿠폰 선택 >",

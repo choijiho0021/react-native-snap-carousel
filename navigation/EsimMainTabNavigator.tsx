@@ -146,6 +146,7 @@ function HomeStackComponent() {
       <HomeStack.Screen name="Country" component={CountryScreen} />
       <HomeStack.Screen name="Payment" component={PaymentScreen} />
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
+      <HomeStack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
       <HomeStack.Group
         screenOptions={{animationEnabled: true, presentation: 'modal'}}>
         <HomeStack.Screen name="SimpleTextModal" component={SimpleTextScreen} />
@@ -192,6 +193,7 @@ function CartStackComponent() {
       <CartStack.Screen name="Cart" component={CartScreen} />
       <CartStack.Screen name="Payment" component={PaymentScreen} />
       <CartStack.Screen name="PymMethod" component={PymMethodScreen} />
+      <CartStack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
       <CartStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <CartStack.Group
         screenOptions={{animationEnabled: true, presentation: 'modal'}}>
@@ -254,6 +256,7 @@ function EsimStackComponent() {
       />
       <EsimStack.Screen name="Payment" component={PaymentScreen} />
       <EsimStack.Screen name="PymMethod" component={PymMethodScreen} />
+      <EsimStack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
       <EsimStack.Screen name="SelectCoupon" component={SelectCouponScreen} />
       <EsimStack.Screen name="PaymentResult" component={PaymentResultScreen} />
       <EsimStack.Group screenOptions={{animationEnabled: true}}>

@@ -45,8 +45,9 @@ import {
   ProductAction,
   ProductModelState,
 } from '@/redux/modules/product';
-import DiscountInfo from './DiscountInfo';
+import DiscountInfo from '@/components/AppPaymentGateway/DiscountInfo';
 import PaymentSummary from '@/components/PaymentSummary';
+import ConfirmEmail from '@/components/AppPaymentGateway/ConfirmEmail';
 
 const infoKey = 'pym:benefit';
 
@@ -341,6 +342,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         enableOnAndroid
         enableResetScrollToCoords={false}>
         <PaymentItemInfo purchaseItems={cart.purchaseItems} mode="method" />
+
+        <ConfirmEmail onPress={() => navigation.navigate('ChangeEmail')} />
 
         <DiscountInfo onPress={() => navigation.navigate('SelectCoupon')} />
 
