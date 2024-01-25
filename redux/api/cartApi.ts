@@ -144,14 +144,18 @@ const add = ({
   );
 };
 
-const checkStock = async ({purchaseItems}: {purchaseItems: PurchaseItem[]}) => {
+const checkStock = async ({
+  purchaseItems,
+  token,
+}: {
+  purchaseItems: PurchaseItem[];
+  token: string;
+}) => {
   if (!purchaseItems)
     return api.reject(
       api.E_INVALID_ARGUMENT,
       'missing parameter: purchaseItems',
     );
-
-  const token = await API.User.getToken();
 
   return api.callHttp(
     `${api.httpUrl(api.path.cart)}/stock?_format=json`,
