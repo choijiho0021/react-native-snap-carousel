@@ -302,11 +302,7 @@ function MyPageStackComponent() {
         name="AccountSettings"
         component={AccountSettingsScreen}
       />
-      <MyPageStack.Screen
-        name="Resign"
-        component={ResignScreen}
-        options={{headerShown: true}}
-      />
+      <MyPageStack.Screen name="Resign" component={ResignScreen} />
       <MyPageStack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
       <MyPageStack.Screen name="Receipt" component={ReceiptScreen} />
       <MyPageStack.Screen name="CashHistory" component={CashHistoryScreen} />
