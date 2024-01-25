@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Animated, Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
@@ -70,6 +70,8 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
   setValue,
   animatedValue,
 }) => {
+  const [height, setHeight] = useState(26);
+
   const renderTitle = useCallback(() => {
     return (
       <View
@@ -148,11 +150,20 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
                     borderColor:
                       text.length > 0 ? colors.clearBlue : colors.lightGrey,
                   },
+                  isEid ? {height} : {height: 56},
                 ]}>
                 <AppTextInput
                   key={r}
                   style={styles.eidFrame}
                   maxLength={isEid ? 32 : 15}
+                  onContentSizeChange={(event) => {
+                    if (isEid)
+                      setHeight(
+                        event.nativeEvent.contentSize.height < 56
+                          ? 56
+                          : event.nativeEvent.contentSize.height,
+                      );
+                  }}
                   multiline
                   enablesReturnKeyAutomatically
                   clearTextOnFocus={false}
@@ -209,7 +220,7 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
         })}
       </View>
     );
-  }, [renderTitle, setValue, value]);
+  }, [height, renderTitle, setValue, value]);
 
   const renderContent = useCallback(() => {
     switch (inputType) {
