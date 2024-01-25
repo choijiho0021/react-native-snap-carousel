@@ -160,7 +160,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
   useEffect(() => {
     action.cart.prepareOrder({
-      id: account.coupon.map((a) => a.id),
+      id: account.coupon?.map((a) => a.id),
     });
   }, [account.coupon, action.cart]);
 

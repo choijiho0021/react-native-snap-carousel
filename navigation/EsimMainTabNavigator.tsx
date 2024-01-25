@@ -74,6 +74,7 @@ import RegisterMobileScreen from '@/screens/RegisterMobileScreen';
 import CouponScreen from '@/screens/CouponScreen';
 import SelectCouponScreen from '@/screens/SelectCouponScreen';
 import DraftUsScreen from '@/screens/DraftUsScreen';
+import PaymentVBankScreen from '@/screens/PaymentVBankScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -163,6 +164,7 @@ function HomeStackComponent() {
           name="PaymentGateway"
           component={PaymentGatewayScreen}
         />
+        <HomeStack.Screen name="PaymentVBank" component={PaymentVBankScreen} />
         <HomeStack.Screen name="SelectCard" component={SelectCardScreen} />
       </HomeStack.Group>
       <HomeStack.Screen name="PaymentResult" component={PaymentResultScreen} />
@@ -207,6 +209,7 @@ function CartStackComponent() {
           name="PaymentGateway"
           component={PaymentGatewayScreen}
         />
+        <CartStack.Screen name="PaymentVBank" component={PaymentVBankScreen} />
         <CartStack.Screen name="SelectCard" component={SelectCardScreen} />
       </CartStack.Group>
     </CartStack.Navigator>
@@ -264,6 +267,7 @@ function EsimStackComponent() {
           name="PaymentGateway"
           component={PaymentGatewayScreen}
         />
+        <EsimStack.Screen name="PaymentVBank" component={PaymentVBankScreen} />
         <EsimStack.Screen name="SelectCard" component={SelectCardScreen} />
       </EsimStack.Group>
     </EsimStack.Navigator>
@@ -317,6 +321,10 @@ function MyPageStackComponent() {
         <MyPageStack.Screen
           name="PaymentGateway"
           component={PaymentGatewayScreen}
+        />
+        <MyPageStack.Screen
+          name="PaymentVBank"
+          component={PaymentVBankScreen}
         />
         <MyPageStack.Screen name="SelectCard" component={SelectCardScreen} />
       </MyPageStack.Group>

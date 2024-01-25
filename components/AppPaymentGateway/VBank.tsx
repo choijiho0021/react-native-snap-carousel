@@ -16,6 +16,8 @@ import PolicyChecker from './PolicyChecker';
 import AppButton from '../AppButton';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
+import api, {ApiResult} from '@/redux/api/api';
+import {RkbPaymentVBankResult} from '@/redux/api/paymentApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -30,9 +32,10 @@ type VBankProps = {
   cart: CartModelState;
   info: PaymentParams;
   token?: string;
+  callback: (result: ApiResult<RkbPaymentVBankResult>) => void;
 };
 
-const VBank: React.FC<VBankProps> = ({cart, info, token}) => {
+const VBank: React.FC<VBankProps> = ({cart, info, token, callback}) => {
   const [policyChecked, setPolicyChecked] = useState(false);
 
   const onSubmit = useCallback(() => {
@@ -42,8 +45,10 @@ const VBank: React.FC<VBankProps> = ({cart, info, token}) => {
         pg: 'hecto',
       },
       token,
-    }).then((resp) => console.log('@@@ resp', resp));
-  }, [info, token]);
+    })
+      .then((resp) => callback(resp))
+      .catch((ex) => callback(api.failure(api.E_INVALID_STATUS, ex.message)));
+  }, [callback, info, token]);
 
   return (
     <SafeAreaView style={styles.container}>

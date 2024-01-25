@@ -7,7 +7,7 @@ import {bindActionCreators, RootState} from 'redux';
 import Video from 'react-native-video';
 import AppAlert from '@/components/AppAlert';
 import {HomeStackParamList} from '@/navigation/navigation';
-import api from '@/redux/api/api';
+import api, {ApiResult} from '@/redux/api/api';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
 import {PaymentInfo} from '@/redux/api/cartApi';
@@ -21,6 +21,7 @@ import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import VBank from '@/components/AppPaymentGateway/VBank';
+import {RkbPaymentVBankResult} from '@/redux/api/paymentApi';
 
 const loading = require('../assets/images/loading_1.mp4');
 
@@ -121,6 +122,19 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
     ],
   );
 
+  const vbank = useCallback(
+    (resp: ApiResult<RkbPaymentVBankResult>) => {
+      if (resp.result === 0)
+        navigation.replace('PaymentVBank', {info: resp.objects[0]});
+      else
+        navigation.replace('PaymentResult', {
+          pymResult: false,
+          mode: params?.mode,
+        });
+    },
+    [navigation, params?.mode],
+  );
+
   useEffect(() => {
     if (!params.isPaid) {
       action.cart
@@ -172,7 +186,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       </View>
       {isOrderReady ? (
         params.pay_method === 'vbank' ? (
-          <VBank info={params} callback={callback} />
+          <VBank info={params} callback={vbank} />
         ) : (
           <AppPaymentGateway info={params} callback={callback} />
         )
