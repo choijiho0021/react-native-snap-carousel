@@ -77,32 +77,46 @@ const DiscountInfo: React.FC<DiscountProps> = ({
       <AppText style={styles.title}>{i18n.t('pym:discount')}</AppText>
       <View key="coupon" style={styles.row}>
         <AppText>{i18n.t('pym:coupon')}</AppText>
-        <AppText>{i18n.t('unit', {unit: account.coupon?.length || 0})}</AppText>
+        {onPress ? (
+          <AppText>
+            {i18n.t('unit', {unit: account.coupon?.length || 0})}
+          </AppText>
+        ) : null}
       </View>
       <View key="select" style={styles.row}>
         <AppPrice price={discount} />
-        <AppButton title={i18n.t('pym:selectCoupon')} onPress={onPress} />
+        {onPress ? (
+          <AppButton title={i18n.t('pym:selectCoupon')} onPress={onPress} />
+        ) : null}
       </View>
       <View key="cash" style={styles.row}>
         <AppText>{i18n.t('acc:balance')}</AppText>
-        <AppPrice
-          price={{value: account.balance || 0, currency: esimCurrency}}
-        />
+        {onPress ? (
+          <AppPrice
+            price={{value: account.balance || 0, currency: esimCurrency}}
+          />
+        ) : null}
       </View>
       <View key="selcash" style={styles.row}>
-        <AppTextInput
-          style={{flex: 1}}
-          keyboardType="numeric"
-          returnKeyType="done"
-          enablesReturnKeyAutomatically
-          onChangeText={setRokebiCash}
-          value={rokebiCash}
-          onSubmitEditing={() => updateRokebiCash(rokebiCash)}
-        />
-        <AppButton
-          title={i18n.t('pym:deductAll')}
-          onPress={() => action.cart.deductRokebiCash(account.balance)}
-        />
+        {onPress ? (
+          <AppTextInput
+            style={{flex: 1}}
+            keyboardType="numeric"
+            returnKeyType="done"
+            enablesReturnKeyAutomatically
+            onChangeText={setRokebiCash}
+            value={rokebiCash}
+            onSubmitEditing={() => updateRokebiCash(rokebiCash)}
+          />
+        ) : (
+          <AppText>{rokebiCash}</AppText>
+        )}
+        {onPress ? (
+          <AppButton
+            title={i18n.t('pym:deductAll')}
+            onPress={() => action.cart.deductRokebiCash(account.balance)}
+          />
+        ) : null}
       </View>
     </View>
   );
