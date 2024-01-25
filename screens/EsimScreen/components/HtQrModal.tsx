@@ -106,7 +106,7 @@ const HtQrModal: React.FC<HtQrModalProps> = ({visible, onOkClose}) => {
             {i18n.t('esim:howToCall:moveToQr')}
           </AppText>
         </View>
-        <View style={{margin: 20}}>
+        <View style={{marginHorizontal: 20, marginTop: 8, marginBottom: 20}}>
           <AppStyledText
             text={i18n.t(`esim:howToCall:moveToQr:txt`)}
             textStyle={[appStyles.bold16Text, {lineHeight: 24}]}
