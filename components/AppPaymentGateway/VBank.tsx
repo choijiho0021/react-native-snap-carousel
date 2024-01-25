@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -10,6 +10,12 @@ import PaymentItemInfo from '../PaymentItemInfo';
 import {CartModelState} from '@/redux/modules/cart';
 import DiscountInfo from '@/components/AppPaymentGateway/DiscountInfo';
 import ConfirmEmail from './ConfirmEmail';
+import PymMethod from './PymMethod';
+import PaymentSummary from '../PaymentSummary';
+import PolicyChecker from './PolicyChecker';
+import AppButton from '../AppButton';
+import i18n from '@/utils/i18n';
+import {appStyles} from '@/constants/Styles';
 
 const styles = StyleSheet.create({
   container: {
@@ -27,7 +33,9 @@ type VBankProps = {
 };
 
 const VBank: React.FC<VBankProps> = ({cart, info, token}) => {
-  const submit = useCallback(() => {
+  const [policyChecked, setPolicyChecked] = useState(false);
+
+  const onSubmit = useCallback(() => {
     API.Payment.reqRokebiPaymentVBank({
       params: {
         ...info,
@@ -49,7 +57,22 @@ const VBank: React.FC<VBankProps> = ({cart, info, token}) => {
         <ConfirmEmail />
 
         <DiscountInfo />
+
+        <PymMethod />
+
+        <PaymentSummary mode="method" />
+
         <View style={{flex: 1}} />
+        <PolicyChecker onPress={setPolicyChecked} />
+        <AppButton
+          title={i18n.t('payment')}
+          titleStyle={appStyles.medium18}
+          disabled={!policyChecked}
+          key={i18n.t('payment')}
+          onPress={onSubmit}
+          style={appStyles.confirm}
+          type="primary"
+        />
       </KeyboardAwareScrollView>
     </SafeAreaView>
   );

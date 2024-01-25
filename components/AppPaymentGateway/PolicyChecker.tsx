@@ -7,7 +7,6 @@ import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
-import {navigate} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({
   rowCenter: {

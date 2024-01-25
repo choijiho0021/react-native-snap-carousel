@@ -1028,6 +1028,13 @@
   "pym:item:rkbcash": "로깨비캐시 사용",
   "pym:deductAll": "모두 사용",
 
+  "pym:method:vbank": "무통장 입금 (가상 계좌)",
+  "pym:method:vbank:input": "입금 은행을 선택해주세요",
+  "pym:vbank:receipt": "현금 영수증",
+  "pym:vbank:receipt:1": "개인소득공제용",
+  "pym:vbank:receipt:2": "사업자증빙용",
+  "pym:vbank:receipt:3": "발급안함",
+
   "err:login": "로그인 후 상품 구매하기",
   "err:body": "본문이 없습니다",
 

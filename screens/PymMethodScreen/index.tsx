@@ -39,7 +39,7 @@ import AppModal from '@/components/AppModal';
 import AppStyledText from '@/components/AppStyledText';
 import PymButtonList from '@/components/AppPaymentGateway/PymButtonList';
 import DropDownHeader from './DropDownHeader';
-import PolicyChecker from './PolicyChecker';
+import PolicyChecker from '@/components/AppPaymentGateway/PolicyChecker';
 import {
   actions as productActions,
   ProductAction,
