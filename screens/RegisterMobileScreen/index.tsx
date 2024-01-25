@@ -696,13 +696,19 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             initState();
 
             if (!socialLogin) {
+              // . 확인필요
+              // 뒤로가기 후 로그인 시 예약된 화면 안가도록
+              navigation.navigate('MyPageStack', {
+                screen: 'MyPage',
+              });
+
               navigation.goBack();
             }
           }}
         />
       ),
     });
-  }, [initState, loggedIn, navigation, route?.params?.screen, socialLogin]);
+  }, [initState, loggedIn, navigation, route?.params, socialLogin]);
 
   return (
     <SafeAreaView style={styles.container}>

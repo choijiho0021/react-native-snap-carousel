@@ -135,7 +135,6 @@ const EsimDraftSubs = ({
       <Pressable
         style={styles.prodTitle}
         onPress={() => {
-          console.log('hellow');
           setShowMoreInfo((prev) => !prev);
         }}>
         <View>
