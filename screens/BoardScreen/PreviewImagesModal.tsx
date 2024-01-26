@@ -65,13 +65,8 @@ const PreviewImageModal: React.FC<PreviewImageModalModalProps> = ({
   const width = useMemo(() => (isFolder ? 400 : sliderWidth), [isFolder]);
 
   useEffect(() => {
-    console.log('@@@@ PreviewImageModal');
-
-    console.log('imgUrl : ', imgUrl);
     if (imgUrl)
       Image.getSize(API.default.httpImageUrl(imgUrl).toString(), (w, h) => {
-        console.log('@@@@ w : ', w);
-
         setHeight(h * ((windowWidth * 0.8) / (isFolder ? 420 : w)));
       });
     else
