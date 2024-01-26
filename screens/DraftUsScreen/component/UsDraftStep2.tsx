@@ -14,6 +14,7 @@ import UsDeviceInput from './UsDeviceInput';
 import {DeviceDataType} from '..';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {API} from '@/redux/api';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const styles = StyleSheet.create({});
 
@@ -40,6 +41,7 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
   const [infoModalVisible, setInfoModalVisible] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showSnackBar, setShowSnackbar] = useState(false);
 
   const blockAnimation = useRef(false);
   const animatedValue = useRef(new Animated.Value(40)).current;
@@ -71,9 +73,12 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
 
         setDeviceData({eid, imei2});
 
+        if (!eid || !imei2) setShowSnackbar(true);
+
         console.log('EID/IMEI2 image uploaded successfully:', data);
       } catch (error) {
         setDeviceData({eid: '', imei2: ''});
+        setShowSnackbar(true);
         console.error('EID/IMEI2 image upload failed:', error);
       }
     },
@@ -177,6 +182,12 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
         visible={uploadModalVisible}
         setVisible={setUploadModalVisible}
         onClickButton={onClickDeviceInputBtn}
+      />
+
+      <AppSnackBar
+        visible={showSnackBar}
+        onClose={() => setShowSnackbar(false)}
+        textMessage={i18n.t('us:device:img:err')}
       />
     </>
   );
