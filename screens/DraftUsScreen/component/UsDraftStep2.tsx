@@ -47,7 +47,13 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
   const extractFromImage = useCallback(
     async (formData: FormData) => {
       try {
-        const data = await API.User.extractBarcodes(formData);
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Timeout')), 10000),
+        );
+
+        const apiPromise = API.User.extractBarcodes(formData);
+
+        const data = await Promise.race([apiPromise, timeoutPromise]);
 
         const {eid, imeiList} = data?.barcodeList.reduce(
           (acc: {eid: string; imeiList: string[]}, current: string) => {
@@ -67,6 +73,7 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
 
         console.log('EID/IMEI2 image uploaded successfully:', data);
       } catch (error) {
+        setDeviceData({eid: '', imei2: ''});
         console.error('EID/IMEI2 image upload failed:', error);
       }
     },
