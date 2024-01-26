@@ -188,6 +188,7 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
         visible={showSnackBar}
         onClose={() => setShowSnackbar(false)}
         textMessage={i18n.t('us:device:img:err')}
+        preIcon="cautionRed"
       />
     </>
   );
