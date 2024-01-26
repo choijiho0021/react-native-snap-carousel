@@ -943,7 +943,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     return (
       prod &&
       descData && (
-        <ScrollView style={{flex: 1}}>
+        <View>
           {renderTopInfo(isDaily, volume, volumeUnit)}
           {renderSixIcon(isDaily, volume, volumeUnit)}
           {(noticeList.length > 0 || cautionList.length > 0) &&
@@ -952,13 +952,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             ftr &&
             ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(clMtd) &&
             renderCallMethod(clMtd)}
-          <BodyHtml body={descData.body} onMessage={onMessage} />
-        </ScrollView>
+        </View>
       )
     );
   }, [
     descData,
-    onMessage,
     prod,
     renderCallMethod,
     renderNotice,
@@ -1193,7 +1191,12 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         )}
       </View>
 
-      <View style={{flex: 1}}>{renderProdDetail()}</View>
+      <ScrollView style={{flex: 1}}>
+        {renderProdDetail()}
+        {descData?.body && (
+          <BodyHtml body={descData.body} onMessage={onMessage} />
+        )}
+      </ScrollView>
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       {purchaseButtonTab()}
 
