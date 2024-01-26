@@ -95,9 +95,10 @@ type HowToCallModalProps = {
 
 const HowToCallModal: React.FC<HowToCallModalProps> = ({
   visible,
-  clMtd,
+  clMtd2,
   onOkClose,
 }) => {
+  const clMtd = 'ustotal';
   const renderNumCheck = useCallback(
     () => (
       <>
@@ -106,7 +107,11 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
         </AppText>
 
         <View style={styles.greyBox}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
             <AppSvgIcon name="bannerCheckBlue" />
             <AppText style={styles.way}>{`${i18n.t(
               'esim:howToCall:numCheck:way',
@@ -129,7 +134,7 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
               text={i18n.t(`esim:howToCall:numCheck:way2:ios`)}
               textStyle={appStyles.bold14Text}
               format={{
-                h: {color: colors.darkBlue},
+                h: {color: colors.darkBlue, fontWeight: '700'},
                 g: {color: colors.warmGrey},
               }}
               numberOfLines={2}
@@ -138,7 +143,10 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
           <AppStyledText
             text={i18n.t(`esim:howToCall:numCheck:way2:aos`)}
             textStyle={appStyles.bold14Text}
-            format={{h: {color: colors.darkBlue}, g: {color: colors.warmGrey}}}
+            format={{
+              h: {color: colors.darkBlue, fontWeight: '700'},
+              g: {color: colors.warmGrey},
+            }}
             numberOfLines={2}
           />
         </View>
@@ -162,6 +170,7 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
           style={{
             ...appStyles.bold14Text,
             marginLeft: 12,
+            marginBottom: 8,
             color: colors.warmGrey,
           }}>
           {i18n.t(`esim:howToCall:domestic:${clMtd}:ex`)}
@@ -221,7 +230,7 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
 
         <View style={{marginLeft: 20}}>
           <View style={{flexDirection: 'row'}}>
-            <AppSvgIcon name="checkGreySmall" style={{marginRight: 4}} />
+            <AppSvgIcon name="checkedDarkBlueSmall" style={{marginRight: 4}} />
             <View>
               <AppText style={styles.darkblueBold14}>
                 {i18n.t(`esim:howToCall:international:${clMtd}:ex:title`)}
