@@ -1,5 +1,5 @@
 import React, {useCallback, useState} from 'react';
-import {Animated, Pressable, StyleSheet, View} from 'react-native';
+import {Animated, Platform, Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import i18n from '@/utils/i18n';
@@ -35,16 +35,13 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
     borderRadius: 3,
     borderWidth: 1,
+    padding: 16,
+    justifyContent: 'center',
+    overflow: 'visible',
   },
   eidFrame: {
     flex: 1,
     ...appStyles.medium16,
-    lineHeight: 24,
-    gap: 8,
-    padding: 16,
-    // flexDirection: 'row',
-    // alignItems: 'center',
-    // justifyContent: 'space-between',
   },
   showSearchBar: {
     paddingRight: 10,
@@ -149,22 +146,32 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
                   {
                     borderColor:
                       text.length > 0 ? colors.clearBlue : colors.lightGrey,
+                    padding: Platform.OS === 'android' ? 8 : 16,
+                    paddingHorizontal: 16,
                   },
-                  isEid ? {height} : {height: 56},
                 ]}>
                 <AppTextInput
                   key={r}
-                  style={styles.eidFrame}
+                  style={[
+                    styles.eidFrame,
+                    {
+                      height: isEid
+                        ? height
+                        : Platform.OS === 'android'
+                        ? 40
+                        : 36,
+                      lineHeight: 20,
+                      marginRight: 10,
+                      textAlignVertical: 'center',
+                    },
+                  ]}
                   maxLength={isEid ? 32 : 15}
                   onContentSizeChange={(event) => {
-                    if (isEid)
-                      setHeight(
-                        event.nativeEvent.contentSize.height < 56
-                          ? 56
-                          : event.nativeEvent.contentSize.height,
-                      );
+                    if (isEid) {
+                      setHeight(event.nativeEvent.contentSize.height);
+                    }
                   }}
-                  multiline
+                  multiline={isEid}
                   enablesReturnKeyAutomatically
                   clearTextOnFocus={false}
                   autoCorrect={false}

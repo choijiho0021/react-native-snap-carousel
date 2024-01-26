@@ -53,7 +53,7 @@ const UsDateInput: React.FC<UsDateInputProps> = ({
 }) => {
   return (
     <Animated.View>
-      <View style={{gap: 8, marginBottom: 8}}>
+      <View style={{gap: 8, marginBottom: 8, marginTop: 10}}>
         <AppText style={[appStyles.normal14Text, {color: colors.greyish}]}>
           {i18n.t('us:actDate')}
         </AppText>
