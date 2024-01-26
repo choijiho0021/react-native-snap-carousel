@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import ImagePicker from 'react-native-image-crop-picker';
-import MlkitOcr from 'react-native-mlkit-ocr';
 import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
@@ -13,6 +12,8 @@ import UsDeviceInfoModal from './UsDeviceInfoModal';
 import UsDeviceInputModal from './UsDeviceInputModal';
 import UsDeviceInput from './UsDeviceInput';
 import {DeviceDataType} from '..';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import {API} from '@/redux/api';
 
 const styles = StyleSheet.create({});
 
@@ -38,52 +39,35 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
 }) => {
   const [infoModalVisible, setInfoModalVisible] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const blockAnimation = useRef(false);
   const animatedValue = useRef(new Animated.Value(40)).current;
 
-  const extractTextFromImage = useCallback(
-    async (imagePath: string) => {
+  const extractFromImage = useCallback(
+    async (formData: FormData) => {
       try {
-        if (MlkitOcr) {
-          let imei2 = '';
-          let eid = '';
-          const result = await MlkitOcr.detectFromFile(imagePath);
+        const data = await API.User.extractBarcodes(formData);
 
-          result.forEach((r, i) => {
-            const {text} = r;
-            let temp = '';
-            if (text.includes('IMEI2')) {
-              if (text.length > 10) {
-                temp = text.split('IMEI2')[1].replace(/\s/g, '');
-              } else {
-                temp = result[i + 1].text
-                  .replace(/\s/g, '')
-                  .replace(/\n/g, '')
-                  .split('/')[0]
-                  .replace(/o/g, '0');
-              }
-              if (temp.length === 15 && !Number.isNaN(temp)) imei2 = temp;
-            } else if (text.includes('EID')) {
-              if (text.length > 10) {
-                temp = text.split('EID')[1].replace(/\s/g, '');
-              } else {
-                temp = result[i + 1].text
-                  .replace(/\s/g, '')
-                  .replace(/\n/g, '')
-                  .split('/')[0]
-                  .replace(/o/g, '0');
-              }
-              if (temp.length === 32 && !Number.isNaN(temp)) eid = temp;
+        const {eid, imeiList} = data?.barcodeList.reduce(
+          (acc: {eid: string; imeiList: string[]}, current: string) => {
+            if (current.length === 32) {
+              acc.eid = current;
+            } else if (current.length === 15 && !Number.isNaN(current)) {
+              acc.imeiList.push(current);
             }
-          });
+            return acc;
+          },
+          {eid: '', imeiList: []},
+        );
 
-          setDeviceData({eid, imei2});
-        } else {
-          console.error('@@@@ MlkitOcr is null or undefined');
-        }
+        const imei2 = imeiList.length > 1 ? imeiList[0] : '';
+
+        setDeviceData({eid, imei2});
+
+        console.log('EID/IMEI2 image uploaded successfully:', data);
       } catch (error) {
-        console.log('@@@@ error', error);
+        console.error('EID/IMEI2 image upload failed:', error);
       }
     },
     [setDeviceData],
@@ -100,13 +84,26 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
             forceJpb: true,
             compressImageQuality: 0.1,
           });
-          await extractTextFromImage(image.path);
+          setUploadModalVisible(false);
+          setLoading(true);
+
+          const formData = new FormData();
+          formData.append('image', {
+            uri: image.path,
+            type: image.mime,
+            name: 'myImage.jpg',
+          });
+
+          await extractFromImage(formData);
         }
+
+        setLoading(false);
+      } else {
+        setUploadModalVisible(false);
       }
       setDeviceInputType(type);
-      setUploadModalVisible(false);
     },
-    [extractTextFromImage, setDeviceInputType],
+    [extractFromImage, setDeviceInputType],
   );
 
   useEffect(() => {
@@ -135,6 +132,8 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
 
   return (
     <>
+      <AppActivityIndicator visible={loading} />
+
       <KeyboardAwareScrollView
         enableOnAndroid
         showsVerticalScrollIndicator={false}
