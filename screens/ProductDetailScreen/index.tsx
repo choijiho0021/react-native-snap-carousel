@@ -430,7 +430,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     [route.params?.item],
   );
 
-  const prod = useMemo(() => route.params?.prod, [route.params?.prod]);
+  const prod = useMemo(() => {
+    return route.params?.prod || product.prodList.get(route.params?.uuid);
+  }, [product.prodList, route.params?.prod, route.params?.uuid]);
   const noFup = useMemo(
     () => prod?.fup === 'N/A' || prod?.fup === '0',
     [prod?.fup],
@@ -449,8 +451,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [showCallDetail, setShowCallDetail] = useState(false);
   const dispatch = useDispatch();
   const descData: DescData = useMemo(
-    () => product.descData.get(prod?.key),
-    [prod?.key, product.descData],
+    () => product.descData.get(prod?.key || route.params?.uuid),
+    [prod?.key, product.descData, route.params?.uuid],
   );
 
   const isht = useMemo(
@@ -468,9 +470,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   });
 
   useEffect(() => {
-    if (!product.descData.get(prod?.key))
-      dispatch(productAction.getProdDesc(prod.key));
-  }, [dispatch, prod, product.descData]);
+    if (!product.descData.get(prod?.key || route.params?.uuid))
+      dispatch(productAction.getProdDesc(prod?.key || route.params?.uuid));
+  }, [dispatch, prod, product.descData, route.params?.uuid]);
 
   useEffect(() => {
     getTrackingStatus().then((elm) => setStatus(elm));
