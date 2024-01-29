@@ -15,10 +15,12 @@ import {DeviceDataType} from '..';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {API} from '@/redux/api';
 import AppSnackBar from '@/components/AppSnackBar';
+import {AccountModelState} from '@/redux/modules/account';
 
 const styles = StyleSheet.create({});
 
 type UsDraftStep2Props = {
+  account: AccountModelState;
   actDate: string;
   setDateModalVisible: (val: boolean) => void;
   deviceData: DeviceDataType;
@@ -31,6 +33,7 @@ export type UsDeviceInputType = 'none' | 'barcode' | 'capture' | 'manual';
 
 // TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
 const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
+  account,
   actDate,
   setDateModalVisible,
   deviceData,
@@ -103,7 +106,7 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
           formData.append('image', {
             uri: image.path,
             type: image.mime,
-            name: 'myImage.jpg',
+            name: `${account.mobile}.jpg`,
           });
 
           await extractFromImage(formData);
@@ -115,7 +118,7 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
       }
       setDeviceInputType(type);
     },
-    [extractFromImage, setDeviceInputType],
+    [account.mobile, extractFromImage, setDeviceInputType],
   );
 
   useEffect(() => {
@@ -194,6 +197,7 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
   );
 };
 
-export default connect(({product}: RootState) => ({
+export default connect(({account, product}: RootState) => ({
+  account,
   product,
 }))(UsDraftStep2);
