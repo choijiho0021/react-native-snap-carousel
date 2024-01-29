@@ -251,7 +251,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [subsData, firstUsedIdx] = useMemo(
     () => {
       const list = order.subs?.filter((elm) =>
-        isEditMode ? elm.statusCd === 'U' : !elm.hide,
+        isEditMode ? ['U', 'E'].includes(elm.statusCd) : !elm.hide,
       );
       return [list, list.findIndex((o) => o.statusCd === 'U')];
     }, // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨길 수 없도록 한다.
