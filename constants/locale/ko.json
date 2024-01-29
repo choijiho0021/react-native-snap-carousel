@@ -881,6 +881,7 @@
   "us:device:modal:input:button:barcode": "바코드로 스캔하기",
   "us:device:modal:input:button:capture": "캡처 화면 업로드하기",
   "us:device:modal:input:button:manual": "수동 직접 입력하기",
+  "us:device:img:err": "단말 정보를 인식할 수 없는 이미지입니다.",
 
   "us:device:upload:another": "다른 업로드 방법",
   "us:device:placeholder": "단말 정보를 입력하세요.",

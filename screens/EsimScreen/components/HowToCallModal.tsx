@@ -95,10 +95,9 @@ type HowToCallModalProps = {
 
 const HowToCallModal: React.FC<HowToCallModalProps> = ({
   visible,
-  clMtd2,
+  clMtd,
   onOkClose,
 }) => {
-  const clMtd = 'ustotal';
   const renderNumCheck = useCallback(
     () => (
       <>
