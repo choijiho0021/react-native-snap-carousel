@@ -28,6 +28,7 @@ import {
   AddOnOptionType,
   isDisabled,
   RkbSubscription,
+  STATUS_EXPIRED,
   STATUS_PENDING,
   STATUS_RESERVED,
 } from '@/redux/api/subscriptionApi';
@@ -50,6 +51,7 @@ import {AccountModelState} from '@/redux/modules/account';
 import {HomeStackParamList} from '@/navigation/navigation';
 import HowToCallModal from './HowToCallModal';
 import HtQrModal from './HtQrModal';
+import AppNotiBox from '@/components/AppNotiBox';
 
 const styles = StyleSheet.create({
   cardExpiredBg: {
@@ -324,6 +326,17 @@ const styles = StyleSheet.create({
     ...appStyles.bold14Text,
     color: colors.clearBlue,
   },
+
+  notiBox: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    ...appStyles.normal14Text,
+    backgroundColor: colors.backRed,
+    borderRadius: 3,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    marginTop: 6,
+  },
 });
 
 type EsimSubsNavigationProp = StackNavigationProp<
@@ -371,6 +384,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     isCharged,
     isBC,
     expired,
+    failed,
     chargeablePeriod,
     notCardInfo,
     sendable,
@@ -386,6 +400,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
             .endOf('day')
             .isBefore(moment())
         : mainSubs.lastExpireDate?.isBefore(now)) || false;
+    const isFailed = mainSubs.statusCd === STATUS_EXPIRED;
 
     return [
       checkHt,
@@ -395,10 +410,12 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       (mainSubs.cnt || 0) > 1,
       mainSubs.partner === 'billionconnect',
       expd,
+      isFailed,
       utils.toDateString(mainSubs.expireDate, 'YYYY.MM.DD'),
       !expd &&
         mainSubs.giftStatusCd !== 'S' &&
-        mainSubs.type !== API.Subscription.CALL_PRODUCT,
+        mainSubs.type !== API.Subscription.CALL_PRODUCT &&
+        !isFailed,
       !expd &&
         !mainSubs.giftStatusCd &&
         (mainSubs.cnt || 0) === 1 &&
@@ -498,10 +515,11 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
             <AppText style={styles.drafting}>{i18n.t('esim:reserved')}</AppText>
           </View>
         )}
+
         <Pressable
           style={styles.prodTitle}
           onPress={() => {
-            if (isTypeDraft) return;
+            if (isTypeDraft || failed) return;
 
             if (notCardInfo) {
               setShowMoreInfo((prev) => !prev);
@@ -559,7 +577,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
             </View>
           ) : (
             // R 발송중인 상태에선 상품 발송중 표시
-            !isTypeDraft && (
+            !(isTypeDraft || failed) && (
               <View style={styles.arrow}>
                 <AppSvgIcon name={showMoreInfo ? 'topArrow' : 'bottomArrow'} />
               </View>
@@ -571,94 +589,132 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   }, [
     mainSubs,
     notCardInfo,
+    isTypeDraft,
     isEditMode,
     renderSwitch,
     expired,
     isCharged,
-    isTypeDraft,
     showMoreInfo,
+    failed,
     flatListRef,
     index,
   ]);
 
+  const failNotiBox = useCallback(() => {
+    return (
+      failed && (
+        <View>
+          <AppNotiBox
+            iconName="bannerWarning"
+            containerStyle={styles.notiBox}
+            backgroundColor={colors.backRed}
+            textColor={colors.redError}
+            text="<b>개통 실패! 고객센터로 문의해 주세요.</b>"
+          />
+        </View>
+      )
+    );
+  }, [failed]);
+
   const topInfo = useCallback(() => {
     if (isht) {
+      console.log('@@@@ mainSubs.statusCd = ', mainSubs.statusCd);
+
       return (
+        <>
+          {failNotiBox()}
+          <View style={[styles.topInfo, !notCardInfo && {marginVertical: 16}]}>
+            {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
+              <View style={styles.inactiveContainer}>
+                <AppText style={{...styles.normal14Gray, fontWeight: '700'}}>
+                  {i18n.t('eid')}
+                </AppText>
+                <AppText
+                  style={[
+                    styles.normal14Gray,
+                    {marginLeft: 80, textAlign: 'right', flex: 1},
+                  ]}>
+                  {mainSubs.eid}
+                </AppText>
+              </View>
+            )}
+            <View style={styles.inactiveContainer}>
+              <AppText style={{...styles.normal14Gray, fontWeight: '700'}}>
+                {i18n.t('imei2:esim')}
+              </AppText>
+              <AppText style={styles.normal14Gray}>{mainSubs.imei2}</AppText>
+            </View>
+
+            {!isBC && (
+              <View style={styles.inactiveContainer}>
+                <AppText style={{...styles.normal14Gray, fontWeight: '700'}}>
+                  {i18n.t('esim:activationDate')}
+                </AppText>
+                <AppText style={styles.normal14Gray}>
+                  {mainSubs.activationDate?.format('YYYY.MM.DD')}
+                </AppText>
+              </View>
+            )}
+          </View>
+        </>
+      );
+    }
+    return (
+      <>
+        {failNotiBox()}
         <View style={[styles.topInfo, !notCardInfo && {marginVertical: 16}]}>
           {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
             <View style={styles.inactiveContainer}>
-              <AppText style={{...styles.normal14Gray, fontWeight: '700'}}>
-                {i18n.t('eid')}
-              </AppText>
               <AppText
                 style={[
                   styles.normal14Gray,
-                  {marginLeft: 80, textAlign: 'right', flex: 1},
+                  !mainSubs.subsIccid
+                    ? {
+                        textDecorationLine: 'line-through',
+                        textDecorationStyle: 'solid',
+                      }
+                    : {},
                 ]}>
-                {mainSubs.eid}
+                {i18n.t('esim:iccid')}
+              </AppText>
+              <AppText style={styles.normal14Gray}>
+                {mainSubs.subsIccid}
               </AppText>
             </View>
           )}
           <View style={styles.inactiveContainer}>
-            <AppText style={{...styles.normal14Gray, fontWeight: '700'}}>
-              {i18n.t('imei2:esim')}
+            <AppText style={styles.normal14Gray}>
+              {i18n.t('esim:usablePeriod')}
             </AppText>
-            <AppText style={styles.normal14Gray}>{mainSubs.imei2}</AppText>
+            <AppText style={styles.normal14Gray}>{`${utils.toDateString(
+              mainSubs.purchaseDate,
+              'YYYY.MM.DD',
+            )} - ${utils.toDateString(
+              mainSubs?.lastExpireDate,
+              'YYYY.MM.DD',
+            )}`}</AppText>
           </View>
 
           {!isBC && (
             <View style={styles.inactiveContainer}>
-              <AppText style={{...styles.normal14Gray, fontWeight: '700'}}>
-                {i18n.t('esim:activationDate')}
-              </AppText>
               <AppText style={styles.normal14Gray}>
-                {mainSubs.activationDate?.format('YYYY.MM.DD')}
+                {i18n.t('esim:rechargeablePeriod')}
               </AppText>
+              <AppText style={styles.normal14Gray}>{chargeablePeriod}</AppText>
             </View>
           )}
         </View>
-      );
-    }
-    return (
-      <View style={[styles.topInfo, !notCardInfo && {marginVertical: 16}]}>
-        {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
-          <View style={styles.inactiveContainer}>
-            <AppText style={styles.normal14Gray}>
-              {i18n.t('esim:iccid')}
-            </AppText>
-            <AppText style={styles.normal14Gray}>{mainSubs.subsIccid}</AppText>
-          </View>
-        )}
-        <View style={styles.inactiveContainer}>
-          <AppText style={styles.normal14Gray}>
-            {i18n.t('esim:usablePeriod')}
-          </AppText>
-          <AppText style={styles.normal14Gray}>{`${utils.toDateString(
-            mainSubs.purchaseDate,
-            'YYYY.MM.DD',
-          )} - ${utils.toDateString(
-            mainSubs?.lastExpireDate,
-            'YYYY.MM.DD',
-          )}`}</AppText>
-        </View>
-
-        {!isBC && (
-          <View style={styles.inactiveContainer}>
-            <AppText style={styles.normal14Gray}>
-              {i18n.t('esim:rechargeablePeriod')}
-            </AppText>
-            <AppText style={styles.normal14Gray}>{chargeablePeriod}</AppText>
-          </View>
-        )}
-      </View>
+      </>
     );
   }, [
     isht,
+    failNotiBox,
     notCardInfo,
     mainSubs.type,
     mainSubs.subsIccid,
     mainSubs.purchaseDate,
     mainSubs?.lastExpireDate,
+    mainSubs.statusCd,
     mainSubs.eid,
     mainSubs.imei2,
     mainSubs.activationDate,
@@ -974,92 +1030,94 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   );
 
   return (
-    <View
-      style={[
-        styles.usageListContainer,
-        expired || mainSubs.giftStatusCd === 'S'
-          ? styles.cardExpiredBg
-          : styles.shadow,
-        isTypeDraft && {paddingBottom: 16},
-      ]}>
-      {title()}
+    <>
       <View
-        pointerEvents={isEditMode ? 'none' : 'auto'}
-        style={{opacity: isEditMode ? 0.6 : 1}}>
+        style={[
+          styles.usageListContainer,
+          expired || mainSubs.giftStatusCd === 'S'
+            ? styles.cardExpiredBg
+            : styles.shadow,
+          isTypeDraft && {paddingBottom: 16},
+        ]}>
+        {title()}
         <View
-          style={
-            notCardInfo
-              ? {
-                  ...styles.infoRadiusBorderBottom,
-                  paddingTop: isTypeDraft ? 0 : 6,
-                }
-              : styles.infoCardBottom
-          }>
-          {isTypeDraft ? <View /> : notCardInfo ? QRnCopyInfo() : topInfo()}
-        </View>
-
-        {showMoreInfo && (
-          <View style={showMoreInfo && styles.moreInfoContent}>
-            {topInfo()}
-
-            {!!mainSubs.caution || (mainSubs.cautionList?.length || 0) > 0 ? (
-              <View style={styles.cautionBox}>
-                <View style={styles.cautionRow}>
-                  <AppSvgIcon name="cautionIcon" style={{marginRight: 12}} />
-                  <AppText style={styles.cautionTitle}>
-                    {i18n.t('esim:caution')}
-                  </AppText>
-                </View>
-
-                <View>
-                  {(mainSubs.cautionList || [])
-                    .concat(mainSubs.caution || [])
-                    ?.map(renderCautionList)}
-                </View>
-              </View>
-            ) : (
-              <View style={{height: 30}} />
-            )}
-
-            {renderHkBtn()}
-
-            {renderHowToCall()}
-
-            {renderMvHtQr()}
-
-            {!isht && renderMoveBtn()}
+          pointerEvents={isEditMode ? 'none' : 'auto'}
+          style={{opacity: isEditMode ? 0.6 : 1}}>
+          <View
+            style={
+              notCardInfo
+                ? {
+                    ...styles.infoRadiusBorderBottom,
+                    paddingTop: isTypeDraft ? 0 : 6,
+                  }
+                : styles.infoCardBottom
+            }>
+            {isTypeDraft ? <View /> : notCardInfo ? QRnCopyInfo() : topInfo()}
           </View>
-        )}
-      </View>
 
-      {mainSubs?.clMtd && (
-        <>
-          <HowToCallModal
-            visible={showHtcModal}
-            clMtd={mainSubs?.clMtd}
-            onOkClose={() => setShowHtcModal(false)}
-          />
-          <HtQrModal
-            visible={showHtQrModal}
-            onOkClose={() => setShowHtQrModal(false)}
-          />
-        </>
-      )}
+          {showMoreInfo && (
+            <View style={showMoreInfo && styles.moreInfoContent}>
+              {topInfo()}
 
-      <AppModal
-        type="info"
-        buttonStyle={styles.btnStyle}
-        onOkClose={() => setExpiredModalVisible(false)}
-        visible={expiredModalVisible}>
-        <View style={styles.expiredModalTextFrame}>
-          <AppStyledText
-            textStyle={styles.expiredModalText}
-            text={i18n.t('esim:charge:cautionExpired')}
-            format={{r: styles.highlightText}}
-          />
+              {!!mainSubs.caution || (mainSubs.cautionList?.length || 0) > 0 ? (
+                <View style={styles.cautionBox}>
+                  <View style={styles.cautionRow}>
+                    <AppSvgIcon name="cautionIcon" style={{marginRight: 12}} />
+                    <AppText style={styles.cautionTitle}>
+                      {i18n.t('esim:caution')}
+                    </AppText>
+                  </View>
+
+                  <View>
+                    {(mainSubs.cautionList || [])
+                      .concat(mainSubs.caution || [])
+                      ?.map(renderCautionList)}
+                  </View>
+                </View>
+              ) : (
+                <View style={{height: 30}} />
+              )}
+
+              {renderHkBtn()}
+
+              {renderHowToCall()}
+
+              {renderMvHtQr()}
+
+              {!isht && renderMoveBtn()}
+            </View>
+          )}
         </View>
-      </AppModal>
-    </View>
+
+        {mainSubs?.clMtd && (
+          <>
+            <HowToCallModal
+              visible={showHtcModal}
+              clMtd={mainSubs?.clMtd}
+              onOkClose={() => setShowHtcModal(false)}
+            />
+            <HtQrModal
+              visible={showHtQrModal}
+              onOkClose={() => setShowHtQrModal(false)}
+            />
+          </>
+        )}
+
+        <AppModal
+          type="info"
+          buttonStyle={styles.btnStyle}
+          onOkClose={() => setExpiredModalVisible(false)}
+          visible={expiredModalVisible}>
+          <View style={styles.expiredModalTextFrame}>
+            <AppStyledText
+              textStyle={styles.expiredModalText}
+              text={i18n.t('esim:charge:cautionExpired')}
+              format={{r: styles.highlightText}}
+            />
+          </View>
+        </AppModal>
+      </View>
+    </>
   );
 };
 

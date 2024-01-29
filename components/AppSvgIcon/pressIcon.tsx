@@ -4172,6 +4172,23 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  bannerWarning: [
+    <Svg
+      width="26"
+      height="26"
+      viewBox="0 0 26 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M12.135 3.662a1 1 0 0 1 1.73 0l10.183 17.587a1 1 0 0 1-.866 1.501H2.818a1 1 0 0 1-.866-1.5L12.135 3.661z"
+        fill="#EE4423"
+      />
+      <Path
+        d="M14.083 19.5a1.083 1.083 0 1 1-2.166 0 1.083 1.083 0 0 1 2.166 0zM11.917 10.679c0-.513.485-.929 1.083-.929s1.083.416 1.083.929v4.642c0 .513-.485.929-1.083.929s-1.083-.416-1.083-.929V10.68z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
 
   bannerCheck: [
     <Svg
