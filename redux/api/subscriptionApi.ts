@@ -9,7 +9,7 @@ import {ProdDesc} from './productApi';
 
 const {specialCategories} = Env.get();
 
-const STATUS_ACTIVE = 'A'; // 사용중
+export const STATUS_ACTIVE = 'A'; // 사용중
 const STATUS_INACTIVE = 'I'; // 미사용
 export const STATUS_RESERVED = 'R'; // 사용 대기중
 const STATUS_CANCELED = 'C'; // 취소

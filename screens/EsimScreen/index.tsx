@@ -32,6 +32,8 @@ import {
   UsageObj,
   Usage,
   AddOnOptionType,
+  STATUS_USED,
+  STATUS_EXPIRED,
 } from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
@@ -251,9 +253,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [subsData, firstUsedIdx] = useMemo(
     () => {
       const list = order.subs?.filter((elm) =>
-        isEditMode ? ['U', 'E'].includes(elm.statusCd) : !elm.hide,
+        isEditMode
+          ? [STATUS_USED, STATUS_EXPIRED].includes(elm.statusCd)
+          : !elm.hide,
       );
-      return [list, list.findIndex((o) => o.statusCd === 'U')];
+      return [list, list.findIndex((o) => o.statusCd === STATUS_USED)];
     }, // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨길 수 없도록 한다.
     [isEditMode, order.subs],
   );
@@ -613,7 +617,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         mainSubs={item}
         showDetail={
           ((index === firstUsedIdx || index === selectedIdx) &&
-            item.statusCd === 'U' &&
+            item.statusCd === STATUS_USED &&
             item.purchaseDate.isAfter(days14ago)) ||
           route?.params?.subsId === item.nid
         }

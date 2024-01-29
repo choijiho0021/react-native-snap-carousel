@@ -548,7 +548,9 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               renderPromoFlag(mainSubs.promoFlag || [], mainSubs.isStore)
             }
             style={[
-              [STATUS_RESERVED, STATUS_PENDING].includes(mainSubs.statusCd)
+              [STATUS_RESERVED, STATUS_PENDING, STATUS_ACTIVE].includes(
+                mainSubs.statusCd,
+              )
                 ? styles.reservedSubsTitle
                 : expired || mainSubs.giftStatusCd === 'S'
                 ? styles.usageTitleNormal
