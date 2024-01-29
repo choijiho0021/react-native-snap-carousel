@@ -4172,6 +4172,37 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+
+  imgIcon: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm6.4 1.602a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-4.8 9v1.297a.5.5 0 0 0 .5.5h11.8a.5.5 0 0 0 .5-.5v-2.897a.5.5 0 0 0-.141-.348l-3.01-3.104a.5.5 0 0 0-.699-.018l-3.226 2.995a.5.5 0 0 1-.624.045L5.051 9.44a.5.5 0 0 0-.642.063L1.74 12.255a.5.5 0 0 0-.141.348z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
+
+  bannerCheckBlue2: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="12" cy="12" r="11" fill="#DAEEFF" />
+      <Path
+        d="M13 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM11 8a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V8z"
+        fill="#2A7FF6"
+      />
+    </Svg>,
+  ],
   bannerWarning: [
     <Svg
       width="26"
