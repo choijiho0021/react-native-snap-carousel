@@ -431,7 +431,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   );
 
   const prod = useMemo(() => {
-    return route.params?.prod || product.prodList.get(route.params?.uuid);
+    return route.params?.prod || product.prodList.get(route.params?.uuid || '');
   }, [product.prodList, route.params?.prod, route.params?.uuid]);
   const noFup = useMemo(
     () => prod?.fup === 'N/A' || prod?.fup === '0',
