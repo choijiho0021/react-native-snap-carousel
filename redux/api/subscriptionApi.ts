@@ -135,9 +135,15 @@ export type UsageObj = {
   totalUsed?: number;
 };
 
+export type UsageOptionObj = {
+  mode?: String[]; // stu: 상태값 출력, usa: 현재 사용량 보여줌, end : 상품 종료시간 보여줌
+  ret?: string;
+};
+
 export type Usage = {
   status: StatusObj;
   usage: UsageObj;
+  usageOption: UsageOptionObj;
 };
 
 export enum AddOnOptionType {
@@ -555,9 +561,11 @@ const quadcellGetUsage = ({
 const bcGetSubsUsage = ({
   subsIccid,
   orderId,
+  localOpId,
 }: {
   subsIccid: string;
   orderId?: string;
+  localOpId?: string;
 }) => {
   if (!subsIccid || !orderId)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
@@ -571,6 +579,7 @@ const bcGetSubsUsage = ({
     )}&${api.queryString({
       iccid: subsIccid,
       orderId,
+      localOpId: localOpId || '0',
     })}`,
     (data) => {
       if (data?.result?.code === 0) {

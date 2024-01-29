@@ -32,6 +32,7 @@ import {
   UsageObj,
   Usage,
   AddOnOptionType,
+  UsageOptionObj,
 } from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
@@ -239,6 +240,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [isPressClose, setIsPressClose] = useState(false);
   const [dataUsage, setDataUsage] = useState({});
   const [dataStatus, setDataStatus] = useState({});
+  const [dataUsageOption, setDataUsageOption] = useState({});
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [showUsageSubsId, setShowUsageSubsId] = useState<string | undefined>();
   const isFocused = useIsFocused();
@@ -309,7 +311,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const checkCmiData = useCallback(
     async (
       item: RkbSubscription,
-    ): Promise<{status: StatusObj; usage: UsageObj}> => {
+    ): Promise<{
+      status: StatusObj;
+      usage: UsageObj;
+      usageOption: UsageOptionObj;
+    }> => {
       if (item?.subsIccid && item?.packageId) {
         const {result, objects} = await API.Subscription.cmiGetSubsUsage({
           iccid: item?.subsIccid,
@@ -326,6 +332,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           used: undefined,
           remain: undefined,
           totalUsed: undefined,
+        },
+        usageOption: {
+          mode: ['stu', 'usa', 'end'],
         },
       };
     },
@@ -350,6 +359,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           remain: undefined,
           totalUsed: undefined,
         },
+        usageOption: {
+          mode: ['stu', 'usa', 'end'],
+        },
       };
     },
     [],
@@ -358,7 +370,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const checkBcData = useCallback(
     async (
       item: RkbSubscription,
-    ): Promise<{status: StatusObj; usage: UsageObj}> => {
+    ): Promise<{
+      status: StatusObj;
+      usage: UsageObj;
+      usageOption: UsageOptionObj;
+    }> => {
       if (item?.subsIccid) {
         const {result, objects} = await API.Subscription.bcGetSubsUsage({
           subsIccid: item.subsIccid,
@@ -376,6 +392,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           remain: undefined,
           totalUsed: undefined,
         },
+        usageOption: {
+          mode: ['stu', 'usa', 'end'],
+        },
       };
     },
     [],
@@ -386,7 +405,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       setUsageLoading(true);
       setSubs(item);
 
-      let result = {status: {}, usage: {}};
+      let result = {status: {}, usage: {}, usageOption: {}};
       switch (item.partner) {
         case 'cmi':
         case 'cmi2':
@@ -409,6 +428,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
                 ?.endOf('day'),
             },
             usage: {quota: 0, used: 0, remain: 0, totalUsed: 0},
+            usageOption: {
+              mode: ['stu', 'usa', 'end'],
+            },
           };
           break;
         default:
@@ -419,6 +441,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       setIsChargeable(isChargeableParam!);
       setDataStatus(result.status);
       setDataUsage(result.usage);
+      setDataUsageOption(result.usageOption);
       setUsageLoading(false);
       return result;
     },
@@ -837,6 +860,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         usageLoading={usageLoading}
         dataUsage={dataUsage}
         dataStatus={dataStatus}
+        dataUsageOption={dataUsageOption}
         onCancelClose={() => {
           setShowUsageModal(false);
           setDataStatus({});
