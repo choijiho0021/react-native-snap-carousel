@@ -2,9 +2,9 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -45,9 +45,11 @@ import {
   ProductAction,
   ProductModelState,
 } from '@/redux/modules/product';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import DiscountInfo from '@/components/AppPaymentGateway/DiscountInfo';
 import PaymentSummary from '@/components/PaymentSummary';
 import ConfirmEmail from '@/components/AppPaymentGateway/ConfirmEmail';
+import ChangeEmail from './ChangeEmail';
 
 const infoKey = 'pym:benefit';
 
@@ -109,6 +111,10 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     letterSpacing: -0.5,
   },
+  modal: {
+    flex: 1,
+    backgroundColor: 'yellow',
+  },
 });
 
 type PymMethodScreenNavigationProp = StackNavigationProp<
@@ -131,6 +137,7 @@ type PymMethodScreenProps = {
     cart: CartAction;
     info: InfoAction;
     product: ProductAction;
+    modal: ModalAction;
   };
 };
 
@@ -151,6 +158,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [policyChecked, setPolicyChecked] = useState(false);
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!info.infoMap.has(infoKey)) {
@@ -327,6 +335,15 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     );
   }, []);
 
+  const showChangeEmail = useCallback(() => {
+    action.modal.renderModal(() => (
+      <ChangeEmail
+        email={account.email}
+        onCancelClose={() => action.modal.closeModal()}
+      />
+    ));
+  }, [account.email, action.modal]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={appStyles.header}>
@@ -343,7 +360,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         enableResetScrollToCoords={false}>
         <PaymentItemInfo purchaseItems={cart.purchaseItems} mode="method" />
 
-        <ConfirmEmail onPress={() => navigation.navigate('ChangeEmail')} />
+        <ConfirmEmail onPress={() => showChangeEmail()} />
 
         <DiscountInfo onPress={() => navigation.navigate('SelectCoupon')} />
 
@@ -402,6 +419,7 @@ export default connect(
       cart: bindActionCreators(cartActions, dispatch),
       info: bindActionCreators(infoActions, dispatch),
       product: bindActionCreators(productActions, dispatch),
+      modal: bindActionCreators(modalActions, dispatch),
     },
   }),
 )(PymMethodScreen);

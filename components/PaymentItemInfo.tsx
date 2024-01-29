@@ -16,10 +16,10 @@ import utils from '@/redux/api/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {CartModelState} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
-import AppSvgIcon from '@/components/AppSvgIcon';
-import AppStyledText from '@/components/AppStyledText';
 import AppText from './AppText';
 import {RootState} from '@/redux';
+import {ProductModelState} from '@/redux/modules/product';
+import {RkbProduct} from '@/redux/api/productApi';
 
 const {width} = Dimensions.get('window');
 
@@ -65,16 +65,6 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontSize: isDeviceSize('small') ? 14 : 16,
   },
-  productPriceTitle: {
-    ...appStyles.normal16Text,
-    lineHeight: 36,
-    letterSpacing: 0.26,
-    fontWeight: 'normal',
-    fontSize: isDeviceSize('small') ? 14 : 16,
-    maxWidth: '70%',
-    // flexDirection: 'row',
-    // flexWrap: 'wrap'
-  },
   esimInfo: {
     ...appStyles.normal14Text,
     color: colors.clearBlue,
@@ -94,63 +84,81 @@ export type PaymentItemMode = 'method' | 'result';
 const PaymentItem0 = ({
   style,
   title,
-  titleStyle,
   value,
   valueStyle,
   mode,
+  prod,
+  qty,
 }: {
   title: string;
   value: string;
   mode?: PaymentItemMode;
   style?: StyleProp<ViewStyle>;
-  titleStyle?: StyleProp<TextStyle>;
   valueStyle?: StyleProp<TextStyle>;
+  prod?: RkbProduct;
+  qty: number;
 }) => {
+  console.log('@@@ prod', prod);
+
   return (
-    <View style={style || styles.row} key={title}>
-      <AppText
-        key="title"
-        style={
-          titleStyle || [appStyles.normal14Text, {color: colors.warmGrey}]
-        }>
-        {title}
-      </AppText>
-      <AppText
-        key="amount"
-        style={
-          valueStyle || [
-            styles.normalText16,
-            mode === 'result' && styles.colorWarmGrey,
-          ]
-        }>
-        {value}
-      </AppText>
-    </View>
+    <>
+      <View style={style || styles.row} key="title">
+        <AppText
+          key="title"
+          style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
+          {title}
+        </AppText>
+        <AppText key="qty">{`${qty} ${i18n.t('qty')}`}</AppText>
+      </View>
+      <View style={styles.row} key="amount">
+        <AppText
+          key="desc"
+          style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
+          {prod?.field_description}
+        </AppText>
+        <AppText
+          key="amount"
+          style={
+            valueStyle || [
+              styles.normalText16,
+              mode === 'result' && styles.colorWarmGrey,
+            ]
+          }>
+          {value}
+        </AppText>
+      </View>
+    </>
   );
 };
 
 export const PaymentItem = memo(PaymentItem0);
 
-const PaymentItemInfo = ({
-  cart,
-  purchaseItems,
-  mode = 'method',
-}: {
+type PaymentItemInfoProps = {
   cart: CartModelState;
+  product: ProductModelState;
   purchaseItems: PurchaseItem[];
   mode?: PaymentItemMode;
+};
+
+const PaymentItemInfo: React.FC<PaymentItemInfoProps> = ({
+  cart,
+  product,
+  purchaseItems,
+  mode = 'method',
 }) => {
-  const {mainSubsId} = cart;
   const isRecharge = useMemo(
     () => purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
     [purchaseItems],
   );
 
-  const isImmediateOrder =
-    mainSubsId ||
-    purchaseItems.findIndex((item) =>
-      ['add_on_product', 'rch'].includes(item.type),
-    ) >= 0;
+  const isImmediateOrder = useMemo(
+    () =>
+      cart.mainSubsId ||
+      purchaseItems.findIndex((item) =>
+        ['add_on_product', 'rch'].includes(item.type),
+      ) >= 0,
+    [cart.mainSubsId, purchaseItems],
+  );
 
   return (
     <View>
@@ -167,58 +175,33 @@ const PaymentItemInfo = ({
           !isRecharge && styles.borderBottomGrey,
         ]}>
         {purchaseItems.map((item) => {
-          const [qty, price] =
+          const price =
             item.qty === undefined
-              ? ['', item.price]
-              : [
-                  ` × ${item.qty}`,
-                  utils.toCurrency(
-                    Math.round(item.price.value * item.qty * 100) / 100,
-                    item.price.currency,
-                  ),
-                ];
+              ? item.price
+              : utils.toCurrency(
+                  Math.round(item.price.value * item.qty * 100) / 100,
+                  item.price.currency,
+                );
           return (
             <PaymentItem
               key={item.key}
-              titleStyle={styles.productPriceTitle}
-              title={item.title + qty}
+              title={item.title}
               valueStyle={[
                 styles.normalText16,
                 mode === 'result' && styles.colorWarmGrey,
               ]}
+              qty={item.qty}
               value={utils.price(price)}
+              prod={product.prodList.get(item.key)}
             />
           );
         })}
       </View>
-
-      {mode !== 'result' && esimApp && !isImmediateOrder && (
-        <View
-          style={{
-            flexDirection: 'row',
-            marginHorizontal: 20,
-            marginTop: 20,
-            backgroundColor: colors.backGrey,
-            padding: 20,
-          }}>
-          <AppSvgIcon
-            name="bannerCheckBlue"
-            style={{
-              marginRight: 8,
-              justifyContent: 'center',
-            }}
-          />
-          <AppStyledText
-            text={i18n.t('pym:esimInfo')}
-            textStyle={styles.esimInfo}
-            format={{b: styles.esimInfoBold}}
-          />
-        </View>
-      )}
     </View>
   );
 };
 
-export default connect(({cart}: RootState) => ({
+export default connect(({cart, product}: RootState) => ({
   cart,
+  product,
 }))(memo(PaymentItemInfo));

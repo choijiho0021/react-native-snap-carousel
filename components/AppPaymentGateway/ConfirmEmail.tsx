@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
     marginBottom: isDeviceSize('small') ? 10 : 20,
     marginHorizontal: 20,
     color: colors.black,
+    flex: 1,
   },
   oldEmail: {
     height: 46,
@@ -42,6 +43,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     paddingHorizontal: 20,
+    alignItems: 'center',
   },
 });
 

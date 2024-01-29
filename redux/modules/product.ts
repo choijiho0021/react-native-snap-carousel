@@ -6,10 +6,8 @@ import {Map as ImmutableMap} from 'immutable';
 import moment from 'moment';
 import {API, Country} from '@/redux/api';
 import {
-  addonOptionType,
   Currency,
   DescData,
-  ProdDesc,
   RkbLocalOp,
   RkbProdByCountry,
   RkbProduct,

@@ -158,11 +158,7 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
         style={{flex: 1}}
         behavior={isIOS ? 'padding' : undefined}>
         <ScreenHeader title={i18n.t('set:changeMail')} />
-        <View
-          style={{
-            padding: 20,
-            flex: 1,
-          }}>
+        <View style={{padding: 20, flex: 1}}>
           <AppText style={styles.title}>{i18n.t('changeEmail:using')}</AppText>
           <View style={styles.oldEmail}>
             <AppText style={styles.oldEmailText}>{email}</AppText>
