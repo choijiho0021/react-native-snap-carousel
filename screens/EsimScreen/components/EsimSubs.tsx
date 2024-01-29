@@ -28,6 +28,7 @@ import {
   AddOnOptionType,
   isDisabled,
   RkbSubscription,
+  STATUS_ACTIVE,
   STATUS_EXPIRED,
   STATUS_PENDING,
   STATUS_RESERVED,
