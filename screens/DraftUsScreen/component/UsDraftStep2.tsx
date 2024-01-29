@@ -106,7 +106,7 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
           formData.append('image', {
             uri: image.path,
             type: image.mime,
-            name: `${account.mobile}.jpg`,
+            name: `App_${account.mobile}.jpg`,
           });
 
           await extractFromImage(formData);
