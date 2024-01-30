@@ -42,10 +42,10 @@ const defaultReturn = (resp) => {
 };
 
 export const getLastExpireDate = (sub: RkbSubscription) => {
-  // TODO : 서버에서 HT일땐 타임존 EST 붙여서 주도록 변경하기, 지금은 +00:00
   const lastExpireDate = isHt(sub)
-    ? moment(`${sub?.activationDate?.toString().slice(0, 10)}T23:59:59-05:00`)
+    ? moment(sub?.activationDate)
         ?.add(Number(sub?.prodDays) - 1, 'days')
+        .endOf('day')
         .format()
     : sub?.lastExpireDate;
 
