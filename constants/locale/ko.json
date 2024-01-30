@@ -1132,6 +1132,10 @@
   "prodDetail:copy": "APN이 복사되었습니다.",
   "prodDetail:qtyLimit": "구매 수량이 주문당 1개로 제한된 상품입니다.",
 
+  "prodDetail:body:top:title": "사용 가능 지역 및 통신사 확인하기",
+  "prodDetail:body:top:apn": "APN : ",
+  "prodDetail:body:top:go:apn": "국가별 APN 보러가기",
+
   "prodDetail:copy:product": "상품 링크가 복사되었습니다.",
   "prodDetailOp:title": "사용 가능 지역 및 통신사 확인하기",
   "prodDetailOp:subTitle": "해당 국가를 클릭하면 APN 정보가 보여요!",

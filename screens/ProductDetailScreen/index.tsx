@@ -14,7 +14,6 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {WebViewMessageEvent} from 'react-native-webview';
 import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import analytics, {firebase} from '@react-native-firebase/analytics';
@@ -25,6 +24,8 @@ import {
   TrackingStatus,
 } from 'react-native-tracking-transparency';
 import {ScrollView} from 'react-native-gesture-handler';
+import BeautifulSoup from 'beautiful-soup-js';
+import {SoupElement} from 'beautiful-soup-js/build/es/main/SoupElement';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
@@ -60,9 +61,9 @@ import ShareLinkModal from './components/ShareLinkModal';
 import AppStyledText from '@/components/AppStyledText';
 import ChargeInfoModal from './components/ChargeInfoModal';
 import TextWithDot from '../EsimScreen/components/TextWithDot';
-import BodyHtml from './components/BodyHtml';
 import TextWithCheck from '../HomeScreen/component/TextWithCheck';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
+import AppCopyBtn from '@/components/AppCopyBtn';
 
 const {esimGlobal, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -287,6 +288,28 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: colors.white,
   },
+  dotBlack: {
+    ...appStyles.bold14Text,
+    marginHorizontal: 5,
+    lineHeight: 16,
+    color: colors.black,
+  },
+  noticeTextBlackWithDot: {
+    ...appStyles.normal14Text,
+    lineHeight: 18,
+    color: colors.warmGrey,
+    marginRight: 20,
+  },
+  noticeTextBlack: {
+    ...appStyles.normal14Text,
+    lineHeight: 18,
+    color: colors.warmGrey,
+  },
+  noticeTextBlackBold: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 18,
+    color: colors.black,
+  },
   noticeText: {
     ...appStyles.normal14Text,
     lineHeight: 20,
@@ -385,6 +408,117 @@ const styles = StyleSheet.create({
     ...appStyles.semiBold14Text,
     lineHeight: 22,
     color: colors.warmGrey,
+  },
+  bodyTop: {
+    paddingVertical: 56,
+    paddingHorizontal: 20,
+    backgroundColor: colors.white,
+  },
+  bodyTopTitle: {
+    ...appStyles.medium20,
+    lineHeight: 22,
+    color: colors.black,
+  },
+  bodyTopBox: {
+    borderColor: colors.lightGrey,
+    borderWidth: 1,
+    borderRadius: 3,
+    padding: 20,
+    marginVertical: 16,
+  },
+  bodyTopBoxCountry: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 22,
+    color: colors.black,
+    marginBottom: 4,
+  },
+  bodyTopBoxTel: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 22,
+    color: colors.clearBlue,
+  },
+  multiApn: {
+    paddingVertical: 9,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  apnButton: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 4,
+    alignItems: 'center',
+  },
+  apnButtonText: {
+    ...appStyles.medium14,
+    letterSpacing: 0.23,
+    color: colors.clearBlue,
+  },
+  tplInfo: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8,
+    marginBottom: 16,
+  },
+  apnSetBox: {
+    marginTop: 40,
+  },
+  apnSetBoxTop: {
+    borderTopLeftRadius: 3,
+    borderTopRightRadius: 3,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  apnCopy: {
+    padding: 20,
+    backgroundColor: colors.whiteTwo,
+    borderBottomLeftRadius: 3,
+    borderBottomRightRadius: 3,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.lightGrey,
+    borderRightColor: colors.lightGrey,
+    borderLeftColor: colors.lightGrey,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  apnBoxTitle: {
+    ...appStyles.normal18Text,
+    lineHeight: 22,
+    color: colors.white,
+  },
+  apnInfo: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  underline: {
+    borderBottomColor: colors.black,
+    borderBottomWidth: 1,
+    paddingBottom: 1,
+  },
+  apnPrefix: {
+    ...appStyles.normal16Text,
+    lineHeight: 24,
+    color: colors.warmGrey,
+    paddingBottom: 1,
+  },
+  apnInfoText: {
+    ...appStyles.bold16Text,
+    lineHeight: 24,
+    color: colors.black,
+  },
+  goToApnText: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 24,
+    color: colors.black,
   },
 });
 
@@ -522,56 +656,27 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   }, []);
 
   const onMessage = useCallback(
-    (event: WebViewMessageEvent) => {
-      const [key, value] = event.nativeEvent.data.split(',');
-      const k = route.params?.item?.key;
-
+    (key: string, value?: string) => {
       switch (key) {
-        case 'showButton':
-          setShowWebModal(false);
-          break;
-        case 'hideButton':
-          setShowModal(false);
-          setShowWebModal(true);
-          break;
-
-        case 'moveToPage':
-          if (value) {
-            action.info.getItem(value).then(({payload: item}) => {
-              if (item?.title && item?.body) {
-                navigation.navigate('SimpleText', {
-                  key: 'noti',
-                  title: i18n.t('set:noti'),
-                  bodyTitle: item?.title,
-                  body: item?.body,
-                  mode: 'html',
-                });
-              } else {
-                AppAlert.error(i18n.t('info:init:err'));
-              }
-            });
-          }
-          break;
         case 'moveToFaq':
-          if (value) {
-            const moveTo = value.split('/');
-            navigation.navigate('Faq', {
-              key: `${moveTo[0]}.${Platform.OS}`,
-              num: moveTo[1],
-            });
-          }
+          navigation.navigate('Faq', {
+            key: `general.${Platform.OS}`,
+            num: '02',
+          });
           break;
         case 'copy':
-          Clipboard.setString(value);
-          setShowSnackBar({text: i18n.t('prodDetail:copy'), visible: true});
+          if (value) {
+            Clipboard.setString(value);
+            setShowSnackBar({text: i18n.t('prodDetail:copy'), visible: true});
+          }
+
           break;
         case 'apn':
-          if (k)
-            if (descData?.desc?.apn)
-              navigation.navigate('ProductDetailOp', {
-                title: route.params?.title,
-                apn: descData?.desc?.apn,
-              });
+          if (descData?.desc?.apn)
+            navigation.navigate('ProductDetailOp', {
+              title: route.params?.title,
+              apn: descData?.desc?.apn,
+            });
 
           break;
         // 기본적으로 화면 크기 가져오도록 함
@@ -580,13 +685,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           break;
       }
     },
-    [
-      action.info,
-      descData?.desc?.apn,
-      navigation,
-      route.params?.item?.key,
-      route.params?.title,
-    ],
+    [descData?.desc?.apn, navigation, route.params?.title],
   );
 
   const renderTopInfo = useCallback(
@@ -734,7 +833,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
                 ),
               },
               {
-                icon: prod?.hotspot ? 'iconWifi' : 'conWifiOff',
+                icon: prod?.hotspot ? 'iconWifi' : 'iconWifiOff',
                 text: i18n.t(
                   `prodDetail:icon:${prod?.hotspot ? 'wifi' : 'wifiOff'}`,
                 ),
@@ -1169,6 +1268,161 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     onPressBtnPurchase,
   ]);
 
+  const renderTplInfo = useCallback(
+    (t: {class: string; tag: string; text: string}) => {
+      return t.class === 'txt_dot' ? (
+        <TextWithDot
+          key={t.text}
+          text={t.text}
+          boldStyle={styles.noticeTextBlackBold}
+          textStyle={styles.noticeTextBlackWithDot}
+          dotStyle={styles.dotBlack}
+        />
+      ) : (
+        <AppStyledText
+          text={t.text}
+          textStyle={styles.noticeTextBlack}
+          format={{b: styles.noticeTextBlackBold}}
+        />
+      );
+    },
+    [],
+  );
+
+  const attachBTag = useCallback((el: SoupElement, orgText: string) => {
+    const boldList: string[] = el?.contents.reduce((acc: string[], cur) => {
+      const text = cur.getText();
+      if (text !== '') {
+        acc.push(text);
+      }
+      return acc;
+    }, []);
+
+    return boldList.reduce((acc, cur) => {
+      const regex = new RegExp(`(${cur})`, 'g');
+      return acc.replace(regex, '<b>$1</b>');
+    }, orgText);
+  }, []);
+
+  const renderBodyTop = useCallback(() => {
+    const soup = new BeautifulSoup(
+      `<html><body>${descData?.body}</body></html>`,
+    );
+    const tplInfoTags = soup?.find({attrs: {class: 'tpl_info'}});
+    const tplList =
+      tplInfoTags?.contents.length > 1
+        ? tplInfoTags?.contents.map((c) => ({
+            class: c.attrs?.class,
+            tag: c.name,
+            text: attachBTag(c, c.getText()),
+          }))
+        : [
+            {
+              class: tplInfoTags.contents[0].attrs?.class,
+              tag: tplInfoTags.name,
+              text: attachBTag(tplInfoTags.contents[0], tplInfoTags.getText()),
+            },
+          ];
+
+    const apnList = descData?.desc?.apn?.split(',');
+    const apnInfo = apnList?.[0]?.split('/');
+
+    return (
+      <View style={styles.bodyTop}>
+        <AppText style={styles.bodyTopTitle}>
+          {i18n.t('prodDetail:body:top:title')}
+        </AppText>
+        {apnList &&
+          apnInfo &&
+          (apnList?.length > 1 ? (
+            <Pressable
+              style={styles.bodyTopBox}
+              onPress={() => onMessage('apn')}>
+              <View style={styles.multiApn}>
+                <AppText style={styles.bodyTopBoxCountry}>
+                  {prod?.name
+                    .split(' ')
+                    .filter((item) => !/(무제한|종량제|\d+일)/.test(item))
+                    .join(' ')}
+                </AppText>
+                <View style={styles.apnButton}>
+                  <AppText style={styles.apnButtonText}>
+                    {i18n.t('pym:detail')}
+                  </AppText>
+                  <AppIcon name="arrowRightBlue10" />
+                </View>
+              </View>
+            </Pressable>
+          ) : (
+            <View style={styles.bodyTopBox}>
+              <AppText style={styles.bodyTopBoxCountry}>{apnInfo[0]}</AppText>
+              <AppText style={styles.bodyTopBoxTel}>
+                {apnInfo[1].replace('&amp;', ' • ')}
+              </AppText>
+            </View>
+          ))}
+        {tplList && tplList.length > 0 && !!tplList[0].text && (
+          <View style={styles.tplInfo}>
+            {tplList.map((t) => renderTplInfo(t))}
+          </View>
+        )}
+        <View style={styles.apnSetBox}>
+          <View
+            style={[
+              styles.apnSetBoxTop,
+              {
+                backgroundColor:
+                  prod?.field_daily === 'daily'
+                    ? colors.purpleishBlue
+                    : colors.violet,
+              },
+            ]}>
+            <AppIcon name="apn" />
+            <AppText style={styles.apnBoxTitle}>{i18n.t('store:apn')}</AppText>
+          </View>
+        </View>
+        {apnList &&
+          apnInfo &&
+          (apnList?.length > 1 ? (
+            <Pressable
+              style={[styles.apnCopy, {backgroundColor: colors.white}]}
+              onPress={() => onMessage('apn')}>
+              <AppText style={styles.goToApnText}>
+                {i18n.t('prodDetail:body:top:go:apn')}
+              </AppText>
+              <AppIcon name="iconArrowRightBlack10" />
+            </Pressable>
+          ) : (
+            <View style={styles.apnCopy}>
+              <View style={styles.apnInfo}>
+                <AppText style={styles.apnPrefix}>
+                  {i18n.t('prodDetail:body:top:apn')}
+                </AppText>
+                <View style={styles.underline}>
+                  <AppText style={styles.apnInfoText}>{apnInfo[2]}</AppText>
+                </View>
+              </View>
+              <AppCopyBtn
+                title={i18n.t('copy')}
+                onPress={() => onMessage('copy', apnInfo[2])}
+              />
+            </View>
+          ))}
+      </View>
+    );
+  }, [
+    descData?.body,
+    descData?.desc?.apn,
+    onMessage,
+    prod?.field_daily,
+    prod?.name,
+    renderTplInfo,
+  ]);
+
+  const renderBody = useCallback(() => {
+    return <View>{renderBodyTop()}</View>;
+  }, [renderBodyTop]);
+
   return (
     <SafeAreaView style={styles.screen}>
       <View
@@ -1195,9 +1449,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
       <ScrollView style={{flex: 1}}>
         {renderProdDetail()}
-        {descData?.body && (
-          <BodyHtml body={descData.body} onMessage={onMessage} />
-        )}
+        {descData?.body && renderBody()}
       </ScrollView>
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       {purchaseButtonTab()}

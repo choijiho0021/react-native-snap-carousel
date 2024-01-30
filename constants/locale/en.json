@@ -1040,6 +1040,11 @@
   "prodDetail:KakaoPlus": "Ask via KakaoTalk Plus like a friend!",
   "prodDetail:FacebookMessage": "Ask via Facebook message like a friend!",
   "prodDetail:copy": "Copied",
+
+  "prodDetail:body:top:title": "사용 가능 지역 및 통신사 확인하기",
+  "prodDetail:body:top:apn": "APN : ",
+  "prodDetail:body:top:go:apn": "국가별 APN 보러가기",
+
   "prodDetailOp:title": "Check available locations and service providers",
   "prodDetailOp:subTitle": "Select a specific country to show APN details!",
   "prodDetailOp:search": "Search countries",

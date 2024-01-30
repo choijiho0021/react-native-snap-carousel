@@ -392,7 +392,14 @@ const slice = createSlice({
       if (result === 0) {
         state.descData = state.descData.merge(
           ImmutableMap({
-            [objects.uuid]: objects,
+            [objects.uuid]: {
+              ...objects,
+              body: objects?.body
+                ?.replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&amp;/g, '&'),
+            },
           }),
         );
       }

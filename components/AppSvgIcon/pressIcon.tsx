@@ -1452,6 +1452,21 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  iconArrowRightBlack10: [
+    <Svg
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M4.5.5 9 5 4.5 9.5"
+        stroke="#2C2C2C"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
   iconArrowRightBlack: [
     <Svg
       width="10"
@@ -5090,6 +5105,36 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         fillRule="evenodd"
         clipRule="evenodd"
         d="m15.796 14.095-1.131 1.132c-.319.319-.814.39-1.189.138a10.448 10.448 0 0 1-2.836-2.838c-.252-.374-.182-.87.136-1.189l1.132-1.131c.479-.48.479-1.257 0-1.737l-2.11-2.11a1.226 1.226 0 0 0-1.735 0l-1.31 1.31-.39.39a1.212 1.212 0 0 0-.346 1.06c.09.512.207 1.016.356 1.506a13.496 13.496 0 0 0 8.977 8.98c.5.153 1.011.28 1.533.376a1.21 1.21 0 0 0 1.065-.347l.71-.709.982-.984c.48-.48.48-1.257 0-1.736l-2.109-2.11a1.227 1.227 0 0 0-1.735 0z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
+  arrowRightBlue10: [
+    <Svg
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M4.5.5 9 5 4.5 9.5"
+        stroke="#2A7FF6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+  ],
+  apn: [
+    <Svg
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M18 2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V2zM3 3.959a1 1 0 0 1 1.04-.958C9.984 3.244 14.757 8.017 15 13.959a1 1 0 1 1-2 .082A9.445 9.445 0 0 0 3.96 4.999a1 1 0 0 1-.958-1.04zm1.058 3.043a1 1 0 0 0-.116 1.996 5.387 5.387 0 0 1 5.06 5.06 1 1 0 1 0 1.996-.116 7.387 7.387 0 0 0-6.94-6.94zm.052 4.004a1 1 0 0 0-.22 1.988 1.267 1.267 0 0 1 1.116 1.116 1 1 0 0 0 1.988-.22 3.267 3.267 0 0 0-2.884-2.884z"
         fill="#fff"
       />
     </Svg>,
