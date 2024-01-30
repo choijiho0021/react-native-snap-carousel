@@ -57,9 +57,8 @@ export const isDisabled = (item: RkbSubscription) => {
   return (
     item.giftStatusCd === 'S' ||
     (item.partner === 'ht' &&
-      moment(item.activationDate)
-        ?.add(item.prodDays, 'days')
-        .isBefore(moment())) ||
+      item?.lastExpireDate &&
+      item.lastExpireDate.isBefore(moment())) ||
     (item?.cnt > 1
       ? item.lastExpireDate && item.lastExpireDate.isBefore(moment())
       : item.expireDate && item.expireDate.isBefore(moment()))
