@@ -4,6 +4,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
+import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
@@ -15,6 +16,11 @@ import ProductDetailInfo from './component/ProductDetailInfo';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {OrderModelState, isExpiredDraft} from '@/redux/modules/order';
 import AppIcon from '@/components/AppIcon';
+import {
+  AccountAction,
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const styles = StyleSheet.create({
@@ -70,6 +76,11 @@ type CancelResultScreenProps = {
   navigation: CancelResultScreenNavigationProp;
   route: CancelResultScreenRouteProp;
   order: OrderModelState;
+
+  account: AccountModelState;
+  action: {
+    account: AccountAction;
+  };
 };
 
 export type ProdDesc = {
@@ -84,6 +95,8 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
   navigation,
   route,
   order,
+  account,
+  action,
 }) => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [prods, setProds] = useState<ProdDesc[]>([]);
@@ -106,7 +119,10 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
       return true;
     },
   });
+
   useEffect(() => {
+    console.log('@@@@ 이거 호출 여러번 하나?');
+
     if (!route?.params?.orderId) return;
 
     setIsSuccess(route?.params?.isSuccess);
@@ -195,6 +211,11 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
           type="primary"
           title={i18n.t('his:cancelOrderButton')}
           onPress={() => {
+            action.account.getAccount({
+              iccid: account.iccid,
+              token: account.token,
+            });
+
             navigation.navigate('PurchaseDetail', {
               orderId: orderResult?.orderId,
             });
@@ -205,7 +226,15 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
   );
 };
 
-export default connect(({order}: RootState) => ({
-  order,
-  pending: false,
-}))(CancelResultScreen);
+export default connect(
+  ({account, order}: RootState) => ({
+    account,
+    order,
+    pending: false,
+  }),
+  (dispatch) => ({
+    action: {
+      account: bindActionCreators(accountActions, dispatch),
+    },
+  }),
+)(CancelResultScreen);
