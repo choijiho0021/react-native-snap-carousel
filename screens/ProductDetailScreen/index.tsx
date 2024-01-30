@@ -463,6 +463,7 @@ const styles = StyleSheet.create({
   },
   apnSetBox: {
     marginTop: 40,
+    marginBottom: 16,
   },
   apnSetBoxTop: {
     borderTopLeftRadius: 3,
@@ -1380,44 +1381,47 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             <AppIcon name="apn" />
             <AppText style={styles.apnBoxTitle}>{i18n.t('store:apn')}</AppText>
           </View>
-        </View>
-        {apnList &&
-          apnInfo &&
-          (apnList?.length > 1 ? (
-            <Pressable
-              style={[styles.apnCopy, {backgroundColor: colors.white}]}
-              onPress={() => onMessage('apn')}>
-              <AppText style={styles.goToApnText}>
-                {i18n.t('prodDetail:body:top:go:apn')}
-              </AppText>
-              <AppIcon name="iconArrowRightBlack10" />
-            </Pressable>
-          ) : (
-            <View style={styles.apnCopy}>
-              <View style={styles.apnInfo}>
-                <AppText style={styles.apnPrefix}>
-                  {i18n.t('prodDetail:body:top:apn')}
+
+          {apnList &&
+            apnInfo &&
+            (apnList?.length > 1 ? (
+              <Pressable
+                style={[styles.apnCopy, {backgroundColor: colors.white}]}
+                onPress={() => onMessage('apn')}>
+                <AppText style={styles.goToApnText}>
+                  {i18n.t('prodDetail:body:top:go:apn')}
                 </AppText>
-                <View style={styles.underline}>
-                  <AppText style={styles.apnInfoText}>{apnInfo[2]}</AppText>
+                <AppIcon name="iconArrowRightBlack10" />
+              </Pressable>
+            ) : (
+              <View style={styles.apnCopy}>
+                <View style={styles.apnInfo}>
+                  <AppText style={styles.apnPrefix}>
+                    {i18n.t('prodDetail:body:top:apn')}
+                  </AppText>
+                  <View style={styles.underline}>
+                    <AppText style={styles.apnInfoText}>{apnInfo[2]}</AppText>
+                  </View>
                 </View>
+                <AppCopyBtn
+                  title={i18n.t('copy')}
+                  onPress={() => onMessage('copy', apnInfo[2])}
+                />
               </View>
-              <AppCopyBtn
-                title={i18n.t('copy')}
-                onPress={() => onMessage('copy', apnInfo[2])}
-              />
-            </View>
-          ))}
+            ))}
+        </View>
+        {[1, 2].map((i) => (
+          <TextWithDot
+            key={`prodDetail:body:top:apn:notice${i}`}
+            text={i18n.t(`prodDetail:body:top:apn:notice${i}`)}
+            boldStyle={styles.noticeTextBlackBold}
+            textStyle={styles.noticeTextBlackWithDot}
+            dotStyle={styles.dotBlack}
+          />
+        ))}
       </View>
     );
-  }, [
-    descData?.body,
-    descData?.desc?.apn,
-    onMessage,
-    prod?.field_daily,
-    prod?.name,
-    renderTplInfo,
-  ]);
+  }, [attachBTag, descData, onMessage, prod, renderTplInfo]);
 
   const renderBody = useCallback(() => {
     return <View>{renderBodyTop()}</View>;
