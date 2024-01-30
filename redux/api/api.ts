@@ -79,6 +79,7 @@ const path = {
   cart: 'cart',
   uploadFile: 'file/upload',
   board: 'json/contactboard',
+  boardSearch: 'json/contactboard/search',
   eventBoard: 'json/event/board',
   subscription: 'json/subs/more',
   storeSubs: 'json/store',

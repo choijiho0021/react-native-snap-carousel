@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     height: 288,
     paddingTop: 40,
     paddingBottom: 32,
-    paddingLeft: 20,
+    paddingHorizontal: 20,
   },
   titleTop: {
     display: 'flex',
@@ -429,7 +429,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     [route.params?.item],
   );
 
-  const prod = useMemo(() => route.params?.prod, [route.params?.prod]);
+  const prod = useMemo(() => {
+    return route.params?.prod || product.prodList.get(route.params?.uuid || '');
+  }, [product.prodList, route.params?.prod, route.params?.uuid]);
   const noFup = useMemo(
     () => prod?.fup === 'N/A' || prod?.fup === '0',
     [prod?.fup],
@@ -448,8 +450,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [showCallDetail, setShowCallDetail] = useState(false);
   const dispatch = useDispatch();
   const descData: DescData = useMemo(
-    () => product.descData.get(prod?.key),
-    [prod?.key, product.descData],
+    () => product.descData.get(prod?.key || route.params?.uuid),
+    [prod?.key, product.descData, route.params?.uuid],
   );
 
   const isht = useMemo(
@@ -467,9 +469,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   });
 
   useEffect(() => {
-    if (!product.descData.get(prod?.key))
-      dispatch(productAction.getProdDesc(prod.key));
-  }, [dispatch, prod, product.descData]);
+    if (!product.descData.get(prod?.key || route.params?.uuid))
+      dispatch(productAction.getProdDesc(prod?.key || route.params?.uuid));
+  }, [dispatch, prod, product.descData, route.params?.uuid]);
 
   useEffect(() => {
     getTrackingStatus().then((elm) => setStatus(elm));
@@ -941,7 +943,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     return (
       prod &&
       descData && (
-        <ScrollView style={{flex: 1}}>
+        <View>
           {renderTopInfo(isDaily, volume, volumeUnit)}
           {renderSixIcon(isDaily, volume, volumeUnit)}
           {(noticeList.length > 0 || cautionList.length > 0) &&
@@ -950,13 +952,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             ftr &&
             ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(clMtd) &&
             renderCallMethod(clMtd)}
-          <BodyHtml body={descData.body} onMessage={onMessage} />
-        </ScrollView>
+        </View>
       )
     );
   }, [
     descData,
-    onMessage,
     prod,
     renderCallMethod,
     renderNotice,
@@ -1179,7 +1179,12 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         )}
       </View>
 
-      <View style={{flex: 1}}>{renderProdDetail()}</View>
+      <ScrollView style={{flex: 1}}>
+        {renderProdDetail()}
+        {descData?.body && (
+          <BodyHtml body={descData.body} onMessage={onMessage} />
+        )}
+      </ScrollView>
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       {purchaseButtonTab()}
 

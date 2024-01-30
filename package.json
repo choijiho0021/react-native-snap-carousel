@@ -93,7 +93,6 @@
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-linear-gradient": "^2.6.2",
     "react-native-localize": "^2.1.4",
-    "react-native-mlkit-ocr": "^0.3.0",
     "react-native-pager-view": "6.2.0",
     "react-native-pagination": "^1.5.5",
     "react-native-permissions": "3.6.0",

@@ -63,6 +63,7 @@ type EsimModalProps = {
   onCancelClose?: () => void;
   dataUsage: any;
   dataStatus: any;
+  dataUsageOption: any;
   usageLoading: boolean;
   isChargeableData: boolean;
 };
@@ -73,6 +74,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
   onCancelClose,
   dataUsage,
   dataStatus,
+  dataUsageOption,
   usageLoading,
   isChargeableData,
 }) => {
@@ -94,6 +96,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
           usageLoading={usageLoading}
           usage={dataUsage}
           dataStatusCd={statusCd}
+          dataUsageOption={dataUsageOption}
           endTime={dataStatus?.endTime}
         />
       )

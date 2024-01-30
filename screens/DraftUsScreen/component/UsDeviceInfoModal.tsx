@@ -54,9 +54,9 @@ const UsDeviceInfoModal: React.FC<UsDeviceInfoModalProps> = ({
 }) => {
   const modalTitle = useMemo(() => {
     return (
-      <View style={{marginBottom: 24}}>
+      <View style={{marginBottom: 24, height: 100}}>
         <AppText style={appStyles.bold24Text}>
-          {'잠깐! 사용 가능한\nSIM인지 확인해주세요.'}
+          {i18n.t('us:device:modal:title')}
         </AppText>
       </View>
     );

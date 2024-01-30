@@ -7,7 +7,7 @@ import {RkbFile} from './accountApi';
 import {SocialAuthInfo} from '@/components/SocialLogin';
 import Env from '@/environment';
 
-const {cachePrefix} = Env.get();
+const {cachePrefix, webViewHost} = Env.get();
 
 const KEY_ICCID = `${cachePrefix}account.iccid`;
 
@@ -477,6 +477,16 @@ const confirmEmail = ({
   );
 };
 
+const extractBarcodes = async (formData: FormData) => {
+  return api.callHttp(`${webViewHost}/ocr`, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+};
+
 const resign = async (
   {uid = 0, token}: {uid?: number; token?: string},
   reason?: string,
@@ -524,4 +534,5 @@ export default {
   socialLogin,
   resign,
   registeRecommender,
+  extractBarcodes,
 };

@@ -32,6 +32,9 @@ import {
   UsageObj,
   Usage,
   AddOnOptionType,
+  UsageOptionObj,
+  STATUS_USED,
+  STATUS_EXPIRED,
 } from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
@@ -239,6 +242,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [isPressClose, setIsPressClose] = useState(false);
   const [dataUsage, setDataUsage] = useState({});
   const [dataStatus, setDataStatus] = useState({});
+  const [dataUsageOption, setDataUsageOption] = useState({});
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [showUsageSubsId, setShowUsageSubsId] = useState<string | undefined>();
   const isFocused = useIsFocused();
@@ -251,9 +255,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [subsData, firstUsedIdx] = useMemo(
     () => {
       const list = order.subs?.filter((elm) =>
-        isEditMode ? elm.statusCd === 'U' : !elm.hide,
+        isEditMode
+          ? [STATUS_USED, STATUS_EXPIRED].includes(elm.statusCd)
+          : !elm.hide,
       );
-      return [list, list.findIndex((o) => o.statusCd === 'U')];
+      return [list, list.findIndex((o) => o.statusCd === STATUS_USED)];
     }, // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨길 수 없도록 한다.
     [isEditMode, order.subs],
   );
@@ -309,7 +315,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const checkCmiData = useCallback(
     async (
       item: RkbSubscription,
-    ): Promise<{status: StatusObj; usage: UsageObj}> => {
+    ): Promise<{
+      status: StatusObj;
+      usage: UsageObj;
+      usageOption: UsageOptionObj;
+    }> => {
       if (item?.subsIccid && item?.packageId) {
         const {result, objects} = await API.Subscription.cmiGetSubsUsage({
           iccid: item?.subsIccid,
@@ -326,6 +336,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           used: undefined,
           remain: undefined,
           totalUsed: undefined,
+        },
+        usageOption: {
+          mode: ['stu', 'usa', 'end'],
         },
       };
     },
@@ -350,6 +363,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           remain: undefined,
           totalUsed: undefined,
         },
+        usageOption: {
+          mode: ['stu', 'usa', 'end'],
+        },
       };
     },
     [],
@@ -358,7 +374,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const checkBcData = useCallback(
     async (
       item: RkbSubscription,
-    ): Promise<{status: StatusObj; usage: UsageObj}> => {
+    ): Promise<{
+      status: StatusObj;
+      usage: UsageObj;
+      usageOption: UsageOptionObj;
+    }> => {
       if (item?.subsIccid) {
         const {result, objects} = await API.Subscription.bcGetSubsUsage({
           subsIccid: item.subsIccid,
@@ -376,6 +396,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           remain: undefined,
           totalUsed: undefined,
         },
+        usageOption: {
+          mode: ['stu', 'usa', 'end'],
+        },
       };
     },
     [],
@@ -386,7 +409,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       setUsageLoading(true);
       setSubs(item);
 
-      let result = {status: {}, usage: {}};
+      let result = {status: {}, usage: {}, usageOption: {}};
       switch (item.partner) {
         case 'cmi':
         case 'cmi2':
@@ -409,6 +432,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
                 ?.endOf('day'),
             },
             usage: {quota: 0, used: 0, remain: 0, totalUsed: 0},
+            usageOption: {
+              mode: ['end'],
+            },
           };
           break;
         default:
@@ -419,6 +445,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       setIsChargeable(isChargeableParam!);
       setDataStatus(result.status);
       setDataUsage(result.usage);
+      setDataUsageOption(result.usageOption);
       setUsageLoading(false);
       return result;
     },
@@ -613,7 +640,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         mainSubs={item}
         showDetail={
           ((index === firstUsedIdx || index === selectedIdx) &&
-            item.statusCd === 'U' &&
+            item.statusCd === STATUS_USED &&
             item.purchaseDate.isAfter(days14ago)) ||
           route?.params?.subsId === item.nid
         }
@@ -837,6 +864,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         usageLoading={usageLoading}
         dataUsage={dataUsage}
         dataStatus={dataStatus}
+        dataUsageOption={dataUsageOption}
         onCancelClose={() => {
           setShowUsageModal(false);
           setDataStatus({});

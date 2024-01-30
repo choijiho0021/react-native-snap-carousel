@@ -161,7 +161,7 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
 
   useEffect(() => {
     if ((board.list.length || 0) > 0) {
-      if (mobile) {
+      if (mobile?.length > 0) {
         const number = mobile.replace(/-/g, '');
         setData(
           board.list.filter((item) => item.mobile.includes(number)) || [],
@@ -180,12 +180,16 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
     [navigation],
   );
 
-  const onSubmit = useCallback((value: string) => {
-    if (value) {
+  const onSubmit = useCallback(
+    (value: string) => {
       const number = value.replace(/-/g, '');
       setMobile(number);
-    }
-  }, []);
+
+      if (number) action.board.searchIssueList(number);
+      else if (number?.length === 0) action.board.getIssueList();
+    },
+    [action.board],
+  );
 
   // 응답 메시지 화면으로 이동한다.
   const onSubmitPin = useCallback(() => {

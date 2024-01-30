@@ -14,6 +14,7 @@ import {
   ScrollView,
   Dimensions,
   Pressable,
+  Platform,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {colors} from '@/constants/Colors';
@@ -366,43 +367,75 @@ const UserGuideScreen = () => {
             isDeviceSize('large') ? undefined : {flex: 1},
           ]}>
           <View style={{alignItems: 'center', marginBottom: 21}}>
-            <View
-              style={[
-                styles.step,
-                data.stepPreText === 'korea' && {
-                  backgroundColor: colors.dodgerBlue,
-                },
-                data.stepPreText === 'local' && {
-                  backgroundColor: colors.purplyBlue,
-                },
-              ]}>
-              <AppText style={styles.stepText}>
-                {/* eslint-disable-next-line react-native/no-raw-text */}
-                {data.stepTitle ||
-                  `${data.stepPreText ? i18n.t(data.stepPreText) : 'Step.'}${
-                    data.stepPreText ? '_' : ' '
-                  }${data.step}${isCheckLocal ? i18n.t('localNet') : ''}`}
-              </AppText>
-            </View>
-            {isCheckLocal && data.localTitle ? data.localTitle : data.title}
+            {data.stepTitle === 'Bonus' ? (
+              <>
+                <View
+                  style={[
+                    styles.step,
+                    data.stepPreText === 'korea' && {
+                      backgroundColor: colors.dodgerBlue,
+                    },
+                    data.stepPreText === 'local' && {
+                      backgroundColor: colors.purplyBlue,
+                    },
+                  ]}>
+                  <AppText style={styles.stepText}>
+                    {/* eslint-disable-next-line react-native/no-raw-text */}
+                    {data.stepTitle ||
+                      `${
+                        data.stepPreText ? i18n.t(data.stepPreText) : 'Step.'
+                      }${data.stepPreText ? '_' : ' '}${data.step}${
+                        isCheckLocal ? i18n.t('localNet') : ''
+                      }`}
+                  </AppText>
+                </View>
+                {isCheckLocal && data.localTitle ? data.localTitle : data.title}
+              </>
+            ) : (
+              <>
+                <View
+                  style={[
+                    styles.step,
+                    data.stepPreText === 'korea' && {
+                      backgroundColor: colors.dodgerBlue,
+                    },
+                    data.stepPreText === 'local' && {
+                      backgroundColor: colors.purplyBlue,
+                    },
+                  ]}>
+                  <AppText style={styles.stepText}>
+                    {/* eslint-disable-next-line react-native/no-raw-text */}
+                    {data.stepTitle ||
+                      `${
+                        data.stepPreText ? i18n.t(data.stepPreText) : 'Step.'
+                      }${data.stepPreText ? '_' : ' '}${data.step}${
+                        isCheckLocal ? i18n.t('localNet') : ''
+                      }`}
+                  </AppText>
+                </View>
+                {isCheckLocal && data.localTitle ? data.localTitle : data.title}
+              </>
+            )}
           </View>
-
-          {data.noticeBox && data.noticeBox(isCheckLocal)}
 
           {data.tip ? (
             <View
               style={
                 data.noticeBox
                   ? {marginBottom: 12}
-                  : {marginBottom: isIOS ? 21 : 38}
+                  : {marginBottom: isIOS ? 21 : data.step === 2 ? 0 : 38}
               }>
               {isCheckLocal && data.localTip ? data.localTip() : data.tip()}
             </View>
           ) : !isIOS ? (
             <View style={{height: 23}} />
+          ) : guideOption === 'checkSetting' && data.noticeBox ? (
+            <View style={{height: 0}} />
           ) : (
-            guideOption === 'checkSetting' && <View style={{height: 79}} />
+            <View style={{height: 79}} />
           )}
+
+          {data.noticeBox && data.noticeBox(isCheckLocal)}
 
           <View
             style={{

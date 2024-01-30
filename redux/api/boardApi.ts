@@ -230,6 +230,27 @@ const getByFilter = (filter, {user, pass}) => {
     }
     */
 
+const searchIssueList = ({
+  mobile,
+  token,
+  page = 0,
+}: {
+  mobile: number;
+  token?: string;
+  page?: number;
+}) => {
+  if (!token)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter:token');
+
+  return api.callHttpGet(
+    `${api.httpUrl(
+      api.path.boardSearch,
+    )}/${mobile.toString()}?_format=hal_json&page=${page}`,
+    toBoard,
+    api.withToken(token, 'vnd.api+json'),
+  );
+};
+
 const getIssueList = ({
   uid = 0,
   token,
@@ -307,6 +328,7 @@ const uploadAttachment = ({
 export default {
   statusToString,
   post,
+  searchIssueList,
   getIssueList,
   getComments,
   uploadAttachment,

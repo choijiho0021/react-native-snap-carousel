@@ -141,7 +141,7 @@ android {
         multiDexEnabled true
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
-        versionCode 145
+        versionCode 147
         versionName "1.4.5"
         multiDexEnabled true
         resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
@@ -324,7 +324,6 @@ dependencies {
 
     implementation project(':@react-native-camera-roll_camera-roll')
 
-    implementation ('com.google.mlkit:text-recognition:16.0.0')
 
 //    addUnimodulesDependencies([exclude: ['expo-file-system','expo-image-loader','expo-permissions','expo-constants']])
 }

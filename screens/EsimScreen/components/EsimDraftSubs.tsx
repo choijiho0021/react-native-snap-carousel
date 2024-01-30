@@ -135,7 +135,6 @@ const EsimDraftSubs = ({
       <Pressable
         style={styles.prodTitle}
         onPress={() => {
-          console.log('hellow');
           setShowMoreInfo((prev) => !prev);
         }}>
         <View>
@@ -151,14 +150,17 @@ const EsimDraftSubs = ({
                 numberOfLines={2}
                 ellipsizeMode="tail">
                 {`${draftOrder.orderItems[0].title} `}
+                {draftOrder.orderItems?.length > 1 && (
+                  <AppText style={styles.draftTitleSubText}>
+                    {i18n
+                      .t('esim:etcCnt')
+                      .replace(
+                        '%%',
+                        getCountItems(draftOrder?.orderItems, true),
+                      )}
+                  </AppText>
+                )}
               </AppText>
-              {draftOrder.orderItems?.length > 1 && (
-                <AppText style={styles.draftTitleSubText}>
-                  {i18n
-                    .t('esim:etcCnt')
-                    .replace('%%', getCountItems(draftOrder?.orderItems, true))}
-                </AppText>
-              )}
             </View>
           </View>
         </View>

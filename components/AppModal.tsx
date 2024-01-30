@@ -254,7 +254,6 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
           justifyContent ? {justifyContent} : undefined,
           {backgroundColor: safeAreaColor},
         ]}>
-        <Pressable onPress={() => onCancelClose()} style={{flex: 1}} />
         <View
           style={{
             alignItems: 'center',
