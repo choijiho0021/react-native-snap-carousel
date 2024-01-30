@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
     ...appStyles.bold18Text,
     marginTop: 20,
     marginBottom: isDeviceSize('small') ? 10 : 20,
-    marginHorizontal: 20,
     color: colors.black,
     flex: 1,
   },
@@ -33,6 +32,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     paddingHorizontal: 15,
     justifyContent: 'center',
+    marginHorizontal: 20,
   },
   oldEmailText: {
     ...appStyles.normal16Text,

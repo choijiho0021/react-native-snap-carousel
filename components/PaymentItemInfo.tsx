@@ -1,17 +1,9 @@
-import {
-  Dimensions,
-  StyleProp,
-  StyleSheet,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
-import React, {memo, useMemo} from 'react';
+import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
+import React, {memo, useCallback, useMemo} from 'react';
 import {connect} from 'react-redux';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
-import Env from '@/environment';
 import utils from '@/redux/api/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {CartModelState} from '@/redux/modules/cart';
@@ -21,9 +13,6 @@ import {RootState} from '@/redux';
 import {ProductModelState} from '@/redux/modules/product';
 import {RkbProduct} from '@/redux/api/productApi';
 
-const {width} = Dimensions.get('window');
-
-const {esimApp} = Env.get();
 const styles = StyleSheet.create({
   // container: {
   //   justifyContent: 'space-between',
@@ -65,18 +54,6 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontSize: isDeviceSize('small') ? 14 : 16,
   },
-  esimInfo: {
-    ...appStyles.normal14Text,
-    color: colors.clearBlue,
-    lineHeight: 20,
-    width: width - 112,
-  },
-  esimInfoBold: {
-    ...appStyles.bold14Text,
-    color: colors.clearBlue,
-    lineHeight: 20,
-    width: width - 112,
-  },
 });
 
 export type PaymentItemMode = 'method' | 'result';
@@ -96,9 +73,23 @@ const PaymentItem0 = ({
   style?: StyleProp<ViewStyle>;
   valueStyle?: StyleProp<TextStyle>;
   prod?: RkbProduct;
-  qty: number;
+  qty?: number;
 }) => {
-  console.log('@@@ prod', prod);
+  const renderAmount = useCallback(
+    () => (
+      <AppText
+        key="amount"
+        style={
+          valueStyle || [
+            styles.normalText16,
+            mode === 'result' && styles.colorWarmGrey,
+          ]
+        }>
+        {value}
+      </AppText>
+    ),
+    [mode, value, valueStyle],
+  );
 
   return (
     <>
@@ -108,25 +99,31 @@ const PaymentItem0 = ({
           style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
           {title}
         </AppText>
-        <AppText key="qty">{`${qty} ${i18n.t('qty')}`}</AppText>
+        {qty ? (
+          <AppText key="qty">{`${qty} ${i18n.t('qty')}`}</AppText>
+        ) : (
+          renderAmount()
+        )}
       </View>
-      <View style={styles.row} key="amount">
-        <AppText
-          key="desc"
-          style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
-          {prod?.field_description}
-        </AppText>
-        <AppText
-          key="amount"
-          style={
-            valueStyle || [
-              styles.normalText16,
-              mode === 'result' && styles.colorWarmGrey,
-            ]
-          }>
-          {value}
-        </AppText>
-      </View>
+      {qty ? (
+        <View style={styles.row} key="amount">
+          <AppText
+            key="desc"
+            style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
+            {prod?.field_description}
+          </AppText>
+          <AppText
+            key="amount"
+            style={
+              valueStyle || [
+                styles.normalText16,
+                mode === 'result' && styles.colorWarmGrey,
+              ]
+            }>
+            {value}
+          </AppText>
+        </View>
+      ) : null}
     </>
   );
 };
@@ -141,7 +138,6 @@ type PaymentItemInfoProps = {
 };
 
 const PaymentItemInfo: React.FC<PaymentItemInfoProps> = ({
-  cart,
   product,
   purchaseItems,
   mode = 'method',
@@ -149,15 +145,6 @@ const PaymentItemInfo: React.FC<PaymentItemInfoProps> = ({
   const isRecharge = useMemo(
     () => purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
     [purchaseItems],
-  );
-
-  const isImmediateOrder = useMemo(
-    () =>
-      cart.mainSubsId ||
-      purchaseItems.findIndex((item) =>
-        ['add_on_product', 'rch'].includes(item.type),
-      ) >= 0,
-    [cart.mainSubsId, purchaseItems],
   );
 
   return (
@@ -201,7 +188,6 @@ const PaymentItemInfo: React.FC<PaymentItemInfoProps> = ({
   );
 };
 
-export default connect(({cart, product}: RootState) => ({
-  cart,
-  product,
-}))(memo(PaymentItemInfo));
+export default connect(({product}: RootState) => ({product}))(
+  memo(PaymentItemInfo),
+);

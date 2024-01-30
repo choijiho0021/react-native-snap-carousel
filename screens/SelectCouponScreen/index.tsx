@@ -87,7 +87,7 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
   );
 
   const applyCoupon = useCallback(() => {
-    action.cart.applyCoupon(couponId);
+    action.cart.applyCoupon({couponId});
     navigation.goBack();
   }, [action.cart, couponId, navigation]);
 

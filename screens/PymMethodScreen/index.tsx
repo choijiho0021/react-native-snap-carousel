@@ -2,7 +2,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -50,6 +50,7 @@ import DiscountInfo from '@/components/AppPaymentGateway/DiscountInfo';
 import PaymentSummary from '@/components/PaymentSummary';
 import ConfirmEmail from '@/components/AppPaymentGateway/ConfirmEmail';
 import ChangeEmail from './ChangeEmail';
+import PymMethod from '@/components/AppPaymentGateway/PymMethod';
 
 const infoKey = 'pym:benefit';
 
@@ -110,10 +111,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     lineHeight: 26,
     letterSpacing: -0.5,
-  },
-  modal: {
-    flex: 1,
-    backgroundColor: 'yellow',
   },
 });
 
@@ -364,9 +361,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         <DiscountInfo onPress={() => navigation.navigate('SelectCoupon')} />
 
+        <PymMethod />
+
         <PaymentSummary mode="method" />
 
-        {cart.pymPrice?.value !== 0 ? (
+        {/* {cart.pymPrice?.value !== 0 ? (
           method()
         ) : (
           <View style={styles.result} key="result">
@@ -374,7 +373,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               {i18n.t('pym:balPurchase')}
             </AppText>
           </View>
-        )}
+        )} */}
 
         {/* 가변영역 설정 */}
         <View style={{flex: 1}} />

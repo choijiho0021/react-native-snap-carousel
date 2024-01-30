@@ -9,6 +9,7 @@ import {CartModelState} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
 import {RootState} from '@/redux';
 import {PaymentItem, PaymentItemMode} from './PaymentItemInfo';
+import AppText from './AppText';
 
 const styles = StyleSheet.create({
   // container: {
@@ -70,6 +71,7 @@ const PaymentSummary = ({
 }) => {
   return (
     <View>
+      <AppText style={styles.total}>{i18n.t('cart:pymAmount')}</AppText>
       <View style={styles.priceInfo}>
         {(['subtotal', 'discount', 'rkbcash'] as const).map((k) =>
           cart.pymReq?.[k] ? (

@@ -198,7 +198,16 @@ const slice = createSlice({
     },
 
     applyCoupon: (state, action) => {
-      state.couponToApply = action.payload;
+      const {couponId, maxDiscount} = action.payload;
+
+      if (maxDiscount) {
+        state.couponToApply = state.promo?.reduce((acc, cur) => {
+          if (!acc || cur.adj?.value < acc.adj?.value) return cur;
+          return acc;
+        }, undefined)?.coupon_id;
+      } else {
+        state.couponToApply = couponId;
+      }
 
       // couponToApply == undefined 이면, discount도 undefined로 설정된다.
       const promo = state.promo?.find(

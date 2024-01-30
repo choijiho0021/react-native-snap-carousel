@@ -1,35 +1,78 @@
-import React, {memo} from 'react';
-import {StyleSheet, View} from 'react-native';
+import React, {memo, useState} from 'react';
+import {Pressable, StyleSheet, View} from 'react-native';
 import AppText from '../AppText';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppButton from '../AppButton';
+import AppIcon from '../AppIcon';
+import PymButtonList from './PymButtonList';
 
 const styles = StyleSheet.create({
+  container: {
+    margin: 20,
+  },
   title: {
     ...appStyles.bold18Text,
-    marginTop: 20,
     marginBottom: isDeviceSize('small') ? 10 : 20,
-    marginHorizontal: 20,
     color: colors.black,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  ccard: {
+    height: 44,
+    width: '100%',
+    borderColor: colors.gray,
+    borderWidth: 1,
   },
 });
 
 type PymMethodProps = {};
 
 const PymMethod: React.FC<PymMethodProps> = () => {
+  const [method, setMethod] = useState<'easy' | 'card' | 'vbank'>('easy');
+  const [selected, setSelected] = useState('');
+
   return (
-    <View>
-      <AppText style={styles.title}>{i18n.t('pym:method')}</AppText>
-      <AppText style={styles.title}>{i18n.t('pym:method:vbank')}</AppText>
-      <AppButton title={i18n.t('pym:method:vbank:input')} />
-      <AppText style={styles.title}>{i18n.t('pym:vbank:receipt')}</AppText>
-      {['1', '2', '3'].map((k) => (
-        <AppText key={k}>{i18n.t(`pym:vbank:receipt:${k}`)}</AppText>
+    <View style={styles.container}>
+      <AppText key="title" style={styles.title}>
+        {i18n.t('pym:method')}
+      </AppText>
+      {['easy', 'card', 'vbank'].map((k) => (
+        <>
+          <Pressable key={k} style={styles.row} onPress={() => setMethod(k)}>
+            <AppIcon name="btnCheck" focused={method === k} />
+            <AppText style={styles.title}>{i18n.t(`pym:method:${k}`)}</AppText>
+          </Pressable>
+          {k === method ? (
+            k === 'easy' ? (
+              <PymButtonList selected={selected} onPress={setSelected} />
+            ) : k === 'card' ? (
+              <AppButton
+                style={styles.ccard}
+                titleStyle={{color: colors.black}}
+                title={i18n.t('pym:method:card:sel')}
+              />
+            ) : (
+              <View>
+                <AppButton title={i18n.t('pym:method:vbank:input')} />
+                <AppText style={styles.title}>
+                  {i18n.t('pym:vbank:receipt')}
+                </AppText>
+                {['1', '2', '3'].map((k) => (
+                  <AppText key={k}>{i18n.t(`pym:vbank:receipt:${k}`)}</AppText>
+                ))}
+                <AppText style={styles.title}>
+                  {i18n.t('pym:vbank:receipt')}
+                </AppText>
+              </View>
+            )
+          ) : null}
+        </>
       ))}
-      <AppText style={styles.title}>{i18n.t('pym:vbank:receipt')}</AppText>
     </View>
   );
 };
