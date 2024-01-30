@@ -541,7 +541,6 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                   setPending(true);
                   setSelectedSubs(item);
                   onPressUsage(item)?.then((u) => {
-                    console.log('aaaa u', u);
                     setUsage(u.usage);
                     setStatus(u.status);
                     setDataUsageOption(u.usageOption);

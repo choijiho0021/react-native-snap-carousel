@@ -420,7 +420,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         );
       default:
         return (
-          <View style={{width: '100%', marginTop: 16}}>
+          <View style={{width: '100%'}}>
             <View style={{flexDirection: 'row'}}>
               <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
               <AppText style={styles.warning}>

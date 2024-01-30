@@ -427,7 +427,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             status: {
               statusCd: 'A',
               endTime: moment(item.activationDate)
-                ?.tz('EST')
                 ?.add(Number(item.prodDays) - 1, 'days')
                 ?.endOf('day'),
             },
