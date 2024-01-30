@@ -29,6 +29,8 @@ const {specialCategories} = Env.get();
 export const isBillionConnect = (sub?: RkbSubscription) =>
   sub?.partner === 'billionconnect';
 
+export const isHt = (sub?: RkbSubscription) => sub?.partner === 'ht';
+
 const init = createAsyncThunk('order/init', async (mobile?: string) => {
   const oldData = await retrieveData(`${API.Order.KEY_INIT_ORDER}.${mobile}`);
   return oldData;
@@ -39,6 +41,17 @@ const defaultReturn = (resp) => {
   return resp;
 };
 
+export const getLastExpireDate = (sub: RkbSubscription) => {
+  const lastExpireDate = isHt(sub)
+    ? moment(sub?.activationDate)
+        ?.add(Number(sub?.prodDays) - 1, 'days')
+        .endOf('day')
+        .format()
+    : sub?.lastExpireDate;
+
+  return moment(lastExpireDate);
+};
+
 const subsReturn = (resp) => {
   if (
     resp.objects &&
@@ -47,16 +60,18 @@ const subsReturn = (resp) => {
   ) {
     return {
       ...resp,
-      objects: resp.objects.map((elm) => ({
-        ...elm,
-        purchaseDate: moment(elm.purchaseDate),
-        expireDate: moment(elm.expireDate),
-        provDate: moment(elm.provDate),
-        startDate: moment(elm.startDate),
-        lastExpireDate: moment(elm.lastExpireDate),
-        lastProvDate: moment(elm.lastProvDate),
-        activationDate: moment(elm?.activationDate),
-      })),
+      objects: resp.objects.map((elm) => {
+        return {
+          ...elm,
+          purchaseDate: moment(elm.purchaseDate),
+          expireDate: moment(elm.expireDate),
+          provDate: moment(elm.provDate),
+          startDate: moment(elm.startDate),
+          lastExpireDate: getLastExpireDate(elm),
+          lastProvDate: moment(elm.lastProvDate),
+          activationDate: moment(elm?.activationDate),
+        };
+      }),
     };
   }
 

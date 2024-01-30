@@ -1,10 +1,9 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Animated, Platform, Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
-
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppIcon from '@/components/AppIcon';
@@ -67,7 +66,8 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
   setValue,
   animatedValue,
 }) => {
-  const [height, setHeight] = useState(26);
+  const [eidHeight, setEidHeight] = useState(26);
+  const [imei2Height, setImei2Height] = useState(26);
 
   const renderTitle = useCallback(() => {
     return (
@@ -155,11 +155,8 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
                   style={[
                     styles.eidFrame,
                     {
-                      height: isEid
-                        ? height
-                        : Platform.OS === 'android'
-                        ? 40
-                        : 36,
+                      height: isEid ? eidHeight : imei2Height,
+                      // height: test,
                       lineHeight: 20,
                       marginRight: 10,
                       textAlignVertical: 'center',
@@ -167,9 +164,11 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
                   ]}
                   maxLength={isEid ? 32 : 15}
                   onContentSizeChange={(event) => {
-                    if (isEid) {
-                      setHeight(event.nativeEvent.contentSize.height);
-                    }
+                    const h = event.nativeEvent.contentSize.height;
+                    if (h === 0) return;
+
+                    if (isEid) setEidHeight(h);
+                    else setImei2Height(h);
                   }}
                   multiline={isEid}
                   enablesReturnKeyAutomatically
@@ -227,7 +226,7 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
         })}
       </View>
     );
-  }, [height, renderTitle, setValue, value]);
+  }, [eidHeight, imei2Height, renderTitle, setValue, value]);
 
   const renderContent = useCallback(() => {
     switch (inputType) {

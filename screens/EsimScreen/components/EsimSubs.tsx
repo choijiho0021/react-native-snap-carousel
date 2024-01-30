@@ -47,6 +47,7 @@ import {
   actions as orderActions,
   OrderAction,
   isDraft,
+  isHt,
 } from '@/redux/modules/order';
 import {AccountModelState} from '@/redux/modules/account';
 import {HomeStackParamList} from '@/navigation/navigation';
@@ -393,14 +394,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   ] = useMemo(() => {
     const now = moment();
     const checkHt = mainSubs.partner === 'ht';
-    const expd =
-      (checkHt
-        ? moment(mainSubs.activationDate)
-            ?.add(Number(mainSubs.prodDays) - 1, 'days')
-            .tz('EST')
-            .endOf('day')
-            .isBefore(moment())
-        : mainSubs.lastExpireDate?.isBefore(now)) || false;
+    const expd = mainSubs.lastExpireDate?.isBefore(now) || false;
     const isFailed = mainSubs.statusCd === STATUS_EXPIRED;
 
     return [
@@ -575,7 +569,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               <AppText key={mainSubs.nid} style={styles.expiredText}>
                 {mainSubs.giftStatusCd === 'S'
                   ? i18n.t('esim:S2')
-                  : i18n.t('esim:expired')}
+                  : i18n.t(isHt(mainSubs) ? 'esim:expired:ht' : 'esim:expired')}
               </AppText>
             </View>
           ) : (
