@@ -53,7 +53,7 @@ const UsDateInput: React.FC<UsDateInputProps> = ({
 }) => {
   return (
     <Animated.View>
-      <View style={{gap: 8, marginBottom: 8}}>
+      <View style={{gap: 8, marginBottom: 8, marginTop: 10}}>
         <AppText style={[appStyles.normal14Text, {color: colors.greyish}]}>
           {i18n.t('us:actDate')}
         </AppText>
@@ -98,7 +98,9 @@ const UsDateInput: React.FC<UsDateInputProps> = ({
       {actDate && (
         <View style={{gap: 6}}>
           {['1', '2'].map((i) => (
-            <View style={{gap: 6, flexDirection: 'row', paddingRight: 20}}>
+            <View
+              style={{gap: 6, flexDirection: 'row', paddingRight: 20}}
+              key={`dateInputNotice${i}`}>
               <AppSvgIcon name="checkedBlueSmall" />
               <AppStyledText
                 text={i18n.t(`us:device:notice${i}`)}

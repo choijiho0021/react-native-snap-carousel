@@ -10,6 +10,11 @@ const postAttach = createAsyncThunk(
   'board/postAttach',
   API.Board.uploadAttachment,
 );
+
+const fecthSearchedIssueList = createAsyncThunk(
+  'board/fecthSearchedIssueList',
+  API.Board.searchIssueList,
+);
 const fetchIssueList = createAsyncThunk(
   'board/fetchIssueList',
   API.Board.getIssueList,
@@ -112,6 +117,34 @@ const slice = createSlice({
       }
     });
 
+    builder.addCase(fecthSearchedIssueList.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+      const {list} = state;
+
+      if (result === 0 && objects.length > 0) {
+        // Status가 변경된 item을 찾아서 변경해 준다.
+        const changedList = list.map((item) => {
+          const findObjects = objects.find((org) => org.uuid === item.uuid);
+          return findObjects !== undefined &&
+            item.statusCode !== findObjects.statusCode
+            ? findObjects
+            : item;
+        });
+
+        const newList = objects.filter(
+          (item) => changedList.findIndex((org) => org.uuid === item.uuid) < 0,
+        );
+
+        state.list = changedList
+          .concat(newList)
+          .sort((a, b) => (a.created < b.created ? 1 : -1));
+        state.next =
+          newList.length === PAGE_LIMIT || newList.length === PAGE_UPDATE;
+      } else {
+        state.next = false;
+      }
+    });
+
     builder.addCase(getIssueResp.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
       if (result === 0) {
@@ -121,6 +154,17 @@ const slice = createSlice({
     });
   },
 });
+
+const searchIssueList = createAsyncThunk(
+  'board/searchIssueList',
+  (mobile: string, {dispatch, getState}) => {
+    const {account, board} = getState() as RootState;
+    const {token} = account;
+
+    dispatch(slice.actions.resetIssueList());
+    return dispatch(fecthSearchedIssueList({mobile, token, page: 0}));
+  },
+);
 
 const getIssueList = createAsyncThunk(
   'board/getIssueList',
@@ -160,6 +204,7 @@ const getNextIssueList = createAsyncThunk(
 
 export const actions = {
   ...slice.actions,
+  searchIssueList,
   getIssueList,
   getNextIssueList,
   postAndGetList,

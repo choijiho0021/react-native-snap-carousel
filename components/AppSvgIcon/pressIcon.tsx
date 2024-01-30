@@ -877,6 +877,21 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  checkedDarkBlueSmall: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M11.9087 5.24676C12.3247 5.61001 12.3675 6.24173 12.0043 6.65774L8.18326 11.0337C8.00017 11.2434 7.73796 11.3673 7.45972 11.3756C7.18147 11.3838 6.91237 11.2758 6.71714 11.0773L4.28714 8.60733C3.89982 8.21363 3.90499 7.58048 4.29869 7.19316C4.69239 6.80584 5.32553 6.811 5.71286 7.2047L7.38629 8.90568L10.4977 5.34229C10.861 4.92628 11.4927 4.8835 11.9087 5.24676Z"
+        fill="#194C94"
+      />
+    </Svg>,
+  ],
   checkRedSmall: [
     <Svg
       width="16"
@@ -4154,6 +4169,54 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         clipRule="evenodd"
         d="M8 .667a6 6 0 0 0-6 6v4.666l-.297.445a1 1 0 0 0 .832 1.555h10.93a1 1 0 0 0 .832-1.555L14 11.333V6.666a6 6 0 0 0-6-6z"
         fill="#FFC82D"
+      />
+    </Svg>,
+  ],
+
+  imgIcon: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm6.4 1.602a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-4.8 9v1.297a.5.5 0 0 0 .5.5h11.8a.5.5 0 0 0 .5-.5v-2.897a.5.5 0 0 0-.141-.348l-3.01-3.104a.5.5 0 0 0-.699-.018l-3.226 2.995a.5.5 0 0 1-.624.045L5.051 9.44a.5.5 0 0 0-.642.063L1.74 12.255a.5.5 0 0 0-.141.348z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
+
+  bannerCheckBlue2: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="12" cy="12" r="11" fill="#DAEEFF" />
+      <Path
+        d="M13 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM11 8a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V8z"
+        fill="#2A7FF6"
+      />
+    </Svg>,
+  ],
+  bannerWarning: [
+    <Svg
+      width="26"
+      height="26"
+      viewBox="0 0 26 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M12.135 3.662a1 1 0 0 1 1.73 0l10.183 17.587a1 1 0 0 1-.866 1.501H2.818a1 1 0 0 1-.866-1.5L12.135 3.661z"
+        fill="#EE4423"
+      />
+      <Path
+        d="M14.083 19.5a1.083 1.083 0 1 1-2.166 0 1.083 1.083 0 0 1 2.166 0zM11.917 10.679c0-.513.485-.929 1.083-.929s1.083.416 1.083.929v4.642c0 .513-.485.929-1.083.929s-1.083-.416-1.083-.929V10.68z"
+        fill="#fff"
       />
     </Svg>,
   ],

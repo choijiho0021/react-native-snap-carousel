@@ -17,7 +17,6 @@ import com.facebook.react.ReactApplication;
 import com.reactnativegooglesignin.RNGoogleSigninPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.lugg.RNCConfig.RNCConfigPackage;
-import com.reactnativemlkitocr.MlkitOcrPackage;
 import com.swmansion.gesturehandler.RNGestureHandlerPackage;
 import com.airbnb.android.react.lottie.LottiePackage;
 // import com.horcrux.svg.SvgPackage;
@@ -201,8 +200,7 @@ public class MainApplication extends Application implements ReactApplication {
                             new PagerViewPackage(),
                             new RNCPickerPackage(),
                             new ReactNativeFirebaseAnalyticsPackage(),
-                            new CookieManagerPackage(),
-                            new MlkitOcrPackage()
+                            new CookieManagerPackage()
 
                     );
                 }

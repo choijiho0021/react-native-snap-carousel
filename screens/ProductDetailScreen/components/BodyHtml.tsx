@@ -1,7 +1,6 @@
 /* eslint-disable react-native/no-unused-styles */
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {unescape} from 'underscore';
-import {View} from 'react-native';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 
 type BodyHtmlProps = {
@@ -588,23 +587,22 @@ const BodyHtml: React.FC<BodyHtmlProps> = ({body, onMessage}) => {
   }, []);
 
   return (
-    <View style={{height: webviewHeight}} renderToHardwareTextureAndroid>
-      <WebView
-        ref={ref}
-        javaScriptEnabled
-        scrollEnabled={false}
-        onMessage={(e) => {
-          if (webviewHeight === 300) {
-            calcHeight(e);
-          }
-          onMessage(e);
-        }}
-        onLoadEnd={onLoadEnd}
-        originWhitelist={['*']}
-        source={{html}}
-        style={{flex: 1}}
-      />
-    </View>
+    <WebView
+      focusable={false}
+      ref={ref}
+      javaScriptEnabled
+      scrollEnabled={false}
+      onMessage={(e) => {
+        if (webviewHeight === 300) {
+          calcHeight(e);
+        }
+        onMessage(e);
+      }}
+      onLoadEnd={onLoadEnd}
+      originWhitelist={['*']}
+      source={{html}}
+      style={{opacity: 0.99, minHeight: 1, height: webviewHeight}}
+    />
   );
 };
 
