@@ -165,7 +165,6 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
                   maxLength={isEid ? 32 : 15}
                   onContentSizeChange={(event) => {
                     const h = event.nativeEvent.contentSize.height;
-                    console.log('h : ', h);
                     if (isEid) setEidHeight(h);
                     else setImei2Height(h);
                   }}

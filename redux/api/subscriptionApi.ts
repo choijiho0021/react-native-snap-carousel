@@ -2,7 +2,7 @@ import _, {isArray} from 'underscore';
 import moment, {Moment} from 'moment';
 import i18n from '@/utils/i18n';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
-import {isDraft} from '../modules/order';
+import {getLastExpireDate, isDraft} from '../modules/order';
 import Env from '@/environment';
 import {parseJson} from '@/utils/utils';
 import {ProdDesc} from './productApi';
@@ -302,7 +302,7 @@ const subsFulfillWithValue = (resp) => {
       lastProvDate: getMoment(o.lastProvDate),
       activationDate: getMoment(o.activationDate),
       cnt: parseInt(o.cnt || '0', 10),
-      lastExpireDate: getMoment(o.lastExpireDate),
+      lastExpireDate: getLastExpireDate(o),
       startDate: getMoment(o.startDate),
       promoFlag: o?.promoFlag
         ?.map((p: string) => specialCategories[p.trim()])
