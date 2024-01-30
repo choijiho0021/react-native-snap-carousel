@@ -734,7 +734,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
                 ),
               },
               {
-                icon: prod?.hotspot ? 'iconWifi' : 'conWifiOff',
+                icon: prod?.hotspot ? 'iconWifi' : 'iconWifiOff',
                 text: i18n.t(
                   `prodDetail:icon:${prod?.hotspot ? 'wifi' : 'wifiOff'}`,
                 ),

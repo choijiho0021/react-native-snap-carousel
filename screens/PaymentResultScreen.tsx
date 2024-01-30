@@ -124,12 +124,19 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   const isSuccess = useMemo(() => params?.pymResult || false, [params]);
 
   useEffect(() => {
-    const {iccid, token} = account;
+    const {iccid, token, mobile} = account;
 
     // 구매 이력을 다시 읽어 온다.
     // this.props.action.order.getOrders(this.props.auth)
     // 사용 내역을 다시 읽어 온다.
-    action.order.getSubs({iccid, token});
+    action.order.getSubs({iccid: iccid!, token: token!});
+    action.order.getOrders({
+      user: mobile,
+      token,
+      state: 'validation',
+      orderType: 'refundable',
+      page: 0,
+    });
     action.noti.getNotiList({mobile: account.mobile});
   }, [account, action.noti, action.order]);
 
