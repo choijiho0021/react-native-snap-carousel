@@ -72,7 +72,6 @@ import CancelResultScreen from '@/screens/CancelOrderScreen/CancelResult';
 import {ModalModelState} from '@/redux/modules/modal';
 import RegisterMobileScreen from '@/screens/RegisterMobileScreen';
 import CouponScreen from '@/screens/CouponScreen';
-import SelectCouponScreen from '@/screens/SelectCouponScreen';
 import DraftUsScreen from '@/screens/DraftUsScreen';
 import PaymentVBankScreen from '@/screens/PaymentVBankScreen';
 
@@ -168,7 +167,6 @@ function HomeStackComponent() {
         <HomeStack.Screen name="SelectCard" component={SelectCardScreen} />
       </HomeStack.Group>
       <HomeStack.Screen name="PaymentResult" component={PaymentResultScreen} />
-      <HomeStack.Screen name="SelectCoupon" component={SelectCouponScreen} />
       <HomeStack.Screen
         name="PurchaseDetail"
         component={PurchaseDetailScreen}
@@ -202,7 +200,6 @@ function CartStackComponent() {
         <CartStack.Screen name="SimpleTextModal" component={SimpleTextScreen} />
       </CartStack.Group>
       <CartStack.Screen name="PaymentResult" component={PaymentResultScreen} />
-      <CartStack.Screen name="SelectCoupon" component={SelectCouponScreen} />
 
       <CartStack.Group screenOptions={{animationEnabled: true}}>
         <CartStack.Screen
@@ -260,7 +257,6 @@ function EsimStackComponent() {
       <EsimStack.Screen name="Payment" component={PaymentScreen} />
       <EsimStack.Screen name="PymMethod" component={PymMethodScreen} />
       <EsimStack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
-      <EsimStack.Screen name="SelectCoupon" component={SelectCouponScreen} />
       <EsimStack.Screen name="PaymentResult" component={PaymentResultScreen} />
       <EsimStack.Group screenOptions={{animationEnabled: true}}>
         <EsimStack.Screen
@@ -296,7 +292,6 @@ function MyPageStackComponent() {
       <MyPageStack.Screen name="InvitePromo" component={InvitePromoScreen} />
       <MyPageStack.Screen name="Payment" component={PaymentScreen} />
       <MyPageStack.Screen name="PymMethod" component={PymMethodScreen} />
-      <MyPageStack.Screen name="SelectCoupon" component={SelectCouponScreen} />
       <MyPageStack.Screen
         name="PaymentResult"
         component={PaymentResultScreen}

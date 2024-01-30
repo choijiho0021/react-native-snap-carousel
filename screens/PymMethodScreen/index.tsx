@@ -51,6 +51,7 @@ import PaymentSummary from '@/components/PaymentSummary';
 import ConfirmEmail from '@/components/AppPaymentGateway/ConfirmEmail';
 import ChangeEmail from './ChangeEmail';
 import PymMethod from '@/components/AppPaymentGateway/PymMethod';
+import SelectCoupon from './SelectCoupon';
 
 const infoKey = 'pym:benefit';
 
@@ -155,7 +156,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [policyChecked, setPolicyChecked] = useState(false);
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!info.infoMap.has(infoKey)) {
@@ -341,6 +341,19 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     ));
   }, [account.email, action.modal]);
 
+  const showCouponSelector = useCallback(() => {
+    action.modal.renderModal(() => (
+      <SelectCoupon
+        promo={cart.promo}
+        couponId={cart.couponToApply}
+        onPress={(couponId: string) => {
+          action.cart.applyCoupon({couponId});
+          action.modal.closeModal();
+        }}
+      />
+    ));
+  }, [action.cart, action.modal, cart.couponToApply, cart.promo]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={appStyles.header}>
@@ -359,7 +372,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         <ConfirmEmail onPress={() => showChangeEmail()} />
 
-        <DiscountInfo onPress={() => navigation.navigate('SelectCoupon')} />
+        <DiscountInfo onPress={() => showCouponSelector()} />
 
         <PymMethod />
 
