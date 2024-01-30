@@ -350,6 +350,27 @@ const getMyCoupon = ({token}: {token: string}) => {
   );
 };
 
+// register coupon
+const registerCoupon = ({
+  code,
+  iccid,
+  token,
+}: {
+  code: string;
+  iccid: string;
+  token: string;
+}) => {
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.coupon)}?_format=json`,
+    {
+      method: 'POST',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({code, iccid}),
+    },
+    toCoupon,
+  );
+};
+
 export default {
   toAccount,
   toFile,
@@ -361,4 +382,5 @@ export default {
   registerMobile,
   uploadPicture,
   getMyCoupon,
+  registerCoupon,
 };
