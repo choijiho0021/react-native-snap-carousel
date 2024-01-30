@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import ImagePicker from 'react-native-image-crop-picker';
-import MlkitOcr from 'react-native-mlkit-ocr';
 import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
@@ -13,10 +12,15 @@ import UsDeviceInfoModal from './UsDeviceInfoModal';
 import UsDeviceInputModal from './UsDeviceInputModal';
 import UsDeviceInput from './UsDeviceInput';
 import {DeviceDataType} from '..';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import {API} from '@/redux/api';
+import AppSnackBar from '@/components/AppSnackBar';
+import {AccountModelState} from '@/redux/modules/account';
 
 const styles = StyleSheet.create({});
 
 type UsDraftStep2Props = {
+  account: AccountModelState;
   actDate: string;
   setDateModalVisible: (val: boolean) => void;
   deviceData: DeviceDataType;
@@ -29,6 +33,7 @@ export type UsDeviceInputType = 'none' | 'barcode' | 'capture' | 'manual';
 
 // TODO : 이름 변경하고 장바구니 모달도 해당 컴포넌트 사용하기
 const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
+  account,
   actDate,
   setDateModalVisible,
   deviceData,
@@ -38,52 +43,46 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
 }) => {
   const [infoModalVisible, setInfoModalVisible] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showSnackBar, setShowSnackbar] = useState(false);
 
   const blockAnimation = useRef(false);
   const animatedValue = useRef(new Animated.Value(40)).current;
 
-  const extractTextFromImage = useCallback(
-    async (imagePath: string) => {
+  const extractFromImage = useCallback(
+    async (formData: FormData) => {
       try {
-        if (MlkitOcr) {
-          let imei2 = '';
-          let eid = '';
-          const result = await MlkitOcr.detectFromFile(imagePath);
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Timeout')), 10000),
+        );
 
-          result.forEach((r, i) => {
-            const {text} = r;
-            let temp = '';
-            if (text.includes('IMEI2')) {
-              if (text.length > 10) {
-                temp = text.split('IMEI2')[1].replace(/\s/g, '');
-              } else {
-                temp = result[i + 1].text
-                  .replace(/\s/g, '')
-                  .replace(/\n/g, '')
-                  .split('/')[0]
-                  .replace(/o/g, '0');
-              }
-              if (temp.length === 15 && !Number.isNaN(temp)) imei2 = temp;
-            } else if (text.includes('EID')) {
-              if (text.length > 10) {
-                temp = text.split('EID')[1].replace(/\s/g, '');
-              } else {
-                temp = result[i + 1].text
-                  .replace(/\s/g, '')
-                  .replace(/\n/g, '')
-                  .split('/')[0]
-                  .replace(/o/g, '0');
-              }
-              if (temp.length === 32 && !Number.isNaN(temp)) eid = temp;
+        const apiPromise = API.User.extractBarcodes(formData);
+
+        const data = await Promise.race([apiPromise, timeoutPromise]);
+
+        const {eid, imeiList} = data?.barcodeList.reduce(
+          (acc: {eid: string; imeiList: string[]}, current: string) => {
+            if (current.length === 32) {
+              acc.eid = current;
+            } else if (current.length === 15 && !Number.isNaN(current)) {
+              acc.imeiList.push(current);
             }
-          });
+            return acc;
+          },
+          {eid: '', imeiList: []},
+        );
 
-          setDeviceData({eid, imei2});
-        } else {
-          console.error('@@@@ MlkitOcr is null or undefined');
-        }
+        const imei2 = imeiList.length > 1 ? imeiList[0] : '';
+
+        setDeviceData({eid, imei2});
+
+        if (!eid || !imei2) setShowSnackbar(true);
+
+        console.log('EID/IMEI2 image uploaded successfully:', data);
       } catch (error) {
-        console.log('@@@@ error', error);
+        setDeviceData({eid: '', imei2: ''});
+        setShowSnackbar(true);
+        console.error('EID/IMEI2 image upload failed:', error);
       }
     },
     [setDeviceData],
@@ -100,13 +99,26 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
             forceJpb: true,
             compressImageQuality: 0.1,
           });
-          await extractTextFromImage(image.path);
+          setUploadModalVisible(false);
+          setLoading(true);
+
+          const formData = new FormData();
+          formData.append('image', {
+            uri: image.path,
+            type: image.mime,
+            name: `App_${account.mobile}.jpg`,
+          });
+
+          await extractFromImage(formData);
         }
+
+        setLoading(false);
+      } else {
+        setUploadModalVisible(false);
       }
       setDeviceInputType(type);
-      setUploadModalVisible(false);
     },
-    [extractTextFromImage, setDeviceInputType],
+    [account.mobile, extractFromImage, setDeviceInputType],
   );
 
   useEffect(() => {
@@ -135,6 +147,8 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
 
   return (
     <>
+      <AppActivityIndicator visible={loading} />
+
       <KeyboardAwareScrollView
         enableOnAndroid
         showsVerticalScrollIndicator={false}
@@ -172,10 +186,18 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
         setVisible={setUploadModalVisible}
         onClickButton={onClickDeviceInputBtn}
       />
+
+      <AppSnackBar
+        visible={showSnackBar}
+        onClose={() => setShowSnackbar(false)}
+        textMessage={i18n.t('us:device:img:err')}
+        preIcon="cautionRed"
+      />
     </>
   );
 };
 
-export default connect(({product}: RootState) => ({
+export default connect(({account, product}: RootState) => ({
+  account,
   product,
 }))(UsDraftStep2);

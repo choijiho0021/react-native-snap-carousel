@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
-import React from 'react';
+import React, {ReactNode} from 'react';
 import {Dimensions, StyleSheet, TextStyle, View} from 'react-native';
 import {colors} from '@/constants/Colors';
 import {appStyles, formatText} from '@/constants/Styles';
@@ -14,6 +14,8 @@ import Env from '@/environment';
 import {GuideOption} from './GuideHomeScreen';
 import {GuideRegion} from './GuideSelectRegionScreen';
 import AppSvgIcon from '@/components/AppSvgIcon';
+
+export type AnotherComponentType = {key: string; component: ReactNode};
 
 const {isIOS} = Env.get();
 // const isIOS = false;
@@ -136,6 +138,35 @@ const styles = StyleSheet.create({
   },
 });
 
+const tipPage2TextComponent = {
+  key: 'userGuide:tipPage2:galaxy_1',
+  component: (
+    <View>
+      <AppStyledText
+        text={i18n.t('userGuide:tipPage2:galaxy_1_1')}
+        textStyle={styles.tipText}
+        format={{
+          b: styles.tipBoldText,
+          r: styles.tipBoldRedText,
+          s: {...styles.tipBoldText, color: colors.tomato},
+        }}
+      />
+      <View style={{flexDirection: 'row'}}>
+        <AppSvgIcon name="imgIcon" style={{justifyContent: 'center'}} />
+        <AppStyledText
+          text={i18n.t('userGuide:tipPage2:galaxy_1_2')}
+          textStyle={styles.tipText}
+          format={{
+            b: styles.tipBoldText,
+            r: styles.tipBoldRedText,
+            s: {...styles.tipBoldText, color: colors.tomato},
+          }}
+        />
+      </View>
+    </View>
+  ),
+};
+
 const renderTips = () => (
   <AppText
     style={{
@@ -176,17 +207,27 @@ const renderTipText = (
   key: string,
   style: TextStyle = styles.tipText,
   boldRed = false,
-) => (
-  <AppStyledText
-    text={i18n.t(key)}
-    textStyle={style}
-    format={{
-      b: boldRed ? styles.tipBoldRedText : styles.tipBoldText,
-      r: styles.tipBoldRedText,
-      s: {...styles.tipBoldText, color: colors.tomato},
-    }}
-  />
-);
+  anotherComponent = {key: '', component: <></>},
+) => {
+  console.log('anotherComponent?.key : ', anotherComponent?.key);
+  console.log(' anotherComponent : ', anotherComponent.component);
+
+  if (anotherComponent?.key === key) {
+    return anotherComponent.component;
+  }
+
+  return (
+    <AppStyledText
+      text={i18n.t(key)}
+      textStyle={style}
+      format={{
+        b: boldRed ? styles.tipBoldRedText : styles.tipBoldText,
+        r: styles.tipBoldRedText,
+        s: {...styles.tipBoldText, color: colors.tomato},
+      }}
+    />
+  );
+};
 
 type RenderTipParams = {
   id: string;
@@ -226,6 +267,7 @@ const renderTipList = (
   list: 'dot' | 'num' = 'num',
   boldRed = false,
   num: number = 2,
+  anotherComponent: AnotherComponentType = {key: '', component: <></>},
 ) => (
   <View style={styles.tipContainer}>
     {renderTips()}
@@ -241,7 +283,12 @@ const renderTipList = (
               {i18n.t('centerDot')}
             </AppText>
           )}
-          {renderTipText(`${id}_${k}`, styles.tipText, boldRed)}
+          {renderTipText(
+            `${id}_${k}`,
+            styles.tipText,
+            boldRed,
+            anotherComponent,
+          )}
         </View>
       ))}
     </View>
@@ -279,7 +326,7 @@ const renderNoticeBox = ({
               color: colors.clearBlue,
               lineHeight: 18,
             }}
-            format={{b: {fontWeight: '600'}}}
+            format={{b: {fontWeight: '700'}}}
           />
         )}
         {body.length > 1
@@ -289,7 +336,7 @@ const renderNoticeBox = ({
                 <AppStyledText
                   text={i18n.t(b)}
                   textStyle={{...appStyles.normal14Text, lineHeight: 18}}
-                  format={{b: {fontWeight: '600'}}}
+                  format={{b: {fontWeight: '700'}}}
                 />
               </View>
             ))
@@ -297,7 +344,7 @@ const renderNoticeBox = ({
               <AppStyledText
                 text={i18n.t(b)}
                 textStyle={styles.noticeBoxBody}
-                format={{b: {fontWeight: '600'}}}
+                format={{b: {fontWeight: '700', color: colors.deepDarkBlue}}}
               />
             ))}
       </View>
@@ -307,13 +354,13 @@ const renderNoticeBox = ({
 
 const renderIsLocalBox = () => (
   <View style={[styles.isLocalBox, !isIOS && {paddingHorizontal: 24}]}>
-    <AppText style={styles.isLocalBoxTitle}>
-      {i18n.t('userGuide:isLocal')}
-    </AppText>
-    <View style={styles.row}>
-      <AppText style={styles.isLocalBoxBody}>
-        {i18n.t('userGuide:checkSetting:title')}
+    <View style={{flexDirection: 'row', gap: 8}}>
+      <AppSvgIcon name="bannerCheckBlue2" />
+      <AppText style={styles.isLocalBoxTitle}>
+        {i18n.t('userGuide:isLocal')}
       </AppText>
+    </View>
+    <View style={styles.row}>
       <AppSvgIcon name="rightArrow20" />
     </View>
   </View>
@@ -489,6 +536,7 @@ export const getGuideImages = (
 
   if (isIOS) {
     if (guideOption === 'esimReg') {
+      // ios, 등록, 한국
       if (region === 'korea') {
         guideImages = [
           {
@@ -648,7 +696,7 @@ export const getGuideImages = (
           },
         ];
       }
-      // 현지 등록
+      // ios, esim등록, 현지 선택
       else {
         guideImages = [
           {
@@ -769,6 +817,12 @@ export const getGuideImages = (
           localTitle: renderText(
             'userGuide:stepsTitle4:ios:checkSetting:local',
           ),
+          noticeBox: (isCheckLocal: boolean) =>
+            renderNoticeBox({
+              title: 'userGuide:stepsTitle4:ios:caution:title',
+              body: ['userGuide:stepsTitle4:ios:caution:body'],
+              isShow: isCheckLocal,
+            }),
           step: 1,
           stepPreText: 'local',
         },
@@ -783,6 +837,12 @@ export const getGuideImages = (
           title: renderText('userGuide:stepsTitle6:ios:checkSetting'),
           step: 3,
           stepPreText: 'local',
+          noticeBox: (isCheckLocal: boolean) =>
+            renderNoticeBox({
+              title: 'userGuide:stepsTitle6:ios:caution:title',
+              body: ['userGuide:stepsTitle6:ios:caution:body1'],
+              isShow: isCheckLocal,
+            }),
         },
         {
           key: 'page5',
@@ -817,7 +877,13 @@ export const getGuideImages = (
           title: renderText(`userGuide:stepsTitle2:galaxy`),
           step: 2,
           tip: () =>
-            renderTipList('userGuide:tipPage2:galaxy', 'num', false, 3),
+            renderTipList(
+              'userGuide:tipPage2:galaxy',
+              'num',
+              false,
+              3,
+              tipPage2TextComponent,
+            ),
         },
         {
           key: 'page4',
@@ -946,7 +1012,13 @@ export const getGuideImages = (
           title: renderText(`userGuide:stepsTitle2:galaxy`),
           step: 2,
           tip: () =>
-            renderTipList('userGuide:tipPage2:galaxy', 'num', false, 3),
+            renderTipList(
+              'userGuide:tipPage2:galaxy',
+              'num',
+              false,
+              3,
+              tipPage2TextComponent,
+            ),
         },
         {
           key: 'page4',
@@ -1038,10 +1110,7 @@ export const getGuideImages = (
         noticeBox: (isCheckLocal: boolean) =>
           renderNoticeBox({
             title: 'userGuide:stepsTitle5:galaxy:caution:title',
-            body: [
-              'userGuide:stepsTitle5:galaxy:caution:body1',
-              'userGuide:stepsTitle5:galaxy:caution:body2',
-            ],
+            body: ['userGuide:stepsTitle5:galaxy:caution:body1'],
             isShow: isCheckLocal, // 현지(로컬망)인 경우에 보여주도록 함
           }),
       },
@@ -1095,10 +1164,7 @@ export const getGuideImages = (
         noticeBox: (isCheckLocal: boolean) =>
           renderNoticeBox({
             title: 'userGuide:stepsTitle5:galaxy:caution:title',
-            body: [
-              'userGuide:stepsTitle5:galaxy:caution:body1',
-              'userGuide:stepsTitle5:galaxy:caution:body2',
-            ],
+            body: ['userGuide:stepsTitle5:galaxy:caution:body1'],
             isShow: isCheckLocal, // 현지(로컬망)인 경우에 보여주도록 함
           }),
       },

@@ -9,13 +9,14 @@ import {ProdDesc} from './productApi';
 
 const {specialCategories} = Env.get();
 
-const STATUS_ACTIVE = 'A'; // 사용중
+export const STATUS_ACTIVE = 'A'; // 사용중
 const STATUS_INACTIVE = 'I'; // 미사용
 export const STATUS_RESERVED = 'R'; // 사용 대기중
 const STATUS_CANCELED = 'C'; // 취소
-const STATUS_EXPIRED = 'E'; // 사용 기간 종료
+export const STATUS_EXPIRED = 'E'; // 사용 기간 종료, 발권 실패
 export const STATUS_USED = 'U'; // 사용 완료
 export const STATUS_PENDING = 'P'; // 지연 , 상품 배송 중
+export const STATUS_DRAFT = 'D'; // 발권중
 
 const GIFT_STATUS_SEND = 'S'; // 선물 완료
 const GIFT_STATUS_RECEIVE = 'R'; // 선물 받기 완료
