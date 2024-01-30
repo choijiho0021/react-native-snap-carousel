@@ -7,7 +7,7 @@ import {Moment} from 'moment';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {RkbInfo} from '@/redux/api/pageApi';
 import {BoardMsgStatus} from '@/redux/api/boardApi';
-import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {RkbSubscription, UsageOptionObj} from '@/redux/api/subscriptionApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {Currency, RkbAddOnProd, RkbProduct} from '@/redux/api/productApi';
 import {RkbReceipt} from '@/screens/ReceiptScreen';
@@ -156,7 +156,9 @@ export type HomeStackParamList = {
   Gift: {mainSubs: RkbSubscription};
   ChargeHistory: {
     mainSubs: RkbSubscription;
-    onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
+    onPressUsage: (
+      subs: RkbSubscription,
+    ) => Promise<{usage: any; status: any; usageOption: UsageOptionObj}>;
     chargeablePeriod: string;
     isChargeable: boolean;
   };

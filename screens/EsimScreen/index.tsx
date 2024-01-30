@@ -397,7 +397,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           totalUsed: undefined,
         },
         usageOption: {
-          mode: ['stu', 'usa', 'end'],
+          mode: ['stu', 'end'],
         },
       };
     },
