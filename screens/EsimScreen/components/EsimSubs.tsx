@@ -746,6 +746,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
                 uuid: prod.uuid,
                 desc: prod.desc,
                 partner: mainSubs.partner,
+                partnerId: prod.partnerId,
                 prod,
               });
           }}
