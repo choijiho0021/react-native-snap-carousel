@@ -378,10 +378,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             fieldCautionList={descData?.fieldCautionList || []}
           />
           {clMtd &&
-            ftr &&
-            ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(
-              clMtd,
-            ) && <ProductDetailCallMethod clMtd={clMtd} ftr={ftr} />}
+            ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(clMtd) &&
+            ftr && <ProductDetailCallMethod clMtd={clMtd} ftr={ftr} />}
         </View>
       )
     );
@@ -614,6 +612,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           />
         )}
       </ScrollView>
+
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       {purchaseButtonTab()}
 
