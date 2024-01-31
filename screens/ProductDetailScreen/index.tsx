@@ -298,7 +298,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     lineHeight: 18,
     color: colors.warmGrey,
-    marginRight: 20,
   },
   noticeTextBlack: {
     ...appStyles.normal14Text,
@@ -310,11 +309,15 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     color: colors.black,
   },
+  noticeTextBlueBold: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 18,
+    color: colors.clearBlue,
+  },
   noticeText: {
     ...appStyles.normal14Text,
     lineHeight: 20,
     color: colors.white,
-    marginRight: 20,
   },
   noticeTextBold: {
     ...appStyles.bold14Text,
@@ -519,6 +522,23 @@ const styles = StyleSheet.create({
   goToApnText: {
     ...appStyles.semiBold16Text,
     lineHeight: 24,
+    color: colors.black,
+  },
+  bodyBottom: {
+    paddingTop: 40,
+    paddingBottom: 56,
+    paddingHorizontal: 20,
+    backgroundColor: colors.whiteTwo,
+  },
+  bodyNoticeContents: {
+    marginTop: 24,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 20,
+  },
+  noticeTitle: {
+    ...appStyles.bold14Text,
+    lineHeight: 20,
     color: colors.black,
   },
 });
@@ -856,6 +876,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         textStyle={styles.noticeText}
         boldStyle={styles.noticeTextBold}
         text={i18n.t(`prodDetail:noticeOption:${noticeOption}`)}
+        marginRight={20}
       />
     ),
     [],
@@ -872,6 +893,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         textStyle={styles.noticeText}
         boldStyle={styles.noticeTextBold}
         text={cautionText}
+        marginRight={20}
       />
     );
   }, []);
@@ -1270,162 +1292,236 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   ]);
 
   const renderTplInfo = useCallback(
-    (t: {class: string; tag: string; text: string}) => {
-      return t.class === 'txt_dot' ? (
-        <TextWithDot
-          key={t.text}
-          text={t.text}
-          boldStyle={styles.noticeTextBlackBold}
-          textStyle={styles.noticeTextBlackWithDot}
-          dotStyle={styles.dotBlack}
-        />
-      ) : (
-        <AppStyledText
-          text={t.text}
-          textStyle={styles.noticeTextBlack}
-          format={{b: styles.noticeTextBlackBold}}
-        />
+    (t: {class: string; tag: string; text: string}, lineHeight?: number) => {
+      const regex = /►.*◄/;
+      return (
+        <Pressable onPress={() => regex.test(t.text) && onMessage('moveToFaq')}>
+          {t.class === 'txt_dot' ? (
+            <TextWithDot
+              key={t.text}
+              text={t.text}
+              boldStyle={{...styles.noticeTextBlackBold, lineHeight}}
+              secondBoldStyle={{...styles.noticeTextBlueBold, lineHeight}}
+              textStyle={{...styles.noticeTextBlackWithDot, lineHeight}}
+              dotStyle={{
+                ...styles.dotBlack,
+                lineHeight: lineHeight ? lineHeight - 2 : 16,
+              }}
+              marginRight={20}
+            />
+          ) : (
+            <AppStyledText
+              text={t.text}
+              textStyle={{...styles.noticeTextBlack, lineHeight}}
+              format={{
+                b: {...styles.noticeTextBlackBold, lineHeight},
+                s: {...styles.noticeTextBlueBold, lineHeight},
+              }}
+            />
+          )}
+        </Pressable>
       );
     },
-    [],
+    [onMessage],
   );
 
   const attachBTag = useCallback((el: SoupElement, orgText: string) => {
-    const boldList: string[] = el?.contents.reduce((acc: string[], cur) => {
-      const text = cur.getText();
-      if (text !== '') {
-        acc.push(text);
-      }
-      return acc;
-    }, []);
+    const boldList = el?.contents.reduce(
+      (acc: {text: string; tag: string}[], cur) => {
+        const text = cur.getText();
+        if (text !== '') {
+          acc.push({text, tag: cur.name});
+        }
+        return acc;
+      },
+      [],
+    );
 
     return boldList.reduce((acc, cur) => {
-      const regex = new RegExp(`(${cur})`, 'g');
-      return acc.replace(regex, '<b>$1</b>');
+      const regex = new RegExp(`(${cur?.text})`, 'g');
+      return cur.tag === 'a'
+        ? acc.replace(regex, '<s>$1</s>')
+        : acc.replace(regex, '<b>$1</b>');
     }, orgText);
   }, []);
 
-  const renderBodyTop = useCallback(() => {
-    const soup = new BeautifulSoup(
-      `<html><body>${descData?.body}</body></html>`,
-    );
-    const tplInfoTags = soup?.find({attrs: {class: 'tpl_info'}});
-    const tplList =
-      tplInfoTags?.contents.length > 1
-        ? tplInfoTags?.contents.map((c) => ({
-            class: c.attrs?.class,
-            tag: c.name,
-            text: attachBTag(c, c.getText()),
-          }))
-        : [
-            {
-              class: tplInfoTags.contents[0].attrs?.class,
-              tag: tplInfoTags.name,
-              text: attachBTag(tplInfoTags.contents[0], tplInfoTags.getText()),
-            },
-          ];
-
-    const apnList = descData?.desc?.apn?.split(',');
-    const apnInfo = apnList?.[0]?.split('/');
-
-    return (
-      <View style={styles.bodyTop}>
-        <AppText style={styles.bodyTopTitle}>
-          {i18n.t('prodDetail:body:top:title')}
-        </AppText>
-        {apnList &&
-          apnInfo &&
-          (apnList?.length > 1 ? (
-            <Pressable
-              style={styles.bodyTopBox}
-              onPress={() => onMessage('apn')}>
-              <View style={styles.multiApn}>
-                <AppText style={styles.bodyTopBoxCountry}>
-                  {prod?.name
-                    .split(' ')
-                    .filter((item) => !/(무제한|종량제|\d+일)/.test(item))
-                    .join(' ')}
-                </AppText>
-                <View style={styles.apnButton}>
-                  <AppText style={styles.apnButtonText}>
-                    {i18n.t('pym:detail')}
-                  </AppText>
-                  <AppIcon name="arrowRightBlue10" />
-                </View>
-              </View>
-            </Pressable>
-          ) : (
-            <View style={styles.bodyTopBox}>
-              <AppText style={styles.bodyTopBoxCountry}>{apnInfo[0]}</AppText>
-              <AppText style={styles.bodyTopBoxTel}>
-                {apnInfo[1].replace('&amp;', ' • ')}
-              </AppText>
-            </View>
-          ))}
-        {tplList && tplList.length > 0 && !!tplList[0].text && (
-          <View style={styles.tplInfo}>
-            {tplList.map((t) => renderTplInfo(t))}
-          </View>
-        )}
-        <View style={styles.apnSetBox}>
-          <View
-            style={[
-              styles.apnSetBoxTop,
+  const renderBodyTop = useCallback(
+    (soup: BeautifulSoup) => {
+      const tplInfoTags = soup?.find({attrs: {class: 'tpl_info'}});
+      const tplList =
+        tplInfoTags?.contents.length > 1
+          ? tplInfoTags?.contents.map((c) => ({
+              class: c.attrs?.class,
+              tag: c.name,
+              text: attachBTag(c, c.getText()),
+            }))
+          : [
               {
-                backgroundColor:
-                  prod?.field_daily === 'daily'
-                    ? colors.purpleishBlue
-                    : colors.violet,
+                class: tplInfoTags.contents[0].attrs?.class,
+                tag: tplInfoTags.name,
+                text: attachBTag(
+                  tplInfoTags.contents[0],
+                  tplInfoTags.getText(),
+                ),
               },
-            ]}>
-            <AppIcon name="apn" />
-            <AppText style={styles.apnBoxTitle}>{i18n.t('store:apn')}</AppText>
-          </View>
+            ];
 
+      const apnList = descData?.desc?.apn?.split(',');
+      const apnInfo = apnList?.[0]?.split('/');
+
+      return (
+        <View style={styles.bodyTop}>
+          <AppText style={styles.bodyTopTitle}>
+            {i18n.t('prodDetail:body:top:title')}
+          </AppText>
           {apnList &&
             apnInfo &&
             (apnList?.length > 1 ? (
               <Pressable
-                style={[styles.apnCopy, {backgroundColor: colors.white}]}
+                style={styles.bodyTopBox}
                 onPress={() => onMessage('apn')}>
-                <AppText style={styles.goToApnText}>
-                  {i18n.t('prodDetail:body:top:go:apn')}
-                </AppText>
-                <AppIcon name="iconArrowRightBlack10" />
-              </Pressable>
-            ) : (
-              <View style={styles.apnCopy}>
-                <View style={styles.apnInfo}>
-                  <AppText style={styles.apnPrefix}>
-                    {i18n.t('prodDetail:body:top:apn')}
+                <View style={styles.multiApn}>
+                  <AppText style={styles.bodyTopBoxCountry}>
+                    {prod?.name
+                      .split(' ')
+                      .filter((item) => !/(무제한|종량제|\d+일)/.test(item))
+                      .join(' ')}
                   </AppText>
-                  <View style={styles.underline}>
-                    <AppText style={styles.apnInfoText}>{apnInfo[2]}</AppText>
+                  <View style={styles.apnButton}>
+                    <AppText style={styles.apnButtonText}>
+                      {i18n.t('pym:detail')}
+                    </AppText>
+                    <AppIcon name="arrowRightBlue10" />
                   </View>
                 </View>
-                <AppCopyBtn
-                  title={i18n.t('copy')}
-                  onPress={() => onMessage('copy', apnInfo[2])}
-                />
+              </Pressable>
+            ) : (
+              <View style={styles.bodyTopBox}>
+                <AppText style={styles.bodyTopBoxCountry}>{apnInfo[0]}</AppText>
+                <AppText style={styles.bodyTopBoxTel}>
+                  {apnInfo[1].replace('&amp;', ' • ')}
+                </AppText>
               </View>
             ))}
+          {tplList && tplList.length > 0 && !!tplList[0].text && (
+            <View style={styles.tplInfo}>
+              {tplList.map((t) => renderTplInfo(t))}
+            </View>
+          )}
+          <View style={styles.apnSetBox}>
+            <View
+              style={[
+                styles.apnSetBoxTop,
+                {
+                  backgroundColor:
+                    prod?.field_daily === 'daily'
+                      ? colors.purpleishBlue
+                      : colors.violet,
+                },
+              ]}>
+              <AppIcon name="apn" />
+              <AppText style={styles.apnBoxTitle}>
+                {i18n.t('store:apn')}
+              </AppText>
+            </View>
+
+            {apnList &&
+              apnInfo &&
+              (apnList?.length > 1 ? (
+                <Pressable
+                  style={[styles.apnCopy, {backgroundColor: colors.white}]}
+                  onPress={() => onMessage('apn')}>
+                  <AppText style={styles.goToApnText}>
+                    {i18n.t('prodDetail:body:top:go:apn')}
+                  </AppText>
+                  <AppIcon name="iconArrowRightBlack10" />
+                </Pressable>
+              ) : (
+                <View style={styles.apnCopy}>
+                  <View style={styles.apnInfo}>
+                    <AppText style={styles.apnPrefix}>
+                      {i18n.t('prodDetail:body:top:apn')}
+                    </AppText>
+                    <View style={styles.underline}>
+                      <AppText style={styles.apnInfoText}>{apnInfo[2]}</AppText>
+                    </View>
+                  </View>
+                  <AppCopyBtn
+                    title={i18n.t('copy')}
+                    onPress={() => onMessage('copy', apnInfo[2])}
+                  />
+                </View>
+              ))}
+          </View>
+          {[1, 2].map((i) => (
+            <TextWithDot
+              key={`prodDetail:body:top:apn:notice${i}`}
+              text={i18n.t(`prodDetail:body:top:apn:notice${i}`)}
+              boldStyle={styles.noticeTextBlackBold}
+              textStyle={styles.noticeTextBlackWithDot}
+              dotStyle={styles.dotBlack}
+              marginRight={20}
+            />
+          ))}
         </View>
-        {[1, 2].map((i) => (
-          <TextWithDot
-            key={`prodDetail:body:top:apn:notice${i}`}
-            text={i18n.t(`prodDetail:body:top:apn:notice${i}`)}
-            boldStyle={styles.noticeTextBlackBold}
-            textStyle={styles.noticeTextBlackWithDot}
-            dotStyle={styles.dotBlack}
-          />
-        ))}
-      </View>
-    );
-  }, [attachBTag, descData, onMessage, prod, renderTplInfo]);
+      );
+    },
+    [attachBTag, descData, onMessage, prod, renderTplInfo],
+  );
+
+  const renderBodyNotice = useCallback(
+    (t: {class: string; tag: string; text: string}) => {
+      console.log('@@@@ t', t);
+      return t.tag === 'dt' ? (
+        <AppText style={styles.noticeTitle}>{t.text}</AppText>
+      ) : (
+        renderTplInfo(t, 20)
+      );
+    },
+    [renderTplInfo],
+  );
+
+  const renderBodyBottom = useCallback(
+    (soup: BeautifulSoup) => {
+      const tplCautionTags = soup?.find({attrs: {class: 'box_notandum'}});
+
+      const tplClist = tplCautionTags.contents.filter((c) => c.name === 'dl');
+
+      const textList = tplClist.map((c) => {
+        return c?.contents.map((c) => ({
+          class: c.attrs?.class,
+          tag: c.name,
+          text: attachBTag(c, c.getText()).replace(/\t|&nbsp;/g, ''),
+        }));
+      });
+
+      return (
+        <View style={styles.bodyBottom}>
+          <AppText style={{...styles.bodyTopTitle, fontWeight: 'bold'}}>
+            {i18n.t('prodDetail:Caution')}
+          </AppText>
+          <View style={styles.bodyNoticeContents}>
+            {textList.map((t) => (
+              <View>{t.map((i) => renderBodyNotice(i))}</View>
+            ))}
+          </View>
+        </View>
+      );
+    },
+    [attachBTag, renderBodyNotice],
+  );
 
   const renderBody = useCallback(() => {
-    return <View>{renderBodyTop()}</View>;
-  }, [renderBodyTop]);
+    const soup = new BeautifulSoup(
+      `<html><body>${descData?.body}</body></html>`,
+    );
+    return (
+      <View>
+        {renderBodyTop(soup)}
+        {renderBodyBottom(soup)}
+      </View>
+    );
+  }, [descData?.body, renderBodyBottom, renderBodyTop]);
 
   return (
     <SafeAreaView style={styles.screen}>
