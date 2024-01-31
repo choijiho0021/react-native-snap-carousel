@@ -62,6 +62,7 @@ import TextWithDot from '../EsimScreen/components/TextWithDot';
 import TextWithCheck from '../HomeScreen/component/TextWithCheck';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import ProductDetailBody from './components/ProductDetailBody';
+import ProductDetailTopInfo from './components/ProductDetailTopInfo';
 
 const {esimGlobal, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -550,47 +551,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     [descData?.desc?.apn, navigation, route.params?.title],
   );
 
-  const renderTopInfo = useCallback(
-    (isDaily: boolean, volume: string, volumeUnit: string) => (
-      <ImageBackground
-        source={
-          isDaily
-            ? require('@/assets/images/esim/img_bg_1.png')
-            : require('@/assets/images/esim/img_bg_2.png')
-        }
-        style={styles.bg}>
-        <View style={styles.titleTop}>
-          <AppStyledText
-            text={i18n.t(`prodDetail:title:${isDaily ? 'daily' : 'total'}`)}
-            textStyle={styles.prodTitle}
-            format={{b: styles.prodTitleBold}}
-            data={{
-              data: isDaily ? prod?.days?.toString() || '' : volume || '',
-              unit: volumeUnit,
-            }}
-          />
-
-          <AppText style={styles.prodBody}>{descData?.desc?.desc1}</AppText>
-        </View>
-        <View>
-          <AppText style={styles.locaTag}>
-            {i18n.t(
-              `prodDetail:${
-                ['로컬', 'local'].find((i) => prod?.name.includes(i))
-                  ? 'local'
-                  : 'roaming'
-              }`,
-            )}
-          </AppText>
-          <AppText style={styles.bottomText}>
-            {descData?.desc?.desc2?.replace(/&amp;/g, '&')}
-          </AppText>
-        </View>
-      </ImageBackground>
-    ),
-    [descData, prod],
-  );
-
   const renderIconWithText = useCallback(
     (icon: string, text: string) => (
       <View style={styles.iconWithText} key={`${icon}${text}`}>
@@ -911,7 +871,15 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       prod &&
       descData && (
         <View>
-          {renderTopInfo(isDaily, volume, volumeUnit)}
+          <ProductDetailTopInfo
+            isDaily={isDaily}
+            volume={volume}
+            volumeUnit={volumeUnit}
+            desc1={descData?.desc?.desc1 || ''}
+            desc2={descData?.desc?.desc2 || ''}
+            prodName={prod?.name || ''}
+            prodDays={prod?.days || ''}
+          />
           {renderSixIcon(isDaily, volume, volumeUnit)}
           {(noticeList.length > 0 || cautionList.length > 0) &&
             renderNotice(noticeList, cautionList)}
@@ -922,14 +890,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         </View>
       )
     );
-  }, [
-    descData,
-    prod,
-    renderCallMethod,
-    renderNotice,
-    renderSixIcon,
-    renderTopInfo,
-  ]);
+  }, [descData, prod, renderCallMethod, renderNotice, renderSixIcon]);
 
   const soldOut = useCallback((payload: ApiResult<any>, message: string) => {
     if (payload.result === api.E_RESOURCE_NOT_FOUND) {
