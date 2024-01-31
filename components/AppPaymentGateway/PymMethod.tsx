@@ -38,6 +38,7 @@ type PymMethodProps = {
 const PymMethod: React.FC<PymMethodProps> = ({value, onPress}) => {
   const [method, setMethod] = useState<'easy' | 'card' | 'vbank'>('easy');
   const [selected, setSelected] = useState('');
+  const [receipt, setReceipt] = useState('1');
 
   useEffect(() => {
     if (value.startsWith('card')) setMethod('card');
@@ -81,13 +82,33 @@ const PymMethod: React.FC<PymMethodProps> = ({value, onPress}) => {
               />
             ) : (
               <View>
-                <AppButton title={i18n.t('pym:method:vbank:input')} />
-                <AppText key="title" style={styles.title}>
+                <AppButton
+                  style={styles.ccard}
+                  titleStyle={{color: colors.black}}
+                  title={i18n.t(
+                    value?.startsWith('vbank')
+                      ? `pym:${value}`
+                      : 'pym:method:vbank:input',
+                  )}
+                  onPress={() => onPress('vbank')}
+                />
+                <AppText
+                  key="title"
+                  style={[styles.title, {marginVertical: 10}]}>
                   {i18n.t('pym:vbank:receipt')}
                 </AppText>
-                {['1', '2', '3'].map((k) => (
-                  <AppText key={k}>{i18n.t(`pym:vbank:receipt:${k}`)}</AppText>
-                ))}
+                <View style={[styles.row, {marginVertical: 10}]}>
+                  {['1', '2', '3'].map((k) => (
+                    <Pressable
+                      style={[styles.row, {flex: 1}]}
+                      onPress={() => setReceipt(k)}>
+                      <AppIcon name="btnCheck" checked={k === receipt} />
+                      <AppText key={k} style={{flex: 1, marginLeft: 5}}>
+                        {i18n.t(`pym:vbank:receipt:${k}`)}
+                      </AppText>
+                    </Pressable>
+                  ))}
+                </View>
                 <AppText style={styles.title}>
                   {i18n.t('pym:vbank:receipt')}
                 </AppText>

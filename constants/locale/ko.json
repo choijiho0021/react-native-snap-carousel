@@ -982,6 +982,22 @@
   "pym:card71": "우체국체크",
   "pym:card95": "저축은행체크",
 
+  "pym:vbank:h:003": "IBK기업은행",
+  "pym:vbank:h:004": "KB국민은행",
+  "pym:vbank:h:007": "수협",
+  "pym:vbank:h:011": "NH농협은행",
+  "pym:vbank:h:020": "우리은행",
+  "pym:vbank:h:023": "SC제일은행",
+  "pym:vbank:h:031": "대구은행",
+  "pym:vbank:h:032": "부산은행",
+  "pym:vbank:h:034": "광주은행",
+  "pym:vbank:h:039": "경남은행",
+  "pym:vbank:h:045": "새마을금고",
+  "pym:vbank:h:071": "우체국",
+  "pym:vbank:h:081": "하나은행(KEB하나은행)",
+  "pym:vbank:h:088": "신한은행",
+  "pym:vbank:h:089": "케이뱅크",
+
   "pym:card:title": "카드사 선택",
   "pym:card:noti": "결제에 사용할 카드를 선택해주세요.",
 

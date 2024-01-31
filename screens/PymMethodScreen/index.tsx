@@ -53,6 +53,7 @@ import PymMethod from '@/components/AppPaymentGateway/PymMethod';
 import SelectCoupon from './SelectCoupon';
 import SelectCard from './SelectCard';
 import {retrieveData, storeData} from '@/utils/utils';
+import SelectBank from './SelectBank';
 
 const infoKey = 'pym:benefit';
 
@@ -62,31 +63,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'stretch',
     backgroundColor: colors.white,
-  },
-  divider: {
-    height: 10,
-    backgroundColor: colors.whiteTwo,
-  },
-  thickBar: {
-    borderBottomColor: colors.black,
-    borderBottomWidth: 1,
-    marginBottom: 30,
-  },
-  normal12TxtLeft: {
-    ...appStyles.normal12Text,
-    color: colors.black,
-    textAlign: 'left',
-    lineHeight: 14,
-    textAlignVertical: 'center',
-  },
-  beforeDrop: {
-    marginHorizontal: 20,
-    marginBottom: 45,
-  },
-  benefit: {
-    backgroundColor: colors.whiteTwo,
-    padding: 15,
-    marginTop: 20,
   },
   modalBodyStyle: {
     paddingTop: 15,
@@ -324,17 +300,32 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     ));
   }, [action.cart, action.modal, cart.couponToApply, cart.promo]);
 
-  const showCardSelector = useCallback(() => {
-    action.modal.renderModal(() => (
-      <SelectCard
-        onPress={(card: string) => {
-          console.log('@@@ card', card);
-          setSelected(card);
-          action.modal.closeModal();
-        }}
-      />
-    ));
-  }, [action.modal]);
+  const setPymMethod = useCallback(
+    (kind: string) => {
+      if (kind === 'card') {
+        action.modal.renderModal(() => (
+          <SelectCard
+            onPress={(card: string) => {
+              setSelected(card);
+              action.modal.closeModal();
+            }}
+          />
+        ));
+      } else if (kind === 'vbank') {
+        action.modal.renderModal(() => (
+          <SelectBank
+            onPress={(bank: string) => {
+              setSelected(bank);
+              action.modal.closeModal();
+            }}
+          />
+        ));
+      } else {
+        setSelected(kind);
+      }
+    },
+    [action.modal],
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -356,12 +347,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         <DiscountInfo onPress={() => showCouponSelector()} />
 
-        <PymMethod
-          value={selected}
-          onPress={(kind: string) =>
-            kind === 'card' ? showCardSelector() : setSelected(kind)
-          }
-        />
+        <PymMethod value={selected} onPress={setPymMethod} />
 
         <PaymentSummary mode="method" />
 
