@@ -52,6 +52,7 @@ import ChangeEmail from './ChangeEmail';
 import PymMethod from '@/components/AppPaymentGateway/PymMethod';
 import SelectCoupon from './SelectCoupon';
 import SelectCard from './SelectCard';
+import {retrieveData, storeData} from '@/utils/utils';
 
 const infoKey = 'pym:benefit';
 
@@ -130,7 +131,7 @@ type PymMethodScreenProps = {
   };
 };
 
-const {esimGlobal, impId} = Env.get();
+const {esimGlobal, impId, cachePrefix} = Env.get();
 
 const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   navigation,
@@ -141,9 +142,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   product,
   action,
 }) => {
-  const [selected, setSelected] = useState('easy');
+  const [selected, setSelected] = useState('pym:kakao');
   const [clickable, setClickable] = useState(true);
-  const [showModalMethod, setShowModalMethod] = useState(true);
   const [policyChecked, setPolicyChecked] = useState(false);
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
@@ -166,6 +166,15 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     });
   }, [route.params]);
 
+  useEffect(() => {
+    async function getPymMethod() {
+      const method = await retrieveData(`${cachePrefix}cache.pym.method`);
+      console.log('@@@ cached method', method);
+      if (method) setSelected(method);
+    }
+    getPymMethod();
+  }, []);
+
   const onSubmit = useCallback(
     (passingAlert: boolean) => {
       if (!clickable) return;
@@ -176,6 +185,10 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       }
 
       setClickable(false);
+
+      // store payment
+      console.log('@@@ pym method', selected);
+      storeData(`${cachePrefix}cache.pym.method`, selected);
 
       const payMethod = selected.startsWith('card')
         ? API.Payment.method['pym:ccard']
@@ -345,8 +358,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         <PymMethod
           value={selected}
-          onPress={(kind: 'card') =>
-            kind === 'card' ? showCardSelector() : null
+          onPress={(kind: string) =>
+            kind === 'card' ? showCardSelector() : setSelected(kind)
           }
         />
 

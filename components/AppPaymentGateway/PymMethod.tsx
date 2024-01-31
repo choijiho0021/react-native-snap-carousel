@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
 
 type PymMethodProps = {
   value: string;
-  onPress: (kind: 'card') => void;
+  onPress: (kind: string) => void;
 };
 
 const PymMethod: React.FC<PymMethodProps> = ({value, onPress}) => {
@@ -42,7 +42,10 @@ const PymMethod: React.FC<PymMethodProps> = ({value, onPress}) => {
   useEffect(() => {
     if (value.startsWith('card')) setMethod('card');
     else if (value.startsWith('vbank')) setMethod('vbank');
-    else setMethod('easy');
+    else {
+      setMethod('easy');
+      setSelected(value);
+    }
   }, [value]);
 
   return (
@@ -50,15 +53,21 @@ const PymMethod: React.FC<PymMethodProps> = ({value, onPress}) => {
       <AppText key="title" style={styles.title}>
         {i18n.t('pym:method')}
       </AppText>
-      {['easy', 'card', 'vbank'].map((k) => (
-        <>
-          <Pressable key={k} style={styles.row} onPress={() => setMethod(k)}>
+      {(['easy', 'card', 'vbank'] as const).map((k) => (
+        <View key={k}>
+          <Pressable style={styles.row} onPress={() => setMethod(k)}>
             <AppIcon name="btnCheck" focused={method === k} />
             <AppText style={styles.title}>{i18n.t(`pym:method:${k}`)}</AppText>
           </Pressable>
           {k === method ? (
             k === 'easy' ? (
-              <PymButtonList selected={selected} onPress={setSelected} />
+              <PymButtonList
+                selected={selected}
+                onPress={(m) => {
+                  setSelected(m);
+                  onPress(m);
+                }}
+              />
             ) : k === 'card' ? (
               <AppButton
                 style={styles.ccard}
@@ -85,7 +94,7 @@ const PymMethod: React.FC<PymMethodProps> = ({value, onPress}) => {
               </View>
             )
           ) : null}
-        </>
+        </View>
       ))}
     </View>
   );
