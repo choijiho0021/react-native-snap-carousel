@@ -62,6 +62,8 @@ import BackbuttonHandler from '@/components/BackbuttonHandler';
 import ProductDetailBody from './components/ProductDetailBody';
 import ProductDetailTopInfo from './components/ProductDetailTopInfo';
 import ProductDetailSixIcon from './components/ProductDetailSixIcon';
+import ProductDetailNotice from './components/ProductDetailNotice';
+import ProductDetailCallMethod from './components/ProductDetailCallMethod';
 
 const {esimGlobal, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -172,127 +174,6 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     color: colors.clearBlue,
   },
-  noticeBox: {
-    paddingVertical: 17,
-    paddingHorizontal: 20,
-    backgroundColor: colors.darkNavy,
-  },
-  noticeHeader: {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: 4,
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  noticeHeaderText: {
-    ...appStyles.normal16Text,
-    lineHeight: 20,
-    color: colors.white,
-  },
-  dot: {
-    ...appStyles.bold14Text,
-    marginHorizontal: 5,
-    lineHeight: 20,
-    color: colors.white,
-  },
-  noticeText: {
-    ...appStyles.normal14Text,
-    lineHeight: 20,
-    color: colors.white,
-  },
-  noticeTextBold: {
-    ...appStyles.bold14Text,
-    lineHeight: 20,
-    color: colors.white,
-  },
-  callMethod: {
-    paddingHorizontal: 20,
-    paddingTop: 42,
-  },
-  callMethodTitle: {
-    ...appStyles.medium20,
-    lineHeight: 22,
-    color: colors.black,
-    marginBottom: 16,
-  },
-  callMethodBox: {
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
-    backgroundColor: colors.white,
-    borderRadius: 3,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  callMethodBoxTop: {
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderColor: colors.whiteFive,
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  callMethodContents: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 4,
-    marginTop: 8,
-    paddingVertical: 12,
-  },
-  callMethodBoxBottom: {
-    paddingTop: 9,
-    paddingBottom: 6,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 6,
-  },
-  featureWithText: {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: 8,
-    alignItems: 'center',
-    width: '50%',
-  },
-  featureText: {
-    ...appStyles.semiBold18Text,
-    lineHeight: 22,
-    color: colors.black,
-  },
-  callMethodBoxBold: {
-    ...appStyles.semiBold16Text,
-    lineHeight: 24,
-    color: colors.black,
-  },
-  callMethodBoxText: {
-    ...appStyles.normal16Text,
-    lineHeight: 24,
-    color: colors.black,
-  },
-  showDetail: {
-    ...appStyles.bold14Text,
-    lineHeight: 24,
-    letterSpacing: -0.5,
-    color: colors.warmGrey,
-  },
-  ustotalDetailBox: {
-    marginLeft: 24,
-  },
-  countryBox: {
-    padding: 8,
-    backgroundColor: colors.backGrey,
-    borderRadius: 3,
-    marginVertical: 2,
-  },
-  countryBoxText: {
-    ...appStyles.semiBold14Text,
-    lineHeight: 22,
-    color: colors.black,
-  },
-  countryBoxNotice: {
-    ...appStyles.semiBold14Text,
-    lineHeight: 22,
-    color: colors.warmGrey,
-  },
 });
 
 export type ProductDetailScreenNavigationProp = StackNavigationProp<
@@ -340,10 +221,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const prod = useMemo(() => {
     return route.params?.prod || product.prodList.get(route.params?.uuid || '');
   }, [product.prodList, route.params?.prod, route.params?.uuid]);
-  const noFup = useMemo(
-    () => prod?.fup === 'N/A' || prod?.fup === '0',
-    [prod?.fup],
-  );
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -353,7 +230,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const appState = useRef('unknown');
   const [price, setPrice] = useState<Currency>();
   const [showChargeInfoModal, setShowChargeInfoModal] = useState(false);
-  const [showCallDetail, setShowCallDetail] = useState(false);
   const dispatch = useDispatch();
   const descData: DescData = useMemo(
     () => product.descData.get(prod?.key || route.params?.uuid),
@@ -459,167 +335,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     [descData?.desc?.apn, navigation, route.params?.title],
   );
 
-  const renderNoticeOption = useCallback(
-    (noticeOption: string) => (
-      <TextWithDot
-        key={noticeOption}
-        dotStyle={styles.dot}
-        textStyle={styles.noticeText}
-        boldStyle={styles.noticeTextBold}
-        text={i18n.t(`prodDetail:noticeOption:${noticeOption}`)}
-        marginRight={20}
-      />
-    ),
-    [],
-  );
-
-  const renderCautionList = useCallback((caution: string) => {
-    const cautionText = caution.substring(
-      caution.startsWith('ios:') ? 4 : caution.startsWith('android:') ? 8 : 0,
-    );
-    return (
-      <TextWithDot
-        key={caution}
-        dotStyle={styles.dot}
-        textStyle={styles.noticeText}
-        boldStyle={styles.noticeTextBold}
-        text={cautionText}
-        marginRight={20}
-      />
-    );
-  }, []);
-
-  const renderNotice = useCallback(
-    (noticeList: string[], cautionList: string[]) => {
-      return (
-        <View style={styles.noticeBox}>
-          <View style={styles.noticeHeader}>
-            <AppIcon name="iconNoticeRed24" />
-            <AppText style={styles.noticeHeaderText}>
-              {i18n.t('prodDetail:Caution')}
-            </AppText>
-          </View>
-          {noticeList.map((i) => renderNoticeOption(i))}
-          {cautionList.map((i) => renderCautionList(i))}
-        </View>
-      );
-    },
-    [renderCautionList, renderNoticeOption],
-  );
-
-  const renderFeature = useCallback((feature: string) => {
-    const key = `icon${feature}`;
-    return (
-      <View style={styles.featureWithText} key={key}>
-        {feature === 'M' && <View style={{width: 20}} />}
-        <AppIcon name={key} />
-        <AppText style={styles.featureText}>
-          {i18n.t(`prodDetail:callMethod:box:feature:${feature}`)}
-        </AppText>
-      </View>
-    );
-  }, []);
-
-  const renderUsTotalCountryBox = useCallback(
-    () => (
-      <View style={styles.ustotalDetailBox}>
-        <View style={styles.countryBox}>
-          <AppText style={styles.countryBoxText}>
-            {i18n.t('prodDetail:callMethod:box:detail:ustotal:country')}
-          </AppText>
-        </View>
-        <AppText style={styles.countryBoxNotice}>
-          {i18n.t('prodDetail:callMethod:box:detail:ustotal:notice')}
-        </AppText>
-      </View>
-    ),
-    [],
-  );
-
-  const getDetailList = useCallback((clMtd: string) => {
-    switch (clMtd) {
-      case 'usdaily':
-      case 'mvtotal':
-        return [1];
-      case 'ustotal':
-      case 'ais':
-        return [1, 2];
-      case 'dtac':
-        return [1, 2, 3, 4];
-      default:
-        return [];
-    }
-  }, []);
-
-  const renderCallMethod = useCallback(
-    (clMtd: string) => {
-      const ftrList =
-        descData?.desc?.ftr?.toLowerCase() === 'm' ? ['V', 'M'] : ['V'];
-      const isUS = clMtd.includes('us');
-      const defaultList = ['ustotal', 'mvtotal'].includes(clMtd) ? [1, 2] : [1];
-      const detailList = getDetailList(clMtd);
-
-      return (
-        <View style={styles.callMethod}>
-          <AppText style={styles.callMethodTitle}>
-            {i18n.t('prodDetail:callMethod:title')}
-          </AppText>
-          <View style={styles.callMethodBox}>
-            <View style={styles.callMethodBoxTop}>
-              {ftrList.map((f) => renderFeature(f))}
-            </View>
-            <View style={styles.callMethodContents}>
-              {defaultList.map((i) => (
-                <View key={`default${clMtd}${i}`}>
-                  <TextWithCheck
-                    text={i18n.t(
-                      `prodDetail:callMethod:box:contents:default${i}:${
-                        isUS ? 'us' : clMtd
-                      }`,
-                    )}
-                    textStyle={styles.callMethodBoxBold}
-                  />
-                </View>
-              ))}
-              {showCallDetail &&
-                detailList.length > 0 &&
-                detailList.map((i) => (
-                  <View key={`detail${clMtd}${i}`}>
-                    <TextWithCheck
-                      text={i18n.t(
-                        `prodDetail:callMethod:box:contents:detail${i}:${clMtd}`,
-                      )}
-                      textStyle={styles.callMethodBoxText}
-                    />
-                    {clMtd === 'ustotal' &&
-                      i === 1 &&
-                      renderUsTotalCountryBox()}
-                  </View>
-                ))}
-            </View>
-            <Pressable
-              style={styles.callMethodBoxBottom}
-              onPress={() => setShowCallDetail((prev) => !prev)}>
-              <AppText style={styles.showDetail}>
-                {i18n.t(showCallDetail ? 'close' : 'pym:detail')}
-              </AppText>
-              <AppIcon
-                name={showCallDetail ? 'iconArrowUp11' : 'iconArrowDown11'}
-              />
-            </Pressable>
-          </View>
-        </View>
-      );
-    },
-    [
-      descData?.desc?.ftr,
-      getDetailList,
-      renderFeature,
-      renderUsTotalCountryBox,
-      showCallDetail,
-    ],
-  );
-
   const renderProdDetail = useCallback(() => {
     const isDaily = prod?.field_daily === 'daily';
     const volume =
@@ -628,33 +343,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         : prod?.volume || '';
     const volumeUnit = Number(prod?.volume) > 500 ? 'GB' : 'MB';
 
-    const noticeOption = descData?.fieldNoticeOption || [];
-    let noticeOptionList: string[] = [];
-    if (typeof noticeOption === 'string') {
-      noticeOptionList = noticeOption.replace(' ', '').split(',');
-    } else {
-      noticeOptionList = noticeOption;
-    }
-
-    const drupalList = ['I', 'A', 'K', 'N', 'H'];
-
-    const noticeList: string[] = drupalList.reduce(
-      (acc: string[], curr: string) => {
-        if (noticeOptionList.includes(curr)) {
-          acc.push(curr);
-        }
-        return acc;
-      },
-      [],
-    );
-
-    const cautionList: string[] =
-      descData?.fieldCautionList?.filter((c) =>
-        isIOS ? !c.includes('android:') : !c.includes('ios:'),
-      ) || [];
-
     const clMtd = descData?.desc?.clMtd;
     const ftr = descData?.desc?.ftr;
+    const prodDays = prod?.days;
+
     return (
       prod &&
       descData && (
@@ -666,30 +358,34 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             desc1={descData?.desc?.desc1 || ''}
             desc2={descData?.desc?.desc2 || ''}
             prodName={prod?.name || ''}
-            prodDays={prod?.days || ''}
+            prodDays={prodDays || ''}
           />
           <ProductDetailSixIcon
             isDaily={isDaily}
             volume={volume}
             volumeUnit={volumeUnit}
-            ftr={descData?.desc?.ftr || ''}
-            prodDays={prod?.days || ''}
+            ftr={ftr || ''}
+            prodDays={prodDays || ''}
             fup={prod?.fup || ''}
             network={prod?.network || ''}
             hotspot={prod?.hotspot || ''}
             addonOption={descData.addonOption || ''}
             setShowChargeInfoModal={setShowChargeInfoModal}
           />
-          {(noticeList.length > 0 || cautionList.length > 0) &&
-            renderNotice(noticeList, cautionList)}
+
+          <ProductDetailNotice
+            fieldNoticeOption={descData?.fieldNoticeOption || []}
+            fieldCautionList={descData?.fieldCautionList || []}
+          />
           {clMtd &&
             ftr &&
-            ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(clMtd) &&
-            renderCallMethod(clMtd)}
+            ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(
+              clMtd,
+            ) && <ProductDetailCallMethod clMtd={clMtd} ftr={ftr} />}
         </View>
       )
     );
-  }, [descData, prod, renderCallMethod, renderNotice]);
+  }, [descData, prod]);
 
   const soldOut = useCallback((payload: ApiResult<any>, message: string) => {
     if (payload.result === api.E_RESOURCE_NOT_FOUND) {
