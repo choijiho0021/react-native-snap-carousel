@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
   dotBlack: {
     ...appStyles.bold14Text,
     marginHorizontal: 5,
-    lineHeight: 16,
+    lineHeight: 18,
     color: colors.black,
   },
   noticeTextBlackWithDot: {
@@ -1312,10 +1312,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               boldStyle={{...styles.noticeTextBlackBold, lineHeight}}
               secondBoldStyle={{...styles.noticeTextBlueBold, lineHeight}}
               textStyle={{...styles.noticeTextBlackWithDot, lineHeight}}
-              dotStyle={{
-                ...styles.dotBlack,
-                lineHeight: lineHeight ? lineHeight - 2 : 16,
-              }}
+              dotStyle={{...styles.dotBlack, lineHeight}}
               marginRight={20}
             />
           ) : (
