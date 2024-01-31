@@ -534,12 +534,13 @@ const styles = StyleSheet.create({
     marginTop: 24,
     display: 'flex',
     flexDirection: 'column',
-    gap: 20,
+    gap: 26,
   },
   noticeTitle: {
     ...appStyles.bold14Text,
     lineHeight: 20,
     color: colors.black,
+    marginBottom: 2,
   },
 });
 
@@ -1295,7 +1296,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     (t: {class: string; tag: string; text: string}, lineHeight?: number) => {
       const regex = /►.*◄/;
       return (
-        <Pressable onPress={() => regex.test(t.text) && onMessage('moveToFaq')}>
+        <Pressable
+          onPress={() => regex.test(t.text) && onMessage('moveToFaq')}
+          key={t.text}>
           {t.class === 'txt_dot' ? (
             <TextWithDot
               key={t.text}
@@ -1504,7 +1507,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           </AppText>
           <View style={styles.bodyNoticeContents}>
             {textList.map((t) => (
-              <View>{t.map((i) => renderBodyNotice(i))}</View>
+              <View key={t[0].text}>{t.map((c) => renderBodyNotice(c))}</View>
             ))}
           </View>
         </View>
