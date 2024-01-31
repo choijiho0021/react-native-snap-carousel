@@ -34,7 +34,6 @@ import PurchaseDetailScreen from '@/screens/PurchaseDetailScreen';
 import ContactScreen from '@/screens/ContactScreen';
 import ContactBoardScreen from '@/screens/ContactBoardScreen';
 import PymMethodScreen from '@/screens/PymMethodScreen';
-import SelectCardScreen from '@/screens/SelectCardScreen';
 import StoreSearchScreen from '@/screens/StoreSearch';
 import BoardMsgRespScreen from '@/screens/BoardMsgRespScreen';
 import SimpleTextScreen from '@/screens/SimpleTextScreen';
@@ -164,7 +163,6 @@ function HomeStackComponent() {
           component={PaymentGatewayScreen}
         />
         <HomeStack.Screen name="PaymentVBank" component={PaymentVBankScreen} />
-        <HomeStack.Screen name="SelectCard" component={SelectCardScreen} />
       </HomeStack.Group>
       <HomeStack.Screen name="PaymentResult" component={PaymentResultScreen} />
       <HomeStack.Screen
@@ -207,7 +205,6 @@ function CartStackComponent() {
           component={PaymentGatewayScreen}
         />
         <CartStack.Screen name="PaymentVBank" component={PaymentVBankScreen} />
-        <CartStack.Screen name="SelectCard" component={SelectCardScreen} />
       </CartStack.Group>
     </CartStack.Navigator>
   );
@@ -264,7 +261,6 @@ function EsimStackComponent() {
           component={PaymentGatewayScreen}
         />
         <EsimStack.Screen name="PaymentVBank" component={PaymentVBankScreen} />
-        <EsimStack.Screen name="SelectCard" component={SelectCardScreen} />
       </EsimStack.Group>
     </EsimStack.Navigator>
   );
@@ -321,7 +317,6 @@ function MyPageStackComponent() {
           name="PaymentVBank"
           component={PaymentVBankScreen}
         />
-        <MyPageStack.Screen name="SelectCard" component={SelectCardScreen} />
       </MyPageStack.Group>
     </MyPageStack.Navigator>
   );

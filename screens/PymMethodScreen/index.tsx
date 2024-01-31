@@ -4,7 +4,7 @@ import Analytics from 'appcenter-analytics';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {connect, useDispatch} from 'react-redux';
+import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -12,7 +12,6 @@ import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import PaymentItemInfo from '@/components/PaymentItemInfo';
 import {colors} from '@/constants/Colors';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList, PaymentParams} from '@/navigation/navigation';
@@ -52,6 +51,7 @@ import ConfirmEmail from '@/components/AppPaymentGateway/ConfirmEmail';
 import ChangeEmail from './ChangeEmail';
 import PymMethod from '@/components/AppPaymentGateway/PymMethod';
 import SelectCoupon from './SelectCoupon';
+import SelectCard from './SelectCard';
 
 const infoKey = 'pym:benefit';
 
@@ -65,15 +65,6 @@ const styles = StyleSheet.create({
   divider: {
     height: 10,
     backgroundColor: colors.whiteTwo,
-  },
-  result: {
-    justifyContent: 'center',
-    height: isDeviceSize('small') ? 140 : 180,
-  },
-  resultText: {
-    ...appStyles.normal16Text,
-    color: colors.warmGrey,
-    textAlign: 'center',
   },
   thickBar: {
     borderBottomColor: colors.black,
@@ -150,7 +141,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   product,
   action,
 }) => {
-  const [selected, setSelected] = useState('pym:ccard');
+  const [selected, setSelected] = useState('easy');
   const [clickable, setClickable] = useState(true);
   const [showModalMethod, setShowModalMethod] = useState(true);
   const [policyChecked, setPolicyChecked] = useState(false);
@@ -186,7 +177,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
       setClickable(false);
 
-      const payMethod = API.Payment.method[selected];
+      const payMethod = selected.startsWith('card')
+        ? API.Payment.method['pym:ccard']
+        : API.Payment.method[selected];
       if (!payMethod && cart.pymPrice?.value !== 0) return;
 
       const {mobile, email} = account;
@@ -246,6 +239,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         const params = {
           pg: payMethod?.key,
           pay_method: payMethod?.method,
+          card: selected.startsWith('card') ? selected.slice(4, 6) : '',
           merchant_uid: `${
             product.rule.inicis_enabled === '1' ? 'r_' : 'i_'
           }${mobile}_${new Date().getTime()}`,
@@ -283,43 +277,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     ],
   );
 
-  const method = useCallback(() => {
-    const benefit = selected
-      ? info.infoMap
-          .get(infoKey)
-          ?.find((item) => item.title.indexOf(selected) >= 0)
-      : undefined;
-
-    return (
-      <View>
-        <DropDownHeader
-          showModal={showModalMethod}
-          onPress={() => setShowModalMethod((prev) => !prev)}
-          title={i18n.t('pym:method')}
-          alias={selected ? i18n.t(selected) : ''}
-        />
-        {showModalMethod && (
-          <View style={styles.beforeDrop}>
-            <View style={styles.thickBar} />
-            <PymButtonList selected={selected} onPress={setSelected} />
-            {benefit && (
-              <View style={styles.benefit}>
-                <AppText style={[styles.normal12TxtLeft, {marginBottom: 5}]}>
-                  {benefit.title}
-                </AppText>
-                <AppText
-                  style={[styles.normal12TxtLeft, {color: colors.warmGrey}]}>
-                  {benefit.body}
-                </AppText>
-              </View>
-            )}
-          </View>
-        )}
-        <View style={styles.divider} />
-      </View>
-    );
-  }, [info.infoMap, selected, showModalMethod]);
-
   const modalBody = useCallback(() => {
     return (
       <View style={styles.modalBodyStyle}>
@@ -354,6 +311,18 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     ));
   }, [action.cart, action.modal, cart.couponToApply, cart.promo]);
 
+  const showCardSelector = useCallback(() => {
+    action.modal.renderModal(() => (
+      <SelectCard
+        onPress={(card: string) => {
+          console.log('@@@ card', card);
+          setSelected(card);
+          action.modal.closeModal();
+        }}
+      />
+    ));
+  }, [action.modal]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={appStyles.header}>
@@ -374,7 +343,12 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         <DiscountInfo onPress={() => showCouponSelector()} />
 
-        <PymMethod />
+        <PymMethod
+          value={selected}
+          onPress={(kind: 'card') =>
+            kind === 'card' ? showCardSelector() : null
+          }
+        />
 
         <PaymentSummary mode="method" />
 

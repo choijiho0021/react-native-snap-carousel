@@ -952,7 +952,8 @@
   "pym:ssgpay": "SSG페이",
   "pym:lpay": "L.Pay",
 
-  "pym:card01": "외환카드",
+  "pym:card01": "하나카드",
+  "pym:card02": "우리카드",
   "pym:card03": "롯데카드",
   "pym:card04": "현대카드",
   "pym:card06": "국민카드",
@@ -967,9 +968,9 @@
   "pym:card26": "중국은련카드",
   "pym:card32": "광주카드",
   "pym:card33": "전북카드",
-  "pym:card34": "하나카드",
+  "pym:card34": "하나SK카드",
   "pym:card35": "산업카드",
-  "pym:card38": "우리카드",
+  "pym:card38": "우리BC카드",
   "pym:card41": "NH카드",
   "pym:card43": "씨티카드",
   "pym:card48": "신협체크카드",
@@ -980,6 +981,9 @@
   "pym:card56": "카카오뱅크",
   "pym:card71": "우체국체크",
   "pym:card95": "저축은행체크",
+
+  "pym:card:title": "카드사 선택",
+  "pym:card:noti": "결제에 사용할 카드를 선택해주세요.",
 
   "pym:orderState": "주문 상태",
   "pym:orderState:canceled": "구매 취소",

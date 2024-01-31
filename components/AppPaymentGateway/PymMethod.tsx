@@ -1,4 +1,4 @@
-import React, {memo, useState} from 'react';
+import React, {memo, useEffect, useState} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import AppText from '../AppText';
 import i18n from '@/utils/i18n';
@@ -30,11 +30,20 @@ const styles = StyleSheet.create({
   },
 });
 
-type PymMethodProps = {};
+type PymMethodProps = {
+  value: string;
+  onPress: (kind: 'card') => void;
+};
 
-const PymMethod: React.FC<PymMethodProps> = () => {
+const PymMethod: React.FC<PymMethodProps> = ({value, onPress}) => {
   const [method, setMethod] = useState<'easy' | 'card' | 'vbank'>('easy');
   const [selected, setSelected] = useState('');
+
+  useEffect(() => {
+    if (value.startsWith('card')) setMethod('card');
+    else if (value.startsWith('vbank')) setMethod('vbank');
+    else setMethod('easy');
+  }, [value]);
 
   return (
     <View style={styles.container}>
@@ -54,12 +63,17 @@ const PymMethod: React.FC<PymMethodProps> = () => {
               <AppButton
                 style={styles.ccard}
                 titleStyle={{color: colors.black}}
-                title={i18n.t('pym:method:card:sel')}
+                title={i18n.t(
+                  value?.startsWith('card')
+                    ? `pym:${value}`
+                    : 'pym:method:card:sel',
+                )}
+                onPress={() => onPress('card')}
               />
             ) : (
               <View>
                 <AppButton title={i18n.t('pym:method:vbank:input')} />
-                <AppText style={styles.title}>
+                <AppText key="title" style={styles.title}>
                   {i18n.t('pym:vbank:receipt')}
                 </AppText>
                 {['1', '2', '3'].map((k) => (
