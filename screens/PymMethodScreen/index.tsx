@@ -9,7 +9,6 @@ import {bindActionCreators} from 'redux';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
-import AppText from '@/components/AppText';
 import PaymentItemInfo from '@/components/PaymentItemInfo';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -36,8 +35,6 @@ import {
 import i18n from '@/utils/i18n';
 import AppModal from '@/components/AppModal';
 import AppStyledText from '@/components/AppStyledText';
-import PymButtonList from '@/components/AppPaymentGateway/PymButtonList';
-import DropDownHeader from './DropDownHeader';
 import PolicyChecker from '@/components/AppPaymentGateway/PolicyChecker';
 import {
   actions as productActions,
@@ -168,6 +165,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
       const payMethod = selected.startsWith('card')
         ? API.Payment.method['pym:ccard']
+        : selected.startsWith('vbank')
+        ? API.Payment.method['pym:vbank']
         : API.Payment.method[selected];
       if (!payMethod && cart.pymPrice?.value !== 0) return;
 
@@ -230,7 +229,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           pay_method: payMethod?.method,
           card: selected.startsWith('card') ? selected.slice(4, 6) : '',
           merchant_uid: `${
-            product.rule.inicis_enabled === '1' ? 'r_' : 'i_'
+            payMethod?.method === 'vbank' ? 'v_' : 'r_'
           }${mobile}_${new Date().getTime()}`,
           name: i18n.t('appTitle'),
           amount: cart.pymPrice?.value, // 실제 결제 금액 (로깨비캐시 제외)

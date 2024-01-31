@@ -41,8 +41,8 @@ const PymMethod: React.FC<PymMethodProps> = ({value, onPress}) => {
   const [receipt, setReceipt] = useState('1');
 
   useEffect(() => {
-    if (value.startsWith('card')) setMethod('card');
-    else if (value.startsWith('vbank')) setMethod('vbank');
+    if (value?.startsWith('card')) setMethod('card');
+    else if (value?.startsWith('vbank')) setMethod('vbank');
     else {
       setMethod('easy');
       setSelected(value);
@@ -56,7 +56,12 @@ const PymMethod: React.FC<PymMethodProps> = ({value, onPress}) => {
       </AppText>
       {(['easy', 'card', 'vbank'] as const).map((k) => (
         <View key={k}>
-          <Pressable style={styles.row} onPress={() => setMethod(k)}>
+          <Pressable
+            style={styles.row}
+            onPress={() => {
+              setMethod(k);
+              if (k === 'easy') onPress(value);
+            }}>
             <AppIcon name="btnCheck" focused={method === k} />
             <AppText style={styles.title}>{i18n.t(`pym:method:${k}`)}</AppText>
           </Pressable>
@@ -100,10 +105,11 @@ const PymMethod: React.FC<PymMethodProps> = ({value, onPress}) => {
                 <View style={[styles.row, {marginVertical: 10}]}>
                   {['1', '2', '3'].map((k) => (
                     <Pressable
+                      key={k}
                       style={[styles.row, {flex: 1}]}
                       onPress={() => setReceipt(k)}>
                       <AppIcon name="btnCheck" checked={k === receipt} />
-                      <AppText key={k} style={{flex: 1, marginLeft: 5}}>
+                      <AppText style={{flex: 1, marginLeft: 5}}>
                         {i18n.t(`pym:vbank:receipt:${k}`)}
                       </AppText>
                     </Pressable>

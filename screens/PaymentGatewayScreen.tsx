@@ -20,7 +20,6 @@ import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import VBank from '@/components/AppPaymentGateway/VBank';
 import {RkbPaymentVBankResult} from '@/redux/api/paymentApi';
 
 const loading = require('../assets/images/loading_1.mp4');
@@ -151,6 +150,20 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
             navigation.goBack();
           } else {
             setIsOrderReady(true);
+
+            if (params.pay_method.startsWith('vbank')) {
+              API.Payment.reqRokebiPaymentVBank({
+                params: {
+                  ...params,
+                  pg: 'hecto',
+                },
+                token: account.token,
+              })
+                .then(vbank)
+                .catch((ex) =>
+                  vbank(api.failure(api.E_INVALID_STATUS, ex.message)),
+                );
+            }
           }
         })
         .catch(() => {
@@ -158,7 +171,16 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
           navigation.goBack();
         });
     }
-  }, [action.cart, navigation, params.isPaid, pymInfo]);
+  }, [
+    account.token,
+    action.cart,
+    callback,
+    navigation,
+    params,
+    params.isPaid,
+    pymInfo,
+    vbank,
+  ]);
 
   const renderLoading = useCallback(() => {
     return (
@@ -184,12 +206,8 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
           showIcon={!params.isPaid}
         />
       </View>
-      {isOrderReady ? (
-        params.pay_method === 'vbank' ? (
-          <VBank info={params} callback={vbank} />
-        ) : (
-          <AppPaymentGateway info={params} callback={callback} />
-        )
+      {isOrderReady && !params.pay_method.startsWith('vbank') ? (
+        <AppPaymentGateway info={params} callback={callback} />
       ) : (
         renderLoading()
       )}
