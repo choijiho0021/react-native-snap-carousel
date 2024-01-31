@@ -491,6 +491,10 @@ const styles = StyleSheet.create({
     borderLeftColor: colors.lightGrey,
     display: 'flex',
     flexDirection: 'row',
+  },
+  apn: {
+    display: 'flex',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
@@ -1330,6 +1334,27 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     [onMessage],
   );
 
+  const renderAPN = useCallback(
+    (apn: string) => (
+      <View style={styles.apn}>
+        <View style={styles.apnInfo}>
+          <AppText style={styles.apnPrefix}>
+            {i18n.t('prodDetail:body:top:apn')}
+          </AppText>
+          <View style={styles.underline}>
+            <AppText style={styles.apnInfoText}>{apn}</AppText>
+          </View>
+        </View>
+        <AppCopyBtn
+          title={i18n.t('copy')}
+          onPress={() => onMessage('copy', apn)}
+        />
+      </View>
+    ),
+
+    [],
+  );
+
   const attachBTag = useCallback((el: SoupElement, orgText: string) => {
     const boldList = el?.contents?.reduce(
       (acc: {text: string; tag: string}[], cur) => {
@@ -1375,6 +1400,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
       const apnList = descData?.desc?.apn?.split(',');
       const apnInfo = apnList?.[0]?.split('/');
+      const tel = apnInfo?.[1]?.replace(/&amp;/g, ' • ');
+      const apn = apnInfo?.[2].replace(/&amp;/g, '&');
 
       return (
         <View style={styles.bodyTop}>
@@ -1405,9 +1432,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             ) : (
               <View style={styles.bodyTopBox}>
                 <AppText style={styles.bodyTopBoxCountry}>{apnInfo[0]}</AppText>
-                <AppText style={styles.bodyTopBoxTel}>
-                  {apnInfo[1]?.replace(/&amp;/g, ' • ')}
-                </AppText>
+                <AppText style={styles.bodyTopBoxTel}>{tel}</AppText>
               </View>
             ))}
           {tplList && tplList.length > 0 && !!tplList[0]?.text && (
@@ -1436,7 +1461,14 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               apnInfo &&
               (apnList?.length > 1 ? (
                 <Pressable
-                  style={[styles.apnCopy, {backgroundColor: colors.white}]}
+                  style={[
+                    styles.apnCopy,
+                    {
+                      backgroundColor: colors.white,
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    },
+                  ]}
                   onPress={() => onMessage('apn')}>
                   <AppText style={styles.goToApnText}>
                     {i18n.t('prodDetail:body:top:go:apn')}
@@ -1444,23 +1476,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
                   <AppIcon name="iconArrowRightBlack10" />
                 </Pressable>
               ) : (
-                <View style={styles.apnCopy}>
-                  <View style={styles.apnInfo}>
-                    <AppText style={styles.apnPrefix}>
-                      {i18n.t('prodDetail:body:top:apn')}
-                    </AppText>
-                    <View style={styles.underline}>
-                      <AppText style={styles.apnInfoText}>
-                        {apnInfo[2].replace(/&amp;/g, '&')}
-                      </AppText>
-                    </View>
-                  </View>
-                  <AppCopyBtn
-                    title={i18n.t('copy')}
-                    onPress={() =>
-                      onMessage('copy', apnInfo[2].replace(/&amp;/g, '&'))
-                    }
-                  />
+                <View
+                  style={[styles.apnCopy, {flexDirection: 'column', gap: 16}]}>
+                  {apn?.split('&').map((a) => renderAPN(a))}
                 </View>
               ))}
           </View>
@@ -1477,7 +1495,15 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         </View>
       );
     },
-    [attachBTag, descData, onMessage, prod, renderTplInfo],
+    [
+      attachBTag,
+      descData?.desc?.apn,
+      onMessage,
+      prod?.field_daily,
+      prod?.name,
+      renderAPN,
+      renderTplInfo,
+    ],
   );
 
   const renderBodyNotice = useCallback(
