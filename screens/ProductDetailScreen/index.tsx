@@ -725,7 +725,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             textStyle={styles.prodTitle}
             format={{b: styles.prodTitleBold}}
             data={{
-              data: isDaily ? prod?.days.toString() || '' : volume || '',
+              data: isDaily ? prod?.days?.toString() || '' : volume || '',
               unit: volumeUnit,
             }}
           />
@@ -829,7 +829,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
                     : 'iconLTE',
                 text: prod?.network || '',
               },
-            ].map((i) => renderIconWithText(i.icon, i.text))}
+            ].map((i) => renderIconWithText(i?.icon, i?.text))}
           </View>
           <View style={styles.iconBoxLine}>
             {[
@@ -1331,21 +1331,21 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const attachBTag = useCallback((el: SoupElement, orgText: string) => {
     const boldList = el?.contents?.reduce(
       (acc: {text: string; tag: string}[], cur) => {
-        const text = cur.getText();
+        const text = cur?.getText();
         if (text !== '') {
-          acc.push({text, tag: cur.name});
+          acc?.push({text, tag: cur?.name});
         }
         return acc;
       },
       [],
     );
 
-    return boldList && boldList.length > 0
-      ? boldList.reduce((acc, cur) => {
+    return boldList && boldList?.length > 0
+      ? boldList?.reduce((acc, cur) => {
           const regex = new RegExp(`(${cur?.text})`, 'g');
-          return cur.tag === 'a'
-            ? acc.replace(regex, '<s>$1</s>')
-            : acc.replace(regex, '<b>$1</b>');
+          return cur?.tag === 'a'
+            ? acc?.replace(regex, '<s>$1</s>')
+            : acc?.replace(regex, '<b>$1</b>');
         }, orgText)
       : orgText;
   }, []);
@@ -1356,17 +1356,17 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       const tplList =
         tplInfoTags?.contents.length > 1
           ? tplInfoTags?.contents.map((c) => ({
-              class: c.attrs?.class,
-              tag: c.name,
+              class: c?.attrs?.class,
+              tag: c?.name,
               text: attachBTag(c, c.getText()),
             }))
           : [
               {
-                class: tplInfoTags.contents[0]?.attrs?.class,
-                tag: tplInfoTags.name,
+                class: tplInfoTags?.contents[0]?.attrs?.class,
+                tag: tplInfoTags?.name,
                 text: attachBTag(
-                  tplInfoTags.contents[0],
-                  tplInfoTags.getText(),
+                  tplInfoTags?.contents[0],
+                  tplInfoTags?.getText(),
                 ),
               },
             ];
@@ -1404,11 +1404,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               <View style={styles.bodyTopBox}>
                 <AppText style={styles.bodyTopBoxCountry}>{apnInfo[0]}</AppText>
                 <AppText style={styles.bodyTopBoxTel}>
-                  {apnInfo[1].replace('&amp;', ' • ')}
+                  {apnInfo[1]?.replace('&amp;', ' • ')}
                 </AppText>
               </View>
             ))}
-          {tplList && tplList.length > 0 && !!tplList[0].text && (
+          {tplList && tplList.length > 0 && !!tplList[0]?.text && (
             <View style={styles.tplInfo}>
               {tplList.map((t) => renderTplInfo(t))}
             </View>
