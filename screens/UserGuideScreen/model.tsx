@@ -209,9 +209,6 @@ const renderTipText = (
   boldRed = false,
   anotherComponent = {key: '', component: <></>},
 ) => {
-  console.log('anotherComponent?.key : ', anotherComponent?.key);
-  console.log(' anotherComponent : ', anotherComponent.component);
-
   if (anotherComponent?.key === key) {
     return anotherComponent.component;
   }
