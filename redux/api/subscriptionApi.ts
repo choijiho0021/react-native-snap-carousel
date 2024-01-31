@@ -5,7 +5,6 @@ import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import {getLastExpireDate, isDraft} from '../modules/order';
 import Env from '@/environment';
 import {parseJson} from '@/utils/utils';
-import {ProdDesc} from './productApi';
 
 const {specialCategories} = Env.get();
 

@@ -6,11 +6,12 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import ProductDetailList from '@/screens/CancelOrderScreen/component/ProductDetailList';
 import i18n from '@/utils/i18n';
-import {DeviceDataType, UsProdDesc} from '..';
+import {DeviceDataType} from '..';
 import GuideBox from '@/screens/CancelOrderScreen/component/GuideBox';
 import FloatCheckButton from '@/screens/CancelOrderScreen/component/FloatCheckButton';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import moment from 'moment';
+import {ProdInfo} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -31,7 +32,7 @@ const styles = StyleSheet.create({
 });
 
 interface UsDraftStep3Props {
-  prods: UsProdDesc;
+  prods: ProdInfo;
   actDate: string;
   deviceData: DeviceDataType;
   checked: boolean;
@@ -46,12 +47,6 @@ const UsDraftStep3: React.FC<UsDraftStep3Props> = ({
   setChecked,
 }) => {
   const scrollRef = useRef(null);
-
-  useEffect(() => {
-    console.log('@@@@ actDate : ', actDate);
-    console.log('@@@@@ moment(actDate) : ', moment(actDate));
-    console.log('@@@@@ moment(actDate) : ', moment(actDate).format());
-  }, [actDate]);
 
   const onCheck = useCallback(() => {
     if (!checked) scrollRef?.current.scrollToEnd();

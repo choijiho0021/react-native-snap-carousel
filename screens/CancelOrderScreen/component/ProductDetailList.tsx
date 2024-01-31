@@ -7,6 +7,7 @@ import AppStyledText from '@/components/AppStyledText';
 import ProductDetailInfo from './ProductDetailInfo';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
+import {ProdInfo} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({
   notiContainer: {
@@ -115,15 +116,8 @@ const DefaultFooter = () => {
   );
 };
 
-type ProdDesc = {
-  title: string;
-  field_description: string;
-  promoFlag: string[];
-  qty: number;
-};
-
 type ProductDetailListPros = {
-  prods: ProdDesc[];
+  prods: ProdInfo[];
   listTitle?: string;
   style?: StyleProp<ViewStyle>;
   notiComponent?: any;
@@ -148,7 +142,7 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
   isBody = false,
 }) => {
   const renderItem = useCallback(
-    ({item, isLast}: {item: ProdDesc; isLast?: boolean}) => {
+    ({item, isLast}: {item: ProdInfo; isLast?: boolean}) => {
       return (
         <Fragment key={`${item.title}_${listTitle}`}>
           {Array.from({length: item?.qty}, (_, index) => {

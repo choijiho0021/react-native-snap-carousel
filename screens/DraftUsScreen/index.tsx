@@ -32,8 +32,8 @@ import UsDraftStep2, {UsDeviceInputType} from './component/UsDraftStep2';
 import UsDraftStep3 from './component/UsDraftStep3';
 import AppAlert from '@/components/AppAlert';
 import api from '@/redux/api/api';
-import {ProdDesc} from '../CancelOrderScreen/CancelResult';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import {ProdInfo} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -106,7 +106,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   pending,
 }) => {
   const [draftOrder, setDraftOrder] = useState<RkbOrder>();
-  const [prods, setProds] = useState<ProdDesc[]>([]);
+  const [prods, setProds] = useState<ProdInfo[]>([]);
   const loading = useRef(false);
   const [showSnackBar, setShowSnackBar] = useState('');
   const [showPicker, setShowPicker] = useState(false);
@@ -201,7 +201,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   useEffect(() => {
     if (!draftOrder?.orderItems) return;
 
-    const prodList: UsProdDesc = draftOrder.orderItems.map((r) => {
+    const prodList: ProdInfo = draftOrder.orderItems.map((r) => {
       const prod = product.prodList.get(r.uuid);
 
       console.log('@@@@@ prod : ', prod);
@@ -212,7 +212,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
           field_description: prod.field_description,
           promoFlag: prod.promoFlag,
           qty: r.qty,
-        } as ProdDesc;
+        } as ProdInfo;
 
       return null;
     });
