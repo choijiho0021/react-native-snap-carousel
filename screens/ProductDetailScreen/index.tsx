@@ -1301,14 +1301,15 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const renderTplInfo = useCallback(
     (t: {class: string; tag: string; text: string}, lineHeight?: number) => {
       const regex = /►.*◄/;
+      const text = t.text.replace(/\t|&nbsp;/g, '');
       return (
         <Pressable
-          onPress={() => regex.test(t.text) && onMessage('moveToFaq')}
-          key={t.text}>
+          onPress={() => regex.test(text) && onMessage('moveToFaq')}
+          key={text}>
           {t.class === 'txt_dot' ? (
             <TextWithDot
-              key={t.text}
-              text={t.text}
+              key={text}
+              text={text}
               boldStyle={{...styles.noticeTextBlackBold, lineHeight}}
               secondBoldStyle={{...styles.noticeTextBlueBold, lineHeight}}
               textStyle={{...styles.noticeTextBlackWithDot, lineHeight}}
@@ -1317,7 +1318,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             />
           ) : (
             <AppStyledText
-              text={t.text}
+              text={text}
               textStyle={{...styles.noticeTextBlack, lineHeight}}
               format={{
                 b: {...styles.noticeTextBlackBold, lineHeight},
@@ -1527,7 +1528,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         return c?.contents.map((c) => ({
           class: c?.attrs?.class,
           tag: c?.name,
-          text: attachBTag(c, c.getText()).replace(/\t|&nbsp;/g, ''),
+          text: attachBTag(c, c.getText()),
         }));
       });
 
