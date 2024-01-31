@@ -742,7 +742,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               }`,
             )}
           </AppText>
-          <AppText style={styles.bottomText}>{descData?.desc?.desc2}</AppText>
+          <AppText style={styles.bottomText}>
+            {descData?.desc?.desc2?.replace('&amp;', '&')}
+          </AppText>
         </View>
       </ImageBackground>
     ),
@@ -1490,12 +1492,14 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     (soup: BeautifulSoup) => {
       const tplCautionTags = soup?.find({attrs: {class: 'box_notandum'}});
 
-      const tplClist = tplCautionTags.contents.filter((c) => c.name === 'dl');
+      const tplClist = tplCautionTags?.contents?.filter(
+        (c) => c?.name === 'dl',
+      );
 
-      const textList = tplClist.map((c) => {
+      const textList = tplClist?.map((c) => {
         return c?.contents.map((c) => ({
-          class: c.attrs?.class,
-          tag: c.name,
+          class: c?.attrs?.class,
+          tag: c?.name,
           text: attachBTag(c, c.getText()).replace(/\t|&nbsp;/g, ''),
         }));
       });
@@ -1506,9 +1510,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             {i18n.t('prodDetail:Caution')}
           </AppText>
           <View style={styles.bodyNoticeContents}>
-            {textList.map((t) => (
-              <View key={t[0].text}>{t.map((c) => renderBodyNotice(c))}</View>
-            ))}
+            {textList &&
+              textList.length > 0 &&
+              textList.map((t) => (
+                <View key={t[0].text}>{t.map((c) => renderBodyNotice(c))}</View>
+              ))}
           </View>
         </View>
       );
