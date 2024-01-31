@@ -1329,7 +1329,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   );
 
   const attachBTag = useCallback((el: SoupElement, orgText: string) => {
-    const boldList = el?.contents.reduce(
+    const boldList = el?.contents?.reduce(
       (acc: {text: string; tag: string}[], cur) => {
         const text = cur.getText();
         if (text !== '') {
