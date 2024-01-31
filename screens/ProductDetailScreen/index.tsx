@@ -1337,12 +1337,14 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       [],
     );
 
-    return boldList.reduce((acc, cur) => {
-      const regex = new RegExp(`(${cur?.text})`, 'g');
-      return cur.tag === 'a'
-        ? acc.replace(regex, '<s>$1</s>')
-        : acc.replace(regex, '<b>$1</b>');
-    }, orgText);
+    return boldList && boldList.length > 0
+      ? boldList.reduce((acc, cur) => {
+          const regex = new RegExp(`(${cur?.text})`, 'g');
+          return cur.tag === 'a'
+            ? acc.replace(regex, '<s>$1</s>')
+            : acc.replace(regex, '<b>$1</b>');
+        }, orgText)
+      : orgText;
   }, []);
 
   const renderBodyTop = useCallback(
@@ -1357,7 +1359,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             }))
           : [
               {
-                class: tplInfoTags.contents[0].attrs?.class,
+                class: tplInfoTags.contents[0]?.attrs?.class,
                 tag: tplInfoTags.name,
                 text: attachBTag(
                   tplInfoTags.contents[0],
