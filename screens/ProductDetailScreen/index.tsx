@@ -602,8 +602,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [showModal, setShowModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
 
-  const [showWebModal, setShowWebModal] = useState(false);
-
   const [qty, setQty] = useState(1);
   const appState = useRef('unknown');
   const [price, setPrice] = useState<Currency>();
@@ -1242,7 +1240,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   }, [navigation, resetModalInfo]);
 
   const purchaseButtonTab = useCallback(() => {
-    if (showWebModal || showModal) return <></>;
+    if (showModal) return <></>;
 
     return (
       <View style={styles.buttonBox}>
@@ -1264,11 +1262,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         />
       </View>
     );
-  }, [showModal, showWebModal]);
+  }, [showModal]);
 
   const purchaseNumberTab = useCallback(() => {
-    if (showWebModal) return <></>;
-
     return (
       <View style={styles.bottomButtonContainer}>
         <View style={styles.bottomButtonFrame}>
@@ -1290,7 +1286,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       </View>
     );
   }, [
-    showWebModal,
     isht,
     account.loggedIn,
     onPressBtnRegCard,
@@ -1562,23 +1557,14 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.screen}>
-      <View
-        style={[
-          styles.header,
-          showWebModal ? {backgroundColor: 'rgba(0,0,0,0.3)'} : {},
-        ]}>
+      <View style={styles.header}>
         <AppBackButton
           title={route.params?.title}
           style={{width: '70%', height: 56}}
-          disable={showWebModal}
         />
         {account.loggedIn && (
           <AppCartButton
-            onPress={() =>
-              showWebModal
-                ? {}
-                : navigation.navigate('Cart', {showHeader: true})
-            }
+            onPress={() => navigation.navigate('Cart', {showHeader: true})}
             iconName="btnHeaderCart"
           />
         )}
