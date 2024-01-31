@@ -1086,7 +1086,7 @@
   "prodDetail:icon:timer:total": "{{data}}소진 시\n사용 종료",
 
   "prodDetail:icon:wifi": "핫스팟 테더링\n가능",
-  "prodDetail:icon:wifiOff": "핫스팟 테더링\n가능",
+  "prodDetail:icon:wifiOff": "핫스팟 테더링\n불가능",
   "prodDetail:icon:charge": "충전 가능",
   "prodDetail:icon:chargeOff": "충전 미지원",
   "prodDetail:icon:charge:addOn": "용량 충전",
