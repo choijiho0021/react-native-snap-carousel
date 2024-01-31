@@ -18,7 +18,12 @@ import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
-import {code, RkbSubscription, UsageObj} from '@/redux/api/subscriptionApi';
+import {
+  code,
+  RkbSubscription,
+  UsageObj,
+  UsageOptionObj,
+} from '@/redux/api/subscriptionApi';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import Env from '@/environment';
@@ -146,6 +151,7 @@ type UsageItemProps = {
   usageLoading: Boolean;
   usage?: UsageObj;
   dataStatusCd?: string;
+  dataUsageOption?: UsageOptionObj;
   endTime?: string;
 };
 
@@ -155,6 +161,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
   usageLoading,
   usage,
   dataStatusCd,
+  dataUsageOption,
   endTime,
 }) => {
   const [disableBtn, setDisableBtn] = useState(false);
@@ -169,23 +176,17 @@ const UsageItem: React.FC<UsageItemProps> = ({
   );
   const circularProgress = useRef();
 
-  // const showUsage = useMemo(
-  //   () =>
-  //     item.partner !== 'billionconnect' ||
-  //     !(
-  //       (item.country?.includes('JP') && item.daily === 'daily') ||
-  //       (item.country?.includes('TH') && item.daily === 'total')
-  //     ),
-  //   [item.country, item.daily, item.partner],
-  // );
-
   const isError = useMemo(() => {
     return dataStatusCd === 'E';
   }, [dataStatusCd]);
 
-  const showUsage = useMemo(
-    () => item.partner !== 'billionconnect' && item.partner !== 'ht',
-    [item.partner],
+  const [showStatus, showUsage, showEndTime] = useMemo(
+    () => [
+      dataUsageOption?.mode?.includes('stu'),
+      dataUsageOption?.mode?.includes('usa'),
+      dataUsageOption?.mode?.includes('end'),
+    ],
+    [dataUsageOption?.mode],
   );
 
   useEffect(() => {
@@ -195,7 +196,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [disableBtn]);
 
   useEffect(() => {
-    if (dataStatusCd === 'A') {
+    if (showUsage && dataStatusCd === 'A') {
       if (
         usage?.quota !== undefined &&
         usage?.remain !== undefined &&
@@ -217,13 +218,16 @@ const UsageItem: React.FC<UsageItemProps> = ({
       console.log('@@ show snackbar');
       showSnackbar();
     }
-  }, [dataStatusCd, quota, remain, showSnackbar, usage, used]);
+  }, [dataStatusCd, quota, remain, showSnackbar, showUsage, usage, used]);
 
-  const getResetTime = useCallback((tz: string) => {
-    if (item.resetTime) return item.resetTime;
-    else if (endTime) return moment(endTime).tz(tz).format('HH:mm:ss');
-    else return i18n.t('contact:q');
-  }, []);
+  const getResetTime = useCallback(
+    (tz: string) => {
+      if (dataUsageOption?.ret) return dataUsageOption?.ret;
+      if (endTime) return moment(endTime).tz(tz).format('HH:mm:ss');
+      return i18n.t('contact:q');
+    },
+    [dataUsageOption?.ret, endTime],
+  );
 
   const renderResetTimeRow = useCallback(
     (key: string, rowStyle: ViewStyle = {}) => {
@@ -241,7 +245,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         </View>
       );
     },
-    [endTime, item.partner],
+    [getResetTime],
   );
 
   const renderCaution = useCallback(() => {
@@ -312,19 +316,21 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
     return (
       <View style={styles.timeContainer}>
-        <View style={styles.timeItem}>
-          <AppText
-            style={{
-              ...appStyles.bold12Text,
-              color: colors.black,
-              marginBottom: 6,
-            }}>
-            {i18n.t('esim:time:usable')}
-          </AppText>
-          <AppText style={{...appStyles.bold16Text, color: colors.clearBlue}}>
-            {utils.toDateString(endTime, 'YYYY년 MM월 DD일 HH:mm:ss까지')}
-          </AppText>
-        </View>
+        {showEndTime && endTime && (
+          <View style={styles.timeItem}>
+            <AppText
+              style={{
+                ...appStyles.bold12Text,
+                color: colors.black,
+                marginBottom: 6,
+              }}>
+              {i18n.t('esim:time:usable')}
+            </AppText>
+            <AppText style={{...appStyles.bold16Text, color: colors.clearBlue}}>
+              {utils.toDateString(endTime, 'YYYY년 MM월 DD일 HH:mm:ss까지')}
+            </AppText>
+          </View>
+        )}
 
         {item.daily === 'daily' && showUsage && (
           <Fragment>
@@ -353,7 +359,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         )}
       </View>
     );
-  }, [endTime, item.daily, item.partner, renderResetTimeRow]);
+  }, [endTime, item.daily, renderResetTimeRow, showEndTime, showUsage]);
 
   const renderAnimatedCircularProgress = useCallback(() => {
     return (
@@ -397,7 +403,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
     switch (item?.partner) {
       case 'ht':
         return (
-          <View style={{width: '100%', marginTop: 16}}>
+          <View style={{width: '100%'}}>
             <View style={{flexDirection: 'row'}}>
               <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
               <AppText style={styles.warning}>
@@ -414,7 +420,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         );
       default:
         return (
-          <View style={{width: '100%', marginTop: 16}}>
+          <View style={{width: '100%'}}>
             <View style={{flexDirection: 'row'}}>
               <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
               <AppText style={styles.warning}>
@@ -425,6 +431,19 @@ const UsageItem: React.FC<UsageItemProps> = ({
         );
     }
   }, [item?.partner]);
+
+  const clMtdTxt = useCallback(() => {
+    return ['ais', 'dtac', 'mvtotal'].includes(item?.clMtd || '') ? (
+      <View style={{width: '100%'}}>
+        <View style={{flexDirection: 'row'}}>
+          <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
+          <AppText style={styles.warning}>
+            {i18n.t(`esim:caution:clMtd:${item.clMtd}`)}
+          </AppText>
+        </View>
+      </View>
+    ) : null;
+  }, [item?.clMtd]);
 
   const renderWarning = useCallback(() => {
     return (
@@ -438,23 +457,24 @@ const UsageItem: React.FC<UsageItemProps> = ({
           </View>
         )}
         {warningDotTxt()}
+        {clMtdTxt()}
       </View>
     );
-  }, [showUsage, warningDotTxt]);
+  }, [clMtdTxt, showUsage, warningDotTxt]);
 
   const usageRender = useCallback(() => {
     return (
       <View style={styles.activeContainer}>
-        {showUsage && renderAnimatedCircularProgress()}
+        {showUsage ? (
+          renderAnimatedCircularProgress()
+        ) : (
+          <AppSvgIcon style={{marginBottom: 20}} name="notShowEsimUsage" />
+        )}
 
         {/* {showUsage &&
           isExhausted &&
           item.daily === 'daily' &&
           renderDailyUsage()} */}
-
-        {!showUsage && (
-          <AppSvgIcon style={{marginBottom: 20}} name="notShowEsimUsage" />
-        )}
 
         {renderCaution()}
 
@@ -586,16 +606,19 @@ const UsageItem: React.FC<UsageItemProps> = ({
           <AppText key={i18n.t('esim:checkUsage')} style={appStyles.bold18Text}>
             {i18n.t('esim:checkUsage')}
           </AppText>
-          {!usageLoading && !isError && item?.partner !== 'ht' && (
-            <AppText
-              key={item.nid}
-              style={[
-                styles.usageStatus,
-                {color: statusColor, backgroundColor: statusBackgroundColor},
-              ]}>
-              {status}
-            </AppText>
-          )}
+          {showStatus &&
+            !usageLoading &&
+            !isError &&
+            item?.partner !== 'ht' && (
+              <AppText
+                key={item.nid}
+                style={[
+                  styles.usageStatus,
+                  {color: statusColor, backgroundColor: statusBackgroundColor},
+                ]}>
+                {status}
+              </AppText>
+            )}
         </View>
         {usageLoading ? (
           <View style={{paddingVertical: 30, height: 170}}>

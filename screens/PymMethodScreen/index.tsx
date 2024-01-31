@@ -178,7 +178,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       if (!clickable) return;
 
       if (!passingAlert && !account.isSupportDev) {
-        setShowUnsupAlert((prev) => !prev);
+        setShowUnsupAlert(true);
         return;
       }
 
@@ -369,10 +369,10 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         title={showUnsupAlert ? i18n.t('pym:unsupportDeviceModal') : undefined}
         type={showUnsupAlert ? 'normal' : 'info'}
         onOkClose={async () => {
-          setShowUnsupAlert((prev) => !prev);
+          setShowUnsupAlert(false);
           onSubmit(true);
         }}
-        onCancelClose={() => setShowUnsupAlert((prev) => !prev)}
+        onCancelClose={() => setShowUnsupAlert(false)}
         visible={showUnsupAlert}>
         {modalBody()}
       </AppModal>

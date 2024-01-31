@@ -14,6 +14,7 @@ import {
   ScrollView,
   Dimensions,
   Pressable,
+  Platform,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {colors} from '@/constants/Colors';
@@ -34,6 +35,7 @@ import {getImage} from '@/utils/utils';
 import AppCarousel, {AppCarouselRef} from '@/components/AppCarousel';
 import {ContactListItem} from '../ContactScreen';
 import ChatTalk from '@/components/ChatTalk';
+import LinearGradient from 'react-native-linear-gradient';
 
 const {isIOS} = Env.get();
 // const isIOS = false;
@@ -172,6 +174,30 @@ const styles = StyleSheet.create({
     ...appStyles.bold20Text,
     lineHeight: 28,
     marginBottom: 16,
+  },
+
+  grediant: {
+    height: 28,
+    width: 78,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    borderRadius: 20,
+    marginBottom: 13,
+    marginTop: 14,
+  },
+  buttonContainer: {
+    flex: 1.0,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+    width: '95%',
+    margin: 2,
+    borderRadius: 20,
+  },
+  buttonText: {
+    textAlign: 'center',
+    color: '#4C64FF',
+    alignSelf: 'center',
   },
 });
 
@@ -365,44 +391,81 @@ const UserGuideScreen = () => {
             styles.stepPage,
             isDeviceSize('large') ? undefined : {flex: 1},
           ]}>
-          <View style={{alignItems: 'center', marginBottom: 21}}>
-            <View
-              style={[
-                styles.step,
-                data.stepPreText === 'korea' && {
-                  backgroundColor: colors.dodgerBlue,
-                },
-                data.stepPreText === 'local' && {
-                  backgroundColor: colors.purplyBlue,
-                },
-              ]}>
-              <AppText style={styles.stepText}>
-                {/* eslint-disable-next-line react-native/no-raw-text */}
-                {data.stepTitle ||
-                  `${data.stepPreText ? i18n.t(data.stepPreText) : 'Step.'}${
-                    data.stepPreText ? '_' : ' '
-                  }${data.step}${isCheckLocal ? i18n.t('localNet') : ''}`}
-              </AppText>
-            </View>
-            {isCheckLocal && data.localTitle ? data.localTitle : data.title}
+          <View
+            style={{
+              alignItems: 'center',
+              marginBottom: data.stepTitle === 'Bonus' ? 0 : 21,
+            }}>
+            {data.stepTitle === 'Bonus' ? (
+              <>
+                <LinearGradient
+                  colors={['#2a7ff6', '#b52af6']}
+                  start={{x: 0.0, y: 1.0}}
+                  end={{x: 1.0, y: 1.0}}
+                  style={styles.grediant}>
+                  <View
+                    style={[
+                      styles.buttonContainer,
+                      {backgroundColor: 'white'},
+                    ]}>
+                    <AppText style={[styles.stepText, styles.buttonText]}>
+                      {/* eslint-disable-next-line react-native/no-raw-text */}
+                      {data.stepTitle ||
+                        `${
+                          data.stepPreText ? i18n.t(data.stepPreText) : 'Step.'
+                        }${data.stepPreText ? '_' : ' '}${data.step}${
+                          isCheckLocal ? i18n.t('localNet') : ''
+                        }`}
+                    </AppText>
+                  </View>
+                </LinearGradient>
+                {isCheckLocal && data.localTitle ? data.localTitle : data.title}
+              </>
+            ) : (
+              <>
+                <View
+                  style={[
+                    styles.step,
+                    data.stepPreText === 'korea' && {
+                      backgroundColor: colors.dodgerBlue,
+                    },
+                    data.stepPreText === 'local' && {
+                      backgroundColor: colors.purplyBlue,
+                    },
+                  ]}>
+                  <AppText style={styles.stepText}>
+                    {/* eslint-disable-next-line react-native/no-raw-text */}
+                    {data.stepTitle ||
+                      `${
+                        data.stepPreText ? i18n.t(data.stepPreText) : 'Step.'
+                      }${data.stepPreText ? '_' : ' '}${data.step}${
+                        isCheckLocal ? i18n.t('localNet') : ''
+                      }`}
+                  </AppText>
+                </View>
+                {isCheckLocal && data.localTitle ? data.localTitle : data.title}
+              </>
+            )}
           </View>
-
-          {data.noticeBox && data.noticeBox(isCheckLocal)}
 
           {data.tip ? (
             <View
               style={
                 data.noticeBox
                   ? {marginBottom: 12}
-                  : {marginBottom: isIOS ? 21 : 38}
+                  : {marginBottom: isIOS ? 21 : data.step === 2 ? 0 : 38}
               }>
               {isCheckLocal && data.localTip ? data.localTip() : data.tip()}
             </View>
           ) : !isIOS ? (
             <View style={{height: 23}} />
+          ) : guideOption === 'checkSetting' && data.noticeBox ? (
+            <View style={{height: 0}} />
           ) : (
-            guideOption === 'checkSetting' && <View style={{height: 79}} />
+            <View style={{height: 79}} />
           )}
+
+          {data.noticeBox && data.noticeBox(isCheckLocal)}
 
           <View
             style={{

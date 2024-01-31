@@ -1265,7 +1265,6 @@
   "userGuide:stepsTitle5:galaxy:checkSetting": "<b>설정 > 연결 > SIM 관리자</b> 화면이\n아래처럼 설정되어 있는지\n확인해주세요.",
   "userGuide:stepsTitle5:galaxy:caution:title": "※ 통화 가능 상품의 경우!",
   "userGuide:stepsTitle5:galaxy:caution:body1": "<b>현지에서 통화·문자 사용 예정</b>이라면, <b>통화를 eSIM 1</b>으로 설정해주세요.",
-  "userGuide:stepsTitle5:galaxy:caution:body2": "현재 미국(로컬), 태국(로컬) 상품에서 통화 서비스를 지원하고 있어요.",
   "userGuide:stepsTitle6:galaxy": "<b>모바일 데이터</b>를 <b>eSIM 1</b>으로\n변경해주세요.\n",
   "userGuide:stepsTitle6:galaxy:checkSetting": "설정 > 연결 > SIM 관리자 화면\n하단의 <b>데이터 전환이 OFF</b>인지\n확인해주세요.",
   "userGuide:stepsTitle7:galaxy": "설정 > 연결 > 해외 로밍에서\n<b>데이터 로밍을 ON</b> 해주세요.",
