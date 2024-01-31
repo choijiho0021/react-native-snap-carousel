@@ -1302,6 +1302,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     (t: {class: string; tag: string; text: string}, lineHeight?: number) => {
       const regex = /►.*◄/;
       const text = t.text.replace(/\t|&nbsp;/g, '');
+      // console.log('@@@@ text', text);
       return (
         <Pressable
           onPress={() => regex.test(text) && onMessage('moveToFaq')}
@@ -1349,21 +1350,19 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         />
       </View>
     ),
-
-    [],
+    [onMessage],
   );
 
   const attachBTag = useCallback((el: SoupElement, orgText: string) => {
-    const boldList = el?.contents?.reduce(
-      (acc: {text: string; tag: string}[], cur) => {
+    const boldList = el?.contents
+      ?.reduce((acc: {text: string; tag: string}[], cur) => {
         const text = cur?.getText();
         if (text !== '') {
           acc?.push({text, tag: cur?.name});
         }
         return acc;
-      },
-      [],
-    );
+      }, [])
+      ?.filter((b) => b.text !== '.');
 
     return boldList && boldList?.length > 0
       ? boldList?.reduce((acc, cur) => {
@@ -1506,7 +1505,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   const renderBodyNotice = useCallback(
     (t: {class: string; tag: string; text: string}) => {
-      console.log('@@@@ t', t);
       return t.tag === 'dt' ? (
         <AppText style={styles.noticeTitle}>{t.text}</AppText>
       ) : (
