@@ -743,7 +743,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             )}
           </AppText>
           <AppText style={styles.bottomText}>
-            {descData?.desc?.desc2?.replace('&amp;', '&')}
+            {descData?.desc?.desc2?.replace(/&amp;/g, '&')}
           </AppText>
         </View>
       </ImageBackground>
@@ -1406,7 +1406,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               <View style={styles.bodyTopBox}>
                 <AppText style={styles.bodyTopBoxCountry}>{apnInfo[0]}</AppText>
                 <AppText style={styles.bodyTopBoxTel}>
-                  {apnInfo[1]?.replace('&amp;', ' • ')}
+                  {apnInfo[1]?.replace(/&amp;/g, ' • ')}
                 </AppText>
               </View>
             ))}
@@ -1450,12 +1450,16 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
                       {i18n.t('prodDetail:body:top:apn')}
                     </AppText>
                     <View style={styles.underline}>
-                      <AppText style={styles.apnInfoText}>{apnInfo[2]}</AppText>
+                      <AppText style={styles.apnInfoText}>
+                        {apnInfo[2].replace(/&amp;/g, '&')}
+                      </AppText>
                     </View>
                   </View>
                   <AppCopyBtn
                     title={i18n.t('copy')}
-                    onPress={() => onMessage('copy', apnInfo[2])}
+                    onPress={() =>
+                      onMessage('copy', apnInfo[2].replace(/&amp;/g, '&'))
+                    }
                   />
                 </View>
               ))}
