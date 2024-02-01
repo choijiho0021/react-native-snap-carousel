@@ -462,10 +462,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           .then(() => {
             action.account.getAccount({iccid, token});
             getOrders(hidden);
+            setIsFirstLoad(false);
           })
           .finally(() => {
             setRefreshing(false);
-            setIsFirstLoad(false);
           });
       }
     },
