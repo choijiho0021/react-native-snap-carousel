@@ -662,20 +662,11 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         <View style={[styles.topInfo, !notCardInfo && {marginVertical: 16}]}>
           {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
             <View style={styles.inactiveContainer}>
-              <AppText
-                style={[
-                  styles.normal14Gray,
-                  !mainSubs.subsIccid
-                    ? {
-                        textDecorationLine: 'line-through',
-                        textDecorationStyle: 'solid',
-                      }
-                    : {},
-                ]}>
+              <AppText style={styles.normal14Gray}>
                 {i18n.t('esim:iccid')}
               </AppText>
               <AppText style={styles.normal14Gray}>
-                {mainSubs.subsIccid}
+                {mainSubs.subsIccid || '-'}
               </AppText>
             </View>
           )}
@@ -697,7 +688,9 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               <AppText style={styles.normal14Gray}>
                 {i18n.t('esim:rechargeablePeriod')}
               </AppText>
-              <AppText style={styles.normal14Gray}>{chargeablePeriod}</AppText>
+              <AppText style={styles.normal14Gray}>
+                {chargeablePeriod || '-'}
+              </AppText>
             </View>
           )}
         </View>
