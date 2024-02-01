@@ -152,13 +152,13 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
                   style={[
                     styles.eidFrame,
                     {
-                      lineHeight: 20,
+                      lineHeight: Platform.OS === 'android' ? 20 : 16,
                       marginRight: 10,
                       textAlignVertical: 'center',
                     },
                   ]}
                   maxLength={isEid ? 32 : 15}
-                  multiline={isEid}
+                  multiline
                   enablesReturnKeyAutomatically
                   clearTextOnFocus={false}
                   autoCorrect={false}
