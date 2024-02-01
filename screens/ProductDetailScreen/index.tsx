@@ -347,6 +347,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     const ftr = descData?.desc?.ftr;
     const prodDays = prod?.days;
 
+    const fieldNoticeOption = descData?.fieldNoticeOption || [];
+    const fieldCautionList = descData?.fieldCautionList || [];
+
     return (
       prod &&
       descData && (
@@ -372,16 +375,15 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             addonOption={descData.addonOption || ''}
             setShowChargeInfoModal={setShowChargeInfoModal}
           />
-
-          <ProductDetailNotice
-            fieldNoticeOption={descData?.fieldNoticeOption || []}
-            fieldCautionList={descData?.fieldCautionList || []}
-          />
+          {(fieldNoticeOption.length > 0 || fieldCautionList.length > 0) && (
+            <ProductDetailNotice
+              fieldNoticeOption={fieldNoticeOption}
+              fieldCautionList={fieldCautionList}
+            />
+          )}
           {clMtd &&
-            ftr &&
-            ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(
-              clMtd,
-            ) && <ProductDetailCallMethod clMtd={clMtd} ftr={ftr} />}
+            ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(clMtd) &&
+            ftr && <ProductDetailCallMethod clMtd={clMtd} ftr={ftr} />}
         </View>
       )
     );
@@ -614,6 +616,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           />
         )}
       </ScrollView>
+
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       {purchaseButtonTab()}
 

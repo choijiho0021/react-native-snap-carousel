@@ -62,6 +62,7 @@ import ProgressiveImage from '@/components/ProgressiveImage';
 import i18n from '@/utils/i18n';
 import {isFolderOpen} from '@/constants/SliderEntry.style';
 import {ProductModelState} from '@/redux/modules/product';
+import AppAlert from '@/components/AppAlert';
 
 const {isIOS, esimGlobal} = Env.get();
 const MainStack = createStackNavigator();
@@ -391,7 +392,13 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
             params: naviParams,
           });
         } else if (url) {
-          gift(url, params);
+          const urlSplit = url.split('?');
+          const schemeSplit = urlSplit[0].split('/');
+          const linkPath = schemeSplit[schemeSplit.length - 1];
+
+          if (linkPath === 'draft') {
+            refNavigate({stack: 'EsimStack', screen: 'Esim'});
+          } else gift(url, params);
         }
       }
     },
@@ -657,17 +664,21 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
             });
             break;
           default:
-            // 이게 맞나... 따로 붙여야할 것 같음.
-            if (params?.orderId) {
-              refNavigate({
-                stack: 'EsimStack',
-                screen: 'esim',
-                initial: false,
-                params: {
-                  actionStr: 'reload',
-                },
-              });
-            }
+            // console.log('@@@@ params?.orderID : ', params?.orderId);
+
+            // AppAlert.info(`params orderId : ${params?.orderId}`, 'logging');
+
+            // // 이게 맞나... 따로 붙여야할 것 같음.
+            // if (params?.orderId) {
+            //   refNavigate({
+            //     stack: 'EsimStack',
+            //     screen: 'Esim',
+            //     initial: false,
+            //     params: {
+            //       actionStr: 'reload',
+            //     },
+            //   });
+            // }
 
             break;
         }

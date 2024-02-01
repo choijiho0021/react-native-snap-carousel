@@ -138,6 +138,13 @@ export type ProdDesc = {
   email_notice?: string;
 };
 
+export type ProdInfo = {
+  title: string;
+  field_description: string;
+  promoFlag: string[];
+  qty: number;
+};
+
 export type RkbProduct = {
   key: string;
   uuid: string;
