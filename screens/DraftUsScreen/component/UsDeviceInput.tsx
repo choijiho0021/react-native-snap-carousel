@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback} from 'react';
 import {Animated, Platform, Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
@@ -66,9 +66,6 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
   setValue,
   animatedValue,
 }) => {
-  const [eidHeight, setEidHeight] = useState(26);
-  const [imei2Height, setImei2Height] = useState(26);
-
   const renderTitle = useCallback(() => {
     return (
       <View
@@ -146,7 +143,7 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
                   {
                     borderColor:
                       text.length > 0 ? colors.clearBlue : colors.lightGrey,
-                    padding: Platform.OS === 'android' ? 8 : 16,
+                    padding: Platform.OS === 'android' ? 4 : 16,
                     paddingHorizontal: 16,
                   },
                 ]}>
@@ -155,26 +152,16 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
                   style={[
                     styles.eidFrame,
                     {
-                      height: isEid ? eidHeight : imei2Height,
-                      // height: test,
                       lineHeight: 20,
                       marginRight: 10,
                       textAlignVertical: 'center',
                     },
                   ]}
                   maxLength={isEid ? 32 : 15}
-                  onContentSizeChange={(event) => {
-                    const h = event.nativeEvent.contentSize.height;
-                    if (h === 0) return;
-
-                    if (isEid) setEidHeight(h);
-                    else setImei2Height(h);
-                  }}
                   multiline={isEid}
                   enablesReturnKeyAutomatically
                   clearTextOnFocus={false}
                   autoCorrect={false}
-                  keyboardType="numeric"
                   value={text}
                   onChangeText={(str) => {
                     setValue(
@@ -226,7 +213,7 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
         })}
       </View>
     );
-  }, [eidHeight, imei2Height, renderTitle, setValue, value]);
+  }, [renderTitle, setValue, value]);
 
   const renderContent = useCallback(() => {
     switch (inputType) {
