@@ -64,6 +64,7 @@ import ProductDetailTopInfo from './components/ProductDetailTopInfo';
 import ProductDetailSixIcon from './components/ProductDetailSixIcon';
 import ProductDetailNotice from './components/ProductDetailNotice';
 import ProductDetailCallMethod from './components/ProductDetailCallMethod';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 
 const {esimGlobal, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -225,6 +226,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [qty, setQty] = useState(1);
   const appState = useRef('unknown');
@@ -251,8 +253,12 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   });
 
   useEffect(() => {
-    if (!product.descData.get(prod?.key || route.params?.uuid))
+    if (!product.descData.get(prod?.key || route.params?.uuid)) {
       dispatch(productAction.getProdDesc(prod?.key || route.params?.uuid));
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
   }, [dispatch, prod, product.descData, route.params?.uuid]);
 
   useEffect(() => {
@@ -591,6 +597,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.screen}>
+      <AppActivityIndicator visible={loading} />
       <View style={styles.header}>
         <AppBackButton
           title={route.params?.title}
