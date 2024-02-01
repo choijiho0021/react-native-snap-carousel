@@ -1080,19 +1080,22 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           )}
         </View>
 
-        {mainSubs?.clMtd && (
-          <>
-            <HowToCallModal
-              visible={showHtcModal}
-              clMtd={mainSubs?.clMtd}
-              onOkClose={() => setShowHtcModal(false)}
-            />
-            <HtQrModal
-              visible={showHtQrModal}
-              onOkClose={() => setShowHtQrModal(false)}
-            />
-          </>
-        )}
+        {mainSubs?.clMtd &&
+          ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(
+            mainSubs?.clMtd,
+          ) && (
+            <>
+              <HowToCallModal
+                visible={showHtcModal}
+                clMtd={mainSubs?.clMtd}
+                onOkClose={() => setShowHtcModal(false)}
+              />
+              <HtQrModal
+                visible={showHtQrModal}
+                onOkClose={() => setShowHtQrModal(false)}
+              />
+            </>
+          )}
 
         <AppModal
           type="info"

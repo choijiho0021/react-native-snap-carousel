@@ -433,7 +433,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [item?.partner]);
 
   const clMtdTxt = useCallback(() => {
-    return ['ais', 'dtac', 'mvtotal'].includes(item?.clMtd || '') ? (
+    return ['ais', 'dtac', 'vndaily'].includes(item?.clMtd || '') ? (
       <View style={{width: '100%'}}>
         <View style={{flexDirection: 'row'}}>
           <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
@@ -500,7 +500,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
               <AppText key={item.key} style={styles.usageTitleBold}>
                 {item.prodName}
               </AppText>
-              {item.partner !== 'ht' && (
+              {showStatus && (
                 <AppText key={item.prodName} style={styles.bold14WarmGrey}>
                   {i18n.t('esim:quota', {
                     quota: utils.toDataVolumeString(quota || 0),
