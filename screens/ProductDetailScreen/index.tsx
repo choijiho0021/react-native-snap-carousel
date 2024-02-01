@@ -373,10 +373,13 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             setShowChargeInfoModal={setShowChargeInfoModal}
           />
 
-          <ProductDetailNotice
-            fieldNoticeOption={descData?.fieldNoticeOption || []}
-            fieldCautionList={descData?.fieldCautionList || []}
-          />
+          {((descData?.fieldNoticeOption || [])?.length > 0 ||
+            (descData?.fieldCautionList || [])?.length > 0) && (
+            <ProductDetailNotice
+              fieldNoticeOption={descData?.fieldNoticeOption || []}
+              fieldCautionList={descData?.fieldCautionList || []}
+            />
+          )}
           {clMtd &&
             ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(clMtd) &&
             ftr && <ProductDetailCallMethod clMtd={clMtd} ftr={ftr} />}
