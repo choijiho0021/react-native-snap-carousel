@@ -483,7 +483,9 @@ const slice = createSlice({
           state.subs = state.subs.reduce((acc, cur) => {
             if (cur.statusCd === STATUS_USED) {
               if (cur.subsIccid === subsIccid) {
-                return acc.concat([{...cur, lastExpireDate: maxExpiredDate}]);
+                return acc.concat([
+                  {...cur, lastExpireDate: maxExpiredDate, cnt: objects.length},
+                ]);
               }
             } else if (objects.find((obj) => obj.nid === cur.nid)) return acc;
 
