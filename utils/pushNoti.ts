@@ -99,7 +99,7 @@ class PushNoti {
         PushNotificationIOS.setApplicationIconBadgeNumber(Number(badge));
       else ShortcutBadge.setCount(Number(badge));
       // sim 카드 해지 알림이 왓을 때 백그라운드
-      if (notiType && iccid) {
+      if (notiType) {
         onNotification({data: {notiType, iccid}});
       }
     });

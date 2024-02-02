@@ -269,7 +269,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
               screen: 'Esim',
               params: {
                 iccid: split[1],
-                actionStr: 'navigate',
+                actionStr: 'reload',
               },
             });
             break;
