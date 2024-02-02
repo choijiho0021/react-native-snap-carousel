@@ -45,8 +45,7 @@ import {countRokebiCash, isRokebiCash} from '../PurchaseDetailScreen';
 import AppTextInput from '@/components/AppTextInput';
 import Env from '@/environment';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {Currency} from '@/redux/api/productApi';
-import {ProdDesc} from './CancelResult';
+import {Currency, ProdInfo} from '@/redux/api/productApi';
 import AppSnackBar from '@/components/AppSnackBar';
 import ProductDetailList from './component/ProductDetailList';
 import GuideBox from './component/GuideBox';
@@ -254,7 +253,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   const REASON_MAX_LENGTH = 500;
   const REASON_MIN_LENGTH = 10;
   const [selectedOrder, setSelectedOrder] = useState<RkbOrder>();
-  const [prods, setProds] = useState<ProdDesc[]>([]);
+  const [prods, setProds] = useState<ProdInfo[]>([]);
   const [step, setStep] = useState(0);
   const [balanceCharge, setBalanceCharge] = useState<Currency>();
   const loading = useRef(false);
@@ -348,7 +347,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
     setBalanceCharge(countRokebiCash(selectedOrder));
     getProdDate();
 
-    const prodList: ProdDesc[] = selectedOrder.orderItems.map((r) => {
+    const prodList: ProdInfo[] = selectedOrder.orderItems.map((r) => {
       const prod = product.prodList.get(r.uuid);
 
       if (prod)

@@ -276,6 +276,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   const [pending, setPending] = useState(false);
   const [usage, setUsage] = useState({});
   const [status, setStatus] = useState({});
+  const [dataUsageOption, setDataUsageOption] = useState({});
   const [orderModalVisible, setOrderModalVisible] = useState<boolean>(false);
   const [orderType, setOrderType] = useState<OrderType>('purchase');
   const orderTypeList: OrderType[] = useMemo(() => ['purchase', 'latest'], []);
@@ -542,6 +543,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                   onPressUsage(item)?.then((u) => {
                     setUsage(u.usage);
                     setStatus(u.status);
+                    setDataUsageOption(u.usageOption);
                     setPending(false);
                   });
                   setShowModal(true);
@@ -666,11 +668,13 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         usageLoading={pending}
         dataUsage={usage}
         dataStatus={status}
+        dataUsageOption={dataUsageOption}
         isChargeableData={isChargeable}
         onCancelClose={() => {
           setShowModal(false);
           setStatus({});
           setUsage({});
+          setDataUsageOption({});
         }}
         onOkClose={navigateToChargeType}
       />

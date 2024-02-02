@@ -53,7 +53,7 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
     async (formData: FormData) => {
       try {
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Timeout')), 10000),
+          setTimeout(() => reject(new Error('Timeout')), 15000),
         );
 
         const apiPromise = API.User.extractBarcodes(formData);

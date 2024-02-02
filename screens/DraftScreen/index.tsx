@@ -37,6 +37,7 @@ import GuideBox from '../CancelOrderScreen/component/GuideBox';
 import FloatCheckButton from '../CancelOrderScreen/component/FloatCheckButton';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
+import {ProdInfo} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -88,13 +89,6 @@ type DraftScreenProps = {
   };
 };
 
-type ProdDesc = {
-  title: string;
-  field_description: string;
-  promoFlag: string[];
-  qty: number;
-};
-
 const DraftScreen: React.FC<DraftScreenProps> = ({
   navigation,
   route,
@@ -105,7 +99,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   pending,
 }) => {
   const [draftOrder, setDraftOrder] = useState<RkbOrder>();
-  const [prods, setProds] = useState<ProdDesc[]>([]);
+  const [prods, setProds] = useState<ProdInfo[]>([]);
   const loading = useRef(false);
   const [checked, setChecked] = useState<boolean>(false);
   const [isClickButton, setIsClickButton] = useState(false);
@@ -168,7 +162,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   useEffect(() => {
     if (!draftOrder?.orderItems) return;
 
-    const prodList: ProdDesc[] = draftOrder.orderItems.map((r) => {
+    const prodList: ProdInfo[] = draftOrder.orderItems.map((r) => {
       const prod = product.prodList.get(r.uuid);
       if (prod)
         return {

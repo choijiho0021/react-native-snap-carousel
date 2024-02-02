@@ -1,10 +1,9 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback} from 'react';
 import {Animated, Platform, Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
-
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppIcon from '@/components/AppIcon';
@@ -67,8 +66,6 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
   setValue,
   animatedValue,
 }) => {
-  const [height, setHeight] = useState(26);
-
   const renderTitle = useCallback(() => {
     return (
       <View
@@ -146,7 +143,7 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
                   {
                     borderColor:
                       text.length > 0 ? colors.clearBlue : colors.lightGrey,
-                    padding: Platform.OS === 'android' ? 8 : 16,
+                    padding: Platform.OS === 'android' ? 4 : 16,
                     paddingHorizontal: 16,
                   },
                 ]}>
@@ -155,27 +152,16 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
                   style={[
                     styles.eidFrame,
                     {
-                      height: isEid
-                        ? height
-                        : Platform.OS === 'android'
-                        ? 40
-                        : 36,
-                      lineHeight: 20,
+                      lineHeight: Platform.OS === 'android' ? 20 : 16,
                       marginRight: 10,
                       textAlignVertical: 'center',
                     },
                   ]}
                   maxLength={isEid ? 32 : 15}
-                  onContentSizeChange={(event) => {
-                    if (isEid) {
-                      setHeight(event.nativeEvent.contentSize.height);
-                    }
-                  }}
-                  multiline={isEid}
+                  multiline
                   enablesReturnKeyAutomatically
                   clearTextOnFocus={false}
                   autoCorrect={false}
-                  keyboardType="numeric"
                   value={text}
                   onChangeText={(str) => {
                     setValue(
@@ -227,7 +213,7 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
         })}
       </View>
     );
-  }, [height, renderTitle, setValue, value]);
+  }, [renderTitle, setValue, value]);
 
   const renderContent = useCallback(() => {
     switch (inputType) {

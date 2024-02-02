@@ -101,7 +101,7 @@ const EsimModal: React.FC<EsimModalProps> = ({
         />
       )
     );
-  }, [usageLoading, dataStatus, dataUsage, subs]);
+  }, [subs, dataUsage, dataStatus, usageLoading, dataUsageOption]);
 
   const renderBottom = useCallback(() => {
     const quota = Number(dataUsage?.quota || 0);

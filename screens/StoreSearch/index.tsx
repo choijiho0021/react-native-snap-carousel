@@ -331,7 +331,7 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
             wordIdx < 0 ? searchList : searchList.filter((h) => h !== word),
           );
           storeData('searchHist', hist.join(','));
-          setSearchList(hist);
+          setSearchList(hist.slice(0, 7));
         } else {
           storeData('searchHist', word);
           setSearchList(word?.split(','));

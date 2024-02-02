@@ -7,14 +7,18 @@ import {Moment} from 'moment';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {RkbInfo} from '@/redux/api/pageApi';
 import {BoardMsgStatus} from '@/redux/api/boardApi';
-import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {RkbSubscription, UsageOptionObj} from '@/redux/api/subscriptionApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
-import {Currency, RkbAddOnProd, RkbProduct} from '@/redux/api/productApi';
+import {
+  Currency,
+  ProdInfo,
+  RkbAddOnProd,
+  RkbProduct,
+} from '@/redux/api/productApi';
 import {RkbReceipt} from '@/screens/ReceiptScreen';
 import {GuideOption} from '@/screens/UserGuideScreen/GuideHomeScreen';
 import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
 import {RkbEventBoard} from '@/redux/api/eventBoardApi';
-import {ProdDesc} from '@/screens/CancelOrderScreen/CancelResult';
 import {PaymentRule} from '@/redux/modules/product';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti';
@@ -149,14 +153,16 @@ export type HomeStackParamList = {
 
   Draft: {orderId: number};
   DraftUs: {orderId: number};
-  DraftResult: {isSuccess: boolean; prods: ProdDesc[]};
+  DraftResult: {isSuccess: boolean; prods: ProdInfo[]};
   CancelOrder: {orderId: number};
-  CancelResult: {isSuccess: boolean; orderId: number; prods: ProdDesc[]};
+  CancelResult: {isSuccess: boolean; orderId: number; prods: ProdInfo[]};
 
   Gift: {mainSubs: RkbSubscription};
   ChargeHistory: {
     mainSubs: RkbSubscription;
-    onPressUsage: (subs: RkbSubscription) => Promise<{usage: any; status: any}>;
+    onPressUsage: (
+      subs: RkbSubscription,
+    ) => Promise<{usage: any; status: any; usageOption: UsageOptionObj}>;
     chargeablePeriod: string;
     isChargeable: boolean;
   };

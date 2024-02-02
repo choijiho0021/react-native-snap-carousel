@@ -9,7 +9,7 @@ import {RkbOrder} from '@/redux/api/orderApi';
 import {getCountItems} from '@/redux/modules/order';
 import ProductDetailList from '@/screens/CancelOrderScreen/component/ProductDetailList';
 import i18n from '@/utils/i18n';
-import {UsProdDesc} from '..';
+import {ProdInfo} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({
   buttonFrame: {flexDirection: 'row'},
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
 });
 
 interface UsDraftStep1Props {
-  prods: UsProdDesc;
+  prods: ProdInfo;
   draftOrder: RkbOrder;
   onClick: () => void;
 }

@@ -186,7 +186,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
       dataUsageOption?.mode?.includes('usa'),
       dataUsageOption?.mode?.includes('end'),
     ],
-    [item.partner],
+    [dataUsageOption?.mode],
   );
 
   useEffect(() => {
@@ -196,7 +196,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [disableBtn]);
 
   useEffect(() => {
-    if (dataStatusCd === 'A') {
+    if (showUsage && dataStatusCd === 'A') {
       if (
         usage?.quota !== undefined &&
         usage?.remain !== undefined &&
@@ -218,13 +218,16 @@ const UsageItem: React.FC<UsageItemProps> = ({
       console.log('@@ show snackbar');
       showSnackbar();
     }
-  }, [dataStatusCd, quota, remain, showSnackbar, usage, used]);
+  }, [dataStatusCd, quota, remain, showSnackbar, showUsage, usage, used]);
 
-  const getResetTime = useCallback((tz: string) => {
-    if (dataUsageOption?.ret) return dataUsageOption?.ret;
-    else if (endTime) return moment(endTime).tz(tz).format('HH:mm:ss');
-    else return i18n.t('contact:q');
-  }, []);
+  const getResetTime = useCallback(
+    (tz: string) => {
+      if (dataUsageOption?.ret) return dataUsageOption?.ret;
+      if (endTime) return moment(endTime).tz(tz).format('HH:mm:ss');
+      return i18n.t('contact:q');
+    },
+    [dataUsageOption?.ret, endTime],
+  );
 
   const renderResetTimeRow = useCallback(
     (key: string, rowStyle: ViewStyle = {}) => {
@@ -242,7 +245,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         </View>
       );
     },
-    [endTime, item.partner],
+    [getResetTime],
   );
 
   const renderCaution = useCallback(() => {
@@ -313,7 +316,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
     return (
       <View style={styles.timeContainer}>
-        {showEndTime && (
+        {showEndTime && endTime && (
           <View style={styles.timeItem}>
             <AppText
               style={{
@@ -356,7 +359,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         )}
       </View>
     );
-  }, [endTime, item.daily, item.partner, renderResetTimeRow]);
+  }, [endTime, item.daily, renderResetTimeRow, showEndTime, showUsage]);
 
   const renderAnimatedCircularProgress = useCallback(() => {
     return (
@@ -417,7 +420,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         );
       default:
         return (
-          <View style={{width: '100%', marginTop: 16}}>
+          <View style={{width: '100%'}}>
             <View style={{flexDirection: 'row'}}>
               <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
               <AppText style={styles.warning}>
@@ -430,7 +433,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [item?.partner]);
 
   const clMtdTxt = useCallback(() => {
-    return ['ais', 'dtac', 'mvtotal'].includes(item?.clMtd || '') ? (
+    return ['ais', 'dtac', 'vndaily'].includes(item?.clMtd || '') ? (
       <View style={{width: '100%'}}>
         <View style={{flexDirection: 'row'}}>
           <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
@@ -440,7 +443,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         </View>
       </View>
     ) : null;
-  }, []);
+  }, [item?.clMtd]);
 
   const renderWarning = useCallback(() => {
     return (
@@ -457,7 +460,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         {clMtdTxt()}
       </View>
     );
-  }, [showUsage, warningDotTxt]);
+  }, [clMtdTxt, showUsage, warningDotTxt]);
 
   const usageRender = useCallback(() => {
     return (
@@ -497,7 +500,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
               <AppText key={item.key} style={styles.usageTitleBold}>
                 {item.prodName}
               </AppText>
-              {item.partner !== 'ht' && (
+              {showStatus && (
                 <AppText key={item.prodName} style={styles.bold14WarmGrey}>
                   {i18n.t('esim:quota', {
                     quota: utils.toDataVolumeString(quota || 0),
@@ -586,7 +589,15 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
       return null;
     },
-    [isError, item.key, item.partner, item.prodName, quota, usageRender],
+    [
+      isError,
+      item.key,
+      item.partner,
+      item.prodName,
+      quota,
+      showStatus,
+      usageRender,
+    ],
   );
 
   const [status, statusCd] = esimApp

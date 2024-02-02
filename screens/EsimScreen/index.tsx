@@ -383,6 +383,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         const {result, objects} = await API.Subscription.bcGetSubsUsage({
           subsIccid: item.subsIccid,
           orderId: item.subsOrderNo,
+          localOpId: item.localOpId,
         });
 
         if (result === 0 && objects.length > 0) return objects[0];
@@ -397,7 +398,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           totalUsed: undefined,
         },
         usageOption: {
-          mode: ['stu', 'usa', 'end'],
+          mode: ['stu', 'end'],
         },
       };
     },
@@ -427,7 +428,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             status: {
               statusCd: 'A',
               endTime: moment(item.activationDate)
-                ?.tz('EST')
                 ?.add(Number(item.prodDays) - 1, 'days')
                 ?.endOf('day'),
             },
@@ -463,10 +463,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           .then(() => {
             action.account.getAccount({iccid, token});
             getOrders(hidden);
+            setIsFirstLoad(false);
           })
           .finally(() => {
             setRefreshing(false);
-            setIsFirstLoad(false);
           });
       }
     },

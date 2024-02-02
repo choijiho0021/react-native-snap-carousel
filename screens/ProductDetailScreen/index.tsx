@@ -6,7 +6,6 @@ import Clipboard from '@react-native-community/clipboard';
 import {
   AppState,
   Image,
-  ImageBackground,
   Modal,
   Platform,
   Pressable,
@@ -14,7 +13,6 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {WebViewMessageEvent} from 'react-native-webview';
 import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import analytics, {firebase} from '@react-native-firebase/analytics';
@@ -57,12 +55,16 @@ import {
   ProductModelState,
 } from '@/redux/modules/product';
 import ShareLinkModal from './components/ShareLinkModal';
-import AppStyledText from '@/components/AppStyledText';
 import ChargeInfoModal from './components/ChargeInfoModal';
 import TextWithDot from '../EsimScreen/components/TextWithDot';
-import BodyHtml from './components/BodyHtml';
 import TextWithCheck from '../HomeScreen/component/TextWithCheck';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
+import ProductDetailBody from './components/ProductDetailBody';
+import ProductDetailTopInfo from './components/ProductDetailTopInfo';
+import ProductDetailSixIcon from './components/ProductDetailSixIcon';
+import ProductDetailNotice from './components/ProductDetailNotice';
+import ProductDetailCallMethod from './components/ProductDetailCallMethod';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 
 const {esimGlobal, isIOS} = Env.get();
 const PURCHASE_LIMIT = 10;
@@ -173,227 +175,14 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     color: colors.clearBlue,
   },
-  bg: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    height: 288,
-    paddingTop: 40,
-    paddingBottom: 32,
-    paddingHorizontal: 20,
-  },
-  titleTop: {
-    display: 'flex',
-    gap: 8,
-  },
-  prodTitle: {
-    ...appStyles.semiBold24Text,
-    lineHeight: 42,
-    color: colors.white,
-  },
-  prodTitleBold: {
-    ...appStyles.bold32Text,
-    lineHeight: 42,
-    color: colors.white,
-  },
-  prodBody: {
-    ...appStyles.normal14Text,
-    lineHeight: 20,
-    color: colors.white,
-  },
-  locaTag: {
-    ...appStyles.bold16Text,
-    lineHeight: 24,
-    color: colors.white,
-    marginBottom: 4,
-  },
-  bottomText: {
-    ...appStyles.normal16Text,
-    color: colors.white,
-    lineHeight: 24,
-  },
-  iconBox: {
-    backgroundColor: colors.paleBlue2,
-    paddingTop: 48,
-    paddingBottom: 10,
-    paddingHorizontal: 20,
-    gap: 32,
-  },
-  iconBoxLine: {
-    display: 'flex',
-    flexDirection: 'row',
-    flex: 1,
-    justifyContent: 'space-around',
-  },
-  iconWithText: {
-    width: 110,
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-  },
-  iconText: {
-    ...appStyles.semiBold14Text,
-    lineHeight: 18,
-    textAlign: 'center',
-  },
-  row: {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: 4,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  chargeBoxFrame: {
-    height: 48,
-    width: 79,
-  },
-  chargeBox: {
-    borderWidth: 1,
-    borderColor: colors.veryLightBlue,
-    borderRadius: 3,
-    width: '100%',
-    height: '100%',
-    backgroundColor: colors.white,
-    justifyContent: 'center',
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 2,
-  },
-  chargeBoxText: {
-    ...appStyles.bold12Text,
-    lineHeight: 16,
-    color: colors.black,
-  },
-  noticeBox: {
-    paddingVertical: 17,
-    paddingHorizontal: 20,
-    backgroundColor: colors.darkNavy,
-  },
-  noticeHeader: {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: 4,
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  noticeHeaderText: {
-    ...appStyles.normal16Text,
-    lineHeight: 20,
-    color: colors.white,
-  },
-  dot: {
-    ...appStyles.bold14Text,
-    marginHorizontal: 5,
-    lineHeight: 20,
-    color: colors.white,
-  },
-  noticeText: {
-    ...appStyles.normal14Text,
-    lineHeight: 20,
-    color: colors.white,
-    marginRight: 20,
-  },
-  noticeTextBold: {
-    ...appStyles.bold14Text,
-    lineHeight: 20,
-    color: colors.white,
-  },
-  callMethod: {
-    paddingHorizontal: 20,
-    paddingTop: 42,
-  },
-  callMethodTitle: {
-    ...appStyles.medium20,
-    lineHeight: 22,
-    color: colors.black,
-    marginBottom: 16,
-  },
-  callMethodBox: {
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
-    backgroundColor: colors.white,
-    borderRadius: 3,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  callMethodBoxTop: {
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderColor: colors.whiteFive,
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  callMethodContents: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 4,
-    marginTop: 8,
-    paddingVertical: 12,
-  },
-  callMethodBoxBottom: {
-    paddingTop: 9,
-    paddingBottom: 6,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 6,
-  },
-  featureWithText: {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: 8,
-    alignItems: 'center',
-    width: '50%',
-  },
-  featureText: {
-    ...appStyles.semiBold18Text,
-    lineHeight: 22,
-    color: colors.black,
-  },
-  callMethodBoxBold: {
-    ...appStyles.semiBold16Text,
-    lineHeight: 24,
-    color: colors.black,
-  },
-  callMethodBoxText: {
-    ...appStyles.normal16Text,
-    lineHeight: 24,
-    color: colors.black,
-  },
-  showDetail: {
-    ...appStyles.bold14Text,
-    lineHeight: 24,
-    letterSpacing: -0.5,
-    color: colors.warmGrey,
-  },
-  ustotalDetailBox: {
-    marginLeft: 24,
-  },
-  countryBox: {
-    padding: 8,
-    backgroundColor: colors.backGrey,
-    borderRadius: 3,
-    marginVertical: 2,
-  },
-  countryBoxText: {
-    ...appStyles.semiBold14Text,
-    lineHeight: 22,
-    color: colors.black,
-  },
-  countryBoxNotice: {
-    ...appStyles.semiBold14Text,
-    lineHeight: 22,
-    color: colors.warmGrey,
-  },
 });
 
-type ProductDetailScreenNavigationProp = StackNavigationProp<
+export type ProductDetailScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
   'ProductDetail'
 >;
 
-type ProductDetailScreenRouteProp = RouteProp<
+export type ProductDetailScreenRouteProp = RouteProp<
   HomeStackParamList,
   'ProductDetail'
 >;
@@ -433,22 +222,16 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const prod = useMemo(() => {
     return route.params?.prod || product.prodList.get(route.params?.uuid || '');
   }, [product.prodList, route.params?.prod, route.params?.uuid]);
-  const noFup = useMemo(
-    () => prod?.fup === 'N/A' || prod?.fup === '0',
-    [prod?.fup],
-  );
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
-
-  const [showWebModal, setShowWebModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [qty, setQty] = useState(1);
   const appState = useRef('unknown');
   const [price, setPrice] = useState<Currency>();
   const [showChargeInfoModal, setShowChargeInfoModal] = useState(false);
-  const [showCallDetail, setShowCallDetail] = useState(false);
   const dispatch = useDispatch();
   const descData: DescData = useMemo(
     () => product.descData.get(prod?.key || route.params?.uuid),
@@ -470,8 +253,12 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   });
 
   useEffect(() => {
-    if (!product.descData.get(prod?.key || route.params?.uuid))
+    if (!product.descData.get(prod?.key || route.params?.uuid)) {
       dispatch(productAction.getProdDesc(prod?.key || route.params?.uuid));
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
   }, [dispatch, prod, product.descData, route.params?.uuid]);
 
   useEffect(() => {
@@ -522,56 +309,27 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   }, []);
 
   const onMessage = useCallback(
-    (event: WebViewMessageEvent) => {
-      const [key, value] = event.nativeEvent.data.split(',');
-      const k = route.params?.item?.key;
-
+    (key: string, value?: string) => {
       switch (key) {
-        case 'showButton':
-          setShowWebModal(false);
-          break;
-        case 'hideButton':
-          setShowModal(false);
-          setShowWebModal(true);
-          break;
-
-        case 'moveToPage':
-          if (value) {
-            action.info.getItem(value).then(({payload: item}) => {
-              if (item?.title && item?.body) {
-                navigation.navigate('SimpleText', {
-                  key: 'noti',
-                  title: i18n.t('set:noti'),
-                  bodyTitle: item?.title,
-                  body: item?.body,
-                  mode: 'html',
-                });
-              } else {
-                AppAlert.error(i18n.t('info:init:err'));
-              }
-            });
-          }
-          break;
         case 'moveToFaq':
-          if (value) {
-            const moveTo = value.split('/');
-            navigation.navigate('Faq', {
-              key: `${moveTo[0]}.${Platform.OS}`,
-              num: moveTo[1],
-            });
-          }
+          navigation.navigate('Faq', {
+            key: `general.${Platform.OS}`,
+            num: '02',
+          });
           break;
         case 'copy':
-          Clipboard.setString(value);
-          setShowSnackBar({text: i18n.t('prodDetail:copy'), visible: true});
+          if (value) {
+            Clipboard.setString(value);
+            setShowSnackBar({text: i18n.t('prodDetail:copy'), visible: true});
+          }
+
           break;
         case 'apn':
-          if (k)
-            if (descData?.desc?.apn)
-              navigation.navigate('ProductDetailOp', {
-                title: route.params?.title,
-                apn: descData?.desc?.apn,
-              });
+          if (descData?.desc?.apn)
+            navigation.navigate('ProductDetailOp', {
+              title: route.params?.title,
+              apn: descData?.desc?.apn,
+            });
 
           break;
         // 기본적으로 화면 크기 가져오도록 함
@@ -580,331 +338,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           break;
       }
     },
-    [
-      action.info,
-      descData?.desc?.apn,
-      navigation,
-      route.params?.item?.key,
-      route.params?.title,
-    ],
-  );
-
-  const renderTopInfo = useCallback(
-    (isDaily: boolean, volume: string, volumeUnit: string) => (
-      <ImageBackground
-        source={
-          isDaily
-            ? require('@/assets/images/esim/img_bg_1.png')
-            : require('@/assets/images/esim/img_bg_2.png')
-        }
-        style={styles.bg}>
-        <View style={styles.titleTop}>
-          <AppStyledText
-            text={i18n.t(`prodDetail:title:${isDaily ? 'daily' : 'total'}`)}
-            textStyle={styles.prodTitle}
-            format={{b: styles.prodTitleBold}}
-            data={{
-              data: isDaily ? prod?.days.toString() || '' : volume || '',
-              unit: volumeUnit,
-            }}
-          />
-
-          <AppText style={styles.prodBody}>{descData?.desc?.desc1}</AppText>
-        </View>
-        <View>
-          <AppText style={styles.locaTag}>
-            {i18n.t(
-              `prodDetail:${
-                ['로컬', 'local'].find((i) => prod?.name.includes(i))
-                  ? 'local'
-                  : 'roaming'
-              }`,
-            )}
-          </AppText>
-          <AppText style={styles.bottomText}>{descData?.desc?.desc2}</AppText>
-        </View>
-      </ImageBackground>
-    ),
-    [descData, prod],
-  );
-
-  const renderIconWithText = useCallback(
-    (icon: string, text: string) => (
-      <View style={styles.iconWithText} key={`${icon}${text}`}>
-        <AppIcon name={icon} />
-        <AppText style={styles.iconText}>{text}</AppText>
-      </View>
-    ),
-    [],
-  );
-
-  const renderChargeDetail = useCallback(
-    (icon: string, text: string) => (
-      <View style={styles.row} key={`${icon}${text}`}>
-        <AppText style={styles.chargeBoxText}>{text}</AppText>
-        <AppIcon name={icon} />
-      </View>
-    ),
-    [],
-  );
-
-  const renderChargeIcon = useCallback(() => {
-    const isChargeOff = descData?.addonOption === 'N' || !descData?.addonOption;
-    return (
-      <Pressable
-        style={styles.iconWithText}
-        onPress={() => setShowChargeInfoModal((prev) => !prev)}>
-        <AppIcon name={isChargeOff ? 'iconChargeOff' : 'iconCharge'} />
-        <View style={styles.row}>
-          <AppText style={styles.iconText}>
-            {i18n.t(`prodDetail:icon:charge${isChargeOff ? 'Off' : ''}`)}
-          </AppText>
-          <AppIcon name="iconChargeInfo" />
-        </View>
-        <View style={styles.chargeBoxFrame}>
-          {!isChargeOff && (
-            <View style={styles.chargeBox}>
-              {[
-                {
-                  icon: descData?.addonOption === 'E' ? 'iconX' : 'iconOk',
-                  text: i18n.t('prodDetail:icon:charge:addOn'),
-                },
-                {
-                  icon: descData?.addonOption === 'A' ? 'iconX' : 'iconOk',
-                  text: i18n.t('prodDetail:icon:charge:extension'),
-                },
-              ].map((i) => renderChargeDetail(i.icon, i.text))}
-            </View>
-          )}
-        </View>
-      </Pressable>
-    );
-  }, [descData?.addonOption, renderChargeDetail]);
-
-  const renderSixIcon = useCallback(
-    (isDaily: boolean, volume: string, volumeUnit: string) => {
-      const feature = descData?.desc?.ftr?.toUpperCase() || 'Only';
-
-      return (
-        <View style={styles.iconBox}>
-          <View style={styles.iconBoxLine}>
-            {[
-              {
-                icon: `iconData${feature}`,
-                text: i18n.t(`prodDetail:icon:data${feature}`),
-              },
-              {
-                icon: 'iconClock',
-                text: i18n.t('prodDetail:icon:clock', {
-                  days: prod?.days,
-                }),
-              },
-              {
-                icon:
-                  prod?.network === '5G/LTE/3G'
-                    ? 'icon5G'
-                    : prod?.network === '3G'
-                    ? 'icon3G'
-                    : 'iconLTE',
-                text: prod?.network || '',
-              },
-            ].map((i) => renderIconWithText(i.icon, i.text))}
-          </View>
-          <View style={styles.iconBoxLine}>
-            {[
-              {
-                icon: noFup
-                  ? volume === '1000'
-                    ? 'iconAllday'
-                    : 'iconTimer'
-                  : 'iconSpeed',
-                text: i18n.t(
-                  `prodDetail:icon:${
-                    noFup ? (volume === '1000' ? 'allday' : 'timer') : 'speed'
-                  }${
-                    noFup && volume === '1000'
-                      ? ''
-                      : isDaily
-                      ? ':daily'
-                      : ':total'
-                  }`,
-                  {
-                    data: `${volume}${volumeUnit}`,
-                  },
-                ),
-              },
-              {
-                icon: prod?.hotspot ? 'iconWifi' : 'conWifiOff',
-                text: i18n.t(
-                  `prodDetail:icon:${prod?.hotspot ? 'wifi' : 'wifiOff'}`,
-                ),
-              },
-            ].map((i) => renderIconWithText(i.icon, i.text))}
-            {descData?.addonOption && renderChargeIcon()}
-          </View>
-        </View>
-      );
-    },
-    [descData, noFup, prod, renderChargeIcon, renderIconWithText],
-  );
-
-  const renderNoticeOption = useCallback(
-    (noticeOption: string) => (
-      <TextWithDot
-        key={noticeOption}
-        dotStyle={styles.dot}
-        textStyle={styles.noticeText}
-        boldStyle={styles.noticeTextBold}
-        text={i18n.t(`prodDetail:noticeOption:${noticeOption}`)}
-      />
-    ),
-    [],
-  );
-
-  const renderCautionList = useCallback((caution: string) => {
-    const cautionText = caution.substring(
-      caution.startsWith('ios:') ? 4 : caution.startsWith('android:') ? 8 : 0,
-    );
-    return (
-      <TextWithDot
-        key={caution}
-        dotStyle={styles.dot}
-        textStyle={styles.noticeText}
-        boldStyle={styles.noticeTextBold}
-        text={cautionText}
-      />
-    );
-  }, []);
-
-  const renderNotice = useCallback(
-    (noticeList: string[], cautionList: string[]) => {
-      return (
-        <View style={styles.noticeBox}>
-          <View style={styles.noticeHeader}>
-            <AppIcon name="iconNoticeRed24" />
-            <AppText style={styles.noticeHeaderText}>
-              {i18n.t('prodDetail:Caution')}
-            </AppText>
-          </View>
-          {noticeList.map((i) => renderNoticeOption(i))}
-          {cautionList.map((i) => renderCautionList(i))}
-        </View>
-      );
-    },
-    [renderCautionList, renderNoticeOption],
-  );
-
-  const renderFeature = useCallback((feature: string) => {
-    const key = `icon${feature}`;
-    return (
-      <View style={styles.featureWithText} key={key}>
-        {feature === 'M' && <View style={{width: 20}} />}
-        <AppIcon name={key} />
-        <AppText style={styles.featureText}>
-          {i18n.t(`prodDetail:callMethod:box:feature:${feature}`)}
-        </AppText>
-      </View>
-    );
-  }, []);
-
-  const renderUsTotalCountryBox = useCallback(
-    () => (
-      <View style={styles.ustotalDetailBox}>
-        <View style={styles.countryBox}>
-          <AppText style={styles.countryBoxText}>
-            {i18n.t('prodDetail:callMethod:box:detail:ustotal:country')}
-          </AppText>
-        </View>
-        <AppText style={styles.countryBoxNotice}>
-          {i18n.t('prodDetail:callMethod:box:detail:ustotal:notice')}
-        </AppText>
-      </View>
-    ),
-    [],
-  );
-
-  const getDetailList = useCallback((clMtd: string) => {
-    switch (clMtd) {
-      case 'usdaily':
-      case 'mvtotal':
-        return [1];
-      case 'ustotal':
-      case 'ais':
-        return [1, 2];
-      case 'dtac':
-        return [1, 2, 3, 4];
-      default:
-        return [];
-    }
-  }, []);
-
-  const renderCallMethod = useCallback(
-    (clMtd: string) => {
-      const ftrList =
-        descData?.desc?.ftr?.toLowerCase() === 'm' ? ['V', 'M'] : ['V'];
-      const isUS = clMtd.includes('us');
-      const defaultList = ['ustotal', 'mvtotal'].includes(clMtd) ? [1, 2] : [1];
-      const detailList = getDetailList(clMtd);
-
-      return (
-        <View style={styles.callMethod}>
-          <AppText style={styles.callMethodTitle}>
-            {i18n.t('prodDetail:callMethod:title')}
-          </AppText>
-          <View style={styles.callMethodBox}>
-            <View style={styles.callMethodBoxTop}>
-              {ftrList.map((f) => renderFeature(f))}
-            </View>
-            <View style={styles.callMethodContents}>
-              {defaultList.map((i) => (
-                <View key={`default${clMtd}${i}`}>
-                  <TextWithCheck
-                    text={i18n.t(
-                      `prodDetail:callMethod:box:contents:default${i}:${
-                        isUS ? 'us' : clMtd
-                      }`,
-                    )}
-                    textStyle={styles.callMethodBoxBold}
-                  />
-                </View>
-              ))}
-              {showCallDetail &&
-                detailList.length > 0 &&
-                detailList.map((i) => (
-                  <View key={`detail${clMtd}${i}`}>
-                    <TextWithCheck
-                      text={i18n.t(
-                        `prodDetail:callMethod:box:contents:detail${i}:${clMtd}`,
-                      )}
-                      textStyle={styles.callMethodBoxText}
-                    />
-                    {clMtd === 'ustotal' &&
-                      i === 1 &&
-                      renderUsTotalCountryBox()}
-                  </View>
-                ))}
-            </View>
-            <Pressable
-              style={styles.callMethodBoxBottom}
-              onPress={() => setShowCallDetail((prev) => !prev)}>
-              <AppText style={styles.showDetail}>
-                {i18n.t(showCallDetail ? 'close' : 'pym:detail')}
-              </AppText>
-              <AppIcon
-                name={showCallDetail ? 'iconArrowUp11' : 'iconArrowDown11'}
-              />
-            </Pressable>
-          </View>
-        </View>
-      );
-    },
-    [
-      descData?.desc?.ftr,
-      getDetailList,
-      renderFeature,
-      renderUsTotalCountryBox,
-      showCallDetail,
-    ],
+    [descData?.desc?.apn, navigation, route.params?.title],
   );
 
   const renderProdDetail = useCallback(() => {
@@ -915,56 +349,51 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         : prod?.volume || '';
     const volumeUnit = Number(prod?.volume) > 500 ? 'GB' : 'MB';
 
-    const noticeOption = descData?.fieldNoticeOption || [];
-    let noticeOptionList: string[] = [];
-    if (typeof noticeOption === 'string') {
-      noticeOptionList = noticeOption.replace(' ', '').split(',');
-    } else {
-      noticeOptionList = noticeOption;
-    }
-
-    const drupalList = ['I', 'A', 'K', 'N', 'H'];
-
-    const noticeList: string[] = drupalList.reduce(
-      (acc: string[], curr: string) => {
-        if (noticeOptionList.includes(curr)) {
-          acc.push(curr);
-        }
-        return acc;
-      },
-      [],
-    );
-
-    const cautionList: string[] =
-      descData?.fieldCautionList?.filter((c) =>
-        isIOS ? !c.includes('android:') : !c.includes('ios:'),
-      ) || [];
-
     const clMtd = descData?.desc?.clMtd;
     const ftr = descData?.desc?.ftr;
+    const prodDays = prod?.days;
+
+    const fieldNoticeOption = descData?.fieldNoticeOption || [];
+    const fieldCautionList = descData?.fieldCautionList || [];
+
     return (
       prod &&
       descData && (
         <View>
-          {renderTopInfo(isDaily, volume, volumeUnit)}
-          {renderSixIcon(isDaily, volume, volumeUnit)}
-          {(noticeList.length > 0 || cautionList.length > 0) &&
-            renderNotice(noticeList, cautionList)}
+          <ProductDetailTopInfo
+            isDaily={isDaily}
+            volume={volume}
+            volumeUnit={volumeUnit}
+            desc1={descData?.desc?.desc1 || ''}
+            desc2={descData?.desc?.desc2 || ''}
+            prodName={prod?.name || ''}
+            prodDays={prodDays || ''}
+          />
+          <ProductDetailSixIcon
+            isDaily={isDaily}
+            volume={volume}
+            volumeUnit={volumeUnit}
+            ftr={ftr || ''}
+            prodDays={prodDays || ''}
+            fup={prod?.fup || ''}
+            network={prod?.network || ''}
+            hotspot={prod?.hotspot || ''}
+            addonOption={descData.addonOption || ''}
+            setShowChargeInfoModal={setShowChargeInfoModal}
+          />
+          {(fieldNoticeOption.length > 0 || fieldCautionList.length > 0) && (
+            <ProductDetailNotice
+              fieldNoticeOption={fieldNoticeOption}
+              fieldCautionList={fieldCautionList}
+            />
+          )}
           {clMtd &&
-            ftr &&
             ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(clMtd) &&
-            renderCallMethod(clMtd)}
+            ftr && <ProductDetailCallMethod clMtd={clMtd} ftr={ftr} />}
         </View>
       )
     );
-  }, [
-    descData,
-    prod,
-    renderCallMethod,
-    renderNotice,
-    renderSixIcon,
-    renderTopInfo,
-  ]);
+  }, [descData, prod]);
 
   const soldOut = useCallback((payload: ApiResult<any>, message: string) => {
     if (payload.result === api.E_RESOURCE_NOT_FOUND) {
@@ -1113,7 +542,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   }, [navigation, resetModalInfo]);
 
   const purchaseButtonTab = useCallback(() => {
-    if (showWebModal || showModal) return <></>;
+    if (showModal) return <></>;
 
     return (
       <View style={styles.buttonBox}>
@@ -1135,11 +564,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         />
       </View>
     );
-  }, [showModal, showWebModal]);
+  }, [showModal]);
 
   const purchaseNumberTab = useCallback(() => {
-    if (showWebModal) return <></>;
-
     return (
       <View style={styles.bottomButtonContainer}>
         <View style={styles.bottomButtonFrame}>
@@ -1161,7 +588,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       </View>
     );
   }, [
-    showWebModal,
     isht,
     account.loggedIn,
     onPressBtnRegCard,
@@ -1171,23 +597,15 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.screen}>
-      <View
-        style={[
-          styles.header,
-          showWebModal ? {backgroundColor: 'rgba(0,0,0,0.3)'} : {},
-        ]}>
+      <AppActivityIndicator visible={loading} />
+      <View style={styles.header}>
         <AppBackButton
           title={route.params?.title}
           style={{width: '70%', height: 56}}
-          disable={showWebModal}
         />
         {account.loggedIn && (
           <AppCartButton
-            onPress={() =>
-              showWebModal
-                ? {}
-                : navigation.navigate('Cart', {showHeader: true})
-            }
+            onPress={() => navigation.navigate('Cart', {showHeader: true})}
             iconName="btnHeaderCart"
           />
         )}
@@ -1196,9 +614,16 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       <ScrollView style={{flex: 1}}>
         {renderProdDetail()}
         {descData?.body && (
-          <BodyHtml body={descData.body} onMessage={onMessage} />
+          <ProductDetailBody
+            body={descData?.body}
+            onMessage={onMessage}
+            descApn={descData?.desc?.apn || ''}
+            prodName={prod?.name || ''}
+            isDaily={prod?.field_daily === 'daily'}
+          />
         )}
       </ScrollView>
+
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       {purchaseButtonTab()}
 

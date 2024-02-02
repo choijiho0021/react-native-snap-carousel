@@ -47,6 +47,7 @@ import {
   actions as orderActions,
   OrderAction,
   isDraft,
+  isHt,
 } from '@/redux/modules/order';
 import {AccountModelState} from '@/redux/modules/account';
 import {HomeStackParamList} from '@/navigation/navigation';
@@ -393,14 +394,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   ] = useMemo(() => {
     const now = moment();
     const checkHt = mainSubs.partner === 'ht';
-    const expd =
-      (checkHt
-        ? moment(mainSubs.activationDate)
-            ?.add(Number(mainSubs.prodDays) - 1, 'days')
-            .tz('EST')
-            .endOf('day')
-            .isBefore(moment())
-        : mainSubs.lastExpireDate?.isBefore(now)) || false;
+    const expd = mainSubs.lastExpireDate?.isBefore(now) || false;
     const isFailed = mainSubs.statusCd === STATUS_EXPIRED;
 
     return [
@@ -575,7 +569,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               <AppText key={mainSubs.nid} style={styles.expiredText}>
                 {mainSubs.giftStatusCd === 'S'
                   ? i18n.t('esim:S2')
-                  : i18n.t('esim:expired')}
+                  : i18n.t(isHt(mainSubs) ? 'esim:expired:ht' : 'esim:expired')}
               </AppText>
             </View>
           ) : (
@@ -668,20 +662,11 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         <View style={[styles.topInfo, !notCardInfo && {marginVertical: 16}]}>
           {mainSubs.type !== API.Subscription.CALL_PRODUCT && (
             <View style={styles.inactiveContainer}>
-              <AppText
-                style={[
-                  styles.normal14Gray,
-                  !mainSubs.subsIccid
-                    ? {
-                        textDecorationLine: 'line-through',
-                        textDecorationStyle: 'solid',
-                      }
-                    : {},
-                ]}>
+              <AppText style={styles.normal14Gray}>
                 {i18n.t('esim:iccid')}
               </AppText>
               <AppText style={styles.normal14Gray}>
-                {mainSubs.subsIccid}
+                {mainSubs.subsIccid || '-'}
               </AppText>
             </View>
           )}
@@ -703,7 +688,9 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               <AppText style={styles.normal14Gray}>
                 {i18n.t('esim:rechargeablePeriod')}
               </AppText>
-              <AppText style={styles.normal14Gray}>{chargeablePeriod}</AppText>
+              <AppText style={styles.normal14Gray}>
+                {chargeablePeriod || '-'}
+              </AppText>
             </View>
           )}
         </View>
@@ -752,6 +739,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
                 uuid: prod.uuid,
                 desc: prod.desc,
                 partner: mainSubs.partner,
+                partnerId: prod.partnerId,
                 prod,
               });
           }}
@@ -1092,19 +1080,22 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           )}
         </View>
 
-        {mainSubs?.clMtd && (
-          <>
-            <HowToCallModal
-              visible={showHtcModal}
-              clMtd={mainSubs?.clMtd}
-              onOkClose={() => setShowHtcModal(false)}
-            />
-            <HtQrModal
-              visible={showHtQrModal}
-              onOkClose={() => setShowHtQrModal(false)}
-            />
-          </>
-        )}
+        {mainSubs?.clMtd &&
+          ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(
+            mainSubs?.clMtd,
+          ) && (
+            <>
+              <HowToCallModal
+                visible={showHtcModal}
+                clMtd={mainSubs?.clMtd}
+                onOkClose={() => setShowHtcModal(false)}
+              />
+              <HtQrModal
+                visible={showHtQrModal}
+                onOkClose={() => setShowHtQrModal(false)}
+              />
+            </>
+          )}
 
         <AppModal
           type="info"
