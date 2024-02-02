@@ -492,13 +492,7 @@ const slice = createSlice({
             if (cur.statusCd === STATUS_USED) {
               if (cur.subsIccid === subsIccid) {
                 return acc.concat([
-                  {
-                    ...cur,
-                    lastExpireDate: isHt(cur)
-                      ? getLastExpireDate(cur)
-                      : maxExpiredDate,
-                    cnt: objects.length,
-                  },
+                  {...cur, lastExpireDate: maxExpiredDate, cnt: objects.length},
                 ]);
               }
             } else if (objects.find((obj) => obj.nid === cur.nid)) return acc;
