@@ -172,7 +172,7 @@ const ProductDetailSixIcon: React.FC<ProductDetailSixIconProps> = ({
           },
         ].map((i) => renderIconWithText(i?.icon, i?.text))}
       </View>
-      <View style={styles.iconBoxLine}>
+      <View style={[styles.iconBoxLine, {marginBottom: !addonOption ? 38 : 0}]}>
         {[
           {
             icon: noFup

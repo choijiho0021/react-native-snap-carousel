@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
 });
 type HowToCallModalProps = {
   visible: boolean;
-  clMtd: string; // ”ustotal” | ”usdaily” | ”ais” | ”dtac"  | "mvtotal"
+  clMtd: string; // "ustotal" | "usdaily" | "ais" | "dtac"  | "mvtotal" | "vndaily"
   onOkClose: () => void;
 };
 

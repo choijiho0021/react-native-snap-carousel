@@ -220,7 +220,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
   const onPress = useCallback(
     async ({uuid, isRead, bodyTitle, body, notiType = 'Notice/0'}: RkbNoti) => {
       const {token} = account;
-      const split = notiType.split('/');
+      const split = notiType?.split('/');
       const type = split[0];
 
       Analytics.trackEvent('Page_View_Count', {page: 'Noti Detail'});
