@@ -339,6 +339,12 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     marginTop: 6,
   },
+  htqr : {
+    justifyContent: 'center',
+    backgroundColor: colors.white,
+    flexDirection: 'row',
+    marginTop: 4,
+  }
 });
 
 type EsimSubsNavigationProp = StackNavigationProp<
@@ -850,8 +856,12 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   }, [expired, mainSubs, navigation]);
 
   const renderHowToCall = useCallback(() => {
-    const clMtd = mainSubs?.clMtd;
-    if (clMtd)
+    const showHowModal =
+      mainSubs?.clMtd &&
+      ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(
+        mainSubs?.clMtd,
+      );
+    if (showHowModal)
       return (
         <View>
           <Pressable
@@ -887,12 +897,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     if (mainSubs.daily === 'daily' && mainSubs.partner === 'ht')
       return (
         <Pressable
-          style={{
-            justifyContent: 'center',
-            backgroundColor: colors.white,
-            flexDirection: 'row',
-            marginTop: 4,
-          }}
+          style={styles.htqr}
           onPress={() => {
             setShowHtQrModal(true);
           }}>
@@ -1080,22 +1085,18 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           )}
         </View>
 
-        {mainSubs?.clMtd &&
-          ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(
-            mainSubs?.clMtd,
-          ) && (
-            <>
-              <HowToCallModal
-                visible={showHtcModal}
-                clMtd={mainSubs?.clMtd}
-                onOkClose={() => setShowHtcModal(false)}
-              />
-              <HtQrModal
-                visible={showHtQrModal}
-                onOkClose={() => setShowHtQrModal(false)}
-              />
-            </>
-          )}
+        {mainSubs?.clMtd && (
+          <HowToCallModal
+            visible={showHtcModal}
+            clMtd={mainSubs?.clMtd}
+            onOkClose={() => setShowHtcModal(false)}
+          />
+        )}
+
+        <HtQrModal
+          visible={showHtQrModal}
+          onOkClose={() => setShowHtQrModal(false)}
+        />
 
         <AppModal
           type="info"
