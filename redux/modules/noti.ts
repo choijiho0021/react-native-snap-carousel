@@ -32,7 +32,6 @@ const initNotiList = createAsyncThunk(
 
 const getNotiList = createAsyncThunk('noti/getNotiList', API.Noti.getNoti);
 const readNoti = createAsyncThunk('noti/readNoti', API.Noti.read);
-// export const updateNoti = createAsyncThunk(UPDATE_NOTI, API.Noti.update);
 const initAlimTalk = createAction('initAlimTalk');
 const sendAlimTalk = createAsyncThunk(
   'noti/sendAlimTalk',

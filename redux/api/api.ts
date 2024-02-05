@@ -131,6 +131,7 @@ const path = {
       prodAddOn: 'rokebi/prod/addon',
       coupon: 'rokebi/coupon',
       config: 'rokebi/config',
+      noti: 'rokebi/noti',
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage/quota',
