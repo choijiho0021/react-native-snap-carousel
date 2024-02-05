@@ -266,7 +266,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
-      console.log('aaaaa');
       setShowUsageModal(false);
       setShowGiftModal(false);
     });

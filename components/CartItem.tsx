@@ -98,7 +98,7 @@ const CartItem = ({
         <AppText style={styles.itemTitle}>{name}</AppText>
         <View style={styles.input}>
           <AppText style={styles.itemPrice}>{utils.price(price)}</AppText>
-          <InputNumber value={qty} onChange={onChange} />
+          <InputNumber value={qty} onChange={onChange} boldIcon />
         </View>
         <View style={[styles.input, {marginTop: 20}]}>
           <AppPrice
