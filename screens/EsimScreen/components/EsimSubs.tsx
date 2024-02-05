@@ -730,6 +730,8 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           title={i18n.t('esim:prodInfo')}
           onPress={() => {
             const prod = product.prodList.get(mainSubs?.prodId || '0');
+            const localOp = product.localOpList.get(prod?.partnerId || '0');
+
             if (prod)
               navigation.navigate('ProductDetail', {
                 title: prod.name,
@@ -740,6 +742,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
                 desc: prod.desc,
                 partner: mainSubs.partner,
                 partnerId: prod.partnerId,
+                img: localOp?.imageUrl,
                 prod,
               });
           }}
