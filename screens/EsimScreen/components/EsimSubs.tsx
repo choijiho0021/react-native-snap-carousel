@@ -339,12 +339,12 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     marginTop: 6,
   },
-  htqr : {
+  htqr: {
     justifyContent: 'center',
     backgroundColor: colors.white,
     flexDirection: 'row',
     marginTop: 4,
-  }
+  },
 });
 
 type EsimSubsNavigationProp = StackNavigationProp<
@@ -805,6 +805,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     navigation,
     onPressRecharge,
     onPressUsage,
+    product.localOpList,
     product.prodList,
     setShowUsageModal,
   ]);

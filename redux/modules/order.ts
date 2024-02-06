@@ -510,6 +510,7 @@ const slice = createSlice({
               sub.nid === objects[0].nid
                 ? {
                     ...objects[0],
+                    cnt: 1,
                     lastExpireDate: maxExpiredDate,
                   }
                 : sub,
