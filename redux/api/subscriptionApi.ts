@@ -340,7 +340,7 @@ const getSubscription = ({
   const url = `${api.httpUrl(api.path.rokApi.rokebi.subs)}/${
     uuid || '0'
   }?_format=json${hidden ? '' : '&hidden=0'}${
-    subsId ? `&subsId=${subsId}` : ''
+    subsId && subsId !== '0' ? `&subsId=${subsId}` : ''
   }&iccid=${iccid}&count=${count}&offset=${offset}`;
 
   return api.callHttpGet(
