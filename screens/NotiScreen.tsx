@@ -265,13 +265,24 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             // format : provision/{iccid}/{nid}
             navigation.popToTop();
 
-            navigation.navigate('EsimStack', {
-              screen: 'Esim',
-              params: {
-                iccid: split[1],
-                actionStr: 'navigate',
-              },
-            });
+            if (split[1] === '0') {
+              // 미국 로컬 상품의 경우 iccid가 없어 0으로 정의됨
+              navigation.navigate('EsimStack', {
+                screen: 'Esim',
+                params: {
+                  actionStr: 'reload',
+                },
+              });
+            } else {
+              navigation.navigate('EsimStack', {
+                screen: 'Esim',
+                params: {
+                  iccid: split[1],
+                  actionStr: 'navigate',
+                },
+              });
+            }
+
             break;
 
           case notiActions.NOTI_TYPE_EVENT:
