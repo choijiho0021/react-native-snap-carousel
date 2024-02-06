@@ -292,6 +292,14 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
 
   const animatedValue = useRef(new Animated.Value(topHeight)).current;
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('blur', () => {
+      setShowModal(false);
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   const showTop = useCallback(
     (isTop: boolean) => {
       if (!blockAnimation.current) {
