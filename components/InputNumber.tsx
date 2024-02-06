@@ -49,7 +49,7 @@ const InputNumber = ({
   value,
   onChange,
   minValue = 1,
-  maxValue = 9,
+  maxValue = 10,
   boldIcon = false,
   disabled = false,
   fontStyle,

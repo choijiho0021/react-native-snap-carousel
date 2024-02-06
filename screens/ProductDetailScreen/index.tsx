@@ -277,7 +277,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     (cnt: number, showSnackbar: boolean = true) => {
       if (isht && showSnackbar) {
         setShowSnackBar({text: i18n.t('prodDetail:qtyLimit'), visible: true});
-      } else if(cnt > 0 && cnt < 10) {
+      } else if (cnt > 0 && cnt <= 10) {
         setQty(cnt);
         setPrice({
           value: Math.round(cnt * purchaseItems[0]?.price?.value * 100) / 100,
