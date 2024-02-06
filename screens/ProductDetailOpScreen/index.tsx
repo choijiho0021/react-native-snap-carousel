@@ -302,7 +302,7 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
       <View style={styles.showSearchBar}>
         <AppTextInput
           style={styles.textInput}
-          clearButtonMode="while-editing"
+          // clearButtonMode="while-editing"
           placeholder={i18n.t('prodDetailOp:search')}
           placeholderTextColor={colors.greyish}
           onChangeText={(val: string) => {
