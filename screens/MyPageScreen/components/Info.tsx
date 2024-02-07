@@ -113,6 +113,12 @@ const styles = StyleSheet.create({
     color: 'white',
     marginRight: 4,
   },
+  btnStyle: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 type InfoProps = {
@@ -158,9 +164,11 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
 
       <View style={styles.rowBtn}>
         <AppButton
+          iconName="mycoupon"
           title={i18n.t('mypage:coupon')}
           style={styles.btnContactBoard}
           titleStyle={appStyles.normal16Text}
+          viewStyle={styles.btnStyle}
           type="secondary"
           onPress={() =>
             navigate(navigation, route, 'MyPageStack', {
@@ -171,9 +179,11 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
           }
         />
         <AppButton
+          iconName="contact121"
           title={i18n.t('contact:event')}
           style={styles.btnContactBoard}
           titleStyle={appStyles.normal16Text}
+          viewStyle={styles.btnStyle}
           type="secondary"
           onPress={() =>
             navigate(navigation, route, 'MyPageStack', {
