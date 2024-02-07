@@ -386,7 +386,7 @@ const makeOrder = ({
       order_items: items.map((item) => ({
         quantity: item.qty,
         purchased_entity: {
-          sku: item.sku.slice(0, -1) + '3', //ysjoung
+          sku: item.sku,
         },
       })),
     },
