@@ -386,7 +386,7 @@ const makeOrder = ({
       order_items: items.map((item) => ({
         quantity: item.qty,
         purchased_entity: {
-          sku: item.sku,
+          sku: item.sku.slice(0, -1) + '3', //ysjoung
         },
       })),
     },
@@ -423,10 +423,13 @@ const makeOrder = ({
         // order_id 값이 있으면 성공한 것으로 간주한다.
         return api.success([resp]);
       }
-      if (resp.result === api.E_STATUS_EXPIRED) {
+      if ([api.E_INVALID_STATUS, api.W_INVALID_STATUS].includes(resp.result)) {
+        return api.success([resp.objects], [], resp.result);
+      }
+
+      if ([api.E_STATUS_EXPIRED].includes(resp.result)) {
         return api.failure<PurchaseItem>(resp.result, resp.desc);
       }
-      return api.failure<PurchaseItem>(-1, 'no result');
     },
   );
 };

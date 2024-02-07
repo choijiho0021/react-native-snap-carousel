@@ -28,6 +28,7 @@ const API_STATUS_INIT = 0;
 const API_STATUS_TRYING = 1;
 const API_STATUS_DONE = 2;
 const API_STATUS_FAIL = 3;
+const W_INVALID_STATUS = -5003; // warning
 
 const path = {
   jsonapi: {
@@ -464,6 +465,7 @@ export default {
   API_STATUS_TRYING,
   API_STATUS_DONE,
   API_STATUS_FAIL,
+  W_INVALID_STATUS,
 
   path,
 

@@ -6,6 +6,7 @@ import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import moment, {Moment} from 'moment';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -107,6 +108,27 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     letterSpacing: -0.5,
   },
+  modalContent: {
+    maginHorizontal: 20,
+    width: '90%',
+    paddingTop: 25,
+    backgroundColor: 'white',
+  },
+  titleContent: {
+    marginHorizontal: 30,
+  },
+  modalOkText: {
+    borderRadius: 3,
+    backgroundColor: colors.clearBlue,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    lineHeight: 40,
+    color: 'white',
+    width: 120,
+    height: 40,
+    marginRight: 18,
+  },
+  modalCloseStyle: {color: colors.black, marginRight: 108},
 });
 
 type PymMethodScreenNavigationProp = StackNavigationProp<
@@ -148,6 +170,10 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [showModalMethod, setShowModalMethod] = useState(true);
   const [policyChecked, setPolicyChecked] = useState(false);
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
+  const [showNavigateAlert, setShowNavigateAlert] = useState(false);
+  const [navigateAlertTxt, setNavigateAlertTxt] = useState<string>();
+  const [rstTm, setRstTm] = useState('');
+
   const {pymPrice, deduct} = useMemo(() => cart, [cart]);
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
 
@@ -232,6 +258,19 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               AppAlert.info(i18n.t('cart:unpublishedError'), '', () =>
                 navigation.popToTop(),
               );
+            } else if (
+              [api.E_INVALID_STATUS, api.W_INVALID_STATUS].includes(resp.result)
+            ) {
+              if (api.E_INVALID_STATUS === resp.result) {
+                setNavigateAlertTxt(i18n.t('esim:charge:time:reject3'));
+              } else if (resp.objects[0].leftDays > 1) {
+                setRstTm(moment(resp.objects[0].rstTm).format('HH:mm:ss'));
+                setNavigateAlertTxt(i18n.t('esim:charge:time:reject2'));
+              } else {
+                setNavigateAlertTxt(i18n.t('esim:charge:time:reject1'));
+              }
+
+              setShowNavigateAlert(true);
             } else {
               AppAlert.info(i18n.t('cart:systemError'));
             }
@@ -266,6 +305,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     [
       account,
       action.cart,
+      action.product,
+      cart,
       clickable,
       deduct,
       mode,
@@ -325,6 +366,44 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     );
   }, []);
 
+  const renderModal = useCallback(() => {
+    const navigateEsim = () => {
+      setShowNavigateAlert(false);
+      navigation.popToTop();
+      navigation.navigate('EsimStack', {screen: 'Esim'});
+    };
+
+    return (
+      <AppModal
+        onCancelClose={navigateEsim}
+        type="info"
+        onOkClose={navigateEsim}
+        contentStyle={styles.modalContent}
+        titleStyle={styles.titleContent}
+        visible={showNavigateAlert}
+        buttonBackgroundColor={colors.clearBlue}
+        cancelButtonTitle={i18n.t('no')}
+        cancelButtonStyle={styles.modalCloseStyle}
+        okButtonTitle={i18n.t('ok')}
+        okButtonStyle={styles.modalOkText}>
+        <View style={{marginHorizontal: 30}}>
+          <AppStyledText
+            text={navigateAlertTxt}
+            textStyle={[
+              appStyles.medium16,
+              {color: colors.black, textAlignVertical: 'center'},
+            ]}
+            format={{
+              red: [appStyles.bold16Text, {color: colors.redError}],
+              b: appStyles.bold16Text,
+            }}
+            data={{date: rstTm}}
+          />
+        </View>
+      </AppModal>
+    );
+  }, [navigateAlertTxt, navigation, rstTm, showNavigateAlert]);
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
@@ -376,6 +455,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         visible={showUnsupAlert}>
         {modalBody()}
       </AppModal>
+
+      {renderModal()}
     </SafeAreaView>
   );
 };
