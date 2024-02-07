@@ -209,9 +209,6 @@ const renderTipText = (
   boldRed = false,
   anotherComponent = {key: '', component: <></>},
 ) => {
-  console.log('anotherComponent?.key : ', anotherComponent?.key);
-  console.log(' anotherComponent : ', anotherComponent.component);
-
   if (anotherComponent?.key === key) {
     return anotherComponent.component;
   }
@@ -299,15 +296,17 @@ const renderNoticeBox = ({
   title,
   body,
   isShow,
+  marginBottom = 16,
 }: {
   title?: string;
   body: string[];
   isShow: boolean;
+  marginBottom?: number;
 }) => {
   if (!isShow) return null;
 
   return (
-    <View style={{width: '100%', marginBottom: 16}}>
+    <View style={{width: '100%', marginBottom}}>
       <View
         style={{
           backgroundColor: colors.veryLightBlue,
@@ -520,7 +519,10 @@ export type GuideImage = {
   isHeader?: boolean;
   stepPreText?: string;
   tip?: () => JSX.Element | null;
-  noticeBox?: (isCheckLocal: boolean) => JSX.Element | null;
+  noticeBox?: (
+    isCheckLocal: boolean,
+    marginBottom?: number,
+  ) => JSX.Element | null;
   isLocalBox?: () => JSX.Element | null;
   caption?: string;
   localTitle?: JSX.Element;
@@ -983,6 +985,7 @@ export const getGuideImages = (
             renderNoticeBox({
               body: ['userGuide:noticeBox:us:body1'],
               isShow: true,
+              marginBottom: 60,
             }),
           stepTitle: 'Bonus',
         },

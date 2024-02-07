@@ -16,6 +16,7 @@ class HandleProvisionPushNoti extends HandlePushNoti {
             iccid: this.iccid,
             token: this.token,
             uuid: subsIccid,
+            offset: 0,
           });
         }
       }

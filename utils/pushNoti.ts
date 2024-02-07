@@ -92,14 +92,14 @@ class PushNoti {
 
     // // foreground 상태에서 data만 받아서 처리 (foreground badge 수 변경 전용)
     this.onMessage = messaging().onMessage((message) => {
-      const {badge = 0, notiType, iccid} = message.data;
+      const {badge = 0, notiType, iccid} = message?.data;
       this.reloadNoti();
       // messaging().setBadge(Number(badge));
       if (Platform.OS === 'ios')
         PushNotificationIOS.setApplicationIconBadgeNumber(Number(badge));
       else ShortcutBadge.setCount(Number(badge));
       // sim 카드 해지 알림이 왓을 때 백그라운드
-      if (notiType && iccid) {
+      if (notiType) {
         onNotification({data: {notiType, iccid}});
       }
     });

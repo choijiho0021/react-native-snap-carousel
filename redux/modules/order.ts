@@ -29,6 +29,8 @@ const {specialCategories} = Env.get();
 export const isBillionConnect = (sub?: RkbSubscription) =>
   sub?.partner === 'billionconnect';
 
+export const isHt = (sub?: RkbSubscription) => sub?.partner === 'ht';
+
 const init = createAsyncThunk('order/init', async (mobile?: string) => {
   const oldData = await retrieveData(`${API.Order.KEY_INIT_ORDER}.${mobile}`);
   return oldData;
@@ -39,6 +41,17 @@ const defaultReturn = (resp) => {
   return resp;
 };
 
+export const getLastExpireDate = (sub: RkbSubscription) => {
+  const lastExpireDate = isHt(sub)
+    ? moment(sub?.activationDate)
+        ?.add(Number(sub?.prodDays) - 1, 'days')
+        .endOf('day')
+        .format()
+    : sub?.lastExpireDate;
+
+  return moment(lastExpireDate);
+};
+
 const subsReturn = (resp) => {
   if (
     resp.objects &&
@@ -47,16 +60,18 @@ const subsReturn = (resp) => {
   ) {
     return {
       ...resp,
-      objects: resp.objects.map((elm) => ({
-        ...elm,
-        purchaseDate: moment(elm.purchaseDate),
-        expireDate: moment(elm.expireDate),
-        provDate: moment(elm.provDate),
-        startDate: moment(elm.startDate),
-        lastExpireDate: moment(elm.lastExpireDate),
-        lastProvDate: moment(elm.lastProvDate),
-        activationDate: moment(elm?.activationDate),
-      })),
+      objects: resp.objects.map((elm) => {
+        return {
+          ...elm,
+          purchaseDate: moment(elm.purchaseDate),
+          expireDate: moment(elm.expireDate),
+          provDate: moment(elm.provDate),
+          startDate: moment(elm.startDate),
+          lastExpireDate: getLastExpireDate(elm),
+          lastProvDate: moment(elm.lastProvDate),
+          activationDate: moment(elm?.activationDate),
+        };
+      }),
     };
   }
 
@@ -77,10 +92,16 @@ const cancelOrder = createAsyncThunk(
 const getNotiSubs = createAsyncThunk(
   'order/getNotiSubs',
   async (param: SubscriptionParam, {getState}) => {
+    console.log('@@@@ params : ', param);
+    console.log('@@@@@ order.ts getNotiSubs : ', param.offset);
+
     if (param.offset === undefined) {
       const {order} = getState() as RootState;
+      console.log('@@@@ subsOffset : ', order.subsOffset);
       param.offset = order.subsOffset;
     }
+
+    console.log('@@@@@@ param?.iccid : ', param?.iccid, ', params : ', param);
 
     return cachedApi(
       `cache.subs.${param?.iccid}`,
@@ -452,6 +473,8 @@ const slice = createSlice({
     builder.addCase(getNotiSubs.fulfilled, (state, action) => {
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
 
+      console.log('@@ getNotiSubs Result ', result);
+
       if (result === 0 && objects) {
         const maxExpiredDate: Moment = objects.reduce(
           (maxDate, obj) =>
@@ -468,7 +491,9 @@ const slice = createSlice({
           state.subs = state.subs.reduce((acc, cur) => {
             if (cur.statusCd === STATUS_USED) {
               if (cur.subsIccid === subsIccid) {
-                return acc.concat([{...cur, lastExpireDate: maxExpiredDate}]);
+                return acc.concat([
+                  {...cur, lastExpireDate: maxExpiredDate, cnt: objects.length},
+                ]);
               }
             } else if (objects.find((obj) => obj.nid === cur.nid)) return acc;
 
@@ -478,7 +503,10 @@ const slice = createSlice({
           state.subs = state.subs
             .map((sub) =>
               sub.nid === objects[0].nid
-                ? {...objects[0], lastExpireDate: maxExpiredDate}
+                ? {
+                    ...objects[0],
+                    lastExpireDate: maxExpiredDate,
+                  }
                 : sub,
             )
             .sort(sortSubs);

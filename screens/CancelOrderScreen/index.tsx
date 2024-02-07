@@ -42,7 +42,7 @@ import LabelText from '@/components/LabelText';
 import {isRokebiCash} from '../PurchaseDetailScreen';
 import AppTextInput from '@/components/AppTextInput';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {ProdDesc} from './CancelResult';
+import {ProdInfo} from '@/redux/api/productApi';
 import AppSnackBar from '@/components/AppSnackBar';
 import ProductDetailList from './component/ProductDetailList';
 import GuideBox from './component/GuideBox';
@@ -249,7 +249,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   const REASON_MAX_LENGTH = 500;
   const REASON_MIN_LENGTH = 10;
   const [selectedOrder, setSelectedOrder] = useState<RkbOrder>();
-  const [prods, setProds] = useState<ProdDesc[]>([]);
+  const [prods, setProds] = useState<ProdInfo[]>([]);
   const [step, setStep] = useState(0);
   const loading = useRef(false);
   const [inputText, setInputText] = useState('');
@@ -316,7 +316,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
     getProdDate();
 
-    const prodList: ProdDesc[] = selectedOrder.orderItems.map((r) => {
+    const prodList: ProdInfo[] = selectedOrder.orderItems.map((r) => {
       const prod = product.prodList.get(r.uuid);
       return prod
         ? {

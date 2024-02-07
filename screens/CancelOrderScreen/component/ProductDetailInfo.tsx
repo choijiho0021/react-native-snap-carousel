@@ -7,6 +7,7 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {utils} from '@/utils/utils';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
+import {ProdInfo} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({
   productFrame: {
@@ -17,14 +18,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type ProdDesc = {
-  title: string;
-  field_description: string;
-  promoFlag: string[];
-  qty: number;
-};
-
-type ProductDetailInfoPros = {item: ProdDesc; style?: StyleProp<ViewStyle>};
+type ProductDetailInfoPros = {item: ProdInfo; style?: StyleProp<ViewStyle>};
 
 const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
   item,

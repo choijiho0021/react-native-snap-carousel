@@ -26,21 +26,30 @@ const TextWithDot = ({
   dotStyle,
   textStyle,
   boldStyle,
+  secondBoldStyle,
   text,
+  marginRight,
 }: {
   dotStyle?: TextStyle;
   textStyle?: TextStyle;
   boldStyle?: TextStyle;
+  secondBoldStyle?: TextStyle;
+  marginRight?: number;
   text: string;
 }) => {
   return (
     <View key={text} style={{flexDirection: 'row'}}>
       <AppText style={dotStyle || styles.dot}>•</AppText>
-      <AppStyledText
-        textStyle={textStyle || styles.body}
-        text={text}
-        format={{b: boldStyle || styles.bold}}
-      />
+      <View style={{marginRight}}>
+        <AppStyledText
+          textStyle={textStyle || styles.body}
+          text={text}
+          format={{
+            b: boldStyle || styles.bold,
+            s: secondBoldStyle || styles.bold,
+          }}
+        />
+      </View>
     </View>
   );
 };

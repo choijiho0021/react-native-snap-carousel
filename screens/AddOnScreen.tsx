@@ -363,8 +363,8 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
     [usagePeriod],
   );
 
-  const renderNotice = useCallback(
-    () => (
+  const renderNotice = useCallback(() => {
+    return (
       <View style={styles.notice}>
         <View style={styles.noticeTitle}>
           <AppSvgIcon name="bluePin" style={{marginRight: 8}} />
@@ -386,7 +386,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
 
             <AppStyledText
               text={i18n.t(
-                `esim:charge:addOn:resetTime:${chargeableItem.partner}`,
+                `esim:charge:addOn:resetTime:${status}:${chargeableItem.partner}`,
               )}
               textStyle={styles.noticeBodyText}
               format={{b: styles.noticeBodyTextBold}}
@@ -396,15 +396,15 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
         )}
         <View style={styles.noticeBox}>{renderUsagePrieod()}</View>
       </View>
-    ),
-    [
-      dataResetTime,
-      chargeableItem.daily,
-      chargeableItem.partner,
-      renderUsagePrieod,
-      selectedType,
-    ],
-  );
+    );
+  }, [
+    chargeableItem.partner,
+    chargeableItem.daily,
+    status,
+    selectedType,
+    dataResetTime,
+    renderUsagePrieod,
+  ]);
 
   return (
     <SafeAreaView style={styles.container}>
