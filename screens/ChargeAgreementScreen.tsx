@@ -197,46 +197,6 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
   const [isPressed, setIsPressed] = useState(false);
   const [visible, setVisible] = useState<string>('');
 
-  const validateTime = useCallback(() => {
-    if (
-      params?.mainSubs?.partner?.startsWith('quadcell') &&
-      params?.status === 'R'
-    ) {
-      return true;
-    }
-
-    const remainDay =
-      params?.expireTime.diff(moment(), 'seconds') / (24 * 60 * 60);
-
-    // usagePeroid.period는 KST, 값 변경 없이 뒤에 +09:00를 붙임
-    const expireTime = moment(
-      usagePeriod?.period,
-      usagePeriod?.format,
-    ).utcOffset('+09:00', true);
-    const currentTime = moment().utcOffset(9);
-
-    const twentyMinuteAgoMoment = moment(expireTime.subtract(20, 'minutes')); // 20분 전
-    const hourAgoMoment = moment(expireTime.subtract(40, 'minutes')); //  20분 뺀 expireTime에 40분을 뺐으니 1시간 전이다.
-    const isBlockTime = currentTime.isAfter(twentyMinuteAgoMoment);
-    const isWarningTime =
-      currentTime.isAfter(hourAgoMoment) &&
-      currentTime.isBefore(twentyMinuteAgoMoment);
-
-    if (isWarningTime) {
-      setVisible('esim:charge:time:warning');
-      return false;
-    }
-
-    if (isBlockTime) {
-      setVisible(
-        remainDay < 1 ? 'esim:charge:time:reject' : 'esim:charge:time:reject2',
-      );
-      return false;
-    }
-
-    return true;
-  }, [params, usagePeriod?.format, usagePeriod?.period]);
-
   const onPurchase = useCallback(() => {
     if (isPressed) {
       const {balance} = account;
@@ -275,13 +235,8 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
   ]);
 
   const onPressBtnPurchase = useCallback(() => {
-    // 충전하기만 시간 체크
-    if (params?.type === 'addOn' && params?.expireTime) {
-      if (validateTime()) {
-        onPurchase();
-      }
-    } else onPurchase();
-  }, [onPurchase, params?.expireTime, params?.type, validateTime]);
+    onPurchase();
+  }, [onPurchase]);
 
   const renderModal = useCallback(() => {
     const isWarning = visible === 'esim:charge:time:warning';

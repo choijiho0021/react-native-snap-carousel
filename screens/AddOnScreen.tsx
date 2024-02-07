@@ -195,7 +195,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
 
   const usagePeriod = useMemo(() => {
     const now = moment().utcOffset(9);
-    const resetTime = moment.tz(dataResetTime, 'HH:mm:ss', 'Asia/Seoul');
+    const resetTime = moment(dataResetTime, 'HH:mm:ss');
 
     if (selectedType === 'today') {
       const n = moment(now.format(format), format);
