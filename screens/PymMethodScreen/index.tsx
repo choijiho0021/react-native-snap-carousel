@@ -1,7 +1,7 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
@@ -46,7 +46,9 @@ import DiscountInfo from '@/components/AppPaymentGateway/DiscountInfo';
 import PaymentSummary from '@/components/PaymentSummary';
 import ConfirmEmail from '@/components/AppPaymentGateway/ConfirmEmail';
 import ChangeEmail from './ChangeEmail';
-import PymMethod from '@/components/AppPaymentGateway/PymMethod';
+import PymMethod, {
+  PymMethodRef,
+} from '@/components/AppPaymentGateway/PymMethod';
 import SelectCoupon from './SelectCoupon';
 import SelectCard from './SelectCard';
 import {retrieveData, storeData} from '@/utils/utils';
@@ -120,6 +122,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [policyChecked, setPolicyChecked] = useState(false);
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
+  const pymMethodRef = useRef<PymMethodRef>(null);
 
   useEffect(() => {
     if (!info.infoMap.has(infoKey)) {
@@ -142,7 +145,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   useEffect(() => {
     async function getPymMethod() {
       const method = await retrieveData(`${cachePrefix}cache.pym.method`);
-      console.log('@@@ cached method', method);
       if (method) setSelected(method);
     }
     getPymMethod();
@@ -224,13 +226,19 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         });
       } else {
         // if the payment amount is not zero, make order first
+        let prefix = 'r_';
+        let receipt: PaymentParams['receipt'];
+        if (payMethod?.method === 'vbank') {
+          receipt = pymMethodRef?.current?.getExtraInfo();
+          prefix = 'v_';
+          console.log('@@@ vbank', receipt);
+        }
+
         const params = {
           pg: payMethod?.key,
           pay_method: payMethod?.method,
           card: selected.startsWith('card') ? selected.slice(4, 6) : '',
-          merchant_uid: `${
-            payMethod?.method === 'vbank' ? 'v_' : 'r_'
-          }${mobile}_${new Date().getTime()}`,
+          merchant_uid: `${prefix}${mobile}_${new Date().getTime()}`,
           name: i18n.t('appTitle'),
           amount: cart.pymPrice?.value, // 실제 결제 금액 (로깨비캐시 제외)
           rokebi_cash: cart.pymReq?.rkbcash?.value, // balance 차감 금액
@@ -243,6 +251,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           digital: true,
           paymentRule: product.rule,
           mode,
+          receipt,
         } as PaymentParams;
 
         setClickable(true);
@@ -291,7 +300,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       <SelectCoupon
         promo={cart.promo}
         couponId={cart.couponToApply}
-        onPress={(couponId: string) => {
+        onPress={(couponId?: string) => {
           action.cart.applyCoupon({couponId});
           action.modal.closeModal();
         }}
@@ -346,7 +355,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         <DiscountInfo onPress={() => showCouponSelector()} />
 
-        <PymMethod value={selected} onPress={setPymMethod} />
+        <PymMethod
+          pymMethodRef={pymMethodRef}
+          value={selected}
+          onPress={setPymMethod}
+        />
 
         <PaymentSummary mode="method" />
 

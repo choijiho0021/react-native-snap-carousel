@@ -43,6 +43,11 @@ export type PaymentParams = {
   app_scheme: string;
   digital: boolean; // 컨텐츠 - 데이터상품일 경우 true
   memo?: string;
+  receipt?: {
+    type: 'p' | 'b' | 'n'; // 용도 p-개인, b-사업용 n-발급안함
+    idType: 'm' | 'c' | 'b'; // id 종류  m-휴대폰, c-영수증카드, b-사업자등록번호
+    id: string; // id 번호
+  };
 
   isPaid?: boolean;
   mode?: string;
