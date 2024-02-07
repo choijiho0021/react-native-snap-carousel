@@ -180,7 +180,7 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
         />
         <AppButton
           iconName="contact121"
-          title={i18n.t('contact:event')}
+          title={i18n.t('contact:board')}
           style={styles.btnContactBoard}
           titleStyle={appStyles.normal16Text}
           viewStyle={styles.btnStyle}
@@ -188,7 +188,7 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
           onPress={() =>
             navigate(navigation, route, 'MyPageStack', {
               tab: 'HomeStack',
-              screen: 'EventBoard',
+              screen: 'ContactBoard',
               params: {index: 1},
             })
           }
