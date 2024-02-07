@@ -4,6 +4,7 @@ import moment from 'moment';
 import utils from '@/redux/api/utils';
 import api, {ApiResult, ApiToken, DrupalNode, DrupalNodeJsonApi} from './api';
 import {CashExpire, CashHistory} from '@/redux/modules/account';
+import {Currency} from './productApi';
 
 export type RkbAccount = {
   nid: number;
@@ -24,8 +25,13 @@ export type RkbCoupon = {
   id: string;
   prName: string;
   prDisp: string;
+  prDesc: string;
   startDate: moment.Moment;
   endDate?: moment.Moment;
+  offer: {
+    percentage?: number;
+    amount?: Currency;
+  };
 };
 
 const toAccount = (
@@ -109,8 +115,16 @@ const toCoupon = (
     id: string;
     pr_name: string;
     pr_disp: string;
+    pr_desc: string;
     start_date: string;
     end_date: string;
+    offer: {
+      percentage?: string;
+      amount?: {
+        currency_code: string;
+        number: string;
+      };
+    };
   }>,
 ): ApiResult<RkbCoupon> => {
   // REST API json/account/list/{id}로 조회하는 경우
@@ -122,8 +136,18 @@ const toCoupon = (
             id: item.id,
             prName: item.pr_name,
             prDisp: item.pr_disp,
+            prDesc: item.pr_desc,
             startDate: item.start_date ? moment(item.start_date) : undefined,
             endDate: item.end_date ? moment(item.end_date) : undefined,
+            offer: {
+              percentage: utils.stringToNumber(item.offer.percentage),
+              amount: item.offer.amount
+                ? ({
+                    value: utils.stringToNumber(item.offer.amount.number),
+                    currency: item.offer.amount.currency_code,
+                  } as Currency)
+                : undefined,
+            },
           } as RkbCoupon),
       ),
     );

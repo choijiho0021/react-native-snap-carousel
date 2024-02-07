@@ -1232,7 +1232,7 @@
   "mypage:preparing": "서비스 준비중",
   "mypage:mailInfo": "* 구매하신 eSIM 상품은 본 이메일로 발송됩니다.",
   "mypage:coupon": "쿠폰함",
-  "coupon:inputCode": "쿠폰 코드를 입력해 주세요",
+  "coupon:inputCode": "쿠폰 코드를 입력하세요",
   "coupon:reg": "쿠폰 등록",
   "coupon:reg:succ": "쿠폰이 등록되었습니다.",
   "coupon:reg:fail": "쿠폰 코드 또는 다운로드 기한을 확인해 주세요.",

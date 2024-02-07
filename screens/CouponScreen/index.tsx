@@ -27,6 +27,7 @@ import AppTextInput from '@/components/AppTextInput';
 import AppButton from '@/components/AppButton';
 import {API} from '@/redux/api';
 import AppSnackBar from '@/components/AppSnackBar';
+import AppPrice from '@/components/AppPrice';
 
 const styles = StyleSheet.create({
   container: {
@@ -35,11 +36,12 @@ const styles = StyleSheet.create({
   },
   coupon: {
     paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: 'gray',
+    paddingVertical: 16,
+    borderColor: colors.gray4,
+    borderWidth: 1,
+    borderRadius: 3,
+    marginHorizontal: 20,
+    marginVertical: 6,
   },
   row: {
     flexDirection: 'row',
@@ -48,8 +50,32 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   title: {
-    ...appStyles.h1,
-    margin: 20,
+    ...appStyles.bold16Text,
+    marginTop: 40,
+    marginHorizontal: 20,
+    marginBottom: 10,
+  },
+  input: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 3,
+    height: 40,
+    flex: 1,
+    marginRight: 8,
+    paddingHorizontal: 16,
+  },
+  regBtn: {
+    width: 92,
+    height: 40,
+    borderRadius: 3,
+    backgroundColor: colors.clearBlue,
+  },
+  desc: {
+    ...appStyles.bold14Text,
+    color: colors.warmGrey,
+    marginVertical: 6,
   },
 });
 
@@ -76,6 +102,7 @@ const CouponScreen: React.FC<CouponProps> = ({
   const dispatch = useDispatch();
   const [message, setMessage] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [focused, setFocused] = useState(false);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -89,11 +116,23 @@ const CouponScreen: React.FC<CouponProps> = ({
   }, [onRefresh]);
 
   const renderCoupon = useCallback(({item}: {item: RkbCoupon}) => {
+    console.log('@@@ coupon', item);
     return (
       <View style={styles.coupon}>
-        <AppText>{item.prName}</AppText>
-        <AppText>{item.prDisp}</AppText>
-        <AppText>{item.startDate?.toString()}</AppText>
+        {item.offer.amount ? (
+          <AppPrice
+            price={item.offer.amount}
+            balanceStyle={[appStyles.robotoBold22Text, {lineHeight: 36}]}
+            currencyStyle={[appStyles.bold22Text, {color: colors.clearBlue}]}
+          />
+        ) : item.offer.percentage ? (
+          <AppText style={appStyles.robotoBold22Text}>
+            {`${item.offer.percentage * 100}%`}
+          </AppText>
+        ) : null}
+        <AppText style={appStyles.bold16Text}>{item.prDisp}</AppText>
+        <AppText style={styles.desc}>{item.prDesc}</AppText>
+        <AppText>{item.endDate?.toString()}</AppText>
       </View>
     );
   }, []);
@@ -120,16 +159,34 @@ const CouponScreen: React.FC<CouponProps> = ({
       <View style={appStyles.header}>
         <AppBackButton title={i18n.t('mypage:coupon')} />
       </View>
-      <View style={styles.row}>
-        <AppTextInput
-          placeholder={i18n.t('coupon:inputCode')}
-          value={code}
-          onChangeText={setCode}
-        />
+      <View style={[styles.row, {marginTop: 24}]}>
+        <View
+          style={[
+            styles.input,
+            {borderColor: focused ? colors.clearBlue : colors.lightGrey},
+          ]}>
+          <AppTextInput
+            style={{flex: 1}}
+            placeholder={i18n.t('coupon:inputCode')}
+            value={code}
+            onChangeText={setCode}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+          />
+          {code.length > 0 && (
+            <AppButton
+              style={{justifyContent: 'flex-end', marginLeft: 10}}
+              iconName="btnSearchCancel"
+              onPress={() => setCode('')}
+            />
+          )}
+        </View>
         <AppButton
+          style={styles.regBtn}
           title={i18n.t('coupon:reg')}
           disabled={code.length < 1}
           onPress={regCoupon}
+          titleStyle={[appStyles.semiBold16Text, {color: colors.white}]}
         />
       </View>
       <AppText style={styles.title}>{i18n.t('coupon:mine')}</AppText>
@@ -138,7 +195,6 @@ const CouponScreen: React.FC<CouponProps> = ({
         data={coupon}
         keyExtractor={(item) => item.id}
         renderItem={renderCoupon}
-        ItemSeparatorComponent={<View style={styles.separator} />}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
