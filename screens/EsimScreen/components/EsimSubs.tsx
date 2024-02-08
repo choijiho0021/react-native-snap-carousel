@@ -178,6 +178,7 @@ const styles = StyleSheet.create({
   },
   btnTitle2: {
     ...appStyles.medium18,
+    color: colors.white,
     paddingBottom: 2,
     lineHeight: 22,
   },

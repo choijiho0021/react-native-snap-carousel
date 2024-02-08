@@ -233,7 +233,7 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
       </ScrollView>
       <AppButton
         title={i18n.t('rch:recharge')}
-        titleStyle={appStyles.medium18}
+        titleStyle={[appStyles.medium18, {color: colors.white}]}
         disabled={_.isEmpty(selected)}
         onPress={onSubmit}
         style={styles.confirm}

@@ -148,7 +148,7 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
         title={`${
           promo?.find((p) => p.coupon_id === couponId)?.adj?.value || '0'
         } ${i18n.t('pym:sel:coupon:apply')}`}
-        titleStyle={appStyles.medium18}
+        titleStyle={[appStyles.medium18, {color: colors.white}]}
         onPress={() => {
           action.cart.applyCoupon({couponId});
           navigation.goBack();

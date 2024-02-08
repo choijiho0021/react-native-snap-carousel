@@ -370,7 +370,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         <PolicyChecker onPress={setPolicyChecked} />
         <AppButton
           title={i18n.t('payment')}
-          titleStyle={appStyles.medium18}
+          titleStyle={[appStyles.medium18, {color: colors.white}]}
           disabled={(cart.pymPrice?.value !== 0 && !selected) || !policyChecked}
           key={i18n.t('payment')}
           onPress={() => onSubmit(false)}

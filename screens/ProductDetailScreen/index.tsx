@@ -568,7 +568,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             style={styles.mainButton}
             title={i18n.t('cart:purchaseNow')}
             onPress={!account.loggedIn ? onPressBtnRegCard : onPressBtnPurchase}
-            titleStyle={appStyles.medium18}
+            titleStyle={[appStyles.medium18, {color: colors.white}]}
           />
         </View>
       </View>
