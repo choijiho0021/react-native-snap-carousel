@@ -14,17 +14,6 @@ import AppText from './AppText';
 import AppTextInput from './AppTextInput';
 import Triangle from './Triangle';
 
-export const emailDomainList = {
-  'icloud.com': 'Apple',
-  'naver.com': 'Naver',
-  'gmail.com': 'Gmail',
-  'daum.net': 'Daum',
-  'hanmail.net': 'Hanmail',
-  'kakao.com': 'Kakao',
-  'hotmail.com': 'Hotmail',
-  'yahoo.com': 'Yahoo',
-};
-
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
@@ -32,42 +21,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingRight: 10,
   },
-  emptyInput: {
-    ...appStyles.normal16Text,
-    borderBottomColor: colors.lightGrey,
-    borderColor: colors.lightGrey,
-    color: colors.lightGrey,
-  },
   textInputWrapper: {
-    borderBottomColor: colors.black,
-    borderBottomWidth: 1,
-    marginRight: 10,
-    paddingLeft: 10,
+    flex: 1,
+    borderColor: colors.lightGrey,
+    borderWidth: 1,
+    borderRadius: 3,
+    paddingHorizontal: 16,
+    paddingVertical: 13,
   },
   textInput: {
-    ...appStyles.normal16Text,
-    paddingTop: 9,
-    color: colors.black,
-    paddingBottom: 7,
+    ...appStyles.medium16,
+    color: colors.greyish,
     textAlignVertical: 'center',
   },
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignContent: 'stretch',
-  },
-  pickerWrapper: {
-    ...appStyles.borderWrapper,
-    width: 96,
-    borderColor: colors.black,
-    marginTop: 5,
-  },
-  placeholder: {
-    ...appStyles.normal14Text,
-    lineHeight: 19,
-    paddingLeft: 10,
-    paddingVertical: 8,
-    height: '100%',
+    alignItems: 'center',
   },
   infoText: {
     marginTop: 15,
@@ -83,28 +53,28 @@ type InputEmailProps = {
   style?: StyleProp<ViewStyle>;
   inputRef?: React.MutableRefObject<InputEmailRef | null>;
   value?: string;
+  domain?: string;
   onChange?: (email: string) => void;
-  onPressPicker?: () => void;
+  onPress?: () => void;
 };
 
 const InputEmail: React.FC<InputEmailProps> = ({
   style,
   inputRef,
   value,
+  domain,
   onChange,
-  onPressPicker = () => {},
+  onPress = () => {},
 }) => {
   const emailRef = useRef<TextInput>();
   const domainRef = useRef<TextInput>();
   const [email, setEmail] = useState('');
-  const [domain, setDomain] = useState('');
   const [isDirectInput, setIsDirectInput] = useState(true);
 
   useEffect(() => {
     const m = value?.split('@');
     if (m && m?.length > 1) {
       setEmail(m[0]);
-      setDomain(m[1]);
       setIsDirectInput(!emailDomainList.hasOwnProperty(m[1]));
     }
   }, [value]);
@@ -119,7 +89,6 @@ const InputEmail: React.FC<InputEmailProps> = ({
 
   const chgDomain = useCallback(
     (v: string) => {
-      setDomain(v);
       setIsDirectInput(!emailDomainList.hasOwnProperty(v));
       onChange?.(`${email}@${v}`);
     },
@@ -138,14 +107,10 @@ const InputEmail: React.FC<InputEmailProps> = ({
     <View style={style}>
       <View style={styles.container}>
         <Pressable
-          style={[
-            styles.textInputWrapper,
-            email ? {} : styles.emptyInput,
-            {flex: 1},
-          ]}
+          style={styles.textInputWrapper}
           onPress={() => emailRef.current?.focus()}>
           <AppTextInput
-            style={[styles.textInput, email ? {} : styles.emptyInput]}
+            style={styles.textInput}
             placeholder={i18n.t('reg:email')}
             placeholderTextColor={colors.greyish}
             returnKeyType="next"
@@ -157,24 +122,13 @@ const InputEmail: React.FC<InputEmailProps> = ({
           />
         </Pressable>
 
-        <AppText
-          style={[
-            appStyles.normal12Text,
-            styles.textInput,
-            email ? {} : styles.emptyInput,
-          ]}>
-          @
-        </AppText>
+        <AppText style={[appStyles.medium16, {marginHorizontal: 6}]}>@</AppText>
 
-        <Pressable
-          style={[
-            styles.textInputWrapper,
-            domain ? {} : styles.emptyInput,
-            {flex: 1, marginLeft: 10},
-          ]}
+        {/* <Pressable
+          style={[styles.textInputWrapper, {flex: 1, marginLeft: 10}]}
           onPress={() => domainRef.current?.focus()}>
           <AppTextInput
-            style={[styles.textInput, domain ? {} : styles.emptyInput]}
+            style={[styles.textInput]}
             returnKeyType="next"
             enablesReturnKeyAutomatically
             editable={isDirectInput}
@@ -183,18 +137,16 @@ const InputEmail: React.FC<InputEmailProps> = ({
             ref={domainRef}
             value={domain}
           />
-        </Pressable>
+        </Pressable> */}
 
-        <Pressable
-          style={[styles.pickerWrapper, isDirectInput ? styles.emptyInput : {}]}
-          onPress={onPressPicker}>
+        <Pressable style={styles.textInputWrapper} onPress={onPress}>
           <View style={styles.row}>
             <AppText
               style={[
-                styles.placeholder,
-                {color: isDirectInput ? colors.warmGrey : colors.black},
+                appStyles.medium16,
+                {color: domain ? colors.black : colors.greyish},
               ]}>
-              {isDirectInput ? i18n.t('email:input') : emailDomainList[domain]}
+              {domain || i18n.t('email:input')}
             </AppText>
             <Triangle width={8} height={6} color={colors.warmGrey} />
           </View>

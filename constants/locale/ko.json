@@ -142,7 +142,7 @@
 
   "reg:actCode": "Activation Code",
   "reg:inputActCode": "Activation Code를 입력하세요.",
-  "reg:email": "이메일",
+  "reg:email": "변경할 이메일",
   "reg:ICCID": "ICCID 카드 등록",
   "reg:cntry": "국가",
   "reg:mobile": "휴대전화",
@@ -288,7 +288,7 @@
   "mobile:timeout": "인증번호가 만료되었습니다. 다시 시도해주세요.",
   "mobile:inputInTime": "* 3분 이내로 인증번호(6자리)를 입력해주세요.",
 
-  "email:input": "직접 입력",
+  "email:input": "선택하기",
 
   "cfm:contract": "이용 약관 동의",
   "cfm:required": " (필수)",
@@ -1334,10 +1334,10 @@
   "info:init:err": "공지사항을 가져오는 데 실패했습니다.\n다시 시도해 주세요",
 
   "changeEmail": "이메일 변경",
-  "changeEmail:using": "사용 중인 이메일 주소",
-  "changeEmail:new": "새 이메일 주소",
+  "changeEmail:using": "사용 중인 이메일",
+  "changeEmail:new": "새 이메일",
   "changeEmail:placeholder": "변경할 이메일 주소를 입력하세요.",
-  "changeEmail:info": "* 구매하신 eSIM 상품은 본 이메일로 발송됩니다.",
+  "changeEmail:info": "변경된 이메일로 eSIM 상품이 발송됩니다.",
   "changeEmail:save": "변경 내용 저장하기",
   "changeEmail:saveInfo": "저장이 완료되었습니다.",
   "changeEmail:duplicate": "이미 사용하고 있는 이메일 주소입니다.",

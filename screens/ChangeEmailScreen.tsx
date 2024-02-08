@@ -27,6 +27,9 @@ import Env from '@/environment';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import ScreenHeader from '@/components/ScreenHeader';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import InputEmail from '@/components/InputEmail';
+import DomainListModal from '@/components/DomainListModal';
 
 const {isIOS} = Env.get();
 
@@ -52,12 +55,15 @@ const styles = StyleSheet.create({
     color: colors.warmGrey,
   },
   oldEmail: {
-    height: 46,
-    marginTop: 4,
-    marginBottom: 32,
-    backgroundColor: colors.whiteTwo,
+    height: 50,
+    marginTop: 6,
+    marginBottom: 24,
+    backgroundColor: colors.backGrey,
     borderRadius: 3,
-    paddingHorizontal: 15,
+    borderWidth: 1,
+    borderColor: colors.gray4,
+    paddingHorizontal: 16,
+    paddingVertical: 13,
     justifyContent: 'center',
   },
   oldEmailText: {
@@ -87,6 +93,11 @@ const styles = StyleSheet.create({
     marginTop: 15,
     color: colors.clearBlue,
   },
+  caution: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
 });
 
 type ChangeEmailScreenNavigationProp = StackNavigationProp<
@@ -114,6 +125,8 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
 }) => {
   const [newEmail, setNewEmail] = useState<string>('');
   const [inValid, setInValid] = useState<ValidationResult>({});
+  const [showDomainModal, setShowDomainModal] = useState(false);
+  const [domain, setDomain] = useState('');
 
   const showModal = useCallback(() => {
     actions.modal.renderModal(() => (
@@ -159,12 +172,29 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
         behavior={isIOS ? 'padding' : undefined}>
         <ScreenHeader title={i18n.t('set:changeMail')} />
         <View style={{padding: 20, flex: 1}}>
+          <View style={styles.caution}>
+            <AppSvgIcon name="cautionPurple" />
+            <AppText
+              style={[
+                appStyles.bold14Text,
+                {color: colors.violet500, marginLeft: 8},
+              ]}>
+              {i18n.t('changeEmail:info')}
+            </AppText>
+          </View>
           <AppText style={styles.title}>{i18n.t('changeEmail:using')}</AppText>
           <View style={styles.oldEmail}>
             <AppText style={styles.oldEmailText}>{email}</AppText>
           </View>
 
-          <AppText style={styles.title}>{i18n.t('changeEmail:new')}</AppText>
+          <AppText style={[appStyles.bold16Text, {marginBottom: 6}]}>
+            {i18n.t('changeEmail:new')}
+          </AppText>
+
+          <InputEmail
+            domain={domain}
+            onPress={() => setShowDomainModal(true)}
+          />
 
           <View>
             <AppTextInput
@@ -198,6 +228,14 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
           title={i18n.t('changeEmail:save')}
           onPress={changeEmail}
           type="primary"
+        />
+        <DomainListModal
+          style={{right: 20, top: 200}}
+          visible={showDomainModal}
+          onClose={(v) => {
+            setDomain(v);
+            setShowDomainModal(false);
+          }}
         />
       </KeyboardAvoidingView>
     </SafeAreaView>
