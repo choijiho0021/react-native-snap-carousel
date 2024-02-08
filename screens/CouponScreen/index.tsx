@@ -11,6 +11,7 @@ import {
 import {StackNavigationProp} from '@react-navigation/stack';
 import {connect, useDispatch} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
+import moment from 'moment';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import i18n from '@/utils/i18n';
@@ -28,6 +29,7 @@ import AppButton from '@/components/AppButton';
 import {API} from '@/redux/api';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppPrice from '@/components/AppPrice';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
   container: {
@@ -46,7 +48,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     marginHorizontal: 20,
   },
   title: {
@@ -76,6 +77,33 @@ const styles = StyleSheet.create({
     ...appStyles.bold14Text,
     color: colors.warmGrey,
     marginVertical: 6,
+  },
+  date: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  dday: {
+    ...appStyles.bold12Text,
+    color: colors.clearBlue,
+    backgroundColor: colors.veryLightBlue,
+    height: 20,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 3,
+    marginRight: 8,
+  },
+  urgent: {
+    backgroundColor: colors.backRed,
+    color: colors.redError,
+  },
+  bottom: {
+    paddingVertical: 40,
+    backgroundColor: colors.backGrey,
+  },
+  caution: {
+    ...appStyles.medium14,
+    marginHorizontal: 20,
+    color: colors.warmGrey,
   },
 });
 
@@ -117,22 +145,37 @@ const CouponScreen: React.FC<CouponProps> = ({
 
   const renderCoupon = useCallback(({item}: {item: RkbCoupon}) => {
     console.log('@@@ coupon', item);
+    const {
+      prDisp,
+      prDesc,
+      endDate,
+      offer: {percentage, amount},
+    } = item;
+
+    const diff = Math.ceil(endDate.diff(moment(), 'days', true) || 0);
+    if (diff < 0) return null;
+
     return (
       <View style={styles.coupon}>
-        {item.offer.amount ? (
+        {amount ? (
           <AppPrice
-            price={item.offer.amount}
+            price={amount}
             balanceStyle={[appStyles.robotoBold22Text, {lineHeight: 36}]}
             currencyStyle={[appStyles.bold22Text, {color: colors.clearBlue}]}
           />
-        ) : item.offer.percentage ? (
-          <AppText style={appStyles.robotoBold22Text}>
-            {`${item.offer.percentage * 100}%`}
-          </AppText>
+        ) : percentage ? (
+          <AppText style={appStyles.robotoBold22Text}>{percentage}</AppText>
         ) : null}
-        <AppText style={appStyles.bold16Text}>{item.prDisp}</AppText>
-        <AppText style={styles.desc}>{item.prDesc}</AppText>
-        <AppText>{item.endDate?.toString()}</AppText>
+        <AppText style={appStyles.bold16Text}>{prDisp}</AppText>
+        <AppText style={styles.desc}>{prDesc}</AppText>
+        <View style={styles.date}>
+          <AppText style={[styles.dday, diff < 10 ? styles.urgent : undefined]}>
+            {`D-${diff}`}
+          </AppText>
+          <AppText style={appStyles.medium14}>
+            {endDate.format('yyyy.MM.DD 까지')}
+          </AppText>
+        </View>
       </View>
     );
   }, []);
@@ -204,10 +247,19 @@ const CouponScreen: React.FC<CouponProps> = ({
           />
         }
       />
-      <View style={{marginHorizontal: 20}}>
-        <AppText key="noti">{i18n.t('coupon:noti')}</AppText>
-        <AppText key="noti.1">{i18n.t('coupon:noti:1')}</AppText>
-        <AppText key="noti.2">{i18n.t('coupon:noti:2')}</AppText>
+      <View style={styles.bottom}>
+        <View style={[styles.row, {marginBottom: 12}]}>
+          <AppSvgIcon name="caution24" />
+          <AppText key="noti" style={[appStyles.bold18Text, {marginLeft: 8}]}>
+            {i18n.t('coupon:noti')}
+          </AppText>
+        </View>
+        <AppText key="noti.1" style={styles.caution}>
+          {i18n.t('coupon:noti:1')}
+        </AppText>
+        <AppText key="noti.2" style={styles.caution}>
+          {i18n.t('coupon:noti:2')}
+        </AppText>
       </View>
       <AppSnackBar
         visible={!!message}

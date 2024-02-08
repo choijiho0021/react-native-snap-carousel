@@ -27,9 +27,9 @@ export type RkbCoupon = {
   prDisp: string;
   prDesc: string;
   startDate: moment.Moment;
-  endDate?: moment.Moment;
+  endDate: moment.Moment;
   offer: {
-    percentage?: number;
+    percentage?: string;
     amount?: Currency;
   };
 };
@@ -129,27 +129,43 @@ const toCoupon = (
 ): ApiResult<RkbCoupon> => {
   // REST API json/account/list/{id}로 조회하는 경우
   if (resp.result === 0 && resp.objects) {
+    const now = moment();
     return api.success(
-      resp.objects.map(
-        (item) =>
-          ({
+      resp.objects
+        .map((item) => {
+          const {
+            offer: {percentage, amount},
+          } = item;
+
+          const p = percentage
+            ? `${(utils.stringToNumber(percentage) || 0) * 100}%`
+            : '';
+
+          const a = amount
+            ? ({
+                value: utils.stringToNumber(amount.number),
+                currency: amount.currency_code,
+              } as Currency)
+            : undefined;
+
+          return {
             id: item.id,
             prName: item.pr_name,
             prDisp: item.pr_disp,
             prDesc: item.pr_desc,
             startDate: item.start_date ? moment(item.start_date) : undefined,
             endDate: item.end_date ? moment(item.end_date) : undefined,
-            offer: {
-              percentage: utils.stringToNumber(item.offer.percentage),
-              amount: item.offer.amount
-                ? ({
-                    value: utils.stringToNumber(item.offer.amount.number),
-                    currency: item.offer.amount.currency_code,
-                  } as Currency)
-                : undefined,
-            },
-          } as RkbCoupon),
-      ),
+            offer: {percentage: p, amount: a},
+          } as RkbCoupon;
+        })
+        .filter(
+          (c) =>
+            c.startDate &&
+            c.endDate &&
+            c.startDate.isBefore(now) &&
+            c.endDate?.isAfter(now),
+        )
+        .sort((a, b) => a.endDate.diff(b.endDate)),
     );
   }
 
