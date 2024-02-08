@@ -73,6 +73,7 @@ import RegisterMobileScreen from '@/screens/RegisterMobileScreen';
 import CouponScreen from '@/screens/CouponScreen';
 import DraftUsScreen from '@/screens/DraftUsScreen';
 import PaymentVBankScreen from '@/screens/PaymentVBankScreen';
+import SelectCoupon from '@/screens/SelectCouponScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -148,7 +149,7 @@ function HomeStackComponent() {
       <HomeStack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
       <HomeStack.Group
         screenOptions={{animationEnabled: true, presentation: 'modal'}}>
-        <HomeStack.Screen name="SimpleTextModal" component={SimpleTextScreen} />
+        <HomeStack.Screen name="SelectCoupon" component={SelectCoupon} />
         <HomeStack.Screen name="UserGuideStep" component={UserGuideScreen} />
         <HomeStack.Screen
           name="UserGuide"
@@ -195,6 +196,7 @@ function CartStackComponent() {
       <CartStack.Screen name="SimpleText" component={SimpleTextScreen} />
       <CartStack.Group
         screenOptions={{animationEnabled: true, presentation: 'modal'}}>
+        <CartStack.Screen name="SelectCoupon" component={SelectCoupon} />
         <CartStack.Screen name="SimpleTextModal" component={SimpleTextScreen} />
       </CartStack.Group>
       <CartStack.Screen name="PaymentResult" component={PaymentResultScreen} />
@@ -223,6 +225,7 @@ function EsimStackComponent() {
       <EsimStack.Group
         screenOptions={{animationEnabled: true, presentation: 'modal'}}>
         <EsimStack.Screen name="SimpleTextModal" component={SimpleTextScreen} />
+        <EsimStack.Screen name="SelectCoupon" component={SelectCoupon} />
       </EsimStack.Group>
       <EsimStack.Screen name="ChargeType" component={ChargeTypeScreen} />
       <EsimStack.Screen name="Charge" component={ChargeScreen} />
@@ -281,6 +284,7 @@ function MyPageStackComponent() {
           name="SimpleTextModal"
           component={SimpleTextScreen}
         />
+        <MyPageStack.Screen name="SelectCoupon" component={SelectCoupon} />
       </MyPageStack.Group>
       <MyPageStack.Screen name="Recharge" component={RechargeScreen} />
       {/* <MyPageStack.Screen name="Pedometer" component={PedometerScreen} /> */}

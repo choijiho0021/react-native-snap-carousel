@@ -14,6 +14,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'space-between',
+    height: 56,
   },
   title: {
     ...appStyles.title,

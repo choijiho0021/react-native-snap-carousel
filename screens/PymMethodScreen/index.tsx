@@ -49,7 +49,7 @@ import ChangeEmail from './ChangeEmail';
 import PymMethod, {
   PymMethodRef,
 } from '@/components/AppPaymentGateway/PymMethod';
-import SelectCoupon from './SelectCoupon';
+import SelectCoupon from '../SelectCouponScreen';
 import SelectCard from './SelectCard';
 import {retrieveData, storeData} from '@/utils/utils';
 import SelectBank from './SelectBank';
@@ -296,17 +296,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   }, [account.email, action.modal]);
 
   const showCouponSelector = useCallback(() => {
-    action.modal.renderModal(() => (
-      <SelectCoupon
-        promo={cart.promo}
-        couponId={cart.couponToApply}
-        onPress={(couponId?: string) => {
-          action.cart.applyCoupon({couponId});
-          action.modal.closeModal();
-        }}
-      />
-    ));
-  }, [action.cart, action.modal, cart.couponToApply, cart.promo]);
+    navigation.navigate('SelectCoupon');
+  }, [navigation]);
 
   const setPymMethod = useCallback(
     (kind: string) => {

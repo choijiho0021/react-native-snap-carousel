@@ -1060,8 +1060,8 @@
   "pym:no:coupon": "적용 가능한 쿠폰이 없습니다.",
   "pym:coupon:none:sel": "적용 안함",
 
-  "pym:sel:coupon:title": "쿠폰 선택하기",
-  "pym:sel:coupon:noti": "쿠폰 코드를 사용하고 싶으신가요?\n쿠폰함에서 쿠폰 등록 후 사용하실 수 있어요!",
+  "pym:sel:coupon:title": "쿠폰 선택",
+  "pym:sel:coupon:noti": "<b>쿠폰함</b>에서 <b>쿠폰 코드</b> 등록 후 사용하실 수 있어요!",
   "pym:sel:coupon:apply": "원 할인 적용하기",
   "pym:item:subtotal": "상품 금액",
   "pym:item:discount": "할인쿠폰 사용",
@@ -1241,6 +1241,7 @@
   "coupon:noti": "쿠폰 사용 전 확인해주세요.",
   "coupon:noti:1": "• 쿠폰 사용 후 결제 취소로 환불하는 경우, 쿠폰은 쿠폰함으로 반환되며 쿠폰 유효기간이 남아있을 경우 재사용 가능해요.",
   "coupon:noti:2": "• 사용한 쿠폰과 유효기간이 만료된 쿠폰은 목록에서 삭제돼요.",
+  "coupon:none": "보유 쿠폰이 없습니다.",
 
   "invite:title": "로깨비캐시 *p를 보냈어요.",
   "invite:desc": "어쩌면 당신의 해외여행 데이터는 공짜!?",

@@ -5273,6 +5273,35 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  couponColor: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M.684 11.94a2 2 0 0 0 1.68 1.96l9.213 1.49a2 2 0 0 0 2.3-1.695l.084-.604a2 2 0 0 0-1.717-2.26L2.945 9.595a2 2 0 0 0-2.263 1.996l.002.348z"
+        fill="#F1694F"
+      />
+      <Path
+        d="M.666 11.435A2 2 0 0 0 2.52 13.43l9.729.716a2 2 0 0 0 2.142-1.855l.043-.615a2 2 0 0 0-1.898-2.137l-9.772-.477A2 2 0 0 0 .666 11.06v.375z"
+        fill="#FFD357"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M.666 2.667a2 2 0 0 1 2-2h10.667a2 2 0 0 1 2 2v2.666a1.333 1.333 0 1 0 0 2.667v2.667a2 2 0 0 1-2 2H2.666a2 2 0 0 1-2-2V8a1.333 1.333 0 0 0 0-2.667V2.667z"
+        fill="#2A7FF6"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10 8.667a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm0 1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM6 5.667a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm0 1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM5.646 9.02a.5.5 0 0 1 0-.707l4-4a.5.5 0 0 1 .707.707l-4 4a.5.5 0 0 1-.707 0z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;
