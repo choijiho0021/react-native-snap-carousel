@@ -105,6 +105,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     color: colors.warmGrey,
   },
+  empty: {
+    flex: 1,
+    alignItems: 'center',
+    marginTop: 20,
+  },
 });
 
 type CouponScreenNavigationProp = StackNavigationProp<
@@ -238,6 +243,14 @@ const CouponScreen: React.FC<CouponProps> = ({
         data={coupon}
         keyExtractor={(item) => item.id}
         renderItem={renderCoupon}
+        ListEmptyComponent={
+          <View style={styles.empty}>
+            <AppSvgIcon name="imgCoupon" />
+            <AppText style={[appStyles.bold14Text, {color: colors.warmGrey}]}>
+              {i18n.t('coupon:none')}
+            </AppText>
+          </View>
+        }
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

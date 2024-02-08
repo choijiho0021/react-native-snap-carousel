@@ -5243,6 +5243,36 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  imgCoupon: [
+    <Svg
+      width="63"
+      height="62"
+      viewBox="0 0 63 62"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M.5 12a2 2 0 0 1 2-2h58a2 2 0 0 1 2 2v12.7c-3.314 0-6 2.82-6 6.3s2.686 6.3 6 6.3V50a2 2 0 0 1-2 2h-58a2 2 0 0 1-2-2V37.3c3.314 0 6-2.82 6-6.3s-2.686-6.3-6-6.3V12z"
+        fill="url(#3m87a5l96a)"
+      />
+      <Circle cx="19.5" cy="31" r="3" fill="#fff" />
+      <Circle cx="31.5" cy="31" r="3" fill="#fff" />
+      <Circle cx="43.5" cy="31" r="3" fill="#fff" />
+      <Defs>
+        <LinearGradient
+          id="3m87a5l96a"
+          x1="19.5"
+          y1="22.6"
+          x2="51.204"
+          y2="39.185"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#2A7FF6" />
+          <Stop offset="1" stopColor="#71A9F8" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
 };
 
 export default pressIcons;
