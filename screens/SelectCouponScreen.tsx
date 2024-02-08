@@ -5,6 +5,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import {bindActionCreators} from 'redux';
 import React, {memo, useCallback, useMemo, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
@@ -16,11 +17,15 @@ import {appStyles} from '@/constants/Styles';
 import ScreenHeader from '@/components/ScreenHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
-import {CartModelState} from '@/redux/modules/cart';
 import CouponItem from './CouponScreen/CouponItem';
 import {AccountModelState} from '@/redux/modules/account';
 import {RkbCoupon} from '@/redux/api/accountApi';
 import AppText from '@/components/AppText';
+import {
+  CartAction,
+  actions as cartActions,
+  CartModelState,
+} from '@/redux/modules/cart';
 
 const styles = StyleSheet.create({
   container: {
@@ -68,13 +73,15 @@ type SelectCouponProps = {
   cart: CartModelState;
   account: AccountModelState;
 
-  onPress?: (coupon?: string) => void;
+  action: {
+    cart: CartAction;
+  };
 };
 
 const SelectCoupon: React.FC<SelectCouponProps> = ({
   cart: {promo, couponToApply},
   account: {coupon: myCoupon},
-  onPress = () => {},
+  action,
 }) => {
   const navigation = useNavigation();
   const [couponId, setCouponId] = useState(couponToApply);
@@ -142,7 +149,10 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
           promo?.find((p) => p.coupon_id === couponId)?.adj?.value || '0'
         } ${i18n.t('pym:sel:coupon:apply')}`}
         titleStyle={appStyles.medium18}
-        onPress={() => onPress(couponId)}
+        onPress={() => {
+          action.cart.applyCoupon({couponId});
+          navigation.goBack();
+        }}
         style={appStyles.confirm}
         type="primary"
       />
@@ -151,5 +161,12 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
 };
 
 export default memo(
-  connect(({cart, account}: RootState) => ({cart, account}))(SelectCoupon),
+  connect(
+    ({cart, account}: RootState) => ({cart, account}),
+    (dispatch) => ({
+      action: {
+        cart: bindActionCreators(cartActions, dispatch),
+      },
+    }),
+  )(SelectCoupon),
 );
