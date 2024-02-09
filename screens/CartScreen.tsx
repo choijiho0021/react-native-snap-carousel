@@ -157,17 +157,19 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
 
   const onChangeQty = useCallback(
     (key: string, orderItemId: number, cnt: number) => {
-      setQty((prev) => prev.set(key, cnt));
-      setChecked((prev) => prev.set(key, true));
+      if (cnt > 0 && cnt <= 10) {
+        setQty((prev) => prev.set(key, cnt));
+        setChecked((prev) => prev.set(key, true));
 
-      const {orderId} = cart;
-      if (orderItemId && orderId) {
-        action.cart.cartUpdateQty({
-          orderId,
-          orderItemId,
-          qty: cnt,
-          abortController: new AbortController(),
-        });
+        const {orderId} = cart;
+        if (orderItemId && orderId) {
+          action.cart.cartUpdateQty({
+            orderId,
+            orderItemId,
+            qty: cnt,
+            abortController: new AbortController(),
+          });
+        }
       }
     },
     [action.cart, cart],

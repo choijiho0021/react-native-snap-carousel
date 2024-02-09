@@ -101,7 +101,7 @@ const InputNumber = ({
           <AppSvgIcon
             name={boldIcon ? 'boldMinus' : 'minus'}
             disabled={inputValue <= minValue}
-            style={{opacity: disabled ? 0.4 : 1}}
+            style={{opacity: disabled || inputValue === minValue ? 0.4 : 1}}
           />
         </View>
       </Pressable>
@@ -113,7 +113,7 @@ const InputNumber = ({
           <AppSvgIcon
             name={boldIcon ? 'boldPlus' : 'plus'}
             disabled={inputValue >= maxValue}
-            style={{opacity: disabled ? 0.4 : 1}}
+            style={{opacity: disabled || inputValue === maxValue ? 0.4 : 1}}
           />
         </View>
       </Pressable>

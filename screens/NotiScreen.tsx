@@ -220,7 +220,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
   const onPress = useCallback(
     async ({uuid, isRead, bodyTitle, body, notiType = 'Notice/0'}: RkbNoti) => {
       const {token} = account;
-      const split = notiType.split('/');
+      const split = notiType?.split('/');
       const type = split[0];
 
       Analytics.trackEvent('Page_View_Count', {page: 'Noti Detail'});
@@ -265,13 +265,24 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             // format : provision/{iccid}/{nid}
             navigation.popToTop();
 
-            navigation.navigate('EsimStack', {
-              screen: 'Esim',
-              params: {
-                iccid: split[1],
-                actionStr: 'navigate',
-              },
-            });
+            if (split[1] === '0') {
+              // 미국 로컬 상품의 경우 iccid가 없어 0으로 정의됨
+              navigation.navigate('EsimStack', {
+                screen: 'Esim',
+                params: {
+                  actionStr: 'reload',
+                },
+              });
+            } else {
+              navigation.navigate('EsimStack', {
+                screen: 'Esim',
+                params: {
+                  iccid: split[1],
+                  actionStr: 'navigate',
+                },
+              });
+            }
+
             break;
 
           case notiActions.NOTI_TYPE_EVENT:

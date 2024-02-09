@@ -1,7 +1,7 @@
 import React, {useMemo, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import i18n from '@/utils/i18n';
-
+import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import AppNotiBox from '@/components/AppNotiBox';
 import {Calendar, LocaleConfig} from 'react-native-calendars';
@@ -9,7 +9,19 @@ import AppBottomModal from './AppBottomModal';
 import moment from 'moment';
 import AppSvgIcon from '@/components/AppSvgIcon';
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  headNotiFrame: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    ...appStyles.normal14Text,
+    backgroundColor: colors.backGrey,
+    borderRadius: 3,
+    marginTop: 20,
+    padding: 16,
+    paddingRight: 30,
+    marginHorizontal: 20,
+  },
+});
 
 type DatePickerModalProps = {
   visible: boolean;
@@ -99,6 +111,7 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
     return (
       <View style={{paddingBottom: 20}}>
         <AppNotiBox
+          containerStyle={styles.headNotiFrame}
           backgroundColor={colors.backGrey}
           textColor={colors.black}
           text={i18n.t('us:modal:selectDate:text')}

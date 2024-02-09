@@ -264,6 +264,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [isEditMode, order.subs],
   );
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('blur', () => {
+      setShowUsageModal(false);
+      setShowGiftModal(false);
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   const showModal = useMemo(() => {
     if (showUsageModal && isDefined(showGiftModal)) return 'usage';
     if (!showUsageModal && showGiftModal) return 'gift';

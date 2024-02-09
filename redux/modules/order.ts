@@ -92,10 +92,16 @@ const cancelOrder = createAsyncThunk(
 const getNotiSubs = createAsyncThunk(
   'order/getNotiSubs',
   async (param: SubscriptionParam, {getState}) => {
+    console.log('@@@@ params : ', param);
+    console.log('@@@@@ order.ts getNotiSubs : ', param.offset);
+
     if (param.offset === undefined) {
       const {order} = getState() as RootState;
+      console.log('@@@@ subsOffset : ', order.subsOffset);
       param.offset = order.subsOffset;
     }
+
+    console.log('@@@@@@ param?.iccid : ', param?.iccid, ', params : ', param);
 
     return cachedApi(
       `cache.subs.${param?.iccid}`,
@@ -466,6 +472,13 @@ const slice = createSlice({
 
     builder.addCase(getNotiSubs.fulfilled, (state, action) => {
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
+      const {uuid} = action?.meta?.arg;
+
+      // 미국 상품은 uuid(subsId) = 0으로 고정, 전체 조회 후 종료
+      if (uuid === '0') {
+        state.subs = objects.sort(sortSubs);
+        return;
+      }
 
       if (result === 0 && objects) {
         const maxExpiredDate: Moment = objects.reduce(
@@ -483,7 +496,9 @@ const slice = createSlice({
           state.subs = state.subs.reduce((acc, cur) => {
             if (cur.statusCd === STATUS_USED) {
               if (cur.subsIccid === subsIccid) {
-                return acc.concat([{...cur, lastExpireDate: maxExpiredDate}]);
+                return acc.concat([
+                  {...cur, lastExpireDate: maxExpiredDate, cnt: objects.length},
+                ]);
               }
             } else if (objects.find((obj) => obj.nid === cur.nid)) return acc;
 
@@ -493,7 +508,11 @@ const slice = createSlice({
           state.subs = state.subs
             .map((sub) =>
               sub.nid === objects[0].nid
-                ? {...objects[0], lastExpireDate: maxExpiredDate}
+                ? {
+                    ...objects[0],
+                    cnt: 1,
+                    lastExpireDate: maxExpiredDate,
+                  }
                 : sub,
             )
             .sort(sortSubs);
