@@ -13,6 +13,7 @@ import {colors} from '@/constants/Colors';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
 import Triangle from './Triangle';
+import AppButton from './AppButton';
 
 const styles = StyleSheet.create({
   row: {
@@ -21,11 +22,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingRight: 10,
   },
-  textInputWrapper: {
+  wrapper: {
     flex: 1,
-    borderColor: colors.lightGrey,
     borderWidth: 1,
     borderRadius: 3,
+    borderColor: colors.lightGrey,
     paddingHorizontal: 16,
     paddingVertical: 13,
   },
@@ -38,10 +39,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  infoText: {
-    marginTop: 15,
-    color: colors.clearBlue,
   },
 });
 
@@ -59,7 +56,6 @@ type InputEmailProps = {
 };
 
 const InputEmail: React.FC<InputEmailProps> = ({
-  style,
   inputRef,
   value,
   domain,
@@ -67,32 +63,15 @@ const InputEmail: React.FC<InputEmailProps> = ({
   onPress = () => {},
 }) => {
   const emailRef = useRef<TextInput>();
-  const domainRef = useRef<TextInput>();
-  const [email, setEmail] = useState('');
-  const [isDirectInput, setIsDirectInput] = useState(true);
-
-  useEffect(() => {
-    const m = value?.split('@');
-    if (m && m?.length > 1) {
-      setEmail(m[0]);
-      setIsDirectInput(!emailDomainList.hasOwnProperty(m[1]));
-    }
-  }, [value]);
+  const [email, setEmail] = useState(value?.split('@')?.[0] || '');
+  const [focused, setFocused] = useState(false);
 
   const chgAddr = useCallback(
     (v: string) => {
       setEmail(v);
-      onChange?.(`${v}@${domain}`);
+      onChange?.(v);
     },
-    [domain, onChange],
-  );
-
-  const chgDomain = useCallback(
-    (v: string) => {
-      setIsDirectInput(!emailDomainList.hasOwnProperty(v));
-      onChange?.(`${email}@${v}`);
-    },
-    [email, onChange],
+    [onChange],
   );
 
   useEffect(() => {
@@ -104,42 +83,50 @@ const InputEmail: React.FC<InputEmailProps> = ({
   }, [domain, email, inputRef]);
 
   return (
-    <View style={style}>
-      <View style={styles.container}>
-        <Pressable
-          style={styles.textInputWrapper}
-          onPress={() => emailRef.current?.focus()}>
-          <AppTextInput
-            style={styles.textInput}
-            placeholder={i18n.t('reg:email')}
-            placeholderTextColor={colors.greyish}
-            returnKeyType="next"
-            enablesReturnKeyAutomatically
-            onChangeText={chgAddr}
-            autoCapitalize="none"
-            ref={emailRef}
-            value={email}
+    <View style={styles.container}>
+      <Pressable
+        style={[
+          styles.wrapper,
+          {
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderColor: focused ? colors.clearBlue : colors.lightGrey,
+          },
+        ]}
+        onPress={() => emailRef.current?.focus()}>
+        <AppTextInput
+          style={[
+            styles.textInput,
+            {color: email ? colors.black : colors.greyish},
+          ]}
+          placeholder={i18n.t('reg:email')}
+          placeholderTextColor={colors.greyish}
+          returnKeyType="next"
+          enablesReturnKeyAutomatically
+          onChangeText={chgAddr}
+          autoCapitalize="none"
+          ref={emailRef}
+          value={email}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+        />
+        {email.length > 0 && (
+          <AppButton
+            style={{justifyContent: 'flex-end', marginLeft: 10}}
+            iconName="btnSearchCancel"
+            onPress={() => setEmail('')}
           />
-        </Pressable>
+        )}
+      </Pressable>
 
+      {domain !== 'input' && (
         <AppText style={[appStyles.medium16, {marginHorizontal: 6}]}>@</AppText>
+      )}
 
-        {/* <Pressable
-          style={[styles.textInputWrapper, {flex: 1, marginLeft: 10}]}
-          onPress={() => domainRef.current?.focus()}>
-          <AppTextInput
-            style={[styles.textInput]}
-            returnKeyType="next"
-            enablesReturnKeyAutomatically
-            editable={isDirectInput}
-            onChangeText={chgDomain}
-            autoCapitalize="none"
-            ref={domainRef}
-            value={domain}
-          />
-        </Pressable> */}
-
-        <Pressable style={styles.textInputWrapper} onPress={onPress}>
+      {domain !== 'input' && (
+        <Pressable style={styles.wrapper} onPress={onPress}>
           <View style={styles.row}>
             <AppText
               style={[
@@ -151,8 +138,7 @@ const InputEmail: React.FC<InputEmailProps> = ({
             <Triangle width={8} height={6} color={colors.warmGrey} />
           </View>
         </Pressable>
-      </View>
-      <AppText style={styles.infoText}>{i18n.t('mypage:mailInfo')}</AppText>
+      )}
     </View>
   );
 };

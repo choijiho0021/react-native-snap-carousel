@@ -148,7 +148,7 @@
   "reg:mobile": "휴대전화",
   "reg:phone": "일반전화",
   "reg:noEmail": "^E-mail 주소를 입력하세요",
-  "reg:invalidEmail": "^E-mail 주소가 아닙니다",
+  "reg:invalidEmail": "^이메일 형식이 올바르지 않습니다.",
   "reg:usingEmail": "사용 중인 이메일입니다.",
   "reg:noICCID": "ICCID 카드 등록 후 \n데이터상품 구매가 가능합니다.\n카드등록화면으로 이동하시겠습니까?",
   "reg:noActCode": "^Activation Code를 입력하세요",
@@ -1342,6 +1342,8 @@
   "changeEmail:saveInfo": "저장이 완료되었습니다.",
   "changeEmail:duplicate": "이미 사용하고 있는 이메일 주소입니다.",
   "changeEmail:fail": "이메일 등록에 실패했습니다.",
+  "changeEmail:notChanged": "변경 내용이 없습니다.",
+  "changeEmail:usable": "사용할 수 있는 이메일입니다.",
 
   "socialLogin:kakao": "카카오 로그인",
   "socialLogin:apple": "Apple로 로그인",
