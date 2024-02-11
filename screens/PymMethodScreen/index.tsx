@@ -45,11 +45,9 @@ import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import DiscountInfo from '@/components/AppPaymentGateway/DiscountInfo';
 import PaymentSummary from '@/components/PaymentSummary';
 import ConfirmEmail from '@/components/AppPaymentGateway/ConfirmEmail';
-import ChangeEmail from './ChangeEmail';
 import PymMethod, {
   PymMethodRef,
 } from '@/components/AppPaymentGateway/PymMethod';
-import SelectCoupon from '../SelectCouponScreen';
 import SelectCard from './SelectCard';
 import {retrieveData, storeData} from '@/utils/utils';
 import SelectBank from './SelectBank';
@@ -286,19 +284,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     );
   }, []);
 
-  const showChangeEmail = useCallback(() => {
-    action.modal.renderModal(() => (
-      <ChangeEmail
-        email={account.email}
-        onCancelClose={() => action.modal.closeModal()}
-      />
-    ));
-  }, [account.email, action.modal]);
-
-  const showCouponSelector = useCallback(() => {
-    navigation.navigate('SelectCoupon');
-  }, [navigation]);
-
   const setPymMethod = useCallback(
     (kind: string) => {
       if (kind === 'card') {
@@ -342,9 +327,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         enableResetScrollToCoords={false}>
         <PaymentItemInfo purchaseItems={cart.purchaseItems} mode="method" />
 
-        <ConfirmEmail onPress={() => showChangeEmail()} />
+        <ConfirmEmail onPress={() => navigation.navigate('ChangeEmail')} />
 
-        <DiscountInfo onPress={() => showCouponSelector()} />
+        <DiscountInfo onPress={() => navigation.navigate('SelectCoupon')} />
 
         <PymMethod
           pymMethodRef={pymMethodRef}

@@ -109,7 +109,7 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
     actions.account.changeEmail(newEmail).then((rsp) => {
       if (rsp.payload.result === 0) {
         setSnackBarMsg(i18n.t('changeEmail:saveInfo'));
-        setTimeout(() => navigation.goBack(), 200);
+        setTimeout(() => navigation.goBack(), 100);
       } else {
         setSnackBarMsg(i18n.t('changeEmail:fail'));
       }

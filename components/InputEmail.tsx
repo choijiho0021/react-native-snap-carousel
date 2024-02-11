@@ -57,7 +57,6 @@ export type InputEmailRef = {
 type InputEmailProps = {
   inputRef?: React.MutableRefObject<InputEmailRef | null>;
   currentEmail?: string; // current email
-  // value: string;
   domain: string;
   onChange?: (email: string) => void;
   onPress?: () => void;
@@ -107,7 +106,9 @@ const InputEmail: React.FC<InputEmailProps> = ({
         }
       }
     },
-    [currentEmail, domain, onChange],
+    // current email은 dependency list에서 제외할것
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [domain, onChange],
   );
 
   const validated = useMemo(() => inValid === 'changeEmail:usable', [inValid]);
