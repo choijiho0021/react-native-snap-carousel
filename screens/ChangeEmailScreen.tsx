@@ -20,11 +20,8 @@ import {
 } from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
-import validationUtil from '@/utils/validationUtil';
-import {API} from '@/redux/api';
 import Env from '@/environment';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
-import AppModalContent from '@/components/ModalContent/AppModalContent';
 import ScreenHeader from '@/components/ScreenHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import InputEmail from '@/components/InputEmail';
@@ -60,12 +57,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     lineHeight: 22,
     color: colors.black,
-  },
-  helpText: {
-    ...appStyles.normal14Text,
-    color: colors.clearBlue,
-    marginTop: 13,
-    marginLeft: 10,
   },
   button: {
     ...appStyles.normal16Text,
@@ -110,59 +101,20 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
   email,
 }) => {
   const [newEmail, setNewEmail] = useState<string>('');
-  const [inValid, setInValid] = useState('');
   const [showDomainModal, setShowDomainModal] = useState(false);
   const [domain, setDomain] = useState('');
-  const [showMsg, setShowMsg] = useState(false);
-
-  const validateEmail = useCallback(
-    (m: string) => {
-      const valid = validationUtil.validate('email', m);
-      if ((valid?.email?.length || 0) > 0) {
-        setInValid(valid?.email[0] || '');
-      } else if (m === email) {
-        // email not changed
-        setInValid(i18n.t('changeEmail:notChanged'));
-      } else {
-        // check if the email is duplicated
-        API.User.confirmEmail({email: m})
-          .then((rsp) => {
-            if (rsp.result === 0) {
-              setInValid(i18n.t('changeEmail:usable'));
-            } else if (rsp.message?.includes('Duplicate')) {
-              setInValid(i18n.t('changeEmail:duplicate'));
-            } else {
-              setInValid(i18n.t('changeEmail:fail'));
-            }
-          })
-          .catch(() => {
-            setInValid(i18n.t('changeEmail:fail'));
-          });
-      }
-    },
-    [email],
-  );
-
-  const onChangeText = useCallback(
-    (v: string) => {
-      const m = domain === 'input' ? v : `${v}@${domain}`;
-      setNewEmail(m);
-      validateEmail(m);
-    },
-    [domain, validateEmail],
-  );
+  const [snackBarMsg, setSnackBarMsg] = useState('');
 
   const changeEmail = useCallback(() => {
     actions.account.changeEmail(newEmail).then((rsp) => {
       if (rsp.payload.result === 0) {
-        setShowMsg(true);
+        setSnackBarMsg(i18n.t('changeEmail:saveInfo'));
+        setTimeout(() => navigation.goBack(), 200);
       } else {
-        setInValid(i18n.t('changeEmail:fail'));
+        setSnackBarMsg(i18n.t('changeEmail:fail'));
       }
     });
-  }, [actions.account, newEmail]);
-
-  const validated = inValid === i18n.t('changeEmail:usable');
+  }, [actions.account, navigation, newEmail]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -191,31 +143,23 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
           </AppText>
 
           <InputEmail
-            value={newEmail}
+            currentEmail={email}
             domain={domain}
             onPress={() => setShowDomainModal(true)}
-            onChange={onChangeText}
+            onChange={setNewEmail}
           />
-
-          <AppText
-            style={[
-              styles.helpText,
-              {color: validated ? colors.clearBlue : colors.errorBackground},
-            ]}>
-            {inValid}
-          </AppText>
         </View>
 
         <AppButton
           style={[
             styles.button,
-            {backgroundColor: validated ? colors.clearBlue : colors.lightGrey},
+            {backgroundColor: newEmail ? colors.clearBlue : colors.lightGrey},
           ]}
           titleStyle={[
             styles.buttonTitle,
-            {color: validated ? colors.white : colors.warmGrey},
+            {color: newEmail ? colors.white : colors.warmGrey},
           ]}
-          disabled={!validated}
+          disabled={!newEmail}
           title={i18n.t('changeEmail:save')}
           onPress={changeEmail}
           type="primary"
@@ -224,22 +168,14 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
           style={{right: 20, top: 200}}
           visible={showDomainModal}
           onClose={(v) => {
-            let m = newEmail.split('@')?.[0];
-            if (v !== 'input') m += `@${v}`;
-
-            setNewEmail(m);
-            validateEmail(m);
             setDomain(v);
             setShowDomainModal(false);
           }}
         />
         <AppSnackBar
-          visible={showMsg}
-          textMessage={i18n.t('changeEmail:saveInfo')}
-          onClose={() => {
-            setShowMsg(false);
-            navigation.goBack();
-          }}
+          visible={!!snackBarMsg}
+          textMessage={snackBarMsg}
+          onClose={() => setSnackBarMsg('')}
         />
       </KeyboardAvoidingView>
     </SafeAreaView>
