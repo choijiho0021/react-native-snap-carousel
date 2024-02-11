@@ -29,6 +29,7 @@ import ScreenHeader from '@/components/ScreenHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import InputEmail from '@/components/InputEmail';
 import DomainListModal from '@/components/DomainListModal';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const {isIOS} = Env.get();
 
@@ -112,23 +113,10 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
   const [inValid, setInValid] = useState('');
   const [showDomainModal, setShowDomainModal] = useState(false);
   const [domain, setDomain] = useState('');
-
-  const showModal = useCallback(() => {
-    actions.modal.renderModal(() => (
-      <AppModalContent
-        title={i18n.t('changeEmail:saveInfo')}
-        type="info"
-        onOkClose={() => {
-          actions.modal.closeModal();
-          navigation.popToTop();
-        }}
-      />
-    ));
-  }, [actions.modal, navigation]);
+  const [showMsg, setShowMsg] = useState(false);
 
   const validateEmail = useCallback(
     (m: string) => {
-      console.log('@@@ validate email', m);
       const valid = validationUtil.validate('email', m);
       if ((valid?.email?.length || 0) > 0) {
         setInValid(valid?.email[0] || '');
@@ -137,16 +125,22 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
         setInValid(i18n.t('changeEmail:notChanged'));
       } else {
         // check if the email is duplicated
-        API.User.confirmEmail({email: newEmail}).then((rsp) => {
-          if (rsp.result === 0) {
-            setInValid(i18n.t('changeEmail:usable'));
-          } else if (rsp.message?.includes('Duplicate')) {
-            setInValid(i18n.t('changeEmail:duplicate'));
-          }
-        });
+        API.User.confirmEmail({email: m})
+          .then((rsp) => {
+            if (rsp.result === 0) {
+              setInValid(i18n.t('changeEmail:usable'));
+            } else if (rsp.message?.includes('Duplicate')) {
+              setInValid(i18n.t('changeEmail:duplicate'));
+            } else {
+              setInValid(i18n.t('changeEmail:fail'));
+            }
+          })
+          .catch(() => {
+            setInValid(i18n.t('changeEmail:fail'));
+          });
       }
     },
-    [email, newEmail],
+    [email],
   );
 
   const onChangeText = useCallback(
@@ -158,26 +152,16 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
     [domain, validateEmail],
   );
 
-  const changeEmail = useCallback(async () => {
-    const checkEmail = await API.User.confirmEmail({email: newEmail});
+  const changeEmail = useCallback(() => {
+    actions.account.changeEmail(newEmail).then((rsp) => {
+      if (rsp.payload.result === 0) {
+        setShowMsg(true);
+      } else {
+        setInValid(i18n.t('changeEmail:fail'));
+      }
+    });
+  }, [actions.account, newEmail]);
 
-    if (checkEmail.result === 0) {
-      await actions.account.changeEmail(newEmail).then((rsp) => {
-        if (rsp.payload.result === 0) {
-          showModal();
-        }
-      });
-    } else if (checkEmail.message?.includes('Duplicate')) {
-      setInValid(i18n.t('changeEmail:duplicate'));
-    } else {
-      // dulicated email 이외의 에러인 경우, throw error
-      console.log('confirm email failed', checkEmail);
-      setInValid(i18n.t('changeEmail:fail'));
-      throw new Error('failed to confirm email');
-    }
-  }, [actions.account, newEmail, showModal]);
-
-  console.log('@@@ email screen', domain, inValid);
   const validated = inValid === i18n.t('changeEmail:usable');
 
   return (
@@ -247,6 +231,14 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
             validateEmail(m);
             setDomain(v);
             setShowDomainModal(false);
+          }}
+        />
+        <AppSnackBar
+          visible={showMsg}
+          textMessage={i18n.t('changeEmail:saveInfo')}
+          onClose={() => {
+            setShowMsg(false);
+            navigation.goBack();
           }}
         />
       </KeyboardAvoidingView>
