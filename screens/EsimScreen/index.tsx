@@ -188,7 +188,6 @@ type EsimScreenProps = {
   navigation: EsimScreenNavigationProp;
   route: EsimScreenRouteProp;
 
-  pending: boolean;
   account: AccountModelState;
   modal: ModalModelState;
   order: OrderModelState;
@@ -229,7 +228,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   action,
   account: {iccid, mobile, token, balance, expDate},
   order,
-  pending,
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -858,7 +856,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         }}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing || pending}
+            refreshing={refreshing}
             onRefresh={() => onRefresh(isEditMode, true)}
             colors={[colors.clearBlue]} // android 전용
             tintColor={colors.clearBlue} // ios 전용
@@ -866,7 +864,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         }
       />
 
-      {/* <AppActivityIndicator visible={pending || refreshing} /> */}
       <EsimModal
         visible={showModal === 'usage'}
         subs={subs}
@@ -918,12 +915,6 @@ export default connect(
     order,
     account,
     modal,
-    pending:
-      status.pending[accountActions.logInAndGetAccount.typePrefix] ||
-      status.pending[accountActions.getAccount.typePrefix] ||
-      status.pending[orderActions.getSubs.typePrefix] ||
-      status.pending[orderActions.cmiGetSubsUsage.typePrefix] ||
-      false,
   }),
   (dispatch) => ({
     action: {
