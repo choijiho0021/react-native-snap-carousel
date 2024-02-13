@@ -707,7 +707,7 @@
   "esim:howToCall:international:ex:tip": "한국 국가번호 : 82",
   "esim:howToCall:international:ais:txt": "00300 + 국가번호 + “0”을 제외한 전화번호 + 통화",
   "esim:howToCall:international:dtac:txt": "00400 + 국가번호 + “0”을 제외한 전화번호 + 통화",
-  "esim:howToCall:etcInfo": "기타 정보 확인",
+  "esim:howToCall:etcInfo": "기타 정보 확인 방법",
   "esim:howToCall:etcInfo:checkMtd": "확인 방법",
   "esim:howToCall:etcInfo:subtitle1:ais:title": "잔여 데이터 및 기간",
   "esim:howToCall:etcInfo:subtitle1:dtac:title": "데이터 사용량",
