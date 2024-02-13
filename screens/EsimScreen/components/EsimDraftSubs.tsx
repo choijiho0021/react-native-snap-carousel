@@ -131,6 +131,8 @@ const EsimDraftSubs = ({
   }, [draftOrder.orderDate]);
 
   const titleDraft = useCallback(() => {
+    const etcCount = getCountItems(draftOrder?.orderItems, true);
+
     return (
       <Pressable
         style={styles.prodTitle}
@@ -150,14 +152,9 @@ const EsimDraftSubs = ({
                 numberOfLines={2}
                 ellipsizeMode="tail">
                 {`${draftOrder.orderItems[0].title} `}
-                {draftOrder.orderItems?.length > 1 && (
+                {parseInt(etcCount, 10) > 0 && (
                   <AppText style={styles.draftTitleSubText}>
-                    {i18n
-                      .t('esim:etcCnt')
-                      .replace(
-                        '%%',
-                        getCountItems(draftOrder?.orderItems, true),
-                      )}
+                    {i18n.t('esim:etcCnt').replace('%%', etcCount)}
                   </AppText>
                 )}
               </AppText>
