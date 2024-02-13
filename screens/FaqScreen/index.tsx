@@ -140,7 +140,7 @@ const FaqScreen: React.FC<FaqScreenProps & DispatchProp> = ({
         key: undefined,
         num: undefined,
       });
-    }
+    } else refreshData(0);
   }, [navigation, refreshData, route.params, routes]);
 
   return (
