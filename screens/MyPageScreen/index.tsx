@@ -47,11 +47,6 @@ import ScreenHeader from '@/components/ScreenHeader';
 const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
-  title: {
-    ...appStyles.title,
-    marginLeft: 20,
-    marginRight: 20,
-  },
   container: {
     flex: 1,
     backgroundColor: colors.white,
