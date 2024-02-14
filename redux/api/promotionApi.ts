@@ -331,13 +331,13 @@ export const shareWebViewLink = (
 ) => {
   // ofl localhost 직접 입력 시 firebase 콘솔에 설정된 보안 규칙에 어긋나서 동작 안함
 
-  const param = `partnerId=${country.partner}&uuid=${uuid}`;
+  const param = `?partnerId=${country.partner}&uuid=${uuid}`;
 
   // ofl 값만 encode를 안합니다. 그래서 파라미터 uuid가 잘리는 현상이 발견됨 (Android 일때만).
   // IOS는 WebLink에 한글 들어가면 동작 안함 -> 웹에서 search말고도 동작 되게 수정해야함
   return `${needDomain ? `${webViewHost}/` : ''}esim/${country.country}/${
     Platform.OS === 'android' ? country.search?.split(',')[1] : 'page'
-  }?${param}`;
+  }${Platform.OS === 'android' ? encodeURIComponent(param) : param}`;
 };
 
 const shareLink = (uuid: string) => {
