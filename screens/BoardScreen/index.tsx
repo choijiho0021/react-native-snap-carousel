@@ -38,11 +38,9 @@ type BoardScreenProps = {
   routes: (TabRoute & {
     render: (jumpto: (v: string) => void) => React.ReactElement;
   })[];
-
-  pending: boolean;
 };
 
-const BoardScreen: React.FC<BoardScreenProps> = ({pending, title, routes}) => {
+const BoardScreen: React.FC<BoardScreenProps> = ({title, routes}) => {
   const navigation = useNavigation();
   const route = useRoute();
   const [index, setIndex] = useState(route?.params?.index || 0);
@@ -81,7 +79,6 @@ const BoardScreen: React.FC<BoardScreenProps> = ({pending, title, routes}) => {
         initialLayout={{width: windowWidth}}
         renderTabBar={() => null}
       />
-      <AppActivityIndicator visible={pending} />
     </SafeAreaView>
   );
 };
