@@ -232,6 +232,10 @@
   "set:pushnoti": "Push Notifications",
   "set:accountSettings": "Account Settings",
   "set:changeMail": "Change email",
+  "set:reSetting": "개발자 메뉴",
+
+  "set:netstat:connected": "네트워크 연결",
+  "set:netstat:disconnected": "네트워크 연결 실패",
 
   "resign": "Delete Account",
   "resign:why": "Please let us know why you are leaving us.",

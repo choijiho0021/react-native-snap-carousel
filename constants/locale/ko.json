@@ -239,6 +239,10 @@
   "set:pushnoti": "Push 알림 받기",
   "set:accountSettings": "회원 정보 수정",
   "set:changeMail": "이메일 주소 변경",
+  "set:reSetting": "개발자 메뉴",
+
+  "set:netstat:connected": "네트워크 연결",
+  "set:netstat:disconnected": "네트워크 연결 실패",
 
   "resign": "계정 탈퇴",
   "resign:why": "계정을 탈퇴하려는 이유를 알려주세요.",
