@@ -56,6 +56,8 @@
   "sizeup": "UP",
   "doubleSizeup": "더블UP",
   "tripleSizeup": "트리플UP",
+  "quadSizeup": "쿼드UP",
+  "megaSizeup": "메가UP",
   "fiveG": "5G",
   "copy": "복사",
   "close": "닫기",
@@ -1561,6 +1563,8 @@
   "daily:filter:1024": "1GB",
   "daily:filter:2048": "2GB",
   "daily:filter:3072": "3GB",
+  "daily:filter:4096": "4GB",
+  "daily:filter:5120": "5GB",
   "daily:filter:1024000": "올데이",
 
   "network:filter:fiveG": "5G속도",

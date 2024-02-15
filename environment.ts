@@ -65,6 +65,8 @@ const specialCategories: Record<string, PromoFlag> = esimGlobal
       181: 'sizeup', // 사이즈업
       182: 'doubleSizeup', // 더블 사이즈업
       452: 'tripleSizeup', // 트리플 사이즈업
+      521: 'quadSizeup', // 쿼드업
+      522: 'megaSizeup', // 메가업
       459: 'fiveG', // 5G
     }
   : {
@@ -73,6 +75,8 @@ const specialCategories: Record<string, PromoFlag> = esimGlobal
       181: 'sizeup', // 사이즈업
       182: 'doubleSizeup', // 더블 사이즈업
       746: 'tripleSizeup', // 트리플 사이즈업
+      754: 'quadSizeup', // 쿼드업
+      755: 'megaSizeup', // 메가업
       749: 'fiveG', // 5G
     };
 

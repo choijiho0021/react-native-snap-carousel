@@ -53,8 +53,11 @@
   "latest": "latest",
   "sale": "Discount",
   "hot": "Hot",
-  "sizeup": "SIZE UP",
-  "doubleSizeup": "DOUBLE",
+  "sizeup": "UP",
+  "doubleSizeup": "더블UP",
+  "tripleSizeup": "트리플UP",
+  "quadSizeup": "쿼드UP",
+  "megaSizeup": "메가UP",
   "copy": "Copy",
   "close": "Close",
   "close:week": "Don't show for Week",
@@ -1445,5 +1448,17 @@
 
   "extraCoupon": "Coupons",
 
-  "localOp:tag:N": "New"
+  "localOp:tag:N": "New",
+
+  "daily:filter:all": "전체",
+  "daily:filter:500": "500MB",
+  "daily:filter:1024": "1GB",
+  "daily:filter:2048": "2GB",
+  "daily:filter:3072": "3GB",
+  "daily:filter:4096": "4GB",
+  "daily:filter:5120": "5GB",
+  "daily:filter:1024000": "올데이",
+
+  "network:filter:fiveG": "5G속도",
+  "network:filter:else": "LTE/3G"
 }
