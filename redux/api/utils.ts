@@ -11,6 +11,8 @@ import {RkbImage} from './accountApi';
 import {Currency, CurrencyCode} from './productApi';
 import {urlParamObj} from '@/redux/modules/link';
 import {parseJson} from '@/utils/utils';
+import store from '@/store';
+import {actions as LogActions} from '@/redux/modules/log';
 
 const {esimCurrency} = Env.get();
 const dateTimeFmt = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})*$/;
@@ -359,6 +361,11 @@ const extractProdName = (str) => {
   return match ? match[1] : str;
 };
 
+export const log = (str: string) => {
+  // store.dispatch(ToastActions.push(Toast.NOT_LOADED));
+  store.dispatch(LogActions.append(str));
+};
+
 export default {
   fontScaling,
   numberToCommaString,
@@ -389,4 +396,5 @@ export default {
   compareVersion,
   cmpMomentAsc,
   cmpMomentDesc,
+  log,
 };

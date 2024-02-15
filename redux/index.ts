@@ -17,6 +17,7 @@ import promotion from './modules/promotion';
 import status from './modules/status';
 import link from './modules/link';
 import modal from './modules/modal';
+import log from './modules/log';
 
 const reducers = {
   account,
@@ -34,6 +35,7 @@ const reducers = {
   status,
   link,
   modal,
+  log,
 };
 
 type BaseReducerMap<S> = {
