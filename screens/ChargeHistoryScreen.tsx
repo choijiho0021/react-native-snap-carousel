@@ -222,7 +222,7 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => {
                 styles.badge,
                 {
                   backgroundColor: badgeColor.backgroundColor,
-                  marginRight: 8,
+                  marginRight: 4,
                 },
               ]}>
               <View style={{flexDirection: 'row'}}>
