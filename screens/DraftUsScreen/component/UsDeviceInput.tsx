@@ -165,7 +165,9 @@ const UsDeviceInput: React.FC<UsDeviceInputProps> = ({
                   value={text}
                   onChangeText={(str) => {
                     setValue(
-                      isEid ? {...value, eid: str} : {...value, imei2: str},
+                      isEid
+                        ? {...value, eid: str.replace(/[^0-9]/g, '')}
+                        : {...value, imei2: str.replace(/[^0-9]/g, '')},
                     );
                   }}
                   placeholder={i18n.t(`us:device:placeholder`)}

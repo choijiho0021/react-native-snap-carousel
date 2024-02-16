@@ -294,7 +294,7 @@ const ProductDetailBody: React.FC<ProductDetailBodyProps> = ({
     const apnList = descApn?.split(',');
     const apnInfo = apnList?.[0]?.split('/');
     const tel = apnInfo?.[1]?.replace(/&amp;/g, ' • ');
-    const apn = apnInfo?.[2].replace(/&amp;/g, '&');
+    const apn = apnInfo?.[2]?.replace(/&amp;/g, '&');
 
     return (
       <View style={styles.bodyTop}>

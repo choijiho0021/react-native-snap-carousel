@@ -472,8 +472,13 @@ const slice = createSlice({
 
     builder.addCase(getNotiSubs.fulfilled, (state, action) => {
       const {result, objects}: {objects: RkbSubscription[]} = action.payload;
+      const {uuid} = action?.meta?.arg;
 
-      console.log('@@ getNotiSubs Result ', result);
+      // 미국 상품은 uuid(subsId) = 0으로 고정, 전체 조회 후 종료
+      if (uuid === '0') {
+        state.subs = objects.sort(sortSubs);
+        return;
+      }
 
       if (result === 0 && objects) {
         const maxExpiredDate: Moment = objects.reduce(
@@ -505,6 +510,7 @@ const slice = createSlice({
               sub.nid === objects[0].nid
                 ? {
                     ...objects[0],
+                    cnt: 1,
                     lastExpireDate: maxExpiredDate,
                   }
                 : sub,

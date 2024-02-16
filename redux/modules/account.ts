@@ -651,6 +651,7 @@ export const actions = {
   getToken,
   uploadAndChangePicture,
   logout,
+  logOut,
   changeEmail,
   changeNotiToken,
   getAccount,

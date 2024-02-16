@@ -53,6 +53,14 @@ const flagColor = {
     backgroundColor: colors.lightYellow,
     fontColor: colors.yellowSecond,
   },
+  quadSizeup: {
+    backgroundColor: colors.violetbg,
+    fontColor: colors.violet500,
+  },
+  megaSizeup: {
+    backgroundColor: colors.pinkbg,
+    fontColor: colors.pink500,
+  },
   fiveG: {
     // backgroundColor: colors.purplyBlue,
     fontColor: colors.purplyBlue,
@@ -73,7 +81,15 @@ export const promoFlagSort = (arr: string[]) => {
 
   arr.forEach((elm) => {
     if (
-      ['sizeup', 'doubleSizeup', 'tripleSizeup', 'hot', 'fiveG'].includes(elm)
+      [
+        'sizeup',
+        'doubleSizeup',
+        'tripleSizeup',
+        'hot',
+        'quadSizeup',
+        'megaSizeup',
+        'fiveG',
+      ].includes(elm)
     )
       promoFlags.push(elm as PromoFlag);
   });
@@ -210,7 +226,7 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
   if (_.isArray(data) && data.length > 0) {
     return api.success(
       data
-        // .filter((elm) => !testProductReg.test(elm.sku))
+        .filter((elm) => !testProductReg.test(elm.sku))
         .map((item, idx) => ({
           key: item.uuid,
           uuid: item.uuid,
@@ -271,32 +287,36 @@ type RkbAllProdJson = {
 
 const toAllProduct = (data: RkbAllProdJson[]): ApiResult<RkbProduct> => {
   if (data && data.length > 0) {
+    const testProductReg = /test/;
+
     return api.success(
-      data.map((item, idx) => ({
-        key: item.uid,
-        uuid: item.uid,
-        name: item.tt,
-        listPrice: utils.stringToCurrency(item.lpr),
-        price: utils.stringToCurrency(item.pr),
-        field_daily: item.da,
-        volume: item.vol,
-        partnerId: item.pid,
-        categoryId: item.ct,
-        days: utils.stringToNumber(item.dys) || 0,
-        variationId: item.var,
-        field_description: item.dsc,
-        promoFlag: item.sp
-          .map((v) => specialCategories[v.trim()])
-          .filter((v) => !_.isEmpty(v)),
-        sku: item.sku,
-        idx,
-        hotspot: item.hot === '1',
-        weight: utils.stringToNumber(item.w),
-        network: item.net,
-        fup: item.fup,
-        body: '',
-        desc: '',
-      })),
+      data
+        .filter((elm) => !testProductReg.test(elm.sku))
+        .map((item, idx) => ({
+          key: item.uid,
+          uuid: item.uid,
+          name: item.tt,
+          listPrice: utils.stringToCurrency(item.lpr),
+          price: utils.stringToCurrency(item.pr),
+          field_daily: item.da,
+          volume: item.vol,
+          partnerId: item.pid,
+          categoryId: item.ct,
+          days: utils.stringToNumber(item.dys) || 0,
+          variationId: item.var,
+          field_description: item.dsc,
+          promoFlag: item.sp
+            .map((v) => specialCategories[v.trim()])
+            .filter((v) => !_.isEmpty(v)),
+          sku: item.sku,
+          idx,
+          hotspot: item.hot === '1',
+          weight: utils.stringToNumber(item.w),
+          network: item.net,
+          fup: item.fup,
+          body: '',
+          desc: '',
+        })),
     );
   }
 
