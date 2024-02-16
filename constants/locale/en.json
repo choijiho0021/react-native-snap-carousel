@@ -588,6 +588,7 @@
   "esim:U": "Used up",
   "esim:sendGift": "Gift this Item",
   "esim:draft": "총 %개 발권하기",
+  "esim:draft:failNoti": "<b>발권 실패! 고객센터로 문의해 주세요.</b>",
   "esim:etcCnt": "%% case",
   "esim:draftNotice": "You can check the product information after draft!",
   "esim:orderNo": "Purchase ID",
