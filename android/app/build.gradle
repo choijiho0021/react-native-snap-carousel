@@ -323,6 +323,7 @@ dependencies {
     implementation ('com.navercorp.ntracker:NTrackerSDKExt:1.0.0')
 
     implementation project(':@react-native-camera-roll_camera-roll')
+    implementation project(':@react-native-community_netinfo')
 
 
 //    addUnimodulesDependencies([exclude: ['expo-file-system','expo-image-loader','expo-permissions','expo-constants']])
