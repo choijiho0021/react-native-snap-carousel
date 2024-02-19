@@ -198,8 +198,11 @@ const ProductDetailBody: React.FC<ProductDetailBodyProps> = ({
   const renderTplInfo = useCallback(
     (t: {class: string; tag: string; text: string}, lineHeight?: number) => {
       const regex = /►.*◄/;
-      const text = t.text.replace(/\t|&nbsp;/g, '');
-      // console.log('@@@@ text', text);
+      const text = t.text
+        .replace(/\t|&nbsp;/g, '')
+        .replace('►', '\n►')
+        .replace('\n\n►', '\n►');
+
       return (
         <Pressable
           onPress={() => regex.test(text) && onMessage('moveToFaq')}

@@ -56,8 +56,6 @@ import {
 } from '@/redux/modules/product';
 import ShareLinkModal from './components/ShareLinkModal';
 import ChargeInfoModal from './components/ChargeInfoModal';
-import TextWithDot from '../EsimScreen/components/TextWithDot';
-import TextWithCheck from '../HomeScreen/component/TextWithCheck';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import ProductDetailBody from './components/ProductDetailBody';
 import ProductDetailTopInfo from './components/ProductDetailTopInfo';
@@ -597,7 +595,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.screen}>
-      <AppActivityIndicator visible={loading} />
       <View style={styles.header}>
         <AppBackButton
           title={route.params?.title}
@@ -611,18 +608,22 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         )}
       </View>
 
-      <ScrollView style={{flex: 1}}>
-        {renderProdDetail()}
-        {descData?.body && (
-          <ProductDetailBody
-            body={descData?.body}
-            onMessage={onMessage}
-            descApn={descData?.desc?.apn || ''}
-            prodName={prod?.name || ''}
-            isDaily={prod?.field_daily === 'daily'}
-          />
-        )}
-      </ScrollView>
+      <View style={styles.screen}>
+        <AppActivityIndicator visible={loading} />
+
+        <ScrollView style={{flex: 1}}>
+          {renderProdDetail()}
+          {descData?.body && (
+            <ProductDetailBody
+              body={descData?.body}
+              onMessage={onMessage}
+              descApn={descData?.desc?.apn || ''}
+              prodName={prod?.name || ''}
+              isDaily={prod?.field_daily === 'daily'}
+            />
+          )}
+        </ScrollView>
+      </View>
 
       {/* useNativeDriver 사용 여부가 아직 추가 되지 않아 warning 발생중 */}
       {purchaseButtonTab()}
