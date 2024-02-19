@@ -434,7 +434,10 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                     ]}
                     titleStyle={[
                       styles.reasonButtonText,
-                      btn === keyword && {color: colors.white},
+                      btn === keyword && {
+                        color: colors.white,
+                        fontWeight: '700',
+                      },
                     ]}
                     onPress={() => {
                       setKeyword(btn);
