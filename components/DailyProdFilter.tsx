@@ -3,6 +3,7 @@ import {ScrollView, StyleSheet, View} from 'react-native';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import AppButton from './AppButton';
+import {appStyles} from '../constants/Styles';
 
 const styles = StyleSheet.create({
   button: {
@@ -53,7 +54,8 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
           titleStyle={[
             styles.button,
             {
-              color: elm === filter ? 'white' : colors.warmGrey,
+              ...appStyles.bold14Text,
+              color: elm === filter ? 'white' : colors.black,
             },
           ]}
           title={i18n.t(`daily:filter:${elm}`)}
