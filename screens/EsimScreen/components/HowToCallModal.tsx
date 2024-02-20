@@ -361,6 +361,7 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
         {['ais', 'dtac', 'ustotal'].includes(clMtd) && rednerInternational()}
 
         {['ais', 'dtac', 'mvtotal'].includes(clMtd) && renderEtcInfo()}
+        <View style={{height: 24, width: '100%'}} />
       </ScrollView>
     </AppModal>
   );
