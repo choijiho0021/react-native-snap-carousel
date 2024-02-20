@@ -70,6 +70,7 @@ const InputMobile: React.FC<InputMobileProps> = ({
       inputRef.current = {
         reset: () => {
           setMobile('');
+          setValue('');
           setErrors(undefined);
           setTimer(undefined);
         },
