@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.whiteFive,
+    borderRadius: 3,
 
     elevation: 12,
     shadowColor: 'rgb(166, 168, 172)',

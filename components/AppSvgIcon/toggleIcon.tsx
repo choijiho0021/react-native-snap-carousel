@@ -215,7 +215,13 @@ const toggleIcons: Record<string, React.ReactElement[]> = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Circle cx="11" cy="11" r="11" fill="#2A7FF6" />
-      <Path d="M5 10.5 9.696 15 17 8" stroke="#fff" strokeLinecap="round" />
+      <Path
+        d="m6 10 3.913 5L16 7"
+        stroke="#fff"
+        strokeWidth="2"
+        strokeWinecap="round"
+        strokeWinejoin="round"
+      />
     </Svg>,
     <Svg
       width="22"

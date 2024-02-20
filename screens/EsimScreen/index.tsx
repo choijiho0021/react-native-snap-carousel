@@ -327,22 +327,22 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       usage: UsageObj;
       usageOption: UsageOptionObj;
     }> => {
-      if (item?.subsIccid && item?.packageId) {
-        const {result, objects} = await API.Subscription.cmiGetSubsUsage({
-          iccid: item?.subsIccid,
-          imsi: item?.imsi,
-          orderId: item?.subsOrderNo || 'noOrderId',
-        });
+      // if (item?.subsIccid && item?.packageId) {
+      //   const {result, objects} = await API.Subscription.cmiGetSubsUsage({
+      //     iccid: item?.subsIccid,
+      //     imsi: item?.imsi,
+      //     orderId: item?.subsOrderNo || 'noOrderId',
+      //   });
 
-        if (result?.code === 0 && objects.length > 0) return objects[0];
-      }
+      //   if (result?.code === 0 && objects.length > 0) return objects[0];
+      // }
       return {
-        status: {statusCd: undefined, endTime: undefined},
+        status: {statusCd: 'A', endTime: undefined},
         usage: {
-          quota: undefined,
-          used: undefined,
-          remain: undefined,
-          totalUsed: undefined,
+          quota: 100,
+          used: 100,
+          remain: 0,
+          totalUsed: 100,
         },
         usageOption: {
           mode: ['stu', 'usa', 'end'],

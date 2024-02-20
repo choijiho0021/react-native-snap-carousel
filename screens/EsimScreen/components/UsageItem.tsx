@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   usageTitleBold: {
     ...appStyles.bold20Text,
     fontSize: isDeviceSize('small') ? 18 : 20,
-    marginBottom: 2,
+    marginBottom: 6,
   },
   usageStatus: {
     ...appStyles.bold14Text,
@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingVertical: 10,
     paddingHorizontal: 12,
+    borderRadius: 3,
     alignItems: 'center',
     flexDirection: 'row',
     width: '100%',
@@ -101,6 +102,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     alignItems: 'center',
+    borderRadius: 3,
     backgroundColor: colors.backGrey,
   },
   timeItem: {
