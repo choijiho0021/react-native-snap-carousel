@@ -419,6 +419,7 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
           (v) =>
             ({
               ...v,
+              weight: product.localOpList.get(v.partner)?.weight || 0,
               partnerList: [v.partner],
               minPrice: utils.stringToCurrency(v.price),
             } as RkbPriceInfo),
