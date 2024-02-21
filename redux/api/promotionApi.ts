@@ -326,8 +326,7 @@ const inviteLink = (recommender: string, gift: string = '') => {
 export const shareWebViewLink = (
   uuid: string,
   country: RkbProdByCountry,
-  isOfl = false,
-  needDomain = true,
+  isPCLink = true,
 ) => {
   // ofl localhost 직접 입력 시 firebase 콘솔에 설정된 보안 규칙에 어긋나서 동작 안함
 
@@ -335,9 +334,13 @@ export const shareWebViewLink = (
 
   // ofl 값만 encode를 안합니다. 그래서 파라미터 uuid가 잘리는 현상이 발견됨 (Android 일때만).
   // IOS는 WebLink에 한글 들어가면 동작 안함 -> 웹에서 search말고도 동작 되게 수정해야함
-  return `${needDomain ? `${webViewHost}/` : ''}esim/${country.country}/${
+  return `${webViewHost}/esim/${country.country}/${
     Platform.OS === 'android' ? country.search?.split(',')[1] : 'page'
-  }${Platform.OS === 'android' ? encodeURIComponent(param) : param}`;
+  }${
+    Platform.OS === 'android' && isPCLink
+      ? encodeURIComponent(param)
+      : `${encodeURIComponent('?') + param}`
+  }`;
 };
 
 const shareLink = (uuid: string) => {
@@ -358,13 +361,13 @@ const buildShareLink = async ({
   counry: RkbProdByCountry;
   isShort?: boolean;
 }) => {
-  const webLink = shareWebViewLink(uuid, country);
+  const webLink = shareWebViewLink(uuid, country, false);
 
   const input = {
     link: shareLink(uuid),
     domainUriPrefix: dynamicLink,
     otherPlatform: {
-      fallbackUrl: shareWebViewLink(uuid, country, true),
+      fallbackUrl: shareWebViewLink(uuid, country),
     },
     ios: {
       bundleId: Platform.OS === 'ios' ? bundleId : iosBundleId,
