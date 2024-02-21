@@ -57,7 +57,7 @@ const NetworkFilter: React.FC<NetworkFilterProps> = ({
           )}
           <AppText
             style={{
-              marginRight: 8,
+              marginRight: 12,
               ...appStyles.bold14Text,
               color: elm === 'fiveG' ? colors.purplyBlue : colors.black,
             }}>

@@ -141,7 +141,7 @@ android {
         multiDexEnabled true
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
-        versionCode 159
+        versionCode 162
         versionName "1.4.6"
         multiDexEnabled true
         resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
@@ -323,6 +323,7 @@ dependencies {
     implementation ('com.navercorp.ntracker:NTrackerSDKExt:1.0.0')
 
     implementation project(':@react-native-camera-roll_camera-roll')
+    implementation project(':@react-native-community_netinfo')
 
 
 //    addUnimodulesDependencies([exclude: ['expo-file-system','expo-image-loader','expo-permissions','expo-constants']])
