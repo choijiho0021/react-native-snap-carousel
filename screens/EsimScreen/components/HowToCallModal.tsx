@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
     ...appStyles.bold18Text,
     marginBottom: 16,
     lineHeight: 22,
+    paddingRight: 20,
   },
   darkblueBold14: {
     ...appStyles.bold14Text,
@@ -283,20 +284,19 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
             style={{
               flexDirection: 'row',
               marginTop: 6,
+              flexWrap: 'wrap',
             }}>
             <AppSvgIcon name="checkedDarkBlueSmall" style={{marginRight: 4}} />
-            <View style={{marginRight: 4}}>
-              <AppText style={styles.darkblueBold14}>
-                {i18n.t(`esim:howToCall:etcInfo:subtitle1:${clMtd}:title`)}
-              </AppText>
-              <AppText
-                style={{
-                  ...appStyles.bold14Text,
-                  color: colors.warmGrey,
-                }}>
-                {i18n.t(`esim:howToCall:etcInfo:subtitle1:${clMtd}:txt`)}
-              </AppText>
-            </View>
+            <AppText style={styles.darkblueBold14}>
+              {i18n.t(`esim:howToCall:etcInfo:subtitle1:${clMtd}:title`)}
+            </AppText>
+            <AppText
+              style={{
+                ...appStyles.bold14Text,
+                color: colors.warmGrey,
+              }}>
+              {i18n.t(`esim:howToCall:etcInfo:subtitle1:${clMtd}:txt`)}
+            </AppText>
           </View>
 
           {['ais', 'dtac'].includes(clMtd) && (
