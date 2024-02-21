@@ -31,7 +31,7 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
     <ScrollView
       style={{
         flexDirection: 'row',
-        marginHorizontal: 20,
+        paddingLeft: 20,
         marginBottom: 24,
       }}
       horizontal
