@@ -240,7 +240,7 @@ function HomeStackComponent() {
       <HomeStack.Screen
         name="RegisterMobile"
         component={RegisterMobileScreen}
-        options={{headerShown: true}}
+        options={{headerShown: false}}
       />
     </HomeStack.Navigator>
   );

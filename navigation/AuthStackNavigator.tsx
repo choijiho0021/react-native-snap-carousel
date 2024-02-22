@@ -13,7 +13,7 @@ function authStack() {
       <Auth.Screen
         name="RegisterMobile"
         component={RegisterMobileScreen}
-        options={{headerShown: true}}
+        options={{headerShown: false}}
       />
       <Auth.Screen
         name="SimpleTextForAuth"
