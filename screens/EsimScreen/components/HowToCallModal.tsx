@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
     ...appStyles.bold18Text,
     marginBottom: 16,
     lineHeight: 22,
+    paddingRight: 20,
   },
   darkblueBold14: {
     ...appStyles.bold14Text,
@@ -279,23 +280,32 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
             {i18n.t(`esim:howToCall:etcInfo:checkMtd`)}
           </AppText>
 
-          <View style={{flexDirection: 'row', marginTop: 6}}>
-            <AppSvgIcon name="checkGreySmall" style={{marginRight: 4}} />
-            <View>
-              <AppText style={styles.darkblueBold14}>
-                {i18n.t(`esim:howToCall:etcInfo:subtitle1:${clMtd}:title`)}
-              </AppText>
-              <AppText
-                style={{...appStyles.bold14Text, color: colors.warmGrey}}>
-                {i18n.t(`esim:howToCall:etcInfo:subtitle1:${clMtd}:txt`)}
-              </AppText>
-            </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginTop: 6,
+              flexWrap: 'wrap',
+            }}>
+            <AppSvgIcon name="checkedDarkBlueSmall" style={{marginRight: 4}} />
+            <AppText style={styles.darkblueBold14}>
+              {i18n.t(`esim:howToCall:etcInfo:subtitle1:${clMtd}:title`)}
+            </AppText>
+            <AppText
+              style={{
+                ...appStyles.bold14Text,
+                color: colors.warmGrey,
+              }}>
+              {i18n.t(`esim:howToCall:etcInfo:subtitle1:${clMtd}:txt`)}
+            </AppText>
           </View>
 
           {['ais', 'dtac'].includes(clMtd) && (
             <View style={{flexDirection: 'row', marginTop: 12}}>
-              <AppSvgIcon name="checkGreySmall" style={{marginRight: 4}} />
-              <View>
+              <AppSvgIcon
+                name="checkedDarkBlueSmall"
+                style={{marginRight: 4}}
+              />
+              <View style={{marginRight: 4}}>
                 <AppText style={{...styles.darkblueBold14, marginBottom: 4}}>
                   {i18n.t(`esim:howToCall:etcInfo:subtitle2:${clMtd}:title`)}
                 </AppText>
@@ -351,6 +361,7 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
         {['ais', 'dtac', 'ustotal'].includes(clMtd) && rednerInternational()}
 
         {['ais', 'dtac', 'mvtotal'].includes(clMtd) && renderEtcInfo()}
+        <View style={{height: 24, width: '100%'}} />
       </ScrollView>
     </AppModal>
   );

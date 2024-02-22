@@ -74,6 +74,7 @@ import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 import com.reactnativecommunity.picker.RNCPickerPackage;
 import com.reactnativecommunity.cookies.CookieManagerPackage;
 import com.reactnativecommunity.cameraroll.CameraRollPackage;
+import com.reactnativecommunity.netinfo.NetInfoPackage;
 import fr.greweb.reactnativeviewshot.RNViewShotPackage;
 
 import com.reactnativepagerview.PagerViewPackage;
@@ -198,6 +199,7 @@ public class MainApplication extends Application implements ReactApplication {
                             new ReactNativeFirebaseMessagingPackage(),
                             new FlipperPackage(),
                             new PagerViewPackage(),
+                            new NetInfoPackage(),
                             new RNCPickerPackage(),
                             new ReactNativeFirebaseAnalyticsPackage(),
                             new CookieManagerPackage()

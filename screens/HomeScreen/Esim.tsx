@@ -615,7 +615,7 @@ const Esim: React.FC<EsimProps> = ({
     (type: string, payload, isForeground = true) => {
       const pushNotiHandler = createHandlePushNoti(navigation, payload, {
         mobile: account.mobile,
-        iccid: account.iccid,
+        iccid: `00001111${account.mobile}`,
         isForeground,
         isRegister: type === 'register',
         updateAccount: action.account.updateAccount,

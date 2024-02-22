@@ -65,18 +65,6 @@ const InputMobile: React.FC<InputMobileProps> = ({
   const [errors, setErrors] = useState<ValidationResult>();
   const [timer, setTimer] = useState<NodeJS.Timeout>();
 
-  useEffect(() => {
-    if (inputRef) {
-      inputRef.current = {
-        reset: () => {
-          setMobile('');
-          setErrors(undefined);
-          setTimer(undefined);
-        },
-      };
-    }
-  }, [inputRef]);
-
   const onChangeText = useCallback((value: string) => {
     if (Platform.OS === 'android' && value.length > 11) return;
     const mobileTxt = value.replace(/-/g, '');
@@ -86,6 +74,18 @@ const InputMobile: React.FC<InputMobileProps> = ({
       validationUtil.validateAll({mobile: utils.toPhoneNumber(mobileTxt)}),
     );
   }, []);
+
+  useEffect(() => {
+    if (inputRef) {
+      inputRef.current = {
+        reset: () => {
+          onChangeText('');
+          setErrors(undefined);
+          setTimer(undefined);
+        },
+      };
+    }
+  }, [inputRef, onChangeText]);
 
   const onPressInput = useCallback(() => {
     onPress?.(mobile);

@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   usageTitleBold: {
     ...appStyles.bold20Text,
     fontSize: isDeviceSize('small') ? 18 : 20,
-    marginBottom: 2,
+    marginBottom: 6,
   },
   usageStatus: {
     ...appStyles.bold14Text,
@@ -91,8 +91,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 20,
     marginBottom: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 3,
     alignItems: 'center',
     flexDirection: 'row',
     width: '100%',
@@ -101,6 +102,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     alignItems: 'center',
+    borderRadius: 3,
     backgroundColor: colors.backGrey,
   },
   timeItem: {
@@ -332,7 +334,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           </View>
         )}
 
-        {item.daily === 'daily' && showUsage && (
+        {item.daily === 'daily' && (
           <Fragment>
             <View style={styles.timeDivider} />
 
@@ -359,7 +361,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         )}
       </View>
     );
-  }, [endTime, item.daily, renderResetTimeRow, showEndTime, showUsage]);
+  }, [endTime, item.daily, renderResetTimeRow, showEndTime]);
 
   const renderAnimatedCircularProgress = useCallback(() => {
     return (
