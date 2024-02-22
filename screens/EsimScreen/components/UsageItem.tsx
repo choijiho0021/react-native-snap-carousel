@@ -334,7 +334,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           </View>
         )}
 
-        {item.daily === 'daily' && showUsage && (
+        {item.daily === 'daily' && (
           <Fragment>
             <View style={styles.timeDivider} />
 
@@ -361,7 +361,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         )}
       </View>
     );
-  }, [endTime, item.daily, renderResetTimeRow, showEndTime, showUsage]);
+  }, [endTime, item.daily, renderResetTimeRow, showEndTime]);
 
   const renderAnimatedCircularProgress = useCallback(() => {
     return (
