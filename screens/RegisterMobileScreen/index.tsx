@@ -57,6 +57,7 @@ import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
 import {LinkModelState} from '@/redux/modules/link';
 import DomainPicker from './DomainPicker';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const {esimGlobal, isProduction, isIOS} = Env.get();
 
@@ -692,32 +693,24 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     [authorized, confirm, newUser],
   );
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          title={i18n.t('mobile:header')}
-          onPress={() => {
-            initState();
-
-            if (!socialLogin) {
-              // . 확인필요
-              // 뒤로가기 후 로그인 시 예약된 화면 안가도록
-              navigation.navigate('MyPageStack', {
-                screen: 'MyPage',
-              });
-
-              navigation.goBack();
-            }
-          }}
-        />
-      ),
-    });
-  }, [initState, loggedIn, navigation, route?.params, socialLogin]);
-
   return (
     <SafeAreaView style={styles.container}>
+      <ScreenHeader
+        title={i18n.t('mobile:header')}
+        backHandler={() => {
+          initState();
+
+          if (!socialLogin) {
+            // . 확인필요
+            // 뒤로가기 후 로그인 시 예약된 화면 안가도록
+            navigation.navigate('MyPageStack', {
+              screen: 'MyPage',
+            });
+
+            navigation.goBack();
+          }
+        }}
+      />
       <StatusBar barStyle="dark-content" />
 
       <KeyboardAwareScrollView

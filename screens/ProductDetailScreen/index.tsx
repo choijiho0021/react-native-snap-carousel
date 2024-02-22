@@ -536,7 +536,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     resetModalInfo();
     Analytics.trackEvent('Click_regCard');
 
-    navigation.navigate('RegisterMobile', {goBack: () => navigation.goBack()});
+    navigation.navigate('Auth', {
+      screen: 'RegisterMobile',
+      params: {goBack: () => navigation.goBack()},
+    });
   }, [navigation, resetModalInfo]);
 
   const purchaseButtonTab = useCallback(() => {
