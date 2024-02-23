@@ -20,6 +20,7 @@ DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
+ios/.xcode.env.local
 
 # Android/IntelliJ
 #
@@ -28,9 +29,16 @@ build/
 .gradle
 local.properties
 *.iml
-android/app/src/main/res/*
-android/app/src/main/assets/*
-android/app/src/main/java/com/rokebi/generated/*
+*.hprof
+.cxx/
+*.keystore
+!debug.keystore
+!rokebi.keystore
+
+and/
+android/app/src/main/res/**/*.png
+*.mp4
+
 
 # node.js
 #
@@ -39,12 +47,6 @@ npm-debug.log
 yarn-error.log
 yarn.lock
 
-# BUCK
-buck-out/
-\.buckd/
-*.keystore
-!debug.keystore
-
 # fastlane
 #
 # It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
@@ -52,15 +54,29 @@ buck-out/
 # For more information about the recommended setup visit:
 # https://docs.fastlane.tools/best-practices/source-control/
 
-*/fastlane/report.xml
-*/fastlane/Preview.html
-*/fastlane/screenshots
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
 
 # Bundle artifact
 *.jsbundle
 
-# CocoaPods
+
+# Ruby / CocoaPods
 /ios/Pods/
+/vendor/bundle/
+
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
 
 *.swp
 /ios/Podfile.lock
+
+#android realease mode 실행 후 파일 생성 무시
+android/app/bin/*
+android/.project
+android/app/.project
+.swn
+.swo
+.vscode/settings.json

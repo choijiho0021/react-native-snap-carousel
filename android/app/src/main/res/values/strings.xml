@@ -1,5 +1,9 @@
 <resources>
-    <string name="app_name">Rokebi</string>
+<!--    <string name="app_name">로깨비ESIM</string>-->
+<!--    9ue1F5Z0h6Dfm_En6kao_FUO-yTjn7n6A_JAr-->
     <string name="appCenterCrashes_whenToSendCrashes" moduleConfig="true" translatable="false">DO_NOT_ASK_JAVASCRIPT</string>
     <string name="appCenterAnalytics_whenToEnableAnalytics" moduleConfig="true" translatable="false">ALWAYS_SEND</string>
+    <string name="kakao_app_key">f881469e3b4a140967dfaebe648ede8d</string>
+    <string name="facebook_app_id">531615184696321</string>
+    <string name="facebook_client_token">894c3f612ec0ebd095aa7ed24f47ad3c</string>
 </resources>
