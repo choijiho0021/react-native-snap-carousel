@@ -215,13 +215,6 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
   const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('inv:title')} />,
-    });
-  }, [navigation]);
-
-  useEffect(() => {
     if (isSending) {
       setTimeout(() => {
         setIsSending(false);

@@ -32,6 +32,7 @@ import {API} from '@/redux/api';
 import HkStatusLottie from './EsimScreen/components/HkStatusLottie';
 import AppModal from '@/components/AppModal';
 import {retrieveData, storeData, getImage} from '@/utils/utils';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const {width} = Dimensions.get('window');
 
@@ -287,7 +288,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
   // const params = useMemo(() => route?.params || {}, [route?.params]);
 
   useEffect(() => {
-    const {iccid, uuid, imsi} = route?.params;
+    const {iccid, uuid, imsi} = route?.params || {};
     if (iccid && uuid && imsi) {
       storeData('HKScreenParams', JSON.stringify(route?.params));
       setParams(route?.params);
@@ -297,25 +298,6 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
       );
     }
   }, [route?.params]);
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('redirectHK')} />,
-      headerRight: () => (
-        <AppSvgIcon
-          name="btnCnter"
-          style={styles.btnCnter}
-          onPress={() =>
-            navigate(navigation, route, 'EsimStack', {
-              tab: 'HomeStack',
-              screen: 'Contact',
-            })
-          }
-        />
-      ),
-    });
-  }, [navigation, route]);
 
   const copyToClipboard = useCallback(
     (value?: string) => () => {
@@ -408,6 +390,21 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={i18n.t('redirectHK')}
+        renderRight={
+          <AppSvgIcon
+            name="btnCnter"
+            style={styles.btnCnter}
+            onPress={() =>
+              navigate(navigation, route, 'EsimStack', {
+                tab: 'HomeStack',
+                screen: 'Contact',
+              })
+            }
+          />
+        }
+      />
       <ScrollView style={styles.container}>
         <View style={{margin: 20}}>
           <AppStyledText

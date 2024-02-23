@@ -34,6 +34,7 @@ import AppAlert from '@/components/AppAlert';
 import api from '@/redux/api/api';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {ProdInfo} from '@/redux/api/productApi';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -143,31 +144,6 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
     },
     [actDate, deviceData, step, checked],
   );
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          title={i18n.t('his:draftTitle')}
-          onPress={() => {
-            if (step === 0) goBack(navigation, route);
-            else setStep((prev) => prev - 1);
-          }}
-        />
-      ),
-      headerRight: () =>
-        step !== 0 && (
-          <AppSvgIcon
-            name="closeModal"
-            style={styles.btnCnter}
-            onPress={() => {
-              goBack(navigation, route);
-            }}
-          />
-        ),
-    });
-  }, [navigation, route, step]);
 
   useEffect(() => {
     console.log('@@@ draftOrder : ', draftOrder);
@@ -314,6 +290,24 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScreenHeader
+        title={i18n.t('his:draftTitle')}
+        backHandler={() => {
+          if (step === 0) goBack(navigation, route);
+          else setStep((prev) => prev - 1);
+        }}
+        renderRight={
+          step !== 0 && (
+            <AppSvgIcon
+              name="closeModal"
+              style={styles.btnCnter}
+              onPress={() => {
+                goBack(navigation, route);
+              }}
+            />
+          )
+        }
+      />
       {step === 0 && (
         <UsDraftStep1
           prods={prods}

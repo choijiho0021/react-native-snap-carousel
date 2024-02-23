@@ -415,8 +415,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         visible={showUnsupAlert}>
         {modalBody()}
       </AppModal>
-
-      {renderModal()}
     </SafeAreaView>
   );
 };
