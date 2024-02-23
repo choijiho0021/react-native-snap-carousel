@@ -119,7 +119,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
   }, []);
 
   const onPurchase = useCallback(() => {
-    const {loggedIn, balance} = account;
+    const {loggedIn} = account;
 
     if (!loggedIn) {
       navigation.navigate('Auth');
@@ -137,11 +137,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         );
 
       action.cart
-        .checkStockAndPurchase({
-          purchaseItems,
-          balance,
-          dlvCost: false,
-        })
+        .checkStockAndPurchase({purchaseItems, isCart: true})
         .then(({payload: resp}) => {
           if (resp.result === 0) {
             navigation.navigate('PymMethod', {mode: 'cart'});
@@ -161,10 +157,9 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         setQty((prev) => prev.set(key, cnt));
         setChecked((prev) => prev.set(key, true));
 
-        const {orderId} = cart;
-        if (orderItemId && orderId) {
+        if (orderItemId && cart.cartId) {
           action.cart.cartUpdateQty({
-            orderId,
+            orderId: cart.cartId,
             orderItemId,
             qty: cnt,
             abortController: new AbortController(),
@@ -172,7 +167,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         }
       }
     },
-    [action.cart, cart],
+    [action.cart, cart.cartId],
   );
 
   const empty = useCallback(
@@ -202,15 +197,14 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
       setChecked((prev) => prev.remove(key));
       setQty((prev) => prev.remove(key));
 
-      const {orderId} = cart;
-      if (orderItemId && orderId) {
+      if (orderItemId && cart.cartId) {
         action.cart.cartRemove({
-          orderId,
+          orderId: cart.cartId,
           orderItemId,
         });
       }
     },
-    [action.cart, cart],
+    [action.cart, cart.cartId],
   );
 
   const renderItem = useCallback(
@@ -237,21 +231,19 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
   );
 
   useEffect(() => {
-    const {orderItems} = cart;
-
-    setList(orderItems);
+    setList(cart.cartItems);
     setQty((prev) =>
-      orderItems.reduce((acc, cur) => acc.set(cur.key, cur.qty), prev),
+      cart.cartItems.reduce((acc, cur) => acc.set(cur.key, cur.qty), prev),
     );
     setChecked((prev) =>
-      orderItems.reduce(
+      cart.cartItems.reduce(
         (acc, cur) => acc.update(cur.key, (v) => (v === undefined ? true : v)),
         prev,
       ),
     );
 
     if (!loading.current) {
-      orderItems.forEach((i) => {
+      cart.cartItems.forEach((i) => {
         if (!product.prodList.has(i.key)) {
           // action.product.getProdBySku(i.prod.sku);
           console.log('@@@ i.prod.uuid', i.prod.uuid);
@@ -260,7 +252,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         }
       });
     }
-  }, [action.product, cart, product.prodList]);
+  }, [action.product, cart.cartItems, product.prodList]);
 
   useFocusEffect(
     React.useCallback(() => {

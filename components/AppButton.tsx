@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
@@ -48,7 +49,6 @@ interface AppButtonProps {
   checked?: boolean;
   disableColor?: string;
   disableBackgroundColor?: string;
-  direction?: string;
   checkedColor?: string;
   iconStyle?: ViewStyle;
   viewStyle?: ViewStyle;
@@ -73,7 +73,6 @@ const AppButton: React.FC<AppButtonProps> = ({
   checked,
   disableColor,
   disableBackgroundColor,
-  direction,
   checkedColor,
   iconStyle,
   viewStyle,
@@ -115,13 +114,7 @@ const AppButton: React.FC<AppButtonProps> = ({
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
       onPress={disabled ? disabledOnPress : onPress}>
-      <View
-        style={[
-          viewStyle || styles.container,
-          direction === 'row'
-            ? {flexDirection: 'row', justifyContent: 'flex-start'}
-            : {justifyContent: 'center'},
-        ]}>
+      <View style={viewStyle || styles.container}>
         {uri ? (
           <Image source={{uri: API.default.httpImageUrl(uri)}} />
         ) : (
@@ -140,6 +133,7 @@ const AppButton: React.FC<AppButtonProps> = ({
               titleStyle || styles.text,
               disabled && {color: disableColor || colors.white},
               checked && {color: checkedColor || colors.clearBlue},
+              iconName || uri ? {marginLeft: 10} : undefined,
             ]}>
             {title || i18n.t('select')}
           </AppText>

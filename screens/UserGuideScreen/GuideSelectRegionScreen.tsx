@@ -58,13 +58,6 @@ const GuideSelectRegionScreen = () => {
     [route.params?.guideOption],
   );
 
-  useEffect(() => {
-    navigation?.setOptions({
-      title: null,
-      headerShown: false,
-    });
-  }, [navigation]);
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>

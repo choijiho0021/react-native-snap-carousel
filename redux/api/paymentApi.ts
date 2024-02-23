@@ -191,6 +191,12 @@ const getRokebiPayment = ({
   );
 };
 
+export type RkbPaymentVBankResult = {
+  amount: string;
+  bankCd: string;
+  expireDate: string;
+  vAcntNo: string;
+};
 const reqRokebiPaymentVBank = ({
   params,
   token,
@@ -198,7 +204,7 @@ const reqRokebiPaymentVBank = ({
   params: PaymentParams;
   token?: string;
 }) => {
-  return api.callHttpPost(
+  return api.callHttpPost<RkbPaymentVBankResult>(
     `${api.httpUrl(api.path.rokApi.rokebi.vbank)}?_format=json`,
     JSON.stringify(params),
     api.withToken(token, 'json'),

@@ -339,6 +339,9 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={appStyles.header}>
+        <AppBackButton title={i18n.t('inv:title')} />
+      </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         {showPromo && (
           <Pressable onPress={joinPromo} style={styles.promoBtn}>
@@ -380,7 +383,7 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
             iconName="iconShare"
             iconStyle={{marginRight: 10}}
             title={i18n.t('inv:share')}
-            titleStyle={appStyles.medium18}
+            titleStyle={[appStyles.medium18, {color: colors.white}]}
             type="primary"
             onPress={() => {
               if (!isSending) {

@@ -76,4 +76,7 @@ export const colors = {
   darkNavy: '#263867',
   purpleishBlue: '#4455f5',
   violet: '#8f1ff1',
+  black10: 'rgba(0, 0, 0, 0.1)',
+  menu: 'rgba(237, 237, 237, 0.8)',
+  menuBorder: 'rgba(60, 60, 67, 0.36)',
 };

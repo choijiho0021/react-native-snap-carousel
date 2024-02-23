@@ -17,6 +17,7 @@ import api from '@/redux/api/api';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
 import {PaymentInfo} from '@/redux/api/cartApi';
+import {appStyles} from '@/constants/Styles';
 
 // const IMP = require('iamport-react-native').default;
 const loading = require('../assets/images/loading_1.mp4');
@@ -85,28 +86,12 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
         merchant_uid: params.merchant_uid,
         amount: params.amount,
         rokebi_cash: params.rokebi_cash,
-        dlvCost: params.dlvCost,
-        profile_uuid: params.profile_uuid,
         memo: params.memo,
         captured: false,
       } as PaymentInfo),
     [params],
   );
   const [stockChecked, setStockChecked] = useState(false);
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerShown: params.pg !== 'eximbay',
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          title={i18n.t(params?.isPaid ? 'his:paymentCompleted' : 'payment')}
-          disabled={params.isPaid}
-          showIcon={!params.isPaid}
-        />
-      ),
-    });
-  }, [navigation, params]);
 
   const callback = useCallback(
     (response) => {
@@ -179,6 +164,15 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
 
   return stockChecked ? (
     <SafeAreaView style={styles.container}>
+      {params.pg !== 'eximbay' ? (
+        <View style={appStyles.header}>
+          <AppBackButton
+            title={i18n.t(params?.isPaid ? 'his:paymentCompleted' : 'payment')}
+            disabled={params.isPaid}
+            showIcon={!params.isPaid}
+          />
+        </View>
+      ) : null}
       <IMP.Payment
         userCode={impId}
         loading={renderLoading()}

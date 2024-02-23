@@ -1,30 +1,18 @@
-import {
-  Dimensions,
-  StyleProp,
-  StyleSheet,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
-import React, {memo, useMemo} from 'react';
+import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
+import React, {memo, useCallback, useMemo} from 'react';
 import {connect} from 'react-redux';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
-import Env from '@/environment';
-import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
-import {CartModelState, PaymentReq} from '@/redux/modules/cart';
+import {CartModelState} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
-import AppSvgIcon from '@/components/AppSvgIcon';
-import AppStyledText from '@/components/AppStyledText';
 import AppText from './AppText';
 import {RootState} from '@/redux';
+import {ProductModelState} from '@/redux/modules/product';
+import {RkbProduct} from '@/redux/api/productApi';
 
-const {width} = Dimensions.get('window');
-
-const {esimApp} = Env.get();
 const styles = StyleSheet.create({
   // container: {
   //   justifyContent: 'space-between',
@@ -45,27 +33,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 0,
   },
-  total: {
-    height: 52,
-    paddingHorizontal: 20,
-    borderTopColor: colors.black,
-    borderTopWidth: 1,
-    backgroundColor: colors.whiteTwo,
-    alignItems: 'center',
-  },
-  resultTotal: {
-    backgroundColor: colors.white,
-    height: 60,
-    marginTop: 20,
-  },
   mrgBottom0: {
     marginBottom: 0,
-  },
-  brdrBottom0: {
-    borderBottomWidth: 0,
-  },
-  colorClearBlue: {
-    color: colors.clearBlue,
   },
   colorWarmGrey: {
     color: colors.warmGrey,
@@ -79,79 +48,35 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.lightGrey,
     borderBottomWidth: 1,
   },
-  priceInfo: {
-    marginVertical: 11,
-    marginHorizontal: 20,
-  },
   normalText16: {
     ...appStyles.normal16Text,
     fontWeight: 'normal',
     color: colors.black,
     fontSize: isDeviceSize('small') ? 14 : 16,
   },
-  boldText16: {
-    ...appStyles.bold16Text,
-    fontSize: isDeviceSize('small') ? 14 : 16,
-  },
-  boldText18: {
-    ...appStyles.bold18Text,
-    fontSize: isDeviceSize('small') ? 14 : 16,
-  },
-  productPriceTitle: {
-    ...appStyles.normal16Text,
-    lineHeight: 36,
-    letterSpacing: 0.26,
-    fontWeight: 'normal',
-    fontSize: isDeviceSize('small') ? 14 : 16,
-    maxWidth: '70%',
-    // flexDirection: 'row',
-    // flexWrap: 'wrap'
-  },
-  divider: {
-    marginTop: 30,
-    height: 10,
-    backgroundColor: colors.whiteTwo,
-  },
-  esimInfo: {
-    ...appStyles.normal14Text,
-    color: colors.clearBlue,
-    lineHeight: 20,
-    width: width - 112,
-  },
-  esimInfoBold: {
-    ...appStyles.bold14Text,
-    color: colors.clearBlue,
-    lineHeight: 20,
-    width: width - 112,
-  },
 });
 
-type PaymentItemMode = 'method' | 'result';
+export type PaymentItemMode = 'method' | 'result';
 
 const PaymentItem0 = ({
   style,
   title,
-  titleStyle,
   value,
   valueStyle,
   mode,
+  prod,
+  qty,
 }: {
   title: string;
   value: string;
   mode?: PaymentItemMode;
   style?: StyleProp<ViewStyle>;
-  titleStyle?: StyleProp<TextStyle>;
   valueStyle?: StyleProp<TextStyle>;
+  prod?: RkbProduct;
+  qty?: number;
 }) => {
-  return (
-    <View style={style || styles.row} key={title}>
-      <AppText
-        key="title"
-        style={
-          titleStyle || [appStyles.normal14Text, {color: colors.warmGrey}]
-        }>
-        {title}
-      </AppText>
+  const renderAmount = useCallback(
+    () => (
       <AppText
         key="amount"
         style={
@@ -162,39 +87,65 @@ const PaymentItem0 = ({
         }>
         {value}
       </AppText>
-    </View>
+    ),
+    [mode, value, valueStyle],
+  );
+
+  return (
+    <>
+      <View style={style || styles.row} key="title">
+        <AppText
+          key="title"
+          style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
+          {title}
+        </AppText>
+        {qty ? (
+          <AppText key="qty">{`${qty} ${i18n.t('qty')}`}</AppText>
+        ) : (
+          renderAmount()
+        )}
+      </View>
+      {qty ? (
+        <View style={styles.row} key="amount">
+          <AppText
+            key="desc"
+            style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
+            {prod?.field_description}
+          </AppText>
+          <AppText
+            key="amount"
+            style={
+              valueStyle || [
+                styles.normalText16,
+                mode === 'result' && styles.colorWarmGrey,
+              ]
+            }>
+            {value}
+          </AppText>
+        </View>
+      ) : null}
+    </>
   );
 };
-const PaymentItem = memo(PaymentItem0);
 
-const PaymentItemInfo = ({
-  cart,
-  purchaseItems,
-  pymReq = [],
-  deduct,
-  pymPrice,
-  screen,
-  mode = 'method',
-}: {
+export const PaymentItem = memo(PaymentItem0);
+
+type PaymentItemInfoProps = {
   cart: CartModelState;
+  product: ProductModelState;
   purchaseItems: PurchaseItem[];
-  pymReq?: PaymentReq[];
-  deduct?: Currency;
-  pymPrice?: Currency;
-  screen?: string;
   mode?: PaymentItemMode;
+};
+
+const PaymentItemInfo: React.FC<PaymentItemInfoProps> = ({
+  product,
+  purchaseItems,
+  mode = 'method',
 }) => {
-  const {mainSubsId} = cart;
   const isRecharge = useMemo(
     () => purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
     [purchaseItems],
   );
-
-  const isImmediateOrder =
-    mainSubsId ||
-    purchaseItems.findIndex((item) =>
-      ['add_on_product', 'rch'].includes(item.type),
-    ) >= 0;
 
   return (
     <View>
@@ -211,93 +162,32 @@ const PaymentItemInfo = ({
           !isRecharge && styles.borderBottomGrey,
         ]}>
         {purchaseItems.map((item) => {
-          const [qty, price] =
+          const price =
             item.qty === undefined
-              ? ['', item.price]
-              : [
-                  ` × ${item.qty}`,
-                  utils.toCurrency(
-                    Math.round(item.price.value * item.qty * 100) / 100,
-                    item.price.currency,
-                  ),
-                ];
+              ? item.price
+              : utils.toCurrency(
+                  Math.round(item.price.value * item.qty * 100) / 100,
+                  item.price.currency,
+                );
           return (
             <PaymentItem
               key={item.key}
-              titleStyle={styles.productPriceTitle}
-              title={item.title + qty}
+              title={item.title}
               valueStyle={[
                 styles.normalText16,
                 mode === 'result' && styles.colorWarmGrey,
               ]}
+              qty={item.qty}
               value={utils.price(price)}
+              prod={product.prodList.get(item.key)}
             />
           );
         })}
       </View>
-
-      {!isRecharge && (
-        <View style={styles.priceInfo}>
-          {pymReq.map((item) => (
-            <PaymentItem
-              key={item.key}
-              title={item.title}
-              value={utils.price(item.amount)}
-              mode={mode}
-            />
-          ))}
-          <PaymentItem
-            key="deductBalance"
-            title={i18n.t('cart:deductBalance')}
-            value={`- ${utils.price(deduct)}`}
-            mode={mode}
-          />
-        </View>
-      )}
-
-      <PaymentItem
-        key="totalCost"
-        style={[
-          styles.row,
-          styles.total,
-          styles.brdrBottom0,
-          mode === 'result' && styles.resultTotal,
-        ]}
-        titleStyle={mode === 'result' ? styles.boldText16 : styles.normalText16}
-        title={`${i18n.t('cart:totalCost')} `}
-        valueStyle={[
-          mode === 'result' ? styles.boldText18 : styles.boldText16,
-          styles.colorClearBlue,
-        ]}
-        value={utils.price(pymPrice)}
-      />
-      {mode !== 'result' && esimApp && !isImmediateOrder && (
-        <View
-          style={{
-            flexDirection: 'row',
-            marginHorizontal: 20,
-            marginTop: 20,
-            backgroundColor: colors.backGrey,
-            padding: 20,
-          }}>
-          <AppSvgIcon
-            name="bannerCheckBlue"
-            style={{
-              marginRight: 8,
-              justifyContent: 'center',
-            }}
-          />
-          <AppStyledText
-            text={i18n.t('pym:esimInfo')}
-            textStyle={styles.esimInfo}
-            format={{b: styles.esimInfoBold}}
-          />
-        </View>
-      )}
     </View>
   );
 };
 
-export default connect(({cart}: RootState) => ({
-  cart,
-}))(memo(PaymentItemInfo));
+export default connect(({product}: RootState) => ({product}))(
+  memo(PaymentItemInfo),
+);

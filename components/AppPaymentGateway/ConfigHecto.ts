@@ -6,17 +6,17 @@ import {PaymentParams} from '@/navigation/navigation';
 import {debugScript} from './ConfigInicis';
 import {pgWebViewConfig} from '.';
 
-const {payment, scheme, apiUrl} = Env.get();
+const {payment, scheme, isProduction, apiUrl} = Env.get();
 
 export const configHecto = {
   notiUrl: `${scheme}://${apiUrl}/rokebi/payment/hecto?noti`,
   nextUrl: `${scheme}://${apiUrl}/rokebi/payment/hecto`,
 
-  // PAYMENT_SERVER: isProduction
-  //   ? 'https://npg.settlebank.co.kr' //운영서버 url
-  //   : 'https://tbnpg.settlebank.co.kr', //테스트서버 url
+  PAYMENT_SERVER: isProduction
+    ? 'https://npg.settlebank.co.kr' //운영서버 url
+    : 'https://tbnpg.settlebank.co.kr', //테스트서버 url
 
-  PAYMENT_SERVER: 'https://npg.settlebank.co.kr', //운영서버 url
+  // PAYMENT_SERVER: 'https://npg.settlebank.co.kr', //운영서버 url
 
   /** 세틀뱅크 API통신 Connect Timeout 설정(ms) */
   CONN_TIMEOUT: 5000,

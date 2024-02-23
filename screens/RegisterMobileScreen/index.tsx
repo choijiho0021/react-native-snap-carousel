@@ -29,7 +29,6 @@ import {RouteProp} from '@react-navigation/native';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
-import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
@@ -56,18 +55,12 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import validationUtil from '@/utils/validationUtil';
 import {LinkModelState} from '@/redux/modules/link';
-import DomainPicker from './DomainPicker';
 import ScreenHeader from '@/components/ScreenHeader';
+import DomainListModal from '@/components/DomainListModal';
 
 const {esimGlobal, isProduction, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
-  helpText: {
-    ...appStyles.normal14Text,
-    color: colors.clearBlue,
-    marginTop: 13,
-    marginLeft: 30,
-  },
   title: {
     ...appStyles.bold30Text,
     paddingHorizontal: 20,
@@ -231,8 +224,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     }),
   );
   const [newUser, setNewUser] = useState(false);
-  const [isValidEmail, setIsValidEmail] = useState(false);
-  const [emailError, setEmailError] = useState<string | undefined>('');
   const [socialLogin, setSocialLogin] = useState(false);
   const [isKeyboardShow, setIsKeyboardShow] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState('');
@@ -243,7 +234,8 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const emailRef = useRef<InputEmailRef>(null);
   const mobileRef = useRef<InputMobileRef>(null);
   const inputRef = useRef<InputPinRef>(null);
-  const [showPicker, setShowPicker] = useState(false);
+  const [showDomainModal, setShowDomainModal] = useState(false);
+  const [domain, setDomain] = useState('');
 
   const recommender = useMemo(
     () => link?.params?.recommender,
@@ -314,7 +306,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         navigation.goBack();
       } else if (stack && screen) {
         navigation.navigate(stack, {
-          screen: screen,
+          screen,
           initial: false,
           params,
         });
@@ -364,8 +356,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       }),
     );
     setNewUser(false);
-    setIsValidEmail(false);
-    setEmailError('');
     setSocialLogin(false);
 
     inputRef.current?.reset();
@@ -400,7 +390,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
   const submitHandler = useCallback(async () => {
     Keyboard.dismiss();
-    const error = validationUtil.validate('email', email);
     let isValid = true;
 
     if (loading || pending) return;
@@ -408,27 +397,19 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     setLoading(true);
 
     try {
-      if (!_.isEmpty(error)) {
-        isValid = false;
-        setIsValidEmail(isValid);
-        setEmailError(error?.email[0]);
-      } else {
-        const resp = await API.User.confirmEmail({email});
+      const resp = await API.User.confirmEmail({email});
 
-        if (!mounted.current) return;
+      if (!mounted.current) return;
 
-        isValid = resp.result === 0;
-        if (resp.result !== 0) {
-          // duplicated email error
-          if (
-            resp.result !== API.default.E_RESOURCE_NOT_FOUND ||
-            !resp.message?.includes('Duplicate')
-          ) {
-            // 정상이거나, duplicated email 인 경우는 화면 상태 갱신 필요
-            setIsValidEmail(isValid);
-            setEmailError(isValid ? undefined : i18n.t('acc:duplicatedEmail'));
-            throw new Error('Duplicated email');
-          }
+      isValid = resp.result === 0;
+      if (resp.result !== 0) {
+        // duplicated email error
+        if (
+          resp.result !== API.default.E_RESOURCE_NOT_FOUND ||
+          !resp.message?.includes('Duplicate')
+        ) {
+          // 정상이거나, duplicated email 인 경우는 화면 상태 갱신 필요
+          throw new Error('Duplicated email');
         }
       }
 
@@ -695,24 +676,16 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
       <ScreenHeader
         title={i18n.t('mobile:header')}
         backHandler={() => {
           initState();
-
           if (!socialLogin) {
-            // . 확인필요
-            // 뒤로가기 후 로그인 시 예약된 화면 안가도록
-            navigation.navigate('MyPageStack', {
-              screen: 'MyPage',
-            });
-
             navigation.goBack();
           }
         }}
       />
-      <StatusBar barStyle="dark-content" />
-
       <KeyboardAwareScrollView
         enableOnAndroid
         enableResetScrollToCoords={false}
@@ -731,24 +704,16 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
         {newUser && authorized && (
           <View>
-            <InputEmail
-              style={{
-                marginTop: socialLogin ? 20 : 38,
-                paddingHorizontal: 20,
-              }}
-              inputRef={emailRef}
-              value={email}
-              onChange={(v) => {
-                setEmail(v.replace(/ /g, ''));
-                setIsValidEmail(() => true);
-                setEmailError(() => undefined);
-              }}
-              onPressPicker={() => setShowPicker(true)}
-            />
+            <View
+              style={{marginTop: socialLogin ? 20 : 38, paddingHorizontal: 20}}>
+              <InputEmail
+                inputRef={emailRef}
+                domain={domain}
+                onChange={setEmail}
+                onPress={() => setShowDomainModal(true)}
+              />
+            </View>
 
-            <AppText style={[styles.helpText, {color: colors.errorBackground}]}>
-              {isValidEmail ? null : emailError}
-            </AppText>
             <View key="divider" style={styles.divider} />
 
             {confirmList.map((item) => renderItem({item}))}
@@ -784,16 +749,13 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       )}
 
       <AppActivityIndicator visible={pending || loading} />
-      <DomainPicker
-        visible={showPicker}
-        onOkClose={(val) => {
-          setEmail((prev) => {
-            const m = prev.split('@');
-            return `${m[0]}@${val}`;
-          });
-          setShowPicker(false);
+      <DomainListModal
+        style={{right: 20, top: 200}}
+        visible={showDomainModal}
+        onClose={(v) => {
+          setDomain(v);
+          setShowDomainModal(false);
         }}
-        onCancelClose={() => setShowPicker(false)}
       />
     </SafeAreaView>
   );

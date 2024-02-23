@@ -5187,6 +5187,135 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  mycoupon: [
+    <Svg
+      width="21"
+      height="20"
+      viewBox="0 0 21 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M17.75 3.125h-15v4.01a3.126 3.126 0 0 1 0 5.73v4.01h15v-4.01a3.126 3.126 0 0 1 0-5.73v-4.01zm1.25 0c0-.69-.56-1.25-1.25-1.25h-15c-.69 0-1.25.56-1.25 1.25v5a1.875 1.875 0 0 1 0 3.75v5c0 .69.56 1.25 1.25 1.25h15c.69 0 1.25-.56 1.25-1.25v-5a1.875 1.875 0 0 1 0-3.75v-5z"
+        fill="#2C2C2C"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12.75 12.5a.625.625 0 1 0 0-1.25.625.625 0 0 0 0 1.25zm0 1.25a1.875 1.875 0 1 0 0-3.75 1.875 1.875 0 0 0 0 3.75zM7.75 8.75a.625.625 0 1 0 0-1.25.625.625 0 0 0 0 1.25zm0 1.25a1.875 1.875 0 1 0 0-3.75 1.875 1.875 0 0 0 0 3.75zM7.308 12.942a.625.625 0 0 1 0-.884l5-5a.625.625 0 0 1 .884.884l-5 5a.625.625 0 0 1-.884 0z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
+  contact121: [
+    <Svg
+      width="21"
+      height="20"
+      viewBox="0 0 21 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M1.02 7.693C1.02 3.869 4.118.77 7.941.77h4.616c3.823 0 6.923 3.1 6.923 6.923v4.615c0 3.823-3.1 6.923-6.923 6.923h-10c-.85 0-1.539-.689-1.539-1.538v-10zm6.922-5.385a5.385 5.385 0 0 0-5.384 5.385v10h10a5.385 5.385 0 0 0 5.384-5.385V7.693a5.385 5.385 0 0 0-5.384-5.385H7.942z"
+        fill="#2C2C2C"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M6.404 7.693a.77.77 0 0 1 .77-.77h6.153a.77.77 0 0 1 0 1.54H7.173a.77.77 0 0 1-.77-.77zM6.404 12.308a.77.77 0 0 1 .77-.769h3.845a.77.77 0 0 1 0 1.539H7.173a.77.77 0 0 1-.77-.77z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
+  caution24: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="12" cy="12" r="11" fill="#2C2C2C" />
+      <Path
+        d="M13 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM11 8a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V8z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
+  imgCoupon: [
+    <Svg
+      width="63"
+      height="62"
+      viewBox="0 0 63 62"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M.5 12a2 2 0 0 1 2-2h58a2 2 0 0 1 2 2v12.7c-3.314 0-6 2.82-6 6.3s2.686 6.3 6 6.3V50a2 2 0 0 1-2 2h-58a2 2 0 0 1-2-2V37.3c3.314 0 6-2.82 6-6.3s-2.686-6.3-6-6.3V12z"
+        fill="url(#3m87a5l96a)"
+      />
+      <Circle cx="19.5" cy="31" r="3" fill="#fff" />
+      <Circle cx="31.5" cy="31" r="3" fill="#fff" />
+      <Circle cx="43.5" cy="31" r="3" fill="#fff" />
+      <Defs>
+        <LinearGradient
+          id="3m87a5l96a"
+          x1="19.5"
+          y1="22.6"
+          x2="51.204"
+          y2="39.185"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#2A7FF6" />
+          <Stop offset="1" stopColor="#71A9F8" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
+  couponColor: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M.684 11.94a2 2 0 0 0 1.68 1.96l9.213 1.49a2 2 0 0 0 2.3-1.695l.084-.604a2 2 0 0 0-1.717-2.26L2.945 9.595a2 2 0 0 0-2.263 1.996l.002.348z"
+        fill="#F1694F"
+      />
+      <Path
+        d="M.666 11.435A2 2 0 0 0 2.52 13.43l9.729.716a2 2 0 0 0 2.142-1.855l.043-.615a2 2 0 0 0-1.898-2.137l-9.772-.477A2 2 0 0 0 .666 11.06v.375z"
+        fill="#FFD357"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M.666 2.667a2 2 0 0 1 2-2h10.667a2 2 0 0 1 2 2v2.666a1.333 1.333 0 1 0 0 2.667v2.667a2 2 0 0 1-2 2H2.666a2 2 0 0 1-2-2V8a1.333 1.333 0 0 0 0-2.667V2.667z"
+        fill="#2A7FF6"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10 8.667a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm0 1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM6 5.667a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm0 1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM5.646 9.02a.5.5 0 0 1 0-.707l4-4a.5.5 0 0 1 .707.707l-4 4a.5.5 0 0 1-.707 0z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
+  cautionPurple: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="12" cy="12" r="11" fill="#5B16EF" />
+      <Path
+        d="M13 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM11 8a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V8z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

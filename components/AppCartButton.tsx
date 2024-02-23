@@ -64,7 +64,7 @@ const AppCartButton: React.FC<AppCartButtonProps> = ({
 };
 
 export default connect(({cart}: RootState) => ({
-  cartItems: (cart.orderItems || []).reduce(
+  cartItems: (cart.cartItems || []).reduce(
     (acc, cur) => acc + (cur.qty || 0),
     0,
   ),

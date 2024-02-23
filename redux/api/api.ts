@@ -78,7 +78,6 @@ const path = {
 
   simCard: 'json/smc/list',
   cart: 'cart',
-  order: 'json/orders',
   uploadFile: 'file/upload',
   board: 'json/contactboard',
   boardSearch: 'json/contactboard/search',
@@ -131,7 +130,9 @@ const path = {
       paymentRule: 'rokebi/payment/rule',
       calculateTotal: 'rokebi/order/calc',
       prodAddOn: 'rokebi/prod/addon',
+      coupon: 'rokebi/coupon',
       config: 'rokebi/config',
+      noti: 'rokebi/noti',
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage/quota',

@@ -88,7 +88,7 @@ export const appStyles = StyleSheet.create({
 
   header: {
     flexDirection: 'row',
-    height: 44,
+    height: 56,
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'white',
@@ -656,7 +656,7 @@ export const appStyles = StyleSheet.create({
     fontWeight: '500',
     fontStyle: 'normal',
     letterSpacing: 0.25,
-    color: colors.white,
+    color: colors.black,
     textAlign: 'center',
   },
   robotoMedium16Text: {

@@ -1,7 +1,7 @@
 import React, {memo, useCallback, useEffect, useState} from 'react';
 import {StyleSheet, View, SafeAreaView} from 'react-native';
 import {TabView} from 'react-native-tab-view';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useRoute} from '@react-navigation/native';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -13,6 +13,14 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.white,
     flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    backgroundColor: colors.white,
+    alignItems: 'center',
+    height: 56,
   },
   tab: {
     backgroundColor: colors.white,
@@ -40,17 +48,9 @@ type BoardScreenProps = {
   })[];
 };
 
-const BoardScreen: React.FC<BoardScreenProps> = ({title, routes}) => {
-  const navigation = useNavigation();
+const BoardScreen: React.FC<BoardScreenProps> = ({pending, title, routes}) => {
   const route = useRoute();
   const [index, setIndex] = useState(route?.params?.index || 0);
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={title} />,
-    });
-  }, [navigation, title]);
 
   const renderScene = useCallback(
     ({route, jumpTo}: {route: TabRoute; jumpTo: (v: string) => void}) => {
@@ -61,6 +61,9 @@ const BoardScreen: React.FC<BoardScreenProps> = ({title, routes}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <AppBackButton title={title} />
+      </View>
       <AppTabHeader
         index={index}
         routes={routes}
