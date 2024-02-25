@@ -410,10 +410,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
                   {i18n.t(`cashHistory:type:${item.type}`)}
                 </AppText>
                 {item.order_id && pressable && (
-                  <AppSvgIcon
-                    name="rightAngleBracket"
-                    style={{marginLeft: 4}}
-                  />
+                  <AppSvgIcon name="rightArrow10" style={{marginLeft: 4}} />
                 )}
               </View>
             </View>
@@ -699,7 +696,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               balanceStyle={[appStyles.bold18Text, {color: colors.redError}]}
               currencyStyle={[appStyles.bold16Text, {color: colors.redError}]}
             />
-            <AppSvgIcon name="rightArrow" style={{marginLeft: 8}} />
+            <AppSvgIcon name="rightArrow10" style={{marginLeft: 8}} />
           </View>
         </Pressable>
 

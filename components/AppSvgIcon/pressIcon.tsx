@@ -53,21 +53,6 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </G>
     </Svg>,
   ],
-  rightArrow: [
-    <Svg
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
-      <Path
-        d="M4.5.5 9 5 4.5 9.5"
-        stroke="#2C2C2C"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>,
-  ],
   arrowRight: [
     <Svg
       width="10"
@@ -1175,21 +1160,6 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
-  rightAngleBracket: [
-    <Svg
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
-      <Path
-        d="M4.5.5 9 5 4.5 9.5"
-        stroke="#2C2C2C"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>,
-  ],
   rightBlueAngleBracket: [
     <Svg
       width="10"
@@ -1452,21 +1422,6 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
-  iconArrowRightBlack10: [
-    <Svg
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
-      <Path
-        d="M4.5.5 9 5 4.5 9.5"
-        stroke="#2C2C2C"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>,
-  ],
   iconArrowRightBlack: [
     <Svg
       width="10"
@@ -1613,7 +1568,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
-  iconArrowRightBlack: [
+  rightArrow10: [
     <Svg
       width="10"
       height="10"

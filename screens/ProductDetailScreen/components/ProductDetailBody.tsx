@@ -364,7 +364,7 @@ const ProductDetailBody: React.FC<ProductDetailBodyProps> = ({
                 <AppText style={styles.goToApnText}>
                   {i18n.t('prodDetail:body:top:go:apn')}
                 </AppText>
-                <AppIcon name="iconArrowRightBlack10" />
+                <AppIcon name="rightArrow10" />
               </Pressable>
             ) : (
               <View
