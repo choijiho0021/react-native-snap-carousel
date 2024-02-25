@@ -157,13 +157,14 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         setQty((prev) => prev.set(key, cnt));
         setChecked((prev) => prev.set(key, true));
 
-      if (orderItemId && cart.cartId) {
-        action.cart.cartUpdateQty({
-          orderId: cart.cartId,
-          orderItemId,
-          qty: cnt,
-          abortController: new AbortController(),
-        });
+        if (orderItemId && cart.cartId) {
+          action.cart.cartUpdateQty({
+            orderId: cart.cartId,
+            orderItemId,
+            qty: cnt,
+            abortController: new AbortController(),
+          });
+        }
       }
     },
     [action.cart, cart.cartId],

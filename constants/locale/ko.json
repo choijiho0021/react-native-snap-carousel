@@ -1342,6 +1342,7 @@
   "info:init:err": "공지사항을 가져오는 데 실패했습니다.\n다시 시도해 주세요",
 
   "changeEmail": "이메일 변경",
+  "changeEmail:short": "메일 변경",
   "changeEmail:using": "사용 중인 이메일",
   "changeEmail:new": "새 이메일",
   "changeEmail:placeholder": "변경할 이메일 주소를 입력하세요.",

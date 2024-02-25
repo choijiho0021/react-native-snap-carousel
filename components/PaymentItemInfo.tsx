@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   productPriceInfo: {
     paddingVertical: isDeviceSize('small') ? 13 : 11,
     marginTop: isDeviceSize('small') ? 0 : 9,
-    marginHorizontal: 20,
+    paddingHorizontal: 20,
   },
   borderBottomGrey: {
     borderBottomColor: colors.lightGrey,

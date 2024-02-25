@@ -6,7 +6,7 @@ import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import moment, {Moment} from 'moment';
+import moment from 'moment';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -79,27 +79,6 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     letterSpacing: -0.5,
   },
-  modalContent: {
-    maginHorizontal: 20,
-    width: '90%',
-    paddingTop: 25,
-    backgroundColor: 'white',
-  },
-  titleContent: {
-    marginHorizontal: 30,
-  },
-  modalOkText: {
-    borderRadius: 3,
-    backgroundColor: colors.clearBlue,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    lineHeight: 40,
-    color: 'white',
-    width: 120,
-    height: 40,
-    marginRight: 18,
-  },
-  modalCloseStyle: {color: colors.black, marginRight: 108},
 });
 
 type PymMethodScreenNavigationProp = StackNavigationProp<
@@ -324,6 +303,33 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     );
   }, []);
 
+  const setPymMethod = useCallback(
+    (kind: string) => {
+      if (kind === 'card') {
+        action.modal.renderModal(() => (
+          <SelectCard
+            onPress={(card: string) => {
+              setSelected(card);
+              action.modal.closeModal();
+            }}
+          />
+        ));
+      } else if (kind === 'vbank') {
+        action.modal.renderModal(() => (
+          <SelectBank
+            onPress={(bank: string) => {
+              setSelected(bank);
+              action.modal.closeModal();
+            }}
+          />
+        ));
+      } else {
+        setSelected(kind);
+      }
+    },
+    [action.modal],
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={appStyles.header}>
@@ -388,8 +394,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         visible={showUnsupAlert}>
         {modalBody()}
       </AppModal>
-
-      {renderModal()}
     </SafeAreaView>
   );
 };
