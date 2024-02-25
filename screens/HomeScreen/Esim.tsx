@@ -474,7 +474,12 @@ const Esim: React.FC<EsimProps> = ({
         title={i18n.t('home:searchPlaceholder')}
         style={styles.showSearchBar}
         titleStyle={[appStyles.normal16Text, {color: colors.clearBlue}]}
-        direction="row"
+        viewStyle={{
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+        }}
         onPress={() => navigation.navigate('StoreSearch')}
         iconName="btnSearchBlue"
         iconStyle={{marginHorizontal: 24}}

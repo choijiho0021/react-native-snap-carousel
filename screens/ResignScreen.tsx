@@ -15,7 +15,6 @@ import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
 import Svg, {Path} from 'react-native-svg';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppBackButton from '@/components/AppBackButton';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -40,6 +39,7 @@ import {API} from '@/redux/api';
 import AppTextInput from '@/components/AppTextInput';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const radioButtons = [
   {id: 'resign:reason1'},
@@ -372,13 +372,6 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
     }
   }, [account, action.order, purchaseCnt]);
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('resign')} />,
-    });
-  }, [navigation]);
-
   const logout = useCallback(() => {
     action.modal.closeModal();
     Promise.all([
@@ -455,8 +448,8 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScreenHeader title={i18n.t('resign')} />
       <ScrollView style={styles.container}>
-        <AppActivityIndicator visible={pending} />
         <View style={styles.blueContainer}>
           <AppText style={[styles.resignTitle, {color: colors.white}]}>
             {i18n.t('resign:title')}
@@ -549,6 +542,7 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
           title={i18n.t('resign')}
           onPress={() => showConfirmModal()}
         />
+        <AppActivityIndicator visible={pending} />
       </ScrollView>
     </SafeAreaView>
   );

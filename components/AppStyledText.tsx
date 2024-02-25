@@ -7,13 +7,13 @@ import AppText from './AppText';
 const AppStyledText = ({
   text,
   textStyle,
-  format,
+  format = {},
   data,
   numberOfLines,
 }: {
   text: string;
   textStyle: TextStyle;
-  format: Record<string, TextStyle>;
+  format?: Record<string, TextStyle>;
   data?: Record<string, string>;
   numberOfLines?: number;
 }) => {
@@ -77,6 +77,6 @@ const AppStyledText = ({
     if (typeof list === 'object') return render(list, fmt);
   }
 
-  return <AppText style={textStyle}>{text}</AppText>;
+  return <AppText style={textStyle}>{render([{text}], [])}</AppText>;
 };
 export default memo(AppStyledText);

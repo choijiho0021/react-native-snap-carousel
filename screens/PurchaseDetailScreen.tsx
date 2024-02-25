@@ -241,24 +241,6 @@ type PurchaseDetailScreenProps = {
 export const isRokebiCash = (pg: string) =>
   ['rokebi_cash', 'rokebi_point'].includes(pg);
 
-export const countRokebiCash = (order: RkbOrder) => {
-  const list = order?.paymentList?.filter((item) =>
-    isRokebiCash(item.paymentGateway),
-  );
-  if (list?.[0]) {
-    return list.reduce(
-      (acc, cur) => ({
-        value: acc.value + cur.amount.value,
-        currency: acc.currency,
-      }),
-      {
-        value: 0,
-        currency: list[0].amount.currency,
-      } as Currency,
-    );
-  }
-};
-
 const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   navigation,
   route,
@@ -269,7 +251,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
 }) => {
   const [showPayment, setShowPayment] = useState(true);
   const [method, setMethod] = useState<RkbPayment>();
-  const [balanceCharge, setBalanceCharge] = useState<Currency>();
   const [order, setOrder] = useState<RkbOrder>();
   const [showSnackBar, setShowSnackBar] = useState<string>('');
   const [loading, setLoading] = useState(false);
@@ -306,8 +287,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             (item) => !isRokebiCash(item.paymentGateway),
           ),
         );
-
-        setBalanceCharge(countRokebiCash(detail));
       } else {
         // order를 못찾으면, 다시 읽어온다.
         const {mobile, token} = account;
@@ -343,55 +322,54 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
       order.orderItems?.find((item) =>
         item.title.includes(i18n.t('sim:rechargeBalance')),
       ) || false;
+
     return (
       <View>
-        <View style={styles.thickBar} />
-        {order.orderItems &&
-          order.orderItems.map((item, idx) => (
+        <View key="bar-1" style={styles.thickBar} />
+        {order.orderItems?.map((item, idx) => (
+          <LabelText
+            key={idx}
+            style={styles.item}
+            label={`${item.title}  ×  ${item.qty}`}
+            labelStyle={styles.label}
+            format="price"
+            valueStyle={appStyles.roboto16Text}
+            value={item.price}
+            balanceStyle={[styles.normal16BlueTxt, {color: colors.black}]}
+            currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
+          />
+        ))}
+        {/* {!esimApp && ( */}
+        <View key="bar-2" style={styles.bar} />
+        <LabelText
+          key="productAmount"
+          style={styles.item}
+          label={i18n.t('his:productAmount')}
+          labelStyle={styles.label2}
+          format="price"
+          valueStyle={appStyles.roboto16Text}
+          value={order.subtotal}
+          currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
+          balanceStyle={[styles.normal16BlueTxt, {color: colors.black}]}
+        />
+        {/* )} */}
+
+        {!isRecharge &&
+          ['discount', 'deductBalance'].map((k) => (
             <LabelText
-              key={utils.generateKey(idx.toString())}
+              key={k}
               style={styles.item}
-              label={`${item.title}  ×  ${item.qty}`}
-              labelStyle={styles.label}
+              label={i18n.t(`pym:${k}`)}
               format="price"
+              labelStyle={styles.label2}
               valueStyle={appStyles.roboto16Text}
-              value={item.price}
+              value={order[k]}
               balanceStyle={[styles.normal16BlueTxt, {color: colors.black}]}
               currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
             />
           ))}
-        {/* {!esimApp && ( */}
-        <View>
-          <View style={styles.bar} />
-          <LabelText
-            key="productAmount"
-            style={styles.item}
-            label={i18n.t('his:productAmount')}
-            labelStyle={styles.label2}
-            format="price"
-            valueStyle={appStyles.roboto16Text}
-            value={order.totalPrice}
-            currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
-            balanceStyle={[styles.normal16BlueTxt, {color: colors.black}]}
-          />
-        </View>
-        {/* )} */}
-
-        {!isRecharge && (
-          <LabelText
-            key="pymBalance"
-            style={styles.item}
-            label={i18n.t('pym:deductBalance')}
-            format="price"
-            labelStyle={styles.label2}
-            valueStyle={appStyles.roboto16Text}
-            deduct={balanceCharge?.value}
-            balanceStyle={[styles.normal16BlueTxt, {color: colors.black}]}
-            currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
-          />
-        )}
-        <View style={styles.bar} />
-        <View style={[styles.row, {marginBottom: 5}]}>
+        <View key="bar-3" style={styles.bar} />
+        <View key="total" style={[styles.row, {marginBottom: 5}]}>
           <AppText style={appStyles.normal16Text}>
             {i18n.t('cart:totalCost')}
           </AppText>
@@ -405,10 +383,10 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           </View>
         </View>
 
-        {!isRecharge && <View style={{marginBottom: 20}} />}
+        {!isRecharge && <View key="margin" style={{marginBottom: 20}} />}
 
         {!isRecharge && (
-          <View style={styles.cancelDraftFrame}>
+          <View key="btn" style={styles.cancelDraftFrame}>
             <AppButton
               style={styles.cancelDraftBtn}
               onPress={() => {
@@ -436,14 +414,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         )}
       </View>
     );
-  }, [
-    balanceCharge?.value,
-    isValidate,
-    isValidation,
-    navigation,
-    order,
-    paidAmount,
-  ]);
+  }, [isValidate, isValidation, navigation, order, paidAmount]);
 
   const pymId = useMemo(
     () =>
@@ -518,9 +489,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
       <View
         style={[
           styles.hearNotiFrame,
-          {
-            backgroundColor: isValidation ? colors.backRed : colors.backGrey,
-          },
+          {backgroundColor: isValidation ? colors.backRed : colors.backGrey},
         ]}>
         {
           // 자동 발권 처리 대기 상태는 아이콘 미표시
@@ -538,9 +507,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           format={{
             b: [
               styles.headerNotiBoldText,
-              {
-                color: isValidation ? colors.redError : colors.blue,
-              },
+              {color: isValidation ? colors.redError : colors.blue},
             ],
           }}
         />

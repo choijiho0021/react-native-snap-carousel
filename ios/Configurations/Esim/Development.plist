@@ -176,6 +176,11 @@
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
+			<key>drupal9.rokebi.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
 			<key>tb-global.rokebi.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>

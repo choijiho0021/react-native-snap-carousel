@@ -1,6 +1,5 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {bindActionCreators} from 'redux';
 import {
   Linking,
   Pressable,
@@ -149,13 +148,6 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
     setIsEnded(!eventList.find((e: RkbEvent) => e.nid === issue?.eventId));
   }, [eventList, issue?.eventId]);
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={title} />,
-    });
-  }, [navigation, title]);
-
   const renderImages = useCallback(
     (images?: string[]) => (
       <View>
@@ -216,6 +208,9 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={appStyles.header}>
+        <AppBackButton title={title} />
+      </View>
       <ScrollView style={styles.container}>
         <View style={{flex: 1, paddingHorizontal: 20}}>
           {showStatus && issue?.statusCode && (

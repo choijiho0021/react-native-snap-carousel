@@ -3,10 +3,15 @@ import {Reducer} from 'redux-actions';
 import {List as ImmutableList} from 'immutable';
 import {AnyAction} from 'redux';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
+import _ from 'underscore';
 import {API} from '@/redux/api';
-import i18n from '@/utils/i18n';
 import Env from '@/environment';
-import {PaymentInfo, RkbOrderItem} from '@/redux/api/cartApi';
+import {
+  CouponInfo,
+  OrderPromo,
+  PaymentInfo,
+  RkbOrderItem,
+} from '@/redux/api/cartApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import api from '@/redux/api/api';
 import {Currency} from '@/redux/api/productApi';
@@ -39,12 +44,17 @@ const makeOrder = createAsyncThunk('cart/makeOrder', API.Cart.makeOrder);
 
 const checkStock = createAsyncThunk(
   'cart/checkStock',
-  ({purchaseItems}: {purchaseItems: PurchaseItem[]}, {dispatch}) => {
+  (
+    {purchaseItems, token}: {purchaseItems: PurchaseItem[]; token: string},
+    {dispatch},
+  ) => {
     return purchaseItems[0].type === 'product'
-      ? dispatch(cartCheckStock({purchaseItems})).then(({payload: resp}) => {
-          if (resp.result === 0) return resp;
-          return dispatch(getOutOfStockTitle(resp));
-        })
+      ? dispatch(cartCheckStock({purchaseItems, token})).then(
+          ({payload: resp}) => {
+            if (resp.result === 0) return resp;
+            return dispatch(getOutOfStockTitle(resp));
+          },
+        )
       : Promise.resolve({result: 0});
   },
 );
@@ -56,7 +66,7 @@ const cartAddAndGet = createAsyncThunk(
       account: {token},
     } = getState() as RootState;
 
-    return dispatch(checkStock({purchaseItems}))
+    return dispatch(checkStock({purchaseItems, token}))
       .then(({payload: resp}) => {
         if (resp.result === 0) {
           return dispatch(cartAdd({purchaseItems, token}));
@@ -82,54 +92,56 @@ const init = createAsyncThunk(
   },
 );
 
-export type PaymentReq = {key: string; title: string; amount: Currency};
+const prepareOrder = createAsyncThunk(
+  'cart/prepareOrder',
+  (coupon: CouponInfo, {getState}) => {
+    const {account, cart} = getState() as RootState;
+    const {token, iccid, email, mobile} = account;
+    const {purchaseItems, orderId, cartId, esimIccid, mainSubsId, isCart} =
+      cart;
+
+    return API.Cart.makeOrder({
+      orderId: isCart ? cartId : orderId,
+      items: purchaseItems,
+      token,
+      iccid,
+      esimIccid,
+      mainSubsId,
+      user: mobile,
+      mail: email,
+      coupon,
+    });
+  },
+);
+
+export type PaymentReq = Record<
+  'subtotal' | 'discount' | 'rkbcash',
+  Currency | undefined
+>;
 
 export interface CartModelState {
-  result: number;
+  // cart data
+  cartId?: number;
+  cartItems: RkbOrderItem[];
+  cartUuid?: string;
+
+  // purchase data
   orderId?: number;
-  orderItems: RkbOrderItem[];
-  uuid?: string;
   purchaseItems: PurchaseItem[];
-  pymReq?: PaymentReq[];
-  pymResult?: object;
+  pymReq?: PaymentReq;
+  pymResult?: PaymentInfo;
   lastTab: ImmutableList<string>;
-  pymPrice?: Currency;
-  deduct?: Currency;
+  pymPrice?: Currency; // total amount to pay
   esimIccid?: string;
   mainSubsId?: string;
+  promo?: OrderPromo[];
+  couponToApply?: string; // selected coupon
+  isCart?: boolean; // true if purchased by cart, false if one time purchase
 }
 
-const onSuccess = (state, action) => {
-  const {result, objects} = action.payload;
-
-  if (objects)
-    storeData(
-      `${API.Cart.KEY_INIT_CART}.${action?.meta?.arg?.mobile}`,
-      JSON.stringify(objects),
-    );
-
-  state.result = result;
-  if (result === 0 && objects.length > 0) {
-    state.orderId = objects[0].orderId;
-    state.orderItems = objects[0].orderItems.filter(
-      (i) => i.type === 'esim_product',
-    );
-    state.uuid = objects[0].uuid;
-  } else {
-    state.orderId = undefined;
-    state.orderItems = [];
-    state.uuid = undefined;
-  }
-};
-
 const initialState: CartModelState = {
-  result: 0,
-  orderId: undefined,
-  orderItems: [],
-  uuid: undefined,
+  cartItems: [],
   purchaseItems: [],
-  pymReq: undefined,
-  pymResult: undefined,
   lastTab: ImmutableList<string>(['Home']),
 };
 
@@ -155,68 +167,85 @@ const slice = createSlice({
 
     // 구매할 품목을 저장한다.
     purchase: (state, {payload}) => {
-      const {
-        esimIccid,
-        purchaseItems,
-        dlvCost = false,
-        balance = 0,
-        mainSubsId,
-      } = payload;
-      const total = ((purchaseItems as PurchaseItem[]) || []).reduce(
-        (acc, cur) =>
-          utils.toCurrency(
-            acc.value + cur.price.value * (cur.qty || 1),
-            cur.price.currency,
-          ),
-        utils.toCurrency(0, esimCurrency),
-      );
-      const pymReq = [
-        {
-          key: 'total',
-          title: i18n.t('price'),
-          amount: total,
-        },
-      ];
+      const {esimIccid, purchaseItems, mainSubsId, isCart} = payload;
 
-      if (dlvCost)
-        pymReq.push({
-          key: 'dlvCost',
-          title: i18n.t('cart:dlvCost'),
-          amount: utils.dlvCost(total),
-        });
-
-      // 배송비 포함 상품 합계
-      const totalPrice = utils.addCurrency(
-        total,
-        dlvCost ? utils.dlvCost(total) : utils.toCurrency(0, total.currency),
+      const subtotal = utils.toCurrency(
+        ((purchaseItems as PurchaseItem[]) || []).reduce(
+          (acc, cur) => acc + cur.price.value * (cur.qty || 1),
+          0,
+        ),
+        esimCurrency,
       );
-      // 계산해야하는 총액
-      // 잔액 차감
 
       state.esimIccid = esimIccid;
       state.mainSubsId = mainSubsId;
       // purchaseItems에는 key, qty, price, title 정보 필요
       state.purchaseItems = purchaseItems;
-      state.pymReq = pymReq;
-      state.pymPrice = utils.toCurrency(
-        totalPrice.value > balance ? totalPrice.value - balance : 0,
-        totalPrice.currency,
-      );
-      state.deduct = utils.toCurrency(
-        totalPrice.value > balance ? balance : totalPrice.value,
-        totalPrice.currency,
-      );
+      state.pymReq = {subtotal} as PaymentReq;
+      state.pymPrice = subtotal;
+      state.isCart = isCart;
     },
 
     // 결제 결과를 저장한다.
     pymResult: (state, action) => {
-      const {purchaseItems, orderItems} = state;
+      const {purchaseItems, cartItems} = state;
 
       // orderItems에서 purchaseItem에 포함된 상품은 모두 제거한다.
       state.pymResult = action.payload;
-      state.orderItems = orderItems.filter(
+      state.cartItems = cartItems.filter(
         (item) => purchaseItems.findIndex((p) => p.key === item.key) < 0,
       );
+    },
+
+    applyCoupon: (state, action) => {
+      const {couponId, maxDiscount} = action.payload;
+
+      if (maxDiscount) {
+        state.couponToApply = state.promo?.reduce((acc, cur) => {
+          if (!acc || cur.adj?.value < acc.adj?.value) return cur;
+          return acc;
+        }, undefined)?.coupon_id;
+      } else {
+        state.couponToApply = couponId;
+      }
+
+      // couponToApply == undefined 이면, discount도 undefined로 설정된다.
+      const promo = state.promo?.find(
+        (p) => p.coupon_id === state.couponToApply,
+      );
+
+      state.pymReq = {
+        ...state.pymReq,
+        discount: promo?.adj,
+      };
+
+      state.pymPrice = utils.toCurrency(
+        (state.pymReq?.subtotal?.value || 0) +
+          (state.pymReq?.discount?.value || 0) -
+          (state.pymReq?.rkbcash?.value || 0),
+        esimCurrency,
+      );
+    },
+
+    deductRokebiCash: (state, action) => {
+      const cash = action.payload;
+      if (_.isNumber(cash)) {
+        const total =
+          (state.pymReq?.subtotal?.value || 0) +
+          (state.pymReq?.discount?.value || 0);
+
+        const min = Math.min(cash, total);
+
+        state.pymReq = {
+          ...state.pymReq,
+          rkbcash: utils.toCurrency(min, esimCurrency),
+        };
+
+        state.pymPrice = utils.toCurrency(
+          total - (state.pymReq?.rkbcash?.value || 0),
+          esimCurrency,
+        );
+      }
     },
   },
 
@@ -224,15 +253,36 @@ const slice = createSlice({
     builder.addCase(initCart.fulfilled, (state, {payload}) => {
       if (payload) {
         const obj = parseJson(payload);
-        state.orderId = obj[0].orderId;
-        state.orderItems = obj[0].orderItems.filter(
+        state.cartId = obj[0].orderId;
+        state.cartItems = obj[0].orderItems.filter(
           (i) => i.type === 'esim_product',
         );
-        state.uuid = obj[0].uuid;
+        state.cartUuid = obj[0].uuid;
       }
     });
 
-    builder.addCase(cartFetch.fulfilled, onSuccess);
+    builder.addCase(cartFetch.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      if (objects) {
+        storeData(
+          `${API.Cart.KEY_INIT_CART}.${action?.meta?.arg?.mobile}`,
+          JSON.stringify(objects),
+        );
+      }
+
+      if (result === 0 && objects.length > 0) {
+        state.cartId = objects[0].orderId;
+        state.cartItems = objects[0].orderItems.filter(
+          (i) => i.type === 'esim_product',
+        );
+        state.cartUuid = objects[0].uuid;
+      } else {
+        state.cartId = undefined;
+        state.cartItems = [];
+        state.cartUuid = undefined;
+      }
+    });
 
     // onfailure ->api 실패
     // onsuccess
@@ -246,14 +296,10 @@ const slice = createSlice({
 
     builder.addCase(cartRemove.fulfilled, (state, action) => {
       const {result, objects = []} = action.payload;
-      const {orderId, orderItems} = state;
+      const {cartId, cartItems} = state;
 
-      if (
-        result === 0 &&
-        objects.length > 0 &&
-        objects[0].orderId === orderId
-      ) {
-        state.orderItems = orderItems.filter(
+      if (result === 0 && objects.length > 0 && objects[0].orderId === cartId) {
+        state.cartItems = cartItems.filter(
           (item) => item.orderItemId !== objects[0].orderItemId,
         );
       }
@@ -261,14 +307,10 @@ const slice = createSlice({
 
     builder.addCase(cartUpdateQty.fulfilled, (state, action) => {
       const {result, objects = []} = action.payload;
-      const {orderId} = state;
+      const {cartId} = state;
 
-      if (
-        result === 0 &&
-        objects.length > 0 &&
-        objects[0].orderId === orderId
-      ) {
-        state.orderItems = objects[0].orderItems.filter(
+      if (result === 0 && objects.length > 0 && objects[0].orderId === cartId) {
+        state.cartItems = objects[0].orderItems.filter(
           (i) => i.type === 'esim_product',
         );
       }
@@ -280,11 +322,41 @@ const slice = createSlice({
     // },
 
     builder.addCase(makeOrder.fulfilled, (state, action) => {
-      const {result, objects = []} = action.payload;
+      const {result, objects} = action.payload;
 
       if (result === 0) {
         // update orderId
-        state.orderId = objects[0]?.order_id[0]?.value;
+        state.orderId = objects[0]?.order_id;
+      }
+    });
+
+    builder.addCase(prepareOrder.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      if (result === 0 && objects[0]) {
+        state.orderId = objects[0].order_id;
+        state.promo = objects[0].promo;
+        state.couponToApply = state.promo?.reduce((acc, cur) => {
+          if (!acc || cur.adj?.value < acc.adj?.value) return cur;
+          return acc;
+        }, undefined)?.coupon_id;
+
+        // couponToApply == undefined 이면, discount도 undefined로 설정된다.
+        const promo = state.promo?.find(
+          (p) => p.coupon_id === state.couponToApply,
+        );
+
+        state.pymReq = {
+          ...state.pymReq,
+          discount: promo?.adj,
+        };
+
+        state.pymPrice = utils.toCurrency(
+          (state.pymReq?.subtotal?.value || 0) +
+            (state.pymReq?.discount?.value || 0) -
+            (state.pymReq?.rkbcash?.value || 0),
+          esimCurrency,
+        );
       }
     });
   },
@@ -295,17 +367,21 @@ const checkStockAndMakeOrder = createAsyncThunk(
   (info: PaymentInfo, {dispatch, getState}) => {
     const {account, cart} = getState() as RootState;
     const {token, iccid, email, mobile} = account;
-    const {purchaseItems, orderId, esimIccid, mainSubsId} = cart;
+    const {purchaseItems, cartId, orderId, esimIccid, mainSubsId, isCart} =
+      cart;
+    const coupon = cart.couponToApply
+      ? ({id: [cart.couponToApply]} as CouponInfo)
+      : undefined;
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
-    return dispatch(checkStock({purchaseItems}))
+    return dispatch(checkStock({purchaseItems, token}))
       .then(({payload: res}) => {
         if (res.result === 0) {
           // 충전, 구매 모두 order 생성
           return dispatch(
             makeOrder({
-              orderId,
+              orderId: isCart ? cartId : orderId,
               items: purchaseItems,
               info,
               token,
@@ -314,23 +390,11 @@ const checkStockAndMakeOrder = createAsyncThunk(
               mainSubsId,
               user: mobile,
               mail: email,
+              coupon,
             }),
           )
             .then((rsp) => {
-              if (rsp.payload.status === api.API_STATUS_PREFAILED) {
-                dispatch(accountAction.getAccount({iccid, token})).then(() => {
-                  const {
-                    account: {balance},
-                  } = getState() as RootState;
-                  dispatch(
-                    slice.actions.purchase({
-                      purchaseItems,
-                      dlvCost: false,
-                      balance,
-                    }),
-                  );
-                });
-              }
+              dispatch(slice.actions.purchase({purchaseItems}));
               return rsp.payload;
             })
             .catch((err) => {
@@ -397,21 +461,22 @@ const payNorder = createAsyncThunk(
 const checkStockAndPurchase = createAsyncThunk(
   'cart/checkStockAndPurchase',
   (
-    {
-      purchaseItems,
-      balance,
-      dlvCost = false,
-    }: {purchaseItems: PurchaseItem[]; balance?: number; dlvCost?: boolean},
-    {dispatch},
+    {purchaseItems, isCart}: {purchaseItems: PurchaseItem[]; isCart: boolean},
+    {dispatch, getState},
   ) => {
-    return dispatch(checkStock({purchaseItems})).then(({payload: resp}) => {
-      console.log('@@@ check', resp);
-      if (resp.result === 0) {
-        dispatch(slice.actions.purchase({purchaseItems, dlvCost, balance}));
-      }
-      // 처리 결과는 reducer에 보내서 처리하지만, 결과는 resp를 반환한다.
-      return resp;
-    });
+    const {
+      account: {token},
+    } = getState() as RootState;
+
+    return dispatch(checkStock({purchaseItems, token})).then(
+      ({payload: resp}) => {
+        if (resp.result === 0) {
+          dispatch(slice.actions.purchase({purchaseItems, isCart}));
+        }
+        // 처리 결과는 reducer에 보내서 처리하지만, 결과는 resp를 반환한다.
+        return resp;
+      },
+    );
   },
 );
 /*
@@ -446,6 +511,7 @@ export const actions = {
   init,
   initCart,
   checkStockAndMakeOrder,
+  prepareOrder,
   updateOrder,
   makeEmpty,
   calculateTotal,
