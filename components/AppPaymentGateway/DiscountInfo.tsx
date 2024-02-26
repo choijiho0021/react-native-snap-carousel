@@ -8,23 +8,18 @@ import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppButton from '@/components/AppButton';
-import AppPrice from '@/components/AppPrice';
 import {
   CartAction,
   CartModelState,
   actions as cartActions,
 } from '@/redux/modules/cart';
-import Env from '@/environment';
 import AppTextInput from '@/components/AppTextInput';
 import {utils} from '@/utils/utils';
 import AppIcon from '../AppIcon';
 import DropDownHeader from '@/screens/PymMethodScreen/DropDownHeader';
 import ConfirmButton from './ConfirmButton';
 import AppStyledText from '../AppStyledText';
-
-const {esimCurrency} = Env.get();
 
 const styles = StyleSheet.create({
   row: {
@@ -33,7 +28,6 @@ const styles = StyleSheet.create({
   },
   container: {
     marginTop: 24,
-    marginBottom: 12,
     marginHorizontal: 20,
   },
   title: {

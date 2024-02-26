@@ -28,10 +28,10 @@ const styles = StyleSheet.create({
   },
   row: {
     ...appStyles.itemRow,
-    height: isDeviceSize('small') ? 30 : 36,
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 0,
+    marginTop: 14,
   },
   mrgBottom0: {
     marginBottom: 0,
@@ -61,6 +61,7 @@ export type PaymentItemMode = 'method' | 'result';
 const PaymentItem0 = ({
   style,
   title,
+  titleStyle,
   value,
   valueStyle,
   mode,
@@ -71,6 +72,7 @@ const PaymentItem0 = ({
   value: string;
   mode?: PaymentItemMode;
   style?: StyleProp<ViewStyle>;
+  titleStyle?: StyleProp<ViewStyle>;
   valueStyle?: StyleProp<TextStyle>;
   prod?: RkbProduct;
   qty?: number;
@@ -96,7 +98,9 @@ const PaymentItem0 = ({
       <View style={style || styles.row} key="title">
         <AppText
           key="title"
-          style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
+          style={
+            titleStyle || [appStyles.semiBold14Text, {color: colors.warmGrey}]
+          }>
           {title}
         </AppText>
         {qty ? (

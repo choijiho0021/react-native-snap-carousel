@@ -9,7 +9,10 @@ import {CartModelState} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
 import {RootState} from '@/redux';
 import {PaymentItem, PaymentItemMode} from './PaymentItemInfo';
-import AppText from './AppText';
+import DropDownHeader from '@/screens/PymMethodScreen/DropDownHeader';
+import Env from '@/environment';
+
+const {esimCurrency} = Env.get();
 
 const styles = StyleSheet.create({
   // container: {
@@ -25,10 +28,9 @@ const styles = StyleSheet.create({
   },
   total: {
     height: 52,
-    paddingHorizontal: 20,
-    borderTopColor: colors.black,
+    marginHorizontal: 20,
+    borderTopColor: colors.lightGrey,
     borderTopWidth: 1,
-    backgroundColor: colors.whiteTwo,
     alignItems: 'center',
   },
   resultTotal: {
@@ -39,26 +41,10 @@ const styles = StyleSheet.create({
   brdrBottom0: {
     borderBottomWidth: 0,
   },
-  colorClearBlue: {
-    color: colors.clearBlue,
-  },
   priceInfo: {
-    marginVertical: 11,
+    marginTop: 11,
+    marginBottom: 25,
     marginHorizontal: 20,
-  },
-  normalText16: {
-    ...appStyles.normal16Text,
-    fontWeight: 'normal',
-    color: colors.black,
-    fontSize: isDeviceSize('small') ? 14 : 16,
-  },
-  boldText16: {
-    ...appStyles.bold16Text,
-    fontSize: isDeviceSize('small') ? 14 : 16,
-  },
-  boldText18: {
-    ...appStyles.bold18Text,
-    fontSize: isDeviceSize('small') ? 14 : 16,
   },
 });
 
@@ -70,19 +56,18 @@ const PaymentSummary = ({
   mode?: PaymentItemMode;
 }) => {
   return (
-    <View>
-      <AppText style={styles.total}>{i18n.t('cart:pymAmount')}</AppText>
+    <DropDownHeader title={i18n.t('cart:pymAmount')}>
       <View style={styles.priceInfo}>
-        {(['subtotal', 'discount', 'rkbcash'] as const).map((k) =>
-          cart.pymReq?.[k] ? (
-            <PaymentItem
-              key={k}
-              title={i18n.t(`pym:item:${k}`)}
-              value={utils.price(cart.pymReq[k])}
-              mode={mode}
-            />
-          ) : null,
-        )}
+        {(['subtotal', 'discount', 'rkbcash'] as const).map((k) => (
+          <PaymentItem
+            key={k}
+            title={i18n.t(`pym:item:${k}`)}
+            value={utils.price(
+              cart.pymReq?.[k] || utils.toCurrency(0, esimCurrency),
+            )}
+            mode={mode}
+          />
+        ))}
       </View>
 
       <PaymentItem
@@ -93,15 +78,12 @@ const PaymentSummary = ({
           styles.brdrBottom0,
           mode === 'result' && styles.resultTotal,
         ]}
-        titleStyle={mode === 'result' ? styles.boldText16 : styles.normalText16}
+        titleStyle={appStyles.bold16Text}
         title={`${i18n.t('cart:totalCost')} `}
-        valueStyle={[
-          mode === 'result' ? styles.boldText18 : styles.boldText16,
-          styles.colorClearBlue,
-        ]}
+        valueStyle={{...appStyles.robotoBold22Text, color: colors.clearBlue}}
         value={utils.price(cart.pymPrice)}
       />
-    </View>
+    </DropDownHeader>
   );
 };
 

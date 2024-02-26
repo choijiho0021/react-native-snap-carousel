@@ -84,13 +84,13 @@ const styles = StyleSheet.create({
   divider: {
     height: 10,
     backgroundColor: colors.whiteTwo,
+    marginTop: 24,
   },
   changeEmail: {
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'stretch',
     backgroundColor: colors.white,
-    marginBottom: 24,
     marginHorizontal: 20,
   },
   title: {
@@ -381,13 +381,13 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         <View key="div2" style={styles.divider} />
 
+        <PaymentSummary mode="method" />
+
         <PymMethod
           pymMethodRef={pymMethodRef}
           value={selected}
           onPress={setPymMethod}
         />
-
-        <PaymentSummary mode="method" />
 
         {/* {cart.pymPrice?.value !== 0 ? (
           method()

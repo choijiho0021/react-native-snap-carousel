@@ -567,7 +567,7 @@
   "cart:afterDeductBalance": "남은 로깨비캐시",
   "cart:couponDiscount": "할인쿠폰 사용",
   "cart:dlvCost": "배송비",
-  "cart:totalCost": "총 결제 금액",
+  "cart:totalCost": "최종 결제 금액",
   "cart:totalCntX": "총 %% 개",
   "cart:dlvCostNotice": "* 3만원 이상 구매시 배송료 무료",
   "cart:toCart": "카트에 넣기",
@@ -1071,7 +1071,7 @@
   "pym:sel:coupon:noti": "<b>쿠폰함</b>에서 <b>쿠폰 코드</b> 등록 후 사용하실 수 있어요!",
   "pym:sel:coupon:apply": "원 할인 적용하기",
   "pym:item:subtotal": "상품 금액",
-  "pym:item:discount": "할인쿠폰 사용",
+  "pym:item:discount": "쿠폰 할인",
   "pym:item:rkbcash": "로깨비캐시 사용",
   "pym:deductAll": "모두 사용",
 
