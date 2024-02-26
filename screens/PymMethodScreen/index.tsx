@@ -143,6 +143,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [showNavigateAlert, setShowNavigateAlert] = useState(false);
   const [navigateAlertTxt, setNavigateAlertTxt] = useState<string>();
   const [rstTm, setRstTm] = useState('');
+  const [showSelectCard, setShowSelectCard] = useState(false);
 
   const {pymPrice, deduct} = useMemo(() => cart, [cart]);
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
@@ -323,32 +324,13 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     );
   }, []);
 
-  const setPymMethod = useCallback(
-    (kind: string) => {
-      if (kind === 'card') {
-        action.modal.renderModal(() => (
-          <SelectCard
-            onPress={(card: string) => {
-              setSelected(card);
-              action.modal.closeModal();
-            }}
-          />
-        ));
-      } else if (kind === 'vbank') {
-        action.modal.renderModal(() => (
-          <SelectBank
-            onPress={(bank: string) => {
-              setSelected(bank);
-              action.modal.closeModal();
-            }}
-          />
-        ));
-      } else {
-        setSelected(kind);
-      }
-    },
-    [action.modal],
-  );
+  const setPymMethod = useCallback((kind: string) => {
+    if (kind === 'card') {
+      setShowSelectCard(true);
+    } else {
+      setSelected(kind);
+    }
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -382,6 +364,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         <View key="div2" style={styles.divider} />
 
         <PaymentSummary mode="method" />
+
+        <View key="div3" style={styles.divider} />
 
         <PymMethod
           pymMethodRef={pymMethodRef}
@@ -425,6 +409,13 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         visible={showUnsupAlert}>
         {modalBody()}
       </AppModal>
+      <SelectCard
+        visible={showSelectCard}
+        onPress={(card) => {
+          setShowSelectCard(false);
+          setSelected(card);
+        }}
+      />
     </SafeAreaView>
   );
 };

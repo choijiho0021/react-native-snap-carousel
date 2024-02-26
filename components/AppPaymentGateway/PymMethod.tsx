@@ -1,34 +1,39 @@
-import React, {memo, useEffect, useState} from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import AppText from '../AppText';
 import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppButton from '../AppButton';
 import AppIcon from '../AppIcon';
 import PymButtonList from './PymButtonList';
 import AppTextInput from '../AppTextInput';
 import {PaymentParams} from '@/navigation/navigation';
+import DropDownHeader from '@/screens/PymMethodScreen/DropDownHeader';
+import AppSvgIcon from '../AppSvgIcon';
 
 const styles = StyleSheet.create({
   container: {
-    margin: 20,
+    marginHorizontal: 20,
+    marginBottom: 24,
   },
   title: {
-    ...appStyles.bold18Text,
-    marginBottom: isDeviceSize('small') ? 10 : 20,
-    color: colors.black,
+    ...appStyles.bold16Text,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   ccard: {
-    height: 44,
+    height: 48,
     width: '100%',
-    borderColor: colors.gray,
+    borderColor: colors.lightGrey,
     borderWidth: 1,
+    borderRadius: 3,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 18,
   },
   input: {
     height: 44,
@@ -37,6 +42,31 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
 });
+
+const DropDownButton0 = ({
+  title,
+  disabled = false,
+  onPress,
+}: {
+  title: string;
+  disabled?: boolean;
+  onPress: () => void;
+}) => {
+  return (
+    <Pressable style={styles.ccard} disabled={disabled} onPress={onPress}>
+      <AppText
+        style={{
+          ...appStyles.medium16,
+          color: disabled ? colors.greyish : colors.black,
+        }}>
+        {title}
+      </AppText>
+      <AppSvgIcon name="dropDownToggle" focused />
+    </Pressable>
+  );
+};
+
+const DropDownButton = memo(DropDownButton0);
 
 export type PymMethodRef = {
   getExtraInfo: () => PaymentParams['receipt'];
@@ -59,6 +89,8 @@ const PymMethod: React.FC<PymMethodProps> = ({
   const [id, setId] = useState('');
   const [rcptType, setRcptType] = useState<'p' | 'b' | 'n'>('p');
 
+  console.log('@@@ pym method', value);
+
   useEffect(() => {
     if (pymMethodRef) {
       pymMethodRef.current = {
@@ -76,86 +108,105 @@ const PymMethod: React.FC<PymMethodProps> = ({
     }
   }, [value]);
 
+  const renderCardButton = useCallback(() => {
+    return (
+      <View>
+        <DropDownButton
+          title={i18n.t(
+            value?.startsWith('card') ? `pym:${value}` : 'pym:method:card:sel',
+          )}
+          onPress={() => onPress('card')}
+        />
+        <View style={{height: 12}} />
+        <DropDownButton
+          title={i18n.t('pym:method:pay:atonce')}
+          disabled={!value?.startsWith('card')}
+          onPress={() => onPress('card:duration')}
+        />
+      </View>
+    );
+  }, [onPress, value]);
+
   return (
-    <View style={styles.container}>
-      <AppText key="title" style={styles.title}>
-        {i18n.t('pym:method')}
-      </AppText>
-      {(['easy', 'card', 'vbank'] as const).map((k) => (
-        <View key={k}>
-          <Pressable
-            style={styles.row}
-            onPress={() => {
-              setMethod(k);
-              if (k === 'easy') onPress(value);
-            }}>
-            <AppIcon name="btnCheck" focused={method === k} />
-            <AppText style={styles.title}>{i18n.t(`pym:method:${k}`)}</AppText>
-          </Pressable>
-          {k === method ? (
-            k === 'easy' ? (
-              <PymButtonList
-                selected={selected}
-                onPress={(m) => {
-                  setSelected(m);
-                  onPress(m);
-                }}
-              />
-            ) : k === 'card' ? (
-              <AppButton
-                style={styles.ccard}
-                titleStyle={{color: colors.black}}
-                title={i18n.t(
-                  value?.startsWith('card')
-                    ? `pym:${value}`
-                    : 'pym:method:card:sel',
-                )}
-                onPress={() => onPress('card')}
-              />
-            ) : (
-              <View>
-                <AppButton
-                  style={styles.ccard}
-                  titleStyle={{color: colors.black}}
-                  title={i18n.t(
-                    value?.startsWith('vbank')
-                      ? `pym:${value}`
-                      : 'pym:method:vbank:input',
-                  )}
-                  onPress={() => onPress('vbank')}
+    <DropDownHeader title={i18n.t('pym:method')}>
+      <View style={styles.container}>
+        {(['easy', 'card'] as const).map((k, i) => (
+          <View key={k} style={{marginBottom: 24}}>
+            <Pressable
+              style={[
+                styles.row,
+                {
+                  paddingTop: 24,
+                  paddingBottom: method === k ? 16 : 0,
+                  borderTopWidth: i > 0 ? 1 : 0,
+                  borderTopColor: colors.lightGrey,
+                },
+              ]}
+              onPress={() => {
+                setMethod(k);
+                if (k === 'easy') onPress(value);
+              }}>
+              <AppSvgIcon name="btnRadio" focused={method === k} />
+              <AppText style={{...appStyles.bold16Text, marginLeft: 6}}>
+                {i18n.t(`pym:method:${k}`)}
+              </AppText>
+            </Pressable>
+            {k === method ? (
+              k === 'easy' ? (
+                <PymButtonList
+                  selected={selected}
+                  onPress={(m) => {
+                    setSelected(m);
+                    onPress(m);
+                  }}
                 />
-                <AppText
-                  key="title"
-                  style={[styles.title, {marginVertical: 10}]}>
-                  {i18n.t('pym:vbank:receipt')}
-                </AppText>
-                <View style={[styles.row, {marginVertical: 10}]}>
-                  {(['p', 'b', 'n'] as const).map((k) => (
-                    <Pressable
-                      key={k}
-                      style={[styles.row, {flex: 1}]}
-                      onPress={() => setRcptType(k)}>
-                      <AppIcon name="btnCheck" checked={k === rcptType} />
-                      <AppText style={{flex: 1, marginLeft: 5}}>
-                        {i18n.t(`pym:vbank:receipt:${k}`)}
-                      </AppText>
-                    </Pressable>
-                  ))}
+              ) : k === 'card' ? (
+                renderCardButton()
+              ) : (
+                <View>
+                  <AppButton
+                    style={styles.ccard}
+                    titleStyle={{color: colors.black}}
+                    title={i18n.t(
+                      value?.startsWith('vbank')
+                        ? `pym:${value}`
+                        : 'pym:method:vbank:input',
+                    )}
+                    onPress={() => onPress('vbank')}
+                  />
+                  <AppText
+                    key="title"
+                    style={[styles.title, {marginVertical: 10}]}>
+                    {i18n.t('pym:vbank:receipt')}
+                  </AppText>
+                  <View style={[styles.row, {marginVertical: 10}]}>
+                    {(['p', 'b', 'n'] as const).map((k) => (
+                      <Pressable
+                        key={k}
+                        style={[styles.row, {flex: 1}]}
+                        onPress={() => setRcptType(k)}>
+                        <AppIcon name="btnCheck" checked={k === rcptType} />
+                        <AppText style={{flex: 1, marginLeft: 5}}>
+                          {i18n.t(`pym:vbank:receipt:${k}`)}
+                        </AppText>
+                      </Pressable>
+                    ))}
+                  </View>
+                  <AppText style={styles.title}>
+                    {i18n.t('pym:vbank:receipt')}
+                  </AppText>
+                  <AppTextInput
+                    style={styles.input}
+                    value={id}
+                    onChangeText={setId}
+                  />
                 </View>
-                <AppText style={styles.title}>
-                  {i18n.t('pym:vbank:receipt')}
-                </AppText>
-                <AppTextInput
-                  style={styles.input}
-                  value={id}
-                  onChangeText={setId}
-                />
-              </View>
-            )
-          ) : null}
-        </View>
-      ))}
-    </View>
+              )
+            ) : null}
+          </View>
+        ))}
+      </View>
+    </DropDownHeader>
   );
 };
 

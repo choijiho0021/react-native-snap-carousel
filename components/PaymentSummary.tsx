@@ -21,25 +21,16 @@ const styles = StyleSheet.create({
   // },
   row: {
     ...appStyles.itemRow,
-    height: isDeviceSize('small') ? 30 : 36,
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 0,
   },
   total: {
-    height: 52,
     marginHorizontal: 20,
+    paddingTop: 24,
     borderTopColor: colors.lightGrey,
     borderTopWidth: 1,
     alignItems: 'center',
-  },
-  resultTotal: {
-    backgroundColor: colors.white,
-    height: 60,
-    marginTop: 20,
-  },
-  brdrBottom0: {
-    borderBottomWidth: 0,
   },
   priceInfo: {
     marginTop: 11,
@@ -72,12 +63,7 @@ const PaymentSummary = ({
 
       <PaymentItem
         key="totalCost"
-        style={[
-          styles.row,
-          styles.total,
-          styles.brdrBottom0,
-          mode === 'result' && styles.resultTotal,
-        ]}
+        style={[styles.row, styles.total]}
         titleStyle={appStyles.bold16Text}
         title={`${i18n.t('cart:totalCost')} `}
         valueStyle={{...appStyles.robotoBold22Text, color: colors.clearBlue}}

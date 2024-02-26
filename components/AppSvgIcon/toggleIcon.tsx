@@ -232,5 +232,49 @@ const toggleIcons: Record<string, React.ReactElement[]> = {
       <Circle cx="11" cy="11" r="10.5" stroke="#D8D8D8" />
     </Svg>,
   ],
+  btnRadio: [
+    <Svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="11" cy="11" r="11" fill="#2A7FF6" />
+      <Circle cx="11" cy="11" r="5" fill="#fff" />
+    </Svg>,
+    <Svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="11" cy="11" r="10.5" fill="#fff" stroke="#D8D8D8" />
+      <Circle cx="11" cy="11" r="5" fill="#F5F5F5" />
+    </Svg>,
+  ],
+  dropDownToggle: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M10.564 12.76a.784.784 0 0 1-1.128 0L5.16 8.037C4.78 7.62 5.118 7 5.724 7h8.552c.606 0 .943.62.564 1.037l-4.276 4.723z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M10.564 12.76a.784.784 0 0 1-1.128 0L5.16 8.037C4.78 7.62 5.118 7 5.724 7h8.552c.606 0 .943.62.564 1.037l-4.276 4.723z"
+        fill="#AAA"
+      />
+    </Svg>,
+  ],
 };
 export default toggleIcons;
