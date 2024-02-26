@@ -20,6 +20,7 @@ import AppIcon from '../AppIcon';
 import DropDownHeader from '@/screens/PymMethodScreen/DropDownHeader';
 import ConfirmButton from './ConfirmButton';
 import AppStyledText from '../AppStyledText';
+import AppSvgIcon from '../AppSvgIcon';
 
 const styles = StyleSheet.create({
   row: {
@@ -108,8 +109,6 @@ const DiscountInfo: React.FC<DiscountProps> = ({
     setRokebiCash(utils.numberToCommaString(cart.pymReq?.rkbcash?.value || 0));
   }, [cart.pymReq?.rkbcash]);
 
-  console.log('@@@ discount', discount);
-
   return (
     <DropDownHeader
       title={i18n.t('pym:discount')}
@@ -151,10 +150,16 @@ const DiscountInfo: React.FC<DiscountProps> = ({
           }
           titleStyle={appStyles.robotoBold16Text}
           buttonTitle={i18n.t('pym:sel:coupon:title')}
-          onPress={onPress}
+          onPress={() => {
+            setChecked(false);
+            onPress?.();
+          }}
         />
         <View key="cash" style={[styles.row, {marginTop: 24}]}>
-          <AppText style={styles.title}>{i18n.t('acc:balance')}</AppText>
+          <AppSvgIcon name="rokebiLogo" />
+          <AppText style={[styles.title, {marginLeft: 8}]}>
+            {i18n.t('acc:balance')}
+          </AppText>
           {onPress ? (
             <AppStyledText
               text={i18n.t('acc:balance:hold')}
