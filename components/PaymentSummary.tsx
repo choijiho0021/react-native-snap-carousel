@@ -2,7 +2,6 @@ import {StyleSheet, View} from 'react-native';
 import React, {memo} from 'react';
 import {connect} from 'react-redux';
 import {colors} from '@/constants/Colors';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import utils from '@/redux/api/utils';
 import {CartModelState} from '@/redux/modules/cart';
@@ -15,10 +14,6 @@ import Env from '@/environment';
 const {esimCurrency} = Env.get();
 
 const styles = StyleSheet.create({
-  // container: {
-  //   justifyContent: 'space-between',
-  //   width: '63%'
-  // },
   row: {
     ...appStyles.itemRow,
     justifyContent: 'space-between',
@@ -47,7 +42,9 @@ const PaymentSummary = ({
   mode?: PaymentItemMode;
 }) => {
   return (
-    <DropDownHeader title={i18n.t('cart:pymAmount')}>
+    <DropDownHeader
+      title={i18n.t('cart:pymAmount')}
+      summary={utils.price(cart.pymPrice)}>
       <View style={styles.priceInfo}>
         {(['subtotal', 'discount', 'rkbcash'] as const).map((k) => (
           <PaymentItem

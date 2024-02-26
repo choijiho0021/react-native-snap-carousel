@@ -7,35 +7,8 @@ import {
   ViewStyle,
 } from 'react-native';
 import {colors} from '@/constants/Colors';
-import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
-
-// '21', '22','23', '24', '25', '26'
-
-const CARD_CODE = [
-  '41',
-  '03',
-  '04',
-  '06',
-  '11',
-  '12',
-  '14',
-  '34',
-  '38',
-  '32',
-  '35',
-  '33',
-  '95',
-  '43',
-  '48',
-  '51',
-  '52',
-  '54',
-  '55',
-  '56',
-  '71',
-];
 
 const styles = StyleSheet.create({
   menu: {
@@ -65,10 +38,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const SelectCard = ({
+const PopupList = ({
   visible,
   onPress,
+  data,
 }: {
+  data: {label: string; value: string}[];
   visible: boolean;
   style?: ViewStyle;
   onPress: (id: string) => void;
@@ -77,22 +52,15 @@ const SelectCard = ({
     <Modal visible={visible} transparent>
       <Pressable style={{flex: 1}} onPress={() => onPress('')}>
         <ScrollView style={styles.menu}>
-          <Pressable key="header" style={styles.menuItem}>
-            <AppText style={appStyles.medium18}>
-              {i18n.t('pym:card:sel')}
-            </AppText>
-          </Pressable>
-          {CARD_CODE.map((r, i) => (
+          {data.map(({label, value}, i) => (
             <Pressable
-              key={r}
+              key={value}
               style={[
                 styles.menuItem,
-                {borderBottomWidth: i === CARD_CODE.length - 1 ? 0 : 1},
+                {borderBottomWidth: i === data.length - 1 ? 0 : 1},
               ]}
-              onPress={() => onPress(`card${r}`)}>
-              <AppText style={appStyles.medium18}>
-                {i18n.t(`pym:card${r}`)}
-              </AppText>
+              onPress={() => onPress(value)}>
+              <AppText style={appStyles.medium18}>{label}</AppText>
             </Pressable>
           ))}
         </ScrollView>
@@ -101,4 +69,4 @@ const SelectCard = ({
   );
 };
 
-export default memo(SelectCard);
+export default memo(PopupList);

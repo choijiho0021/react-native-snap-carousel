@@ -49,13 +49,43 @@ import ConfirmButton from '@/components/AppPaymentGateway/ConfirmButton';
 import PymMethod, {
   PymMethodRef,
 } from '@/components/AppPaymentGateway/PymMethod';
-import SelectCard from './SelectCard';
+import PopupList from './PopupList';
 import {retrieveData, storeData} from '@/utils/utils';
-import SelectBank from './SelectBank';
 import AppText from '@/components/AppText';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const infoKey = 'pym:benefit';
+const creditCardList = [
+  '41',
+  '03',
+  '04',
+  '06',
+  '11',
+  '12',
+  '14',
+  '34',
+  '38',
+  '32',
+  '35',
+  '33',
+  '95',
+  '43',
+  '48',
+  '51',
+  '52',
+  '54',
+  '55',
+  '56',
+  '71',
+].map((k) => ({
+  label: i18n.t(`pym:card${k}`),
+  value: `card${k}`,
+}));
+
+const durationList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((k) => ({
+  label: k === 1 ? i18n.t('pym:pay:atonce') : k + i18n.t('pym:duration'),
+  value: k.toString(),
+}));
 
 const styles = StyleSheet.create({
   container: {
@@ -87,7 +117,6 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   changeEmail: {
-    flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'stretch',
     backgroundColor: colors.white,
@@ -144,8 +173,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [navigateAlertTxt, setNavigateAlertTxt] = useState<string>();
   const [rstTm, setRstTm] = useState('');
   const [showSelectCard, setShowSelectCard] = useState(false);
+  const [showDuration, setShowDuration] = useState(false);
+  const [duration, setDuration] = useState('1');
 
-  const {pymPrice, deduct} = useMemo(() => cart, [cart]);
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
   const pymMethodRef = useRef<PymMethodRef>(null);
 
@@ -327,6 +357,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const setPymMethod = useCallback((kind: string) => {
     if (kind === 'card') {
       setShowSelectCard(true);
+    } else if (kind === 'duration') {
+      setShowDuration(true);
     } else {
       setSelected(kind);
     }
@@ -370,6 +402,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         <PymMethod
           pymMethodRef={pymMethodRef}
           value={selected}
+          duration={duration}
           onPress={setPymMethod}
         />
 
@@ -384,7 +417,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         )} */}
 
         {/* 가변영역 설정 */}
-        <View style={{flex: 1}} />
+        <View style={{flex: 1, minHeight: 26}} />
 
         <PolicyChecker onPress={setPolicyChecked} />
         <AppButton
@@ -409,11 +442,20 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         visible={showUnsupAlert}>
         {modalBody()}
       </AppModal>
-      <SelectCard
-        visible={showSelectCard}
-        onPress={(card) => {
-          setShowSelectCard(false);
-          setSelected(card);
+      <PopupList
+        data={
+          showSelectCard ? creditCardList : showDuration ? durationList : []
+        }
+        visible={showSelectCard || showDuration}
+        onPress={(v) => {
+          console.log('@@@ popup list', v);
+          if (showSelectCard) {
+            setShowSelectCard(false);
+            setSelected(v);
+          } else {
+            setShowDuration(false);
+            setDuration(v);
+          }
         }}
       />
     </SafeAreaView>

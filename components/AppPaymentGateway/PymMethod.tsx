@@ -15,7 +15,6 @@ import AppSvgIcon from '../AppSvgIcon';
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: 20,
-    marginBottom: 24,
   },
   title: {
     ...appStyles.bold16Text,
@@ -74,12 +73,14 @@ export type PymMethodRef = {
 
 type PymMethodProps = {
   value: string;
+  duration?: string;
   onPress: (kind: string) => void;
   pymMethodRef: React.MutableRefObject<PymMethodRef | null>;
 };
 
 const PymMethod: React.FC<PymMethodProps> = ({
   value,
+  duration,
   onPress,
   pymMethodRef,
 }) => {
@@ -88,8 +89,6 @@ const PymMethod: React.FC<PymMethodProps> = ({
   const [idType, setIdType] = useState<'m' | 'c' | 'b'>('m');
   const [id, setId] = useState('');
   const [rcptType, setRcptType] = useState<'p' | 'b' | 'n'>('p');
-
-  console.log('@@@ pym method', value);
 
   useEffect(() => {
     if (pymMethodRef) {
@@ -119,13 +118,17 @@ const PymMethod: React.FC<PymMethodProps> = ({
         />
         <View style={{height: 12}} />
         <DropDownButton
-          title={i18n.t('pym:method:pay:atonce')}
+          title={
+            (duration || '1') === '1'
+              ? i18n.t('pym:pay:atonce')
+              : duration + i18n.t('pym:duration')
+          }
           disabled={!value?.startsWith('card')}
-          onPress={() => onPress('card:duration')}
+          onPress={() => onPress('duration')}
         />
       </View>
     );
-  }, [onPress, value]);
+  }, [duration, onPress, value]);
 
   return (
     <DropDownHeader title={i18n.t('pym:method')}>

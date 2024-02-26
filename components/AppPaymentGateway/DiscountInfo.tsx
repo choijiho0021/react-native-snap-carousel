@@ -108,17 +108,29 @@ const DiscountInfo: React.FC<DiscountProps> = ({
     setRokebiCash(utils.numberToCommaString(cart.pymReq?.rkbcash?.value || 0));
   }, [cart.pymReq?.rkbcash]);
 
+  console.log('@@@ discount', discount);
+
   return (
-    <DropDownHeader title={i18n.t('pym:discount')}>
+    <DropDownHeader
+      title={i18n.t('pym:discount')}
+      summary={
+        i18n.t('total') +
+        utils.price(
+          utils.toCurrency(
+            Math.abs(discount?.value || 0) +
+              (utils.stringToNumber(rokebiCash) || 0),
+          ),
+        )
+      }>
       <View style={styles.container}>
         <View
           key="coupon"
           style={[styles.row, {justifyContent: 'space-between'}]}>
           <AppText style={styles.title}>{i18n.t('pym:coupon')}</AppText>
-          {cart.promo?.length > 0 ? (
+          {(cart.promo?.length || 0) > 0 ? (
             <Pressable
               style={styles.row}
-              disabled={(cart.promo?.length || 0) === 0}>
+              onPress={() => toggleMaxPromo(checked)}>
               <AppIcon name="btnCheck2" checked={checked} size={22} />
               <AppText style={{...appStyles.medium16, marginLeft: 8}}>
                 {i18n.t('pym:coupon:max')}
@@ -127,12 +139,19 @@ const DiscountInfo: React.FC<DiscountProps> = ({
           ) : null}
         </View>
         <ConfirmButton
-          title={i18n.t(
-            (cart.promo?.length || 0) > 0
-              ? 'pym:coupon:none:sel'
-              : 'pym:no:coupon',
-          )}
+          title={
+            discount
+              ? utils.numberToCommaString(Math.abs(discount.value)) +
+                i18n.t('won')
+              : i18n.t(
+                  (cart.promo?.length || 0) > 0
+                    ? 'pym:coupon:none:sel'
+                    : 'pym:no:coupon',
+                )
+          }
+          titleStyle={appStyles.robotoBold16Text}
           buttonTitle={i18n.t('pym:sel:coupon:title')}
+          onPress={onPress}
         />
         <View key="cash" style={[styles.row, {marginTop: 24}]}>
           <AppText style={styles.title}>{i18n.t('acc:balance')}</AppText>

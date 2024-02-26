@@ -1,12 +1,12 @@
 import React, {memo} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Pressable, StyleSheet, TextStyle, View} from 'react-native';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppSvgIcon from '../AppSvgIcon';
 
 const styles = StyleSheet.create({
-  oldEmail: {
+  container: {
     flexDirection: 'row',
     marginTop: 4,
     borderRadius: 3,
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  oldEmailText: {
+  text: {
     ...appStyles.medium18,
     lineHeight: 22,
     color: colors.clearBlue,
@@ -38,18 +38,20 @@ const styles = StyleSheet.create({
 
 type ConfirmEmailProps = {
   title?: string;
+  titleStyle?: TextStyle;
   buttonTitle?: string;
   onPress?: () => void;
 };
 
 const ConfirmButton: React.FC<ConfirmEmailProps> = ({
   title,
+  titleStyle,
   buttonTitle,
   onPress,
 }) => {
   return (
-    <Pressable style={styles.oldEmail} onPress={onPress}>
-      <AppText style={styles.oldEmailText}>{title}</AppText>
+    <Pressable style={styles.container} onPress={onPress}>
+      <AppText style={titleStyle || styles.text}>{title}</AppText>
       <View style={styles.row}>
         <AppText style={styles.changeText}>{buttonTitle}</AppText>
         <AppSvgIcon name="rightArrow10" />

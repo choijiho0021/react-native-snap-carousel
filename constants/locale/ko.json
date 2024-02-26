@@ -950,7 +950,7 @@
   "pym:method:easy": "간편 결제",
   "pym:method:card": "신용,체크 카드",
   "pym:method:card:sel": "결제에 사용할 카드를 선택해주세요.",
-  "pym:method:pay:atonce": "일시불",
+  "pym:pay:atonce": "일시불",
   "pym:ccard": "신용카드",
   "pym:bank": "계좌이체",
   "pym:vbank": "계좌이체",
@@ -996,6 +996,7 @@
   "pym:card56": "카카오뱅크",
   "pym:card71": "우체국체크",
   "pym:card95": "저축은행체크",
+  "pym:duration": "개월",
 
   "pym:vbank:h:003": "IBK기업은행",
   "pym:vbank:h:004": "KB국민은행",

@@ -22,14 +22,25 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignSelf: 'flex-end',
   },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  summary: {
+    ...appStyles.robotoBold16Text,
+    color: colors.clearBlue,
+    marginRight: 8,
+  },
 });
 
 type DropDownHeaderProps = {
   title: string;
+  summary?: string;
 };
 
 const DropDownHeader: React.FC<PropsWithChildren<DropDownHeaderProps>> = ({
   title,
+  summary,
   children,
 }) => {
   const [showContent, setShowContent] = useState(true);
@@ -44,12 +55,15 @@ const DropDownHeader: React.FC<PropsWithChildren<DropDownHeaderProps>> = ({
         ]}
         onPress={() => setShowContent((prev) => !prev)}>
         <AppText style={styles.boldTitle}>{title}</AppText>
-        <AppButton
-          style={{backgroundColor: colors.white}}
-          iconName={showContent ? 'iconArrowUp' : 'iconArrowDown'}
-          iconStyle={styles.dropDownIcon}
-          onPress={() => setShowContent((prev) => !prev)}
-        />
+        <View style={styles.row}>
+          {!showContent && <AppText style={styles.summary}>{summary}</AppText>}
+          <AppButton
+            style={{backgroundColor: colors.white}}
+            iconName={showContent ? 'iconArrowUp' : 'iconArrowDown'}
+            iconStyle={styles.dropDownIcon}
+            onPress={() => setShowContent((prev) => !prev)}
+          />
+        </View>
       </Pressable>
       {showContent ? children : null}
     </View>
