@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
   },
   paymentBtnTitle: {
     ...appStyles.medium18,
+    color: colors.white,
     textAlign: 'center',
     width: '100%',
   },

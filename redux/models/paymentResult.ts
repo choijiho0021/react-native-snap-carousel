@@ -6,7 +6,6 @@ export const createPaymentInfo = ({
   paymentType,
   impId,
   mobile,
-  profileId,
   deduct,
   memo,
   digital,
@@ -17,7 +16,6 @@ export const createPaymentInfo = ({
   paymentType: string;
   impId: string;
   mobile?: string;
-  profileId?: string;
   deduct?: number;
   memo?: string;
   digital: boolean;
@@ -33,7 +31,6 @@ export const createPaymentInfo = ({
     captured,
     imp_uid: impId,
     merchant_uid: `${mobile}_${new Date().getTime()}`,
-    profile_uuid: profileId,
     amount: amount || 0,
     rokebi_cash: deduct,
     digital,
@@ -46,14 +43,12 @@ export const createPaymentInfo = ({
 export const createPaymentInfoForRokebiCash = ({
   impId,
   mobile,
-  profileId,
   deduct,
   digital,
   memo,
 }: {
   impId: string;
   mobile?: string;
-  profileId?: string;
   deduct?: Currency;
   digital: boolean;
   memo?: string;
@@ -61,7 +56,6 @@ export const createPaymentInfoForRokebiCash = ({
   createPaymentInfo({
     impId,
     mobile,
-    profileId,
     deduct: deduct?.value,
     currency_code: deduct?.currency,
     digital,

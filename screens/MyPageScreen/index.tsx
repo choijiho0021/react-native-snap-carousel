@@ -5,8 +5,8 @@ import {
   FlatList,
   Platform,
   RefreshControl,
+  SafeAreaView,
   StyleSheet,
-  View,
 } from 'react-native';
 import {
   check,
@@ -42,6 +42,7 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import AppSnackBar from '@/components/AppSnackBar';
 import ChatTalk from '@/components/ChatTalk';
 import Env from '@/environment';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const {isIOS} = Env.get();
 
@@ -118,22 +119,6 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
       const perm = await checkPhotoPermission();
       setHasPhotoPermission(perm);
     }
-
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <View style={{flexDirection: 'row'}}>
-          <AppText style={styles.title}>{i18n.t('acc:title')}</AppText>
-        </View>
-      ),
-      headerRight: () => (
-        <AppSvgIcon
-          name="btnSetup"
-          style={styles.settings}
-          onPress={() => navigation.navigate('Settings')}
-        />
-      ),
-    });
 
     // Logout시에 mount가 새로 되는데 login 페이지로 안가기 위해서 isFocused 조건 추가
     if (!account.loggedIn && navigation.isFocused()) {
@@ -265,7 +250,18 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <ScreenHeader
+        title={i18n.t('acc:title')}
+        isStackTop
+        renderRight={
+          <AppSvgIcon
+            name="btnSetup"
+            style={styles.settings}
+            onPress={() => navigation.navigate('Settings')}
+          />
+        }
+      />
       <FlatList
         style={{flex: 1}}
         ref={flatListRef}
@@ -295,7 +291,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
       />
 
       <ChatTalk visible bottom={(isIOS ? 100 : 70) - tabBarHeight} />
-    </View>
+    </SafeAreaView>
   );
 };
 

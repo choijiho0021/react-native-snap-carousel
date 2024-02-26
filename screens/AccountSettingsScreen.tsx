@@ -1,8 +1,13 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {memo, useCallback, useEffect, useMemo} from 'react';
-import {FlatList, Pressable, StyleSheet, View} from 'react-native';
+import {
+  FlatList,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {connect} from 'react-redux';
-import AppBackButton from '@/components/AppBackButton';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -11,7 +16,6 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import i18n from '@/utils/i18n';
 import ScreenHeader from '@/components/ScreenHeader';
-import {SafeAreaView} from 'react-native-safe-area-context';
 
 const styles = StyleSheet.create({
   container: {

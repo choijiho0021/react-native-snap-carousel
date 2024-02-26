@@ -29,10 +29,10 @@ const styles = StyleSheet.create({
 const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
   const label = useMemo(() => {
     let str = item.orderItems[0]?.title;
-    if (item.orderItems && item.orderItems.length > 1) {
-      str += i18n
-        .t('his:etcCnt')
-        .replace('%%', getCountItems(item?.orderItems, true));
+    const etcCount = getCountItems(item?.orderItems, true);
+
+    if (item.orderItems && parseInt(etcCount, 10) > 0) {
+      str += i18n.t('his:etcCnt').replace('%%', etcCount);
     }
     return str;
   }, [item.orderItems]);
@@ -51,11 +51,6 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
     return [undefined];
   }, [item.orderType, item.state, item.usageList]);
 
-  const billingAmt = useMemo(
-    () => utils.addCurrency(item.totalPrice, item.dlvCost),
-    [item.dlvCost, item.totalPrice],
-  );
-
   if (_.isEmpty(item.orderItems)) return <View />;
 
   return (
@@ -65,7 +60,7 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
           style={styles.orderValue}
           label={utils.toDateString(item.orderDate, 'YYYY-MM-DD')}
           labelStyle={styles.date}
-          valueStyle={statusColor && {color: statusColor}}
+          valueStyle={statusColor ? {color: statusColor} : undefined}
           value={status}
         />
         <LabelText
@@ -77,7 +72,7 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
               ? appStyles.normal16Text
               : appStyles.normal18Text,
           ]}
-          value={billingAmt}
+          value={item.totalPrice}
           color={isCanceled ? colors.warmGrey : colors.black}
           valueStyle={appStyles.price}
           balanceStyle={{

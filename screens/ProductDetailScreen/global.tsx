@@ -45,6 +45,7 @@ import {
 import i18n from '@/utils/i18n';
 import utils from '@/redux/api/utils';
 import {parseJson} from '@/utils/utils';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const {baseUrl, channelId, esimGlobal, fbUser} = Env.get();
 
@@ -129,13 +130,6 @@ const ProductDetailGlobalScreen: React.FC<ProductDetailScreenProps> = ({
   // const scrollY = useRef(new Animated.Value(0));
   const [tabIdx, setTabIdx] = useState(0);
   const [height, setHeight] = useState([0, 0, 0, 0]);
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={route.params?.title} />,
-    });
-  }, [navigation, route.params?.title]);
 
   useEffect(() => {
     if (!product.detailCommon) {
@@ -328,6 +322,7 @@ const ProductDetailGlobalScreen: React.FC<ProductDetailScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.screen}>
+      <ScreenHeader title={route.params?.title} />
       <AppActivityIndicator visible={pending} />
       <ScrollView
         style={{backgroundColor: colors.whiteTwo}}

@@ -1,29 +1,21 @@
-import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
-import {
-  StyleProp,
-  StyleSheet,
-  TextInput,
-  Pressable,
-  View,
-  ViewStyle,
-} from 'react-native';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import {StyleSheet, TextInput, Pressable, View} from 'react-native';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
 import Triangle from './Triangle';
-
-export const emailDomainList = {
-  'icloud.com': 'Apple',
-  'naver.com': 'Naver',
-  'gmail.com': 'Gmail',
-  'daum.net': 'Daum',
-  'hanmail.net': 'Hanmail',
-  'kakao.com': 'Kakao',
-  'hotmail.com': 'Hotmail',
-  'yahoo.com': 'Yahoo',
-};
+import AppButton from './AppButton';
+import validationUtil from '@/utils/validationUtil';
+import {API} from '@/redux/api';
 
 const styles = StyleSheet.create({
   row: {
@@ -32,46 +24,29 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingRight: 10,
   },
-  emptyInput: {
-    ...appStyles.normal16Text,
-    borderBottomColor: colors.lightGrey,
+  wrapper: {
+    flex: 1,
+    borderWidth: 1,
+    borderRadius: 3,
     borderColor: colors.lightGrey,
-    color: colors.lightGrey,
-  },
-  textInputWrapper: {
-    borderBottomColor: colors.black,
-    borderBottomWidth: 1,
-    marginRight: 10,
-    paddingLeft: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 13,
   },
   textInput: {
-    ...appStyles.normal16Text,
-    paddingTop: 9,
-    color: colors.black,
-    paddingBottom: 7,
+    ...appStyles.medium16,
+    color: colors.greyish,
     textAlignVertical: 'center',
   },
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignContent: 'stretch',
+    alignItems: 'center',
   },
-  pickerWrapper: {
-    ...appStyles.borderWrapper,
-    width: 96,
-    borderColor: colors.black,
-    marginTop: 5,
-  },
-  placeholder: {
+  helpText: {
     ...appStyles.normal14Text,
-    lineHeight: 19,
-    paddingLeft: 10,
-    paddingVertical: 8,
-    height: '100%',
-  },
-  infoText: {
-    marginTop: 15,
     color: colors.clearBlue,
+    marginTop: 13,
+    marginLeft: 10,
   },
 });
 
@@ -80,51 +55,68 @@ export type InputEmailRef = {
 };
 
 type InputEmailProps = {
-  style?: StyleProp<ViewStyle>;
   inputRef?: React.MutableRefObject<InputEmailRef | null>;
-  value?: string;
+  currentEmail?: string; // current email
+  domain: string;
   onChange?: (email: string) => void;
-  onPressPicker?: () => void;
+  onPress?: () => void;
 };
 
 const InputEmail: React.FC<InputEmailProps> = ({
-  style,
   inputRef,
-  value,
+  currentEmail,
+  domain,
   onChange,
-  onPressPicker = () => {},
+  onPress = () => {},
 }) => {
   const emailRef = useRef<TextInput>();
-  const domainRef = useRef<TextInput>();
   const [email, setEmail] = useState('');
-  const [domain, setDomain] = useState('');
-  const [isDirectInput, setIsDirectInput] = useState(true);
+  const [focused, setFocused] = useState(false);
+  const [inValid, setInValid] = useState('');
 
-  useEffect(() => {
-    const m = value?.split('@');
-    if (m && m?.length > 1) {
-      setEmail(m[0]);
-      setDomain(m[1]);
-      setIsDirectInput(!emailDomainList.hasOwnProperty(m[1]));
-    }
-  }, [value]);
-
-  const chgAddr = useCallback(
+  const validateEmail = useCallback(
     (v: string) => {
-      setEmail(v);
-      onChange?.(`${v}@${domain}`);
+      const str = v.replace(/ /g, '');
+      if (str) {
+        const m = domain === 'input' ? str : `${str}@${domain}`;
+        //check if not empty
+        console.log('@@@ validate email:', m, v, str);
+        const valid = validationUtil.validate('email', m);
+        if ((valid?.email?.length || 0) > 0) {
+          setInValid('changeEmail:invalidEmail');
+        } else if (m === currentEmail) {
+          // email not changed
+          setInValid('changeEmail:notChanged');
+        } else {
+          // check if the email is duplicated
+          API.User.confirmEmail({email: m})
+            .then((rsp) => {
+              if (rsp.result === 0) {
+                setInValid('changeEmail:usable');
+                onChange?.(m);
+              } else if (rsp.message?.includes('Duplicate')) {
+                setInValid('changeEmail:duplicate');
+              } else {
+                setInValid('changeEmail:fail');
+              }
+            })
+            .catch(() => {
+              setInValid('changeEmail:fail');
+            });
+        }
+      }
     },
+    // current email은 dependency list에서 제외할것
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [domain, onChange],
   );
 
-  const chgDomain = useCallback(
-    (v: string) => {
-      setDomain(v);
-      setIsDirectInput(!emailDomainList.hasOwnProperty(v));
-      onChange?.(`${email}@${v}`);
-    },
-    [email, onChange],
-  );
+  const validated = useMemo(() => inValid === 'changeEmail:usable', [inValid]);
+
+  useEffect(() => {
+    console.log('@@@ check email', email);
+    validateEmail(email);
+  }, [validateEmail, email]);
 
   useEffect(() => {
     if (inputRef) {
@@ -135,72 +127,76 @@ const InputEmail: React.FC<InputEmailProps> = ({
   }, [domain, email, inputRef]);
 
   return (
-    <View style={style}>
+    <View>
       <View style={styles.container}>
         <Pressable
           style={[
-            styles.textInputWrapper,
-            email ? {} : styles.emptyInput,
-            {flex: 1},
+            styles.wrapper,
+            {
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              borderColor: focused ? colors.clearBlue : colors.lightGrey,
+            },
           ]}
           onPress={() => emailRef.current?.focus()}>
           <AppTextInput
-            style={[styles.textInput, email ? {} : styles.emptyInput]}
+            style={[
+              styles.textInput,
+              {color: email ? colors.black : colors.greyish},
+            ]}
             placeholder={i18n.t('reg:email')}
             placeholderTextColor={colors.greyish}
             returnKeyType="next"
             enablesReturnKeyAutomatically
-            onChangeText={chgAddr}
+            onChangeText={setEmail}
             autoCapitalize="none"
             ref={emailRef}
             value={email}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
           />
+          {email.length > 0 && (
+            <AppButton
+              style={{justifyContent: 'flex-end', marginLeft: 10}}
+              iconName="btnSearchCancel"
+              onPress={() => {
+                setEmail('');
+                setInValid('changeEmail:invalidEmail');
+              }}
+            />
+          )}
         </Pressable>
 
-        <AppText
-          style={[
-            appStyles.normal12Text,
-            styles.textInput,
-            email ? {} : styles.emptyInput,
-          ]}>
-          @
-        </AppText>
+        {domain !== 'input' && (
+          <AppText style={[appStyles.medium16, {marginHorizontal: 6}]}>
+            @
+          </AppText>
+        )}
 
-        <Pressable
-          style={[
-            styles.textInputWrapper,
-            domain ? {} : styles.emptyInput,
-            {flex: 1, marginLeft: 10},
-          ]}
-          onPress={() => domainRef.current?.focus()}>
-          <AppTextInput
-            style={[styles.textInput, domain ? {} : styles.emptyInput]}
-            returnKeyType="next"
-            enablesReturnKeyAutomatically
-            editable={isDirectInput}
-            onChangeText={chgDomain}
-            autoCapitalize="none"
-            ref={domainRef}
-            value={domain}
-          />
-        </Pressable>
-
-        <Pressable
-          style={[styles.pickerWrapper, isDirectInput ? styles.emptyInput : {}]}
-          onPress={onPressPicker}>
-          <View style={styles.row}>
-            <AppText
-              style={[
-                styles.placeholder,
-                {color: isDirectInput ? colors.warmGrey : colors.black},
-              ]}>
-              {isDirectInput ? i18n.t('email:input') : emailDomainList[domain]}
-            </AppText>
-            <Triangle width={8} height={6} color={colors.warmGrey} />
-          </View>
-        </Pressable>
+        {domain !== 'input' && (
+          <Pressable style={styles.wrapper} onPress={onPress}>
+            <View style={styles.row}>
+              <AppText
+                style={[
+                  appStyles.medium16,
+                  {color: domain ? colors.black : colors.greyish},
+                ]}>
+                {domain || i18n.t('email:input')}
+              </AppText>
+              <Triangle width={8} height={6} color={colors.warmGrey} />
+            </View>
+          </Pressable>
+        )}
       </View>
-      <AppText style={styles.infoText}>{i18n.t('mypage:mailInfo')}</AppText>
+      <AppText
+        style={[
+          styles.helpText,
+          {color: validated ? colors.clearBlue : colors.errorBackground},
+        ]}>
+        {inValid ? i18n.t(inValid) : ''}
+      </AppText>
     </View>
   );
 };

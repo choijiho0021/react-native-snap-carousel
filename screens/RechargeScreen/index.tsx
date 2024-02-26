@@ -136,11 +136,6 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
   const [amount, setAmount] = useState(rechargeChoice[0][0]);
 
   useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('recharge')} />,
-    });
-
     return () => {
       const {iccid, token} = account;
       if (iccid && token) {
@@ -209,6 +204,9 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={appStyles.header}>
+        <AppBackButton title={i18n.t('recharge')} />
+      </View>
       <ScrollView>
         <View style={styles.rechargeBox}>
           <AppText
@@ -235,7 +233,7 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
       </ScrollView>
       <AppButton
         title={i18n.t('rch:recharge')}
-        titleStyle={appStyles.medium18}
+        titleStyle={[appStyles.medium18, {color: colors.white}]}
         disabled={_.isEmpty(selected)}
         onPress={onSubmit}
         style={styles.confirm}
