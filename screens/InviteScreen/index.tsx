@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   highLightRow: {
     flex: 1,
@@ -212,13 +213,6 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
 }) => {
   const [showSnackBar, setShowSnackbar] = useState(false);
   const [isSending, setIsSending] = useState(false);
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('inv:title')} />,
-    });
-  }, [navigation]);
 
   useEffect(() => {
     if (isSending) {

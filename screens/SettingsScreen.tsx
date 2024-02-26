@@ -318,25 +318,23 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
       <View style={appStyles.header}>
         <AppBackButton title={i18n.t('settings')} />
       </View>
-      <View style={styles.container}>
-        {showNetStat && (
-          <View
-            style={{
-              alignItems: 'center',
-              backgroundColor: isConnected ? colors.clearBlue : colors.redError,
-            }}>
-            <AppText
-              style={[
-                appStyles.bold16Text,
-                {color: colors.white, marginVertical: 5},
-              ]}>
-              {isConnected
-                ? i18n.t('set:netstat:connected')
-                : i18n.t('set:netstat:disconnected')}
-            </AppText>
-          </View>
-        )}
-      </View>
+      {showNetStat && (
+        <View
+          style={{
+            alignItems: 'center',
+            backgroundColor: isConnected ? colors.clearBlue : colors.redError,
+          }}>
+          <AppText
+            style={[
+              appStyles.bold16Text,
+              {color: colors.white, marginVertical: 5},
+            ]}>
+            {isConnected
+              ? i18n.t('set:netstat:connected')
+              : i18n.t('set:netstat:disconnected')}
+          </AppText>
+        </View>
+      )}
       <FlatList
         data={data}
         renderItem={renderItem}

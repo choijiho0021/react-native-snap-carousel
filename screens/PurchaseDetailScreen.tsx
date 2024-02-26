@@ -533,10 +533,10 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     const pg = method?.paymentMethod || i18n.t('pym:balance');
     const state = i18n.t(`pym:orderState:${order?.state}`);
     let label: string = order.orderItems[0].title;
-    if (order.orderItems.length > 1)
-      label += i18n
-        .t('his:etcCnt')
-        .replace('%%', getCountItems(order?.orderItems, true));
+    const etcCount = getCountItems(order?.orderItems, true);
+
+    if (parseInt(etcCount, 10) > 0)
+      label += i18n.t('his:etcCnt').replace('%%', etcCount);
     return (
       <View>
         <AppText style={styles.date}>

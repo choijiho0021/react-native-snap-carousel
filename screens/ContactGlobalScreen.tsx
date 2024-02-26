@@ -23,6 +23,7 @@ import {
   ToastAction,
 } from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const {channelId, esimGlobal, fbUser} = Env.get();
 
@@ -136,15 +137,6 @@ const ContactGlobalScreen: React.FC<ContactScreenProps> = ({
   );
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('contact:title')} />,
-    });
-
-    Analytics.trackEvent('Page_View_Count', {page: 'Service Center'});
-  }, [navigation]);
-
   const onPress = useCallback(
     (key: string) => {
       switch (key) {
@@ -195,6 +187,8 @@ const ContactGlobalScreen: React.FC<ContactScreenProps> = ({
 
   return (
     <View style={styles.container}>
+      <ScreenHeader title={i18n.t('contact:title')} />
+
       <FlatList data={data} renderItem={renderItem} />
 
       <AppModal

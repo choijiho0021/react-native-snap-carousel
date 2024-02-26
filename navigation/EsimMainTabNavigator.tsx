@@ -217,11 +217,7 @@ function EsimStackComponent() {
     <EsimStack.Navigator screenOptions={screenOptions}>
       <EsimStack.Screen name="Esim" component={EsimScreen} />
       <EsimStack.Screen name="Gift" component={GiftScreen} />
-      <EsimStack.Screen
-        name="RedirectHK"
-        component={RedirectHKScreen}
-        options={{headerShown: true}}
-      />
+      <EsimStack.Screen name="RedirectHK" component={RedirectHKScreen} />
       <EsimStack.Group
         screenOptions={{animationEnabled: true, presentation: 'modal'}}>
         <EsimStack.Screen name="SimpleTextModal" component={SimpleTextScreen} />
