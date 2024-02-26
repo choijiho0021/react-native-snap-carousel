@@ -455,7 +455,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         }
         visible={showSelectCard || showDuration}
         onPress={(v) => {
-          console.log('@@@ popup list', v);
           if (showSelectCard) {
             setShowSelectCard(false);
             setSelected(v);

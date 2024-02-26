@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   },
   buttonTitle: {
     ...appStyles.medium16,
-    color: colors.warmGrey,
+    color: colors.clearBlue,
   },
   input: {
     flex: 1,
@@ -57,9 +57,13 @@ const styles = StyleSheet.create({
     marginTop: 12,
     height: 48,
     width: 96,
-    borderColor: colors.lightGrey,
+    borderColor: colors.clearBlue,
     borderWidth: 1,
     borderRadius: 3,
+  },
+  cancelButton: {
+    justifyContent: 'flex-end',
+    marginLeft: 10,
   },
 });
 
@@ -195,7 +199,8 @@ const DiscountInfo: React.FC<DiscountProps> = ({
             )}
             {rokebiCash?.length > 0 && (
               <AppButton
-                style={{justifyContent: 'flex-end', marginLeft: 10}}
+                style={styles.cancelButton}
+                titleStyle={{color: colors.clearBlue}}
                 iconName="btnSearchCancel"
                 onPress={() => setRokebiCash('0')}
               />
