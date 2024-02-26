@@ -14,13 +14,8 @@ import {ProductModelState} from '@/redux/modules/product';
 import {RkbProduct} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({
-  // container: {
-  //   justifyContent: 'space-between',
-  //   width: '63%'
-  // },
   title: {
     ...appStyles.bold18Text,
-    // fontFamily: "AppleSDGothicNeo",
     marginTop: 20,
     marginBottom: isDeviceSize('small') ? 10 : 20,
     marginHorizontal: 20,

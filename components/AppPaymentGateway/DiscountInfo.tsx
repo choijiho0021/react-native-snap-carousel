@@ -82,6 +82,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
   const discount = useMemo(() => cart.pymReq?.discount, [cart.pymReq]);
   const [rokebiCash, setRokebiCash] = useState('');
   const [checked, setChecked] = useState(true);
+  const [editing, setEditing] = useState(false);
   const updateRokebiCash = useCallback(
     (v: string) => {
       const min = Math.min(account.balance || 0, utils.stringToNumber(v) || 0);
@@ -180,8 +181,14 @@ const DiscountInfo: React.FC<DiscountProps> = ({
                 returnKeyType="done"
                 enablesReturnKeyAutomatically
                 onChangeText={setRokebiCash}
-                value={rokebiCash}
+                value={
+                  editing
+                    ? rokebiCash
+                    : utils.numberToCommaString(rokebiCash) + i18n.t('rkbCash')
+                }
                 onSubmitEditing={() => updateRokebiCash(rokebiCash)}
+                onFocus={() => setEditing(true)}
+                onBlur={() => setEditing(false)}
               />
             ) : (
               <AppText>{rokebiCash}</AppText>
@@ -190,7 +197,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
               <AppButton
                 style={{justifyContent: 'flex-end', marginLeft: 10}}
                 iconName="btnSearchCancel"
-                // onPress={() => setCode('')}
+                onPress={() => setRokebiCash('0')}
               />
             )}
           </View>

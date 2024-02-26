@@ -55,38 +55,6 @@ import AppText from '@/components/AppText';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const infoKey = 'pym:benefit';
-const creditCardList = [
-  '41',
-  '03',
-  '04',
-  '06',
-  '11',
-  '12',
-  '14',
-  '34',
-  '38',
-  '32',
-  '35',
-  '33',
-  '95',
-  '43',
-  '48',
-  '51',
-  '52',
-  '54',
-  '55',
-  '56',
-  '71',
-].map((k) => ({
-  label: i18n.t(`pym:card${k}`),
-  value: `card${k}`,
-}));
-
-const durationList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((k) => ({
-  label: k === 1 ? i18n.t('pym:pay:atonce') : k + i18n.t('pym:duration'),
-  value: k.toString(),
-}));
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -178,6 +146,45 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
   const pymMethodRef = useRef<PymMethodRef>(null);
+  const creditCardList = useMemo(
+    () =>
+      [
+        '41',
+        '03',
+        '04',
+        '06',
+        '11',
+        '12',
+        '14',
+        '34',
+        '38',
+        '32',
+        '35',
+        '33',
+        '95',
+        '43',
+        '48',
+        '51',
+        '52',
+        '54',
+        '55',
+        '56',
+        '71',
+      ].map((k) => ({
+        label: i18n.t(`pym:card${k}`),
+        value: `card${k}`,
+      })),
+    [],
+  );
+
+  const durationList = useMemo(
+    () =>
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((k) => ({
+        label: k === 1 ? i18n.t('pym:pay:atonce') : k + i18n.t('pym:duration'),
+        value: k.toString(),
+      })),
+    [],
+  );
 
   useEffect(() => {
     if (!info.infoMap.has(infoKey)) {

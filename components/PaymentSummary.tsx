@@ -1,5 +1,5 @@
 import {StyleSheet, View} from 'react-native';
-import React, {memo} from 'react';
+import React, {memo, useMemo} from 'react';
 import {connect} from 'react-redux';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -9,9 +9,6 @@ import i18n from '@/utils/i18n';
 import {RootState} from '@/redux';
 import {PaymentItem, PaymentItemMode} from './PaymentItemInfo';
 import DropDownHeader from '@/screens/PymMethodScreen/DropDownHeader';
-import Env from '@/environment';
-
-const {esimCurrency} = Env.get();
 
 const styles = StyleSheet.create({
   row: {
@@ -41,6 +38,14 @@ const PaymentSummary = ({
   cart: CartModelState;
   mode?: PaymentItemMode;
 }) => {
+  const a = useMemo(
+    () =>
+      (['subtotal', 'discount', 'rkbcash'] as const).map(
+        (k) => cart.pymReq?.[k]?.value,
+      ),
+    [cart.pymReq],
+  );
+
   return (
     <DropDownHeader
       title={i18n.t('cart:pymAmount')}
@@ -51,8 +56,11 @@ const PaymentSummary = ({
             key={k}
             title={i18n.t(`pym:item:${k}`)}
             value={utils.price(
-              cart.pymReq?.[k] || utils.toCurrency(0, esimCurrency),
+              utils.toCurrency(
+                (cart.pymReq?.[k]?.value || 0) * (k === 'rkbcash' ? -1 : 1),
+              ),
             )}
+            valueStyle={appStyles.roboto16Text}
             mode={mode}
           />
         ))}

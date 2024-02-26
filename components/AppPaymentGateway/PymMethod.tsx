@@ -130,8 +130,45 @@ const PymMethod: React.FC<PymMethodProps> = ({
     );
   }, [duration, onPress, value]);
 
+  const renderVBankButton = useCallback(() => {
+    return (
+      <View>
+        <AppButton
+          style={styles.ccard}
+          titleStyle={{color: colors.black}}
+          title={i18n.t(
+            value?.startsWith('vbank')
+              ? `pym:${value}`
+              : 'pym:method:vbank:input',
+          )}
+          onPress={() => onPress('vbank')}
+        />
+        <AppText key="title" style={[styles.title, {marginVertical: 10}]}>
+          {i18n.t('pym:vbank:receipt')}
+        </AppText>
+        <View style={[styles.row, {marginVertical: 10}]}>
+          {(['p', 'b', 'n'] as const).map((k) => (
+            <Pressable
+              key={k}
+              style={[styles.row, {flex: 1}]}
+              onPress={() => setRcptType(k)}>
+              <AppIcon name="btnCheck" checked={k === rcptType} />
+              <AppText style={{flex: 1, marginLeft: 5}}>
+                {i18n.t(`pym:vbank:receipt:${k}`)}
+              </AppText>
+            </Pressable>
+          ))}
+        </View>
+        <AppText style={styles.title}>{i18n.t('pym:vbank:receipt')}</AppText>
+        <AppTextInput style={styles.input} value={id} onChangeText={setId} />
+      </View>
+    );
+  }, [id, onPress, rcptType, value]);
+
   return (
-    <DropDownHeader title={i18n.t('pym:method')}>
+    <DropDownHeader
+      title={i18n.t('pym:method')}
+      summary={i18n.t(value.startsWith('card') ? `pym:${value}` : value)}>
       <View style={styles.container}>
         {(['easy', 'card'] as const).map((k, i) => (
           <View key={k} style={{marginBottom: 24}}>
@@ -146,8 +183,12 @@ const PymMethod: React.FC<PymMethodProps> = ({
                 },
               ]}
               onPress={() => {
-                setMethod(k);
-                if (k === 'easy') onPress(value);
+                if (k !== method) {
+                  setMethod(k);
+                  if (k === 'easy') {
+                    onPress('pym:kakao');
+                  }
+                }
               }}>
               <AppSvgIcon name="btnRadio" focused={method === k} />
               <AppText style={{...appStyles.bold16Text, marginLeft: 6}}>
@@ -166,44 +207,7 @@ const PymMethod: React.FC<PymMethodProps> = ({
               ) : k === 'card' ? (
                 renderCardButton()
               ) : (
-                <View>
-                  <AppButton
-                    style={styles.ccard}
-                    titleStyle={{color: colors.black}}
-                    title={i18n.t(
-                      value?.startsWith('vbank')
-                        ? `pym:${value}`
-                        : 'pym:method:vbank:input',
-                    )}
-                    onPress={() => onPress('vbank')}
-                  />
-                  <AppText
-                    key="title"
-                    style={[styles.title, {marginVertical: 10}]}>
-                    {i18n.t('pym:vbank:receipt')}
-                  </AppText>
-                  <View style={[styles.row, {marginVertical: 10}]}>
-                    {(['p', 'b', 'n'] as const).map((k) => (
-                      <Pressable
-                        key={k}
-                        style={[styles.row, {flex: 1}]}
-                        onPress={() => setRcptType(k)}>
-                        <AppIcon name="btnCheck" checked={k === rcptType} />
-                        <AppText style={{flex: 1, marginLeft: 5}}>
-                          {i18n.t(`pym:vbank:receipt:${k}`)}
-                        </AppText>
-                      </Pressable>
-                    ))}
-                  </View>
-                  <AppText style={styles.title}>
-                    {i18n.t('pym:vbank:receipt')}
-                  </AppText>
-                  <AppTextInput
-                    style={styles.input}
-                    value={id}
-                    onChangeText={setId}
-                  />
-                </View>
+                renderVBankButton()
               )
             ) : null}
           </View>

@@ -88,6 +88,7 @@
   "imei2:esim": "IMEI2(eSIM)",
   "android": "안드로이드폰",
   "ios": "아이폰",
+  "rkbCash": "캐시",
 
   "purchase:date": "{{date}} 구매",
 
