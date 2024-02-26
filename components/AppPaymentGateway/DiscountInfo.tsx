@@ -20,26 +20,51 @@ import Env from '@/environment';
 import AppTextInput from '@/components/AppTextInput';
 import {utils} from '@/utils/utils';
 import AppIcon from '../AppIcon';
+import DropDownHeader from '@/screens/PymMethodScreen/DropDownHeader';
+import ConfirmButton from './ConfirmButton';
+import AppStyledText from '../AppStyledText';
 
 const {esimCurrency} = Env.get();
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'stretch',
-    backgroundColor: colors.white,
-  },
-  title: {
-    ...appStyles.bold18Text,
-    marginTop: 20,
-    marginBottom: isDeviceSize('small') ? 10 : 20,
-    marginHorizontal: 20,
-    color: colors.black,
-  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  container: {
+    marginTop: 24,
+    marginBottom: 12,
+    marginHorizontal: 20,
+  },
+  title: {
+    ...appStyles.bold16Text,
+    color: colors.warmGrey,
+    flex: 1,
+  },
+  buttonTitle: {
+    ...appStyles.medium16,
+    color: colors.warmGrey,
+  },
+  input: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    borderColor: colors.lightGrey,
+    borderWidth: 1,
+    borderRadius: 3,
+    marginTop: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginRight: 8,
+  },
+  button: {
+    marginTop: 12,
+    height: 48,
+    width: 96,
+    borderColor: colors.lightGrey,
+    borderWidth: 1,
+    borderRadius: 3,
   },
 });
 
@@ -89,86 +114,79 @@ const DiscountInfo: React.FC<DiscountProps> = ({
     setRokebiCash(utils.numberToCommaString(cart.pymReq?.rkbcash?.value || 0));
   }, [cart.pymReq?.rkbcash]);
 
-  console.log('@@@ apply coupon', discount, cart.pymReq);
-
   return (
-    <View style={styles.container}>
-      <AppText style={styles.title}>{i18n.t('pym:discount')}</AppText>
-      <View
-        key="coupon"
-        style={[
-          styles.row,
-          {
-            marginVertical: 10,
-            marginHorizontal: 20,
-            justifyContent: 'space-between',
-          },
-        ]}>
-        <AppText style={{flex: 1}}>{i18n.t('pym:coupon')}</AppText>
-        {cart.promo?.length > 0 ? (
-          <Pressable style={styles.row} onPress={() => toggleMaxPromo(checked)}>
-            <AppIcon name="btnCheck2" checked={checked} size={22} />
-            <AppText style={{marginLeft: 8}}>
-              {i18n.t('pym:coupon:max')}
-            </AppText>
-          </Pressable>
-        ) : null}
-      </View>
-      <View key="select" style={[styles.row, {marginHorizontal: 20}]}>
-        <View style={{flex: 1}}>
-          {discount ? (
-            <AppPrice price={discount} />
-          ) : (
-            <AppText>
-              {i18n.t(
-                cart.promo?.length > 0
-                  ? 'pym:coupon:none:sel'
-                  : 'pym:no:coupon',
-              )}
-            </AppText>
+    <DropDownHeader title={i18n.t('pym:discount')}>
+      <View style={styles.container}>
+        <View
+          key="coupon"
+          style={[styles.row, {justifyContent: 'space-between'}]}>
+          <AppText style={styles.title}>{i18n.t('pym:coupon')}</AppText>
+          {cart.promo?.length > 0 ? (
+            <Pressable
+              style={styles.row}
+              disabled={(cart.promo?.length || 0) === 0}>
+              <AppIcon name="btnCheck2" checked={checked} size={22} />
+              <AppText style={{...appStyles.medium16, marginLeft: 8}}>
+                {i18n.t('pym:coupon:max')}
+              </AppText>
+            </Pressable>
+          ) : null}
+        </View>
+        <ConfirmButton
+          title={i18n.t(
+            (cart.promo?.length || 0) > 0
+              ? 'pym:coupon:none:sel'
+              : 'pym:no:coupon',
           )}
-        </View>
-        {onPress ? (
-          <AppButton title={i18n.t('pym:selectCoupon')} onPress={onPress} />
-        ) : null}
-      </View>
-      <View
-        key="cash"
-        style={[styles.row, {marginHorizontal: 20, marginTop: 20}]}>
-        <View style={{flex: 1}}>
-          <AppText>{i18n.t('acc:balance')}</AppText>
-        </View>
-        {onPress ? (
-          <View style={styles.row}>
-            <AppPrice
-              price={{value: account.balance || 0, currency: esimCurrency}}
+          buttonTitle={i18n.t('pym:sel:coupon:title')}
+        />
+        <View key="cash" style={[styles.row, {marginTop: 24}]}>
+          <AppText style={styles.title}>{i18n.t('acc:balance')}</AppText>
+          {onPress ? (
+            <AppStyledText
+              text={i18n.t('acc:balance:hold')}
+              textStyle={{...appStyles.bold14Text, color: colors.clearBlue}}
+              data={{cash: utils.numberToCommaString(account.balance || 0)}}
             />
-            <AppText>{i18n.t('acc:balance:hold')}</AppText>
+          ) : null}
+        </View>
+        <View key="selcash" style={styles.row}>
+          <View style={styles.input}>
+            {onPress ? (
+              <AppTextInput
+                style={{
+                  ...styles.title,
+                  color: colors.clearBlue,
+                }}
+                keyboardType="numeric"
+                returnKeyType="done"
+                enablesReturnKeyAutomatically
+                onChangeText={setRokebiCash}
+                value={rokebiCash}
+                onSubmitEditing={() => updateRokebiCash(rokebiCash)}
+              />
+            ) : (
+              <AppText>{rokebiCash}</AppText>
+            )}
+            {rokebiCash?.length > 0 && (
+              <AppButton
+                style={{justifyContent: 'flex-end', marginLeft: 10}}
+                iconName="btnSearchCancel"
+                // onPress={() => setCode('')}
+              />
+            )}
           </View>
-        ) : null}
+          {onPress ? (
+            <AppButton
+              style={styles.button}
+              titleStyle={styles.buttonTitle}
+              title={i18n.t('pym:deductAll')}
+              onPress={() => action.cart.deductRokebiCash(account.balance)}
+            />
+          ) : null}
+        </View>
       </View>
-      <View key="selcash" style={[styles.row, {marginHorizontal: 20}]}>
-        {onPress ? (
-          <AppTextInput
-            style={{flex: 1}}
-            keyboardType="numeric"
-            returnKeyType="done"
-            enablesReturnKeyAutomatically
-            onChangeText={setRokebiCash}
-            value={rokebiCash}
-            onSubmitEditing={() => updateRokebiCash(rokebiCash)}
-          />
-        ) : (
-          <AppText>{rokebiCash}</AppText>
-        )}
-        {onPress ? (
-          <AppButton
-            title={i18n.t('pym:deductAll')}
-            onPress={() => action.cart.deductRokebiCash(account.balance)}
-          />
-        ) : null}
-      </View>
-    </View>
+    </DropDownHeader>
   );
 };
 

@@ -45,13 +45,15 @@ import {
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import DiscountInfo from '@/components/AppPaymentGateway/DiscountInfo';
 import PaymentSummary from '@/components/PaymentSummary';
-import ConfirmEmail from '@/components/AppPaymentGateway/ConfirmEmail';
+import ConfirmButton from '@/components/AppPaymentGateway/ConfirmButton';
 import PymMethod, {
   PymMethodRef,
 } from '@/components/AppPaymentGateway/PymMethod';
 import SelectCard from './SelectCard';
 import {retrieveData, storeData} from '@/utils/utils';
 import SelectBank from './SelectBank';
+import AppText from '@/components/AppText';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const infoKey = 'pym:benefit';
 
@@ -78,6 +80,24 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     lineHeight: 26,
     letterSpacing: -0.5,
+  },
+  divider: {
+    height: 10,
+    backgroundColor: colors.whiteTwo,
+  },
+  changeEmail: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    backgroundColor: colors.white,
+    marginBottom: 24,
+    marginHorizontal: 20,
+  },
+  title: {
+    ...appStyles.bold18Text,
+    marginTop: 20,
+    marginBottom: isDeviceSize('small') ? 10 : 20,
+    color: colors.black,
   },
 });
 
@@ -346,9 +366,20 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         enableResetScrollToCoords={false}>
         <PaymentItemInfo purchaseItems={cart.purchaseItems} mode="method" />
 
-        <ConfirmEmail onPress={() => navigation.navigate('ChangeEmail')} />
+        <View style={styles.changeEmail}>
+          <AppText style={styles.title}>{i18n.t('pym:email')}</AppText>
+          <ConfirmButton
+            title={account.email}
+            buttonTitle={i18n.t('changeEmail:short')}
+            onPress={() => navigation.navigate('ChangeEmail')}
+          />
+        </View>
+
+        <View key="div1" style={styles.divider} />
 
         <DiscountInfo onPress={() => navigation.navigate('SelectCoupon')} />
+
+        <View key="div2" style={styles.divider} />
 
         <PymMethod
           pymMethodRef={pymMethodRef}

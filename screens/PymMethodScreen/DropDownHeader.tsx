@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropsWithChildren, memo, useState} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
@@ -21,47 +21,35 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignSelf: 'flex-end',
   },
-  alignCenter: {
-    alignSelf: 'center',
-    marginRight: 15,
-  },
-  normal16BlueTxt: {
-    ...appStyles.normal16Text,
-    color: colors.clearBlue,
-    lineHeight: 24,
-    letterSpacing: 0.24,
-  },
 });
 
-const DropDownHeader = ({
-  showModal,
-  onPress,
-  title,
-  alias,
-}: {
-  showModal: boolean;
-  onPress: () => void;
+type DropDownHeaderProps = {
   title: string;
-  alias?: string;
+};
+
+const DropDownHeader: React.FC<PropsWithChildren<DropDownHeaderProps>> = ({
+  title,
+  children,
 }) => {
+  const [showContent, setShowContent] = useState(false);
   return (
-    <Pressable style={styles.spaceBetweenBox} onPress={onPress}>
-      <AppText style={styles.boldTitle}>{title}</AppText>
-      <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-        {!showModal && (
-          <AppText style={[styles.alignCenter, styles.normal16BlueTxt]}>
-            {alias}
-          </AppText>
-        )}
+    <View>
+      <Pressable
+        style={[
+          styles.spaceBetweenBox,
+          {borderBottomWidth: showContent ? 1 : 0},
+        ]}
+        onPress={() => setShowContent((prev) => !prev)}>
+        <AppText style={styles.boldTitle}>{title}</AppText>
         <AppButton
-          style={{backgroundColor: colors.white, height: 70}}
-          iconName={showModal ? 'iconArrowUp' : 'iconArrowDown'}
+          style={{backgroundColor: colors.white, height: 68}}
+          iconName={showContent ? 'iconArrowUp' : 'iconArrowDown'}
           iconStyle={styles.dropDownIcon}
-          onPress={onPress}
         />
-      </View>
-    </Pressable>
+      </Pressable>
+      {showContent ? children : null}
+    </View>
   );
 };
 
-export default DropDownHeader;
+export default memo(DropDownHeader);
