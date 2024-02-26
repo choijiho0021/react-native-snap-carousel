@@ -5307,6 +5307,29 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  emailIcon: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect
+        x=".667"
+        y="1.334"
+        width="14.667"
+        height="13.333"
+        rx="2"
+        fill="#2A7FF6"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M8 9.334a.667.667 0 0 1-.472-.195l-4-4a.667.667 0 1 1 .943-.943L8 7.725l3.528-3.53a.667.667 0 1 1 .943.944l-4 4A.667.667 0 0 1 8 9.334z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;
