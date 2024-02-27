@@ -96,6 +96,12 @@ const styles = StyleSheet.create({
     marginBottom: isDeviceSize('small') ? 10 : 20,
     color: colors.black,
   },
+  bottomBar: {
+    borderBottomColor: colors.lightGrey,
+    borderBottomWidth: 1,
+    marginHorizontal: 20,
+    marginBottom: 20,
+  },
 });
 
 type PymMethodScreenNavigationProp = StackNavigationProp<
@@ -424,6 +430,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         enableOnAndroid
         enableResetScrollToCoords={false}>
         <PaymentItemInfo purchaseItems={cart.purchaseItems} mode="method" />
+
+        <View style={styles.bottomBar} />
 
         <View style={styles.changeEmail}>
           <AppText style={styles.title}>{i18n.t('pym:email')}</AppText>

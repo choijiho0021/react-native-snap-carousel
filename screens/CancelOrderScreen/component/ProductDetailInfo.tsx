@@ -1,4 +1,4 @@
-import React, {memo, useMemo} from 'react';
+import React, {memo} from 'react';
 import {StyleSheet, ViewStyle, View, StyleProp} from 'react-native';
 import {colors} from '@/constants/Colors';
 import SplitText from '@/components/SplitText';
@@ -7,15 +7,20 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {utils} from '@/utils/utils';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
-import {Currency, ProdInfo} from '@/redux/api/productApi';
+import {ProdInfo} from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';
+import AppPrice from '@/components/AppPrice';
 
 const styles = StyleSheet.create({
   productFrame: {
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+  },
+  priceText: {
+    ...appStyles.bold16Text,
+    color: colors.black,
+    lineHeight: 24,
   },
 });
 
@@ -30,14 +35,9 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
   style = {marginBottom: 10},
   showPriceInfo = false,
 }) => {
-  const price: Currency = useMemo(
-    () => ({value: item?.price, currency: 'KRW'}),
-    [item?.price],
-  );
-
   return (
-    <View style={style}>
-      <View style={[styles.productFrame, {marginBottom: 4}]}>
+    <View style={[{gap: 8}, style]}>
+      <View style={styles.productFrame}>
         <SplitText
           numberOfLines={2}
           renderExpend={() => renderPromoFlag(item.promoFlag || [], false)}
@@ -64,8 +64,8 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
       </View>
 
       {showPriceInfo && (
-        <View style={{marginTop: 4, flexDirection: 'row'}}>
-          <AppText
+        <View style={{flexDirection: 'row'}}>
+          {/* <AppText
             key="price"
             style={[
               appStyles.bold16Text,
@@ -74,8 +74,18 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
                 lineHeight: 24,
               },
             ]}>
-            {`${price.value}${i18n.t(price.currency)}`}
-          </AppText>
+            {`${item.price.value}${i18n.t(item.price.currency)}`}
+          </AppText> */}
+
+          <AppPrice
+            price={utils.toCurrency(
+              item.price?.value || 0,
+              item.price?.currency,
+            )}
+            balanceStyle={styles.priceText}
+            currencyStyle={styles.priceText}
+            // style={styles.priceValueText}
+          />
           <AppText
             key="qty"
             style={[

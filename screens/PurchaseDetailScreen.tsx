@@ -43,6 +43,7 @@ import DropDownHeader from './PymMethodScreen/DropDownHeader';
 import ProductDetailInfo from './CancelOrderScreen/component/ProductDetailInfo';
 import ProductDetailRender from './CancelOrderScreen/component/ProductDetailRender';
 import {ProductModelState} from '@/redux/modules/product';
+import ProductDetailList from './CancelOrderScreen/component/ProductDetailList';
 
 const {esimCurrency, esimGlobal} = Env.get();
 
@@ -582,21 +583,18 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         </View> */}
         <DropDownHeader
           title={label}
-          style={{paddingTop: 16}}
+          style={{paddingTop: 16, paddingBottom: 20}}
           titleStyle={styles.productTitle}>
-          <ProductDetailRender
+          <ProductDetailList
             style={{
               paddingBottom: 0,
               paddingHorizontal: 20,
             }}
-            frameStyle={{}}
+            showPriceInfo
             prods={prodList}
-            isHeader={false}
-            listTitle={'1'}
-            isFooter={false}
           />
         </DropDownHeader>
-        <View style={styles.bar} />
+        <View style={styles.bottomBar} />
         <LabelText
           key="orderId"
           style={styles.item}

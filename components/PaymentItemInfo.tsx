@@ -1,5 +1,5 @@
 import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
-import React, {memo, useCallback, useMemo} from 'react';
+import React, {memo, useCallback, useEffect, useMemo} from 'react';
 import {connect} from 'react-redux';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
@@ -12,6 +12,8 @@ import AppText from './AppText';
 import {RootState} from '@/redux';
 import {ProductModelState} from '@/redux/modules/product';
 import {RkbProduct} from '@/redux/api/productApi';
+import DropDownHeader from '@/screens/PymMethodScreen/DropDownHeader';
+import ProductDetailList from '@/screens/CancelOrderScreen/component/ProductDetailList';
 
 const styles = StyleSheet.create({
   title: {
@@ -48,6 +50,14 @@ const styles = StyleSheet.create({
     fontWeight: 'normal',
     color: colors.black,
     fontSize: isDeviceSize('small') ? 14 : 16,
+  },
+
+  productTitle: {
+    ...appStyles.bold18Text,
+    lineHeight: 24,
+    letterSpacing: 0.27,
+    flexDirection: 'row',
+    maxWidth: isDeviceSize('small') ? '70%' : '80%',
   },
 });
 
@@ -141,50 +151,67 @@ const PaymentItemInfo: React.FC<PaymentItemInfoProps> = ({
   purchaseItems,
   mode = 'method',
 }) => {
-  const isRecharge = useMemo(
-    () => purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
-    [purchaseItems],
+  // PaymentResultScreen에서 어떻게 보이나 확인 필요
+  return (
+    <DropDownHeader
+      title={i18n.t('pym:title')}
+      style={{paddingTop: 16, paddingBottom: 20}}
+      titleStyle={styles.productTitle}>
+      <ProductDetailList
+        style={{
+          paddingBottom: 0,
+          paddingHorizontal: 20,
+        }}
+        showPriceInfo
+        orderItems={purchaseItems}
+        product={product}
+      />
+    </DropDownHeader>
   );
 
-  return (
-    <View>
-      <AppText style={[styles.title, styles.mrgBottom0]}>
-        {i18n.t('pym:title')}
-      </AppText>
-      {/*
-        상품별 가격
-        ex) 일본 상품 3일  x 1개   
-      */}
-      <View
-        style={[
-          styles.productPriceInfo,
-          !isRecharge && styles.borderBottomGrey,
-        ]}>
-        {purchaseItems.map((item) => {
-          const price =
-            item.qty === undefined
-              ? item.price
-              : utils.toCurrency(
-                  Math.round(item.price.value * item.qty * 100) / 100,
-                  item.price.currency,
-                );
-          return (
-            <PaymentItem
-              key={item.key}
-              title={item.title}
-              valueStyle={[
-                styles.normalText16,
-                mode === 'result' && styles.colorWarmGrey,
-              ]}
-              qty={item.qty}
-              value={utils.price(price)}
-              prod={product.prodList.get(item.key)}
-            />
-          );
-        })}
-      </View>
-    </View>
-  );
+  // const isRecharge = useMemo(
+  //   () => purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
+  //   [purchaseItems],
+  // );
+  // return (
+  //   <View>
+  //     <AppText style={[styles.title, styles.mrgBottom0]}>
+  //       {i18n.t('pym:title')}
+  //     </AppText>
+  //     {/*
+  //       상품별 가격
+  //       ex) 일본 상품 3일  x 1개
+  //     */}
+  //     <View
+  //       style={[
+  //         styles.productPriceInfo,
+  //         !isRecharge && styles.borderBottomGrey,
+  //       ]}>
+  //       {purchaseItems.map((item) => {
+  //         const price =
+  //           item.qty === undefined
+  //             ? item.price
+  //             : utils.toCurrency(
+  //                 Math.round(item.price.value * item.qty * 100) / 100,
+  //                 item.price.currency,
+  //               );
+  //         return (
+  //           <PaymentItem
+  //             key={item.key}
+  //             title={item.title}
+  //             valueStyle={[
+  //               styles.normalText16,
+  //               mode === 'result' && styles.colorWarmGrey,
+  //             ]}
+  //             qty={item.qty}
+  //             value={utils.price(price)}
+  //             prod={product.prodList.get(item.key)}
+  //           />
+  //         );
+  //       })}
+  //     </View>
+  //   </View>
+  // );
 };
 
 export default connect(({product}: RootState) => ({product}))(

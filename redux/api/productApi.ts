@@ -159,7 +159,7 @@ export type ProdInfo = {
   field_description: string;
   promoFlag: string[];
   qty: number;
-  price: number;
+  price: Currency;
 };
 
 export type RkbProduct = {
