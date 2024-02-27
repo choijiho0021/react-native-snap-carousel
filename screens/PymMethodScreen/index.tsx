@@ -336,7 +336,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         } as PaymentParams;
 
         setClickable(true);
-        navigation.navigate(esimGlobal ? 'Payment' : 'PaymentGateway', params);
+        navigation.navigate('PaymentGateway', params);
       }
     },
     [
@@ -448,7 +448,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         <View key="div2" style={styles.divider} />
 
-        <PaymentSummary mode="method" />
+        <PaymentSummary data={cart.pymReq} total={cart.pymPrice} />
 
         <View key="div3" style={styles.divider} />
 

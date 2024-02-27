@@ -1,14 +1,13 @@
 import {StyleSheet, View} from 'react-native';
-import React, {memo, useMemo} from 'react';
-import {connect} from 'react-redux';
+import React, {memo} from 'react';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import utils from '@/redux/api/utils';
-import {CartModelState} from '@/redux/modules/cart';
+import {PaymentReq} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
-import {RootState} from '@/redux';
-import {PaymentItem, PaymentItemMode} from './PaymentItemInfo';
+import {PaymentItem} from './PaymentItemInfo';
 import DropDownHeader from '@/screens/PymMethodScreen/DropDownHeader';
+import {Currency} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({
   row: {
@@ -32,24 +31,25 @@ const styles = StyleSheet.create({
 });
 
 const PaymentSummary = ({
-  cart,
-  mode = 'method',
+  data,
+  total,
+  expandable = true,
+  title,
+  totalLabel,
+  totalColor,
 }: {
-  cart: CartModelState;
-  mode?: PaymentItemMode;
+  data: PaymentReq;
+  total: Currency;
+  expandable?: boolean;
+  title?: string;
+  totalLabel?: string;
+  totalColor?: string;
 }) => {
-  const a = useMemo(
-    () =>
-      (['subtotal', 'discount', 'rkbcash'] as const).map(
-        (k) => cart.pymReq?.[k]?.value,
-      ),
-    [cart.pymReq],
-  );
-
   return (
     <DropDownHeader
-      title={i18n.t('cart:pymAmount')}
-      summary={utils.price(cart.pymPrice)}>
+      title={title || i18n.t('cart:pymAmount')}
+      expandable={expandable}
+      summary={utils.price(total)}>
       <View style={styles.priceInfo}>
         {(['subtotal', 'discount', 'rkbcash'] as const).map((k) => (
           <PaymentItem
@@ -57,11 +57,14 @@ const PaymentSummary = ({
             title={i18n.t(`pym:item:${k}`)}
             value={utils.price(
               utils.toCurrency(
-                (cart.pymReq?.[k]?.value || 0) * (k === 'rkbcash' ? -1 : 1),
+                (data[k]?.value || 0) * (k === 'rkbcash' ? -1 : 1),
               ),
             )}
-            valueStyle={appStyles.roboto16Text}
-            mode={mode}
+            valueStyle={
+              k === 'subtotal'
+                ? {...appStyles.robotoBold16Text, color: colors.black}
+                : appStyles.roboto16Text
+            }
           />
         ))}
       </View>
@@ -70,14 +73,15 @@ const PaymentSummary = ({
         key="totalCost"
         style={[styles.row, styles.total]}
         titleStyle={appStyles.bold16Text}
-        title={`${i18n.t('cart:totalCost')} `}
-        valueStyle={{...appStyles.robotoBold22Text, color: colors.clearBlue}}
-        value={utils.price(cart.pymPrice)}
+        title={totalLabel || `${i18n.t('cart:totalCost')} `}
+        valueStyle={{
+          ...appStyles.robotoBold22Text,
+          color: totalColor || colors.clearBlue,
+        }}
+        value={utils.price(total)}
       />
     </DropDownHeader>
   );
 };
 
-export default connect(({cart}: RootState) => ({
-  cart,
-}))(memo(PaymentSummary));
+export default memo(PaymentSummary);

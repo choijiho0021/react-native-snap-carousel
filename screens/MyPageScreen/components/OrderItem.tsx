@@ -72,7 +72,7 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
               ? appStyles.normal16Text
               : appStyles.normal18Text,
           ]}
-          value={item.totalPrice}
+          value={item.subtotal}
           color={isCanceled ? colors.warmGrey : colors.black}
           valueStyle={appStyles.price}
           balanceStyle={{

@@ -22,7 +22,6 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {

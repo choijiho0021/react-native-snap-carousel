@@ -38,11 +38,13 @@ type DropDownHeaderProps = {
   summary?: string;
   titleStyle?: StyleProp<ViewStyle>;
   style: StyleProp<ViewStyle>;
+  expandable?: boolean;
 };
 
 const DropDownHeader: React.FC<PropsWithChildren<DropDownHeaderProps>> = ({
   title,
   summary,
+  expandable = true,
   children,
   style,
   titleStyle,
@@ -58,17 +60,23 @@ const DropDownHeader: React.FC<PropsWithChildren<DropDownHeaderProps>> = ({
           {paddingBottom: showContent ? 20 : 0},
           style,
         ]}
-        onPress={() => setShowContent((prev) => !prev)}>
+        onPress={() => {
+          if (expandable) setShowContent((prev) => !prev);
+        }}>
         <AppText style={[styles.boldTitle, titleStyle]}>{title}</AppText>
-        <View style={styles.row}>
-          {!showContent && <AppText style={styles.summary}>{summary}</AppText>}
-          <AppButton
-            style={{backgroundColor: colors.white}}
-            iconName={showContent ? 'iconArrowUp' : 'iconArrowDown'}
-            iconStyle={styles.dropDownIcon}
-            onPress={() => setShowContent((prev) => !prev)}
-          />
-        </View>
+        {expandable ? (
+          <View style={styles.row}>
+            {!showContent && (
+              <AppText style={styles.summary}>{summary}</AppText>
+            )}
+            <AppButton
+              style={{backgroundColor: colors.white}}
+              iconName={showContent ? 'iconArrowUp' : 'iconArrowDown'}
+              iconStyle={styles.dropDownIcon}
+              onPress={() => setShowContent((prev) => !prev)}
+            />
+          </View>
+        ) : null}
       </Pressable>
       {showContent ? children : null}
     </View>

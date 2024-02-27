@@ -20,7 +20,6 @@ import {
   RESULTS,
   openSettings,
 } from 'react-native-permissions';
-import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import i18n from '@/utils/i18n';
 import {RkbOrder} from '@/redux/api/orderApi';
@@ -35,12 +34,14 @@ import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppAlert from '@/components/AppAlert';
 import Env from '@/environment';
+import ScreenHeader from '@/components/ScreenHeader';
+
 const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.whiteTwo,
+    backgroundColor: colors.white,
   },
   title: {
     marginTop: 10,
@@ -195,18 +196,13 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={appStyles.header}>
-        <AppBackButton title={i18n.t('pym:receipt')} />
-      </View>
+      <ScreenHeader title={i18n.t('pym:receipt')} />
       <ScrollView style={{flex: 1}}>
         <ViewShot ref={ref} style={{backgroundColor: colors.whiteTwo}}>
           <View style={styles.title}>
             <AppText
               style={[appStyles.semiBold14Text, {color: colors.warmGrey}]}>
-              {utils.toDateString(
-                order?.orderDate,
-                esimGlobal ? 'LLL' : 'YYYY년 MM월 DD일 A h:mm',
-              )}
+              {utils.toDateString(order?.orderDate, 'LLL')}
             </AppText>
             <AppText style={styles.titleText}>{i18n.t('appTitle')}</AppText>
           </View>
