@@ -107,7 +107,6 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   pending,
 }) => {
   const [draftOrder, setDraftOrder] = useState<RkbOrder>();
-  const [prods, setProds] = useState<ProdInfo[]>([]);
   const loading = useRef(false);
   const [showSnackBar, setShowSnackBar] = useState('');
   const [showPicker, setShowPicker] = useState(false);
@@ -160,44 +159,6 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   const onClickStart = useCallback(() => {
     setStep((prev) => prev + 1);
   }, []);
-
-  //
-  const getProdDate = useCallback(() => {
-    if (!loading.current && draftOrder?.orderItems?.length > 0) {
-      draftOrder?.orderItems?.forEach((i) => {
-        if (!product.prodList.has(i.uuid)) {
-          // 해당 Uuid로 없다면 서버에서 가져온다.
-          action?.product.getProdByUuid(i.uuid);
-          loading.current = true;
-        }
-      });
-    }
-  }, [action?.product, draftOrder?.orderItems, product.prodList]);
-
-  useEffect(() => {
-    if (!draftOrder?.orderItems) return;
-
-    const prodList: ProdInfo = draftOrder.orderItems.map((r) => {
-      const prod = product.prodList.get(r.uuid);
-
-      console.log('@@@@@ prod : ', prod);
-
-      if (prod)
-        return {
-          title: prod.name,
-          field_description: prod.field_description,
-          promoFlag: prod.promoFlag,
-          qty: r.qty,
-        } as ProdInfo;
-
-      return null;
-    });
-
-    const isNeedUpdate = prodList.some((item) => item === null);
-
-    if (isNeedUpdate) getProdDate();
-    else setProds(prodList);
-  }, [draftOrder?.orderItems, getProdDate, product.prodList]);
 
   const requestDraft = useCallback(() => {
     setIsClickButton(true);
@@ -310,7 +271,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
       />
       {step === 0 && (
         <UsDraftStep1
-          prods={prods}
+          product={product}
           draftOrder={draftOrder}
           onClick={onClickStart}
         />
@@ -337,8 +298,9 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
           <UsDraftStep3
             actDate={actDate}
             deviceData={deviceData}
-            prods={prods}
+            product={product}
             checked={checked}
+            orderItems={draftOrder?.orderItems}
             setChecked={setChecked}
           />
           {renderBottomBtn(() => {

@@ -343,7 +343,8 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
             paddingBottom: 20,
           }}>
           <ProductDetailRender
-            prods={prods}
+            orderItems={selectedOrder?.orderItems}
+            product={product}
             listTitle={i18n
               .t('his:cancelHeaderTitle2')
               .replace('%', getCountItems(selectedOrder?.orderItems, false))}
@@ -364,7 +365,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         </View>
       </ScrollView>
     );
-  }, [selectedOrder?.orderItems, prods]);
+  }, [selectedOrder?.orderItems, product]);
 
   const renderStep2 = useCallback(() => {
     return (

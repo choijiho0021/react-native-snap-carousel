@@ -12,6 +12,8 @@ import FloatCheckButton from '@/screens/CancelOrderScreen/component/FloatCheckBu
 import AppSvgIcon from '@/components/AppSvgIcon';
 import moment from 'moment';
 import {ProdInfo} from '@/redux/api/productApi';
+import {ProductModelState} from '@/redux/modules/product';
+import {OrderItemType} from '@/redux/api/orderApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,19 +34,21 @@ const styles = StyleSheet.create({
 });
 
 interface UsDraftStep3Props {
-  prods: ProdInfo;
   actDate: string;
   deviceData: DeviceDataType;
   checked: boolean;
   setChecked: (val: boolean) => void;
+  product: ProductModelState;
+  orderItems: OrderItemType[];
 }
 
 const UsDraftStep3: React.FC<UsDraftStep3Props> = ({
-  prods,
   actDate,
   deviceData,
   checked,
   setChecked,
+  orderItems,
+  product,
 }) => {
   const scrollRef = useRef(null);
 
@@ -74,7 +78,8 @@ const UsDraftStep3: React.FC<UsDraftStep3Props> = ({
           <View style={styles.proudctFrame}>
             <ProductDetailRender
               style={styles.product}
-              prods={prods}
+              product={product}
+              orderItems={orderItems}
               isHeader={false}
               isBody
               bodyComponent={

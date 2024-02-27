@@ -268,27 +268,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     [method?.amount],
   );
 
-  // 별도 컴포넌트로 분리하기?
-  const prodList = useMemo(() => {
-    if (!order?.orderItems) return [];
-
-    return order.orderItems.map((r) => {
-      const prod = product.prodList.get(r.uuid);
-
-      console.log('@@@@@@ prod : ', prod);
-      if (prod)
-        return {
-          title: prod.name,
-          field_description: prod.field_description,
-          promoFlag: prod.promoFlag,
-          qty: r.qty,
-          price: r.price,
-        };
-
-      return null;
-    });
-  }, [order?.orderItems, product.prodList]);
-
   const isValidate = useMemo(
     () => order?.orderType === 'refundable' && order?.state === 'validation',
     [order?.orderType, order?.state],
@@ -591,7 +570,8 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
               paddingHorizontal: 20,
             }}
             showPriceInfo
-            prods={prodList}
+            product={product}
+            orderItems={order?.orderItems}
           />
         </DropDownHeader>
         <View style={styles.bottomBar} />

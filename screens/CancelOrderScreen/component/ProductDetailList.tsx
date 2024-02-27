@@ -7,6 +7,7 @@ import {RkbOrderItem} from '@/redux/api/cartApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {ProductModelState} from '@/redux/modules/product';
 import {utils} from '@/utils/utils';
+import {OrderItemType} from '@/redux/api/orderApi';
 
 const styles = StyleSheet.create({
   cancelItem: {
@@ -18,7 +19,7 @@ const styles = StyleSheet.create({
 });
 
 type ProductDetailListPros = {
-  orderItems: RkbOrderItem[] | PurchaseItem[];
+  orderItems: RkbOrderItem[] | PurchaseItem[] | OrderItemType[];
   style: StyleProp<ViewStyle>;
   listTitle?: string;
   showPriceInfo?: boolean;
@@ -42,8 +43,9 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
         item.qty === undefined
           ? item.price
           : utils.toCurrency(
-              Math.round(item.price.value * item.qty * 100) / 100,
-              item.price.currency,
+              Math.round((item?.price?.value || item.price) * item.qty * 100) /
+                100,
+              item?.price?.currency || 'KRW',
             );
       const prod = product.prodList.get(item?.key || item?.uuid);
 

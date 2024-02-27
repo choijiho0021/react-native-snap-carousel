@@ -10,6 +10,7 @@ import {getCountItems} from '@/redux/modules/order';
 import ProductDetailRender from '@/screens/CancelOrderScreen/component/ProductDetailRender';
 import i18n from '@/utils/i18n';
 import {ProdInfo} from '@/redux/api/productApi';
+import {ProductModelState} from '@/redux/modules/product';
 
 const styles = StyleSheet.create({
   buttonFrame: {flexDirection: 'row'},
@@ -30,14 +31,14 @@ const styles = StyleSheet.create({
 });
 
 interface UsDraftStep1Props {
-  prods: ProdInfo;
   draftOrder: RkbOrder;
+  product: ProductModelState;
   onClick: () => void;
 }
 
 const UsDraftStep1: React.FC<UsDraftStep1Props> = ({
-  prods,
   draftOrder,
+  product,
   onClick,
 }) => {
   return (
@@ -52,7 +53,8 @@ const UsDraftStep1: React.FC<UsDraftStep1Props> = ({
         <View style={styles.proudctFrame}>
           <ProductDetailRender
             style={styles.product}
-            prods={prods}
+            product={product}
+            orderItems={draftOrder?.orderItems}
             listTitle={i18n
               .t('his:draftItemText')
               .replace('%', getCountItems(draftOrder?.orderItems, false))}

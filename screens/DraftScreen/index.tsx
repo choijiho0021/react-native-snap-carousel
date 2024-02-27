@@ -99,8 +99,6 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   pending,
 }) => {
   const [draftOrder, setDraftOrder] = useState<RkbOrder>();
-  const [prods, setProds] = useState<ProdInfo[]>([]);
-  const loading = useRef(false);
   const [checked, setChecked] = useState<boolean>(false);
   const [isClickButton, setIsClickButton] = useState(false);
 
@@ -139,44 +137,6 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
       });
   }, [action.order, draftOrder?.orderId, token, iccid, navigation]);
 
-  //
-  const getProdDate = useCallback(() => {
-    if (!loading.current && draftOrder?.orderItems?.length > 0) {
-      draftOrder?.orderItems?.forEach((i) => {
-        if (!product.prodList.has(i.uuid)) {
-          // 해당 Uuid로 없다면 서버에서 가져온다.
-          action?.product.getProdByUuid(i.uuid);
-          loading.current = true;
-        }
-      });
-    }
-  }, [action?.product, draftOrder?.orderItems, product.prodList]);
-
-  useEffect(() => {
-    if (!draftOrder?.orderItems) return;
-
-    const prodList: ProdInfo[] = draftOrder.orderItems.map((r) => {
-      const prod = product.prodList.get(r.uuid);
-
-      console.log('@@@@@@ prod : ', prod);
-      if (prod)
-        return {
-          title: prod.name,
-          field_description: prod.field_description,
-          promoFlag: prod.promoFlag,
-          qty: r.qty,
-          price: r.price,
-        };
-
-      return null;
-    });
-
-    const isNeedUpdate = prodList.some((item) => item === null);
-
-    if (isNeedUpdate) getProdDate();
-    else setProds(prodList);
-  }, [draftOrder?.orderItems, getProdDate, product.prodList]);
-
   const renderCheckButton = useCallback(() => {
     return (
       <FloatCheckButton
@@ -201,7 +161,8 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
         <View style={styles.proudctFrame}>
           <ProductDetailRender
             style={styles.product}
-            prods={prods}
+            orderItems={draftOrder?.orderItems}
+            product={product}
             listTitle={i18n
               .t('his:draftItemText')
               .replace('%', getCountItems(draftOrder?.orderItems, false))}

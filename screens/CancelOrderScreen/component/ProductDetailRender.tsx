@@ -9,6 +9,8 @@ import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
 import {ProdInfo} from '@/redux/api/productApi';
 import ProductDetailList from './ProductDetailList';
+import {ProductModelState} from '@/redux/modules/product';
+import {OrderItemType} from '@/redux/api/orderApi';
 
 const styles = StyleSheet.create({
   notiContainer: {
@@ -118,10 +120,11 @@ const DefaultFooter = () => {
 };
 
 type ProductDetailRenderPros = {
-  prods: ProdInfo[];
+  orderItems: ProdInfo[] | OrderItemType[];
   listTitle?: string;
   style?: StyleProp<ViewStyle>;
   frameStyle?: StyleProp<ViewStyle>;
+  product: ProductModelState;
   notiComponent?: any;
   footerComponent?: any;
   bodyComponent?: any;
@@ -132,10 +135,11 @@ type ProductDetailRenderPros = {
 };
 
 const ProductDetailRender: React.FC<ProductDetailRenderPros> = ({
-  prods,
+  orderItems,
   style,
   frameStyle,
   listTitle,
+  product,
   notiComponent,
   footerComponent = <DefaultFooter />,
   bodyComponent,
@@ -182,7 +186,11 @@ const ProductDetailRender: React.FC<ProductDetailRenderPros> = ({
       </View>
 
       <View key="cancelFrame" style={frameStyle || styles.cancelItemFrame}>
-        <ProductDetailList prods={prods} listTitle={listTitle} />
+        <ProductDetailList
+          orderItems={orderItems}
+          product={product}
+          listTitle={listTitle}
+        />
         {isBody && bodyComponent}
         {isFooter && footerComponent}
       </View>
