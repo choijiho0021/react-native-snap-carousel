@@ -53,6 +53,8 @@ import PopupList from './PopupList';
 import {retrieveData, storeData, utils} from '@/utils/utils';
 import AppText from '@/components/AppText';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import DropDownHeader from './DropDownHeader';
+import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
 
 const infoKey = 'pym:benefit';
 const styles = StyleSheet.create({
@@ -101,6 +103,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     marginHorizontal: 20,
     marginBottom: 20,
+  },
+
+  productTitle: {
+    ...appStyles.bold18Text,
+    lineHeight: 24,
+    letterSpacing: 0.27,
+    flexDirection: 'row',
+    maxWidth: isDeviceSize('small') ? '70%' : '80%',
   },
 });
 
@@ -429,7 +439,20 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         showsVerticalScrollIndicator={false}
         enableOnAndroid
         enableResetScrollToCoords={false}>
-        <PaymentItemInfo purchaseItems={cart.purchaseItems} />
+        <DropDownHeader
+          title={i18n.t('pym:title')}
+          style={{paddingTop: 16, paddingBottom: 20}}
+          titleStyle={styles.productTitle}>
+          <ProductDetailList
+            style={{
+              paddingBottom: 0,
+              paddingHorizontal: 20,
+            }}
+            showPriceInfo
+            orderItems={cart.purchaseItems}
+            product={product}
+          />
+        </DropDownHeader>
 
         <View style={styles.bottomBar} />
 

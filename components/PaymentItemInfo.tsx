@@ -47,14 +47,6 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontSize: isDeviceSize('small') ? 14 : 16,
   },
-
-  productTitle: {
-    ...appStyles.bold18Text,
-    lineHeight: 24,
-    letterSpacing: 0.27,
-    flexDirection: 'row',
-    maxWidth: isDeviceSize('small') ? '70%' : '80%',
-  },
 });
 
 export type PaymentItemMode = 'method' | 'result';
@@ -130,24 +122,25 @@ const PaymentItemInfo: React.FC<PaymentItemInfoProps> = ({
 }) => {
   // PaymentResultScreen에서 어떻게 보이나 확인 필요
 
-  //   <DropDownHeader
-  //   title={i18n.t('pym:title')}
-  //   style={{paddingTop: 16, paddingBottom: 20}}
-  //   titleStyle={styles.productTitle}>
-  //   <ProductDetailList
-  //     style={{
-  //       paddingBottom: 0,
-  //       paddingHorizontal: 20,
-  //     }}
-  //     showPriceInfo
-  //     orderItems={purchaseItems}
-  //     product={product}
-  //   />
-  // </DropDownHeader>
+  const isRecharge = useMemo(
+    () => purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
+    [purchaseItems],
+  );
 
   return (
     <View>
-      <View>
+      <AppText style={[styles.title, styles.mrgBottom0]}>
+        {i18n.t('pym:title')}
+      </AppText>
+      {/*
+        상품별 가격
+        ex) 일본 상품 3일  x 1개   
+      */}
+      <View
+        style={[
+          styles.productPriceInfo,
+          !isRecharge && styles.borderBottomGrey,
+        ]}>
         {purchaseItems.map((item) => {
           const price =
             item.qty === undefined
