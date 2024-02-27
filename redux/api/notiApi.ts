@@ -1,9 +1,9 @@
 import _ from 'underscore';
 import Env from '@/environment';
-import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
+import api, {ApiResult} from './api';
 import {RkbInfo} from './pageApi';
 
-const {isProduction, cachePrefix} = Env.get();
+const {cachePrefix} = Env.get();
 
 const KEY_INIT_LIST = `${cachePrefix}noti.initList`;
 

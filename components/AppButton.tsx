@@ -133,7 +133,6 @@ const AppButton: React.FC<AppButtonProps> = ({
               titleStyle || styles.text,
               disabled && {color: disableColor || colors.white},
               checked && {color: checkedColor || colors.clearBlue},
-              iconName || uri ? {marginLeft: 10} : undefined,
             ]}>
             {title || i18n.t('select')}
           </AppText>

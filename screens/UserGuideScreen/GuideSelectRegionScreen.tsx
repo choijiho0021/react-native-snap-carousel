@@ -85,7 +85,7 @@ const GuideSelectRegionScreen = () => {
                 {i18n.t('userGuide:selectRegion:esimReg:notice:body')}
               </AppText>
             </View>
-            <AppSvgIcon name="rightArrow" style={{marginLeft: 'auto'}} />
+            <AppSvgIcon name="rightArrow10" style={{marginLeft: 'auto'}} />
           </Pressable>
         ) : (
           <View style={{height: 40}} />

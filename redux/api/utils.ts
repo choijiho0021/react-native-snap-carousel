@@ -121,7 +121,10 @@ const priceToCurrency = ({
   return {value: stringToNumber(number) || 0, currency: 'KRW'};
 };
 
-const toCurrency = (value: number, currency: CurrencyCode): Currency => ({
+const toCurrency = (
+  value: number,
+  currency: CurrencyCode = 'KRW',
+): Currency => ({
   value,
   currency,
 });

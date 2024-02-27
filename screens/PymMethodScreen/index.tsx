@@ -6,7 +6,7 @@ import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import moment, {Moment} from 'moment';
+import moment from 'moment';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -45,16 +45,16 @@ import {
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import DiscountInfo from '@/components/AppPaymentGateway/DiscountInfo';
 import PaymentSummary from '@/components/PaymentSummary';
-import ConfirmEmail from '@/components/AppPaymentGateway/ConfirmEmail';
+import ConfirmButton from '@/components/AppPaymentGateway/ConfirmButton';
 import PymMethod, {
   PymMethodRef,
 } from '@/components/AppPaymentGateway/PymMethod';
-import SelectCard from './SelectCard';
+import PopupList from './PopupList';
 import {retrieveData, storeData} from '@/utils/utils';
-import SelectBank from './SelectBank';
+import AppText from '@/components/AppText';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const infoKey = 'pym:benefit';
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -79,27 +79,23 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     letterSpacing: -0.5,
   },
-  modalContent: {
-    maginHorizontal: 20,
-    width: '90%',
-    paddingTop: 25,
-    backgroundColor: 'white',
+  divider: {
+    height: 10,
+    backgroundColor: colors.whiteTwo,
+    marginTop: 24,
   },
-  titleContent: {
-    marginHorizontal: 30,
+  changeEmail: {
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    backgroundColor: colors.white,
+    marginHorizontal: 20,
   },
-  modalOkText: {
-    borderRadius: 3,
-    backgroundColor: colors.clearBlue,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    lineHeight: 40,
-    color: 'white',
-    width: 120,
-    height: 40,
-    marginRight: 18,
+  title: {
+    ...appStyles.bold18Text,
+    marginTop: 20,
+    marginBottom: isDeviceSize('small') ? 10 : 20,
+    color: colors.black,
   },
-  modalCloseStyle: {color: colors.black, marginRight: 108},
 });
 
 type PymMethodScreenNavigationProp = StackNavigationProp<
@@ -144,8 +140,51 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [showNavigateAlert, setShowNavigateAlert] = useState(false);
   const [navigateAlertTxt, setNavigateAlertTxt] = useState<string>();
   const [rstTm, setRstTm] = useState('');
+  const [showSelectCard, setShowSelectCard] = useState(false);
+  const [showDuration, setShowDuration] = useState(false);
+  const [duration, setDuration] = useState('1');
+
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
   const pymMethodRef = useRef<PymMethodRef>(null);
+  const creditCardList = useMemo(
+    () =>
+      [
+        '41',
+        '03',
+        '04',
+        '06',
+        '11',
+        '12',
+        '14',
+        '34',
+        '38',
+        '32',
+        '35',
+        '33',
+        '95',
+        '43',
+        '48',
+        '51',
+        '52',
+        '54',
+        '55',
+        '56',
+        '71',
+      ].map((k) => ({
+        label: i18n.t(`pym:card${k}`),
+        value: `card${k}`,
+      })),
+    [],
+  );
+
+  const durationList = useMemo(
+    () =>
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((k) => ({
+        label: k === 1 ? i18n.t('pym:pay:atonce') : k + i18n.t('pym:duration'),
+        value: k.toString(),
+      })),
+    [],
+  );
 
   useEffect(() => {
     if (!info.infoMap.has(infoKey)) {
@@ -322,32 +361,15 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     );
   }, []);
 
-  const setPymMethod = useCallback(
-    (kind: string) => {
-      if (kind === 'card') {
-        action.modal.renderModal(() => (
-          <SelectCard
-            onPress={(card: string) => {
-              setSelected(card);
-              action.modal.closeModal();
-            }}
-          />
-        ));
-      } else if (kind === 'vbank') {
-        action.modal.renderModal(() => (
-          <SelectBank
-            onPress={(bank: string) => {
-              setSelected(bank);
-              action.modal.closeModal();
-            }}
-          />
-        ));
-      } else {
-        setSelected(kind);
-      }
-    },
-    [action.modal],
-  );
+  const setPymMethod = useCallback((kind: string) => {
+    if (kind === 'card') {
+      setShowSelectCard(true);
+    } else if (kind === 'duration') {
+      setShowDuration(true);
+    } else {
+      setSelected(kind);
+    }
+  }, []);
 
   const renderModal = useCallback(() => {
     const navigateEsim = () => {
@@ -403,17 +425,31 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         enableResetScrollToCoords={false}>
         <PaymentItemInfo purchaseItems={cart.purchaseItems} mode="method" />
 
-        <ConfirmEmail onPress={() => navigation.navigate('ChangeEmail')} />
+        <View style={styles.changeEmail}>
+          <AppText style={styles.title}>{i18n.t('pym:email')}</AppText>
+          <ConfirmButton
+            title={account.email}
+            buttonTitle={i18n.t('changeEmail:short')}
+            onPress={() => navigation.navigate('ChangeEmail')}
+          />
+        </View>
+
+        <View key="div1" style={styles.divider} />
 
         <DiscountInfo onPress={() => navigation.navigate('SelectCoupon')} />
+
+        <View key="div2" style={styles.divider} />
+
+        <PaymentSummary mode="method" />
+
+        <View key="div3" style={styles.divider} />
 
         <PymMethod
           pymMethodRef={pymMethodRef}
           value={selected}
+          duration={duration}
           onPress={setPymMethod}
         />
-
-        <PaymentSummary mode="method" />
 
         {/* {cart.pymPrice?.value !== 0 ? (
           method()
@@ -426,7 +462,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         )} */}
 
         {/* 가변영역 설정 */}
-        <View style={{flex: 1}} />
+        <View style={{flex: 1, minHeight: 26}} />
 
         <PolicyChecker onPress={setPolicyChecked} />
         <AppButton
@@ -451,7 +487,21 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         visible={showUnsupAlert}>
         {modalBody()}
       </AppModal>
-      {renderModal()}
+      <PopupList
+        data={
+          showSelectCard ? creditCardList : showDuration ? durationList : []
+        }
+        visible={showSelectCard || showDuration}
+        onPress={(v) => {
+          if (showSelectCard) {
+            setShowSelectCard(false);
+            setSelected(v);
+          } else {
+            setShowDuration(false);
+            setDuration(v);
+          }
+        }}
+      />
     </SafeAreaView>
   );
 };

@@ -48,7 +48,8 @@ type BoardScreenProps = {
   })[];
 };
 
-const BoardScreen: React.FC<BoardScreenProps> = ({pending, title, routes}) => {
+const BoardScreen: React.FC<BoardScreenProps> = ({title, routes}) => {
+  const navigation = useNavigation();
   const route = useRoute();
   const [index, setIndex] = useState(route?.params?.index || 0);
 

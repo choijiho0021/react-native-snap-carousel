@@ -88,6 +88,7 @@
   "imei2:esim": "IMEI2(eSIM)",
   "android": "안드로이드폰",
   "ios": "아이폰",
+  "rkbCash": "캐시",
 
   "purchase:date": "{{date}} 구매",
 
@@ -206,7 +207,7 @@
   "acc:expDate": "만료일",
   "acc:actDate": "시작일",
   "acc:balance": "로깨비 캐시",
-  "acc:balance:hold": "보유",
+  "acc:balance:hold": "보유 {cash}캐시",
   "acc:remain": "로깨비캐시 잔액",
   "acc:mysim": "유심 정보",
   "acc:recharge": "충전",
@@ -449,7 +450,6 @@
   "his:cancelTotalAmount": "최종 환불 금액",
   "his:orderTotalAmount": "주문금액",
   "his:rokebiCash": "로깨비캐시",
-  "his:paidAmount": "일시불",
 
   "his:draftSuccessTitle": "발권이\n완료되었어요!",
   "his:draftSuccessText1": "고객님의 소중한 상품을 발송하고 있어요.",
@@ -567,7 +567,7 @@
   "cart:afterDeductBalance": "남은 로깨비캐시",
   "cart:couponDiscount": "할인쿠폰 사용",
   "cart:dlvCost": "배송비",
-  "cart:totalCost": "총 결제 금액",
+  "cart:totalCost": "최종 결제 금액",
   "cart:totalCntX": "총 %% 개",
   "cart:dlvCostNotice": "* 3만원 이상 구매시 배송료 무료",
   "cart:toCart": "카트에 넣기",
@@ -950,7 +950,8 @@
   "pym:method": "결제 방법",
   "pym:method:easy": "간편 결제",
   "pym:method:card": "신용,체크 카드",
-  "pym:method:card:sel": "카드사를 선택해 주세요",
+  "pym:method:card:sel": "결제에 사용할 카드를 선택해주세요.",
+  "pym:pay:atonce": "일시불",
   "pym:ccard": "신용카드",
   "pym:bank": "계좌이체",
   "pym:vbank": "계좌이체",
@@ -966,6 +967,7 @@
   "pym:ssgpay": "SSG페이",
   "pym:lpay": "L.Pay",
 
+  "pym:card:sel": "카드 선택",
   "pym:card01": "하나카드",
   "pym:card02": "우리카드",
   "pym:card03": "롯데카드",
@@ -995,6 +997,7 @@
   "pym:card56": "카카오뱅크",
   "pym:card71": "우체국체크",
   "pym:card95": "저축은행체크",
+  "pym:duration": "개월",
 
   "pym:vbank:h:003": "IBK기업은행",
   "pym:vbank:h:004": "KB국민은행",
@@ -1064,7 +1067,6 @@
   "pym:discount": "할인 적용",
   "pym:coupon": "쿠폰",
   "pym:coupon:max": "최대 할인 적용",
-  "pym:selectCoupon": "쿠폰 선택 >",
   "pym:no:coupon": "적용 가능한 쿠폰이 없습니다.",
   "pym:coupon:none:sel": "적용 안함",
 
@@ -1072,7 +1074,7 @@
   "pym:sel:coupon:noti": "<b>쿠폰함</b>에서 <b>쿠폰 코드</b> 등록 후 사용하실 수 있어요!",
   "pym:sel:coupon:apply": "원 할인 적용하기",
   "pym:item:subtotal": "상품 금액",
-  "pym:item:discount": "할인쿠폰 사용",
+  "pym:item:discount": "쿠폰 할인",
   "pym:item:rkbcash": "로깨비캐시 사용",
   "pym:deductAll": "모두 사용",
 
@@ -1342,6 +1344,7 @@
   "info:init:err": "공지사항을 가져오는 데 실패했습니다.\n다시 시도해 주세요",
 
   "changeEmail": "이메일 변경",
+  "changeEmail:short": "메일 변경",
   "changeEmail:using": "사용 중인 이메일",
   "changeEmail:new": "새 이메일",
   "changeEmail:placeholder": "변경할 이메일 주소를 입력하세요.",

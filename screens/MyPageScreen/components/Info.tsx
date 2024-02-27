@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 10,
-    marginTop: 32,
+    marginTop: 20,
     backgroundColor: colors.whiteTwo,
   },
   subTitle: {
@@ -42,14 +42,11 @@ const styles = StyleSheet.create({
   btnContactBoard: {
     marginHorizontal: 7.5,
     flex: 1,
-    borderColor: colors.lightGrey,
-    borderWidth: 1,
-    borderRadius: 3,
-    height: 40,
+    height: 72,
     justifyContent: 'center',
   },
   btnInvite: {
-    marginTop: 15,
+    marginTop: 30,
     marginHorizontal: 20,
     backgroundColor: colors.clearBlue,
     overflow: 'hidden',
@@ -79,7 +76,6 @@ const styles = StyleSheet.create({
   },
   rowBtn: {
     flex: 1,
-    marginBottom: 15,
     flexDirection: 'row',
     justifyContent: 'center',
     marginHorizontal: 12.5,
@@ -115,11 +111,31 @@ const styles = StyleSheet.create({
   },
   btnStyle: {
     flex: 1,
-    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
 });
+
+const btnList = [
+  {
+    icon: 'mycoupon',
+    title: 'mypage:coupon',
+    tab: 'MyPageStack',
+    screen: 'Coupon',
+  },
+  {
+    icon: 'contact121',
+    title: 'contact:board',
+    tab: 'HomeStack',
+    screen: 'ContactBoard',
+  },
+  {
+    icon: 'iconGift',
+    title: 'contact:event',
+    tab: 'HomeStack',
+    screen: 'EventBoard',
+  },
+];
 
 type InfoProps = {
   account: AccountModelState;
@@ -163,37 +179,26 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
       </Pressable>
 
       <View style={styles.rowBtn}>
-        <AppButton
-          iconName="mycoupon"
-          title={i18n.t('mypage:coupon')}
-          style={styles.btnContactBoard}
-          titleStyle={appStyles.normal16Text}
-          viewStyle={styles.btnStyle}
-          type="secondary"
-          onPress={() =>
-            navigate(navigation, route, 'MyPageStack', {
-              tab: 'MyPageStack',
-              screen: 'Coupon',
-              params: {index: 1},
-            })
-          }
-        />
-        <AppButton
-          iconName="contact121"
-          title={i18n.t('contact:board')}
-          style={styles.btnContactBoard}
-          titleStyle={appStyles.normal16Text}
-          viewStyle={styles.btnStyle}
-          type="secondary"
-          onPress={() =>
-            navigate(navigation, route, 'MyPageStack', {
-              tab: 'HomeStack',
-              screen: 'ContactBoard',
-              params: {index: 1},
-            })
-          }
-        />
+        {btnList.map(({icon, title, tab, screen}) => (
+          <AppButton
+            key={title}
+            iconName={icon}
+            title={i18n.t(title)}
+            style={styles.btnContactBoard}
+            titleStyle={[appStyles.normal16Text, {marginTop: 8}]}
+            viewStyle={styles.btnStyle}
+            type="secondary"
+            onPress={() =>
+              navigate(navigation, route, 'MyPageStack', {
+                tab,
+                screen,
+                params: {index: 1},
+              })
+            }
+          />
+        ))}
       </View>
+      <View style={styles.divider} />
       {!esimGlobal && (
         <Pressable
           style={styles.btnInvite}
@@ -217,7 +222,6 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
           </View>
         </Pressable>
       )}
-      <View style={styles.divider} />
       <AppText style={styles.subTitle}>{i18n.t('acc:purchaseHistory')}</AppText>
       <View style={styles.dividerSmall} />
     </View>

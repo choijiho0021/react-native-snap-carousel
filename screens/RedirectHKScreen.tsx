@@ -543,7 +543,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
               </AppText>
             </View>
 
-            <AppSvgIcon name="rightArrow" style={{right: 0}} />
+            <AppSvgIcon name="rightArrow10" style={{right: 0}} />
           </Pressable>
         ) : (
           <View style={{height: 50}} />

@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   title: {
-    ...appStyles.normal14Text,
+    ...appStyles.semiBold14Text,
     lineHeight: 20,
     color: colors.warmGrey,
   },
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backGrey,
     borderRadius: 3,
     borderWidth: 1,
-    borderColor: colors.gray4,
+    borderColor: colors.lightGrey,
     paddingHorizontal: 16,
     paddingVertical: 13,
     justifyContent: 'center',
@@ -73,7 +73,16 @@ const styles = StyleSheet.create({
   caution: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 40,
+    backgroundColor: colors.backGrey,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 3,
+  },
+  inner: {
+    paddingHorizontal: 20,
+    marginTop: 24,
+    flex: 1,
   },
 });
 
@@ -122,14 +131,10 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
         style={{flex: 1}}
         behavior={isIOS ? 'padding' : undefined}>
         <ScreenHeader title={i18n.t('set:changeMail')} />
-        <View style={{padding: 20, flex: 1}}>
+        <View style={styles.inner}>
           <View style={styles.caution}>
-            <AppSvgIcon name="cautionPurple" />
-            <AppText
-              style={[
-                appStyles.bold14Text,
-                {color: colors.violet500, marginLeft: 8},
-              ]}>
+            <AppSvgIcon name="emailIcon" />
+            <AppText style={[appStyles.medium14, {marginLeft: 8}]}>
               {i18n.t('changeEmail:info')}
             </AppText>
           </View>

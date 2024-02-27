@@ -14,13 +14,8 @@ import {ProductModelState} from '@/redux/modules/product';
 import {RkbProduct} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({
-  // container: {
-  //   justifyContent: 'space-between',
-  //   width: '63%'
-  // },
   title: {
     ...appStyles.bold18Text,
-    // fontFamily: "AppleSDGothicNeo",
     marginTop: 20,
     marginBottom: isDeviceSize('small') ? 10 : 20,
     marginHorizontal: 20,
@@ -28,10 +23,10 @@ const styles = StyleSheet.create({
   },
   row: {
     ...appStyles.itemRow,
-    height: isDeviceSize('small') ? 30 : 36,
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 0,
+    marginTop: 14,
   },
   mrgBottom0: {
     marginBottom: 0,
@@ -42,7 +37,7 @@ const styles = StyleSheet.create({
   productPriceInfo: {
     paddingVertical: isDeviceSize('small') ? 13 : 11,
     marginTop: isDeviceSize('small') ? 0 : 9,
-    marginHorizontal: 20,
+    paddingHorizontal: 20,
   },
   borderBottomGrey: {
     borderBottomColor: colors.lightGrey,
@@ -61,6 +56,7 @@ export type PaymentItemMode = 'method' | 'result';
 const PaymentItem0 = ({
   style,
   title,
+  titleStyle,
   value,
   valueStyle,
   mode,
@@ -71,6 +67,7 @@ const PaymentItem0 = ({
   value: string;
   mode?: PaymentItemMode;
   style?: StyleProp<ViewStyle>;
+  titleStyle?: StyleProp<ViewStyle>;
   valueStyle?: StyleProp<TextStyle>;
   prod?: RkbProduct;
   qty?: number;
@@ -96,7 +93,9 @@ const PaymentItem0 = ({
       <View style={style || styles.row} key="title">
         <AppText
           key="title"
-          style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
+          style={
+            titleStyle || [appStyles.semiBold14Text, {color: colors.warmGrey}]
+          }>
           {title}
         </AppText>
         {qty ? (

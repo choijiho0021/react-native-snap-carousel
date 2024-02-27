@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropsWithChildren, memo, useState} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
@@ -7,6 +7,7 @@ import {appStyles} from '@/constants/Styles';
 
 const styles = StyleSheet.create({
   spaceBetweenBox: {
+    paddingTop: 24,
     marginHorizontal: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -21,47 +22,52 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignSelf: 'flex-end',
   },
-  alignCenter: {
-    alignSelf: 'center',
-    marginRight: 15,
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  normal16BlueTxt: {
-    ...appStyles.normal16Text,
+  summary: {
+    ...appStyles.robotoBold16Text,
     color: colors.clearBlue,
-    lineHeight: 24,
-    letterSpacing: 0.24,
+    marginRight: 8,
   },
 });
 
-const DropDownHeader = ({
-  showModal,
-  onPress,
-  title,
-  alias,
-}: {
-  showModal: boolean;
-  onPress: () => void;
+type DropDownHeaderProps = {
   title: string;
-  alias?: string;
+  summary?: string;
+};
+
+const DropDownHeader: React.FC<PropsWithChildren<DropDownHeaderProps>> = ({
+  title,
+  summary,
+  children,
 }) => {
+  const [showContent, setShowContent] = useState(true);
+
   return (
-    <Pressable style={styles.spaceBetweenBox} onPress={onPress}>
-      <AppText style={styles.boldTitle}>{title}</AppText>
-      <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-        {!showModal && (
-          <AppText style={[styles.alignCenter, styles.normal16BlueTxt]}>
-            {alias}
-          </AppText>
-        )}
-        <AppButton
-          style={{backgroundColor: colors.white, height: 70}}
-          iconName={showModal ? 'iconArrowUp' : 'iconArrowDown'}
-          iconStyle={styles.dropDownIcon}
-          onPress={onPress}
-        />
-      </View>
-    </Pressable>
+    <View>
+      <Pressable
+        style={[
+          styles.spaceBetweenBox,
+          {borderBottomWidth: showContent ? 1 : 0},
+          {paddingBottom: showContent ? 20 : 0},
+        ]}
+        onPress={() => setShowContent((prev) => !prev)}>
+        <AppText style={styles.boldTitle}>{title}</AppText>
+        <View style={styles.row}>
+          {!showContent && <AppText style={styles.summary}>{summary}</AppText>}
+          <AppButton
+            style={{backgroundColor: colors.white}}
+            iconName={showContent ? 'iconArrowUp' : 'iconArrowDown'}
+            iconStyle={styles.dropDownIcon}
+            onPress={() => setShowContent((prev) => !prev)}
+          />
+        </View>
+      </Pressable>
+      {showContent ? children : null}
+    </View>
   );
 };
 
-export default DropDownHeader;
+export default memo(DropDownHeader);
