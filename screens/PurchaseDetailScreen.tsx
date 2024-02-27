@@ -106,11 +106,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteTwo,
     justifyContent: 'center',
   },
-  bar: {
+  bottomBar: {
     borderBottomColor: colors.lightGrey,
     borderBottomWidth: 1,
     marginHorizontal: 20,
-    marginVertical: 20,
+    marginBottom: 20,
   },
   item: {
     marginHorizontal: 20,
@@ -489,7 +489,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         <View style={styles.dividerTop} />
       </View>
     );
-  }, [getColor, order]);
+  }, [getColor, order, product]);
 
   if (!order || !order.orderItems) {
     return (

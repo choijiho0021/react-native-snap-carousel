@@ -50,7 +50,7 @@ import PymMethod, {
   PymMethodRef,
 } from '@/components/AppPaymentGateway/PymMethod';
 import PopupList from './PopupList';
-import {retrieveData, storeData} from '@/utils/utils';
+import {retrieveData, storeData, utils} from '@/utils/utils';
 import AppText from '@/components/AppText';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 
@@ -474,8 +474,12 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         <PolicyChecker onPress={setPolicyChecked} />
         <AppButton
-          title={i18n.t('payment')}
+          title={i18n
+            .t('cart:payment')
+            .replace('%%', utils.price(cart.pymPrice))}
           titleStyle={[appStyles.medium18, {color: colors.white}]}
+          disableColor={colors.greyish}
+          disableStyle={{backgroundColor: colors.lightGrey}}
           disabled={(cart.pymPrice?.value !== 0 && !selected) || !policyChecked}
           key={i18n.t('payment')}
           onPress={() => onSubmit(false)}
