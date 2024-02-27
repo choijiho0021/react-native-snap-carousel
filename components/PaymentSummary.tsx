@@ -30,10 +30,25 @@ const styles = StyleSheet.create({
   },
 });
 
-const PaymentSummary = ({data, total}: {data: PaymentReq; total: Currency}) => {
+const PaymentSummary = ({
+  data,
+  total,
+  expandable = true,
+  title,
+  totalLabel,
+  totalColor,
+}: {
+  data: PaymentReq;
+  total: Currency;
+  expandable?: boolean;
+  title?: string;
+  totalLabel?: string;
+  totalColor?: string;
+}) => {
   return (
     <DropDownHeader
-      title={i18n.t('cart:pymAmount')}
+      title={title || i18n.t('cart:pymAmount')}
+      expandable={expandable}
       summary={utils.price(total)}>
       <View style={styles.priceInfo}>
         {(['subtotal', 'discount', 'rkbcash'] as const).map((k) => (
@@ -58,8 +73,11 @@ const PaymentSummary = ({data, total}: {data: PaymentReq; total: Currency}) => {
         key="totalCost"
         style={[styles.row, styles.total]}
         titleStyle={appStyles.bold16Text}
-        title={`${i18n.t('cart:totalCost')} `}
-        valueStyle={{...appStyles.robotoBold22Text, color: colors.clearBlue}}
+        title={totalLabel || `${i18n.t('cart:totalCost')} `}
+        valueStyle={{
+          ...appStyles.robotoBold22Text,
+          color: totalColor || colors.clearBlue,
+        }}
         value={utils.price(total)}
       />
     </DropDownHeader>

@@ -35,8 +35,6 @@ import ScreenHeader from '@/components/ScreenHeader';
 import PaymentSummary from '@/components/PaymentSummary';
 import {PaymentReq} from '@/redux/modules/cart';
 
-const {esimCurrency} = Env.get();
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -152,6 +150,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: colors.white,
   },
+  cancelText: {
+    ...appStyles.normal14Text,
+    marginTop: 24,
+    lineHeight: 22,
+    marginHorizontal: 20,
+    color: colors.warmGrey,
+  },
 });
 
 type PurchaseDetailScreenNavigationProp = StackNavigationProp<
@@ -266,7 +271,16 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
 
     return (
       <View>
-        <PaymentSummary data={pym} total={order.totalPrice} />
+        <PaymentSummary
+          data={pym}
+          total={order.totalPrice}
+          expandable={false}
+          title={i18n.t('his:paymentDetail')}
+          totalLabel={
+            order.state === 'canceled' ? i18n.t('his:cancelAmount') : undefined
+          }
+          totalColor={order.state === 'canceled' ? colors.redError : undefined}
+        />
         <LabelText
           style={styles.item}
           label={i18n.t('pym:method')}
@@ -275,32 +289,38 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           valueStyle={styles.labelValue}
         />
 
-        {!isRecharge && (
-          <View key="btn" style={styles.cancelDraftFrame}>
-            <AppButton
-              style={styles.cancelDraftBtn}
-              onPress={() => {
-                navigation.navigate('CancelOrder', {orderId: order?.orderId});
-              }}
-              disabled={!isValidation}
-              disabledCanOnPress
-              disabledOnPress={() => {
-                if (order?.state === 'completed') {
-                  setShowSnackBar(
-                    i18n.t(`his:draftButtonAlert:${order?.orderType}`),
-                  );
-                } else if (order?.state === 'canceled') {
-                  setShowSnackBar(i18n.t(`his:draftButtonAlert:canceled`));
-                } else if (isValidate && isExpiredDraft(order?.orderDate)) {
-                  setShowSnackBar(i18n.t(`his:draftButtonAlert:auto`));
-                }
-              }}
-              disableStyle={styles.cancelDraftBtnDisabled}
-              disableColor={colors.greyish}
-              title={i18n.t('his:cancelDraft')}
-              titleStyle={styles.cancelButtonText}
-            />
-          </View>
+        {order.state === 'canceled' ? (
+          <AppText style={styles.cancelText}>
+            {i18n.t('his:cancelText')}
+          </AppText>
+        ) : (
+          !isRecharge && (
+            <View key="btn" style={styles.cancelDraftFrame}>
+              <AppButton
+                style={styles.cancelDraftBtn}
+                onPress={() => {
+                  navigation.navigate('CancelOrder', {orderId: order?.orderId});
+                }}
+                disabled={!isValidation}
+                disabledCanOnPress
+                disabledOnPress={() => {
+                  if (order?.state === 'completed') {
+                    setShowSnackBar(
+                      i18n.t(`his:draftButtonAlert:${order?.orderType}`),
+                    );
+                  } else if (order?.state === 'canceled') {
+                    setShowSnackBar(i18n.t(`his:draftButtonAlert:canceled`));
+                  } else if (isValidate && isExpiredDraft(order?.orderDate)) {
+                    setShowSnackBar(i18n.t(`his:draftButtonAlert:auto`));
+                  }
+                }}
+                disableStyle={styles.cancelDraftBtnDisabled}
+                disableColor={colors.greyish}
+                title={i18n.t('his:cancelDraft')}
+                titleStyle={styles.cancelButtonText}
+              />
+            </View>
+          )
         )}
       </View>
     );
