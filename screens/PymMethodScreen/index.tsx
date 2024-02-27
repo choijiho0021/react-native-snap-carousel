@@ -144,8 +144,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [showNavigateAlert, setShowNavigateAlert] = useState(false);
   const [navigateAlertTxt, setNavigateAlertTxt] = useState<string>();
   const [rstTm, setRstTm] = useState('');
-
-  const {pymPrice, deduct} = useMemo(() => cart, [cart]);
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
   const pymMethodRef = useRef<PymMethodRef>(null);
 
@@ -351,6 +349,44 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     [action.modal],
   );
 
+  const renderModal = useCallback(() => {
+    const navigateEsim = () => {
+      setShowNavigateAlert(false);
+      navigation.popToTop();
+      navigation.navigate('EsimStack', {screen: 'Esim'});
+    };
+
+    return (
+      <AppModal
+        onCancelClose={navigateEsim}
+        type="info"
+        onOkClose={navigateEsim}
+        contentStyle={styles.modalContent}
+        titleStyle={styles.titleContent}
+        visible={showNavigateAlert}
+        buttonBackgroundColor={colors.clearBlue}
+        cancelButtonTitle={i18n.t('no')}
+        cancelButtonStyle={styles.modalCloseStyle}
+        okButtonTitle={i18n.t('ok')}
+        okButtonStyle={styles.modalOkText}>
+        <View style={{marginHorizontal: 30}}>
+          <AppStyledText
+            text={navigateAlertTxt}
+            textStyle={[
+              appStyles.medium16,
+              {color: colors.black, textAlignVertical: 'center'},
+            ]}
+            format={{
+              red: [appStyles.bold16Text, {color: colors.redError}],
+              b: appStyles.bold16Text,
+            }}
+            data={{date: rstTm}}
+          />
+        </View>
+      </AppModal>
+    );
+  }, [navigateAlertTxt, navigation, rstTm, showNavigateAlert]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={appStyles.header}>
@@ -415,6 +451,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         visible={showUnsupAlert}>
         {modalBody()}
       </AppModal>
+      {renderModal()}
     </SafeAreaView>
   );
 };
