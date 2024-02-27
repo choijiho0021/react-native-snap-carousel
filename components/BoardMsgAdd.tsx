@@ -160,6 +160,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   const [title, setTitle] = useState<string>();
   const [msg, setMsg] = useState<string>();
   const [pin, setPin] = useState<string>();
+  const [clickable, setClickable] = useState<boolean>(true);
   const [attachment, setAttachment] = useState(List<CropImage>());
   const [extraHeight, setExtraHeight] = useState(0);
   const [value, setValue] = useState('');
@@ -194,9 +195,11 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   }, []);
 
   const onPress = useCallback(async () => {
-    if (!title || !msg) {
+    if (!title || !msg || !clickable) {
       return;
     }
+
+    setClickable(false);
 
     const issue = {
       title,
@@ -210,11 +213,15 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
 
     await action.board.postAndGetList(issue);
 
+    setTimeout(() => {
+      setClickable(true);
+    }, 2000); // 1초 후에 다시 활성화
+
     setMsg(undefined);
     setTitle(undefined);
     setPin(undefined);
     setAttachment((a) => a.clear());
-  }, [action.board, attachment, msg, pin, title, value]);
+  }, [action.board, attachment, clickable, msg, pin, title, value]);
 
   const error = useCallback(
     (key: string) => {
