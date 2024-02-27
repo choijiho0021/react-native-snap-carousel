@@ -25,7 +25,6 @@ import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {OrderState, RkbOrder, RkbPayment} from '@/redux/api/orderApi';
-import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import {
@@ -40,6 +39,10 @@ import {API} from '@/redux/api';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
 import ScreenHeader from '@/components/ScreenHeader';
+import DropDownHeader from './PymMethodScreen/DropDownHeader';
+import ProductDetailInfo from './CancelOrderScreen/component/ProductDetailInfo';
+import ProductDetailRender from './CancelOrderScreen/component/ProductDetailRender';
+import {ProductModelState} from '@/redux/modules/product';
 
 const {esimCurrency, esimGlobal} = Env.get();
 
@@ -105,9 +108,6 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     letterSpacing: 0.27,
     flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 20,
-    marginVertical: 10,
     maxWidth: isDeviceSize('small') ? '70%' : '80%',
   },
   cancelDraftFrame: {
@@ -135,6 +135,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     marginHorizontal: 20,
     marginVertical: 20,
+  },
+  bottomBar: {
+    borderBottomColor: colors.lightGrey,
+    borderBottomWidth: 1,
+    marginHorizontal: 20,
+    marginBottom: 20,
   },
   thickBar: {
     borderBottomColor: colors.black,
@@ -230,6 +236,7 @@ type PurchaseDetailScreenProps = {
 
   account: AccountModelState;
   orders: OrderModelState['orders'];
+  product: ProductModelState;
 
   pending: boolean;
 
@@ -248,6 +255,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   orders,
   pending,
   action,
+  product,
 }) => {
   const [showPayment, setShowPayment] = useState(true);
   const [method, setMethod] = useState<RkbPayment>();
@@ -258,6 +266,27 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     () => method?.amount || utils.toCurrency(0, esimCurrency),
     [method?.amount],
   );
+
+  // 별도 컴포넌트로 분리하기?
+  const prodList = useMemo(() => {
+    if (!order?.orderItems) return [];
+
+    return order.orderItems.map((r) => {
+      const prod = product.prodList.get(r.uuid);
+
+      console.log('@@@@@@ prod : ', prod);
+      if (prod)
+        return {
+          title: prod.name,
+          field_description: prod.field_description,
+          promoFlag: prod.promoFlag,
+          qty: r.qty,
+          price: r.price,
+        };
+
+      return null;
+    });
+  }, [order?.orderItems, product.prodList]);
 
   const isValidate = useMemo(
     () => order?.orderType === 'refundable' && order?.state === 'validation',
@@ -537,6 +566,9 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
 
     if (parseInt(etcCount, 10) > 0)
       label += i18n.t('his:etcCnt').replace('%%', etcCount);
+
+    console.log('@@@@ order.orderItems :', order.orderItems);
+
     return (
       <View>
         <AppText style={styles.date}>
@@ -545,9 +577,25 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             esimGlobal ? 'LLL' : 'YYYY년 MM월 DD일 A h:mm',
           )}
         </AppText>
-        <View style={styles.productTitle}>
+        {/* <View style={styles.productTitle}>
           <AppText style={appStyles.bold18Text}>{label}</AppText>
-        </View>
+        </View> */}
+        <DropDownHeader
+          title={label}
+          style={{paddingTop: 16}}
+          titleStyle={styles.productTitle}>
+          <ProductDetailRender
+            style={{
+              paddingBottom: 0,
+              paddingHorizontal: 20,
+            }}
+            frameStyle={{}}
+            prods={prodList}
+            isHeader={false}
+            listTitle={'1'}
+            isFooter={false}
+          />
+        </DropDownHeader>
         <View style={styles.bar} />
         <LabelText
           key="orderId"
@@ -668,9 +716,10 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
 };
 
 export default connect(
-  ({account, status, order}: RootState) => ({
+  ({account, status, order, product}: RootState) => ({
     account,
     orders: order.orders,
+    product,
     pending:
       status.pending[orderActions.getOrders.typePrefix] ||
       status.pending[orderActions.cancelDraftOrder.typePrefix] ||

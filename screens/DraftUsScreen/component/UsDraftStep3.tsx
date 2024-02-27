@@ -4,7 +4,7 @@ import React, {useCallback, useEffect, useRef} from 'react';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import ProductDetailList from '@/screens/CancelOrderScreen/component/ProductDetailList';
+import ProductDetailRender from '@/screens/CancelOrderScreen/component/ProductDetailRender';
 import i18n from '@/utils/i18n';
 import {DeviceDataType} from '..';
 import GuideBox from '@/screens/CancelOrderScreen/component/GuideBox';
@@ -72,7 +72,7 @@ const UsDraftStep3: React.FC<UsDraftStep3Props> = ({
             {i18n.t('us:result:title')}
           </AppText>
           <View style={styles.proudctFrame}>
-            <ProductDetailList
+            <ProductDetailRender
               style={styles.product}
               prods={prods}
               isHeader={false}

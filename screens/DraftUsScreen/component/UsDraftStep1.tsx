@@ -7,7 +7,7 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {getCountItems} from '@/redux/modules/order';
-import ProductDetailList from '@/screens/CancelOrderScreen/component/ProductDetailList';
+import ProductDetailRender from '@/screens/CancelOrderScreen/component/ProductDetailRender';
 import i18n from '@/utils/i18n';
 import {ProdInfo} from '@/redux/api/productApi';
 
@@ -50,7 +50,7 @@ const UsDraftStep1: React.FC<UsDraftStep1Props> = ({
         />
 
         <View style={styles.proudctFrame}>
-          <ProductDetailList
+          <ProductDetailRender
             style={styles.product}
             prods={prods}
             listTitle={i18n

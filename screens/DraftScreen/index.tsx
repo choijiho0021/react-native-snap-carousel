@@ -32,7 +32,7 @@ import {
   ProductModelState,
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
-import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
+import ProductDetailRender from '../CancelOrderScreen/component/ProductDetailRender';
 import GuideBox from '../CancelOrderScreen/component/GuideBox';
 import FloatCheckButton from '../CancelOrderScreen/component/FloatCheckButton';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
@@ -157,12 +157,15 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
 
     const prodList: ProdInfo[] = draftOrder.orderItems.map((r) => {
       const prod = product.prodList.get(r.uuid);
+
+      console.log('@@@@@@ prod : ', prod);
       if (prod)
         return {
           title: prod.name,
           field_description: prod.field_description,
           promoFlag: prod.promoFlag,
           qty: r.qty,
+          price: r.price,
         };
 
       return null;
@@ -196,7 +199,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
       </View>
       <ScrollView ref={scrollRef} style={{flex: 1}}>
         <View style={styles.proudctFrame}>
-          <ProductDetailList
+          <ProductDetailRender
             style={styles.product}
             prods={prods}
             listTitle={i18n

@@ -44,7 +44,7 @@ import AppTextInput from '@/components/AppTextInput';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {ProdInfo} from '@/redux/api/productApi';
 import AppSnackBar from '@/components/AppSnackBar';
-import ProductDetailList from './component/ProductDetailList';
+import ProductDetailRender from './component/ProductDetailRender';
 import GuideBox from './component/GuideBox';
 import FloatCheckButton from './component/FloatCheckButton';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
@@ -342,7 +342,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
             paddingHorizontal: 20,
             paddingBottom: 20,
           }}>
-          <ProductDetailList
+          <ProductDetailRender
             prods={prods}
             listTitle={i18n
               .t('his:cancelHeaderTitle2')

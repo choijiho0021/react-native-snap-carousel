@@ -1,4 +1,4 @@
-import React, {memo, useEffect} from 'react';
+import React, {memo, useMemo} from 'react';
 import {StyleSheet, ViewStyle, View, StyleProp} from 'react-native';
 import {colors} from '@/constants/Colors';
 import SplitText from '@/components/SplitText';
@@ -7,7 +7,8 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {utils} from '@/utils/utils';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
-import {ProdInfo} from '@/redux/api/productApi';
+import {Currency, ProdInfo} from '@/redux/api/productApi';
+import i18n from '@/utils/i18n';
 
 const styles = StyleSheet.create({
   productFrame: {
@@ -18,15 +19,25 @@ const styles = StyleSheet.create({
   },
 });
 
-type ProductDetailInfoPros = {item: ProdInfo; style?: StyleProp<ViewStyle>};
+type ProductDetailInfoPros = {
+  item: ProdInfo;
+  style?: StyleProp<ViewStyle>;
+  showPriceInfo?: boolean;
+};
 
 const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
   item,
   style = {marginBottom: 10},
+  showPriceInfo = false,
 }) => {
+  const price: Currency = useMemo(
+    () => ({value: item?.price, currency: 'KRW'}),
+    [item?.price],
+  );
+
   return (
     <View style={style}>
-      <View style={styles.productFrame}>
+      <View style={[styles.productFrame, {marginBottom: 4}]}>
         <SplitText
           numberOfLines={2}
           renderExpend={() => renderPromoFlag(item.promoFlag || [], false)}
@@ -51,6 +62,33 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
           {item.field_description}
         </AppText>
       </View>
+
+      {showPriceInfo && (
+        <View style={{marginTop: 4, flexDirection: 'row'}}>
+          <AppText
+            key="price"
+            style={[
+              appStyles.bold16Text,
+              {
+                color: colors.black,
+                lineHeight: 24,
+              },
+            ]}>
+            {`${price.value}${i18n.t(price.currency)}`}
+          </AppText>
+          <AppText
+            key="qty"
+            style={[
+              appStyles.normal16Text,
+              {
+                color: colors.black,
+                lineHeight: 24,
+              },
+            ]}>
+            {` / ${item.qty}${i18n.t('qty')}`}
+          </AppText>
+        </View>
+      )}
     </View>
   );
 };
