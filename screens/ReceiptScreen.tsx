@@ -203,10 +203,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
           <View style={styles.title}>
             <AppText
               style={[appStyles.semiBold14Text, {color: colors.warmGrey}]}>
-              {utils.toDateString(
-                order?.orderDate,
-                esimGlobal ? 'LLL' : 'YYYY년 MM월 DD일 A h:mm',
-              )}
+              {utils.toDateString(order?.orderDate, 'LLL')}
             </AppText>
             <AppText style={styles.titleText}>{i18n.t('appTitle')}</AppText>
           </View>

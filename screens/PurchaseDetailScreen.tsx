@@ -25,7 +25,6 @@ import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {OrderState, RkbOrder, RkbPayment} from '@/redux/api/orderApi';
-import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import {
@@ -540,10 +539,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     return (
       <View>
         <AppText style={styles.date}>
-          {utils.toDateString(
-            order?.orderDate,
-            esimGlobal ? 'LLL' : 'YYYY년 MM월 DD일 A h:mm',
-          )}
+          {utils.toDateString(order?.orderDate, 'LLL')}
         </AppText>
         <View style={styles.productTitle}>
           <AppText style={appStyles.bold18Text}>{label}</AppText>

@@ -1,10 +1,9 @@
-import moment from 'moment-with-locales-es6';
 import {Image, Platform} from 'react-native';
 import {getFontScale} from 'react-native-device-info';
 import RNFetchBlob from 'rn-fetch-blob';
 import _ from 'underscore';
 import {Image as CropImage} from 'react-native-image-crop-picker';
-import {Moment} from 'moment';
+import moment, {Moment} from 'moment';
 import i18n from '@/utils/i18n';
 import Env from '@/environment';
 import {RkbImage} from './accountApi';
