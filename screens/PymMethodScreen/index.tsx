@@ -330,7 +330,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         } as PaymentParams;
 
         setClickable(true);
-        navigation.navigate(esimGlobal ? 'Payment' : 'PaymentGateway', params);
+        navigation.navigate('PaymentGateway', params);
       }
     },
     [

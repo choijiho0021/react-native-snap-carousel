@@ -28,7 +28,6 @@ import CartScreen from '@/screens/CartScreen';
 import MyPageScreen from '@/screens/MyPageScreen/index';
 import InviteScreen from '@/screens/InviteScreen/index';
 import NotiScreen from '@/screens/NotiScreen';
-import PaymentScreen from '@/screens/PaymentScreen';
 import PaymentResultScreen from '@/screens/PaymentResultScreen';
 import PurchaseDetailScreen from '@/screens/PurchaseDetailScreen';
 import ContactScreen from '@/screens/ContactScreen';
@@ -144,7 +143,6 @@ function HomeStackComponent() {
       <HomeStack.Screen name="BoardMsgResp" component={BoardMsgRespScreen} />
       <HomeStack.Screen name="Faq" component={FaqScreen} />
       <HomeStack.Screen name="Country" component={CountryScreen} />
-      <HomeStack.Screen name="Payment" component={PaymentScreen} />
       <HomeStack.Screen name="PymMethod" component={PymMethodScreen} />
       <HomeStack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
       <HomeStack.Group
@@ -190,7 +188,6 @@ function CartStackComponent() {
   return (
     <CartStack.Navigator screenOptions={screenOptions}>
       <CartStack.Screen name="Cart" component={CartScreen} />
-      <CartStack.Screen name="Payment" component={PaymentScreen} />
       <CartStack.Screen name="PymMethod" component={PymMethodScreen} />
       <CartStack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
       <CartStack.Screen name="SimpleText" component={SimpleTextScreen} />
@@ -250,7 +247,6 @@ function EsimStackComponent() {
         name="ProductDetailOp"
         component={ProductDetailOpScreen}
       />
-      <EsimStack.Screen name="Payment" component={PaymentScreen} />
       <EsimStack.Screen name="PymMethod" component={PymMethodScreen} />
       <EsimStack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
       <EsimStack.Screen name="PaymentResult" component={PaymentResultScreen} />
@@ -286,7 +282,6 @@ function MyPageStackComponent() {
       {/* <MyPageStack.Screen name="Pedometer" component={PedometerScreen} /> */}
       <MyPageStack.Screen name="Invite" component={InviteScreen} />
       <MyPageStack.Screen name="InvitePromo" component={InvitePromoScreen} />
-      <MyPageStack.Screen name="Payment" component={PaymentScreen} />
       <MyPageStack.Screen name="PymMethod" component={PymMethodScreen} />
       <MyPageStack.Screen
         name="PaymentResult"
