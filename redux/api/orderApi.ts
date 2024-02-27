@@ -72,6 +72,7 @@ export type OrderItemType = {
   qty: number;
   price: number;
   uuid: string;
+  type: 'esim_product' | 'add_on_product' | 'recharge';
 };
 
 export type OrderPolicyType = 'immediate_order' | 'refundable' | 'default';

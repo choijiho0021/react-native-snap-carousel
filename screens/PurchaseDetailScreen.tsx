@@ -2,19 +2,12 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppButton from '@/components/AppButton';
-import AppPrice from '@/components/AppPrice';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppText from '@/components/AppText';
 import LabelText from '@/components/LabelText';
@@ -39,22 +32,15 @@ import {API} from '@/redux/api';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
 import ScreenHeader from '@/components/ScreenHeader';
+import PaymentSummary from '@/components/PaymentSummary';
+import {PaymentReq} from '@/redux/modules/cart';
 
-const {esimCurrency, esimGlobal} = Env.get();
+const {esimCurrency} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-  },
-  dropDownBox: {
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  dropDownIcon: {
-    flexDirection: 'column',
-    alignSelf: 'flex-end',
   },
   hearNotiFrame: {
     alignItems: 'center',
@@ -82,22 +68,10 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     color: colors.warmGrey,
   },
-  normal16BlueTxt: {
-    ...appStyles.normal16Text,
-    color: colors.clearBlue,
-    lineHeight: 24,
-    letterSpacing: 0.24,
-  },
   cancelButtonText: {
     ...appStyles.medium14,
     color: colors.blue,
     lineHeight: 24,
-  },
-  boldTitle: {
-    ...appStyles.bold18Text,
-    color: colors.black,
-    lineHeight: 22,
-    alignSelf: 'center',
   },
   productTitle: {
     ...appStyles.bold18Text,
@@ -112,6 +86,7 @@ const styles = StyleSheet.create({
   cancelDraftFrame: {
     marginHorizontal: 20,
     marginBottom: 26,
+    marginTop: 32,
   },
   cancelDraftBtn: {
     borderRadius: 3,
@@ -135,24 +110,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginVertical: 20,
   },
-  thickBar: {
-    borderBottomColor: colors.black,
-    borderBottomWidth: 1,
-    marginHorizontal: 20,
-    marginBottom: 20,
-  },
   item: {
     marginHorizontal: 20,
     height: 36,
     alignItems: 'center',
     minWidth: '25%',
-  },
-  label: {
-    ...appStyles.bold16Text,
-    fontSize: isDeviceSize('small') ? 14 : 16,
-    lineHeight: 36,
-    letterSpacing: 0.26,
-    color: colors.black,
   },
   labelValue: {
     ...appStyles.robotoSemiBold16Text,
@@ -170,23 +132,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     lineHeight: 36,
     color: colors.warmGrey,
-  },
-  row: {
-    ...appStyles.itemRow,
-    paddingHorizontal: 20,
-    height: isDeviceSize('small') ? 30 : 36,
-    alignItems: 'center',
-    borderBottomWidth: 0,
-    // marginBottom: 20,
-  },
-  fontWeightBold: {
-    fontWeight: 'bold',
-    lineHeight: 24,
-    letterSpacing: 0.22,
-  },
-  alignCenter: {
-    alignSelf: 'center',
-    marginRight: 15,
   },
   secondaryButton: {
     flex: 1,
@@ -206,10 +151,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
     color: colors.white,
-  },
-  priceStyle: {
-    ...appStyles.bold22Text,
-    color: colors.blue,
   },
 });
 
@@ -248,15 +189,10 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   pending,
   action,
 }) => {
-  const [showPayment, setShowPayment] = useState(true);
-  const [method, setMethod] = useState<RkbPayment>();
   const [order, setOrder] = useState<RkbOrder>();
+  const [method, setMethod] = useState<RkbPayment>();
   const [showSnackBar, setShowSnackBar] = useState<string>('');
   const [loading, setLoading] = useState(false);
-  const paidAmount = useMemo(
-    () => method?.amount || utils.toCurrency(0, esimCurrency),
-    [method?.amount],
-  );
 
   const isValidate = useMemo(
     () => order?.orderType === 'refundable' && order?.state === 'validation',
@@ -318,71 +254,26 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     if (!order) return null;
 
     const isRecharge =
-      order.orderItems?.find((item) =>
-        item.title.includes(i18n.t('sim:rechargeBalance')),
-      ) || false;
+      order.orderItems?.find((i) => i.type === 'recharge') || false;
+
+    const pym = {
+      subtotal: order.subtotal,
+      discount: order.discount,
+      rkbcash: order.deductBalance,
+    } as PaymentReq;
+
+    const pg = method?.paymentMethod || i18n.t('pym:balance');
 
     return (
       <View>
-        <View key="bar-1" style={styles.thickBar} />
-        {order.orderItems?.map((item, idx) => (
-          <LabelText
-            key={idx}
-            style={styles.item}
-            label={`${item.title}  ×  ${item.qty}`}
-            labelStyle={styles.label}
-            format="price"
-            valueStyle={appStyles.roboto16Text}
-            value={item.price}
-            balanceStyle={[styles.normal16BlueTxt, {color: colors.black}]}
-            currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
-          />
-        ))}
-        {/* {!esimApp && ( */}
-        <View key="bar-2" style={styles.bar} />
+        <PaymentSummary data={pym} total={order.totalPrice} />
         <LabelText
-          key="productAmount"
           style={styles.item}
-          label={i18n.t('his:productAmount')}
+          label={i18n.t('pym:method')}
           labelStyle={styles.label2}
-          format="price"
-          valueStyle={appStyles.roboto16Text}
-          value={order.subtotal}
-          currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
-          balanceStyle={[styles.normal16BlueTxt, {color: colors.black}]}
+          value={pg}
+          valueStyle={styles.labelValue}
         />
-        {/* )} */}
-
-        {!isRecharge &&
-          ['discount', 'deductBalance'].map((k) => (
-            <LabelText
-              key={k}
-              style={styles.item}
-              label={i18n.t(`pym:${k}`)}
-              format="price"
-              labelStyle={styles.label2}
-              valueStyle={appStyles.roboto16Text}
-              value={order[k]}
-              balanceStyle={[styles.normal16BlueTxt, {color: colors.black}]}
-              currencyStyle={[styles.normal16BlueTxt, {color: colors.black}]}
-            />
-          ))}
-        <View key="bar-3" style={styles.bar} />
-        <View key="total" style={[styles.row, {marginBottom: 5}]}>
-          <AppText style={appStyles.normal16Text}>
-            {i18n.t('cart:totalCost')}
-          </AppText>
-          <View
-            style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
-            <AppPrice
-              price={paidAmount}
-              balanceStyle={[styles.priceStyle, {marginRight: 5}]}
-              currencyStyle={styles.priceStyle}
-            />
-          </View>
-        </View>
-
-        {!isRecharge && <View key="margin" style={{marginBottom: 20}} />}
 
         {!isRecharge && (
           <View key="btn" style={styles.cancelDraftFrame}>
@@ -413,7 +304,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         )}
       </View>
     );
-  }, [isValidate, isValidation, navigation, order, paidAmount]);
+  }, [isValidate, isValidation, method?.paymentMethod, navigation, order]);
 
   const pymId = useMemo(
     () =>
@@ -529,7 +420,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   const headerInfo = useCallback(() => {
     if (!order || !order.orderItems) return <View />;
 
-    const pg = method?.paymentMethod || i18n.t('pym:balance');
     const state = i18n.t(`pym:orderState:${order?.state}`);
     let label: string = order.orderItems[0].title;
     const etcCount = getCountItems(order?.orderItems, true);
@@ -548,23 +438,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         <LabelText
           key="orderId"
           style={styles.item}
-          label={i18n.t('his:orderId')}
-          labelStyle={styles.label2}
-          value={order.orderNo}
-          valueStyle={styles.labelValue}
-        />
-        <LabelText
-          key="pymMethod"
-          style={styles.item}
-          label={i18n.t('pym:method')}
-          labelStyle={styles.label2}
-          value={pg}
-          valueStyle={styles.labelValue}
-        />
-        <LabelText
-          key="orderState"
-          style={[styles.item, {marginBottom: 20}]}
-          label={i18n.t('pym:orderState')}
+          label={`${i18n.t('his:orderId')} ${order.orderNo}`}
           labelStyle={styles.label2}
           value={state}
           valueStyle={[styles.labelValue, {color: getColor(order?.state)}]}
@@ -572,7 +446,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         <View style={styles.dividerTop} />
       </View>
     );
-  }, [getColor, method?.paymentMethod, order]);
+  }, [getColor, order]);
 
   if (!order || !order.orderItems) {
     return (
@@ -591,32 +465,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
       <ScrollView style={{flex: 1}}>
         {headerNoti()}
         {headerInfo()}
-        <Pressable
-          style={styles.dropDownBox}
-          onPress={() => setShowPayment((prev) => !prev)}>
-          <AppText style={styles.boldTitle}>
-            {i18n.t('his:paymentDetail')}
-          </AppText>
-          <View style={{flexDirection: 'row'}}>
-            {!showPayment && (
-              <AppText
-                style={[
-                  styles.normal16BlueTxt,
-                  styles.fontWeightBold,
-                  styles.alignCenter,
-                ]}>
-                {utils.price(paidAmount)}
-              </AppText>
-            )}
-            <AppButton
-              style={{backgroundColor: colors.white, height: 70}}
-              iconName={showPayment ? 'iconArrowUp' : 'iconArrowDown'}
-              iconStyle={styles.dropDownIcon}
-              onPress={() => setShowPayment((prev) => !prev)}
-            />
-          </View>
-        </Pressable>
-        {showPayment && paymentInfo()}
+        {paymentInfo()}
       </ScrollView>
       <AppSnackBar
         visible={showSnackBar !== ''}
