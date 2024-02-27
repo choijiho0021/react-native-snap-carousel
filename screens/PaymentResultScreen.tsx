@@ -7,9 +7,8 @@ import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppButton from '@/components/AppButton';
-import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
-import PaymentItemInfo from '@/components/PaymentItemInfo';
+import {PaymentItem} from '@/components/PaymentItemInfo';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
@@ -25,53 +24,28 @@ import {
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import ScreenHeader from '@/components/ScreenHeader';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
-const {esimCurrency, esimGlobal} = Env.get();
+const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
-  container: {
+  box: {
     flex: 1,
     backgroundColor: colors.white,
-    marginHorizontal: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 24,
     justifyContent: 'flex-start',
-  },
-  result: {
-    ...appStyles.itemRow,
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    height: 90,
-    padding: 20,
-    backgroundColor: colors.white,
-    borderBottomWidth: 0,
-  },
-  title: {
-    ...appStyles.title,
-    marginLeft: 20,
-  },
-  image: {
-    marginTop: 30,
-    justifyContent: 'center',
-  },
-  paymentResultView: {
-    backgroundColor: colors.white,
-    alignItems: 'center',
-    marginHorizontal: 10,
-    marginVertical: 10,
-  },
-  paymentResultText: {
-    ...appStyles.normal14Text,
-    color: colors.clearBlue,
-    marginVertical: 15,
-  },
-  btnOrderList: {
     borderWidth: 1,
-    borderColor: colors.lightGrey,
-    width: 180,
-    height: 44,
-    marginTop: 15,
-    marginBottom: 40,
+    borderRadius: 3,
+    borderColor: colors.whiteFive,
+    shadowColor: 'rgba(166, 168, 172, 0.16)',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowRadius: 10,
+    shadowOpacity: 1,
   },
   btnHomeText: {
     ...appStyles.normal18Text,
@@ -85,7 +59,23 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    backgroundColor: colors.whiteTwo,
+    backgroundColor: colors.white,
+    marginHorizontal: 20,
+  },
+  status: {
+    ...appStyles.bold24Text,
+    marginTop: 80,
+    marginBottom: 16,
+  },
+  divider: {
+    height: 1,
+    marginTop: 23,
+    backgroundColor: colors.black,
+  },
+  stamp: {
+    marginRight: 8,
+    alignItems: 'flex-end',
+    height: 62,
   },
 });
 
@@ -115,7 +105,7 @@ type PaymentResultScreenProps = {
 
 const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   navigation,
-  route: {params, name: screen},
+  route: {params},
   account,
   cart,
   action,
@@ -180,10 +170,10 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   );
 
   useEffect(() => {
-    const {pymReq, purchaseItems, pymPrice, deduct, orderId} = cart;
+    const {pymReq, purchaseItems, pymPrice, orderId} = cart;
     const {token} = account;
     if (purchaseItems.length > 0) {
-      setOldCart({pymReq, purchaseItems, pymPrice, deduct});
+      setOldCart({pymReq, purchaseItems, pymPrice});
       // 카트를 비운다.
       action.cart.makeEmpty({orderId, token});
     }
@@ -198,67 +188,48 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     }
   }, [cart?.pymPrice, isSuccess, params?.mode]);
 
+  console.log('@@@ old cart', oldCart, params);
+
   // [WARNING: 이해를 돕기 위한 것일 뿐, imp_success 또는 success 파라미터로 결제 성공 여부를 장담할 수 없습니다.]
   // 아임포트 서버로 결제내역 조회(GET /payments/${imp_uid})를 통해 그 응답(status)에 따라 결제 성공 여부를 판단하세요.
 
   return (
-    <SafeAreaView style={{flex: 1, alignItems: 'stretch'}}>
-      <ScreenHeader
-        title={i18n.t(isSuccess ? 'his:paymentCompleted' : 'his:paymentFailed')}
-        backHandler={() => {}}
-        showIcon={false}
-      />
+    <SafeAreaView
+      style={{flex: 1, alignItems: 'stretch', backgroundColor: colors.white}}>
       <ScrollView style={styles.scrollView}>
-        <View style={styles.paymentResultView}>
-          <AppIcon
-            style={styles.image}
-            name={isSuccess ? 'imgCheck' : 'imgFail'}
-          />
-          <AppText
-            style={[
-              styles.paymentResultText,
-              !isSuccess && {color: colors.tomato},
-            ]}>
-            {` ${i18n.t(isSuccess ? 'pym:success' : 'pym:fail')}`}
+        <AppText style={styles.status}>
+          {i18n.t(isSuccess ? 'his:pym:success' : 'his:pym:fail')}
+        </AppText>
+        <AppText style={appStyles.normal16Text}>
+          {i18n.t(isSuccess ? 'his:pym:withus' : 'his:pym:tryagain')}
+        </AppText>
+        <AppSvgIcon name="stampFail" style={styles.stamp} />
+        <View style={styles.box}>
+          <AppText style={appStyles.bold18Text}>
+            {oldCart?.purchaseItems?.[0].title}
+            {(oldCart?.purchaseItems?.length || 0) > 1 && (
+              <AppText style={appStyles.normal18Text}>
+                {i18n
+                  .t('his:etcCnt')
+                  .replace('%%', (oldCart?.purchaseItems?.length || 0) - 1)}
+              </AppText>
+            )}
           </AppText>
-          <AppButton
-            style={styles.btnOrderList}
-            type="secondary"
-            // MyPage화면 이동 필요
-            onPress={() => {
-              navigation.popToTop();
-              navigation.navigate('MyPageStack', {screen: 'MyPage'});
-            }}
-            // title={i18n.t('cancel')}
-            title={i18n.t('pym:toOrderList')}
-            titleStyle={appStyles.normal16Text}
+          <View style={styles.divider} />
+          <PaymentItem
+            title={i18n.t('his:pymAmount')}
+            value={utils.price(oldCart?.pymPrice)}
+            valueStyle={appStyles.roboto16Text}
           />
-        </View>
-        <View style={styles.container}>
-          <PaymentItemInfo
-            purchaseItems={oldCart?.purchaseItems || []}
-            pymReq={oldCart?.pymReq}
-            mode="result"
-            pymPrice={
-              isSuccess ? oldCart?.pymPrice : utils.toCurrency(0, esimCurrency)
+          <PaymentItem
+            title={i18n.t('pym:method')}
+            value={
+              params.pay_method === 'card'
+                ? i18n.t(`pym:card${params.card}`)
+                : i18n.t(params.pay_method)
             }
-            deduct={
-              isSuccess ? oldCart?.deduct : utils.toCurrency(0, esimCurrency)
-            }
-            screen={screen}
+            valueStyle={appStyles.roboto16Text}
           />
-          {screen === 'PaymentResult' && (
-            <View style={styles.result}>
-              <AppText style={[appStyles.normal16Text, {flex: 1}]}>
-                {i18n.t('cart:afterDeductBalance')}
-              </AppText>
-              <AppText style={appStyles.normal16Text}>
-                {utils.price(
-                  utils.toCurrency(account.balance || 0, esimCurrency),
-                )}
-              </AppText>
-            </View>
-          )}
         </View>
       </ScrollView>
       <AppButton

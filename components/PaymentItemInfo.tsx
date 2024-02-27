@@ -6,7 +6,6 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import utils from '@/redux/api/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
-import {CartModelState} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
 import AppText from './AppText';
 import {RootState} from '@/redux';
@@ -32,9 +31,6 @@ const styles = StyleSheet.create({
   },
   mrgBottom0: {
     marginBottom: 0,
-  },
-  colorWarmGrey: {
-    color: colors.warmGrey,
   },
   productPriceInfo: {
     paddingVertical: isDeviceSize('small') ? 13 : 11,
@@ -69,13 +65,11 @@ const PaymentItem0 = ({
   titleStyle,
   value,
   valueStyle,
-  mode,
   prod,
   qty,
 }: {
   title: string;
   value: string;
-  mode?: PaymentItemMode;
   style?: StyleProp<ViewStyle>;
   titleStyle?: StyleProp<ViewStyle>;
   valueStyle?: StyleProp<TextStyle>;
@@ -84,18 +78,11 @@ const PaymentItem0 = ({
 }) => {
   const renderAmount = useCallback(
     () => (
-      <AppText
-        key="amount"
-        style={
-          valueStyle || [
-            styles.normalText16,
-            mode === 'result' && styles.colorWarmGrey,
-          ]
-        }>
+      <AppText key="amount" style={valueStyle || styles.normalText16}>
         {value}
       </AppText>
     ),
-    [mode, value, valueStyle],
+    [value, valueStyle],
   );
 
   return (
@@ -121,14 +108,7 @@ const PaymentItem0 = ({
             style={[appStyles.normal14Text, {color: colors.warmGrey}]}>
             {prod?.field_description}
           </AppText>
-          <AppText
-            key="amount"
-            style={
-              valueStyle || [
-                styles.normalText16,
-                mode === 'result' && styles.colorWarmGrey,
-              ]
-            }>
+          <AppText key="amount" style={valueStyle || styles.normalText16}>
             {value}
           </AppText>
         </View>
@@ -140,33 +120,55 @@ const PaymentItem0 = ({
 export const PaymentItem = memo(PaymentItem0);
 
 type PaymentItemInfoProps = {
-  cart: CartModelState;
   product: ProductModelState;
   purchaseItems: PurchaseItem[];
-  mode?: PaymentItemMode;
 };
 
 const PaymentItemInfo: React.FC<PaymentItemInfoProps> = ({
   product,
   purchaseItems,
-  mode = 'method',
 }) => {
   // PaymentResultScreen에서 어떻게 보이나 확인 필요
+
+  //   <DropDownHeader
+  //   title={i18n.t('pym:title')}
+  //   style={{paddingTop: 16, paddingBottom: 20}}
+  //   titleStyle={styles.productTitle}>
+  //   <ProductDetailList
+  //     style={{
+  //       paddingBottom: 0,
+  //       paddingHorizontal: 20,
+  //     }}
+  //     showPriceInfo
+  //     orderItems={purchaseItems}
+  //     product={product}
+  //   />
+  // </DropDownHeader>
+
   return (
-    <DropDownHeader
-      title={i18n.t('pym:title')}
-      style={{paddingTop: 16, paddingBottom: 20}}
-      titleStyle={styles.productTitle}>
-      <ProductDetailList
-        style={{
-          paddingBottom: 0,
-          paddingHorizontal: 20,
-        }}
-        showPriceInfo
-        orderItems={purchaseItems}
-        product={product}
-      />
-    </DropDownHeader>
+    <View>
+      <View>
+        {purchaseItems.map((item) => {
+          const price =
+            item.qty === undefined
+              ? item.price
+              : utils.toCurrency(
+                  Math.round(item.price.value * item.qty * 100) / 100,
+                  item.price.currency,
+                );
+          return (
+            <PaymentItem
+              key={item.key}
+              title={item.title}
+              valueStyle={styles.normalText16}
+              qty={item.qty}
+              value={utils.price(price)}
+              prod={product.prodList.get(item.key)}
+            />
+          );
+        })}
+      </View>
+    </View>
   );
 
   // const isRecharge = useMemo(
@@ -179,7 +181,6 @@ const PaymentItemInfo: React.FC<PaymentItemInfoProps> = ({
   //       {i18n.t('pym:title')}
   //     </AppText>
   //     {/*
-  //       상품별 가격
   //       ex) 일본 상품 3일  x 1개
   //     */}
   //     <View

@@ -97,7 +97,6 @@ const PaymentVBankScreen: React.FC<PaymentVBankScreenProps> = ({
     <SafeAreaView style={{flex: 1, alignItems: 'stretch'}}>
       <ScreenHeader
         title={i18n.t(isSuccess ? 'his:paymentCompleted' : 'his:paymentFailed')}
-        backHandler={() => {}}
         showIcon={false}
       />
       <ScrollView style={styles.scrollView}>

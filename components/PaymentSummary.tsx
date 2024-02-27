@@ -38,14 +38,14 @@ const PaymentSummary = ({
   totalLabel,
   totalColor,
 }: {
-  data: PaymentReq;
-  total: Currency;
+  data?: PaymentReq;
+  total?: Currency;
   expandable?: boolean;
   title?: string;
   totalLabel?: string;
   totalColor?: string;
 }) => {
-  return (
+  return data && total ? (
     <DropDownHeader
       title={title || i18n.t('cart:pymAmount')}
       expandable={expandable}
@@ -81,7 +81,7 @@ const PaymentSummary = ({
         value={utils.price(total)}
       />
     </DropDownHeader>
-  );
+  ) : null;
 };
 
 export default memo(PaymentSummary);
