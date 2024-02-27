@@ -138,6 +138,7 @@ const toOrder = (
               (acc, cur) => acc + (utils.stringToNumber(cur.amt) || 0),
               0,
             );
+          const total = utils.stringToCurrency(item.total);
 
           return {
             key: item.id || '',
@@ -149,7 +150,11 @@ const toOrder = (
             subtotal: utils.stringToCurrency(item.subtotal),
             discount: utils.stringToCurrency(item.adj),
             deductBalance: utils.toCurrency(deductBalance, esimCurrency),
-            totalPrice: utils.stringToCurrency(item.total),
+            // totalPrice = 최종 결제 금액 (subtotal - discount - rokebicash)
+            totalPrice: utils.toCurrency(
+              total ? total.value - deductBalance : 0,
+              esimCurrency,
+            ),
             orderItems: item.item,
             usageList: item.subs,
             paymentList: item.pym.map((p) => ({
