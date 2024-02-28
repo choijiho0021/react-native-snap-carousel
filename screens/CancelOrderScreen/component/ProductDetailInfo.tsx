@@ -43,7 +43,7 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
           renderExpend={() => renderPromoFlag(item.promoFlag || [], false)}
           style={{...appStyles.bold16Text, marginRight: 6}}
           ellipsizeMode="tail">
-          {utils.removeBracketOfName(item.title)}
+          {utils.removeBracketOfName(item?.title)}
         </SplitText>
       </View>
       <View>
@@ -59,7 +59,7 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
               lineHeight: isDeviceSize('medium') ? 20 : 22,
             },
           ]}>
-          {item.field_description}
+          {item?.field_description}
         </AppText>
       </View>
 

@@ -450,7 +450,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
             }}
             showPriceInfo
             orderItems={cart.purchaseItems}
-            product={product}
           />
         </DropDownHeader>
 

@@ -162,7 +162,6 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
           <ProductDetailRender
             style={styles.product}
             orderItems={draftOrder?.orderItems}
-            product={product}
             listTitle={i18n
               .t('his:draftItemText')
               .replace('%', getCountItems(draftOrder?.orderItems, false))}

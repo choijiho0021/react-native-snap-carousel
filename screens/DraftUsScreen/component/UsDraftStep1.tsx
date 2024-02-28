@@ -53,7 +53,6 @@ const UsDraftStep1: React.FC<UsDraftStep1Props> = ({
         <View style={styles.proudctFrame}>
           <ProductDetailRender
             style={styles.product}
-            product={product}
             orderItems={draftOrder?.orderItems}
             listTitle={i18n
               .t('his:draftItemText')

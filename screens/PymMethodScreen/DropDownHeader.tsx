@@ -37,7 +37,7 @@ type DropDownHeaderProps = {
   title: string;
   summary?: string;
   titleStyle?: StyleProp<ViewStyle>;
-  style: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
   expandable?: boolean;
 };
 

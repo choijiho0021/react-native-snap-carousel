@@ -78,7 +78,6 @@ const UsDraftStep3: React.FC<UsDraftStep3Props> = ({
           <View style={styles.proudctFrame}>
             <ProductDetailRender
               style={styles.product}
-              product={product}
               orderItems={orderItems}
               isHeader={false}
               isBody

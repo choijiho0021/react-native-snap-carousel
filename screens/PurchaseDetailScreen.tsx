@@ -453,8 +453,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     if (parseInt(etcCount, 10) > 0)
       label += i18n.t('his:etcCnt').replace('%%', etcCount);
 
-    console.log('@@@@ order.orderItems :', order.orderItems);
-
     return (
       <View>
         <AppText style={styles.date}>
@@ -473,7 +471,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
               paddingHorizontal: 20,
             }}
             showPriceInfo
-            product={product}
             orderItems={order?.orderItems}
           />
         </DropDownHeader>

@@ -344,7 +344,6 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
           }}>
           <ProductDetailRender
             orderItems={selectedOrder?.orderItems}
-            product={product}
             listTitle={i18n
               .t('his:cancelHeaderTitle2')
               .replace('%', getCountItems(selectedOrder?.orderItems, false))}

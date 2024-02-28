@@ -4,12 +4,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppStyledText from '@/components/AppStyledText';
-import ProductDetailInfo from './ProductDetailInfo';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
 import {ProdInfo} from '@/redux/api/productApi';
 import ProductDetailList from './ProductDetailList';
-import {ProductModelState} from '@/redux/modules/product';
 import {OrderItemType} from '@/redux/api/orderApi';
 
 const styles = StyleSheet.create({
@@ -124,7 +122,6 @@ type ProductDetailRenderPros = {
   listTitle?: string;
   style?: StyleProp<ViewStyle>;
   frameStyle?: StyleProp<ViewStyle>;
-  product: ProductModelState;
   notiComponent?: any;
   footerComponent?: any;
   bodyComponent?: any;
@@ -139,7 +136,6 @@ const ProductDetailRender: React.FC<ProductDetailRenderPros> = ({
   style,
   frameStyle,
   listTitle,
-  product,
   notiComponent,
   footerComponent = <DefaultFooter />,
   bodyComponent,
@@ -186,11 +182,7 @@ const ProductDetailRender: React.FC<ProductDetailRenderPros> = ({
       </View>
 
       <View key="cancelFrame" style={frameStyle || styles.cancelItemFrame}>
-        <ProductDetailList
-          orderItems={orderItems}
-          product={product}
-          listTitle={listTitle}
-        />
+        <ProductDetailList orderItems={orderItems} listTitle={listTitle} />
         {isBody && bodyComponent}
         {isFooter && footerComponent}
       </View>
