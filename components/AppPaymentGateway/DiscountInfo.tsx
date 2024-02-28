@@ -95,6 +95,12 @@ const DiscountInfo: React.FC<DiscountProps> = ({
     [account.balance, action.cart],
   );
 
+  useEffect(() => {
+    if (rokebiCash !== '') {
+      updateRokebiCash(rokebiCash);
+    }
+  }, [rokebiCash, updateRokebiCash]);
+
   const toggleMaxPromo = useCallback(
     (check: boolean) => {
       // check - current status
