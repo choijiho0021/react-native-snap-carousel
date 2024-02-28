@@ -30,6 +30,7 @@ import AppSnackBar from '@/components/AppSnackBar';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import CouponItem from './CouponItem';
 import api from '@/redux/api/api';
+import moment from 'moment';
 
 const styles = StyleSheet.create({
   container: {
@@ -142,7 +143,11 @@ const CouponScreen: React.FC<CouponProps> = ({
       API.Account.registerCoupon({code, iccid, token}).then((resp) => {
         if (resp.result === 0) {
           setCode('');
-          setMessage(i18n.t('coupon:reg:succ'));
+          if (resp.objects?.[0]?.endDate.diff(moment(), 'days') < 1) {
+            setMessage(i18n.t('coupon:reg:succ:1dayLeft'));
+          } else {
+            setMessage(i18n.t('coupon:reg:succ'));
+          }
           dispatch(action.account.getMyCoupon({token}));
         } else if (resp.result === api.E_RESOURCE_NOT_FOUND) {
           setMessage(i18n.t('coupon:reg:fail:norsc'));
