@@ -394,6 +394,7 @@
   "his:notSelected": "선택 안함",
   "his:paymentCompleted": "결제 완료",
   "his:paymentFailed": "결제 실패",
+  "his:pym:alert": "발권 후 구매하신 eSIM 상품 정보를 확인할 수 있어요.",
   "his:pym:success": "결제\n완료되었습니다.",
   "his:pym:fail": "결제\n실패하였습니다.",
   "his:pym:tryagain": "다시 시도해주세요.",

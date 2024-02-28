@@ -3,9 +3,9 @@ import {StackNavigationProp} from '@react-navigation/stack';
 
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
-import {appStyles} from '@/constants/Styles';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {appStyles} from '@/constants/Styles';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList, goBack} from '@/navigation/navigation';
