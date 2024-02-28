@@ -169,20 +169,10 @@ const slice = createSlice({
     purchase: (state, {payload}) => {
       const {esimIccid, purchaseItems, mainSubsId, isCart} = payload;
 
-      const subtotal = utils.toCurrency(
-        ((purchaseItems as PurchaseItem[]) || []).reduce(
-          (acc, cur) => acc + cur.price.value * (cur.qty || 1),
-          0,
-        ),
-        esimCurrency,
-      );
-
       state.esimIccid = esimIccid;
       state.mainSubsId = mainSubsId;
       // purchaseItems에는 key, qty, price, title 정보 필요
       state.purchaseItems = purchaseItems;
-      state.pymReq = {subtotal} as PaymentReq;
-      state.pymPrice = subtotal;
       state.isCart = isCart;
     },
 
@@ -341,15 +331,27 @@ const slice = createSlice({
           return acc;
         }, undefined)?.coupon_id;
 
+        if (!state.pymReq) {
+          state.pymReq = {} as PaymentReq;
+        }
+
+        if (!state.pymReq.subtotal) {
+          state.pymReq.subtotal = utils.toCurrency(
+            ((state.purchaseItems as PurchaseItem[]) || []).reduce(
+              (acc, cur) => acc + cur.price.value * (cur.qty || 1),
+              0,
+            ),
+            esimCurrency,
+          );
+        }
+
         // couponToApply == undefined 이면, discount도 undefined로 설정된다.
         const promo = state.promo?.find(
           (p) => p.coupon_id === state.couponToApply,
         );
-
-        state.pymReq = {
-          ...state.pymReq,
-          discount: promo?.adj,
-        };
+        if (promo) {
+          state.pymReq.discount = promo.adj;
+        }
 
         state.pymPrice = utils.toCurrency(
           (state.pymReq?.subtotal?.value || 0) +
