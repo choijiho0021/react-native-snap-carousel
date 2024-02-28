@@ -73,14 +73,14 @@ export type PymMethodRef = {
 
 type PymMethodProps = {
   value: string;
-  duration?: string;
+  installmentMonths?: string;
   onPress: (kind: string) => void;
   pymMethodRef: React.MutableRefObject<PymMethodRef | null>;
 };
 
 const PymMethod: React.FC<PymMethodProps> = ({
   value,
-  duration,
+  installmentMonths,
   onPress,
   pymMethodRef,
 }) => {
@@ -119,16 +119,16 @@ const PymMethod: React.FC<PymMethodProps> = ({
         <View style={{height: 12}} />
         <DropDownButton
           title={
-            (duration || '1') === '1'
+            (installmentMonths || '0') === '0'
               ? i18n.t('pym:pay:atonce')
-              : duration + i18n.t('pym:duration')
+              : installmentMonths + i18n.t('pym:duration')
           }
           disabled={!value?.startsWith('card')}
-          onPress={() => onPress('duration')}
+          onPress={() => onPress('installmentMonths')}
         />
       </View>
     );
-  }, [duration, onPress, value]);
+  }, [installmentMonths, onPress, value]);
 
   const renderVBankButton = useCallback(() => {
     return (

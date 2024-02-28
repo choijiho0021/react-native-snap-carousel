@@ -56,6 +56,7 @@ export type PaymentParams = {
   isPaid?: boolean;
   mode?: string;
   card?: string;
+  installmentMonths?: string; // 할부 개월수
   paymentRule?: PaymentRule;
 };
 
