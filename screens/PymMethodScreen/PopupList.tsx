@@ -1,11 +1,5 @@
 import React, {memo} from 'react';
-import {
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import {Modal, Pressable, ScrollView, StyleSheet} from 'react-native';
 import {colors} from '@/constants/Colors';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
@@ -23,7 +17,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     left: 19,
     top: 125,
-    height: '80%',
     backgroundColor: 'rgba(237, 237, 237, 0.8)',
     shadowColor: 'rgba(0, 0, 0, 0.16)',
   },
@@ -42,16 +35,17 @@ const PopupList = ({
   visible,
   onPress,
   data,
+  height,
 }: {
   data: {label: string; value: string}[];
   visible: boolean;
-  style?: ViewStyle;
+  height?: number | string;
   onPress: (id: string) => void;
 }) => {
   return (
     <Modal visible={visible} transparent>
       <Pressable style={{flex: 1}} onPress={() => onPress('')}>
-        <ScrollView style={styles.menu}>
+        <ScrollView style={[styles.menu, {height: height || '80%'}]}>
           {data.map(({label, value}, i) => (
             <Pressable
               key={value}

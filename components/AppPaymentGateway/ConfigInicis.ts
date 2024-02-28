@@ -35,7 +35,8 @@ const opt: Record<string, string> = {
 export const inicisWebviewHtml = (info: PaymentParams) => {
   let reserved = opt[info.pay_method] || '';
   if (info.card) {
-    reserved += `&d_card=${info.card}&d_quota=0&cardshowopt=${info.card}:3`;
+    // reserved += `&d_card=${info.card}&d_quota=0&cardshowopt=${info.card}:3`;
+    reserved += `&d_card=${info.card}&d_quota=${info.installmentMonths || '0'}`;
   }
   const timestamp = Date.now();
   const hash = CryptoJS.SHA512(

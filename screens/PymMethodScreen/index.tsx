@@ -157,8 +157,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [navigateAlertTxt, setNavigateAlertTxt] = useState<string>();
   const [rstTm, setRstTm] = useState('');
   const [showSelectCard, setShowSelectCard] = useState(false);
-  const [showDuration, setShowDuration] = useState(false);
-  const [duration, setDuration] = useState('1');
+  const [showInstallmentMonths, setShowInstallmentMonths] = useState(false);
+  const [installmentMonths, setInstallmentMonths] = useState('0');
 
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
   const pymMethodRef = useRef<PymMethodRef>(null);
@@ -193,10 +193,10 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     [],
   );
 
-  const durationList = useMemo(
+  const installmentMonthsList = useMemo(
     () =>
-      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((k) => ({
-        label: k === 1 ? i18n.t('pym:pay:atonce') : k + i18n.t('pym:duration'),
+      [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((k) => ({
+        label: k === 0 ? i18n.t('pym:pay:atonce') : k + i18n.t('pym:duration'),
         value: k.toString(),
       })),
     [],
@@ -329,6 +329,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           pg: payMethod?.key,
           pay_method: payMethod?.method,
           card: selected.startsWith('card') ? selected.slice(4, 6) : '',
+          installmentMonths,
           merchant_uid: `${prefix}${mobile}_${new Date().getTime()}`,
           name: i18n.t('appTitle'),
           amount: cart.pymPrice?.value, // 실제 결제 금액 (로깨비캐시 제외)
@@ -358,6 +359,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       cart.pymPrice?.value,
       cart.pymReq?.rkbcash,
       clickable,
+      installmentMonths,
       mode,
       navigation,
       product.rule,
@@ -380,8 +382,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const setPymMethod = useCallback((kind: string) => {
     if (kind === 'card') {
       setShowSelectCard(true);
-    } else if (kind === 'duration') {
-      setShowDuration(true);
+    } else if (kind === 'installmentMonths') {
+      setShowInstallmentMonths(true);
     } else {
       setSelected(kind);
     }
@@ -443,7 +445,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         <PymMethod
           pymMethodRef={pymMethodRef}
           value={selected}
-          duration={duration}
+          installmentMonths={installmentMonths}
           onPress={setPymMethod}
         />
 
@@ -489,16 +491,21 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       </AppModal>
       <PopupList
         data={
-          showSelectCard ? creditCardList : showDuration ? durationList : []
+          showSelectCard
+            ? creditCardList
+            : showInstallmentMonths
+            ? installmentMonthsList
+            : []
         }
-        visible={showSelectCard || showDuration}
+        height={showInstallmentMonths ? '60%' : '80%'}
+        visible={showSelectCard || showInstallmentMonths}
         onPress={(v) => {
           if (showSelectCard) {
             setShowSelectCard(false);
             setSelected(v);
           } else {
-            setShowDuration(false);
-            setDuration(v);
+            setShowInstallmentMonths(false);
+            setInstallmentMonths(v);
           }
         }}
       />
