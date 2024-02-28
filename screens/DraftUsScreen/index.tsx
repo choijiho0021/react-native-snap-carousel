@@ -1,13 +1,12 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {appStyles} from '@/constants/Styles';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList, goBack} from '@/navigation/navigation';
 import {RootState} from '@/redux';
@@ -33,7 +32,6 @@ import UsDraftStep3 from './component/UsDraftStep3';
 import AppAlert from '@/components/AppAlert';
 import api from '@/redux/api/api';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {ProdInfo} from '@/redux/api/productApi';
 import ScreenHeader from '@/components/ScreenHeader';
 
 const styles = StyleSheet.create({
@@ -102,7 +100,6 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   route,
   account: {iccid, token},
   action,
-  product,
   order,
   pending,
 }) => {
@@ -270,11 +267,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
         }
       />
       {step === 0 && (
-        <UsDraftStep1
-          product={product}
-          draftOrder={draftOrder}
-          onClick={onClickStart}
-        />
+        <UsDraftStep1 draftOrder={draftOrder} onClick={onClickStart} />
       )}
 
       {step === 1 && (
@@ -298,7 +291,6 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
           <UsDraftStep3
             actDate={actDate}
             deviceData={deviceData}
-            product={product}
             checked={checked}
             orderItems={draftOrder?.orderItems}
             setChecked={setChecked}
@@ -329,9 +321,8 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
 };
 
 export default connect(
-  ({account, product, order}: RootState) => ({
+  ({account, order}: RootState) => ({
     account,
-    product,
     order,
     pending: false,
   }),

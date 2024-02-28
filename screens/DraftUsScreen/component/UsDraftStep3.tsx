@@ -1,6 +1,7 @@
 import {ScrollView} from 'react-native-gesture-handler';
 import {StyleSheet, View} from 'react-native';
-import React, {useCallback, useEffect, useRef} from 'react';
+import React, {useCallback, useRef} from 'react';
+import moment from 'moment';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -10,9 +11,6 @@ import {DeviceDataType} from '..';
 import GuideBox from '@/screens/CancelOrderScreen/component/GuideBox';
 import FloatCheckButton from '@/screens/CancelOrderScreen/component/FloatCheckButton';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import moment from 'moment';
-import {ProdInfo} from '@/redux/api/productApi';
-import {ProductModelState} from '@/redux/modules/product';
 import {OrderItemType} from '@/redux/api/orderApi';
 
 const styles = StyleSheet.create({
@@ -38,7 +36,6 @@ interface UsDraftStep3Props {
   deviceData: DeviceDataType;
   checked: boolean;
   setChecked: (val: boolean) => void;
-  product: ProductModelState;
   orderItems: OrderItemType[];
 }
 
@@ -48,7 +45,6 @@ const UsDraftStep3: React.FC<UsDraftStep3Props> = ({
   checked,
   setChecked,
   orderItems,
-  product,
 }) => {
   const scrollRef = useRef(null);
 

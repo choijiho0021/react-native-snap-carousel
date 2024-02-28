@@ -65,18 +65,6 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
 
       {showPriceInfo && (
         <View style={{flexDirection: 'row'}}>
-          {/* <AppText
-            key="price"
-            style={[
-              appStyles.bold16Text,
-              {
-                color: colors.black,
-                lineHeight: 24,
-              },
-            ]}>
-            {`${item.price.value}${i18n.t(item.price.currency)}`}
-          </AppText> */}
-
           <AppPrice
             price={utils.toCurrency(
               item.price?.value || 0,
@@ -84,7 +72,6 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
             )}
             balanceStyle={styles.priceText}
             currencyStyle={styles.priceText}
-            // style={styles.priceValueText}
           />
           <AppText
             key="qty"

@@ -36,12 +36,6 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     shadowOpacity: 0.3,
   },
-  cancelItem: {
-    paddingVertical: 24,
-    borderBottomWidth: 1,
-    marginBottom: 8,
-    borderColor: colors.whiteFive,
-  },
 
   cancelCountNotiFrame: {
     backgroundColor: colors.darkBlue,

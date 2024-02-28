@@ -364,7 +364,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         </View>
       </ScrollView>
     );
-  }, [selectedOrder?.orderItems, product]);
+  }, [selectedOrder?.orderItems]);
 
   const renderStep2 = useCallback(() => {
     return (

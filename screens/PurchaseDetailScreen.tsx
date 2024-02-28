@@ -33,12 +33,7 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
 import ScreenHeader from '@/components/ScreenHeader';
 import DropDownHeader from './PymMethodScreen/DropDownHeader';
-import ProductDetailInfo from './CancelOrderScreen/component/ProductDetailInfo';
-import ProductDetailRender from './CancelOrderScreen/component/ProductDetailRender';
-import {ProductModelState} from '@/redux/modules/product';
 import ProductDetailList from './CancelOrderScreen/component/ProductDetailList';
-
-const {esimCurrency, esimGlobal} = Env.get();
 import PaymentSummary from '@/components/PaymentSummary';
 import {PaymentReq} from '@/redux/modules/cart';
 
@@ -179,8 +174,6 @@ type PurchaseDetailScreenProps = {
 
   account: AccountModelState;
   orders: OrderModelState['orders'];
-  product: ProductModelState;
-
   pending: boolean;
 
   action: {
@@ -198,7 +191,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   orders,
   pending,
   action,
-  product,
 }) => {
   const [order, setOrder] = useState<RkbOrder>();
   const [method, setMethod] = useState<RkbPayment>();
@@ -458,9 +450,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         <AppText style={styles.date}>
           {utils.toDateString(order?.orderDate, 'LLL')}
         </AppText>
-        {/* <View style={styles.productTitle}>
-          <AppText style={appStyles.bold18Text}>{label}</AppText>
-        </View> */}
         <DropDownHeader
           title={label}
           style={{paddingTop: 16, paddingBottom: 20}}
@@ -486,7 +475,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         <View style={styles.dividerTop} />
       </View>
     );
-  }, [getColor, order, product]);
+  }, [getColor, order]);
 
   if (!order || !order.orderItems) {
     return (
@@ -553,10 +542,9 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
 };
 
 export default connect(
-  ({account, status, order, product}: RootState) => ({
+  ({account, status, order}: RootState) => ({
     account,
     orders: order.orders,
-    product,
     pending:
       status.pending[orderActions.getOrders.typePrefix] ||
       status.pending[orderActions.cancelDraftOrder.typePrefix] ||

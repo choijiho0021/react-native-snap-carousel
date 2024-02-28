@@ -9,8 +9,6 @@ import {RkbOrder} from '@/redux/api/orderApi';
 import {getCountItems} from '@/redux/modules/order';
 import ProductDetailRender from '@/screens/CancelOrderScreen/component/ProductDetailRender';
 import i18n from '@/utils/i18n';
-import {ProdInfo} from '@/redux/api/productApi';
-import {ProductModelState} from '@/redux/modules/product';
 
 const styles = StyleSheet.create({
   buttonFrame: {flexDirection: 'row'},
@@ -32,15 +30,10 @@ const styles = StyleSheet.create({
 
 interface UsDraftStep1Props {
   draftOrder: RkbOrder;
-  product: ProductModelState;
   onClick: () => void;
 }
 
-const UsDraftStep1: React.FC<UsDraftStep1Props> = ({
-  draftOrder,
-  product,
-  onClick,
-}) => {
+const UsDraftStep1: React.FC<UsDraftStep1Props> = ({draftOrder, onClick}) => {
   return (
     <>
       <ScrollView style={{flex: 1}}>
@@ -67,9 +60,6 @@ const UsDraftStep1: React.FC<UsDraftStep1Props> = ({
         <AppButton
           style={styles.button}
           type="primary"
-          // pressedStyle={{
-          //   backgroundColor: checked ? colors.clearBlue : colors.gray,
-          // }}
           title={i18n.t('esim:draftStart')}
           onPress={() => {
             onClick();
