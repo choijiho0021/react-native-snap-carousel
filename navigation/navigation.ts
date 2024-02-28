@@ -229,6 +229,7 @@ export type HomeStackParamList = {
   CashHistory: {};
   ChangeEmail: undefined;
   SelectCoupon: undefined;
+  Coupon: undefined;
 };
 
 export const navigate = (

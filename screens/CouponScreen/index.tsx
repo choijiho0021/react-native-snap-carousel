@@ -29,6 +29,7 @@ import {API} from '@/redux/api';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import CouponItem from './CouponItem';
+import api from '@/redux/api/api';
 
 const styles = StyleSheet.create({
   container: {
@@ -141,8 +142,12 @@ const CouponScreen: React.FC<CouponProps> = ({
       API.Account.registerCoupon({code, iccid, token}).then((resp) => {
         if (resp.result === 0) {
           setCode('');
-          dispatch(action.account.getMyCoupon({token}));
           setMessage(i18n.t('coupon:reg:succ'));
+          dispatch(action.account.getMyCoupon({token}));
+        } else if (resp.result === api.E_RESOURCE_NOT_FOUND) {
+          setMessage(i18n.t('coupon:reg:fail:norsc'));
+        } else if (resp.result === api.E_ALREADY_EXIST) {
+          setMessage(i18n.t('coupon:reg:fail:duplicated'));
         } else {
           setMessage(i18n.t('coupon:reg:fail'));
         }
