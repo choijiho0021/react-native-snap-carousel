@@ -1,220 +1,168 @@
-import React, {Fragment, memo, useCallback} from 'react';
-import {StyleSheet, ViewStyle, View, StyleProp, Platform} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import React, {Fragment, useCallback, useMemo, useRef} from 'react';
+import {StyleProp, StyleSheet, View, ViewStyle} from 'react-native';
 import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
-import AppStyledText from '@/components/AppStyledText';
 import ProductDetailInfo from './ProductDetailInfo';
-import AppText from '@/components/AppText';
-import i18n from '@/utils/i18n';
 import {ProdInfo} from '@/redux/api/productApi';
+import {RkbOrderItem} from '@/redux/api/cartApi';
+import {PurchaseItem} from '@/redux/models/purchaseItem';
+import {utils} from '@/utils/utils';
+import {OrderItemType} from '@/redux/api/orderApi';
+
+import {
+  actions as productActions,
+  ProductModelState,
+} from '@/redux/modules/product';
+
+import {bindActionCreators, RootState} from 'redux';
+import {connect} from 'react-redux';
 
 const styles = StyleSheet.create({
-  notiContainer: {
-    marginTop: 20,
-  },
-
-  notiText: {...appStyles.normal20Text, color: colors.white, lineHeight: 28},
-  notiBoldText: {...appStyles.bold20Text, color: colors.white, lineHeight: 28},
-  cancelItemFrame: {
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    backgroundColor: colors.white,
-    borderColor: colors.whiteFive,
-    borderBottomLeftRadius: 3,
-    borderBottomRightRadius: 3,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-
-    elevation: 12,
-    shadowColor: colors.shadow4,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowRadius: 10,
-    shadowOpacity: 0.3,
-  },
   cancelItem: {
     paddingVertical: 24,
     borderBottomWidth: 1,
     marginBottom: 8,
     borderColor: colors.whiteFive,
   },
-
-  cancelCountNotiFrame: {
-    backgroundColor: colors.darkBlue,
-    alignItems: 'center',
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
-    borderTopLeftRadius: 3,
-    borderTopRightRadius: 3,
-    paddingVertical: 12,
-    shadowColor: colors.shadow2,
-    shadowRadius: 10,
-    shadowOpacity: 0.16,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-  },
-  dashContainer: {
-    overflow: 'hidden',
-  },
-  dashFrame: {
-    borderStyle: 'dashed',
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
-    margin: -1,
-    height: 0,
-    marginBottom: 0,
-  },
-  dash: {
-    width: '100%',
-  },
-
-  headerNotiText: {
-    ...appStyles.bold16Text,
-    color: colors.redError,
-  },
-
-  headerNoti: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    borderColor: colors.lightGrey,
-  },
 });
 
-const DefaultFooter = () => {
-  const renderDashedDiv = useCallback(() => {
-    return (
-      <View style={styles.dashContainer}>
-        <View style={styles.dashFrame}>
-          <View style={styles.dash} />
-        </View>
-      </View>
-    );
-  }, []);
-
-  return (
-    <View>
-      {Platform.OS === 'ios' && renderDashedDiv()}
-      <View
-        style={[
-          styles.headerNoti,
-          Platform.OS === 'android' && {
-            borderStyle: 'dashed',
-            borderTopWidth: 1,
-          },
-        ]}>
-        <AppText style={styles.headerNotiText}>
-          {i18n.t('his:draftNoti')}
-        </AppText>
-      </View>
-    </View>
-  );
-};
-
 type ProductDetailListPros = {
-  prods: ProdInfo[];
+  orderItems: RkbOrderItem[] | PurchaseItem[] | OrderItemType[];
+  style: StyleProp<ViewStyle>;
   listTitle?: string;
-  style?: StyleProp<ViewStyle>;
-  notiComponent?: any;
-  footerComponent?: any;
-  bodyComponent?: any;
-  isGradient?: boolean;
-  isFooter?: boolean;
-  isHeader?: boolean;
-  isBody?: boolean;
+  showPriceInfo?: boolean;
+  product: ProductModelState;
 };
 
 const ProductDetailList: React.FC<ProductDetailListPros> = ({
-  prods,
-  style,
+  orderItems,
   listTitle,
-  notiComponent,
-  footerComponent = <DefaultFooter />,
-  bodyComponent,
-  isGradient = false,
-  isFooter = true,
-  isHeader = true,
-  isBody = false,
+  style,
+  showPriceInfo,
+  product,
+  action,
 }) => {
+  const loading = useRef(false);
+
+  // 함수로 묶기
+  const getProdDate = useCallback(() => {
+    if (!loading.current && (orderItems?.length || 0) > 0) {
+      orderItems.forEach((i) => {
+        if (!product.prodList.has(i?.key || i?.uuid)) {
+          // 해당 Uuid로 없다면 서버에서 가져온다.
+          action.product.getProdByUuid(i?.key || i?.uuid);
+          loading.current = true;
+        }
+      });
+    }
+  }, [action.product, orderItems, product.prodList]);
+
+  const prodList = useMemo(() => {
+    if (!orderItems) return [];
+
+    getProdDate();
+
+    const prods = orderItems
+      .map((item) => {
+        const price =
+          item.qty === undefined
+            ? item.price
+            : utils.toCurrency(
+                Math.round(
+                  (item?.price?.value || item.price) * item.qty * 100,
+                ) / 100,
+                item?.price?.currency || 'KRW',
+              );
+        const prod = product.prodList.get(item?.key || item?.uuid);
+
+        if (prod)
+          return {
+            title: prod.name,
+            field_description: prod?.field_description,
+            promoFlag: prod.promoFlag,
+            qty: item.qty,
+            price,
+          };
+
+        return null;
+      })
+      .filter((r) => r !== null);
+
+    const isNeedUpdate = prods.some((item) => item === null);
+
+    if (isNeedUpdate) getProdDate();
+    return prods;
+  }, [getProdDate, orderItems, product.prodList]);
+
   const renderItem = useCallback(
-    ({item, isLast}: {item: ProdInfo; isLast?: boolean}) => {
+    ({
+      item,
+      isLast,
+      indexParam,
+    }: {
+      item: ProdInfo;
+      isLast?: boolean;
+      indexParam: number;
+    }) => {
       return (
-        <Fragment key={`${item.title}_${listTitle}`}>
-          {Array.from({length: item?.qty}, (_, index) => {
-            return (
-              <ProductDetailInfo
-                key={`${item.title}_${index}_${listTitle}`}
-                item={item}
-                style={[
-                  styles.cancelItem,
-                  isLast &&
-                    index === item?.qty - 1 && {
-                      marginBottom: 0,
-                      borderBottomWidth: 0,
-                    },
-                ]}
-              />
-            );
-          })}
+        <Fragment key={`${item?.title}_${listTitle}_${indexParam}`}>
+          {showPriceInfo ? (
+            <ProductDetailInfo
+              key={`${item?.title}_${indexParam}_${listTitle}`}
+              showPriceInfo={showPriceInfo}
+              item={item}
+              style={[
+                styles.cancelItem,
+                isLast && {
+                  marginBottom: 0,
+                  borderBottomWidth: 0,
+                },
+              ]}
+            />
+          ) : (
+            Array.from({length: item?.qty}, (_, index) => {
+              return (
+                <ProductDetailInfo
+                  key={`${item?.title}_${index}_${listTitle}`}
+                  showPriceInfo={showPriceInfo}
+                  item={item}
+                  style={[
+                    styles.cancelItem,
+                    isLast &&
+                      index === item?.qty - 1 && {
+                        marginBottom: 0,
+                        borderBottomWidth: 0,
+                      },
+                  ]}
+                />
+              );
+            })
+          )}
         </Fragment>
       );
     },
-    [listTitle],
+    [listTitle, showPriceInfo],
   );
 
   return (
-    <View
-      key="container"
-      style={[{backgroundColor: 'white', borderColor: '#000'}, style]}>
-      <View key="noti" style={styles.notiContainer}>
-        {isHeader && (
-          <>
-            {notiComponent}
-            {isGradient ? (
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={[colors.clearBlue, colors.purplyBlue]}
-                style={styles.cancelCountNotiFrame}>
-                <View>
-                  <AppStyledText
-                    text={listTitle}
-                    textStyle={styles.notiText}
-                    format={{b: styles.notiBoldText}}
-                  />
-                </View>
-              </LinearGradient>
-            ) : (
-              <View style={styles.cancelCountNotiFrame}>
-                <View>
-                  <AppStyledText
-                    text={listTitle}
-                    textStyle={styles.notiText}
-                    format={{b: styles.notiBoldText}}
-                  />
-                </View>
-              </View>
-            )}
-          </>
-        )}
-      </View>
-
-      <View key="cancelFrame" style={styles.cancelItemFrame}>
-        <View key="cancelList" style={{justifyContent: 'center'}}>
-          {prods.map((r, index) => {
-            return renderItem({item: r, isLast: index === prods.length - 1});
-          })}
-        </View>
-        {isBody && bodyComponent}
-        {isFooter && footerComponent}
-      </View>
+    <View key="cancelList" style={[{justifyContent: 'center'}, style]}>
+      {prodList?.length > 0 &&
+        prodList.map((r, index) => {
+          return renderItem({
+            item: r,
+            isLast: index === orderItems.length - 1,
+            indexParam: index,
+          });
+        })}
     </View>
   );
 };
 
-export default memo(ProductDetailList);
+// export default memo(ProductDetailList);
+export default connect(
+  ({product}: RootState) => ({product}),
+  (dispatch) => ({
+    action: {
+      product: bindActionCreators(productActions, dispatch),
+    },
+  }),
+)(ProductDetailList);

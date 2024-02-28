@@ -1,13 +1,12 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {appStyles} from '@/constants/Styles';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList, goBack} from '@/navigation/navigation';
 import {RootState} from '@/redux';
@@ -33,7 +32,6 @@ import UsDraftStep3 from './component/UsDraftStep3';
 import AppAlert from '@/components/AppAlert';
 import api from '@/redux/api/api';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {ProdInfo} from '@/redux/api/productApi';
 import ScreenHeader from '@/components/ScreenHeader';
 
 const styles = StyleSheet.create({
@@ -102,12 +100,10 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   route,
   account: {iccid, token},
   action,
-  product,
   order,
   pending,
 }) => {
   const [draftOrder, setDraftOrder] = useState<RkbOrder>();
-  const [prods, setProds] = useState<ProdInfo[]>([]);
   const loading = useRef(false);
   const [showSnackBar, setShowSnackBar] = useState('');
   const [showPicker, setShowPicker] = useState(false);
@@ -160,44 +156,6 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   const onClickStart = useCallback(() => {
     setStep((prev) => prev + 1);
   }, []);
-
-  //
-  const getProdDate = useCallback(() => {
-    if (!loading.current && draftOrder?.orderItems?.length > 0) {
-      draftOrder?.orderItems?.forEach((i) => {
-        if (!product.prodList.has(i.uuid)) {
-          // 해당 Uuid로 없다면 서버에서 가져온다.
-          action?.product.getProdByUuid(i.uuid);
-          loading.current = true;
-        }
-      });
-    }
-  }, [action?.product, draftOrder?.orderItems, product.prodList]);
-
-  useEffect(() => {
-    if (!draftOrder?.orderItems) return;
-
-    const prodList: ProdInfo = draftOrder.orderItems.map((r) => {
-      const prod = product.prodList.get(r.uuid);
-
-      console.log('@@@@@ prod : ', prod);
-
-      if (prod)
-        return {
-          title: prod.name,
-          field_description: prod.field_description,
-          promoFlag: prod.promoFlag,
-          qty: r.qty,
-        } as ProdInfo;
-
-      return null;
-    });
-
-    const isNeedUpdate = prodList.some((item) => item === null);
-
-    if (isNeedUpdate) getProdDate();
-    else setProds(prodList);
-  }, [draftOrder?.orderItems, getProdDate, product.prodList]);
 
   const requestDraft = useCallback(() => {
     setIsClickButton(true);
@@ -309,11 +267,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
         }
       />
       {step === 0 && (
-        <UsDraftStep1
-          prods={prods}
-          draftOrder={draftOrder}
-          onClick={onClickStart}
-        />
+        <UsDraftStep1 draftOrder={draftOrder} onClick={onClickStart} />
       )}
 
       {step === 1 && (
@@ -337,8 +291,8 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
           <UsDraftStep3
             actDate={actDate}
             deviceData={deviceData}
-            prods={prods}
             checked={checked}
+            orderItems={draftOrder?.orderItems}
             setChecked={setChecked}
           />
           {renderBottomBtn(() => {
@@ -367,9 +321,8 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
 };
 
 export default connect(
-  ({account, product, order}: RootState) => ({
+  ({account, order}: RootState) => ({
     account,
-    product,
     order,
     pending: false,
   }),

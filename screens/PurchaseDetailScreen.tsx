@@ -32,6 +32,8 @@ import {API} from '@/redux/api';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
 import ScreenHeader from '@/components/ScreenHeader';
+import DropDownHeader from './PymMethodScreen/DropDownHeader';
+import ProductDetailList from './CancelOrderScreen/component/ProductDetailList';
 import PaymentSummary from '@/components/PaymentSummary';
 import {PaymentReq} from '@/redux/modules/cart';
 
@@ -76,9 +78,6 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     letterSpacing: 0.27,
     flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 20,
-    marginVertical: 10,
     maxWidth: isDeviceSize('small') ? '70%' : '80%',
   },
   cancelDraftFrame: {
@@ -102,11 +101,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteTwo,
     justifyContent: 'center',
   },
-  bar: {
+  bottomBar: {
     borderBottomColor: colors.lightGrey,
     borderBottomWidth: 1,
     marginHorizontal: 20,
-    marginVertical: 20,
+    marginBottom: 20,
   },
   item: {
     marginHorizontal: 20,
@@ -175,7 +174,6 @@ type PurchaseDetailScreenProps = {
 
   account: AccountModelState;
   orders: OrderModelState['orders'];
-
   pending: boolean;
 
   action: {
@@ -446,15 +444,26 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
 
     if (parseInt(etcCount, 10) > 0)
       label += i18n.t('his:etcCnt').replace('%%', etcCount);
+
     return (
       <View>
         <AppText style={styles.date}>
           {utils.toDateString(order?.orderDate, 'LLL')}
         </AppText>
-        <View style={styles.productTitle}>
-          <AppText style={appStyles.bold18Text}>{label}</AppText>
-        </View>
-        <View style={styles.bar} />
+        <DropDownHeader
+          title={label}
+          style={{paddingTop: 16, paddingBottom: 20}}
+          titleStyle={styles.productTitle}>
+          <ProductDetailList
+            style={{
+              paddingBottom: 0,
+              paddingHorizontal: 20,
+            }}
+            showPriceInfo
+            orderItems={order?.orderItems}
+          />
+        </DropDownHeader>
+        <View style={styles.bottomBar} />
         <LabelText
           key="orderId"
           style={styles.item}

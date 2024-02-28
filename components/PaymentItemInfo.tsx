@@ -118,6 +118,8 @@ const PaymentItemInfo: React.FC<PaymentItemInfoProps> = ({
   product,
   purchaseItems,
 }) => {
+  // PaymentResultScreen에서 어떻게 보이나 확인 필요
+
   const isRecharge = useMemo(
     () => purchaseItems.findIndex((item) => item.type === 'rch') >= 0,
     [purchaseItems],

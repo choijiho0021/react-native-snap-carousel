@@ -1,5 +1,5 @@
 import React, {PropsWithChildren, memo, useState} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Pressable, StyleProp, StyleSheet, View, ViewStyle} from 'react-native';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -36,14 +36,18 @@ const styles = StyleSheet.create({
 type DropDownHeaderProps = {
   title: string;
   summary?: string;
+  titleStyle?: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
   expandable?: boolean;
 };
 
 const DropDownHeader: React.FC<PropsWithChildren<DropDownHeaderProps>> = ({
   title,
   summary,
-  expandable,
+  expandable = true,
   children,
+  style,
+  titleStyle,
 }) => {
   const [showContent, setShowContent] = useState(true);
 
@@ -54,11 +58,12 @@ const DropDownHeader: React.FC<PropsWithChildren<DropDownHeaderProps>> = ({
           styles.spaceBetweenBox,
           {borderBottomWidth: showContent ? 1 : 0},
           {paddingBottom: showContent ? 20 : 0},
+          style,
         ]}
         onPress={() => {
           if (expandable) setShowContent((prev) => !prev);
         }}>
-        <AppText style={styles.boldTitle}>{title}</AppText>
+        <AppText style={[styles.boldTitle, titleStyle]}>{title}</AppText>
         {expandable ? (
           <View style={styles.row}>
             {!showContent && (

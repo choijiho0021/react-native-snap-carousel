@@ -583,6 +583,7 @@
   "cart:purchase": "구매하기",
   "cart:purchaseNow": "바로 구매하기",
   "cart:saveCart": "카트에 담기",
+  "cart:payment": "%% 결제하기",
   "cart:empty1": "카트가 비어있습니다.",
   "cart:empty2": "로밍도깨비와 즐거운 여행을 계획해 보세요!",
   "cart:remove": "판매 중지된 상품이 목록에서 삭제되었습니다.",
@@ -1066,7 +1067,7 @@
   "pym:receipt": "영수증",
   "pym:noAppScheme": "앱 실행에 실패했습니다. 설치가 되어있지 않은 경우 설치하기 버튼을 눌러주세요.",
 
-  "pym:email": "배송 이메일",
+  "pym:email": "발송 이메일",
   "pym:email:change": "이메일 변경",
   "pym:email:change:noti": "변경된 이메일로 eSIM 상품이 발송됩니다.",
 

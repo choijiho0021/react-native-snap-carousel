@@ -144,7 +144,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 
   [super application:application didFinishLaunchingWithOptions:launchOptions];
 
-
+  [ChannelIO initialize:application];
+  
   [NaverTracker configure];
 
   // didFinishLaunchingWithOptions 아래에 와야한다. 위에 있으면 RNSplashScreen은 연결할 RootView를 몰라서 에러 로그도 출력하지 않고 하얀화면만 실행된다

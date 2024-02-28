@@ -44,7 +44,7 @@ import AppTextInput from '@/components/AppTextInput';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {ProdInfo} from '@/redux/api/productApi';
 import AppSnackBar from '@/components/AppSnackBar';
-import ProductDetailList from './component/ProductDetailList';
+import ProductDetailRender from './component/ProductDetailRender';
 import GuideBox from './component/GuideBox';
 import FloatCheckButton from './component/FloatCheckButton';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
@@ -342,8 +342,8 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
             paddingHorizontal: 20,
             paddingBottom: 20,
           }}>
-          <ProductDetailList
-            prods={prods}
+          <ProductDetailRender
+            orderItems={selectedOrder?.orderItems}
             listTitle={i18n
               .t('his:cancelHeaderTitle2')
               .replace('%', getCountItems(selectedOrder?.orderItems, false))}
@@ -364,7 +364,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         </View>
       </ScrollView>
     );
-  }, [selectedOrder?.orderItems, prods]);
+  }, [selectedOrder?.orderItems]);
 
   const renderStep2 = useCallback(() => {
     return (

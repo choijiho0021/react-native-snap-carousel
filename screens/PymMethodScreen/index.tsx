@@ -50,9 +50,11 @@ import PymMethod, {
   PymMethodRef,
 } from '@/components/AppPaymentGateway/PymMethod';
 import PopupList from './PopupList';
-import {retrieveData, storeData} from '@/utils/utils';
+import {retrieveData, storeData, utils} from '@/utils/utils';
 import AppText from '@/components/AppText';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import DropDownHeader from './DropDownHeader';
+import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
 
 const infoKey = 'pym:benefit';
 const styles = StyleSheet.create({
@@ -95,6 +97,20 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: isDeviceSize('small') ? 10 : 20,
     color: colors.black,
+  },
+  bottomBar: {
+    borderBottomColor: colors.lightGrey,
+    borderBottomWidth: 1,
+    marginHorizontal: 20,
+    marginBottom: 20,
+  },
+
+  productTitle: {
+    ...appStyles.bold18Text,
+    lineHeight: 24,
+    letterSpacing: 0.27,
+    flexDirection: 'row',
+    maxWidth: isDeviceSize('small') ? '70%' : '80%',
   },
 });
 
@@ -373,6 +389,44 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     }
   }, []);
 
+  const renderModal = useCallback(() => {
+    const navigateEsim = () => {
+      setShowNavigateAlert(false);
+      navigation.popToTop();
+      navigation.navigate('EsimStack', {screen: 'Esim'});
+    };
+
+    return (
+      <AppModal
+        onCancelClose={navigateEsim}
+        type="info"
+        onOkClose={navigateEsim}
+        contentStyle={styles.modalContent}
+        titleStyle={styles.titleContent}
+        visible={showNavigateAlert}
+        buttonBackgroundColor={colors.clearBlue}
+        cancelButtonTitle={i18n.t('no')}
+        cancelButtonStyle={styles.modalCloseStyle}
+        okButtonTitle={i18n.t('ok')}
+        okButtonStyle={styles.modalOkText}>
+        <View style={{marginHorizontal: 30}}>
+          <AppStyledText
+            text={navigateAlertTxt}
+            textStyle={[
+              appStyles.medium16,
+              {color: colors.black, textAlignVertical: 'center'},
+            ]}
+            format={{
+              red: [appStyles.bold16Text, {color: colors.redError}],
+              b: appStyles.bold16Text,
+            }}
+            data={{date: rstTm}}
+          />
+        </View>
+      </AppModal>
+    );
+  }, [navigateAlertTxt, navigation, rstTm, showNavigateAlert]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={appStyles.header}>
@@ -387,7 +441,21 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         showsVerticalScrollIndicator={false}
         enableOnAndroid
         enableResetScrollToCoords={false}>
-        <PaymentItemInfo purchaseItems={cart.purchaseItems} />
+        <DropDownHeader
+          title={i18n.t('pym:title')}
+          style={{paddingTop: 16, paddingBottom: 20}}
+          titleStyle={styles.productTitle}>
+          <ProductDetailList
+            style={{
+              paddingBottom: 0,
+              paddingHorizontal: 20,
+            }}
+            showPriceInfo
+            orderItems={cart.purchaseItems}
+          />
+        </DropDownHeader>
+
+        <View style={styles.bottomBar} />
 
         <View style={styles.changeEmail}>
           <AppText style={styles.title}>{i18n.t('pym:email')}</AppText>
@@ -430,8 +498,12 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         <PolicyChecker onPress={setPolicyChecked} />
         <AppButton
-          title={i18n.t('payment')}
+          title={i18n
+            .t('cart:payment')
+            .replace('%%', utils.price(cart.pymPrice))}
           titleStyle={[appStyles.medium18, {color: colors.white}]}
+          disableColor={colors.greyish}
+          disableStyle={{backgroundColor: colors.lightGrey}}
           disabled={(cart.pymPrice?.value !== 0 && !selected) || !policyChecked}
           key={i18n.t('payment')}
           onPress={() => onSubmit(false)}

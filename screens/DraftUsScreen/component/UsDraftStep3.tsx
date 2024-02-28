@@ -1,17 +1,17 @@
 import {ScrollView} from 'react-native-gesture-handler';
 import {StyleSheet, View} from 'react-native';
-import React, {useCallback, useEffect, useRef} from 'react';
+import React, {useCallback, useRef} from 'react';
+import moment from 'moment';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import ProductDetailList from '@/screens/CancelOrderScreen/component/ProductDetailList';
+import ProductDetailRender from '@/screens/CancelOrderScreen/component/ProductDetailRender';
 import i18n from '@/utils/i18n';
 import {DeviceDataType} from '..';
 import GuideBox from '@/screens/CancelOrderScreen/component/GuideBox';
 import FloatCheckButton from '@/screens/CancelOrderScreen/component/FloatCheckButton';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import moment from 'moment';
-import {ProdInfo} from '@/redux/api/productApi';
+import {OrderItemType} from '@/redux/api/orderApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,19 +32,19 @@ const styles = StyleSheet.create({
 });
 
 interface UsDraftStep3Props {
-  prods: ProdInfo;
   actDate: string;
   deviceData: DeviceDataType;
   checked: boolean;
   setChecked: (val: boolean) => void;
+  orderItems: OrderItemType[];
 }
 
 const UsDraftStep3: React.FC<UsDraftStep3Props> = ({
-  prods,
   actDate,
   deviceData,
   checked,
   setChecked,
+  orderItems,
 }) => {
   const scrollRef = useRef(null);
 
@@ -72,9 +72,9 @@ const UsDraftStep3: React.FC<UsDraftStep3Props> = ({
             {i18n.t('us:result:title')}
           </AppText>
           <View style={styles.proudctFrame}>
-            <ProductDetailList
+            <ProductDetailRender
               style={styles.product}
-              prods={prods}
+              orderItems={orderItems}
               isHeader={false}
               isBody
               bodyComponent={

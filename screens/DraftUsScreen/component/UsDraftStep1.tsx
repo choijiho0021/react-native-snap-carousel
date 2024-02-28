@@ -7,9 +7,8 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {getCountItems} from '@/redux/modules/order';
-import ProductDetailList from '@/screens/CancelOrderScreen/component/ProductDetailList';
+import ProductDetailRender from '@/screens/CancelOrderScreen/component/ProductDetailRender';
 import i18n from '@/utils/i18n';
-import {ProdInfo} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({
   buttonFrame: {flexDirection: 'row'},
@@ -30,16 +29,11 @@ const styles = StyleSheet.create({
 });
 
 interface UsDraftStep1Props {
-  prods: ProdInfo;
   draftOrder: RkbOrder;
   onClick: () => void;
 }
 
-const UsDraftStep1: React.FC<UsDraftStep1Props> = ({
-  prods,
-  draftOrder,
-  onClick,
-}) => {
+const UsDraftStep1: React.FC<UsDraftStep1Props> = ({draftOrder, onClick}) => {
   return (
     <>
       <ScrollView style={{flex: 1}}>
@@ -50,9 +44,9 @@ const UsDraftStep1: React.FC<UsDraftStep1Props> = ({
         />
 
         <View style={styles.proudctFrame}>
-          <ProductDetailList
+          <ProductDetailRender
             style={styles.product}
-            prods={prods}
+            orderItems={draftOrder?.orderItems}
             listTitle={i18n
               .t('his:draftItemText')
               .replace('%', getCountItems(draftOrder?.orderItems, false))}
@@ -66,9 +60,6 @@ const UsDraftStep1: React.FC<UsDraftStep1Props> = ({
         <AppButton
           style={styles.button}
           type="primary"
-          // pressedStyle={{
-          //   backgroundColor: checked ? colors.clearBlue : colors.gray,
-          // }}
           title={i18n.t('esim:draftStart')}
           onPress={() => {
             onClick();
