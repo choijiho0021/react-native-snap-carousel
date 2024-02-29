@@ -3,8 +3,8 @@ import {Linking, StyleSheet, View} from 'react-native';
 import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
 import Video from 'react-native-video';
+import moment from 'moment';
 import {inicisWebviewHtml} from './ConfigInicis';
-import {colors} from '@/constants/Colors';
 import AppText from '../AppText';
 import i18n from '@/utils/i18n';
 import {PaymentParams} from '@/navigation/navigation';
@@ -12,7 +12,6 @@ import utils from '@/redux/api/utils';
 import AppAlert from '@/components/AppAlert';
 import {hectoWebViewHtml} from './ConfigHecto';
 import AppBottomModal from '@/screens/DraftUsScreen/component/AppBottomModal';
-import moment from 'moment';
 
 export type PaymentResultCallbackParam = 'next' | 'cancel' | 'check';
 
@@ -87,6 +86,9 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
   const injected = useRef(false);
   const ref = useRef<WebView>(null);
   const html = useMemo(() => pgWebViewHtml(info), [info]);
+
+  const [count, setCount] = useState(0);
+
   const onMessage = useCallback((payload) => {
     let dataPayload;
     try {
@@ -117,11 +119,13 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         callback('next');
         return false;
       }
-      if (
-        event.url.startsWith('http://') ||
-        event.url.startsWith('https://') ||
-        event.url.startsWith('about:blank')
-      ) {
+
+      if (event.url.startsWith('about:blank')) {
+        return true;
+      }
+
+      if (event.url.startsWith('http://') || event.url.startsWith('https://')) {
+        setCount((prev) => prev + 1);
         return true;
       }
 
@@ -154,7 +158,7 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         <AppBottomModal
           visible={loading}
           isCloseBtn={false}
-          height={250}
+          height={160}
           onClose={() => {}}
           containerStyle={{
             backgroundColor: 'rgba(0,0,0,0)',
@@ -166,7 +170,7 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
             shadowRadius: 16,
             shadowOpacity: 1,
           }}
-          title="잠시만 기다려주세요."
+          title={i18n.t('pym:wait:title')}
           body={
             <View style={{marginHorizontal: 20}}>
               <AppText>
@@ -181,13 +185,7 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
 
   const onLoadEnd = useCallback(
     ({nativeEvent: event}) => {
-      console.log('@@@ onLoadEnd : ', event);
-
-      if (cardLinkKeyword.some((r) => event.url.includes(r || ''))) {
-        setLoading(false);
-      }
-
-      if (exceptionLink.some((r) => info?.selected?.includes(r || ''))) {
+      if (count > 1) {
         setLoading(false);
       }
 
@@ -196,7 +194,7 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         injected.current = true;
       }
     },
-    [info?.selected],
+    [count],
   );
 
   return (
