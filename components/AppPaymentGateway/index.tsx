@@ -125,6 +125,7 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
       }
 
       if (event.url.startsWith('http://') || event.url.startsWith('https://')) {
+        setLoading(true);
         setCount((prev) => prev + 1);
         return true;
       }
