@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Linking, StyleSheet, View} from 'react-native';
 import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
@@ -11,6 +11,8 @@ import {PaymentParams} from '@/navigation/navigation';
 import utils from '@/redux/api/utils';
 import AppAlert from '@/components/AppAlert';
 import {hectoWebViewHtml} from './ConfigHecto';
+import AppBottomModal from '@/screens/DraftUsScreen/component/AppBottomModal';
+import moment from 'moment';
 
 export type PaymentResultCallbackParam = 'next' | 'cancel' | 'check';
 
@@ -41,16 +43,6 @@ const styles = StyleSheet.create({
     bottom: 80,
     right: 0,
   },
-  infoText: {
-    position: 'absolute',
-    left: 0,
-    bottom: 0,
-    right: 0,
-    marginBottom: 30,
-    color: colors.clearBlue,
-    textAlign: 'center',
-    fontSize: 14,
-  },
   loading: {
     position: 'absolute',
     left: 0,
@@ -62,11 +54,36 @@ const styles = StyleSheet.create({
   },
 });
 
+// 고정된 값으로 처리해야만 하나 서버에서 받는건?
+// naver, ios. 전북 은행은 는 3번째 링크로 안들어간다..
+const exceptionLink = ['naver', 'apple', 'card33'];
+
+const cardLinkKeyword = [
+  'lottecard',
+  'nonghyup',
+  'toss',
+  'lpay',
+  'payco',
+  'ssgpay',
+  'kakao',
+  'hyundai',
+  'kbcard',
+  'bcAppPay',
+  'samsungcard',
+  'shinhancard',
+  'hanacard',
+  'wooricard',
+  'ispmobile',
+  'citibank',
+  'kbcard',
+];
+
 const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
   info,
   callback,
 }) => {
   const [loading, setLoading] = useState(true);
+
   const injected = useRef(false);
   const ref = useRef<WebView>(null);
   const html = useMemo(() => pgWebViewHtml(info), [info]);
@@ -100,7 +117,6 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         callback('next');
         return false;
       }
-
       if (
         event.url.startsWith('http://') ||
         event.url.startsWith('https://') ||
@@ -121,32 +137,67 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
   );
 
   const renderLoading = useCallback(() => {
-    return (
-      <View style={styles.loading}>
-        <Video
-          source={loadingImg}
-          repeat
-          style={styles.backgroundVideo}
-          resizeMode="cover"
-          mixWithOthers="mix"
-        />
-        <AppText style={styles.infoText}>{i18n.t('pym:loadingInfo')}</AppText>
-      </View>
-    );
-  }, []);
+    const isKST = moment().format().includes('+09:00');
 
-  const onLoadEnd = useCallback(({nativeEvent: {url}}) => {
-    // console.log('@@@ onLoadEnd url', url, injected.current);
-    // ref.current?.injectJavaScript(
-    //   'console.log("END" + window.document.documentElement.innerHTML);' +
-    //     'console.log("LOAD:" + document.body.onload);',
-    // );
-    setLoading(false);
-    if (url.startsWith('about') && !injected.current) {
-      ref.current?.injectJavaScript('start_script();');
-      injected.current = true;
-    }
-  }, []);
+    return (
+      <>
+        <View style={styles.loading}>
+          <Video
+            source={loadingImg}
+            repeat
+            style={styles.backgroundVideo}
+            resizeMode="cover"
+            mixWithOthers="mix"
+          />
+          {/* <AppText style={styles.infoText}>{i18n.t('pym:loadingInfo')}</AppText> */}
+        </View>
+        <AppBottomModal
+          visible={loading}
+          isCloseBtn={false}
+          height={250}
+          onClose={() => {}}
+          containerStyle={{
+            backgroundColor: 'rgba(0,0,0,0)',
+            shadowColor: 'rgba(166, 168, 172, 0.24)',
+            shadowOffset: {
+              width: 0,
+              height: 0,
+            },
+            shadowRadius: 16,
+            shadowOpacity: 1,
+          }}
+          title="잠시만 기다려주세요."
+          body={
+            <View style={{marginHorizontal: 20}}>
+              <AppText>
+                {i18n.t(isKST ? 'pym:wait:kst' : 'pym:wait:another')}
+              </AppText>
+            </View>
+          }
+        />
+      </>
+    );
+  }, [loading]);
+
+  const onLoadEnd = useCallback(
+    ({nativeEvent: event}) => {
+      console.log('@@@ onLoadEnd : ', event);
+
+      if (cardLinkKeyword.some((r) => event.url.includes(r || ''))) {
+        setLoading(false);
+      }
+
+      if (exceptionLink.some((r) => info?.selected?.includes(r || ''))) {
+        setLoading(false);
+      }
+
+      if (event.url.startsWith('about') && !injected.current) {
+        ref.current?.injectJavaScript('start_script();');
+        injected.current = true;
+      }
+    },
+    [info?.selected],
+  );
 
   return (
     <>
@@ -163,7 +214,7 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         onLoadEnd={onLoadEnd}
         source={{html}}
       />
-      {loading ? renderLoading() : null}
+      {loading ? <>{renderLoading()}</> : null}
     </>
   );
 };

@@ -55,6 +55,7 @@ import AppText from '@/components/AppText';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import DropDownHeader from './DropDownHeader';
 import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
+import AppBottomModal from '../DraftUsScreen/component/AppBottomModal';
 
 const infoKey = 'pym:benefit';
 const styles = StyleSheet.create({
@@ -344,6 +345,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           paymentRule: product.rule,
           mode,
           receipt,
+          selected,
         } as PaymentParams;
 
         setClickable(true);
