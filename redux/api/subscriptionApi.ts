@@ -328,7 +328,6 @@ const getSubscription = ({
   subsId,
   token,
   hidden,
-  reset = false,
   count = 10,
   offset = 0,
 }: SubscriptionParam) => {
