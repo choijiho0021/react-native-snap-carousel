@@ -2,12 +2,14 @@
 /* eslint-disable eqeqeq */
 import {Buffer} from 'buffer';
 import _ from 'underscore';
+import moment from 'moment';
 import Env from '@/environment';
 import userApi from './userApi';
 import {API} from '@/redux/api';
 import {parseJson, retrieveData, storeData} from '@/utils/utils';
 import store from '@/store';
 import {actions as ToastActions, Toast} from '@/redux/modules/toast';
+import utils from '@/redux/api/utils';
 
 export type Langcode = 'ko' | 'en';
 const {scheme, apiUrl, esimGlobal, rokApiUrl, cachePrefix} = Env.get();
@@ -143,6 +145,7 @@ const path = {
       quadcell2: 'api/v1/pvd/pv/quadcell2',
       bc: 'api/v1/pvd/pv/bc',
       hkRegStatus: 'api/v1/pvd/pv/cmi/v2/status',
+      saveLog: 'api/v1/pvd/pv/clientLog/save',
     },
   },
 };
@@ -328,6 +331,7 @@ const callHttp = async <T>(
       ...config,
       signal: controller.signal,
     });
+
     clearTimeout(id);
     if (option.abortController && option.abortController.signal.aborted) {
       console.log('@@@ aborted');
@@ -341,6 +345,7 @@ const callHttp = async <T>(
       !url.includes('user/login') &&
       !url.includes('user/logout')
     ) {
+      ㅡ;
       const user = await retrieveData(API.User.KEY_MOBILE, true);
       const pass = await retrieveData(API.User.KEY_PIN, true);
       const isLoggedIn = await userApi.logIn({user, pass});
@@ -371,7 +376,15 @@ const callHttp = async <T>(
 
           try {
             const js = await response.json();
-            console.log('API response', url, response.status, js);
+
+            // config에는 상품정보 등 큰 정보가 많아 제외 -- 추후 결과값을 성공 / 실패 로만 남기는 로그를 추가할 필요성이 있음
+            if (!url.includes('config'))
+              utils.log(
+                `${moment().tz('Asia/Seoul').format()} ${url} ${JSON.stringify(
+                  js,
+                )}\n`,
+              );
+
             return callback(js, response.headers.get('set-cookie'));
           } catch (ex) {
             return failure(
