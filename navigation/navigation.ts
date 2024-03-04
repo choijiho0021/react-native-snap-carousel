@@ -228,6 +228,9 @@ export type HomeStackParamList = {
   };
   EsimSubs: {};
   CashHistory: {};
+  ChangeEmail: undefined;
+  SelectCoupon: undefined;
+  Coupon: undefined;
 };
 
 export const navigate = (
