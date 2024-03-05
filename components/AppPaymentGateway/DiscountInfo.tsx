@@ -77,6 +77,10 @@ type DiscountProps = {
   };
 };
 
+export const availableRokebiCash = (balance: number, productPrice: number) => {
+  return Math.min(balance, productPrice);
+};
+
 const DiscountInfo: React.FC<DiscountProps> = ({
   account,
   cart,
@@ -89,7 +93,11 @@ const DiscountInfo: React.FC<DiscountProps> = ({
   const [editing, setEditing] = useState(false);
   const updateRokebiCash = useCallback(
     (v: string) => {
-      const min = Math.min(account.balance || 0, utils.stringToNumber(v) || 0);
+      const min = availableRokebiCash(
+        account.balance || 0,
+        utils.stringToNumber(v) || 0,
+      );
+
       action.cart.deductRokebiCash(min);
     },
     [account.balance, action.cart],
@@ -107,13 +115,16 @@ const DiscountInfo: React.FC<DiscountProps> = ({
       setChecked(!check);
       if (!check) {
         // 최대 할인 적용
-        action.cart.applyCoupon({maxDiscount: true});
+        action.cart.applyCoupon({
+          maxDiscount: true,
+          accountCash: account.balance,
+        });
       } else {
         // unselect coupon
         action.cart.applyCoupon({couponId: undefined});
       }
     },
-    [action.cart],
+    [account.balance, action.cart],
   );
 
   useEffect(() => {

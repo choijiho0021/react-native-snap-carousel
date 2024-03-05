@@ -18,6 +18,7 @@ import {Currency} from '@/redux/api/productApi';
 import {storeData, retrieveData, utils, parseJson} from '@/utils/utils';
 import {actions as orderAction} from './order';
 import {actions as accountAction} from './account';
+import {availableRokebiCash} from '@/components/AppPaymentGateway/DiscountInfo';
 
 const {esimCurrency} = Env.get();
 
@@ -188,7 +189,7 @@ const slice = createSlice({
     },
 
     applyCoupon: (state, action) => {
-      const {couponId, maxDiscount} = action.payload;
+      const {couponId, maxDiscount, accountCash} = action.payload;
 
       if (maxDiscount) {
         state.couponToApply = state.promo?.reduce((acc, cur) => {
@@ -203,6 +204,19 @@ const slice = createSlice({
       const promo = state.promo?.find(
         (p) => p.coupon_id === state.couponToApply,
       );
+
+      // 쿠폰 적용 시 결제 값이 음수가 되지 않도록 사용할 캐시 재계산
+      if (promo && state?.pymReq?.rkbcash?.value > 0) {
+        const maxPrice =
+          (state.pymReq?.subtotal?.value || 0) - (promo?.adj?.value || 0);
+
+        // 할인된 상품의 가격을 넘어선 안되고, 계정이 가진 캐시보다 커선 안된다.
+        const min = availableRokebiCash(maxPrice, accountCash);
+        state.pymReq = {
+          ...state.pymReq,
+          rkbcash: utils.toCurrency(min, esimCurrency),
+        };
+      }
 
       state.pymReq = {
         ...state.pymReq,
@@ -333,16 +347,8 @@ const slice = createSlice({
           return acc;
         }, undefined)?.coupon_id;
 
-        // 주석처리 부분은 확인 받아야함
-
-        // 있던 없던 pymReq 초기화
-        // if (!state.pymReq) {
         state.pymReq = {} as PaymentReq;
-        // }
 
-        // 확인 필요
-        // if (!state.pymReq.subtotal) {
-        // 없을때는 현재 purchaseItems 에서 갱신하기
         state.pymReq.subtotal = utils.toCurrency(
           ((state.purchaseItems as PurchaseItem[]) || []).reduce(
             (acc, cur) => acc + cur.price.value * (cur.qty || 1),
@@ -350,7 +356,6 @@ const slice = createSlice({
           ),
           esimCurrency,
         );
-        // }
 
         // couponToApply == undefined 이면, discount도 undefined로 설정된다.
         const promo = state.promo?.find(

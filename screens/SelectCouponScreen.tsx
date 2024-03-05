@@ -6,7 +6,7 @@ import {
   View,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
-import React, {memo, useCallback, useMemo, useState} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
@@ -80,7 +80,7 @@ type SelectCouponProps = {
 
 const SelectCoupon: React.FC<SelectCouponProps> = ({
   cart: {promo, couponToApply},
-  account: {coupon: myCoupon},
+  account: {coupon: myCoupon, balance},
   action,
 }) => {
   const navigation = useNavigation();
@@ -150,7 +150,7 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
         } ${i18n.t('pym:sel:coupon:apply')}`}
         titleStyle={[appStyles.medium18, {color: colors.white}]}
         onPress={() => {
-          action.cart.applyCoupon({couponId});
+          action.cart.applyCoupon({couponId, accountCash: balance});
           navigation.goBack();
         }}
         style={appStyles.confirm}

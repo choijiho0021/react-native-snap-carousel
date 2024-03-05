@@ -10,7 +10,6 @@ import moment from 'moment';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
-import PaymentItemInfo from '@/components/PaymentItemInfo';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
