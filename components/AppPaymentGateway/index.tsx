@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {Linking, StyleSheet, View} from 'react-native';
 import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
@@ -11,7 +11,6 @@ import {PaymentParams} from '@/navigation/navigation';
 import utils from '@/redux/api/utils';
 import AppAlert from '@/components/AppAlert';
 import {hectoWebViewHtml} from './ConfigHecto';
-import AppBottomModal from '@/screens/DraftUsScreen/component/AppBottomModal';
 import {useFocusEffect} from '@react-navigation/native';
 import {appStyles} from '@/constants/Styles';
 
@@ -75,30 +74,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
 });
-
-// 고정된 값으로 처리해야만 하나 서버에서 받는건?
-// naver, ios. 전북 은행은 는 3번째 링크로 안들어간다..
-const exceptionLink = ['naver', 'apple', 'card33'];
-
-const cardLinkKeyword = [
-  'lottecard',
-  'nonghyup',
-  'toss',
-  'lpay',
-  'payco',
-  'ssgpay',
-  'kakao',
-  'hyundai',
-  'kbcard',
-  'bcAppPay',
-  'samsungcard',
-  'shinhancard',
-  'hanacard',
-  'wooricard',
-  'ispmobile',
-  'citibank',
-  'kbcard',
-];
 
 const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
   info,

@@ -1080,6 +1080,7 @@
   "pym:coupon:max": "최대 할인 적용",
   "pym:no:coupon": "적용 가능한 쿠폰이 없습니다.",
   "pym:coupon:none:sel": "적용 안함",
+  "pym:coupon:select": "선택한 쿠폰이 적용되었습니다.",
 
   "pym:sel:coupon:title": "쿠폰 선택",
   "pym:sel:coupon:noti": "<b>쿠폰함</b>에서 <b>쿠폰 코드</b> 등록 후 사용하실 수 있어요!",
