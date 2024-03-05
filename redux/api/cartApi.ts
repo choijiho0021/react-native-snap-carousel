@@ -423,6 +423,8 @@ const makeOrder = ({
     coupon,
   };
 
+  console.log('@@@@ body check JSON.stringify(body) :', JSON.stringify(body));
+
   return api.callHttp(
     `${api.httpUrl(api.path.commerce.order)}?_format=json`,
     {

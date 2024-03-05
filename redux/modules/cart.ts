@@ -101,6 +101,8 @@ const prepareOrder = createAsyncThunk(
     const {purchaseItems, orderId, cartId, esimIccid, mainSubsId, isCart} =
       cart;
 
+    console.log('@@@ 처음엔 파라미터를 안넣는건가?? coupon : ', coupon);
+
     return API.Cart.makeOrder({
       orderId: isCart ? cartId : orderId,
       items: purchaseItems,
@@ -204,6 +206,8 @@ const slice = createSlice({
       const promo = state.promo?.find(
         (p) => p.coupon_id === state.couponToApply,
       );
+
+      console.log('@@@ promo :', promo, ', promo adj : ', promo?.adj?.value);
 
       // 쿠폰 적용 시 결제 값이 음수가 되지 않도록 사용할 캐시 재계산
       if (promo && state?.pymReq?.rkbcash?.value > 0) {
