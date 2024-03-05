@@ -124,6 +124,7 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         return true;
       }
 
+      console.log('@@@ url : ', event.url, ', setLoading : true');
       if (event.url.startsWith('http://') || event.url.startsWith('https://')) {
         setLoading(true);
         setCount((prev) => prev + 1);
@@ -186,7 +187,8 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
 
   const onLoadEnd = useCallback(
     ({nativeEvent: event}) => {
-      if (count > 1) {
+      console.log('@@@ count : ', count, ', loadEnd -> setLoading false');
+      if (count > 0) {
         setLoading(false);
       }
 
