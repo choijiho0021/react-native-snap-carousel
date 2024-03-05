@@ -1,4 +1,4 @@
-import React, {Fragment, useCallback, useMemo, useRef} from 'react';
+import React, {Fragment, useCallback, useEffect, useMemo, useRef} from 'react';
 import {StyleProp, StyleSheet, View, ViewStyle} from 'react-native';
 import {colors} from '@/constants/Colors';
 import ProductDetailInfo from './ProductDetailInfo';
@@ -72,6 +72,18 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
                 ) / 100,
                 item?.price?.currency || 'KRW',
               );
+
+        if (item?.type === 'rch') {
+          const rchOrder = item as PurchaseItem;
+
+          return {
+            title: rchOrder.title,
+            field_description: rchOrder.title,
+            qty: rchOrder.qty,
+            price: rchOrder.price,
+          };
+        }
+
         const prod = product.prodList.get(item?.key || item?.uuid);
 
         if (prod)
