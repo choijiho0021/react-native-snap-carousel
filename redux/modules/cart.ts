@@ -246,7 +246,7 @@ const slice = createSlice({
 
         state.pymReq = {
           ...state.pymReq,
-          rkbcash: utils.toCurrency(min, esimCurrency),
+          rkbcash: utils.toCurrency(min < 0 ? 0 : min, esimCurrency),
         };
 
         state.pymPrice = utils.toCurrency(
