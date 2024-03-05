@@ -54,7 +54,6 @@ import AppText from '@/components/AppText';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import DropDownHeader from './DropDownHeader';
 import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
-import AppBottomModal from '../DraftUsScreen/component/AppBottomModal';
 
 const infoKey = 'pym:benefit';
 const styles = StyleSheet.create({
@@ -435,7 +434,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         <View key="div1" style={styles.divider} />
 
-        <DiscountInfo onPress={() => navigation.navigate('SelectCoupon')} />
+        {mode !== 'recharge' && (
+          <DiscountInfo onPress={() => navigation.navigate('SelectCoupon')} />
+        )}
 
         <View key="div2" style={styles.divider} />
 
