@@ -12,6 +12,8 @@ import utils from '@/redux/api/utils';
 import AppAlert from '@/components/AppAlert';
 import {hectoWebViewHtml} from './ConfigHecto';
 import AppBottomModal from '@/screens/DraftUsScreen/component/AppBottomModal';
+import {useFocusEffect} from '@react-navigation/native';
+import {appStyles} from '@/constants/Styles';
 
 export type PaymentResultCallbackParam = 'next' | 'cancel' | 'check';
 
@@ -51,6 +53,27 @@ const styles = StyleSheet.create({
     flex: 1,
     zIndex: 1,
   },
+  loadingContainer: {
+    backgroundColor: 'white',
+    shadowColor: 'rgba(166, 168, 172, 0.24)',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowRadius: 2,
+    shadowOpacity: 1,
+    height: 160,
+  },
+  head: {
+    height: 74,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignContent: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 28,
+    gap: 6,
+  },
 });
 
 // 고정된 값으로 처리해야만 하나 서버에서 받는건?
@@ -89,6 +112,16 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
 
   const [count, setCount] = useState(0);
 
+  // 화면 빠져나간 경우도 로딩 취소
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        setLoading(false);
+      };
+    }, []),
+  );
+
   const onMessage = useCallback((payload) => {
     let dataPayload;
     try {
@@ -121,6 +154,7 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
       }
 
       if (event.url.startsWith('about:blank')) {
+        setLoading(false);
         return true;
       }
 
@@ -157,30 +191,25 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
           />
           {/* <AppText style={styles.infoText}>{i18n.t('pym:loadingInfo')}</AppText> */}
         </View>
-        <AppBottomModal
-          visible={loading}
-          isCloseBtn={false}
-          height={160}
-          onClose={() => {}}
-          containerStyle={{
-            backgroundColor: 'rgba(0,0,0,0)',
-            shadowColor: 'rgba(166, 168, 172, 0.24)',
-            shadowOffset: {
-              width: 0,
-              height: 0,
-            },
-            shadowRadius: 16,
-            shadowOpacity: 1,
-          }}
-          title={i18n.t('pym:wait:title')}
-          body={
-            <View style={{marginHorizontal: 20}}>
-              <AppText>
+
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <View style={styles.head}>
+              <AppText style={appStyles.bold18Text}>
+                {i18n.t('pym:wait:title')}
+              </AppText>
+            </View>
+            <View>
+              <AppText
+                style={{
+                  ...appStyles.normal16Text,
+                  paddingHorizontal: 20,
+                }}>
                 {i18n.t(isKST ? 'pym:wait:kst' : 'pym:wait:another')}
               </AppText>
             </View>
-          }
-        />
+          </View>
+        )}
       </>
     );
   }, [loading]);
