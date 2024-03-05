@@ -323,6 +323,8 @@ const slice = createSlice({
     builder.addCase(prepareOrder.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
+      console.log('@@@ makeorder 결과물 : ', result, ', objects : ', objects);
+
       if (result === 0 && objects[0]) {
         state.orderId = objects[0].order_id;
         state.promo = objects[0].promo;
@@ -331,19 +333,24 @@ const slice = createSlice({
           return acc;
         }, undefined)?.coupon_id;
 
-        if (!state.pymReq) {
-          state.pymReq = {} as PaymentReq;
-        }
+        // 주석처리 부분은 확인 받아야함
 
-        if (!state.pymReq.subtotal) {
-          state.pymReq.subtotal = utils.toCurrency(
-            ((state.purchaseItems as PurchaseItem[]) || []).reduce(
-              (acc, cur) => acc + cur.price.value * (cur.qty || 1),
-              0,
-            ),
-            esimCurrency,
-          );
-        }
+        // 있던 없던 pymReq 초기화
+        // if (!state.pymReq) {
+        state.pymReq = {} as PaymentReq;
+        // }
+
+        // 확인 필요
+        // if (!state.pymReq.subtotal) {
+        // 없을때는 현재 purchaseItems 에서 갱신하기
+        state.pymReq.subtotal = utils.toCurrency(
+          ((state.purchaseItems as PurchaseItem[]) || []).reduce(
+            (acc, cur) => acc + cur.price.value * (cur.qty || 1),
+            0,
+          ),
+          esimCurrency,
+        );
+        // }
 
         // couponToApply == undefined 이면, discount도 undefined로 설정된다.
         const promo = state.promo?.find(
