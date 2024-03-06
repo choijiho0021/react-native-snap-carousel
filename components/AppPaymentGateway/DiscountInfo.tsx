@@ -91,6 +91,20 @@ const DiscountInfo: React.FC<DiscountProps> = ({
   const [rokebiCash, setRokebiCash] = useState('');
   const [checked, setChecked] = useState(true);
   const [editing, setEditing] = useState(false);
+
+  const disabledDeductAll = useMemo(
+    () =>
+      (account?.balance || 0) === utils.stringToNumber(rokebiCash) ||
+      utils.stringToNumber(rokebiCash) ===
+        (cart.pymReq?.subtotal?.value || 0) +
+          (cart.pymReq?.discount?.value || 0),
+    [
+      account?.balance,
+      cart.pymReq?.discount?.value,
+      cart.pymReq?.subtotal?.value,
+      rokebiCash,
+    ],
+  );
   const isCashNotEmpty = useMemo(
     () => (account?.balance || 0) !== 0,
     [account?.balance],
@@ -236,8 +250,15 @@ const DiscountInfo: React.FC<DiscountProps> = ({
           {onPress && isCashNotEmpty ? (
             <AppButton
               style={styles.button}
-              titleStyle={styles.buttonTitle}
+              titleStyle={[styles.buttonTitle]}
               title={i18n.t('pym:deductAll')}
+              // 보유캐시와 사용캐시가 같거나, 상품 가격과 사용캐시가 같을 때 비활성화
+              disabled={disabledDeductAll}
+              disableStyle={{
+                backgroundColor: colors.lightGrey,
+                borderColor: colors.whiteTwo,
+              }}
+              disableColor={colors.greyish}
               onPress={() => action.cart.deductRokebiCash(account.balance)}
             />
           ) : null}
