@@ -58,6 +58,7 @@ export type PaymentParams = {
   card?: string;
   installmentMonths?: string; // 할부 개월수
   paymentRule?: PaymentRule;
+  selected?: string;
 };
 
 type ChargeAgreementContents = {

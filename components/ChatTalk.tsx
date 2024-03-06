@@ -16,11 +16,14 @@ import AppSnackBar from '@/components/AppSnackBar';
 import i18n from '@/utils/i18n';
 import Env from '@/environment';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
+import utils from '@/redux/api/utils';
+import {API} from '@/redux/api';
 
 const {appId, talkPluginKey, esimGlobal} = Env.get();
 
 const ChatTalk = ({
   account,
+  log,
   visible = false,
   isClicked = false,
   bottom = 20,
@@ -58,6 +61,8 @@ const ChatTalk = ({
 
   const openChannelTalk = useCallback(async () => {
     setLoading(true);
+    // 앱 로그 서버로 전송
+    API.User.saveClientLog({mobile: account.mobile, log: log.log});
 
     ChannelIO.boot(settings).then((result) => {
       if (result.status === 'SUCCESS') {
@@ -67,7 +72,7 @@ const ChatTalk = ({
       }
       setLoading(false);
     });
-  }, [settings]);
+  }, [account, log.log, settings]);
 
   useEffect(() => {
     if (isClicked && setChatTalkClicked !== undefined) {
@@ -103,6 +108,7 @@ const ChatTalk = ({
   );
 };
 
-export default connect(({account}: RootState) => ({
+export default connect(({account, log}: RootState) => ({
   account,
+  log,
 }))(ChatTalk);

@@ -77,6 +77,10 @@ type DiscountProps = {
   };
 };
 
+export const availableRokebiCash = (balance: number, productPrice: number) => {
+  return Math.min(balance, productPrice);
+};
+
 const DiscountInfo: React.FC<DiscountProps> = ({
   account,
   cart,
@@ -87,9 +91,31 @@ const DiscountInfo: React.FC<DiscountProps> = ({
   const [rokebiCash, setRokebiCash] = useState('');
   const [checked, setChecked] = useState(true);
   const [editing, setEditing] = useState(false);
+
+  const disabledDeductAll = useMemo(
+    () =>
+      (account?.balance || 0) === utils.stringToNumber(rokebiCash) ||
+      utils.stringToNumber(rokebiCash) ===
+        (cart.pymReq?.subtotal?.value || 0) +
+          (cart.pymReq?.discount?.value || 0),
+    [
+      account?.balance,
+      cart.pymReq?.discount?.value,
+      cart.pymReq?.subtotal?.value,
+      rokebiCash,
+    ],
+  );
+  const isCashNotEmpty = useMemo(
+    () => (account?.balance || 0) !== 0,
+    [account?.balance],
+  );
   const updateRokebiCash = useCallback(
     (v: string) => {
-      const min = Math.min(account.balance || 0, utils.stringToNumber(v) || 0);
+      const min = availableRokebiCash(
+        account.balance || 0,
+        utils.stringToNumber(v) || 0,
+      );
+
       action.cart.deductRokebiCash(min);
     },
     [account.balance, action.cart],
@@ -107,13 +133,16 @@ const DiscountInfo: React.FC<DiscountProps> = ({
       setChecked(!check);
       if (!check) {
         // 최대 할인 적용
-        action.cart.applyCoupon({maxDiscount: true});
+        action.cart.applyCoupon({
+          maxDiscount: true,
+          accountCash: account.balance,
+        });
       } else {
         // unselect coupon
         action.cart.applyCoupon({couponId: undefined});
       }
     },
-    [action.cart],
+    [account.balance, action.cart],
   );
 
   useEffect(() => {
@@ -171,7 +200,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
           <AppText style={[styles.title, {marginLeft: 8}]}>
             {i18n.t('acc:balance')}
           </AppText>
-          {onPress ? (
+          {onPress && isCashNotEmpty ? (
             <AppStyledText
               text={i18n.t('acc:balance:hold')}
               textStyle={{...appStyles.bold14Text, color: colors.clearBlue}}
@@ -181,7 +210,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
         </View>
         <View key="selcash" style={styles.row}>
           <View style={styles.input}>
-            {onPress ? (
+            {onPress && isCashNotEmpty ? (
               <AppTextInput
                 style={{
                   ...styles.title,
@@ -201,9 +230,15 @@ const DiscountInfo: React.FC<DiscountProps> = ({
                 onBlur={() => setEditing(false)}
               />
             ) : (
-              <AppText>{rokebiCash}</AppText>
+              <AppText
+                style={{
+                  ...styles.title,
+                  color: colors.clearBlue,
+                }}>
+                {i18n.t('acc:balance:none')}
+              </AppText>
             )}
-            {rokebiCash?.length > 0 && (
+            {(utils.stringToNumber(rokebiCash) || 0) > 0 && (
               <AppButton
                 style={styles.cancelButton}
                 titleStyle={{color: colors.clearBlue}}
@@ -212,11 +247,18 @@ const DiscountInfo: React.FC<DiscountProps> = ({
               />
             )}
           </View>
-          {onPress ? (
+          {onPress && isCashNotEmpty ? (
             <AppButton
               style={styles.button}
-              titleStyle={styles.buttonTitle}
+              titleStyle={[styles.buttonTitle]}
               title={i18n.t('pym:deductAll')}
+              // 보유캐시와 사용캐시가 같거나, 상품 가격과 사용캐시가 같을 때 비활성화
+              disabled={disabledDeductAll}
+              disableStyle={{
+                backgroundColor: colors.lightGrey,
+                borderColor: colors.whiteTwo,
+              }}
+              disableColor={colors.greyish}
               onPress={() => action.cart.deductRokebiCash(account.balance)}
             />
           ) : null}

@@ -15,6 +15,11 @@ export type PurchaseItem = {
   promoFlag?: string[];
 };
 
+export const getItemsOrderType = (items: PurchaseItem[]) =>
+  items.findIndex((item) => ['addon', 'rch'].includes(item.type)) >= 0
+    ? 'immediate_order'
+    : 'refundable';
+
 export const createFromProduct = (prod: RkbProduct) => {
   return {
     type: 'product',

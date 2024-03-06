@@ -10,7 +10,6 @@ import moment from 'moment';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
-import PaymentItemInfo from '@/components/PaymentItemInfo';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
@@ -344,6 +343,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           paymentRule: product.rule,
           mode,
           receipt,
+          selected,
         } as PaymentParams;
 
         setClickable(true);
@@ -389,44 +389,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     }
   }, []);
 
-  const renderModal = useCallback(() => {
-    const navigateEsim = () => {
-      setShowNavigateAlert(false);
-      navigation.popToTop();
-      navigation.navigate('EsimStack', {screen: 'Esim'});
-    };
-
-    return (
-      <AppModal
-        onCancelClose={navigateEsim}
-        type="info"
-        onOkClose={navigateEsim}
-        contentStyle={styles.modalContent}
-        titleStyle={styles.titleContent}
-        visible={showNavigateAlert}
-        buttonBackgroundColor={colors.clearBlue}
-        cancelButtonTitle={i18n.t('no')}
-        cancelButtonStyle={styles.modalCloseStyle}
-        okButtonTitle={i18n.t('ok')}
-        okButtonStyle={styles.modalOkText}>
-        <View style={{marginHorizontal: 30}}>
-          <AppStyledText
-            text={navigateAlertTxt}
-            textStyle={[
-              appStyles.medium16,
-              {color: colors.black, textAlignVertical: 'center'},
-            ]}
-            format={{
-              red: [appStyles.bold16Text, {color: colors.redError}],
-              b: appStyles.bold16Text,
-            }}
-            data={{date: rstTm}}
-          />
-        </View>
-      </AppModal>
-    );
-  }, [navigateAlertTxt, navigation, rstTm, showNavigateAlert]);
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={appStyles.header}>
@@ -444,7 +406,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         <DropDownHeader
           title={i18n.t('pym:title')}
           style={{paddingTop: 16, paddingBottom: 20}}
-          titleStyle={styles.productTitle}>
+          titleStyle={styles.productTitle}
+          summary={`${cart.purchaseItems.reduce(
+            (acc, cur) => acc + cur.qty,
+            0,
+          )}개`}>
           <ProductDetailList
             style={{
               paddingBottom: 0,
@@ -468,7 +434,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         <View key="div1" style={styles.divider} />
 
-        <DiscountInfo onPress={() => navigation.navigate('SelectCoupon')} />
+        {mode !== 'recharge' && (
+          <DiscountInfo onPress={() => navigation.navigate('SelectCoupon')} />
+        )}
 
         <View key="div2" style={styles.divider} />
 

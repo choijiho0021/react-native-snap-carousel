@@ -3,7 +3,13 @@ import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import {
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppButton from '@/components/AppButton';
@@ -26,6 +32,9 @@ import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import AppIcon from '@/components/AppIcon';
+import {getItemsOrderType} from '@/redux/models/purchaseItem';
+import AppBottomModal from './DraftUsScreen/component/AppBottomModal';
 
 const {esimGlobal} = Env.get();
 
@@ -77,6 +86,34 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     height: 62,
   },
+  detailButton: {
+    marginTop: 40,
+    borderColor: colors.lightGrey,
+    borderWidth: 1,
+    borderRadius: 3,
+    paddingVertical: 8,
+  },
+
+  dashContainer: {
+    overflow: 'hidden',
+  },
+  dashFrame: {
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    margin: -1,
+    height: 0,
+    marginVertical: 23,
+  },
+  dash: {
+    width: '100%',
+  },
+
+  headerNoti: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderColor: colors.lightGrey,
+  },
 });
 
 type PaymentResultScreenNavigationProp = StackNavigationProp<
@@ -112,6 +149,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
 }) => {
   const [oldCart, setOldCart] = useState<Partial<CartModelState>>();
   const isSuccess = useMemo(() => params?.pymResult || false, [params]);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const {iccid, token, mobile} = account;
@@ -172,8 +210,9 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   useEffect(() => {
     const {pymReq, purchaseItems, pymPrice, orderId} = cart;
     const {token} = account;
+
     if (purchaseItems.length > 0) {
-      setOldCart({pymReq, purchaseItems, pymPrice});
+      setOldCart({pymReq, purchaseItems, pymPrice, orderId});
       // 카트를 비운다.
       action.cart.makeEmpty({orderId, token});
     }
@@ -190,6 +229,33 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
 
   console.log('@@@ old cart', oldCart, params);
 
+  const DashedBar = () => {
+    const renderDashedDiv = useCallback(() => {
+      return (
+        <View style={styles.dashContainer}>
+          <View style={styles.dashFrame}>
+            <View style={styles.dash} />
+          </View>
+        </View>
+      );
+    }, []);
+
+    return (
+      <View>
+        {Platform.OS === 'ios' && renderDashedDiv()}
+        <View
+          style={[
+            styles.headerNoti,
+            Platform.OS === 'android' && {
+              borderStyle: 'dashed',
+              borderTopWidth: 1,
+            },
+          ]}
+        />
+      </View>
+    );
+  };
+
   // [WARNING: 이해를 돕기 위한 것일 뿐, imp_success 또는 success 파라미터로 결제 성공 여부를 장담할 수 없습니다.]
   // 아임포트 서버로 결제내역 조회(GET /payments/${imp_uid})를 통해 그 응답(status)에 따라 결제 성공 여부를 판단하세요.
 
@@ -203,7 +269,12 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
         <AppText style={appStyles.normal16Text}>
           {i18n.t(isSuccess ? 'his:pym:withus' : 'his:pym:tryagain')}
         </AppText>
-        <AppSvgIcon name="stampFail" style={styles.stamp} />
+
+        {isSuccess ? (
+          <AppSvgIcon name="stampSuccess" style={styles.stamp} />
+        ) : (
+          <AppSvgIcon name="stampFail" style={styles.stamp} />
+        )}
         <View style={styles.box}>
           <AppText style={appStyles.bold18Text}>
             {oldCart?.purchaseItems?.[0].title}
@@ -219,7 +290,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
           <PaymentItem
             title={i18n.t('his:pymAmount')}
             value={utils.price(oldCart?.pymPrice)}
-            valueStyle={appStyles.roboto16Text}
+            valueStyle={{...appStyles.bold16Text, color: colors.clearBlue}}
           />
           <PaymentItem
             title={i18n.t('pym:method')}
@@ -230,6 +301,43 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
             }
             valueStyle={appStyles.roboto16Text}
           />
+
+          <AppButton
+            style={styles.detailButton}
+            titleStyle={{
+              ...appStyles.roboto16Text,
+              lineHeight: 24,
+            }}
+            title={i18n.t(`pym:detail`)}
+            onPress={() => {
+              navigation.navigate('PurchaseDetail', {
+                orderId: oldCart?.orderId?.toString(),
+              });
+            }}
+          />
+          {isSuccess &&
+            oldCart?.purchaseItems &&
+            getItemsOrderType(oldCart.purchaseItems) === 'refundable' && (
+              <>
+                <DashedBar />
+
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    gap: 6,
+                  }}>
+                  <AppIcon name="bannerMark2" />
+                  <AppText
+                    style={{
+                      ...appStyles.bold14Text,
+                      color: colors.warmGrey,
+                      lineHeight: 20,
+                    }}>
+                    {i18n.t('his:pym:alert')}
+                  </AppText>
+                </View>
+              </>
+            )}
         </View>
       </ScrollView>
       <AppButton

@@ -18,6 +18,7 @@ import {Currency} from '@/redux/api/productApi';
 import {storeData, retrieveData, utils, parseJson} from '@/utils/utils';
 import {actions as orderAction} from './order';
 import {actions as accountAction} from './account';
+import {availableRokebiCash} from '@/components/AppPaymentGateway/DiscountInfo';
 
 const {esimCurrency} = Env.get();
 
@@ -99,6 +100,8 @@ const prepareOrder = createAsyncThunk(
     const {token, iccid, email, mobile} = account;
     const {purchaseItems, orderId, cartId, esimIccid, mainSubsId, isCart} =
       cart;
+
+    console.log('@@@ 처음엔 파라미터를 안넣는건가?? coupon : ', coupon);
 
     return API.Cart.makeOrder({
       orderId: isCart ? cartId : orderId,
@@ -188,7 +191,7 @@ const slice = createSlice({
     },
 
     applyCoupon: (state, action) => {
-      const {couponId, maxDiscount} = action.payload;
+      const {couponId, maxDiscount, accountCash} = action.payload;
 
       if (maxDiscount) {
         state.couponToApply = state.promo?.reduce((acc, cur) => {
@@ -203,6 +206,21 @@ const slice = createSlice({
       const promo = state.promo?.find(
         (p) => p.coupon_id === state.couponToApply,
       );
+
+      console.log('@@@ promo :', promo, ', promo adj : ', promo?.adj?.value);
+
+      // 쿠폰 적용 시 결제 값이 음수가 되지 않도록 사용할 캐시 재계산
+      if (promo && state?.pymReq?.rkbcash?.value > 0) {
+        const maxPrice =
+          (state.pymReq?.subtotal?.value || 0) - (promo?.adj?.value || 0);
+
+        // 할인된 상품의 가격을 넘어선 안되고, 계정이 가진 캐시보다 커선 안된다.
+        const min = availableRokebiCash(maxPrice, accountCash);
+        state.pymReq = {
+          ...state.pymReq,
+          rkbcash: utils.toCurrency(min, esimCurrency),
+        };
+      }
 
       state.pymReq = {
         ...state.pymReq,
@@ -228,7 +246,7 @@ const slice = createSlice({
 
         state.pymReq = {
           ...state.pymReq,
-          rkbcash: utils.toCurrency(min, esimCurrency),
+          rkbcash: utils.toCurrency(min < 0 ? 0 : min, esimCurrency),
         };
 
         state.pymPrice = utils.toCurrency(
@@ -323,6 +341,8 @@ const slice = createSlice({
     builder.addCase(prepareOrder.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
+      console.log('@@@ makeorder 결과물 : ', result, ', objects : ', objects);
+
       if (result === 0 && objects[0]) {
         state.orderId = objects[0].order_id;
         state.promo = objects[0].promo;
@@ -331,19 +351,15 @@ const slice = createSlice({
           return acc;
         }, undefined)?.coupon_id;
 
-        if (!state.pymReq) {
-          state.pymReq = {} as PaymentReq;
-        }
+        state.pymReq = {} as PaymentReq;
 
-        if (!state.pymReq.subtotal) {
-          state.pymReq.subtotal = utils.toCurrency(
-            ((state.purchaseItems as PurchaseItem[]) || []).reduce(
-              (acc, cur) => acc + cur.price.value * (cur.qty || 1),
-              0,
-            ),
-            esimCurrency,
-          );
-        }
+        state.pymReq.subtotal = utils.toCurrency(
+          ((state.purchaseItems as PurchaseItem[]) || []).reduce(
+            (acc, cur) => acc + cur.price.value * (cur.qty || 1),
+            0,
+          ),
+          esimCurrency,
+        );
 
         // couponToApply == undefined 이면, discount도 undefined로 설정된다.
         const promo = state.promo?.find(

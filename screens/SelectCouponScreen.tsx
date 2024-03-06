@@ -20,6 +20,11 @@ import AppStyledText from '@/components/AppStyledText';
 import CouponItem from './CouponScreen/CouponItem';
 import {AccountModelState} from '@/redux/modules/account';
 import {RkbCoupon} from '@/redux/api/accountApi';
+import {
+  actions as toastActions,
+  Toast,
+  ToastAction,
+} from '@/redux/modules/toast';
 import AppText from '@/components/AppText';
 import {
   CartAction,
@@ -75,12 +80,13 @@ type SelectCouponProps = {
 
   action: {
     cart: CartAction;
+    toast: ToastAction;
   };
 };
 
 const SelectCoupon: React.FC<SelectCouponProps> = ({
   cart: {promo, couponToApply},
-  account: {coupon: myCoupon},
+  account: {coupon: myCoupon, balance},
   action,
 }) => {
   const navigation = useNavigation();
@@ -150,7 +156,9 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
         } ${i18n.t('pym:sel:coupon:apply')}`}
         titleStyle={[appStyles.medium18, {color: colors.white}]}
         onPress={() => {
-          action.cart.applyCoupon({couponId});
+          action.toast.push('pym:coupon:select');
+
+          action.cart.applyCoupon({couponId, accountCash: balance});
           navigation.goBack();
         }}
         style={appStyles.confirm}
@@ -166,6 +174,7 @@ export default memo(
     (dispatch) => ({
       action: {
         cart: bindActionCreators(cartActions, dispatch),
+        toast: bindActionCreators(toastActions, dispatch),
       },
     }),
   )(SelectCoupon),

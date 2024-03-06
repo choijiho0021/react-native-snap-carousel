@@ -192,6 +192,8 @@ const CouponScreen: React.FC<CouponProps> = ({
           title={i18n.t('coupon:reg')}
           disabled={code.length < 1}
           onPress={regCoupon}
+          disabledOnPress={regCoupon}
+          disabledCanOnPress
           titleStyle={[appStyles.semiBold16Text, {color: colors.white}]}
         />
       </View>
