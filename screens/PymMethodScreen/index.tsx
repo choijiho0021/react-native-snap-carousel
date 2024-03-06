@@ -474,6 +474,15 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           disableColor={colors.greyish}
           disableStyle={{backgroundColor: colors.lightGrey}}
           disabled={(cart.pymPrice?.value !== 0 && !selected) || !policyChecked}
+          disabledCanOnPress
+          disabledOnPress={() => {
+            // AppAlert 결제에 사용할 카드를 선택해주세요
+
+            // AppAlert 주문 내용 확인 후 약관에 동의해주세요.
+            if (!policyChecked) {
+              AppAlert.info(i18n.t('pym:policy:alert'));
+            }
+          }}
           key={i18n.t('payment')}
           onPress={() => onSubmit(false)}
           style={appStyles.confirm}

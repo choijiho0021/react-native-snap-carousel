@@ -85,7 +85,7 @@ const PymMethod: React.FC<PymMethodProps> = ({
   installmentMonths,
   onPress,
   pymMethodRef,
-  price,
+  price = {value: 0, currency: 'KRW'},
 }) => {
   const [method, setMethod] = useState<'easy' | 'card' | 'vbank'>('easy');
   const [selected, setSelected] = useState('');
