@@ -297,7 +297,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
             value={
               params.pay_method === 'card'
                 ? i18n.t(`pym:card${params.card}`)
-                : i18n.t(params.pay_method)
+                : i18n.t(`pym:${params.pay_method}`)
             }
             valueStyle={appStyles.roboto16Text}
           />

@@ -268,6 +268,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
             navigation.setParams({isPaid: true});
             navigation.replace('PaymentResult', {
               pymResult: true,
+              pay_method: 'rokebi',
               mode,
             });
           } else {
