@@ -117,6 +117,7 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
   const onShouldStartLoadWithRequest = useCallback(
     (event: ShouldStartLoadRequest): boolean => {
       console.log('@@@ PG ', event.url);
+      console.log('@@@@ event : ', event.loading);
 
       if (pgWebViewConfig.cancelUrl === event.url) {
         callback('cancel');
@@ -128,14 +129,18 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         return false;
       }
 
-      if (event.url.startsWith('about:blank')) {
+      if (
+        event.url.startsWith('about:blank') ||
+        event.url.indexOf('blank') !== -1
+      ) {
         setLoading(false);
         return true;
       }
 
       console.log('@@@ url : ', event.url, ', setLoading : true');
       if (event.url.startsWith('http://') || event.url.startsWith('https://')) {
-        setLoading(true);
+        // 결제사의 비밀번호 입력 화면 같은 특정 웹 페이지는 loading false -> onLoadEnd 호출을 안해서 loading 값 참조
+        setLoading(event?.loading || false);
         setCount((prev) => prev + 1);
         return true;
       }
