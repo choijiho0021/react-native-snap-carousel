@@ -91,6 +91,10 @@ const DiscountInfo: React.FC<DiscountProps> = ({
   const [rokebiCash, setRokebiCash] = useState('');
   const [checked, setChecked] = useState(true);
   const [editing, setEditing] = useState(false);
+  const isCashNotEmpty = useMemo(
+    () => (account?.balance || 0) !== 0,
+    [account?.balance],
+  );
   const updateRokebiCash = useCallback(
     (v: string) => {
       const min = availableRokebiCash(
@@ -182,7 +186,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
           <AppText style={[styles.title, {marginLeft: 8}]}>
             {i18n.t('acc:balance')}
           </AppText>
-          {onPress ? (
+          {onPress && isCashNotEmpty ? (
             <AppStyledText
               text={i18n.t('acc:balance:hold')}
               textStyle={{...appStyles.bold14Text, color: colors.clearBlue}}
@@ -192,7 +196,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
         </View>
         <View key="selcash" style={styles.row}>
           <View style={styles.input}>
-            {onPress ? (
+            {onPress && isCashNotEmpty ? (
               <AppTextInput
                 style={{
                   ...styles.title,
@@ -212,9 +216,15 @@ const DiscountInfo: React.FC<DiscountProps> = ({
                 onBlur={() => setEditing(false)}
               />
             ) : (
-              <AppText>{rokebiCash}</AppText>
+              <AppText
+                style={{
+                  ...styles.title,
+                  color: colors.clearBlue,
+                }}>
+                {i18n.t('acc:balance:none')}
+              </AppText>
             )}
-            {rokebiCash?.length > 0 && (
+            {(utils.stringToNumber(rokebiCash) || 0) > 0 && (
               <AppButton
                 style={styles.cancelButton}
                 titleStyle={{color: colors.clearBlue}}
@@ -223,7 +233,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
               />
             )}
           </View>
-          {onPress ? (
+          {onPress && isCashNotEmpty ? (
             <AppButton
               style={styles.button}
               titleStyle={styles.buttonTitle}
