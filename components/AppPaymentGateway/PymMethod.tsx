@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useEffect, useState} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import AppText from '../AppText';
 import i18n from '@/utils/i18n';
@@ -11,6 +11,7 @@ import AppTextInput from '../AppTextInput';
 import {PaymentParams} from '@/navigation/navigation';
 import DropDownHeader from '@/screens/PymMethodScreen/DropDownHeader';
 import AppSvgIcon from '../AppSvgIcon';
+import {Currency} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -76,6 +77,7 @@ type PymMethodProps = {
   installmentMonths?: string;
   onPress: (kind: string) => void;
   pymMethodRef: React.MutableRefObject<PymMethodRef | null>;
+  price: Currency;
 };
 
 const PymMethod: React.FC<PymMethodProps> = ({
@@ -83,12 +85,17 @@ const PymMethod: React.FC<PymMethodProps> = ({
   installmentMonths,
   onPress,
   pymMethodRef,
+  price,
 }) => {
   const [method, setMethod] = useState<'easy' | 'card' | 'vbank'>('easy');
   const [selected, setSelected] = useState('');
   const [idType, setIdType] = useState<'m' | 'c' | 'b'>('m');
   const [id, setId] = useState('');
   const [rcptType, setRcptType] = useState<'p' | 'b' | 'n'>('p');
+  const disabled = useMemo(
+    () => price.currency === 'KRW' && price.value <= 0,
+    [price.currency, price.value],
+  );
 
   useEffect(() => {
     if (pymMethodRef) {
@@ -114,7 +121,7 @@ const PymMethod: React.FC<PymMethodProps> = ({
           title={i18n.t(
             value?.startsWith('card') ? `pym:${value}` : 'pym:method:card:sel',
           )}
-          onPress={() => onPress('card')}
+          onPress={disabled ? () => {} : () => onPress('card')}
         />
         <View style={{height: 12}} />
         <DropDownButton
@@ -123,12 +130,23 @@ const PymMethod: React.FC<PymMethodProps> = ({
               ? i18n.t('pym:pay:atonce')
               : installmentMonths + i18n.t('pym:duration')
           }
-          disabled={!value?.startsWith('card')}
+          disabled={
+            !value?.startsWith('card') ||
+            disabled ||
+            (price?.currency === 'KRW' && (price?.value || 0) < 50000)
+          }
           onPress={() => onPress('installmentMonths')}
         />
       </View>
     );
-  }, [installmentMonths, onPress, value]);
+  }, [
+    disabled,
+    installmentMonths,
+    onPress,
+    price?.currency,
+    price?.value,
+    value,
+  ]);
 
   const renderVBankButton = useCallback(() => {
     return (
@@ -182,6 +200,7 @@ const PymMethod: React.FC<PymMethodProps> = ({
                   borderTopColor: colors.lightGrey,
                 },
               ]}
+              disabled={disabled}
               onPress={() => {
                 if (k !== method) {
                   setMethod(k);
@@ -200,6 +219,8 @@ const PymMethod: React.FC<PymMethodProps> = ({
                 <PymButtonList
                   selected={selected}
                   onPress={(m) => {
+                    if (disabled) return;
+
                     setSelected(m);
                     onPress(m);
                   }}

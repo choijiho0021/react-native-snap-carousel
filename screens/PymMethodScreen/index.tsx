@@ -449,6 +449,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           value={selected}
           installmentMonths={installmentMonths}
           onPress={setPymMethod}
+          price={cart?.pymPrice}
         />
 
         {/* {cart.pymPrice?.value !== 0 ? (
