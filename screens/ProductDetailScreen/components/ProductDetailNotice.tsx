@@ -56,8 +56,10 @@ const ProductDetailNotice: React.FC<ProductDetailNoticeProps> = ({
 }) => {
   const cautionList: string[] = useMemo(
     () =>
-      fieldCautionList?.filter((c) =>
-        isIOS ? !c.includes('android:') : !c.includes('ios:'),
+      fieldCautionList?.filter(
+        (c) =>
+          !c.includes('app') &&
+          (isIOS ? !c.includes('android') : !c.includes('ios')),
       ) || [],
     [fieldCautionList],
   );
@@ -96,9 +98,7 @@ const ProductDetailNotice: React.FC<ProductDetailNoticeProps> = ({
   );
 
   const renderCautionList = useCallback((caution: string) => {
-    const cautionText = caution.substring(
-      caution.startsWith('ios:') ? 4 : caution.startsWith('android:') ? 8 : 0,
-    );
+    const cautionText = caution.includes(':') ? caution.split(':')[1] : caution;
     return (
       <TextWithDot
         key={caution}

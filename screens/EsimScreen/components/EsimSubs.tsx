@@ -54,7 +54,9 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import HowToCallModal from './HowToCallModal';
 import HtQrModal from './HtQrModal';
 import AppNotiBox from '@/components/AppNotiBox';
+import Env from '@/environment';
 
+const {isIOS} = Env.get();
 const styles = StyleSheet.create({
   cardExpiredBg: {
     backgroundColor: colors.backGrey,
@@ -426,6 +428,16 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         !(mainSubs.expireDate && mainSubs.expireDate.isBefore(now)),
     ];
   }, [mainSubs]);
+
+  const cautionList: string[] = useMemo(
+    () =>
+      mainSubs.cautionList?.filter(
+        (c) =>
+          !c.includes('web') &&
+          (isIOS ? !c.includes('android') : !c.includes('ios')),
+      ) || [],
+    [mainSubs.cautionList],
+  );
 
   const [showMoreInfo, setShowMoreInfo] = useState(showDetail);
   const [showSubs, setShowSubs] = useState<boolean>(!mainSubs.hide);
@@ -988,45 +1000,36 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     sendable,
   ]);
 
-  const renderCautionText = useCallback(
-    (caution: string, subNum: number, hasPreDot: boolean) => (
-      <View
-        key={caution + subNum}
-        style={[
-          styles.cautionTextContainer,
-          {
-            marginBottom: hasPreDot ? 10 : 0,
-            marginRight: hasPreDot ? 36 : 0,
-          },
-        ]}>
-        {hasPreDot && (
-          <AppText
-            key="centerDot"
-            style={[styles.cautionText, {marginHorizontal: 8}]}>
-            {i18n.t('centerDot')}
-          </AppText>
-        )}
-
-        <AppText key={caution} style={styles.cautionText}>
-          {caution.substring(subNum)}
-        </AppText>
-      </View>
-    ),
-    [],
-  );
-
   const renderCautionList = useCallback(
     (caution: string, idx: number, arr: string[]) => {
       const hasPreDot = arr.length > 1;
-      if (caution.startsWith('ios:') && Platform.OS === 'ios')
-        return renderCautionText(caution, 4, hasPreDot);
-      if (caution.startsWith('android:') && Platform.OS === 'android')
-        return renderCautionText(caution, 8, hasPreDot);
-      if (!caution.startsWith('ios:') && !caution.startsWith('android:'))
-        return renderCautionText(caution, 0, hasPreDot);
-      return null;
+      const cautionText = caution.includes(':')
+        ? caution.split(':')[1]
+        : caution;
+      return (
+        <View
+          key={cautionText}
+          style={[
+            styles.cautionTextContainer,
+            {
+              marginBottom: hasPreDot ? 10 : 0,
+              marginRight: hasPreDot ? 36 : 0,
+            },
+          ]}>
+          {hasPreDot && (
+            <AppText
+              key="centerDot"
+              style={[styles.cautionText, {marginHorizontal: 8}]}>
+              {i18n.t('centerDot')}
+            </AppText>
+          )}
+          <AppText key={cautionText} style={styles.cautionText}>
+            {cautionText}
+          </AppText>
+        </View>
+      );
     },
-    [renderCautionText],
+    [],
   );
 
   return (
@@ -1059,7 +1062,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
             <View style={showMoreInfo && styles.moreInfoContent}>
               {topInfo()}
 
-              {!!mainSubs.caution || (mainSubs.cautionList?.length || 0) > 0 ? (
+              {!!mainSubs.caution || (cautionList?.length || 0) > 0 ? (
                 <View style={styles.cautionBox}>
                   <View style={styles.cautionRow}>
                     <AppSvgIcon name="cautionIcon" style={{marginRight: 12}} />
@@ -1069,7 +1072,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
                   </View>
 
                   <View>
-                    {(mainSubs.cautionList || [])
+                    {(cautionList || [])
                       .concat(mainSubs.caution || [])
                       ?.map(renderCautionList)}
                   </View>
