@@ -954,6 +954,7 @@
 
   "pym:esimInfo": "구매 후 구매 eSIM 목록 화면에서 <b>발권하기 버튼을 눌러</b> 발권 절차를 진행하신 뒤에 <b>eSIM 상품 정보를 확인</b>할 수 있어요.",
   "pym:title": "주문 상품",
+  "pym:goBack:alert": "지금 나가시면 할인 적용이 취소돼요.\n정말 주문을 취소하고 나가시겠어요?",
   "pym:delivery": "배송 정보",
   "pym:deliveryMemo": "배송 메모",
   "pym:method": "결제 방법",
@@ -1041,6 +1042,7 @@
   "pym:toOrderList": "구매내역 보기",
   "pym:toHome": "홈으로 이동",
   "pym:toCheck": "구매 상품 확인하기",
+  "pym:retry": "결제 재시도하기",
   "pym:selectMemo": "배송 메모를 선택해 주세요.",
   "pym:IputMemo": "배송 메모를 입력하세요.",
   "pym:notSelected": "선택 안함",
