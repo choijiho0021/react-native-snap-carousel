@@ -252,7 +252,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
               style={styles.button}
               titleStyle={[styles.buttonTitle]}
               title={i18n.t('pym:deductAll')}
-              // 보유캐시와 사용캐시가 같거나, 상품 가격과 사용캐시가 같을 때 비활성화
+              // 보유캐시와 사용할 캐시가 같거나, 상품 결제 금액과 사용할 캐시가 같을 때 비활성화
               disabled={disabledDeductAll}
               disableStyle={{
                 backgroundColor: colors.lightGrey,
