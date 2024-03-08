@@ -49,6 +49,7 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
       orderItems.forEach((i) => {
         if (!product.prodList.has(i?.key || i?.uuid)) {
           // 해당 Uuid로 없다면 서버에서 가져온다.
+
           action.product.getProdByUuid(i?.key || i?.uuid);
           loading.current = true;
         }
@@ -73,7 +74,7 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
                 item?.price?.currency || 'KRW',
               );
 
-        if (item?.type === 'rch') {
+        if (['rch', 'addon'].includes(item?.type)) {
           const rchOrder = item as PurchaseItem;
 
           return {
