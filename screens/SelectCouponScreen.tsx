@@ -6,7 +6,7 @@ import {
   View,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
-import React, {memo, useCallback, useMemo, useState} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
@@ -94,8 +94,16 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
   const couponList = useMemo(
     () =>
       promo
-        ?.map((p) => myCoupon.find((c) => c.id === p.coupon_id))
-        .filter((c) => !!c) || [],
+        ?.map((p) => {
+          return {
+            ...myCoupon.find((c) => c.id === p.coupon_id),
+            adj: p?.adj?.value || 0,
+          };
+        })
+        .filter((c) => !!c)
+        .sort((a, b) => {
+          return a?.adj > b?.adj ? 1 : -1;
+        }) || [],
     [myCoupon, promo],
   );
 

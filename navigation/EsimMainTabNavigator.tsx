@@ -121,6 +121,8 @@ function HomeStackComponent() {
           },
         }}
       />
+
+      <HomeStack.Screen name="SimpleTextModal" component={SimpleTextScreen} />
       <HomeStack.Screen name="Tutorial" component={TutorialScreen} />
       <HomeStack.Screen name="StoreSearch" component={StoreSearchScreen} />
       <HomeStack.Screen name="Cart" component={CartScreen} />

@@ -33,8 +33,11 @@ import i18n from '@/utils/i18n';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppIcon from '@/components/AppIcon';
-import {getItemsOrderType} from '@/redux/models/purchaseItem';
+import {PurchaseItem, getItemsOrderType} from '@/redux/models/purchaseItem';
 import AppBottomModal from './DraftUsScreen/component/AppBottomModal';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+import api from '@/redux/api/api';
+import AppAlert from '@/components/AppAlert';
 
 const {esimGlobal} = Env.get();
 
@@ -65,6 +68,19 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 52,
     backgroundColor: colors.clearBlue,
+  },
+  btnGoHomeText: {
+    ...appStyles.normal18Text,
+    textAlign: 'center',
+    color: colors.black,
+  },
+  btnGoHome: {
+    width: '50%',
+    height: 52,
+    backgroundColor: colors.white,
+    borderTopWidth: 1,
+    borderColor: colors.lightGrey,
+    colors: colors.black,
   },
   scrollView: {
     flex: 1,
@@ -207,16 +223,50 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     }, [action.cart]),
   );
 
+  const retry = useCallback(() => {
+    console.log('@@@@ retry : ', retry);
+
+    console.log(
+      '@@@@ oldCart 정보 확인, 체크된 데이터만 들어오는지? : ',
+      oldCart?.purchaseItems,
+    );
+
+    // 이렇게 했을 때, 뒤로가기 같은거 하면 안꼬이는 지 확인이 필요할듯?
+    const purchaseItems = oldCart?.purchaseItems || [];
+
+    if (purchaseItems.length > 0)
+      action.cart
+        .checkStockAndPurchase({purchaseItems, isCart: true})
+        .then(({payload: resp}) => {
+          if (resp.result === 0) {
+            navigation.navigate('PymMethod', {mode: 'cart'});
+          } else if (resp.result === api.E_RESOURCE_NOT_FOUND)
+            AppAlert.info(`${resp.title} ${i18n.t('cart:soldOut')}`);
+          else AppAlert.info(i18n.t('cart:systemError'));
+        })
+        .catch((err) => {
+          console.log('failed to check stock', err);
+        });
+    else {
+      console.log('@@@@ 재 결제 시도 실패 홈으로 이동하기');
+      navigation.navigate('HomeStack', {screen: 'Home'});
+    }
+  }, [action.cart, navigation, oldCart?.purchaseItems]);
+
   useEffect(() => {
     const {pymReq, purchaseItems, pymPrice, orderId} = cart;
     const {token} = account;
 
+    // cart를 비우는게 맞나??
+
     if (purchaseItems.length > 0) {
       setOldCart({pymReq, purchaseItems, pymPrice, orderId});
+
+      // 성공했을 때만
       // 카트를 비운다.
-      action.cart.makeEmpty({orderId, token});
+      if (isSuccess) action.cart.makeEmpty({orderId, token});
     }
-  }, [account, action.cart, cart]);
+  }, [account, action.cart, cart, isSuccess]);
 
   useEffect(() => {
     Analytics.trackEvent('Payment', {
@@ -297,7 +347,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
             value={
               params.pay_method === 'card'
                 ? i18n.t(`pym:card${params.card}`)
-                : i18n.t(params.pay_method)
+                : i18n.t(`pym:${params.pay_method}`)
             }
             valueStyle={appStyles.roboto16Text}
           />
@@ -340,15 +390,39 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
             )}
         </View>
       </ScrollView>
-      <AppButton
-        style={styles.btnHome}
-        title={i18n.t('pym:toCheck')}
-        titleStyle={styles.btnHomeText}
-        type="primary"
-        onPress={() => {
-          onNavigateScreen();
-        }}
-      />
+
+      {isSuccess ? (
+        <AppButton
+          style={styles.btnHome}
+          title={i18n.t('pym:toCheck')}
+          titleStyle={styles.btnHomeText}
+          type="secondary"
+          onPress={() => {
+            onNavigateScreen();
+          }}
+        />
+      ) : (
+        <View style={{flexDirection: 'row'}}>
+          <AppButton
+            style={styles.btnGoHome}
+            title={i18n.t('pym:toHome')}
+            titleStyle={styles.btnGoHomeText}
+            type="primary"
+            onPress={() => {
+              navigation.navigate('HomeStack', {screen: 'Home'});
+            }}
+          />
+          <AppButton
+            style={[styles.btnHome, {width: '50%'}]}
+            title={i18n.t('pym:retry')}
+            titleStyle={styles.btnHomeText}
+            type="primary"
+            onPress={() => {
+              navigation.goBack();
+            }}
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
