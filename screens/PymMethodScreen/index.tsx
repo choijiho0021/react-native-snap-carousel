@@ -13,7 +13,11 @@ import AppButton from '@/components/AppButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {HomeStackParamList, PaymentParams} from '@/navigation/navigation';
+import {
+  HomeStackParamList,
+  PaymentParams,
+  goBack,
+} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import api from '@/redux/api/api';
@@ -54,6 +58,7 @@ import AppText from '@/components/AppText';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import DropDownHeader from './DropDownHeader';
 import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
+import AppModalContent from '@/components/ModalContent/AppModalContent';
 
 const infoKey = 'pym:benefit';
 const styles = StyleSheet.create({
@@ -397,6 +402,25 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           title={i18n.t('payment')}
           disabled={route.params.isPaid}
           showIcon={!route.params.isPaid}
+          onPress={() => {
+            action.modal.renderModal(() => (
+              <AppModalContent
+                title={i18n.t('pym:goBack:alert')}
+                type="normal"
+                onOkClose={() => {
+                  action.modal.closeModal();
+                }}
+                onCancelClose={() => {
+                  goBack(navigation, route);
+                  action.modal.closeModal();
+                }}
+                cancelButtonStyle={{color: colors.black, marginRight: 60}}
+                okButtonTitle={i18n.t('no')}
+                cancelButtonTitle={i18n.t('yes')}
+                okButtonStyle={{color: colors.clearBlue}}
+              />
+            ));
+          }}
         />
       </View>
       <KeyboardAwareScrollView
