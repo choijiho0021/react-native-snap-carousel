@@ -12,7 +12,7 @@ import {
   SafeAreaView,
   StatusBar,
   StyleSheet,
-  TouchableOpacity,
+  Pressable,
   View,
 } from 'react-native';
 import React, {
@@ -62,14 +62,12 @@ const {esimGlobal, isProduction, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   title: {
-    ...appStyles.bold30Text,
     paddingHorizontal: 20,
     paddingTop: 50,
     lineHeight: 40,
   },
   mobileAuth: {
     ...appStyles.h1,
-    paddingHorizontal: 20,
     paddingTop: 50,
   },
   confirmList: {
@@ -108,9 +106,10 @@ const styles = StyleSheet.create({
     textAlignVertical: 'bottom',
     lineHeight: 19,
   },
-  rowStyle: {
+  row: {
     flexDirection: 'row',
     flex: 1,
+    justifyContent: 'space-between',
   },
 });
 
@@ -143,7 +142,7 @@ const RegisterMobileListItem0 = ({
 
   return (
     <View style={styles.confirmList}>
-      <TouchableOpacity
+      <Pressable
         onPress={() => onPress(item.key)}
         activeOpacity={1}
         style={{paddingVertical: 13}}>
@@ -152,12 +151,12 @@ const RegisterMobileListItem0 = ({
           name="btnCheck2"
           checked={confirmed}
         />
-      </TouchableOpacity>
-      <TouchableOpacity
+      </Pressable>
+      <Pressable
         onPress={onMove(item.key, navi.route, navi.param)}
         activeOpacity={1}
-        style={[styles.rowStyle, {paddingVertical: 13}]}>
-        <View style={styles.rowStyle}>
+        style={[styles.row, {paddingVertical: 13}]}>
+        <View style={styles.row}>
           {item.list.map((elm, idx) => (
             <AppText
               key={utils.generateKey(idx)}
@@ -170,7 +169,7 @@ const RegisterMobileListItem0 = ({
           style={{marginRight: 10, marginTop: 5}}
           name="iconArrowRight"
         />
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 };
@@ -628,7 +627,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           {i18n.t('mobile:easyLogin')}
         </AppText>
         <InputMobile
-          style={{marginTop: 30, paddingHorizontal: 20}}
           onPress={sendSms}
           authNoti={authNoti}
           disabled={(authNoti && authorized) || loading}
@@ -637,7 +635,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         />
 
         <InputPinInTime
-          style={{marginTop: 20, paddingHorizontal: 20}}
+          style={{marginTop: 20}}
           clickable={editablePin || !isProduction}
           editable={pinEditable}
           authorized={mobile ? authorized : undefined}
@@ -662,8 +660,13 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
   const renderLogin = useCallback(() => {
     return (
-      <View>
-        <AppText style={styles.title}>{i18n.t('mobile:title')}</AppText>
+      <View style={styles.title}>
+        <View style={styles.row}>
+          <AppText style={appStyles.bold30Text}>
+            {i18n.t('mobile:title')}
+          </AppText>
+          <AppIcon name="earth" />
+        </View>
         {!esimGlobal && renderInput()}
       </View>
     );

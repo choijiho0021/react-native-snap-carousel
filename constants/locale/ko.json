@@ -286,15 +286,16 @@
 
   "mobile:header": "로그인",
   "mobile:title": "여행을\n시작해 볼까요?",
-  "mobile:easyLogin": "휴대폰 간편 인증 로그인",
+  "mobile:easyLogin": "휴대폰 간편 로그인",
   "mobile:input": "- 없이 숫자만 입력",
   "mobile:auth": "인증번호 입력",
-  "mobile:sendAuth": "인증번호 전송",
+  "mobile:sendAuth": "인증",
   "mobile:resendAuth": "재전송",
   "mobile:authMatch": "인증번호가 확인되었습니다",
   "mobile:authMismatch": "잘못된 인증번호 입니다",
   "mobile:timeout": "인증번호가 만료되었습니다. 다시 시도해주세요.",
   "mobile:inputInTime": "* 3분 이내로 인증번호(6자리)를 입력해주세요.",
+  "mobile:timeLeft": "남은 시간 ",
 
   "email:input": "선택하기",
 
@@ -1343,7 +1344,7 @@
   "noti:cancel": "다음에 할래요",
   "noti:ok": "업데이트",
 
-  "login:easyLogin": "간편 로그인",
+  "login:easyLogin": "또는",
   "googleLogin:inProgress": "이미 로그인 중 입니다.",
   "googleLogin:signInCanceled": "로그인이 취소 되었습니다.",
   "googleLogin:serviceUnavailable": "서비스 사용이 불가능합니다.",
