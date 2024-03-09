@@ -13,7 +13,6 @@ import {colors} from '@/constants/Colors';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
 import Triangle from './Triangle';
-import AppButton from './AppButton';
 import validationUtil from '@/utils/validationUtil';
 import {API} from '@/redux/api';
 
@@ -29,13 +28,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 3,
     borderColor: colors.lightGrey,
-    paddingHorizontal: 16,
-    paddingVertical: 13,
+    paddingLeft: 16,
   },
   textInput: {
     ...appStyles.medium16,
     color: colors.greyish,
     textAlignVertical: 'center',
+    paddingVertical: 13,
+    flex: 1,
   },
   container: {
     flexDirection: 'row',
@@ -58,6 +58,7 @@ type InputEmailProps = {
   inputRef?: React.MutableRefObject<InputEmailRef | null>;
   currentEmail?: string; // current email
   domain: string;
+  placeholder?: string;
   onChange?: (email: string) => void;
   onPress?: () => void;
 };
@@ -66,6 +67,7 @@ const InputEmail: React.FC<InputEmailProps> = ({
   inputRef,
   currentEmail,
   domain,
+  placeholder,
   onChange,
   onPress = () => {},
 }) => {
@@ -129,45 +131,31 @@ const InputEmail: React.FC<InputEmailProps> = ({
   return (
     <View>
       <View style={styles.container}>
-        <Pressable
+        <AppTextInput
+          showCancel
+          containerStyle={{
+            ...styles.wrapper,
+            borderColor: focused ? colors.clearBlue : colors.lightGrey,
+          }}
           style={[
-            styles.wrapper,
-            {
-              flex: 1,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              borderColor: focused ? colors.clearBlue : colors.lightGrey,
-            },
+            styles.textInput,
+            {color: email ? colors.black : colors.greyish},
           ]}
-          onPress={() => emailRef.current?.focus()}>
-          <AppTextInput
-            style={[
-              styles.textInput,
-              {color: email ? colors.black : colors.greyish},
-            ]}
-            placeholder={i18n.t('reg:email')}
-            placeholderTextColor={colors.greyish}
-            returnKeyType="next"
-            enablesReturnKeyAutomatically
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            ref={emailRef}
-            value={email}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-          />
-          {email.length > 0 && (
-            <AppButton
-              style={{justifyContent: 'flex-end', marginLeft: 10}}
-              iconName="btnSearchCancel"
-              onPress={() => {
-                setEmail('');
-                setInValid('changeEmail:invalidEmail');
-              }}
-            />
-          )}
-        </Pressable>
+          placeholder={placeholder}
+          placeholderTextColor={colors.greyish}
+          returnKeyType="next"
+          enablesReturnKeyAutomatically
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          ref={emailRef}
+          value={email}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          onCancel={() => {
+            setEmail('');
+            setInValid('changeEmail:invalidEmail');
+          }}
+        />
 
         {domain !== 'input' && (
           <AppText style={[appStyles.medium16, {marginHorizontal: 6}]}>
@@ -177,7 +165,7 @@ const InputEmail: React.FC<InputEmailProps> = ({
 
         {domain !== 'input' && (
           <Pressable style={styles.wrapper} onPress={onPress}>
-            <View style={styles.row}>
+            <View style={[styles.row, {paddingVertical: 13}]}>
               <AppText
                 style={[
                   appStyles.medium16,

@@ -152,6 +152,7 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
             domain={domain}
             onPress={() => setShowDomainModal(true)}
             onChange={setNewEmail}
+            placeholder={i18n.t('chg:email')}
           />
         </View>
 

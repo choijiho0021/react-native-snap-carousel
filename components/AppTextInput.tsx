@@ -23,7 +23,15 @@ const AppTextInput = React.forwardRef<
   ) => {
     if (showCancel) {
       return (
-        <View style={containerStyle}>
+        <View
+          style={[
+            containerStyle,
+            {
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            },
+          ]}>
           <TextInput
             ref={ref}
             {...props}

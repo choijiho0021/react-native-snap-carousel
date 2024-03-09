@@ -145,7 +145,8 @@
 
   "reg:actCode": "Activation Code",
   "reg:inputActCode": "Activation Code를 입력하세요.",
-  "reg:email": "변경할 이메일",
+  "reg:email": "이메일 입력",
+  "chg:email": "변경할 이메일",
   "reg:ICCID": "ICCID 카드 등록",
   "reg:cntry": "국가",
   "reg:mobile": "휴대전화",
@@ -296,14 +297,14 @@
   "mobile:timeout": "인증번호가 만료되었습니다. 다시 시도해주세요.",
   "mobile:inputInTime": "* 3분 이내로 인증번호(6자리)를 입력해주세요.",
   "mobile:timeLeft": "남은 시간 ",
+  "mobile:email": "상품 발송 이메일",
 
   "email:input": "선택하기",
 
-  "cfm:contract": "이용 약관 동의",
-  "cfm:required": " (필수)",
-  "cfm:personalInfo": "개인정보 수집목적 및 이용동의",
-  "cfm:marketing": "맞춤안내 및 마케팅 정보 수신동의",
-  "cfm:optional": " (선택)",
+  "cfm:all": "다음 약관에 모두 동의합니다.",
+  "cfm:contract": "이용 약관 동의 (필수)",
+  "cfm:personalInfo": "개인정보 수집목적 및 이용동의 (필수)",
+  "cfm:marketing": "맞춤안내 및 마케팅 정보 수신동의 (선택)",
   "cfm:accept": "동의",
 
   "purchase:address": "배송 주소",

@@ -12,17 +12,9 @@ import {
   SafeAreaView,
   StatusBar,
   StyleSheet,
-  Pressable,
   View,
 } from 'react-native';
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Map as ImmutableMap} from 'immutable';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
@@ -57,6 +49,7 @@ import validationUtil from '@/utils/validationUtil';
 import {LinkModelState} from '@/redux/modules/link';
 import ScreenHeader from '@/components/ScreenHeader';
 import DomainListModal from '@/components/DomainListModal';
+import ConfirmPolicy from './ConfirmPolicy';
 
 const {esimGlobal, isProduction, isIOS} = Env.get();
 
@@ -70,24 +63,11 @@ const styles = StyleSheet.create({
     ...appStyles.h1,
     paddingTop: 50,
   },
-  confirmList: {
-    flexDirection: 'row',
-    height: 46,
-    borderBottomColor: colors.lightGrey,
-    borderBottomWidth: 0.5,
-    paddingHorizontal: 20,
-  },
   confirm: {
     width: '100%',
     height: 52,
     backgroundColor: colors.clearBlue,
     justifyContent: 'flex-end',
-  },
-  divider: {
-    marginTop: 30,
-    width: '100%',
-    height: 10,
-    backgroundColor: '#f5f5f5',
   },
   text: {
     ...appStyles.normal18Text,
@@ -101,80 +81,12 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: colors.white,
   },
-  confirmItem: {
-    ...appStyles.normal14Text,
-    textAlignVertical: 'bottom',
-    lineHeight: 19,
-  },
   row: {
     flexDirection: 'row',
     flex: 1,
     justifyContent: 'space-between',
   },
 });
-
-type ConfirmItem = {
-  key: string;
-  list: {color: string; text: string}[];
-  navi: {
-    route: string;
-    param: {key: string; title: string};
-  };
-};
-
-const RegisterMobileListItem0 = ({
-  item,
-  confirm,
-  onPress,
-  onMove,
-}: {
-  item: ConfirmItem;
-  onPress: (k: string) => void;
-  onMove: (
-    k: string,
-    route: string,
-    param: {key: string; title: string},
-  ) => () => void;
-  confirm: ImmutableMap<string, boolean>;
-}) => {
-  const confirmed = confirm.get(item.key);
-  const navi = item.navi || {};
-
-  return (
-    <View style={styles.confirmList}>
-      <Pressable
-        onPress={() => onPress(item.key)}
-        activeOpacity={1}
-        style={{paddingVertical: 13}}>
-        <AppIcon
-          style={{marginRight: 10}}
-          name="btnCheck2"
-          checked={confirmed}
-        />
-      </Pressable>
-      <Pressable
-        onPress={onMove(item.key, navi.route, navi.param)}
-        activeOpacity={1}
-        style={[styles.row, {paddingVertical: 13}]}>
-        <View style={styles.row}>
-          {item.list.map((elm, idx) => (
-            <AppText
-              key={utils.generateKey(idx)}
-              style={[styles.confirmItem, {color: elm.color}]}>
-              {elm.text}
-            </AppText>
-          ))}
-        </View>
-        <AppIcon
-          style={{marginRight: 10, marginTop: 5}}
-          name="iconArrowRight"
-        />
-      </Pressable>
-    </View>
-  );
-};
-
-const RegisterMobileListItem = memo(RegisterMobileListItem0);
 
 type RegisterMobileScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
@@ -239,34 +151,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const recommender = useMemo(
     () => link?.params?.recommender,
     [link?.params?.recommender],
-  );
-  const confirmList = useMemo(
-    () =>
-      [
-        ['contract', 'required', 'setting:contract'],
-        ['personalInfo', 'required', 'setting:privacy'],
-      ]
-        .concat(
-          (!esimGlobal && [['marketing', 'optional', 'mkt:agreement']]) || [],
-        )
-        .map((v, i) => ({
-          key: `${i}`,
-          list: [
-            {
-              color: colors.warmGrey,
-              text: i18n.t(`cfm:${v[0]}`),
-            },
-            {
-              color: v[1] === 'required' ? colors.clearBlue : colors.warmGrey,
-              text: i18n.t(`cfm:${v[1]}`),
-            },
-          ],
-          navi: {
-            route: 'SimpleTextForAuth',
-            param: {key: v[2], title: i18n.t(`cfm:${v[0]}`)},
-          },
-        })),
-    [],
   );
 
   useEffect(() => {
@@ -518,6 +402,8 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             setLoading(false);
           }
 
+          // for testing
+          resp.result = 0;
           if (resp.result === 0 && mounted.current) {
             setAuthorized(_.isEmpty(resp.objects) ? true : undefined);
             setNewUser(_.isEmpty(resp.objects));
@@ -546,10 +432,8 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   );
 
   const onMove = useCallback(
-    (key: string, routeName: string, param: object) => () => {
-      if (!_.isEmpty(routeName)) {
-        navigation.navigate(routeName, param);
-      }
+    (param: Record<string, string>) => {
+      navigation.navigate('SimpleTextForAuth', param);
     },
     [navigation],
   );
@@ -599,23 +483,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       }
     },
     [signIn],
-  );
-
-  const renderItem = useCallback(
-    ({item}: {item: ConfirmItem}) => {
-      return (
-        <RegisterMobileListItem
-          key={item.key}
-          item={item}
-          confirm={confirm}
-          onPress={(key) =>
-            setConfirm((prev) => prev.update(key, (value) => !value))
-          }
-          onMove={onMove}
-        />
-      );
-    },
-    [confirm, onMove],
   );
 
   const renderInput = useCallback(() => {
@@ -708,18 +575,20 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         {newUser && authorized && (
           <View>
             <View
-              style={{marginTop: socialLogin ? 20 : 38, paddingHorizontal: 20}}>
+              style={{marginTop: socialLogin ? 20 : 40, paddingHorizontal: 20}}>
+              <AppText style={{...appStyles.semiBold14Text, marginBottom: 6}}>
+                {i18n.t('mobile:email')}
+              </AppText>
               <InputEmail
                 inputRef={emailRef}
                 domain={domain}
                 onChange={setEmail}
                 onPress={() => setShowDomainModal(true)}
+                placeholder={i18n.t('reg:email')}
               />
             </View>
 
-            <View key="divider" style={styles.divider} />
-
-            {confirmList.map((item) => renderItem({item}))}
+            <ConfirmPolicy onMove={onMove} />
           </View>
         )}
       </KeyboardAwareScrollView>
