@@ -298,13 +298,16 @@
   "mobile:inputInTime": "* 3분 이내로 인증번호(6자리)를 입력해주세요.",
   "mobile:timeLeft": "남은 시간 ",
   "mobile:email": "상품 발송 이메일",
+  "mobile:signup": "회원 가입하기",
 
   "email:input": "선택하기",
 
   "cfm:all": "다음 약관에 모두 동의합니다.",
-  "cfm:contract": "이용 약관 동의 (필수)",
-  "cfm:personalInfo": "개인정보 수집목적 및 이용동의 (필수)",
-  "cfm:marketing": "맞춤안내 및 마케팅 정보 수신동의 (선택)",
+  "cfm:contract": "이용 약관 동의",
+  "cfm:personalInfo": "개인정보 수집목적 및 이용동의",
+  "cfm:marketing": "맞춤안내 및 마케팅 정보 수신동의",
+  "cfm:mandatory": " (필수)",
+  "cfm:optional": " (선택)",
   "cfm:accept": "동의",
 
   "purchase:address": "배송 주소",

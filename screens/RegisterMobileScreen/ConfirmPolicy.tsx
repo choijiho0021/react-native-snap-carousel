@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useMemo, useState} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import AppText from '@/components/AppText';
 import AppIcon from '@/components/AppIcon';
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
 type ConfirmItem = {
   key: 'contract' | 'personalInfo' | 'marketing';
   label: string;
-  param: string;
+  param: {key: string; title: string};
 };
 
 const RegisterMobileListItem0 = ({
@@ -83,25 +83,27 @@ const RegisterMobileListItem = memo(RegisterMobileListItem0);
 
 const ConfirmPolicy = ({
   onMove,
+  onChange,
 }: {
   onMove: (param: Record<string, string>) => void;
+  onChange: (value: {mandatory: boolean; optional: boolean}) => void;
 }) => {
   const confirmList = useMemo<ConfirmItem[]>(
     () => [
       {
         key: 'contract',
-        label: i18n.t('cfm:contract'),
-        param: 'setting:contract',
+        label: i18n.t('cfm:contract') + i18n.t('cfm:mandatory'),
+        param: {key: 'setting:contract', title: i18n.t('cfm:contract')},
       },
       {
         key: 'personalInfo',
-        label: i18n.t('cfm:personalInfo'),
-        param: 'setting:privacy',
+        label: i18n.t('cfm:personalInfo') + i18n.t('cfm:mandatory'),
+        param: {key: 'setting:privacy', title: i18n.t('cfm:personalInfo')},
       },
       {
         key: 'marketing',
-        label: i18n.t('cfm:marketing'),
-        param: 'mkt:agreement',
+        label: i18n.t('cfm:marketing') + i18n.t('cfm:optional'),
+        param: {key: 'mkt:agreement', title: i18n.t('cfm:marketing')},
       },
     ],
     [],
@@ -133,6 +135,13 @@ const ConfirmPolicy = ({
     }
   }, [checkAll]);
 
+  useEffect(() => {
+    onChange({
+      mandatory: confirm.contract && confirm.personalInfo,
+      optional: confirm.marketing,
+    });
+  }, [confirm, onChange]);
+
   return (
     <View style={styles.container}>
       <Pressable style={styles.titleBox} onPress={toggleCheckAll}>
@@ -147,7 +156,7 @@ const ConfirmPolicy = ({
           onPress={(key) =>
             setConfirm((prev) => ({...prev, [key]: !prev[key]}))
           }
-          onMove={() => onMove?.({key: item.param, title: item.label})}
+          onMove={() => onMove?.(item.param)}
         />
       ))}
     </View>

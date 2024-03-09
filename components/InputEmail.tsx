@@ -1,11 +1,4 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, {memo, useEffect, useMemo, useRef, useState} from 'react';
 import {StyleSheet, TextInput, Pressable, View} from 'react-native';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
@@ -46,7 +39,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     color: colors.clearBlue,
     marginTop: 13,
-    marginLeft: 10,
   },
 });
 
@@ -76,49 +68,43 @@ const InputEmail: React.FC<InputEmailProps> = ({
   const [focused, setFocused] = useState(false);
   const [inValid, setInValid] = useState('');
 
-  const validateEmail = useCallback(
-    (v: string) => {
-      const str = v.replace(/ /g, '');
-      if (str) {
-        const m = domain === 'input' ? str : `${str}@${domain}`;
-        //check if not empty
-        console.log('@@@ validate email:', m, v, str);
-        const valid = validationUtil.validate('email', m);
-        if ((valid?.email?.length || 0) > 0) {
-          setInValid('changeEmail:invalidEmail');
-        } else if (m === currentEmail) {
-          // email not changed
-          setInValid('changeEmail:notChanged');
-        } else {
-          // check if the email is duplicated
-          API.User.confirmEmail({email: m})
-            .then((rsp) => {
-              if (rsp.result === 0) {
-                setInValid('changeEmail:usable');
-                onChange?.(m);
-              } else if (rsp.message?.includes('Duplicate')) {
-                setInValid('changeEmail:duplicate');
-              } else {
-                setInValid('changeEmail:fail');
-              }
-            })
-            .catch(() => {
-              setInValid('changeEmail:fail');
-            });
-        }
-      }
-    },
-    // current email은 dependency list에서 제외할것
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [domain, onChange],
-  );
-
   const validated = useMemo(() => inValid === 'changeEmail:usable', [inValid]);
 
   useEffect(() => {
-    console.log('@@@ check email', email);
-    validateEmail(email);
-  }, [validateEmail, email]);
+    const str = email.replace(/ /g, '');
+    if (str) {
+      const m = domain === 'input' ? str : `${str}@${domain}`;
+      const valid = validationUtil.validate('email', m);
+      if ((valid?.email?.length || 0) > 0) {
+        setInValid('changeEmail:invalidEmail');
+      } else if (m === currentEmail) {
+        // email not changed
+        setInValid('changeEmail:notChanged');
+      } else {
+        // check if the email is duplicated
+        API.User.confirmEmail({email: m})
+          .then((rsp) => {
+            if (rsp.result === 0) {
+              setInValid('changeEmail:usable');
+              onChange?.(m);
+            } else if (rsp.message?.includes('Duplicate')) {
+              setInValid('changeEmail:duplicate');
+            } else {
+              setInValid('changeEmail:fail');
+            }
+          })
+          .catch(() => {
+            setInValid('changeEmail:fail');
+          });
+      }
+    }
+  }, [currentEmail, domain, email, onChange]);
+
+  useEffect(() => {
+    if (inValid !== 'changeEmail:usable') {
+      onChange?.('');
+    }
+  }, [inValid, onChange]);
 
   useEffect(() => {
     if (inputRef) {

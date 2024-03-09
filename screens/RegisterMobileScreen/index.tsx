@@ -15,7 +15,6 @@ import {
   View,
 } from 'react-native';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {Map as ImmutableMap} from 'immutable';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import analytics, {firebase} from '@react-native-firebase/analytics';
@@ -51,7 +50,7 @@ import ScreenHeader from '@/components/ScreenHeader';
 import DomainListModal from '@/components/DomainListModal';
 import ConfirmPolicy from './ConfirmPolicy';
 
-const {esimGlobal, isProduction, isIOS} = Env.get();
+const {isProduction, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   title: {
@@ -127,13 +126,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const [authorized, setAuthorized] = useState<boolean | undefined>();
   const [authNoti, setAuthNoti] = useState(false);
   const [timeoutFlag, setTimeoutFlag] = useState(false);
-  const [confirm, setConfirm] = useState(
-    ImmutableMap({
-      0: false,
-      1: false,
-      2: false,
-    }),
-  );
+  const [confirm, setConfirm] = useState({mandatory: false, optional: false});
   const [newUser, setNewUser] = useState(false);
   const [socialLogin, setSocialLogin] = useState(false);
   const [isKeyboardShow, setIsKeyboardShow] = useState(false);
@@ -177,7 +170,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     mounted.current = true;
 
     if (status === 'authorized' && recommender) {
-      analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_recommender`);
+      analytics().logEvent('esim_recommender');
     }
   }, [recommender, status]);
 
@@ -231,13 +224,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     setAuthorized(false);
     setAuthNoti(false);
     setTimeoutFlag(false);
-    setConfirm(
-      ImmutableMap({
-        0: false,
-        1: false,
-        2: false,
-      }),
-    );
+    setConfirm({mandatory: false, optional: false});
     setNewUser(false);
     setSocialLogin(false);
 
@@ -297,20 +284,20 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       }
 
       if (isValid && mounted.current) {
-        const resp = await API.User.signUp({
+        const rsp = await API.User.signUp({
           user: mobile,
           pass: pin,
           email,
-          mktgOptIn: confirm.get('2'),
+          mktgOptIn: confirm.optional,
           deviceModel,
           recommender,
         });
 
-        if (resp.result === 0 && !_.isEmpty(resp.objects)) {
+        if (rsp.result === 0 && !_.isEmpty(rsp.objects)) {
           if (status === 'authorized') {
             await firebase.analytics().setAnalyticsCollectionEnabled(true);
             await Settings.setAdvertiserTrackingEnabled(true);
-            analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_sign_up`);
+            analytics().logEvent('esim_sign_up');
           }
 
           signIn({mobile, pin}, profileImageUrl);
@@ -534,14 +521,14 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           </AppText>
           <AppIcon name="earth" />
         </View>
-        {!esimGlobal && renderInput()}
+        {renderInput()}
       </View>
     );
   }, [renderInput]);
 
   const disableButton = useMemo(
-    () => !authorized || (newUser && !(confirm.get('0') && confirm.get('1'))),
-    [authorized, confirm, newUser],
+    () => !authorized || (newUser && !confirm.mandatory) || !email,
+    [authorized, confirm.mandatory, email, newUser],
   );
 
   return (
@@ -575,7 +562,11 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         {newUser && authorized && (
           <View>
             <View
-              style={{marginTop: socialLogin ? 20 : 40, paddingHorizontal: 20}}>
+              style={{
+                marginTop: socialLogin ? 20 : 40,
+                paddingHorizontal: 20,
+                marginBottom: 64,
+              }}>
               <AppText style={{...appStyles.semiBold14Text, marginBottom: 6}}>
                 {i18n.t('mobile:email')}
               </AppText>
@@ -588,7 +579,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
               />
             </View>
 
-            <ConfirmPolicy onMove={onMove} />
+            <ConfirmPolicy onMove={onMove} onChange={setConfirm} />
           </View>
         )}
       </KeyboardAwareScrollView>
@@ -597,20 +588,10 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           <SocialLogin onAuth={onAuth} />
         </View>
       )}
-      {esimGlobal && (
-        <View
-          key="imgRokebi"
-          style={{
-            justifyContent: 'center',
-            paddingBottom: 52,
-          }}>
-          <AppIcon name="textLogo" style={{alignItems: 'center'}} />
-        </View>
-      )}
       {newUser && authorized && (
         <AppButton
           style={styles.confirm}
-          title={i18n.t('ok')}
+          title={i18n.t('mobile:signup')}
           titleStyle={styles.text}
           disabled={disableButton}
           disableColor={colors.black}
