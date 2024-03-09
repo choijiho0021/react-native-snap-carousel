@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     flex: 1,
-    marginRight: 10,
+    marginRight: 8,
   },
   timer: {
     ...appStyles.medium14,

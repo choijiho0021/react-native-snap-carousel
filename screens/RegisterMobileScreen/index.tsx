@@ -55,8 +55,7 @@ const {isProduction, isIOS} = Env.get();
 const styles = StyleSheet.create({
   title: {
     paddingHorizontal: 20,
-    paddingTop: 50,
-    lineHeight: 40,
+    paddingTop: 40,
   },
   mobileAuth: {
     ...appStyles.h1,
@@ -472,11 +471,17 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     [signIn],
   );
 
-  const renderInput = useCallback(() => {
+  const renderLogin = useCallback(() => {
     const editablePin = !!mobile && authNoti && !authorized && !loading;
 
     return (
-      <View key="mobile">
+      <View style={styles.title}>
+        <View style={styles.row}>
+          <AppText style={appStyles.bold30Text}>
+            {i18n.t('mobile:title')}
+          </AppText>
+          <AppIcon name="earth" />
+        </View>
         <AppText style={styles.mobileAuth}>
           {i18n.t('mobile:easyLogin')}
         </AppText>
@@ -487,7 +492,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           authorized={authorized}
           inputRef={mobileRef}
         />
-
         <InputPinInTime
           style={{marginTop: 20}}
           clickable={editablePin || !isProduction}
@@ -502,34 +506,15 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       </View>
     );
   }, [
-    mobile,
     authNoti,
     authorized,
     loading,
-    sendSms,
-    pinEditable,
-    timeoutFlag,
+    mobile,
     onPressPin,
+    pinEditable,
+    sendSms,
+    timeoutFlag,
   ]);
-
-  const renderLogin = useCallback(() => {
-    return (
-      <View style={styles.title}>
-        <View style={styles.row}>
-          <AppText style={appStyles.bold30Text}>
-            {i18n.t('mobile:title')}
-          </AppText>
-          <AppIcon name="earth" />
-        </View>
-        {renderInput()}
-      </View>
-    );
-  }, [renderInput]);
-
-  const disableButton = useMemo(
-    () => !authorized || (newUser && !confirm.mandatory) || !email,
-    [authorized, confirm.mandatory, email, newUser],
-  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -544,11 +529,13 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         }}
       />
       <KeyboardAwareScrollView
+        // style={{flex: 1}}
+        // contentContainerStyle={{flex: 1}}
         enableOnAndroid
         enableResetScrollToCoords={false}
         keyboardShouldPersistTaps="handled">
         {socialLogin ? (
-          <View style={{marginTop: 30}}>
+          <View style={{marginTop: 40}}>
             <Profile
               email={email}
               mobile={mobile}
@@ -578,7 +565,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
                 placeholder={i18n.t('reg:email')}
               />
             </View>
-
             <ConfirmPolicy onMove={onMove} onChange={setConfirm} />
           </View>
         )}
@@ -593,7 +579,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           style={styles.confirm}
           title={i18n.t('mobile:signup')}
           titleStyle={styles.text}
-          disabled={disableButton}
+          disabled={!authorized || (newUser && !confirm.mandatory) || !email}
           disableColor={colors.black}
           disableBackgroundColor={colors.lightGrey}
           onPress={submitHandler}

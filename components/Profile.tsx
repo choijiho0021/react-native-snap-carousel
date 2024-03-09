@@ -1,6 +1,6 @@
 import {RootState} from '@reduxjs/toolkit';
 import React, {memo} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import Svg, {Circle, G, Mask, Path} from 'react-native-svg';
 import AppUserPic from '@/components/AppUserPic';
@@ -306,8 +306,6 @@ const ProfileImg = () => (
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 35,
-    // flex: 1,
     flexDirection: 'row',
     marginLeft: 20,
     height: 76,
@@ -347,7 +345,6 @@ type ProfileProps = {
   email?: string;
   userPictureUrl?: string;
   onChangePhoto?: () => void;
-  onPress?: (v: 'id' | 'email') => void;
 };
 
 const Profile: React.FC<ProfileProps> = ({
@@ -360,7 +357,6 @@ const Profile: React.FC<ProfileProps> = ({
   email,
   userPictureUrl,
   onChangePhoto = () => {},
-  onPress = () => {},
 }) => {
   return (
     <View style={styles.container}>
@@ -374,14 +370,12 @@ const Profile: React.FC<ProfileProps> = ({
         />
       </View>
       <View style={{flex: 3, justifyContent: 'center'}}>
+        <AppText style={styles.value} numberOfLines={1} ellipsizeMode="tail">
+          {email || accountEmail || ''}
+        </AppText>
         <AppText style={styles.label}>
           {utils.toPhoneNumber(mobile || accountMobile)}
         </AppText>
-        <Pressable onPress={() => onPress('email')}>
-          <AppText style={styles.value} numberOfLines={1} ellipsizeMode="tail">
-            {email || accountEmail || ''}
-          </AppText>
-        </Pressable>
       </View>
     </View>
   );
