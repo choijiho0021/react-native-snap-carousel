@@ -121,7 +121,6 @@ android {
 //    def versionPropsFile = file('version.properties')
 //    if (versionPropsFile.canRead()) {
 //        def Properties versionProps = new Properties()
-
 //        versionProps.load(new FileInputStream((versionPropsFile)))
 
 //        def versionMajor = versionProps['VERSION_MAJOR'].toInteger()
@@ -141,8 +140,8 @@ android {
         multiDexEnabled true
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
-        versionCode 162
-        versionName "1.4.6"
+        versionCode 170
+        versionName "1.4.7"
         multiDexEnabled true
         resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
         resValue "string", "build_config_package", "com.rokebiesim"
