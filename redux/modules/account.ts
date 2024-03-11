@@ -22,6 +22,7 @@ import {actions as toastActions, reflectWithToast, Toast} from './toast';
 import {actions as orderActions} from './order';
 import {actions as promotionActions} from './promotion';
 import {actions as notiActions} from './noti';
+import {actions as cartActions} from './cart';
 import Env from '@/environment';
 import userApi from '@/redux/api/userApi';
 
@@ -311,6 +312,7 @@ const logInAndGetAccount = createAsyncThunk(
           dispatch(getUserId({name: obj.current_user.name}));
           dispatch(notiActions.getNotiList({mobile: obj.current_user.name}));
           dispatch(getMyCoupon({token}));
+          dispatch(cartActions.cartFetch);
           return api.success([]);
         }
         return {result, objects};

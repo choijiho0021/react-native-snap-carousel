@@ -12,7 +12,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   container: {
-    flex: 1,
     alignContent: 'stretch',
     flexDirection: 'column',
     backgroundColor: colors.backGrey,
@@ -25,13 +24,10 @@ const styles = StyleSheet.create({
   },
   titleBox: {
     flexDirection: 'row',
-    flex: 1,
-    justifyContent: 'space-between',
     paddingVertical: 24,
     marginHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: colors.lightGrey,
-    marginBottom: 16,
   },
   title: {
     ...appStyles.bold16Text,
