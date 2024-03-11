@@ -13,9 +13,7 @@
 #import "RNSplashScreen.h"  // here
 #import <CodePush/CodePush.h>
 
-#ifdef TARGET_GLOBAL  // RokebiGlobal
-#import <FBSDKCoreKit/FBSDKCoreKit-swift.h>
-#endif
+#import <React/RCTLinkingManager.h>
 
 // firebase
 #import <Firebase.h>
@@ -31,7 +29,10 @@
 // NAVER Tracker
 #import "RokebiESIM-Swift.h"
 
-
+// facebook SDK
+#import <AuthenticationServices/AuthenticationServices.h>
+#import <SafariServices/SafariServices.h>
+#import <FBSDKCoreKit/FBSDKCoreKit-Swift.h>
 
 #import "AppDelegate.h"
 
@@ -108,8 +109,6 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-
-  
   self.moduleName = @"RokebiESIM";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
@@ -133,10 +132,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   [AppCenterReactNativeAnalytics registerWithInitiallyEnabled:true];
   [AppCenterReactNativeCrashes registerWithAutomaticProcessing];
 
-  #ifdef TARGET_GLOBAL
-    [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
-  #endif
-
+  [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
   
   // Define UNUserNotificationCenter
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
@@ -152,6 +148,24 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   [RNSplashScreen show];
   
   return true;
+}
+
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+  
+  [NaverTracker setInflow:url];
+  
+  if([RNKakaoLogins isKakaoTalkLoginUrl:url]) {
+    return [RNKakaoLogins handleOpenUrl: url];
+  }
+
+  if ([[FBSDKApplicationDelegate sharedInstance] application:application openURL:url options:options]) {
+    return YES;
+  }
+
+  return [RCTLinkingManager application:application openURL:url options:options];
 }
 
 

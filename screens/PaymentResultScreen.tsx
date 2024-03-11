@@ -38,6 +38,7 @@ import AppBottomModal from './DraftUsScreen/component/AppBottomModal';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import api from '@/redux/api/api';
 import AppAlert from '@/components/AppAlert';
+import {API} from '@/redux/api';
 
 const {esimGlobal} = Env.get();
 
@@ -277,8 +278,6 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     }
   }, [cart?.pymPrice, isSuccess, params?.mode]);
 
-  console.log('@@@ old cart', oldCart, params);
-
   const DashedBar = () => {
     const renderDashedDiv = useCallback(() => {
       return (
@@ -340,7 +339,10 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
           <PaymentItem
             title={i18n.t('his:pymAmount')}
             value={utils.price(oldCart?.pymPrice)}
-            valueStyle={{...appStyles.bold16Text, color: colors.clearBlue}}
+            valueStyle={{
+              ...appStyles.bold16Text,
+              color: colors.clearBlue,
+            }}
           />
           <PaymentItem
             title={i18n.t('pym:method')}
@@ -351,20 +353,33 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
             }
             valueStyle={appStyles.roboto16Text}
           />
+          {!isSuccess && (
+            <PaymentItem
+              title={i18n.t('pym:failReason')}
+              value={utils.getParam(params?.errorMsg)?.error || ''}
+              valueStyle={{
+                ...appStyles.bold16Text,
+                color: colors.redBold,
+                width: '50%',
+              }}
+            />
+          )}
 
-          <AppButton
-            style={styles.detailButton}
-            titleStyle={{
-              ...appStyles.roboto16Text,
-              lineHeight: 24,
-            }}
-            title={i18n.t(`pym:detail`)}
-            onPress={() => {
-              navigation.navigate('PurchaseDetail', {
-                orderId: oldCart?.orderId?.toString(),
-              });
-            }}
-          />
+          {isSuccess && (
+            <AppButton
+              style={styles.detailButton}
+              titleStyle={{
+                ...appStyles.roboto16Text,
+                lineHeight: 24,
+              }}
+              title={i18n.t(`pym:detail`)}
+              onPress={() => {
+                navigation.navigate('PurchaseDetail', {
+                  orderId: oldCart?.orderId?.toString(),
+                });
+              }}
+            />
+          )}
           {isSuccess &&
             oldCart?.purchaseItems &&
             getItemsOrderType(oldCart.purchaseItems) === 'refundable' && (
@@ -409,6 +424,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
             titleStyle={styles.btnGoHomeText}
             type="primary"
             onPress={() => {
+              navigation.popToTop();
               navigation.navigate('HomeStack', {screen: 'Home'});
             }}
           />

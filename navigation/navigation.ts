@@ -138,6 +138,7 @@ export type HomeStackParamList = {
     pay_method: string;
     card?: string;
     mode?: string;
+    errorMsg?: string;
   };
   CodePush: undefined;
   CustomerProfile: undefined;
