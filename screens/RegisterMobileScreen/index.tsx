@@ -97,13 +97,11 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   pending,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [pin, setPin] = useState('');
   const [mobile, setMobile] = useState('');
   const [pinEditable, setPinEditable] = useState(false);
   const [authorized, setAuthorized] = useState<boolean | undefined>();
   const [authNoti, setAuthNoti] = useState(false);
   const [timeoutFlag, setTimeoutFlag] = useState(false);
-  const [socialLogin, setSocialLogin] = useState(false);
   const [isKeyboardShow, setIsKeyboardShow] = useState(false);
   const [status, setStatus] = useState<TrackingStatus>();
   const controller = useRef(new AbortController());
@@ -188,12 +186,10 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
   const initState = useCallback(() => {
     setLoading(false);
-    setPin('');
     setMobile('');
     setAuthorized(false);
     setAuthNoti(false);
     setTimeoutFlag(false);
-    setSocialLogin(false);
 
     inputRef.current?.reset();
     mobileRef.current?.reset();
@@ -218,7 +214,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           i18n.t('reg:unableToSendSms'),
         );
       } else {
-        setPin('');
         setPinEditable(true);
         setAuthorized(undefined);
         setTimeoutFlag(true);
@@ -266,7 +261,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           resp.result = 0;
           if (resp.result === 0 && mounted.current) {
             setAuthorized(_.isEmpty(resp.objects) ? true : undefined);
-            setPin(value);
 
             if (!_.isEmpty(resp.objects)) {
               signIn({mobile, pin: value});
@@ -317,9 +311,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         const {mobile: drupalId, newUser: isNew} = resp.objects[0];
 
         setMobile(drupalId);
-        setPin(pass);
         setAuthorized(isAuthorized);
-        setSocialLogin(true);
 
         if (isNew) {
           // new login
@@ -349,9 +341,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         title={i18n.t('mobile:header')}
         backHandler={() => {
           initState();
-          if (!socialLogin) {
-            navigation.goBack();
-          }
+          navigation.goBack();
         }}
       />
       <KeyboardAwareScrollView
