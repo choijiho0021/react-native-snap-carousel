@@ -350,7 +350,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     const prodDays = prod?.days;
 
     const fieldNoticeOption = descData?.fieldNoticeOption || [];
-    const fieldCautionList = descData?.fieldCautionList || [];
 
     return (
       prod &&
@@ -377,11 +376,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             addonOption={descData.addonOption || ''}
             setShowChargeInfoModal={setShowChargeInfoModal}
           />
-          {(fieldNoticeOption.length > 0 || fieldCautionList.length > 0) && (
-            <ProductDetailNotice
-              fieldNoticeOption={fieldNoticeOption}
-              fieldCautionList={fieldCautionList}
-            />
+          {fieldNoticeOption.length > 0 && (
+            <ProductDetailNotice fieldNoticeOption={fieldNoticeOption} />
           )}
           {clMtd &&
             ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(clMtd) &&

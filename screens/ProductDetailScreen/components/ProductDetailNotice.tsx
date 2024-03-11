@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {colors} from '@/constants/Colors';
 import AppText from '@/components/AppText';
@@ -6,9 +6,7 @@ import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import AppIcon from '@/components/AppIcon';
 import TextWithDot from '@/screens/EsimScreen/components/TextWithDot';
-import Env from '@/environment';
 
-const {isIOS} = Env.get();
 const styles = StyleSheet.create({
   noticeBox: {
     paddingVertical: 17,
@@ -47,21 +45,11 @@ const styles = StyleSheet.create({
 
 type ProductDetailNoticeProps = {
   fieldNoticeOption: string[] | string;
-  fieldCautionList: string[];
 };
 
 const ProductDetailNotice: React.FC<ProductDetailNoticeProps> = ({
   fieldNoticeOption,
-  fieldCautionList,
 }) => {
-  const cautionList: string[] = useMemo(
-    () =>
-      fieldCautionList?.filter((c) =>
-        isIOS ? !c.includes('android:') : !c.includes('ios:'),
-      ) || [],
-    [fieldCautionList],
-  );
-
   let noticeOptionList: string[] = [];
   if (typeof fieldNoticeOption === 'string') {
     noticeOptionList = fieldNoticeOption.replace(' ', '').split(',');
@@ -95,22 +83,6 @@ const ProductDetailNotice: React.FC<ProductDetailNoticeProps> = ({
     [],
   );
 
-  const renderCautionList = useCallback((caution: string) => {
-    const cautionText = caution.substring(
-      caution.startsWith('ios:') ? 4 : caution.startsWith('android:') ? 8 : 0,
-    );
-    return (
-      <TextWithDot
-        key={caution}
-        dotStyle={styles.dot}
-        textStyle={styles.noticeText}
-        boldStyle={styles.noticeTextBold}
-        text={cautionText}
-        marginRight={20}
-      />
-    );
-  }, []);
-
   return (
     <View style={styles.noticeBox}>
       <View style={styles.noticeHeader}>
@@ -120,7 +92,6 @@ const ProductDetailNotice: React.FC<ProductDetailNoticeProps> = ({
         </AppText>
       </View>
       {noticeList.map((i) => renderNoticeOption(i))}
-      {cautionList.map((i) => renderCautionList(i))}
     </View>
   );
 };
