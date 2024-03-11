@@ -232,6 +232,14 @@ export type HomeStackParamList = {
   ChangeEmail: undefined;
   SelectCoupon: undefined;
   Coupon: undefined;
+  Signup: {
+    pin: string;
+    mobile: string;
+    status?: string;
+    email?: string;
+    profileImageUrl?: string;
+  };
+  SimpleTextForAuth: Record<string, string>;
 };
 
 export const navigate = (

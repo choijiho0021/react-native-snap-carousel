@@ -53,7 +53,7 @@ const SocialLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
     <View style={styles.container}>
       <View style={styles.easyLoginTitle}>
         <View style={styles.divider} />
-        <AppText style={appStyles.bold18Text}>
+        <AppText style={[appStyles.medium18, {color: colors.gray2}]}>
           {i18n.t('login:easyLogin')}
         </AppText>
         <View style={styles.divider} />

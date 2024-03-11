@@ -13,6 +13,7 @@ const giftPath = '../assets/images/gift/';
 
 const images: Record<string, any[]> = {
   updateImg: [require(`${mainPath}update.png`)],
+  earth: [require(`${mainPath}earth.png`)],
 
   kakao: [require(`${paymentPath}logoKakao.png`)],
   naver: [require(`${paymentPath}logoNaver.png`)],

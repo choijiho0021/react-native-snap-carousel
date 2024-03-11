@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {Platform, StyleSheet, TextInput, View} from 'react-native';
+import {Platform, StyleSheet, View} from 'react-native';
 import _ from 'underscore';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -8,6 +8,7 @@ import i18n from '@/utils/i18n';
 import validationUtil, {ValidationResult} from '@/utils/validationUtil';
 import AppText from './AppText';
 import AppButton from './AppButton';
+import AppTextInput from './AppTextInput';
 
 const styles = StyleSheet.create({
   helpText: {
@@ -17,26 +18,39 @@ const styles = StyleSheet.create({
     marginLeft: 30,
   },
   text: {
-    ...appStyles.normal12Text,
+    ...appStyles.semiBold16Text,
     color: '#ffffff',
-    lineHeight: 19,
-    letterSpacing: 0.15,
+    lineHeight: 24,
   },
-  inputStyle: {
+  inputBox: {
     flex: 1,
-    marginRight: 10,
-    paddingBottom: 9,
-  },
-  emptyInput: {
-    borderBottomColor: colors.lightGrey,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 3,
+    height: 50,
+    marginRight: 8,
   },
   input: {
     ...appStyles.normal16Text,
     color: colors.black,
     paddingHorizontal: 10,
-    borderBottomColor: colors.black,
-    borderBottomWidth: 1,
     marginRight: 20,
+    paddingVertical: 10,
+    flex: 1,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+    marginTop: 16,
+  },
+  button: {
+    width: 80,
+    height: 50,
+    borderRadius: 3,
+    backgroundColor: colors.clearBlue,
   },
 });
 
@@ -64,6 +78,7 @@ const InputMobile: React.FC<InputMobileProps> = ({
   const [value, setValue] = useState('');
   const [errors, setErrors] = useState<ValidationResult>();
   const [timer, setTimer] = useState<NodeJS.Timeout>();
+  const [focused, setFocused] = useState(false);
 
   const onChangeText = useCallback((value: string) => {
     if (Platform.OS === 'android' && value.length > 11) return;
@@ -109,44 +124,51 @@ const InputMobile: React.FC<InputMobileProps> = ({
     () => _.isEmpty(errors?.mobile) && !disabled && !timer && mobile.length > 1,
     [disabled, errors?.mobile, mobile.length, timer],
   );
+
   return (
     <View>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'flex-end',
-          alignItems: 'flex-end',
-          marginHorizontal: 20,
-          marginTop: 20,
-        }}>
-        <TextInput
+      <View style={styles.row}>
+        <AppTextInput
+          showCancel
+          containerStyle={{
+            ...styles.inputBox,
+            borderColor: focused ? colors.clearBlue : colors.lightGrey,
+          }}
           placeholder={i18n.t('mobile:input')}
           placeholderTextColor={colors.greyish}
           keyboardType="numeric"
           enablesReturnKeyAutomatically
-          onFocus={() => setValue(mobile)}
-          onBlur={() => setValue(utils.toPhoneNumber(mobile))}
+          onFocus={() => {
+            setValue(mobile);
+            setFocused(true);
+          }}
+          onBlur={() => {
+            setValue(utils.toPhoneNumber(mobile));
+            setFocused(false);
+          }}
           maxLength={Platform.OS === 'android' ? 13 : 11}
           blurOnSubmit={false}
           onChangeText={onChangeText}
           value={value}
           allowFontScaling={false}
-          style={[
-            styles.input,
-            styles.inputStyle,
-            mobile ? {} : styles.emptyInput,
-          ]}
+          style={styles.input}
           editable={!disabled}
           selectTextOnFocus={!disabled}
+          onCancel={() => {
+            setValue('');
+            setMobile('');
+          }}
         />
         <AppButton
+          style={styles.button}
           disabled={!clickable}
           onPress={onPressInput}
           titleStyle={styles.text}
           title={
             authNoti ? i18n.t('mobile:resendAuth') : i18n.t('mobile:sendAuth')
           }
-          disableColor={colors.white}
+          disableColor={colors.lightGrey}
+          disableBackgroundColor={colors.backGrey}
         />
       </View>
 

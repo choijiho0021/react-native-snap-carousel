@@ -28,7 +28,6 @@ import {
   CashExpire,
   SectionData,
 } from '@/redux/modules/account';
-import {OrderModelState, getCountItems} from '@/redux/modules/order';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppPrice from '@/components/AppPrice';
@@ -207,7 +206,6 @@ type CashHistoryScreenNavigationProp = StackNavigationProp<
 type CashHistoryScreenProps = {
   navigation: CashHistoryScreenNavigationProp;
   account: AccountModelState;
-  order: OrderModelState;
   pending: boolean;
 
   action: {
@@ -222,7 +220,6 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   navigation,
   action,
   account,
-  order,
   // pending,
 }) => {
   const {
@@ -767,9 +764,8 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 };
 
 export default connect(
-  ({account, order, status}: RootState) => ({
+  ({account, status}: RootState) => ({
     account,
-    order,
     pending:
       status.pending[accountActions.getCashHistory.typePrefix] ||
       status.pending[accountActions.getCashExpire.typePrefix] ||
