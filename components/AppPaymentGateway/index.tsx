@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Linking, StyleSheet, View} from 'react-native';
 import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
@@ -24,7 +24,7 @@ export const pgWebViewConfig = {
 
 type PaymentGatewayScreenProps = {
   info: PaymentParams;
-  callback: (result: PaymentResultCallbackParam) => void;
+  callback: (result: PaymentResultCallbackParam, errorMsg?: string) => void;
 };
 
 const loadingImg = require('../../assets/images/loading_1.mp4');
@@ -86,6 +86,7 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
   const html = useMemo(() => pgWebViewHtml(info), [info]);
 
   const [count, setCount] = useState(0);
+  const [errorMsg, setErrorMsg] = useState('');
 
   // 화면 빠져나간 경우도 로딩 취소
 
@@ -119,8 +120,8 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
       console.log('@@@ PG ', event.url);
       console.log('@@@@ event : ', event.loading);
 
-      if (pgWebViewConfig.cancelUrl === event.url) {
-        callback('cancel');
+      if (event.url.includes(pgWebViewConfig.cancelUrl)) {
+        callback('cancel', decodeURI(event?.url));
         return false;
       }
 

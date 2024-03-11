@@ -424,6 +424,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
             titleStyle={styles.btnGoHomeText}
             type="primary"
             onPress={() => {
+              navigation.popToTop();
               navigation.navigate('HomeStack', {screen: 'Home'});
             }}
           />

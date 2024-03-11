@@ -16,7 +16,7 @@ export const debugScript = isProduction
       };`;
 
 export const configInicis = {
-  confirmUrl: `${scheme}://${apiUrl}/rokebi/payment/inicis`,
+  confirmUrl: `${scheme}://${apiUrl}/rokebi/payment/inicis?v2`,
   notiUrl: `${scheme}://${apiUrl}/rokebi/payment/inicis?noti`,
   WEBVIEW_ENDPOINT: 'https://mobile.inicis.com/smart/payment/',
 };

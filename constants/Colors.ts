@@ -60,6 +60,7 @@ export const colors = {
   veryLightBlue: '#DAEEFF', // rgb 218 238 255
   greyishBrown: '#575757',
   redError: '#ee4423',
+  redBold: '#ee2d23',
   shadow1: '#a6a8ac',
   shadow2: 'rgba(166, 168, 172, 0.16)',
   shadow4: 'rgb(166, 168, 172)',

@@ -85,7 +85,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
   );
 
   const callback = useCallback(
-    async (status: PaymentResultCallbackParam) => {
+    async (status: PaymentResultCallbackParam, errorMsg?: string) => {
       let pymResult = false;
 
       if (status !== 'cancel') {
@@ -109,6 +109,12 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
         navigation.replace('PaymentResult', {
           pymResult,
           status,
+          errorMsg,
+          paymentParams: {
+            key: pymInfo.merchant_uid,
+            pg: params.paymentRule?.[params.card || params.pay_method] || '',
+            token: account.token,
+          },
           pay_method: params.pay_method,
           card: params.card,
           mode: params.mode,
