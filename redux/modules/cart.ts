@@ -101,8 +101,6 @@ const prepareOrder = createAsyncThunk(
     const {purchaseItems, orderId, cartId, esimIccid, mainSubsId, isCart} =
       cart;
 
-    console.log('@@@ 처음엔 파라미터를 안넣는건가?? coupon : ', coupon);
-
     return API.Cart.makeOrder({
       orderId: isCart ? cartId : orderId,
       items: purchaseItems,

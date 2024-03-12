@@ -4,7 +4,6 @@ import {utils} from '@/utils/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import api, {ApiResult, DrupalNode} from './api';
 import {Currency, CurrencyCode} from './productApi';
-import {API} from '.';
 import {OrderPolicyType} from './orderApi';
 
 const {esimCurrency, cachePrefix} = Env.get();
@@ -423,8 +422,6 @@ const makeOrder = ({
     coupon,
   };
 
-  console.log('@@@@ body check JSON.stringify(body) :', JSON.stringify(body));
-
   return api.callHttp(
     `${api.httpUrl(api.path.commerce.order)}?_format=json`,
     {
@@ -457,9 +454,7 @@ const makeOrder = ({
         return api.success([resp.objects], [], resp.result);
       }
 
-      if ([api.E_STATUS_EXPIRED].includes(resp.result)) {
-        return api.failure<PurchaseItem>(resp.result, resp.desc);
-      }
+      return api.failure<PurchaseItem>(resp.result, resp.desc);
     },
   );
 };
