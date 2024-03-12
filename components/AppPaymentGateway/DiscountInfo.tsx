@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     marginTop: 12,
     paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingLeft: 16,
     marginRight: 8,
   },
   button: {
@@ -60,10 +60,6 @@ const styles = StyleSheet.create({
     borderColor: colors.clearBlue,
     borderWidth: 1,
     borderRadius: 3,
-  },
-  cancelButton: {
-    justifyContent: 'flex-end',
-    marginLeft: 10,
   },
 });
 
@@ -209,44 +205,37 @@ const DiscountInfo: React.FC<DiscountProps> = ({
           ) : null}
         </View>
         <View key="selcash" style={styles.row}>
-          <View style={styles.input}>
-            {onPress && isCashNotEmpty ? (
-              <AppTextInput
-                style={{
-                  ...styles.title,
-                  color: colors.clearBlue,
-                }}
-                keyboardType="numeric"
-                returnKeyType="done"
-                enablesReturnKeyAutomatically
-                onChangeText={setRokebiCash}
-                value={
-                  editing
-                    ? rokebiCash
-                    : utils.numberToCommaString(rokebiCash) + i18n.t('rkbCash')
-                }
-                onSubmitEditing={() => updateRokebiCash(rokebiCash)}
-                onFocus={() => setEditing(true)}
-                onBlur={() => setEditing(false)}
-              />
-            ) : (
-              <AppText
-                style={{
-                  ...styles.title,
-                  color: colors.clearBlue,
-                }}>
-                {i18n.t('acc:balance:none')}
-              </AppText>
-            )}
-            {(utils.stringToNumber(rokebiCash) || 0) > 0 && (
-              <AppButton
-                style={styles.cancelButton}
-                titleStyle={{color: colors.clearBlue}}
-                iconName="btnSearchCancel"
-                onPress={() => setRokebiCash('0')}
-              />
-            )}
-          </View>
+          {onPress && isCashNotEmpty ? (
+            <AppTextInput
+              showCancel
+              containerStyle={styles.input}
+              style={{
+                ...styles.title,
+                color: colors.clearBlue,
+              }}
+              keyboardType="numeric"
+              returnKeyType="done"
+              enablesReturnKeyAutomatically
+              onChangeText={setRokebiCash}
+              value={
+                editing
+                  ? rokebiCash
+                  : utils.numberToCommaString(rokebiCash) + i18n.t('rkbCash')
+              }
+              onSubmitEditing={() => updateRokebiCash(rokebiCash)}
+              onFocus={() => setEditing(true)}
+              onBlur={() => setEditing(false)}
+              onCancel={() => setRokebiCash('0')}
+            />
+          ) : (
+            <AppText
+              style={{
+                ...styles.title,
+                color: colors.clearBlue,
+              }}>
+              {i18n.t('acc:balance:none')}
+            </AppText>
+          )}
           {onPress && isCashNotEmpty ? (
             <AppButton
               style={styles.button}
