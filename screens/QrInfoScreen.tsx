@@ -123,7 +123,7 @@ const showQR = (subs: RkbSubscription) => (
         <AppStyledText
           textStyle={styles.qrText}
           text={i18n.t('esim:showQR:body_new')}
-          format={{b: {fontWeight: '700'}}}
+          format={{b: {fontWeight: 'bold', color: colors.black}}}
         />
         <View style={styles.center}>
           <QRCode value={subs.qrCode} />
