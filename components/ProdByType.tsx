@@ -15,7 +15,6 @@ import {RkbProduct} from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';
 import DailyProdFilter, {DailyProdFilterList} from './DailyProdFilter';
 import NetworkFilter, {NetworkFilterList} from './NetworkFilter';
-import {contains} from 'underscore';
 
 const styles = StyleSheet.create({
   emptyImage: {

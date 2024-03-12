@@ -375,7 +375,7 @@ const ProductDetailBody: React.FC<ProductDetailBodyProps> = ({
         </View>
         {[1, 2].map((i) => (
           <TextWithDot
-            key={`prodDetail:body:top:apn:notice${i}`}
+            key={i}
             text={i18n.t(`prodDetail:body:top:apn:notice${i}`)}
             boldStyle={styles.noticeTextBlackBold}
             textStyle={styles.noticeTextBlackWithDot}
