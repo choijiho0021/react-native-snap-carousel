@@ -334,7 +334,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           </View>
         )}
 
-        {item.daily === 'daily' && (
+        {item.daily === 'daily' && item.partner !== 'ht' && (
           <Fragment>
             <View style={styles.timeDivider} />
 
