@@ -133,6 +133,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
               sku: item.prod.sku,
               variationId: item.prod.variationId,
               qty: qty.get(item.key),
+              type: item.type === 'esim_product' ? 'product' : item.type,
             } as PurchaseItem),
         );
 
