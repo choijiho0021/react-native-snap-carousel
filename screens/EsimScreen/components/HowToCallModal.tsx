@@ -280,23 +280,17 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
             {i18n.t(`esim:howToCall:etcInfo:checkMtd`)}
           </AppText>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              marginTop: 6,
-              flexWrap: 'wrap',
-            }}>
+          <View style={{flexDirection: 'row', marginTop: 12}}>
             <AppSvgIcon name="checkedDarkBlueSmall" style={{marginRight: 4}} />
-            <AppText style={styles.darkblueBold14}>
-              {i18n.t(`esim:howToCall:etcInfo:subtitle1:${clMtd}:title`)}
-            </AppText>
-            <AppText
-              style={{
-                ...appStyles.bold14Text,
-                color: colors.warmGrey,
-              }}>
-              {i18n.t(`esim:howToCall:etcInfo:subtitle1:${clMtd}:txt`)}
-            </AppText>
+            <View style={{marginRight: 4}}>
+              <AppText style={{...styles.darkblueBold14, marginBottom: 4}}>
+                {i18n.t(`esim:howToCall:etcInfo:subtitle1:${clMtd}:title`)}
+              </AppText>
+              <AppText
+                style={{...appStyles.bold14Text, color: colors.warmGrey}}>
+                {i18n.t(`esim:howToCall:etcInfo:subtitle1:${clMtd}:txt`)}
+              </AppText>
+            </View>
           </View>
 
           {['ais', 'dtac'].includes(clMtd) && (
