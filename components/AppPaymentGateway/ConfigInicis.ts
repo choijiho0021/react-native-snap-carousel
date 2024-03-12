@@ -16,7 +16,8 @@ export const debugScript = isProduction
       };`;
 
 export const configInicis = {
-  confirmUrl: `${scheme}://${apiUrl}/rokebi/payment/inicis?v2`,
+  confirmUrl: (pymId: string) =>
+    `${scheme}://${apiUrl}/rokebi/payment/inicis?v2&pymid=${pymId}`,
   notiUrl: `${scheme}://${apiUrl}/rokebi/payment/inicis?noti`,
   WEBVIEW_ENDPOINT: 'https://mobile.inicis.com/smart/payment/',
 };
@@ -74,9 +75,9 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
       <input type="hidden" name="P_MOBILE" value="${info.buyer_tel}" />
       <input type="hidden" name="P_EMAIL" value="${info.buyer_email}" />
       <input type="hidden" name="P_NOTI_URL" value="${configInicis.notiUrl}" />
-      <input type="hidden" name="P_NEXT_URL" value="${
-        configInicis.confirmUrl
-      }" />
+      <input type="hidden" name="P_NEXT_URL" value="${configInicis.confirmUrl(
+        info.merchant_uid,
+      )}" />
       <input type="hidden" name="P_CHARSET" value="utf8" />
       <input type="hidden" name="P_TIMESTAMP" value="${timestamp}" />
       <input type="hidden" name="P_CHKFAKE" value="${hash}" />
