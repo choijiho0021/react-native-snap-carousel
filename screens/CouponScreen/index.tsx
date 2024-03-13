@@ -143,7 +143,11 @@ const CouponScreen: React.FC<CouponProps> = ({
       API.Account.registerCoupon({code, iccid, token}).then((resp) => {
         if (resp.result === 0) {
           setCode('');
-          if (resp.objects?.[0]?.endDate.diff(moment(), 'days') < 1) {
+
+          const endDate = resp.objects?.[0]?.endDate;
+          const now = moment();
+
+          if (now.isSame(endDate, 'day')) {
             setMessage(i18n.t('coupon:reg:succ:1dayLeft'));
           } else {
             setMessage(i18n.t('coupon:reg:succ'));
