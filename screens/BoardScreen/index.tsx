@@ -1,7 +1,7 @@
 import React, {memo, useCallback, useEffect, useState} from 'react';
 import {StyleSheet, View, SafeAreaView} from 'react-native';
 import {TabView} from 'react-native-tab-view';
-import {useRoute} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -49,7 +49,6 @@ type BoardScreenProps = {
 };
 
 const BoardScreen: React.FC<BoardScreenProps> = ({title, routes}) => {
-  const navigation = useNavigation();
   const route = useRoute();
   const [index, setIndex] = useState(route?.params?.index || 0);
 
