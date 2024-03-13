@@ -1,7 +1,7 @@
 import {RootState} from '@reduxjs/toolkit';
 import {bindActionCreators} from 'redux';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Pressable, StyleSheet, TextInput, View} from 'react-native';
 import {connect} from 'react-redux';
 import {AccountModelState} from '@/redux/modules/account';
 import AppText from '@/components/AppText';
@@ -211,11 +211,12 @@ const DiscountInfo: React.FC<DiscountProps> = ({
         <View key="selcash" style={styles.row}>
           <View style={styles.input}>
             {onPress && isCashNotEmpty ? (
-              <AppTextInput
+              <TextInput
                 style={{
                   ...styles.title,
                   color: colors.clearBlue,
                 }}
+                allowFontScaling={false}
                 keyboardType="numeric"
                 returnKeyType="done"
                 enablesReturnKeyAutomatically
