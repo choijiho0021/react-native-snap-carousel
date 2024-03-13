@@ -65,6 +65,11 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     marginLeft: 10,
   },
+  divider: {
+    height: 10,
+    backgroundColor: colors.whiteTwo,
+    marginTop: 24,
+  },
 });
 
 type DiscountProps = {
@@ -150,51 +155,57 @@ const DiscountInfo: React.FC<DiscountProps> = ({
   }, [cart.pymReq?.rkbcash]);
 
   return (
-    <DropDownHeader
-      title={i18n.t('pym:discount')}
-      summary={
-        i18n.t('total') +
-        utils.price(
-          utils.toCurrency(
-            Math.abs(discount?.value || 0) +
-              (utils.stringToNumber(rokebiCash) || 0),
-          ),
-        )
-      }>
-      <View style={styles.container}>
-        <View
-          key="coupon"
-          style={[styles.row, {justifyContent: 'space-between'}]}>
-          <AppText style={styles.title}>{i18n.t('pym:coupon')}</AppText>
-          {(cart.promo?.length || 0) > 0 ? (
-            <Pressable
-              style={styles.row}
-              onPress={() => toggleMaxPromo(checked)}>
-              <AppIcon name="btnCheck2" checked={checked} size={22} />
-              <AppText style={{...appStyles.medium16, marginLeft: 8}}>
-                {i18n.t('pym:coupon:max')}
-              </AppText>
-            </Pressable>
-          ) : null}
+    <>
+      <DropDownHeader
+        title={i18n.t('pym:discount')}
+        summary={
+          i18n.t('total') +
+          utils.price(
+            utils.toCurrency(
+              Math.abs(discount?.value || 0) +
+                (utils.stringToNumber(rokebiCash) || 0),
+            ),
+          )
+        }>
+        <View style={styles.container}>
+          <View
+            key="coupon"
+            style={[styles.row, {justifyContent: 'space-between'}]}>
+            <AppText style={styles.title}>{i18n.t('pym:coupon')}</AppText>
+            {(cart.promo?.length || 0) > 0 ? (
+              <Pressable
+                style={styles.row}
+                onPress={() => toggleMaxPromo(checked)}>
+                <AppIcon name="btnCheck2" checked={checked} size={22} />
+                <AppText style={{...appStyles.medium16, marginLeft: 8}}>
+                  {i18n.t('pym:coupon:max')}
+                </AppText>
+              </Pressable>
+            ) : null}
+          </View>
+          <ConfirmButton
+            title={
+              discount
+                ? utils.numberToCommaString(Math.abs(discount.value)) +
+                  i18n.t('won')
+                : i18n.t(
+                    (cart.promo?.length || 0) > 0
+                      ? 'pym:coupon:none:sel'
+                      : 'pym:no:coupon',
+                  )
+            }
+            titleStyle={appStyles.robotoBold16Text}
+            buttonTitle={i18n.t('pym:sel:coupon:title')}
+            onPress={() => {
+              setChecked(false);
+              onPress?.();
+            }}
+          />
         </View>
-        <ConfirmButton
-          title={
-            discount
-              ? utils.numberToCommaString(Math.abs(discount.value)) +
-                i18n.t('won')
-              : i18n.t(
-                  (cart.promo?.length || 0) > 0
-                    ? 'pym:coupon:none:sel'
-                    : 'pym:no:coupon',
-                )
-          }
-          titleStyle={appStyles.robotoBold16Text}
-          buttonTitle={i18n.t('pym:sel:coupon:title')}
-          onPress={() => {
-            setChecked(false);
-            onPress?.();
-          }}
-        />
+      </DropDownHeader>
+      <View key="div" style={styles.divider} />
+
+      <View style={{marginHorizontal: 20}}>
         <View key="cash" style={[styles.row, {marginTop: 24}]}>
           <AppSvgIcon name="rokebiLogo" />
           <AppText style={[styles.title, {marginLeft: 8}]}>
@@ -264,7 +275,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
           ) : null}
         </View>
       </View>
-    </DropDownHeader>
+    </>
   );
 };
 
