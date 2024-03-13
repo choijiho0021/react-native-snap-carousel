@@ -5,6 +5,7 @@ import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {Currency} from '@/redux/api/productApi';
 import LabelText from './LabelText';
+import AppText from './AppText';
 
 const styles = StyleSheet.create({
   price: {
@@ -44,6 +45,19 @@ const ChargeSummary = ({
         balanceStyle={appStyles.bold22Text}
         currencyStyle={appStyles.medium14}
       />
+      <View style={{flexDirection: 'row'}}>
+        {/* <AppText>{i18n.t('middleDotn')}</AppText>
+        <AppText>{i18n.t('cart:totalPrice')}</AppText> */}
+        <AppText
+          style={{
+            ...appStyles.medium14,
+            color: colors.warmGrey,
+            marginTop: 12,
+          }}>
+          {i18n.t('middleDot')}
+          {i18n.t('cart:notice')}
+        </AppText>
+      </View>
     </View>
   );
 };

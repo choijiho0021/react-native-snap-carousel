@@ -573,8 +573,8 @@
   "event:fail:loading": "이미지 파일을 업로드 할 수 없습니다.",
   "event:ended": "이미 종료된 이벤트입니다.",
 
-  "cart:totalCnt": "총 상품 수",
-  "cart:totalPrice": "상품 금액 합계",
+  "cart:totalCnt": "주문 상품 수",
+  "cart:totalPrice": "주문 상품 금액",
   "cart:count": "수량",
   "cart:proudctTotalPrice": "총 상품 금액",
   "cart:currentBalance": "현재 로깨비캐시",
@@ -605,6 +605,7 @@
   "cart:share:sms": "메세지",
   "cart:share:more": "더보기",
   "cart:share": "공유하기",
+  "cart:notice": "쿠폰 및 로깨비캐시 적용에 따라 최종 결제 금액이 결정됩니다.",
 
   "usim:toRokebiCash": "전환금액",
   "usim:balance": "로깨비캐시",
