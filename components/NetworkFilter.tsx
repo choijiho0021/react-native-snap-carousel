@@ -45,6 +45,7 @@ const NetworkFilter: React.FC<NetworkFilterProps> = ({
       showsHorizontalScrollIndicator={false}>
       {filterList.map((elm, idx) => (
         <Pressable
+          key={idx}
           style={{flexDirection: 'row'}}
           onPress={() => onPressFilter(elm)}>
           <AppIcon

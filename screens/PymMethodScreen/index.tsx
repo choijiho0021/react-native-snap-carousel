@@ -219,9 +219,13 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   }, [action.info, info.infoMap]);
 
   useEffect(() => {
-    action.cart.prepareOrder({
-      id: account.coupon?.map((a) => a.id),
-    });
+    action.cart
+      .prepareOrder({
+        id: account.coupon?.map((a) => a.id),
+      })
+      .catch((err) => {
+        console.log('@@@ failed to preapre order', err);
+      });
   }, [account.coupon, action.cart]);
 
   useEffect(() => {
@@ -333,7 +337,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         if (payMethod?.method === 'vbank') {
           receipt = pymMethodRef?.current?.getExtraInfo();
           prefix = 'v_';
-          console.log('@@@ vbank', receipt);
         }
 
         const params = {
