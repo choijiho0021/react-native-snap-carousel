@@ -61,6 +61,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 3,
   },
+  cancelButton: {
+    justifyContent: 'flex-end',
+    marginLeft: 10,
+  },
+  divider: {
+    height: 10,
+    backgroundColor: colors.whiteTwo,
+    marginTop: 24,
+  },
 });
 
 type DiscountProps = {
@@ -219,6 +228,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
                 ...styles.title,
                 color: colors.clearBlue,
               }}
+              allowFontScaling={false}
               keyboardType="numeric"
               returnKeyType="done"
               enablesReturnKeyAutomatically
@@ -231,7 +241,6 @@ const DiscountInfo: React.FC<DiscountProps> = ({
               onSubmitEditing={() => updateRokebiCash(rokebiCash)}
               onFocus={() => setEditing(true)}
               onBlur={() => setEditing(false)}
-              onCancel={() => setRokebiCash('0')}
             />
           ) : (
             <AppText
@@ -242,22 +251,30 @@ const DiscountInfo: React.FC<DiscountProps> = ({
               {i18n.t('acc:balance:none')}
             </AppText>
           )}
-          {onPress && isCashNotEmpty ? (
+          {(utils.stringToNumber(rokebiCash) || 0) > 0 && (
             <AppButton
-              style={styles.button}
-              titleStyle={[styles.buttonTitle]}
-              title={i18n.t('pym:deductAll')}
-              // 보유캐시와 사용할 캐시가 같거나, 상품 결제 금액과 사용할 캐시가 같을 때 비활성화
-              disabled={disabledDeductAll}
-              disableStyle={{
-                backgroundColor: colors.lightGrey,
-                borderColor: colors.whiteTwo,
-              }}
-              disableColor={colors.greyish}
-              onPress={() => action.cart.deductRokebiCash(account.balance)}
+              style={styles.cancelButton}
+              titleStyle={{color: colors.clearBlue}}
+              iconName="btnSearchCancel"
+              onPress={() => setRokebiCash('0')}
             />
-          ) : null}
+          )}
         </View>
+        {onPress && isCashNotEmpty ? (
+          <AppButton
+            style={styles.button}
+            titleStyle={[styles.buttonTitle]}
+            title={i18n.t('pym:deductAll')}
+            // 보유캐시와 사용할 캐시가 같거나, 상품 결제 금액과 사용할 캐시가 같을 때 비활성화
+            disabled={disabledDeductAll}
+            disableStyle={{
+              backgroundColor: colors.lightGrey,
+              borderColor: colors.whiteTwo,
+            }}
+            disableColor={colors.greyish}
+            onPress={() => action.cart.deductRokebiCash(account.balance)}
+          />
+        ) : null}
       </View>
     </>
   );
