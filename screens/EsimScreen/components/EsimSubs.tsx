@@ -432,11 +432,13 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
   const cautionList: string[] = useMemo(
     () =>
-      mainSubs.cautionList?.filter(
-        (c) =>
-          !c.includes('web') &&
-          (isIOS ? !c.includes('android') : !c.includes('ios')),
-      ) || [],
+      mainSubs.cautionList?.filter((c) => {
+        const condition = c.includes(':') ? c.split(':')[0] : '';
+        return (
+          !condition.includes('web') &&
+          (isIOS ? !condition.includes('android') : !condition.includes('ios'))
+        );
+      }) || [],
     [mainSubs.cautionList],
   );
 

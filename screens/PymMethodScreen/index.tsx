@@ -23,6 +23,7 @@ import {API} from '@/redux/api';
 import api from '@/redux/api/api';
 import {createPaymentInfoForRokebiCash} from '@/redux/models/paymentResult';
 import {
+  AccountAction,
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
@@ -139,6 +140,7 @@ type PymMethodScreenProps = {
     info: InfoAction;
     product: ProductAction;
     modal: ModalAction;
+    account: AccountAction;
   };
 };
 
@@ -205,6 +207,10 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       })),
     [],
   );
+
+  useEffect(() => {
+    action.account.getMyCoupon({token: account?.token});
+  }, [account?.token, action.account]);
 
   useEffect(() => {
     if (!info.infoMap.has(infoKey)) {

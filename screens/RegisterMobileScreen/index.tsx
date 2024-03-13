@@ -257,8 +257,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             setLoading(false);
           }
 
-          // for testing
-          resp.result = 0;
           if (resp.result === 0 && mounted.current) {
             setAuthorized(_.isEmpty(resp.objects) ? true : undefined);
 

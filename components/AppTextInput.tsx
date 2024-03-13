@@ -5,8 +5,8 @@ import AppButton from './AppButton';
 const AppTextInput = React.forwardRef<
   any,
   PropsWithChildren<TextInputProps> & {
-    containerStyle: ViewStyle;
-    showCancel: boolean;
+    containerStyle?: ViewStyle;
+    showCancel?: boolean;
     onCancel?: () => void;
   }
 >(
@@ -50,7 +50,11 @@ const AppTextInput = React.forwardRef<
     }
 
     return (
-      <TextInput ref={ref} {...props} allowFontScaling={allowFontScaling}>
+      <TextInput
+        ref={ref}
+        value={value}
+        {...props}
+        allowFontScaling={allowFontScaling}>
         {props.children}
       </TextInput>
     );
