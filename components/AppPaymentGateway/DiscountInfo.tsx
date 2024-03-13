@@ -211,7 +211,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
         <View key="selcash" style={styles.row}>
           <View style={styles.input}>
             {onPress && isCashNotEmpty ? (
-              <TextInput
+              <AppTextInput
                 style={{
                   ...styles.title,
                   color: colors.clearBlue,
