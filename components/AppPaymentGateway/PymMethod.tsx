@@ -183,7 +183,34 @@ const PymMethod: React.FC<PymMethodProps> = ({
     );
   }, [id, onPress, rcptType, value]);
 
-  return (
+  return disabled ? (
+    (['easy', 'card'] as const).map((k, i) => (
+      <View style={styles.container}>
+        <View key={k} style={{marginBottom: 12}}>
+          <Pressable
+            style={[
+              styles.row,
+              {
+                paddingTop: 24,
+                paddingBottom: 16,
+                borderTopWidth: i > 0 ? 1 : 0,
+                borderTopColor: colors.lightGrey,
+              },
+            ]}>
+            <AppSvgIcon name="btnRadio" focused={false} />
+            <AppText
+              style={{
+                ...appStyles.bold16Text,
+                marginLeft: 6,
+                color: colors.greyish,
+              }}>
+              {i18n.t(`pym:method:${k}`)}
+            </AppText>
+          </Pressable>
+        </View>
+      </View>
+    ))
+  ) : (
     <DropDownHeader
       title={i18n.t('pym:method')}
       summary={i18n.t(value.startsWith('card') ? `pym:${value}` : value)}>
@@ -200,7 +227,6 @@ const PymMethod: React.FC<PymMethodProps> = ({
                   borderTopColor: colors.lightGrey,
                 },
               ]}
-              disabled={disabled}
               onPress={() => {
                 if (k !== method) {
                   setMethod(k);
@@ -219,8 +245,6 @@ const PymMethod: React.FC<PymMethodProps> = ({
                 <PymButtonList
                   selected={selected}
                   onPress={(m) => {
-                    if (disabled) return;
-
                     setSelected(m);
                     onPress(m);
                   }}
