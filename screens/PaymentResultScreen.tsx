@@ -33,12 +33,9 @@ import i18n from '@/utils/i18n';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppIcon from '@/components/AppIcon';
-import {PurchaseItem, getItemsOrderType} from '@/redux/models/purchaseItem';
-import AppBottomModal from './DraftUsScreen/component/AppBottomModal';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {getItemsOrderType} from '@/redux/models/purchaseItem';
 import api from '@/redux/api/api';
 import AppAlert from '@/components/AppAlert';
-import {API} from '@/redux/api';
 import AppDashBar from '@/components/AppDashBar';
 
 const {esimGlobal} = Env.get();
@@ -299,6 +296,8 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
             Platform.OS === 'android' && {
               borderStyle: 'dashed',
               borderTopWidth: 1,
+              marginTop: 24,
+              marginBottom: 24,
             },
           ]}
         />

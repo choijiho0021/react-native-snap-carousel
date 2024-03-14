@@ -1,16 +1,6 @@
 import React, {memo, useCallback} from 'react';
-import {
-  Image,
-  Platform,
-  Pressable,
-  StyleProp,
-  StyleSheet,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
+import {Platform, StyleProp, StyleSheet, View, ViewStyle} from 'react-native';
 import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
 
 const styles = StyleSheet.create({
   dashContainer: {
