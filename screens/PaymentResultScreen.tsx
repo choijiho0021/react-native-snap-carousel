@@ -39,6 +39,7 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import api from '@/redux/api/api';
 import AppAlert from '@/components/AppAlert';
 import {API} from '@/redux/api';
+import AppDashBar from '@/components/AppDashBar';
 
 const {esimGlobal} = Env.get();
 
@@ -339,10 +340,14 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
           <PaymentItem
             title={i18n.t('his:pymAmount')}
             value={utils.price(oldCart?.pymPrice)}
-            valueStyle={{
-              ...appStyles.bold16Text,
-              color: colors.clearBlue,
-            }}
+            valueStyle={
+              isSuccess
+                ? {
+                    ...appStyles.bold16Text,
+                    color: colors.clearBlue,
+                  }
+                : {...appStyles.roboto16Text}
+            }
           />
           <PaymentItem
             title={i18n.t('pym:method')}
@@ -354,15 +359,28 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
             valueStyle={appStyles.roboto16Text}
           />
           {!isSuccess && (
-            <PaymentItem
-              title={i18n.t('pym:failReason')}
-              value={utils.getParam(params?.errorMsg)?.error || ''}
-              valueStyle={{
-                ...appStyles.bold16Text,
-                color: colors.redBold,
-                width: '50%',
-              }}
-            />
+            <>
+              <AppDashBar />
+
+              <View style={{gap: 6}}>
+                <View style={{gap: 6, flexDirection: 'row'}}>
+                  <AppSvgIcon name="bannerWarning20" />
+                  <AppText
+                    style={{
+                      ...appStyles.bold16Text,
+                      color: colors.redBold,
+                    }}>
+                    {i18n.t('pym:failReason')}
+                  </AppText>
+                </View>
+                <View>
+                  <AppText
+                    style={{...appStyles.medium14, color: colors.redBold}}>
+                    {utils.getParam(params?.errorMsg)?.error || ''}
+                  </AppText>
+                </View>
+              </View>
+            </>
           )}
 
           {isSuccess && (
