@@ -41,7 +41,7 @@ const CouponItem = ({item}: {item: RkbCoupon}) => {
     offer: {percentage, amount},
   } = item;
 
-  const diff = Math.ceil(endDate.diff(moment(), 'days', true) || 0);
+  const diff = Math.floor(endDate.diff(moment(), 'days', true) || 0);
   if (diff < 0) return null;
 
   return (
