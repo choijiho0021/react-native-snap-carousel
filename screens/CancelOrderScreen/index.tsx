@@ -490,12 +490,18 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
               key="productAmount"
               style={styles.orderItemFrame}
               label={i18n.t('his:orderTotalAmount')}
-              labelStyle={[appStyles.bold14Text, {color: colors.black}]}
+              labelStyle={[appStyles.bold16Text, {color: colors.black}]}
               format="price"
               valueStyle={appStyles.roboto16Text}
-              value={selectedOrder?.totalPrice}
-              currencyStyle={[appStyles.bold14Text, {color: colors.black}]}
-              balanceStyle={[appStyles.robotoBold16Text, {color: colors.black}]}
+              value={{
+                ...selectedOrder?.totalPrice,
+                value:
+                  (selectedOrder?.deductBalance?.value || 0) +
+                  (selectedOrder?.totalPrice?.value || 0),
+              }}
+              currencyStyle={[appStyles.bold22Text, {color: colors.black}]}
+              balanceStyle={[appStyles.robotoBold22Text, {color: colors.black}]}
+              color={colors.redError}
             />
 
             {method && (
@@ -509,7 +515,6 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                 value={method?.amount}
                 balanceStyle={styles.itemCashCurrencyText}
                 currencyStyle={styles.itemCashCurrencyText}
-                color={colors.warmGrey}
               />
             )}
             {selectedOrder?.deductBalance?.value != 0 && (
@@ -523,22 +528,8 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                 value={selectedOrder?.deductBalance?.value}
                 balanceStyle={styles.itemCashCurrencyText}
                 currencyStyle={styles.itemCashCurrencyText}
-                color={colors.warmGrey}
               />
             )}
-
-            <LabelText
-              key="totalRefund"
-              style={styles.item}
-              label={i18n.t('his:cancelTotalAmount')}
-              labelStyle={appStyles.bold16Text}
-              format="price"
-              valueStyle={appStyles.roboto16Text}
-              value={selectedOrder?.totalPrice}
-              currencyStyle={styles.totalCashCurrencyText}
-              balanceStyle={styles.totalCashCurrencyText}
-              color={colors.blue}
-            />
           </View>
         </View>
         <View>{renderGuide()}</View>
