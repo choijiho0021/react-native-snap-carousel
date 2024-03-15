@@ -48,6 +48,7 @@ const AppDashBar: React.FC<AppDashBarProps> = ({style}) => {
           Platform.OS === 'android' && {
             borderStyle: 'dashed',
             borderTopWidth: 1,
+            marginVertical: 23,
           },
         ]}
       />
