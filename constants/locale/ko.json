@@ -588,7 +588,7 @@
   // "cart:buy": "바로 구매",
   "cart:buy": "구매하기",
   "cart:pymAmount": "결제 금액",
-  "cart:purchase": "구매하기",
+  "cart:purchase": "총 <b>{{cnt}}</b>개 구매하기",
   "cart:purchaseNow": "바로 구매하기",
   "cart:saveCart": "카트에 담기",
   "cart:payment": "%% 결제하기",
