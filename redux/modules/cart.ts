@@ -192,8 +192,11 @@ const slice = createSlice({
       const {couponId, maxDiscount, accountCash} = action.payload;
 
       if (maxDiscount) {
+        console.log('@@@@ account coupon: ', account.coupon);
+
         state.couponToApply = state.promo?.reduce((acc, cur) => {
           if (!acc || cur.adj?.value < acc.adj?.value) return cur;
+
           return acc;
         }, undefined)?.coupon_id;
       } else {
@@ -339,15 +342,16 @@ const slice = createSlice({
     builder.addCase(prepareOrder.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
-      console.log('@@@ makeorder 결과물 : ', result, ', objects : ', objects);
-
       if (result === 0 && objects[0]) {
         state.orderId = objects[0].order_id;
         state.promo = objects[0].promo;
-        state.couponToApply = state.promo?.reduce((acc, cur) => {
-          if (!acc || cur.adj?.value < acc.adj?.value) return cur;
-          return acc;
-        }, undefined)?.coupon_id;
+
+        // 로꺠비 캐시는 쿠폰 적용 X
+        if (state.purchaseItems.findIndex((r) => r.type === 'rch') === -1)
+          state.couponToApply = state.promo?.reduce((acc, cur) => {
+            if (!acc || cur.adj?.value < acc.adj?.value) return cur;
+            return acc;
+          }, undefined)?.coupon_id;
 
         state.pymReq = {} as PaymentReq;
 
@@ -363,6 +367,7 @@ const slice = createSlice({
         const promo = state.promo?.find(
           (p) => p.coupon_id === state.couponToApply,
         );
+
         if (promo) {
           state.pymReq.discount = promo.adj;
         }
