@@ -23,6 +23,11 @@ buildscript {
         //ImagePicker를 위해 추가
         maven { url 'https://maven.google.com' }
         maven { url 'https://devrepo.kakao.com/nexus/content/groups/public/'}
+        jcenter() {
+            content {
+                includeModule("com.yqritc", "android-scalablevideoview")
+            }
+        }
     }
     dependencies {
         classpath("com.android.tools.build:gradle:7.4.2")
@@ -41,6 +46,11 @@ allprojects {
         //ImagePicker를 위해 추가
         maven { url 'https://maven.google.com' }
         maven { url 'https://devrepo.kakao.com/nexus/content/groups/public/'}
+        jcenter() {
+            content {
+                includeModule("com.yqritc", "android-scalablevideoview")
+            }
+        }
     }
 }
 

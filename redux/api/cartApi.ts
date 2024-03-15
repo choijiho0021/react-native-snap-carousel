@@ -5,6 +5,8 @@ import {PurchaseItem} from '@/redux/models/purchaseItem';
 import api, {ApiResult, DrupalNode} from './api';
 import {Currency, CurrencyCode} from './productApi';
 import {OrderPolicyType} from './orderApi';
+import {Moment} from 'moment';
+import moment from 'moment';
 
 const {esimCurrency, cachePrefix} = Env.get();
 
@@ -335,6 +337,7 @@ export type OrderPromo = {
   title?: string;
   total: Currency;
   adj?: Currency;
+  endDate?: Moment;
 };
 
 const makeOrder = ({
@@ -444,6 +447,7 @@ const makeOrder = ({
                     title: v.title,
                     total: utils.stringToCurrency(v.total),
                     adj: utils.stringToCurrency(v.adj),
+                    endDate: v?.endDate ? moment(v.endDate) : undefined,
                   } as OrderPromo),
               )
               .filter((d) => !!d.adj),

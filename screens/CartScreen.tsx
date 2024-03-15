@@ -2,7 +2,13 @@ import {useFocusEffect, RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Map as ImmutableMap} from 'immutable';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {FlatList, SafeAreaView, StyleSheet, View} from 'react-native';
+import {
+  FlatList,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
@@ -38,6 +44,7 @@ import {
 import i18n from '@/utils/i18n';
 import ChatTalk from '@/components/ChatTalk';
 import ScreenHeader from '@/components/ScreenHeader';
+import AppStyledText from '@/components/AppStyledText';
 
 const {esimCurrency, isIOS} = Env.get();
 
@@ -59,7 +66,9 @@ const styles = StyleSheet.create({
   },
   btnBuy: {
     flex: 1,
-    backgroundColor: colors.clearBlue,
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   btnBuyText: {
     ...appStyles.normal16Text,
@@ -114,6 +123,10 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
 
   const tabBarHeight = useBottomTabBarHeight();
 
+  const disablePurchase = useMemo(
+    () => total.price.value === 0,
+    [total.price.value],
+  );
   const onChecked = useCallback((key: string) => {
     setChecked((prev) => prev.update(key, (v) => !v));
   }, []);
@@ -289,16 +302,12 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     setTotal(tot);
   }, [checked, list, qty]);
 
-  const balance = useMemo(() => account.balance || 0, [account.balance]);
   const pymPrice = useMemo(() => {
     const amount = total
       ? utils.toCurrency(total.price.value, total.price.currency)
       : ({value: 0, currency: 'KRW'} as Currency);
-    return utils.toCurrency(
-      amount.value > balance ? amount.value - balance : 0,
-      amount.currency,
-    );
-  }, [balance, total]);
+    return utils.toCurrency(amount.value, amount.currency);
+  }, [total]);
 
   return _.isEmpty(list) ? (
     empty()
@@ -310,11 +319,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         renderItem={renderItem}
         extraData={[qty, checked]}
         ListFooterComponent={
-          <ChargeSummary
-            totalCnt={total.cnt}
-            totalPrice={total.price}
-            balance={balance}
-          />
+          <ChargeSummary totalCnt={total.cnt} totalPrice={total.price} />
         }
       />
       <AppSnackBar
@@ -325,26 +330,35 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
       <View style={styles.buttonBox}>
         <View style={styles.sumBox}>
           <AppText style={[styles.btnBuyText, {color: colors.black}]}>
-            {`${i18n.t('cart:pymAmount')}: `}
+            {i18n.t('esim:charge:amount')}
           </AppText>
-          <AppText style={[styles.btnBuyText, {color: colors.black}]}>
-            {utils.price(pymPrice)}
+          <AppText style={[appStyles.bold16Text, {color: colors.black}]}>
+            {utils.currencyString(pymPrice.value)}
           </AppText>
+          <AppText>{i18n.t(pymPrice.currency)}</AppText>
         </View>
-        <AppButton
-          style={styles.btnBuy}
-          title={`${i18n.t('cart:purchase')} (${total.cnt})`}
-          titleStyle={{
-            ...appStyles.normal18Text,
-            color: colors.white,
-            textAlign: 'center',
-            margin: 5,
-          }}
-          type="primary"
-          checkedColor={colors.white}
-          disabled={total.price.value === 0}
+        <Pressable
+          style={[
+            styles.btnBuy,
+            {
+              backgroundColor: disablePurchase
+                ? colors.warmGrey
+                : colors.clearBlue,
+            },
+          ]}
           onPress={onPurchase}
-        />
+          disabled={disablePurchase}>
+          <AppStyledText
+            text={i18n.t('cart:purchase', {cnt: total.cnt})}
+            textStyle={{
+              ...appStyles.normal18Text,
+              color: colors.white,
+              textAlign: 'center',
+              margin: 5,
+            }}
+            format={{b: {...appStyles.bold18Text, color: colors.white}}}
+          />
+        </Pressable>
       </View>
       <ChatTalk visible bottom={(isIOS ? 100 : 70) - tabBarHeight} />
     </SafeAreaView>

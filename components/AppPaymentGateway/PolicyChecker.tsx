@@ -35,11 +35,11 @@ const PolicyChecker = ({onPress}: {onPress?: (v: boolean) => void}) => {
     () => ({
       '1': {
         key: 'setting:privacy',
-        title: i18n.t('pym:privacy'),
+        title: i18n.t('pym:contract:1'),
       },
       '2': {
         key: 'pym:agreement',
-        title: i18n.t('pym:paymentAgency'),
+        title: i18n.t('pym:contract:2'),
       },
     }),
     [],
