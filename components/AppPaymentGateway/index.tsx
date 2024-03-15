@@ -85,9 +85,6 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
   const ref = useRef<WebView>(null);
   const html = useMemo(() => pgWebViewHtml(info), [info]);
 
-  const [count, setCount] = useState(0);
-  const [errorMsg, setErrorMsg] = useState('');
-
   // 화면 빠져나간 경우도 로딩 취소
 
   useFocusEffect(
@@ -142,7 +139,6 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
       if (event.url.startsWith('http://') || event.url.startsWith('https://')) {
         // 결제사의 비밀번호 입력 화면 같은 특정 웹 페이지는 loading false -> onLoadEnd 호출을 안해서 loading 값 참조
         setLoading(event?.loading || false);
-        setCount((prev) => prev + 1);
         return true;
       }
 
@@ -195,20 +191,14 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
     );
   }, [loading]);
 
-  const onLoadEnd = useCallback(
-    ({nativeEvent: event}) => {
-      console.log('@@@ count : ', count, ', loadEnd -> setLoading false');
-      if (count > 0) {
-        setLoading(false);
-      }
+  const onLoadEnd = useCallback(({nativeEvent: event}) => {
+    setLoading(false);
 
-      if (event.url.startsWith('about') && !injected.current) {
-        ref.current?.injectJavaScript('start_script();');
-        injected.current = true;
-      }
-    },
-    [count],
-  );
+    if (event.url.startsWith('about') && !injected.current) {
+      ref.current?.injectJavaScript('start_script();');
+      injected.current = true;
+    }
+  }, []);
 
   return (
     <>
