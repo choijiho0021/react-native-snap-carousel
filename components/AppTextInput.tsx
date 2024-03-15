@@ -49,7 +49,17 @@ const AppTextInput = React.forwardRef<
       );
     }
 
-    return (
+    return containerStyle ? (
+      <View style={containerStyle}>
+        <TextInput
+          ref={ref}
+          value={value}
+          {...props}
+          allowFontScaling={allowFontScaling}>
+          {props.children}
+        </TextInput>
+      </View>
+    ) : (
       <TextInput
         ref={ref}
         value={value}
