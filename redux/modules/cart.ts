@@ -22,6 +22,13 @@ import {availableRokebiCash} from '@/components/AppPaymentGateway/DiscountInfo';
 
 const {esimCurrency} = Env.get();
 
+const selectMaxCoupon = (acc: OrderPromo, cur: OrderPromo) => {
+  if (!acc || cur.adj?.value < acc.adj?.value) return cur;
+  if (cur.adj?.value === acc.adj?.value && cur.endDate?.isBefore(acc.endDate))
+    return cur;
+  return acc;
+};
+
 const initCart = createAsyncThunk(
   'cart/initCart',
   async ({mobile}: {mobile?: string}) => {
@@ -192,12 +199,8 @@ const slice = createSlice({
       const {couponId, maxDiscount, accountCash} = action.payload;
 
       if (maxDiscount) {
-        console.log('@@@@ account coupon: ', account.coupon);
-
         state.couponToApply = state.promo?.reduce((acc, cur) => {
-          if (!acc || cur.adj?.value < acc.adj?.value) return cur;
-
-          return acc;
+          return selectMaxCoupon(acc, cur);
         }, undefined)?.coupon_id;
       } else {
         state.couponToApply = couponId;
@@ -207,8 +210,6 @@ const slice = createSlice({
       const promo = state.promo?.find(
         (p) => p.coupon_id === state.couponToApply,
       );
-
-      console.log('@@@ promo :', promo, ', promo adj : ', promo?.adj?.value);
 
       // 쿠폰 적용 시 결제 값이 음수가 되지 않도록 사용할 캐시 재계산
       if (promo && state?.pymReq?.rkbcash?.value > 0) {
@@ -349,8 +350,7 @@ const slice = createSlice({
         // 로꺠비 캐시는 쿠폰 적용 X
         if (state.purchaseItems.findIndex((r) => r.type === 'rch') === -1)
           state.couponToApply = state.promo?.reduce((acc, cur) => {
-            if (!acc || cur.adj?.value < acc.adj?.value) return cur;
-            return acc;
+            return selectMaxCoupon(acc, cur);
           }, undefined)?.coupon_id;
 
         state.pymReq = {} as PaymentReq;
