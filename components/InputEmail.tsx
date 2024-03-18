@@ -135,6 +135,7 @@ const InputEmail: React.FC<InputEmailProps> = ({
           autoCapitalize="none"
           ref={emailRef}
           value={email}
+          keyboardType="email-address"
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           onCancel={() => {
