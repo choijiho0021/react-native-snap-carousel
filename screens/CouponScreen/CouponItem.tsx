@@ -6,12 +6,19 @@ import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RkbCoupon} from '@/redux/api/accountApi';
+import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
   desc: {
-    ...appStyles.bold14Text,
+    ...appStyles.medium14,
+    lineHeight: 20,
     color: colors.warmGrey,
     marginVertical: 6,
+  },
+  descBold: {
+    ...appStyles.bold14Text,
+    lineHeight: 20,
+    color: colors.warmGrey,
   },
   date: {
     flexDirection: 'row',
@@ -56,7 +63,16 @@ const CouponItem = ({item}: {item: RkbCoupon}) => {
         <AppText style={appStyles.robotoBold22Text}>{percentage}</AppText>
       ) : null}
       <AppText style={appStyles.bold16Text}>{prDisp}</AppText>
-      <AppText style={styles.desc}>{prDesc}</AppText>
+      <AppStyledText
+        textStyle={styles.desc}
+        text={prDesc}
+        numberOfLines={3}
+        format={{
+          b: {
+            ...styles.descBold,
+          },
+        }}
+      />
       <View style={styles.date}>
         <AppText style={[styles.dday, diff < 10 ? styles.urgent : undefined]}>
           {`D-${diff}`}
