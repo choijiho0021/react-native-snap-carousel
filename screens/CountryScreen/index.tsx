@@ -1,5 +1,5 @@
 /* eslint-disable consistent-return */
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useIsFocused} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState, useMemo, useRef} from 'react';
 import {Animated, SafeAreaView, StyleSheet, View} from 'react-native';
@@ -103,6 +103,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     [localOpList, route.params?.partner],
   );
   const animatedValue = useRef(new Animated.Value(150)).current;
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     if (route.params?.partner) {
@@ -185,7 +186,8 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           }}
         />
         {(headerTitle.includes('(로컬망)') ||
-          headerTitle.includes('(local)')) && <ToolTip />}
+          headerTitle.includes('(local)')) &&
+          isFocused && <ToolTip />}
       </View>
 
       {imageUrl && (
