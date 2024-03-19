@@ -129,6 +129,7 @@ const slice = createSlice({
 
     builder.addCase(getNotiList.fulfilled, (state, {payload}) => {
       const {result, objects} = payload;
+      console.log('aaaaa payload', payload);
       if (result === 0 && objects && objects.length > 0) {
         // appBadge 업데이트
         try {
