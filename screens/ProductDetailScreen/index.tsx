@@ -477,9 +477,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
   const onPressBtnPurchase = useCallback(() => {
     Analytics.trackEvent('Click_purchase');
+    setIsButtonDisabled(true);
     setShowModal(false);
 
-    if (!account.loggedIn) {
+    if (!account.loggedIn && !isButtonDisabled) {
       navigation.navigate('RegisterMobile', {
         goBack: () => navigation.goBack(),
       });
@@ -487,25 +488,32 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
     const item: PurchaseItem = {...purchaseItems[0], qty};
 
-    // 구매 품목을 갱신한다.
-    return action.cart
-      .checkStockAndPurchase({purchaseItems: [item], isCart: false})
-      .then(({payload: resp}) => {
-        resetModalInfo();
-        if (resp.result === 0) {
-          navigation.navigate('PymMethod', {
-            mode: 'roaming_product',
-          });
-        } else {
-          soldOut(resp, 'cart:soldOut');
-        }
-      })
-      .catch((err) => {
-        console.log('failed to check stock', err);
-      });
+    if (!isButtonDisabled) {
+      // 구매 품목을 갱신한다.
+      action.cart
+        .checkStockAndPurchase({purchaseItems: [item], isCart: false})
+        .then(({payload: resp}) => {
+          resetModalInfo();
+          if (resp.result === 0) {
+            navigation.navigate('PymMethod', {
+              mode: 'roaming_product',
+            });
+          } else {
+            soldOut(resp, 'cart:soldOut');
+          }
+        })
+        .catch((err) => {
+          console.log('failed to check stock', err);
+        });
+    }
+
+    return setTimeout(() => {
+      setIsButtonDisabled(false);
+    }, 3000);
   }, [
     account.loggedIn,
     action.cart,
+    isButtonDisabled,
     navigation,
     purchaseItems,
     qty,
@@ -540,14 +548,14 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           title={i18n.t('cart:buy')}
           titleStyle={styles.btnBuyText}
           onPress={() => {
-            setShowModal(true);
+            if (!isButtonDisabled) setShowModal(true);
           }}
           // onPress={onPressBtnPurchase}
           type="primary"
         />
       </View>
     );
-  }, [showModal]);
+  }, [isButtonDisabled, showModal]);
 
   const purchaseNumberTab = useCallback(() => {
     return (
