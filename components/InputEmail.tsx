@@ -67,38 +67,41 @@ const InputEmail: React.FC<InputEmailProps> = ({
   const [email, setEmail] = useState('');
   const [focused, setFocused] = useState(false);
   const [inValid, setInValid] = useState('');
+  const [currentValue, setCurrentValue] = useState(currentEmail);
 
   const validated = useMemo(() => inValid === 'changeEmail:usable', [inValid]);
 
   useEffect(() => {
-    const str = email.replace(/ /g, '');
-    if (str) {
-      const m = domain === 'input' ? str : `${str}@${domain}`;
-      const valid = validationUtil.validate('email', m);
-      if ((valid?.email?.length || 0) > 0) {
-        setInValid('changeEmail:invalidEmail');
-      } else if (m === currentEmail) {
-        // email not changed
-        setInValid('changeEmail:notChanged');
-      } else {
-        // check if the email is duplicated
-        API.User.confirmEmail({email: m})
-          .then((rsp) => {
-            if (rsp.result === 0) {
-              setInValid('changeEmail:usable');
-              onChange?.(m);
-            } else if (rsp.message?.includes('Duplicate')) {
-              setInValid('changeEmail:duplicate');
-            } else {
+    if (currentEmail === currentValue) {
+      const str = email.replace(/ /g, '');
+      if (str) {
+        const m = domain === 'input' ? str : `${str}@${domain}`;
+        const valid = validationUtil.validate('email', m);
+        if ((valid?.email?.length || 0) > 0) {
+          setInValid('changeEmail:invalidEmail');
+        } else if (m === currentEmail) {
+          // email not changed
+          setInValid('changeEmail:notChanged');
+        } else {
+          // check if the email is duplicated
+          API.User.confirmEmail({email: m})
+            .then((rsp) => {
+              if (rsp.result === 0) {
+                setInValid('changeEmail:usable');
+                onChange?.(m);
+              } else if (rsp.message?.includes('Duplicate')) {
+                setInValid('changeEmail:duplicate');
+              } else {
+                setInValid('changeEmail:fail');
+              }
+            })
+            .catch(() => {
               setInValid('changeEmail:fail');
-            }
-          })
-          .catch(() => {
-            setInValid('changeEmail:fail');
-          });
+            });
+        }
       }
     }
-  }, [currentEmail, domain, email, onChange]);
+  }, [currentEmail, currentValue, domain, email, onChange]);
 
   useEffect(() => {
     if (inValid !== 'changeEmail:usable') {
