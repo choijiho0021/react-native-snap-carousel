@@ -70,6 +70,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteTwo,
     marginTop: 24,
   },
+  nobal: {
+    color: colors.clearBlue,
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    borderRadius: 3,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginTop: 13,
+  },
 });
 
 type DiscountProps = {
@@ -244,11 +253,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
               onBlur={() => setEditing(false)}
             />
           ) : (
-            <AppText
-              style={{
-                ...styles.title,
-                color: colors.clearBlue,
-              }}>
+            <AppText style={[styles.title, styles.nobal]}>
               {i18n.t('acc:balance:none')}
             </AppText>
           )}
