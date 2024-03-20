@@ -419,7 +419,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           onPress={() => {
             action.modal.renderModal(() => (
               <AppModalContent
-                title={i18n.t('pym:goBack:alert')}
+                title={
+                  (cart.pymReq?.discount?.value || 0) < 0
+                    ? i18n.t('pym:goBack:alert')
+                    : i18n.t('pym:goBack:alert2')
+                }
                 type="normal"
                 onOkClose={() => {
                   action.modal.closeModal();
