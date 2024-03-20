@@ -65,7 +65,7 @@ const CouponItem = ({item}: {item: RkbCoupon}) => {
       <AppText style={appStyles.bold16Text}>{prDisp}</AppText>
       <AppStyledText
         textStyle={styles.desc}
-        text={prDesc}
+        text={prDesc || ''}
         numberOfLines={3}
         format={{
           b: {
