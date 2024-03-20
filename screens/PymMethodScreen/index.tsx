@@ -404,6 +404,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     }
   }, []);
 
+  useEffect(() => {
+    if (mode === 'recharge')
+      action.cart.applyCoupon({couponId: undefined, accountCash: 0});
+  }, [action.cart, mode]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={appStyles.header}>
@@ -474,7 +479,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         <View key="div2" style={styles.divider} />
 
-        <PaymentSummary data={cart.pymReq} total={cart.pymPrice} />
+        <PaymentSummary data={cart.pymReq} total={cart.pymPrice} mode={mode} />
 
         <View key="div3" style={styles.divider} />
 
