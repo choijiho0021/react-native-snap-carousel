@@ -144,6 +144,7 @@ export interface CartModelState {
   mainSubsId?: string;
   promo?: OrderPromo[];
   couponToApply?: string; // selected coupon
+  maxCouponId?: string;
   isCart?: boolean; // true if purchased by cart, false if one time purchase
 }
 
@@ -198,14 +199,16 @@ const slice = createSlice({
     applyCoupon: (state, action) => {
       const {couponId, maxDiscount, accountCash} = action.payload;
 
+      const maxDiscountCpn = state.promo?.reduce((acc, cur) => {
+        return selectMaxCoupon(acc, cur);
+      }, undefined)?.coupon_id;
+
       if (maxDiscount) {
-        state.couponToApply = state.promo?.reduce((acc, cur) => {
-          return selectMaxCoupon(acc, cur);
-        }, undefined)?.coupon_id;
+        state.couponToApply = maxDiscountCpn;
       } else {
         state.couponToApply = couponId;
       }
-
+      state.maxCouponId = maxDiscountCpn;
       // couponToApply == undefined 이면, discount도 undefined로 설정된다.
       const promo = state.promo?.find(
         (p) => p.coupon_id === state.couponToApply,
@@ -348,10 +351,14 @@ const slice = createSlice({
         state.promo = objects[0].promo;
 
         // 로꺠비 캐시는 쿠폰 적용 X
-        if (state.purchaseItems.findIndex((r) => r.type === 'rch') === -1)
-          state.couponToApply = state.promo?.reduce((acc, cur) => {
+        if (state.purchaseItems.findIndex((r) => r.type === 'rch') === -1) {
+          const maxCouponId = state.promo?.reduce((acc, cur) => {
             return selectMaxCoupon(acc, cur);
           }, undefined)?.coupon_id;
+
+          state.couponToApply = maxCouponId;
+          state.maxCouponId = maxCouponId;
+        }
 
         state.pymReq = {} as PaymentReq;
 
