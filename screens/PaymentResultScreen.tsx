@@ -391,6 +391,8 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
               }}
               title={i18n.t(`pym:detail`)}
               onPress={() => {
+                navigation.popToTop();
+
                 navigation.navigate('PurchaseDetail', {
                   orderId: oldCart?.orderId?.toString(),
                 });
