@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     },
     shadowRadius: 2,
     shadowOpacity: 1,
-    height: 160,
+    height: 240,
   },
   head: {
     height: 74,
