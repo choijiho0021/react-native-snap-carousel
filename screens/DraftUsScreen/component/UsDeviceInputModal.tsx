@@ -17,7 +17,9 @@ import {appStyles} from '@/constants/Styles';
 import AppStyledText from '@/components/AppStyledText';
 import AppBottomModal from './AppBottomModal';
 import {UsDeviceInputType} from './UsDraftStep2';
+import Env from '@/environment';
 
+const {isIOS} = Env.get();
 const styles = StyleSheet.create({});
 
 type UsDeviceInputModalProps = {
@@ -34,8 +36,12 @@ const UsDeviceInputModal: React.FC<UsDeviceInputModalProps> = ({
 }) => {
   const uploadModalTitle = useMemo(() => {
     return (
-      <View style={{paddingVertical: 24, paddingHorizontal: 4}}>
-        <AppText style={appStyles.bold24Text}>
+      <View
+        style={{
+          paddingVertical: isIOS ? 24 : 0,
+          paddingHorizontal: 4,
+        }}>
+        <AppText style={[appStyles.bold24Text]}>
           {i18n.t('us:device:modal:input:title')}
         </AppText>
       </View>
@@ -98,6 +104,8 @@ const UsDeviceInputModal: React.FC<UsDeviceInputModalProps> = ({
       onClose={() => {
         setVisible(false);
       }}
+      height={isIOS ? 510 : 480}
+      headerStyle={{height: isIOS ? 124 : 80}}
       title={uploadModalTitle}
       body={uploadModalBody}
     />

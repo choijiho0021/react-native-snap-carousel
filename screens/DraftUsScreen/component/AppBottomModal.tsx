@@ -59,6 +59,7 @@ type AppBottomModalProps = {
   height: number;
   isCloseTouch: boolean;
   containerStyle?: StyleProp<ViewStyle>;
+  headerStyle?: StyleProp<ViewStyle>;
 };
 
 const AppBottomModal: React.FC<AppBottomModalProps> = ({
@@ -70,6 +71,7 @@ const AppBottomModal: React.FC<AppBottomModalProps> = ({
   height,
   isCloseTouch = true,
   containerStyle,
+  headerStyle,
 }) => {
   return (
     <Modal
@@ -89,7 +91,7 @@ const AppBottomModal: React.FC<AppBottomModalProps> = ({
         <SafeAreaView key="modal" style={[styles.storeBox, {height}]}>
           <Pressable>
             {title && (
-              <View style={styles.head}>
+              <View style={[styles.head, headerStyle]}>
                 <AppText style={appStyles.bold18Text}>{title}</AppText>
                 {isCloseBtn && (
                   <View style={styles.modalClose}>
