@@ -160,14 +160,8 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   }, [account?.mobile]);
 
   useEffect(() => {
-    if ((board.list.length || 0) > 0) {
-      if (mobile?.length > 0) {
-        const number = mobile.replace(/-/g, '');
-        setData(
-          board.list.filter((item) => item.mobile.includes(number)) || [],
-        );
-      } else setData(board.list || []);
-    }
+    const number = mobile.replace(/-/g, '');
+    setData(board.list.filter((item) => item.mobile.includes(number)) || []);
   }, [board.list, mobile]);
 
   const onPress = useCallback(
@@ -230,8 +224,8 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   }, [action.board]);
 
   const onRefresh = useCallback(() => {
-    action.board.getIssueList();
-  }, [action.board]);
+    onSubmit(mobile.replace(/-/g, ''));
+  }, [mobile, onSubmit]);
 
   const empty = useCallback(
     () => (
