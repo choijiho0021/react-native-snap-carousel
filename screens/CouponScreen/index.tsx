@@ -31,6 +31,9 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import CouponItem from './CouponItem';
 import api from '@/redux/api/api';
 import moment from 'moment';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -114,6 +117,7 @@ const CouponScreen: React.FC<CouponProps> = ({
   const [message, setMessage] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [focused, setFocused] = useState(false);
+  const [bottom, setBottom] = useState(20);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -121,6 +125,20 @@ const CouponScreen: React.FC<CouponProps> = ({
       setRefreshing(false);
     });
   }, [action.account, token]);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', (e) => {
+      if (isIOS) setBottom(e.endCoordinates.height + 20);
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', (e) => {
+      if (isIOS) setBottom(20);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     onRefresh();
@@ -242,6 +260,7 @@ const CouponScreen: React.FC<CouponProps> = ({
         visible={!!message}
         textMessage={message}
         onClose={() => setMessage('')}
+        bottom={bottom}
       />
     </SafeAreaView>
   );
