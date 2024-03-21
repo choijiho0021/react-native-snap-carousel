@@ -96,7 +96,6 @@ const PymMethod: React.FC<PymMethodProps> = ({
     () => price.currency === 'KRW' && price.value <= 0,
     [price.currency, price.value],
   );
-
   useEffect(() => {
     if (pymMethodRef) {
       pymMethodRef.current = {
@@ -119,7 +118,7 @@ const PymMethod: React.FC<PymMethodProps> = ({
       <View>
         <DropDownButton
           title={i18n.t(
-            value?.startsWith('card') ? `pym:${value}` : 'pym:method:card:sel',
+            value?.startsWith('card') ? `pym:${value}` : 'pym:card:noSelect',
           )}
           onPress={disabled ? () => {} : () => onPress('card')}
         />
@@ -232,6 +231,8 @@ const PymMethod: React.FC<PymMethodProps> = ({
                   setMethod(k);
                   if (k === 'easy') {
                     onPress('pym:kakao');
+                  } else if (k === 'card') {
+                    onPress('card:noSelect');
                   }
                 }
               }}>
