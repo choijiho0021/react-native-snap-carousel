@@ -519,7 +519,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           disabled={
             (cart.pymPrice?.value !== 0 && !selected) ||
             !policyChecked ||
-            selected === 'card:noSelect'
+            (cart.pymPrice?.value !== 0 && selected === 'card:noSelect')
           }
           disabledCanOnPress
           disabledOnPress={() => {
