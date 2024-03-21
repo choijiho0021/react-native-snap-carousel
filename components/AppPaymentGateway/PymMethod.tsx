@@ -124,19 +124,18 @@ const PymMethod: React.FC<PymMethodProps> = ({
           onPress={disabled ? () => {} : () => onPress('card')}
         />
         <View style={{height: 12}} />
-        <DropDownButton
-          title={
-            (installmentMonths || '0') === '0'
-              ? i18n.t('pym:pay:atonce')
-              : installmentMonths + i18n.t('pym:duration')
-          }
-          disabled={
-            !value?.startsWith('card') ||
-            disabled ||
-            (price?.currency === 'KRW' && (price?.value || 0) < 50000)
-          }
-          onPress={() => onPress('installmentMonths')}
-        />
+        {disabled ||
+          (price?.currency === 'KRW' && (price?.value || 0) < 50000 && (
+            <DropDownButton
+              title={
+                (installmentMonths || '0') === '0'
+                  ? i18n.t('pym:pay:atonce')
+                  : installmentMonths + i18n.t('pym:duration')
+              }
+              disabled={!value?.startsWith('card')}
+              onPress={() => onPress('installmentMonths')}
+            />
+          ))}
       </View>
     );
   }, [
