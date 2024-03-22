@@ -671,6 +671,7 @@
   "esim:howToCall:international:ustotal:ex:title": "미국에서 한국 010-1234-5678로 전화를 걸 때",
   "esim:howToCall:international:ais:ex:title": "태국에서 한국 010-1234-5678로 전화를 걸 때",
   "esim:howToCall:international:dtac:ex:title": "태국에서 한국 010-1234-5678로 전화를 걸 때",
+  "esim:howToCall:international:ustotal:txt": "011 + 국가번호 + “0”을 제외한 전화번호 + 통화",
   "esim:howToCall:international:ustotal:ex:txt1": "1 + 지역번호 + 전화번호 + 통화 → 안내멘트 →",
   "esim:howToCall:international:ustotal:ex:txt2": "011 + 82 + 10 1234 5678 + 통화",
   "esim:howToCall:international:ais:ex:txt1": "00300 + 82 + 10 1234 5678 + 통화",
