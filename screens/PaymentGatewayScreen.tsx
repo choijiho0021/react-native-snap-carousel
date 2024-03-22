@@ -116,6 +116,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
             token: account.token,
           },
           pay_method: params.pay_method,
+          installmentMonths: params?.installmentMonths || '0',
           card: params.card,
           mode: params.mode,
         });

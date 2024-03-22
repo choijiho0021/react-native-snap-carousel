@@ -248,7 +248,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
       />
       <KeyboardAwareScrollView
         style={{flex: 1}}
-        contentContainerStyle={{flex: 1}}
+        contentContainerStyle={{flexGrow: 1}}
         enableOnAndroid
         enableResetScrollToCoords={false}
         keyboardShouldPersistTaps="handled">
