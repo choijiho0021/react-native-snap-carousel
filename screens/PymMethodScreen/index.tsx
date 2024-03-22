@@ -2,7 +2,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import {SafeAreaView, StyleSheet, View, BackHandler} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -61,6 +61,7 @@ import DropDownHeader from './DropDownHeader';
 import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import ScreenHeader from '@/components/ScreenHeader';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const infoKey = 'pym:benefit';
 const styles = StyleSheet.create({
@@ -407,34 +408,41 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       action.cart.applyCoupon({couponId: undefined, accountCash: 0});
   }, [action.cart, mode]);
 
+  const backhanler = useCallback(() => {
+    action.modal.renderModal(() => (
+      <AppModalContent
+        title={
+          (cart.pymReq?.discount?.value || 0) < 0
+            ? i18n.t('pym:goBack:alert')
+            : i18n.t('pym:goBack:alert2')
+        }
+        type="normal"
+        onOkClose={() => {
+          action.modal.closeModal();
+        }}
+        onCancelClose={() => {
+          goBack(navigation, route);
+          action.modal.closeModal();
+        }}
+        cancelButtonStyle={{color: colors.black, marginRight: 60}}
+        okButtonTitle={i18n.t('no')}
+        cancelButtonTitle={i18n.t('yes')}
+        okButtonStyle={{color: colors.clearBlue}}
+      />
+    ));
+  }, [action.modal, cart.pymReq?.discount?.value, navigation, route]);
+
+  BackbuttonHandler({
+    navigation,
+    onBack: () => {
+      backhanler();
+      return true;
+    },
+  });
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScreenHeader
-        title={i18n.t('payment')}
-        backHandler={() => {
-          action.modal.renderModal(() => (
-            <AppModalContent
-              title={
-                (cart.pymReq?.discount?.value || 0) < 0
-                  ? i18n.t('pym:goBack:alert')
-                  : i18n.t('pym:goBack:alert2')
-              }
-              type="normal"
-              onOkClose={() => {
-                action.modal.closeModal();
-              }}
-              onCancelClose={() => {
-                goBack(navigation, route);
-                action.modal.closeModal();
-              }}
-              cancelButtonStyle={{color: colors.black, marginRight: 60}}
-              okButtonTitle={i18n.t('no')}
-              cancelButtonTitle={i18n.t('yes')}
-              okButtonStyle={{color: colors.clearBlue}}
-            />
-          ));
-        }}
-      />
+      <ScreenHeader title={i18n.t('payment')} backHandler={backhanler} />
       <KeyboardAwareScrollView
         contentContainerStyle={{minHeight: '100%'}}
         showsVerticalScrollIndicator={false}
