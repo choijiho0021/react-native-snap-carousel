@@ -442,12 +442,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScreenHeader
-        title={i18n.t('payment')}
-        backHandler={() => {
-          backHandler();
-        }}
-      />
+      <ScreenHeader title={i18n.t('payment')} backHandler={backHandler} />
       <KeyboardAwareScrollView
         contentContainerStyle={{minHeight: '100%'}}
         showsVerticalScrollIndicator={false}
