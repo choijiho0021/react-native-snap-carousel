@@ -70,6 +70,7 @@ const InputEmail: React.FC<InputEmailProps> = ({
   const [currentValue, setCurrentValue] = useState(currentEmail);
 
   const validated = useMemo(() => inValid === 'changeEmail:usable', [inValid]);
+  const regEx = new RegExp(/^[a-zA-Z0-9!#$%&'*+/=?^_.`{|}~-]+$/, 'g');
 
   useEffect(() => {
     if (currentEmail === currentValue) {
@@ -77,7 +78,9 @@ const InputEmail: React.FC<InputEmailProps> = ({
       if (str) {
         const m = domain === 'input' ? str : `${str}@${domain}`;
         const valid = validationUtil.validate('email', m);
-        if ((valid?.email?.length || 0) > 0) {
+
+        // Orcale이 사용하는 국제 표준 RFC 이메일 정규식 추가
+        if ((valid?.email?.length || 0) > 0 || !regEx.test(str)) {
           setInValid('changeEmail:invalidEmail');
         } else if (m === currentEmail) {
           // email not changed
