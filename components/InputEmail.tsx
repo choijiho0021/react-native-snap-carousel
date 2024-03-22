@@ -70,7 +70,10 @@ const InputEmail: React.FC<InputEmailProps> = ({
   const [currentValue, setCurrentValue] = useState(currentEmail);
 
   const validated = useMemo(() => inValid === 'changeEmail:usable', [inValid]);
-  const regEx = new RegExp(/^[a-zA-Z0-9!#$%&'*+/=?^_.`{|}~-]+$/, 'g');
+  const regEx = useMemo(
+    () => new RegExp(/^[a-zA-Z0-9!#$%&'*+/=?^_.`{|}~-]+$/, 'g'),
+    [],
+  );
 
   useEffect(() => {
     if (currentEmail === currentValue) {
@@ -104,7 +107,7 @@ const InputEmail: React.FC<InputEmailProps> = ({
         }
       }
     }
-  }, [currentEmail, currentValue, domain, email, onChange]);
+  }, [currentEmail, currentValue, domain, email, onChange, regEx]);
 
   useEffect(() => {
     if (inValid !== 'changeEmail:usable') {
