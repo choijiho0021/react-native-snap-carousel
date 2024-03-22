@@ -251,7 +251,6 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
           console.log('failed to check stock', err);
         });
     else {
-      console.log('@@@@ 재 결제 시도 실패 홈으로 이동하기');
       navigation.navigate('HomeStack', {screen: 'Home'});
     }
   }, [action.cart, navigation, oldCart?.purchaseItems]);
@@ -365,7 +364,11 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
             title={i18n.t('pym:method')}
             value={
               params.pay_method === 'card'
-                ? i18n.t(`pym:card${params.card}`)
+                ? `${i18n.t(`pym:card${params.card}`)}/${
+                    params?.installmentMonths === '0'
+                      ? i18n.t('pym:pay:atonce')
+                      : `${params?.installmentMonths}${i18n.t('pym:duration')}`
+                  }`
                 : i18n.t(`pym:${params.pay_method}`)
             }
             valueStyle={appStyles.roboto16Text}

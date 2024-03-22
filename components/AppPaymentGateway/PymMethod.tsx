@@ -131,7 +131,7 @@ const PymMethod: React.FC<PymMethodProps> = ({
                 ? i18n.t('pym:pay:atonce')
                 : installmentMonths + i18n.t('pym:duration')
             }
-            disabled={!value?.startsWith('card')}
+            disabled={disabled || !value?.startsWith('card')}
             onPress={() => onPress('installmentMonths')}
           />
         )}
