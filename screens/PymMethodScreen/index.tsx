@@ -54,7 +54,7 @@ import PymMethod, {
   PymMethodRef,
 } from '@/components/AppPaymentGateway/PymMethod';
 import PopupList from './PopupList';
-import {retrieveData, storeData, utils} from '@/utils/utils';
+import {retrieveData, utils} from '@/utils/utils';
 import AppText from '@/components/AppText';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import DropDownHeader from './DropDownHeader';
@@ -253,10 +253,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
       setClickable(false);
 
-      // store payment
-      console.log('@@@ pym method', selected);
-      storeData(`${cachePrefix}cache.pym.method`, selected);
-
       const payMethod = selected.startsWith('card')
         ? API.Payment.method['pym:ccard']
         : selected.startsWith('vbank')
@@ -359,6 +355,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           mode,
           receipt,
           selected,
+          pymMethod: selected,
         } as PaymentParams;
 
         setClickable(true);
@@ -516,13 +513,18 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           titleStyle={[appStyles.medium18, {color: colors.white}]}
           disableColor={colors.greyish}
           disableStyle={{backgroundColor: colors.lightGrey}}
-          disabled={(cart.pymPrice?.value !== 0 && !selected) || !policyChecked}
+          disabled={
+            (cart.pymPrice?.value !== 0 && !selected) ||
+            !policyChecked ||
+            (cart.pymPrice?.value !== 0 && selected === 'card:noSelect')
+          }
           disabledCanOnPress
           disabledOnPress={() => {
-            // AppAlert 결제에 사용할 카드를 선택해주세요
-
-            // AppAlert 주문 내용 확인 후 약관에 동의해주세요.
-            if (!policyChecked) {
+            if (selected === 'card:noSelect') {
+              // AppAlert 결제에 사용할 카드를 선택해주세요
+              AppAlert.info(i18n.t('pym:card:noSelect'));
+            } else if (!policyChecked) {
+              // AppAlert 주문 내용 확인 후 약관에 동의해주세요.
               AppAlert.info(i18n.t('pym:policy:alert'));
             }
           }}

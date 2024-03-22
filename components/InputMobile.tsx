@@ -82,7 +82,7 @@ const InputMobile: React.FC<InputMobileProps> = ({
 
   const onChangeText = useCallback((value: string) => {
     if (Platform.OS === 'android' && value.length > 11) return;
-    const mobileTxt = value.replace(/-/g, '');
+    const mobileTxt = value.replace(/[.-]/g, '');
     setMobile(mobileTxt);
     setValue(mobileTxt);
     setErrors(

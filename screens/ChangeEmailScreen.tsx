@@ -18,6 +18,11 @@ import {
   AccountAction,
   actions as accountActions,
 } from '@/redux/modules/account';
+import {
+  actions as toastActions,
+  Toast,
+  ToastAction,
+} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import Env from '@/environment';
@@ -26,7 +31,6 @@ import ScreenHeader from '@/components/ScreenHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import InputEmail from '@/components/InputEmail';
 import DomainListModal from '@/components/DomainListModal';
-import AppSnackBar from '@/components/AppSnackBar';
 
 const {isIOS} = Env.get();
 
@@ -101,6 +105,7 @@ type ChangeEmailScreenProps = {
   actions: {
     account: AccountAction;
     modal: ModalAction;
+    toast: ToastAction;
   };
 };
 
@@ -112,18 +117,17 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
   const [newEmail, setNewEmail] = useState<string>('');
   const [showDomainModal, setShowDomainModal] = useState(false);
   const [domain, setDomain] = useState('');
-  const [snackBarMsg, setSnackBarMsg] = useState('');
 
   const changeEmail = useCallback(() => {
     actions.account.changeEmail(newEmail).then((rsp) => {
       if (rsp.payload.result === 0) {
-        setSnackBarMsg(i18n.t('changeEmail:saveInfo'));
-        setTimeout(() => navigation.goBack(), 300);
+        actions.toast.push('changeEmail:saveInfo');
+        navigation.goBack();
       } else {
-        setSnackBarMsg(i18n.t('changeEmail:fail'));
+        actions.toast.push('changeEmail:fail');
       }
     });
-  }, [actions.account, navigation, newEmail]);
+  }, [actions.account, actions.toast, navigation, newEmail]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -178,11 +182,6 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
             setShowDomainModal(false);
           }}
         />
-        <AppSnackBar
-          visible={!!snackBarMsg}
-          textMessage={snackBarMsg}
-          onClose={() => setSnackBarMsg('')}
-        />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -197,6 +196,7 @@ export default connect(
     actions: {
       account: bindActionCreators(accountActions, dispatch),
       modal: bindActionCreators(modalActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch),
     },
   }),
 )(ChangeEmailScreen);
