@@ -54,7 +54,7 @@ import PymMethod, {
   PymMethodRef,
 } from '@/components/AppPaymentGateway/PymMethod';
 import PopupList from './PopupList';
-import {retrieveData, storeData, utils} from '@/utils/utils';
+import {retrieveData, utils} from '@/utils/utils';
 import AppText from '@/components/AppText';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import DropDownHeader from './DropDownHeader';
@@ -253,10 +253,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
       setClickable(false);
 
-      // store payment
-      console.log('@@@ pym method', selected);
-      storeData(`${cachePrefix}cache.pym.method`, selected);
-
       const payMethod = selected.startsWith('card')
         ? API.Payment.method['pym:ccard']
         : selected.startsWith('vbank')
@@ -359,6 +355,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           mode,
           receipt,
           selected,
+          pymMethod: selected,
         } as PaymentParams;
 
         setClickable(true);

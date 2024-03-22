@@ -59,6 +59,7 @@ export type PaymentParams = {
   installmentMonths?: string; // 할부 개월수
   paymentRule?: PaymentRule;
   selected?: string;
+  pymMethod?: string;
 };
 
 type ChargeAgreementContents = {
