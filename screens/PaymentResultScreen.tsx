@@ -373,7 +373,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
             }
             valueStyle={appStyles.roboto16Text}
           />
-          {!isSuccess && (
+          {!isSuccess && params?.errorMsg && (
             <>
               <AppDashBar />
 
