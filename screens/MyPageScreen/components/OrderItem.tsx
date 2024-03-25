@@ -12,11 +12,12 @@ import {getCountItems, isDraft} from '@/redux/modules/order';
 
 const styles = StyleSheet.create({
   order: {
-    marginVertical: 15,
+    marginTop: 14,
+    marginBottom: 12,
     marginHorizontal: 20,
   },
   orderValue: {
-    marginTop: 12,
+    marginTop: 6,
   },
   date: {
     ...appStyles.normal14Text,
