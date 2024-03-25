@@ -2,7 +2,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import {SafeAreaView, StyleSheet, View, BackHandler} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -54,12 +54,14 @@ import PymMethod, {
   PymMethodRef,
 } from '@/components/AppPaymentGateway/PymMethod';
 import PopupList from './PopupList';
-import {retrieveData, storeData, utils} from '@/utils/utils';
+import {retrieveData, utils} from '@/utils/utils';
 import AppText from '@/components/AppText';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import DropDownHeader from './DropDownHeader';
 import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
+import ScreenHeader from '@/components/ScreenHeader';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const infoKey = 'pym:benefit';
 const styles = StyleSheet.create({
@@ -253,10 +255,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
       setClickable(false);
 
-      // store payment
-      console.log('@@@ pym method', selected);
-      storeData(`${cachePrefix}cache.pym.method`, selected);
-
       const payMethod = selected.startsWith('card')
         ? API.Payment.method['pym:ccard']
         : selected.startsWith('vbank')
@@ -359,6 +357,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           mode,
           receipt,
           selected,
+          pymMethod: selected,
         } as PaymentParams;
 
         setClickable(true);
@@ -404,34 +403,46 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     }
   }, []);
 
+  useEffect(() => {
+    if (mode === 'recharge')
+      action.cart.applyCoupon({couponId: undefined, accountCash: 0});
+  }, [action.cart, mode]);
+
+  const backhanler = useCallback(() => {
+    action.modal.renderModal(() => (
+      <AppModalContent
+        title={
+          (cart.pymReq?.discount?.value || 0) < 0
+            ? i18n.t('pym:goBack:alert')
+            : i18n.t('pym:goBack:alert2')
+        }
+        type="normal"
+        onOkClose={() => {
+          action.modal.closeModal();
+        }}
+        onCancelClose={() => {
+          goBack(navigation, route);
+          action.modal.closeModal();
+        }}
+        cancelButtonStyle={{color: colors.black, marginRight: 60}}
+        okButtonTitle={i18n.t('no')}
+        cancelButtonTitle={i18n.t('yes')}
+        okButtonStyle={{color: colors.clearBlue}}
+      />
+    ));
+  }, [action.modal, cart.pymReq?.discount?.value, navigation, route]);
+
+  BackbuttonHandler({
+    navigation,
+    onBack: () => {
+      backhanler();
+      return true;
+    },
+  });
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={appStyles.header}>
-        <AppBackButton
-          title={i18n.t('payment')}
-          disabled={route.params.isPaid}
-          showIcon={!route.params.isPaid}
-          onPress={() => {
-            action.modal.renderModal(() => (
-              <AppModalContent
-                title={i18n.t('pym:goBack:alert')}
-                type="normal"
-                onOkClose={() => {
-                  action.modal.closeModal();
-                }}
-                onCancelClose={() => {
-                  goBack(navigation, route);
-                  action.modal.closeModal();
-                }}
-                cancelButtonStyle={{color: colors.black, marginRight: 60}}
-                okButtonTitle={i18n.t('no')}
-                cancelButtonTitle={i18n.t('yes')}
-                okButtonStyle={{color: colors.clearBlue}}
-              />
-            ));
-          }}
-        />
-      </View>
+      <ScreenHeader title={i18n.t('payment')} backHandler={backhanler} />
       <KeyboardAwareScrollView
         contentContainerStyle={{minHeight: '100%'}}
         showsVerticalScrollIndicator={false}
@@ -474,7 +485,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         <View key="div2" style={styles.divider} />
 
-        <PaymentSummary data={cart.pymReq} total={cart.pymPrice} />
+        <PaymentSummary data={cart.pymReq} total={cart.pymPrice} mode={mode} />
 
         <View key="div3" style={styles.divider} />
 
@@ -507,13 +518,18 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           titleStyle={[appStyles.medium18, {color: colors.white}]}
           disableColor={colors.greyish}
           disableStyle={{backgroundColor: colors.lightGrey}}
-          disabled={(cart.pymPrice?.value !== 0 && !selected) || !policyChecked}
+          disabled={
+            (cart.pymPrice?.value !== 0 && !selected) ||
+            !policyChecked ||
+            (cart.pymPrice?.value !== 0 && selected === 'card:noSelect')
+          }
           disabledCanOnPress
           disabledOnPress={() => {
-            // AppAlert 결제에 사용할 카드를 선택해주세요
-
-            // AppAlert 주문 내용 확인 후 약관에 동의해주세요.
-            if (!policyChecked) {
+            if (selected === 'card:noSelect') {
+              // AppAlert 결제에 사용할 카드를 선택해주세요
+              AppAlert.info(i18n.t('pym:card:noSelect'));
+            } else if (!policyChecked) {
+              // AppAlert 주문 내용 확인 후 약관에 동의해주세요.
               AppAlert.info(i18n.t('pym:policy:alert'));
             }
           }}

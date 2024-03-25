@@ -1,5 +1,5 @@
 import {StyleSheet, View} from 'react-native';
-import React, {memo} from 'react';
+import React, {memo, useEffect, useMemo} from 'react';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import utils from '@/redux/api/utils';
@@ -8,6 +8,7 @@ import i18n from '@/utils/i18n';
 import {PaymentItem} from './PaymentItemInfo';
 import DropDownHeader from '@/screens/PymMethodScreen/DropDownHeader';
 import {Currency} from '@/redux/api/productApi';
+import {PymMethodScreenMode} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({
   row: {
@@ -37,6 +38,7 @@ const PaymentSummary = ({
   title,
   totalLabel,
   totalColor,
+  mode,
 }: {
   data?: PaymentReq;
   total?: Currency;
@@ -44,14 +46,21 @@ const PaymentSummary = ({
   title?: string;
   totalLabel?: string;
   totalColor?: string;
+  mode?: PymMethodScreenMode;
 }) => {
+  const infoList = useMemo(
+    () =>
+      mode === 'recharge' ? ['subtotal'] : ['subtotal', 'discount', 'rkbcash'],
+    [mode],
+  );
+
   return data && total ? (
     <DropDownHeader
       title={title || i18n.t('cart:pymAmount')}
       expandable={expandable}
       summary={utils.price(total)}>
       <View style={styles.priceInfo}>
-        {(['subtotal', 'discount', 'rkbcash'] as const).map((k) => (
+        {infoList.map((k) => (
           <PaymentItem
             key={k}
             title={i18n.t(`pym:item:${k}`)}

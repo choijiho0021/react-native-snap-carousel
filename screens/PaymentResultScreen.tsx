@@ -28,7 +28,11 @@ import {
   CartModelState,
 } from '@/redux/modules/cart';
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
-import {actions as orderActions, OrderAction} from '@/redux/modules/order';
+import {
+  actions as orderActions,
+  OrderAction,
+  getCountItems,
+} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -247,7 +251,6 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
           console.log('failed to check stock', err);
         });
     else {
-      console.log('@@@@ 재 결제 시도 실패 홈으로 이동하기');
       navigation.navigate('HomeStack', {screen: 'Home'});
     }
   }, [action.cart, navigation, oldCart?.purchaseItems]);
@@ -308,6 +311,21 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   // [WARNING: 이해를 돕기 위한 것일 뿐, imp_success 또는 success 파라미터로 결제 성공 여부를 장담할 수 없습니다.]
   // 아임포트 서버로 결제내역 조회(GET /payments/${imp_uid})를 통해 그 응답(status)에 따라 결제 성공 여부를 판단하세요.
 
+  const getTitle = useCallback(() => {
+    let result = <></>;
+    const etcCount = getCountItems(oldCart?.purchaseItems, true);
+    console.log('@@@etc count : ', etcCount);
+
+    if (parseInt(etcCount, 10) > 0)
+      result = (
+        <AppText style={appStyles.normal18Text}>
+          {i18n.t('his:etcCnt').replace('%%', etcCount)}
+        </AppText>
+      );
+
+    return result;
+  }, [oldCart?.purchaseItems]);
+
   return (
     <SafeAreaView
       style={{flex: 1, alignItems: 'stretch', backgroundColor: colors.white}}>
@@ -327,13 +345,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
         <View style={styles.box}>
           <AppText style={appStyles.bold18Text}>
             {oldCart?.purchaseItems?.[0].title}
-            {(oldCart?.purchaseItems?.length || 0) > 1 && (
-              <AppText style={appStyles.normal18Text}>
-                {i18n
-                  .t('his:etcCnt')
-                  .replace('%%', (oldCart?.purchaseItems?.length || 0) - 1)}
-              </AppText>
-            )}
+            {getTitle()}
           </AppText>
           <View style={styles.divider} />
           <PaymentItem
@@ -352,7 +364,11 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
             title={i18n.t('pym:method')}
             value={
               params.pay_method === 'card'
-                ? i18n.t(`pym:card${params.card}`)
+                ? `${i18n.t(`pym:card${params.card}`)}/${
+                    params?.installmentMonths === '0'
+                      ? i18n.t('pym:pay:atonce')
+                      : `${params?.installmentMonths}${i18n.t('pym:duration')}`
+                  }`
                 : i18n.t(`pym:${params.pay_method}`)
             }
             valueStyle={appStyles.roboto16Text}
@@ -391,6 +407,8 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
               }}
               title={i18n.t(`pym:detail`)}
               onPress={() => {
+                navigation.popToTop();
+
                 navigation.navigate('PurchaseDetail', {
                   orderId: oldCart?.orderId?.toString(),
                 });

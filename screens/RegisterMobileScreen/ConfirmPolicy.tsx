@@ -138,6 +138,14 @@ const ConfirmPolicy = ({
     });
   }, [confirm, onChange]);
 
+  useEffect(() => {
+    if (confirm.contract && confirm.marketing && confirm.personalInfo) {
+      setCheckAll(true);
+    } else {
+      setCheckAll(false);
+    }
+  }, [confirm.contract, confirm.marketing, confirm.personalInfo]);
+
   return (
     <View style={styles.container}>
       <Pressable style={styles.titleBox} onPress={toggleCheckAll}>

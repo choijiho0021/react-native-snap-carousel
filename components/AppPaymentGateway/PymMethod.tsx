@@ -96,7 +96,6 @@ const PymMethod: React.FC<PymMethodProps> = ({
     () => price.currency === 'KRW' && price.value <= 0,
     [price.currency, price.value],
   );
-
   useEffect(() => {
     if (pymMethodRef) {
       pymMethodRef.current = {
@@ -119,24 +118,22 @@ const PymMethod: React.FC<PymMethodProps> = ({
       <View>
         <DropDownButton
           title={i18n.t(
-            value?.startsWith('card') ? `pym:${value}` : 'pym:method:card:sel',
+            value?.startsWith('card') ? `pym:${value}` : 'pym:card:noSelect',
           )}
           onPress={disabled ? () => {} : () => onPress('card')}
         />
         <View style={{height: 12}} />
-        <DropDownButton
-          title={
-            (installmentMonths || '0') === '0'
-              ? i18n.t('pym:pay:atonce')
-              : installmentMonths + i18n.t('pym:duration')
-          }
-          disabled={
-            !value?.startsWith('card') ||
-            disabled ||
-            (price?.currency === 'KRW' && (price?.value || 0) < 50000)
-          }
-          onPress={() => onPress('installmentMonths')}
-        />
+        {price?.currency === 'KRW' && (price?.value || 0) >= 50000 && (
+          <DropDownButton
+            title={
+              (installmentMonths || '0') === '0'
+                ? i18n.t('pym:pay:atonce')
+                : installmentMonths + i18n.t('pym:duration')
+            }
+            disabled={disabled || !value?.startsWith('card')}
+            onPress={() => onPress('installmentMonths')}
+          />
+        )}
       </View>
     );
   }, [
@@ -232,6 +229,8 @@ const PymMethod: React.FC<PymMethodProps> = ({
                   setMethod(k);
                   if (k === 'easy') {
                     onPress('pym:kakao');
+                  } else if (k === 'card') {
+                    onPress('card:noSelect');
                   }
                 }
               }}>

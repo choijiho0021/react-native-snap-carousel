@@ -21,8 +21,12 @@ import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RkbPaymentVBankResult} from '@/redux/api/paymentApi';
+import Env from '@/environment';
+import {storeData} from '@/utils/utils';
 
 const loading = require('../assets/images/loading_1.mp4');
+
+const {cachePrefix} = Env.get();
 
 type PaymentGatewayScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
@@ -105,6 +109,9 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       }
 
       if (status !== 'check' || pymResult) {
+        console.log('@@@ pym method', params.pymMethod);
+        storeData(`${cachePrefix}cache.pym.method`, params.pymMethod);
+
         // status = 'next', 'cancel' 이거나, pymResult = true인 경우 다음 페이지로 이동
         navigation.replace('PaymentResult', {
           pymResult,
@@ -116,6 +123,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
             token: account.token,
           },
           pay_method: params.pay_method,
+          installmentMonths: params?.installmentMonths || '0',
           card: params.card,
           mode: params.mode,
         });

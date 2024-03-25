@@ -312,7 +312,8 @@ const logInAndGetAccount = createAsyncThunk(
           dispatch(getUserId({name: obj.current_user.name}));
           dispatch(notiActions.getNotiList({mobile: obj.current_user.name}));
           dispatch(getMyCoupon({token}));
-          dispatch(cartActions.cartFetch);
+          dispatch(cartActions.cartFetch());
+
           return api.success([]);
         }
         return {result, objects};

@@ -12,7 +12,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {connect, useDispatch} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import {colors} from '@/constants/Colors';
-import {HomeStackParamList} from '@/navigation/navigation';
+import {HomeStackParamList, goBack} from '@/navigation/navigation';
 import i18n from '@/utils/i18n';
 import AppBackButton from '@/components/AppBackButton';
 import {
@@ -31,6 +31,12 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import CouponItem from './CouponItem';
 import api from '@/redux/api/api';
 import moment from 'moment';
+import Env from '@/environment';
+import ScreenHeader from '@/components/ScreenHeader';
+import {useRoute} from '@react-navigation/native';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -108,19 +114,46 @@ type CouponProps = {
 const CouponScreen: React.FC<CouponProps> = ({
   action,
   account: {token, coupon, iccid},
+  navigation,
 }) => {
   const [code, setCode] = useState('');
   const dispatch = useDispatch();
   const [message, setMessage] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [focused, setFocused] = useState(false);
-
+  const [bottom, setBottom] = useState(20);
+  const route = useRoute();
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     action.account.getMyCoupon({token}).finally(() => {
       setRefreshing(false);
     });
   }, [action.account, token]);
+
+  // 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
+
+  BackbuttonHandler({
+    navigation,
+    onBack: () => {
+      navigation.popToTop();
+      goBack(navigation, route);
+      return true;
+    },
+  });
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', (e) => {
+      if (isIOS) setBottom(e.endCoordinates.height + 20);
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', (e) => {
+      if (isIOS) setBottom(20);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     onRefresh();
@@ -242,6 +275,7 @@ const CouponScreen: React.FC<CouponProps> = ({
         visible={!!message}
         textMessage={message}
         onClose={() => setMessage('')}
+        bottom={bottom}
       />
     </SafeAreaView>
   );

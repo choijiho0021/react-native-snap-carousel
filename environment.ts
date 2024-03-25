@@ -183,7 +183,7 @@ function get() {
     default:
       env.scheme = 'http';
       env.rokApiUrl = 'tb-svcapp.rokebi.com';
-      env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'drupal9.rokebi.com';
+      env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'tb-esim.rokebi.com';
       env.webViewHost = esimGlobal
         ? 'http://tb.rokebi.com/us'
         : 'http://tb.rokebi.com';

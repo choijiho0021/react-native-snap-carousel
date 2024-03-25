@@ -244,11 +244,13 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
       <StatusBar barStyle="dark-content" />
       <ScreenHeader
         title={i18n.t('signup:title')}
-        backHandler={() => navigation.goBack()}
+        backHandler={() =>
+          navigation.reset({index: 0, routes: [{name: 'RegisterMobile'}]})
+        }
       />
       <KeyboardAwareScrollView
         style={{flex: 1}}
-        contentContainerStyle={{flex: 1}}
+        contentContainerStyle={{flexGrow: 1}}
         enableOnAndroid
         enableResetScrollToCoords={false}
         keyboardShouldPersistTaps="handled">

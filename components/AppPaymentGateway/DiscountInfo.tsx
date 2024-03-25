@@ -21,6 +21,7 @@ import DropDownHeader from '@/screens/PymMethodScreen/DropDownHeader';
 import ConfirmButton from './ConfirmButton';
 import AppStyledText from '../AppStyledText';
 import AppSvgIcon from '../AppSvgIcon';
+import moment from 'moment';
 
 const styles = StyleSheet.create({
   row: {
@@ -70,6 +71,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteTwo,
     marginTop: 24,
   },
+  nobal: {
+    color: colors.clearBlue,
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    borderRadius: 3,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginTop: 13,
+  },
 });
 
 type DiscountProps = {
@@ -110,10 +120,17 @@ const DiscountInfo: React.FC<DiscountProps> = ({
       rokebiCash,
     ],
   );
+
   const isCashNotEmpty = useMemo(
     () => (account?.balance || 0) !== 0,
     [account?.balance],
   );
+
+  useEffect(() => {
+    if (cart.maxCouponId === cart.couponToApply) setChecked(true);
+    else setChecked(false);
+  }, [cart.couponToApply, cart.maxCouponId]);
+
   const updateRokebiCash = useCallback(
     (v: string) => {
       const min = availableRokebiCash(
@@ -134,8 +151,6 @@ const DiscountInfo: React.FC<DiscountProps> = ({
 
   const toggleMaxPromo = useCallback(
     (check: boolean) => {
-      // check - current status
-      setChecked(!check);
       if (!check) {
         // 최대 할인 적용
         action.cart.applyCoupon({
@@ -197,7 +212,6 @@ const DiscountInfo: React.FC<DiscountProps> = ({
             titleStyle={appStyles.robotoBold16Text}
             buttonTitle={i18n.t('pym:sel:coupon:title')}
             onPress={() => {
-              setChecked(false);
               onPress?.();
             }}
           />
@@ -244,11 +258,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
               onBlur={() => setEditing(false)}
             />
           ) : (
-            <AppText
-              style={{
-                ...styles.title,
-                color: colors.clearBlue,
-              }}>
+            <AppText style={[styles.title, styles.nobal]}>
               {i18n.t('acc:balance:none')}
             </AppText>
           )}

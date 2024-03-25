@@ -196,22 +196,12 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
   );
 
   const renderIntGreyBox = useCallback(() => {
-    const steps = [{bold: true}, {bold: false}, {bold: true}];
-
-    if (clMtd === 'ustotal') {
-      return (
-        <>
-          <AppSvgIcon name="verLine" style={styles.verLine} />
-          <View>{steps.map((elm, idx) => renderStep(idx + 1, elm.bold))}</View>
-        </>
-      );
-    }
     return (
       <AppText style={styles.stepBoldTxt}>
         {i18n.t(`esim:howToCall:international:${clMtd}:txt`)}
       </AppText>
     );
-  }, [clMtd, renderStep]);
+  }, [clMtd]);
 
   const rednerInternational = useCallback(() => {
     return (
