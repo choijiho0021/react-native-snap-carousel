@@ -257,7 +257,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
         }
       />
       <FlatList
-        style={{flex: 1}}
+        style={{flex: 1, marginTop: 24}}
         ref={flatListRef}
         data={order.orderList}
         keyExtractor={(item) => `${item}`}
