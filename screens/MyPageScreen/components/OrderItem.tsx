@@ -58,7 +58,7 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
       <View key={item.orderId} style={styles.order}>
         <LabelText
           style={styles.orderValue}
-          label={utils.toDateString(item.orderDate, 'YYYY-MM-DD')}
+          label={utils.toDateString(item.orderDate, 'YYYY.MM.DD')}
           labelStyle={styles.date}
           valueStyle={statusColor ? {color: statusColor} : undefined}
           value={status}

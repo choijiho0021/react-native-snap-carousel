@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     letterSpacing: 0,
     color: 'white',
-    marginRight: 4,
+    marginRight: 0,
   },
   btnStyle: {
     flex: 1,
