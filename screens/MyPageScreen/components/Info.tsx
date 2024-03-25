@@ -185,7 +185,7 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
             iconName={icon}
             title={i18n.t(title)}
             style={styles.btnContactBoard}
-            titleStyle={[appStyles.normal16Text, {marginTop: 8}]}
+            titleStyle={[appStyles.bold14Text, {marginTop: 8}]}
             viewStyle={styles.btnStyle}
             type="secondary"
             onPress={() =>
