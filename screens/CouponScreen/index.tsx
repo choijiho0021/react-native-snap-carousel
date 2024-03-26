@@ -227,23 +227,23 @@ const CouponScreen: React.FC<CouponProps> = ({
   );
 
   const renderListHeader = useCallback(
-    () => (
+    (value: string, changing: boolean) => (
       <>
         <View style={[styles.row, {marginTop: 24}]}>
           <View
             style={[
               styles.input,
-              {borderColor: focused ? colors.clearBlue : colors.lightGrey},
+              {borderColor: changing ? colors.clearBlue : colors.lightGrey},
             ]}>
             <AppTextInput
               style={{flex: 1}}
               placeholder={i18n.t('coupon:inputCode')}
-              value={code}
+              value={value}
               onChangeText={setCode}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
             />
-            {code.length > 0 && (
+            {value.length > 0 && (
               <AppButton
                 style={{justifyContent: 'flex-end', marginLeft: 10}}
                 iconName="btnSearchCancel"
@@ -254,7 +254,7 @@ const CouponScreen: React.FC<CouponProps> = ({
           <AppButton
             style={styles.regBtn}
             title={i18n.t('coupon:reg')}
-            disabled={code.length < 1}
+            disabled={value.length < 1}
             onPress={regCoupon}
             disabledOnPress={regCoupon}
             disabledCanOnPress
@@ -264,7 +264,7 @@ const CouponScreen: React.FC<CouponProps> = ({
         <AppText style={styles.title}>{i18n.t('coupon:mine')}</AppText>
       </>
     ),
-    [code, focused, regCoupon],
+    [regCoupon],
   );
 
   return (
@@ -272,15 +272,13 @@ const CouponScreen: React.FC<CouponProps> = ({
       <View style={appStyles.header}>
         <AppBackButton title={i18n.t('mypage:coupon')} />
       </View>
-      {renderListHeader()}
       <FlatList
         style={{flex: 1}}
         data={coupon}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{flexGrow: 1}}
         renderItem={renderCoupon}
-        // extraData={[focused, code]}
-        // ListHeaderComponent={renderListHeader}
+        ListHeaderComponent={renderListHeader(code, focused)}
         ListFooterComponent={renderCaution}
         ListFooterComponentStyle={{
           flex: 1,
