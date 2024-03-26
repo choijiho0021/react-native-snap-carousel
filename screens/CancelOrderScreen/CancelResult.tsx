@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
   titleText: {
     ...appStyles.bold24Text,
     marginBottom: 16,
+    marginTop: 80,
   },
 
   bodyText: {

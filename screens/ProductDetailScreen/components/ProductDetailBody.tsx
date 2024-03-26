@@ -11,6 +11,7 @@ import AppStyledText from '@/components/AppStyledText';
 import AppCopyBtn from '@/components/AppCopyBtn';
 import AppIcon from '@/components/AppIcon';
 import {appStyles} from '@/constants/Styles';
+import {utils} from '@/utils/utils';
 
 const styles = StyleSheet.create({
   dotBlack: {
@@ -399,7 +400,9 @@ const ProductDetailBody: React.FC<ProductDetailBodyProps> = ({
   const renderBodyNotice = useCallback(
     (t: {class: string; tag: string; text: string}) => {
       return t.tag === 'dt' ? (
-        <AppText style={styles.noticeTitle}>{t.text}</AppText>
+        <AppText key={utils.generateKey(t.text)} style={styles.noticeTitle}>
+          {t.text}
+        </AppText>
       ) : (
         renderTplInfo(t, 20)
       );
@@ -428,8 +431,10 @@ const ProductDetailBody: React.FC<ProductDetailBodyProps> = ({
         <View style={styles.bodyNoticeContents}>
           {textList &&
             textList.length > 0 &&
-            textList.map((t) => (
-              <View key={t[0].text}>{t.map((c) => renderBodyNotice(c))}</View>
+            textList.map((t, idx) => (
+              <View key={utils.generateKey(idx.toString())}>
+                {t.map((c) => renderBodyNotice(c))}
+              </View>
             ))}
         </View>
       </View>
