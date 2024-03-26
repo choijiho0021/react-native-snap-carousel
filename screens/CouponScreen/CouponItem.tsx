@@ -1,6 +1,6 @@
 import React, {memo} from 'react';
 import moment from 'moment';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, ViewStyle} from 'react-native';
 import AppPrice from '@/components/AppPrice';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -32,6 +32,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 3,
+    borderWidth: 1,
+    borderColor: colors.veryLightBlue,
     marginRight: 8,
   },
   urgent: {
@@ -62,17 +64,21 @@ const CouponItem = ({item}: {item: RkbCoupon}) => {
       ) : percentage ? (
         <AppText style={appStyles.robotoBold22Text}>{percentage}</AppText>
       ) : null}
-      <AppText style={appStyles.bold16Text}>{prDisp}</AppText>
-      <AppStyledText
-        textStyle={styles.desc}
-        text={prDesc || ''}
-        numberOfLines={3}
-        format={{
-          b: {
-            ...styles.descBold,
-          },
-        }}
-      />
+      <AppText style={{...appStyles.bold16Text, marginTop: 8}}>
+        {prDisp}
+      </AppText>
+      <View style={{marginVertical: 2}}>
+        <AppStyledText
+          textStyle={styles.desc}
+          text={prDesc || ''}
+          numberOfLines={3}
+          format={{
+            b: {
+              ...styles.descBold,
+            },
+          }}
+        />
+      </View>
       <View style={styles.date}>
         <AppText style={[styles.dday, diff < 10 ? styles.urgent : undefined]}>
           {`D-${diff}`}
