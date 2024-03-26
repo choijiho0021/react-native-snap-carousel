@@ -334,34 +334,35 @@ const UsageItem: React.FC<UsageItemProps> = ({
           </View>
         )}
 
+        {showEndTime &&
+          endTime &&
+          item.daily === 'daily' &&
+          item.partner !== 'ht' && <View style={styles.timeDivider} />}
+
         {item.daily === 'daily' && item.partner !== 'ht' && (
-          <Fragment>
-            <View style={styles.timeDivider} />
+          <View style={styles.timeItem}>
+            <AppText
+              style={{
+                ...appStyles.bold12Text,
+                color: colors.black,
+                marginBottom: 6,
+              }}>
+              {i18n.t('esim:time:dataReset')}
+            </AppText>
 
-            <View style={styles.timeItem}>
-              <AppText
-                style={{
-                  ...appStyles.bold12Text,
-                  color: colors.black,
-                  marginBottom: 6,
-                }}>
-                {i18n.t('esim:time:dataReset')}
-              </AppText>
-
-              {isTzDiff ? (
-                <View>
-                  {renderResetTimeRow('korea', styles.rowBetween)}
-                  {renderResetTimeRow('local', styles.rowBetween)}
-                </View>
-              ) : (
-                <View>{renderResetTimeRow('korea')}</View>
-              )}
-            </View>
-          </Fragment>
+            {isTzDiff ? (
+              <View>
+                {renderResetTimeRow('korea', styles.rowBetween)}
+                {renderResetTimeRow('local', styles.rowBetween)}
+              </View>
+            ) : (
+              <View>{renderResetTimeRow('korea')}</View>
+            )}
+          </View>
         )}
       </View>
     );
-  }, [endTime, item.daily, renderResetTimeRow, showEndTime]);
+  }, [endTime, item.daily, item.partner, renderResetTimeRow, showEndTime]);
 
   const renderAnimatedCircularProgress = useCallback(() => {
     return (
@@ -402,6 +403,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [isExhausted, remain]);
 
   const warningDotTxt = useCallback(() => {
+    console.log('aaaaa showEndTime', showEndTime);
     switch (item?.partner) {
       case 'ht':
         return (
@@ -421,7 +423,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           </View>
         );
       default:
-        return (
+        return showEndTime && endTime ? (
           <View style={{width: '100%'}}>
             <View style={{flexDirection: 'row'}}>
               <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
@@ -430,9 +432,9 @@ const UsageItem: React.FC<UsageItemProps> = ({
               </AppText>
             </View>
           </View>
-        );
+        ) : null;
     }
-  }, [item?.partner]);
+  }, [endTime, item?.partner, showEndTime]);
 
   const clMtdTxt = useCallback(() => {
     return ['ais', 'dtac', 'vndaily'].includes(item?.clMtd || '') ? (
