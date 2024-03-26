@@ -386,6 +386,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
             } else if (sku?.startsWith('cpn-')) {
               navigation.navigate('MyPageStack', {
                 screen: 'Coupon',
+                initial: false,
               });
             } else {
               navigation.navigate('EsimStack', {
