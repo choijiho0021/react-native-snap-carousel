@@ -134,7 +134,6 @@ const CouponScreen: React.FC<CouponProps> = ({
       setRefreshing(false);
     });
   }, [action.account, token]);
-
   // 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
 
   BackbuttonHandler({
@@ -265,7 +264,7 @@ const CouponScreen: React.FC<CouponProps> = ({
         <AppText style={styles.title}>{i18n.t('coupon:mine')}</AppText>
       </>
     ),
-    [],
+    [code, focused, regCoupon],
   );
 
   return (
@@ -273,14 +272,15 @@ const CouponScreen: React.FC<CouponProps> = ({
       <View style={appStyles.header}>
         <AppBackButton title={i18n.t('mypage:coupon')} />
       </View>
-
+      {renderListHeader()}
       <FlatList
         style={{flex: 1}}
         data={coupon}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{flexGrow: 1}}
         renderItem={renderCoupon}
-        ListHeaderComponent={renderListHeader}
+        // extraData={[focused, code]}
+        // ListHeaderComponent={renderListHeader}
         ListFooterComponent={renderCaution}
         ListFooterComponentStyle={{
           flex: 1,
