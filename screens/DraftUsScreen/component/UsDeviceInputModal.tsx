@@ -104,7 +104,7 @@ const UsDeviceInputModal: React.FC<UsDeviceInputModalProps> = ({
       onClose={() => {
         setVisible(false);
       }}
-      height={isIOS ? 510 : 480}
+      height={isIOS ? 540 : 510}
       headerStyle={{height: isIOS ? 124 : 80}}
       title={uploadModalTitle}
       body={uploadModalBody}
