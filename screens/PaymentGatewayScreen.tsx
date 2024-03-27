@@ -138,6 +138,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       params.mode,
       params.pay_method,
       params.paymentRule,
+      params.pymMethod,
       pymInfo,
     ],
   );
