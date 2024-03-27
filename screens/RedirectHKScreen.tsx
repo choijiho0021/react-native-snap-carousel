@@ -26,13 +26,13 @@ import {sliderWidth, MAX_WIDTH} from '@/constants/SliderEntry.style';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
-import {getImage} from '@/utils/utils';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import {AccountModelState} from '@/redux/modules/account';
 import {API} from '@/redux/api';
 import HkStatusLottie from './EsimScreen/components/HkStatusLottie';
 import AppModal from '@/components/AppModal';
-import {removeData, retrieveData, storeData, utils} from '@/utils/utils';
+import {retrieveData, storeData, getImage} from '@/utils/utils';
+import ScreenHeader from '@/components/ScreenHeader';
 
 const {width} = Dimensions.get('window');
 
@@ -288,7 +288,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
   // const params = useMemo(() => route?.params || {}, [route?.params]);
 
   useEffect(() => {
-    const {iccid, uuid, imsi} = route?.params;
+    const {iccid, uuid, imsi} = route?.params || {};
     if (iccid && uuid && imsi) {
       storeData('HKScreenParams', JSON.stringify(route?.params));
       setParams(route?.params);
@@ -298,25 +298,6 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
       );
     }
   }, [route?.params]);
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('redirectHK')} />,
-      headerRight: () => (
-        <AppSvgIcon
-          name="btnCnter"
-          style={styles.btnCnter}
-          onPress={() =>
-            navigate(navigation, route, 'EsimStack', {
-              tab: 'HomeStack',
-              screen: 'Contact',
-            })
-          }
-        />
-      ),
-    });
-  }, [navigation, route]);
 
   const copyToClipboard = useCallback(
     (value?: string) => () => {
@@ -409,6 +390,21 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={i18n.t('redirectHK')}
+        renderRight={
+          <AppSvgIcon
+            name="btnCnter"
+            style={styles.btnCnter}
+            onPress={() =>
+              navigate(navigation, route, 'EsimStack', {
+                tab: 'HomeStack',
+                screen: 'Contact',
+              })
+            }
+          />
+        }
+      />
       <ScrollView style={styles.container}>
         <View style={{margin: 20}}>
           <AppStyledText
@@ -547,7 +543,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
               </AppText>
             </View>
 
-            <AppSvgIcon name="rightArrow" style={{right: 0}} />
+            <AppSvgIcon name="rightArrow10" style={{right: 0}} />
           </Pressable>
         ) : (
           <View style={{height: 50}} />

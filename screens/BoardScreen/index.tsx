@@ -14,6 +14,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     flex: 1,
   },
+  header: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    backgroundColor: colors.white,
+    alignItems: 'center',
+    height: 56,
+  },
   tab: {
     backgroundColor: colors.white,
     height: 50,
@@ -41,16 +49,8 @@ type BoardScreenProps = {
 };
 
 const BoardScreen: React.FC<BoardScreenProps> = ({title, routes}) => {
-  const navigation = useNavigation();
   const route = useRoute();
   const [index, setIndex] = useState(route?.params?.index || 0);
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={title} />,
-    });
-  }, [navigation, title]);
 
   const renderScene = useCallback(
     ({route, jumpTo}: {route: TabRoute; jumpTo: (v: string) => void}) => {
@@ -61,6 +61,9 @@ const BoardScreen: React.FC<BoardScreenProps> = ({title, routes}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <AppBackButton title={title} />
+      </View>
       <AppTabHeader
         index={index}
         routes={routes}

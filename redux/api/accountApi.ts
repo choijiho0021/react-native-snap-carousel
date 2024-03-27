@@ -4,6 +4,7 @@ import moment from 'moment';
 import utils from '@/redux/api/utils';
 import api, {ApiResult, ApiToken, DrupalNode, DrupalNodeJsonApi} from './api';
 import {CashExpire, CashHistory} from '@/redux/modules/account';
+import {Currency} from './productApi';
 
 export type RkbAccount = {
   nid: number;
@@ -18,6 +19,19 @@ export type RkbAccount = {
   fcmToken?: string;
   userAccount?: string;
   iccid?: string;
+};
+
+export type RkbCoupon = {
+  id: string;
+  prName: string;
+  prDisp: string;
+  prDesc: string;
+  startDate: moment.Moment;
+  endDate: moment.Moment;
+  offer: {
+    percentage?: string;
+    amount?: Currency;
+  };
 };
 
 const toAccount = (
@@ -94,6 +108,68 @@ const toAccount = (
   }
 
   return api.failure(data.result || api.E_NOT_FOUND, data.desc || '', 200);
+};
+
+const toCoupon = (
+  resp: ApiResult<{
+    id: string;
+    pr_name: string;
+    pr_disp: string;
+    pr_desc: string;
+    start_date: string;
+    end_date: string;
+    offer: {
+      percentage?: string;
+      amount?: {
+        currency_code: string;
+        number: string;
+      };
+    };
+  }>,
+): ApiResult<RkbCoupon> => {
+  // REST API json/account/list/{id}로 조회하는 경우
+  if (resp.result === 0 && resp.objects) {
+    const now = moment();
+    return api.success(
+      resp.objects
+        .map((item) => {
+          const {
+            offer: {percentage, amount},
+          } = item;
+
+          const p = percentage
+            ? `${(utils.stringToNumber(percentage) || 0) * 100}%`
+            : '';
+
+          const a = amount
+            ? ({
+                value: utils.stringToNumber(amount.number),
+                currency: amount.currency_code,
+              } as Currency)
+            : undefined;
+
+          return {
+            id: item.id,
+            prName: item.pr_name,
+            prDisp: item.pr_disp,
+            prDesc: item.pr_desc,
+            startDate: item.start_date ? moment(item.start_date) : undefined,
+            endDate: item.end_date ? moment(item.end_date) : undefined,
+            offer: {percentage: p, amount: a},
+          } as RkbCoupon;
+        })
+        .filter(
+          (c) =>
+            c.startDate &&
+            c.endDate &&
+            c.startDate.isBefore(now) &&
+            c.endDate?.isAfter(now),
+        )
+        .sort((a, b) => a.endDate.diff(b.endDate)),
+    );
+  }
+
+  return api.failure(resp.result);
 };
 
 export type RkbFile = {
@@ -305,6 +381,36 @@ const uploadPicture = ({
   );
 };
 
+// get my coupons
+const getMyCoupon = ({token}: {token: string}) => {
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.rokApi.rokebi.coupon)}/0?_format=json`,
+    toCoupon,
+    api.withToken(token, 'json'),
+  );
+};
+
+// register coupon
+const registerCoupon = ({
+  code,
+  iccid,
+  token,
+}: {
+  code: string;
+  iccid: string;
+  token: string;
+}) => {
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.coupon)}?_format=json`,
+    {
+      method: 'POST',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({code, iccid}),
+    },
+    toCoupon,
+  );
+};
+
 export default {
   toAccount,
   toFile,
@@ -315,4 +421,6 @@ export default {
   getByUser,
   registerMobile,
   uploadPicture,
+  getMyCoupon,
+  registerCoupon,
 };

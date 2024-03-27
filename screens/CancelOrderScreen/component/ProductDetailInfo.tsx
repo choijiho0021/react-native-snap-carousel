@@ -1,4 +1,4 @@
-import React, {memo, useEffect} from 'react';
+import React, {memo} from 'react';
 import {StyleSheet, ViewStyle, View, StyleProp} from 'react-native';
 import {colors} from '@/constants/Colors';
 import SplitText from '@/components/SplitText';
@@ -8,31 +8,42 @@ import {appStyles} from '@/constants/Styles';
 import {utils} from '@/utils/utils';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
 import {ProdInfo} from '@/redux/api/productApi';
+import i18n from '@/utils/i18n';
+import AppPrice from '@/components/AppPrice';
 
 const styles = StyleSheet.create({
   productFrame: {
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+  },
+  priceText: {
+    ...appStyles.bold16Text,
+    color: colors.black,
+    lineHeight: 24,
   },
 });
 
-type ProductDetailInfoPros = {item: ProdInfo; style?: StyleProp<ViewStyle>};
+type ProductDetailInfoPros = {
+  item: ProdInfo;
+  style?: StyleProp<ViewStyle>;
+  showPriceInfo?: boolean;
+};
 
 const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
   item,
   style = {marginBottom: 10},
+  showPriceInfo = false,
 }) => {
   return (
-    <View style={style}>
+    <View style={[{gap: 8}, style]}>
       <View style={styles.productFrame}>
         <SplitText
           numberOfLines={2}
           renderExpend={() => renderPromoFlag(item.promoFlag || [], false)}
           style={{...appStyles.bold16Text, marginRight: 6}}
           ellipsizeMode="tail">
-          {utils.removeBracketOfName(item.title)}
+          {utils.removeBracketOfName(item?.title)}
         </SplitText>
       </View>
       <View>
@@ -48,9 +59,33 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
               lineHeight: isDeviceSize('medium') ? 20 : 22,
             },
           ]}>
-          {item.field_description}
+          {item?.field_description}
         </AppText>
       </View>
+
+      {showPriceInfo && (
+        <View style={{flexDirection: 'row'}}>
+          <AppPrice
+            price={utils.toCurrency(
+              item.price?.value || 0,
+              item.price?.currency,
+            )}
+            balanceStyle={styles.priceText}
+            currencyStyle={styles.priceText}
+          />
+          <AppText
+            key="qty"
+            style={[
+              appStyles.normal16Text,
+              {
+                color: colors.black,
+                lineHeight: 24,
+              },
+            ]}>
+            {` / ${item.qty}${i18n.t('qty')}`}
+          </AppText>
+        </View>
+      )}
     </View>
   );
 };

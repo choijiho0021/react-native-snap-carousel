@@ -180,6 +180,7 @@ const styles = StyleSheet.create({
   },
   btnTitle2: {
     ...appStyles.medium18,
+    color: colors.white,
     paddingBottom: 2,
     lineHeight: 22,
   },
@@ -626,7 +627,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
             containerStyle={styles.notiBox}
             backgroundColor={colors.backRed}
             textColor={colors.redError}
-            text="<b>개통 실패! 고객센터로 문의해 주세요.</b>"
+            text={i18n.t('esim:draft:failNoti')}
           />
         </View>
       )

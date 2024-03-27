@@ -45,15 +45,21 @@ export type PaymentParams = {
   buyer_email: string;
   escrow: boolean;
   app_scheme: string;
-  profile_uuid?: string;
-  dlvCost?: number;
   digital: boolean; // 컨텐츠 - 데이터상품일 경우 true
   memo?: string;
+  receipt?: {
+    type: 'p' | 'b' | 'n'; // 용도 p-개인, b-사업용 n-발급안함
+    idType: 'm' | 'c' | 'b'; // id 종류  m-휴대폰, c-영수증카드, b-사업자등록번호
+    id: string; // id 번호
+  };
 
   isPaid?: boolean;
   mode?: string;
   card?: string;
+  installmentMonths?: string; // 할부 개월수
   paymentRule?: PaymentRule;
+  selected?: string;
+  pymMethod?: string;
 };
 
 type ChargeAgreementContents = {
@@ -127,7 +133,20 @@ export type HomeStackParamList = {
   PaymentGateway: PaymentParams;
   PymMethod: {isPaid?: boolean; pymPrice?: number; mode?: PymMethodScreenMode};
   FindAddress: undefined;
-  PaymentResult: {pymResult: boolean; mode?: 'recharge' | string};
+  PaymentResult: {
+    pymResult: boolean;
+    status: string;
+    pay_method: string;
+    card?: string;
+    mode?: string;
+    errorMsg?: string;
+    installmentMonths?: string;
+    paymentParams: {
+      key: string;
+      pg: string;
+      token: string;
+    };
+  };
   CodePush: undefined;
   CustomerProfile: undefined;
   AddProfile: undefined;
@@ -217,6 +236,17 @@ export type HomeStackParamList = {
   };
   EsimSubs: {};
   CashHistory: {};
+  ChangeEmail: undefined;
+  SelectCoupon: undefined;
+  Coupon: undefined;
+  Signup: {
+    pin: string;
+    mobile: string;
+    status?: string;
+    email?: string;
+    profileImageUrl?: string;
+  };
+  SimpleTextForAuth: Record<string, string>;
 };
 
 export const navigate = (

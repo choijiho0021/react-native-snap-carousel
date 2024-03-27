@@ -15,7 +15,6 @@ import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -23,7 +22,6 @@ import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {CancelKeywordType, RkbOrder, RkbPayment} from '@/redux/api/orderApi';
-import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import {
   actions as orderActions,
@@ -41,19 +39,17 @@ import {
 import i18n from '@/utils/i18n';
 import AppStyledText from '@/components/AppStyledText';
 import LabelText from '@/components/LabelText';
-import {countRokebiCash, isRokebiCash} from '../PurchaseDetailScreen';
+import {isRokebiCash} from '../PurchaseDetailScreen';
 import AppTextInput from '@/components/AppTextInput';
-import Env from '@/environment';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {Currency, ProdInfo} from '@/redux/api/productApi';
+import {ProdInfo} from '@/redux/api/productApi';
 import AppSnackBar from '@/components/AppSnackBar';
-import ProductDetailList from './component/ProductDetailList';
+import ProductDetailRender from './component/ProductDetailRender';
 import GuideBox from './component/GuideBox';
 import FloatCheckButton from './component/FloatCheckButton';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
-
-const {esimCurrency} = Env.get();
+import ScreenHeader from '@/components/ScreenHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -255,7 +251,6 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   const [selectedOrder, setSelectedOrder] = useState<RkbOrder>();
   const [prods, setProds] = useState<ProdInfo[]>([]);
   const [step, setStep] = useState(0);
-  const [balanceCharge, setBalanceCharge] = useState<Currency>();
   const loading = useRef(false);
   const [inputText, setInputText] = useState('');
   const [keyword, setKeyword] = useState<CancelKeywordType>();
@@ -271,44 +266,19 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
     setStep((prev) => (prev - 1 <= 0 ? 0 : prev - 1));
   }, []);
 
+  const backHandler = useCallback(() => {
+    if (step === 0) navigation.goBack();
+    else {
+      onBackStep();
+    }
+    return true;
+  }, [navigation, onBackStep, step]);
+
   // 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
   BackbuttonHandler({
     navigation,
-    onBack: () => {
-      if (step === 0) navigation.goBack();
-      else {
-        onBackStep();
-      }
-      return true;
-    },
+    onBack: backHandler,
   });
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          title={i18n.t('his:cancelDraft')}
-          onPress={() => {
-            if (step === 0) navigation.goBack();
-            else {
-              onBackStep();
-            }
-          }}
-        />
-      ),
-      headerRight: () =>
-        step !== 0 && (
-          <AppSvgIcon
-            name="closeModal"
-            style={styles.btnCnter}
-            onPress={() => {
-              navigation.goBack();
-            }}
-          />
-        ),
-    });
-  }, [navigation, onBackStep, step]);
 
   useEffect(() => {
     if (route?.params?.orderId) {
@@ -344,20 +314,18 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   useEffect(() => {
     if (!selectedOrder?.orderItems) return;
 
-    setBalanceCharge(countRokebiCash(selectedOrder));
     getProdDate();
 
     const prodList: ProdInfo[] = selectedOrder.orderItems.map((r) => {
       const prod = product.prodList.get(r.uuid);
-
-      if (prod)
-        return {
-          title: prod.name,
-          field_description: prod.field_description,
-          promoFlag: prod.promoFlag,
-          qty: r.qty,
-        };
-      return null;
+      return prod
+        ? {
+            title: prod.name,
+            field_description: prod.field_description,
+            promoFlag: prod.promoFlag,
+            qty: r.qty,
+          }
+        : undefined;
     });
 
     const isNeedUpdate = prodList.some((item) => item === null);
@@ -374,8 +342,8 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
             paddingHorizontal: 20,
             paddingBottom: 20,
           }}>
-          <ProductDetailList
-            prods={prods}
+          <ProductDetailRender
+            orderItems={selectedOrder?.orderItems}
             listTitle={i18n
               .t('his:cancelHeaderTitle2')
               .replace('%', getCountItems(selectedOrder?.orderItems, false))}
@@ -396,7 +364,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         </View>
       </ScrollView>
     );
-  }, [selectedOrder?.orderItems, prods]);
+  }, [selectedOrder?.orderItems]);
 
   const renderStep2 = useCallback(() => {
     return (
@@ -434,7 +402,10 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                     ]}
                     titleStyle={[
                       styles.reasonButtonText,
-                      btn === keyword && {color: colors.white},
+                      btn === keyword && {
+                        color: colors.white,
+                        fontWeight: '700',
+                      },
                     ]}
                     onPress={() => {
                       setKeyword(btn);
@@ -519,12 +490,18 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
               key="productAmount"
               style={styles.orderItemFrame}
               label={i18n.t('his:orderTotalAmount')}
-              labelStyle={[appStyles.bold14Text, {color: colors.black}]}
+              labelStyle={[appStyles.bold16Text, {color: colors.black}]}
               format="price"
               valueStyle={appStyles.roboto16Text}
-              value={selectedOrder?.totalPrice}
-              currencyStyle={[appStyles.bold14Text, {color: colors.black}]}
-              balanceStyle={[appStyles.robotoBold16Text, {color: colors.black}]}
+              value={{
+                ...selectedOrder?.totalPrice,
+                value:
+                  (selectedOrder?.deductBalance?.value || 0) +
+                  (selectedOrder?.totalPrice?.value || 0),
+              }}
+              currencyStyle={[appStyles.bold22Text, {color: colors.black}]}
+              balanceStyle={[appStyles.robotoBold22Text, {color: colors.black}]}
+              color={colors.redError}
             />
 
             {method && (
@@ -538,10 +515,9 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                 value={method?.amount}
                 balanceStyle={styles.itemCashCurrencyText}
                 currencyStyle={styles.itemCashCurrencyText}
-                color={colors.warmGrey}
               />
             )}
-            {balanceCharge !== utils.toCurrency(0, esimCurrency) && (
+            {selectedOrder?.deductBalance?.value != 0 && (
               <LabelText
                 key="deductBalance"
                 style={[styles.item, {marginTop: method ? 0 : 10}]}
@@ -549,31 +525,22 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
                 format="price"
                 labelStyle={styles.label2}
                 valueStyle={styles.itemCashText}
-                value={balanceCharge?.value}
+                value={selectedOrder?.deductBalance?.value}
                 balanceStyle={styles.itemCashCurrencyText}
                 currencyStyle={styles.itemCashCurrencyText}
-                color={colors.warmGrey}
               />
             )}
-
-            <LabelText
-              key="totalRefund"
-              style={styles.item}
-              label={i18n.t('his:cancelTotalAmount')}
-              labelStyle={appStyles.bold16Text}
-              format="price"
-              valueStyle={appStyles.roboto16Text}
-              value={selectedOrder?.totalPrice}
-              currencyStyle={styles.totalCashCurrencyText}
-              balanceStyle={styles.totalCashCurrencyText}
-              color={colors.blue}
-            />
           </View>
         </View>
         <View>{renderGuide()}</View>
       </ScrollView>
     );
-  }, [balanceCharge, method, renderGuide, selectedOrder?.totalPrice]);
+  }, [
+    method,
+    renderGuide,
+    selectedOrder?.deductBalance?.value,
+    selectedOrder?.totalPrice,
+  ]);
 
   const cancelOrder = useCallback(() => {
     setIsClickButton(true);
@@ -605,10 +572,27 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScreenHeader
+        title={i18n.t('his:cancelDraft')}
+        backHandler={backHandler}
+        renderRight={
+          step !== 0 ? (
+            <AppSvgIcon
+              name="closeModal"
+              style={styles.btnCnter}
+              onPress={() => navigation.goBack()}
+            />
+          ) : null
+        }
+      />
       <View style={{flex: 1}}>
-        {step === 0 && renderStep1()}
-        {step === 1 && renderStep2()}
-        {step === 2 && renderStep3()}
+        {step === 0
+          ? renderStep1()
+          : step === 1
+          ? renderStep2()
+          : step === 2
+          ? renderStep3()
+          : null}
 
         <AppSnackBar
           visible={showSnackBar !== ''}

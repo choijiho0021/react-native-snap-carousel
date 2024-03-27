@@ -3,7 +3,14 @@ import messaging from '@react-native-firebase/messaging';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {FlatList, Pressable, StyleSheet, View, Platform} from 'react-native';
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  View,
+  Platform,
+  SafeAreaView,
+} from 'react-native';
 import Config from 'react-native-config';
 import {openSettings} from 'react-native-permissions';
 import VersionCheck from 'react-native-version-check';
@@ -11,6 +18,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import ShortcutBadge from 'react-native-app-badge';
 import DeviceInfo from 'react-native-device-info';
+import NetInfo from '@react-native-community/netinfo';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
@@ -32,6 +40,8 @@ import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
+import {retrieveData} from '@/utils/utils';
+import {API} from '@/redux/api';
 
 const {isProduction} = Env.get();
 const PUSH_ENABLED = 0;
@@ -120,6 +130,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
   const {navigation, isPushNotiEnabled, loggedIn, pending, action} = props;
   const [showModal, setShowModal] = useState(false);
   const [showSnackBar, setShowSnackBar] = useState(false);
+  const [showNetStat, setShowNetStat] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [resetDisabled, setResetDisable] = useState(false);
+
   const data = useMemo(
     () => [
       {
@@ -150,6 +164,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
         }`,
       },
       {
+        key: 'setting:reSetting',
+        value: i18n.t('set:reSetting'),
+      },
+      {
         key: 'setting:aboutus',
         value: i18n.t('set:aboutus'),
         route: 'SimpleText',
@@ -163,11 +181,20 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
   );
 
   useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('settings')} />,
-    });
-  }, [navigation]);
+    if (showNetStat) {
+      setTimeout(() => {
+        setShowNetStat(false);
+      }, 30000);
+    }
+  }, [showNetStat]);
+
+  useEffect(() => {
+    if (resetDisabled) {
+      setTimeout(() => {
+        setResetDisable(false);
+      }, 30000);
+    }
+  }, [resetDisabled]);
 
   useEffect(() => {
     async function perm() {
@@ -203,6 +230,22 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
           else navigation.navigate('Auth');
           break;
 
+        case 'setting:reSetting':
+          if (!resetDisabled) {
+            setResetDisable(true);
+            NetInfo.fetch().then((state) => {
+              setShowNetStat(true);
+              setIsConnected(state?.isConnected || false);
+            });
+
+            await action.account.logInAndGetAccount({
+              mobile: await retrieveData(API.User.KEY_MOBILE, true),
+              pin: await retrieveData(API.User.KEY_PIN, true),
+            });
+          }
+
+          break;
+
         case 'setting:pushnoti':
           pushPermission = await messaging().requestPermission();
           if (pushPermission === PUSH_ENABLED && !isPushNotiEnabled) {
@@ -229,7 +272,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
           }
       }
     },
-    [action.account, isPushNotiEnabled, loggedIn, navigation],
+    [action.account, isPushNotiEnabled, loggedIn, navigation, resetDisabled],
   );
 
   const logout = useCallback(() => {
@@ -271,7 +314,27 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <View style={appStyles.header}>
+        <AppBackButton title={i18n.t('settings')} />
+      </View>
+      {showNetStat && (
+        <View
+          style={{
+            alignItems: 'center',
+            backgroundColor: isConnected ? colors.clearBlue : colors.redError,
+          }}>
+          <AppText
+            style={[
+              appStyles.bold16Text,
+              {color: colors.white, marginVertical: 5},
+            ]}>
+            {isConnected
+              ? i18n.t('set:netstat:connected')
+              : i18n.t('set:netstat:disconnected')}
+          </AppText>
+        </View>
+      )}
       <FlatList
         data={data}
         renderItem={renderItem}
@@ -291,7 +354,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
         textMessage={i18n.t('settings:deniedPush')}
       />
       <AppActivityIndicator visible={pending} />
-    </View>
+    </SafeAreaView>
   );
 };
 

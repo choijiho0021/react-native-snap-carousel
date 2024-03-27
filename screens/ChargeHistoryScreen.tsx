@@ -80,10 +80,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   badge: {
-    paddingHorizontal: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 8,
+    marginLeft: 4,
     height: 20,
     alignSelf: 'center',
     borderRadius: 3,
@@ -221,8 +220,8 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => {
               style={[
                 styles.badge,
                 {
+                  paddingHorizontal: elm === 'fiveG' ? 2 : 8,
                   backgroundColor: badgeColor.backgroundColor,
-                  marginRight: 8,
                 },
               ]}>
               <View style={{flexDirection: 'row'}}>

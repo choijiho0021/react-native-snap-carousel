@@ -1,5 +1,14 @@
 import React, {ReactNode} from 'react';
-import {Modal, Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
+import {
+  Modal,
+  Pressable,
+  SafeAreaView,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewProps,
+  ViewStyle,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -49,6 +58,8 @@ type AppBottomModalProps = {
   body: ReactNode;
   height: number;
   isCloseTouch: boolean;
+  containerStyle?: StyleProp<ViewStyle>;
+  headerStyle?: StyleProp<ViewStyle>;
 };
 
 const AppBottomModal: React.FC<AppBottomModalProps> = ({
@@ -59,6 +70,8 @@ const AppBottomModal: React.FC<AppBottomModalProps> = ({
   body,
   height,
   isCloseTouch = true,
+  containerStyle,
+  headerStyle,
 }) => {
   return (
     <Modal
@@ -67,12 +80,18 @@ const AppBottomModal: React.FC<AppBottomModalProps> = ({
       animationType="fade"
       onRequestClose={() => onClose()}>
       <Pressable
-        style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.3)'}}
+        style={[
+          {
+            flex: 1,
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          },
+          containerStyle,
+        ]}
         onPress={isCloseTouch ? onClose : () => {}}>
         <SafeAreaView key="modal" style={[styles.storeBox, {height}]}>
           <Pressable>
             {title && (
-              <View style={styles.head}>
+              <View style={[styles.head, headerStyle]}>
                 <AppText style={appStyles.bold18Text}>{title}</AppText>
                 {isCloseBtn && (
                   <View style={styles.modalClose}>

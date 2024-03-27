@@ -2,7 +2,13 @@ import {useFocusEffect, RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Map as ImmutableMap} from 'immutable';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {FlatList, SafeAreaView, StyleSheet, View} from 'react-native';
+import {
+  FlatList,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
@@ -38,6 +44,7 @@ import {
 import i18n from '@/utils/i18n';
 import ChatTalk from '@/components/ChatTalk';
 import ScreenHeader from '@/components/ScreenHeader';
+import AppStyledText from '@/components/AppStyledText';
 
 const {esimCurrency, isIOS} = Env.get();
 
@@ -59,7 +66,9 @@ const styles = StyleSheet.create({
   },
   btnBuy: {
     flex: 1,
-    backgroundColor: colors.clearBlue,
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   btnBuyText: {
     ...appStyles.normal16Text,
@@ -114,12 +123,16 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
 
   const tabBarHeight = useBottomTabBarHeight();
 
+  const disablePurchase = useMemo(
+    () => total.price.value === 0,
+    [total.price.value],
+  );
   const onChecked = useCallback((key: string) => {
     setChecked((prev) => prev.update(key, (v) => !v));
   }, []);
 
   const onPurchase = useCallback(() => {
-    const {loggedIn, balance} = account;
+    const {loggedIn} = account;
 
     if (!loggedIn) {
       navigation.navigate('Auth');
@@ -133,15 +146,12 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
               sku: item.prod.sku,
               variationId: item.prod.variationId,
               qty: qty.get(item.key),
+              type: item.type === 'esim_product' ? 'product' : item.type,
             } as PurchaseItem),
         );
 
       action.cart
-        .checkStockAndPurchase({
-          purchaseItems,
-          balance,
-          dlvCost: false,
-        })
+        .checkStockAndPurchase({purchaseItems, isCart: true})
         .then(({payload: resp}) => {
           if (resp.result === 0) {
             navigation.navigate('PymMethod', {mode: 'cart'});
@@ -161,10 +171,9 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         setQty((prev) => prev.set(key, cnt));
         setChecked((prev) => prev.set(key, true));
 
-        const {orderId} = cart;
-        if (orderItemId && orderId) {
+        if (orderItemId && cart.cartId) {
           action.cart.cartUpdateQty({
-            orderId,
+            orderId: cart.cartId,
             orderItemId,
             qty: cnt,
             abortController: new AbortController(),
@@ -172,7 +181,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         }
       }
     },
-    [action.cart, cart],
+    [action.cart, cart.cartId],
   );
 
   const empty = useCallback(
@@ -202,15 +211,14 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
       setChecked((prev) => prev.remove(key));
       setQty((prev) => prev.remove(key));
 
-      const {orderId} = cart;
-      if (orderItemId && orderId) {
+      if (orderItemId && cart.cartId) {
         action.cart.cartRemove({
-          orderId,
+          orderId: cart.cartId,
           orderItemId,
         });
       }
     },
-    [action.cart, cart],
+    [action.cart, cart.cartId],
   );
 
   const renderItem = useCallback(
@@ -237,21 +245,19 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
   );
 
   useEffect(() => {
-    const {orderItems} = cart;
-
-    setList(orderItems);
+    setList(cart.cartItems);
     setQty((prev) =>
-      orderItems.reduce((acc, cur) => acc.set(cur.key, cur.qty), prev),
+      cart.cartItems.reduce((acc, cur) => acc.set(cur.key, cur.qty), prev),
     );
     setChecked((prev) =>
-      orderItems.reduce(
+      cart.cartItems.reduce(
         (acc, cur) => acc.update(cur.key, (v) => (v === undefined ? true : v)),
         prev,
       ),
     );
 
     if (!loading.current) {
-      orderItems.forEach((i) => {
+      cart.cartItems.forEach((i) => {
         if (!product.prodList.has(i.key)) {
           // action.product.getProdBySku(i.prod.sku);
           console.log('@@@ i.prod.uuid', i.prod.uuid);
@@ -260,7 +266,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         }
       });
     }
-  }, [action.product, cart, product.prodList]);
+  }, [action.product, cart.cartItems, product.prodList]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -296,16 +302,12 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     setTotal(tot);
   }, [checked, list, qty]);
 
-  const balance = useMemo(() => account.balance || 0, [account.balance]);
   const pymPrice = useMemo(() => {
     const amount = total
       ? utils.toCurrency(total.price.value, total.price.currency)
       : ({value: 0, currency: 'KRW'} as Currency);
-    return utils.toCurrency(
-      amount.value > balance ? amount.value - balance : 0,
-      amount.currency,
-    );
-  }, [balance, total]);
+    return utils.toCurrency(amount.value, amount.currency);
+  }, [total]);
 
   return _.isEmpty(list) ? (
     empty()
@@ -317,11 +319,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         renderItem={renderItem}
         extraData={[qty, checked]}
         ListFooterComponent={
-          <ChargeSummary
-            totalCnt={total.cnt}
-            totalPrice={total.price}
-            balance={balance}
-          />
+          <ChargeSummary totalCnt={total.cnt} totalPrice={total.price} />
         }
       />
       <AppSnackBar
@@ -332,26 +330,35 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
       <View style={styles.buttonBox}>
         <View style={styles.sumBox}>
           <AppText style={[styles.btnBuyText, {color: colors.black}]}>
-            {`${i18n.t('cart:pymAmount')}: `}
+            {i18n.t('esim:charge:amount')}
           </AppText>
-          <AppText style={[styles.btnBuyText, {color: colors.black}]}>
-            {utils.price(pymPrice)}
+          <AppText style={[appStyles.bold16Text, {color: colors.black}]}>
+            {utils.currencyString(pymPrice.value)}
           </AppText>
+          <AppText>{i18n.t(pymPrice.currency)}</AppText>
         </View>
-        <AppButton
-          style={styles.btnBuy}
-          title={`${i18n.t('cart:purchase')} (${total.cnt})`}
-          titleStyle={{
-            ...appStyles.normal18Text,
-            color: colors.white,
-            textAlign: 'center',
-            margin: 5,
-          }}
-          type="primary"
-          checkedColor={colors.white}
-          disabled={total.price.value === 0}
+        <Pressable
+          style={[
+            styles.btnBuy,
+            {
+              backgroundColor: disablePurchase
+                ? colors.warmGrey
+                : colors.clearBlue,
+            },
+          ]}
           onPress={onPurchase}
-        />
+          disabled={disablePurchase}>
+          <AppStyledText
+            text={i18n.t('cart:purchase', {cnt: total.cnt})}
+            textStyle={{
+              ...appStyles.normal18Text,
+              color: colors.white,
+              textAlign: 'center',
+              margin: 5,
+            }}
+            format={{b: {...appStyles.bold18Text, color: colors.white}}}
+          />
+        </Pressable>
       </View>
       <ChatTalk visible bottom={(isIOS ? 100 : 70) - tabBarHeight} />
     </SafeAreaView>

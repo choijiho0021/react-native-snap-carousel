@@ -474,7 +474,12 @@ const Esim: React.FC<EsimProps> = ({
         title={i18n.t('home:searchPlaceholder')}
         style={styles.showSearchBar}
         titleStyle={[appStyles.normal16Text, {color: colors.clearBlue}]}
-        direction="row"
+        viewStyle={{
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+        }}
         onPress={() => navigation.navigate('StoreSearch')}
         iconName="btnSearchBlue"
         iconStyle={{marginHorizontal: 24}}
@@ -571,51 +576,11 @@ const Esim: React.FC<EsimProps> = ({
     );
   }, [index, onIndexChange, routes]);
 
-  useEffect(() => {
-    navigation?.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppText style={styles.title}>
-          {i18n.t('esim')}
-          {esimGlobal ? ' Store' : ''}
-        </AppText>
-      ),
-      headerRight: () => (
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-          }}>
-          <AppSvgIcon
-            key="cnter"
-            style={styles.btnCnter}
-            onPress={() =>
-              navigate(navigation, route, 'HomeStack', {
-                tab: 'HomeStack',
-                screen: 'Contact',
-              })
-            }
-            name="btnCnter"
-          />
-          <AppButton
-            key="alarm"
-            style={styles.btnAlarm}
-            onPress={() => navigation?.navigate('Noti', {mode: 'noti'})}
-            iconName="btnAlarm"
-          />
-          {noti.notiList.find((elm) => elm.isRead === 'F') && (
-            <View style={styles.notiBadge} />
-          )}
-        </View>
-      ),
-    });
-  }, [navigation, noti.notiList, route]);
-
   const notification = useCallback(
     (type: string, payload, isForeground = true) => {
       const pushNotiHandler = createHandlePushNoti(navigation, payload, {
         mobile: account.mobile,
-        iccid: account.iccid,
+        iccid: `00001111${account.mobile}`,
         isForeground,
         isRegister: type === 'register',
         updateAccount: action.account.updateAccount,
@@ -637,7 +602,6 @@ const Esim: React.FC<EsimProps> = ({
       pushNotiHandler.handleNoti();
     },
     [
-      account.iccid,
       account.mobile,
       account?.token,
       action.account,

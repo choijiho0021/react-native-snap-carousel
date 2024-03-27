@@ -2,13 +2,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
@@ -32,7 +26,7 @@ import {
   ProductModelState,
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
-import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
+import ProductDetailRender from '../CancelOrderScreen/component/ProductDetailRender';
 import GuideBox from '../CancelOrderScreen/component/GuideBox';
 import FloatCheckButton from '../CancelOrderScreen/component/FloatCheckButton';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
@@ -99,19 +93,10 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   pending,
 }) => {
   const [draftOrder, setDraftOrder] = useState<RkbOrder>();
-  const [prods, setProds] = useState<ProdInfo[]>([]);
-  const loading = useRef(false);
   const [checked, setChecked] = useState<boolean>(false);
   const [isClickButton, setIsClickButton] = useState(false);
 
   const scrollRef = useRef<ScrollView>();
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('his:draftTitle')} />,
-    });
-  }, [navigation]);
 
   useEffect(() => {
     if (route?.params?.orderId)
@@ -146,41 +131,6 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
       });
   }, [action.order, draftOrder?.orderId, token, iccid, navigation]);
 
-  //
-  const getProdDate = useCallback(() => {
-    if (!loading.current && draftOrder?.orderItems?.length > 0) {
-      draftOrder?.orderItems?.forEach((i) => {
-        if (!product.prodList.has(i.uuid)) {
-          // 해당 Uuid로 없다면 서버에서 가져온다.
-          action?.product.getProdByUuid(i.uuid);
-          loading.current = true;
-        }
-      });
-    }
-  }, [action?.product, draftOrder?.orderItems, product.prodList]);
-
-  useEffect(() => {
-    if (!draftOrder?.orderItems) return;
-
-    const prodList: ProdInfo[] = draftOrder.orderItems.map((r) => {
-      const prod = product.prodList.get(r.uuid);
-      if (prod)
-        return {
-          title: prod.name,
-          field_description: prod.field_description,
-          promoFlag: prod.promoFlag,
-          qty: r.qty,
-        };
-
-      return null;
-    });
-
-    const isNeedUpdate = prodList.some((item) => item === null);
-
-    if (isNeedUpdate) getProdDate();
-    else setProds(prodList);
-  }, [draftOrder?.orderItems, getProdDate, product.prodList]);
-
   const renderCheckButton = useCallback(() => {
     return (
       <FloatCheckButton
@@ -198,11 +148,14 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={appStyles.header}>
+        <AppBackButton title={i18n.t('his:draftTitle')} />
+      </View>
       <ScrollView ref={scrollRef} style={{flex: 1}}>
         <View style={styles.proudctFrame}>
-          <ProductDetailList
+          <ProductDetailRender
             style={styles.product}
-            prods={prods}
+            orderItems={draftOrder?.orderItems}
             listTitle={i18n
               .t('his:draftItemText')
               .replace('%', getCountItems(draftOrder?.orderItems, false))}

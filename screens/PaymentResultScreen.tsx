@@ -3,13 +3,18 @@ import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import {
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppButton from '@/components/AppButton';
-import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
-import PaymentItemInfo from '@/components/PaymentItemInfo';
+import {PaymentItem} from '@/components/PaymentItemInfo';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
@@ -23,55 +28,39 @@ import {
   CartModelState,
 } from '@/redux/modules/cart';
 import {actions as notiActions, NotiAction} from '@/redux/modules/noti';
-import {actions as orderActions, OrderAction} from '@/redux/modules/order';
+import {
+  actions as orderActions,
+  OrderAction,
+  getCountItems,
+} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import ScreenHeader from '@/components/ScreenHeader';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import AppIcon from '@/components/AppIcon';
+import {getItemsOrderType} from '@/redux/models/purchaseItem';
+import api from '@/redux/api/api';
+import AppAlert from '@/components/AppAlert';
+import AppDashBar from '@/components/AppDashBar';
 
-const {esimCurrency, esimGlobal} = Env.get();
+const {esimGlobal} = Env.get();
 
 const styles = StyleSheet.create({
-  container: {
+  box: {
     flex: 1,
     backgroundColor: colors.white,
-    marginHorizontal: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 24,
     justifyContent: 'flex-start',
-  },
-  result: {
-    ...appStyles.itemRow,
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    height: 90,
-    padding: 20,
-    backgroundColor: colors.white,
-    borderBottomWidth: 0,
-  },
-  title: {
-    ...appStyles.title,
-    marginLeft: 20,
-  },
-  image: {
-    marginTop: 30,
-    justifyContent: 'center',
-  },
-  paymentResultView: {
-    backgroundColor: colors.white,
-    alignItems: 'center',
-    marginHorizontal: 10,
-    marginVertical: 10,
-  },
-  paymentResultText: {
-    ...appStyles.normal14Text,
-    color: colors.clearBlue,
-    marginVertical: 15,
-  },
-  btnOrderList: {
     borderWidth: 1,
-    borderColor: colors.lightGrey,
-    width: 180,
-    height: 44,
-    marginTop: 15,
-    marginBottom: 40,
+    borderRadius: 3,
+    borderColor: colors.whiteFive,
+    shadowColor: 'rgba(166, 168, 172, 0.16)',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowRadius: 10,
+    shadowOpacity: 1,
   },
   btnHomeText: {
     ...appStyles.normal18Text,
@@ -83,9 +72,66 @@ const styles = StyleSheet.create({
     height: 52,
     backgroundColor: colors.clearBlue,
   },
+  btnGoHomeText: {
+    ...appStyles.normal18Text,
+    textAlign: 'center',
+    color: colors.black,
+  },
+  btnGoHome: {
+    width: '50%',
+    height: 52,
+    backgroundColor: colors.white,
+    borderTopWidth: 1,
+    borderColor: colors.lightGrey,
+    colors: colors.black,
+  },
   scrollView: {
     flex: 1,
-    backgroundColor: colors.whiteTwo,
+    backgroundColor: colors.white,
+    marginHorizontal: 20,
+  },
+  status: {
+    ...appStyles.bold24Text,
+    marginTop: 80,
+    marginBottom: 16,
+  },
+  divider: {
+    height: 1,
+    marginTop: 23,
+    backgroundColor: colors.black,
+  },
+  stamp: {
+    marginRight: 8,
+    alignItems: 'flex-end',
+    height: 62,
+  },
+  detailButton: {
+    marginTop: 40,
+    borderColor: colors.lightGrey,
+    borderWidth: 1,
+    borderRadius: 3,
+    paddingVertical: 8,
+  },
+
+  dashContainer: {
+    overflow: 'hidden',
+  },
+  dashFrame: {
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    margin: -1,
+    height: 0,
+    marginVertical: 23,
+  },
+  dash: {
+    width: '100%',
+  },
+
+  headerNoti: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderColor: colors.lightGrey,
   },
 });
 
@@ -115,13 +161,14 @@ type PaymentResultScreenProps = {
 
 const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   navigation,
-  route: {params, name: screen},
+  route: {params},
   account,
   cart,
   action,
 }) => {
   const [oldCart, setOldCart] = useState<Partial<CartModelState>>();
   const isSuccess = useMemo(() => params?.pymResult || false, [params]);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const {iccid, token, mobile} = account;
@@ -179,15 +226,49 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     }, [action.cart]),
   );
 
-  useEffect(() => {
-    const {pymReq, purchaseItems, pymPrice, deduct, orderId} = cart;
-    const {token} = account;
-    if (purchaseItems.length > 0) {
-      setOldCart({pymReq, purchaseItems, pymPrice, deduct});
-      // 카트를 비운다.
-      action.cart.makeEmpty({orderId, token});
+  const retry = useCallback(() => {
+    console.log('@@@@ retry : ', retry);
+
+    console.log(
+      '@@@@ oldCart 정보 확인, 체크된 데이터만 들어오는지? : ',
+      oldCart?.purchaseItems,
+    );
+
+    // 이렇게 했을 때, 뒤로가기 같은거 하면 안꼬이는 지 확인이 필요할듯?
+    const purchaseItems = oldCart?.purchaseItems || [];
+
+    if (purchaseItems.length > 0)
+      action.cart
+        .checkStockAndPurchase({purchaseItems, isCart: true})
+        .then(({payload: resp}) => {
+          if (resp.result === 0) {
+            navigation.navigate('PymMethod', {mode: 'cart'});
+          } else if (resp.result === api.E_RESOURCE_NOT_FOUND)
+            AppAlert.info(`${resp.title} ${i18n.t('cart:soldOut')}`);
+          else AppAlert.info(i18n.t('cart:systemError'));
+        })
+        .catch((err) => {
+          console.log('failed to check stock', err);
+        });
+    else {
+      navigation.navigate('HomeStack', {screen: 'Home'});
     }
-  }, [account, action.cart, cart]);
+  }, [action.cart, navigation, oldCart?.purchaseItems]);
+
+  useEffect(() => {
+    const {pymReq, purchaseItems, pymPrice, orderId} = cart;
+    const {token} = account;
+
+    // cart를 비우는게 맞나??
+
+    if (purchaseItems.length > 0) {
+      setOldCart({pymReq, purchaseItems, pymPrice, orderId});
+
+      // 성공했을 때만
+      // 카트를 비운다.
+      if (isSuccess) action.cart.makeEmpty({orderId, token});
+    }
+  }, [account, action.cart, cart, isSuccess]);
 
   useEffect(() => {
     Analytics.trackEvent('Payment', {
@@ -198,78 +279,201 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     }
   }, [cart?.pymPrice, isSuccess, params?.mode]);
 
+  const DashedBar = () => {
+    const renderDashedDiv = useCallback(() => {
+      return (
+        <View style={styles.dashContainer}>
+          <View style={styles.dashFrame}>
+            <View style={styles.dash} />
+          </View>
+        </View>
+      );
+    }, []);
+
+    return (
+      <View>
+        {Platform.OS === 'ios' && renderDashedDiv()}
+        <View
+          style={[
+            styles.headerNoti,
+            Platform.OS === 'android' && {
+              borderStyle: 'dashed',
+              borderTopWidth: 1,
+              marginTop: 24,
+              marginBottom: 24,
+            },
+          ]}
+        />
+      </View>
+    );
+  };
+
   // [WARNING: 이해를 돕기 위한 것일 뿐, imp_success 또는 success 파라미터로 결제 성공 여부를 장담할 수 없습니다.]
   // 아임포트 서버로 결제내역 조회(GET /payments/${imp_uid})를 통해 그 응답(status)에 따라 결제 성공 여부를 판단하세요.
 
+  const getTitle = useCallback(() => {
+    let result = <></>;
+    const etcCount = getCountItems(oldCart?.purchaseItems, true);
+    console.log('@@@etc count : ', etcCount);
+
+    if (parseInt(etcCount, 10) > 0)
+      result = (
+        <AppText style={appStyles.normal18Text}>
+          {i18n.t('his:etcCnt').replace('%%', etcCount)}
+        </AppText>
+      );
+
+    return result;
+  }, [oldCart?.purchaseItems]);
+
   return (
-    <SafeAreaView style={{flex: 1, alignItems: 'stretch'}}>
-      <ScreenHeader
-        title={i18n.t(isSuccess ? 'his:paymentCompleted' : 'his:paymentFailed')}
-        backHandler={() => {}}
-        showIcon={false}
-      />
+    <SafeAreaView
+      style={{flex: 1, alignItems: 'stretch', backgroundColor: colors.white}}>
       <ScrollView style={styles.scrollView}>
-        <View style={styles.paymentResultView}>
-          <AppIcon
-            style={styles.image}
-            name={isSuccess ? 'imgCheck' : 'imgFail'}
-          />
-          <AppText
-            style={[
-              styles.paymentResultText,
-              !isSuccess && {color: colors.tomato},
-            ]}>
-            {` ${i18n.t(isSuccess ? 'pym:success' : 'pym:fail')}`}
+        <AppText style={styles.status}>
+          {i18n.t(isSuccess ? 'his:pym:success' : 'his:pym:fail')}
+        </AppText>
+        <AppText style={appStyles.normal16Text}>
+          {i18n.t(isSuccess ? 'his:pym:withus' : 'his:pym:tryagain')}
+        </AppText>
+
+        {isSuccess ? (
+          <AppSvgIcon name="stampSuccess" style={styles.stamp} />
+        ) : (
+          <AppSvgIcon name="stampFail" style={styles.stamp} />
+        )}
+        <View style={styles.box}>
+          <AppText style={appStyles.bold18Text}>
+            {oldCart?.purchaseItems?.[0].title}
+            {getTitle()}
           </AppText>
-          <AppButton
-            style={styles.btnOrderList}
-            type="secondary"
-            // MyPage화면 이동 필요
-            onPress={() => {
-              navigation.popToTop();
-              navigation.navigate('MyPageStack', {screen: 'MyPage'});
-            }}
-            // title={i18n.t('cancel')}
-            title={i18n.t('pym:toOrderList')}
-            titleStyle={appStyles.normal16Text}
-          />
-        </View>
-        <View style={styles.container}>
-          <PaymentItemInfo
-            purchaseItems={oldCart?.purchaseItems || []}
-            pymReq={oldCart?.pymReq}
-            mode="result"
-            pymPrice={
-              isSuccess ? oldCart?.pymPrice : utils.toCurrency(0, esimCurrency)
+          <View style={styles.divider} />
+          <PaymentItem
+            title={i18n.t('his:pymAmount')}
+            value={utils.price(oldCart?.pymPrice)}
+            valueStyle={
+              isSuccess
+                ? {
+                    ...appStyles.bold16Text,
+                    color: colors.clearBlue,
+                  }
+                : {...appStyles.roboto16Text}
             }
-            deduct={
-              isSuccess ? oldCart?.deduct : utils.toCurrency(0, esimCurrency)
-            }
-            screen={screen}
           />
-          {screen === 'PaymentResult' && (
-            <View style={styles.result}>
-              <AppText style={[appStyles.normal16Text, {flex: 1}]}>
-                {i18n.t('cart:afterDeductBalance')}
-              </AppText>
-              <AppText style={appStyles.normal16Text}>
-                {utils.price(
-                  utils.toCurrency(account.balance || 0, esimCurrency),
-                )}
-              </AppText>
-            </View>
+          <PaymentItem
+            title={i18n.t('pym:method')}
+            value={
+              params.pay_method === 'card'
+                ? `${i18n.t(`pym:card${params.card}`)}/${
+                    params?.installmentMonths === '0'
+                      ? i18n.t('pym:pay:atonce')
+                      : `${params?.installmentMonths}${i18n.t('pym:duration')}`
+                  }`
+                : i18n.t(`pym:${params.pay_method}`)
+            }
+            valueStyle={appStyles.roboto16Text}
+          />
+          {!isSuccess && params?.errorMsg && (
+            <>
+              <AppDashBar />
+
+              <View style={{gap: 6}}>
+                <View style={{gap: 6, flexDirection: 'row'}}>
+                  <AppSvgIcon name="bannerWarning20" />
+                  <AppText
+                    style={{
+                      ...appStyles.bold16Text,
+                      color: colors.redBold,
+                    }}>
+                    {i18n.t('pym:failReason')}
+                  </AppText>
+                </View>
+                <View>
+                  <AppText
+                    style={{...appStyles.medium14, color: colors.redBold}}>
+                    {utils.getParam(params?.errorMsg)?.error || ''}
+                  </AppText>
+                </View>
+              </View>
+            </>
           )}
+
+          {isSuccess && (
+            <AppButton
+              style={styles.detailButton}
+              titleStyle={{
+                ...appStyles.roboto16Text,
+                lineHeight: 24,
+              }}
+              title={i18n.t(`pym:detail`)}
+              onPress={() => {
+                navigation.popToTop();
+
+                navigation.navigate('PurchaseDetail', {
+                  orderId: oldCart?.orderId?.toString(),
+                });
+              }}
+            />
+          )}
+          {isSuccess &&
+            oldCart?.purchaseItems &&
+            getItemsOrderType(oldCart.purchaseItems) === 'refundable' && (
+              <>
+                <DashedBar />
+
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    gap: 6,
+                  }}>
+                  <AppIcon name="bannerMark2" />
+                  <AppText
+                    style={{
+                      ...appStyles.bold14Text,
+                      color: colors.warmGrey,
+                      lineHeight: 20,
+                    }}>
+                    {i18n.t('his:pym:alert')}
+                  </AppText>
+                </View>
+              </>
+            )}
         </View>
       </ScrollView>
-      <AppButton
-        style={styles.btnHome}
-        title={i18n.t('pym:toCheck')}
-        titleStyle={styles.btnHomeText}
-        type="primary"
-        onPress={() => {
-          onNavigateScreen();
-        }}
-      />
+
+      {isSuccess ? (
+        <AppButton
+          style={styles.btnHome}
+          title={i18n.t('pym:toCheck')}
+          titleStyle={styles.btnHomeText}
+          type="secondary"
+          onPress={() => {
+            onNavigateScreen();
+          }}
+        />
+      ) : (
+        <View style={{flexDirection: 'row'}}>
+          <AppButton
+            style={styles.btnGoHome}
+            title={i18n.t('pym:toHome')}
+            titleStyle={styles.btnGoHomeText}
+            type="primary"
+            onPress={() => {
+              navigation.popToTop();
+              navigation.navigate('HomeStack', {screen: 'Home'});
+            }}
+          />
+          <AppButton
+            style={[styles.btnHome, {width: '50%'}]}
+            title={i18n.t('pym:retry')}
+            titleStyle={styles.btnHomeText}
+            type="primary"
+            onPress={() => {
+              navigation.goBack();
+            }}
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 };

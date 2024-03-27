@@ -123,7 +123,7 @@ const showQR = (subs: RkbSubscription) => (
         <AppStyledText
           textStyle={styles.qrText}
           text={i18n.t('esim:showQR:body_new')}
-          format={{b: {fontWeight: 'bold'}}}
+          format={{b: {fontWeight: 'bold', color: colors.black}}}
         />
         <View style={styles.center}>
           <QRCode value={subs.qrCode} />
@@ -149,13 +149,6 @@ const QrInfoScreen = () => {
   const [showSnackBar, setShowSnackBar] = useState(false);
 
   const navigation = useNavigation();
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => <AppBackButton title={i18n.t('esim:qrInfo')} />,
-    });
-  }, [navigation]);
 
   const copyToClipboard = useCallback((value?: string) => {
     if (value) Clipboard.setString(value);
@@ -184,6 +177,9 @@ const QrInfoScreen = () => {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
+      <View style={appStyles.header}>
+        <AppBackButton title={i18n.t('esim:qrInfo')} />
+      </View>
       <ScrollView style={styles.container}>
         <View style={styles.guideBanner}>{renderInfo(navigation)}</View>
         <View style={styles.box}>

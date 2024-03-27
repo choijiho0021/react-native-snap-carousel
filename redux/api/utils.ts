@@ -1,16 +1,17 @@
-import moment from 'moment-with-locales-es6';
 import {Image, Platform} from 'react-native';
 import {getFontScale} from 'react-native-device-info';
 import RNFetchBlob from 'rn-fetch-blob';
 import _ from 'underscore';
 import {Image as CropImage} from 'react-native-image-crop-picker';
-import {Moment} from 'moment';
+import moment, {Moment} from 'moment';
 import i18n from '@/utils/i18n';
 import Env from '@/environment';
 import {RkbImage} from './accountApi';
 import {Currency, CurrencyCode} from './productApi';
 import {urlParamObj} from '@/redux/modules/link';
 import {parseJson} from '@/utils/utils';
+import store from '@/store';
+import {actions as LogActions} from '@/redux/modules/log';
 
 const {esimCurrency} = Env.get();
 const dateTimeFmt = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})*$/;
@@ -87,14 +88,14 @@ const dlvCost = (totalPrice: Currency): Currency => {
 
 // 숫자만 입력 받기
 const stringToCurrency = (value?: string): Currency | undefined => {
-  if (value === undefined) return undefined;
+  if (!value) return undefined;
 
   if (value.startsWith('USD')) {
-    return {value: stringToNumber(value.substr(3)) || 0, currency: 'USD'};
+    return {value: stringToNumber(value.substring(3)) || 0, currency: 'USD'};
   }
 
   if (value.startsWith('KRW')) {
-    return {value: stringToNumber(value.substr(3)) || 0, currency: 'KRW'};
+    return {value: stringToNumber(value.substring(3)) || 0, currency: 'KRW'};
   }
 
   // default currency : KRW
@@ -119,7 +120,10 @@ const priceToCurrency = ({
   return {value: stringToNumber(number) || 0, currency: 'KRW'};
 };
 
-const toCurrency = (value: number, currency: CurrencyCode): Currency => ({
+const toCurrency = (
+  value: number,
+  currency: CurrencyCode = 'KRW',
+): Currency => ({
   value,
   currency,
 });
@@ -359,6 +363,11 @@ const extractProdName = (str) => {
   return match ? match[1] : str;
 };
 
+export const log = (str: string) => {
+  // store.dispatch(ToastActions.push(Toast.NOT_LOADED));
+  store.dispatch(LogActions.append(str));
+};
+
 export default {
   fontScaling,
   numberToCommaString,
@@ -389,4 +398,5 @@ export default {
   compareVersion,
   cmpMomentAsc,
   cmpMomentDesc,
+  log,
 };

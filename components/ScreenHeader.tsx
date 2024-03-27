@@ -14,6 +14,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'space-between',
+    height: 56,
   },
   title: {
     ...appStyles.title,
@@ -26,8 +27,8 @@ interface ScreenHeaderProps {
   showIcon?: boolean;
   isStackTop?: boolean;
   backHandler?: () => void;
-  renderLeft?: JSX.Element;
-  renderRight?: JSX.Element;
+  renderLeft?: React.ReactNode;
+  renderRight?: React.ReactNode;
 }
 
 const ScreenHeader: React.FC<ScreenHeaderProps> = ({
@@ -52,7 +53,7 @@ const ScreenHeader: React.FC<ScreenHeaderProps> = ({
             style={{marginRight: 10, height: 56}}
             onPress={() => {
               if (backHandler) {
-                backHandler();
+                backHandler?.();
               } else {
                 goBack(navigation, route);
               }

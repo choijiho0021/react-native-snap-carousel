@@ -29,11 +29,15 @@ const styles = StyleSheet.create({
   },
   titleText: {
     ...appStyles.bold24Text,
+    marginTop: 80,
     marginBottom: 16,
   },
-
   bodyText: {
     ...appStyles.normal16Text,
+    lineHeight: 24,
+  },
+  boldBodyText: {
+    ...appStyles.bold16Text,
     lineHeight: 24,
   },
 });
@@ -65,13 +69,6 @@ const DraftResultScreen: React.FC<DraftResultScreenProps> = ({
 }) => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: null,
-    });
-  }, [navigation]);
-
   // 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
   BackbuttonHandler({
     navigation,
@@ -98,7 +95,7 @@ const DraftResultScreen: React.FC<DraftResultScreenProps> = ({
             <AppText style={styles.titleText}>
               {i18n.t('his:draftSuccessTitle')}
             </AppText>
-            <AppText style={styles.bodyText}>
+            <AppText style={styles.boldBodyText}>
               {i18n.t('his:draftSuccessText1')}
             </AppText>
             <AppText style={styles.bodyText}>
@@ -119,6 +116,7 @@ const DraftResultScreen: React.FC<DraftResultScreenProps> = ({
     ),
     [isSuccess],
   );
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={{marginHorizontal: 20, flex: 1}}>

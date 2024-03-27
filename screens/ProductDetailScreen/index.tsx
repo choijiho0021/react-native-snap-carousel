@@ -210,7 +210,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     text: string;
     visible: boolean;
   }>({text: '', visible: false});
-  const [disabled, setDisabled] = useState(false);
   const [status, setStatus] = useState<TrackingStatus>();
   const purchaseItems = useMemo(
     () => (route.params?.item ? [route.params.item] : []),
@@ -266,7 +265,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   useEffect(() => {
     if (purchaseItems) {
       setQty(purchaseItems[0]?.qty);
-
       setPrice(purchaseItems[0]?.price);
     }
   }, [purchaseItems]);
@@ -417,7 +415,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     }
 
     const cartNumber =
-      cart.orderItems.find((elm) => elm.key === purchaseItems[0].key)?.qty || 0;
+      cart.cartItems.find((elm) => elm.key === purchaseItems[0].key)?.qty || 0;
 
     resetModalInfo();
     setShowModal(false);
@@ -455,13 +453,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
                   text: i18n.t('country:addCart'),
                   visible: true,
                 });
-              if (
-                resp.objects[0].orderItems.find(
-                  (v) => v.key === route.params.item?.key,
-                ).qty >= PURCHASE_LIMIT
-              ) {
-                setDisabled(true);
-              }
             } else {
               soldOut(resp, 'cart:notToCart');
             }
@@ -474,23 +465,22 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   }, [
     account,
     action.cart,
-    cart.orderItems,
+    cart.cartItems,
     isButtonDisabled,
     navigation,
     purchaseItems,
     qty,
     resetModalInfo,
-    route.params?.item?.key,
     soldOut,
     status,
   ]);
 
   const onPressBtnPurchase = useCallback(() => {
-    const {loggedIn, balance} = account;
     Analytics.trackEvent('Click_purchase');
+    setIsButtonDisabled(true);
     setShowModal(false);
 
-    if (!loggedIn) {
+    if (!account.loggedIn && !isButtonDisabled) {
       navigation.navigate('RegisterMobile', {
         goBack: () => navigation.goBack(),
       });
@@ -498,28 +488,32 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
     const item: PurchaseItem = {...purchaseItems[0], qty};
 
-    // 구매 품목을 갱신한다.
-    return action.cart
-      .checkStockAndPurchase({
-        purchaseItems: [item],
-        balance,
-      })
-      .then(({payload: resp}) => {
-        resetModalInfo();
-        if (resp.result === 0) {
-          navigation.navigate('PymMethod', {
-            mode: 'roaming_product',
-          });
-        } else {
-          soldOut(resp, 'cart:soldOut');
-        }
-      })
-      .catch((err) => {
-        console.log('failed to check stock', err);
-      });
+    if (!isButtonDisabled) {
+      // 구매 품목을 갱신한다.
+      action.cart
+        .checkStockAndPurchase({purchaseItems: [item], isCart: false})
+        .then(({payload: resp}) => {
+          resetModalInfo();
+          if (resp.result === 0) {
+            navigation.navigate('PymMethod', {
+              mode: 'roaming_product',
+            });
+          } else {
+            soldOut(resp, 'cart:soldOut');
+          }
+        })
+        .catch((err) => {
+          console.log('failed to check stock', err);
+        });
+    }
+
+    return setTimeout(() => {
+      setIsButtonDisabled(false);
+    }, 3000);
   }, [
-    account,
+    account.loggedIn,
     action.cart,
+    isButtonDisabled,
     navigation,
     purchaseItems,
     qty,
@@ -532,7 +526,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     resetModalInfo();
     Analytics.trackEvent('Click_regCard');
 
-    navigation.navigate('RegisterMobile', {goBack: () => navigation.goBack()});
+    navigation.navigate('Auth', {
+      screen: 'RegisterMobile',
+      params: {goBack: () => navigation.goBack()},
+    });
   }, [navigation, resetModalInfo]);
 
   const purchaseButtonTab = useCallback(() => {
@@ -551,14 +548,14 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           title={i18n.t('cart:buy')}
           titleStyle={styles.btnBuyText}
           onPress={() => {
-            setShowModal(true);
+            if (!isButtonDisabled) setShowModal(true);
           }}
           // onPress={onPressBtnPurchase}
           type="primary"
         />
       </View>
     );
-  }, [showModal]);
+  }, [isButtonDisabled, showModal]);
 
   const purchaseNumberTab = useCallback(() => {
     return (
@@ -576,7 +573,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             style={styles.mainButton}
             title={i18n.t('cart:purchaseNow')}
             onPress={!account.loggedIn ? onPressBtnRegCard : onPressBtnPurchase}
-            titleStyle={appStyles.medium18}
+            titleStyle={[appStyles.medium18, {color: colors.white}]}
           />
         </View>
       </View>

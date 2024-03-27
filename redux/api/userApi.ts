@@ -511,6 +511,27 @@ const resign = async (
   );
 };
 
+const saveClientLog = ({mobile, log}: {mobile?: string; log: string}) => {
+  if (!log) return api.reject(api.E_INVALID_ARGUMENT, 'missing argument: log');
+
+  return api.callHttp(
+    `${api.rokHttpUrl(api.path.rokApi.pv.saveLog)}`,
+    {
+      method: 'POST',
+      headers: api.headers('json'),
+      body: JSON.stringify({
+        account: mobile,
+        log,
+      }),
+    },
+    (rsp = {}) => {
+      return rsp.result?.code === 0
+        ? api.success([])
+        : api.failure(api.FAILED, rsp.result?.error);
+    },
+  );
+};
+
 export default {
   KEY_ICCID,
   KEY_MOBILE,
@@ -535,4 +556,5 @@ export default {
   resign,
   registeRecommender,
   extractBarcodes,
+  saveClientLog,
 };

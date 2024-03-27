@@ -45,6 +45,7 @@ const NetworkFilter: React.FC<NetworkFilterProps> = ({
       showsHorizontalScrollIndicator={false}>
       {filterList.map((elm, idx) => (
         <Pressable
+          key={idx}
           style={{flexDirection: 'row'}}
           onPress={() => onPressFilter(elm)}>
           <AppIcon
@@ -57,7 +58,7 @@ const NetworkFilter: React.FC<NetworkFilterProps> = ({
           )}
           <AppText
             style={{
-              marginRight: 8,
+              marginRight: 12,
               ...appStyles.bold14Text,
               color: elm === 'fiveG' ? colors.purplyBlue : colors.black,
             }}>

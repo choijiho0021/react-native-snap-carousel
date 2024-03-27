@@ -4,8 +4,9 @@ import {utils} from '@/utils/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import api, {ApiResult, DrupalNode} from './api';
 import {Currency, CurrencyCode} from './productApi';
-import {API} from '.';
 import {OrderPolicyType} from './orderApi';
+import {Moment} from 'moment';
+import moment from 'moment';
 
 const {esimCurrency, cachePrefix} = Env.get();
 
@@ -144,14 +145,18 @@ const add = ({
   );
 };
 
-const checkStock = async ({purchaseItems}: {purchaseItems: PurchaseItem[]}) => {
+const checkStock = async ({
+  purchaseItems,
+  token,
+}: {
+  purchaseItems: PurchaseItem[];
+  token: string;
+}) => {
   if (!purchaseItems)
     return api.reject(
       api.E_INVALID_ARGUMENT,
       'missing parameter: purchaseItems',
     );
-
-  const token = await API.User.getToken();
 
   return api.callHttp(
     `${api.httpUrl(api.path.cart)}/stock?_format=json`,
@@ -313,14 +318,26 @@ const updateQty = ({
  */
 export type PaymentInfo = {
   memo?: string;
-  profile_uuid?: string;
   payment_type: string;
   merchant_uid: string;
   amount: number;
   rokebi_cash: number;
-  dlvCost?: number;
   currency_code?: CurrencyCode;
   captured: boolean;
+};
+
+export type CouponInfo = {
+  id: string[];
+};
+
+// order에 promotion(coupon)을 적용한 결과
+export type OrderPromo = {
+  coupon_id: string; // coupon id
+  promo_id: string;
+  title?: string;
+  total: Currency;
+  adj?: Currency;
+  endDate?: Moment;
 };
 
 const makeOrder = ({
@@ -333,9 +350,10 @@ const makeOrder = ({
   esimIccid,
   orderId,
   mainSubsId,
+  coupon,
 }: {
   items: PurchaseItem[];
-  info: PaymentInfo;
+  info?: PaymentInfo;
   user?: string;
   mail?: string;
   token?: string;
@@ -343,12 +361,10 @@ const makeOrder = ({
   esimIccid?: string;
   orderId?: number;
   mainSubsId?: string;
+  coupon?: CouponInfo;
 }) => {
   if (_.isEmpty(items))
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: items');
-
-  if (_.isEmpty(info))
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: info');
 
   if (!user)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
@@ -382,7 +398,6 @@ const makeOrder = ({
     order: {
       orderId,
       type: orderType,
-      field_memo: info.memo,
       order_items: items.map((item) => ({
         quantity: item.qty,
         purchased_entity: {
@@ -390,25 +405,24 @@ const makeOrder = ({
         },
       })),
     },
-    profile: {
-      uuid: info.profile_uuid, // 주문에 사용된 profile id
-    },
     user: {
       mail,
       name: user,
     },
-    payment: {
-      gateway: 'iamport',
-      type: info.payment_type,
-      details: {
-        merchant_uid: info.merchant_uid,
-        captured: info.captured,
-      },
-      amount: info.amount,
-      rokebi_cash: info.rokebi_cash,
-      shipping_cost: info.dlvCost,
-      currency_code: info.currency_code || esimCurrency,
-    },
+    payment: info
+      ? {
+          gateway: 'iamport',
+          type: info.payment_type,
+          details: {
+            merchant_uid: info.merchant_uid,
+            captured: info.captured,
+          },
+          amount: info.amount,
+          rokebi_cash: info.rokebi_cash,
+          currency_code: info.currency_code || esimCurrency,
+        }
+      : null,
+    coupon,
   };
 
   return api.callHttp(
@@ -419,17 +433,32 @@ const makeOrder = ({
       body: JSON.stringify(body),
     },
     (resp) => {
-      if (resp.order_id?.length > 0) {
+      if (resp.result === 0 && resp.objects?.order_id) {
         // order_id 값이 있으면 성공한 것으로 간주한다.
-        return api.success([resp]);
+        return api.success([
+          {
+            order_id: resp.objects.order_id,
+            promo: Object.entries(resp.objects.promo)
+              .map(
+                ([k, v]) =>
+                  ({
+                    promo_id: k,
+                    coupon_id: v.id,
+                    title: v.title,
+                    total: utils.stringToCurrency(v.total),
+                    adj: utils.stringToCurrency(v.adj),
+                    endDate: v?.endDate ? moment(v.endDate) : undefined,
+                  } as OrderPromo),
+              )
+              .filter((d) => !!d.adj),
+          },
+        ]);
       }
       if ([api.E_INVALID_STATUS, api.W_INVALID_STATUS].includes(resp.result)) {
         return api.success([resp.objects], [], resp.result);
       }
 
-      if ([api.E_STATUS_EXPIRED].includes(resp.result)) {
-        return api.failure<PurchaseItem>(resp.result, resp.desc);
-      }
+      return api.failure<PurchaseItem>(resp.result, resp.desc);
     },
   );
 };

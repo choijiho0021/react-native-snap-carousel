@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   usageTitleBold: {
     ...appStyles.bold20Text,
     fontSize: isDeviceSize('small') ? 18 : 20,
-    marginBottom: 2,
+    marginBottom: 6,
   },
   usageStatus: {
     ...appStyles.bold14Text,
@@ -91,8 +91,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 20,
     marginBottom: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 3,
     alignItems: 'center',
     flexDirection: 'row',
     width: '100%',
@@ -101,6 +102,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     alignItems: 'center',
+    borderRadius: 3,
     backgroundColor: colors.backGrey,
   },
   timeItem: {
@@ -332,34 +334,35 @@ const UsageItem: React.FC<UsageItemProps> = ({
           </View>
         )}
 
-        {item.daily === 'daily' && showUsage && (
-          <Fragment>
-            <View style={styles.timeDivider} />
+        {showEndTime &&
+          endTime &&
+          item.daily === 'daily' &&
+          item.partner !== 'ht' && <View style={styles.timeDivider} />}
 
-            <View style={styles.timeItem}>
-              <AppText
-                style={{
-                  ...appStyles.bold12Text,
-                  color: colors.black,
-                  marginBottom: 6,
-                }}>
-                {i18n.t('esim:time:dataReset')}
-              </AppText>
+        {item.daily === 'daily' && item.partner !== 'ht' && (
+          <View style={styles.timeItem}>
+            <AppText
+              style={{
+                ...appStyles.bold12Text,
+                color: colors.black,
+                marginBottom: 6,
+              }}>
+              {i18n.t('esim:time:dataReset')}
+            </AppText>
 
-              {isTzDiff ? (
-                <View>
-                  {renderResetTimeRow('korea', styles.rowBetween)}
-                  {renderResetTimeRow('local', styles.rowBetween)}
-                </View>
-              ) : (
-                <View>{renderResetTimeRow('korea')}</View>
-              )}
-            </View>
-          </Fragment>
+            {isTzDiff ? (
+              <View>
+                {renderResetTimeRow('korea', styles.rowBetween)}
+                {renderResetTimeRow('local', styles.rowBetween)}
+              </View>
+            ) : (
+              <View>{renderResetTimeRow('korea')}</View>
+            )}
+          </View>
         )}
       </View>
     );
-  }, [endTime, item.daily, renderResetTimeRow, showEndTime, showUsage]);
+  }, [endTime, item.daily, item.partner, renderResetTimeRow, showEndTime]);
 
   const renderAnimatedCircularProgress = useCallback(() => {
     return (
@@ -400,6 +403,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [isExhausted, remain]);
 
   const warningDotTxt = useCallback(() => {
+    console.log('aaaaa showEndTime', showEndTime);
     switch (item?.partner) {
       case 'ht':
         return (
@@ -419,7 +423,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           </View>
         );
       default:
-        return (
+        return showEndTime && endTime ? (
           <View style={{width: '100%'}}>
             <View style={{flexDirection: 'row'}}>
               <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
@@ -428,9 +432,9 @@ const UsageItem: React.FC<UsageItemProps> = ({
               </AppText>
             </View>
           </View>
-        );
+        ) : null;
     }
-  }, [item?.partner]);
+  }, [endTime, item?.partner, showEndTime]);
 
   const clMtdTxt = useCallback(() => {
     return ['ais', 'dtac', 'vndaily'].includes(item?.clMtd || '') ? (

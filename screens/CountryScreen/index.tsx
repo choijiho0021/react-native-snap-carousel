@@ -1,5 +1,5 @@
 /* eslint-disable consistent-return */
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useIsFocused} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState, useMemo, useRef} from 'react';
 import {Animated, SafeAreaView, StyleSheet, View} from 'react-native';
@@ -103,6 +103,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     [localOpList, route.params?.partner],
   );
   const animatedValue = useRef(new Animated.Value(150)).current;
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     if (route.params?.partner) {
@@ -174,6 +175,24 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     navigation,
   });
 
+  const renderSelectedPane = useCallback(() => {
+    return prodData.length > 0 && isFocused ? (
+      <Tab.Navigator
+        initialRouteName={prodData[0].length === 0 ? 'total' : 'daily'}
+        tabBar={(props) => <TabBar {...props} />}
+        sceneContainerStyle={{backgroundColor: colors.white}}>
+        {['daily', 'total'].map((k) => (
+          <Tab.Screen
+            key={k}
+            name={k}
+            component={renderProdType(k)}
+            options={{lazy: true, title: i18n.t(`country:${k}`)}}
+          />
+        ))}
+      </Tab.Navigator>
+    ) : null;
+  }, [isFocused, prodData, renderProdType]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -185,7 +204,8 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           }}
         />
         {(headerTitle.includes('(로컬망)') ||
-          headerTitle.includes('(local)')) && <ToolTip />}
+          headerTitle.includes('(local)')) &&
+          isFocused && <ToolTip />}
       </View>
 
       {imageUrl && (
@@ -197,21 +217,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         </Animated.View>
       )}
 
-      {prodData.length > 0 ? (
-        <Tab.Navigator
-          initialRouteName={prodData[0].length === 0 ? 'total' : 'daily'}
-          tabBar={(props) => <TabBar {...props} />}
-          sceneContainerStyle={{backgroundColor: colors.white}}>
-          {['daily', 'total'].map((k) => (
-            <Tab.Screen
-              key={k}
-              name={k}
-              component={renderProdType(k)}
-              options={{lazy: true, title: i18n.t(`country:${k}`)}}
-            />
-          ))}
-        </Tab.Navigator>
-      ) : null}
+      {renderSelectedPane()}
 
       <AppActivityIndicator visible={props.pending} />
       <ChatTalk visible bottom={isIOS ? 100 : 70} />

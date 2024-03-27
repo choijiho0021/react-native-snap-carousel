@@ -1,27 +1,29 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import moment, {Moment} from 'moment';
+import moment from 'moment';
 import AppAlert from '@/components/AppAlert';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
-import AppText from '@/components/AppText';
-import PaymentItemInfo from '@/components/PaymentItemInfo';
 import {colors} from '@/constants/Colors';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {HomeStackParamList, PaymentParams} from '@/navigation/navigation';
+import {
+  HomeStackParamList,
+  PaymentParams,
+  goBack,
+} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import api from '@/redux/api/api';
 import {createPaymentInfoForRokebiCash} from '@/redux/models/paymentResult';
 import {
+  AccountAction,
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
@@ -38,58 +40,36 @@ import {
 import i18n from '@/utils/i18n';
 import AppModal from '@/components/AppModal';
 import AppStyledText from '@/components/AppStyledText';
-import PymButtonList from '@/components/AppPaymentGateway/PymButtonList';
-import DropDownHeader from './DropDownHeader';
-import PolicyChecker from './PolicyChecker';
+import PolicyChecker from '@/components/AppPaymentGateway/PolicyChecker';
 import {
   actions as productActions,
   ProductAction,
   ProductModelState,
 } from '@/redux/modules/product';
-import {actions} from '@/redux/modules/toast';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
+import DiscountInfo from '@/components/AppPaymentGateway/DiscountInfo';
+import PaymentSummary from '@/components/PaymentSummary';
+import ConfirmButton from '@/components/AppPaymentGateway/ConfirmButton';
+import PymMethod, {
+  PymMethodRef,
+} from '@/components/AppPaymentGateway/PymMethod';
+import PopupList from './PopupList';
+import {retrieveData, utils} from '@/utils/utils';
+import AppText from '@/components/AppText';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+import DropDownHeader from './DropDownHeader';
+import ProductDetailList from '../CancelOrderScreen/component/ProductDetailList';
+import AppModalContent from '@/components/ModalContent/AppModalContent';
+import ScreenHeader from '@/components/ScreenHeader';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const infoKey = 'pym:benefit';
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'stretch',
     backgroundColor: colors.white,
-  },
-  divider: {
-    height: 10,
-    backgroundColor: colors.whiteTwo,
-  },
-  result: {
-    justifyContent: 'center',
-    height: isDeviceSize('small') ? 140 : 180,
-  },
-  resultText: {
-    ...appStyles.normal16Text,
-    color: colors.warmGrey,
-    textAlign: 'center',
-  },
-  thickBar: {
-    borderBottomColor: colors.black,
-    borderBottomWidth: 1,
-    marginBottom: 30,
-  },
-  normal12TxtLeft: {
-    ...appStyles.normal12Text,
-    color: colors.black,
-    textAlign: 'left',
-    lineHeight: 14,
-    textAlignVertical: 'center',
-  },
-  beforeDrop: {
-    marginHorizontal: 20,
-    marginBottom: 45,
-  },
-  benefit: {
-    backgroundColor: colors.whiteTwo,
-    padding: 15,
-    marginTop: 20,
   },
   modalBodyStyle: {
     paddingTop: 15,
@@ -108,27 +88,37 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     letterSpacing: -0.5,
   },
-  modalContent: {
-    maginHorizontal: 20,
-    width: '90%',
-    paddingTop: 25,
-    backgroundColor: 'white',
+  divider: {
+    height: 10,
+    backgroundColor: colors.whiteTwo,
+    marginTop: 24,
   },
-  titleContent: {
-    marginHorizontal: 30,
+  changeEmail: {
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    backgroundColor: colors.white,
+    marginHorizontal: 20,
   },
-  modalOkText: {
-    borderRadius: 3,
-    backgroundColor: colors.clearBlue,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    lineHeight: 40,
-    color: 'white',
-    width: 120,
-    height: 40,
-    marginRight: 18,
+  title: {
+    ...appStyles.bold18Text,
+    marginTop: 20,
+    marginBottom: isDeviceSize('small') ? 10 : 20,
+    color: colors.black,
   },
-  modalCloseStyle: {color: colors.black, marginRight: 108},
+  bottomBar: {
+    borderBottomColor: colors.lightGrey,
+    borderBottomWidth: 1,
+    marginHorizontal: 20,
+    marginBottom: 20,
+  },
+
+  productTitle: {
+    ...appStyles.bold18Text,
+    lineHeight: 24,
+    letterSpacing: 0.27,
+    flexDirection: 'row',
+    maxWidth: isDeviceSize('small') ? '70%' : '80%',
+  },
 });
 
 type PymMethodScreenNavigationProp = StackNavigationProp<
@@ -151,10 +141,12 @@ type PymMethodScreenProps = {
     cart: CartAction;
     info: InfoAction;
     product: ProductAction;
+    modal: ModalAction;
+    account: AccountAction;
   };
 };
 
-const {esimGlobal, impId} = Env.get();
+const {esimGlobal, impId, cachePrefix} = Env.get();
 
 const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   navigation,
@@ -165,17 +157,62 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   product,
   action,
 }) => {
-  const [selected, setSelected] = useState('pym:ccard');
+  const [selected, setSelected] = useState('pym:kakao');
   const [clickable, setClickable] = useState(true);
-  const [showModalMethod, setShowModalMethod] = useState(true);
   const [policyChecked, setPolicyChecked] = useState(false);
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
   const [showNavigateAlert, setShowNavigateAlert] = useState(false);
   const [navigateAlertTxt, setNavigateAlertTxt] = useState<string>();
   const [rstTm, setRstTm] = useState('');
+  const [showSelectCard, setShowSelectCard] = useState(false);
+  const [showInstallmentMonths, setShowInstallmentMonths] = useState(false);
+  const [installmentMonths, setInstallmentMonths] = useState('0');
 
-  const {pymPrice, deduct} = useMemo(() => cart, [cart]);
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
+  const pymMethodRef = useRef<PymMethodRef>(null);
+  const creditCardList = useMemo(
+    () =>
+      [
+        '41',
+        '03',
+        '04',
+        '06',
+        '11',
+        '12',
+        '14',
+        '34',
+        '38',
+        '32',
+        '35',
+        '33',
+        '95',
+        '43',
+        '48',
+        '51',
+        '52',
+        '54',
+        '55',
+        '56',
+        '71',
+      ].map((k) => ({
+        label: i18n.t(`pym:card${k}`),
+        value: `card${k}`,
+      })),
+    [],
+  );
+
+  const installmentMonthsList = useMemo(
+    () =>
+      [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((k) => ({
+        label: k === 0 ? i18n.t('pym:pay:atonce') : k + i18n.t('pym:duration'),
+        value: k.toString(),
+      })),
+    [],
+  );
+
+  useEffect(() => {
+    action.account.getMyCoupon({token: account?.token});
+  }, [account?.token, action.account]);
 
   useEffect(() => {
     if (!info.infoMap.has(infoKey)) {
@@ -184,20 +221,28 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   }, [action.info, info.infoMap]);
 
   useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          title={i18n.t('payment')}
-          disabled={route.params.isPaid}
-          showIcon={!route.params.isPaid}
-        />
-      ),
-    });
+    action.cart
+      .prepareOrder({
+        id: account.coupon?.map((a) => a.id),
+      })
+      .catch((err) => {
+        console.log('@@@ failed to preapre order', err);
+      });
+  }, [account.coupon, action.cart]);
+
+  useEffect(() => {
     Analytics.trackEvent('Page_View_Count', {
       page: `Payment - ${route.params?.mode}`,
     });
-  }, [navigation, route.params]);
+  }, [route.params]);
+
+  useEffect(() => {
+    async function getPymMethod() {
+      const method = await retrieveData(`${cachePrefix}cache.pym.method`);
+      if (method) setSelected(method);
+    }
+    getPymMethod();
+  }, []);
 
   const onSubmit = useCallback(
     (passingAlert: boolean) => {
@@ -210,20 +255,24 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
       setClickable(false);
 
-      const payMethod = API.Payment.method[selected];
-      if (!payMethod && pymPrice?.value !== 0) return;
+      const payMethod = selected.startsWith('card')
+        ? API.Payment.method['pym:ccard']
+        : selected.startsWith('vbank')
+        ? API.Payment.method['pym:vbank']
+        : API.Payment.method[selected];
+      if (!payMethod && cart.pymPrice?.value !== 0) return;
 
       const {mobile, email} = account;
       const scheme = esimGlobal ? 'RokebiGlobal' : 'RokebiEsim';
 
       // 로깨비캐시 결제
-      if (pymPrice?.value === 0) {
+      if (cart.pymPrice?.value === 0) {
         // if the payment amount is zero, call the old API payNorder
         const pymInfo = createPaymentInfoForRokebiCash({
           impId,
           mobile,
-          deduct,
           digital: true,
+          deduct: cart.pymReq?.rkbcash,
         });
 
         // payNorder에서 재고 확인 - resp.result값으로 비교
@@ -232,6 +281,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
             navigation.setParams({isPaid: true});
             navigation.replace('PaymentResult', {
               pymResult: true,
+              pay_method: 'rokebi',
               mode,
             });
           } else {
@@ -239,19 +289,21 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
             if (resp.result === api.E_RESOURCE_NOT_FOUND) {
               AppAlert.info(i18n.t('cart:soldOut'));
             } else if (resp.result === api.E_STATUS_EXPIRED) {
-              const {orderId} = cart;
-              const orderItems = cart?.orderItems.filter((elm) =>
-                resp?.message.split(',').includes(elm.prod.sku),
-              );
-              const orderItemIds = orderItems.map((elm) => elm.orderItemId);
-              orderItemIds.forEach((orderItemId) => {
-                if (orderItemId && orderId) {
-                  action.cart.cartRemove({
-                    orderId,
-                    orderItemId,
+              // product status is changed.
+              const skuList = resp?.message.split(',');
+              if (skuList?.length > 0 && cart.cartId) {
+                cart?.cartItems
+                  .filter((elm) => skuList.includes(elm.prod.sku))
+                  .forEach((elm) => {
+                    // remove it from the cart
+                    if (elm.orderItemId) {
+                      action.cart.cartRemove({
+                        orderId: cart.cartId,
+                        orderItemId: elm.orderItemId,
+                      });
+                    }
                   });
-                }
-              });
+              }
 
               action.product.getAllProduct(true);
 
@@ -278,15 +330,22 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         });
       } else {
         // if the payment amount is not zero, make order first
+        let prefix = 'r_';
+        let receipt: PaymentParams['receipt'];
+        if (payMethod?.method === 'vbank') {
+          receipt = pymMethodRef?.current?.getExtraInfo();
+          prefix = 'v_';
+        }
+
         const params = {
           pg: payMethod?.key,
           pay_method: payMethod?.method,
-          merchant_uid: `${
-            product.rule.inicis_enabled === '1' ? 'r_' : 'i_'
-          }${mobile}_${new Date().getTime()}`,
+          card: selected.startsWith('card') ? selected.slice(4, 6) : '',
+          installmentMonths,
+          merchant_uid: `${prefix}${mobile}_${new Date().getTime()}`,
           name: i18n.t('appTitle'),
-          amount: pymPrice?.value, // 실제 결제 금액 (로깨비캐시 제외)
-          rokebi_cash: deduct?.value, // balance 차감 금액
+          amount: cart.pymPrice?.value, // 실제 결제 금액 (로깨비캐시 제외)
+          rokebi_cash: cart.pymReq?.rkbcash?.value, // balance 차감 금액
           buyer_tel: mobile,
           buyer_name: mobile,
           buyer_email: email,
@@ -296,63 +355,31 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           digital: true,
           paymentRule: product.rule,
           mode,
+          receipt,
+          selected,
+          pymMethod: selected,
         } as PaymentParams;
 
         setClickable(true);
-        navigation.navigate(esimGlobal ? 'Payment' : 'PaymentGateway', params);
+        navigation.navigate('PaymentGateway', params);
       }
     },
     [
       account,
       action.cart,
       action.product,
-      cart,
+      cart.cartId,
+      cart?.cartItems,
+      cart.pymPrice?.value,
+      cart.pymReq?.rkbcash,
       clickable,
-      deduct,
+      installmentMonths,
       mode,
       navigation,
       product.rule,
-      pymPrice?.value,
       selected,
     ],
   );
-
-  const method = useCallback(() => {
-    const benefit = selected
-      ? info.infoMap
-          .get(infoKey)
-          ?.find((item) => item.title.indexOf(selected) >= 0)
-      : undefined;
-
-    return (
-      <View>
-        <DropDownHeader
-          showModal={showModalMethod}
-          onPress={() => setShowModalMethod((prev) => !prev)}
-          title={i18n.t('pym:method')}
-          alias={selected ? i18n.t(selected) : ''}
-        />
-        {showModalMethod && (
-          <View style={styles.beforeDrop}>
-            <View style={styles.thickBar} />
-            <PymButtonList selected={selected} onPress={setSelected} />
-            {benefit && (
-              <View style={styles.benefit}>
-                <AppText style={[styles.normal12TxtLeft, {marginBottom: 5}]}>
-                  {benefit.title}
-                </AppText>
-                <AppText
-                  style={[styles.normal12TxtLeft, {color: colors.warmGrey}]}>
-                  {benefit.body}
-                </AppText>
-              </View>
-            )}
-          </View>
-        )}
-        <View style={styles.divider} />
-      </View>
-    );
-  }, [info.infoMap, selected, showModalMethod]);
 
   const modalBody = useCallback(() => {
     return (
@@ -366,60 +393,111 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     );
   }, []);
 
-  const renderModal = useCallback(() => {
-    const navigateEsim = () => {
-      setShowNavigateAlert(false);
-      navigation.popToTop();
-      navigation.navigate('EsimStack', {screen: 'Esim'});
-    };
+  const setPymMethod = useCallback((kind: string) => {
+    if (kind === 'card') {
+      setShowSelectCard(true);
+    } else if (kind === 'installmentMonths') {
+      setShowInstallmentMonths(true);
+    } else {
+      setSelected(kind);
+    }
+  }, []);
 
-    return (
-      <AppModal
-        onCancelClose={navigateEsim}
-        type="info"
-        onOkClose={navigateEsim}
-        contentStyle={styles.modalContent}
-        titleStyle={styles.titleContent}
-        visible={showNavigateAlert}
-        buttonBackgroundColor={colors.clearBlue}
-        cancelButtonTitle={i18n.t('no')}
-        cancelButtonStyle={styles.modalCloseStyle}
-        okButtonTitle={i18n.t('ok')}
-        okButtonStyle={styles.modalOkText}>
-        <View style={{marginHorizontal: 30}}>
-          <AppStyledText
-            text={navigateAlertTxt}
-            textStyle={[
-              appStyles.medium16,
-              {color: colors.black, textAlignVertical: 'center'},
-            ]}
-            format={{
-              red: [appStyles.bold16Text, {color: colors.redError}],
-              b: appStyles.bold16Text,
-            }}
-            data={{date: rstTm}}
-          />
-        </View>
-      </AppModal>
-    );
-  }, [navigateAlertTxt, navigation, rstTm, showNavigateAlert]);
+  useEffect(() => {
+    if (mode === 'recharge')
+      action.cart.applyCoupon({couponId: undefined, accountCash: 0});
+  }, [action.cart, mode]);
+
+  const backHandler = useCallback(() => {
+    return action.modal.renderModal(() => (
+      <AppModalContent
+        title={
+          (cart.pymReq?.discount?.value || 0) < 0
+            ? i18n.t('pym:goBack:alert')
+            : i18n.t('pym:goBack:alert2')
+        }
+        type="normal"
+        onOkClose={() => {
+          action.modal.closeModal();
+        }}
+        onCancelClose={() => {
+          goBack(navigation, route);
+          action.modal.closeModal();
+        }}
+        cancelButtonStyle={{color: colors.black, marginRight: 60}}
+        okButtonTitle={i18n.t('no')}
+        cancelButtonTitle={i18n.t('yes')}
+        okButtonStyle={{color: colors.clearBlue}}
+      />
+    ));
+  }, [action.modal, cart.pymReq?.discount?.value, navigation, route]);
+
+  BackbuttonHandler({
+    navigation,
+    onBack: () => {
+      backHandler();
+      return true;
+    },
+  });
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScreenHeader title={i18n.t('payment')} backHandler={backHandler} />
       <KeyboardAwareScrollView
         contentContainerStyle={{minHeight: '100%'}}
         showsVerticalScrollIndicator={false}
         enableOnAndroid
         enableResetScrollToCoords={false}>
-        <PaymentItemInfo
-          purchaseItems={cart.purchaseItems}
-          pymReq={cart.pymReq}
-          mode="method"
-          pymPrice={pymPrice}
-          deduct={deduct}
+        <DropDownHeader
+          title={i18n.t('pym:title')}
+          style={{paddingTop: 16, paddingBottom: 20}}
+          titleStyle={styles.productTitle}
+          summary={`${cart.purchaseItems.reduce(
+            (acc, cur) => acc + cur.qty,
+            0,
+          )}개`}>
+          <ProductDetailList
+            style={{
+              paddingBottom: 0,
+              paddingHorizontal: 20,
+            }}
+            showPriceInfo
+            orderItems={cart.purchaseItems}
+          />
+        </DropDownHeader>
+
+        <View style={styles.bottomBar} />
+
+        <View style={styles.changeEmail}>
+          <AppText style={styles.title}>{i18n.t('pym:email')}</AppText>
+          <ConfirmButton
+            title={account.email}
+            buttonTitle={i18n.t('changeEmail:short')}
+            onPress={() => navigation.navigate('ChangeEmail')}
+          />
+        </View>
+
+        <View key="div1" style={styles.divider} />
+
+        {mode !== 'recharge' && (
+          <DiscountInfo onPress={() => navigation.navigate('SelectCoupon')} />
+        )}
+
+        <View key="div2" style={styles.divider} />
+
+        <PaymentSummary data={cart.pymReq} total={cart.pymPrice} mode={mode} />
+
+        <View key="div3" style={styles.divider} />
+
+        <PymMethod
+          pymMethodRef={pymMethodRef}
+          value={selected}
+          installmentMonths={installmentMonths}
+          onPress={setPymMethod}
+          price={cart?.pymPrice}
         />
 
-        {pymPrice?.value !== 0 ? (
+        {/* {cart.pymPrice?.value !== 0 ? (
           method()
         ) : (
           <View style={styles.result} key="result">
@@ -427,16 +505,34 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               {i18n.t('pym:balPurchase')}
             </AppText>
           </View>
-        )}
+        )} */}
 
         {/* 가변영역 설정 */}
-        <View style={{flex: 1}} />
+        <View style={{flex: 1, minHeight: 26}} />
 
         <PolicyChecker onPress={setPolicyChecked} />
         <AppButton
-          title={i18n.t('payment')}
-          titleStyle={appStyles.medium18}
-          disabled={(pymPrice?.value !== 0 && !selected) || !policyChecked}
+          title={i18n
+            .t('cart:payment')
+            .replace('%%', utils.price(cart.pymPrice))}
+          titleStyle={[appStyles.medium18, {color: colors.white}]}
+          disableColor={colors.greyish}
+          disableStyle={{backgroundColor: colors.lightGrey}}
+          disabled={
+            (cart.pymPrice?.value !== 0 && !selected) ||
+            !policyChecked ||
+            (cart.pymPrice?.value !== 0 && selected === 'card:noSelect')
+          }
+          disabledCanOnPress
+          disabledOnPress={() => {
+            if (selected === 'card:noSelect') {
+              // AppAlert 결제에 사용할 카드를 선택해주세요
+              AppAlert.info(i18n.t('pym:card:noSelect'));
+            } else if (!policyChecked) {
+              // AppAlert 주문 내용 확인 후 약관에 동의해주세요.
+              AppAlert.info(i18n.t('pym:policy:alert'));
+            }
+          }}
           key={i18n.t('payment')}
           onPress={() => onSubmit(false)}
           style={appStyles.confirm}
@@ -455,8 +551,26 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         visible={showUnsupAlert}>
         {modalBody()}
       </AppModal>
-
-      {renderModal()}
+      <PopupList
+        data={
+          showSelectCard
+            ? creditCardList
+            : showInstallmentMonths
+            ? installmentMonthsList
+            : []
+        }
+        height={showInstallmentMonths ? '60%' : '80%'}
+        visible={showSelectCard || showInstallmentMonths}
+        onPress={(v) => {
+          if (showSelectCard) {
+            setShowSelectCard(false);
+            setSelected(v);
+          } else {
+            setShowInstallmentMonths(false);
+            setInstallmentMonths(v);
+          }
+        }}
+      />
     </SafeAreaView>
   );
 };
@@ -474,6 +588,7 @@ export default connect(
       cart: bindActionCreators(cartActions, dispatch),
       info: bindActionCreators(infoActions, dispatch),
       product: bindActionCreators(productActions, dispatch),
+      modal: bindActionCreators(modalActions, dispatch),
     },
   }),
 )(PymMethodScreen);

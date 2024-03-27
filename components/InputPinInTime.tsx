@@ -1,5 +1,17 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Pressable, StyleSheet, TextInput, View, ViewStyle} from 'react-native';
+import React, {
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import {
+  StyleSheet,
+  TextInput,
+  TextInputProps,
+  View,
+  ViewStyle,
+} from 'react-native';
 import _ from 'underscore';
 import {useInterval} from '@/utils/useInterval';
 import {colors} from '@/constants/Colors';
@@ -17,31 +29,33 @@ const styles = StyleSheet.create({
   },
   inputWrapper: {
     paddingHorizontal: 10,
-    borderBottomColor: colors.black,
-    borderBottomWidth: 1,
+    borderWidth: 1,
+    borderRadius: 3,
+    height: 50,
     flexDirection: 'row',
     justifyContent: 'space-between',
     flex: 1,
-    marginRight: 10,
-    paddingBottom: 9,
-  },
-  emptyWrapper: {
-    borderBottomColor: colors.lightGrey,
+    marginRight: 8,
   },
   timer: {
-    ...appStyles.normal14Text,
-    color: colors.errorBackground,
-    textAlignVertical: 'center',
-    lineHeight: 19,
+    ...appStyles.medium14,
+    color: colors.redError,
+    lineHeight: 20,
+    marginTop: 6,
+  },
+  button: {
+    height: 50,
+    width: 80,
+    borderRadius: 3,
+    backgroundColor: colors.clearBlue,
   },
   title: {
-    ...appStyles.normal14Text,
+    ...appStyles.semiBold16Text,
     textAlign: 'center',
     color: colors.white,
   },
   helpBox: {
     marginTop: 13,
-    marginLeft: 30,
   },
   helpText: {
     ...appStyles.normal14Text,
@@ -70,11 +84,21 @@ type InputPinInTimeProps = {
   style?: ViewStyle;
 };
 
-const InputPinInTime: React.FC<InputPinInTimeProps> = (props) => {
-  const {countdown, authorized, onTimeout, onPress, inputRef, style} = props;
+const InputPinInTime: React.FC<
+  InputPinInTimeProps & PropsWithChildren<TextInputProps>
+> = ({
+  countdown,
+  authorized,
+  onTimeout,
+  onPress,
+  inputRef,
+  style,
+  ...props
+}) => {
   const [pin, setPin] = useState('');
   const [duration, setDuration] = useState(0);
   const [timeoutFlag, setTimeoutFlag] = useState(false);
+  const [focused, setFocused] = useState(false);
   const ref = useRef<TextInput>();
 
   useInterval(
@@ -104,13 +128,7 @@ const InputPinInTime: React.FC<InputPinInTimeProps> = (props) => {
     if (countdown) setDuration(props.duration);
   }, [countdown, props.duration]);
 
-  const onClick = useCallback(() => {
-    ref.current?.focus();
-  }, []);
-
   const clickable = props.clickable && _.size(pin) === 6;
-  const min = Math.floor(duration / 60);
-  const sec = Math.floor(duration - min * 60);
 
   useEffect(() => {
     init();
@@ -137,45 +155,53 @@ const InputPinInTime: React.FC<InputPinInTimeProps> = (props) => {
   return (
     <View>
       <View style={[styles.container, style]}>
-        <Pressable
-          style={[
-            styles.inputWrapper,
-            _.size(pin) <= 0 ? styles.emptyWrapper : undefined,
-          ]}
-          onPress={onClick}>
-          <AppTextInput
-            {...props}
-            placeholder={i18n.t('mobile:auth')}
-            placeholderTextColor={colors.greyish}
-            ref={ref}
-            keyboardType="numeric"
-            enablesReturnKeyAutomatically
-            maxLength={6}
-            clearTextOnFocus
-            onFocus={() => setPin('')} //  android - clearTextOnFocus 수동적용
-            onChangeText={setPin}
-            value={pin}
-            style={styles.input}
-            textContentType="oneTimeCode"
-          />
-
-          {countdown ? (
-            <AppText style={styles.timer}>
-              {' '}
-              {min > 0 ? min + i18n.t('min') : ''}{' '}
-              {sec.toString().padStart(2, '0')}
-              {i18n.t('sec')}{' '}
-            </AppText>
-          ) : null}
-        </Pressable>
+        <AppTextInput
+          showCancel
+          containerStyle={{
+            ...styles.inputWrapper,
+            borderColor: focused ? colors.clearBlue : colors.lightGrey,
+          }}
+          {...props}
+          placeholder={i18n.t('mobile:auth')}
+          placeholderTextColor={colors.greyish}
+          ref={ref}
+          keyboardType="numeric"
+          enablesReturnKeyAutomatically
+          maxLength={6}
+          clearTextOnFocus
+          onFocus={() => {
+            setPin('');
+            setFocused(true);
+          }} //  android - clearTextOnFocus 수동적용
+          onBlur={() => setFocused(false)}
+          onChangeText={setPin}
+          value={pin}
+          style={styles.input}
+          textContentType="oneTimeCode"
+          onCancel={() => setPin('')}
+        />
         <AppButton
+          style={styles.button}
           disabled={!clickable}
           onPress={() => onPress && onPress(pin)}
           titleStyle={styles.title}
           title={i18n.t('ok')}
-          disableColor={colors.white}
+          disableColor={colors.lightGrey}
+          disableBackgroundColor={colors.backGrey}
         />
       </View>
+      {countdown ? (
+        <AppText style={styles.timer}>
+          {i18n.t('mobile:timeLeft') +
+            Math.floor(duration / 60)
+              .toString()
+              .padStart(2, '0') +
+            ':' +
+            Math.floor(duration % 60)
+              .toString()
+              .padStart(2, '0')}
+        </AppText>
+      ) : null}
       <View style={styles.helpBox}>
         <AppText
           style={[
@@ -193,11 +219,6 @@ const InputPinInTime: React.FC<InputPinInTimeProps> = (props) => {
                   : 'mobile:authMismatch',
               )}
         </AppText>
-        {authorized ? null : (
-          <AppText style={[styles.helpText, {color: colors.warmGrey}]}>
-            {i18n.t('mobile:inputInTime')}
-          </AppText>
-        )}
       </View>
     </View>
   );

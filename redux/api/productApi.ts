@@ -53,6 +53,14 @@ const flagColor = {
     backgroundColor: colors.lightYellow,
     fontColor: colors.yellowSecond,
   },
+  quadSizeup: {
+    backgroundColor: colors.violetbg,
+    fontColor: colors.violet500,
+  },
+  megaSizeup: {
+    backgroundColor: colors.pinkbg,
+    fontColor: colors.pink500,
+  },
   fiveG: {
     // backgroundColor: colors.purplyBlue,
     fontColor: colors.purplyBlue,
@@ -73,7 +81,15 @@ export const promoFlagSort = (arr: string[]) => {
 
   arr.forEach((elm) => {
     if (
-      ['sizeup', 'doubleSizeup', 'tripleSizeup', 'hot', 'fiveG'].includes(elm)
+      [
+        'sizeup',
+        'doubleSizeup',
+        'tripleSizeup',
+        'hot',
+        'quadSizeup',
+        'megaSizeup',
+        'fiveG',
+      ].includes(elm)
     )
       promoFlags.push(elm as PromoFlag);
   });
@@ -143,6 +159,7 @@ export type ProdInfo = {
   field_description: string;
   promoFlag: string[];
   qty: number;
+  price: Currency;
 };
 
 export type RkbProduct = {

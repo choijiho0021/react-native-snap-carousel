@@ -215,7 +215,13 @@ const toggleIcons: Record<string, React.ReactElement[]> = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Circle cx="11" cy="11" r="11" fill="#2A7FF6" />
-      <Path d="M5 10.5 9.696 15 17 8" stroke="#fff" strokeLinecap="round" />
+      <Path
+        d="m6 10 3.913 5L16 7"
+        stroke="#fff"
+        strokeWidth="2"
+        strokeWinecap="round"
+        strokeWinejoin="round"
+      />
     </Svg>,
     <Svg
       width="22"
@@ -224,6 +230,110 @@ const toggleIcons: Record<string, React.ReactElement[]> = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Circle cx="11" cy="11" r="10.5" stroke="#D8D8D8" />
+    </Svg>,
+  ],
+  btnRadio: [
+    <Svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="11" cy="11" r="11" fill="#2A7FF6" />
+      <Circle cx="11" cy="11" r="5" fill="#fff" />
+    </Svg>,
+    <Svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="11" cy="11" r="10.5" fill="#fff" stroke="#D8D8D8" />
+      <Circle cx="11" cy="11" r="5" fill="#F5F5F5" />
+    </Svg>,
+  ],
+  dropDownToggle: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M10.564 12.76a.784.784 0 0 1-1.128 0L5.16 8.037C4.78 7.62 5.118 7 5.724 7h8.552c.606 0 .943.62.564 1.037l-4.276 4.723z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M10.564 12.76a.784.784 0 0 1-1.128 0L5.16 8.037C4.78 7.62 5.118 7 5.724 7h8.552c.606 0 .943.62.564 1.037l-4.276 4.723z"
+        fill="#AAA"
+      />
+    </Svg>,
+  ],
+  policyCheck: [
+    <Svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M14.909 8.247a1 1 0 0 1 .095 1.41l-3.82 4.377a1 1 0 0 1-1.467.043l-2.43-2.47a1 1 0 1 1 1.426-1.402l1.673 1.7 3.112-3.563a1 1 0 0 1 1.41-.095z"
+        fill="#2A7FF6"
+      />
+    </Svg>,
+    <Svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M14.909 8.247a1 1 0 0 1 .095 1.41l-3.82 4.377a1 1 0 0 1-1.467.043l-2.43-2.47a1 1 0 1 1 1.426-1.402l1.673 1.7 3.112-3.563a1 1 0 0 1 1.41-.095z"
+        fill="#AAA"
+      />
+    </Svg>,
+  ],
+  checkBox: [
+    <Svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect width="22" height="22" rx="3" fill="#2A7FF6" />
+      <Path
+        d="m6 10 3.913 5L16 7"
+        stroke="#fff"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+    <Svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect width="22" height="22" rx="3" fill="#D8D8D8" />
+      <Path
+        d="m6 10 3.913 5L16 7"
+        stroke="#fff"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </Svg>,
   ],
 };

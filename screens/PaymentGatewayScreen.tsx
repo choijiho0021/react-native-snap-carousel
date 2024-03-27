@@ -7,7 +7,7 @@ import {bindActionCreators, RootState} from 'redux';
 import Video from 'react-native-video';
 import AppAlert from '@/components/AppAlert';
 import {HomeStackParamList} from '@/navigation/navigation';
-import api from '@/redux/api/api';
+import api, {ApiResult} from '@/redux/api/api';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import i18n from '@/utils/i18n';
 import {PaymentInfo} from '@/redux/api/cartApi';
@@ -19,8 +19,14 @@ import {AccountModelState} from '@/redux/modules/account';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import {RkbPaymentVBankResult} from '@/redux/api/paymentApi';
+import Env from '@/environment';
+import {storeData} from '@/utils/utils';
 
 const loading = require('../assets/images/loading_1.mp4');
+
+const {cachePrefix} = Env.get();
 
 type PaymentGatewayScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
@@ -76,29 +82,14 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
         merchant_uid: params.merchant_uid,
         amount: params.amount,
         rokebi_cash: params.rokebi_cash,
-        dlvCost: params.dlvCost,
-        profile_uuid: params.profile_uuid,
         memo: params.memo,
         captured: false,
       } as PaymentInfo),
     [params],
   );
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: () => (
-        <AppBackButton
-          title={i18n.t(params?.isPaid ? 'his:paymentCompleted' : 'payment')}
-          disabled={params.isPaid}
-          showIcon={!params.isPaid}
-        />
-      ),
-    });
-  }, [navigation, params.isPaid]);
-
   const callback = useCallback(
-    async (status: PaymentResultCallbackParam) => {
+    async (status: PaymentResultCallbackParam, errorMsg?: string) => {
       let pymResult = false;
 
       if (status !== 'cancel') {
@@ -118,8 +109,24 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       }
 
       if (status !== 'check' || pymResult) {
+        console.log('@@@ pym method', params.pymMethod);
+        storeData(`${cachePrefix}cache.pym.method`, params.pymMethod);
+
         // status = 'next', 'cancel' 이거나, pymResult = true인 경우 다음 페이지로 이동
-        navigation.replace('PaymentResult', {pymResult, mode: params?.mode});
+        navigation.replace('PaymentResult', {
+          pymResult,
+          status,
+          errorMsg,
+          paymentParams: {
+            key: pymInfo.merchant_uid,
+            pg: params.paymentRule?.[params.card || params.pay_method] || '',
+            token: account.token,
+          },
+          pay_method: params.pay_method,
+          installmentMonths: params?.installmentMonths || '0',
+          card: params.card,
+          mode: params.mode,
+        });
       }
     },
     [
@@ -127,11 +134,25 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       action.cart,
       navigation,
       params.card,
-      params?.mode,
+      params?.installmentMonths,
+      params.mode,
       params.pay_method,
       params.paymentRule,
       pymInfo,
     ],
+  );
+
+  const vbank = useCallback(
+    (resp: ApiResult<RkbPaymentVBankResult>) => {
+      if (resp.result === 0)
+        navigation.replace('PaymentVBank', {info: resp.objects[0]});
+      else
+        navigation.replace('PaymentResult', {
+          pymResult: false,
+          mode: params?.mode,
+        });
+    },
+    [navigation, params?.mode],
   );
 
   useEffect(() => {
@@ -139,7 +160,6 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       action.cart
         .checkStockAndMakeOrder(pymInfo)
         .then(({payload: resp}) => {
-          setIsOrderReady(true);
           if (!resp || resp.result < 0) {
             let text = 'cart:systemError';
             if (resp?.result === api.E_RESOURCE_NOT_FOUND)
@@ -149,6 +169,22 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
 
             AppAlert.info(i18n.t(text));
             navigation.goBack();
+          } else {
+            setIsOrderReady(true);
+
+            if (params.pay_method.startsWith('vbank')) {
+              API.Payment.reqRokebiPaymentVBank({
+                params: {
+                  ...params,
+                  pg: 'hecto',
+                },
+                token: account.token,
+              })
+                .then(vbank)
+                .catch((ex) =>
+                  vbank(api.failure(api.E_INVALID_STATUS, ex.message)),
+                );
+            }
           }
         })
         .catch(() => {
@@ -156,7 +192,16 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
           navigation.goBack();
         });
     }
-  }, [action.cart, navigation, params.isPaid, pymInfo]);
+  }, [
+    account.token,
+    action.cart,
+    callback,
+    navigation,
+    params,
+    params.isPaid,
+    pymInfo,
+    vbank,
+  ]);
 
   const renderLoading = useCallback(() => {
     return (
@@ -174,8 +219,15 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
   }, []);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
-      {isOrderReady ? (
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
+      <View style={appStyles.header}>
+        <AppBackButton
+          title={i18n.t(params?.isPaid ? 'his:paymentCompleted' : 'payment')}
+          disabled={params.isPaid}
+          showIcon={!params.isPaid}
+        />
+      </View>
+      {isOrderReady && !params.pay_method.startsWith('vbank') ? (
         <AppPaymentGateway info={params} callback={callback} />
       ) : (
         renderLoading()

@@ -68,7 +68,7 @@ LocaleConfig.locales['ko'] = {
     '토요일',
     '일요일',
   ],
-  dayNamesShort: ['월', '화', '수', '목', '금', '토', '일'],
+  dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
   today: '오늘',
 };
 

@@ -53,8 +53,11 @@
   "latest": "latest",
   "sale": "Discount",
   "hot": "Hot",
-  "sizeup": "SIZE UP",
-  "doubleSizeup": "DOUBLE",
+  "sizeup": "UP",
+  "doubleSizeup": "더블UP",
+  "tripleSizeup": "트리플UP",
+  "quadSizeup": "쿼드UP",
+  "megaSizeup": "메가UP",
   "copy": "Copy",
   "close": "Close",
   "close:week": "Don't show for Week",
@@ -229,6 +232,10 @@
   "set:pushnoti": "Push Notifications",
   "set:accountSettings": "Account Settings",
   "set:changeMail": "Change email",
+  "set:reSetting": "개발자 메뉴",
+
+  "set:netstat:connected": "네트워크 연결",
+  "set:netstat:disconnected": "네트워크 연결 실패",
 
   "resign": "Delete Account",
   "resign:why": "Please let us know why you are leaving us.",
@@ -581,6 +588,7 @@
   "esim:U": "Used up",
   "esim:sendGift": "Gift this Item",
   "esim:draft": "총 %개 발권하기",
+  "esim:draft:failNoti": "<b>발권 실패! 고객센터로 문의해 주세요.</b>",
   "esim:etcCnt": "%% case",
   "esim:draftNotice": "You can check the product information after draft!",
   "esim:orderNo": "Purchase ID",
@@ -632,7 +640,7 @@
   "esim:howToCall": "통화 방법",
   "esim:howToCall:check": "확인하기",
   "esim:howToCall:moveToQr": "eSIM 추가가 안 되나요?",
-  "esim:howToCall:moveToQr:txt": "eSIM 추가 시 자동 설치·개통되지 않고,\n<b>eSIM 추가 방법 선택 화면으로 넘어가는 경우\n아래 QR코드를 스캔</b>하여 eSIM을 추가해보세요.",
+  "esim:howToCall:moveToQr:txt": "eSIM 추가 시 자동 등록되지 않고,\n<b>eSIM 추가 방법 선택 화면으로 넘어가는 경우\n아래 QR코드를 스캔</b>하여 eSIM을 추가해보세요.",
   "esim:howToCall:moveToQr:txt:ios": "설정>셀룰러>eSIM 추가>QR 코드 사용 버튼 클릭!",
   "esim:howToCall:moveToQr:txt:android": "설정>연결>SIM 관리자>eSIM 추가>QR 코드 스캔 버튼 클릭!",
   "esim:howToCall:title:ais": "태국 로컬망 데이터 종량제 상품\n통신사:AIS",
@@ -663,6 +671,7 @@
   "esim:howToCall:international:ustotal:ex:title": "미국에서 한국 010-1234-5678로 전화를 걸 때",
   "esim:howToCall:international:ais:ex:title": "태국에서 한국 010-1234-5678로 전화를 걸 때",
   "esim:howToCall:international:dtac:ex:title": "태국에서 한국 010-1234-5678로 전화를 걸 때",
+  "esim:howToCall:international:ustotal:txt": "011 + 국가번호 + “0”을 제외한 전화번호 + 통화",
   "esim:howToCall:international:ustotal:ex:txt1": "1 + 지역번호 + 전화번호 + 통화 → 안내멘트 →",
   "esim:howToCall:international:ustotal:ex:txt2": "011 + 82 + 10 1234 5678 + 통화",
   "esim:howToCall:international:ais:ex:txt1": "00300 + 82 + 10 1234 5678 + 통화",
@@ -809,6 +818,9 @@
   "esim:caution:time": "사용기간은 한국 표준 시(KST)를 기준으로 합니다.",
   "esim:caution:ht:time1": "사용기간은 미국 동부 표준시(EST, 뉴욕)를 기준으로 합니다.",
   "esim:caution:ht:time2": "선택하신 시작일 00시~12시(EST) 사이에 eSIM이 순차적으로 자동 개통됩니다.",
+  "esim:caution:clMtd:ais": "잔여 데이터 및 기간: *121*3# + 통화 누른 후 수신된 문자로 확인 가능합니다",
+  "esim:caution:clMtd:dtac": "데이터 사용량: *101*1*9# + 통화 눌러 확인 가능합니다",
+  "esim:caution:clMtd:vndaily": "잔여데이터: *101# + 통화 눌러 확인 가능합니다",
 
   "esim:editMode": "목록편집",
   "esim:editMode:confirm": "편집 완료",
@@ -886,6 +898,7 @@
   "pym:eximbay": "Eximbay",
   "pym:kakao": "Kakao Pay",
   "pym:naver": "Naver Pay",
+  "pym:naverpay": "Naver Pay",
   "pym:payco": "Payco",
   "pym:samsung": "Samsung Pay",
   "pym:applepay": "Apple Pay",
@@ -1445,5 +1458,17 @@
 
   "extraCoupon": "Coupons",
 
-  "localOp:tag:N": "New"
+  "localOp:tag:N": "New",
+
+  "daily:filter:all": "전체",
+  "daily:filter:500": "500MB",
+  "daily:filter:1024": "1GB",
+  "daily:filter:2048": "2GB",
+  "daily:filter:3072": "3GB",
+  "daily:filter:4096": "4GB",
+  "daily:filter:5120": "5GB",
+  "daily:filter:1024000": "올데이",
+
+  "network:filter:fiveG": "5G속도",
+  "network:filter:else": "LTE/3G"
 }

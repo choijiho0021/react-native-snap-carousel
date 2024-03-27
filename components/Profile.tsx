@@ -1,6 +1,6 @@
 import {RootState} from '@reduxjs/toolkit';
 import React, {memo} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import Svg, {Circle, G, Mask, Path} from 'react-native-svg';
 import AppUserPic from '@/components/AppUserPic';
@@ -306,8 +306,6 @@ const ProfileImg = () => (
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 35,
-    // flex: 1,
     flexDirection: 'row',
     marginLeft: 20,
     height: 76,
@@ -317,20 +315,22 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   label: {
-    ...appStyles.normal14Text,
+    ...appStyles.medium16,
+    fontSize: isDeviceSize('medium') ? 16 : 18,
     marginHorizontal: 20,
     lineHeight: 22,
     color: colors.warmGrey,
     marginBottom: 4,
   },
   value: {
-    ...appStyles.roboto16Text,
-    fontSize: isDeviceSize('medium') ? 17 : 19,
+    ...appStyles.bold20Text,
+    fontSize: isDeviceSize('medium') ? 20 : 22,
     marginLeft: 20,
     maxWidth: '100%',
-    lineHeight: 25,
+    lineHeight: 24,
     color: colors.black,
     marginRight: 20,
+    marginBottom: 8,
   },
   userPicture: {
     width: 76,
@@ -347,7 +347,6 @@ type ProfileProps = {
   email?: string;
   userPictureUrl?: string;
   onChangePhoto?: () => void;
-  onPress?: (v: 'id' | 'email') => void;
 };
 
 const Profile: React.FC<ProfileProps> = ({
@@ -360,7 +359,6 @@ const Profile: React.FC<ProfileProps> = ({
   email,
   userPictureUrl,
   onChangePhoto = () => {},
-  onPress = () => {},
 }) => {
   return (
     <View style={styles.container}>
@@ -374,14 +372,12 @@ const Profile: React.FC<ProfileProps> = ({
         />
       </View>
       <View style={{flex: 3, justifyContent: 'center'}}>
+        <AppText style={styles.value} numberOfLines={1} ellipsizeMode="tail">
+          {email || accountEmail || ''}
+        </AppText>
         <AppText style={styles.label}>
           {utils.toPhoneNumber(mobile || accountMobile)}
         </AppText>
-        <Pressable onPress={() => onPress('email')}>
-          <AppText style={styles.value} numberOfLines={1} ellipsizeMode="tail">
-            {email || accountEmail || ''}
-          </AppText>
-        </Pressable>
       </View>
     </View>
   );

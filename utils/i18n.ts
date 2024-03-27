@@ -1,7 +1,8 @@
 import i18n from 'i18n-js';
 import {EventEmitter} from 'events';
-import moment from 'moment-with-locales-es6';
+import moment from 'moment';
 import Env from '@/environment';
+import 'moment/locale/ko';
 
 const {esimGlobal} = Env.get();
 export const i18nEvent = new EventEmitter();

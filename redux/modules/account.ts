@@ -16,12 +16,13 @@ import VersionCheck from 'react-native-version-check';
 import DeviceInfo from 'react-native-device-info';
 import {API} from '@/redux/api';
 import {removeData, retrieveData, storeData} from '@/utils/utils';
-import {RkbFile, RkbImage} from '@/redux/api/accountApi';
+import {RkbCoupon, RkbFile, RkbImage} from '@/redux/api/accountApi';
 import api, {ApiResult} from '@/redux/api/api';
 import {actions as toastActions, reflectWithToast, Toast} from './toast';
 import {actions as orderActions} from './order';
 import {actions as promotionActions} from './promotion';
 import {actions as notiActions} from './noti';
+import {actions as cartActions} from './cart';
 import Env from '@/environment';
 import userApi from '@/redux/api/userApi';
 
@@ -89,6 +90,11 @@ const receiveAndGetGift = createAsyncThunk(
       },
     );
   },
+);
+
+const getMyCoupon = createAsyncThunk(
+  'account/getMyCoupon',
+  API.Account.getMyCoupon,
 );
 
 const changeUserAttrWithToast = reflectWithToast(
@@ -172,6 +178,7 @@ export type AccountModelState = {
   cashExpire?: CashExpire[];
   isNewUser?: boolean;
   expirePt?: number;
+  coupon: RkbCoupon[];
 };
 
 export type AccountAuth = {
@@ -304,6 +311,9 @@ const logInAndGetAccount = createAsyncThunk(
 
           dispatch(getUserId({name: obj.current_user.name}));
           dispatch(notiActions.getNotiList({mobile: obj.current_user.name}));
+          dispatch(getMyCoupon({token}));
+          dispatch(cartActions.cartFetch());
+
           return api.success([]);
         }
         return {result, objects};
@@ -567,6 +577,13 @@ const slice = createSlice({
         state.token = action.payload;
       },
     );
+
+    builder.addCase(getMyCoupon.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+      if (result === 0) {
+        state.coupon = objects || ([] as RkbCoupon[]);
+      }
+    });
   },
 });
 
@@ -651,6 +668,7 @@ export const actions = {
   getToken,
   uploadAndChangePicture,
   logout,
+  logOut,
   changeEmail,
   changeNotiToken,
   getAccount,
@@ -660,6 +678,7 @@ export const actions = {
   changePushNoti,
   uploadPicture,
   registerMobile,
+  getMyCoupon,
 };
 export type AccountAction = typeof actions;
 

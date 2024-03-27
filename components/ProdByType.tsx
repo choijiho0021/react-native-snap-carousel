@@ -15,7 +15,6 @@ import {RkbProduct} from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';
 import DailyProdFilter, {DailyProdFilterList} from './DailyProdFilter';
 import NetworkFilter, {NetworkFilterList} from './NetworkFilter';
-import {contains} from 'underscore';
 
 const styles = StyleSheet.create({
   emptyImage: {
@@ -53,7 +52,16 @@ type ProdByTypeProps = {
   onTop?: (v: boolean) => void;
 };
 
-const DEFAULT_FILTER_LIST = ['all', '500', '1024', '2048', '3072', '1024000'];
+const DEFAULT_FILTER_LIST = [
+  'all',
+  '500',
+  '1024',
+  '2048',
+  '3072',
+  '4096',
+  '5120',
+  '1024000',
+];
 
 const ProdByType: React.FC<ProdByTypeProps> = ({
   prodData,

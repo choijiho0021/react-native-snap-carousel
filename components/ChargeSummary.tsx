@@ -5,7 +5,7 @@ import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {Currency} from '@/redux/api/productApi';
 import LabelText from './LabelText';
-import utils from '../redux/api/utils';
+import AppText from './AppText';
 
 const styles = StyleSheet.create({
   price: {
@@ -24,20 +24,11 @@ const styles = StyleSheet.create({
 
 const ChargeSummary = ({
   totalCnt = 0,
-  balance = 0,
   totalPrice,
 }: {
   totalCnt: number;
   totalPrice: Currency;
-  balance?: number;
 }) => {
-  // 상품가격 + 배송비
-  const amount = totalPrice.value;
-  // 잔액 차감
-  const deduct = totalCnt > 0 ? (amount > balance ? balance : amount) : 0;
-  // 계산해야하는 총액
-  const pymPrice = amount > balance ? amount - balance : 0;
-
   return (
     <View style={styles.price}>
       <LabelText
@@ -54,26 +45,19 @@ const ChargeSummary = ({
         balanceStyle={appStyles.bold22Text}
         currencyStyle={appStyles.medium14}
       />
-
-      <LabelText
-        label={i18n.t('cart:deductBalance')}
-        style={styles.summary}
-        format="price"
-        // value={utils.toCurrency(balance, totalPrice.currency)}
-        deduct={deduct}
-        balanceStyle={appStyles.bold22Text}
-        currencyStyle={appStyles.medium14}
-      />
-
-      <LabelText
-        label={i18n.t('cart:totalCost')}
-        style={styles.summary}
-        format="price"
-        color={colors.clearBlue}
-        value={utils.toCurrency(pymPrice, totalPrice.currency)}
-        balanceStyle={appStyles.bold22Text}
-        currencyStyle={appStyles.medium14}
-      />
+      <View style={{flexDirection: 'row'}}>
+        {/* <AppText>{i18n.t('middleDotn')}</AppText>
+        <AppText>{i18n.t('cart:totalPrice')}</AppText> */}
+        <AppText
+          style={{
+            ...appStyles.medium14,
+            color: colors.warmGrey,
+            marginTop: 12,
+          }}>
+          {i18n.t('middleDot')}
+          {i18n.t('cart:notice')}
+        </AppText>
+      </View>
     </View>
   );
 };

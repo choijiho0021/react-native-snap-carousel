@@ -3,7 +3,7 @@ import Env from '@/environment';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import {RkbInfo} from './pageApi';
 
-const {isProduction, cachePrefix} = Env.get();
+const {cachePrefix} = Env.get();
 
 const KEY_INIT_LIST = `${cachePrefix}noti.initList`;
 
@@ -18,6 +18,17 @@ export type RkbNoti = RkbInfo & {
 };
 
 const jsonContentType = {'Content-Type': 'application/json'};
+
+type RkbNotiJson = {
+  title: string;
+  body: string;
+  created: string;
+  ntype: string;
+  uuid: string;
+  mobile: string;
+  isRead: string;
+  fmt: string;
+};
 
 const toNoti = (data: DrupalNode[] | DrupalNodeJsonApi): ApiResult<RkbNoti> => {
   // REST API json/noti/list/{id}로 조회하는 경우
@@ -37,25 +48,6 @@ const toNoti = (data: DrupalNode[] | DrupalNodeJsonApi): ApiResult<RkbNoti> => {
       })),
     );
   }
-
-  // JSON API로 데이터를 조회한 경우
-  if ((<DrupalNodeJsonApi>data).jsonapi) {
-    const obj = _.isArray(data.data) ? data.data : [data.data];
-    const objects = obj.map((item) => ({
-      title: item.attributes.title,
-      body: item.attributes.body,
-      created: item.attributes.created,
-      notiType: item.attributes.field_noti_type,
-      key: item.id,
-      uuid: item.id,
-      // mobile:item.attributes.name,
-      isRead: item.attributes.field_isread,
-      format: item.attributes.field_format,
-    }));
-
-    return api.success(objects);
-  }
-
   return api.failure(api.E_NOT_FOUND);
 };
 
@@ -207,7 +199,6 @@ const sendDisconnect = ({mobile, iccid}: {mobile: string; iccid: string}) => {
 
 export default {
   getNoti,
-  update,
   read,
   sendAlimTalk,
   sendLog,

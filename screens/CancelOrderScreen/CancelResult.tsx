@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
   titleText: {
     ...appStyles.bold24Text,
     marginBottom: 16,
+    marginTop: 80,
   },
 
   bodyText: {
@@ -101,13 +102,6 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [prods, setProds] = useState<ProdDesc[]>([]);
   const [orderResult, setOrderResult] = useState<RkbOrder>();
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: null,
-      headerLeft: null,
-    });
-  }, [navigation]);
 
   // 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
   BackbuttonHandler({
