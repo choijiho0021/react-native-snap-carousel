@@ -403,7 +403,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [isExhausted, remain]);
 
   const warningDotTxt = useCallback(() => {
-    console.log('aaaaa showEndTime', showEndTime);
     switch (item?.partner) {
       case 'ht':
         return (
