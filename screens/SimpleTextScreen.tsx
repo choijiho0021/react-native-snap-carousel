@@ -384,9 +384,11 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
                 screen: 'MyPage',
               });
             } else if (sku?.startsWith('cpn-')) {
-              navigation.navigate('MyPageStack', {
-                screen: 'Coupon',
-              });
+              if (props?.account?.loggedIn) {
+                navigation.navigate('Coupon');
+              } else {
+                navigation.navigate('RegisterMobile', {});
+              }
             } else {
               navigation.navigate('EsimStack', {
                 screen: 'Esim',

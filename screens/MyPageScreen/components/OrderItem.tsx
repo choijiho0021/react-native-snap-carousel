@@ -12,11 +12,12 @@ import {getCountItems, isDraft} from '@/redux/modules/order';
 
 const styles = StyleSheet.create({
   order: {
-    marginVertical: 15,
+    marginTop: 14,
+    marginBottom: 12,
     marginHorizontal: 20,
   },
   orderValue: {
-    marginTop: 12,
+    marginTop: 6,
   },
   date: {
     ...appStyles.normal14Text,
@@ -58,7 +59,7 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
       <View key={item.orderId} style={styles.order}>
         <LabelText
           style={styles.orderValue}
-          label={utils.toDateString(item.orderDate, 'YYYY-MM-DD')}
+          label={utils.toDateString(item.orderDate, 'YYYY.MM.DD')}
           labelStyle={styles.date}
           valueStyle={statusColor ? {color: statusColor} : undefined}
           value={status}

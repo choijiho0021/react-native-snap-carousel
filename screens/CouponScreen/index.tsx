@@ -86,13 +86,18 @@ const styles = StyleSheet.create({
   },
   caution: {
     ...appStyles.medium14,
-    marginHorizontal: 20,
     color: colors.warmGrey,
+    flex: 1,
   },
   empty: {
     flex: 1,
     alignItems: 'center',
     marginTop: 20,
+  },
+  middleDot: {
+    ...appStyles.medium14,
+    color: colors.warmGrey,
+    marginHorizontal: 8,
   },
 });
 
@@ -129,7 +134,6 @@ const CouponScreen: React.FC<CouponProps> = ({
       setRefreshing(false);
     });
   }, [action.account, token]);
-
   // 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
 
   BackbuttonHandler({
@@ -197,49 +201,89 @@ const CouponScreen: React.FC<CouponProps> = ({
     }
   }, [action.account, code, dispatch, iccid, token]);
 
+  const renderCaution = useCallback(
+    () => (
+      <View style={styles.bottom}>
+        <View style={[styles.row, {marginBottom: 12}]}>
+          <AppSvgIcon name="caution24" />
+          <AppText key="noti" style={[appStyles.bold18Text, {marginLeft: 8}]}>
+            {i18n.t('coupon:noti')}
+          </AppText>
+        </View>
+
+        {[1, 2].map((elm) => (
+          <View style={{flexDirection: 'row', marginHorizontal: 20}}>
+            <AppText key="dot1" style={styles.middleDot}>
+              {i18n.t('middleDot')}
+            </AppText>
+            <AppText key="noti.1" style={styles.caution}>
+              {i18n.t(`coupon:noti:${elm}`)}
+            </AppText>
+          </View>
+        ))}
+      </View>
+    ),
+    [],
+  );
+
+  const renderListHeader = useCallback(
+    (value: string, changing: boolean) => (
+      <>
+        <View style={[styles.row, {marginTop: 24}]}>
+          <View
+            style={[
+              styles.input,
+              {borderColor: changing ? colors.clearBlue : colors.lightGrey},
+            ]}>
+            <AppTextInput
+              style={{flex: 1}}
+              placeholder={i18n.t('coupon:inputCode')}
+              value={value}
+              onChangeText={setCode}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+            />
+            {value.length > 0 && (
+              <AppButton
+                style={{justifyContent: 'flex-end', marginLeft: 10}}
+                iconName="btnSearchCancel"
+                onPress={() => setCode('')}
+              />
+            )}
+          </View>
+          <AppButton
+            style={styles.regBtn}
+            title={i18n.t('coupon:reg')}
+            disabled={value.length < 1}
+            onPress={regCoupon}
+            disabledOnPress={regCoupon}
+            disabledCanOnPress
+            titleStyle={[appStyles.semiBold16Text, {color: colors.white}]}
+          />
+        </View>
+        <AppText style={styles.title}>{i18n.t('coupon:mine')}</AppText>
+      </>
+    ),
+    [regCoupon],
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={appStyles.header}>
         <AppBackButton title={i18n.t('mypage:coupon')} />
       </View>
-      <View style={[styles.row, {marginTop: 24}]}>
-        <View
-          style={[
-            styles.input,
-            {borderColor: focused ? colors.clearBlue : colors.lightGrey},
-          ]}>
-          <AppTextInput
-            style={{flex: 1}}
-            placeholder={i18n.t('coupon:inputCode')}
-            value={code}
-            onChangeText={setCode}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-          />
-          {code.length > 0 && (
-            <AppButton
-              style={{justifyContent: 'flex-end', marginLeft: 10}}
-              iconName="btnSearchCancel"
-              onPress={() => setCode('')}
-            />
-          )}
-        </View>
-        <AppButton
-          style={styles.regBtn}
-          title={i18n.t('coupon:reg')}
-          disabled={code.length < 1}
-          onPress={regCoupon}
-          disabledOnPress={regCoupon}
-          disabledCanOnPress
-          titleStyle={[appStyles.semiBold16Text, {color: colors.white}]}
-        />
-      </View>
-      <AppText style={styles.title}>{i18n.t('coupon:mine')}</AppText>
       <FlatList
         style={{flex: 1}}
         data={coupon}
         keyExtractor={(item) => item.id}
+        contentContainerStyle={{flexGrow: 1}}
         renderItem={renderCoupon}
+        ListHeaderComponent={renderListHeader(code, focused)}
+        ListFooterComponent={renderCaution}
+        ListFooterComponentStyle={{
+          flex: 1,
+          justifyContent: 'flex-end',
+        }}
         ListEmptyComponent={
           <View style={styles.empty}>
             <AppSvgIcon name="imgCoupon" />
@@ -257,20 +301,7 @@ const CouponScreen: React.FC<CouponProps> = ({
           />
         }
       />
-      <View style={styles.bottom}>
-        <View style={[styles.row, {marginBottom: 12}]}>
-          <AppSvgIcon name="caution24" />
-          <AppText key="noti" style={[appStyles.bold18Text, {marginLeft: 8}]}>
-            {i18n.t('coupon:noti')}
-          </AppText>
-        </View>
-        <AppText key="noti.1" style={styles.caution}>
-          {i18n.t('coupon:noti:1')}
-        </AppText>
-        <AppText key="noti.2" style={styles.caution}>
-          {i18n.t('coupon:noti:2')}
-        </AppText>
-      </View>
+
       <AppSnackBar
         visible={!!message}
         textMessage={message}

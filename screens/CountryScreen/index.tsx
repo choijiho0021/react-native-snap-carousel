@@ -95,7 +95,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const [prodData, setProdData] = useState<RkbProduct[][]>([]);
   const [imageUrl, setImageUrl] = useState<string>();
   const [localOpDetails, setLocalOpDetails] = useState<string>();
-  const [partnerId, setPartnerId] = useState<string>();
   const isTop = useRef(true);
   const blockAnimation = useRef(false);
   const headerTitle = useMemo(
@@ -110,7 +109,6 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
       const partnerIds = route.params.partner;
 
       const localOp = localOpList.get(partnerIds[0]);
-      setPartnerId(partnerIds[0]);
 
       setImageUrl(localOp?.imageUrl);
       setLocalOpDetails(localOp?.detail);
@@ -132,11 +130,11 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         price: prod.price,
         listPrice: prod.listPrice,
         localOpDetails,
-        partnerId,
+        partnerId: prod.partnerId,
         partner: localOpList.get(prod.partnerId)?.partner,
         prod,
       }),
-    [imageUrl, localOpDetails, localOpList, navigation, partnerId],
+    [imageUrl, localOpDetails, localOpList, navigation],
   );
 
   const onTop = useCallback(

@@ -2,7 +2,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {SafeAreaView, StyleSheet, View, BackHandler} from 'react-native';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -408,8 +408,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       action.cart.applyCoupon({couponId: undefined, accountCash: 0});
   }, [action.cart, mode]);
 
-  const backhanler = useCallback(() => {
-    action.modal.renderModal(() => (
+  const backHandler = useCallback(() => {
+    return action.modal.renderModal(() => (
       <AppModalContent
         title={
           (cart.pymReq?.discount?.value || 0) < 0
@@ -435,14 +435,14 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   BackbuttonHandler({
     navigation,
     onBack: () => {
-      backhanler();
+      backHandler();
       return true;
     },
   });
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScreenHeader title={i18n.t('payment')} backHandler={backhanler} />
+      <ScreenHeader title={i18n.t('payment')} backHandler={backHandler} />
       <KeyboardAwareScrollView
         contentContainerStyle={{minHeight: '100%'}}
         showsVerticalScrollIndicator={false}

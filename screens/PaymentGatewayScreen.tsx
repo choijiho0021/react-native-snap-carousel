@@ -134,6 +134,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       action.cart,
       navigation,
       params.card,
+      params?.installmentMonths,
       params.mode,
       params.pay_method,
       params.paymentRule,

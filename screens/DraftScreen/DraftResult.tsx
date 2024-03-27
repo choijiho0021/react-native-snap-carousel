@@ -29,11 +29,15 @@ const styles = StyleSheet.create({
   },
   titleText: {
     ...appStyles.bold24Text,
+    marginTop: 80,
     marginBottom: 16,
   },
-
   bodyText: {
     ...appStyles.normal16Text,
+    lineHeight: 24,
+  },
+  boldBodyText: {
+    ...appStyles.bold16Text,
     lineHeight: 24,
   },
 });
@@ -91,7 +95,7 @@ const DraftResultScreen: React.FC<DraftResultScreenProps> = ({
             <AppText style={styles.titleText}>
               {i18n.t('his:draftSuccessTitle')}
             </AppText>
-            <AppText style={styles.bodyText}>
+            <AppText style={styles.boldBodyText}>
               {i18n.t('his:draftSuccessText1')}
             </AppText>
             <AppText style={styles.bodyText}>
