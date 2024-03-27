@@ -431,10 +431,7 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
           setIsProdEvent(true);
           if (!props?.account?.loggedIn) {
             setEventStatus('unknown');
-          } else if (
-            rule?.sku.includes('event') ||
-            rule?.sku.includes('cpn-')
-          ) {
+          } else if (rule?.sku.includes('event')) {
             setEventStatus('open');
           } else {
             const resp = await API.Promotion.check(nid);
