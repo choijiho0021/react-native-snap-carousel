@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     flex: 1,
+    height: 100,
   },
   timeDivider: {
     marginHorizontal: 4,
