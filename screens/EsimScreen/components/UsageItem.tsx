@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   },
   activeContainer: {
     alignItems: 'center',
-    marginVertical: 20,
+    marginTop: 20,
   },
   usageTitleBold: {
     ...appStyles.bold20Text,
@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
   cautionContainer: {
     marginHorizontal: 20,
     marginTop: 20,
-    marginBottom: 12,
     paddingVertical: 16,
     paddingHorizontal: 16,
     borderRadius: 3,
@@ -109,6 +108,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     flex: 1,
+    height: 100,
   },
   timeDivider: {
     marginHorizontal: 4,
@@ -334,10 +334,15 @@ const UsageItem: React.FC<UsageItemProps> = ({
           </View>
         )}
 
-        {item.daily === 'daily' && item.partner !== 'ht' && (
-          <Fragment>
+        {showEndTime &&
+          endTime &&
+          item.daily === 'daily' &&
+          !['ht', 'mosaji'].includes(item.partner!) && (
             <View style={styles.timeDivider} />
+          )}
 
+        {item.daily === 'daily' &&
+          !['ht', 'mosaji'].includes(item.partner!) && (
             <View style={styles.timeItem}>
               <AppText
                 style={{
@@ -357,11 +362,10 @@ const UsageItem: React.FC<UsageItemProps> = ({
                 <View>{renderResetTimeRow('korea')}</View>
               )}
             </View>
-          </Fragment>
-        )}
+          )}
       </View>
     );
-  }, [endTime, item.daily, renderResetTimeRow, showEndTime]);
+  }, [endTime, item.daily, item.partner, renderResetTimeRow, showEndTime]);
 
   const renderAnimatedCircularProgress = useCallback(() => {
     return (
@@ -421,7 +425,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           </View>
         );
       default:
-        return (
+        return showEndTime && endTime ? (
           <View style={{width: '100%'}}>
             <View style={{flexDirection: 'row'}}>
               <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
@@ -430,9 +434,9 @@ const UsageItem: React.FC<UsageItemProps> = ({
               </AppText>
             </View>
           </View>
-        );
+        ) : null;
     }
-  }, [item?.partner]);
+  }, [endTime, item?.partner, showEndTime]);
 
   const clMtdTxt = useCallback(() => {
     return ['ais', 'dtac', 'vndaily'].includes(item?.clMtd || '') ? (
@@ -619,7 +623,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           {showStatus &&
             !usageLoading &&
             !isError &&
-            item?.partner !== 'ht' && (
+            !['ht', 'mosaji'].includes(item.partner!) && (
               <AppText
                 key={item.nid}
                 style={[

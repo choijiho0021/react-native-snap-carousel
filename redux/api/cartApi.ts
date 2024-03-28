@@ -386,8 +386,9 @@ const makeOrder = ({
   // 연장하기는 mainSubsId 값이 존재, 연장하기는 환불 불가능
   const orderType: OrderPolicyType =
     mainSubsId ||
-    items.findIndex((item) => ['add_on_product', 'rch'].includes(item.type)) >=
-      0
+    items.findIndex((item) =>
+      ['add_on_product', 'addon', 'rch'].includes(item.type),
+    ) >= 0
       ? 'immediate_order'
       : 'refundable';
 

@@ -178,6 +178,8 @@ function HomeStackComponent() {
       <HomeStack.Screen name="CancelResult" component={CancelResultScreen} />
       <HomeStack.Screen name="Receipt" component={ReceiptScreen} />
 
+      <HomeStack.Screen name="Coupon" component={CouponScreen} />
+
       <HomeStack.Screen
         name="RegisterMobile"
         component={RegisterMobileScreen}

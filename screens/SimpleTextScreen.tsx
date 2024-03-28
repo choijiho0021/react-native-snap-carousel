@@ -238,6 +238,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
       } else {
         setPromoResult('promo:join:ing');
         const resp = await API.Promotion.join({rule, iccid, token});
+
         setPromoResult(
           resp.result === 0 &&
             resp.objects[0]?.hold === 0 &&
@@ -342,6 +343,10 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     return 'ok';
   }, [eventStatus, isProdEvent, loggedIn]);
 
+  const disabled =
+    ['joined', 'invalid'].includes(eventStatus) ||
+    ['promo:join:ing', 'promo:join:fail'].includes(promoResult);
+
   return (
     <SafeAreaView style={styles.screen}>
       <View style={appStyles.header}>
@@ -353,10 +358,12 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
         <AppButton
           style={styles.button}
           type="primary"
-          title={route.params?.rule?.btnTitle || i18n.t(title)}
-          disabled={
-            eventStatus === 'joined' || promoResult === 'promo:join:ing'
+          title={
+            disabled
+              ? i18n.t(title)
+              : route.params?.rule?.btnTitle || i18n.t(title)
           }
+          disabled={disabled}
           onPress={onPress}
         />
       )}
@@ -384,9 +391,11 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
                 screen: 'MyPage',
               });
             } else if (sku?.startsWith('cpn-')) {
-              navigation.navigate('MyPageStack', {
-                screen: 'Coupon',
-              });
+              if (props?.account?.loggedIn) {
+                navigation.navigate('Coupon');
+              } else {
+                navigation.navigate('RegisterMobile', {});
+              }
             } else {
               navigation.navigate('EsimStack', {
                 screen: 'Esim',
@@ -422,8 +431,6 @@ const SimpleTextScreen0 = (props: SimpleTextScreenProps) => {
           setIsProdEvent(true);
           if (!props?.account?.loggedIn) {
             setEventStatus('unknown');
-          } else if (rule?.sku.includes('cpn-')) {
-            setEventStatus('open');
           } else if (rule?.sku.includes('event')) {
             setEventStatus('open');
           } else {
