@@ -233,7 +233,6 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
           // notitype이 push인 경우 stack과 screen을 받아 해당화면으로 이동할 수 있도록 추가
           // ex) push/EsimStack/Esim
           case notiActions.NOTI_TYPE_PUSH:
-            console.log('aaaaa split', split);
             if (split.length > 2) {
               navigation.navigate(split[1], {screen: split[2]});
             } else {
