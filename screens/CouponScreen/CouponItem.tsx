@@ -81,7 +81,7 @@ const CouponItem = ({item}: {item: RkbCoupon}) => {
       </View>
       <View style={styles.date}>
         <AppText style={[styles.dday, diff < 10 ? styles.urgent : undefined]}>
-          {`D-${diff}`}
+          {diff === 0 ? 'D-DAY' : `D-${diff}`}
         </AppText>
         <AppText style={appStyles.medium14}>
           {endDate.format('yyyy.MM.DD 까지')}
