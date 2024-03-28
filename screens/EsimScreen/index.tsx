@@ -444,6 +444,17 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             },
           };
           break;
+        case 'mosaji':
+          result = {
+            status: {
+              statusCd: 'A',
+            },
+            usage: {quota: 0, used: 0, remain: 0, totalUsed: 0},
+            usageOption: {
+              mode: [],
+            },
+          };
+          break;
         default:
           result = await checkCmiData(item);
           break;

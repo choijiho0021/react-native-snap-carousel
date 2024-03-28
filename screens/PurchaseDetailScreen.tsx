@@ -197,6 +197,10 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   const [showSnackBar, setShowSnackBar] = useState<string>('');
   const [loading, setLoading] = useState(false);
 
+  const isCash = useMemo(() => {
+    return order?.orderItems?.find((i) => i.type === 'recharge');
+  }, [order?.orderItems]);
+
   const isValidate = useMemo(
     () => order?.orderType === 'refundable' && order?.state === 'validation',
     [order?.orderType, order?.state],
@@ -453,7 +457,8 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         <DropDownHeader
           title={label}
           style={{paddingTop: 16, paddingBottom: 20}}
-          titleStyle={styles.productTitle}>
+          titleStyle={styles.productTitle}
+          expandable={!isCash}>
           <ProductDetailList
             style={{
               paddingBottom: 0,
@@ -463,7 +468,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
             orderItems={order?.orderItems}
           />
         </DropDownHeader>
-        <View style={styles.bottomBar} />
+        <View style={[styles.bottomBar, isCash && {borderBottomWidth: 0}]} />
         <LabelText
           key="orderId"
           style={styles.item}
@@ -475,7 +480,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         <View style={styles.dividerTop} />
       </View>
     );
-  }, [getColor, order]);
+  }, [getColor, isCash, order]);
 
   if (!order || !order.orderItems) {
     return (

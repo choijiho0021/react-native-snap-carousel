@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   },
   activeContainer: {
     alignItems: 'center',
-    marginVertical: 20,
+    marginTop: 20,
   },
   usageTitleBold: {
     ...appStyles.bold20Text,
@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
   cautionContainer: {
     marginHorizontal: 20,
     marginTop: 20,
-    marginBottom: 12,
     paddingVertical: 16,
     paddingHorizontal: 16,
     borderRadius: 3,
@@ -104,11 +103,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 3,
     backgroundColor: colors.backGrey,
+    marginTop: 12,
   },
   timeItem: {
     paddingHorizontal: 16,
     paddingVertical: 12,
+    justifyContent: 'center',
     flex: 1,
+    height: 100,
   },
   timeDivider: {
     marginHorizontal: 4,
@@ -337,29 +339,32 @@ const UsageItem: React.FC<UsageItemProps> = ({
         {showEndTime &&
           endTime &&
           item.daily === 'daily' &&
-          item.partner !== 'ht' && <View style={styles.timeDivider} />}
+          !['ht', 'mosaji'].includes(item.partner!) && (
+            <View style={styles.timeDivider} />
+          )}
 
-        {item.daily === 'daily' && item.partner !== 'ht' && (
-          <View style={styles.timeItem}>
-            <AppText
-              style={{
-                ...appStyles.bold12Text,
-                color: colors.black,
-                marginBottom: 6,
-              }}>
-              {i18n.t('esim:time:dataReset')}
-            </AppText>
+        {item.daily === 'daily' &&
+          !['ht', 'mosaji'].includes(item.partner!) && (
+            <View style={styles.timeItem}>
+              <AppText
+                style={{
+                  ...appStyles.bold12Text,
+                  color: colors.black,
+                  marginBottom: 6,
+                }}>
+                {i18n.t('esim:time:dataReset')}
+              </AppText>
 
-            {isTzDiff ? (
-              <View>
-                {renderResetTimeRow('korea', styles.rowBetween)}
-                {renderResetTimeRow('local', styles.rowBetween)}
-              </View>
-            ) : (
-              <View>{renderResetTimeRow('korea')}</View>
-            )}
-          </View>
-        )}
+              {isTzDiff ? (
+                <View>
+                  {renderResetTimeRow('korea', styles.rowBetween)}
+                  {renderResetTimeRow('local', styles.rowBetween)}
+                </View>
+              ) : (
+                <View>{renderResetTimeRow('korea')}</View>
+              )}
+            </View>
+          )}
       </View>
     );
   }, [endTime, item.daily, item.partner, renderResetTimeRow, showEndTime]);
@@ -403,7 +408,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [isExhausted, remain]);
 
   const warningDotTxt = useCallback(() => {
-    console.log('aaaaa showEndTime', showEndTime);
     switch (item?.partner) {
       case 'ht':
         return (
@@ -621,7 +625,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           {showStatus &&
             !usageLoading &&
             !isError &&
-            item?.partner !== 'ht' && (
+            !['ht', 'mosaji'].includes(item.partner!) && (
               <AppText
                 key={item.nid}
                 style={[
