@@ -31,11 +31,12 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
     <ScrollView
       style={{
         flexDirection: 'row',
-        paddingLeft: 20,
         marginBottom: 24,
+        width: '100%',
       }}
       horizontal
       showsHorizontalScrollIndicator={false}>
+      <View style={{width: 20, height: 34}} />
       {filterList.map((elm, idx) => (
         <AppButton
           onPress={() => {
@@ -44,7 +45,7 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
           }}
           key={elm}
           style={{
-            marginLeft: idx > 0 ? 8 : 0,
+            marginRight: 8,
             backgroundColor: elm === filter ? colors.clearBlue : colors.white,
             borderWidth: 1,
             borderRadius: 100,
@@ -61,6 +62,7 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
           title={i18n.t(`daily:filter:${elm}`)}
         />
       ))}
+      <View style={{width: 12, height: 34}} />
     </ScrollView>
   );
 };
