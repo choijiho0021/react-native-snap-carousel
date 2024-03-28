@@ -76,6 +76,7 @@
         android:name="com.rokebiesim.MainApplication"
         android:label="@string/app_name"
         android:icon="${appIcon}"
+        android:roundIcon="${roundAppIcon}"
         tools:replace="android:allowBackup"
         android:allowBackup="false"
         android:theme="@style/AppTheme"
