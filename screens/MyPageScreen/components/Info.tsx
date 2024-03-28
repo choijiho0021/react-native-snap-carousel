@@ -1,6 +1,6 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {RootState} from '@reduxjs/toolkit';
-import React, {memo} from 'react';
+import React, {memo, useCallback} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import AppButton from '@/components/AppButton';
@@ -9,7 +9,7 @@ import Profile from '@/components/Profile';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {AccountModelState} from '@/redux/modules/account';
+import account, {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
 import {navigate} from '@/navigation/navigation';
 import AppIcon from '@/components/AppIcon';
@@ -142,9 +142,32 @@ type InfoProps = {
   onChangePhoto: () => void;
 };
 
-const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
+const Info: React.FC<InfoProps> = ({
+  account: {balance, coupon},
+  onChangePhoto,
+}) => {
   const navigation = useNavigation();
   const route = useRoute();
+
+  const btnListTitle = useCallback(
+    (icon: string, title: any) => {
+      return icon === 'mycoupon' ? (
+        <>
+          <AppText style={{...appStyles.bold16Text, marginRight: 4}}>
+            {i18n.t(title)}
+          </AppText>
+          {coupon.length > 0 && (
+            <AppText style={{...appStyles.bold16Text, color: colors.redError}}>
+              {` ${coupon.length}`}
+            </AppText>
+          )}
+        </>
+      ) : (
+        i18n.t(title)
+      );
+    },
+    [coupon.length],
+  );
 
   return (
     <View style={{marginBottom: 10}}>
@@ -183,9 +206,9 @@ const Info: React.FC<InfoProps> = ({account: {balance}, onChangePhoto}) => {
           <AppButton
             key={title}
             iconName={icon}
-            title={i18n.t(title)}
+            title={btnListTitle(icon, title)}
             style={styles.btnContactBoard}
-            titleStyle={[appStyles.bold14Text, {marginTop: 8}]}
+            titleStyle={[appStyles.bold16Text, {marginTop: 8}]}
             viewStyle={styles.btnStyle}
             type="secondary"
             onPress={() =>

@@ -103,10 +103,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 3,
     backgroundColor: colors.backGrey,
+    marginTop: 12,
   },
   timeItem: {
     paddingHorizontal: 16,
     paddingVertical: 12,
+    justifyContent: 'center',
     flex: 1,
     height: 100,
   },
