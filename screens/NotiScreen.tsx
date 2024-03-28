@@ -222,7 +222,6 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
       const {token} = account;
       const split = notiType?.split('/');
       const type = split[0];
-
       Analytics.trackEvent('Page_View_Count', {page: 'Noti Detail'});
 
       if (uuid) {
@@ -231,6 +230,23 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
           action.noti.readNoti({uuid, token});
 
         switch (type) {
+          // notitype이 push인 경우 stack과 screen을 받아 해당화면으로 이동할 수 있도록 추가
+          // ex) push/EsimStack/Esim
+          case notiActions.NOTI_TYPE_PUSH:
+            console.log('aaaaa split', split);
+            if (split.length > 2) {
+              navigation.navigate(split[1], {screen: split[2]});
+            } else {
+              navigation.navigate('SimpleText', {
+                key: 'noti',
+                title: i18n.t('set:noti'),
+                bodyTitle,
+                text: body,
+                mode: 'html',
+              });
+            }
+            break;
+
           case notiActions.NOTI_TYPE_REPLY:
             navigation.navigate('BoardMsgResp', {
               uuid: split[1],
