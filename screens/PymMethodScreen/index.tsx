@@ -172,33 +172,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const pymMethodRef = useRef<PymMethodRef>(null);
   const creditCardList = useMemo(
     () =>
-      [
-        '41',
-        '03',
-        '04',
-        '06',
-        '11',
-        '12',
-        '14',
-        '34',
-        '38',
-        '32',
-        '35',
-        '33',
-        '95',
-        '43',
-        '48',
-        '51',
-        '52',
-        '54',
-        '55',
-        '56',
-        '71',
-      ].map((k) => ({
-        label: i18n.t(`pym:card${k}`),
+      Object.entries(product.rule.code).map(([k, v]) => ({
+        label: v,
         value: `card${k}`,
       })),
-    [],
+    [product.rule.code],
   );
 
   const installmentMonthsList = useMemo(
@@ -477,17 +455,17 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           />
         </View>
 
-        <View key="div1" style={styles.divider} />
+        <View style={styles.divider} />
 
         {mode !== 'recharge' && (
           <DiscountInfo onPress={() => navigation.navigate('SelectCoupon')} />
         )}
 
-        <View key="div2" style={styles.divider} />
+        <View style={styles.divider} />
 
         <PaymentSummary data={cart.pymReq} total={cart.pymPrice} mode={mode} />
 
-        <View key="div3" style={styles.divider} />
+        <View style={styles.divider} />
 
         <PymMethod
           pymMethodRef={pymMethodRef}
@@ -496,16 +474,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           onPress={setPymMethod}
           price={cart?.pymPrice}
         />
-
-        {/* {cart.pymPrice?.value !== 0 ? (
-          method()
-        ) : (
-          <View style={styles.result} key="result">
-            <AppText style={styles.resultText}>
-              {i18n.t('pym:balPurchase')}
-            </AppText>
-          </View>
-        )} */}
 
         {/* 가변영역 설정 */}
         <View style={{flex: 1, minHeight: 26}} />
@@ -533,7 +501,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               AppAlert.info(i18n.t('pym:policy:alert'));
             }
           }}
-          key={i18n.t('payment')}
           onPress={() => onSubmit(false)}
           style={appStyles.confirm}
           type="primary"

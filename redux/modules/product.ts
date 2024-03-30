@@ -182,7 +182,8 @@ export type PaymentRule = {
     state: string;
     message?: string;
   };
-};
+  code: Record<string, string>;
+} & Record<string, 'I' | 'H'>;
 
 export interface ProductModelState {
   prodList: ImmutableMap<string, RkbProduct>; // uuid -> RkbProduct
