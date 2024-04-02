@@ -5491,6 +5491,33 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  scrollRightArrow: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="m10 3 4 5-4 5M6 3l4 5-4 5M2 3l4 5-4 5"
+        stroke="url(#my9n6t4ika)"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Defs>
+        <LinearGradient
+          id="my9n6t4ika"
+          x1="15"
+          y1="8"
+          x2="1.5"
+          y2="8"
+          gradientUnits="userSpaceOnUse">
+          <Stop stop-color="#2C2C2C" />
+          <Stop offset="1" stop-color="#D8D8D8" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
 };
 
 export default pressIcons;
