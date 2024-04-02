@@ -155,14 +155,14 @@ const DiscountInfo: React.FC<DiscountProps> = ({
         // 최대 할인 적용
         action.cart.applyCoupon({
           maxDiscount: true,
-          accountCash: account.balance,
+          accountCash: utils.stringToNumber(rokebiCash),
         });
       } else {
         // unselect coupon
         action.cart.applyCoupon({couponId: undefined});
       }
     },
-    [account.balance, action.cart],
+    [action.cart, rokebiCash],
   );
 
   useEffect(() => {

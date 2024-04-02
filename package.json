@@ -47,7 +47,7 @@
     "@react-native-firebase/dynamic-links": "^15.7.0",
     "@react-native-firebase/messaging": "^15.7.0",
     "@react-native-google-signin/google-signin": "^9.0.2",
-    "@react-native-picker/picker": "^2.4.10",
+    "@react-native-picker/picker": "^2.7.2",
     "@react-native/normalize-color": "^2.0.0",
     "@react-navigation/bottom-tabs": "6.5.8",
     "@react-navigation/compat": "^5.3.20",
