@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import i18n from '@/utils/i18n';
@@ -28,9 +28,15 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
   filterList,
 }) => {
   const scrollRef = useRef<ScrollView>();
+  const [scrollWidth, setScrollWidth] = useState<number>(0);
+  const [contentWidth, setContentWidth] = useState<number>(0);
   const [filter, setFilter] = useState<DailyProdFilterList>('all');
   const [scrollEnd, setScrollEnd] = useState<boolean>(false);
   const [showIcon, setShowIcon] = useState<boolean>(true);
+
+  useEffect(() => {
+    setShowIcon(contentWidth >= scrollWidth);
+  }, [contentWidth, scrollWidth]);
 
   const renderScrollIcon = useCallback(
     () => (
@@ -86,6 +92,21 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
     setScrollEnd(isScrolledToEnd);
   }, []);
 
+  const handleLayout = useCallback(
+    (event) => {
+      const {width} = event.nativeEvent.layout;
+      setScrollWidth(scrollWidth === 0 ? width : scrollWidth);
+    },
+    [scrollWidth],
+  );
+
+  const handleContentSizeChange = useCallback(
+    (width) => {
+      setContentWidth(contentWidth === 0 ? width : contentWidth);
+    },
+    [contentWidth],
+  );
+
   return (
     <View
       style={{
@@ -99,9 +120,11 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
           width: '100%',
         }}
         ref={scrollRef}
+        onLayout={handleLayout}
+        onContentSizeChange={handleContentSizeChange}
         onScroll={handleScroll}
         onScrollBeginDrag={() => {
-          setShowIcon(true);
+          setShowIcon(contentWidth >= scrollWidth);
         }}
         onMomentumScrollEnd={() => {
           setShowIcon(!scrollEnd);
