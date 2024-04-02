@@ -197,7 +197,10 @@ const ProductDetailBody: React.FC<ProductDetailBodyProps> = ({
   );
 
   const renderTplInfo = useCallback(
-    (t: {class: string; tag: string; text: string}, lineHeight?: number) => {
+    (
+      t: {class: string; tag: string; text: string; lineHeight?: number},
+      idx,
+    ) => {
       const regex = /►.*◄/;
       const text = t.text
         .replace(/\t|&nbsp;/g, '')
@@ -207,24 +210,33 @@ const ProductDetailBody: React.FC<ProductDetailBodyProps> = ({
       return (
         <Pressable
           onPress={() => regex.test(text) && onMessage('moveToFaq')}
-          key={text}>
+          key={idx}>
           {t.class === 'txt_dot' ? (
             <TextWithDot
               key={text}
               text={text}
-              boldStyle={{...styles.noticeTextBlackBold, lineHeight}}
-              secondBoldStyle={{...styles.noticeTextBlueBold, lineHeight}}
-              textStyle={{...styles.noticeTextBlackWithDot, lineHeight}}
-              dotStyle={{...styles.dotBlack, lineHeight}}
+              boldStyle={{
+                ...styles.noticeTextBlackBold,
+                lineHeight: t.lineHeight,
+              }}
+              secondBoldStyle={{
+                ...styles.noticeTextBlueBold,
+                lineHeight: t.lineHeight,
+              }}
+              textStyle={{
+                ...styles.noticeTextBlackWithDot,
+                lineHeight: t.lineHeight,
+              }}
+              dotStyle={{...styles.dotBlack, lineHeight: t.lineHeight}}
               marginRight={20}
             />
           ) : (
             <AppStyledText
               text={text}
-              textStyle={{...styles.noticeTextBlack, lineHeight}}
+              textStyle={{...styles.noticeTextBlack, lineHeight: t.lineHeight}}
               format={{
-                b: {...styles.noticeTextBlackBold, lineHeight},
-                s: {...styles.noticeTextBlueBold, lineHeight},
+                b: {...styles.noticeTextBlackBold, lineHeight: t.lineHeight},
+                s: {...styles.noticeTextBlueBold, lineHeight: t.lineHeight},
               }}
             />
           )}
@@ -235,8 +247,8 @@ const ProductDetailBody: React.FC<ProductDetailBodyProps> = ({
   );
 
   const renderAPN = useCallback(
-    (apn: string) => (
-      <View style={styles.apn}>
+    (apn: string, idx) => (
+      <View style={styles.apn} key={idx}>
         <View style={styles.apnInfo}>
           <AppText style={styles.apnPrefix}>
             {i18n.t('prodDetail:body:top:apn')}
@@ -333,9 +345,7 @@ const ProductDetailBody: React.FC<ProductDetailBodyProps> = ({
             </View>
           ))}
         {tplList && tplList.length > 0 && !!tplList[0]?.text && (
-          <View style={styles.tplInfo}>
-            {tplList.map((t) => renderTplInfo(t))}
-          </View>
+          <View style={styles.tplInfo}>{tplList.map(renderTplInfo)}</View>
         )}
         <View style={styles.apnSetBox}>
           <View
@@ -370,7 +380,7 @@ const ProductDetailBody: React.FC<ProductDetailBodyProps> = ({
             ) : (
               <View
                 style={[styles.apnCopy, {flexDirection: 'column', gap: 16}]}>
-                {apn?.split('&').map((a) => renderAPN(a))}
+                {apn?.split('&').map(renderAPN)}
               </View>
             ))}
         </View>
@@ -398,13 +408,13 @@ const ProductDetailBody: React.FC<ProductDetailBodyProps> = ({
   ]);
 
   const renderBodyNotice = useCallback(
-    (t: {class: string; tag: string; text: string}) => {
+    (t: {class: string; tag: string; text: string}, idx) => {
       return t.tag === 'dt' ? (
-        <AppText key={utils.generateKey(t.text)} style={styles.noticeTitle}>
+        <AppText key={idx} style={styles.noticeTitle}>
           {t.text}
         </AppText>
       ) : (
-        renderTplInfo(t, 20)
+        renderTplInfo({...t, lineHeight: 20}, idx)
       );
     },
     [renderTplInfo],
@@ -429,12 +439,9 @@ const ProductDetailBody: React.FC<ProductDetailBodyProps> = ({
           {i18n.t('prodDetail:Caution')}
         </AppText>
         <View style={styles.bodyNoticeContents}>
-          {textList &&
-            textList.length > 0 &&
+          {textList?.length > 0 &&
             textList.map((t, idx) => (
-              <View key={utils.generateKey(idx.toString())}>
-                {t.map((c) => renderBodyNotice(c))}
-              </View>
+              <View key={idx}>{t.map(renderBodyNotice)}</View>
             ))}
         </View>
       </View>
