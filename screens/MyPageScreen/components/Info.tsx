@@ -156,9 +156,9 @@ const Info: React.FC<InfoProps> = ({
           <AppText style={{...appStyles.bold16Text, marginRight: 4}}>
             {i18n.t(title)}
           </AppText>
-          {coupon.length > 0 && (
+          {coupon?.length > 0 && (
             <AppText style={{...appStyles.bold16Text, color: colors.redError}}>
-              {` ${coupon.length}`}
+              {` ${coupon?.length}`}
             </AppText>
           )}
         </>
@@ -166,7 +166,7 @@ const Info: React.FC<InfoProps> = ({
         i18n.t(title)
       );
     },
-    [coupon.length],
+    [coupon?.length],
   );
 
   return (

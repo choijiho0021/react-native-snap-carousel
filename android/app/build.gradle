@@ -1,7 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
 apply plugin: "kotlin-android"
-apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+// apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 apply plugin: 'com.google.gms.google-services' // <- Add this line
 
 /**
@@ -140,8 +140,8 @@ android {
         multiDexEnabled true
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
-        versionCode 171
-        versionName "1.4.7"
+        versionCode 172
+        versionName "1.5.0"
         multiDexEnabled true
         resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
         resValue "string", "build_config_package", "com.rokebiesim"
@@ -154,7 +154,8 @@ android {
         esim {
             resValue "string", "app_name", "로깨비ESIM"
             manifestPlaceholders = [
-                    appIcon: "@raw/ic_launcher_foreground",
+                    appIcon: "@mipmap/ic_launcher",
+                    roundAppIcon: "@mipmap/ic_launcher_round"
             ]
         }
         global {

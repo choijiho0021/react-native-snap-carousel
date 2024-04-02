@@ -2,7 +2,13 @@
 import {RouteProp, useIsFocused} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState, useMemo, useRef} from 'react';
-import {Animated, SafeAreaView, StyleSheet, View} from 'react-native';
+import {
+  Animated,
+  SafeAreaView,
+  StyleSheet,
+  View,
+  BackHandler,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {Map as ImmutableMap} from 'immutable';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';

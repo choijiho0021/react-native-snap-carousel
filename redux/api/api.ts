@@ -345,7 +345,6 @@ const callHttp = async <T>(
       !url.includes('user/login') &&
       !url.includes('user/logout')
     ) {
-      ㅡ;
       const user = await retrieveData(API.User.KEY_MOBILE, true);
       const pass = await retrieveData(API.User.KEY_PIN, true);
       const isLoggedIn = await userApi.logIn({user, pass});

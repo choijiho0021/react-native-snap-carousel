@@ -217,10 +217,11 @@ const slice = createSlice({
       // 쿠폰 적용 시 결제 값이 음수가 되지 않도록 사용할 캐시 재계산
       if (promo && state?.pymReq?.rkbcash?.value > 0) {
         const maxPrice =
-          (state.pymReq?.subtotal?.value || 0) - (promo?.adj?.value || 0);
+          (state.pymReq?.subtotal?.value || 0) + (promo?.adj?.value || 0);
 
         // 할인된 상품의 가격을 넘어선 안되고, 계정이 가진 캐시보다 커선 안된다.
         const min = availableRokebiCash(maxPrice, accountCash);
+
         state.pymReq = {
           ...state.pymReq,
           rkbcash: utils.toCurrency(min, esimCurrency),

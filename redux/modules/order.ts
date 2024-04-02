@@ -49,7 +49,7 @@ export const getLastExpireDate = (sub: RkbSubscription) => {
         .format()
     : sub?.lastExpireDate;
 
-  return moment(lastExpireDate);
+  return moment(lastExpireDate).endOf('day');
 };
 
 const subsReturn = (resp) => {

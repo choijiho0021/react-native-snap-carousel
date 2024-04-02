@@ -13,8 +13,12 @@ import utils from '@/redux/api/utils';
 import AppAlert from '@/components/AppAlert';
 import {hectoWebViewHtml} from './ConfigHecto';
 import {appStyles} from '@/constants/Styles';
+import Env from '@/environment';
+import {colors} from '@/constants/Colors';
 
 export type PaymentResultCallbackParam = 'next' | 'cancel' | 'check';
+
+const {isIOS} = Env.get();
 
 export const pgWebViewConfig = {
   cancelUrl: 'https://localhost/canc',
@@ -52,16 +56,21 @@ const styles = StyleSheet.create({
     flex: 1,
     zIndex: 1,
   },
-  loadingContainer: {
-    backgroundColor: 'white',
+  loadingShadowBox: {
+    elevation: 32,
     shadowColor: 'rgba(166, 168, 172, 0.24)',
     shadowOffset: {
       width: 0,
-      height: -2,
+      height: 0,
     },
-    shadowRadius: 2,
+    shadowRadius: 16,
     shadowOpacity: 1,
-    height: 240,
+  },
+  loadingContainer: {
+    backgroundColor: 'white',
+
+    height: 200,
+    marginTop: 10,
   },
   head: {
     height: 74,
@@ -170,20 +179,26 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         </View>
 
         {loading && (
-          <View style={styles.loadingContainer}>
-            <View style={styles.head}>
-              <AppText style={appStyles.bold18Text}>
-                {i18n.t('pym:wait:title')}
-              </AppText>
-            </View>
-            <View>
-              <AppText
-                style={{
-                  ...appStyles.normal16Text,
-                  paddingHorizontal: 20,
-                }}>
-                {i18n.t(isKST ? 'pym:wait:kst' : 'pym:wait:another')}
-              </AppText>
+          <View
+            style={[
+              styles.loadingShadowBox,
+              !isIOS && {shadowColor: 'rgb(52, 62, 95)'},
+            ]}>
+            <View style={styles.loadingContainer}>
+              <View style={styles.head}>
+                <AppText style={appStyles.bold18Text}>
+                  {i18n.t('pym:wait:title')}
+                </AppText>
+              </View>
+              <View>
+                <AppText
+                  style={{
+                    ...appStyles.normal16Text,
+                    paddingHorizontal: 20,
+                  }}>
+                  {i18n.t(isKST ? 'pym:wait:kst' : 'pym:wait:another')}
+                </AppText>
+              </View>
             </View>
           </View>
         )}
