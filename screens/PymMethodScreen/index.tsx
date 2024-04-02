@@ -170,14 +170,14 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
   const pymMethodRef = useRef<PymMethodRef>(null);
-  const creditCardList = useMemo(
-    () =>
-      Object.entries(product.rule.code).map(([k, v]) => ({
+  const creditCardList = useMemo(() => {
+    return (
+      product.rule.ccard?.map(([k, v]) => ({
         label: v,
         value: `card${k}`,
-      })),
-    [product.rule.code],
-  );
+      })) || []
+    );
+  }, [product.rule.ccard]);
 
   const installmentMonthsList = useMemo(
     () =>
