@@ -4,6 +4,7 @@ import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
 import Video from 'react-native-video';
 import moment from 'moment';
+import {useFocusEffect} from '@react-navigation/native';
 import {inicisWebviewHtml} from './ConfigInicis';
 import AppText from '../AppText';
 import i18n from '@/utils/i18n';
@@ -11,7 +12,6 @@ import {PaymentParams} from '@/navigation/navigation';
 import utils from '@/redux/api/utils';
 import AppAlert from '@/components/AppAlert';
 import {hectoWebViewHtml} from './ConfigHecto';
-import {useFocusEffect} from '@react-navigation/native';
 import {appStyles} from '@/constants/Styles';
 
 export type PaymentResultCallbackParam = 'next' | 'cancel' | 'check';
