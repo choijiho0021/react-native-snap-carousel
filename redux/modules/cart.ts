@@ -41,7 +41,6 @@ const calculateTotal = createAsyncThunk('cart/calc', API.Cart.calculateTotal);
 const cartFetch = createAsyncThunk('cart/fetch', API.Cart.get);
 const cartAdd = createAsyncThunk('cart/add', API.Cart.add);
 const cartRemove = createAsyncThunk('cart/remove', API.Cart.remove);
-const cartCheckStock = createAsyncThunk('cart/checkStock', API.Cart.checkStock);
 const getOutOfStockTitle = createAsyncThunk(
   'cart/getOutOfStockTitle',
   API.Cart.getStockTitle,
@@ -49,23 +48,6 @@ const getOutOfStockTitle = createAsyncThunk(
 const cartUpdateQty = createAsyncThunk('cart/update', API.Cart.updateQty);
 
 const makeOrder = createAsyncThunk('cart/makeOrder', API.Cart.makeOrder);
-
-const checkStock = createAsyncThunk(
-  'cart/checkStock',
-  (
-    {purchaseItems, token}: {purchaseItems: PurchaseItem[]; token: string},
-    {dispatch},
-  ) => {
-    return purchaseItems[0].type === 'product'
-      ? dispatch(cartCheckStock({purchaseItems, token})).then(
-          ({payload: resp}) => {
-            if (resp.result === 0) return resp;
-            return dispatch(getOutOfStockTitle(resp));
-          },
-        )
-      : Promise.resolve({result: 0});
-  },
-);
 
 const cartAddAndGet = createAsyncThunk(
   'cart/addAndGet',
@@ -381,8 +363,8 @@ const slice = createSlice({
   },
 });
 
-const checkStockAndMakeOrder = createAsyncThunk(
-  'cart/checkStockAndMakeOrder',
+const MakeOrderAndPurchase = createAsyncThunk(
+  'cart/MakeOrderAndPurchase',
   (info: PaymentInfo, {dispatch, getState}) => {
     const {account, cart} = getState() as RootState;
     const {token, iccid, email, mobile} = account;
@@ -458,24 +440,13 @@ const payNorder = createAsyncThunk(
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
-    return dispatch(checkStockAndMakeOrder(info)).then(({payload: resp}) => {
+    return dispatch(MakeOrderAndPurchase(info)).then(({payload: resp}) => {
       dispatch(updateOrder(info));
       return resp;
     });
   },
 );
 
-// 재고 확인 후 구매
-// 이후 결제 과정을 거친다.
-const checkStockAndPurchase = createAsyncThunk(
-  'cart/checkStockAndPurchase',
-  (
-    {purchaseItems, isCart}: {purchaseItems: PurchaseItem[]; isCart: boolean},
-    {dispatch},
-  ) => {
-    return dispatch(slice.actions.purchase({purchaseItems, isCart}));
-  },
-);
 /*
 export default handleActions(
   {
@@ -504,10 +475,9 @@ export const actions = {
   cartRemove,
   payNorder,
   cartAddAndGet,
-  checkStockAndPurchase,
   init,
   initCart,
-  checkStockAndMakeOrder,
+  MakeOrderAndPurchase,
   prepareOrder,
   updateOrder,
   makeEmpty,

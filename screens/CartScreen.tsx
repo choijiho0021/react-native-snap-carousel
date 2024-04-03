@@ -151,7 +151,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         );
 
       action.cart
-        .checkStockAndPurchase({purchaseItems, isCart: true})
+        .purchase({purchaseItems, isCart: true})
         .then(({payload: resp}) => {
           if (resp.result === 0) {
             navigation.navigate('PymMethod', {mode: 'cart'});
@@ -374,7 +374,6 @@ export default connect(
       status.pending[cartActions.cartAddAndGet.typePrefix] ||
       status.pending[cartActions.cartUpdateQty.typePrefix] ||
       status.pending[cartActions.cartRemove.typePrefix] ||
-      status.pending[cartActions.checkStockAndPurchase.typePrefix] ||
       false,
   }),
   (dispatch) => ({

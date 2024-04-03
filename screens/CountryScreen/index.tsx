@@ -231,8 +231,5 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
 
 export default connect(({product, status}: RootState) => ({
   product,
-  pending:
-    status.pending[cartActions.cartAddAndGet.typePrefix] ||
-    status.pending[cartActions.checkStockAndPurchase.typePrefix] ||
-    false,
+  pending: status.pending[cartActions.cartAddAndGet.typePrefix] || false,
 }))(CountryScreen);
