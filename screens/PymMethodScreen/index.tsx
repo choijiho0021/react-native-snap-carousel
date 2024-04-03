@@ -189,24 +189,16 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   );
 
   useEffect(() => {
-    action.account.getMyCoupon({token: account?.token});
-  }, [account?.token, action.account]);
+    action.account.getMyCoupon({token: account?.token}).then(() => {
+      action.cart.prepareOrder();
+    });
+  }, [account?.token, action.account, action.cart]);
 
   useEffect(() => {
     if (!info.infoMap.has(infoKey)) {
       action.info.getInfoList(infoKey);
     }
   }, [action.info, info.infoMap]);
-
-  useEffect(() => {
-    action.cart
-      .prepareOrder({
-        id: account.coupon?.map((a) => a.id),
-      })
-      .catch((err) => {
-        console.log('@@@ failed to preapre order', err);
-      });
-  }, [account.coupon, action.cart]);
 
   useEffect(() => {
     Analytics.trackEvent('Page_View_Count', {

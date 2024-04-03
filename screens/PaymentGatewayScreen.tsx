@@ -5,6 +5,7 @@ import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators, RootState} from 'redux';
 import Video from 'react-native-video';
+import moment from 'moment';
 import AppAlert from '@/components/AppAlert';
 import {HomeStackParamList} from '@/navigation/navigation';
 import api, {ApiResult} from '@/redux/api/api';
@@ -23,7 +24,6 @@ import {appStyles} from '@/constants/Styles';
 import {RkbPaymentVBankResult} from '@/redux/api/paymentApi';
 import Env from '@/environment';
 import {storeData} from '@/utils/utils';
-import moment from 'moment';
 
 const loading = require('../assets/images/loading_1.mp4');
 

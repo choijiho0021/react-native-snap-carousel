@@ -74,13 +74,7 @@ const cartAddAndGet = createAsyncThunk(
       account: {token},
     } = getState() as RootState;
 
-    return dispatch(checkStock({purchaseItems, token}))
-      .then(({payload: resp}) => {
-        if (resp.result === 0) {
-          return dispatch(cartAdd({purchaseItems, token}));
-        }
-        throw new Error('Soldout');
-      })
+    return dispatch(cartAdd({purchaseItems, token}))
       .then(({payload: rsp}) => {
         if (rsp.result === 0 && rsp.objects.length > 0) {
           return dispatch(cartFetch());
@@ -100,27 +94,23 @@ const init = createAsyncThunk(
   },
 );
 
-const prepareOrder = createAsyncThunk(
-  'cart/prepareOrder',
-  (coupon: CouponInfo, {getState}) => {
-    const {account, cart} = getState() as RootState;
-    const {token, iccid, email, mobile} = account;
-    const {purchaseItems, orderId, cartId, esimIccid, mainSubsId, isCart} =
-      cart;
+const prepareOrder = createAsyncThunk('cart/prepareOrder', (_, {getState}) => {
+  const {account, cart} = getState() as RootState;
+  const {token, iccid, email, mobile, coupon} = account;
+  const {purchaseItems, orderId, cartId, esimIccid, mainSubsId, isCart} = cart;
 
-    return API.Cart.makeOrder({
-      orderId: isCart ? cartId : orderId,
-      items: purchaseItems,
-      token,
-      iccid,
-      esimIccid,
-      mainSubsId,
-      user: mobile,
-      mail: email,
-      coupon,
-    });
-  },
-);
+  return API.Cart.makeOrder({
+    orderId: isCart ? cartId : orderId,
+    items: purchaseItems,
+    token,
+    iccid,
+    esimIccid,
+    mainSubsId,
+    user: mobile,
+    mail: email,
+    coupon: {id: coupon?.map((a) => a.id)},
+  });
+});
 
 export type PaymentReq = Record<
   'subtotal' | 'discount' | 'rkbcash',
@@ -404,37 +394,27 @@ const checkStockAndMakeOrder = createAsyncThunk(
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
-    return dispatch(checkStock({purchaseItems, token}))
-      .then(({payload: res}) => {
-        if (res.result === 0) {
-          // 충전, 구매 모두 order 생성
-          return dispatch(
-            makeOrder({
-              orderId: isCart ? cartId : orderId,
-              items: purchaseItems,
-              info,
-              token,
-              iccid,
-              esimIccid,
-              mainSubsId,
-              user: mobile,
-              mail: email,
-              coupon,
-            }),
-          )
-            .then((rsp) => {
-              dispatch(slice.actions.purchase({purchaseItems}));
-              return rsp.payload;
-            })
-            .catch((err) => {
-              console.log('@@@ failed to make order', err);
-              return Promise.resolve({result: api.E_INVALID_STATUS});
-            });
-        }
-        return Promise.resolve({result: api.E_RESOURCE_NOT_FOUND});
+    // 충전, 구매 모두 order 생성
+    return dispatch(
+      makeOrder({
+        orderId: isCart ? cartId : orderId,
+        items: purchaseItems,
+        info,
+        token,
+        iccid,
+        esimIccid,
+        mainSubsId,
+        user: mobile,
+        mail: email,
+        coupon,
+      }),
+    )
+      .then((rsp) => {
+        dispatch(slice.actions.purchase({purchaseItems}));
+        return rsp.payload;
       })
-      .catch(() => {
-        console.log('@@@ failed to check stock');
+      .catch((err) => {
+        console.log('@@@ failed to make order', err);
         return Promise.resolve({result: api.E_INVALID_STATUS});
       });
   },
@@ -491,21 +471,9 @@ const checkStockAndPurchase = createAsyncThunk(
   'cart/checkStockAndPurchase',
   (
     {purchaseItems, isCart}: {purchaseItems: PurchaseItem[]; isCart: boolean},
-    {dispatch, getState},
+    {dispatch},
   ) => {
-    const {
-      account: {token},
-    } = getState() as RootState;
-
-    return dispatch(checkStock({purchaseItems, token})).then(
-      ({payload: resp}) => {
-        if (resp.result === 0) {
-          dispatch(slice.actions.purchase({purchaseItems, isCart}));
-        }
-        // 처리 결과는 reducer에 보내서 처리하지만, 결과는 resp를 반환한다.
-        return resp;
-      },
-    );
+    return dispatch(slice.actions.purchase({purchaseItems, isCart}));
   },
 );
 /*
