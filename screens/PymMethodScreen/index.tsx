@@ -147,6 +147,29 @@ type PymMethodScreenProps = {
 };
 
 const {esimGlobal, impId, cachePrefix} = Env.get();
+const defaultCardList = [
+  '41',
+  '03',
+  '04',
+  '06',
+  '11',
+  '12',
+  '14',
+  '34',
+  '38',
+  '32',
+  '35',
+  '33',
+  '95',
+  '43',
+  '48',
+  '51',
+  '52',
+  '54',
+  '55',
+  '56',
+  '71',
+];
 
 const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   navigation,
@@ -175,7 +198,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       product.rule.ccard?.map(([k, v]) => ({
         label: v,
         value: `card${k}`,
-      })) || []
+      })) ||
+      defaultCardList.map((k) => ({
+        label: i18n.t(`pym:card${k}`),
+        value: `card${k}`,
+      }))
     );
   }, [product.rule.ccard]);
 
