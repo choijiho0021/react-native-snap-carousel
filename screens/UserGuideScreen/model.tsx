@@ -174,6 +174,7 @@ const renderTips = () => (
       fontSize: isDeviceSize('medium') ? 14 : 16,
       color: colors.clearBlue,
       marginBottom: 4,
+      lineHeight: 16,
     }}>
     {i18n.t('userGuide:tip')}
   </AppText>

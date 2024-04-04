@@ -108,7 +108,6 @@ const styles = StyleSheet.create({
   timeItem: {
     paddingHorizontal: 16,
     paddingVertical: 12,
-    justifyContent: 'center',
     flex: 1,
     height: 100,
   },
@@ -330,9 +329,12 @@ const UsageItem: React.FC<UsageItemProps> = ({
               }}>
               {i18n.t('esim:time:usable')}
             </AppText>
-            <AppText style={{...appStyles.bold16Text, color: colors.clearBlue}}>
-              {utils.toDateString(endTime, 'YYYY년 MM월 DD일 HH:mm:ss까지')}
-            </AppText>
+            <View style={styles.rowBetween}>
+              <AppText
+                style={{...appStyles.bold16Text, color: colors.clearBlue}}>
+                {utils.toDateString(endTime, 'YYYY년 MM월 DD일 HH:mm:ss까지')}
+              </AppText>
+            </View>
           </View>
         )}
 
