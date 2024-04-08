@@ -150,8 +150,9 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
             } as PurchaseItem),
         );
 
-      action.cart.purchase({purchaseItems, isCart: true});
-      navigation.navigate('PymMethod', {mode: 'cart'});
+      action.cart
+        .dispatchPurchase({purchaseItems, isCart: true})
+        .then(() => navigation.navigate('PymMethod', {mode: 'cart'}));
     }
   }, [account, action.cart, checked, list, navigation, qty]);
 

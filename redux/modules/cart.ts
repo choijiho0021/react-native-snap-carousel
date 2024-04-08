@@ -363,8 +363,8 @@ const slice = createSlice({
   },
 });
 
-const MakeOrderAndPurchase = createAsyncThunk(
-  'cart/MakeOrderAndPurchase',
+const makeOrderAndPurchase = createAsyncThunk(
+  'cart/makeOrderAndPurchase',
   (info: PaymentInfo, {dispatch, getState}) => {
     const {account, cart} = getState() as RootState;
     const {token, iccid, email, mobile} = account;
@@ -440,7 +440,7 @@ const payNorder = createAsyncThunk(
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
-    return dispatch(MakeOrderAndPurchase(info)).then(({payload: resp}) => {
+    return dispatch(makeOrderAndPurchase(info)).then(({payload: resp}) => {
       dispatch(updateOrder(info));
       return resp;
     });
@@ -468,6 +468,13 @@ const makeEmpty = createAsyncThunk(
   },
 );
 
+const dispatchPurchase = createAsyncThunk(
+  'cart/dispatchPurchase',
+  (params: {purchaseItems: PurchaseItem[]; isCart: boolean}, {dispatch}) => {
+    return dispatch(slice.actions.purchase(params));
+  },
+);
+
 export const actions = {
   ...slice.actions,
   cartFetch,
@@ -477,11 +484,12 @@ export const actions = {
   cartAddAndGet,
   init,
   initCart,
-  MakeOrderAndPurchase,
+  makeOrderAndPurchase,
   prepareOrder,
   updateOrder,
   makeEmpty,
   calculateTotal,
+  dispatchPurchase,
 };
 export type CartAction = typeof actions;
 
