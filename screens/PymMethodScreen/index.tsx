@@ -184,9 +184,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [clickable, setClickable] = useState(true);
   const [policyChecked, setPolicyChecked] = useState(false);
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
-  const [showNavigateAlert, setShowNavigateAlert] = useState(false);
-  const [navigateAlertTxt, setNavigateAlertTxt] = useState<string>();
-  const [rstTm, setRstTm] = useState('');
   const [showSelectCard, setShowSelectCard] = useState(false);
   const [showInstallmentMonths, setShowInstallmentMonths] = useState(false);
   const [installmentMonths, setInstallmentMonths] = useState('0');
@@ -307,19 +304,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               AppAlert.info(i18n.t('cart:unpublishedError'), '', () =>
                 navigation.popToTop(),
               );
-            } else if (
-              [api.E_INVALID_STATUS, api.W_INVALID_STATUS].includes(resp.result)
-            ) {
-              if (api.E_INVALID_STATUS === resp.result) {
-                setNavigateAlertTxt(i18n.t('esim:charge:time:reject3'));
-              } else if (resp.objects[0].leftDays > 1) {
-                setRstTm(moment(resp.objects[0].rstTm).format('HH:mm:ss'));
-                setNavigateAlertTxt(i18n.t('esim:charge:time:reject2'));
-              } else {
-                setNavigateAlertTxt(i18n.t('esim:charge:time:reject1'));
-              }
-
-              setShowNavigateAlert(true);
             } else {
               AppAlert.info(i18n.t('cart:systemError'));
             }

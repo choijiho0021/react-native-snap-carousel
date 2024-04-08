@@ -490,17 +490,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
     if (!isButtonDisabled) {
       // 구매 품목을 갱신한다.
-      action.cart
-        .checkStockAndPurchase({purchaseItems: [item], isCart: false})
-        .then(() => {
-          resetModalInfo();
-          navigation.navigate('PymMethod', {
-            mode: 'roaming_product',
-          });
-        })
-        .catch((err) => {
-          console.log('failed to check stock', err);
-        });
+      action.cart.purchase({purchaseItems: [item], isCart: false});
+      resetModalInfo();
+      navigation.navigate('PymMethod', {
+        mode: 'roaming_product',
+      });
     }
 
     return setTimeout(() => {

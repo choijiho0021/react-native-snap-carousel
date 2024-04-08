@@ -237,20 +237,11 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     // 이렇게 했을 때, 뒤로가기 같은거 하면 안꼬이는 지 확인이 필요할듯?
     const purchaseItems = oldCart?.purchaseItems || [];
 
-    if (purchaseItems.length > 0)
-      action.cart
-        .checkStockAndPurchase({purchaseItems, isCart: true})
-        .then(({payload: resp}) => {
-          if (resp.result === 0) {
-            navigation.navigate('PymMethod', {mode: 'cart'});
-          } else if (resp.result === api.E_RESOURCE_NOT_FOUND)
-            AppAlert.info(`${resp.title} ${i18n.t('cart:soldOut')}`);
-          else AppAlert.info(i18n.t('cart:systemError'));
-        })
-        .catch((err) => {
-          console.log('failed to check stock', err);
-        });
-    else {
+    if (purchaseItems.length > 0) {
+      action.cart.purchase({purchaseItems, isCart: true});
+
+      navigation.navigate('PymMethod', {mode: 'cart'});
+    } else {
       navigation.navigate('HomeStack', {screen: 'Home'});
     }
   }, [action.cart, navigation, oldCart?.purchaseItems]);

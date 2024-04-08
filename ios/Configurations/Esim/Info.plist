@@ -70,7 +70,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>13</string>
+	<string>29</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
@@ -142,6 +142,8 @@
 		<string>wooripay</string>
 		<string>nhallonepayansimclick</string>
 		<string>hanawalletmembers</string>
+		<string>monimopay</string>
+		<string>monimopayauth</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>

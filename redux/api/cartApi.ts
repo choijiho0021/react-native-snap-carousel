@@ -145,36 +145,6 @@ const add = ({
   );
 };
 
-const checkStock = async ({
-  purchaseItems,
-  token,
-}: {
-  purchaseItems: PurchaseItem[];
-  token: string;
-}) => {
-  if (!purchaseItems)
-    return api.reject(
-      api.E_INVALID_ARGUMENT,
-      'missing parameter: purchaseItems',
-    );
-
-  return api.callHttp(
-    `${api.httpUrl(api.path.cart)}/stock?_format=json`,
-    {
-      method: 'POST',
-      headers: api.withToken(token, 'json'),
-      body: JSON.stringify(
-        purchaseItems.map((item) => ({
-          purchased_entity_type: 'commerce_product_variation',
-          purchased_entity_id: item.variationId,
-          quantity: item.qty,
-        })),
-      ),
-    },
-    toStock(purchaseItems),
-  );
-};
-
 const remove = ({
   orderId,
   orderItemId,
@@ -504,7 +474,6 @@ export default {
   getStockTitle,
   get,
   add,
-  checkStock,
   remove,
   updateQty,
   makeOrder,

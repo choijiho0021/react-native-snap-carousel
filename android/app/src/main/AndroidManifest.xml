@@ -38,6 +38,7 @@
         <package android:name="com.lottemembers.android" />  <!--LPay-->
         <package android:name="com.tencent.mm" /> <!-- 위챗페이-->
         <package android:name="viva.republica.toss" /> <!-- 토스-->
+        <package android:name="net.ib.android.smcard" /> <!-- 모니모페이 -->
 
         <!--계좌이체-->
         <package android:name="com.kftc.bankpay.android" />  <!--금결원-->

@@ -176,7 +176,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
   useEffect(() => {
     if (!params.isPaid) {
       action.cart
-        .checkStockAndMakeOrder(pymInfo)
+        .MakeOrderAndPurchase(pymInfo)
         .then(({payload: resp}) => {
           if (!resp || resp.result < 0) {
             let text = 'cart:systemError';

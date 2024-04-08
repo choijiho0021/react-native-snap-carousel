@@ -108,9 +108,8 @@ const styles = StyleSheet.create({
   timeItem: {
     paddingHorizontal: 16,
     paddingVertical: 12,
-    justifyContent: 'center',
     flex: 1,
-    height: 100,
+    height: 88,
   },
   timeDivider: {
     marginHorizontal: 4,
@@ -121,6 +120,7 @@ const styles = StyleSheet.create({
   rowBetween: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });
 
@@ -240,10 +240,20 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
       return (
         <View style={rowStyle}>
-          <AppText style={{...appStyles.medium14, color: colors.warmGrey}}>
+          <AppText
+            style={{
+              ...appStyles.medium14,
+              lineHeight: 20,
+              color: colors.warmGrey,
+            }}>
             {i18n.t(`esim:time:${key}`)}
           </AppText>
-          <AppText style={{...appStyles.bold16Text, color: colors.black}}>
+          <AppText
+            style={{
+              ...appStyles.bold16Text,
+              lineHeight: 20,
+              color: colors.black,
+            }}>
             {getResetTime(tz)}
           </AppText>
         </View>
@@ -330,9 +340,12 @@ const UsageItem: React.FC<UsageItemProps> = ({
               }}>
               {i18n.t('esim:time:usable')}
             </AppText>
-            <AppText style={{...appStyles.bold16Text, color: colors.clearBlue}}>
-              {utils.toDateString(endTime, 'YYYY년 MM월 DD일 HH:mm:ss까지')}
-            </AppText>
+            <View style={styles.rowBetween}>
+              <AppText
+                style={{...appStyles.bold16Text, color: colors.clearBlue}}>
+                {utils.toDateString(endTime, 'YYYY.MM.DD HH:mm:ss까지')}
+              </AppText>
+            </View>
           </View>
         )}
 

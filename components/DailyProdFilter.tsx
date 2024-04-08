@@ -71,8 +71,10 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
             name="scrollRightArrow"
             style={{}}
             onPress={() => {
-              setShowIcon(false);
               scrollRef?.current.scrollToEnd();
+              setTimeout(() => {
+                setShowIcon(false);
+              }, 300);
             }}
           />
         </View>
@@ -146,7 +148,6 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
               borderWidth: 1,
               borderRadius: 100,
               borderColor: elm === filter ? colors.clearBlue : colors.lightGrey,
-              // width: 70,
               height: 34,
             }}
             titleStyle={[
