@@ -150,18 +150,8 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
             } as PurchaseItem),
         );
 
-      action.cart
-        .purchase({purchaseItems, isCart: true})
-        .then(({payload: resp}) => {
-          if (resp.result === 0) {
-            navigation.navigate('PymMethod', {mode: 'cart'});
-          } else if (resp.result === api.E_RESOURCE_NOT_FOUND)
-            AppAlert.info(`${resp.title} ${i18n.t('cart:soldOut')}`);
-          else AppAlert.info(i18n.t('cart:systemError'));
-        })
-        .catch((err) => {
-          console.log('failed to check stock', err);
-        });
+      action.cart.purchase({purchaseItems, isCart: true});
+      navigation.navigate('PymMethod', {mode: 'cart'});
     }
   }, [account, action.cart, checked, list, navigation, qty]);
 
