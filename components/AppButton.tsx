@@ -40,7 +40,7 @@ interface AppButtonProps {
   style?: StyleProp<ViewStyle>;
   disabled?: boolean;
   size?: number | number[];
-  title?: string;
+  title?: string | Element;
   iconName?: string;
   uri?: string;
   onPress?: () => void;

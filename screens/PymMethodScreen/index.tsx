@@ -147,6 +147,29 @@ type PymMethodScreenProps = {
 };
 
 const {esimGlobal, impId, cachePrefix} = Env.get();
+const defaultCardList = [
+  '41',
+  '03',
+  '04',
+  '06',
+  '11',
+  '12',
+  '14',
+  '34',
+  '38',
+  '32',
+  '35',
+  '33',
+  '95',
+  '43',
+  '48',
+  '51',
+  '52',
+  '54',
+  '55',
+  '56',
+  '71',
+];
 
 const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   navigation,
@@ -161,45 +184,24 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [clickable, setClickable] = useState(true);
   const [policyChecked, setPolicyChecked] = useState(false);
   const [showUnsupAlert, setShowUnsupAlert] = useState(false);
-  const [showNavigateAlert, setShowNavigateAlert] = useState(false);
-  const [navigateAlertTxt, setNavigateAlertTxt] = useState<string>();
-  const [rstTm, setRstTm] = useState('');
   const [showSelectCard, setShowSelectCard] = useState(false);
   const [showInstallmentMonths, setShowInstallmentMonths] = useState(false);
   const [installmentMonths, setInstallmentMonths] = useState('0');
 
   const mode = useMemo(() => route.params.mode, [route.params.mode]);
   const pymMethodRef = useRef<PymMethodRef>(null);
-  const creditCardList = useMemo(
-    () =>
-      [
-        '41',
-        '03',
-        '04',
-        '06',
-        '11',
-        '12',
-        '14',
-        '34',
-        '38',
-        '32',
-        '35',
-        '33',
-        '95',
-        '43',
-        '48',
-        '51',
-        '52',
-        '54',
-        '55',
-        '56',
-        '71',
-      ].map((k) => ({
+  const creditCardList = useMemo(() => {
+    return (
+      product.rule.ccard?.map(([k, v]) => ({
+        label: v,
+        value: `card${k}`,
+      })) ||
+      defaultCardList.map((k) => ({
         label: i18n.t(`pym:card${k}`),
         value: `card${k}`,
-      })),
-    [],
-  );
+      }))
+    );
+  }, [product.rule.ccard]);
 
   const installmentMonthsList = useMemo(
     () =>
@@ -211,24 +213,16 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   );
 
   useEffect(() => {
-    action.account.getMyCoupon({token: account?.token});
-  }, [account?.token, action.account]);
+    action.account.getMyCoupon({token: account?.token}).then(() => {
+      action.cart.prepareOrder();
+    });
+  }, [account?.token, action.account, action.cart]);
 
   useEffect(() => {
     if (!info.infoMap.has(infoKey)) {
       action.info.getInfoList(infoKey);
     }
   }, [action.info, info.infoMap]);
-
-  useEffect(() => {
-    action.cart
-      .prepareOrder({
-        id: account.coupon?.map((a) => a.id),
-      })
-      .catch((err) => {
-        console.log('@@@ failed to preapre order', err);
-      });
-  }, [account.coupon, action.cart]);
 
   useEffect(() => {
     Analytics.trackEvent('Page_View_Count', {
@@ -310,19 +304,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               AppAlert.info(i18n.t('cart:unpublishedError'), '', () =>
                 navigation.popToTop(),
               );
-            } else if (
-              [api.E_INVALID_STATUS, api.W_INVALID_STATUS].includes(resp.result)
-            ) {
-              if (api.E_INVALID_STATUS === resp.result) {
-                setNavigateAlertTxt(i18n.t('esim:charge:time:reject3'));
-              } else if (resp.objects[0].leftDays > 1) {
-                setRstTm(moment(resp.objects[0].rstTm).format('HH:mm:ss'));
-                setNavigateAlertTxt(i18n.t('esim:charge:time:reject2'));
-              } else {
-                setNavigateAlertTxt(i18n.t('esim:charge:time:reject1'));
-              }
-
-              setShowNavigateAlert(true);
             } else {
               AppAlert.info(i18n.t('cart:systemError'));
             }
@@ -477,17 +458,17 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           />
         </View>
 
-        <View key="div1" style={styles.divider} />
+        <View style={styles.divider} />
 
         {mode !== 'recharge' && (
           <DiscountInfo onPress={() => navigation.navigate('SelectCoupon')} />
         )}
 
-        <View key="div2" style={styles.divider} />
+        <View style={styles.divider} />
 
         <PaymentSummary data={cart.pymReq} total={cart.pymPrice} mode={mode} />
 
-        <View key="div3" style={styles.divider} />
+        <View style={styles.divider} />
 
         <PymMethod
           pymMethodRef={pymMethodRef}
@@ -496,16 +477,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           onPress={setPymMethod}
           price={cart?.pymPrice}
         />
-
-        {/* {cart.pymPrice?.value !== 0 ? (
-          method()
-        ) : (
-          <View style={styles.result} key="result">
-            <AppText style={styles.resultText}>
-              {i18n.t('pym:balPurchase')}
-            </AppText>
-          </View>
-        )} */}
 
         {/* 가변영역 설정 */}
         <View style={{flex: 1, minHeight: 26}} />
@@ -533,7 +504,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               AppAlert.info(i18n.t('pym:policy:alert'));
             }
           }}
-          key={i18n.t('payment')}
           onPress={() => onSubmit(false)}
           style={appStyles.confirm}
           type="primary"

@@ -490,21 +490,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
     if (!isButtonDisabled) {
       // 구매 품목을 갱신한다.
-      action.cart
-        .checkStockAndPurchase({purchaseItems: [item], isCart: false})
-        .then(({payload: resp}) => {
-          resetModalInfo();
-          if (resp.result === 0) {
-            navigation.navigate('PymMethod', {
-              mode: 'roaming_product',
-            });
-          } else {
-            soldOut(resp, 'cart:soldOut');
-          }
-        })
-        .catch((err) => {
-          console.log('failed to check stock', err);
-        });
+      action.cart.purchase({purchaseItems: [item], isCart: false});
+      resetModalInfo();
+      navigation.navigate('PymMethod', {
+        mode: 'roaming_product',
+      });
     }
 
     return setTimeout(() => {
@@ -518,7 +508,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     purchaseItems,
     qty,
     resetModalInfo,
-    soldOut,
   ]);
 
   const onPressBtnRegCard = useCallback(() => {

@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   },
   activeContainer: {
     alignItems: 'center',
-    marginVertical: 20,
+    marginTop: 20,
   },
   usageTitleBold: {
     ...appStyles.bold20Text,
@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
   cautionContainer: {
     marginHorizontal: 20,
     marginTop: 20,
-    marginBottom: 12,
     paddingVertical: 16,
     paddingHorizontal: 16,
     borderRadius: 3,
@@ -104,11 +103,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 3,
     backgroundColor: colors.backGrey,
+    marginTop: 12,
   },
   timeItem: {
     paddingHorizontal: 16,
     paddingVertical: 12,
     flex: 1,
+    height: 88,
   },
   timeDivider: {
     marginHorizontal: 4,
@@ -119,6 +120,7 @@ const styles = StyleSheet.create({
   rowBetween: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });
 
@@ -238,10 +240,20 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
       return (
         <View style={rowStyle}>
-          <AppText style={{...appStyles.medium14, color: colors.warmGrey}}>
+          <AppText
+            style={{
+              ...appStyles.medium14,
+              lineHeight: 20,
+              color: colors.warmGrey,
+            }}>
             {i18n.t(`esim:time:${key}`)}
           </AppText>
-          <AppText style={{...appStyles.bold16Text, color: colors.black}}>
+          <AppText
+            style={{
+              ...appStyles.bold16Text,
+              lineHeight: 20,
+              color: colors.black,
+            }}>
             {getResetTime(tz)}
           </AppText>
         </View>
@@ -328,38 +340,44 @@ const UsageItem: React.FC<UsageItemProps> = ({
               }}>
               {i18n.t('esim:time:usable')}
             </AppText>
-            <AppText style={{...appStyles.bold16Text, color: colors.clearBlue}}>
-              {utils.toDateString(endTime, 'YYYY년 MM월 DD일 HH:mm:ss까지')}
-            </AppText>
+            <View style={styles.rowBetween}>
+              <AppText
+                style={{...appStyles.bold16Text, color: colors.clearBlue}}>
+                {utils.toDateString(endTime, 'YYYY.MM.DD HH:mm:ss까지')}
+              </AppText>
+            </View>
           </View>
         )}
 
         {showEndTime &&
           endTime &&
           item.daily === 'daily' &&
-          item.partner !== 'ht' && <View style={styles.timeDivider} />}
+          !['ht', 'mosaji'].includes(item.partner!) && (
+            <View style={styles.timeDivider} />
+          )}
 
-        {item.daily === 'daily' && item.partner !== 'ht' && (
-          <View style={styles.timeItem}>
-            <AppText
-              style={{
-                ...appStyles.bold12Text,
-                color: colors.black,
-                marginBottom: 6,
-              }}>
-              {i18n.t('esim:time:dataReset')}
-            </AppText>
+        {item.daily === 'daily' &&
+          !['ht', 'mosaji'].includes(item.partner!) && (
+            <View style={styles.timeItem}>
+              <AppText
+                style={{
+                  ...appStyles.bold12Text,
+                  color: colors.black,
+                  marginBottom: 6,
+                }}>
+                {i18n.t('esim:time:dataReset')}
+              </AppText>
 
-            {isTzDiff ? (
-              <View>
-                {renderResetTimeRow('korea', styles.rowBetween)}
-                {renderResetTimeRow('local', styles.rowBetween)}
-              </View>
-            ) : (
-              <View>{renderResetTimeRow('korea')}</View>
-            )}
-          </View>
-        )}
+              {isTzDiff ? (
+                <View>
+                  {renderResetTimeRow('korea', styles.rowBetween)}
+                  {renderResetTimeRow('local', styles.rowBetween)}
+                </View>
+              ) : (
+                <View>{renderResetTimeRow('korea')}</View>
+              )}
+            </View>
+          )}
       </View>
     );
   }, [endTime, item.daily, item.partner, renderResetTimeRow, showEndTime]);
@@ -403,7 +421,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [isExhausted, remain]);
 
   const warningDotTxt = useCallback(() => {
-    console.log('aaaaa showEndTime', showEndTime);
     switch (item?.partner) {
       case 'ht':
         return (
@@ -621,7 +638,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           {showStatus &&
             !usageLoading &&
             !isError &&
-            item?.partner !== 'ht' && (
+            !['ht', 'mosaji'].includes(item.partner!) && (
               <AppText
                 key={item.nid}
                 style={[

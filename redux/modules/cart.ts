@@ -41,7 +41,6 @@ const calculateTotal = createAsyncThunk('cart/calc', API.Cart.calculateTotal);
 const cartFetch = createAsyncThunk('cart/fetch', API.Cart.get);
 const cartAdd = createAsyncThunk('cart/add', API.Cart.add);
 const cartRemove = createAsyncThunk('cart/remove', API.Cart.remove);
-const cartCheckStock = createAsyncThunk('cart/checkStock', API.Cart.checkStock);
 const getOutOfStockTitle = createAsyncThunk(
   'cart/getOutOfStockTitle',
   API.Cart.getStockTitle,
@@ -50,23 +49,6 @@ const cartUpdateQty = createAsyncThunk('cart/update', API.Cart.updateQty);
 
 const makeOrder = createAsyncThunk('cart/makeOrder', API.Cart.makeOrder);
 
-const checkStock = createAsyncThunk(
-  'cart/checkStock',
-  (
-    {purchaseItems, token}: {purchaseItems: PurchaseItem[]; token: string},
-    {dispatch},
-  ) => {
-    return purchaseItems[0].type === 'product'
-      ? dispatch(cartCheckStock({purchaseItems, token})).then(
-          ({payload: resp}) => {
-            if (resp.result === 0) return resp;
-            return dispatch(getOutOfStockTitle(resp));
-          },
-        )
-      : Promise.resolve({result: 0});
-  },
-);
-
 const cartAddAndGet = createAsyncThunk(
   'cart/addAndGet',
   ({purchaseItems}: {purchaseItems: PurchaseItem[]}, {dispatch, getState}) => {
@@ -74,13 +56,7 @@ const cartAddAndGet = createAsyncThunk(
       account: {token},
     } = getState() as RootState;
 
-    return dispatch(checkStock({purchaseItems, token}))
-      .then(({payload: resp}) => {
-        if (resp.result === 0) {
-          return dispatch(cartAdd({purchaseItems, token}));
-        }
-        throw new Error('Soldout');
-      })
+    return dispatch(cartAdd({purchaseItems, token}))
       .then(({payload: rsp}) => {
         if (rsp.result === 0 && rsp.objects.length > 0) {
           return dispatch(cartFetch());
@@ -100,27 +76,23 @@ const init = createAsyncThunk(
   },
 );
 
-const prepareOrder = createAsyncThunk(
-  'cart/prepareOrder',
-  (coupon: CouponInfo, {getState}) => {
-    const {account, cart} = getState() as RootState;
-    const {token, iccid, email, mobile} = account;
-    const {purchaseItems, orderId, cartId, esimIccid, mainSubsId, isCart} =
-      cart;
+const prepareOrder = createAsyncThunk('cart/prepareOrder', (_, {getState}) => {
+  const {account, cart} = getState() as RootState;
+  const {token, iccid, email, mobile, coupon} = account;
+  const {purchaseItems, orderId, cartId, esimIccid, mainSubsId, isCart} = cart;
 
-    return API.Cart.makeOrder({
-      orderId: isCart ? cartId : orderId,
-      items: purchaseItems,
-      token,
-      iccid,
-      esimIccid,
-      mainSubsId,
-      user: mobile,
-      mail: email,
-      coupon,
-    });
-  },
-);
+  return API.Cart.makeOrder({
+    orderId: isCart ? cartId : orderId,
+    items: purchaseItems,
+    token,
+    iccid,
+    esimIccid,
+    mainSubsId,
+    user: mobile,
+    mail: email,
+    coupon: {id: coupon?.map((a) => a.id)},
+  });
+});
 
 export type PaymentReq = Record<
   'subtotal' | 'discount' | 'rkbcash',
@@ -217,10 +189,11 @@ const slice = createSlice({
       // 쿠폰 적용 시 결제 값이 음수가 되지 않도록 사용할 캐시 재계산
       if (promo && state?.pymReq?.rkbcash?.value > 0) {
         const maxPrice =
-          (state.pymReq?.subtotal?.value || 0) - (promo?.adj?.value || 0);
+          (state.pymReq?.subtotal?.value || 0) + (promo?.adj?.value || 0);
 
         // 할인된 상품의 가격을 넘어선 안되고, 계정이 가진 캐시보다 커선 안된다.
         const min = availableRokebiCash(maxPrice, accountCash);
+
         state.pymReq = {
           ...state.pymReq,
           rkbcash: utils.toCurrency(min, esimCurrency),
@@ -390,8 +363,8 @@ const slice = createSlice({
   },
 });
 
-const checkStockAndMakeOrder = createAsyncThunk(
-  'cart/checkStockAndMakeOrder',
+const makeOrderAndPurchase = createAsyncThunk(
+  'cart/makeOrderAndPurchase',
   (info: PaymentInfo, {dispatch, getState}) => {
     const {account, cart} = getState() as RootState;
     const {token, iccid, email, mobile} = account;
@@ -403,37 +376,29 @@ const checkStockAndMakeOrder = createAsyncThunk(
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
-    return dispatch(checkStock({purchaseItems, token}))
-      .then(({payload: res}) => {
-        if (res.result === 0) {
-          // 충전, 구매 모두 order 생성
-          return dispatch(
-            makeOrder({
-              orderId: isCart ? cartId : orderId,
-              items: purchaseItems,
-              info,
-              token,
-              iccid,
-              esimIccid,
-              mainSubsId,
-              user: mobile,
-              mail: email,
-              coupon,
-            }),
-          )
-            .then((rsp) => {
-              dispatch(slice.actions.purchase({purchaseItems}));
-              return rsp.payload;
-            })
-            .catch((err) => {
-              console.log('@@@ failed to make order', err);
-              return Promise.resolve({result: api.E_INVALID_STATUS});
-            });
-        }
-        return Promise.resolve({result: api.E_RESOURCE_NOT_FOUND});
+    // 충전, 구매 모두 order 생성
+    return dispatch(
+      makeOrder({
+        orderId: isCart ? cartId : orderId,
+        items: purchaseItems,
+        info,
+        token,
+        iccid,
+        esimIccid,
+        mainSubsId,
+        user: mobile,
+        mail: email,
+        coupon,
+      }),
+    )
+      .then((rsp) => {
+        dispatch(
+          slice.actions.purchase({purchaseItems, esimIccid, mainSubsId}),
+        );
+        return rsp.payload;
       })
-      .catch(() => {
-        console.log('@@@ failed to check stock');
+      .catch((err) => {
+        console.log('@@@ failed to make order', err);
         return Promise.resolve({result: api.E_INVALID_STATUS});
       });
   },
@@ -477,36 +442,13 @@ const payNorder = createAsyncThunk(
 
     // make order in the server
     // TODO : purchaseItem에 orderable, recharge가 섞여 있는 경우 문제가 될 수 있음
-    return dispatch(checkStockAndMakeOrder(info)).then(({payload: resp}) => {
+    return dispatch(makeOrderAndPurchase(info)).then(({payload: resp}) => {
       dispatch(updateOrder(info));
       return resp;
     });
   },
 );
 
-// 재고 확인 후 구매
-// 이후 결제 과정을 거친다.
-const checkStockAndPurchase = createAsyncThunk(
-  'cart/checkStockAndPurchase',
-  (
-    {purchaseItems, isCart}: {purchaseItems: PurchaseItem[]; isCart: boolean},
-    {dispatch, getState},
-  ) => {
-    const {
-      account: {token},
-    } = getState() as RootState;
-
-    return dispatch(checkStock({purchaseItems, token})).then(
-      ({payload: resp}) => {
-        if (resp.result === 0) {
-          dispatch(slice.actions.purchase({purchaseItems, isCart}));
-        }
-        // 처리 결과는 reducer에 보내서 처리하지만, 결과는 resp를 반환한다.
-        return resp;
-      },
-    );
-  },
-);
 /*
 export default handleActions(
   {
@@ -528,6 +470,13 @@ const makeEmpty = createAsyncThunk(
   },
 );
 
+const dispatchPurchase = createAsyncThunk(
+  'cart/dispatchPurchase',
+  (params: {purchaseItems: PurchaseItem[]; isCart: boolean}, {dispatch}) => {
+    return dispatch(slice.actions.purchase(params));
+  },
+);
+
 export const actions = {
   ...slice.actions,
   cartFetch,
@@ -535,14 +484,14 @@ export const actions = {
   cartRemove,
   payNorder,
   cartAddAndGet,
-  checkStockAndPurchase,
   init,
   initCart,
-  checkStockAndMakeOrder,
+  makeOrderAndPurchase,
   prepareOrder,
   updateOrder,
   makeEmpty,
   calculateTotal,
+  dispatchPurchase,
 };
 export type CartAction = typeof actions;
 

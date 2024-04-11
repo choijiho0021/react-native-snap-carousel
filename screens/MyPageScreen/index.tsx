@@ -155,6 +155,8 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
       token: account.token,
     });
 
+    action.account.getMyCoupon({token: account.token});
+
     action.order
       .getOrders({user: account.mobile, token: account.token, page: 0})
       .then((resp) => {

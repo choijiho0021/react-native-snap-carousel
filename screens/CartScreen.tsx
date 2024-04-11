@@ -151,17 +151,8 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         );
 
       action.cart
-        .checkStockAndPurchase({purchaseItems, isCart: true})
-        .then(({payload: resp}) => {
-          if (resp.result === 0) {
-            navigation.navigate('PymMethod', {mode: 'cart'});
-          } else if (resp.result === api.E_RESOURCE_NOT_FOUND)
-            AppAlert.info(`${resp.title} ${i18n.t('cart:soldOut')}`);
-          else AppAlert.info(i18n.t('cart:systemError'));
-        })
-        .catch((err) => {
-          console.log('failed to check stock', err);
-        });
+        .dispatchPurchase({purchaseItems, isCart: true})
+        .then(() => navigation.navigate('PymMethod', {mode: 'cart'}));
     }
   }, [account, action.cart, checked, list, navigation, qty]);
 
@@ -374,7 +365,6 @@ export default connect(
       status.pending[cartActions.cartAddAndGet.typePrefix] ||
       status.pending[cartActions.cartUpdateQty.typePrefix] ||
       status.pending[cartActions.cartRemove.typePrefix] ||
-      status.pending[cartActions.checkStockAndPurchase.typePrefix] ||
       false,
   }),
   (dispatch) => ({

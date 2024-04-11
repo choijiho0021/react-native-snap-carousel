@@ -5,6 +5,7 @@ import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators, RootState} from 'redux';
 import Video from 'react-native-video';
+import moment from 'moment';
 import AppAlert from '@/components/AppAlert';
 import {HomeStackParamList} from '@/navigation/navigation';
 import api, {ApiResult} from '@/redux/api/api';
@@ -26,7 +27,7 @@ import {storeData} from '@/utils/utils';
 
 const loading = require('../assets/images/loading_1.mp4');
 
-const {cachePrefix} = Env.get();
+const {cachePrefix, isIOS} = Env.get();
 
 type PaymentGatewayScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
@@ -56,15 +57,31 @@ const styles = StyleSheet.create({
     bottom: 80,
     right: 0,
   },
-  infoText: {
-    position: 'absolute',
-    left: 0,
-    bottom: 0,
-    right: 0,
-    marginBottom: 30,
-    color: colors.clearBlue,
-    textAlign: 'center',
-    fontSize: 14,
+  loadingShadowBox: {
+    elevation: 32,
+    shadowColor: 'rgba(166, 168, 172, 0.24)',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowRadius: 16,
+    shadowOpacity: 1,
+  },
+  loadingContainer: {
+    backgroundColor: 'white',
+
+    height: 200,
+    marginTop: 10,
+  },
+  head: {
+    height: 74,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignContent: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 28,
+    gap: 6,
   },
 });
 
@@ -138,6 +155,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       params.mode,
       params.pay_method,
       params.paymentRule,
+      params.pymMethod,
       pymInfo,
     ],
   );
@@ -158,7 +176,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
   useEffect(() => {
     if (!params.isPaid) {
       action.cart
-        .checkStockAndMakeOrder(pymInfo)
+        .makeOrderAndPurchase(pymInfo)
         .then(({payload: resp}) => {
           if (!resp || resp.result < 0) {
             let text = 'cart:systemError';
@@ -166,12 +184,10 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
               text = 'cart:soldOut';
             else if (resp?.status === api.API_STATUS_PREFAILED)
               text = 'cart:cashChanged';
-
             AppAlert.info(i18n.t(text));
             navigation.goBack();
           } else {
             setIsOrderReady(true);
-
             if (params.pay_method.startsWith('vbank')) {
               API.Payment.reqRokebiPaymentVBank({
                 params: {
@@ -204,17 +220,45 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
   ]);
 
   const renderLoading = useCallback(() => {
+    const isKST = moment().format().includes('+09:00');
+
     return (
-      <View style={{flex: 1, alignItems: 'stretch'}}>
-        <Video
-          source={loading}
-          repeat
-          style={styles.backgroundVideo}
-          resizeMode="cover"
-          mixWithOthers="mix"
-        />
-        <AppText style={styles.infoText}>{i18n.t('pym:loadingInfo')}</AppText>
-      </View>
+      <>
+        <View style={{flex: 1, alignItems: 'stretch'}}>
+          <Video
+            source={loading}
+            repeat
+            style={styles.backgroundVideo}
+            resizeMode="cover"
+            mixWithOthers="mix"
+          />
+          {/* <AppText style={styles.infoText}>{i18n.t('pym:loadingInfo')}</AppText> */}
+        </View>
+        {true && (
+          <View
+            style={[
+              styles.loadingShadowBox,
+              !isIOS && {shadowColor: 'rgb(52, 62, 95)'},
+            ]}>
+            <View style={styles.loadingContainer}>
+              <View style={styles.head}>
+                <AppText style={appStyles.bold18Text}>
+                  {i18n.t('pym:wait:title')}
+                </AppText>
+              </View>
+              <View>
+                <AppText
+                  style={{
+                    ...appStyles.normal16Text,
+                    paddingHorizontal: 20,
+                  }}>
+                  {i18n.t(isKST ? 'pym:wait:kst' : 'pym:wait:another')}
+                </AppText>
+              </View>
+            </View>
+          </View>
+        )}
+      </>
     );
   }, []);
 
@@ -227,6 +271,8 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
           showIcon={!params.isPaid}
         />
       </View>
+
+      {/* {renderLoading()} */}
       {isOrderReady && !params.pay_method.startsWith('vbank') ? (
         <AppPaymentGateway info={params} callback={callback} />
       ) : (
