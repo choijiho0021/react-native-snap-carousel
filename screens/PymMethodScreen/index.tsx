@@ -101,8 +101,8 @@ const styles = StyleSheet.create({
   },
   title: {
     ...appStyles.bold18Text,
-    marginTop: 20,
-    marginBottom: isDeviceSize('small') ? 10 : 20,
+    marginTop: 24,
+    marginBottom: 12,
     color: colors.black,
   },
   bottomBar: {

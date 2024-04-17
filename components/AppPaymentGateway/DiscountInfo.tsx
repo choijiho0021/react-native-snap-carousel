@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...appStyles.bold16Text,
-    color: colors.warmGrey,
+    color: colors.black,
     flex: 1,
   },
   buttonTitle: {
@@ -191,7 +191,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
               <Pressable
                 style={styles.row}
                 onPress={() => toggleMaxPromo(checked)}>
-                <AppIcon name="btnCheck2" checked={checked} size={22} />
+                <AppIcon name="btnCheck3" checked={checked} size={22} />
                 <AppText style={{...appStyles.medium16, marginLeft: 8}}>
                   {i18n.t('pym:coupon:max')}
                 </AppText>
@@ -228,7 +228,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
           {onPress && isCashNotEmpty ? (
             <AppStyledText
               text={i18n.t('acc:balance:hold')}
-              textStyle={{...appStyles.bold14Text, color: colors.clearBlue}}
+              textStyle={{...appStyles.bold16Text, color: colors.clearBlue}}
               data={{cash: utils.numberToCommaString(account.balance || 0)}}
             />
           ) : null}

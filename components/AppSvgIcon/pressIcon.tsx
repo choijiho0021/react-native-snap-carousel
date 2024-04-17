@@ -1439,14 +1439,14 @@ const pressIcons: Record<string, React.ReactElement[]> = {
   ],
   iconArrowUp: [
     <Svg
-      width="12"
-      height="11"
-      viewBox="0 0 12 11"
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Path
-        d="M1.5 5.83 6 1.4l4.5 4.43"
-        stroke="#979797"
+        d="M.5 6.967 5 2.54l4.5 4.426"
+        stroke="#2C2C2C"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
