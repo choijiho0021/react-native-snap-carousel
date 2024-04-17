@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   empty: {
     flex: 1,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: '20%',
   },
   middleDot: {
     ...appStyles.medium14,
