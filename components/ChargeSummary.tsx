@@ -10,15 +10,12 @@ import AppText from './AppText';
 const styles = StyleSheet.create({
   price: {
     marginHorizontal: 20,
-    paddingVertical: 20,
+    paddingVertical: 24,
     borderTopWidth: 1,
     borderTopColor: colors.black,
   },
   summary: {
     height: 36,
-  },
-  summaryTop: {
-    marginTop: 17,
   },
 });
 
@@ -33,21 +30,22 @@ const ChargeSummary = ({
     <View style={styles.price}>
       <LabelText
         label={i18n.t('cart:totalCnt')}
-        style={[styles.summary, styles.summaryTop]}
-        valueStyle={{...appStyles.normal14Text, color: colors.black}}
+        style={styles.summary}
+        labelStyle={{...appStyles.bold14Text, color: colors.warmGrey}}
+        valueStyle={{...appStyles.normal16Text, color: colors.black}}
         value={i18n.t('cart:totalCntX').replace('%%', totalCnt.toString())}
       />
       <LabelText
         label={i18n.t('cart:totalPrice')}
         style={styles.summary}
         format="price"
+        labelStyle={{...appStyles.bold14Text, color: colors.warmGrey}}
         value={totalPrice}
+        color={colors.clearBlue}
         balanceStyle={appStyles.bold22Text}
-        currencyStyle={appStyles.medium14}
+        currencyStyle={appStyles.bold22Text}
       />
       <View style={{flexDirection: 'row'}}>
-        {/* <AppText>{i18n.t('middleDotn')}</AppText>
-        <AppText>{i18n.t('cart:totalPrice')}</AppText> */}
         <AppText
           style={{
             ...appStyles.medium14,
@@ -55,6 +53,13 @@ const ChargeSummary = ({
             marginTop: 12,
           }}>
           {i18n.t('middleDot')}
+        </AppText>
+        <AppText
+          style={{
+            ...appStyles.medium14,
+            color: colors.warmGrey,
+            marginTop: 12,
+          }}>
           {i18n.t('cart:notice')}
         </AppText>
       </View>

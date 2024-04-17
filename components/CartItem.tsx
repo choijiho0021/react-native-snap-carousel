@@ -14,7 +14,7 @@ import InputNumber from './InputNumber';
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 15,
+    paddingVertical: 24,
     borderBottomWidth: 0.5,
     borderBottomColor: colors.lightGrey,
     flexDirection: 'row',
@@ -22,14 +22,14 @@ const styles = StyleSheet.create({
     marginHorizontal: isDeviceSize('small') ? 15 : 20,
   },
   checker: {
-    marginRight: isDeviceSize('small') ? 15 : 20,
+    marginRight: 16,
   },
   slide: {
-    width: isDeviceSize('small') ? 70 : 90,
-    height: isDeviceSize('small') ? 70 : 90,
+    width: 100,
+    height: 100,
   },
   desc: {
-    marginLeft: 30,
+    marginLeft: 16,
     marginRight: 0,
     flex: 1,
   },
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     color: colors.warmGrey,
   },
   input: {
-    marginTop: 10,
+    marginTop: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -100,14 +100,14 @@ const CartItem = ({
           <AppText style={styles.itemPrice}>{utils.price(price)}</AppText>
           <InputNumber value={qty} onChange={onChange} boldIcon />
         </View>
-        <View style={[styles.input, {marginTop: 20}]}>
+        <View style={[styles.input, {marginTop: 12}]}>
           <AppPrice
             price={utils.toCurrency(
               Math.round(price.value * qty * 100) / 100,
               price.currency,
             )}
             balanceStyle={appStyles.bold20Text}
-            currencyStyle={appStyles.medium14}
+            currencyStyle={appStyles.bold18Text}
           />
           <View style={{flex: 1}} />
           <AppButton
