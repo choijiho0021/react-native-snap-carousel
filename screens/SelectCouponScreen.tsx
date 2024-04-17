@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: colors.backGrey,
     alignItems: 'center',
-    marginTop: 10,
     marginBottom: 20,
     marginHorizontal: 20,
     paddingHorizontal: 16,
@@ -50,7 +49,7 @@ const styles = StyleSheet.create({
   coupon: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderColor: colors.gray4,
+    borderColor: colors.lightGrey,
     borderWidth: 1,
     borderRadius: 3,
     marginHorizontal: 20,
@@ -69,8 +68,11 @@ const styles = StyleSheet.create({
   line: {
     width: 1,
     height: '100%',
-    backgroundColor: colors.gray4,
     marginHorizontal: 16,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: colors.gray4,
   },
 });
 
@@ -117,6 +119,33 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
     ),
     [couponId],
   );
+  const renderListHeader = useCallback(
+    () => (
+      <View style={styles.header}>
+        <AppSvgIcon name="couponColor" style={{marginRight: 8}} />
+        <AppStyledText
+          key="noti"
+          text={i18n.t('pym:sel:coupon:noti')}
+          textStyle={appStyles.medium14}
+          format={{b: styles.noti}}
+        />
+      </View>
+    ),
+    [],
+  );
+
+  const renderListFooter = useCallback(
+    (id?: string) => (
+      <Pressable style={styles.coupon} onPress={() => setCouponId('')}>
+        <AppSvgIcon name="btnCheck" focused={!id} />
+        <View style={styles.line} />
+        <AppText style={appStyles.bold16Text}>
+          {i18n.t('pym:coupon:none:sel')}
+        </AppText>
+      </Pressable>
+    ),
+    [],
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -132,36 +161,20 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
         }
       />
       <View style={styles.container}>
-        <View style={styles.header}>
-          <AppSvgIcon name="couponColor" style={{marginRight: 8}} />
-          <AppStyledText
-            key="noti"
-            text={i18n.t('pym:sel:coupon:noti')}
-            textStyle={appStyles.medium14}
-            format={{b: styles.noti}}
-          />
-        </View>
         <FlatList
           style={{flex: 1}}
           data={couponList}
           keyExtractor={(item) => item.id}
           renderItem={renderCoupon}
           extraData={couponToApply}
-          ListFooterComponent={
-            <Pressable style={styles.coupon} onPress={() => setCouponId('')}>
-              <AppSvgIcon name="btnCheck" focused={!couponId} />
-              <View style={styles.line} />
-              <AppText style={appStyles.bold16Text}>
-                {i18n.t('pym:coupon:none:sel')}
-              </AppText>
-            </Pressable>
-          }
+          ListHeaderComponent={renderListHeader()}
+          ListFooterComponent={renderListFooter(couponId)}
         />
       </View>
       <AppButton
-        title={`${
-          promo?.find((p) => p.coupon_id === couponId)?.adj?.value || '0'
-        } ${i18n.t('pym:sel:coupon:apply')}`}
+        title={`${Math.abs(
+          promo?.find((p) => p.coupon_id === couponId)?.adj?.value || '0',
+        )}${i18n.t('pym:sel:coupon:apply')}`}
         titleStyle={[appStyles.medium18, {color: colors.white}]}
         onPress={() => {
           if (couponId) {
