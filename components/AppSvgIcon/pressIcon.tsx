@@ -784,6 +784,19 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  triangle: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M8.451 10.208a.627.627 0 0 1-.902 0L4.128 6.429c-.303-.334-.034-.83.451-.83h6.842c.485 0 .754.496.451.83l-3.42 3.779z"
+        fill="#979797"
+      />
+    </Svg>,
+  ],
   selected: [
     <Svg
       width="22"
