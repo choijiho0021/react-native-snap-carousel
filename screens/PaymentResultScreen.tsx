@@ -368,14 +368,14 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
           />
           {!isSuccess && params?.errorMsg && (
             <>
-              <AppDashBar />
+              <AppDashBar style={{width: '150%', right: 20}} />
 
               <View style={{gap: 6}}>
                 <View style={{gap: 6, flexDirection: 'row'}}>
                   <AppSvgIcon name="bannerWarning20" />
                   <AppText
                     style={{
-                      ...appStyles.bold16Text,
+                      ...appStyles.bold14Text,
                       color: colors.redBold,
                     }}>
                     {i18n.t('pym:failReason')}
