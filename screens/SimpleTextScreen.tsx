@@ -9,6 +9,7 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  ViewStyle,
 } from 'react-native';
 import WebView from 'react-native-webview';
 import {connect} from 'react-redux';
@@ -335,7 +336,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
   }, [getContent, route, route.params]);
 
   const {loggedIn, iccid, token} = account;
-  const {image} = route.params;
+  const {image, showIcon, showCloseModal, btnStyle} = route.params;
   const title = useMemo(() => {
     if (isProdEvent) {
       return loggedIn ? `promo:join:${eventStatus}` : 'promo:login';
@@ -350,13 +351,17 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
   return (
     <SafeAreaView style={styles.screen}>
       <View style={appStyles.header}>
-        <AppBackButton title={route.params?.title} />
+        <AppBackButton
+          title={route.params?.title}
+          showIcon={showIcon}
+          showCloseModal={showCloseModal}
+        />
       </View>
       {defineSource(mode)}
       <AppActivityIndicator visible={pending || loading} />
       {!route.params?.rule?.sku?.startsWith('event-multi') && (
         <AppButton
-          style={styles.button}
+          style={[styles.button, btnStyle]}
           type="primary"
           title={
             disabled
