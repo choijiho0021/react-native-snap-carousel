@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
 });
 
 type DropDownHeaderProps = {
-  title: string;
+  title: string | React.JSX.Element;
   summary?: string;
   titleStyle?: StyleProp<ViewStyle>;
   style?: StyleProp<ViewStyle>;
