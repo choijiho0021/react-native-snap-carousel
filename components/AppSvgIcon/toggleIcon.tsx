@@ -192,6 +192,21 @@ const toggleIcons: Record<string, React.ReactElement[]> = {
       viewBox="0 0 22 22"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
+      <Rect width="22" height="22" rx="3" fill="#2A7FF6" />
+      <Path
+        d="m6 10 3.913 5L16 7"
+        stroke="#fff"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>,
+    <Svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
       <Rect
         x=".5"
         y=".5"
@@ -204,21 +219,6 @@ const toggleIcons: Record<string, React.ReactElement[]> = {
       <Path
         d="m6 10 3.913 5L16 7"
         stroke="#D8D8D8"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>,
-    <Svg
-      width="22"
-      height="22"
-      viewBox="0 0 22 22"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
-      <Rect width="22" height="22" rx="3" fill="#2A7FF6" />
-      <Path
-        d="m6 10 3.913 5L16 7"
-        stroke="#fff"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
