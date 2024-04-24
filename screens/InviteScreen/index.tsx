@@ -226,14 +226,10 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
     if (navigation.isFocused()) {
       if (account.loggedIn) {
         action.promotion.getPromotionStat();
-      } else {
-        navigation.navigate('Auth', {
-          screen: 'RegisterMobile',
-          params: {
-            screen: 'Invite',
-          },
-        });
       }
+
+      // MyScreenStack에서 미로그인 시 RegisterMobile로 보내도록 수정되어 필요없어짐
+      // else {
     }
   }, [account.loggedIn, action.promotion, navigation]);
 
@@ -334,7 +330,13 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <View style={appStyles.header}>
-        <AppBackButton title={i18n.t('inv:title')} />
+        <AppBackButton
+          onPress={() => {
+            navigation.popToTop();
+            navigation.goBack();
+          }}
+          title={i18n.t('inv:title')}
+        />
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         {showPromo && (
