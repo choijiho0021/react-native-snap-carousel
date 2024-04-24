@@ -435,6 +435,9 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
             overflow="hidden"
             sliderWidth={sliderWidth}
             itemWidth={sliderWidth}
+            pagingEnabled
+            enableMomentum={false}
+            decelerationRate={'fast'}
           />
 
           <Pagination
