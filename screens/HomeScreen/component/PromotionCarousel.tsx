@@ -28,11 +28,10 @@ import VersionCheck from 'react-native-version-check';
 
 export const DOT_MARGIN = 6;
 export const INACTIVE_DOT_WIDTH = 6;
-export const ACTIVE_DOT_WIDTH = 20;
 
 export const dotStyle = (
-  width: Animated.Value | Animated.AnimatedInterpolation,
-  marginLeft: number | Animated.AnimatedInterpolation,
+  width: number,
+  marginLeft: number,
   backgroundColor: string = colors.clearBlue,
 ) => ({
   height: 6,
@@ -171,18 +170,8 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
 
   const renderDots = useCallback(
     (activeIndex: number) => {
-      const duration = 200;
-      const aniMationWidth = new Animated.Value(INACTIVE_DOT_WIDTH);
-      const margin = aniMationWidth.interpolate({
-        inputRange: [INACTIVE_DOT_WIDTH, ACTIVE_DOT_WIDTH],
-        outputRange: [ACTIVE_DOT_WIDTH, INACTIVE_DOT_WIDTH],
-      });
-
-      Animated.timing(aniMationWidth, {
-        toValue: ACTIVE_DOT_WIDTH,
-        duration,
-        useNativeDriver: false,
-      }).start();
+      const aniMationWidth = INACTIVE_DOT_WIDTH;
+      const margin = INACTIVE_DOT_WIDTH;
 
       if (activeIndex === 0) {
         return promotion.map((elm, idx) =>
