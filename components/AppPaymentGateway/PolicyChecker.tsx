@@ -62,7 +62,7 @@ const PolicyChecker = ({onPress}: {onPress?: (v: boolean) => void}) => {
           setChecked((prev) => !prev);
           onPress?.(!checked);
         }}>
-        <AppIcon name="btnCheck2" checked={checked} size={22} />
+        <AppIcon name="btnCheck3" checked={checked} size={22} />
         <AppText style={[appStyles.bold14Text, {marginLeft: 8}]}>
           {i18n.t('pym:consentEssential')}
         </AppText>

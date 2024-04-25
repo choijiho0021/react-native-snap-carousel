@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   empty: {
     flex: 1,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: '20%',
   },
   middleDot: {
     ...appStyles.medium14,
@@ -243,7 +243,7 @@ const CouponScreen: React.FC<CouponProps> = ({
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
             />
-            {value.length > 0 && (
+            {value.length > 0 && focused && (
               <AppButton
                 style={{justifyContent: 'flex-end', marginLeft: 10}}
                 iconName="btnSearchCancel"
@@ -264,7 +264,7 @@ const CouponScreen: React.FC<CouponProps> = ({
         <AppText style={styles.title}>{i18n.t('coupon:mine')}</AppText>
       </>
     ),
-    [regCoupon],
+    [focused, regCoupon],
   );
 
   return (

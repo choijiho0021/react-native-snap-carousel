@@ -392,7 +392,9 @@ const makeOrderAndPurchase = createAsyncThunk(
       }),
     )
       .then((rsp) => {
-        dispatch(slice.actions.purchase({purchaseItems}));
+        dispatch(
+          slice.actions.purchase({purchaseItems, esimIccid, mainSubsId}),
+        );
         return rsp.payload;
       })
       .catch((err) => {

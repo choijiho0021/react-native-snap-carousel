@@ -20,6 +20,7 @@ import {GuideOption} from '@/screens/UserGuideScreen/GuideHomeScreen';
 import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
 import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 import {PaymentRule} from '@/redux/modules/product';
+import {ViewStyle} from 'react-native';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti';
 export type PymMethodScreenMode =
@@ -77,6 +78,9 @@ type SimpleTextParams = {
   text?: string;
   rule?: Record<string, string>;
   nid?: number;
+  btnStyle?: ViewStyle;
+  showIcon?: boolean;
+  showCloseModal?: boolean;
   image?: {
     success?: string;
     failure?: string;

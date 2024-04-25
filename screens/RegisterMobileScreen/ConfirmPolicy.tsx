@@ -84,25 +84,45 @@ const ConfirmPolicy = ({
   onMove: (param: Record<string, string>) => void;
   onChange: (value: {mandatory: boolean; optional: boolean}) => void;
 }) => {
+  const commonParam = useMemo(
+    () => ({
+      showIcon: false,
+      showCloseModal: true,
+      btnStyle: {marginHorizontal: 20},
+    }),
+    [],
+  );
   const confirmList = useMemo<ConfirmItem[]>(
     () => [
       {
         key: 'contract',
         label: i18n.t('cfm:contract') + i18n.t('cfm:mandatory'),
-        param: {key: 'setting:contract', title: i18n.t('cfm:contract')},
+        param: {
+          key: 'setting:contract',
+          title: i18n.t('cfm:contract'),
+          ...commonParam,
+        },
       },
       {
         key: 'personalInfo',
         label: i18n.t('cfm:personalInfo') + i18n.t('cfm:mandatory'),
-        param: {key: 'setting:privacy', title: i18n.t('cfm:personalInfo')},
+        param: {
+          key: 'setting:privacy',
+          title: i18n.t('cfm:personalInfo'),
+          ...commonParam,
+        },
       },
       {
         key: 'marketing',
         label: i18n.t('cfm:marketing') + i18n.t('cfm:optional'),
-        param: {key: 'mkt:agreement', title: i18n.t('cfm:marketing')},
+        param: {
+          key: 'mkt:agreement',
+          title: i18n.t('cfm:marketing'),
+          ...commonParam,
+        },
       },
     ],
-    [],
+    [commonParam],
   );
 
   const [confirm, setConfirm] = useState<Record<ConfirmItem['key'], boolean>>({
