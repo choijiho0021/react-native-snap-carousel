@@ -227,6 +227,8 @@ function EsimStackComponent() {
       <EsimStack.Screen name="ChargeType" component={ChargeTypeScreen} />
       <EsimStack.Screen name="Charge" component={ChargeScreen} />
       <EsimStack.Screen name="AddOn" component={AddOnScreen} />
+
+      <EsimStack.Screen name="Faq" component={FaqScreen} />
       <EsimStack.Screen
         name="ChargeAgreement"
         component={ChargeAgreementScreen}
