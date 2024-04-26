@@ -92,6 +92,11 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     () => total.price.value === 0,
     [total.price.value],
   );
+
+  useEffect(() => {
+    if (checked.size > 0) action.cart.saveChecked({checked});
+  }, [action.cart, checked]);
+
   const onChecked = useCallback((key: string) => {
     setChecked((prev) => prev.update(key, (v) => !v));
   }, []);
@@ -205,12 +210,16 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     setQty((prev) =>
       cart.cartItems.reduce((acc, cur) => acc.set(cur.key, cur.qty), prev),
     );
-    setChecked((prev) =>
-      cart.cartItems.reduce(
-        (acc, cur) => acc.update(cur.key, (v) => (v === undefined ? true : v)),
-        prev,
-      ),
-    );
+
+    // checked 읽기
+    if (cart.cartItems && checked.size === 0) {
+      setChecked((prev) =>
+        cart.cartItems.reduce(
+          (acc, cur) => acc.update(cur.key, (v: any) => cur.checked),
+          prev,
+        ),
+      );
+    }
 
     if (!loading.current) {
       cart.cartItems.forEach((i) => {
@@ -222,7 +231,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         }
       });
     }
-  }, [action.product, cart.cartItems, product.prodList]);
+  }, [action.product, cart.cartItems, checked.size, product.prodList]);
 
   useFocusEffect(
     React.useCallback(() => {

@@ -27,6 +27,7 @@ export type RkbOrderItem = {
   qty: number;
   price: Currency;
   totalPrice: Currency;
+  checked: boolean;
 };
 
 export type RkbCart = {
