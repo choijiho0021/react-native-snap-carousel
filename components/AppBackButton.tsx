@@ -1,6 +1,13 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {memo, useCallback} from 'react';
-import {Pressable, View, ViewStyle, TextProps, ImageStyle} from 'react-native';
+import {
+  Pressable,
+  View,
+  ViewStyle,
+  TextProps,
+  ImageStyle,
+  TextStyle,
+} from 'react-native';
 import {appStyles} from '@/constants/Styles';
 import AppText from './AppText';
 import {goBack} from '@/navigation/navigation';
@@ -9,6 +16,7 @@ import {values} from 'underscore';
 
 const AppBackButton = ({
   title,
+  titleStyle,
   disabled = false,
   showIcon = true,
   onPress,
@@ -19,6 +27,7 @@ const AppBackButton = ({
   showCloseModal = false,
 }: {
   title?: string;
+  titleStyle?: TextStyle;
   disabled?: boolean;
   showIcon?: boolean;
   onPress?: () => void;
@@ -62,7 +71,11 @@ const AppBackButton = ({
         )}
         <AppText
           key="label"
-          style={[appStyles.subTitle, {marginLeft: 16, fontSize: 20, flex: 1}]}
+          style={[
+            appStyles.subTitle,
+            titleStyle,
+            {marginLeft: 16, fontSize: 20, flex: 1},
+          ]}
           numberOfLines={1}
           ellipsizeMode="tail"
           {...textProps}>

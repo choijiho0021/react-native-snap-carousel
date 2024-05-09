@@ -1,6 +1,6 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {memo} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppText from './AppText';
@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
 
 interface ScreenHeaderProps {
   title?: string;
+  titleStyle?: TextStyle;
   showIcon?: boolean;
   isStackTop?: boolean;
   backHandler?: () => void;
@@ -33,6 +34,7 @@ interface ScreenHeaderProps {
 
 const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   title,
+  titleStyle,
   showIcon,
   isStackTop,
   backHandler,
@@ -46,10 +48,11 @@ const ScreenHeader: React.FC<ScreenHeaderProps> = ({
     <View style={styles.header}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
         {isStackTop ? (
-          <AppText style={styles.title}>{title}</AppText>
+          <AppText style={[styles.title, titleStyle]}>{title}</AppText>
         ) : (
           <AppBackButton
             title={title}
+            titleStyle={titleStyle}
             style={{marginRight: 10, height: 56}}
             onPress={() => {
               if (backHandler) {
