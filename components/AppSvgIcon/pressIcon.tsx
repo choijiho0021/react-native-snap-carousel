@@ -1173,6 +1173,14 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  delivery : [
+<Svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <Path d="M9 6a1 1 0 0 1 1-1h2.172a1 1 0 0 1 .983.813l.218 1.145a.82.82 0 0 0 .806.667.82.82 0 0 1 .821.82V11a1 1 0 0 1-1 1H9V6z" fill="#2A7FF6"/>
+    <Rect x="1" y="2" width="9" height="10" rx="1" fill="#4F99FF"/>
+    <Circle cx="4" cy="12" r="2" fill="#194C94"/>
+    <Circle cx="11" cy="12" r="2" fill="#194C94"/>
+</Svg>
+  ],
   rightBlueAngleBracket: [
     <Svg
       width="10"

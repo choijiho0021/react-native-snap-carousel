@@ -89,6 +89,8 @@
   "android": "안드로이드폰",
   "ios": "아이폰",
   "rkbCash": "캐시",
+  "failure": "실패",
+  "send": "발송",
 
   "purchase:date": "{{date}} 구매",
 
@@ -1638,6 +1640,7 @@
   "cashHistory:type:point_deduct": "상품 구매",
   "cashHistory:type:point_add": "캐시 적립",
   "cashHistory:type:point_exp": "캐시 소멸",
+  "cashHistory:recharge:failure": "충전 실패! 고객센터로 문의해 주세요.",
 
   "promo:join:open": "이벤트 참여",
   "promo:join:joined": "이벤트 참여 완료",
