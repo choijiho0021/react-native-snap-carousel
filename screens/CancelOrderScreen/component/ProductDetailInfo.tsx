@@ -36,7 +36,7 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
   showPriceInfo = false,
 }) => {
   return (
-    <View style={[{gap: 8}, style]}>
+    <View style={[{gap: 4}, style]}>
       <View style={styles.productFrame}>
         <SplitText
           numberOfLines={2}
@@ -55,8 +55,6 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
             appStyles.medium14,
             {
               color: colors.warmGrey,
-              fontSize: isDeviceSize('medium') ? 14 : 16,
-              lineHeight: isDeviceSize('medium') ? 20 : 22,
             },
           ]}>
           {item?.field_description}
