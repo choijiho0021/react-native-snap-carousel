@@ -135,7 +135,6 @@ const path = {
       calculateTotal: 'rokebi/order/calc',
       prodAddOn: 'rokebi/prod/addon',
       coupon: 'rokebi/coupon',
-      lottery: 'rokebi/lottery',
       config: 'rokebi/config',
       noti: 'rokebi/noti',
     },
