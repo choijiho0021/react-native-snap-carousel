@@ -86,6 +86,8 @@
   "imei2:esim": "IMEI2(eSIM)",
   "android": "Android",
   "ios": "IOS",
+  "failure": "실패",
+  "send": "발송",
 
   "purchase:date": "{{date}}",
 
@@ -1431,6 +1433,7 @@
   "cashHistory:type:point_deduct": "point_deduct",
   "cashHistory:type:point_add": "point_add",
   "cashHistory:type:point_exp": "point_exp",
+  "cashHistory:recharge:failure": "충전 실패! 고객센터로 문의해 주세요.",
 
   "promo:join:open": "Paticipate the Event",
   "promo:join:joined": "Successfully Participated.",

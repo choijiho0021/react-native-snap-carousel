@@ -13,12 +13,15 @@ const styles = StyleSheet.create({
   },
   paymentBtn: {
     height: 52,
-    flex: 0.65,
+    flex: 1,
+    // flex: 0.65,
     backgroundColor: colors.clearBlue,
   },
   amountFrame: {
-    flex: 0.35,
+    // flex: 0.35,
+    minWidth: 144,
     alignItems: 'center',
+    paddingHorizontal: 20,
     justifyContent: 'center',
     backgroundColor: colors.white,
     borderTopWidth: 1,

@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 0,
-    marginTop: 14,
+    marginTop: 12,
   },
   mrgBottom0: {
     marginBottom: 0,

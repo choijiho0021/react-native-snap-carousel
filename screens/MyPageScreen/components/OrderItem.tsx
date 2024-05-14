@@ -61,7 +61,11 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
           style={styles.orderValue}
           label={utils.toDateString(item.orderDate, 'YYYY.MM.DD')}
           labelStyle={styles.date}
-          valueStyle={statusColor ? {color: statusColor} : undefined}
+          valueStyle={
+            statusColor
+              ? {...appStyles.bold16Text, color: statusColor}
+              : undefined
+          }
           value={status}
         />
         <LabelText

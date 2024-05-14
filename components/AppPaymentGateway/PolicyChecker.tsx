@@ -31,18 +31,29 @@ const PolicyChecker = ({onPress}: {onPress?: (v: boolean) => void}) => {
   const navigation = useNavigation();
   const [checked, setChecked] = useState(false);
 
+  const commonParam = useMemo(
+    () => ({
+      showIcon: false,
+      showCloseModal: true,
+      btnStyle: {marginHorizontal: 20},
+    }),
+    [],
+  );
+
   const navParam = useMemo(
     () => ({
       '1': {
         key: 'setting:privacy',
         title: i18n.t('pym:contract:1'),
+        ...commonParam,
       },
       '2': {
         key: 'pym:agreement',
         title: i18n.t('pym:contract:2'),
+        ...commonParam,
       },
     }),
-    [],
+    [commonParam],
   );
 
   const move = useCallback(
@@ -62,7 +73,7 @@ const PolicyChecker = ({onPress}: {onPress?: (v: boolean) => void}) => {
           setChecked((prev) => !prev);
           onPress?.(!checked);
         }}>
-        <AppIcon name="btnCheck2" checked={checked} size={22} />
+        <AppIcon name="btnCheck3" checked={checked} size={22} />
         <AppText style={[appStyles.bold14Text, {marginLeft: 8}]}>
           {i18n.t('pym:consentEssential')}
         </AppText>

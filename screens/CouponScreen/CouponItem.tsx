@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     ...appStyles.medium14,
     lineHeight: 20,
     color: colors.warmGrey,
-    marginVertical: 6,
+    marginBottom: 6,
   },
   descBold: {
     ...appStyles.bold14Text,
@@ -27,13 +27,8 @@ const styles = StyleSheet.create({
   dday: {
     ...appStyles.bold12Text,
     color: colors.clearBlue,
-    backgroundColor: colors.veryLightBlue,
     height: 20,
-    paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 3,
-    borderWidth: 1,
-    borderColor: colors.veryLightBlue,
     marginRight: 8,
   },
   urgent: {
@@ -64,10 +59,10 @@ const CouponItem = ({item}: {item: RkbCoupon}) => {
       ) : percentage ? (
         <AppText style={appStyles.robotoBold22Text}>{percentage}</AppText>
       ) : null}
-      <AppText style={{...appStyles.bold16Text, marginTop: 8}}>
+      <AppText style={{...appStyles.bold16Text, marginTop: 8, marginBottom: 6}}>
         {prDisp}
       </AppText>
-      <View style={{marginVertical: 2}}>
+      <View>
         <AppStyledText
           textStyle={styles.desc}
           text={prDesc || ''}
@@ -83,7 +78,7 @@ const CouponItem = ({item}: {item: RkbCoupon}) => {
         <AppText style={[styles.dday, diff < 10 ? styles.urgent : undefined]}>
           {diff === 0 ? 'D-DAY' : `D-${diff}`}
         </AppText>
-        <AppText style={appStyles.medium14}>
+        <AppText style={{...appStyles.medium14, color: colors.black}}>
           {endDate.format('yyyy.MM.DD 까지')}
         </AppText>
       </View>

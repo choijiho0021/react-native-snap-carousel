@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   bottomBar: {
-    borderBottomColor: colors.lightGrey,
+    borderBottomColor: colors.black,
     borderBottomWidth: 1,
     marginHorizontal: 20,
     marginBottom: 20,
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     minWidth: '25%',
   },
   labelValue: {
-    ...appStyles.robotoSemiBold16Text,
+    ...appStyles.normal16Text,
     lineHeight: 36,
     letterSpacing: 0.22,
     color: colors.black,
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteTwo,
   },
   label2: {
-    ...appStyles.normal14Text,
+    ...appStyles.semiBold14Text,
     lineHeight: 36,
     color: colors.warmGrey,
   },
@@ -443,11 +443,22 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
     if (!order || !order.orderItems) return <View />;
 
     const state = i18n.t(`pym:orderState:${order?.state}`);
-    let label: string = order.orderItems[0].title;
+    // let label = order.orderItems[0].title;
+
     const etcCount = getCountItems(order?.orderItems, true);
 
-    if (parseInt(etcCount, 10) > 0)
-      label += i18n.t('his:etcCnt').replace('%%', etcCount);
+    const label = (
+      <AppText style={styles.productTitle}>
+        {order.orderItems[0].title}
+        {parseInt(etcCount, 10) > 0 && (
+          <AppText style={appStyles.normal18Text}>
+            {i18n.t('his:etcCnt').replace('%%', etcCount)}
+          </AppText>
+        )}
+      </AppText>
+    );
+
+    // label += i18n.t('his:etcCnt').replace('%%', etcCount);
 
     return (
       <View>
@@ -475,7 +486,10 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           label={`${i18n.t('his:orderId')} ${order.orderNo}`}
           labelStyle={styles.label2}
           value={state}
-          valueStyle={[styles.labelValue, {color: getColor(order?.state)}]}
+          valueStyle={[
+            appStyles.robotoSemiBold16Text,
+            {color: getColor(order?.state)},
+          ]}
         />
         <View style={styles.dividerTop} />
       </View>
@@ -500,6 +514,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         {headerNoti()}
         {headerInfo()}
         {paymentInfo()}
+        <View style={{height: 40}} />
       </ScrollView>
       <AppSnackBar
         visible={showSnackBar !== ''}

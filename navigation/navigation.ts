@@ -20,8 +20,9 @@ import {GuideOption} from '@/screens/UserGuideScreen/GuideHomeScreen';
 import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
 import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 import {PaymentRule} from '@/redux/modules/product';
+import {ViewStyle} from 'react-native';
 
-export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti';
+export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti' | 'page';
 export type PymMethodScreenMode =
   | 'cart'
   | 'roaming_product'
@@ -74,9 +75,13 @@ type SimpleTextParams = {
   mode?: SimpleTextScreenMode;
   body?: string;
   bodyTitle?: string;
+  created?: Moment;
   text?: string;
   rule?: Record<string, string>;
   nid?: number;
+  btnStyle?: ViewStyle;
+  showIcon?: boolean;
+  showCloseModal?: boolean;
   image?: {
     success?: string;
     failure?: string;

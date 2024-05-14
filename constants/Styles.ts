@@ -649,6 +649,8 @@ export const appStyles = StyleSheet.create({
   confirm: {
     height: 52,
     backgroundColor: colors.clearBlue,
+    marginHorizontal: 20,
+    marginTop: 32,
   },
   medium18: {
     //        fontFamily: "AppleSDGothicNeo",

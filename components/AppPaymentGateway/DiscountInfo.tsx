@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...appStyles.bold16Text,
-    color: colors.warmGrey,
+    color: colors.black,
     flex: 1,
   },
   buttonTitle: {
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   nobal: {
-    color: colors.clearBlue,
+    color: colors.greyish,
     borderWidth: 1,
     borderColor: colors.lightGrey,
     borderRadius: 3,
@@ -185,13 +185,19 @@ const DiscountInfo: React.FC<DiscountProps> = ({
         <View style={styles.container}>
           <View
             key="coupon"
-            style={[styles.row, {justifyContent: 'space-between'}]}>
+            style={[
+              styles.row,
+              {
+                justifyContent: 'space-between',
+                marginBottom: 12,
+              },
+            ]}>
             <AppText style={styles.title}>{i18n.t('pym:coupon')}</AppText>
             {(cart.promo?.length || 0) > 0 ? (
               <Pressable
                 style={styles.row}
                 onPress={() => toggleMaxPromo(checked)}>
-                <AppIcon name="btnCheck2" checked={checked} size={22} />
+                <AppIcon name="btnCheck3" checked={checked} size={22} />
                 <AppText style={{...appStyles.medium16, marginLeft: 8}}>
                   {i18n.t('pym:coupon:max')}
                 </AppText>
@@ -209,7 +215,15 @@ const DiscountInfo: React.FC<DiscountProps> = ({
                       : 'pym:no:coupon',
                   )
             }
-            titleStyle={appStyles.robotoBold16Text}
+            titleStyle={[
+              appStyles.robotoBold16Text,
+              {
+                color:
+                  (cart.promo?.length || 0) > 0
+                    ? colors.clearBlue
+                    : colors.greyish,
+              },
+            ]}
             buttonTitle={i18n.t('pym:sel:coupon:title')}
             onPress={() => {
               onPress?.();
@@ -228,20 +242,20 @@ const DiscountInfo: React.FC<DiscountProps> = ({
           {onPress && isCashNotEmpty ? (
             <AppStyledText
               text={i18n.t('acc:balance:hold')}
-              textStyle={{...appStyles.bold14Text, color: colors.clearBlue}}
+              textStyle={{...appStyles.bold16Text, color: colors.clearBlue}}
               data={{cash: utils.numberToCommaString(account.balance || 0)}}
             />
           ) : null}
         </View>
         <View key="selcash" style={styles.row}>
-          {onPress && isCashNotEmpty ? (
+          {onPress ? (
             <AppTextInput
               showCancel={(utils.stringToNumber(rokebiCash) || 0) > 0}
               containerStyle={styles.input}
               onCancel={() => setRokebiCash('0')}
               style={{
                 ...styles.title,
-                color: colors.clearBlue,
+                color: isCashNotEmpty ? colors.clearBlue : colors.greyish,
               }}
               allowFontScaling={false}
               keyboardType="numeric"
@@ -270,7 +284,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
                 onPress={() => setRokebiCash('0')}
               />
             )} */}
-          {onPress && isCashNotEmpty ? (
+          {onPress ? (
             <AppButton
               style={styles.button}
               titleStyle={[styles.buttonTitle]}
@@ -278,8 +292,8 @@ const DiscountInfo: React.FC<DiscountProps> = ({
               // 보유캐시와 사용할 캐시가 같거나, 상품 결제 금액과 사용할 캐시가 같을 때 비활성화
               disabled={disabledDeductAll}
               disableStyle={{
-                backgroundColor: colors.lightGrey,
-                borderColor: colors.whiteTwo,
+                backgroundColor: colors.whiteTwo,
+                borderColor: colors.lightGrey,
               }}
               disableColor={colors.greyish}
               onPress={() => action.cart.deductRokebiCash(account.balance)}

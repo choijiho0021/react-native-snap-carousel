@@ -39,6 +39,7 @@ import i18n from '@/utils/i18n';
 import validationUtil from '@/utils/validationUtil';
 import {LinkModelState} from '@/redux/modules/link';
 import ScreenHeader from '@/components/ScreenHeader';
+import moment from 'moment';
 
 const {isProduction, isIOS} = Env.get();
 
@@ -371,7 +372,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             countdown={authNoti && !authorized && !timeoutFlag}
             onTimeout={() => setTimeoutFlag(true)}
             onPress={onPressPin}
-            duration={180}
+            duration={moment().add(180, 'seconds')} // 이 부분읈 수정해야함 카운트 다운 true일 때 현재 시간 에서 몇초남았다 이렇게?
             inputRef={inputRef}
           />
         </View>

@@ -679,10 +679,22 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         }}>
         <Pressable style={styles.showExpPtBox} onPress={() => showExpirePt()}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <AppText style={appStyles.bold14Text}>
+            <AppText
+              style={[
+                appStyles.bold14Text,
+                {
+                  lineHeight: 24,
+                },
+              ]}>
               {i18n.t('cashHistory:expirePt')}
             </AppText>
-            <AppText style={appStyles.normal14Text}>
+            <AppText
+              style={[
+                appStyles.normal14Text,
+                {
+                  lineHeight: 24,
+                },
+              ]}>
               {i18n.t('cashHistory:in1Month')}
             </AppText>
           </View>

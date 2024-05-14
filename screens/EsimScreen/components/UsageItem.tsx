@@ -193,6 +193,14 @@ const UsageItem: React.FC<UsageItemProps> = ({
     [dataUsageOption?.mode],
   );
 
+  const canShowUsage = useCallback(
+    (partner: string) =>
+      ['cmi', 'cmi2', 'quadcell', 'quadcell2', 'billionconnect'].includes(
+        partner,
+      ),
+    [],
+  );
+
   useEffect(() => {
     if (disableBtn) {
       setTimeout(() => setDisableBtn(false), 5000);
@@ -352,35 +360,39 @@ const UsageItem: React.FC<UsageItemProps> = ({
         {showEndTime &&
           endTime &&
           item.daily === 'daily' &&
-          !['ht', 'mosaji'].includes(item.partner!) && (
-            <View style={styles.timeDivider} />
-          )}
+          canShowUsage(item.partner!) && <View style={styles.timeDivider} />}
 
-        {item.daily === 'daily' &&
-          !['ht', 'mosaji'].includes(item.partner!) && (
-            <View style={styles.timeItem}>
-              <AppText
-                style={{
-                  ...appStyles.bold12Text,
-                  color: colors.black,
-                  marginBottom: 6,
-                }}>
-                {i18n.t('esim:time:dataReset')}
-              </AppText>
+        {item.daily === 'daily' && canShowUsage(item.partner!) && (
+          <View style={styles.timeItem}>
+            <AppText
+              style={{
+                ...appStyles.bold12Text,
+                color: colors.black,
+                marginBottom: 6,
+              }}>
+              {i18n.t('esim:time:dataReset')}
+            </AppText>
 
-              {isTzDiff ? (
-                <View>
-                  {renderResetTimeRow('korea', styles.rowBetween)}
-                  {renderResetTimeRow('local', styles.rowBetween)}
-                </View>
-              ) : (
-                <View>{renderResetTimeRow('korea')}</View>
-              )}
-            </View>
-          )}
+            {isTzDiff ? (
+              <View>
+                {renderResetTimeRow('korea', styles.rowBetween)}
+                {renderResetTimeRow('local', styles.rowBetween)}
+              </View>
+            ) : (
+              <View>{renderResetTimeRow('korea')}</View>
+            )}
+          </View>
+        )}
       </View>
     );
-  }, [endTime, item.daily, item.partner, renderResetTimeRow, showEndTime]);
+  }, [
+    canShowUsage,
+    endTime,
+    item.daily,
+    item.partner,
+    renderResetTimeRow,
+    showEndTime,
+  ]);
 
   const renderAnimatedCircularProgress = useCallback(() => {
     return (
@@ -638,7 +650,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
           {showStatus &&
             !usageLoading &&
             !isError &&
-            !['ht', 'mosaji'].includes(item.partner!) && (
+            canShowUsage(item.partner!) && (
               <AppText
                 key={item.nid}
                 style={[

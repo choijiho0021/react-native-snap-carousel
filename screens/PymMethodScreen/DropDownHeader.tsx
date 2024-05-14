@@ -34,11 +34,12 @@ const styles = StyleSheet.create({
 });
 
 type DropDownHeaderProps = {
-  title: string;
+  title: string | React.JSX.Element;
   summary?: string;
   titleStyle?: StyleProp<ViewStyle>;
   style?: StyleProp<ViewStyle>;
   expandable?: boolean;
+  showSummary?: boolean;
 };
 
 const DropDownHeader: React.FC<PropsWithChildren<DropDownHeaderProps>> = ({
@@ -48,6 +49,7 @@ const DropDownHeader: React.FC<PropsWithChildren<DropDownHeaderProps>> = ({
   children,
   style,
   titleStyle,
+  showSummary = false,
 }) => {
   const [showContent, setShowContent] = useState(true);
 
@@ -66,7 +68,7 @@ const DropDownHeader: React.FC<PropsWithChildren<DropDownHeaderProps>> = ({
         <AppText style={[styles.boldTitle, titleStyle]}>{title}</AppText>
         {expandable ? (
           <View style={styles.row}>
-            {!showContent && (
+            {(!showContent || showSummary) && (
               <AppText style={styles.summary}>{summary}</AppText>
             )}
             <AppButton

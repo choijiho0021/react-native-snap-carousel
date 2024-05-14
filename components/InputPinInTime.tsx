@@ -6,6 +6,7 @@ import React, {
   useState,
 } from 'react';
 import {
+  AppState,
   StyleSheet,
   TextInput,
   TextInputProps,
@@ -13,6 +14,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import _ from 'underscore';
+import moment, {Moment} from 'moment';
 import {useInterval} from '@/utils/useInterval';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -77,7 +79,7 @@ type InputPinInTimeProps = {
   countdown: boolean;
   authorized?: boolean;
   clickable: boolean;
-  duration: number;
+  duration: Moment;
   onTimeout: () => void;
   onPress: (v: string) => void;
   inputRef?: React.MutableRefObject<InputPinRef | null>;
@@ -101,6 +103,20 @@ const InputPinInTime: React.FC<
   const [focused, setFocused] = useState(false);
   const ref = useRef<TextInput>();
 
+  //
+  const getSecondByDateTime = useCallback(() => {
+    const now = moment();
+
+    const second = props.duration.diff(now, 'seconds');
+
+    console.log('@@@ props.duration : ', props.duration);
+    console.log('@@@ now : ', now);
+
+    console.log('@@@@ second :', second);
+
+    return second < 0 ? 0 : second;
+  }, [props.duration]);
+
   useInterval(
     () => {
       if (duration > 0) setDuration((prev) => prev - 1);
@@ -108,6 +124,29 @@ const InputPinInTime: React.FC<
     },
     duration > 0 ? 1000 : null,
   );
+
+  const appState = useRef('unknown');
+
+  useEffect(() => {
+    if (appState.current === 'unknown') {
+      appState.current = 'setting';
+
+      console.log('@setting...');
+      AppState.addEventListener('change', (nextAppState) => {
+        console.log('@@@@@ nextAppState : ', nextAppState);
+
+        if (
+          appState.current.match(/inactive|background/) &&
+          nextAppState === 'active'
+        ) {
+          console.log('@@@ getSeocndDateTime');
+          setDuration(getSecondByDateTime());
+        }
+
+        appState.current = nextAppState;
+      });
+    }
+  }, [getSecondByDateTime]);
 
   useEffect(() => {
     if (inputRef) {
@@ -125,8 +164,9 @@ const InputPinInTime: React.FC<
   const init = useCallback(() => {
     setTimeoutFlag(false);
 
-    if (countdown) setDuration(props.duration);
-  }, [countdown, props.duration]);
+    // 여기서 duration 은 moment.now() 로 계싼되어있음.
+    if (countdown) setDuration(getSecondByDateTime());
+  }, [countdown, getSecondByDateTime]);
 
   const clickable = props.clickable && _.size(pin) === 6;
 

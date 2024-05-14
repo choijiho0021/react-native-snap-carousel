@@ -52,7 +52,8 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     justifyContent: 'flex-start',
     borderWidth: 1,
-    borderRadius: 3,
+    borderTopEndRadius: 12,
+    borderBottomEndRadius: 3,
     borderColor: colors.whiteFive,
     shadowColor: 'rgba(166, 168, 172, 0.16)',
     shadowOffset: {
@@ -98,6 +99,7 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     marginTop: 23,
+    marginBottom: 12,
     backgroundColor: colors.black,
   },
   stamp: {
@@ -366,14 +368,14 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
           />
           {!isSuccess && params?.errorMsg && (
             <>
-              <AppDashBar />
+              <AppDashBar style={{width: '150%', right: 20}} />
 
               <View style={{gap: 6}}>
                 <View style={{gap: 6, flexDirection: 'row'}}>
                   <AppSvgIcon name="bannerWarning20" />
                   <AppText
                     style={{
-                      ...appStyles.bold16Text,
+                      ...appStyles.bold14Text,
                       color: colors.redBold,
                     }}>
                     {i18n.t('pym:failReason')}
@@ -393,7 +395,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
             <AppButton
               style={styles.detailButton}
               titleStyle={{
-                ...appStyles.roboto16Text,
+                ...appStyles.medium14,
                 lineHeight: 24,
               }}
               title={i18n.t(`pym:detail`)}
@@ -416,6 +418,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
                   style={{
                     flexDirection: 'row',
                     gap: 6,
+                    // backgroundColor: 'red',
                   }}>
                   <AppIcon name="bannerMark2" />
                   <AppText
@@ -423,6 +426,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
                       ...appStyles.bold14Text,
                       color: colors.warmGrey,
                       lineHeight: 20,
+                      flex: 1,
                     }}>
                     {i18n.t('his:pym:alert')}
                   </AppText>
