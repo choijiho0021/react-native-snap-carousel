@@ -218,7 +218,15 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
 
   // 공지사항의 경우 notiType이 없으므로 Notice/0으로 기본값 설정
   const onPress = useCallback(
-    async ({uuid, isRead, bodyTitle, body, notiType = 'Notice/0'}: RkbNoti) => {
+    async ({
+      uuid,
+      isRead,
+      bodyTitle,
+      body,
+      notiType = 'Notice/0',
+      title,
+      created,
+    }: RkbNoti) => {
       const {token} = account;
       const split = notiType?.split('/');
       const type = split[0];
@@ -333,9 +341,16 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
                 type === notiActions.NOTI_TYPE_PUSH
                   ? i18n.t('set:noti')
                   : i18n.t('contact:noticeDetail'),
-              bodyTitle,
+
+              created: moment(created),
+              bodyTitle: bodyTitle || title,
               text: body,
-              mode: type === notiActions.NOTI_TYPE_URI ? 'uri' : 'html',
+              mode:
+                type === notiActions.NOTI_TYPE_URI
+                  ? 'uri'
+                  : type === notiActions.NOTI_TYPE_DONATION
+                  ? 'page'
+                  : 'html',
             });
             break;
         }
