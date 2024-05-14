@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   title: {
-    ...appStyles.bold18Text,
+    ...appStyles.bold16Text,
     marginTop: 24,
     marginBottom: 12,
     color: colors.black,
@@ -118,6 +118,11 @@ const styles = StyleSheet.create({
     letterSpacing: 0.27,
     flexDirection: 'row',
     maxWidth: isDeviceSize('small') ? '70%' : '80%',
+  },
+  confirm: {
+    height: 52,
+    backgroundColor: colors.clearBlue,
+    marginTop: 32,
   },
 });
 
@@ -505,7 +510,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
             }
           }}
           onPress={() => onSubmit(false)}
-          style={appStyles.confirm}
+          style={styles.confirm}
           type="primary"
         />
       </KeyboardAwareScrollView>

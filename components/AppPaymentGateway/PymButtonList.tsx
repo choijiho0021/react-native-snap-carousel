@@ -63,7 +63,12 @@ const PymButton = ({
           borderLeftColor:
             sel || leftColor ? colors.clearBlue : colors.lightGrey,
           borderTopColor: sel || topColor ? colors.clearBlue : colors.lightGrey,
-          borderRightColor: right && sel ? colors.clearBlue : colors.lightGrey,
+          borderRightColor:
+            btnKey === 'pym:null'
+              ? colors.white
+              : right && sel
+              ? colors.clearBlue
+              : colors.lightGrey,
           borderBottomColor:
             bottom && sel ? colors.clearBlue : colors.lightGrey,
         },
@@ -170,11 +175,13 @@ const PymButtonList: React.FC<PymButtonListParams> = ({selected, onPress}) => {
           btnKey="pym:null"
           topColor={selected === 'pym:toss'}
           leftColor={selected === 'pym:lpay'}
+          right
         />
         <PymButton
           btnKey="pym:null"
           topColor={selected === 'pym:ssgpay'}
           left={false}
+          right
         />
       </View>
     </View>

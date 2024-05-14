@@ -444,7 +444,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             },
           };
           break;
-        case 'mosaji':
+        // mosaji, baycon 사용랴 조회 사용 불가 (기본값)
+        default:
           result = {
             status: {
               statusCd: 'A',
@@ -454,9 +455,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               mode: [],
             },
           };
-          break;
-        default:
-          result = await checkCmiData(item);
           break;
       }
 

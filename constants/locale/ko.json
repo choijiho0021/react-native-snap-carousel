@@ -89,6 +89,8 @@
   "android": "안드로이드폰",
   "ios": "아이폰",
   "rkbCash": "캐시",
+  "failure": "실패",
+  "send": "발송",
 
   "purchase:date": "{{date}} 구매",
 
@@ -356,7 +358,7 @@
   "addr:mandatory": "*",
 
   "his:detail": "상세 내역",
-  "his:etcCnt": " 외 %% 개",
+  "his:etcCnt": " 외 %%개",
   "his:purchaseDate": "구매 시각",
   "his:today": "다음 데이터 리셋 시간까지만 사용 가능",
   "his:remainDays": "남은 사용기간 동안 사용 가능",
@@ -582,7 +584,7 @@
   "cart:couponDiscount": "할인쿠폰 사용",
   "cart:dlvCost": "배송비",
   "cart:totalCost": "최종 결제 금액",
-  "cart:totalCntX": "총 %% 개",
+  "cart:totalCntX": "총 %%개",
   "cart:dlvCostNotice": "* 3만원 이상 구매시 배송료 무료",
   "cart:toCart": "카트에 넣기",
   // "cart:buy": "바로 구매",
@@ -1638,6 +1640,7 @@
   "cashHistory:type:point_deduct": "상품 구매",
   "cashHistory:type:point_add": "캐시 적립",
   "cashHistory:type:point_exp": "캐시 소멸",
+  "cashHistory:recharge:failure": "충전 실패! 고객센터로 문의해 주세요.",
 
   "promo:join:open": "이벤트 참여",
   "promo:join:joined": "이벤트 참여 완료",

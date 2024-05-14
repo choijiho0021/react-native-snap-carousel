@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: 'dashed',
     borderColor: colors.gray4,
+    borderRadius: 1,
   },
 });
 
@@ -111,7 +112,15 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
 
   const renderCoupon = useCallback(
     ({item}: {item: RkbCoupon}) => (
-      <Pressable style={styles.coupon} onPress={() => setCouponId(item.id)}>
+      <Pressable
+        style={[
+          styles.coupon,
+          {
+            borderColor:
+              item.id === couponId ? colors.clearBlue : colors.lightGrey,
+          },
+        ]}
+        onPress={() => setCouponId(item.id)}>
         <AppSvgIcon name="btnCheck" focused={item.id === couponId} />
         <View style={styles.line} />
         <CouponItem item={item} />
@@ -152,6 +161,7 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
       <ScreenHeader
         isStackTop
         title={i18n.t('pym:sel:coupon:title')}
+        titleStyle={appStyles.bold18Text}
         renderRight={
           <AppSvgIcon
             name="closeModal"
