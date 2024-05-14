@@ -173,11 +173,19 @@ const CouponScreen: React.FC<CouponProps> = ({
   );
 
   const regCoupon = useCallback(() => {
+    console.log('@@@@ regcoupon random?');
     if (!code) {
       setMessage(i18n.t('coupon:empty'));
     } else {
       Keyboard.dismiss();
-      API.Account.registerCoupon({code, iccid, token}).then((resp) => {
+
+      API.Account.lotteryCoupon({
+        created: '1',
+        count: '2',
+        mobile: '3',
+        iccid,
+        token,
+      }).then((resp) => {
         if (resp.result === 0) {
           setCode('');
 
@@ -198,6 +206,28 @@ const CouponScreen: React.FC<CouponProps> = ({
           setMessage(i18n.t('coupon:reg:fail'));
         }
       });
+
+      // API.Account.registerCoupon({code, iccid, token}).then((resp) => {
+      //   if (resp.result === 0) {
+      //     setCode('');
+
+      //     const endDate = resp.objects?.[0]?.endDate;
+      //     const now = moment();
+
+      //     if (now.isSame(endDate, 'day')) {
+      //       setMessage(i18n.t('coupon:reg:succ:1dayLeft'));
+      //     } else {
+      //       setMessage(i18n.t('coupon:reg:succ'));
+      //     }
+      //     dispatch(action.account.getMyCoupon({token}));
+      //   } else if (resp.result === api.E_RESOURCE_NOT_FOUND) {
+      //     setMessage(i18n.t('coupon:reg:fail:norsc'));
+      //   } else if (resp.result === api.E_ALREADY_EXIST) {
+      //     setMessage(i18n.t('coupon:reg:fail:duplicated'));
+      //   } else {
+      //     setMessage(i18n.t('coupon:reg:fail'));
+      //   }
+      // });
     }
   }, [action.account, code, dispatch, iccid, token]);
 

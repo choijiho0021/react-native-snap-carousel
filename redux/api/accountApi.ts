@@ -411,6 +411,35 @@ const registerCoupon = ({
   );
 };
 
+// register coupon
+const lotteryCoupon = ({
+  created,
+  count,
+  mobile,
+  iccid,
+  token,
+}: {
+  created: string;
+  count: string;
+  mobile: string;
+  iccid: string;
+  token: string;
+}) => {
+  console.log(
+    '@@@ api.path.rokApi.rokebi.couponEvent : ',
+    api.path.rokApi.rokebi.lottery,
+  );
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.lottery)}?_format=json`,
+    {
+      method: 'POST',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({created, count, mobile}),
+    },
+    toCoupon,
+  );
+};
+
 export default {
   toAccount,
   toFile,
@@ -423,4 +452,5 @@ export default {
   uploadPicture,
   getMyCoupon,
   registerCoupon,
+  lotteryCoupon,
 };
