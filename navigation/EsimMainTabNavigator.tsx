@@ -73,6 +73,7 @@ import CouponScreen from '@/screens/CouponScreen';
 import DraftUsScreen from '@/screens/DraftUsScreen';
 import PaymentVBankScreen from '@/screens/PaymentVBankScreen';
 import SelectCoupon from '@/screens/SelectCouponScreen';
+import LotteryScreen from '@/screens/LotteryScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -262,6 +263,7 @@ function EsimStackComponent() {
           component={PaymentGatewayScreen}
         />
         <EsimStack.Screen name="PaymentVBank" component={PaymentVBankScreen} />
+        <EsimStack.Screen name="Lottery" component={LotteryScreen} />
       </EsimStack.Group>
     </EsimStack.Navigator>
   );

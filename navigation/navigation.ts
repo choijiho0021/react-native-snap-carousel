@@ -190,6 +190,7 @@ export type HomeStackParamList = {
     chargeablePeriod: string;
     isChargeable: boolean;
   };
+  Lottery: {count: number};
   ChargeDetail: {
     data: RkbProduct;
     chargeablePeriod: string;

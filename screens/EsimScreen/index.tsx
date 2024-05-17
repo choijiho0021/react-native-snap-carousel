@@ -8,7 +8,7 @@ import {
   SafeAreaView,
   AppState,
 } from 'react-native';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import moment from 'moment';
@@ -249,6 +249,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const appState = useRef('unknown');
   const [isChargeable, setIsChargeable] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
+  const [lotteryCnt, setLotteryCnt] = useState(0);
+  const dispatch = useDispatch();
 
   const [subsData, firstUsedIdx] = useMemo(
     () => {
@@ -318,6 +320,18 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     },
     [action.order, mobile, token],
   );
+
+  const checkLottery = useCallback(() => {
+    API.Account.lotteryCoupon({
+      iccid,
+      token,
+      prompt: 'check',
+    }).then((resp) => {
+      if (resp?.result === 0) {
+        setLotteryCnt(resp.objects[0]?.count || 0);
+      }
+    });
+  }, [iccid, token]);
 
   const checkCmiData = useCallback(
     async (
@@ -479,6 +493,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           .then(() => {
             action.account.getAccount({iccid, token});
             getOrders(hidden);
+
+            // hidden이 False 일 때만 해주면 되나?
+            checkLottery();
+
             setIsFirstLoad(false);
           })
           .finally(() => {
@@ -486,7 +504,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           });
       }
     },
-    [action.account, action.order, getOrders, iccid, token],
+    [action.account, action.order, checkLottery, getOrders, iccid, token],
   );
 
   const getIsChargeable = useCallback((sub: RkbSubscription) => {
@@ -533,6 +551,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           hidden: false,
         });
         getOrders(false);
+        checkLottery();
       } else if (actionStr === 'showUsage') {
         const index = subsData?.findIndex((elm) => elm.nid === subsId);
         if (index >= 0) {
@@ -609,6 +628,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     },
     [
       action.order,
+      checkLottery,
       getIsChargeable,
       getOrders,
       iccid,
@@ -675,6 +695,35 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     ],
   );
 
+  // esimScreen 코드가 너무 길어서 컴포넌트로 빼기..
+  const renderLottery = useCallback(() => {
+    const isPending = (statusCd: string) => statusCd === 'P';
+    const pending = subsData.findIndex((r) => isPending(r.statusCd)) !== -1;
+
+    return (
+      lotteryCnt > 0 && (
+        <Pressable
+          style={{
+            marginHorizontal: 20,
+            marginTop: 20,
+            backgroundColor: colors.greyish,
+            height: pending ? 70 : 150,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          onPress={() => {
+            navigation.navigate('Lottery', {
+              count: lotteryCnt,
+            });
+          }}>
+          <AppText style={appStyles.medium16}>
+            {i18n.t('esim:lottery:start')}
+          </AppText>
+        </Pressable>
+      )
+    );
+  }, [lotteryCnt, navigation, subsData]);
+
   const renderDraft = useCallback(
     (item: RkbOrder, isLast) => {
       return (
@@ -713,6 +762,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           />
           {renderInfo(navigation)}
 
+          {renderLottery()}
+
           {order.drafts?.length > 0 && (
             <>
               <View style={styles.draftFrame}>
@@ -744,7 +795,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           )}
         </View>
       ),
-    [balance, expDate, iccid, navigation, order.drafts, renderDraft],
+    [
+      balance,
+      expDate,
+      iccid,
+      navigation,
+      order.drafts,
+      renderDraft,
+      renderLottery,
+    ],
   );
 
   useEffect(() => {

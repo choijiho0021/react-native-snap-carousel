@@ -411,6 +411,26 @@ const registerCoupon = ({
   );
 };
 
+// register coupon
+const lotteryCoupon = ({
+  prompt,
+  iccid,
+  token,
+}: {
+  prompt: 'lottery' | 'check';
+  iccid: string;
+  token: string;
+}) => {
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.lottery)}?_format=json`,
+    {
+      method: 'POST',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({prompt}),
+    },
+  );
+};
+
 export default {
   toAccount,
   toFile,
@@ -423,4 +443,5 @@ export default {
   uploadPicture,
   getMyCoupon,
   registerCoupon,
+  lotteryCoupon,
 };
