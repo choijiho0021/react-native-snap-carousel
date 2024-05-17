@@ -175,8 +175,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   }, [action.toast, hasAndroidPermission]);
 
   const onClick = useCallback(() => {
-    console.log('@@@ 뽑기 실행');
-
     // 2초 동안 Loading 표시해주기 코드
     setIsLoading(true);
 
@@ -190,7 +188,9 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     if (isLoading) {
       return (
         <View style={{flex: 1, alignItems: 'center'}}>
-          <AppText style={appStyles.bold20Text}>{'이번 여행 운세는?'}</AppText>
+          <AppText style={appStyles.bold20Text}>
+            {i18n.t('esim:lottery:title')}
+          </AppText>
           <View
             style={{
               flex: 8,
@@ -283,14 +283,15 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     return (
       <View style={{flex: 1, justifyContent: 'space-between'}}>
         <View style={{alignItems: 'center'}}>
-          <AppText style={appStyles.bold20Text}>{'이번 여행 운세는?'}</AppText>
+          <AppText style={appStyles.bold20Text}>
+            {i18n.t('esim:lottery:title')}
+          </AppText>
         </View>
         <View>
           <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
-            {'열어보지 않은 쿠폰이 %d개 있네요.\n당첨 여부를 확인해보세요!'.replace(
-              '%d',
-              route?.params?.count || 0,
-            )}
+            {i18n
+              .t('esim:lottery:coupon:cnt')
+              .replace('%d', route?.params?.count || 0)}
           </AppText>
           <Pressable
             style={{
@@ -302,7 +303,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             }}
             onPress={onClick}>
             <AppText style={[appStyles.medium16, {textAlign: 'center'}]}>
-              {'여행 운세와 랜덤 쿠폰 뽑기'}
+              {i18n.t('esim:lottery:button')}
             </AppText>
           </Pressable>
         </View>
@@ -314,12 +315,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             gap: 6,
           }}>
           <AppText style={appStyles.normal14Text}>
-            {'- 쿠폰 당첨 기회는 발권당 1번 부여됩니다.'}
-          </AppText>
-          <AppText style={appStyles.normal14Text}>
-            {
-              '- 여행 운세 및 쿠폰을 확인하지 않으면 쿠폰 당첨 기회가 누적되며, 확인 시 누적된 기회가 일괄 소진됩니다.'
-            }
+            {i18n.t('esim:lottery:notice')}
           </AppText>
         </View>
       </View>

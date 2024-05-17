@@ -8,6 +8,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import ScreenHeader from '@/components/ScreenHeader';
+import i18n from '@/utils/i18n';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {actions as toastActions} from '@/redux/modules/toast';
 import AppText from '@/components/AppText';
@@ -48,11 +49,6 @@ const LotteryCouponScreen: React.FC<LotteryCouponScreenProps> = ({
 }) => {
   const {coupon} = route.params;
 
-  useEffect(() => {
-    console.log('@@ Route.params : ', route?.params);
-    console.log('@@@ coupon : ', coupon);
-  }, [coupon, route?.params]);
-
   return (
     <SafeAreaView style={styles.container}>
       <ScreenHeader
@@ -81,7 +77,7 @@ const LotteryCouponScreen: React.FC<LotteryCouponScreenProps> = ({
                 color: colors.white,
               },
             ]}>
-            {'쿠폰에 당첨되었어요!'}
+            {i18n.t('esim:lottery:modal:win')}
           </AppText>
 
           <View style={{alignItems: 'flex-end'}}>
@@ -104,7 +100,7 @@ const LotteryCouponScreen: React.FC<LotteryCouponScreenProps> = ({
               appStyles.normal12Text,
               {color: colors.white, marginTop: 20},
             ]}>
-            {'내 계정 > 쿠폰함에서 확인해보세요. '}
+            {i18n.t('esim:lottery:modal:notice')}
           </AppText>
         </View>
       </View>
