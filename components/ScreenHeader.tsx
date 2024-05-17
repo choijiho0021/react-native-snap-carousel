@@ -30,6 +30,7 @@ interface ScreenHeaderProps {
   backHandler?: () => void;
   renderLeft?: React.ReactNode;
   renderRight?: React.ReactNode;
+  headerStyle?: ViewStyle;
 }
 
 const ScreenHeader: React.FC<ScreenHeaderProps> = ({
@@ -40,12 +41,13 @@ const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   backHandler,
   renderLeft,
   renderRight,
+  headerStyle,
 }) => {
   const navigation = useNavigation();
   const route = useRoute();
 
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, headerStyle]}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
         {isStackTop ? (
           <AppText style={[styles.title, titleStyle]}>{title}</AppText>

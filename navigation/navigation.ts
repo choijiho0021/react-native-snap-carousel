@@ -21,6 +21,7 @@ import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
 import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 import {PaymentRule} from '@/redux/modules/product';
 import {ViewStyle} from 'react-native';
+import {LotteryCouponType} from '@/screens/LotteryScreen';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti' | 'page';
 export type PymMethodScreenMode =
@@ -190,7 +191,8 @@ export type HomeStackParamList = {
     chargeablePeriod: string;
     isChargeable: boolean;
   };
-  Lottery: {count: number};
+  Lottery: {count: number; onPress: (v: number) => void};
+  LotteryCoupon: {coupon: LotteryCouponType};
   ChargeDetail: {
     data: RkbProduct;
     chargeablePeriod: string;

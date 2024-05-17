@@ -1,24 +1,14 @@
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {
-  memo,
-  PropsWithChildren,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
-  Dimensions,
-  ImageBackground,
   Platform,
   Pressable,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
 import {connect, useDispatch} from 'react-redux';
-import {RouteProp, useRoute} from '@react-navigation/native';
+import {RouteProp} from '@react-navigation/native';
 import ViewShot from 'react-native-view-shot';
 import {colors} from '@/constants/Colors';
 import {bindActionCreators} from 'redux';
@@ -87,7 +77,7 @@ type LotteryProps = {
   };
 };
 
-type CouponProps = {
+export type LotteryCouponType = {
   cnt: number;
   title: string;
   desc: string;
@@ -103,20 +93,12 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [phase, setPhase] = useState('');
   const dispatch = useDispatch();
   // const [couponCnt, setCouponCnt] = useState(0);
-  const [coupon, setCoupon] = useState<CouponProps>({
+  const [coupon, setCoupon] = useState<LotteryCouponType>({
     cnt: 0,
     title: '',
     desc: '',
   });
   const ref = useRef<ViewShot>();
-
-  useEffect(() => {
-    console.log('@@@ route : ', route);
-  }, [route]);
-
-  useEffect(() => {
-    console.log('@@@ coupon : ', coupon);
-  }, [coupon]);
 
   const lotteryCoupon = useCallback(() => {
     // 조건이 필요하다.
@@ -131,9 +113,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       const couponObj = resp.objects[0]?.coupon;
 
       if (resp.result === 0) {
-        console.log('@@@ resp1 : ', resp.objects[0]?.phrase);
-        console.log('@@@ resp1.coupon : ', couponObj?.display_name);
-        console.log('@@@ resp1.coupon : ', couponObj?.description);
         setCoupon({
           cnt: couponObj?.cnt || 0,
           title: couponObj?.display_name,
@@ -142,7 +121,20 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
         setPhase(resp.objects[0]?.phrase);
         setIsLoading(false);
-        // dispatch(action.account.getMyCoupon({token})); // 필요한가?
+        route?.params?.onPress(0);
+
+        // 3초후 쿠폰 결과도 보여달라는데?
+
+        // 뽑기 , 임시로 2초 타임아웃
+        setTimeout(() => {
+          navigation.navigate('LotteryCoupon', {
+            coupon: {
+              cnt: couponObj?.cnt || 0,
+              title: couponObj?.display_name,
+              desc: couponObj?.description,
+            },
+          });
+        }, 3000);
       } else {
         // 실패했을 땐 어떻게 해야할 지??
         // 네트워크 오류나 띄워줄까
@@ -191,7 +183,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     // 뽑기 , 임시로 2초 타임아웃
     setTimeout(() => {
       lotteryCoupon();
-      // 3초후 쿠폰 결과도 보여달라는데?
     }, 2000);
   }, [lotteryCoupon]);
 
@@ -228,7 +219,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             </AppText>
             {coupon?.cnt == 0 && (
               <AppText style={[appStyles.medium14, {marginTop: 10}]}>
-                {'쿠폰 당첨 결과도 곧 나와요! // 쿠폰 당첨 결과 나오면 미노출'}
+                {'쿠폰 당첨 결과도 곧 나와요!'}
               </AppText>
             )}
           </View>

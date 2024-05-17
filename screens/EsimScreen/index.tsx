@@ -714,6 +714,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           onPress={() => {
             navigation.navigate('Lottery', {
               count: lotteryCnt,
+              onPress: setLotteryCnt,
             });
           }}>
           <AppText style={appStyles.medium16}>
