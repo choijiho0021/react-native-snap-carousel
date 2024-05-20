@@ -151,9 +151,15 @@ const LotteryCouponScreen: React.FC<LotteryCouponScreenProps> = ({
                 paddingVertical: 10,
                 alignSelf: 'center',
               }}>
-              <AppText style={appStyles?.bold16Text}>
-                {i18n.t('esim:lottery:modal:save')}
-              </AppText>
+              <View>
+                <AppText
+                  style={[
+                    appStyles?.bold16Text,
+                    {textAlign: 'center', width: 200},
+                  ]}>
+                  {i18n.t('esim:lottery:modal:save')}
+                </AppText>
+              </View>
             </Pressable>
             <AppText
               style={[
