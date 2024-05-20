@@ -458,6 +458,19 @@ const getSubsUsage = ({id, token}: {id?: string; token?: string}) => {
 
 // get usage data from svc server
 // CMI API를 사용하는 경우
+const getCmiCardInfo = ({iccid}: {iccid: string}) => {
+  if (!iccid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
+
+  return api.callHttpGet(
+    `${api.rokHttpUrl(api.path.rokApi.pv.cmiCardInfo)}&iccid=${iccid}`,
+    (data) => data,
+    new Headers({'Content-Type': 'application/json'}),
+  );
+};
+
+// get usage data from svc server
+// CMI API를 사용하는 경우
 const cmiGetSubsUsage = ({
   iccid,
   orderId,
@@ -636,6 +649,7 @@ export default {
   updateSubscriptionAndOrderTag,
   updateSubscriptionGiftStatus,
   getSubsUsage,
+  getCmiCardInfo,
   cmiGetSubsUsage,
   cmiGetSubsStatus,
   cmiGetStatus,

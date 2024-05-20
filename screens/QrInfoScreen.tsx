@@ -1,5 +1,11 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {StyleSheet, SafeAreaView, View, Platform} from 'react-native';
+import {
+  StyleSheet,
+  SafeAreaView,
+  View,
+  Platform,
+  Pressable,
+} from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import Clipboard from '@react-native-community/clipboard';
 import {ScrollView} from 'react-native-gesture-handler';
@@ -16,6 +22,7 @@ import Env from '@/environment';
 import AppStyledText from '@/components/AppStyledText';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppCopyBtn from '@/components/AppCopyBtn';
+import {API} from '@/redux/api';
 
 const {isIOS} = Env.get();
 
@@ -147,8 +154,23 @@ const QrInfoScreen = () => {
   const route = useRoute<RouteProp<ParamList, 'QrInfoScreen'>>();
   const params = useMemo(() => route?.params, [route?.params]);
   const [showSnackBar, setShowSnackBar] = useState(false);
+  const [cardState, setCardState] = useState('wait');
+  const [cardInfo, setCardInfo] = useState<String>('test');
 
   const navigation = useNavigation();
+
+  const checkCmiInstall = useCallback(async (item: RkbSubscription) => {
+    if (item?.subsIccid) {
+      const {result, objects} = await API.Subscription.getCmiCardInfo({
+        iccid: item?.subsIccid,
+      });
+
+      setCardInfo(JSON.stringify(objects?.data || ''));
+      setCardState(objects?.data.state);
+      // if (result?.code === 0) return objects[0];
+    }
+    return {};
+  }, []);
 
   const copyToClipboard = useCallback((value?: string) => {
     if (value) Clipboard.setString(value);
@@ -174,6 +196,15 @@ const QrInfoScreen = () => {
     },
     [copyToClipboard],
   );
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (cardState !== 'wait') {
+        setCardInfo('test');
+        setCardState('wait');
+      }
+    }, 3000);
+  }, [cardState]);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
@@ -204,6 +235,25 @@ const QrInfoScreen = () => {
           )}
         </View>
         <View style={styles.divider} />
+
+        {params.mainSubs.partner?.startsWith('cmi') && (
+          <>
+            <Pressable
+              onPress={() => checkCmiInstall(params.mainSubs)}
+              style={{
+                marginHorizontal: 20,
+                marginBottom: 30,
+                backgroundColor: colors.clearBlue,
+              }}>
+              <AppText>get card info button --- state : {cardState}</AppText>
+            </Pressable>
+            <View style={{marginHorizontal: 20}}>
+              {cardInfo.split(',').map((elm) => (
+                <AppText>{elm}</AppText>
+              ))}
+            </View>
+          </>
+        )}
       </ScrollView>
       <AppSnackBar
         visible={showSnackBar}
