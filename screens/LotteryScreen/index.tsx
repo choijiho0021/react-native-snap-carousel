@@ -81,6 +81,7 @@ export type LotteryCouponType = {
   cnt: number;
   title: string;
   desc: string;
+  charm: string;
 };
 
 const LotteryScreen: React.FC<LotteryProps> = ({
@@ -97,6 +98,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     cnt: 0,
     title: '',
     desc: '',
+    charm: '',
   });
   const ref = useRef<ViewShot>();
 
@@ -117,21 +119,23 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           cnt: couponObj?.cnt || 0,
           title: couponObj?.display_name,
           desc: couponObj?.description,
+          charm: resp.objects[0]?.charm,
         });
 
         setPhase(resp.objects[0]?.phrase);
-        setIsLoading(false);
         route?.params?.onPress(0);
+        setIsLoading(false);
 
         // 3초후 쿠폰 결과도 보여달라는데?
 
-        // 뽑기 , 임시로 2초 타임아웃
+        // 뽑기 , 임시로 3초 타임아웃
         setTimeout(() => {
           navigation.navigate('LotteryCoupon', {
             coupon: {
-              cnt: couponObj?.cnt || 0,
+              cnt: couponObj?.cnt || 0, // 이걸로 성공/실패 구분 가능
               title: couponObj?.display_name,
               desc: couponObj?.description,
+              charm: resp.objects[0]?.charm,
             },
           });
         }, 3000);
@@ -215,11 +219,11 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         <>
           <View style={{flex: 1, alignItems: 'center'}}>
             <AppText style={appStyles.bold20Text}>
-              {'이번 여행 운세는?'}
+              {i18n.t('esim:lottery:title')}
             </AppText>
             {coupon?.cnt == 0 && (
               <AppText style={[appStyles.medium14, {marginTop: 10}]}>
-                {'쿠폰 당첨 결과도 곧 나와요!'}
+                {i18n.t('esim:lottery:wait')}
               </AppText>
             )}
           </View>
@@ -272,7 +276,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
                 });
               }}>
               <AppText style={[appStyles.medium16, {textAlign: 'center'}]}>
-                {'쿠폰함 바로가기'}
+                {i18n.t('esim:lottery:button:navi')}
               </AppText>
             </Pressable>
           </View>
@@ -331,7 +335,9 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           <AppSvgIcon
             name="closeModal"
             style={styles.btnCnter}
-            onPress={() => navigation.goBack()}
+            onPress={() => {
+              navigation.popToTop();
+            }}
           />
         }
       />
