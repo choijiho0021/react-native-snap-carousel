@@ -209,6 +209,28 @@ const getAccount = ({iccid, token}: {iccid?: string; token?: string}) => {
   );
 };
 
+const donateCash = ({
+  iccid,
+  token,
+  ids,
+}: {
+  iccid?: string;
+  token?: string;
+  ids?: number[];
+}) => {
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.cash)}/${iccid}?_format=json`,
+    {
+      method: 'PATCH',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({dona: {ids}}),
+    },
+    (resp) => {
+      return resp;
+    },
+  );
+};
+
 const getCashHistory = ({iccid, token}: {iccid?: string; token?: string}) => {
   return api.callHttpGet<CashHistory>(
     `${api.httpUrl(api.path.rokApi.rokebi.cash)}/${iccid}?_format=json`,
@@ -444,4 +466,5 @@ export default {
   getMyCoupon,
   registerCoupon,
   lotteryCoupon,
+  donateCash,
 };

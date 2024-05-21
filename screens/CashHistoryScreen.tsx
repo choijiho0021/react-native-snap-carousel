@@ -329,7 +329,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   const showDetail = useCallback((item: CashHistory) => {
     const {order_id, expire_dt} = item;
 
-    if (order_id || expire_dt) {
+    if (order_id || expire_dt || item?.type === 'dona') {
       return (
         <View style={{marginLeft: 73}}>
           {item.order_id && (
@@ -343,6 +343,9 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
                 date: item.expire_dt.format('YYYY.MM.DD'),
               })}
             </AppText>
+          )}
+          {item.type === 'dona' && (
+            <AppText style={styles.detailText}>{item.order_title}</AppText>
           )}
           {item.type === 'cash_refund' && (
             <AppText style={styles.detailText}>
