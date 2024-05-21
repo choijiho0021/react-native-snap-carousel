@@ -83,6 +83,7 @@ type SimpleTextParams = {
   btnStyle?: ViewStyle;
   showIcon?: boolean;
   showCloseModal?: boolean;
+  notiType?: string;
   image?: {
     success?: string;
     failure?: string;
@@ -191,7 +192,7 @@ export type HomeStackParamList = {
     chargeablePeriod: string;
     isChargeable: boolean;
   };
-  Lottery: {count: number; onPress: (v: number) => void};
+  Lottery: {count: number; fortune?: string; onPress: (v: number) => void};
   LotteryCoupon: {coupon: LotteryCouponType};
   ChargeDetail: {
     data: RkbProduct;

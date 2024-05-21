@@ -1,5 +1,5 @@
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   Platform,
   Pressable,
@@ -35,6 +35,7 @@ import {
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppAlert from '@/components/AppAlert';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
+import ShareLinkModal from '../ProductDetailScreen/components/ShareLinkModal';
 
 const styles = StyleSheet.create({
   container: {
@@ -92,6 +93,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [phase, setPhase] = useState('');
+  const [showShareModal, setShowShareModal] = useState(false);
   const dispatch = useDispatch();
   // const [couponCnt, setCouponCnt] = useState(0);
   const [coupon, setCoupon] = useState<LotteryCouponType>({
@@ -101,6 +103,10 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     charm: '',
   });
   const ref = useRef<ViewShot>();
+  const {count, fortune} = route?.params;
+  const isHistory = useMemo(() => {
+    return count === 0 && fortune;
+  }, []);
 
   const lotteryCoupon = useCallback(() => {
     // 조건이 필요하다.
@@ -110,8 +116,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       token,
       prompt: 'lottery',
     }).then((resp) => {
-      console.log('@@@@ resp : ', resp);
-
       const couponObj = resp.objects[0]?.coupon;
 
       if (resp.result === 0) {
@@ -214,14 +218,14 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       );
     }
 
-    if (phase) {
+    if (phase || isHistory) {
       return (
         <>
           <View style={{flex: 1, alignItems: 'center'}}>
             <AppText style={appStyles.bold20Text}>
               {i18n.t('esim:lottery:title')}
             </AppText>
-            {coupon?.cnt == 0 && (
+            {coupon?.cnt == 0 && !isHistory && (
               <AppText style={[appStyles.medium14, {marginTop: 10}]}>
                 {i18n.t('esim:lottery:wait')}
               </AppText>
@@ -241,7 +245,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
                 paddingHorizontal: 20,
               }}>
               <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
-                {`${phase}`}
+                {`${phase || fortune}`}
               </AppText>
             </ViewShot>
             <View
@@ -257,28 +261,34 @@ const LotteryScreen: React.FC<LotteryProps> = ({
                 </Pressable>
               </View>
               <View style={{flexDirection: 'row'}}>
-                <AppIcon name="iconShare2" style={styles.shareIconBox} />
+                <AppIcon
+                  onPress={() => {
+                    setShowShareModal(true);
+                  }}
+                  name="iconShare2"
+                  style={styles.shareIconBox}
+                />
                 <AppIcon name="iconShare2" style={styles.shareIconBox} />
               </View>
             </View>
 
-            <Pressable
-              style={{
-                backgroundColor: colors.greyish,
-                paddingHorizontal: 20,
-                paddingVertical: 10,
-                justifyContent: 'center',
-              }}
-              onPress={() => {
-                navigation.popToTop();
-                navigation.navigate('Coupon', {
-                  test: 'hi',
-                });
-              }}>
-              <AppText style={[appStyles.medium16, {textAlign: 'center'}]}>
-                {i18n.t('esim:lottery:button:navi')}
-              </AppText>
-            </Pressable>
+            {!isHistory && (
+              <Pressable
+                style={{
+                  backgroundColor: colors.greyish,
+                  paddingHorizontal: 20,
+                  paddingVertical: 10,
+                  justifyContent: 'center',
+                }}
+                onPress={() => {
+                  navigation.popToTop();
+                  navigation.navigate('Coupon');
+                }}>
+                <AppText style={[appStyles.medium16, {textAlign: 'center'}]}>
+                  {i18n.t('esim:lottery:button:navi')}
+                </AppText>
+              </Pressable>
+            )}
           </View>
         </>
       );
@@ -292,11 +302,13 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           </AppText>
         </View>
         <View>
-          <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
-            {i18n
-              .t('esim:lottery:coupon:cnt')
-              .replace('%d', route?.params?.count || 0)}
-          </AppText>
+          {route?.params?.count > 1 && (
+            <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
+              {i18n
+                .t('esim:lottery:coupon:cnt')
+                .replace('%d', route?.params?.count || 0)}
+            </AppText>
+          )}
           <Pressable
             style={{
               backgroundColor: colors.greyish,
@@ -344,6 +356,21 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
       {/* // 메인화면 */}
       {renderBody()}
+
+      {/* 공유 어떻게 할지 정해지면 props 수정 필요 */}
+      <ShareLinkModal
+        visible={true}
+        onClose={() => {
+          setShowShareModal(false);
+        }}
+        params={{
+          partnerId: route?.params?.partnerId,
+          uuid: route?.params?.uuid,
+          img: route?.params?.img,
+          listPrice: route.params?.listPrice,
+          price: route.params?.price,
+        }}
+      />
     </SafeAreaView>
   );
 };

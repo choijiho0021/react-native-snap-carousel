@@ -250,6 +250,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [isChargeable, setIsChargeable] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [lotteryCnt, setLotteryCnt] = useState(0);
+  const [fortune, setFortune] = useState('');
   const dispatch = useDispatch();
 
   const [subsData, firstUsedIdx] = useMemo(
@@ -329,6 +330,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     }).then((resp) => {
       if (resp?.result === 0) {
         setLotteryCnt(resp.objects[0]?.count || 0);
+        setFortune(resp.objects[0]?.fortune || '');
       }
     });
   }, [iccid, token]);
@@ -700,6 +702,35 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     const isPending = (statusCd: string) => statusCd === 'P';
     const pending = subsData.findIndex((r) => isPending(r.statusCd)) !== -1;
 
+    const navigateLottery = () => {
+      navigation.navigate('Lottery', {
+        count: lotteryCnt,
+        fortune,
+        onPress: setLotteryCnt,
+      });
+    };
+
+    if (lotteryCnt === 0) {
+      return (
+        <Pressable
+          style={{
+            marginHorizontal: 20,
+            marginTop: 20,
+            backgroundColor: colors.greyish,
+            height: 30,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          onPress={() => {
+            navigateLottery();
+          }}>
+          <AppText style={appStyles.medium16}>
+            {i18n.t('esim:lottery:history')}
+          </AppText>
+        </Pressable>
+      );
+    }
+
     return (
       lotteryCnt > 0 && (
         <Pressable
@@ -712,10 +743,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             justifyContent: 'center',
           }}
           onPress={() => {
-            navigation.navigate('Lottery', {
-              count: lotteryCnt,
-              onPress: setLotteryCnt,
-            });
+            navigateLottery();
           }}>
           <AppText style={appStyles.medium16}>
             {i18n.t('esim:lottery:start')}
@@ -723,7 +751,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         </Pressable>
       )
     );
-  }, [lotteryCnt, navigation, subsData]);
+  }, [fortune, lotteryCnt, navigation, subsData]);
 
   const renderDraft = useCallback(
     (item: RkbOrder, isLast) => {
