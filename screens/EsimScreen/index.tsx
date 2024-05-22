@@ -35,6 +35,7 @@ import {
   UsageOptionObj,
   STATUS_USED,
   STATUS_EXPIRED,
+  checkUsage,
 } from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
@@ -319,144 +320,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [action.order, mobile, token],
   );
 
-  const checkCmiData = useCallback(
-    async (
-      item: RkbSubscription,
-    ): Promise<{
-      status: StatusObj;
-      usage: UsageObj;
-      usageOption: UsageOptionObj;
-    }> => {
-      if (item?.subsIccid && item?.packageId) {
-        const {result, objects} = await API.Subscription.cmiGetSubsUsage({
-          iccid: item?.subsIccid,
-          imsi: item?.imsi,
-          orderId: item?.subsOrderNo || 'noOrderId',
-        });
-
-        if (result?.code === 0 && objects.length > 0) return objects[0];
-      }
-      return {
-        status: {statusCd: undefined, endTime: undefined},
-        usage: {
-          quota: undefined,
-          used: undefined,
-          remain: undefined,
-          totalUsed: undefined,
-        },
-        usageOption: {
-          mode: ['stu', 'usa', 'end'],
-        },
-      };
-    },
-    [],
-  );
-
-  const checkQuadcellData = useCallback(
-    async (item: RkbSubscription): Promise<Usage> => {
-      if (item?.imsi) {
-        const {result, objects} = await API.Subscription.quadcellGetUsage({
-          imsi: item.imsi,
-          partner: item.partner!,
-        });
-
-        if (result?.code === 0 && objects.length > 0) return objects[0];
-      }
-      return {
-        status: {statusCd: undefined, endTime: undefined},
-        usage: {
-          quota: undefined,
-          used: undefined,
-          remain: undefined,
-          totalUsed: undefined,
-        },
-        usageOption: {
-          mode: ['stu', 'usa', 'end'],
-        },
-      };
-    },
-    [],
-  );
-
-  const checkBcData = useCallback(
-    async (
-      item: RkbSubscription,
-    ): Promise<{
-      status: StatusObj;
-      usage: UsageObj;
-      usageOption: UsageOptionObj;
-    }> => {
-      if (item?.subsIccid) {
-        const {result, objects} = await API.Subscription.bcGetSubsUsage({
-          subsIccid: item.subsIccid,
-          orderId: item.subsOrderNo,
-          localOpId: item.localOpId,
-        });
-
-        if (result === 0 && objects.length > 0) return objects[0];
-      }
-
-      return {
-        status: {statusCd: undefined, endTime: undefined},
-        usage: {
-          quota: undefined,
-          used: undefined,
-          remain: undefined,
-          totalUsed: undefined,
-        },
-        usageOption: {
-          mode: ['stu', 'end'],
-        },
-      };
-    },
-    [],
-  );
-
   const onPressUsage = useCallback(
     async (item: RkbSubscription, isChargeableParam?: boolean) => {
       setUsageLoading(true);
       setSubs(item);
 
-      let result = {status: {}, usage: {}, usageOption: {}};
-      switch (item.partner) {
-        case 'cmi':
-        case 'cmi2':
-          result = await checkCmiData(item);
-          break;
-        case 'quadcell':
-        case 'quadcell2':
-          result = await checkQuadcellData(item);
-          break;
-        case 'billionconnect':
-          result = await checkBcData(item);
-          break;
-        case 'ht':
-          result = {
-            status: {
-              statusCd: 'A',
-              endTime: moment(item.activationDate)
-                ?.add(Number(item.prodDays) - 1, 'days')
-                ?.endOf('day'),
-            },
-            usage: {quota: 0, used: 0, remain: 0, totalUsed: 0},
-            usageOption: {
-              mode: ['end'],
-            },
-          };
-          break;
-        // mosaji, baycon 사용랴 조회 사용 불가 (기본값)
-        default:
-          result = {
-            status: {
-              statusCd: 'A',
-            },
-            usage: {quota: 0, used: 0, remain: 0, totalUsed: 0},
-            usageOption: {
-              mode: [],
-            },
-          };
-          break;
-      }
+      const result = await checkUsage(item);
 
       setIsChargeable(isChargeableParam!);
       setDataStatus(result.status);
@@ -465,7 +334,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       setUsageLoading(false);
       return result;
     },
-    [checkBcData, checkCmiData, checkQuadcellData],
+    [],
   );
 
   const onRefresh = useCallback(
@@ -566,7 +435,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
                   main?.expireDate,
                   'YYYY.MM.DD',
                 ),
-                onPressUsage,
                 isChargeable: !main.expireDate?.isBefore(moment()),
               });
             }
@@ -598,7 +466,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
                       mainSubs?.expireDate,
                       'YYYY.MM.DD',
                     ),
-                    onPressUsage,
                     isChargeable: !mainSubs?.expireDate?.isBefore(moment()),
                   });
                 }

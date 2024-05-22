@@ -23,7 +23,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {connect} from 'react-redux';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
-import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {RkbSubscription, checkUsage} from '@/redux/api/subscriptionApi';
 import AppButton from '@/components/AppButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -286,7 +286,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   route: {params},
   account,
 }) => {
-  const {mainSubs, chargeablePeriod, onPressUsage, isChargeable} = params || {};
+  const {mainSubs, chargeablePeriod, isChargeable} = params || {};
   const [showModal, setShowModal] = useState(false);
   const [selectedSubs, setSelectedSubs] = useState<RkbSubscription>(mainSubs);
   const [pending, setPending] = useState(false);
@@ -315,6 +315,12 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
 
     return unsubscribe;
   }, [navigation]);
+
+  const isPending = useCallback(
+    (statusCd: string) => ['P', 'A', 'R'].includes(statusCd),
+    [],
+  );
+  const isExpired = useCallback((statusCd: string) => statusCd === 'E', []);
 
   const showTop = useCallback(
     (isTop: boolean) => {
@@ -531,10 +537,10 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   ]);
 
   const renderDesc = useCallback((sub: RkbSubscription) => {
-    if (sub.statusCd === 'E') {
+    if (isExpired(sub.statusCd)) {
       return null;
     }
-    if (sub.statusCd === 'P') {
+    if (isPending(sub.statusCd)) {
       return (
         <View style={{flexDirection: 'row', marginBottom: 24}}>
           <AppText
@@ -558,9 +564,6 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
 
   const renderItem = useCallback(
     ({item}: {item: RkbSubscription}) => {
-      const isPending = (statusCd: string) => statusCd === 'P';
-      const isExpired = (statusCd: string) => statusCd === 'E';
-
       return (
         <View
           style={{
@@ -596,7 +599,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                   onPress={() => {
                     setPending(true);
                     setSelectedSubs(item);
-                    onPressUsage(item)?.then((u) => {
+                    checkUsage(item)?.then((u) => {
                       setUsage(u.usage);
                       setStatus(u.status);
                       setDataUsageOption(u.usageOption);
@@ -710,7 +713,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         </View>
       );
     },
-    [addOnData, onPressUsage, renderDesc, toProdDaysString],
+    [addOnData, renderDesc, toProdDaysString],
   );
 
   return (
