@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import moment from 'moment';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {PaymentItem} from '@/components/PaymentItemInfo';
@@ -42,7 +43,6 @@ import {getItemsOrderType} from '@/redux/models/purchaseItem';
 import api from '@/redux/api/api';
 import AppAlert from '@/components/AppAlert';
 import AppDashBar from '@/components/AppDashBar';
-import moment from 'moment';
 
 const {esimGlobal} = Env.get();
 
