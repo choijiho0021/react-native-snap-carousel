@@ -16,6 +16,7 @@ import Share, {Social} from 'react-native-share';
 import i18n from '@/utils/i18n';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppText from '@/components/AppText';
+import LottieView from 'lottie-react-native';
 import ScreenHeader from '@/components/ScreenHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {appStyles} from '@/constants/Styles';
@@ -37,6 +38,8 @@ import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppAlert from '@/components/AppAlert';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import ShareLinkModal from '../ProductDetailScreen/components/ShareLinkModal';
+import LinearGradient from 'react-native-linear-gradient';
+import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
   container: {
@@ -57,6 +60,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     backgroundColor: colors.white,
     borderColor: colors.lightGrey,
+  },
+
+  motionContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  overlayContainer: {
+    width: 248,
+    height: 248,
+    position: 'relative',
+  },
+  lottieView: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
+  appIcon: {
+    width: 248,
+    height: 248,
+    position: 'absolute',
+    top: 0,
+    left: 0,
   },
 });
 
@@ -117,6 +144,8 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       token,
       prompt: 'lottery',
     }).then((resp) => {
+      console.log('@@@resp : ', resp);
+
       const couponObj = resp.objects[0]?.coupon;
 
       if (resp.result === 0) {
@@ -220,32 +249,58 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     }, 2000);
   }, [lotteryCoupon]);
 
+  const loadingMotion = useCallback(() => {
+    return (
+      <View style={styles.motionContainer}>
+        <View style={styles.overlayContainer}>
+          <LottieView
+            autoPlay
+            loop
+            style={styles.lottieView}
+            source={require('@/assets/animation/lucky.json')}
+            resizeMode="cover"
+          />
+          <AppIcon
+            imgStyle={styles.appIcon}
+            name="loadingLucky"
+            mode="contain"
+          />
+        </View>
+      </View>
+    );
+  }, []);
+
   const renderBody = useCallback(() => {
     if (isLoading) {
+      // if (true) {
       return (
         <View style={{flex: 1, alignItems: 'center'}}>
-          <AppText style={appStyles.bold20Text}>
-            {i18n.t('esim:lottery:title')}
-          </AppText>
           <View
             style={{
-              flex: 8,
               justifyContent: 'center',
+              marginTop: 60,
             }}>
             <View
               style={{
                 justifyContent: 'center',
                 paddingHorizontal: 20,
               }}>
-              <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
-                {`두구두구`}
+              <AppText
+                style={[
+                  appStyles.bold36Text,
+                  {textAlign: 'center', lineHeight: 38},
+                ]}>
+                {`두근두근`}
               </AppText>
             </View>
+
+            <View style={{marginTop: 104}}>{loadingMotion()}</View>
           </View>
         </View>
       );
     }
 
+    // 어지럽다.. 코드 분할 하자
     if (phase || isHistory) {
       return (
         <>
@@ -313,7 +368,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
               </View>
             </View>
 
-            {!isHistory && (
+            {fortune && (
               <Pressable
                 style={{
                   backgroundColor: colors.greyish,
@@ -335,45 +390,88 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       );
     }
 
+    // 코드 분할 해야겠는데 겁나 헷갈려 -> 뽑기 전 화면
     return (
       <View style={{flex: 1, justifyContent: 'space-between'}}>
-        <View style={{alignItems: 'center'}}>
-          <AppText style={appStyles.bold20Text}>
+        <View style={{alignItems: 'center', marginTop: 32}}>
+          <AppText
+            style={[
+              appStyles.bold18Text,
+              {color: colors.blue, lineHeight: 26},
+            ]}>
+            {'랜덤 쿠폰까지!'}
+          </AppText>
+          <AppText
+            style={[appStyles.bold36Text, {color: colors.black, marginTop: 6}]}>
             {i18n.t('esim:lottery:title')}
           </AppText>
+          <AppStyledText
+            text={`내 쿠폰 기회 : <h>${count}번</h>`}
+            textStyle={[
+              appStyles.bold18Text,
+              {color: colors.black, lineHeight: 26, marginTop: 16},
+            ]}
+            format={{
+              h: {color: colors.blue},
+            }}
+            numberOfLines={2}
+          />
         </View>
+
+        <AppIcon
+          name="mainLucky"
+          mode="contain"
+          imgStyle={{width: 248, height: 248}}
+        />
+
         <View>
-          {route?.params?.count > 1 && (
+          {/* 사라진 기획? {route?.params?.count > 1 && (
             <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
               {i18n
                 .t('esim:lottery:coupon:cnt')
                 .replace('%d', route?.params?.count || 0)}
             </AppText>
-          )}
+          )} */}
+
+          <View
+            style={{
+              justifyContent: 'flex-end',
+              marginHorizontal: 20,
+              marginBottom: 20,
+              gap: 6,
+            }}>
+            <AppText
+              style={[
+                appStyles.bold14Text,
+                {color: colors.paleGray4, lineHeight: 20},
+              ]}>
+              {i18n.t('esim:lottery:notice')}
+            </AppText>
+          </View>
           <Pressable
             style={{
-              backgroundColor: colors.greyish,
+              backgroundColor: colors.blue,
+              height: 52,
+              borderRadius: 3,
               paddingHorizontal: 20,
               paddingVertical: 10,
-              marginTop: 40,
+              marginHorizontal: 20,
+              marginBottom: 16,
               justifyContent: 'center',
             }}
             onPress={onClick}>
-            <AppText style={[appStyles.medium16, {textAlign: 'center'}]}>
+            <AppText
+              style={[
+                appStyles.medium18,
+                {
+                  color: colors.white,
+                  letterSpacing: 0,
+                  lineHeight: 26,
+                },
+              ]}>
               {i18n.t('esim:lottery:button')}
             </AppText>
           </Pressable>
-        </View>
-        <View
-          style={{
-            justifyContent: 'flex-end',
-            paddingHorizontal: 10,
-            marginBottom: 40,
-            gap: 6,
-          }}>
-          <AppText style={appStyles.normal14Text}>
-            {i18n.t('esim:lottery:notice')}
-          </AppText>
         </View>
       </View>
     );
@@ -381,37 +479,48 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScreenHeader
-        // backHandler={backHandler}
-        isStackTop
-        renderRight={
-          <AppSvgIcon
-            name="closeModal"
-            style={styles.btnCnter}
-            onPress={() => {
-              navigation.popToTop();
-            }}
-          />
-        }
-      />
+      <LinearGradient
+        // Background Linear Gradient
+        colors={['#eeeeee', '#D0E9FF']}
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: 0,
+          height: '100%',
+        }}>
+        <ScreenHeader
+          // backHandler={backHandler}
+          headerStyle={{backgroundColor: 'transparent'}}
+          isStackTop
+          renderRight={
+            <AppSvgIcon
+              name="closeModal"
+              style={styles.btnCnter}
+              onPress={() => {
+                navigation.popToTop();
+              }}
+            />
+          }
+        />
+        {/* // 메인화면 */}
+        {renderBody()}
 
-      {/* // 메인화면 */}
-      {renderBody()}
-
-      {/* 공유 어떻게 할지 정해지면 props 수정 필요 */}
-      <ShareLinkModal
-        visible={showShareModal}
-        onClose={() => {
-          setShowShareModal(false);
-        }}
-        params={{
-          partnerId: route?.params?.partnerId,
-          uuid: route?.params?.uuid,
-          img: route?.params?.img,
-          listPrice: route.params?.listPrice,
-          price: route.params?.price,
-        }}
-      />
+        {/* 공유 어떻게 할지 정해지면 props 수정 필요 */}
+        <ShareLinkModal
+          visible={showShareModal}
+          onClose={() => {
+            setShowShareModal(false);
+          }}
+          params={{
+            partnerId: route?.params?.partnerId,
+            uuid: route?.params?.uuid,
+            img: route?.params?.img,
+            listPrice: route.params?.listPrice,
+            price: route.params?.price,
+          }}
+        />
+      </LinearGradient>
     </SafeAreaView>
   );
 };

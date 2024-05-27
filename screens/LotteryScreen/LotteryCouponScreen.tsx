@@ -214,7 +214,7 @@ const LotteryCouponScreen: React.FC<LotteryCouponScreenProps> = ({
         </AppText>
       </View>
     );
-  }, [coupon.cnt, coupon.desc, coupon.title]);
+  }, [capture, coupon]);
 
   return (
     <SafeAreaView style={styles.container}>
