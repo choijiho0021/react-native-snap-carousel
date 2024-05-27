@@ -12,6 +12,7 @@ import {RouteProp} from '@react-navigation/native';
 import ViewShot from 'react-native-view-shot';
 import {colors} from '@/constants/Colors';
 import {bindActionCreators} from 'redux';
+import Share, {Social} from 'react-native-share';
 import i18n from '@/utils/i18n';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppText from '@/components/AppText';
@@ -182,6 +183,33 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     });
   }, [action.toast, hasAndroidPermission]);
 
+  const shareInstaStory = useCallback(async () => {
+    try {
+      const uri = await ref.current?.capture?.();
+
+      const image = Platform.OS === 'android' ? uri : `file://${uri}`;
+
+      console.log('@@@ image를 값으로 찍으면 어떻게 될까? : ', image);
+
+      if (uri) {
+        const shareOptions = {
+          stickerImage: image,
+          backgroundBottomColor: '#fefefe',
+          backgroundTopColor: '#906df4',
+          social: Share.Social.INSTAGRAM_STORIES,
+          appId: 'fb147522690488197',
+        };
+        const result = await Share.shareSingle(shareOptions);
+
+        console.log('@@@@ result : ', result);
+      } else {
+        console.log('@@@  empty uri');
+      }
+    } catch (e) {
+      console.log('@@@@ share error : ', e);
+    }
+  }, []);
+
   const onClick = useCallback(() => {
     // 2초 동안 Loading 표시해주기 코드
     setIsLoading(true);
@@ -238,6 +266,11 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             }}>
             <ViewShot
               ref={ref}
+              options={{
+                fileName: 'test',
+                format: 'jpg',
+                quality: 0.9,
+              }}
               style={{
                 backgroundColor: colors.greyish,
                 height: 300,
@@ -268,7 +301,15 @@ const LotteryScreen: React.FC<LotteryProps> = ({
                   name="iconShare2"
                   style={styles.shareIconBox}
                 />
-                <AppIcon name="iconShare2" style={styles.shareIconBox} />
+                <Pressable
+                  onPress={() => {
+                    shareInstaStory();
+                  }}>
+                  <AppIcon
+                    name="iconShare2"
+                    style={[styles.shareIconBox, {backgroundColor: 'grey'}]}
+                  />
+                </Pressable>
               </View>
             </View>
 
@@ -359,7 +400,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
       {/* 공유 어떻게 할지 정해지면 props 수정 필요 */}
       <ShareLinkModal
-        visible={true}
+        visible={showShareModal}
         onClose={() => {
           setShowShareModal(false);
         }}

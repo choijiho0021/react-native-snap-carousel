@@ -2387,10 +2387,10 @@
   resolved "https://registry.yarnpkg.com/@react-native-google-signin/google-signin/-/google-signin-9.1.0.tgz#7757dabfe6f397ab25f09393f99e816ad7c9b7ff"
   integrity sha512-a7yyJyytNxi1w1KFy8iFSvAIgssepI/POQrdpZqP+crYNbYYGctCH9QaYu0zMFlQfUsvc6NY+duV1/FnftnETQ==
 
-"@react-native-picker/picker@^2.4.10":
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-2.6.1.tgz#3b20ddd1385fab0487db103dc6519570f8892e6d"
-  integrity sha512-oJftvmLOj6Y6/bF4kPcK6L83yNBALGmqNYugf94BzP0FQGpHBwimVN2ygqkQ2Sn2ZU3pGUZMs0jV6+Gku2GyYg==
+"@react-native-picker/picker@^2.7.2":
+  version "2.7.6"
+  resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-2.7.6.tgz#fda996742f6878660277b995e878711641e778f4"
+  integrity sha512-Cs3PxRmE2vu6TofM9vt9TV8ZYFOtEPSupNxwoorH9lpkKM9HGG8QwK2i29KOEoODpUbtudKHUTtqhMZSuX9pgA==
 
 "@react-native-windows/cli@0.65.3":
   version "0.65.3"
@@ -6697,11 +6697,6 @@ i@^0.3.7:
   resolved "https://registry.yarnpkg.com/i/-/i-0.3.7.tgz#2a7437a923d59c14b17243dc63a549af24d85799"
   integrity sha512-FYz4wlXgkQwIPqhzC5TdNMLSE5+GS1IIDJZY/1ZiEPCT2S3COUVZeT5OW4BmW4r5LHLQuOosSwsvnroG9GR59Q==
 
-iamport-react-native@^2.0.3:
-  version "2.0.11"
-  resolved "https://registry.yarnpkg.com/iamport-react-native/-/iamport-react-native-2.0.11.tgz#f586543ad13538f38914dde50a69050b03bd63ab"
-  integrity sha512-DB35uDnf5UDNxTFP3wQiRjj1O63WDaq3otN2Jd2rLp+J6iszAqArF7tTsdqZtlXWDTEHbTXmZZ4xM4DOFNmQtg==
-
 iconv-lite@^0.4.24:
   version "0.4.24"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
@@ -9472,11 +9467,6 @@ moment-timezone@^0.5.43:
   dependencies:
     moment "^2.29.4"
 
-moment-with-locales-es6@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/moment-with-locales-es6/-/moment-with-locales-es6-1.0.1.tgz#c2eec19c902f98baa959afeacc34275bb61a3336"
-  integrity sha512-aKHuk7hHGVGk1X86rhu4aVwSEpBEwL3Lo5BEvZnqGueZeVK9pfpTrlLT3qN4A64vMkiKkxWpwQCcyg2YpoZGaQ==
-
 moment@^2.29.1, moment@^2.29.4:
   version "2.30.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.30.1.tgz#f8c91c07b7a786e30c59926df530b4eac96974ae"
@@ -10924,10 +10914,10 @@ react-native-screens@3.14.0:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
 
-react-native-share@^8.1.0:
-  version "8.2.2"
-  resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-8.2.2.tgz#987d6f164afe57b089950dca42e0555f19045d27"
-  integrity sha512-kVCI/cT0GnuYUTXe6mAimrjrnt4VWoRfrWqJZjFeoYFqAyOEfos84RC4eZlZnOT5eVtmTXRIkor5vgSkKOlZhw==
+react-native-share@^10.2.1:
+  version "10.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-10.2.1.tgz#baf94848c2acee6e52f6b28e05c47fa5fa9402be"
+  integrity sha512-Z2LWGYWH7raM4H6Oauttv1tEhaB43XSWJAN8iS6oaSG9CnyrUBeYFF4QpU1AH5RgNeylXQdN8CtbizCHHt6coQ==
 
 react-native-sim-cards-manager@^1.0.10:
   version "1.0.18"
