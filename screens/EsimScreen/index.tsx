@@ -7,7 +7,9 @@ import {
   Pressable,
   SafeAreaView,
   AppState,
+  Image,
 } from 'react-native';
+import Share, {Social} from 'react-native-share';
 import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
@@ -65,6 +67,7 @@ import {
 } from '@/redux/modules/modal';
 import AppButton from '@/components/AppButton';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
+import Insta from '@/redux/modules/native/InstaModule';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -102,6 +105,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: '#d2dfff',
     borderRadius: 3,
+  },
+  fortuneBtnContainer: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    paddingHorizontal: 20,
+    height: 64,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.lightBlue,
+    borderRadius: 3,
+    marginTop: 12,
+  },
+  fortuneBtn: {
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flex: 1,
   },
   rowCenter: {
     flexDirection: 'row',
@@ -710,23 +731,32 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       });
     };
 
-    if (lotteryCnt === 0) {
+    if (lotteryCnt === 0 && fortune) {
       return (
         <Pressable
-          style={{
-            marginHorizontal: 20,
-            marginTop: 20,
-            backgroundColor: colors.greyish,
-            height: 30,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+          style={styles.fortuneBtnContainer}
           onPress={() => {
             navigateLottery();
           }}>
-          <AppText style={appStyles.medium16}>
-            {i18n.t('esim:lottery:history')}
-          </AppText>
+          <View style={styles.fortuneBtn}>
+            <AppText
+              style={[
+                appStyles.bold16Text,
+                {color: colors.white, lineHeight: 20},
+              ]}>
+              {i18n.t('esim:lottery:history')}
+            </AppText>
+
+            <AppIcon
+              name="fortuneBtnSmall"
+              mode="contain"
+              imgStyle={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            />
+          </View>
         </Pressable>
       );
     }
@@ -734,20 +764,35 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     return (
       lotteryCnt > 0 && (
         <Pressable
-          style={{
-            marginHorizontal: 20,
-            marginTop: 20,
-            backgroundColor: colors.greyish,
-            height: pending ? 70 : 150,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+          style={[
+            styles.fortuneBtnContainer,
+            {
+              height: pending ? 150 : 70,
+            },
+          ]}
           onPress={() => {
             navigateLottery();
           }}>
-          <AppText style={appStyles.medium16}>
-            {i18n.t('esim:lottery:start')}
-          </AppText>
+          <View style={styles.fortuneBtn}>
+            <AppText
+              style={[
+                pending ? appStyles.bold18Text : appStyles.bold16Text,
+                {color: colors.white, lineHeight: 22},
+              ]}>
+              {i18n.t(
+                pending ? 'esim:lottery:start:pending' : 'esim:lottery:start',
+              )}
+            </AppText>
+            <AppIcon
+              name={pending ? 'fortuneBtnBig' : 'fortuneBtnSmall'}
+              mode="contain"
+              imgStyle={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            />
+          </View>
         </Pressable>
       )
     );
