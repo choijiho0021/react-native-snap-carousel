@@ -12,6 +12,14 @@ import React, {memo, useCallback, useEffect, useRef} from 'react';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {
+  PERMISSIONS,
+  RESULTS,
+  check,
+  openSettings,
+} from 'react-native-permissions';
+import ViewShot from 'react-native-view-shot';
+import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import ScreenHeader from '@/components/ScreenHeader';
@@ -20,15 +28,7 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import {ToastAction, actions as toastActions} from '@/redux/modules/toast';
 import AppText from '@/components/AppText';
 import {HomeStackParamList} from '@/navigation/navigation';
-import ViewShot from 'react-native-view-shot';
-import {
-  PERMISSIONS,
-  RESULTS,
-  check,
-  openSettings,
-} from 'react-native-permissions';
 import AppAlert from '@/components/AppAlert';
-import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import {API} from '@/redux/api';
 
 const styles = StyleSheet.create({
