@@ -298,7 +298,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
   const getIds = useCallback((input: string) => {
     const parts = input.split('/');
     const idsString = parts[1];
-    return idsString.split(',').map((id: number) => parseInt(id, 10));
+    return idsString.split(',').map((id: string) => parseInt(id, 10));
   }, []);
 
   const defineSource = useCallback(

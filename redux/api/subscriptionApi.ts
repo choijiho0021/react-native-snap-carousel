@@ -208,6 +208,218 @@ export type RkbSubscription = {
 export const getMoment = (str: string) =>
   str ? moment(str).tz('Asia/Seoul') : undefined;
 
+// get usage data from svc server
+// CMI API를 사용하는 경우
+const cmiGetSubsUsage = ({
+  iccid,
+  orderId,
+  imsi,
+}: {
+  iccid: string;
+  orderId: string;
+  imsi?: string;
+}) => {
+  if (!iccid)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
+  if (!orderId)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: orderId');
+
+  return api.callHttpGet<Usage>(
+    `${api.rokHttpUrl(
+      api.path.rokApi.pv.cmiUsage,
+    )}&iccid=${iccid}&orderId=${orderId}&imsi=${imsi}`,
+    (data) => data,
+    new Headers({'Content-Type': 'application/json'}),
+  );
+};
+
+const quadcellGetUsage = ({
+  imsi,
+  partner,
+  usage = 'y',
+}: {
+  imsi: string;
+  partner: string;
+  usage?: string;
+}) => {
+  if (!imsi)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
+
+  const path =
+    partner === 'quadcell2'
+      ? api.path.rokApi.pv.quadcell2
+      : api.path.rokApi.pv.quadcell;
+
+  return api.callHttpGet<Usage>(
+    `${api.rokHttpUrl(`${path}/usage/quota`)}&imsi=${imsi}&usage=${usage}`,
+    (data) => data,
+    new Headers({'Content-Type': 'application/json'}),
+  );
+};
+
+// get usage bc data from svc server
+const bcGetSubsUsage = ({
+  subsIccid,
+  orderId,
+  localOpId,
+}: {
+  subsIccid: string;
+  orderId?: string;
+  localOpId?: string;
+}) => {
+  if (!subsIccid || !orderId)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
+
+  if (!orderId)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: orderId');
+
+  return api.callHttpGet<Usage>(
+    `${api.rokHttpUrl(
+      `${api.path.rokApi.pv.bc}/usage/quota`,
+    )}&${api.queryString({
+      iccid: subsIccid,
+      orderId,
+      localOpId: localOpId || '0',
+    })}`,
+    (data) => {
+      if (data?.result?.code === 0) {
+        return api.success(data?.objects);
+      }
+      return data;
+    },
+    new Headers({'Content-Type': 'application/json'}),
+  );
+};
+
+const checkCmiData = async (
+  item: RkbSubscription,
+): Promise<{
+  status: StatusObj;
+  usage: UsageObj;
+  usageOption: UsageOptionObj;
+}> => {
+  if (item?.subsIccid && item?.packageId) {
+    const {result, objects} = await cmiGetSubsUsage({
+      iccid: item?.subsIccid,
+      imsi: item?.imsi,
+      orderId: item?.subsOrderNo || 'noOrderId',
+    });
+
+    if (result?.code === 0 && objects.length > 0) return objects[0];
+  }
+  return {
+    status: {statusCd: undefined, endTime: undefined},
+    usage: {
+      quota: undefined,
+      used: undefined,
+      remain: undefined,
+      totalUsed: undefined,
+    },
+    usageOption: {
+      mode: ['stu', 'usa', 'end'],
+    },
+  };
+};
+
+const checkQuadcellData = async (item: RkbSubscription): Promise<Usage> => {
+  if (item?.imsi) {
+    const {result, objects} = await quadcellGetUsage({
+      imsi: item.imsi,
+      partner: item.partner!,
+    });
+
+    if (result?.code === 0 && objects.length > 0) return objects[0];
+  }
+  return {
+    status: {statusCd: undefined, endTime: undefined},
+    usage: {
+      quota: undefined,
+      used: undefined,
+      remain: undefined,
+      totalUsed: undefined,
+    },
+    usageOption: {
+      mode: ['stu', 'usa', 'end'],
+    },
+  };
+};
+
+const checkBcData = async (
+  item: RkbSubscription,
+): Promise<{
+  status: StatusObj;
+  usage: UsageObj;
+  usageOption: UsageOptionObj;
+}> => {
+  if (item?.subsIccid) {
+    const {result, objects} = await bcGetSubsUsage({
+      subsIccid: item.subsIccid,
+      orderId: item.subsOrderNo,
+      localOpId: item.localOpId,
+    });
+
+    if (result === 0 && objects.length > 0) return objects[0];
+  }
+
+  return {
+    status: {statusCd: undefined, endTime: undefined},
+    usage: {
+      quota: undefined,
+      used: undefined,
+      remain: undefined,
+      totalUsed: undefined,
+    },
+    usageOption: {
+      mode: ['stu', 'end'],
+    },
+  };
+};
+
+export const checkUsage = async (item: RkbSubscription) => {
+  let result = {status: {}, usage: {}, usageOption: {}};
+
+  switch (item.partner) {
+    case 'cmi':
+    case 'cmi2':
+      result = await checkCmiData(item);
+      break;
+    case 'quadcell':
+    case 'quadcell2':
+      result = await checkQuadcellData(item);
+      break;
+    case 'billionconnect':
+      result = await checkBcData(item);
+      break;
+    case 'ht':
+      result = {
+        status: {
+          statusCd: 'A',
+          endTime: moment(item.activationDate)
+            ?.add(Number(item.prodDays) - 1, 'days')
+            ?.endOf('day'),
+        },
+        usage: {quota: 0, used: 0, remain: 0, totalUsed: 0},
+        usageOption: {
+          mode: ['end'],
+        },
+      };
+      break;
+    // mosaji, baycon 사용랴 조회 사용 불가 (기본값)
+    default:
+      result = {
+        status: {
+          statusCd: 'A',
+        },
+        usage: {quota: 0, used: 0, remain: 0, totalUsed: 0},
+        usageOption: {
+          mode: [],
+        },
+      };
+      break;
+  }
+  return result;
+};
+
 const toSubscription = (
   data: DrupalNode[] | DrupalNodeJsonApi,
 ): ApiResult<RkbSubscription> => {
@@ -458,24 +670,12 @@ const getSubsUsage = ({id, token}: {id?: string; token?: string}) => {
 
 // get usage data from svc server
 // CMI API를 사용하는 경우
-const cmiGetSubsUsage = ({
-  iccid,
-  orderId,
-  imsi,
-}: {
-  iccid: string;
-  orderId: string;
-  imsi?: string;
-}) => {
+const getCmiCardInfo = ({iccid}: {iccid: string}) => {
   if (!iccid)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
-  if (!orderId)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: orderId');
 
-  return api.callHttpGet<Usage>(
-    `${api.rokHttpUrl(
-      api.path.rokApi.pv.cmiUsage,
-    )}&iccid=${iccid}&orderId=${orderId}&imsi=${imsi}`,
+  return api.callHttpGet(
+    `${api.rokHttpUrl(api.path.rokApi.pv.cmiCardInfo)}&iccid=${iccid}`,
     (data) => data,
     new Headers({'Content-Type': 'application/json'}),
   );
@@ -521,64 +721,6 @@ const quadcellGetData = ({
     `${api.rokHttpUrl(`${api.path.rokApi.pv.quadcell}/imsi/${imsi}/${key}`)}${
       query ? `&${api.queryString(query)}` : ''
     }`,
-    (data) => {
-      if (data?.result?.code === 0) {
-        return api.success(data?.objects);
-      }
-      return data;
-    },
-    new Headers({'Content-Type': 'application/json'}),
-  );
-};
-
-const quadcellGetUsage = ({
-  imsi,
-  partner,
-  usage = 'y',
-}: {
-  imsi: string;
-  partner: string;
-  usage?: string;
-}) => {
-  if (!imsi)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: imsi');
-
-  const path =
-    partner === 'quadcell2'
-      ? api.path.rokApi.pv.quadcell2
-      : api.path.rokApi.pv.quadcell;
-
-  return api.callHttpGet<Usage>(
-    `${api.rokHttpUrl(`${path}/usage/quota`)}&imsi=${imsi}&usage=${usage}`,
-    (data) => data,
-    new Headers({'Content-Type': 'application/json'}),
-  );
-};
-
-// get usage bc data from svc server
-const bcGetSubsUsage = ({
-  subsIccid,
-  orderId,
-  localOpId,
-}: {
-  subsIccid: string;
-  orderId?: string;
-  localOpId?: string;
-}) => {
-  if (!subsIccid || !orderId)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: iccid');
-
-  if (!orderId)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: orderId');
-
-  return api.callHttpGet<Usage>(
-    `${api.rokHttpUrl(
-      `${api.path.rokApi.pv.bc}/usage/quota`,
-    )}&${api.queryString({
-      iccid: subsIccid,
-      orderId,
-      localOpId: localOpId || '0',
-    })}`,
     (data) => {
       if (data?.result?.code === 0) {
         return api.success(data?.objects);
@@ -636,6 +778,7 @@ export default {
   updateSubscriptionAndOrderTag,
   updateSubscriptionGiftStatus,
   getSubsUsage,
+  getCmiCardInfo,
   cmiGetSubsUsage,
   cmiGetSubsStatus,
   cmiGetStatus,
