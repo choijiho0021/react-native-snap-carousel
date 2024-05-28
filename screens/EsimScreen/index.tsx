@@ -642,7 +642,18 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           )}
         </View>
       ),
-    [balance, expDate, iccid, navigation, order.drafts, renderDraft],
+    [
+      balance,
+      checkLottery,
+      expDate,
+      fortune,
+      iccid,
+      lotteryCnt,
+      navigation,
+      order.drafts,
+      renderDraft,
+      subsData,
+    ],
   );
 
   useEffect(() => {
