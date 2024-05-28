@@ -5564,6 +5564,59 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  btnShare1: [
+    <Svg
+      width="21"
+      height="20"
+      viewBox="0 0 21 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M16.041 10.207a1 1 0 0 0-1.414-1.414l-2.793 2.793V1a1 1 0 1 0-2 0v10.586L7.041 8.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l4.5-4.5z"
+        fill="#fff"
+      />
+      <Rect x="1.834" y="18" width="18" height="2" rx="1" fill="#fff" />
+    </Svg>,
+  ],
+
+  btnShare2: [
+    <Svg
+      width="21"
+      height="20"
+      viewBox="0 0 21 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M5.293 6.207a1 1 0 0 1 0-1.414l4.5-4.5a1 1 0 0 1 1.414 0l4.5 4.5a1 1 0 1 1-1.414 1.414L11.5 3.414V14a1 1 0 1 1-2 0V3.414L6.707 6.207a1 1 0 0 1-1.414 0zM5.5 20a4 4 0 0 1-4-4v-3a4 4 0 0 1 4-4h1a1 1 0 1 1 0 2h-1a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2h-1a1 1 0 1 1 0-2h1a4 4 0 0 1 4 4v3a4 4 0 0 1-4 4h-10z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
+
+  btnShareInsta: [
+    <Svg
+      width="21"
+      height="20"
+      viewBox="0 0 21 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M.168 6a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6h-8a6 6 0 0 1-6-6V6zm6-4a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V6a4 4 0 0 0-4-4h-8z"
+        fill="#fff"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.168 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm-5 3a5 5 0 1 1 10 0 5 5 0 0 1-10 0z"
+        fill="#fff"
+      />
+      <Path d="M16.168 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" fill="#fff" />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

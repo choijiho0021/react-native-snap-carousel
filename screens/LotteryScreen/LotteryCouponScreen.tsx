@@ -72,10 +72,6 @@ const LotteryCouponScreen: React.FC<LotteryCouponScreenProps> = ({
   const {coupon} = route.params;
   const ref = useRef<ViewShot>();
 
-  useEffect(() => {
-    console.log('@@@ coupon : ', coupon);
-  }, []);
-
   const hasAndroidPermission = useCallback(async () => {
     const permission =
       Platform.Version >= 33

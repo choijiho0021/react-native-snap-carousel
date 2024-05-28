@@ -40,6 +40,7 @@ export const colors = {
   whiteFive: '#eeeeee',
   whiteSix: '#edeff4',
   whiteSeven: '#fcfcfc',
+  whiteEight: 'rgba(255, 255, 255, 0.15)',
   tomato: '#ed4847',
   greyish: '#aaaaaa',
   greyishTwo: '#a8a8a8',

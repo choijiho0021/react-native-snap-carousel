@@ -1,6 +1,7 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
+  Image,
   Platform,
   Pressable,
   SafeAreaView,
@@ -54,12 +55,8 @@ const styles = StyleSheet.create({
   },
 
   shareIconBox: {
-    width: 52,
-    height: 52,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    backgroundColor: colors.white,
-    borderColor: colors.lightGrey,
+    width: 20,
+    height: 20,
   },
 
   motionContainer: {
@@ -78,12 +75,27 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
   },
+  dividerSmall: {
+    borderRightWidth: 1,
+    marginVertical: 15,
+    height: 20,
+    marginBottom: 0,
+    borderColor: colors.whiteEight,
+  },
   appIcon: {
     width: 248,
     height: 248,
     position: 'absolute',
     top: 0,
     left: 0,
+  },
+  btnBox: {
+    alignItems: 'center',
+    gap: 10,
+  },
+  btnText: {
+    ...appStyles.medium14,
+    color: colors.white,
   },
 });
 
@@ -112,6 +124,14 @@ export type LotteryCouponType = {
   desc: string;
   charm: string;
 };
+
+const GRADIENT_COLOR_LIST = [
+  ['rgb(201, 170, 215)', 'rgb(179, 130, 202)'],
+  ['rgb(243, 192, 183)', 'rgb(236, 160, 146)'],
+  ['rgb(143, 211,238)', 'rgb(67,181,226)'],
+  ['rgb(168, 210,200)', 'rgb(99, 205, 180)'],
+  ['rgb(226,203,176)', 'rgb(221,180,134)'],
+];
 
 const LotteryScreen: React.FC<LotteryProps> = ({
   navigation,
@@ -180,6 +200,10 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     });
   }, [iccid, token]);
 
+  const randValue = useCallback(() => {
+    return Math.floor(Math.random() * 5) + 1;
+  }, []);
+
   // 컴포넌트로 뗴야하나
   const hasAndroidPermission = useCallback(async () => {
     const permission =
@@ -217,8 +241,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       const uri = await ref.current?.capture?.();
 
       const image = Platform.OS === 'android' ? uri : `file://${uri}`;
-
-      console.log('@@@ image를 값으로 찍으면 어떻게 될까? : ', image);
 
       if (uri) {
         const shareOptions = {
@@ -270,40 +292,44 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     );
   }, []);
 
-  const renderBody = useCallback(() => {
-    if (isLoading) {
-      // if (true) {
-      return (
-        <View style={{flex: 1, alignItems: 'center'}}>
+  const renderLoading = useCallback(() => {
+    return (
+      <View style={{flex: 1, alignItems: 'center'}}>
+        <View
+          style={{
+            justifyContent: 'center',
+            marginTop: 60,
+          }}>
           <View
             style={{
               justifyContent: 'center',
-              marginTop: 60,
+              paddingHorizontal: 20,
             }}>
-            <View
-              style={{
-                justifyContent: 'center',
-                paddingHorizontal: 20,
-              }}>
-              <AppText
-                style={[
-                  appStyles.bold36Text,
-                  {textAlign: 'center', lineHeight: 38},
-                ]}>
-                {`두근두근`}
-              </AppText>
-            </View>
-
-            <View style={{marginTop: 104}}>{loadingMotion()}</View>
+            <AppText
+              style={[
+                appStyles.bold36Text,
+                {textAlign: 'center', lineHeight: 38},
+              ]}>
+              {`두근두근`}
+            </AppText>
           </View>
-        </View>
-      );
-    }
 
-    // 어지럽다.. 코드 분할 하자
-    if (phase || isHistory) {
-      return (
-        <>
+          <View style={{marginTop: 104}}>{loadingMotion()}</View>
+        </View>
+      </View>
+    );
+  }, []);
+
+  const renderAfterLottery = useCallback(() => {
+    return (
+      <>
+        <ViewShot
+          ref={ref}
+          options={{
+            fileName: 'test',
+            format: 'jpg',
+            quality: 0.9,
+          }}>
           <View style={{alignItems: 'center'}}>
             <View
               style={{
@@ -339,81 +365,96 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           </View>
           <View
             style={{
-              flex: 8,
+              alignItems: 'center',
               justifyContent: 'center',
+              paddingHorizontal: 20,
+              marginTop: 32,
             }}>
-            <ViewShot
-              ref={ref}
-              options={{
-                fileName: 'test',
-                format: 'jpg',
-                quality: 0.9,
+            <Image
+              style={{
+                width: 242,
+                height: 242,
               }}
-              style={{
-                backgroundColor: colors.greyish,
-                height: 300,
-                justifyContent: 'center',
-                paddingHorizontal: 20,
-              }}>
-              <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
-                {`${phase || fortune}`}
-              </AppText>
-            </ViewShot>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginHorizontal: 20,
-                marginVertical: 10,
-              }}>
-              <View style={{flexDirection: 'row'}}>
-                <Pressable onPress={capture}>
-                  <AppIcon name="iconShare2" style={styles.shareIconBox} />
-                </Pressable>
+              source={{
+                uri: API.default.httpImageUrl(
+                  `sites/default/files/img/fortune_card${randValue()}.png`,
+                ),
+              }}
+            />
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+              marginHorizontal: 20,
+              marginTop: 63,
+              marginBottom: 35,
+            }}>
+            <Pressable onPress={capture}>
+              <View style={styles.btnBox}>
+                <AppIcon name="btnShare1" style={styles.shareIconBox} />
+                <AppText style={styles.btnText}>{'이미지 저장'}</AppText>
               </View>
-              <View style={{flexDirection: 'row'}}>
-                <AppIcon
-                  onPress={() => {
-                    setShowShareModal(true);
-                  }}
-                  name="iconShare2"
-                  style={styles.shareIconBox}
-                />
-                <Pressable
-                  onPress={() => {
-                    shareInstaStory();
-                  }}>
-                  <AppIcon
-                    name="iconShare2"
-                    style={[styles.shareIconBox, {backgroundColor: 'grey'}]}
-                  />
-                </Pressable>
-              </View>
-            </View>
+            </Pressable>
 
+            <View style={styles.dividerSmall} />
+
+            <Pressable onPress={capture}>
+              <View style={styles.btnBox}>
+                <AppIcon name="btnShare2" style={styles.shareIconBox} />
+                <AppText style={styles.btnText}>{'SNS 공유'}</AppText>
+              </View>
+            </Pressable>
+
+            <View style={styles.dividerSmall} />
+            <Pressable
+              onPress={() => {
+                shareInstaStory();
+              }}>
+              <View style={styles.btnBox}>
+                <AppIcon name="btnShareInsta" style={styles.shareIconBox} />
+                <AppText style={styles.btnText}>{'스토리 공유'}</AppText>
+              </View>
+            </Pressable>
+          </View>
+
+          <View
+            style={{
+              paddingHorizontal: 20,
+            }}>
             {fortune && (
               <Pressable
                 style={{
-                  backgroundColor: colors.greyish,
                   paddingHorizontal: 20,
-                  paddingVertical: 10,
+                  paddingVertical: 13,
                   justifyContent: 'center',
+                  borderWidth: 1,
+                  borderColor: colors.white,
                 }}
                 onPress={() => {
                   navigation.popToTop();
                   navigation.navigate('Coupon');
                 }}>
-                <AppText style={[appStyles.medium16, {textAlign: 'center'}]}>
+                <AppText
+                  style={[
+                    appStyles.bold18Text,
+                    {
+                      textAlign: 'center',
+                      color: colors.white,
+                      lineHeight: 26,
+                    },
+                  ]}>
                   {i18n.t('esim:lottery:button:navi')}
                 </AppText>
               </Pressable>
             )}
           </View>
-        </>
-      );
-    }
+        </ViewShot>
+      </>
+    );
+  }, []);
 
-    // 코드 분할 해야겠는데 겁나 헷갈려 -> 뽑기 전 화면
+  const renderBeforeLottery = useCallback(() => {
     return (
       <View style={{flex: 1, justifyContent: 'space-between'}}>
         <View style={{alignItems: 'center', marginTop: 32}}>
@@ -448,14 +489,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         />
 
         <View>
-          {/* 사라진 기획? {route?.params?.count > 1 && (
-            <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
-              {i18n
-                .t('esim:lottery:coupon:cnt')
-                .replace('%d', route?.params?.count || 0)}
-            </AppText>
-          )} */}
-
           <View
             style={{
               justifyContent: 'flex-end',
@@ -498,52 +531,99 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         </View>
       </View>
     );
+  }, []);
+
+  const renderBody = useCallback(() => {
+    if (isLoading) {
+      // if (true) {
+      return (
+        <>
+          <LinearGradient
+            // Background Linear Gradient
+            colors={['#eeeeee', '#D0E9FF']}
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              height: '100%',
+            }}
+          />
+          {renderLoading()}
+        </>
+      );
+    }
+
+    if (phase || isHistory) {
+      return (
+        <>
+          <LinearGradient
+            // Background Linear Gradient
+            colors={GRADIENT_COLOR_LIST[0]}
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              height: '100%',
+            }}
+          />
+          {renderAfterLottery()}
+        </>
+      );
+    }
+
+    return (
+      <>
+        <LinearGradient
+          // Background Linear Gradient
+          colors={['#eeeeee', '#D0E9FF']}
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            height: '100%',
+          }}
+        />
+        {renderBeforeLottery()}
+      </>
+    );
   }, [capture, isLoading, navigation, onClick, phase, route?.params?.count]);
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        // Background Linear Gradient
-        colors={['#eeeeee', '#D0E9FF']}
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          top: 0,
-          height: '100%',
-        }}>
-        <ScreenHeader
-          // backHandler={backHandler}
-          headerStyle={{backgroundColor: 'transparent'}}
-          isStackTop
-          renderRight={
-            <AppSvgIcon
-              name="closeModal"
-              style={styles.btnCnter}
-              onPress={() => {
-                navigation.popToTop();
-              }}
-            />
-          }
-        />
-        {/* // 메인화면 */}
-        {renderBody()}
+      <ScreenHeader
+        // backHandler={backHandler}
+        headerStyle={{backgroundColor: 'transparent'}}
+        isStackTop
+        renderRight={
+          <AppSvgIcon
+            name="closeModal"
+            style={styles.btnCnter}
+            onPress={() => {
+              navigation.popToTop();
+            }}
+          />
+        }
+      />
+      {/* // 메인화면 */}
+      {renderBody()}
 
-        {/* 공유 어떻게 할지 정해지면 props 수정 필요 */}
-        <ShareLinkModal
-          visible={showShareModal}
-          onClose={() => {
-            setShowShareModal(false);
-          }}
-          params={{
-            partnerId: route?.params?.partnerId,
-            uuid: route?.params?.uuid,
-            img: route?.params?.img,
-            listPrice: route.params?.listPrice,
-            price: route.params?.price,
-          }}
-        />
-      </LinearGradient>
+      {/* 공유 어떻게 할지 정해지면 props 수정 필요 */}
+      <ShareLinkModal
+        visible={showShareModal}
+        onClose={() => {
+          setShowShareModal(false);
+        }}
+        params={{
+          partnerId: route?.params?.partnerId,
+          uuid: route?.params?.uuid,
+          img: route?.params?.img,
+          listPrice: route.params?.listPrice,
+          price: route.params?.price,
+        }}
+      />
     </SafeAreaView>
   );
 };
