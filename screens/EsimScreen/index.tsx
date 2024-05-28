@@ -35,6 +35,7 @@ import {
 import {
   AccountAction,
   AccountModelState,
+  Fortune,
   actions as accountActions,
 } from '@/redux/modules/account';
 import {
@@ -61,6 +62,7 @@ import {
 } from '@/redux/modules/modal';
 import AppButton from '@/components/AppButton';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
+import LotteryButton from '../LotteryScreen/component/LotteryButton';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -98,24 +100,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: '#d2dfff',
     borderRadius: 3,
-  },
-  fortuneBtnContainer: {
-    flexDirection: 'row',
-    marginHorizontal: 20,
-    paddingHorizontal: 20,
-    height: 64,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.lightBlue,
-    borderRadius: 3,
-    marginTop: 12,
-  },
-  fortuneBtn: {
-    height: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flex: 1,
   },
   rowCenter: {
     flexDirection: 'row',
@@ -264,7 +248,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const [isChargeable, setIsChargeable] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [lotteryCnt, setLotteryCnt] = useState(0);
-  const [fortune, setFortune] = useState('');
+  const [fortune, setFortune] = useState<Fortune>({text: '', num: 0});
   const dispatch = useDispatch();
 
   const [subsData, firstUsedIdx] = useMemo(
@@ -345,7 +329,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       console.log('@@@ check lottery Resp working ? : ', resp);
       if (resp?.result === 0) {
         setLotteryCnt(resp.objects[0]?.count || 0);
-        setFortune(resp.objects[0]?.fortune || '');
+        setFortune({
+          text: resp.objects[0]?.fortune || '',
+          num: resp.objects[0]?.num,
+        });
       }
     });
   }, [iccid, token]);
@@ -578,86 +565,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     ],
   );
 
-  // esimScreen 코드가 너무 길어서 컴포넌트로 빼기..
-  const renderLottery = useCallback(() => {
-    const isPending = (statusCd: string) => statusCd === 'P';
-    const pending = subsData.findIndex((r) => isPending(r.statusCd)) !== -1;
-
-    const navigateLottery = () => {
-      navigation.navigate('Lottery', {
-        count: lotteryCnt,
-        fortune,
-        onPress: setLotteryCnt,
-      });
-    };
-
-    if (lotteryCnt === 0 && fortune) {
-      return (
-        <Pressable
-          style={styles.fortuneBtnContainer}
-          onPress={() => {
-            navigateLottery();
-          }}>
-          <View style={styles.fortuneBtn}>
-            <AppText
-              style={[
-                appStyles.bold16Text,
-                {color: colors.white, lineHeight: 20},
-              ]}>
-              {i18n.t('esim:lottery:history')}
-            </AppText>
-
-            <AppIcon
-              name="fortuneBtnSmall"
-              mode="contain"
-              imgStyle={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            />
-          </View>
-        </Pressable>
-      );
-    }
-
-    return (
-      lotteryCnt > 0 && (
-        <Pressable
-          style={[
-            styles.fortuneBtnContainer,
-            {
-              height: pending ? 150 : 70,
-            },
-          ]}
-          onPress={() => {
-            navigateLottery();
-          }}>
-          <View style={styles.fortuneBtn}>
-            <AppText
-              style={[
-                pending ? appStyles.bold18Text : appStyles.bold16Text,
-                {color: colors.white, lineHeight: 22},
-              ]}>
-              {i18n.t(
-                pending ? 'esim:lottery:start:pending' : 'esim:lottery:start',
-              )}
-            </AppText>
-            <AppIcon
-              name={pending ? 'fortuneBtnBig' : 'fortuneBtnSmall'}
-              mode="contain"
-              imgStyle={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            />
-          </View>
-        </Pressable>
-      )
-    );
-  }, [fortune, lotteryCnt, navigation, subsData]);
-
   const renderDraft = useCallback(
     (item: RkbOrder, isLast) => {
       return (
@@ -696,7 +603,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           />
           {renderInfo(navigation)}
 
-          {renderLottery()}
+          <LotteryButton
+            subsData={subsData}
+            navigation={navigation}
+            fortune={fortune}
+            lotteryCnt={lotteryCnt}
+            checkLottery={checkLottery}
+          />
 
           {order.drafts?.length > 0 && (
             <>
@@ -729,15 +642,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           )}
         </View>
       ),
-    [
-      balance,
-      expDate,
-      iccid,
-      navigation,
-      order.drafts,
-      renderDraft,
-      renderLottery,
-    ],
+    [balance, expDate, iccid, navigation, order.drafts, renderDraft],
   );
 
   useEffect(() => {

@@ -120,6 +120,7 @@ const changePictureWithToast = reflectWithToast(
 // * - point_add : 포인트 지급
 // * - point_exp : 포인트 소멸
 
+export type Fortune = {text: string; num: number};
 export type SectionData = {title: string; data: CashHistory[]};
 export type CashHistory = {
   account_id: string;
