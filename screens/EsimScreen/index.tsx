@@ -8,7 +8,7 @@ import {
   SafeAreaView,
   AppState,
 } from 'react-native';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import moment from 'moment';
@@ -17,7 +17,6 @@ import {RouteProp, useIsFocused} from '@react-navigation/native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {isDefined} from 'validate.js';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -28,11 +27,7 @@ import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {
   RkbSubscription,
-  StatusObj,
-  UsageObj,
-  Usage,
   AddOnOptionType,
-  UsageOptionObj,
   STATUS_USED,
   STATUS_EXPIRED,
   checkUsage,
@@ -103,6 +98,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: '#d2dfff',
     borderRadius: 3,
+  },
+  fortuneBtnContainer: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    paddingHorizontal: 20,
+    height: 64,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.lightBlue,
+    borderRadius: 3,
+    marginTop: 12,
+  },
+  fortuneBtn: {
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flex: 1,
   },
   rowCenter: {
     flexDirection: 'row',
@@ -250,6 +263,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const appState = useRef('unknown');
   const [isChargeable, setIsChargeable] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
+  const [lotteryCnt, setLotteryCnt] = useState(0);
+  const [fortune, setFortune] = useState('');
+  const dispatch = useDispatch();
 
   const [subsData, firstUsedIdx] = useMemo(
     () => {
@@ -320,6 +336,20 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [action.order, mobile, token],
   );
 
+  const checkLottery = useCallback(() => {
+    API.Account.lotteryCoupon({
+      iccid,
+      token,
+      prompt: 'check',
+    }).then((resp) => {
+      console.log('@@@ check lottery Resp working ? : ', resp);
+      if (resp?.result === 0) {
+        setLotteryCnt(resp.objects[0]?.count || 0);
+        setFortune(resp.objects[0]?.fortune || '');
+      }
+    });
+  }, [iccid, token]);
+
   const onPressUsage = useCallback(
     async (item: RkbSubscription, isChargeableParam?: boolean) => {
       setUsageLoading(true);
@@ -348,6 +378,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           .then(() => {
             action.account.getAccount({iccid, token});
             getOrders(hidden);
+
+            // hidden이 False 일 때만 해주면 되나?
+            checkLottery();
+
             setIsFirstLoad(false);
           })
           .finally(() => {
@@ -355,7 +389,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           });
       }
     },
-    [action.account, action.order, getOrders, iccid, token],
+    [action.account, action.order, checkLottery, getOrders, iccid, token],
   );
 
   const getIsChargeable = useCallback((sub: RkbSubscription) => {
@@ -402,6 +436,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           hidden: false,
         });
         getOrders(false);
+        checkLottery();
       } else if (actionStr === 'showUsage') {
         const index = subsData?.findIndex((elm) => elm.nid === subsId);
         if (index >= 0) {
@@ -476,6 +511,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     },
     [
       action.order,
+      checkLottery,
       getIsChargeable,
       getOrders,
       iccid,
@@ -542,6 +578,86 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     ],
   );
 
+  // esimScreen 코드가 너무 길어서 컴포넌트로 빼기..
+  const renderLottery = useCallback(() => {
+    const isPending = (statusCd: string) => statusCd === 'P';
+    const pending = subsData.findIndex((r) => isPending(r.statusCd)) !== -1;
+
+    const navigateLottery = () => {
+      navigation.navigate('Lottery', {
+        count: lotteryCnt,
+        fortune,
+        onPress: setLotteryCnt,
+      });
+    };
+
+    if (lotteryCnt === 0 && fortune) {
+      return (
+        <Pressable
+          style={styles.fortuneBtnContainer}
+          onPress={() => {
+            navigateLottery();
+          }}>
+          <View style={styles.fortuneBtn}>
+            <AppText
+              style={[
+                appStyles.bold16Text,
+                {color: colors.white, lineHeight: 20},
+              ]}>
+              {i18n.t('esim:lottery:history')}
+            </AppText>
+
+            <AppIcon
+              name="fortuneBtnSmall"
+              mode="contain"
+              imgStyle={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            />
+          </View>
+        </Pressable>
+      );
+    }
+
+    return (
+      lotteryCnt > 0 && (
+        <Pressable
+          style={[
+            styles.fortuneBtnContainer,
+            {
+              height: pending ? 150 : 70,
+            },
+          ]}
+          onPress={() => {
+            navigateLottery();
+          }}>
+          <View style={styles.fortuneBtn}>
+            <AppText
+              style={[
+                pending ? appStyles.bold18Text : appStyles.bold16Text,
+                {color: colors.white, lineHeight: 22},
+              ]}>
+              {i18n.t(
+                pending ? 'esim:lottery:start:pending' : 'esim:lottery:start',
+              )}
+            </AppText>
+            <AppIcon
+              name={pending ? 'fortuneBtnBig' : 'fortuneBtnSmall'}
+              mode="contain"
+              imgStyle={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            />
+          </View>
+        </Pressable>
+      )
+    );
+  }, [fortune, lotteryCnt, navigation, subsData]);
+
   const renderDraft = useCallback(
     (item: RkbOrder, isLast) => {
       return (
@@ -580,6 +696,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           />
           {renderInfo(navigation)}
 
+          {renderLottery()}
+
           {order.drafts?.length > 0 && (
             <>
               <View style={styles.draftFrame}>
@@ -611,7 +729,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           )}
         </View>
       ),
-    [balance, expDate, iccid, navigation, order.drafts, renderDraft],
+    [
+      balance,
+      expDate,
+      iccid,
+      navigation,
+      order.drafts,
+      renderDraft,
+      renderLottery,
+    ],
   );
 
   useEffect(() => {

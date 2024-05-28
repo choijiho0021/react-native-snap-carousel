@@ -88,6 +88,19 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
       .add(1, 'days')
       .format('YYYY-MM-DD'); // 2024-01-27
 
+    console.log('@@@@ 앱 시간 moment : ', moment().format());
+
+    console.log(
+      "@@@@ moment().utcOffset('-05:00') : ",
+      moment().utcOffset('-05:00').format(),
+    );
+    console.log(
+      '@@@@ add day : ',
+      moment().utcOffset('-05:00').add(1, 'days').format(),
+    );
+
+    console.log('@@@ mindate : ', minDate);
+
     const today = moment().isBefore(minDate);
 
     const isLeftDisable = moment(month).isBefore(minDate);

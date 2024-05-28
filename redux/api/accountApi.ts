@@ -209,6 +209,28 @@ const getAccount = ({iccid, token}: {iccid?: string; token?: string}) => {
   );
 };
 
+const donateCash = ({
+  iccid,
+  token,
+  ids,
+}: {
+  iccid?: string;
+  token?: string;
+  ids?: number[];
+}) => {
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.cash)}/${iccid}?_format=json`,
+    {
+      method: 'PATCH',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({dona: {ids}}),
+    },
+    (resp) => {
+      return resp;
+    },
+  );
+};
+
 const getCashHistory = ({iccid, token}: {iccid?: string; token?: string}) => {
   return api.callHttpGet<CashHistory>(
     `${api.httpUrl(api.path.rokApi.rokebi.cash)}/${iccid}?_format=json`,
@@ -411,6 +433,26 @@ const registerCoupon = ({
   );
 };
 
+// register coupon
+const lotteryCoupon = ({
+  prompt,
+  iccid,
+  token,
+}: {
+  prompt: 'lottery' | 'check';
+  iccid: string;
+  token: string;
+}) => {
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.lottery)}?_format=json`,
+    {
+      method: 'POST',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({prompt}),
+    },
+  );
+};
+
 export default {
   toAccount,
   toFile,
@@ -423,4 +465,6 @@ export default {
   uploadPicture,
   getMyCoupon,
   registerCoupon,
+  lotteryCoupon,
+  donateCash,
 };

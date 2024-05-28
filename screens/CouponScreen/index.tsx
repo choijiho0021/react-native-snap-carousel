@@ -2,6 +2,7 @@ import React, {memo, useCallback, useEffect, useState} from 'react';
 import {bindActionCreators} from 'redux';
 import {
   FlatList,
+  Image,
   Keyboard,
   RefreshControl,
   SafeAreaView,
@@ -14,6 +15,8 @@ import {RootState} from '@reduxjs/toolkit';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList, goBack} from '@/navigation/navigation';
 import i18n from '@/utils/i18n';
+
+import AppIcon from '@/components/AppIcon';
 import AppBackButton from '@/components/AppBackButton';
 import {
   AccountAction,
@@ -272,6 +275,15 @@ const CouponScreen: React.FC<CouponProps> = ({
     <SafeAreaView style={styles.container}>
       <View style={appStyles.header}>
         <AppBackButton title={i18n.t('mypage:coupon')} />
+      </View>
+
+      <View style={{backgroundColor: '#C9AAD7', width: '100%'}}>
+        {/* <AppIcon name="capsule"   /> */}
+        <Image
+          style={{width: '100%', height: 300}}
+          source={require('@/assets/images/main/capsule.png')}
+          resizeMode="contain"
+        />
       </View>
       <FlatList
         style={{flex: 1}}

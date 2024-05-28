@@ -346,6 +346,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
               created: moment(created),
               bodyTitle: bodyTitle || title,
               text: body,
+              notiType,
               mode:
                 type === notiActions.NOTI_TYPE_URI
                   ? 'uri'

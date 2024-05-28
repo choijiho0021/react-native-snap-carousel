@@ -1,7 +1,14 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import React, {memo, useMemo} from 'react';
-import {View, Image, ViewStyle, StyleProp} from 'react-native';
+import {
+  View,
+  Image,
+  ViewStyle,
+  StyleProp,
+  ImageResizeMode,
+  ImageStyle,
+} from 'react-native';
 import _ from 'underscore';
 import AppSvgIcon from './AppSvgIcon';
 
@@ -34,22 +41,30 @@ const images: Record<string, any[]> = {
   giftGuideStep2: [require(`${giftPath}img_step2.png`)],
   giftGuideStep3: [require(`${giftPath}img_step3.png`)],
   gift: [require(`${giftPath}img_gift.png`)],
+  fortuneBtnSmall: [require(`${esimPath}banner_lucky_s.png`)],
+  fortuneBtnBig: [require(`${esimPath}banner_lucky_l.png`)],
+  loadingLucky: [require(`${esimPath}loading_lucky.png`)],
+  mainLucky: [require(`${esimPath}main_lucky.png`)],
 };
 
 interface AppIconProps {
   name: string;
   focused?: boolean;
   style?: StyleProp<ViewStyle>;
+  imgStyle?: StyleProp<ImageStyle>;
   size?: number | number[];
   checked?: boolean;
+  mode?: ImageResizeMode;
 }
 
 const AppIcon: React.FC<AppIconProps> = ({
   name,
   focused,
   style,
+  imgStyle,
   size,
   checked,
+  mode,
 }) => {
   const source = useMemo(() => images[name], [name]);
   const sz = useMemo(() => {
@@ -62,8 +77,8 @@ const AppIcon: React.FC<AppIconProps> = ({
   return source ? (
     <View style={style || {justifyContent: 'center', alignItems: 'center'}}>
       <Image
-        resizeMode="cover"
-        style={sz}
+        resizeMode={mode || 'cover'}
+        style={[sz, imgStyle]}
         source={
           (focused || checked) && source.length > 1 ? source[1] : source[0]
         }
