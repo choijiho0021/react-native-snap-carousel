@@ -11,6 +11,7 @@ import {
 import {connect, useDispatch} from 'react-redux';
 import {RouteProp} from '@react-navigation/native';
 import ViewShot from 'react-native-view-shot';
+import LinearGradient from 'react-native-linear-gradient';
 import {colors} from '@/constants/Colors';
 import {bindActionCreators} from 'redux';
 import Share, {Social} from 'react-native-share';
@@ -24,6 +25,7 @@ import {appStyles} from '@/constants/Styles';
 import {
   AccountAction,
   AccountModelState,
+  Fortune,
   actions as accountActions,
 } from '@/redux/modules/account';
 import {API} from '@/redux/api';
@@ -39,7 +41,6 @@ import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppAlert from '@/components/AppAlert';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import ShareLinkModal from '../ProductDetailScreen/components/ShareLinkModal';
-import LinearGradient from 'react-native-linear-gradient';
 import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
@@ -140,7 +141,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   action,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [phase, setPhase] = useState('');
+  const [phase, setPhase] = useState<Fortune>({text: '', num: 0});
   const [showShareModal, setShowShareModal] = useState(false);
   const dispatch = useDispatch();
   // const [couponCnt, setCouponCnt] = useState(0);
@@ -153,12 +154,20 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const ref = useRef<ViewShot>();
   const {count, fortune} = route?.params;
   const isHistory = useMemo(() => {
-    return count === 0 && fortune;
-  }, []);
+    return count === 0 && fortune?.text;
+  }, [count, fortune?.text]);
+
+  const screenNum = useMemo(
+    () => phase?.num || fortune?.num,
+    [fortune?.num, phase?.num],
+  );
+
+  useEffect(() => {
+    console.log('phase : ', phase);
+    console.log('@@@ screenNum : ', screenNum);
+  }, [phase, screenNum]);
 
   const lotteryCoupon = useCallback(() => {
-    // 조건이 필요하다.
-    // 구매 목록 중에서 completed 된 것들 + lottery_coupon_start_date < created 가 있는 지
     API.Account.lotteryCoupon({
       iccid,
       token,
@@ -176,7 +185,8 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           charm: resp.objects[0]?.charm,
         });
 
-        setPhase(resp.objects[0]?.phrase);
+        console.log('@@@ resp.objects[0] : ', resp.objects[0]);
+        setPhase({text: resp.objects[0]?.phrase, num: resp.objects[0]?.num});
         route?.params?.onPress(0);
         setIsLoading(false);
 
@@ -198,11 +208,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         // 네트워크 오류나 띄워줄까
       }
     });
-  }, [iccid, token]);
-
-  const randValue = useCallback(() => {
-    return Math.floor(Math.random() * 5) + 1;
-  }, []);
+  }, [iccid, navigation, route?.params, token]);
 
   // 컴포넌트로 뗴야하나
   const hasAndroidPermission = useCallback(async () => {
@@ -292,8 +298,8 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     );
   }, []);
 
-  const renderLoading = useCallback(() => {
-    return (
+  const renderLoading = useCallback(
+    () => (
       <View style={{flex: 1, alignItems: 'center'}}>
         <View
           style={{
@@ -310,15 +316,16 @@ const LotteryScreen: React.FC<LotteryProps> = ({
                 appStyles.bold36Text,
                 {textAlign: 'center', lineHeight: 38},
               ]}>
-              {`두근두근`}
+              {'1'}
             </AppText>
           </View>
 
           <View style={{marginTop: 104}}>{loadingMotion()}</View>
         </View>
       </View>
-    );
-  }, []);
+    ),
+    [loadingMotion],
+  );
 
   const renderAfterLottery = useCallback(() => {
     return (
@@ -337,7 +344,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
                 borderRadius: 99,
                 paddingHorizontal: 16,
                 paddingVertical: 3,
-                marginTop: 72,
+                marginTop: 0,
               }}>
               <AppText
                 style={[
@@ -347,7 +354,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
                 {i18n.t('esim:lottery:title:history')}
               </AppText>
             </View>
-            {coupon?.cnt == 0 && !isHistory && (
+            {coupon?.cnt === 0 && !isHistory && (
               <AppText style={[appStyles.medium14, {marginTop: 10}]}>
                 {i18n.t('esim:lottery:wait')}
               </AppText>
@@ -359,7 +366,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
                   appStyles.semiBold24Text,
                   {marginTop: 10, lineHeight: 30, color: colors.black},
                 ]}>
-                {`${phase || fortune}`}
+                {`${phase?.text || fortune?.text}`}
               </AppText>
             </View>
           </View>
@@ -377,7 +384,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
               }}
               source={{
                 uri: API.default.httpImageUrl(
-                  `sites/default/files/img/fortune_card${randValue()}.png`,
+                  `sites/default/files/img/fortune_card${screenNum}.png`,
                 ),
               }}
             />
@@ -422,7 +429,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             style={{
               paddingHorizontal: 20,
             }}>
-            {fortune && (
+            {fortune?.text && (
               <Pressable
                 style={{
                   paddingHorizontal: 20,
@@ -452,7 +459,16 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         </ViewShot>
       </>
     );
-  }, []);
+  }, [
+    capture,
+    coupon?.cnt,
+    fortune,
+    isHistory,
+    navigation,
+    phase,
+    screenNum,
+    shareInstaStory,
+  ]);
 
   const renderBeforeLottery = useCallback(() => {
     return (
@@ -531,7 +547,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         </View>
       </View>
     );
-  }, []);
+  }, [count, onClick]);
 
   const renderBody = useCallback(() => {
     if (isLoading) {
@@ -554,12 +570,12 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       );
     }
 
-    if (phase || isHistory) {
+    if (phase?.text || isHistory) {
       return (
         <>
           <LinearGradient
             // Background Linear Gradient
-            colors={GRADIENT_COLOR_LIST[0]}
+            colors={GRADIENT_COLOR_LIST[screenNum]}
             style={{
               position: 'absolute',
               left: 0,
@@ -589,7 +605,15 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         {renderBeforeLottery()}
       </>
     );
-  }, [capture, isLoading, navigation, onClick, phase, route?.params?.count]);
+  }, [
+    isHistory,
+    isLoading,
+    phase,
+    renderAfterLottery,
+    renderBeforeLottery,
+    renderLoading,
+    screenNum,
+  ]);
 
   return (
     <SafeAreaView style={styles.container}>
