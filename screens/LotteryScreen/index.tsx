@@ -304,15 +304,38 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     if (phase || isHistory) {
       return (
         <>
-          <View style={{flex: 1, alignItems: 'center'}}>
-            <AppText style={appStyles.bold20Text}>
-              {i18n.t('esim:lottery:title')}
-            </AppText>
+          <View style={{alignItems: 'center'}}>
+            <View
+              style={{
+                backgroundColor: 'black',
+                borderRadius: 99,
+                paddingHorizontal: 16,
+                paddingVertical: 3,
+                marginTop: 72,
+              }}>
+              <AppText
+                style={[
+                  appStyles.medium14,
+                  {color: colors.white, lineHeight: 20},
+                ]}>
+                {i18n.t('esim:lottery:title:history')}
+              </AppText>
+            </View>
             {coupon?.cnt == 0 && !isHistory && (
               <AppText style={[appStyles.medium14, {marginTop: 10}]}>
                 {i18n.t('esim:lottery:wait')}
               </AppText>
             )}
+
+            <View>
+              <AppText
+                style={[
+                  appStyles.semiBold24Text,
+                  {marginTop: 10, lineHeight: 30, color: colors.black},
+                ]}>
+                {`${phase || fortune}`}
+              </AppText>
+            </View>
           </View>
           <View
             style={{

@@ -753,7 +753,7 @@
   "esim:lottery:start": "여행 운세 뽑고, 쿠폰까지!",
   "esim:lottery:history": "여행 운세 다시보기",
   "esim:lottery:title": "이번 여행 운세는?",
-  "esim:lottery:title:history": "이번 여행 운세는?",
+  "esim:lottery:title:history": "나의 여행 운세",
   "esim:lottery:wait": "'쿠폰 당첨 결과도 곧 나와요!'",
   "esim:lottery:coupon:cnt": "열어보지 않은 쿠폰이 %d개 있네요.\n당첨 여부를 확인해보세요!",
   "esim:lottery:button": "여행 운세와 랜덤 쿠폰 뽑기",

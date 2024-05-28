@@ -349,6 +349,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       token,
       prompt: 'check',
     }).then((resp) => {
+      console.log('@@@ check lottery Resp working ? : ', resp);
       if (resp?.result === 0) {
         setLotteryCnt(resp.objects[0]?.count || 0);
         setFortune(resp.objects[0]?.fortune || '');
