@@ -42,6 +42,7 @@ import AppAlert from '@/components/AppAlert';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import ShareLinkModal from '../ProductDetailScreen/components/ShareLinkModal';
 import AppStyledText from '@/components/AppStyledText';
+import LotteryModal from './component/LotteryModal';
 
 const styles = StyleSheet.create({
   container: {
@@ -143,13 +144,19 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [phase, setPhase] = useState<Fortune>({text: '', num: 0});
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showCouponModal, setShowCouponModal] = useState(false);
+
   const dispatch = useDispatch();
-  // const [couponCnt, setCouponCnt] = useState(0);
+
   const [coupon, setCoupon] = useState<LotteryCouponType>({
+    // cnt: 0,
+    // title: '',
+    // desc: '',
+    // charm: '',
+    charm: 'sites/default/files/coupon_clover.png',
     cnt: 0,
-    title: '',
-    desc: '',
-    charm: '',
+    desc: '테스트',
+    title: '2% 추첨 쿠폰',
   });
   const ref = useRef<ViewShot>();
   const {count, fortune} = route?.params;
@@ -191,6 +198,15 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         setIsLoading(false);
 
         // 3초후 쿠폰 결과도 보여달라는데?
+
+        // {"charm": "sites/default/files/temp_charm.png", "cnt": 0, "desc": "테스트", "title": "2% 추첨 쿠폰"}
+
+        console.log('@@@ params : ', {
+          cnt: couponObj?.cnt || 0, // 이걸로 성공/실패 구분 가능
+          title: couponObj?.display_name,
+          desc: couponObj?.description,
+          charm: resp.objects[0]?.charm,
+        });
 
         // 뽑기 , 임시로 3초 타임아웃
         setTimeout(() => {
@@ -633,6 +649,12 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       />
       {/* // 메인화면 */}
       {renderBody()}
+
+      <LotteryModal
+        visible={true || showCouponModal}
+        coupon={coupon}
+        onClose={setShowCouponModal}
+      />
 
       {/* 공유 어떻게 할지 정해지면 props 수정 필요 */}
       <ShareLinkModal

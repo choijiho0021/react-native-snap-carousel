@@ -1,4 +1,4 @@
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {
   Image,
   Platform,
@@ -30,11 +30,14 @@ import AppText from '@/components/AppText';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppAlert from '@/components/AppAlert';
 import {API} from '@/redux/api';
+import AppModal from '@/components/AppModal';
+import {LotteryCouponType} from '..';
+import LinearGradient from 'react-native-linear-gradient';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.greyish,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
     justifyContent: 'center',
   },
   btnCnter: {
@@ -42,34 +45,35 @@ const styles = StyleSheet.create({
     height: 40,
     marginHorizontal: 18,
   },
+  btnSave: {
+    backgroundColor: colors.clearBlue,
+    paddingHorizontal: 16,
+    paddingVertical: 13,
+    alignSelf: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    width: 130,
+    height: 52,
+    borderRadius: 3,
+  },
 });
 
-type LotteryCouponScreenNavigationProp = StackNavigationProp<
-  HomeStackParamList,
-  'LotteryCoupon'
->;
-
-type LotteryCouponScreenRouteProp = RouteProp<
-  HomeStackParamList,
-  'LotteryCoupon'
->;
-
-type LotteryCouponScreenProps = {
-  navigation: LotteryCouponScreenNavigationProp;
-  route: LotteryCouponScreenRouteProp;
-
+type LotteryModalProps = {
+  visible: boolean;
   action: {
     // order: OrderAction;
     toast: ToastAction;
   };
+  coupon: LotteryCouponType;
 };
 
-const LotteryCouponScreen: React.FC<LotteryCouponScreenProps> = ({
-  route,
-  navigation,
+const LotteryModal: React.FC<LotteryModalProps> = ({
   action,
+  visible = false,
+  coupon,
 }) => {
-  const {coupon} = route.params;
+  const route = useRoute();
+  const navigation = useNavigation();
   const ref = useRef<ViewShot>();
 
   const hasAndroidPermission = useCallback(async () => {
@@ -104,9 +108,14 @@ const LotteryCouponScreen: React.FC<LotteryCouponScreenProps> = ({
   }, [action.toast, hasAndroidPermission]);
 
   const renderBody = useCallback(() => {
-    if (coupon?.cnt === 0) {
+    if (coupon?.cnt === 0 && false) {
       return (
-        <View style={{alignContent: 'center', justifyContent: 'center'}}>
+        <View
+          style={{
+            alignContent: 'center',
+            justifyContent: 'center',
+            // backgroundColor: 'red',
+          }}>
           <View
             style={{
               alignContent: 'center',
@@ -115,8 +124,13 @@ const LotteryCouponScreen: React.FC<LotteryCouponScreenProps> = ({
             }}>
             <AppText
               style={[
-                appStyles.medium16,
-                {color: colors.white, textAlign: 'center'},
+                appStyles.bold24Text,
+                {
+                  color: colors.white,
+                  textAlign: 'center',
+                  lineHeight: 32,
+                  marginBottom: 24,
+                },
               ]}>
               {i18n.t('esim:lottery:modal:lose')}
             </AppText>
@@ -126,44 +140,72 @@ const LotteryCouponScreen: React.FC<LotteryCouponScreenProps> = ({
             style={{
               justifyContent: 'center',
               alignSelf: 'center',
-              width: 200,
-              height: 300,
             }}>
             {/* 임시 사진 */}
-            <Image
-              source={{
-                uri: API.default.httpImageUrl(coupon?.charm),
-              }}
-              style={{width: 200, height: 300}}
-              resizeMode="contain"
-            />
-          </ViewShot>
-          <View style={{gap: 10}}>
-            <Pressable
-              onPress={capture}
+            <LinearGradient
+              // Background Linear Gradient
+              colors={['rgb(169,241,208)', 'rgb(10 ,144 ,104)']}
               style={{
-                backgroundColor: colors.white,
-                marginHorizontal: 20,
-                paddingVertical: 10,
-                alignSelf: 'center',
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                top: 0,
+                height: '100%',
+                borderRadius: 20,
+              }}
+            />
+            <View
+              style={{
+                borderRadius: 20,
+                paddingHorizontal: 30,
+                paddingVertical: 30,
+                alignItems: 'center',
+                borderColor: 'rgb(38, 203, 149)',
+                borderWidth: 1,
               }}>
-              <View>
-                <AppText
-                  style={[
-                    appStyles?.bold16Text,
-                    {textAlign: 'center', width: 200},
-                  ]}>
-                  {i18n.t('esim:lottery:modal:save')}
-                </AppText>
-              </View>
+              <AppText
+                style={[
+                  appStyles.bold20Text,
+                  {
+                    textAlign: 'center',
+                    lineHeight: 28,
+                    color: 'rgb(0,102,71)',
+                    marginBottom: 17,
+                  },
+                ]}>
+                {i18n.t('esim:lottery:modal:lose:text')}
+              </AppText>
+              <Image
+                source={{
+                  uri: API.default.httpImageUrl(coupon?.charm),
+                }}
+                style={{width: 180, height: 180}}
+                resizeMode="contain"
+              />
+              <AppSvgIcon name="boldRokebiLogo" />
+            </View>
+          </ViewShot>
+          <View style={{gap: 10, marginTop: 24}}>
+            <Pressable onPress={capture} style={styles.btnSave}>
+              <AppSvgIcon
+                style={{width: 20, justifyContent: 'center'}}
+                name="btnSave"
+              />
+              <AppText
+                style={[
+                  appStyles?.medium18,
+                  {
+                    textAlign: 'center',
+                    color: colors.white,
+                    height: 26,
+                    lineHeight: 26,
+                    justifyContent: 'center',
+                    letterSpacing: 0,
+                  },
+                ]}>
+                {i18n.t('esim:lottery:modal:save')}
+              </AppText>
             </Pressable>
-            <AppText
-              style={[
-                appStyles.normal14Text,
-                {color: colors.white, alignSelf: 'center'},
-              ]}>
-              {i18n.t('esim:lottery:modal:notice2')}
-            </AppText>
           </View>
         </View>
       );
@@ -179,11 +221,17 @@ const LotteryCouponScreen: React.FC<LotteryCouponScreenProps> = ({
             appStyles.bold18Text,
             {
               alignSelf: 'center',
+              textAlign: 'center',
               marginBottom: 40,
               color: colors.white,
             },
           ]}>
           {i18n.t('esim:lottery:modal:win')}
+          <Image
+            source={require('@/assets/images/esim/emojiCelebration.png')}
+            style={{width: 28, height: 28}}
+            resizeMode="contain"
+          />
         </AppText>
 
         <View style={{alignItems: 'flex-end'}}>
@@ -213,10 +261,53 @@ const LotteryCouponScreen: React.FC<LotteryCouponScreenProps> = ({
   }, [capture, coupon]);
 
   return (
+    <AppModal
+      contentStyle={{
+        paddingTop: 0,
+        marginTop: 0,
+        marginBottom: 60,
+        justifyContent: 'center',
+        marginHorizontal: 20,
+        backgroundColor: 'transparent',
+        width: '100%',
+      }}
+      safeAreaColor="rgba(0, 0, 0, 0.7)"
+      titleViewStyle={{marginTop: 20}}
+      okButtonTitle={i18n.t('redirect')}
+      type="division"
+      onOkClose={() => {
+        console.log('Hi');
+      }}
+      bottom={() => <View></View>}
+      onCancelClose={() => {
+        console.log('hi');
+      }}
+      visible={visible}>
+      {renderBody()}
+      {/* <Pressable
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginHorizontal: 20,
+        backgroundColor: 'white',
+        height: 24,
+      }}
+      onPress={() => setChecked((prev) => !prev)}>
+      <AppButton
+        iconName="btnCheck"
+        style={{marginRight: 10}}
+        checked={checked}
+        onPress={() => setChecked((prev) => !prev)}
+      />
+      <AppText style={{color: colors.black}}>{i18n.t('close:week')}</AppText>
+    </Pressable> */}
+    </AppModal>
+  );
+  return (
     <SafeAreaView style={styles.container}>
       <ScreenHeader
         isStackTop
-        headerStyle={{backgroundColor: colors.greyish}}
+        headerStyle={{backgroundColor: 'transparent'}}
         titleStyle={appStyles.bold18Text}
         renderRight={
           <AppSvgIcon
@@ -241,5 +332,5 @@ export default memo(
         toast: bindActionCreators(toastActions, dispatch),
       },
     }),
-  )(LotteryCouponScreen),
+  )(LotteryModal),
 );

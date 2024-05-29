@@ -491,6 +491,20 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  btnSave: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M15.207 10.207a1 1 0 0 0-1.414-1.414L11 11.586V1a1 1 0 1 0-2 0v10.586L6.207 8.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l4.5-4.5z"
+        fill="#fff"
+      />
+      <Rect x="1" y="18" width="18" height="2" rx="1" fill="#fff" />
+    </Svg>,
+  ],
   btnUsage: [
     <Svg
       width="26"
