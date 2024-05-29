@@ -8,10 +8,9 @@ import {
   View,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
-import React, {memo, useCallback, useEffect, useRef} from 'react';
+import React, {memo, useCallback, useRef} from 'react';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
-import {StackNavigationProp} from '@react-navigation/stack';
 import {
   PERMISSIONS,
   RESULTS,
@@ -27,7 +26,6 @@ import i18n from '@/utils/i18n';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {ToastAction, actions as toastActions} from '@/redux/modules/toast';
 import AppText from '@/components/AppText';
-import {HomeStackParamList} from '@/navigation/navigation';
 import AppAlert from '@/components/AppAlert';
 import {API} from '@/redux/api';
 import AppModal from '@/components/AppModal';
@@ -55,6 +53,41 @@ const styles = StyleSheet.create({
     width: 130,
     height: 52,
     borderRadius: 3,
+  },
+  couponContent: {
+    backgroundColor: colors.clearBlue,
+    alignItems: 'center',
+    borderRadius: 20,
+    paddingTop: 23,
+    paddingBottom: 35,
+    paddingHorizontal: 20,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderBottomWidth: 0,
+    borderColor: 'rgba(255, 255, 255, 0.32)',
+  },
+  couponTail: {
+    marginTop: -1,
+    borderRadius: 20,
+    backgroundColor: colors.clearBlue,
+    paddingHorizontal: 80,
+    paddingVertical: 20,
+    alignItems: 'center',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderTopWidth: 0,
+    borderColor: 'rgba(255, 255, 255, 0.32)',
+  },
+  couponCount: {
+    position: 'absolute',
+    top: -16,
+    right: -16,
+    width: 66,
+    height: 66,
+    backgroundColor: '#194C94',
+    borderRadius: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
@@ -108,7 +141,7 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
   }, [action.toast, hasAndroidPermission]);
 
   const renderBody = useCallback(() => {
-    if (coupon?.cnt === 0 && false) {
+    if (coupon?.cnt === 0) {
       return (
         <View
           style={{
@@ -234,27 +267,58 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
           />
         </AppText>
 
-        <View style={{alignItems: 'flex-end'}}>
-          {coupon?.cnt > 1 && (
-            <AppText style={appStyles.bold18Text}>{`*${coupon.cnt}`}</AppText>
-          )}
-        </View>
-        <View
-          style={{
-            backgroundColor: colors.white,
-            alignItems: 'center',
-            gap: 10,
-            padding: 20,
-          }}>
-          <AppText style={[appStyles.bold16Text]}>{coupon.title}</AppText>
-          <AppText style={appStyles.normal12Text}>{coupon.desc}</AppText>
+        <View>
+          <View style={styles.couponContent}>
+            {coupon?.cnt > 1 && (
+              <View style={styles.couponCount}>
+                <View style={{flexDirection: 'row', gap: 2}}>
+                  <AppText style={[appStyles.robotoBold24Text]}>{`X`}</AppText>
+
+                  <AppText
+                    style={[
+                      appStyles.robotoBold24Text,
+                    ]}>{`${coupon.cnt}`}</AppText>
+                </View>
+              </View>
+            )}
+            <AppSvgIcon style={{marginBottom: 30}} name="boldRokebiLogo" />
+            <AppText
+              style={[
+                appStyles.bold32Text,
+                {color: colors.white, marginBottom: 9, textAlign: 'center'},
+              ]}>
+              {coupon.title}
+            </AppText>
+            <AppText
+              style={[
+                appStyles.bold16Text,
+                {
+                  opacity: 0.64,
+                  color: colors.white,
+                },
+              ]}>
+              {coupon.desc}
+            </AppText>
+          </View>
+          <View style={styles.couponTail}>
+            <AppText
+              style={[
+                appStyles.bold20Text,
+                {
+                  color: colors.white,
+                  opacity: 0.64,
+                },
+              ]}>
+              {i18n.t('esim:lottery:modal:win:coupon')}
+            </AppText>
+          </View>
         </View>
         <AppText
           style={[
-            appStyles.normal12Text,
-            {color: colors.white, marginTop: 20},
+            appStyles.medium18,
+            {color: 'rgba(255, 255, 255, 0.72)', marginTop: 20},
           ]}>
-          {i18n.t('esim:lottery:modal:notice')}
+          {i18n.t('esim:lottery:modal:win:text')}
         </AppText>
       </View>
     );
@@ -284,43 +348,7 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
       }}
       visible={visible}>
       {renderBody()}
-      {/* <Pressable
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginHorizontal: 20,
-        backgroundColor: 'white',
-        height: 24,
-      }}
-      onPress={() => setChecked((prev) => !prev)}>
-      <AppButton
-        iconName="btnCheck"
-        style={{marginRight: 10}}
-        checked={checked}
-        onPress={() => setChecked((prev) => !prev)}
-      />
-      <AppText style={{color: colors.black}}>{i18n.t('close:week')}</AppText>
-    </Pressable> */}
     </AppModal>
-  );
-  return (
-    <SafeAreaView style={styles.container}>
-      <ScreenHeader
-        isStackTop
-        headerStyle={{backgroundColor: 'transparent'}}
-        titleStyle={appStyles.bold18Text}
-        renderRight={
-          <AppSvgIcon
-            name="closeModal"
-            style={styles.btnCnter}
-            onPress={() => {
-              navigation.goBack();
-            }}
-          />
-        }
-      />
-      <View style={styles.container}>{renderBody()}</View>
-    </SafeAreaView>
   );
 };
 

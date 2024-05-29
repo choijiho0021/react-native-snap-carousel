@@ -12,6 +12,12 @@ import {connect, useDispatch} from 'react-redux';
 import {RouteProp} from '@react-navigation/native';
 import ViewShot from 'react-native-view-shot';
 import LinearGradient from 'react-native-linear-gradient';
+import {
+  check,
+  openSettings,
+  PERMISSIONS,
+  RESULTS,
+} from 'react-native-permissions';
 import {colors} from '@/constants/Colors';
 import {bindActionCreators} from 'redux';
 import Share, {Social} from 'react-native-share';
@@ -31,12 +37,6 @@ import {
 import {API} from '@/redux/api';
 import {RootState} from '@reduxjs/toolkit';
 import AppIcon from '@/components/AppIcon';
-import {
-  check,
-  openSettings,
-  PERMISSIONS,
-  RESULTS,
-} from 'react-native-permissions';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppAlert from '@/components/AppAlert';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
@@ -98,6 +98,20 @@ const styles = StyleSheet.create({
   btnText: {
     ...appStyles.medium14,
     color: colors.white,
+  },
+  lotteryResultTitleBox: {
+    backgroundColor: 'black',
+    borderRadius: 99,
+    paddingHorizontal: 16,
+    paddingVertical: 3,
+    marginTop: 0,
+  },
+  fortuneText: {
+    ...appStyles.semiBold24Text,
+    marginTop: 10,
+    lineHeight: 30,
+    color: colors.black,
+    textAlign: 'center',
   },
 });
 
@@ -354,14 +368,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             quality: 0.9,
           }}>
           <View style={{alignItems: 'center'}}>
-            <View
-              style={{
-                backgroundColor: 'black',
-                borderRadius: 99,
-                paddingHorizontal: 16,
-                paddingVertical: 3,
-                marginTop: 0,
-              }}>
+            <View style={styles.lotteryResultTitleBox}>
               <AppText
                 style={[
                   appStyles.medium14,
@@ -377,13 +384,9 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             )}
 
             <View>
-              <AppText
-                style={[
-                  appStyles.semiBold24Text,
-                  {marginTop: 10, lineHeight: 30, color: colors.black},
-                ]}>
-                {`${phase?.text || fortune?.text}`}
-              </AppText>
+              <AppText style={styles.fortuneText}>{`${
+                phase?.text || fortune?.text
+              }`}</AppText>
             </View>
           </View>
           <View
@@ -651,7 +654,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       {renderBody()}
 
       <LotteryModal
-        visible={true || showCouponModal}
+        visible={showCouponModal}
         coupon={coupon}
         onClose={setShowCouponModal}
       />

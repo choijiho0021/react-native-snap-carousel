@@ -761,6 +761,7 @@
   "esim:lottery:button:navi": "쿠폰함 바로가기",
   "esim:lottery:modal:win": "행운이 찾아왔어요 :)\n쿠폰 당첨!",
   "esim:lottery:modal:win:text": "쿠폰함에서 확인해보세요.",
+  "esim:lottery:modal:win:coupon": "COUPON",
   "esim:lottery:modal:lose": "아쉽게도 쿠폰에\n당첨되지 않았어요.",
   "esim:lottery:modal:lose:text": "행운이 가득한\n 여행 부적을 드려요♥︎",
   "esim:lottery:modal:save": "부적 저장",
