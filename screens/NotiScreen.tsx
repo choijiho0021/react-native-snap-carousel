@@ -262,6 +262,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             break;
 
           case notiActions.NOTI_TYPE_INVITE:
+          case notiActions.NOTI_TYPE_PROMOTION:
             navigation.navigate('MyPageStack', {screen: 'MyPage'});
             break;
 
@@ -345,6 +346,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
               created: moment(created),
               bodyTitle: bodyTitle || title,
               text: body,
+              notiType,
               mode:
                 type === notiActions.NOTI_TYPE_URI
                   ? 'uri'

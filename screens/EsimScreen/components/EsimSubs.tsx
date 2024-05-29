@@ -467,7 +467,6 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         navigation.navigate('ChargeHistory', {
           mainSubs: item,
           chargeablePeriod,
-          onPressUsage,
           isChargeable: isChargeButton || false,
         });
       }
@@ -479,14 +478,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           isChargeable: isChargeButton || false,
         });
     },
-    [
-      chargeablePeriod,
-      isBC,
-      isChargeButton,
-      isCharged,
-      navigation,
-      onPressUsage,
-    ],
+    [chargeablePeriod, isBC, isChargeButton, isCharged, navigation],
   );
 
   const renderSwitch = useCallback(() => {

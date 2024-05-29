@@ -570,6 +570,14 @@ export const appStyles = StyleSheet.create({
     letterSpacing: 0.29,
     lineHeight: 40,
   },
+  bold36Text: {
+    //        fontFamily: "AppleSDGothicNeo",
+    fontSize: 36,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    letterSpacing: -0.72,
+    lineHeight: 42,
+  },
   robotoSemiBold22Text: {
     fontFamily: 'Roboto',
     fontSize: 22,

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import moment from 'moment';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {PaymentItem} from '@/components/PaymentItemInfo';
@@ -32,6 +33,7 @@ import {
   actions as orderActions,
   OrderAction,
   getCountItems,
+  OrderModelState,
 } from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
@@ -153,6 +155,7 @@ type PaymentResultScreenProps = {
 
   account: AccountModelState;
   cart: CartModelState;
+  order: OrderModelState;
 
   action: {
     noti: NotiAction;
@@ -166,6 +169,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   route: {params},
   account,
   cart,
+  order,
   action,
 }) => {
   const [oldCart, setOldCart] = useState<Partial<CartModelState>>();
@@ -201,6 +205,17 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
       });
       navigation.navigate('MyPageStack', {screen: 'MyPage'});
       // 일반 상품, 충전 상품 -> eSIM 화면 이동
+    }
+    if (cart.esimIccid) {
+      // 충전 또는 연장 상품의 경우 충전내역으로 이동
+      const main = order.subs?.find((s) => s.subsIccid === cart.esimIccid);
+
+      if (main)
+        navigation.navigate('ChargeHistory', {
+          mainSubs: main,
+          chargeablePeriod: utils.toDateString(main?.expireDate, 'YYYY.MM.DD'),
+          isChargeable: !main.expireDate?.isBefore(moment()),
+        });
     } else
       navigation.navigate('EsimStack', {
         screen: 'Esim',
@@ -208,7 +223,15 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
           actionStr: 'reload',
         },
       });
-  }, [account?.iccid, account?.token, action.order, navigation, params?.mode]);
+  }, [
+    account?.iccid,
+    account?.token,
+    action.order,
+    cart.esimIccid,
+    navigation,
+    order.subs,
+    params?.mode,
+  ]);
 
   // 결제 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
   BackbuttonHandler({
@@ -474,9 +497,10 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
 };
 
 export default connect(
-  ({account, cart}: RootState) => ({
+  ({account, cart, order}: RootState) => ({
     account,
     cart,
+    order,
   }),
   (dispatch) => ({
     action: {

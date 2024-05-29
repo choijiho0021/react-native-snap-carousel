@@ -749,6 +749,21 @@
   "esim:howToCall:etcInfo:subtitle2:ais:txt": "*121*2# + 통화 누른 후 수신된 문자로 확인 가능",
   "esim:howToCall:etcInfo:subtitle2:dtac:txt": "*101*9# + 통화 눌러 확인 가능",
 
+  "esim:lottery:start:pending": "이번 여행\n나의 운세는?",
+  "esim:lottery:start": "여행 운세 뽑고, 쿠폰까지!",
+  "esim:lottery:history": "여행 운세 다시보기",
+  "esim:lottery:title": "이번 여행 운세는?",
+  "esim:lottery:title:history": "나의 여행 운세",
+  "esim:lottery:wait": "'쿠폰 당첨 결과도 곧 나와요!'",
+  "esim:lottery:coupon:cnt": "열어보지 않은 쿠폰이 %d개 있네요.\n당첨 여부를 확인해보세요!",
+  "esim:lottery:button": "여행 운세와 랜덤 쿠폰 뽑기",
+  "esim:lottery:notice": "• 쿠폰 당첨 기회는 발권당 1번 부여됩니다.\n• 여행 운세 및 쿠폰을 확인하지 않으면 쿠폰 당첨 기회가 누적되며, 확인 시 누적된 기회가 일괄 소진됩니다.",
+  "esim:lottery:button:navi": "쿠폰함 바로가기",
+  "esim:lottery:modal:win": "쿠폰에 당첨되었어요!",
+  "esim:lottery:modal:lose": "아쉽게도 쿠폰에 당첨되지\n않았어요.\n대신 로밍도깨비가 행운의\n부적을 드릴게요!",
+  "esim:lottery:modal:save": "부적 저장하기",
+  "esim:lottery:modal:notice2": "지금 저장하지 않으면 소멸되는 부적이에요.",
+
   "esim:time:usable": "상품 사용기간",
   "esim:time:dataReset": "데이터 리셋 시간",
   "esim:time:korea": "한국시간",
@@ -1640,6 +1655,7 @@
   "cashHistory:type:point_deduct": "상품 구매",
   "cashHistory:type:point_add": "캐시 적립",
   "cashHistory:type:point_exp": "캐시 소멸",
+  "cashHistory:type:dona": "캐시 소멸",
   "cashHistory:recharge:failure": "충전 실패! 고객센터로 문의해 주세요.",
 
   "promo:join:open": "이벤트 참여",
@@ -1650,6 +1666,8 @@
   "promo:join:ing": "시도중 ...",
   "promo:login": "로그인 후 이벤트 참여하기",
   "promo:donate": "기부 동참하기",
+  "promo:donate:success": "로깨비 환경 보호 캠페인에 함께해 주셔\n서감사합니다.\n여러분의 기부로 더 나은 지구를 만들 수 있어요!",
+  "promo:donate:fail": "이미 사용 또는 기부 동참한 캐시입니다.",
 
   "local:ok": "네! 확인했어요",
   "local:modal:title": "{{localOpName}} 상품 구매 전\n꼭 확인해주세요!",

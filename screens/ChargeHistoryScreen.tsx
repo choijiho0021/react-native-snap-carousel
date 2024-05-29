@@ -23,7 +23,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {connect} from 'react-redux';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
-import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {RkbSubscription, checkUsage} from '@/redux/api/subscriptionApi';
 import AppButton from '@/components/AppButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -39,6 +39,7 @@ import {API} from '@/redux/api';
 import ScreenHeader from '@/components/ScreenHeader';
 import {AccountModelState} from '@/redux/modules/account';
 import {RootState} from '@/redux';
+import {actions as orderActions} from '@/redux/modules/order';
 
 const styles = StyleSheet.create({
   chargeBtn: {
@@ -275,6 +276,7 @@ type ChargeHistoryScreenProps = {
   navigation: ChargeHistoryScreenNavigationProp;
   route: RouteProp<HomeStackParamList, 'ChargeHistory'>;
   account: AccountModelState;
+  refreshing: boolean;
 };
 
 // SVG 파일로 대체 불가. SVG는 이미지가 깨져보임
@@ -285,8 +287,9 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   navigation,
   route: {params},
   account,
+  refreshing,
 }) => {
-  const {mainSubs, chargeablePeriod, onPressUsage, isChargeable} = params || {};
+  const {mainSubs, chargeablePeriod, isChargeable} = params || {};
   const [showModal, setShowModal] = useState(false);
   const [selectedSubs, setSelectedSubs] = useState<RkbSubscription>(mainSubs);
   const [pending, setPending] = useState(false);
@@ -315,6 +318,12 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
 
     return unsubscribe;
   }, [navigation]);
+
+  const isPending = useCallback(
+    (statusCd: string) => ['P', 'A', 'R'].includes(statusCd),
+    [],
+  );
+  const isExpired = useCallback((statusCd: string) => statusCd === 'E', []);
 
   const showTop = useCallback(
     (isTop: boolean) => {
@@ -357,7 +366,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
     );
   }, []);
 
-  useEffect(() => {
+  const getSubs = useCallback(() => {
     const {iccid, token} = account;
     if (iccid && token) {
       API.Subscription.getSubscription({
@@ -371,6 +380,15 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
       });
     }
   }, [account, mainSubs.subsIccid]);
+
+  useEffect(() => {
+    getSubs();
+  }, [getSubs]);
+
+  useEffect(() => {
+    // 프로비저닝 푸시알림을 받은 후 getNotiSubs가 호출되면 리프레시 추가
+    if (refreshing) getSubs();
+  }, [getSubs, refreshing]);
 
   const renderTooltip = useCallback(() => {
     return (
@@ -530,37 +548,42 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
     navigation,
   ]);
 
-  const renderDesc = useCallback((sub: RkbSubscription) => {
-    if (sub.statusCd === 'E') {
-      return null;
-    }
-    if (sub.statusCd === 'P') {
-      return (
-        <View style={{flexDirection: 'row', marginBottom: 24}}>
-          <AppText
-            style={[
-              appStyles.bold14Text,
-              {color: colors.clearBlue, marginRight: 8},
-            ]}>
-            {i18n.t('esim:reserved')}
-          </AppText>
-          <AppSvgIcon name="delivery" style={{marginRight: 8, marginTop: 4}} />
-        </View>
-      );
-    }
+  const renderDesc = useCallback(
+    (sub: RkbSubscription) => {
+      if (isExpired(sub.statusCd)) {
+        return null;
+      }
+      if (isPending(sub.statusCd)) {
+        return (
+          <View style={{flexDirection: 'row', marginBottom: 24}}>
+            <AppText
+              style={[
+                appStyles.bold14Text,
+                {color: colors.clearBlue, marginRight: 8},
+              ]}>
+              {i18n.t('esim:reserved')}
+            </AppText>
+            <AppSvgIcon
+              name="delivery"
+              style={{marginRight: 8, marginTop: 4}}
+            />
+          </View>
+        );
+      }
 
-    return (
-      <AppText style={{...styles.normal14Gray, marginBottom: 24}}>
-        {sub.prodDays === '1' ? i18n.t('his:today') : i18n.t('his:remainDays')}
-      </AppText>
-    );
-  }, []);
+      return (
+        <AppText style={{...styles.normal14Gray, marginBottom: 24}}>
+          {sub.prodDays === '1'
+            ? i18n.t('his:today')
+            : i18n.t('his:remainDays')}
+        </AppText>
+      );
+    },
+    [isExpired, isPending],
+  );
 
   const renderItem = useCallback(
     ({item}: {item: RkbSubscription}) => {
-      const isPending = (statusCd: string) => statusCd === 'P';
-      const isExpired = (statusCd: string) => statusCd === 'E';
-
       return (
         <View
           style={{
@@ -596,7 +619,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                   onPress={() => {
                     setPending(true);
                     setSelectedSubs(item);
-                    onPressUsage(item)?.then((u) => {
+                    checkUsage(item)?.then((u) => {
                       setUsage(u.usage);
                       setStatus(u.status);
                       setDataUsageOption(u.usageOption);
@@ -710,7 +733,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         </View>
       );
     },
-    [addOnData, onPressUsage, renderDesc, toProdDaysString],
+    [addOnData, isExpired, isPending, renderDesc, toProdDaysString],
   );
 
   return (
@@ -838,6 +861,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   );
 };
 
-export default connect(({account}: RootState) => ({account}))(
-  ChargeHistoryScreen,
-);
+export default connect(({account, status}: RootState) => ({
+  account,
+  refreshing: status.pending[orderActions.getNotiSubs.typePrefix] || false,
+}))(ChargeHistoryScreen);
