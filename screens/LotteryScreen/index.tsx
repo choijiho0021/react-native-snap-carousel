@@ -725,7 +725,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   );
 
   const sharePlatform = useCallback(
-    (pictureUrl: string, type: string) => {
+    (pictureUrl: string, type: string, link: string) => {
       const serverImageUrl = API.default.httpImageUrl(pictureUrl);
 
       console.log('@@@ serverImageUrl : ', serverImageUrl);
@@ -755,11 +755,11 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       // TODO : 서버에서 받은 값을 넣어줘야겠다.
 
       console.log('@@@ onSharePress');
-      // uploadImage();
 
       const link = `http://tb.rokebi.com?${encodeURIComponent(
         'linkPath=ozCS&recommender=411d33bb-0bb6-4244-9b01-d5309233229f',
       )}`;
+
       API.Account.lotteryCoupon({
         iccid,
         token,
@@ -773,10 +773,10 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             : '';
 
           if (pictureUrl) {
-            sharePlatform(pictureUrl, type);
+            sharePlatform(pictureUrl, type, link);
           } else {
             uploadImage().then((url) => {
-              sharePlatform(url, type);
+              sharePlatform(url, type, link);
             });
           }
         }
