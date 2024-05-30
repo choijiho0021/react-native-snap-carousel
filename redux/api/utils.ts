@@ -246,6 +246,31 @@ const cmpMomentDesc = (a?: Moment, b?: Moment) => {
   return cmpMomentAsc(a, b) * -1;
 };
 
+const convertFileURLtoRkbImage = async (url: string) => {
+  if (_.isEmpty(url)) return Promise.reject(new Error(`invalid URL:${url}`));
+
+  try {
+    const data = await RNFetchBlob.fs.readFile(url, 'base64');
+    return await new Promise<RkbImage>((resolve, reject) => {
+      if (data) {
+        Image.getSize(url, (width, height) => {
+          const rkbImage: RkbImage = {
+            mime: 'image/jpeg',
+            data,
+            height,
+            width,
+          };
+          resolve(rkbImage);
+        });
+      } else {
+        reject(new Error('convertURLtoRkbImage failed'));
+      }
+    });
+  } catch (err) {
+    return Promise.reject(new Error('convertURLtoRkbImage failed'));
+  }
+};
+
 const convertURLtoRkbImage = async (url: string) => {
   if (_.isEmpty(url)) return Promise.reject(new Error(`invalid URL:${url}`));
 
@@ -389,6 +414,7 @@ export default {
   addCurrency,
   currencyString,
   convertURLtoRkbImage,
+  convertFileURLtoRkbImage,
   convertCropImageToRkbImage,
   removeBracketOfName,
   generateKey,

@@ -276,15 +276,6 @@ const CouponScreen: React.FC<CouponProps> = ({
       <View style={appStyles.header}>
         <AppBackButton title={i18n.t('mypage:coupon')} />
       </View>
-
-      <View style={{backgroundColor: '#C9AAD7', width: '100%'}}>
-        {/* <AppIcon name="capsule"   /> */}
-        <Image
-          style={{width: '100%', height: 300}}
-          source={require('@/assets/images/main/capsule.png')}
-          resizeMode="contain"
-        />
-      </View>
       <FlatList
         style={{flex: 1}}
         data={coupon}
