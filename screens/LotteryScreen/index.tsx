@@ -18,11 +18,11 @@ import {
   PERMISSIONS,
   RESULTS,
 } from 'react-native-permissions';
+import Share from 'react-native-share';
 import KakaoSDK from '@/components/NativeModule/KakaoSDK';
 import Env from '@/environment';
 import {colors} from '@/constants/Colors';
 import {bindActionCreators} from 'redux';
-import Share, {Social} from 'react-native-share';
 import i18n from '@/utils/i18n';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppText from '@/components/AppText';
@@ -39,11 +39,7 @@ import {
 import {API} from '@/redux/api';
 import {RootState} from '@reduxjs/toolkit';
 import AppIcon from '@/components/AppIcon';
-import {
-  actions as toastActions,
-  ToastAction,
-  actions,
-} from '@/redux/modules/toast';
+import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppAlert from '@/components/AppAlert';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import ShareLinkModal, {
@@ -51,9 +47,7 @@ import ShareLinkModal, {
 } from '../ProductDetailScreen/components/ShareLinkModal';
 import AppStyledText from '@/components/AppStyledText';
 import LotteryModal from './component/LotteryModal';
-import {RkbImage} from '@/redux/api/accountApi';
 import {utils} from '@/utils/utils';
-import RNFetchBlob from 'rn-fetch-blob';
 
 const styles = StyleSheet.create({
   container: {
@@ -172,9 +166,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [phase, setPhase] = useState<Fortune>({text: '', num: 0});
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCouponModal, setShowCouponModal] = useState(false);
-  const [imageUrl, setImageUrl] = useState(''); // params 으로도 받아야함.
-
-  const dispatch = useDispatch();
 
   const [coupon, setCoupon] = useState<LotteryCouponType>({
     // cnt: 0,
