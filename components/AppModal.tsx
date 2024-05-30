@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
 export interface AppModalProps {
   visible: boolean;
   maxWidth?: string | number;
-  type?: 'normal' | 'close' | 'info' | 'redirect';
+  type?: 'normal' | 'close' | 'info' | 'redirect' | 'division';
   justifyContent?: 'center' | 'flex-end';
   title?: string;
   titleStyle?: TextStyle;
@@ -259,6 +259,25 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
             alignItems: 'center',
             marginHorizontal: contentStyle?.marginHorizontal,
           }}>
+          {type === 'division' && (
+            <View style={{width: '90%', marginBottom: 24}}>
+              <View
+                style={{
+                  marginHorizontal: 20,
+                  paddingTop: 25,
+                  alignSelf: 'flex-end',
+                }}>
+                <View
+                  style={{
+                    borderColor: colors.white,
+                    borderWidth: 2,
+                    borderRadius: 100,
+                  }}>
+                  <AppIcon name="boldCancel" />
+                </View>
+              </View>
+            </View>
+          )}
           <View
             style={[
               contentStyle || styles.inner,

@@ -1,6 +1,7 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
+  Image,
   Platform,
   Pressable,
   SafeAreaView,
@@ -10,9 +11,18 @@ import {
 import {connect, useDispatch} from 'react-redux';
 import {RouteProp} from '@react-navigation/native';
 import ViewShot from 'react-native-view-shot';
+import LinearGradient from 'react-native-linear-gradient';
+import {
+  check,
+  openSettings,
+  PERMISSIONS,
+  RESULTS,
+} from 'react-native-permissions';
+import Share from 'react-native-share';
+import KakaoSDK from '@/components/NativeModule/KakaoSDK';
+import Env from '@/environment';
 import {colors} from '@/constants/Colors';
 import {bindActionCreators} from 'redux';
-import Share, {Social} from 'react-native-share';
 import i18n from '@/utils/i18n';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppText from '@/components/AppText';
@@ -23,23 +33,21 @@ import {appStyles} from '@/constants/Styles';
 import {
   AccountAction,
   AccountModelState,
+  Fortune,
   actions as accountActions,
 } from '@/redux/modules/account';
 import {API} from '@/redux/api';
 import {RootState} from '@reduxjs/toolkit';
 import AppIcon from '@/components/AppIcon';
-import {
-  check,
-  openSettings,
-  PERMISSIONS,
-  RESULTS,
-} from 'react-native-permissions';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppAlert from '@/components/AppAlert';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
-import ShareLinkModal from '../ProductDetailScreen/components/ShareLinkModal';
-import LinearGradient from 'react-native-linear-gradient';
+import ShareLinkModal, {
+  SharePlatfromType,
+} from '../ProductDetailScreen/components/ShareLinkModal';
 import AppStyledText from '@/components/AppStyledText';
+import LotteryModal from './component/LotteryModal';
+import {utils} from '@/utils/utils';
 
 const styles = StyleSheet.create({
   container: {
@@ -54,12 +62,8 @@ const styles = StyleSheet.create({
   },
 
   shareIconBox: {
-    width: 52,
-    height: 52,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    backgroundColor: colors.white,
-    borderColor: colors.lightGrey,
+    width: 20,
+    height: 20,
   },
 
   motionContainer: {
@@ -78,12 +82,41 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
   },
+  dividerSmall: {
+    borderRightWidth: 1,
+    marginVertical: 15,
+    height: 20,
+    marginBottom: 0,
+    borderColor: colors.whiteEight,
+  },
   appIcon: {
     width: 248,
     height: 248,
     position: 'absolute',
     top: 0,
     left: 0,
+  },
+  btnBox: {
+    alignItems: 'center',
+    gap: 10,
+  },
+  btnText: {
+    ...appStyles.medium14,
+    color: colors.white,
+  },
+  lotteryResultTitleBox: {
+    backgroundColor: 'black',
+    borderRadius: 99,
+    paddingHorizontal: 16,
+    paddingVertical: 3,
+    marginTop: 0,
+  },
+  fortuneText: {
+    ...appStyles.semiBold24Text,
+    marginTop: 10,
+    lineHeight: 30,
+    color: colors.black,
+    textAlign: 'center',
   },
 });
 
@@ -113,32 +146,86 @@ export type LotteryCouponType = {
   charm: string;
 };
 
+const GRADIENT_COLOR_LIST = [
+  ['rgb(201, 170, 215)', 'rgb(179, 130, 202)'],
+  ['rgb(243, 192, 183)', 'rgb(236, 160, 146)'],
+  ['rgb(143, 211,238)', 'rgb(67,181,226)'],
+  ['rgb(168, 210,200)', 'rgb(99, 205, 180)'],
+  ['rgb(226,203,176)', 'rgb(221,180,134)'],
+];
+
+const {isProduction} = Env.get();
+
 const LotteryScreen: React.FC<LotteryProps> = ({
   navigation,
   route,
-  account: {iccid, token},
+  account: {iccid, token, mobile},
   action,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [phase, setPhase] = useState('');
+  const [phase, setPhase] = useState<Fortune>({text: '', num: 0});
   const [showShareModal, setShowShareModal] = useState(false);
-  const dispatch = useDispatch();
-  // const [couponCnt, setCouponCnt] = useState(0);
+  const [showCouponModal, setShowCouponModal] = useState(false);
+
   const [coupon, setCoupon] = useState<LotteryCouponType>({
+    // cnt: 0,
+    // title: '',
+    // desc: '',
+    // charm: '',
+    charm: 'sites/default/files/coupon_clover.png',
     cnt: 0,
-    title: '',
-    desc: '',
-    charm: '',
+    desc: '테스트',
+    title: '2% 추첨 쿠폰',
   });
   const ref = useRef<ViewShot>();
   const {count, fortune} = route?.params;
   const isHistory = useMemo(() => {
-    return count === 0 && fortune;
-  }, []);
+    return count === 0 && fortune?.text;
+  }, [count, fortune?.text]);
 
-  const lotteryCoupon = useCallback(() => {
-    // 조건이 필요하다.
-    // 구매 목록 중에서 completed 된 것들 + lottery_coupon_start_date < created 가 있는 지
+  const screenNum = useMemo(
+    () => phase?.num || fortune?.num,
+    [fortune?.num, phase?.num],
+  );
+
+  useEffect(() => {
+    console.log('phase : ', phase);
+    console.log('@@@ screenNum : ', screenNum);
+  }, [phase, screenNum]);
+
+  const uploadImage = useCallback(async () => {
+    const uri = await ref.current?.capture?.();
+    const image = Platform.OS === 'android' ? uri : `file://${uri}`;
+
+    const convertImage = await utils.convertFileURLtoRkbImage(image);
+
+    // image upload
+    API.Account.uploadFortuneImage({
+      image: convertImage,
+      user: mobile,
+      token,
+    }).then((resp) => {
+      if (resp?.result === 0) {
+        const serverImageUrl = API.default.httpImageUrl(
+          resp?.objects[0]?.userPictureUrl,
+        );
+
+        // fortune Image 필드 갱신
+        API.Account.lotteryCoupon({
+          iccid,
+          token,
+          prompt: 'image',
+          fid: parseInt(resp?.objects[0]?.fid, 10), // ref_fortune 값에 넣을 데이터, imageUrl은 리덕스 처리해야하나...
+        }).then((resp) => {
+          if (resp?.result === 0) return serverImageUrl;
+        });
+      }
+
+      return '';
+    });
+  }, [iccid, mobile, token]);
+
+  const lotteryCoupon = useCallback(async () => {
     API.Account.lotteryCoupon({
       iccid,
       token,
@@ -156,29 +243,32 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           charm: resp.objects[0]?.charm,
         });
 
-        setPhase(resp.objects[0]?.phrase);
+        console.log('@@@ resp.objects[0] : ', resp.objects[0]);
+        setPhase({text: resp.objects[0]?.phrase, num: resp.objects[0]?.num});
         route?.params?.onPress(0);
         setIsLoading(false);
 
         // 3초후 쿠폰 결과도 보여달라는데?
 
+        // {"charm": "sites/default/files/temp_charm.png", "cnt": 0, "desc": "테스트", "title": "2% 추첨 쿠폰"}
+
+        console.log('@@@ params : ', {
+          cnt: couponObj?.cnt || 0, // 이걸로 성공/실패 구분 가능
+          title: couponObj?.display_name,
+          desc: couponObj?.description,
+          charm: resp.objects[0]?.charm,
+        });
+
         // 뽑기 , 임시로 3초 타임아웃
         setTimeout(() => {
-          navigation.navigate('LotteryCoupon', {
-            coupon: {
-              cnt: couponObj?.cnt || 0, // 이걸로 성공/실패 구분 가능
-              title: couponObj?.display_name,
-              desc: couponObj?.description,
-              charm: resp.objects[0]?.charm,
-            },
-          });
+          setShowCouponModal(true);
         }, 3000);
       } else {
         // 실패했을 땐 어떻게 해야할 지??
         // 네트워크 오류나 띄워줄까
       }
     });
-  }, [iccid, token]);
+  }, [iccid, route?.params, token]);
 
   // 컴포넌트로 뗴야하나
   const hasAndroidPermission = useCallback(async () => {
@@ -212,13 +302,18 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     });
   }, [action.toast, hasAndroidPermission]);
 
-  const shareInstaStory = useCallback(async () => {
+  const onShare = useCallback(() => {
+    setShowShareModal(true);
+  }, []);
+
+  const shareInstaStory = useCallback(async (imageParam: string) => {
     try {
       const uri = await ref.current?.capture?.();
 
-      const image = Platform.OS === 'android' ? uri : `file://${uri}`;
+      const image =
+        imageParam || (Platform.OS === 'android' ? uri : `file://${uri}`);
 
-      console.log('@@@ image를 값으로 찍으면 어떻게 될까? : ', image);
+      console.log('@@@@ image : ', image);
 
       if (uri) {
         const shareOptions = {
@@ -270,49 +365,46 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     );
   }, []);
 
-  const renderBody = useCallback(() => {
-    if (isLoading) {
-      // if (true) {
-      return (
-        <View style={{flex: 1, alignItems: 'center'}}>
+  const renderLoading = useCallback(
+    () => (
+      <View style={{flex: 1, alignItems: 'center'}}>
+        <View
+          style={{
+            justifyContent: 'center',
+            marginTop: 60,
+          }}>
           <View
             style={{
               justifyContent: 'center',
-              marginTop: 60,
+              paddingHorizontal: 20,
             }}>
-            <View
-              style={{
-                justifyContent: 'center',
-                paddingHorizontal: 20,
-              }}>
-              <AppText
-                style={[
-                  appStyles.bold36Text,
-                  {textAlign: 'center', lineHeight: 38},
-                ]}>
-                {`두근두근`}
-              </AppText>
-            </View>
-
-            <View style={{marginTop: 104}}>{loadingMotion()}</View>
+            <AppText
+              style={[
+                appStyles.bold36Text,
+                {textAlign: 'center', lineHeight: 38},
+              ]}>
+              {i18n.t('esim:lottery:loading')}
+            </AppText>
           </View>
+          <View style={{marginTop: 104}}>{loadingMotion()}</View>
         </View>
-      );
-    }
+      </View>
+    ),
+    [loadingMotion],
+  );
 
-    // 어지럽다.. 코드 분할 하자
-    if (phase || isHistory) {
-      return (
-        <>
+  const renderAfterLottery = useCallback(() => {
+    return (
+      <>
+        <ViewShot
+          ref={ref}
+          options={{
+            fileName: 'test',
+            format: 'png',
+            quality: 0.9,
+          }}>
           <View style={{alignItems: 'center'}}>
-            <View
-              style={{
-                backgroundColor: 'black',
-                borderRadius: 99,
-                paddingHorizontal: 16,
-                paddingVertical: 3,
-                marginTop: 72,
-              }}>
+            <View style={styles.lotteryResultTitleBox}>
               <AppText
                 style={[
                   appStyles.medium14,
@@ -321,99 +413,120 @@ const LotteryScreen: React.FC<LotteryProps> = ({
                 {i18n.t('esim:lottery:title:history')}
               </AppText>
             </View>
-            {coupon?.cnt == 0 && !isHistory && (
+            {coupon?.cnt === 0 && !isHistory && (
               <AppText style={[appStyles.medium14, {marginTop: 10}]}>
                 {i18n.t('esim:lottery:wait')}
               </AppText>
             )}
 
             <View>
-              <AppText
-                style={[
-                  appStyles.semiBold24Text,
-                  {marginTop: 10, lineHeight: 30, color: colors.black},
-                ]}>
-                {`${phase || fortune}`}
+              <AppText style={styles.fortuneText}>
+                {`${phase?.text || fortune?.text}`}
               </AppText>
             </View>
           </View>
           <View
             style={{
-              flex: 8,
+              alignItems: 'center',
               justifyContent: 'center',
+              paddingHorizontal: 20,
+              marginTop: 32,
             }}>
-            <ViewShot
-              ref={ref}
-              options={{
-                fileName: 'test',
-                format: 'jpg',
-                quality: 0.9,
+            <Image
+              style={{
+                width: 242,
+                height: 242,
               }}
-              style={{
-                backgroundColor: colors.greyish,
-                height: 300,
-                justifyContent: 'center',
-                paddingHorizontal: 20,
-              }}>
-              <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
-                {`${phase || fortune}`}
-              </AppText>
-            </ViewShot>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginHorizontal: 20,
-                marginVertical: 10,
-              }}>
-              <View style={{flexDirection: 'row'}}>
-                <Pressable onPress={capture}>
-                  <AppIcon name="iconShare2" style={styles.shareIconBox} />
-                </Pressable>
-              </View>
-              <View style={{flexDirection: 'row'}}>
-                <AppIcon
-                  onPress={() => {
-                    setShowShareModal(true);
-                  }}
-                  name="iconShare2"
-                  style={styles.shareIconBox}
-                />
-                <Pressable
-                  onPress={() => {
-                    shareInstaStory();
-                  }}>
-                  <AppIcon
-                    name="iconShare2"
-                    style={[styles.shareIconBox, {backgroundColor: 'grey'}]}
-                  />
-                </Pressable>
-              </View>
-            </View>
-
-            {fortune && (
-              <Pressable
-                style={{
-                  backgroundColor: colors.greyish,
-                  paddingHorizontal: 20,
-                  paddingVertical: 10,
-                  justifyContent: 'center',
-                }}
-                onPress={() => {
-                  navigation.popToTop();
-                  navigation.navigate('Coupon');
-                }}>
-                <AppText style={[appStyles.medium16, {textAlign: 'center'}]}>
-                  {i18n.t('esim:lottery:button:navi')}
-                </AppText>
-              </Pressable>
-            )}
+              source={{
+                uri: API.default.httpImageUrl(
+                  `sites/default/files/img/fortune_card${screenNum}.png`,
+                ),
+              }}
+            />
           </View>
-        </>
-      );
-    }
+        </ViewShot>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            marginHorizontal: 20,
+            marginTop: 63,
+            marginBottom: 35,
+          }}>
+          <Pressable onPress={capture}>
+            <View style={styles.btnBox}>
+              <AppIcon name="btnShare1" style={styles.shareIconBox} />
+              <AppText style={styles.btnText}>{'이미지 저장'}</AppText>
+            </View>
+          </Pressable>
 
-    // 코드 분할 해야겠는데 겁나 헷갈려 -> 뽑기 전 화면
+          <View style={styles.dividerSmall} />
+
+          <Pressable onPress={onShare}>
+            <View style={styles.btnBox}>
+              <AppIcon name="btnShare2" style={styles.shareIconBox} />
+              <AppText style={styles.btnText}>{'SNS 공유'}</AppText>
+            </View>
+          </Pressable>
+
+          <View style={styles.dividerSmall} />
+          <Pressable
+            onPress={() => {
+              shareInstaStory();
+            }}>
+            <View style={styles.btnBox}>
+              <AppIcon name="btnShareInsta" style={styles.shareIconBox} />
+              <AppText style={styles.btnText}>{'스토리 공유'}</AppText>
+            </View>
+          </Pressable>
+        </View>
+
+        <View
+          style={{
+            paddingHorizontal: 20,
+          }}>
+          {fortune?.text && (
+            <Pressable
+              style={{
+                paddingHorizontal: 20,
+                paddingVertical: 13,
+                justifyContent: 'center',
+                borderWidth: 1,
+                borderColor: colors.white,
+              }}
+              onPress={() => {
+                navigation.popToTop();
+                navigation.navigate('Coupon');
+              }}>
+              <AppText
+                style={[
+                  appStyles.bold18Text,
+                  {
+                    textAlign: 'center',
+                    color: colors.white,
+                    lineHeight: 26,
+                  },
+                ]}>
+                {i18n.t('esim:lottery:button:navi')}
+              </AppText>
+            </Pressable>
+          )}
+        </View>
+      </>
+    );
+  }, [
+    capture,
+    coupon?.cnt,
+    fortune?.text,
+    isHistory,
+    navigation,
+    onShare,
+    phase?.text,
+    screenNum,
+    shareInstaStory,
+  ]);
+
+  const renderBeforeLottery = useCallback(() => {
     return (
       <View style={{flex: 1, justifyContent: 'space-between'}}>
         <View style={{alignItems: 'center', marginTop: 32}}>
@@ -448,14 +561,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         />
 
         <View>
-          {/* 사라진 기획? {route?.params?.count > 1 && (
-            <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
-              {i18n
-                .t('esim:lottery:coupon:cnt')
-                .replace('%d', route?.params?.count || 0)}
-            </AppText>
-          )} */}
-
           <View
             style={{
               justifyContent: 'flex-end',
@@ -498,52 +603,225 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         </View>
       </View>
     );
-  }, [capture, isLoading, navigation, onClick, phase, route?.params?.count]);
+  }, [count, onClick]);
+
+  const renderBody = useCallback(() => {
+    if (isLoading) {
+      // if (true) {
+      return (
+        <>
+          <LinearGradient
+            // Background Linear Gradient
+            colors={['#eeeeee', '#D0E9FF']}
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              height: '100%',
+            }}
+          />
+          {renderLoading()}
+        </>
+      );
+    }
+
+    if (phase?.text || isHistory) {
+      return (
+        <>
+          <LinearGradient
+            // Background Linear Gradient
+            colors={GRADIENT_COLOR_LIST[screenNum]}
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              height: '100%',
+            }}
+          />
+          {renderAfterLottery()}
+        </>
+      );
+    }
+
+    return (
+      <>
+        <LinearGradient
+          // Background Linear Gradient
+          colors={['#eeeeee', '#D0E9FF']}
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            height: '100%',
+          }}
+        />
+        {renderBeforeLottery()}
+      </>
+    );
+  }, [
+    isHistory,
+    isLoading,
+    phase,
+    renderAfterLottery,
+    renderBeforeLottery,
+    renderLoading,
+    screenNum,
+  ]);
+
+  // TODO : Share 관련된 것만 따로 뺼 것
+  const onPressShareKakaoForFortune = useCallback(
+    async (link: string, imgUrl: string) => {
+      console.log('@@@@ kakaoShare image Url 전달 : ', imgUrl);
+
+      const resp = await KakaoSDK.KakaoShareLink.sendCustom({
+        templateId: isProduction ? 107765 : 108427,
+        templateArgs: [
+          {key: 'dynamicLink', value: link},
+          {
+            key: 'image',
+            value: imgUrl,
+          },
+        ],
+      });
+
+      console.log('@@@ onPressKakao Result : ', resp);
+    },
+
+    [],
+  );
+
+  const onShareMore = useCallback(async (link) => {
+    try {
+      console.log('@@ link : ', link);
+      await Share.open({
+        title: i18n.t('rtitle'),
+        url: link,
+        message: `내용에 링크를 넣어보자.`,
+      }).then((r) => {
+        console.log('onShare success ');
+      });
+    } catch (e) {
+      console.log('onShare fail : ', e);
+    }
+  }, []);
+
+  const onPressShareMore = useCallback(
+    (shareLink) => {
+      if (shareLink) onShareMore(shareLink);
+    },
+    [onShareMore],
+  );
+
+  const sharePlatform = useCallback(
+    (pictureUrl: string, type: string, link: string) => {
+      const serverImageUrl = API.default.httpImageUrl(pictureUrl);
+
+      console.log('@@@ serverImageUrl : ', serverImageUrl);
+
+      // more , sms, kakao 때만 동적 링크 필요
+      if (['more', 'sms', 'kakao'].includes(type)) {
+        return API.Promotion.buildLinkFortune({
+          imageUrl: serverImageUrl || '',
+          link,
+          desc: i18n.t('esim:lotterty:share:desc'),
+        }).then(async (url) => {
+          console.log('@@@ 만들어진 url 링크 확인 : ', url);
+
+          if (type === 'kakao') {
+            onPressShareKakaoForFortune(url, serverImageUrl || '');
+          } else if (type === 'more') {
+            onPressShareMore(url);
+          }
+        });
+      }
+    },
+    [onPressShareKakaoForFortune, onPressShareMore],
+  );
+  // 공유 관련 코드 따로 컴포넌트 파서 사용하자..
+  const onSharePress = useCallback(
+    async (type: SharePlatfromType) => {
+      // TODO : 서버에서 받은 값을 넣어줘야겠다.
+
+      console.log('@@@ onSharePress');
+
+      const link = `http://tb.rokebi.com?${encodeURIComponent(
+        'linkPath=ozCS&recommender=411d33bb-0bb6-4244-9b01-d5309233229f',
+      )}`;
+
+      API.Account.lotteryCoupon({
+        iccid,
+        token,
+        prompt: 'image',
+      }).then((resp) => {
+        console.log('@@@ lotteryCoupon resp : ', resp);
+
+        if (resp.result === 0) {
+          const pictureUrl = resp?.objects[0]
+            ? resp?.objects[0]?.userPictureUrl
+            : '';
+
+          if (pictureUrl) {
+            sharePlatform(pictureUrl, type, link);
+          } else {
+            uploadImage().then((url) => {
+              sharePlatform(url, type, link);
+            });
+          }
+        }
+      });
+
+      if (type === 'insta') {
+        shareInstaStory(image);
+
+        return 'insta send success';
+      }
+    },
+    [iccid, shareInstaStory, sharePlatform, token, uploadImage],
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        // Background Linear Gradient
-        colors={['#eeeeee', '#D0E9FF']}
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          top: 0,
-          height: '100%',
-        }}>
-        <ScreenHeader
-          // backHandler={backHandler}
-          headerStyle={{backgroundColor: 'transparent'}}
-          isStackTop
-          renderRight={
-            <AppSvgIcon
-              name="closeModal"
-              style={styles.btnCnter}
-              onPress={() => {
-                navigation.popToTop();
-              }}
-            />
-          }
-        />
-        {/* // 메인화면 */}
-        {renderBody()}
+      <ScreenHeader
+        // backHandler={backHandler}
+        headerStyle={{backgroundColor: 'transparent', zIndex: 10}}
+        isStackTop
+        renderRight={
+          <AppSvgIcon
+            name="closeModal"
+            style={styles.btnCnter}
+            onPress={() => {
+              navigation.popToTop();
+            }}
+          />
+        }
+      />
+      {/* // 메인화면 */}
+      {renderBody()}
 
-        {/* 공유 어떻게 할지 정해지면 props 수정 필요 */}
-        <ShareLinkModal
-          visible={showShareModal}
-          onClose={() => {
-            setShowShareModal(false);
-          }}
-          params={{
-            partnerId: route?.params?.partnerId,
-            uuid: route?.params?.uuid,
-            img: route?.params?.img,
-            listPrice: route.params?.listPrice,
-            price: route.params?.price,
-          }}
-        />
-      </LinearGradient>
+      <LotteryModal
+        visible={showCouponModal}
+        coupon={coupon}
+        onClose={setShowCouponModal}
+      />
+
+      {/* 공유 어떻게 할지 정해지면 props 수정 필요 */}
+      <ShareLinkModal
+        mode="fortune"
+        params={{
+          img: API.default.httpImageUrl(
+            `sites/default/files/img/fortune_card${screenNum}.png`,
+          ),
+        }}
+        onPress={onSharePress} // 여기다가 종합셋트 만들어야하나
+        onShareInsta={shareInstaStory}
+        visible={showShareModal}
+        onClose={() => {
+          setShowShareModal(false);
+        }}
+      />
     </SafeAreaView>
   );
 };
