@@ -18,6 +18,8 @@ import {
   PERMISSIONS,
   RESULTS,
 } from 'react-native-permissions';
+import KakaoSDK from '@/components/NativeModule/KakaoSDK';
+import Env from '@/environment';
 import {colors} from '@/constants/Colors';
 import {bindActionCreators} from 'redux';
 import Share, {Social} from 'react-native-share';
@@ -37,12 +39,21 @@ import {
 import {API} from '@/redux/api';
 import {RootState} from '@reduxjs/toolkit';
 import AppIcon from '@/components/AppIcon';
-import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
+import {
+  actions as toastActions,
+  ToastAction,
+  actions,
+} from '@/redux/modules/toast';
 import AppAlert from '@/components/AppAlert';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
-import ShareLinkModal from '../ProductDetailScreen/components/ShareLinkModal';
+import ShareLinkModal, {
+  SharePlatfromType,
+} from '../ProductDetailScreen/components/ShareLinkModal';
 import AppStyledText from '@/components/AppStyledText';
 import LotteryModal from './component/LotteryModal';
+import {RkbImage} from '@/redux/api/accountApi';
+import {utils} from '@/utils/utils';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const styles = StyleSheet.create({
   container: {
@@ -149,16 +160,19 @@ const GRADIENT_COLOR_LIST = [
   ['rgb(226,203,176)', 'rgb(221,180,134)'],
 ];
 
+const {isProduction} = Env.get();
+
 const LotteryScreen: React.FC<LotteryProps> = ({
   navigation,
   route,
-  account: {iccid, token},
+  account: {iccid, token, mobile},
   action,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [phase, setPhase] = useState<Fortune>({text: '', num: 0});
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCouponModal, setShowCouponModal] = useState(false);
+  const [imageUrl, setImageUrl] = useState(''); // params 으로도 받아야함.
 
   const dispatch = useDispatch();
 
@@ -188,7 +202,39 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     console.log('@@@ screenNum : ', screenNum);
   }, [phase, screenNum]);
 
-  const lotteryCoupon = useCallback(() => {
+  const uploadImage = useCallback(async () => {
+    const uri = await ref.current?.capture?.();
+    const image = Platform.OS === 'android' ? uri : `file://${uri}`;
+
+    const convertImage = await utils.convertFileURLtoRkbImage(image);
+
+    // image upload
+    API.Account.uploadFortuneImage({
+      image: convertImage,
+      user: mobile,
+      token,
+    }).then((resp) => {
+      if (resp?.result === 0) {
+        const serverImageUrl = API.default.httpImageUrl(
+          resp?.objects[0]?.userPictureUrl,
+        );
+
+        // fortune Image 필드 갱신
+        API.Account.lotteryCoupon({
+          iccid,
+          token,
+          prompt: 'image',
+          fid: parseInt(resp?.objects[0]?.fid, 10), // ref_fortune 값에 넣을 데이터, imageUrl은 리덕스 처리해야하나...
+        }).then((resp) => {
+          if (resp?.result === 0) return serverImageUrl;
+        });
+      }
+
+      return '';
+    });
+  }, [iccid, mobile, token]);
+
+  const lotteryCoupon = useCallback(async () => {
     API.Account.lotteryCoupon({
       iccid,
       token,
@@ -224,21 +270,14 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
         // 뽑기 , 임시로 3초 타임아웃
         setTimeout(() => {
-          navigation.navigate('LotteryCoupon', {
-            coupon: {
-              cnt: couponObj?.cnt || 0, // 이걸로 성공/실패 구분 가능
-              title: couponObj?.display_name,
-              desc: couponObj?.description,
-              charm: resp.objects[0]?.charm,
-            },
-          });
+          setShowCouponModal(true);
         }, 3000);
       } else {
         // 실패했을 땐 어떻게 해야할 지??
         // 네트워크 오류나 띄워줄까
       }
     });
-  }, [iccid, navigation, route?.params, token]);
+  }, [iccid, route?.params, token]);
 
   // 컴포넌트로 뗴야하나
   const hasAndroidPermission = useCallback(async () => {
@@ -272,11 +311,18 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     });
   }, [action.toast, hasAndroidPermission]);
 
-  const shareInstaStory = useCallback(async () => {
+  const onShare = useCallback(() => {
+    setShowShareModal(true);
+  }, []);
+
+  const shareInstaStory = useCallback(async (imageParam: string) => {
     try {
       const uri = await ref.current?.capture?.();
 
-      const image = Platform.OS === 'android' ? uri : `file://${uri}`;
+      const image =
+        imageParam || (Platform.OS === 'android' ? uri : `file://${uri}`);
+
+      console.log('@@@@ image : ', image);
 
       if (uri) {
         const shareOptions = {
@@ -346,10 +392,9 @@ const LotteryScreen: React.FC<LotteryProps> = ({
                 appStyles.bold36Text,
                 {textAlign: 'center', lineHeight: 38},
               ]}>
-              {'1'}
+              {i18n.t('esim:lottery:loading')}
             </AppText>
           </View>
-
           <View style={{marginTop: 104}}>{loadingMotion()}</View>
         </View>
       </View>
@@ -364,7 +409,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           ref={ref}
           options={{
             fileName: 'test',
-            format: 'jpg',
+            format: 'png',
             quality: 0.9,
           }}>
           <View style={{alignItems: 'center'}}>
@@ -384,9 +429,9 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             )}
 
             <View>
-              <AppText style={styles.fortuneText}>{`${
-                phase?.text || fortune?.text
-              }`}</AppText>
+              <AppText style={styles.fortuneText}>
+                {`${phase?.text || fortune?.text}`}
+              </AppText>
             </View>
           </View>
           <View
@@ -408,83 +453,84 @@ const LotteryScreen: React.FC<LotteryProps> = ({
               }}
             />
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-around',
-              marginHorizontal: 20,
-              marginTop: 63,
-              marginBottom: 35,
-            }}>
-            <Pressable onPress={capture}>
-              <View style={styles.btnBox}>
-                <AppIcon name="btnShare1" style={styles.shareIconBox} />
-                <AppText style={styles.btnText}>{'이미지 저장'}</AppText>
-              </View>
-            </Pressable>
-
-            <View style={styles.dividerSmall} />
-
-            <Pressable onPress={capture}>
-              <View style={styles.btnBox}>
-                <AppIcon name="btnShare2" style={styles.shareIconBox} />
-                <AppText style={styles.btnText}>{'SNS 공유'}</AppText>
-              </View>
-            </Pressable>
-
-            <View style={styles.dividerSmall} />
-            <Pressable
-              onPress={() => {
-                shareInstaStory();
-              }}>
-              <View style={styles.btnBox}>
-                <AppIcon name="btnShareInsta" style={styles.shareIconBox} />
-                <AppText style={styles.btnText}>{'스토리 공유'}</AppText>
-              </View>
-            </Pressable>
-          </View>
-
-          <View
-            style={{
-              paddingHorizontal: 20,
-            }}>
-            {fortune?.text && (
-              <Pressable
-                style={{
-                  paddingHorizontal: 20,
-                  paddingVertical: 13,
-                  justifyContent: 'center',
-                  borderWidth: 1,
-                  borderColor: colors.white,
-                }}
-                onPress={() => {
-                  navigation.popToTop();
-                  navigation.navigate('Coupon');
-                }}>
-                <AppText
-                  style={[
-                    appStyles.bold18Text,
-                    {
-                      textAlign: 'center',
-                      color: colors.white,
-                      lineHeight: 26,
-                    },
-                  ]}>
-                  {i18n.t('esim:lottery:button:navi')}
-                </AppText>
-              </Pressable>
-            )}
-          </View>
         </ViewShot>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            marginHorizontal: 20,
+            marginTop: 63,
+            marginBottom: 35,
+          }}>
+          <Pressable onPress={capture}>
+            <View style={styles.btnBox}>
+              <AppIcon name="btnShare1" style={styles.shareIconBox} />
+              <AppText style={styles.btnText}>{'이미지 저장'}</AppText>
+            </View>
+          </Pressable>
+
+          <View style={styles.dividerSmall} />
+
+          <Pressable onPress={onShare}>
+            <View style={styles.btnBox}>
+              <AppIcon name="btnShare2" style={styles.shareIconBox} />
+              <AppText style={styles.btnText}>{'SNS 공유'}</AppText>
+            </View>
+          </Pressable>
+
+          <View style={styles.dividerSmall} />
+          <Pressable
+            onPress={() => {
+              shareInstaStory();
+            }}>
+            <View style={styles.btnBox}>
+              <AppIcon name="btnShareInsta" style={styles.shareIconBox} />
+              <AppText style={styles.btnText}>{'스토리 공유'}</AppText>
+            </View>
+          </Pressable>
+        </View>
+
+        <View
+          style={{
+            paddingHorizontal: 20,
+          }}>
+          {fortune?.text && (
+            <Pressable
+              style={{
+                paddingHorizontal: 20,
+                paddingVertical: 13,
+                justifyContent: 'center',
+                borderWidth: 1,
+                borderColor: colors.white,
+              }}
+              onPress={() => {
+                navigation.popToTop();
+                navigation.navigate('Coupon');
+              }}>
+              <AppText
+                style={[
+                  appStyles.bold18Text,
+                  {
+                    textAlign: 'center',
+                    color: colors.white,
+                    lineHeight: 26,
+                  },
+                ]}>
+                {i18n.t('esim:lottery:button:navi')}
+              </AppText>
+            </Pressable>
+          )}
+        </View>
       </>
     );
   }, [
     capture,
     coupon?.cnt,
-    fortune,
+    fortune?.text,
     isHistory,
     navigation,
-    phase,
+    onShare,
+    phase?.text,
     screenNum,
     shareInstaStory,
   ]);
@@ -634,11 +680,122 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     screenNum,
   ]);
 
+  // TODO : Share 관련된 것만 따로 뺼 것
+  const onPressShareKakaoForFortune = useCallback(
+    async (link: string, imgUrl: string) => {
+      console.log('@@@@ kakaoShare image Url 전달 : ', imgUrl);
+
+      const resp = await KakaoSDK.KakaoShareLink.sendCustom({
+        templateId: isProduction ? 107765 : 108427,
+        templateArgs: [
+          {key: 'dynamicLink', value: link},
+          {
+            key: 'image',
+            value: imgUrl,
+          },
+        ],
+      });
+
+      console.log('@@@ onPressKakao Result : ', resp);
+    },
+
+    [],
+  );
+
+  const onShareMore = useCallback(async (link) => {
+    try {
+      console.log('@@ link : ', link);
+      await Share.open({
+        title: i18n.t('rtitle'),
+        url: link,
+        message: `내용에 링크를 넣어보자.`,
+      }).then((r) => {
+        console.log('onShare success ');
+      });
+    } catch (e) {
+      console.log('onShare fail : ', e);
+    }
+  }, []);
+
+  const onPressShareMore = useCallback(
+    (shareLink) => {
+      if (shareLink) onShareMore(shareLink);
+    },
+    [onShareMore],
+  );
+
+  const sharePlatform = useCallback(
+    (pictureUrl: string, type: string) => {
+      const serverImageUrl = API.default.httpImageUrl(pictureUrl);
+
+      console.log('@@@ serverImageUrl : ', serverImageUrl);
+
+      // more , sms, kakao 때만 동적 링크 필요
+      if (['more', 'sms', 'kakao'].includes(type)) {
+        return API.Promotion.buildLinkFortune({
+          imageUrl: serverImageUrl || '',
+          link,
+          desc: i18n.t('esim:lotterty:share:desc'),
+        }).then(async (url) => {
+          console.log('@@@ 만들어진 url 링크 확인 : ', url);
+
+          if (type === 'kakao') {
+            onPressShareKakaoForFortune(url, serverImageUrl || '');
+          } else if (type === 'more') {
+            onPressShareMore(url);
+          }
+        });
+      }
+    },
+    [onPressShareKakaoForFortune, onPressShareMore],
+  );
+  // 공유 관련 코드 따로 컴포넌트 파서 사용하자..
+  const onSharePress = useCallback(
+    async (type: SharePlatfromType) => {
+      // TODO : 서버에서 받은 값을 넣어줘야겠다.
+
+      console.log('@@@ onSharePress');
+      // uploadImage();
+
+      const link = `http://tb.rokebi.com?${encodeURIComponent(
+        'linkPath=ozCS&recommender=411d33bb-0bb6-4244-9b01-d5309233229f',
+      )}`;
+      API.Account.lotteryCoupon({
+        iccid,
+        token,
+        prompt: 'image',
+      }).then((resp) => {
+        console.log('@@@ lotteryCoupon resp : ', resp);
+
+        if (resp.result === 0) {
+          const pictureUrl = resp?.objects[0]
+            ? resp?.objects[0]?.userPictureUrl
+            : '';
+
+          if (pictureUrl) {
+            sharePlatform(pictureUrl, type);
+          } else {
+            uploadImage().then((url) => {
+              sharePlatform(url, type);
+            });
+          }
+        }
+      });
+
+      if (type === 'insta') {
+        shareInstaStory(image);
+
+        return 'insta send success';
+      }
+    },
+    [iccid, shareInstaStory, sharePlatform, token, uploadImage],
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <ScreenHeader
         // backHandler={backHandler}
-        headerStyle={{backgroundColor: 'transparent'}}
+        headerStyle={{backgroundColor: 'transparent', zIndex: 10}}
         isStackTop
         renderRight={
           <AppSvgIcon
@@ -661,16 +818,17 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
       {/* 공유 어떻게 할지 정해지면 props 수정 필요 */}
       <ShareLinkModal
+        mode="fortune"
+        params={{
+          img: API.default.httpImageUrl(
+            `sites/default/files/img/fortune_card${screenNum}.png`,
+          ),
+        }}
+        onPress={onSharePress} // 여기다가 종합셋트 만들어야하나
+        onShareInsta={shareInstaStory}
         visible={showShareModal}
         onClose={() => {
           setShowShareModal(false);
-        }}
-        params={{
-          partnerId: route?.params?.partnerId,
-          uuid: route?.params?.uuid,
-          img: route?.params?.img,
-          listPrice: route.params?.listPrice,
-          price: route.params?.price,
         }}
       />
     </SafeAreaView>

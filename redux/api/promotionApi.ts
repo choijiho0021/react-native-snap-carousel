@@ -394,6 +394,51 @@ const buildShareLink = async ({
   return url;
 };
 
+// 공통으로 사용할 수 있는 buildLink 만들어보자
+const buildLinkFortune = async ({
+  imageUrl,
+  link,
+  desc,
+  isShort = true,
+}: {
+  imageUrl: string;
+  link: string;
+  desc: string;
+  isShort?: boolean;
+}) => {
+  console.log(' link : ', link);
+  console.log(
+    'input link : ',
+    `${webViewHost}${encodeURIComponent(
+      '?linkPath=ozCS&recommender=411d33bb-0bb6-4244-9b01-d5309233229f',
+    )}`,
+  );
+  const input = {
+    link: `${webViewHost}${'?linkPath=ozCS&recommender=411d33bb-0bb6-4244-9b01-d5309233229f'}`,
+    domainUriPrefix: dynamicLink,
+    ios: {
+      bundleId: Platform.OS === 'ios' ? bundleId : iosBundleId,
+    },
+    android: {
+      packageName: 'com.rokebiesim',
+    },
+    social: {
+      title: i18n.t('share:title'),
+      descriptionText: desc,
+      imageUrl,
+    },
+    navigation: {
+      forcedRedirectEnabled: true,
+    },
+  };
+
+  const url = isShort
+    ? await dynamicLinks().buildShortLink(input)
+    : await dynamicLinks().buildLink(input);
+
+  return url;
+};
+
 // 다이나믹 링크를 활용한 초대링크 생성
 const buildLink = async ({
   recommender,
@@ -504,5 +549,6 @@ export default {
   invite,
   buildLink,
   buildShareLink,
+  buildLinkFortune,
   getExtraCoupon,
 };

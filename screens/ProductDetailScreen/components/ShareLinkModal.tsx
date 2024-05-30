@@ -74,11 +74,13 @@ const styles = StyleSheet.create({
   },
 });
 
+export type SharePlatfromType = 'kakao' | 'insta' | 'more' | 'sms';
+
 type ShareLinkModalProps = {
   visible: boolean;
   onClose: () => void;
-  purchaseItem: PurchaseItem;
-  params: {
+  purchaseItem?: PurchaseItem;
+  params?: {
     partnerId?: string;
     uuid?: string;
     img?: string;
@@ -86,6 +88,9 @@ type ShareLinkModalProps = {
     price?: Currency;
   };
   product: ProductModelState;
+  mode?: 'product' | 'fortune';
+  onShareInsta?: () => void;
+  onPress?: (type: SharePlatfromType) => Promise<string>;
 };
 
 const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
@@ -94,10 +99,13 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
   params,
   purchaseItem,
   product,
+  mode = 'product',
+  onShareInsta = () => {},
+  onPress,
 }) => {
   // uuid 체크하는거 넣어줘야하나?
   const {partnerId, uuid, img, price, listPrice} = useMemo(
-    () => params,
+    () => params || {},
     [params],
   );
 
@@ -220,15 +228,11 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
   );
 
   const onPressShareMessage = useCallback(
-    async (dynamicLink: string) => {
-      // encode 필요한가
-      // const text = encodeURIComponent(
-      //   `${dynamicLink}\n[로밍도깨비 eSIM] ${purchaseItem?.title}상품어때요?\n\n터치 한 번으로 eSIM 구매부터 사용까지 뚝딱!\n로밍도깨비 앱에서 더 다양한 상품을 만나보세요 😉`,
-      // );
+    async (dynamicLink: string, msg?: string) => {
+      const content =
+        msg || `이번 여행은 로밍도깨비 ${purchaseItem?.title} eSIM 어때요?`;
 
-      const text = encodeURIComponent(
-        `${dynamicLink}\n이번 여행은 로밍도깨비 ${purchaseItem?.title} eSIM 어때요?`,
-      );
+      const text = encodeURIComponent(`${dynamicLink}\n${content}`);
 
       const result = await Linking.openURL(`sms:${SMSDivider()}body=${text}`);
 
@@ -237,6 +241,97 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
 
     [purchaseItem?.title],
   );
+
+  const renderContentProduct = useCallback(() => {
+    return ['kakao', 'sms', 'more'].map((type) => (
+      <View key={type} style={{alignContent: 'center', rowGap: 6}}>
+        <AppSvgIcon
+          key="closeModal"
+          onPress={() => {
+            setIsShareDisabled(true);
+
+            const selectedCountryData: RkbProdByCountry =
+              product.prodByCountry.find((r) => r.partner === partnerId);
+            // 이미지 코드
+            const imageUrl: string = API.default.httpImageUrl(img);
+
+            // 별도 컴포넌트로 뺴고 이거 위에서 처리하게 하자.
+            API.Promotion.buildShareLink({
+              uuid,
+              prodName: purchaseItem?.title,
+              imageUrl,
+              promoFlag: purchaseItem?.promoFlag,
+              country: selectedCountryData,
+              isShort: true,
+            }).then((url) => {
+              setIsShareDisabled(false);
+
+              if (type === 'more') {
+                // onPressShareMore(imageUrl);
+              } else if (type === 'kakao') {
+                onPressShareKakao(selectedCountryData, imageUrl, url);
+              } else if (type === 'sms') {
+                onPressShareMessage(url);
+              }
+            });
+          }}
+          name={`${type}Icon`}
+        />
+        <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
+          {i18n.t(`cart:share:${type}`)}
+        </AppText>
+      </View>
+    ));
+  }, [
+    img,
+    onPressShareKakao,
+    onPressShareMessage,
+    partnerId,
+    product.prodByCountry,
+    purchaseItem?.promoFlag,
+    purchaseItem?.title,
+    uuid,
+  ]);
+
+  const renderContentFortune = useCallback(() => {
+    return ['kakao', 'sms', 'insta', 'more'].map((type) => (
+      <View key={type} style={{alignContent: 'center', rowGap: 6}}>
+        <AppSvgIcon
+          key={`${type}Icon`}
+          onPress={() => {
+            setIsShareDisabled(true);
+
+            if (onPress) {
+              onPress(type).then((url) => {
+                console.log('@@@ url : ', url);
+
+                if (type === 'sms') {
+                  onPressShareMessage(url, i18n.t('esim:lotterty:share:desc'));
+                } else if (type === 'more') {
+                  onPressShareMore(url);
+                }
+              });
+            }
+          }}
+          name={`${type}Icon`}
+        />
+        <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
+          {i18n.t(`cart:share:${type}`)}
+        </AppText>
+      </View>
+    ));
+  }, [onPress, onPressShareMessage, onPressShareMore]);
+
+  const renderContent = useCallback(() => {
+    console.log('@@@ mode : ', mode);
+    if (mode === 'fortune') {
+      return renderContentFortune();
+    }
+    if (mode === 'product') {
+      return renderContentProduct();
+    }
+    return <></>;
+  }, [mode, renderContentFortune, renderContentProduct]);
 
   return (
     <Modal visible={visible} transparent>
@@ -267,49 +362,7 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
                 gap: 40,
               },
             ]}>
-            {['kakao', 'sms', 'more'].map((type) => (
-              <View key={type} style={{alignContent: 'center', rowGap: 6}}>
-                <AppSvgIcon
-                  key="closeModal"
-                  onPress={() => {
-                    setIsShareDisabled(true);
-
-                    const selectedCountryData: RkbProdByCountry =
-                      product.prodByCountry.find(
-                        (r) => r.partner === partnerId,
-                      );
-                    const imageUrl: string = API.default.httpImageUrl(img);
-
-                    console.log('@@@ imageUrl : ', imageUrl);
-
-                    // 별도 컴포넌트로 뺴고 이거 위에서 처리하게 하자.
-                    API.Promotion.buildShareLink({
-                      uuid,
-                      prodName: purchaseItem?.title,
-                      imageUrl,
-                      promoFlag: purchaseItem?.promoFlag,
-                      country: selectedCountryData,
-                      isShort: true,
-                    }).then((url) => {
-                      setIsShareDisabled(false);
-
-                      if (type === 'more') {
-                        onPressShareMore(url);
-                      } else if (type === 'kakao') {
-                        onPressShareKakao(selectedCountryData, imageUrl, url);
-                      } else if (type === 'sms') {
-                        onPressShareMessage(url);
-                      }
-                    });
-                  }}
-                  name={`${type}Icon`}
-                />
-                <AppText
-                  style={[appStyles.normal14Text, {textAlign: 'center'}]}>
-                  {i18n.t(`cart:share:${type}`)}
-                </AppText>
-              </View>
-            ))}
+            {renderContent()}
           </View>
         </SafeAreaView>
       </Pressable>
