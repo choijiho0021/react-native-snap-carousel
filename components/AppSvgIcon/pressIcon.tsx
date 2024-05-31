@@ -5858,6 +5858,322 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Rect x="5" y="8" width="6" height="1.5" rx=".75" fill="#D6F3E3" />
     </Svg>,
   ],
+  regCardInfo: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#tsdkbm8yga)">
+        <Circle cx="8" cy="8" r="7.333" fill="#2A7FF6" />
+        <Path
+          d="M8.667 10.667a.667.667 0 1 1-1.334 0 .667.667 0 0 1 1.334 0zM7.333 5.334a.667.667 0 0 1 1.334 0v3.333a.667.667 0 0 1-1.334 0V5.334z"
+          fill="#fff"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="tsdkbm8yga">
+          <Path fill="#fff" d="M0 0h16v16H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
+  regCardWarn: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#4vlqgsafha)">
+        <Circle cx="8" cy="8" r="7.333" fill="#EE4423" />
+        <Path
+          d="M8.667 10.667a.667.667 0 1 1-1.333 0 .667.667 0 0 1 1.333 0zM7.333 5.334a.667.667 0 1 1 1.334 0v3.333a.667.667 0 0 1-1.333 0V5.334z"
+          fill="#fff"
+        />
+      </G>
+      <Defs>
+        <clipPath id="4vlqgsafha">
+          <Path fill="#fff" d="M0 0h16v16H0z" />
+        </clipPath>
+      </Defs>
+    </Svg>,
+  ],
+  regCardCel: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#anjql1isla)">
+        <Path
+          d="M.31 1.405a.286.286 0 0 1 .342-.38l4.376 1.208-3.06 3.397L.31 1.405z"
+          fill="#4F99FF"
+        />
+        <Mask
+          id="9eos4xklcb"
+          style="mask-type:alpha"
+          maskUnits="userSpaceOnUse"
+          x="0"
+          y="1"
+          width="6"
+          height="5">
+          <Path
+            d="M.31 1.405a.286.286 0 0 1 .342-.38l4.376 1.208L1.969 5.63.31 1.405z"
+            fill="#2A7FF6"
+          />
+        </Mask>
+        <G
+          mask="url(#9eos4xklcb)"
+          fillRule="evenodd"
+          clipRule="evenodd"
+          fill="#FF00C7">
+          <Path d="M4.853 1.392c-.031-.142-.172-.214-.314-.162-.933.344-1.77 1.093-2.399 1.864-.626.768-1.08 1.602-1.222 2.16-.038.15.045.286.186.306.14.019.285-.087.323-.236.11-.436.504-1.185 1.096-1.912.59-.723 1.339-1.378 2.13-1.67a.315.315 0 0 0 .2-.35z" />
+          <Path d="M4.089.703C4.057.562 3.916.49 3.774.542c-.933.343-1.77 1.093-2.398 1.863C.75 3.173.295 4.008.153 4.565c-.037.15.046.287.186.306.14.02.286-.086.323-.236.11-.436.505-1.185 1.097-1.911.59-.723 1.338-1.378 2.13-1.67a.315.315 0 0 0 .2-.35z" />
+          <Path d="M3.367.053c-.032-.142-.172-.214-.314-.162-.934.344-1.77 1.093-2.4 1.864-.625.768-1.08 1.602-1.221 2.16-.038.15.045.286.186.306.14.019.285-.087.323-.236.11-.436.504-1.185 1.096-1.912.59-.723 1.339-1.378 2.13-1.67a.315.315 0 0 0 .2-.35z" />
+        </G>
+        <Path
+          d="M14.857 8A6.857 6.857 0 1 1 1.143 8a6.857 6.857 0 0 1 13.714 0z"
+          fill="url(#37yfpzhqic)"
+        />
+        <Path
+          d="M14.857 8A6.857 6.857 0 1 1 1.143 8a6.857 6.857 0 0 1 13.714 0z"
+          fill="url(#r4i0alksid)"
+        />
+        <G filter="url(#8vef9bsyie)">
+          <Path
+            d="M5.714 9.429a1.429 1.429 0 1 1-2.857 0 1.429 1.429 0 0 1 2.857 0z"
+            fill="#FF8700"
+          />
+        </G>
+        <G filter="url(#6l8hjcs7vf)">
+          <Path
+            d="M13.143 9.429a1.429 1.429 0 1 1-2.857 0 1.429 1.429 0 0 1 2.857 0z"
+            fill="#FF8700"
+          />
+        </G>
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M9.583 5.629c.715-.24 1.46-.006 2.001.266a.371.371 0 0 0 .333-.664c-.6-.301-1.57-.64-2.57-.307a.371.371 0 1 0 .236.705zM7.073 5.629c-.715-.24-1.46-.006-2.001.266a.371.371 0 1 1-.333-.664c.6-.301 1.57-.64 2.57-.307a.371.371 0 1 1-.236.705z"
+          fill="#2C2C2C"
+        />
+        <Path
+          d="M7.449 7.075c0 .52-.316.941-.706.941-.39 0-.706-.421-.706-.941s.316-.941.706-.941c.39 0 .706.421.706.941zM10.272 7.075c0 .52-.316.941-.706.941-.39 0-.705-.421-.705-.941s.316-.941.705-.941c.39 0 .706.421.706.941z"
+          fill="#2C2C2C"
+        />
+        <Path
+          d="M8.894 9.563h1.143v1.142H8.894V9.562z"
+          fill="url(#28sh492eeg)"
+        />
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M13.664 6.977c.734 0 1.57.437 1.757 1.37.084.42.046.784-.086 1.09a1.607 1.607 0 0 1-.565.68c-.43.3-.936.388-1.142.388h-3.143a.371.371 0 0 1 0-.743h3.143c.08 0 .43-.054.716-.254a.866.866 0 0 0 .31-.365c.063-.15.097-.357.038-.65-.099-.497-.548-.774-1.028-.774a.923.923 0 0 0-.582.185c-.131.107-.225.268-.225.515 0 .184.065.298.147.374.09.082.222.137.37.15a.594.594 0 0 0 .358-.073c.062-.04.152-.184.08-.251-.05-.049-.109.031-.148.07-.145.146-.352.168-.553 0-.185-.197-.113-.498.032-.643.225-.225.503-.226.814-.158a.758.758 0 0 1 .442.275c.118.151.172.34.172.542a.92.92 0 0 1-.44.79c-.241.155-.54.21-.82.187a1.367 1.367 0 0 1-.809-.341 1.217 1.217 0 0 1-.388-.922c0-.467.191-.84.498-1.09.297-.244.68-.352 1.052-.352z"
+          fill="#FF00C7"
+        />
+        <Mask
+          id="i3revrqtbi"
+          style="mask-type:alpha"
+          maskUnits="userSpaceOnUse"
+          x="10"
+          y="6"
+          width="6"
+          height="5">
+          <Path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M13.664 6.977c.734 0 1.57.437 1.757 1.37.084.42.046.784-.086 1.09a1.607 1.607 0 0 1-.565.68c-.43.3-.936.388-1.142.388h-3.143a.371.371 0 0 1 0-.743h3.143c.08 0 .43-.054.716-.254a.866.866 0 0 0 .31-.365c.063-.15.097-.357.038-.65-.099-.497-.548-.774-1.028-.774a.923.923 0 0 0-.582.185c-.131.107-.225.268-.225.515 0 .184.065.298.147.374.09.082.222.137.37.15a.594.594 0 0 0 .358-.073c.062-.04.152-.184.08-.251-.05-.049-.109.031-.148.07-.145.146-.352.168-.553 0-.185-.197-.113-.498.032-.643.225-.225.503-.226.814-.158a.758.758 0 0 1 .442.275c.118.151.172.34.172.542a.92.92 0 0 1-.44.79c-.241.155-.54.21-.82.187a1.367 1.367 0 0 1-.809-.341 1.217 1.217 0 0 1-.388-.922c0-.467.191-.84.498-1.09.297-.244.68-.352 1.052-.352z"
+            fill="url(#e5cnzl3yzh)"
+          />
+        </Mask>
+        <G mask="url(#i3revrqtbi)" fill="#2A7FF6">
+          <Path d="M15.82 9.657a.571.571 0 1 1-1.143 0 .571.571 0 0 1 1.143 0zM12.392 9.657a.571.571 0 1 1-1.143 0 .571.571 0 0 1 1.143 0zM14.106 10.8a.571.571 0 1 1-1.143 0 .571.571 0 0 1 1.143 0zM15.249 7.371a.571.571 0 1 1-1.143 0 .571.571 0 0 1 1.143 0z" />
+          <Path d="M12.6 8.8a.571.571 0 0 0-.78.21l.99.57a.571.571 0 0 0-.21-.78zM14.106 9.372a.286.286 0 1 0-.572 0 .286.286 0 0 0 .572 0zM14.677 8.8a.286.286 0 1 0-.571 0 .286.286 0 0 0 .571 0zM13.82 8.115a.286.286 0 1 0-.571 0 .286.286 0 0 0 .571 0zM12.963 7.371a.571.571 0 1 1-1.143 0 .571.571 0 0 1 1.143 0z" />
+        </G>
+        <Path
+          d="M10.037 9.563a.571.571 0 1 1 1.143 0v1.143a.571.571 0 1 1-1.143 0V9.563z"
+          fill="url(#40d7f3hruj)"
+        />
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M7.917 9.435c.198-.1.36-.083.454-.036.084.043.151.126.151.275 0 .022-.014.075-.07.13-.055.055-.108.07-.13.07a.371.371 0 1 0 0 .744c.022 0 .075.015.13.07.056.055.07.108.07.13 0 .15-.067.233-.151.275-.094.047-.256.064-.454-.036a.371.371 0 1 0-.332.665c.373.186.783.203 1.118.036.343-.172.562-.517.562-.94a.92.92 0 0 0-.212-.572.92.92 0 0 0 .212-.572c0-.422-.219-.768-.562-.94-.335-.167-.745-.15-1.118.037a.371.371 0 0 0 .332.664z"
+          fill="#2C2C2C"
+        />
+        <Path
+          d="M14.882 5.889c-.36.193-.768.133-.91-.135-.143-.267.035-.64.395-.833.36-.193.768-.133.91.134.143.267-.034.64-.395.834z"
+          fill="#00AD50"
+        />
+        <Path
+          d="M13.302 14.77c-.204.217-.615.16-.918-.126-.302-.286-.382-.693-.178-.909.205-.216.616-.16.918.126.303.286.382.693.178.91z"
+          fill="#ED4847"
+        />
+        <Path
+          d="M12.364 2.454c0 .41-.337.74-.753.74a.747.747 0 0 1-.754-.74c0-.409.338-.74.754-.74s.753.331.753.74z"
+          fill="#EE4423"
+        />
+        <Path
+          d="M15.336 12.834c-.133.145-.43.092-.664-.118-.234-.211-.316-.5-.183-.646.133-.145.43-.093.664.118.234.211.316.5.183.646zM15.167 2.07c.174.197.06.574-.255.842-.314.268-.71.326-.883.13-.174-.197-.06-.574.255-.842.314-.268.71-.326.883-.13z"
+          fill="#4F99FF"
+        />
+      </G>
+      <Defs>
+        <linearGradient
+          id="37yfpzhqic"
+          x1="8.98"
+          y1="14.367"
+          x2="5.061"
+          y2="1.387"
+          gradientUnits="userSpaceOnUse">
+          <Stop offset=".14" stopColor="#FFBC00" />
+          <Stop offset="1" stopColor="#FFE393" />
+        </linearGradient>
+        <linearGradient
+          id="28sh492eeg"
+          x1="9.465"
+          y1="9.563"
+          x2="9.465"
+          y2="10.705"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#6658E9" />
+          <Stop offset=".265" stopColor="#867BED" />
+          <Stop offset=".855" stopColor="#211D6B" />
+        </linearGradient>
+        <linearGradient
+          id="e5cnzl3yzh"
+          x1="12.79"
+          y1="6.977"
+          x2="12.79"
+          y2="10.505"
+          gradientUnits="userSpaceOnUse">
+          <Stop offset=".203" stopColor="#3D99FF" />
+          <Stop offset="1" stopColor="#2B5FAD" />
+        </linearGradient>
+        <linearGradient
+          id="40d7f3hruj"
+          x1="10.608"
+          y1="9.086"
+          x2="10.608"
+          y2="11.277"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#6658E9" />
+          <Stop offset=".293" stopColor="#867BED" />
+          <Stop offset=".86" stopColor="#211D6B" />
+        </linearGradient>
+        <filter
+          id="8vef9bsyie"
+          x="-1.143"
+          y="4"
+          width="10.857"
+          height="10.857"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB">
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+          <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+          <feGaussianBlur
+            stdDeviation="2"
+            result="effect1_foregroundBlur_8607_62197"
+          />
+        </filter>
+        <filter
+          id="6l8hjcs7vf"
+          x="6.286"
+          y="4"
+          width="10.857"
+          height="10.857"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB">
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+          <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+          <feGaussianBlur
+            stdDeviation="2"
+            result="effect1_foregroundBlur_8607_62197"
+          />
+        </filter>
+        <radialGradient
+          id="r4i0alksid"
+          cx="0"
+          cy="0"
+          r="1"
+          gradientUnits="userSpaceOnUse"
+          gradientTransform="matrix(-1.02917 -8.82554 7.35958 -.85822 9.029 14.171)">
+          <Stop stopColor="#843F00" stopOpacity=".22" />
+          <Stop offset="1" stopColor="#843F00" stopOpacity="0" />
+        </radialGradient>
+        <clipPath id="anjql1isla">
+          <Path fill="#fff" d="M0 0h16v16H0z" />
+        </clipPath>
+      </Defs>
+    </Svg>,
+  ],
+  qrInfoQuestion: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="12" cy="12" r="11" fill="#2A7FF6" />
+      <Path
+        d="M11.5 16a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0z"
+        fill="#fff"
+        stroke="#fff"
+        stroke-width="3"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12 8c-.297 0-.585.151-.781.431-.121.173-.204.327-.219.569-.034.551-.449 1.034-1 1-.551-.034-1.028-.51-.994-1.061a3.226 3.226 0 0 1 .575-1.656C10.115 6.523 10.99 6 12.001 6c1.72 0 3 1.473 3 3.143 0 1.325-.807 2.527-2 2.966V13a1 1 0 0 1-2 0v-1.5a1 1 0 0 1 1-1c.488 0 1-.66 1-1.357S12.488 8 12 8z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
+  lower: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.625 15.78a1 1 0 0 1-1.25 0l-5-4a1 1 0 0 1 1.25-1.56l4.376 3.5 4.375-3.5a1 1 0 1 1 1.25 1.56l-5 4z"
+        fill="url(#bchg5zt8xa)"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.625 9.78a1 1 0 0 1-1.25 0l-5-4a1 1 0 0 1 1.25-1.56l4.376 3.5 4.375-3.5a1 1 0 0 1 1.25 1.56l-5 4z"
+        fill="url(#6a1hnj1uwb)"
+      />
+      <Defs>
+        <LinearGradient
+          id="bchg5zt8xa"
+          x1="10.001"
+          y1="4"
+          x2="10.001"
+          y2="16"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#2C2C2C" stopOpacity=".5" />
+          <Stop offset="1" stopColor="#2C2C2C" />
+        </LinearGradient>
+        <LinearGradient
+          id="6a1hnj1uwb"
+          x1="10.001"
+          y1="4"
+          x2="10.001"
+          y2="16"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#2C2C2C" stopOpacity=".5" />
+          <Stop offset="1" stopColor="#2C2C2C" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

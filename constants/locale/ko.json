@@ -1713,5 +1713,21 @@
   "daily:filter:1024000": "올데이",
 
   "network:filter:fiveG": "5G속도",
-  "network:filter:else": "LTE/3G"
+  "network:filter:else": "LTE/3G",
+
+  "qrInfo:cardCheck:title": "단말 등록 확인",
+  "qrInfo:cardCheck:subTitle:N": "eSIM이 단말에\n잘 등록되었는지 확인해보세요!",
+  "qrInfo:cardCheck:subTitle:R": "단말에 <c>등록되지 않은</c>\neSIM입니다.",
+  "qrInfo:cardCheck:subTitle:DE": "단말에 <c>정상 등록</c>된\neSIM입니다",
+  "qrInfo:cardCheck:subTitle:E": "단말에 <c>정상 등록</c>된\neSIM입니다",
+  "qrInfo:cardCheck:subTitle:D": "단말에 <c>등록 후 삭제</c>된\neSIM입니다",
+  "qrInfo:cardCheck:desc:R": "계속 등록 실패한다면 고객센터에 문의하여 도움을 받아보세요!",
+  "qrInfo:cardCheck:desc:DE": "현지 도착 후 eSIM 회선을 켜서 사용하세요!",
+  "qrInfo:cardCheck:desc:E": "로밍도깨비와 함께 즐거운 여행하세요!",
+  "qrInfo:cardCheck:desc:D": "<b>재등록 가능한 상품</b>이므로, 사용을 원하시는 경우 다시 등록해보세요!",
+  "qrInfo:cardCheck:desc:fail": "<b>조회 실패하였습니다.</b> 다시 시도해 주세요.",
+  "qrinfo:scrollTxt1": "eSIM 등록 후!",
+  "qrinfo:scrollTxt2": "잘 등록된 건지 확인하고 싶다면?",
+  "qrInfo:cardCheck": "확인하기",
+  "qrInfo:cardCheck:wait": "확인 중"
 }
