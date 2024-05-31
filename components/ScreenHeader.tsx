@@ -48,7 +48,7 @@ const ScreenHeader: React.FC<ScreenHeaderProps> = ({
 
   return (
     <View style={[styles.header, headerStyle]}>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
         {isStackTop ? (
           <AppText style={[styles.title, titleStyle]}>{title}</AppText>
         ) : (

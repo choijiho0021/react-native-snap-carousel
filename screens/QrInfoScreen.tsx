@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -14,7 +14,6 @@ import _ from 'underscore';
 import {colors} from '@/constants/Colors';
 import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
-import {renderInfo} from './EsimScreen';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import AppText from '@/components/AppText';
 import {appStyles} from '@/constants/Styles';
@@ -23,6 +22,8 @@ import AppStyledText from '@/components/AppStyledText';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppCopyBtn from '@/components/AppCopyBtn';
 import {API} from '@/redux/api';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import AppIcon from '@/components/AppIcon';
 
 const {isIOS} = Env.get();
 
@@ -41,9 +42,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.whiteFive,
     backgroundColor: colors.white,
-    padding: 20,
+    paddingHorizontal: 20,
     paddingTop: 28,
-    paddingBottom: 38,
     ...Platform.select({
       ios: {
         shadowColor: 'rgb(52, 62, 95)',
@@ -111,6 +111,61 @@ const styles = StyleSheet.create({
   divider: {
     height: 30,
   },
+  checkBtn: {
+    width: 120,
+    height: 40,
+    backgroundColor: colors.clearBlue,
+    justifyContent: 'center',
+  },
+  checkBtnTxt: {
+    ...appStyles.semiBold16Text,
+    color: colors.white,
+    alignSelf: 'center',
+  },
+  cardCheckDesc: {
+    borderTopColor: colors.whiteFive,
+    borderTopWidth: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    flexDirection: 'row',
+  },
+  cardCheckTxt: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: 28,
+    paddingHorizontal: 20,
+  },
+  cardCheckSubTitle: {
+    ...appStyles.robotoSemiBold16Text,
+    marginTop: 24,
+    marginBottom: 16,
+  },
+  scrollTxt1: {
+    ...appStyles.bold16Text,
+    color: colors.black,
+  },
+  scrollTxt2: {
+    ...appStyles.bold14Text,
+    color: colors.clearBlue,
+  },
+  rowCenter: {
+    flex: 1,
+  },
+  scrollBtn: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    paddingHorizontal: 20,
+    height: 64,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.whiteFive,
+    borderRadius: 3,
+  },
+  rowRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    textAlign: 'right',
+  },
 });
 
 type ParamList = {
@@ -150,27 +205,87 @@ const esimManualInputInfo = () => (
   </View>
 );
 
+type CardState = 'N' | 'R' | 'E' | 'DE' | 'D';
+
 const QrInfoScreen = () => {
   const route = useRoute<RouteProp<ParamList, 'QrInfoScreen'>>();
   const params = useMemo(() => route?.params, [route?.params]);
   const [showSnackBar, setShowSnackBar] = useState(false);
-  const [cardState, setCardState] = useState('wait');
-  const [cardInfo, setCardInfo] = useState<String>('test');
+  const [loading, setLoading] = useState(false);
+  const [showBtn, setShowBtn] = useState(true);
+  const [cardState, setCardState] = useState<CardState>('N');
+  const [isFail, setIsFail] = useState(false);
 
+  const scrollRef = useRef<ScrollView>();
   const navigation = useNavigation();
 
-  const checkCmiInstall = useCallback(async (item: RkbSubscription) => {
-    if (item?.subsIccid) {
-      const {result, objects} = await API.Subscription.getCmiCardInfo({
-        iccid: item?.subsIccid,
-      });
+  const getCardState = useCallback((state: string) => {
+    switch (state) {
+      case 'Released':
+        setCardState('R');
+        setIsFail(false);
+        break;
+      case 'Enabled':
+        setCardState('E');
+        setIsFail(false);
+        break;
+      case 'Disabled':
+        setCardState('DE');
+        setIsFail(false);
+        break;
+      case 'Deleted':
+        setCardState('D');
+        setIsFail(false);
+        break;
 
-      setCardInfo(JSON.stringify(objects?.data || ''));
-      setCardState(objects?.data.state);
-      // if (result?.code === 0) return objects[0];
+      default:
+        setIsFail(true);
     }
-    return {};
   }, []);
+
+  const checkCmiInstall = useCallback(
+    async (item: RkbSubscription) => {
+      setLoading(true);
+      setShowBtn(false);
+      if (item?.subsIccid) {
+        const {result, objects} = await API.Subscription.getCmiCardInfo({
+          iccid: item?.subsIccid,
+        });
+
+        if (result?.code === 0) {
+          // release : 설치 전, enable : 설치 후 회선 on , disable : 설치 후 회선 off, delete : 삭제 후
+          getCardState(objects?.data.state);
+        } else {
+          setIsFail(true);
+        }
+      }
+      setLoading(false);
+      return {};
+    },
+    [getCardState],
+  );
+
+  const renderInfo = useCallback(
+    (scrollRef) => (
+      <Pressable
+        style={styles.scrollBtn}
+        onPress={() => scrollRef?.current.scrollToEnd()}>
+        <AppSvgIcon name="qrInfoQuestion" style={{marginRight: 8}} />
+        <View style={styles.rowCenter}>
+          <AppText style={styles.scrollTxt1}>
+            {i18n.t('qrinfo:scrollTxt1')}
+          </AppText>
+          <AppText style={styles.scrollTxt2}>
+            {i18n.t('qrinfo:scrollTxt2')}
+          </AppText>
+        </View>
+        <View style={styles.rowRight}>
+          <AppIcon name="lower" />
+        </View>
+      </Pressable>
+    ),
+    [],
+  );
 
   const copyToClipboard = useCallback((value?: string) => {
     if (value) Clipboard.setString(value);
@@ -199,25 +314,24 @@ const QrInfoScreen = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      if (cardState !== 'wait') {
-        setCardInfo('test');
-        setCardState('wait');
+      if (!showBtn) {
+        setShowBtn(true);
       }
-    }, 3000);
-  }, [cardState]);
+    }, 20000);
+  }, [showBtn]);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
       <View style={appStyles.header}>
         <AppBackButton title={i18n.t('esim:qrInfo')} />
       </View>
-      <ScrollView style={styles.container}>
-        <View style={styles.guideBanner}>{renderInfo(navigation)}</View>
-        <View style={styles.box}>
+      <ScrollView style={styles.container} ref={scrollRef}>
+        <View style={styles.guideBanner}>{renderInfo(scrollRef)}</View>
+        <View style={{...styles.box, paddingBottom: 38}}>
           <AppText style={styles.title}>{i18n.t('esim:qr')}</AppText>
           {showQR(params.mainSubs)}
         </View>
-        <View style={styles.box}>
+        <View style={{...styles.box, paddingBottom: 38}}>
           <AppText style={styles.title}>{i18n.t('esim:manualInput')}</AppText>
           <View style={styles.esimManualInputInfo}>
             {esimManualInputInfo()}
@@ -234,26 +348,63 @@ const QrInfoScreen = () => {
             renderCode(i18n.t('esim:actCode'), params.mainSubs?.qrCode || '')
           )}
         </View>
-        <View style={styles.divider} />
 
         {params.mainSubs.partner?.startsWith('cmi') && (
-          <>
-            <Pressable
-              onPress={() => checkCmiInstall(params.mainSubs)}
-              style={{
-                marginHorizontal: 20,
-                marginBottom: 30,
-                backgroundColor: colors.clearBlue,
-              }}>
-              <AppText>get card info button --- state : {cardState}</AppText>
-            </Pressable>
-            <View style={{marginHorizontal: 20}}>
-              {cardInfo.split(',').map((elm) => (
-                <AppText>{elm}</AppText>
-              ))}
+          <View style={{...styles.box, paddingHorizontal: 0}}>
+            <AppText
+              style={[
+                appStyles.bold20Text,
+                {marginTop: 4, paddingHorizontal: 20},
+              ]}>
+              {i18n.t('qrInfo:cardCheck:title')}
+            </AppText>
+
+            <View style={styles.cardCheckTxt}>
+              <View>
+                <AppStyledText
+                  text={i18n.t(`qrInfo:cardCheck:subTitle:${cardState}`)}
+                  textStyle={styles.cardCheckSubTitle}
+                  format={{c: {color: colors.clearBlue}}}
+                />
+
+                {(showBtn || loading) && (
+                  <Pressable
+                    onPress={() => checkCmiInstall(params.mainSubs)}
+                    style={styles.checkBtn}>
+                    <AppText style={styles.checkBtnTxt}>
+                      {i18n.t(
+                        loading
+                          ? 'qrInfo:cardCheck:wait'
+                          : cardState === 'N'
+                          ? 'qrInfo:cardCheck'
+                          : 'qrInfo:reCardCheck',
+                      )}
+                    </AppText>
+                  </Pressable>
+                )}
+              </View>
+              <AppIcon name={`DeviceReg${cardState}`} />
             </View>
-          </>
+            {(['R', 'E', 'DE', 'D'].includes(cardState) || isFail) && (
+              <View style={styles.cardCheckDesc}>
+                <AppSvgIcon
+                  name="regCardInfo"
+                  style={{marginRight: 4, top: 2}}
+                />
+                <AppStyledText
+                  textStyle={appStyles.medium14}
+                  text={i18n.t(
+                    isFail
+                      ? 'qrInfo:cardCheck:desc:fail'
+                      : `qrInfo:cardCheck:desc:${cardState}`,
+                  )}
+                  format={{b: {color: colors.redError}}}
+                />
+              </View>
+            )}
+          </View>
         )}
+        <View style={styles.divider} />
       </ScrollView>
       <AppSnackBar
         visible={showSnackBar}

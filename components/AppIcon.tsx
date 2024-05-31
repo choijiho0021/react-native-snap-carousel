@@ -45,6 +45,11 @@ const images: Record<string, any[]> = {
   fortuneBtnBig: [require(`${esimPath}banner_lucky_l.png`)],
   loadingLucky: [require(`${esimPath}loading_lucky.png`)],
   mainLucky: [require(`${esimPath}main_lucky.png`)],
+
+  DeviceRegN: [require(`${esimPath}Device_reg_N.png`)],
+  DeviceRegR: [require(`${esimPath}Device_reg_R.png`)],
+  DeviceRegE: [require(`${esimPath}Device_reg_E.png`)],
+  DeviceRegD: [require(`${esimPath}Device_reg_D.png`)],
 };
 
 interface AppIconProps {
