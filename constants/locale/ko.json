@@ -1736,5 +1736,5 @@
   "qrinfo:scrollTxt1": "eSIM 등록 후!",
   "qrinfo:scrollTxt2": "잘 등록된 건지 확인하고 싶다면?",
   "qrInfo:cardCheck": "확인하기",
-  "qrInfo:cardCheck:wait": "확인 중"
+  "qrInfo:cardCheck:wait": "확인중..."
 }
