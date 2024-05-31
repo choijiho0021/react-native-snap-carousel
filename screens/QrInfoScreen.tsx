@@ -373,7 +373,11 @@ const QrInfoScreen = () => {
                     style={styles.checkBtn}>
                     <AppText style={styles.checkBtnTxt}>
                       {i18n.t(
-                        loading ? 'qrInfo:cardCheck:wait' : 'qrInfo:cardCheck',
+                        loading
+                          ? 'qrInfo:cardCheck:wait'
+                          : cardState === 'N'
+                          ? 'qrInfo:cardCheck'
+                          : 'qrInfo:reCardCheck',
                       )}
                     </AppText>
                   </Pressable>
