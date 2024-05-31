@@ -64,24 +64,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   titleText: {
-    ...appStyles.normal16Text,
+    ...appStyles.bold16Text,
   },
   notiText: {
     width: '90%',
     // height: 98,
   },
   body: {
-    ...appStyles.normal14Text,
+    ...appStyles.medium14,
     // height: 48,
     width: '100%',
     lineHeight: 24,
     letterSpacing: 0.23,
-    color: colors.warmGrey,
+    color: colors.black,
   },
   icon: {
     justifyContent: 'center',
     alignItems: 'flex-end',
-    height: 98,
     width: 10,
   },
   emptyPage: {
@@ -103,6 +102,59 @@ const NotiListItem0 = ({
   item: RkbNoti;
   onPress: (n: RkbNoti) => void;
 }) => {
+  const formatNotificationDate = useCallback((createdDate: string) => {
+    const now = moment();
+    const created = moment(createdDate);
+    const diffInMinutes = now.diff(created, 'minutes');
+    const diffInHours = now.diff(created, 'hours');
+    const diffInDays = now.diff(created, 'days');
+
+    if (diffInMinutes < 1) {
+      return i18n.t('noti:now');
+    }
+    if (diffInMinutes < 60) {
+      return i18n.t('noti:minBefore', {min: diffInMinutes});
+    }
+    if (diffInHours < 24) {
+      return i18n.t('noti:hourBefore', {hour: diffInHours});
+    }
+    if (diffInDays < 8) {
+      return i18n.t('noti:dayBefore', {day: diffInDays});
+    }
+    if (created.year() === now.year()) {
+      return created.format('M월 DD일');
+    }
+
+    return created.format('YYYY년 M월 DD일');
+  }, []);
+
+  // type : notiCash, notiData, notiMarketing, notiNotice, notiReceipt
+  const getIconName = useCallback((type: string) => {
+    switch (type.split('/')[0]) {
+      case notiActions.NOTI_TYPE_PYM:
+      case notiActions.NOTI_TYPE_PROVISION:
+        return 'notiReceipt';
+
+      case notiActions.NOTI_TYPE_DONATION:
+        return 'notiCash';
+      case notiActions.NOTI_TYPE_USAGE:
+        return 'notiData';
+
+      case notiActions.NOTI_TYPE_PROMOTION:
+        return 'notiMarketing';
+
+      // case notiActions.NOTI_TYPE_ACCOUNT:
+      // case notiActions.NOTI_TYPE_URI:
+      // case notiActions.NOTI_TYPE_NOTI:
+      // case notiActions.NOTI_TYPE_REPLY:
+      // case notiActions.NOTI_TYPE_INVITE:
+      // case notiActions.NOTI_TYPE_EVENT:
+      // case notiActions.NOTI_TYPE_PUSH:
+      default:
+        return 'notiNotice';
+    }
+  }, []);
+
   return (
     <Pressable
       onPress={() => onPress(item)}
@@ -113,15 +165,17 @@ const NotiListItem0 = ({
           styles.notibox,
           {
             backgroundColor:
-              item.isRead === 'F' ? colors.paleGrey3 : colors.white,
+              item.isRead === 'F' ? colors.clearBlue8 : colors.white,
           },
         ]}>
+        {/* icon */}
+        <AppIcon
+          key="icon"
+          name={getIconName(item.notiType || '')}
+          size={10}
+          style={{marginTop: 7}}
+        />
         <View key="notitext" style={styles.notiText}>
-          <AppText
-            key="titleText"
-            style={[appStyles.bold13Text, {color: colors.warmGrey}]}>
-            {moment(item.created).format('M월 DD일')}
-          </AppText>
           <View style={styles.title}>
             <AppText
               key="titleText"
@@ -139,6 +193,14 @@ const NotiListItem0 = ({
             {utils.htmlToString(
               (item.summary || item.body)?.replace(/\n{1,}/g, '\n'),
             )}
+          </AppText>
+          <AppText
+            key="titleText"
+            style={[
+              appStyles.medium14,
+              {color: colors.warmGrey, marginTop: 6},
+            ]}>
+            {formatNotificationDate(item.created)}
           </AppText>
         </View>
         <View key="iconview" style={styles.icon}>
@@ -187,13 +249,17 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
     return route.params?.mode || 'info';
   }, [route.params?.mode]);
 
+  const onRefresh = useCallback(() => {
+    action.noti.getNotiList({mobile: account.mobile});
+  }, [account.mobile, action.noti]);
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       if (route.params?.mode === 'noti') onRefresh();
     });
 
     return unsubscribe;
-  }, []);
+  }, [navigation, onRefresh, route.params?.mode]);
 
   useEffect(() => {
     if (route.params?.mode === 'info' && !info.infoMap.has('info')) {
@@ -361,10 +427,6 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
     [account, action.noti, eventBoard.list, mode, navigation, promotion.event],
   );
 
-  const onRefresh = useCallback(() => {
-    action.noti.getNotiList({mobile: account.mobile});
-  }, [account.mobile, action.noti]);
-
   const renderItem = useCallback(
     ({item}: {item: RkbNoti}) => <NotiListItem item={item} onPress={onPress} />,
     [onPress],
@@ -381,6 +443,21 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
     <SafeAreaView key="container" style={styles.container}>
       <ScreenHeader
         title={mode === 'info' ? i18n.t('set:notice') : i18n.t('set:noti')}
+        renderRight={
+          <Pressable
+            style={{justifyContent: 'flex-end'}}
+            onPress={() => {
+              action.noti.readNoti({uuid: '0', token: account.token});
+            }}>
+            <AppText
+              style={[
+                appStyles.semiBold16Text,
+                {color: colors.clearBlue, marginRight: 20},
+              ]}>
+              {i18n.t('noti:readAll')}
+            </AppText>
+          </Pressable>
+        }
       />
       {!pending && (
         <FlatList

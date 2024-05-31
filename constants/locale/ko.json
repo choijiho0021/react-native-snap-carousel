@@ -47,6 +47,7 @@
   "noti": "알림",
   "done": "완료",
   "lowest": "최저",
+  "hour": "시간",
   "min": "분",
   "sec": "초",
   "now": "현재",
@@ -1161,6 +1162,11 @@
   "guide:detail": "더 자세히 알고 싶다면?",
 
   "noti:empty": "알림이 없습니다",
+  "noti:readAll": "모두 읽음",
+  "noti:now": "지금",
+  "noti:minBefore": "{{min}}분 전",
+  "noti:hourBefore": "{{hour}}시간 전",
+  "noti:dayBefore": "{{day}}일 전",
 
   "search:list": "최근 검색",
   "search:err": "최근 검색이 없습니다",
