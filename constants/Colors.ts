@@ -83,4 +83,5 @@ export const colors = {
   black10: 'rgba(0, 0, 0, 0.1)',
   menu: 'rgba(237, 237, 237, 0.8)',
   menuBorder: 'rgba(60, 60, 67, 0.36)',
+  clearBlue8: 'rgba(42, 127, 246, 0.08)',
 };
