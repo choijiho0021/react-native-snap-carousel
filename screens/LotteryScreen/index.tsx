@@ -2,23 +2,16 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   Image,
-  Linking,
   Platform,
   Pressable,
   SafeAreaView,
   StyleSheet,
   View,
 } from 'react-native';
-import {connect, useDispatch} from 'react-redux';
+import {connect} from 'react-redux';
 import {RouteProp} from '@react-navigation/native';
 import ViewShot from 'react-native-view-shot';
 import LinearGradient from 'react-native-linear-gradient';
-import {
-  check,
-  openSettings,
-  PERMISSIONS,
-  RESULTS,
-} from 'react-native-permissions';
 import Share from 'react-native-share';
 import RNFetchBlob from 'rn-fetch-blob';
 import KakaoSDK from '@/components/NativeModule/KakaoSDK';
@@ -28,7 +21,6 @@ import {bindActionCreators} from 'redux';
 import i18n from '@/utils/i18n';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppText from '@/components/AppText';
-import LottieView from 'lottie-react-native';
 import ScreenHeader from '@/components/ScreenHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {appStyles} from '@/constants/Styles';
@@ -42,15 +34,12 @@ import {API} from '@/redux/api';
 import {RootState} from '@reduxjs/toolkit';
 import AppIcon from '@/components/AppIcon';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
-import AppAlert from '@/components/AppAlert';
-import {CameraRoll} from '@react-native-camera-roll/camera-roll';
-import ShareLinkModal, {
-  SharePlatfromType,
-} from '../ProductDetailScreen/components/ShareLinkModal';
-import AppStyledText from '@/components/AppStyledText';
+import {SharePlatfromType} from '../ProductDetailScreen/components/ShareLinkModal';
 import LotteryModal from './component/LotteryModal';
-import {hasAndroidPermission, utils} from '@/utils/utils';
+import {captureScreen, utils} from '@/utils/utils';
 import LotteryShareModal from './component/LotteryShareModal';
+import RenderBeforeLottery from './component/RenderBeforeLottery';
+import RenderLoadingLottery from './component/RenderLoadingLottery';
 
 const styles = StyleSheet.create({
   container: {
@@ -69,22 +58,6 @@ const styles = StyleSheet.create({
     height: 20,
   },
 
-  motionContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  overlayContainer: {
-    width: 248,
-    height: 248,
-    position: 'relative',
-  },
-  lottieView: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-  },
   dividerSmall: {
     borderRightWidth: 1,
     marginVertical: 15,
@@ -92,13 +65,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     borderColor: colors.whiteEight,
   },
-  appIcon: {
-    width: 248,
-    height: 248,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-  },
+
   btnBox: {
     alignItems: 'center',
     gap: 10,
@@ -120,6 +87,33 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     color: colors.black,
     textAlign: 'center',
+  },
+  imageContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    marginTop: 0,
+  },
+  btnContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginHorizontal: 20,
+    marginTop: 63,
+    marginBottom: 35,
+  },
+
+  naviCouponBtn: {
+    paddingHorizontal: 20,
+    paddingVertical: 13,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.white,
+  },
+  naviCouponBtnText: {
+    ...appStyles.bold18Text,
+    textAlign: 'center',
+    color: colors.white,
+    lineHeight: 26,
   },
 });
 
@@ -256,11 +250,9 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         setIsLoading(false);
 
         // 3초후 쿠폰 결과도 보여달라는데?
-
         // {"charm": "sites/default/files/temp_charm.png", "cnt": 0, "desc": "테스트", "title": "2% 추첨 쿠폰"}
-
         console.log('@@@ params : ', {
-          cnt: couponObj?.cnt || 0, // 이걸로 성공/실패 구분 가능
+          cnt: couponObj?.cnt || 0, // 이걸로 쿠폰 결과 알 수 있음?
           title: couponObj?.display_name,
           desc: couponObj?.description,
           charm: resp.objects[0]?.charm,
@@ -277,22 +269,33 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     });
   }, [iccid, route?.params, token]);
 
-  const capture = useCallback(async () => {
-    if (Platform.OS === 'android' && !(await hasAndroidPermission())) {
-      action.toast.push('toast:perm:gallery');
-      return;
-    }
-
-    ref.current?.capture().then((uri) => {
-      CameraRoll.save(uri, {type: 'photo', album: i18n.t('rcpt:album')}).then(
-        () => action.toast.push('rcpt:saved'),
-      );
-    });
-  }, [action.toast]);
-
   const onShare = useCallback(() => {
     setShowShareModal(true);
   }, []);
+
+  const renderTitleAndPhase = useCallback(() => {
+    return (
+      <View style={{alignItems: 'center'}}>
+        <View style={styles.lotteryResultTitleBox}>
+          <AppText
+            style={[appStyles.medium14, {color: colors.white, lineHeight: 20}]}>
+            {i18n.t('esim:lottery:title:history')}
+          </AppText>
+        </View>
+        {coupon?.cnt === 0 && !isHistory && (
+          <AppText style={[appStyles.medium14, {marginTop: 10}]}>
+            {i18n.t('esim:lottery:wait')}
+          </AppText>
+        )}
+
+        <View>
+          <AppText style={styles.fortuneText}>
+            {`${phase?.text || fortune?.text}`}
+          </AppText>
+        </View>
+      </View>
+    );
+  }, [coupon?.cnt, fortune?.text, isHistory, phase?.text]);
 
   // 이미지 공유용 뷰샷 따로 넣어놓기
   const shareView = useCallback(() => {
@@ -308,38 +311,9 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         <LinearGradient
           // Background Linear Gradient
           colors={GRADIENT_COLOR_LIST[screenNum]}
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: 0,
-            height: '100%',
-          }}
         />
-        <View style={{alignItems: 'center'}}>
-          <View style={styles.lotteryResultTitleBox}>
-            <AppText
-              style={[
-                appStyles.medium14,
-                {color: colors.white, lineHeight: 20},
-              ]}>
-              {i18n.t('esim:lottery:title:history')}
-            </AppText>
-          </View>
-
-          <View>
-            <AppText style={[styles.fortuneText, {marginTop: 10}]}>
-              {`${phase?.text || fortune?.text}`}
-            </AppText>
-          </View>
-        </View>
-        <View
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            paddingHorizontal: 20,
-            marginTop: 0,
-          }}>
+        {renderTitleAndPhase()}
+        <View style={styles.imageContainer}>
           <Image
             style={{
               width: 242,
@@ -354,7 +328,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         </View>
       </ViewShot>
     );
-  }, [fortune?.text, phase?.text, screenNum]);
+  }, [renderTitleAndPhase, screenNum]);
 
   const shareInstaStory = useCallback(async () => {
     try {
@@ -394,88 +368,32 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     }, 2000);
   }, [lotteryCoupon]);
 
-  const loadingMotion = useCallback(() => {
-    return (
-      <View style={styles.motionContainer}>
-        <View style={styles.overlayContainer}>
-          <LottieView
-            autoPlay
-            loop
-            style={styles.lottieView}
-            source={require('@/assets/animation/lucky.json')}
-            resizeMode="cover"
-          />
-          <AppIcon
-            imgStyle={styles.appIcon}
-            name="loadingLucky"
-            mode="contain"
-          />
-        </View>
-      </View>
-    );
-  }, []);
-
-  const renderLoading = useCallback(
-    () => (
-      <View style={{flex: 1, alignItems: 'center'}}>
-        <View
-          style={{
-            justifyContent: 'center',
-            marginTop: 60,
-          }}>
-          <View
-            style={{
-              justifyContent: 'center',
-              paddingHorizontal: 20,
-            }}>
-            <AppText
-              style={[
-                appStyles.bold36Text,
-                {textAlign: 'center', lineHeight: 38},
-              ]}>
-              {i18n.t('esim:lottery:loading')}
-            </AppText>
+  const renderShareButton = useCallback(
+    (text: string, appIcon: string, onPress: any) => {
+      return (
+        <Pressable onPress={onPress}>
+          <View style={styles.btnBox}>
+            <AppIcon name={appIcon} style={styles.shareIconBox} />
+            <AppText style={styles.btnText}>{text}</AppText>
           </View>
-          <View style={{marginTop: 104}}>{loadingMotion()}</View>
-        </View>
-      </View>
-    ),
-    [loadingMotion],
+        </Pressable>
+      );
+    },
+    [],
   );
 
   const renderAfterLottery = useCallback(() => {
     return (
       <>
         <View>
-          <View style={{alignItems: 'center'}}>
-            <View style={styles.lotteryResultTitleBox}>
-              <AppText
-                style={[
-                  appStyles.medium14,
-                  {color: colors.white, lineHeight: 20},
-                ]}>
-                {i18n.t('esim:lottery:title:history')}
-              </AppText>
-            </View>
-            {coupon?.cnt === 0 && !isHistory && (
-              <AppText style={[appStyles.medium14, {marginTop: 10}]}>
-                {i18n.t('esim:lottery:wait')}
-              </AppText>
-            )}
-
-            <View>
-              <AppText style={styles.fortuneText}>
-                {`${phase?.text || fortune?.text}`}
-              </AppText>
-            </View>
-          </View>
+          {renderTitleAndPhase()}
           <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingHorizontal: 20,
-              marginTop: 32,
-            }}>
+            style={[
+              styles.imageContainer,
+              {
+                marginTop: 32,
+              },
+            ]}>
             <Image
               style={{
                 width: 242,
@@ -489,40 +407,28 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             />
           </View>
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            marginHorizontal: 20,
-            marginTop: 63,
-            marginBottom: 35,
-          }}>
-          <Pressable onPress={capture}>
-            <View style={styles.btnBox}>
-              <AppIcon name="btnShare1" style={styles.shareIconBox} />
-              <AppText style={styles.btnText}>{'이미지 저장'}</AppText>
-            </View>
-          </Pressable>
+        <View style={styles.btnContainer}>
+          {renderShareButton(
+            i18n.t('esim:lottery:share:img'),
+            'btnShare1',
+            () => captureScreen(ref, action.toast),
+          )}
 
           <View style={styles.dividerSmall} />
 
-          <Pressable onPress={onShare}>
-            <View style={styles.btnBox}>
-              <AppIcon name="btnShare2" style={styles.shareIconBox} />
-              <AppText style={styles.btnText}>{'SNS 공유'}</AppText>
-            </View>
-          </Pressable>
+          {renderShareButton(
+            i18n.t('esim:lottery:share:sns'),
+            'btnShare2',
+            onShare,
+          )}
 
           <View style={styles.dividerSmall} />
-          <Pressable
-            onPress={() => {
-              shareInstaStory();
-            }}>
-            <View style={styles.btnBox}>
-              <AppIcon name="btnShareInsta" style={styles.shareIconBox} />
-              <AppText style={styles.btnText}>{'스토리 공유'}</AppText>
-            </View>
-          </Pressable>
+
+          {renderShareButton(
+            i18n.t('esim:lottery:share:story'),
+            'btnShareInsta',
+            () => shareInstaStory(),
+          )}
         </View>
 
         <View
@@ -531,26 +437,12 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           }}>
           {fortune?.text && (
             <Pressable
-              style={{
-                paddingHorizontal: 20,
-                paddingVertical: 13,
-                justifyContent: 'center',
-                borderWidth: 1,
-                borderColor: colors.white,
-              }}
+              style={styles.naviCouponBtn}
               onPress={() => {
                 navigation.popToTop();
                 navigation.navigate('Coupon');
               }}>
-              <AppText
-                style={[
-                  appStyles.bold18Text,
-                  {
-                    textAlign: 'center',
-                    color: colors.white,
-                    lineHeight: 26,
-                  },
-                ]}>
+              <AppText style={styles.naviCouponBtnText}>
                 {i18n.t('esim:lottery:button:navi')}
               </AppText>
             </Pressable>
@@ -559,115 +451,20 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       </>
     );
   }, [
-    capture,
-    coupon?.cnt,
+    action.toast,
     fortune?.text,
-    isHistory,
     navigation,
     onShare,
-    phase?.text,
+    renderShareButton,
+    renderTitleAndPhase,
     screenNum,
     shareInstaStory,
   ]);
 
-  const renderBeforeLottery = useCallback(() => {
-    return (
-      <View style={{flex: 1, justifyContent: 'space-between'}}>
-        <View style={{alignItems: 'center', marginTop: 32}}>
-          <AppText
-            style={[
-              appStyles.bold18Text,
-              {color: colors.blue, lineHeight: 26},
-            ]}>
-            {'랜덤 쿠폰까지!'}
-          </AppText>
-          <AppText
-            style={[appStyles.bold36Text, {color: colors.black, marginTop: 6}]}>
-            {i18n.t('esim:lottery:title')}
-          </AppText>
-          <AppStyledText
-            text={`내 쿠폰 기회 : <h>${count}번</h>`}
-            textStyle={[
-              appStyles.bold18Text,
-              {color: colors.black, lineHeight: 26, marginTop: 16},
-            ]}
-            format={{
-              h: {color: colors.blue},
-            }}
-            numberOfLines={2}
-          />
-        </View>
-
-        <AppIcon
-          name="mainLucky"
-          mode="contain"
-          imgStyle={{width: 248, height: 248}}
-        />
-
-        <View>
-          <View
-            style={{
-              justifyContent: 'flex-end',
-              marginHorizontal: 20,
-              marginBottom: 20,
-              gap: 6,
-            }}>
-            <AppText
-              style={[
-                appStyles.bold14Text,
-                {color: colors.paleGray4, lineHeight: 20},
-              ]}>
-              {i18n.t('esim:lottery:notice')}
-            </AppText>
-          </View>
-          <Pressable
-            style={{
-              backgroundColor: colors.blue,
-              height: 52,
-              borderRadius: 3,
-              paddingHorizontal: 20,
-              paddingVertical: 10,
-              marginHorizontal: 20,
-              marginBottom: 16,
-              justifyContent: 'center',
-            }}
-            onPress={onClick}>
-            <AppText
-              style={[
-                appStyles.medium18,
-                {
-                  color: colors.white,
-                  letterSpacing: 0,
-                  lineHeight: 26,
-                },
-              ]}>
-              {i18n.t('esim:lottery:button')}
-            </AppText>
-          </Pressable>
-        </View>
-      </View>
-    );
-  }, [count, onClick]);
-
   const renderBody = useCallback(() => {
     if (isLoading) {
       // if (true) {
-      return (
-        <>
-          <LinearGradient
-            // Background Linear Gradient
-            colors={['#eeeeee', '#D0E9FF']}
-            style={{
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              top: 0,
-              height: '100%',
-            }}
-          />
-          {renderLoading()}
-        </>
-      );
+      return <RenderLoadingLottery />;
     }
 
     if (phase?.text || isHistory) {
@@ -689,29 +486,14 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       );
     }
 
-    return (
-      <>
-        <LinearGradient
-          // Background Linear Gradient
-          colors={['#eeeeee', '#D0E9FF']}
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: 0,
-            height: '100%',
-          }}
-        />
-        {renderBeforeLottery()}
-      </>
-    );
+    return <RenderBeforeLottery count={count} onClick={onClick} />;
   }, [
+    count,
     isHistory,
     isLoading,
-    phase,
+    onClick,
+    phase?.text,
     renderAfterLottery,
-    renderBeforeLottery,
-    renderLoading,
     screenNum,
   ]);
 
@@ -823,7 +605,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         return API.Promotion.buildLinkFortune({
           imageUrl: serverImageUrl || '',
           link,
-          desc: i18n.t('esim:lotterty:share:desc'),
+          desc: i18n.t('esim:lottery:share:desc'),
         }).then(async (url) => {
           console.log('@@@ 만들어진 url 링크 확인 : ', url);
 

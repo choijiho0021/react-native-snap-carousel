@@ -31,6 +31,7 @@ import {API} from '@/redux/api';
 import AppModal from '@/components/AppModal';
 import {LotteryCouponType} from '..';
 import LinearGradient from 'react-native-linear-gradient';
+import {captureScreen, hasAndroidPermission, utils} from '@/utils/utils';
 
 const styles = StyleSheet.create({
   container: {
@@ -111,37 +112,6 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
   const navigation = useNavigation();
   const ref = useRef<ViewShot>();
 
-  const hasAndroidPermission = useCallback(async () => {
-    const permission =
-      Platform.Version >= 33
-        ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
-        : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
-
-    const hasPermission = await check(permission);
-    if (hasPermission === RESULTS.GRANTED) {
-      return true;
-    }
-
-    AppAlert.confirm(i18n.t('settings'), i18n.t('acc:permPhoto'), {
-      ok: () => openSettings(),
-    });
-
-    return false;
-  }, []);
-
-  const capture = useCallback(async () => {
-    if (Platform.OS === 'android' && !(await hasAndroidPermission())) {
-      action.toast.push('toast:perm:gallery');
-      return;
-    }
-
-    ref.current?.capture().then((uri) => {
-      CameraRoll.save(uri, {type: 'photo', album: i18n.t('rcpt:album')}).then(
-        () => action.toast.push('rcpt:saved'),
-      );
-    });
-  }, [action.toast, hasAndroidPermission]);
-
   const renderBody = useCallback(() => {
     if (coupon?.cnt === 0) {
       return (
@@ -221,7 +191,9 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
             </View>
           </ViewShot>
           <View style={{gap: 10, marginTop: 24}}>
-            <Pressable onPress={capture} style={styles.btnSave}>
+            <Pressable
+              onPress={() => captureScreen(ref, action.toast)}
+              style={styles.btnSave}>
               <AppSvgIcon
                 style={{width: 20, justifyContent: 'center'}}
                 name="btnSave"
@@ -324,7 +296,7 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
         </AppText>
       </View>
     );
-  }, [capture, coupon]);
+  }, [coupon]);
 
   return (
     <AppModal
