@@ -1,6 +1,5 @@
-import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
-  Linking,
   Modal,
   Platform,
   Pressable,
@@ -11,9 +10,7 @@ import {
 import Share from 'react-native-share';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
-import {SMSDivider} from '@/utils/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {Currency, RkbProdByCountry} from '@/redux/api/productApi';
 import {API} from '@/redux/api';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import i18n from '@/utils/i18n';
@@ -21,10 +18,10 @@ import Env from '@/environment';
 import AppText from '@/components/AppText';
 
 import KakaoSDK from '@/components/NativeModule/KakaoSDK';
-import {ProductModelState, getDiscountRate} from '@/redux/modules/product';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {shareWebViewLink} from '@/redux/api/promotionApi';
+import {AccountModelState} from '@/redux/modules/account';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const {isProduction} = Env.get();
 
@@ -59,7 +56,7 @@ const styles = StyleSheet.create({
     paddingBottom: 28,
     gap: 6,
   },
-  store: {
+  contentContainer: {
     paddingTop: 32,
     paddingBottom: 48,
     height: 164,
@@ -67,6 +64,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     display: 'flex',
     justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    gap: 40,
   },
 });
 
@@ -77,52 +76,219 @@ type LotteryShareModalProps = {
   onClose: () => void;
   purchaseItem?: PurchaseItem;
   onShareInsta?: () => void;
-  onPress?: (type: SharePlatfromType) => Promise<string>;
+  account: AccountModelState;
 };
 
 const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
   visible,
   onClose,
-  onPress,
+  account: {iccid, token, mobile},
+  onShareInsta,
 }) => {
   const [isShareDisabled, setIsShareDisabled] = useState(false);
 
-  const onShare = useCallback(async (link) => {
-    try {
-      await Share.open({
-        title: i18n.t('rcpt:title'),
-        url: link,
-      }).then((r) => {
-        console.log('onShare success ');
+  const uploadImage = useCallback(async () => {
+    const uri = await ref.current?.capture?.();
+    const image = Platform.OS === 'android' ? uri : `file://${uri}`;
+
+    const convertImage = await utils.convertFileURLtoRkbImage(image);
+
+    // image upload
+    API.Account.uploadFortuneImage({
+      image: convertImage,
+      user: mobile,
+      token,
+    }).then((resp) => {
+      if (resp?.result === 0) {
+        const serverImageUrl = API.default.httpImageUrl(
+          resp?.objects[0]?.userPictureUrl,
+        );
+
+        // fortune Image 필드 갱신
+        API.Account.lotteryCoupon({
+          iccid,
+          token,
+          prompt: 'image',
+          fid: parseInt(resp?.objects[0]?.fid, 10), // ref_fortune 값에 넣을 데이터, imageUrl은 리덕스 처리해야하나...
+        }).then((resp) => {
+          if (resp?.result === 0) return serverImageUrl;
+        });
+      }
+
+      return '';
+    });
+  }, [iccid, mobile, token]);
+
+  const getBase64 = useCallback((imgLink: string) => {
+    return RNFetchBlob.config({
+      fileCache: true,
+    })
+      .fetch('GET', imgLink)
+      .then((resp) => {
+        imagePath = resp.path();
+        return resp.readFile('base64');
+      })
+      .then(async (base64Data) => {
+        const base64Image = `data:image/jpeg;base64,${base64Data}`;
+
+        return base64Image;
       });
-    } catch (e) {
-      console.log('onShare fail : ', e);
-    }
   }, []);
 
-  const onPressShareMore = useCallback(
-    (shareLink) => {
-      if (!isShareDisabled && shareLink) onShare(shareLink);
+  const onShareMore = useCallback(
+    async (link, imgLink) => {
+      try {
+        console.log('@@ link : ', link);
+
+        getBase64(imgLink).then(async (base64) => {
+          const base64Image = `data:image/jpeg;base64,${base64}`;
+
+          await Share.open({
+            // title: i18n.t('rtitle'),
+            urls: [base64Image],
+            subject: 'Check out this image!',
+            message: `내용에 링크를 넣어보자.`,
+          }).then((r) => {
+            console.log('onShare success');
+          });
+        });
+      } catch (e) {
+        console.log('onShare fail : ', e);
+      }
     },
-    [isShareDisabled, onShare],
+    [getBase64],
   );
+
+  const onPressShareMore = useCallback(
+    async (shareLink, imgLink) => {
+      if (shareLink) {
+        onShareMore(shareLink, imgLink);
+      }
+    },
+    [onShareMore],
+  );
+
+  const onPressShareMessage = useCallback(
+    async (msg: string, imgLink: string) => {
+      getBase64(imgLink).then((base64) => {
+        try {
+          const shareOptions = {
+            social: Share.Social.SMS,
+            message: '내용내용내용',
+            title: '타이틀이 의미가 있나?',
+            url: base64,
+            recipient: '',
+          };
+          Share.shareSingle(shareOptions).then((result) => {
+            console.log('@@@@ result : ', result);
+          });
+        } catch (e) {
+          console.log('@@@@ share error : ', e);
+        }
+      });
+    },
+
+    [getBase64],
+  );
+
+  // TODO : Share 관련된 것만 따로 뺼 것
+  const onPressShareKakaoForFortune = useCallback(
+    async (link: string, imgUrl: string) => {
+      console.log('@@@@ kakaoShare image Url 전달 : ', imgUrl);
+
+      const resp = await KakaoSDK.KakaoShareLink.sendCustom({
+        templateId: isProduction ? 107765 : 108427,
+        templateArgs: [
+          {key: 'dynamicLink', value: link},
+          {
+            key: 'image',
+            value: imgUrl,
+          },
+        ],
+      });
+
+      console.log('@@@ onPressKakao Result : ', resp);
+    },
+
+    [],
+  );
+
+  const sharePlatform = useCallback(
+    (pictureUrl: string, type: string, link: string) => {
+      const serverImageUrl = API.default.httpImageUrl(pictureUrl);
+
+      console.log('@@@ serverImageUrl : ', serverImageUrl);
+
+      // more , sms, kakao 때만 동적 링크 필요
+      if (['more', 'sms', 'kakao'].includes(type)) {
+        return API.Promotion.buildLinkFortune({
+          imageUrl: serverImageUrl || '',
+          link,
+          desc: i18n.t('esim:lottery:share:desc'),
+        }).then(async (url) => {
+          console.log('@@@ 만들어진 url 링크 확인 : ', url);
+
+          if (type === 'kakao') {
+            onPressShareKakaoForFortune(url, serverImageUrl || '');
+          } else if (type === 'more') {
+            onPressShareMore(url, serverImageUrl);
+          } else if (type === 'sms') {
+            console.log('@@@ sms');
+            onPressShareMessage(url, serverImageUrl);
+          }
+        });
+      }
+    },
+    [onPressShareKakaoForFortune, onPressShareMessage, onPressShareMore],
+  );
+
+  // 공유 관련 코드 따로 컴포넌트 파서 사용하자..
+  const onSharePress = useCallback(
+    async (type: SharePlatfromType) => {
+      // TODO : 서버에서 받은 값을 넣어줘야겠다.
+
+      console.log('@@@ onSharePress');
+
+      const link = `http://tb.rokebi.com?${encodeURIComponent(
+        'linkPath=ozCS&recommender=411d33bb-0bb6-4244-9b01-d5309233229f',
+      )}`;
+
+      API.Account.lotteryCoupon({
+        iccid,
+        token,
+        prompt: 'image',
+      }).then((resp) => {
+        console.log('@@@ lotteryCoupon resp : ', resp);
+
+        if (resp.result === 0) {
+          const pictureUrl = resp?.objects[0]
+            ? resp?.objects[0]?.userPictureUrl
+            : '';
+
+          if (pictureUrl) {
+            sharePlatform(pictureUrl, type, link);
+          } else {
+            uploadImage().then((url) => {
+              sharePlatform(url, type, link);
+            });
+          }
+        }
+      });
+
+      if (type === 'insta' && onShareInsta) {
+        onShareInsta();
+        return 'insta send success';
+      }
+    },
+    [iccid, onShareInsta, sharePlatform, token, uploadImage],
+  );
+
   const renderContentFortune = useCallback(() => {
     return ['kakao', 'sms', 'insta', 'more'].map((type) => (
       <View key={type} style={{alignContent: 'center', rowGap: 6}}>
         <AppSvgIcon
           key={`${type}Icon`}
-          onPress={() => {
-            setIsShareDisabled(true);
-
-            if (onPress) {
-              onPress(type).then((url) => {
-                console.log('@@@ url : ', url);
-                if (type === 'more') {
-                  onPressShareMore(url);
-                }
-              });
-            }
-          }}
+          onPress={() => onSharePress(type)}
           name={`${type}Icon`}
         />
         <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
@@ -130,12 +296,13 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
         </AppText>
       </View>
     ));
-  }, [onPress, onPressShareMore]);
+  }, [onSharePress]);
 
   const renderContent = useCallback(() => {
     return renderContentFortune();
   }, [renderContentFortune]);
 
+  // 나중에 ShareModal 공통된 부분 모아서 컴포넌트로 분리
   return (
     <Modal visible={visible} transparent>
       <Pressable
@@ -154,19 +321,7 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
               />
             </View>
           </View>
-          <View
-            style={[
-              styles.store,
-              {
-                display: 'flex',
-                justifyContent: 'center',
-                flexDirection: 'row',
-                paddingHorizontal: 40,
-                gap: 40,
-              },
-            ]}>
-            {renderContent()}
-          </View>
+          <View style={styles.contentContainer}>{renderContent()}</View>
         </SafeAreaView>
       </Pressable>
     </Modal>
