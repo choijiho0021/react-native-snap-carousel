@@ -112,6 +112,13 @@ const styles = StyleSheet.create({
     color: colors.white,
     lineHeight: 26,
   },
+  gradientContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: '100%',
+  },
 });
 
 type LotteryScreenNavigationProp = StackNavigationProp<
@@ -148,8 +155,6 @@ const GRADIENT_COLOR_LIST = [
   ['#E2CBB0', '#DDB486'],
 ];
 
-const {isProduction} = Env.get();
-
 const LotteryScreen: React.FC<LotteryProps> = ({
   navigation,
   route,
@@ -176,10 +181,10 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const ref = useRef<ViewShot>();
   const {count, fortune} = route?.params;
 
-  // 이게 정확히 무슨 기능?
+  // 다시보기 구분하는 코드
   const isHistory = useMemo(() => {
-    return count === 0 && fortune?.text;
-  }, [count, fortune?.text]);
+    return count === 0 && fortune?.text && phase?.text === '';
+  }, [count, fortune?.text, phase?.text]);
 
   const screenNum = useMemo(
     () => phase?.num || fortune?.num,
@@ -211,7 +216,10 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
         console.log('@@@ resp.objects[0] : ', resp.objects[0]);
         setPhase({text: resp.objects[0]?.phrase, num: resp.objects[0]?.num});
+
+        // esim 갱신을 위한 리로드 코드, redux로 빼면 필요없어짐
         route?.params?.onPress(0);
+
         setIsLoading(false);
 
         // 뽑기 , 임시로 3초 타임아웃
@@ -242,7 +250,8 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             {i18n.t('esim:lottery:title:history')}
           </AppText>
         </View>
-        {coupon?.cnt === 0 && !isHistory && (
+
+        {coupon?.cnt === 0 && phase?.text === '' && (
           <AppText style={[appStyles.medium14, {marginTop: 10}]}>
             {i18n.t('esim:lottery:wait')}
           </AppText>
@@ -255,7 +264,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         </View>
       </View>
     );
-  }, [coupon?.cnt, fortune?.text, isHistory, phase?.text]);
+  }, [coupon?.cnt, fortune?.text, phase?.text]);
 
   // 이미지 공유용 뷰샷 따로 넣어놓기
   const shareView = useCallback(() => {
@@ -269,6 +278,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           quality: 0.9,
         }}>
         <LinearGradient
+          style={styles.gradientContainer}
           // Background Linear Gradient
           colors={GRADIENT_COLOR_LIST[screenNum]}
         />
@@ -293,11 +303,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const shareInstaStory = useCallback(async () => {
     try {
       const uri = await ref.current?.capture?.();
-
       const image = Platform.OS === 'android' ? uri : `file://${uri}`;
-
-      console.log('@@@@ image : ', image);
-      // ['rgb(201, 170, 215)', 'rgb(179, 130, 202)'],
 
       if (uri) {
         const shareOptions = {
@@ -391,10 +397,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           )}
         </View>
 
-        <View
-          style={{
-            paddingHorizontal: 20,
-          }}>
+        <View style={{paddingHorizontal: 20}}>
           {fortune?.text && (
             <Pressable
               style={styles.naviCouponBtn}
@@ -433,13 +436,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           <LinearGradient
             // Background Linear Gradient
             colors={GRADIENT_COLOR_LIST[screenNum]}
-            style={{
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              top: 0,
-              height: '100%',
-            }}
+            style={styles.gradientContainer}
           />
           {renderAfterLottery()}
         </>
@@ -485,6 +482,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
       {/* 공유 어떻게 할지 정해지면 props 수정 필요 */}
       <LotteryShareModal
+        captureRef={ref}
         account={{iccid, token, mobile}}
         params={{
           img: API.default.httpImageUrl(

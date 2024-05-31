@@ -22,8 +22,10 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {AccountModelState} from '@/redux/modules/account';
 import RNFetchBlob from 'rn-fetch-blob';
+import ViewShot from 'react-native-view-shot';
+import {utils} from '@/utils/utils';
 
-const {isProduction} = Env.get();
+const {isProduction, webViewHost} = Env.get();
 
 const styles = StyleSheet.create({
   storeBox: {
@@ -77,6 +79,7 @@ type LotteryShareModalProps = {
   purchaseItem?: PurchaseItem;
   onShareInsta?: () => void;
   account: AccountModelState;
+  captureRef: React.MutableRefObject<ViewShot | null>;
 };
 
 const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
@@ -84,11 +87,12 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
   onClose,
   account: {iccid, token, mobile},
   onShareInsta,
+  captureRef,
 }) => {
   const [isShareDisabled, setIsShareDisabled] = useState(false);
 
   const uploadImage = useCallback(async () => {
-    const uri = await ref.current?.capture?.();
+    const uri = await captureRef.current?.capture?.();
     const image = Platform.OS === 'android' ? uri : `file://${uri}`;
 
     const convertImage = await utils.convertFileURLtoRkbImage(image);
@@ -117,7 +121,7 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
 
       return '';
     });
-  }, [iccid, mobile, token]);
+  }, [iccid, mobile, captureRef, token]);
 
   const getBase64 = useCallback((imgLink: string) => {
     return RNFetchBlob.config({
@@ -135,47 +139,13 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
       });
   }, []);
 
-  const onShareMore = useCallback(
-    async (link, imgLink) => {
-      try {
-        console.log('@@ link : ', link);
-
-        getBase64(imgLink).then(async (base64) => {
-          const base64Image = `data:image/jpeg;base64,${base64}`;
-
-          await Share.open({
-            // title: i18n.t('rtitle'),
-            urls: [base64Image],
-            subject: 'Check out this image!',
-            message: `내용에 링크를 넣어보자.`,
-          }).then((r) => {
-            console.log('onShare success');
-          });
-        });
-      } catch (e) {
-        console.log('onShare fail : ', e);
-      }
-    },
-    [getBase64],
-  );
-
-  const onPressShareMore = useCallback(
-    async (shareLink, imgLink) => {
-      if (shareLink) {
-        onShareMore(shareLink, imgLink);
-      }
-    },
-    [onShareMore],
-  );
-
   const onPressShareMessage = useCallback(
-    async (msg: string, imgLink: string) => {
+    async (imgLink: string) => {
       getBase64(imgLink).then((base64) => {
         try {
           const shareOptions = {
             social: Share.Social.SMS,
-            message: '내용내용내용',
-            title: '타이틀이 의미가 있나?',
+            message: i18n.t('esim:lottery:share:desc'),
             url: base64,
             recipient: '',
           };
@@ -189,6 +159,33 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
     },
 
     [getBase64],
+  );
+  const onShareMore = useCallback(
+    async (imgLink) => {
+      try {
+        getBase64(imgLink).then(async (base64) => {
+          const base64Image = `data:image/jpeg;base64,${base64}`;
+          await Share.open({
+            url: base64Image,
+            message: i18n.t('esim:lottery:share:desc'),
+          }).then((r) => {
+            console.log('onShare success');
+          });
+        });
+      } catch (e) {
+        console.log('onShare fail : ', e);
+      }
+    },
+    [getBase64],
+  );
+
+  const onPressShareMore = useCallback(
+    async (imgLink) => {
+      if (shareLink) {
+        onShareMore(imgLink);
+      }
+    },
+    [onShareMore],
   );
 
   // TODO : Share 관련된 것만 따로 뺼 것
@@ -214,13 +211,19 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
   );
 
   const sharePlatform = useCallback(
-    (pictureUrl: string, type: string, link: string) => {
+    (pictureUrl: string, type: string) => {
       const serverImageUrl = API.default.httpImageUrl(pictureUrl);
 
       console.log('@@@ serverImageUrl : ', serverImageUrl);
 
-      // more , sms, kakao 때만 동적 링크 필요
-      if (['more', 'sms', 'kakao'].includes(type)) {
+      //  kakao 때만 동적 링크 필요
+      if (['kakao'].includes(type)) {
+        const link = `${webViewHost}${
+          isProduction
+            ? 'linkPath=LPjf&recommender=202d3f20-6a53-44ee-8c07-5532abc8583a'
+            : '?linkPath=ozCS&recommender=411d33bb-0bb6-4244-9b01-d5309233229f'
+        }`;
+
         return API.Promotion.buildLinkFortune({
           imageUrl: serverImageUrl || '',
           link,
@@ -230,13 +233,17 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
 
           if (type === 'kakao') {
             onPressShareKakaoForFortune(url, serverImageUrl || '');
-          } else if (type === 'more') {
-            onPressShareMore(url, serverImageUrl);
-          } else if (type === 'sms') {
-            console.log('@@@ sms');
-            onPressShareMessage(url, serverImageUrl);
           }
         });
+      }
+
+      if (type === 'more') {
+        onPressShareMore(serverImageUrl);
+      }
+
+      if (type === 'sms') {
+        console.log('@@@ sms');
+        onPressShareMessage(serverImageUrl);
       }
     },
     [onPressShareKakaoForFortune, onPressShareMessage, onPressShareMore],
@@ -249,9 +256,10 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
 
       console.log('@@@ onSharePress');
 
-      const link = `http://tb.rokebi.com?${encodeURIComponent(
-        'linkPath=ozCS&recommender=411d33bb-0bb6-4244-9b01-d5309233229f',
-      )}`;
+      if (type === 'insta' && onShareInsta) {
+        onShareInsta();
+        return 'insta send success';
+      }
 
       API.Account.lotteryCoupon({
         iccid,
@@ -266,19 +274,14 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
             : '';
 
           if (pictureUrl) {
-            sharePlatform(pictureUrl, type, link);
+            sharePlatform(pictureUrl, type);
           } else {
             uploadImage().then((url) => {
-              sharePlatform(url, type, link);
+              sharePlatform(url, type);
             });
           }
         }
       });
-
-      if (type === 'insta' && onShareInsta) {
-        onShareInsta();
-        return 'insta send success';
-      }
     },
     [iccid, onShareInsta, sharePlatform, token, uploadImage],
   );

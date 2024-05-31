@@ -320,6 +320,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [action.order, mobile, token],
   );
 
+  // 발권할 때 리로드가 안되서 Redux로 뺴야겠다.
   const checkLottery = useCallback(() => {
     API.Account.lotteryCoupon({
       iccid,
@@ -514,7 +515,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     const {subsId, actionStr, iccid: subsIccid} = route?.params || {};
 
     if (isFirstLoad) onRefresh(false, true, subsId, actionStr);
-    else if (iccid) getSubsAction(subsId, actionStr, subsIccid);
+    else if (iccid) {
+      getSubsAction(subsId, actionStr, subsIccid);
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [route?.params, isFirstLoad, iccid]);

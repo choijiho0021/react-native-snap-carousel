@@ -406,15 +406,8 @@ const buildLinkFortune = async ({
   desc: string;
   isShort?: boolean;
 }) => {
-  console.log(' link : ', link);
-  console.log(
-    'input link : ',
-    `${webViewHost}${encodeURIComponent(
-      '?linkPath=ozCS&recommender=411d33bb-0bb6-4244-9b01-d5309233229f',
-    )}`,
-  );
   const input = {
-    link: `${webViewHost}${'?linkPath=ozCS&recommender=411d33bb-0bb6-4244-9b01-d5309233229f'}`,
+    link,
     domainUriPrefix: dynamicLink,
     ios: {
       bundleId: Platform.OS === 'ios' ? bundleId : iosBundleId,
