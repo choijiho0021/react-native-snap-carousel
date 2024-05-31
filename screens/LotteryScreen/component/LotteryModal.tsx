@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
-import React, {memo, useCallback, useRef} from 'react';
+import React, {memo, useCallback, useEffect, useRef} from 'react';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import {
@@ -31,8 +31,18 @@ import {API} from '@/redux/api';
 import AppModal from '@/components/AppModal';
 import {LotteryCouponType} from '..';
 import LinearGradient from 'react-native-linear-gradient';
+import {captureScreen, hasAndroidPermission, utils} from '@/utils/utils';
 
 const styles = StyleSheet.create({
+  modalContainer: {
+    paddingTop: 0,
+    marginTop: 0,
+    marginBottom: 60,
+    justifyContent: 'center',
+    marginHorizontal: 20,
+    backgroundColor: 'transparent',
+    width: '100%',
+  },
   container: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
@@ -89,6 +99,63 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  bodyContainer: {
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
+  titleContainer: {
+    alignContent: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  title: {
+    ...appStyles.bold24Text,
+    color: colors.white,
+    textAlign: 'center',
+    lineHeight: 32,
+    marginBottom: 24,
+  },
+  gradientContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: '100%',
+    borderRadius: 20,
+  },
+  textContainer: {
+    borderRadius: 20,
+    paddingHorizontal: 30,
+    paddingVertical: 30,
+    alignItems: 'center',
+    borderColor: 'rgb(38, 203, 149)',
+    borderWidth: 1,
+  },
+  titleText: {
+    ...appStyles.bold20Text,
+    textAlign: 'center',
+    lineHeight: 28,
+    color: 'rgb(0,102,71)',
+    marginBottom: 17,
+  },
+  saveText: {
+    ...appStyles?.medium18,
+    textAlign: 'center',
+    color: colors.white,
+    height: 26,
+    lineHeight: 26,
+    justifyContent: 'center',
+    letterSpacing: 0,
+  },
+
+  winTitleText: {
+    ...appStyles.bold18Text,
+    alignSelf: 'center',
+    textAlign: 'center',
+    marginBottom: 40,
+    color: colors.white,
+  },
 });
 
 type LotteryModalProps = {
@@ -98,73 +165,25 @@ type LotteryModalProps = {
     toast: ToastAction;
   };
   coupon: LotteryCouponType;
+  onClose: () => void;
 };
 
 const LotteryModal: React.FC<LotteryModalProps> = ({
   action,
   visible = false,
   coupon,
+  onClose,
 }) => {
   const route = useRoute();
   const navigation = useNavigation();
   const ref = useRef<ViewShot>();
 
-  const hasAndroidPermission = useCallback(async () => {
-    const permission =
-      Platform.Version >= 33
-        ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
-        : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
-
-    const hasPermission = await check(permission);
-    if (hasPermission === RESULTS.GRANTED) {
-      return true;
-    }
-
-    AppAlert.confirm(i18n.t('settings'), i18n.t('acc:permPhoto'), {
-      ok: () => openSettings(),
-    });
-
-    return false;
-  }, []);
-
-  const capture = useCallback(async () => {
-    if (Platform.OS === 'android' && !(await hasAndroidPermission())) {
-      action.toast.push('toast:perm:gallery');
-      return;
-    }
-
-    ref.current?.capture().then((uri) => {
-      CameraRoll.save(uri, {type: 'photo', album: i18n.t('rcpt:album')}).then(
-        () => action.toast.push('rcpt:saved'),
-      );
-    });
-  }, [action.toast, hasAndroidPermission]);
-
   const renderBody = useCallback(() => {
     if (coupon?.cnt === 0) {
       return (
-        <View
-          style={{
-            alignContent: 'center',
-            justifyContent: 'center',
-            // backgroundColor: 'red',
-          }}>
-          <View
-            style={{
-              alignContent: 'center',
-              justifyContent: 'center',
-              alignSelf: 'center',
-            }}>
-            <AppText
-              style={[
-                appStyles.bold24Text,
-                {
-                  color: colors.white,
-                  textAlign: 'center',
-                  lineHeight: 32,
-                  marginBottom: 24,
-                },
-              ]}>
+        <View style={styles.bodyContainer}>
+          <View style={styles.titleContainer}>
+            <AppText style={styles.title}>
               {i18n.t('esim:lottery:modal:lose')}
             </AppText>
           </View>
@@ -174,38 +193,13 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
               justifyContent: 'center',
               alignSelf: 'center',
             }}>
-            {/* 임시 사진 */}
             <LinearGradient
               // Background Linear Gradient
               colors={['rgb(169,241,208)', 'rgb(10 ,144 ,104)']}
-              style={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                top: 0,
-                height: '100%',
-                borderRadius: 20,
-              }}
+              style={styles.gradientContainer}
             />
-            <View
-              style={{
-                borderRadius: 20,
-                paddingHorizontal: 30,
-                paddingVertical: 30,
-                alignItems: 'center',
-                borderColor: 'rgb(38, 203, 149)',
-                borderWidth: 1,
-              }}>
-              <AppText
-                style={[
-                  appStyles.bold20Text,
-                  {
-                    textAlign: 'center',
-                    lineHeight: 28,
-                    color: 'rgb(0,102,71)',
-                    marginBottom: 17,
-                  },
-                ]}>
+            <View style={styles.textContainer}>
+              <AppText style={styles.titleText}>
                 {i18n.t('esim:lottery:modal:lose:text')}
               </AppText>
               <Image
@@ -219,23 +213,14 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
             </View>
           </ViewShot>
           <View style={{gap: 10, marginTop: 24}}>
-            <Pressable onPress={capture} style={styles.btnSave}>
+            <Pressable
+              onPress={() => captureScreen(ref, action.toast)}
+              style={styles.btnSave}>
               <AppSvgIcon
                 style={{width: 20, justifyContent: 'center'}}
                 name="btnSave"
               />
-              <AppText
-                style={[
-                  appStyles?.medium18,
-                  {
-                    textAlign: 'center',
-                    color: colors.white,
-                    height: 26,
-                    lineHeight: 26,
-                    justifyContent: 'center',
-                    letterSpacing: 0,
-                  },
-                ]}>
+              <AppText style={styles.saveText}>
                 {i18n.t('esim:lottery:modal:save')}
               </AppText>
             </Pressable>
@@ -249,16 +234,7 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
         style={{
           marginHorizontal: 20,
         }}>
-        <AppText
-          style={[
-            appStyles.bold18Text,
-            {
-              alignSelf: 'center',
-              textAlign: 'center',
-              marginBottom: 40,
-              color: colors.white,
-            },
-          ]}>
+        <AppText style={styles.winTitleText}>
           {i18n.t('esim:lottery:modal:win')}
           <Image
             source={require('@/assets/images/esim/emojiCelebration.png')}
@@ -322,29 +298,21 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
         </AppText>
       </View>
     );
-  }, [capture, coupon]);
+  }, [coupon]);
 
   return (
     <AppModal
-      contentStyle={{
-        paddingTop: 0,
-        marginTop: 0,
-        marginBottom: 60,
-        justifyContent: 'center',
-        marginHorizontal: 20,
-        backgroundColor: 'transparent',
-        width: '100%',
-      }}
+      contentStyle={styles.modalContainer}
       safeAreaColor="rgba(0, 0, 0, 0.7)"
       titleViewStyle={{marginTop: 20}}
       okButtonTitle={i18n.t('redirect')}
       type="division"
       onOkClose={() => {
-        console.log('Hi');
+        onClose();
       }}
       bottom={() => <View></View>}
       onCancelClose={() => {
-        console.log('hi');
+        onClose();
       }}
       visible={visible}>
       {renderBody()}

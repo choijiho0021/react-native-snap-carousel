@@ -1,12 +1,5 @@
-import React, {
-  ReactNode,
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-import {Animated, Pressable, StyleSheet, View} from 'react-native';
+import React, {useCallback, useEffect, useMemo} from 'react';
+import {Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import i18n from '@/utils/i18n';
@@ -15,9 +8,6 @@ import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppIcon from '@/components/AppIcon';
-import moment from 'moment';
-import AppSvgIcon from '@/components/AppSvgIcon';
-import AppStyledText from '@/components/AppStyledText';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {Fortune} from '@/redux/modules/account';
 
@@ -58,11 +48,10 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
   fortune,
   checkLottery,
 }) => {
-  //   const [lotteryCnt, setLotteryCnt] = useState(0);
-  //   const [fortune, setFortune] = useState<Fortune>({text: '', num: 0});
-
-  const isPending = (statusCd: string) => statusCd === 'P';
-  const pending = subsData.findIndex((r) => isPending(r.statusCd)) !== -1;
+  const isPending = useCallback((statusCd: string) => statusCd === 'R', []);
+  const pending = useMemo(() => {
+    return subsData.findIndex((r) => isPending(r.statusCd)) !== -1;
+  }, [isPending, subsData]);
 
   const navigateLottery = useCallback(() => {
     navigation.navigate('Lottery', {
@@ -101,7 +90,6 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
       </Pressable>
     );
   }
-
   return (
     lotteryCnt > 0 && (
       <Pressable

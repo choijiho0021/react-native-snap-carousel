@@ -2,7 +2,6 @@ import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Linking,
   Modal,
-  Platform,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -68,10 +67,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'space-between',
   },
-  storeName: {
-    ...appStyles.medium18,
-    color: colors.black,
-  },
 });
 
 export type SharePlatfromType = 'kakao' | 'insta' | 'more' | 'sms';
@@ -99,9 +94,6 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
   params,
   purchaseItem,
   product,
-  mode = 'product',
-  onShareInsta = () => {},
-  onPress,
 }) => {
   // uuid 체크하는거 넣어줘야하나?
   const {partnerId, uuid, img, price, listPrice} = useMemo(
@@ -267,7 +259,7 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
               setIsShareDisabled(false);
 
               if (type === 'more') {
-                // onPressShareMore(imageUrl);
+                onPressShareMore(imageUrl);
               } else if (type === 'kakao') {
                 onPressShareKakao(selectedCountryData, imageUrl, url);
               } else if (type === 'sms') {
@@ -286,6 +278,7 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
     img,
     onPressShareKakao,
     onPressShareMessage,
+    onPressShareMore,
     partnerId,
     product.prodByCountry,
     purchaseItem?.promoFlag,
@@ -293,45 +286,9 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
     uuid,
   ]);
 
-  const renderContentFortune = useCallback(() => {
-    return ['kakao', 'sms', 'insta', 'more'].map((type) => (
-      <View key={type} style={{alignContent: 'center', rowGap: 6}}>
-        <AppSvgIcon
-          key={`${type}Icon`}
-          onPress={() => {
-            setIsShareDisabled(true);
-
-            if (onPress) {
-              onPress(type).then((url) => {
-                console.log('@@@ url : ', url);
-
-                if (type === 'sms') {
-                  onPressShareMessage(url, i18n.t('esim:lotterty:share:desc'));
-                } else if (type === 'more') {
-                  onPressShareMore(url);
-                }
-              });
-            }
-          }}
-          name={`${type}Icon`}
-        />
-        <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
-          {i18n.t(`cart:share:${type}`)}
-        </AppText>
-      </View>
-    ));
-  }, [onPress, onPressShareMessage, onPressShareMore]);
-
   const renderContent = useCallback(() => {
-    console.log('@@@ mode : ', mode);
-    if (mode === 'fortune') {
-      return renderContentFortune();
-    }
-    if (mode === 'product') {
-      return renderContentProduct();
-    }
-    return <></>;
-  }, [mode, renderContentFortune, renderContentProduct]);
+    return renderContentProduct();
+  }, [renderContentProduct]);
 
   return (
     <Modal visible={visible} transparent>
@@ -369,8 +326,6 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
     </Modal>
   );
 };
-
-// export default memo(ShareLinkModal);
 
 export default connect(({product}: RootState) => ({
   product,

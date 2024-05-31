@@ -267,14 +267,15 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
                   paddingTop: 25,
                   alignSelf: 'flex-end',
                 }}>
-                <View
+                <Pressable
+                  onPress={onOkClose}
                   style={{
                     borderColor: colors.white,
                     borderWidth: 2,
                     borderRadius: 100,
                   }}>
                   <AppIcon name="boldCancel" />
-                </View>
+                </Pressable>
               </View>
             </View>
           )}
