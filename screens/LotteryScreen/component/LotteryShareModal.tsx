@@ -98,29 +98,31 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
     const convertImage = await utils.convertFileURLtoRkbImage(image);
 
     // image upload
-    API.Account.uploadFortuneImage({
+    const resp = await API.Account.uploadFortuneImage({
       image: convertImage,
       user: mobile,
       token,
-    }).then((resp) => {
-      if (resp?.result === 0) {
-        const serverImageUrl = API.default.httpImageUrl(
-          resp?.objects[0]?.userPictureUrl,
-        );
+    });
 
-        // fortune Image 필드 갱신
-        API.Account.lotteryCoupon({
-          iccid,
-          token,
-          prompt: 'image',
-          fid: parseInt(resp?.objects[0]?.fid, 10), // ref_fortune 값에 넣을 데이터, imageUrl은 리덕스 처리해야하나...
-        }).then((resp) => {
-          if (resp?.result === 0) return serverImageUrl;
-        });
+    if (resp?.result === 0) {
+      const serverImageUrl = resp?.objects[0]?.userPictureUrl;
+
+      console.log('@@@@@ 공유에 포함시키는 userPictureUrl  : ', serverImageUrl);
+
+      // fortune Image 필드 갱신
+      const setImageResp = await API.Account.lotteryCoupon({
+        iccid,
+        token,
+        prompt: 'image',
+        fid: parseInt(resp?.objects[0]?.fid, 10), // ref_fortune 값에 넣을 데이터, imageUrl은 리덕스 처리해야하나...
+      });
+
+      if (setImageResp?.result !== 0) {
+        console.log('@@@ 전송 에러 ');
       }
 
-      return '';
-    });
+      return serverImageUrl;
+    }
   }, [iccid, mobile, captureRef, token]);
 
   const getBase64 = useCallback((imgLink: string) => {
@@ -266,8 +268,6 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
         token,
         prompt: 'image',
       }).then((resp) => {
-        console.log('@@@ lotteryCoupon resp : ', resp);
-
         if (resp.result === 0) {
           const pictureUrl = resp?.objects[0]
             ? resp?.objects[0]?.userPictureUrl
