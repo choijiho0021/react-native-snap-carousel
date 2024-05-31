@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
-import React, {memo, useCallback, useRef} from 'react';
+import React, {memo, useCallback, useEffect, useRef} from 'react';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import {
@@ -98,12 +98,14 @@ type LotteryModalProps = {
     toast: ToastAction;
   };
   coupon: LotteryCouponType;
+  onClose: () => void;
 };
 
 const LotteryModal: React.FC<LotteryModalProps> = ({
   action,
   visible = false,
   coupon,
+  onClose,
 }) => {
   const route = useRoute();
   const navigation = useNavigation();
@@ -340,11 +342,11 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
       okButtonTitle={i18n.t('redirect')}
       type="division"
       onOkClose={() => {
-        console.log('Hi');
+        onClose();
       }}
       bottom={() => <View></View>}
       onCancelClose={() => {
-        console.log('hi');
+        onClose();
       }}
       visible={visible}>
       {renderBody()}
