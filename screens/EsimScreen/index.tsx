@@ -8,7 +8,7 @@ import {
   SafeAreaView,
   AppState,
 } from 'react-native';
-import {connect, useDispatch} from 'react-redux';
+import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import moment from 'moment';
@@ -35,7 +35,6 @@ import {
 import {
   AccountAction,
   AccountModelState,
-  Fortune,
   actions as accountActions,
 } from '@/redux/modules/account';
 import {
@@ -224,7 +223,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   navigation,
   route,
   action,
-  account: {iccid, mobile, token, balance, expDate},
+  account: {iccid, mobile, token, balance, expDate, fortune},
   order,
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -247,9 +246,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const appState = useRef('unknown');
   const [isChargeable, setIsChargeable] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
-  const [lotteryCnt, setLotteryCnt] = useState(0);
-  const [fortune, setFortune] = useState<Fortune>({text: '', num: 0});
-  const dispatch = useDispatch();
 
   const [subsData, firstUsedIdx] = useMemo(
     () => {
@@ -320,23 +316,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [action.order, mobile, token],
   );
 
-  // 발권할 때 리로드가 안되서 Redux로 뺴야겠다.
   const checkLottery = useCallback(() => {
-    API.Account.lotteryCoupon({
-      iccid,
-      token,
-      prompt: 'check',
-    }).then((resp) => {
-      console.log('@@@ check lottery Resp working ? : ', resp);
-      if (resp?.result === 0) {
-        setLotteryCnt(resp.objects[0]?.count || 0);
-        setFortune({
-          text: resp.objects[0]?.fortune || '',
-          num: resp.objects[0]?.num,
-        });
-      }
-    });
-  }, [iccid, token]);
+    action.account.checkLottery({iccid, token, prompt: 'check'});
+  }, [action.account, iccid, token]);
 
   const onPressUsage = useCallback(
     async (item: RkbSubscription, isChargeableParam?: boolean) => {
@@ -610,8 +592,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             subsData={subsData}
             navigation={navigation}
             fortune={fortune}
-            lotteryCnt={lotteryCnt}
-            checkLottery={checkLottery}
           />
 
           {order.drafts?.length > 0 && (
@@ -647,11 +627,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       ),
     [
       balance,
-      checkLottery,
       expDate,
       fortune,
       iccid,
-      lotteryCnt,
       navigation,
       order.drafts,
       renderDraft,
@@ -832,7 +810,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 };
 
 export default connect(
-  ({account, order, status, modal}: RootState) => ({
+  ({account, order, modal}: RootState) => ({
     order,
     account,
     modal,

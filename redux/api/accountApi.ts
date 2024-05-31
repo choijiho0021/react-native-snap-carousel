@@ -3,7 +3,7 @@ import {Buffer} from 'buffer';
 import moment from 'moment';
 import utils from '@/redux/api/utils';
 import api, {ApiResult, ApiToken, DrupalNode, DrupalNodeJsonApi} from './api';
-import {CashExpire, CashHistory} from '@/redux/modules/account';
+import {CashExpire, CashHistory, Fortune} from '@/redux/modules/account';
 import {Currency} from './productApi';
 
 export type RkbAccount = {

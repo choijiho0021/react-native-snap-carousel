@@ -8,12 +8,12 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import {RouteProp} from '@react-navigation/native';
 import ViewShot from 'react-native-view-shot';
 import LinearGradient from 'react-native-linear-gradient';
 import Share from 'react-native-share';
-import Env from '@/environment';
+import {RootState} from '@reduxjs/toolkit';
 import {colors} from '@/constants/Colors';
 import {bindActionCreators} from 'redux';
 import i18n from '@/utils/i18n';
@@ -29,7 +29,6 @@ import {
   actions as accountActions,
 } from '@/redux/modules/account';
 import {API} from '@/redux/api';
-import {RootState} from '@reduxjs/toolkit';
 import AppIcon from '@/components/AppIcon';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import LotteryModal from './component/LotteryModal';
@@ -158,7 +157,7 @@ const GRADIENT_COLOR_LIST = [
 const LotteryScreen: React.FC<LotteryProps> = ({
   navigation,
   route,
-  account: {iccid, token, mobile},
+  account: {iccid, token, mobile, fortune},
   action,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -167,29 +166,21 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [showCouponModal, setShowCouponModal] = useState(false);
 
   const [coupon, setCoupon] = useState<LotteryCouponType>({
-    // cnt: 0,
-    // title: '',
-    // desc: '',
-    // charm: '',
-    charm: 'sites/default/files/coupon_clover.png',
     cnt: 0,
-    desc: '테스트',
-    title: '2% 추첨 쿠폰',
+    title: '',
+    desc: '',
+    charm: '',
   });
 
-  // const ref = useRef<ViewShot>();
   const ref = useRef<ViewShot>();
-  const {count, fortune} = route?.params;
-
   // 다시보기 구분하는 코드
   const isHistory = useMemo(() => {
-    return count === 0 && fortune?.text && phase?.text === '';
-  }, [count, fortune?.text, phase?.text]);
+    return fortune?.count === 0 && fortune?.text && phase?.text === '';
+  }, [fortune, phase?.text]);
 
-  const screenNum = useMemo(
-    () => phase?.num || fortune?.num,
-    [fortune?.num, phase?.num],
-  );
+  const screenNum = useMemo(() => {
+    return phase?.num || fortune?.num;
+  }, [fortune, phase?.num]);
 
   useEffect(() => {
     console.log('phase : ', phase);
@@ -214,28 +205,30 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           charm: resp.objects[0]?.charm,
         });
 
-        console.log('@@@ resp.objects[0] : ', resp.objects[0]);
+        console.log('@@@ 쿠폰 결과 resp.objects[0] : ', resp.objects[0]);
         setPhase({text: resp.objects[0]?.phrase, num: resp.objects[0]?.num});
-
-        // esim 갱신을 위한 리로드 코드, redux로 빼면 필요없어짐
-        route?.params?.onPress(0);
 
         setIsLoading(false);
 
         // 뽑기 , 임시로 3초 타임아웃
         setTimeout(() => {
+          console.log('@@@@ setTimeout 왜 안함?');
+          // 리로드
+          action.account.checkLottery({iccid, token, prompt: 'check'});
+
           setShowCouponModal(true);
         }, 3000);
       } else {
         // 실패했을 땐 어떻게 해야할 지??
       }
     });
-  }, [iccid, route?.params, token]);
+  }, [action.account, iccid, token]);
 
   useEffect(() => {
     // {"charm": "sites/default/files/temp_charm.png", "cnt": 0, "desc": "테스트", "title": "2% 추첨 쿠폰"}
     console.log('@@@ coupon : ', coupon);
-  }, [coupon]);
+    console.log('@@@ setShowCouponModal : ', showCouponModal);
+  }, [coupon, showCouponModal]);
 
   const onShare = useCallback(() => {
     setShowShareModal(true);
@@ -251,11 +244,12 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           </AppText>
         </View>
 
-        {coupon?.cnt === 0 && phase?.text === '' && (
+        {/* 다시보기가 아니고 쿠폰 결과 받기 전까지  -> 디자인엔 없네? 다음에 확인*/}
+        {/* {showCouponLoading && (
           <AppText style={[appStyles.medium14, {marginTop: 10}]}>
             {i18n.t('esim:lottery:wait')}
           </AppText>
-        )}
+        )} */}
 
         <View>
           <AppText style={styles.fortuneText}>
@@ -264,7 +258,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         </View>
       </View>
     );
-  }, [coupon?.cnt, fortune?.text, phase?.text]);
+  }, [fortune?.text, phase?.text]);
 
   // 이미지 공유용 뷰샷 따로 넣어놓기
   const shareView = useCallback(() => {
@@ -425,6 +419,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   ]);
 
   const renderBody = useCallback(() => {
+    console.log('@@@phase?.text  :', phase?.text, ', isHistory : ', isHistory);
     if (isLoading) {
       // if (true) {
       return <RenderLoadingLottery />;
@@ -443,9 +438,9 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       );
     }
 
-    return <RenderBeforeLottery count={count} onClick={onClick} />;
+    return <RenderBeforeLottery count={fortune?.count} onClick={onClick} />;
   }, [
-    count,
+    fortune,
     isHistory,
     isLoading,
     onClick,
@@ -501,8 +496,8 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
 export default connect(
   ({account, order}: RootState) => ({
-    order,
     account,
+    order,
   }),
   (dispatch) => ({
     action: {
