@@ -119,7 +119,7 @@ const path = {
       user: 'api/v1/noti/user',
     },
     rokebi: {
-      subs: '/rokebi/v2/subs',
+      subs: 'rokebi/subs',
       usage: 'rokebi/usage/subs',
       call: 'rokebi/call',
       ota: 'rokebi/svc/ota',

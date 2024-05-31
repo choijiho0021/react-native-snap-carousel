@@ -552,7 +552,7 @@ const getSubscription = ({
     uuid || '0'
   }?_format=json${hidden ? '' : '&hidden=0'}${
     subsId && subsId !== '0' ? `&subsId=${subsId}` : ''
-  }&iccid=${iccid}&count=${count}&offset=${offset}`;
+  }&iccid=${iccid}&count=${count}&offset=${offset}&ver=v2`;
 
   return api.callHttpGet(
     url,
