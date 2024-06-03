@@ -270,7 +270,7 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
                 <AppText
                   key="1"
                   style={[
-                    appStyles.bold24Text,
+                    appStyles.robotoBold24Text,
                     {marginRight: 20, color: colors.clearBlue},
                   ]}>
                   {isLast
