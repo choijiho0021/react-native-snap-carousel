@@ -8,7 +8,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {connect, useDispatch} from 'react-redux';
+import {connect} from 'react-redux';
 import {RouteProp} from '@react-navigation/native';
 import ViewShot from 'react-native-view-shot';
 import LinearGradient from 'react-native-linear-gradient';
@@ -36,6 +36,7 @@ import {captureScreen} from '@/utils/utils';
 import LotteryShareModal from './component/LotteryShareModal';
 import RenderBeforeLottery from './component/RenderBeforeLottery';
 import RenderLoadingLottery from './component/RenderLoadingLottery';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const styles = StyleSheet.create({
   container: {
@@ -172,6 +173,16 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     charm: '',
   });
 
+  BackbuttonHandler({
+    navigation,
+    route,
+    onBack: () => {
+      setShowShareModal(false);
+      navigation.goBack();
+      return true;
+    },
+  });
+
   const ref = useRef<ViewShot>();
   // 다시보기 구분하는 코드
   const isHistory = useMemo(() => {
@@ -212,8 +223,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
         // 뽑기 , 임시로 3초 타임아웃
         setTimeout(() => {
-          console.log('@@@@ setTimeout 왜 안함?');
-          // 리로드
           action.account.checkLottery({iccid, token, prompt: 'check'});
 
           setShowCouponModal(true);
