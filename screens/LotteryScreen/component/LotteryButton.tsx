@@ -38,15 +38,12 @@ type LotteryButtonProps = {
   navigation: any;
   fortune: Fortune;
   lotteryCnt: number;
-  checkLottery: any;
 };
 
 const LotteryButton: React.FC<LotteryButtonProps> = ({
   subsData,
   navigation,
-  lotteryCnt,
   fortune,
-  checkLottery,
 }) => {
   const isPending = useCallback((statusCd: string) => statusCd === 'R', []);
   const pending = useMemo(() => {
@@ -55,13 +52,12 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
 
   const navigateLottery = useCallback(() => {
     navigation.navigate('Lottery', {
-      count: lotteryCnt,
-      fortune,
-      onPress: checkLottery,
+      count: fortune?.count || 0,
+      fortune: {count: fortune?.count || 0, fortune}, // fortune
     });
-  }, [checkLottery, fortune, lotteryCnt, navigation]);
+  }, [fortune, navigation]);
 
-  if (lotteryCnt === 0 && fortune) {
+  if (fortune?.count === 0) {
     return (
       <Pressable
         style={styles.fortuneBtnContainer}
@@ -90,8 +86,9 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
       </Pressable>
     );
   }
+
   return (
-    lotteryCnt > 0 && (
+    fortune?.count > 0 && (
       <Pressable
         style={[
           styles.fortuneBtnContainer,
