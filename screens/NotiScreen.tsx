@@ -249,6 +249,9 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
     return route.params?.mode || 'info';
   }, [route.params?.mode]);
 
+  // true : 공지사항, false : 알림
+  const isNotice = useMemo(() => mode === 'info', [mode]);
+
   const onRefresh = useCallback(() => {
     action.noti.getNotiList({mobile: account.mobile});
   }, [account.mobile, action.noti]);
@@ -262,7 +265,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
   }, [navigation, onRefresh, route.params?.mode]);
 
   useEffect(() => {
-    if (route.params?.mode === 'info' && !info.infoMap.has('info')) {
+    if (isNotice && !info.infoMap.has('info')) {
       action.info.getInfoList('info');
     }
 
@@ -274,8 +277,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
     action.eventBoard,
     action.info,
     info.infoMap,
-    mode,
-    route.params?.mode,
+    isNotice,
   ]);
 
   useEffect(() => {
@@ -438,29 +440,30 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
 
   const data = useMemo(() => {
     // clone the list to sort
-    const list =
-      mode === 'info' ? info.infoMap.get('info') : _.clone(noti.notiList);
+    const list = isNotice ? info.infoMap.get('info') : _.clone(noti.notiList);
     return list?.sort((a, b) => -a.created.localeCompare(b.created));
-  }, [info.infoMap, mode, noti.notiList]);
+  }, [info.infoMap, isNotice, noti.notiList]);
 
   return (
     <SafeAreaView key="container" style={styles.container}>
       <ScreenHeader
-        title={mode === 'info' ? i18n.t('set:notice') : i18n.t('set:noti')}
+        title={isNotice ? i18n.t('set:notice') : i18n.t('set:noti')}
         renderRight={
-          <Pressable
-            style={{justifyContent: 'flex-end'}}
-            onPress={() => {
-              action.noti.readNoti({uuid: '0', token: account.token});
-            }}>
-            <AppText
-              style={[
-                appStyles.semiBold16Text,
-                {color: colors.clearBlue, marginRight: 20},
-              ]}>
-              {i18n.t('noti:readAll')}
-            </AppText>
-          </Pressable>
+          isNotice ? null : (
+            <Pressable
+              style={{justifyContent: 'flex-end'}}
+              onPress={() => {
+                action.noti.readNoti({uuid: '0', token: account.token});
+              }}>
+              <AppText
+                style={[
+                  appStyles.semiBold16Text,
+                  {color: colors.clearBlue, marginRight: 20},
+                ]}>
+                {i18n.t('noti:readAll')}
+              </AppText>
+            </Pressable>
+          )
         }
       />
       {!pending && (
