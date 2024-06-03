@@ -7,6 +7,7 @@ import {
   RefreshControl,
   SafeAreaView,
   StyleSheet,
+  View,
 } from 'react-native';
 import {
   check,
@@ -264,6 +265,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
         data={order.orderList}
         keyExtractor={(item) => `${item}`}
         ListHeaderComponent={<Info onChangePhoto={changePhoto} />}
+        ListFooterComponent={<View style={{height: 40, width: '100%'}} />}
         ListEmptyComponent={empty()}
         renderItem={renderOrder}
         onEndReachedThreshold={0.4}

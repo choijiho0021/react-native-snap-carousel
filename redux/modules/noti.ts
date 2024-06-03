@@ -23,6 +23,7 @@ const NOTI_TYPE_PUSH = 'push';
 const NOTI_TYPE_USAGE = 'usage';
 const NOTI_TYPE_DONATION = 'dona';
 const NOTI_TYPE_PROMOTION = 'promo';
+const NOTI_TYPE_COUPON = 'cpn';
 
 const initNotiList = createAsyncThunk(
   'noti/initNotiList',
@@ -192,6 +193,7 @@ export const actions = {
   NOTI_TYPE_USAGE,
   NOTI_TYPE_DONATION,
   NOTI_TYPE_PROMOTION,
+  NOTI_TYPE_COUPON,
   sendLog,
   getNotiList,
   readNoti,
