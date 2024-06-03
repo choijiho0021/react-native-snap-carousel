@@ -297,7 +297,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   const [status, setStatus] = useState({});
   const [dataUsageOption, setDataUsageOption] = useState({});
   const [orderModalVisible, setOrderModalVisible] = useState<boolean>(false);
-  const [orderType, setOrderType] = useState<OrderType>('purchase');
+  const [orderType, setOrderType] = useState<OrderType>('latest');
   const orderTypeList: OrderType[] = useMemo(() => ['purchase', 'latest'], []);
   const [showTip, setShowTip] = useState(false);
   const blockAnimation = useRef(false);
