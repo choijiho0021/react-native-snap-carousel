@@ -7,9 +7,11 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import Share from 'react-native-share';
+import Share, {ShareOptions, ShareSingleOptions} from 'react-native-share';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
+import RNFetchBlob from 'rn-fetch-blob';
+import ViewShot from 'react-native-view-shot';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {API} from '@/redux/api';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
@@ -21,8 +23,6 @@ import KakaoSDK from '@/components/NativeModule/KakaoSDK';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {AccountModelState} from '@/redux/modules/account';
-import RNFetchBlob from 'rn-fetch-blob';
-import ViewShot from 'react-native-view-shot';
 import {utils} from '@/utils/utils';
 
 const {isProduction, webViewHost} = Env.get();
@@ -89,6 +89,7 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
   onShareInsta,
   captureRef,
 }) => {
+  // 연타 방지
   const [isShareDisabled, setIsShareDisabled] = useState(false);
 
   const uploadImage = useCallback(async () => {
@@ -107,8 +108,6 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
     if (resp?.result === 0) {
       const serverImageUrl = resp?.objects[0]?.userPictureUrl;
 
-      console.log('@@@@@ 공유에 포함시키는 userPictureUrl  : ', serverImageUrl);
-
       // fortune Image 필드 갱신
       const setImageResp = await API.Account.lotteryCoupon({
         iccid,
@@ -123,6 +122,8 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
 
       return serverImageUrl;
     }
+
+    return '';
   }, [iccid, mobile, captureRef, token]);
 
   const getBase64 = useCallback((imgLink: string) => {
@@ -131,7 +132,6 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
     })
       .fetch('GET', imgLink)
       .then((resp) => {
-        imagePath = resp.path();
         return resp.readFile('base64');
       })
       .then(async (base64Data) => {
@@ -141,60 +141,60 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
       });
   }, []);
 
-  const onPressShareMessage = useCallback(
-    async (imgLink: string) => {
-      getBase64(imgLink).then((base64) => {
+  const onPressShare = useCallback(
+    async (
+      type: 'single' | 'open',
+      imgLink: string,
+      shareOptions: ShareOptions | ShareSingleOptions,
+    ) => {
+      getBase64(imgLink).then(async (base64) => {
         try {
-          const shareOptions = {
-            social: Share.Social.SMS,
-            message: i18n.t('esim:lottery:share:desc'),
-            url: base64,
-            recipient: '',
-          };
-          Share.shareSingle(shareOptions).then((result) => {
-            console.log('@@@@ result : ', result);
-          });
+          let resp: Promise<any>;
+
+          if (type === 'single') {
+            resp = await Share.shareSingle({...shareOptions, url: base64});
+          } else if (type === 'open') {
+            resp = await Share.open({...shareOptions, url: base64});
+          }
+
+          if (resp) {
+            resp.then(() => {
+              setIsShareDisabled(false);
+            });
+          }
         } catch (e) {
           console.log('@@@@ share error : ', e);
+          setIsShareDisabled(false);
         }
       });
     },
-
     [getBase64],
   );
-  const onShareMore = useCallback(
-    async (imgLink) => {
-      try {
-        getBase64(imgLink).then(async (base64) => {
-          const base64Image = `data:image/jpeg;base64,${base64}`;
-          await Share.open({
-            url: base64Image,
-            message: i18n.t('esim:lottery:share:desc'),
-          }).then((r) => {
-            console.log('onShare success');
-          });
-        });
-      } catch (e) {
-        console.log('onShare fail : ', e);
-      }
+
+  const onPressShareMessage = useCallback(
+    (imgLink: string) => {
+      onPressShare('single', imgLink, {
+        social: Share.Social.SMS,
+        message: i18n.t('esim:lottery:share:desc'),
+        recipient: '',
+      });
     },
-    [getBase64],
-  );
 
+    [onPressShare],
+  );
   const onPressShareMore = useCallback(
-    async (imgLink) => {
-      if (shareLink) {
-        onShareMore(imgLink);
-      }
+    (imgLink: string) => {
+      onPressShare('open', imgLink, {
+        message: i18n.t('esim:lottery:share:desc'),
+        failOnCancel: false,
+      });
     },
-    [onShareMore],
+    [onPressShare],
   );
 
   // TODO : Share 관련된 것만 따로 뺼 것
   const onPressShareKakaoForFortune = useCallback(
     async (link: string, imgUrl: string) => {
-      console.log('@@@@ kakaoShare image Url 전달 : ', imgUrl);
-
       const resp = await KakaoSDK.KakaoShareLink.sendCustom({
         templateId: isProduction ? 107765 : 108427,
         templateArgs: [
@@ -207,6 +207,7 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
       });
 
       console.log('@@@ onPressKakao Result : ', resp);
+      setIsShareDisabled(false);
     },
 
     [],
@@ -216,13 +217,11 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
     (pictureUrl: string, type: string) => {
       const serverImageUrl = API.default.httpImageUrl(pictureUrl);
 
-      console.log('@@@ serverImageUrl : ', serverImageUrl);
-
       //  kakao 때만 동적 링크 필요
-      if (['kakao'].includes(type)) {
+      if (type === 'kakao') {
         const link = `${webViewHost}${
           isProduction
-            ? 'linkPath=LPjf&recommender=202d3f20-6a53-44ee-8c07-5532abc8583a'
+            ? '?linkPath=LPjf&recommender=202d3f20-6a53-44ee-8c07-5532abc8583a'
             : '?linkPath=ozCS&recommender=411d33bb-0bb6-4244-9b01-d5309233229f'
         }`;
 
@@ -232,10 +231,7 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
           desc: i18n.t('esim:lottery:share:desc'),
         }).then(async (url) => {
           console.log('@@@ 만들어진 url 링크 확인 : ', url);
-
-          if (type === 'kakao') {
-            onPressShareKakaoForFortune(url, serverImageUrl || '');
-          }
+          onPressShareKakaoForFortune(url, serverImageUrl || '');
         });
       }
 
@@ -244,26 +240,28 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
       }
 
       if (type === 'sms') {
-        console.log('@@@ sms');
         onPressShareMessage(serverImageUrl);
       }
     },
     [onPressShareKakaoForFortune, onPressShareMessage, onPressShareMore],
   );
 
-  // 공유 관련 코드 따로 컴포넌트 파서 사용하자..
   const onSharePress = useCallback(
     async (type: SharePlatfromType) => {
-      // TODO : 서버에서 받은 값을 넣어줘야겠다.
+      setIsShareDisabled(true);
 
-      console.log('@@@ onSharePress');
+      console.log('@@@ isShareDisabled : ', isShareDisabled);
+      if (isShareDisabled) {
+        console.log('@@@ 중복 클릭 방지');
+        return '';
+      }
 
       if (type === 'insta' && onShareInsta) {
         onShareInsta();
         return 'insta send success';
       }
 
-      API.Account.lotteryCoupon({
+      return API.Account.lotteryCoupon({
         iccid,
         token,
         prompt: 'image',
@@ -283,7 +281,7 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
         }
       });
     },
-    [iccid, onShareInsta, sharePlatform, token, uploadImage],
+    [iccid, isShareDisabled, onShareInsta, sharePlatform, token, uploadImage],
   );
 
   const renderContentFortune = useCallback(() => {
@@ -291,7 +289,7 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
       <View key={type} style={{alignContent: 'center', rowGap: 6}}>
         <AppSvgIcon
           key={`${type}Icon`}
-          onPress={() => onSharePress(type)}
+          onPress={() => onSharePress(type as SharePlatfromType)}
           name={`${type}Icon`}
         />
         <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
