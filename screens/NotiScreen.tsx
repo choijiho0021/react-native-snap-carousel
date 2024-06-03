@@ -388,6 +388,10 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             navigation.navigate('Usim');
             break;
 
+          case notiActions.NOTI_TYPE_COUPON:
+            navigation.navigate('MyPageStack', {screen: 'Coupon'});
+            break;
+
           case notiActions.NOTI_TYPE_USAGE:
             navigation.navigate('EsimStack', {
               screen: 'Esim',
