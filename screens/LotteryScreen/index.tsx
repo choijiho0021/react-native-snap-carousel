@@ -233,12 +233,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     });
   }, [action.account, iccid, token]);
 
-  useEffect(() => {
-    // {"charm": "sites/default/files/temp_charm.png", "cnt": 0, "desc": "테스트", "title": "2% 추첨 쿠폰"}
-    console.log('@@@ coupon : ', coupon);
-    console.log('@@@ setShowCouponModal : ', showCouponModal);
-  }, [coupon, showCouponModal]);
-
   const onShare = useCallback(() => {
     setShowShareModal(true);
   }, []);
@@ -252,14 +246,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             {i18n.t('esim:lottery:title:history')}
           </AppText>
         </View>
-
-        {/* 다시보기가 아니고 쿠폰 결과 받기 전까지  -> 디자인엔 없네? 다음에 확인*/}
-        {/* {showCouponLoading && (
-          <AppText style={[appStyles.medium14, {marginTop: 10}]}>
-            {i18n.t('esim:lottery:wait')}
-          </AppText>
-        )} */}
-
         <View>
           <AppText style={styles.fortuneText}>
             {`${phase?.text || fortune?.text}`}
