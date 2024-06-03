@@ -257,7 +257,11 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
               format={{b: styles.highlighter}}
             />
 
-            <View style={[styles.rowCenter, !isLast && {marginTop: 8}]}>
+            <View
+              style={[
+                styles.rowCenter,
+                !isLast && {marginTop: 8, justifyContent: 'flex-start'},
+              ]}>
               <AppText style={appStyles.normal16Text}>
                 {i18n.t('inv:lower4')}
               </AppText>
