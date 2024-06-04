@@ -189,7 +189,7 @@ const HeaderTitle0 = ({
 
   return (
     <View style={styles.headerTitle}>
-      <AppBackButton imageStyle={{marginLeft: 0}} />
+      <AppBackButton imageStyle={{marginLeft: 0}} style={{flex: undefined}} />
       <AppTextInput
         style={styles.searchText}
         placeholder={i18n.t('store:search')}
