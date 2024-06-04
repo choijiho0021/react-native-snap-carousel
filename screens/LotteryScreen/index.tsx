@@ -8,7 +8,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {connect, useDispatch} from 'react-redux';
+import {connect} from 'react-redux';
 import {RouteProp} from '@react-navigation/native';
 import ViewShot from 'react-native-view-shot';
 import LinearGradient from 'react-native-linear-gradient';
@@ -36,6 +36,7 @@ import {captureScreen} from '@/utils/utils';
 import LotteryShareModal from './component/LotteryShareModal';
 import RenderBeforeLottery from './component/RenderBeforeLottery';
 import RenderLoadingLottery from './component/RenderLoadingLottery';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const styles = StyleSheet.create({
   container: {
@@ -172,6 +173,16 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     charm: '',
   });
 
+  BackbuttonHandler({
+    navigation,
+    route,
+    onBack: () => {
+      setShowShareModal(false);
+      navigation.goBack();
+      return true;
+    },
+  });
+
   const ref = useRef<ViewShot>();
   // 다시보기 구분하는 코드
   const isHistory = useMemo(() => {
@@ -212,8 +223,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
         // 뽑기 , 임시로 3초 타임아웃
         setTimeout(() => {
-          console.log('@@@@ setTimeout 왜 안함?');
-          // 리로드
           action.account.checkLottery({iccid, token, prompt: 'check'});
 
           setShowCouponModal(true);
@@ -223,12 +232,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       }
     });
   }, [action.account, iccid, token]);
-
-  useEffect(() => {
-    // {"charm": "sites/default/files/temp_charm.png", "cnt": 0, "desc": "테스트", "title": "2% 추첨 쿠폰"}
-    console.log('@@@ coupon : ', coupon);
-    console.log('@@@ setShowCouponModal : ', showCouponModal);
-  }, [coupon, showCouponModal]);
 
   const onShare = useCallback(() => {
     setShowShareModal(true);
@@ -243,14 +246,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             {i18n.t('esim:lottery:title:history')}
           </AppText>
         </View>
-
-        {/* 다시보기가 아니고 쿠폰 결과 받기 전까지  -> 디자인엔 없네? 다음에 확인*/}
-        {/* {showCouponLoading && (
-          <AppText style={[appStyles.medium14, {marginTop: 10}]}>
-            {i18n.t('esim:lottery:wait')}
-          </AppText>
-        )} */}
-
         <View>
           <AppText style={styles.fortuneText}>
             {`${phase?.text || fortune?.text}`}
