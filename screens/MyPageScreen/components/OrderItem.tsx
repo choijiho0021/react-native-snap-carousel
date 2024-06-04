@@ -87,7 +87,8 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
           }}
           currencyStyle={{
             ...appStyles.normal16Text,
-            fontSize: isDeviceSize('medium') ? 16 : 18,
+            fontWeight: 'bold',
+            fontSize: isDeviceSize('medium') ? 20 : 22,
             top: -1,
           }}
           format="price"

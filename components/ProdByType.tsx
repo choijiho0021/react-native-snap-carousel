@@ -155,6 +155,10 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
               onValueChange={setNetworkFileter}
             />
           ) : null}
+          {/* 위 필터 모두 없는 경우 기본 여백 추가 */}
+          {!(prodType === 'daily' && prodData.length > 0) && !showNetFilter && (
+            <View style={{height: 24}} />
+          )}
         </Fragment>
       }
       renderItem={renderItem}

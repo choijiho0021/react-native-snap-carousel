@@ -61,7 +61,7 @@ const DropDownButton0 = ({
         }}>
         {title}
       </AppText>
-      <AppSvgIcon name="dropDownToggle" focused />
+      <AppSvgIcon name="dropDownToggle" focused={!disabled} />
     </Pressable>
   );
 };

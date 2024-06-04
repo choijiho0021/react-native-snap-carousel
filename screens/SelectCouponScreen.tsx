@@ -31,6 +31,7 @@ import {
   actions as cartActions,
   CartModelState,
 } from '@/redux/modules/cart';
+import Svg, {Line} from 'react-native-svg';
 
 const styles = StyleSheet.create({
   container: {
@@ -75,6 +76,11 @@ const styles = StyleSheet.create({
     borderColor: colors.gray4,
     borderRadius: 1,
   },
+  empty: {
+    flex: 1,
+    alignItems: 'center',
+    marginTop: '30%',
+  },
 });
 
 type SelectCouponProps = {
@@ -110,6 +116,22 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
     [myCoupon, promo],
   );
 
+  const dotLine = useCallback(
+    () => (
+      <Svg height="100%" width="2" style={{marginHorizontal: 16}}>
+        <Line
+          x1="1"
+          y1="0"
+          x2="1"
+          y2="100%"
+          stroke={colors.gray4}
+          strokeWidth="2"
+          strokeDasharray="4, 2"
+        />
+      </Svg>
+    ),
+    [],
+  );
   const renderCoupon = useCallback(
     ({item}: {item: RkbCoupon}) => (
       <Pressable
@@ -122,11 +144,11 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
         ]}
         onPress={() => setCouponId(item.id)}>
         <AppSvgIcon name="btnCheck" focused={item.id === couponId} />
-        <View style={styles.line} />
+        {dotLine()}
         <CouponItem item={item} />
       </Pressable>
     ),
-    [couponId],
+    [couponId, dotLine],
   );
   const renderListHeader = useCallback(
     () => (
@@ -162,6 +184,7 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
         isStackTop
         title={i18n.t('pym:sel:coupon:title')}
         titleStyle={appStyles.bold18Text}
+        headerStyle={{paddingVertical: 30, height: 74}}
         renderRight={
           <AppSvgIcon
             name="closeModal"
@@ -177,8 +200,18 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
           keyExtractor={(item) => item.id}
           renderItem={renderCoupon}
           extraData={couponToApply}
+          ListEmptyComponent={
+            <View style={styles.empty}>
+              <AppSvgIcon name="imgCoupon" />
+              <AppText style={[appStyles.bold14Text, {color: colors.warmGrey}]}>
+                {i18n.t('coupon:none')}
+              </AppText>
+            </View>
+          }
           ListHeaderComponent={renderListHeader()}
-          ListFooterComponent={renderListFooter(couponId)}
+          ListFooterComponent={
+            couponList?.length > 0 ? renderListFooter(couponId) : null
+          }
         />
       </View>
       <AppButton

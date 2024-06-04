@@ -147,7 +147,8 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
             <AppText style={styles.oldEmailText}>{email}</AppText>
           </View>
 
-          <AppText style={[appStyles.bold16Text, {marginBottom: 6}]}>
+          <AppText
+            style={[appStyles.bold16Text, {marginBottom: 6, lineHeight: 0}]}>
             {i18n.t('changeEmail:new')}
           </AppText>
 
