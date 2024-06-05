@@ -188,7 +188,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   // 다시보기 구분하는 코드
   const isHistory = useMemo(() => {
     return fortune?.count === 0 && fortune?.text && phase?.text === '';
-  }, [fortune, phase?.text]);
+  }, [fortune?.count, fortune?.text, phase?.text]);
 
   const screenNum = useMemo(() => {
     return phase?.num || fortune?.num || 0;
@@ -423,7 +423,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
   const renderBody = useCallback(() => {
     if (isLoading) {
-      // if (true) {
       return <RenderLoadingLottery />;
     }
 
