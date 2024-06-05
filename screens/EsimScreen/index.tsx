@@ -212,31 +212,7 @@ type EsimScreenProps = {
 // };
 
 export const renderInfo = (navigation) => {
-  return (
-    <View
-      style={{
-        ...styles.cautionContainer,
-        backgroundColor: colors.violetbg,
-      }}>
-      <AppSvgIcon
-        name={true ? 'cautionUsageIcon' : 'checkUsageIcon'}
-        style={{marginRight: 10}}
-      />
-      <AppStyledText
-        text={i18n.t(`esim:caution:a`)}
-        textStyle={{
-          ...appStyles.normal14Text,
-          color: true ? colors.redError : colors.violet500,
-        }}
-        format={{
-          b: {
-            ...appStyles.bold14Text,
-            color: true ? colors.redError : colors.violet500,
-          },
-        }}
-      />
-    </View>
-  );
+  // 발송충일 때 강조하는 info 컴포넌트 추가 필요
 
   return (
     <Pressable
@@ -621,13 +597,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     () =>
       esimGlobal ? null : (
         <View>
-          {/* <CardInfo
-            iccid={iccid}
-            balance={balance}
-            expDate={expDate}
-            navigation={navigation}
-          /> */}
-
           {!isReserving() && renderInfo(navigation)}
 
           <LotteryButton
@@ -667,16 +636,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           )}
         </View>
       ),
-    [
-      balance,
-      expDate,
-      fortune,
-      iccid,
-      navigation,
-      order.drafts,
-      renderDraft,
-      subsData,
-    ],
+    [fortune, isReserving, navigation, order.drafts, renderDraft, subsData],
   );
 
   useEffect(() => {

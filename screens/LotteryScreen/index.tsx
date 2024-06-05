@@ -95,8 +95,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginHorizontal: 20,
-    marginTop: 63,
-    marginBottom: 35,
+    marginBottom: 32,
   },
 
   naviCouponBtn: {
@@ -154,6 +153,8 @@ const GRADIENT_COLOR_LIST = [
   ['#A8D2C8', '#63CDB4'],
   ['#E2CBB0', '#DDB486'],
 ];
+
+const IMAGE_WIDTH = 242;
 
 const LotteryScreen: React.FC<LotteryProps> = ({
   navigation,
@@ -239,7 +240,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
   const renderTitleAndPhase = useCallback(() => {
     return (
-      <View style={{alignItems: 'center'}}>
+      <View style={{alignItems: 'center', width: IMAGE_WIDTH}}>
         <View style={styles.lotteryResultTitleBox}>
           <AppText
             style={[appStyles.medium14, {color: colors.white, lineHeight: 20}]}>
@@ -275,7 +276,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         <View style={styles.imageContainer}>
           <Image
             style={{
-              width: 242,
+              width: IMAGE_WIDTH,
               height: 242,
             }}
             source={{
@@ -339,8 +340,8 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
   const renderAfterLottery = useCallback(() => {
     return (
-      <>
-        <View>
+      <View style={{flex: 1}}>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           {renderTitleAndPhase()}
           <View
             style={[
@@ -351,7 +352,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             ]}>
             <Image
               style={{
-                width: 242,
+                width: IMAGE_WIDTH,
                 height: 242,
               }}
               source={{
@@ -386,7 +387,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           )}
         </View>
 
-        <View style={{paddingHorizontal: 20}}>
+        <View style={{paddingHorizontal: 20, marginBottom: 16}}>
           {fortune?.text && (
             <Pressable
               style={styles.naviCouponBtn}
@@ -400,7 +401,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             </Pressable>
           )}
         </View>
-      </>
+      </View>
     );
   }, [
     action.toast,
@@ -414,7 +415,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   ]);
 
   const renderBody = useCallback(() => {
-    console.log('@@@phase?.text  :', phase?.text, ', isHistory : ', isHistory);
     if (isLoading) {
       // if (true) {
       return <RenderLoadingLottery />;
