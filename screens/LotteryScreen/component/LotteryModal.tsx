@@ -175,7 +175,7 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
   const route = useRoute();
   const navigation = useNavigation();
   const ref = useRef<ViewShot>();
-  const [showSnackbar, setShowSnackbar] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState('');
 
   const renderBody = useCallback(() => {
     if (coupon?.cnt === 0) {
@@ -215,7 +215,7 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
             <Pressable
               onPress={() =>
                 captureScreen(ref).then((r) => {
-                  setShowSnackbar(true);
+                  if (r) setShowSnackbar(r);
                 })
               }
               style={styles.btnSave}>
@@ -323,9 +323,9 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
         visible={visible}
         renderForward={() => (
           <AppSnackBar
-            visible={showSnackbar}
-            onClose={() => setShowSnackbar(false)}
-            textMessage={i18n.t('rcpt:saved')}
+            visible={showSnackbar !== ''}
+            onClose={() => setShowSnackbar('')}
+            textMessage={i18n.t(showSnackbar)}
             bottom={-10}
           />
         )}>

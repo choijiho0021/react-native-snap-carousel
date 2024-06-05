@@ -165,7 +165,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [phase, setPhase] = useState<Fortune>({text: '', num: 0});
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCouponModal, setShowCouponModal] = useState(false);
-  const [showSnackbar, setShowSnackbar] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState('');
 
   const [coupon, setCoupon] = useState<LotteryCouponType>({
     cnt: 0,
@@ -369,7 +369,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             'btnShare1',
             () =>
               captureScreen(ref).then((r) => {
-                setShowSnackbar(true);
+                if (r) setShowSnackbar(r);
               }),
           )}
 
@@ -469,7 +469,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       <LotteryModal
         visible={showCouponModal}
         coupon={coupon}
-        setShowSnackBar={setShowSnackbar}
         onClose={() => setShowCouponModal(false)}
       />
 
@@ -490,9 +489,9 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       />
 
       <AppSnackBar
-        visible={showSnackbar}
-        onClose={() => setShowSnackbar(false)}
-        textMessage={i18n.t('rcpt:saved')}
+        visible={showSnackbar !== ''}
+        onClose={() => setShowSnackbar('')}
+        textMessage={i18n.t(showSnackbar)}
       />
     </SafeAreaView>
   );

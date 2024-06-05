@@ -76,7 +76,6 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
           <AppIcon
             name="fortuneBtnSmall"
             mode="contain"
-            style={{marginRight: 20}}
             imgStyle={{
               flex: 1,
               justifyContent: 'center',
@@ -89,7 +88,7 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
   }
 
   return (
-    fortune?.count >= 0 && (
+    fortune?.count > 0 && (
       <Pressable
         style={[
           styles.fortuneBtnContainer,
@@ -113,7 +112,6 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
           <AppIcon
             name={pending ? 'fortuneBtnBig' : 'fortuneBtnSmall'}
             mode="contain"
-            style={{marginRight: 20}}
             imgStyle={{
               flex: 1,
               justifyContent: 'center',
