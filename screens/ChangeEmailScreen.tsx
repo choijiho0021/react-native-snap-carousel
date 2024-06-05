@@ -6,6 +6,7 @@ import {
   View,
   SafeAreaView,
   KeyboardAvoidingView,
+  Keyboard,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -120,10 +121,11 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
 
   const changeEmail = useCallback(() => {
     actions.account.changeEmail(newEmail).then((rsp) => {
-      if (rsp.payload.result === 0) {
+      if (rsp?.payload?.result === 0) {
         actions.toast.push('changeEmail:saveInfo');
         navigation.goBack();
       } else {
+        Keyboard.dismiss();
         actions.toast.push('changeEmail:fail');
       }
     });
