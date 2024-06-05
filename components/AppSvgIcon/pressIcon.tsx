@@ -3629,6 +3629,39 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  emojiCoupon: [
+    <Svg
+      width={16}
+      height={16}
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M.667 4a2 2 0 012-2h10.666a2 2 0 012 2v2.667a1.333 1.333 0 100 2.666V12a2 2 0 01-2 2H2.667a2 2 0 01-2-2V9.333a1.333 1.333 0 100-2.666V4z"
+        fill="url(#27bjvd8t9a)"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10 10a.5.5 0 100-1 .5.5 0 000 1zm0 1a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM6 7a.5.5 0 100-1 .5.5 0 000 1zm0 1a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm-.354 2.354a.5.5 0 010-.708l4-4a.5.5 0 11.707.708l-4 4a.5.5 0 01-.707 0z"
+        fill="#E36D00"
+      />
+      <Defs>
+        <LinearGradient
+          id="27bjvd8t9a"
+          x1={13.667}
+          y1={11.333}
+          x2={1.858}
+          y2={0.68}
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#FFBC00" />
+          <Stop offset={1} stopColor="#FFE393" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
   emojiCheck: [
     <Svg
       width="20"
@@ -4071,6 +4104,21 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         fillRule="evenodd"
         clipRule="evenodd"
         d="M3 0a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h60l4 4 4-4h60a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3H3z"
+        fill="#5B16EF"
+      />
+    </Svg>,
+  ],
+  speechBubble3: [
+    <Svg
+      width="254"
+      height="62"
+      viewBox="0 0 254 62"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M6 0a6 6 0 0 0-6 6v28a6 6 0 0 0 6 6h120l8 8 8-8h120a6 6 0 0 0 6-6V6a6 6 0 0 0-6-6H6z"
         fill="#5B16EF"
       />
     </Svg>,

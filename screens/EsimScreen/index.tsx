@@ -60,6 +60,8 @@ import {
 import AppButton from '@/components/AppButton';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import LotteryButton from '../LotteryScreen/component/LotteryButton';
+import Triangle from '@/components/Triangle';
+import {windowWidth} from '@/constants/SliderEntry.style';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -175,15 +177,26 @@ const styles = StyleSheet.create({
     color: colors.redError,
     lineHeight: 22,
   },
-  cautionContainer: {
-    marginHorizontal: 20,
-    marginTop: 20,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    borderRadius: 3,
-    alignItems: 'center',
+
+  tooltipContainer: {
+    zIndex: 100,
+    width: 252,
+    position: 'absolute',
+    left: windowWidth / 2 - 128,
+  },
+  tooltipContent: {
     flexDirection: 'row',
-    width: '100%',
+    backgroundColor: colors.violet500,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 4,
+    borderWidth: 0,
+    padding: 16,
+  },
+  tooltipText: {
+    ...appStyles.bold14Text,
+    color: colors.white,
+    lineHeight: 20,
   },
 });
 
@@ -211,8 +224,31 @@ type EsimScreenProps = {
 //   billionconnect: 1,
 // };
 
-export const renderInfo = (navigation) => {
-  // 발송충일 때 강조하는 info 컴포넌트 추가 필요
+export const renderInfo = (navigation, isReserving) => {
+  // 근데 발송중 말고 운세 다시보기로 바뀌면 출력 안해야 정상 아닌가? 질문 필요
+  if (isReserving)
+    return (
+      <View style={{height: 62}}>
+        <View style={styles.tooltipContainer}>
+          <View style={styles.tooltipContent}>
+            <AppText style={styles.tooltipText}>
+              {i18n.t('esim:lottery:tooltip1')}
+            </AppText>
+            <AppSvgIcon name="emojiCoupon" />
+            <AppText style={styles.tooltipText}>
+              {i18n.t('esim:lottery:tooltip2')}
+            </AppText>
+            <AppSvgIcon name="emojiCoupon" />
+            <AppText style={styles.tooltipText}>
+              {i18n.t('esim:lottery:tooltip3')}
+            </AppText>
+          </View>
+          <View style={{alignItems: 'flex-end', marginRight: 120}}>
+            <Triangle width={20} height={10} color={colors.violet500} />
+          </View>
+        </View>
+      </View>
+    );
 
   return (
     <Pressable
@@ -271,6 +307,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [isEditMode, order.subs],
   );
 
+  const isReserving = useMemo(
+    () => subsData?.findIndex((r) => r?.statusCd === 'R') !== -1,
+    [subsData],
+  );
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
       setShowUsageModal(false);
@@ -534,11 +574,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const days14ago = useMemo(() => moment().subtract(14, 'days'), []);
 
-  const isReserving = useCallback(
-    () => subsData?.findIndex((r) => r?.statusCd === 'R') !== -1,
-    [subsData],
-  );
-
   const renderSubs = useCallback(
     ({item, index}: {item: RkbSubscription; index: number}) => (
       <EsimSubs
@@ -596,15 +631,17 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const info = useCallback(
     () =>
       esimGlobal ? null : (
-        <View>
-          {!isReserving() && renderInfo(navigation)}
-
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: colors.white,
+          }}>
+          {renderInfo(navigation, isReserving)}
           <LotteryButton
             subsData={subsData}
             navigation={navigation}
             fortune={fortune}
           />
-
           {order.drafts?.length > 0 && (
             <>
               <View style={styles.draftFrame}>
