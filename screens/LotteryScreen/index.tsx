@@ -261,7 +261,10 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     return (
       <ViewShot
         ref={ref}
-        style={{position: 'absolute', left: -1700}}
+        style={{
+          position: 'absolute',
+          left: -1700,
+        }}
         options={{
           fileName: 'test',
           format: 'png',
@@ -272,19 +275,21 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           // Background Linear Gradient
           colors={GRADIENT_COLOR_LIST[screenNum]}
         />
-        {renderTitleAndPhase()}
-        <View style={styles.imageContainer}>
-          <Image
-            style={{
-              width: IMAGE_WIDTH,
-              height: 242,
-            }}
-            source={{
-              uri: API.default.httpImageUrl(
-                `sites/default/files/img/fortune_card${screenNum}.png`,
-              ),
-            }}
-          />
+        <View style={{paddingVertical: 120, paddingHorizontal: 40}}>
+          {renderTitleAndPhase()}
+          <View style={[styles.imageContainer, {marginTop: 10}]}>
+            <Image
+              style={{
+                width: 200,
+                height: 200,
+              }}
+              source={{
+                uri: API.default.httpImageUrl(
+                  `sites/default/files/img/fortune_card${screenNum}.png`,
+                ),
+              }}
+            />
+          </View>
         </View>
       </ViewShot>
     );
@@ -298,8 +303,8 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       if (uri) {
         const shareOptions = {
           stickerImage: image,
-          backgroundBottomColor: GRADIENT_COLOR_LIST[screenNum][1],
-          backgroundTopColor: GRADIENT_COLOR_LIST[screenNum][0],
+          backgroundBottomColor: colors.black,
+          backgroundTopColor: colors.black,
           social: Share.Social.INSTAGRAM_STORIES,
           appId: 'fb147522690488197',
         };
