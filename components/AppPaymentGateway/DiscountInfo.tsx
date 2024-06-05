@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   title: {
     ...appStyles.bold16Text,
     color: colors.black,
-    lineHeight: 0,
+    lineHeight: undefined,
     flex: 1,
   },
   buttonTitle: {
@@ -222,7 +222,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
                   (cart.promo?.length || 0) > 0
                     ? colors.clearBlue
                     : colors.greyish,
-                lineHeight: 0,
+                lineHeight: undefined,
               },
             ]}
             buttonTitle={i18n.t('pym:sel:coupon:title')}

@@ -243,7 +243,7 @@ const CouponScreen: React.FC<CouponProps> = ({
               style={{
                 ...appStyles.medium16,
                 flex: 1,
-                lineHeight: 0,
+                lineHeight: undefined,
               }}
               placeholder={i18n.t('coupon:inputCode')}
               value={value}
