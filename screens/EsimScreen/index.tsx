@@ -24,7 +24,6 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList, navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
-import {API} from '@/redux/api';
 import {
   RkbSubscription,
   AddOnOptionType,
@@ -44,7 +43,6 @@ import {
   PAGINATION_SUBS_COUNT,
 } from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
 import EsimModal from './components/EsimModal';
 import GiftModal from './components/GiftModal';
@@ -97,7 +95,9 @@ const styles = StyleSheet.create({
     height: 64,
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#d2dfff',
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
     borderRadius: 3,
   },
   rowCenter: {
@@ -110,14 +110,13 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   ifFirstText: {
-    ...appStyles.semiBold15Text,
+    ...appStyles.semiBold16Text,
     lineHeight: 20,
-    color: '#001c65',
+    color: colors.black,
   },
   moveToGuideText: {
-    ...appStyles.normal14Text,
-    lineHeight: 20,
-    color: '#001c65',
+    ...appStyles.bold14Text,
+    color: colors.clearBlue,
   },
   esimHeader: {
     height: 56,
@@ -176,6 +175,16 @@ const styles = StyleSheet.create({
     color: colors.redError,
     lineHeight: 22,
   },
+  cautionContainer: {
+    marginHorizontal: 20,
+    marginTop: 20,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 3,
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: '100%',
+  },
 });
 
 type EsimScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Esim'>;
@@ -202,22 +211,49 @@ type EsimScreenProps = {
 //   billionconnect: 1,
 // };
 
-export const renderInfo = (navigation) => (
-  <Pressable
-    style={styles.usrGuideBtn}
-    onPress={() => navigation.navigate('UserGuide')}>
-    <View style={styles.rowCenter}>
-      <AppSvgIcon name="newFlag" style={{marginRight: 8}} />
-      <AppText style={styles.ifFirstText}>{i18n.t('esim:ifFirst')}</AppText>
+export const renderInfo = (navigation) => {
+  return (
+    <View
+      style={{
+        ...styles.cautionContainer,
+        backgroundColor: colors.violetbg,
+      }}>
+      <AppSvgIcon
+        name={true ? 'cautionUsageIcon' : 'checkUsageIcon'}
+        style={{marginRight: 10}}
+      />
+      <AppStyledText
+        text={i18n.t(`esim:caution:a`)}
+        textStyle={{
+          ...appStyles.normal14Text,
+          color: true ? colors.redError : colors.violet500,
+        }}
+        format={{
+          b: {
+            ...appStyles.bold14Text,
+            color: true ? colors.redError : colors.violet500,
+          },
+        }}
+      />
     </View>
-    <View style={styles.rowRight}>
-      <AppText style={styles.moveToGuideText}>
-        {i18n.t('esim:moveToGuide')}
-      </AppText>
-      <AppIcon name="iconArrowRightBlack" />
-    </View>
-  </Pressable>
-);
+  );
+
+  return (
+    <Pressable
+      style={styles.usrGuideBtn}
+      onPress={() => navigation.navigate('UserGuide')}>
+      <View style={styles.rowCenter}>
+        <AppSvgIcon name="newFlag" style={{marginRight: 8}} />
+        <AppText style={styles.ifFirstText}>{i18n.t('esim:ifFirst')}</AppText>
+      </View>
+      <View style={styles.rowRight}>
+        <AppText style={styles.moveToGuideText}>
+          {i18n.t('esim:moveToGuide')}
+        </AppText>
+      </View>
+    </Pressable>
+  );
+};
 
 const EsimScreen: React.FC<EsimScreenProps> = ({
   navigation,
@@ -522,6 +558,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const days14ago = useMemo(() => moment().subtract(14, 'days'), []);
 
+  const isReserving = useCallback(
+    () => subsData?.findIndex((r) => r?.statusCd === 'R') !== -1,
+    [subsData],
+  );
+
   const renderSubs = useCallback(
     ({item, index}: {item: RkbSubscription; index: number}) => (
       <EsimSubs
@@ -580,13 +621,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     () =>
       esimGlobal ? null : (
         <View>
-          <CardInfo
+          {/* <CardInfo
             iccid={iccid}
             balance={balance}
             expDate={expDate}
             navigation={navigation}
-          />
-          {renderInfo(navigation)}
+          /> */}
+
+          {!isReserving() && renderInfo(navigation)}
 
           <LotteryButton
             subsData={subsData}

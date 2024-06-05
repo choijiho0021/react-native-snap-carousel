@@ -76,6 +76,7 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
           <AppIcon
             name="fortuneBtnSmall"
             mode="contain"
+            style={{marginRight: 20}}
             imgStyle={{
               flex: 1,
               justifyContent: 'center',
@@ -93,7 +94,7 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
         style={[
           styles.fortuneBtnContainer,
           {
-            height: pending ? 150 : 70,
+            height: pending ? 106 : 64,
           },
         ]}
         onPress={() => {
@@ -112,6 +113,7 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
           <AppIcon
             name={pending ? 'fortuneBtnBig' : 'fortuneBtnSmall'}
             mode="contain"
+            style={{marginRight: 20}}
             imgStyle={{
               flex: 1,
               justifyContent: 'center',
