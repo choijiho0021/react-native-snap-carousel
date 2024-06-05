@@ -1,6 +1,5 @@
 import {StyleSheet, View} from 'react-native';
 import React, {useCallback} from 'react';
-import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
@@ -19,11 +18,11 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   lottieView: {
-    width: '100%',
-    height: '100%',
+    width: '94%',
+    height: '94%',
     position: 'absolute',
-    top: 0,
-    left: 0,
+    top: 8,
+    left: 8,
   },
   appIcon: {
     width: 248,
@@ -62,7 +61,7 @@ const RenderLoadingLottery: React.FC<RenderLoadingLotteryProps> = ({}) => {
     <>
       <LinearGradient
         // Background Linear Gradient
-        colors={['#eeeeee', '#D0E9FF']}
+        colors={['#ffffff', '#D0E9FF']}
         style={{
           position: 'absolute',
           left: 0,

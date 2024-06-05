@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
     marginBottom: 60,
     justifyContent: 'center',
+    alignItems: 'center',
     marginHorizontal: 20,
     backgroundColor: 'transparent',
     width: '100%',
@@ -72,6 +73,7 @@ const styles = StyleSheet.create({
     paddingBottom: 35,
     paddingHorizontal: 20,
     borderStyle: 'solid',
+    width: 239,
     borderWidth: 1,
     borderBottomWidth: 0,
     borderColor: 'rgba(255, 255, 255, 0.32)',
@@ -80,7 +82,6 @@ const styles = StyleSheet.create({
     marginTop: -1,
     borderRadius: 20,
     backgroundColor: colors.clearBlue,
-    paddingHorizontal: 80,
     paddingVertical: 20,
     alignItems: 'center',
     borderStyle: 'solid',
@@ -150,11 +151,12 @@ const styles = StyleSheet.create({
   },
 
   winTitleText: {
-    ...appStyles.bold18Text,
+    ...appStyles.bold24Text,
     alignSelf: 'center',
     textAlign: 'center',
     marginBottom: 40,
     color: colors.white,
+    lineHeight: 32,
   },
 });
 
@@ -232,7 +234,9 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
     return (
       <View
         style={{
-          marginHorizontal: 20,
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: 239,
         }}>
         <AppText style={styles.winTitleText}>
           {i18n.t('esim:lottery:modal:win')}
