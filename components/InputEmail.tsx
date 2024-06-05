@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
     height: 50,
     flex: 1,
+    lineHeight: undefined,
   },
   container: {
     flexDirection: 'row',

@@ -632,7 +632,7 @@
   "esim:U": "사용완료",
   "esim:sendGift": "선물하기",
   "esim:draft": "총 %개 발권하기",
-  "esim:draft:failNoti": "<b>발권 실패! 고객센터로 문의해 주세요.</b>",
+  "esim:draft:failNoti": "<b>발송 지연! 고객센터로 문의해 주세요.</b>",
   "esim:etcCnt": "외 %%개",
   "esim:orderNo": "주문번호",
   "esim:orderDate": "주문일자",

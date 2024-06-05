@@ -75,9 +75,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   priceButtonText: {
-    ...appStyles.normal14Text,
-    marginLeft: 0,
-    textAlign: 'left',
+    ...appStyles.price,
+    fontSize: 20,
+    textAlign: 'right',
+    color: colors.warmGrey,
   },
   balance: {
     ...appStyles.robotoBold28Text,

@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
   empty: {
     flex: 1,
     alignItems: 'center',
-    marginTop: '20%',
+    marginTop: '30%',
   },
   middleDot: {
     ...appStyles.medium14,
@@ -240,7 +240,11 @@ const CouponScreen: React.FC<CouponProps> = ({
               {borderColor: changing ? colors.clearBlue : colors.lightGrey},
             ]}>
             <AppTextInput
-              style={{...appStyles.medium16, flex: 1}}
+              style={{
+                ...appStyles.medium16,
+                flex: 1,
+                lineHeight: undefined,
+              }}
               placeholder={i18n.t('coupon:inputCode')}
               value={value}
               onChangeText={setCode}

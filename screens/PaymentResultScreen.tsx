@@ -43,6 +43,7 @@ import {getItemsOrderType} from '@/redux/models/purchaseItem';
 import api from '@/redux/api/api';
 import AppAlert from '@/components/AppAlert';
 import AppDashBar from '@/components/AppDashBar';
+import Svg, {Line} from 'react-native-svg';
 
 const {esimGlobal} = Env.get();
 
@@ -295,34 +296,22 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     }
   }, [cart?.pymPrice, isSuccess, params?.mode]);
 
-  const DashedBar = () => {
-    const renderDashedDiv = useCallback(() => {
-      return (
-        <View style={styles.dashContainer}>
-          <View style={styles.dashFrame}>
-            <View style={styles.dash} />
-          </View>
-        </View>
-      );
-    }, []);
-
-    return (
-      <View>
-        {Platform.OS === 'ios' && renderDashedDiv()}
-        <View
-          style={[
-            styles.headerNoti,
-            Platform.OS === 'android' && {
-              borderStyle: 'dashed',
-              borderTopWidth: 1,
-              marginTop: 24,
-              marginBottom: 24,
-            },
-          ]}
+  const dotLine = useCallback(
+    () => (
+      <Svg height="2" width="150%" style={{marginVertical: 23, right: 50}}>
+        <Line
+          x1="0"
+          y1="1"
+          x2="150%"
+          y2="1"
+          stroke={colors.gray4}
+          strokeWidth="2"
+          strokeDasharray="4, 2"
         />
-      </View>
-    );
-  };
+      </Svg>
+    ),
+    [],
+  );
 
   // [WARNING: 이해를 돕기 위한 것일 뿐, imp_success 또는 success 파라미터로 결제 성공 여부를 장담할 수 없습니다.]
   // 아임포트 서버로 결제내역 조회(GET /payments/${imp_uid})를 통해 그 응답(status)에 따라 결제 성공 여부를 판단하세요.
@@ -435,7 +424,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
             oldCart?.purchaseItems &&
             getItemsOrderType(oldCart.purchaseItems) === 'refundable' && (
               <>
-                <DashedBar />
+                {dotLine()}
 
                 <View
                   style={{

@@ -25,9 +25,9 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   separator: {
-    borderBottomColor: colors.lightGrey,
-    borderBottomWidth: 2,
-    backgroundColor: 'yello',
+    // borderBottomColor: colors.lightGrey,
+    // borderBottomWidth: 2,
+    // backgroundColor: 'yello',
     width: 20,
   },
 });

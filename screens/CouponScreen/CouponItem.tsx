@@ -23,12 +23,14 @@ const styles = StyleSheet.create({
   date: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 6,
   },
   dday: {
     ...appStyles.bold12Text,
     color: colors.clearBlue,
     height: 20,
     paddingVertical: 2,
+    paddingHorizontal: 6,
     marginRight: 8,
   },
   urgent: {
@@ -75,7 +77,11 @@ const CouponItem = ({item}: {item: RkbCoupon}) => {
         />
       </View>
       <View style={styles.date}>
-        <AppText style={[styles.dday, diff < 10 ? styles.urgent : undefined]}>
+        <AppText
+          style={[
+            styles.dday,
+            diff < 10 ? styles.urgent : {backgroundColor: colors.veryLightBlue},
+          ]}>
           {diff === 0 ? 'D-DAY' : `D-${diff}`}
         </AppText>
         <AppText style={{...appStyles.medium14, color: colors.black}}>
