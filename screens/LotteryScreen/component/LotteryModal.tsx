@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
-import React, {memo, useCallback, useEffect, useRef} from 'react';
+import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import {
@@ -24,7 +24,6 @@ import {appStyles} from '@/constants/Styles';
 import ScreenHeader from '@/components/ScreenHeader';
 import i18n from '@/utils/i18n';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {ToastAction, actions as toastActions} from '@/redux/modules/toast';
 import AppText from '@/components/AppText';
 import AppAlert from '@/components/AppAlert';
 import {API} from '@/redux/api';
@@ -32,6 +31,7 @@ import AppModal from '@/components/AppModal';
 import {LotteryCouponType} from '..';
 import LinearGradient from 'react-native-linear-gradient';
 import {captureScreen, hasAndroidPermission, utils} from '@/utils/utils';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const styles = StyleSheet.create({
   modalContainer: {
@@ -128,7 +128,8 @@ const styles = StyleSheet.create({
   textContainer: {
     borderRadius: 20,
     paddingHorizontal: 30,
-    paddingVertical: 30,
+    paddingTop: 30,
+    paddingBottom: 25,
     alignItems: 'center',
     borderColor: 'rgb(38, 203, 149)',
     borderWidth: 1,
@@ -162,16 +163,11 @@ const styles = StyleSheet.create({
 
 type LotteryModalProps = {
   visible: boolean;
-  action: {
-    // order: OrderAction;
-    toast: ToastAction;
-  };
   coupon: LotteryCouponType;
   onClose: () => void;
 };
 
 const LotteryModal: React.FC<LotteryModalProps> = ({
-  action,
   visible = false,
   coupon,
   onClose,
@@ -179,6 +175,7 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
   const route = useRoute();
   const navigation = useNavigation();
   const ref = useRef<ViewShot>();
+  const [showSnackbar, setShowSnackbar] = useState(false);
 
   const renderBody = useCallback(() => {
     if (coupon?.cnt === 0) {
@@ -211,12 +208,16 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
                 style={{width: 180, height: 180}}
                 resizeMode="contain"
               />
-              <AppSvgIcon name="boldRokebiLogo" />
+              <AppSvgIcon style={{marginTop: 35}} name="boldRokebiLogo2" />
             </View>
           </ViewShot>
           <View style={{gap: 10, marginTop: 24}}>
             <Pressable
-              onPress={() => captureScreen(ref, action.toast)}
+              onPress={() =>
+                captureScreen(ref).then((r) => {
+                  setShowSnackbar(true);
+                })
+              }
               style={styles.btnSave}>
               <AppSvgIcon
                 style={{width: 20, justifyContent: 'center'}}
@@ -305,22 +306,32 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
   }, [coupon]);
 
   return (
-    <AppModal
-      contentStyle={styles.modalContainer}
-      safeAreaColor="rgba(0, 0, 0, 0.7)"
-      titleViewStyle={{marginTop: 20}}
-      okButtonTitle={i18n.t('redirect')}
-      type="division"
-      onOkClose={() => {
-        onClose();
-      }}
-      bottom={() => <View></View>}
-      onCancelClose={() => {
-        onClose();
-      }}
-      visible={visible}>
-      {renderBody()}
-    </AppModal>
+    <>
+      <AppModal
+        contentStyle={styles.modalContainer}
+        safeAreaColor="rgba(0, 0, 0, 0.7)"
+        titleViewStyle={{marginTop: 20}}
+        okButtonTitle={i18n.t('redirect')}
+        type="division"
+        onOkClose={() => {
+          onClose();
+        }}
+        bottom={() => <View></View>}
+        onCancelClose={() => {
+          onClose();
+        }}
+        visible={visible}
+        renderForward={() => (
+          <AppSnackBar
+            visible={showSnackbar}
+            onClose={() => setShowSnackbar(false)}
+            textMessage={i18n.t('rcpt:saved')}
+            bottom={-10}
+          />
+        )}>
+        {renderBody()}
+      </AppModal>
+    </>
   );
 };
 
@@ -328,9 +339,7 @@ export default memo(
   connect(
     ({account}: RootState) => ({account}),
     (dispatch) => ({
-      action: {
-        toast: bindActionCreators(toastActions, dispatch),
-      },
+      action: {},
     }),
   )(LotteryModal),
 );

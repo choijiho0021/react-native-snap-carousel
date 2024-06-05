@@ -104,20 +104,16 @@ const hasAndroidPermission = async () => {
   return false;
 };
 
-const captureScreen = async (
-  ref: React.MutableRefObject<ViewShot>,
-  toast: ToastAction,
-) => {
+const captureScreen = async (ref: React.MutableRefObject<ViewShot>) => {
   if (Platform.OS === 'android' && !(await hasAndroidPermission())) {
     toast.push('toast:perm:gallery');
     return;
   }
-
-  ref.current?.capture().then((uri) => {
-    CameraRoll.save(uri, {type: 'photo', album: i18n.t('rcpt:album')}).then(
-      () => toast.push('rcpt:saved'),
-    );
+  const resp = await ref.current?.capture().then((uri) => {
+    return CameraRoll.save(uri, {type: 'photo', album: i18n.t('rcpt:album')});
   });
+
+  return resp;
 };
 
 export {utils};

@@ -30,13 +30,13 @@ import {
 } from '@/redux/modules/account';
 import {API} from '@/redux/api';
 import AppIcon from '@/components/AppIcon';
-import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import LotteryModal from './component/LotteryModal';
 import {captureScreen} from '@/utils/utils';
 import LotteryShareModal from './component/LotteryShareModal';
 import RenderBeforeLottery from './component/RenderBeforeLottery';
 import RenderLoadingLottery from './component/RenderLoadingLottery';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const styles = StyleSheet.create({
   container: {
@@ -135,7 +135,6 @@ type LotteryProps = {
   action: {
     // order: OrderAction;
     account: AccountAction;
-    toast: ToastAction;
   };
 };
 
@@ -166,6 +165,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [phase, setPhase] = useState<Fortune>({text: '', num: 0});
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCouponModal, setShowCouponModal] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState(false);
 
   const [coupon, setCoupon] = useState<LotteryCouponType>({
     cnt: 0,
@@ -191,7 +191,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   }, [fortune, phase?.text]);
 
   const screenNum = useMemo(() => {
-    return phase?.num || fortune?.num;
+    return phase?.num || fortune?.num || 0;
   }, [fortune, phase?.num]);
 
   useEffect(() => {
@@ -367,7 +367,10 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           {renderShareButton(
             i18n.t('esim:lottery:share:img'),
             'btnShare1',
-            () => captureScreen(ref, action.toast),
+            () =>
+              captureScreen(ref).then((r) => {
+                setShowSnackbar(true);
+              }),
           )}
 
           <View style={styles.dividerSmall} />
@@ -404,7 +407,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       </View>
     );
   }, [
-    action.toast,
     fortune?.text,
     navigation,
     onShare,
@@ -467,6 +469,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       <LotteryModal
         visible={showCouponModal}
         coupon={coupon}
+        setShowSnackBar={setShowSnackbar}
         onClose={() => setShowCouponModal(false)}
       />
 
@@ -485,6 +488,12 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           setShowShareModal(false);
         }}
       />
+
+      <AppSnackBar
+        visible={showSnackbar}
+        onClose={() => setShowSnackbar(false)}
+        textMessage={i18n.t('rcpt:saved')}
+      />
     </SafeAreaView>
   );
 };
@@ -497,7 +506,6 @@ export default connect(
   (dispatch) => ({
     action: {
       account: bindActionCreators(accountActions, dispatch),
-      toast: bindActionCreators(toastActions, dispatch),
     },
   }),
 )(LotteryScreen);
