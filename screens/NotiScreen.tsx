@@ -449,9 +449,10 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
       <ScreenHeader
         title={isNotice ? i18n.t('set:notice') : i18n.t('set:noti')}
         renderRight={
-          isNotice || data?.length === 0 ? null : (
+          isNotice ? null : (
             <Pressable
               style={{justifyContent: 'flex-end'}}
+              disabled={data?.length === 0}
               onPress={() => {
                 action.noti
                   .readNoti({uuid: '0', token: account.token})
@@ -462,7 +463,11 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
               <AppText
                 style={[
                   appStyles.semiBold16Text,
-                  {color: colors.clearBlue, marginRight: 20},
+                  {
+                    color:
+                      data?.length === 0 ? colors.lightGrey : colors.clearBlue,
+                    marginRight: 20,
+                  },
                 ]}>
                 {i18n.t('noti:readAll')}
               </AppText>
