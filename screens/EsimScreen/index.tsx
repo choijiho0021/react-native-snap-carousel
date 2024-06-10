@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: 20,
     paddingHorizontal: 20,
+    marginTop: 24,
     height: 64,
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -230,7 +231,7 @@ export const renderInfo = (navigation, isReserving, fortune?: Fortune) => {
   // 근데 발송중 말고 운세 다시보기로 바뀌면 출력 안해야 정상 아닌가? 질문 필요
   if (fortune && isReserving && !isFortuneHistory(fortune))
     return (
-      <View style={{height: 62}}>
+      <View style={{height: 62, marginTop: 24}}>
         <View style={styles.tooltipContainer}>
           <View style={styles.tooltipContent}>
             <AppText style={styles.tooltipText}>
