@@ -449,11 +449,15 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
       <ScreenHeader
         title={isNotice ? i18n.t('set:notice') : i18n.t('set:noti')}
         renderRight={
-          isNotice ? null : (
+          isNotice || data?.length === 0 ? null : (
             <Pressable
               style={{justifyContent: 'flex-end'}}
               onPress={() => {
-                action.noti.readNoti({uuid: '0', token: account.token});
+                action.noti
+                  .readNoti({uuid: '0', token: account.token})
+                  .then(() => {
+                    onRefresh();
+                  });
               }}>
               <AppText
                 style={[
