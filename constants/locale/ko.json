@@ -273,6 +273,7 @@
   "resign:confirmModal": "{{info}}\n\n정말 탈퇴하시겠습니까?",
   "resign:finished": "계정 탈퇴가 정상적으로 처리되었습니다.\n이용해주셔서 감사합니다.",
   "resign:placeholder": "기타인 경우 이유를 입력해주세요.\n서비스 개선에 적극적으로 반영하겠습니다.",
+  "resign:fail": "네트워크 문제로 요청이 처리되지 않았습니다.\n인터넷 연결 확인 후 다시 시도 해 주세요[",
 
   "set:globalMarket": "Global Market",
 

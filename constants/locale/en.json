@@ -261,6 +261,7 @@
   "resign:confirmModal": "{{info}}\n\nDo you really wish to delete the account?",
   "resign:finished": "Your account has been successfully deleted.\nThank you for using our service.",
   "resign:placeholder": "Would you like to tell us more?",
+  "resign:fail": "네트워크 문제로 요청이 처리되지 않았습니다.\n인터넷 연결 확인 후 다시 시도 해 주세요[",
 
   "set:globalMarket": "Global Market",
 

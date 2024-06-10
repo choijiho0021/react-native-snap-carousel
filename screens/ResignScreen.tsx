@@ -373,6 +373,7 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
   }, [account, action.order, purchaseCnt]);
 
   const logout = useCallback(() => {
+    navigation.navigate('Home');
     action.modal.closeModal();
     Promise.all([
       action.cart.reset(),
@@ -386,12 +387,29 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
         ShortcutBadge.setCount(0);
       }
     });
-  }, [action.account, action.cart, action.modal, action.noti, action.order]);
+  }, [
+    action.account,
+    action.cart,
+    action.modal,
+    action.noti,
+    action.order,
+    navigation,
+  ]);
 
   const showFinishModal = useCallback(() => {
     action.modal.renderModal(() => (
       <AppModalContent
         title={i18n.t('resign:finished')}
+        type="info"
+        onOkClose={logout}
+      />
+    ));
+  }, [action.modal, logout]);
+
+  const showFailModal = useCallback(() => {
+    action.modal.renderModal(() => (
+      <AppModalContent
+        title={i18n.t('resign:fail')}
         type="info"
         onOkClose={logout}
       />
@@ -410,11 +428,11 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
           : i18n.t(radioButtons[reasonIdx].id),
       );
 
-      // 탈퇴 실패한 경우 무시
-      if (rsp.result && rsp.result < 0) {
-        console.log('@@@fail to resign');
+      if (rsp.result && rsp.result >= 0) {
+        showFinishModal();
+      } else {
+        showFailModal();
       }
-      showFinishModal();
     }
   }, [
     account,
@@ -422,6 +440,7 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
     isConfirm,
     otherReason,
     reasonIdx,
+    showFailModal,
     showFinishModal,
   ]);
 
