@@ -34,7 +34,9 @@ import {
 import {
   AccountAction,
   AccountModelState,
+  Fortune,
   actions as accountActions,
+  isFortuneHistory,
 } from '@/redux/modules/account';
 import {
   actions as orderActions,
@@ -224,9 +226,9 @@ type EsimScreenProps = {
 //   billionconnect: 1,
 // };
 
-export const renderInfo = (navigation, isReserving) => {
+export const renderInfo = (navigation, isReserving, fortune?: Fortune) => {
   // 근데 발송중 말고 운세 다시보기로 바뀌면 출력 안해야 정상 아닌가? 질문 필요
-  if (isReserving)
+  if (fortune && isReserving && !isFortuneHistory(fortune))
     return (
       <View style={{height: 62}}>
         <View style={styles.tooltipContainer}>
@@ -311,6 +313,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     () => subsData?.findIndex((r) => r?.statusCd === 'R') !== -1,
     [subsData],
   );
+
+  // const isFortuneHistory = useMemo(
+  //   () => fortune?.count === 0 && fortune?.text !== '',
+  //   [],
+  // );
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
       setShowUsageModal(false);
@@ -636,7 +644,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             flex: 1,
             backgroundColor: colors.white,
           }}>
-          {renderInfo(navigation, isReserving)}
+          {renderInfo(navigation, isReserving, fortune)}
           <LotteryButton
             subsData={subsData}
             navigation={navigation}
