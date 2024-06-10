@@ -25,7 +25,7 @@ import {appStyles} from '@/constants/Styles';
 import {AccountModelState} from '@/redux/modules/account';
 import {utils} from '@/utils/utils';
 
-const {isProduction, webViewHost} = Env.get();
+const {isProduction, webViewHost, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   storeBox: {
@@ -56,11 +56,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 28,
     gap: 6,
+    marginTop: isIOS ? 20 : 0,
   },
   contentContainer: {
     paddingTop: 32,
     paddingBottom: 48,
-    height: 164,
     flexDirection: 'row',
     alignItems: 'center',
     display: 'flex',
