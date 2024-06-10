@@ -54,7 +54,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignContent: 'center',
     paddingHorizontal: 20,
-    paddingTop: 20,
     paddingBottom: 28,
     gap: 6,
   },
@@ -67,7 +66,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    gap: 40,
   },
 });
 
@@ -286,22 +284,20 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
 
   const renderContentFortune = useCallback(() => {
     return ['kakao', 'sms', 'insta', 'more'].map((type) => (
-      <View key={type} style={{alignContent: 'center', rowGap: 6}}>
-        <AppSvgIcon
-          key={`${type}Icon`}
-          onPress={() => onSharePress(type as SharePlatfromType)}
-          name={`${type}Icon`}
-        />
-        <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
-          {i18n.t(`cart:share:${type}`)}
-        </AppText>
+      <View key={type} style={{justifyContent: 'center'}}>
+        <View style={{height: 80, rowGap: 6, alignContent: 'center'}}>
+          <AppSvgIcon
+            key={`${type}Icon`}
+            onPress={() => onSharePress(type as SharePlatfromType)}
+            name={`${type}Icon`}
+          />
+          <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
+            {i18n.t(`cart:share:${type}`)}
+          </AppText>
+        </View>
       </View>
     ));
   }, [onSharePress]);
-
-  const renderContent = useCallback(() => {
-    return renderContentFortune();
-  }, [renderContentFortune]);
 
   // 나중에 ShareModal 공통된 부분 모아서 컴포넌트로 분리
   return (
@@ -322,7 +318,7 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
               />
             </View>
           </View>
-          <View style={styles.contentContainer}>{renderContent()}</View>
+          <View style={styles.contentContainer}>{renderContentFortune()}</View>
         </SafeAreaView>
       </Pressable>
     </Modal>

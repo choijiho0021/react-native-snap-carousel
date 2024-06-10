@@ -24,7 +24,6 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList, navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
-import {API} from '@/redux/api';
 import {
   RkbSubscription,
   AddOnOptionType,
@@ -44,7 +43,6 @@ import {
   PAGINATION_SUBS_COUNT,
 } from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
 import EsimModal from './components/EsimModal';
 import GiftModal from './components/GiftModal';
@@ -62,6 +60,8 @@ import {
 import AppButton from '@/components/AppButton';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import LotteryButton from '../LotteryScreen/component/LotteryButton';
+import Triangle from '@/components/Triangle';
+import {windowWidth} from '@/constants/SliderEntry.style';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -97,7 +97,9 @@ const styles = StyleSheet.create({
     height: 64,
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#d2dfff',
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
     borderRadius: 3,
   },
   rowCenter: {
@@ -110,14 +112,13 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   ifFirstText: {
-    ...appStyles.semiBold15Text,
+    ...appStyles.semiBold16Text,
     lineHeight: 20,
-    color: '#001c65',
+    color: colors.black,
   },
   moveToGuideText: {
-    ...appStyles.normal14Text,
-    lineHeight: 20,
-    color: '#001c65',
+    ...appStyles.bold14Text,
+    color: colors.clearBlue,
   },
   esimHeader: {
     height: 56,
@@ -176,6 +177,27 @@ const styles = StyleSheet.create({
     color: colors.redError,
     lineHeight: 22,
   },
+
+  tooltipContainer: {
+    zIndex: 100,
+    width: 252,
+    position: 'absolute',
+    left: windowWidth / 2 - 128,
+  },
+  tooltipContent: {
+    flexDirection: 'row',
+    backgroundColor: colors.violet500,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 4,
+    borderWidth: 0,
+    padding: 16,
+  },
+  tooltipText: {
+    ...appStyles.bold14Text,
+    color: colors.white,
+    lineHeight: 20,
+  },
 });
 
 type EsimScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Esim'>;
@@ -202,22 +224,48 @@ type EsimScreenProps = {
 //   billionconnect: 1,
 // };
 
-export const renderInfo = (navigation) => (
-  <Pressable
-    style={styles.usrGuideBtn}
-    onPress={() => navigation.navigate('UserGuide')}>
-    <View style={styles.rowCenter}>
-      <AppSvgIcon name="newFlag" style={{marginRight: 8}} />
-      <AppText style={styles.ifFirstText}>{i18n.t('esim:ifFirst')}</AppText>
-    </View>
-    <View style={styles.rowRight}>
-      <AppText style={styles.moveToGuideText}>
-        {i18n.t('esim:moveToGuide')}
-      </AppText>
-      <AppIcon name="iconArrowRightBlack" />
-    </View>
-  </Pressable>
-);
+export const renderInfo = (navigation, isReserving) => {
+  // 근데 발송중 말고 운세 다시보기로 바뀌면 출력 안해야 정상 아닌가? 질문 필요
+  if (isReserving)
+    return (
+      <View style={{height: 62}}>
+        <View style={styles.tooltipContainer}>
+          <View style={styles.tooltipContent}>
+            <AppText style={styles.tooltipText}>
+              {i18n.t('esim:lottery:tooltip1')}
+            </AppText>
+            <AppSvgIcon name="emojiCoupon" />
+            <AppText style={styles.tooltipText}>
+              {i18n.t('esim:lottery:tooltip2')}
+            </AppText>
+            <AppSvgIcon name="emojiCoupon" />
+            <AppText style={styles.tooltipText}>
+              {i18n.t('esim:lottery:tooltip3')}
+            </AppText>
+          </View>
+          <View style={{alignItems: 'flex-end', marginRight: 120}}>
+            <Triangle width={20} height={10} color={colors.violet500} />
+          </View>
+        </View>
+      </View>
+    );
+
+  return (
+    <Pressable
+      style={styles.usrGuideBtn}
+      onPress={() => navigation.navigate('UserGuide')}>
+      <View style={styles.rowCenter}>
+        <AppSvgIcon name="newFlag" style={{marginRight: 8}} />
+        <AppText style={styles.ifFirstText}>{i18n.t('esim:ifFirst')}</AppText>
+      </View>
+      <View style={styles.rowRight}>
+        <AppText style={styles.moveToGuideText}>
+          {i18n.t('esim:moveToGuide')}
+        </AppText>
+      </View>
+    </Pressable>
+  );
+};
 
 const EsimScreen: React.FC<EsimScreenProps> = ({
   navigation,
@@ -259,6 +307,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [isEditMode, order.subs],
   );
 
+  const isReserving = useMemo(
+    () => subsData?.findIndex((r) => r?.statusCd === 'R') !== -1,
+    [subsData],
+  );
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
       setShowUsageModal(false);
@@ -579,21 +631,17 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const info = useCallback(
     () =>
       esimGlobal ? null : (
-        <View>
-          <CardInfo
-            iccid={iccid}
-            balance={balance}
-            expDate={expDate}
-            navigation={navigation}
-          />
-          {renderInfo(navigation)}
-
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: colors.white,
+          }}>
+          {renderInfo(navigation, isReserving)}
           <LotteryButton
             subsData={subsData}
             navigation={navigation}
             fortune={fortune}
           />
-
           {order.drafts?.length > 0 && (
             <>
               <View style={styles.draftFrame}>
@@ -625,16 +673,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           )}
         </View>
       ),
-    [
-      balance,
-      expDate,
-      fortune,
-      iccid,
-      navigation,
-      order.drafts,
-      renderDraft,
-      subsData,
-    ],
+    [fortune, isReserving, navigation, order.drafts, renderDraft, subsData],
   );
 
   useEffect(() => {

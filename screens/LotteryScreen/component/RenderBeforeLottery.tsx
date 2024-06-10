@@ -46,7 +46,7 @@ const RenderBeforeLottery: React.FC<RenderBeforeLotteryProps> = ({
     <>
       <LinearGradient
         // Background Linear Gradient
-        colors={['#eeeeee', '#D0E9FF']}
+        colors={['#ffffff', '#D0E9FF']}
         style={{
           position: 'absolute',
           left: 0,

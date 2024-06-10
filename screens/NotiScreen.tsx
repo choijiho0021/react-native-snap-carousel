@@ -42,6 +42,7 @@ import {
   actions as eventBoardActions,
 } from '@/redux/modules/eventBoard';
 import ScreenHeader from '@/components/ScreenHeader';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
   container: {
@@ -87,6 +88,13 @@ const styles = StyleSheet.create({
     marginTop: 60,
     textAlign: 'center',
     color: colors.black,
+  },
+  notice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 32,
+    gap: 4,
   },
 });
 
@@ -498,6 +506,13 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
           }
         />
       )}
+
+      <View style={styles.notice}>
+        <AppSvgIcon name="bannerMark3" />
+        <AppText style={[appStyles.bold16Text, {color: colors.warmGrey}]}>
+          {i18n.t('noti:notice')}
+        </AppText>
+      </View>
     </SafeAreaView>
   );
 };

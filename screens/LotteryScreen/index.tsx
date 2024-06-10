@@ -30,13 +30,13 @@ import {
 } from '@/redux/modules/account';
 import {API} from '@/redux/api';
 import AppIcon from '@/components/AppIcon';
-import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import LotteryModal from './component/LotteryModal';
 import {captureScreen} from '@/utils/utils';
 import LotteryShareModal from './component/LotteryShareModal';
 import RenderBeforeLottery from './component/RenderBeforeLottery';
 import RenderLoadingLottery from './component/RenderLoadingLottery';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const styles = StyleSheet.create({
   container: {
@@ -95,8 +95,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginHorizontal: 20,
-    marginTop: 63,
-    marginBottom: 35,
+    marginBottom: 32,
   },
 
   naviCouponBtn: {
@@ -117,7 +116,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     top: 0,
-    height: '100%',
+    height: '110%',
   },
 });
 
@@ -136,7 +135,6 @@ type LotteryProps = {
   action: {
     // order: OrderAction;
     account: AccountAction;
-    toast: ToastAction;
   };
 };
 
@@ -155,6 +153,8 @@ const GRADIENT_COLOR_LIST = [
   ['#E2CBB0', '#DDB486'],
 ];
 
+const IMAGE_WIDTH = 242;
+
 const LotteryScreen: React.FC<LotteryProps> = ({
   navigation,
   route,
@@ -165,6 +165,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [phase, setPhase] = useState<Fortune>({text: '', num: 0});
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCouponModal, setShowCouponModal] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState('');
 
   const [coupon, setCoupon] = useState<LotteryCouponType>({
     cnt: 0,
@@ -187,10 +188,10 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   // 다시보기 구분하는 코드
   const isHistory = useMemo(() => {
     return fortune?.count === 0 && fortune?.text && phase?.text === '';
-  }, [fortune, phase?.text]);
+  }, [fortune?.count, fortune?.text, phase?.text]);
 
   const screenNum = useMemo(() => {
-    return phase?.num || fortune?.num;
+    return phase?.num || fortune?.num || 0;
   }, [fortune, phase?.num]);
 
   useEffect(() => {
@@ -239,7 +240,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
   const renderTitleAndPhase = useCallback(() => {
     return (
-      <View style={{alignItems: 'center'}}>
+      <View style={{alignItems: 'center', width: IMAGE_WIDTH}}>
         <View style={styles.lotteryResultTitleBox}>
           <AppText
             style={[appStyles.medium14, {color: colors.white, lineHeight: 20}]}>
@@ -260,7 +261,10 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     return (
       <ViewShot
         ref={ref}
-        style={{position: 'absolute', left: -1700}}
+        style={{
+          position: 'absolute',
+          left: -1700,
+        }}
         options={{
           fileName: 'test',
           format: 'png',
@@ -271,19 +275,21 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           // Background Linear Gradient
           colors={GRADIENT_COLOR_LIST[screenNum]}
         />
-        {renderTitleAndPhase()}
-        <View style={styles.imageContainer}>
-          <Image
-            style={{
-              width: 242,
-              height: 242,
-            }}
-            source={{
-              uri: API.default.httpImageUrl(
-                `sites/default/files/img/fortune_card${screenNum}.png`,
-              ),
-            }}
-          />
+        <View style={{paddingVertical: 120, paddingHorizontal: 40}}>
+          {renderTitleAndPhase()}
+          <View style={[styles.imageContainer, {marginTop: 10}]}>
+            <Image
+              style={{
+                width: 200,
+                height: 200,
+              }}
+              source={{
+                uri: API.default.httpImageUrl(
+                  `sites/default/files/img/fortune_card${screenNum}.png`,
+                ),
+              }}
+            />
+          </View>
         </View>
       </ViewShot>
     );
@@ -297,8 +303,8 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       if (uri) {
         const shareOptions = {
           stickerImage: image,
-          backgroundBottomColor: GRADIENT_COLOR_LIST[screenNum][1],
-          backgroundTopColor: GRADIENT_COLOR_LIST[screenNum][0],
+          backgroundBottomColor: colors.black,
+          backgroundTopColor: colors.black,
           social: Share.Social.INSTAGRAM_STORIES,
           appId: 'fb147522690488197',
         };
@@ -339,8 +345,8 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
   const renderAfterLottery = useCallback(() => {
     return (
-      <>
-        <View>
+      <View style={{flex: 1}}>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           {renderTitleAndPhase()}
           <View
             style={[
@@ -351,7 +357,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             ]}>
             <Image
               style={{
-                width: 242,
+                width: IMAGE_WIDTH,
                 height: 242,
               }}
               source={{
@@ -366,7 +372,10 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           {renderShareButton(
             i18n.t('esim:lottery:share:img'),
             'btnShare1',
-            () => captureScreen(ref, action.toast),
+            () =>
+              captureScreen(ref).then((r) => {
+                if (r) setShowSnackbar(r);
+              }),
           )}
 
           <View style={styles.dividerSmall} />
@@ -386,7 +395,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           )}
         </View>
 
-        <View style={{paddingHorizontal: 20}}>
+        <View style={{paddingHorizontal: 20, marginBottom: 16}}>
           {fortune?.text && (
             <Pressable
               style={styles.naviCouponBtn}
@@ -400,10 +409,9 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             </Pressable>
           )}
         </View>
-      </>
+      </View>
     );
   }, [
-    action.toast,
     fortune?.text,
     navigation,
     onShare,
@@ -414,9 +422,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   ]);
 
   const renderBody = useCallback(() => {
-    console.log('@@@phase?.text  :', phase?.text, ', isHistory : ', isHistory);
     if (isLoading) {
-      // if (true) {
       return <RenderLoadingLottery />;
     }
 
@@ -485,6 +491,12 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           setShowShareModal(false);
         }}
       />
+
+      <AppSnackBar
+        visible={showSnackbar !== ''}
+        onClose={() => setShowSnackbar('')}
+        textMessage={i18n.t(showSnackbar)}
+      />
     </SafeAreaView>
   );
 };
@@ -497,7 +509,6 @@ export default connect(
   (dispatch) => ({
     action: {
       account: bindActionCreators(accountActions, dispatch),
-      toast: bindActionCreators(toastActions, dispatch),
     },
   }),
 )(LotteryScreen);

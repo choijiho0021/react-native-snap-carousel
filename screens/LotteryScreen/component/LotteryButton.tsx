@@ -57,7 +57,8 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
     });
   }, [fortune, navigation]);
 
-  if (fortune?.count === 0) {
+  // 운세 문구가 있지만 추첨권이 0개인 경우 다시보기
+  if (fortune?.count === 0 && fortune?.text !== '') {
     return (
       <Pressable
         style={styles.fortuneBtnContainer}
@@ -93,7 +94,7 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
         style={[
           styles.fortuneBtnContainer,
           {
-            height: pending ? 150 : 70,
+            height: pending ? 106 : 64,
           },
         ]}
         onPress={() => {

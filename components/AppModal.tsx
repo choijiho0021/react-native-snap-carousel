@@ -85,6 +85,7 @@ export interface AppModalProps {
   onCancelClose?: () => void;
   onRequestClose?: () => void;
   bottom?: () => React.ReactNode;
+  renderForward?: () => React.ReactNode;
 }
 
 const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
@@ -107,6 +108,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   visible,
   disableOkButton,
   safeAreaColor = 'rgba(0,0,0,0.5)',
+  renderForward,
   onOkClose = () => {},
   onCancelClose = () => {},
   onRequestClose = () => {
@@ -303,6 +305,8 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
             {bottom ? bottom() : getButtonType()}
           </View>
         </View>
+
+        {renderForward && renderForward()}
       </SafeAreaView>
       {justifyContent === 'flex-end' && (
         <SafeAreaView style={{backgroundColor: 'white'}} />

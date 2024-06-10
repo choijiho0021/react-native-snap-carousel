@@ -259,7 +259,7 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
               setIsShareDisabled(false);
 
               if (type === 'more') {
-                onPressShareMore(imageUrl);
+                onPressShareMore(url);
               } else if (type === 'kakao') {
                 onPressShareKakao(selectedCountryData, imageUrl, url);
               } else if (type === 'sms') {
@@ -285,10 +285,6 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
     purchaseItem?.title,
     uuid,
   ]);
-
-  const renderContent = useCallback(() => {
-    return renderContentProduct();
-  }, [renderContentProduct]);
 
   return (
     <Modal visible={visible} transparent>
@@ -319,7 +315,7 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
                 gap: 40,
               },
             ]}>
-            {renderContent()}
+            {renderContentProduct()}
           </View>
         </SafeAreaView>
       </Pressable>
