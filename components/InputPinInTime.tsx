@@ -79,7 +79,7 @@ type InputPinInTimeProps = {
   countdown: boolean;
   authorized?: boolean;
   clickable: boolean;
-  duration: Moment;
+  duration: number;
   onTimeout: () => void;
   onPress: (v: string) => void;
   inputRef?: React.MutableRefObject<InputPinRef | null>;
@@ -103,24 +103,32 @@ const InputPinInTime: React.FC<
   const [focused, setFocused] = useState(false);
   const ref = useRef<TextInput>();
 
-  //
-  const getSecondByDateTime = useCallback(() => {
+  const backgroundTimeRef = useRef<Moment>(); // background 시점 시간, listener 내부함수에 써야해서 ref 사용
+
+  const getBackgroundDuration = useCallback(() => {
     const now = moment();
 
-    const second = props.duration.diff(now, 'seconds');
+    const second = backgroundTimeRef?.current
+      ? backgroundTimeRef.current.diff(now, 'seconds')
+      : 0;
 
-    console.log('@@@ props.duration : ', props.duration);
-    console.log('@@@ now : ', now);
+    if (backgroundTimeRef?.current) {
+      console.log(
+        '@@@ 줄어드는 시간 체크해보기 : ',
+        backgroundTimeRef.current.diff(now, 'seconds'),
+      );
+    }
 
-    console.log('@@@@ second :', second);
-
-    return second < 0 ? 0 : second;
-  }, [props.duration]);
+    return second;
+  }, []);
 
   useInterval(
     () => {
       if (duration > 0) setDuration((prev) => prev - 1);
-      else onTimeout();
+      else {
+        onTimeout();
+        setTimeoutFlag(true);
+      }
     },
     duration > 0 ? 1000 : null,
   );
@@ -139,14 +147,21 @@ const InputPinInTime: React.FC<
           appState.current.match(/inactive|background/) &&
           nextAppState === 'active'
         ) {
-          console.log('@@@ getSeocndDateTime');
-          setDuration(getSecondByDateTime());
+          setDuration((prev) =>
+            prev + getBackgroundDuration() < 0
+              ? 0
+              : prev + getBackgroundDuration(),
+          );
+        }
+
+        if (nextAppState.match(/inactive|background/)) {
+          backgroundTimeRef.current = moment();
         }
 
         appState.current = nextAppState;
       });
     }
-  }, [getSecondByDateTime]);
+  }, [getBackgroundDuration]);
 
   useEffect(() => {
     if (inputRef) {
@@ -156,6 +171,7 @@ const InputPinInTime: React.FC<
           setPin('');
           setDuration(0);
           setTimeoutFlag(false);
+          backgroundTimeRef.current = undefined;
         },
       };
     }
@@ -163,13 +179,14 @@ const InputPinInTime: React.FC<
 
   const init = useCallback(() => {
     setTimeoutFlag(false);
-
-    // 여기서 duration 은 moment.now() 로 계싼되어있음.
-    if (countdown) setDuration(getSecondByDateTime());
-  }, [countdown, getSecondByDateTime]);
+    if (countdown) {
+      setDuration(props.duration);
+    }
+  }, [countdown, props.duration]);
 
   const clickable = props.clickable && _.size(pin) === 6;
 
+  // 왜 두번 실행?
   useEffect(() => {
     init();
     return () => {
@@ -232,14 +249,14 @@ const InputPinInTime: React.FC<
       </View>
       {countdown ? (
         <AppText style={styles.timer}>
-          {i18n.t('mobile:timeLeft') +
+          {`${
+            i18n.t('mobile:timeLeft') +
             Math.floor(duration / 60)
               .toString()
-              .padStart(2, '0') +
-            ':' +
-            Math.floor(duration % 60)
-              .toString()
-              .padStart(2, '0')}
+              .padStart(2, '0')
+          }:${Math.floor(duration % 60)
+            .toString()
+            .padStart(2, '0')}`}
         </AppText>
       ) : null}
       <View style={styles.helpBox}>
