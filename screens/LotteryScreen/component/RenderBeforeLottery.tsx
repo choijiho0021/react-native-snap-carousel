@@ -13,7 +13,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     marginHorizontal: 20,
     marginBottom: 20,
-    gap: 6,
   },
   btnLottery: {
     backgroundColor: colors.blue,
@@ -52,7 +51,7 @@ const RenderBeforeLottery: React.FC<RenderBeforeLotteryProps> = ({
           left: 0,
           right: 0,
           top: 0,
-          height: '100%',
+          height: '115%',
         }}
       />
       <View style={{flex: 1, justifyContent: 'space-between'}}>
@@ -91,13 +90,24 @@ const RenderBeforeLottery: React.FC<RenderBeforeLotteryProps> = ({
 
         <View>
           <View style={styles.noticeContainer}>
-            <AppText
-              style={[
-                appStyles.bold14Text,
-                {color: colors.paleGray4, lineHeight: 20},
-              ]}>
-              {i18n.t('esim:lottery:notice')}
-            </AppText>
+            {[1, 2].map((idx) => (
+              <View key={idx} style={{flexDirection: 'row'}}>
+                <AppText
+                  style={[
+                    appStyles.bold14Text,
+                    {color: colors.paleGray4, lineHeight: 20},
+                  ]}>
+                  {`${i18n.t('esim:lottery:notice:dot')} `}
+                </AppText>
+                <AppText
+                  style={[
+                    appStyles.bold14Text,
+                    {color: colors.paleGray4, lineHeight: 20},
+                  ]}>
+                  {i18n.t(`esim:lottery:notice${idx}`)}
+                </AppText>
+              </View>
+            ))}
           </View>
           <Pressable style={styles.btnLottery} onPress={onClick}>
             <AppText style={styles.btnLotteryText}>

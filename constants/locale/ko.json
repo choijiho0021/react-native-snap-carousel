@@ -762,8 +762,12 @@
   "esim:lottery:title:history": "나의 여행 운세",
   "esim:lottery:wait": "'쿠폰 당첨 결과도 곧 나와요!'",
   "esim:lottery:coupon:cnt": "열어보지 않은 쿠폰이 %d개 있네요.\n당첨 여부를 확인해보세요!",
-  "esim:lottery:button": "여행 운세와 랜덤 쿠폰 뽑기",
-  "esim:lottery:notice": "\u00B7 쿠폰 당첨 기회는 발권당 1번 부여됩니다.\n\u00B7 여행 운세 및 쿠폰을 확인하지 않으면 쿠폰 당첨 기회가 누적되며,확인 시 누적된 기회가 일괄 소진됩니다.",
+  "esim:lottery:button": "여행 운세 및 랜덤 쿠폰 뽑기",
+  "esim:lottery:notice:dot": "\u00B7",
+
+  "esim:lottery:notice1": "쿠폰 당첨 기회는 발권당 1번 부여됩니다.",
+
+  "esim:lottery:notice2": "여행 운세 및 쿠폰을 확인하지 않으면 쿠폰 당첨 기회가 누적되며,확인 시 누적된 기회가 일괄 소진됩니다.",
   "esim:lottery:button:navi": "쿠폰함 바로가기",
   "esim:lottery:modal:win": "행운이 찾아왔어요 :)\n쿠폰 당첨! ",
   "esim:lottery:modal:win:text": "쿠폰함에서 확인해보세요.",
