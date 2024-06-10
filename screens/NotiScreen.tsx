@@ -251,6 +251,17 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
 
   // true : 공지사항, false : 알림
   const isNotice = useMemo(() => mode === 'info', [mode]);
+  const data = useMemo(() => {
+    // clone the list to sort
+    const list = isNotice ? info.infoMap.get('info') : _.clone(noti.notiList);
+    return list?.sort((a, b) => -a.created.localeCompare(b.created));
+  }, [info.infoMap, isNotice, noti.notiList]);
+
+  const readAllDisabled = useMemo(
+    () =>
+      data?.length === 0 || data?.findIndex((elm) => elm.isRead === 'F') === -1,
+    [data],
+  );
 
   const onRefresh = useCallback(() => {
     action.noti.getNotiList({mobile: account.mobile});
@@ -438,12 +449,6 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
     [onPress],
   );
 
-  const data = useMemo(() => {
-    // clone the list to sort
-    const list = isNotice ? info.infoMap.get('info') : _.clone(noti.notiList);
-    return list?.sort((a, b) => -a.created.localeCompare(b.created));
-  }, [info.infoMap, isNotice, noti.notiList]);
-
   return (
     <SafeAreaView key="container" style={styles.container}>
       <ScreenHeader
@@ -452,7 +457,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
           isNotice ? null : (
             <Pressable
               style={{justifyContent: 'flex-end'}}
-              disabled={data?.length === 0}
+              disabled={readAllDisabled}
               onPress={() => {
                 action.noti
                   .readNoti({uuid: '0', token: account.token})
@@ -464,8 +469,9 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
                 style={[
                   appStyles.semiBold16Text,
                   {
-                    color:
-                      data?.length === 0 ? colors.lightGrey : colors.clearBlue,
+                    color: readAllDisabled
+                      ? colors.lightGrey
+                      : colors.clearBlue,
                     marginRight: 20,
                   },
                 ]}>
