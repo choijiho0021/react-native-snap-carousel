@@ -164,7 +164,7 @@ const slice = createSlice({
     builder.addCase(readNoti.fulfilled, (state, {payload}) => {
       const {result, objects} = payload;
 
-      if (result === 0 && objects) {
+      if (result === 0 && objects.length > 0) {
         const notiList = state.notiList.map((elm) =>
           elm.uuid === objects[0].uuid ? {...elm, isRead: 'T'} : elm,
         );
