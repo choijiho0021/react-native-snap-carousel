@@ -35,6 +35,8 @@ import i18n from '@/utils/i18n';
 import ChatTalk from '@/components/ChatTalk';
 import ScreenHeader from '@/components/ScreenHeader';
 import ButtonWithPrice from './EsimScreen/components/ButtonWithPrice';
+import AppStyledText from '@/components/AppStyledText';
+import {appStyles} from '@/constants/Styles';
 
 const {esimCurrency, isIOS} = Env.get();
 
@@ -274,6 +276,22 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     return utils.toCurrency(amount.value, amount.currency);
   }, [total]);
 
+  const priceTitle = useCallback(
+    () => (
+      <AppStyledText
+        text={i18n.t('cart:purchase', {cnt: total.cnt})}
+        textStyle={{
+          ...appStyles.normal18Text,
+          color: colors.white,
+          textAlign: 'center',
+          margin: 5,
+        }}
+        format={{b: {...appStyles.bold18Text, color: colors.white}}}
+      />
+    ),
+    [total.cnt],
+  );
+
   return _.isEmpty(list) ? (
     empty()
   ) : (
@@ -297,7 +315,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         currency={i18n.t('esim:charge:addOn:currency')}
         onPress={onPurchase}
         disable={disablePurchase}
-        title={i18n.t('esim:charge:payment:agree')}
+        title={priceTitle()}
       />
       <ChatTalk visible bottom={(isIOS ? 100 : 70) - tabBarHeight} />
     </SafeAreaView>
