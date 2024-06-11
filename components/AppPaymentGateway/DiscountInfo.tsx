@@ -21,6 +21,8 @@ import DropDownHeader from '@/screens/PymMethodScreen/DropDownHeader';
 import ConfirmButton from './ConfirmButton';
 import AppStyledText from '../AppStyledText';
 import AppSvgIcon from '../AppSvgIcon';
+import {navigate} from '@/navigation/navigation';
+import {useNavigation, useRoute} from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   row: {
@@ -125,6 +127,8 @@ const DiscountInfo: React.FC<DiscountProps> = ({
   const [rokebiCash, setRokebiCash] = useState('');
   const [checked, setChecked] = useState(true);
   const [editing, setEditing] = useState(false);
+  const navigation = useNavigation();
+  const route = useRoute();
 
   const disabledDeductAll = useMemo(
     () =>
@@ -314,7 +318,10 @@ const DiscountInfo: React.FC<DiscountProps> = ({
         </View>
         <Pressable
           onPress={() => {
-            console.log('@@@@ Pressable');
+            navigate(navigation, route, 'MyPageStack', {
+              tab: 'HomeStack',
+              screen: 'Invite',
+            });
           }}
           style={styles.inviteButtonContainer}>
           <View style={[styles.inviteRow, {gap: 2}]}>
