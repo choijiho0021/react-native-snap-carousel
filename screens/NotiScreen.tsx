@@ -430,7 +430,8 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
               title:
                 type === notiActions.NOTI_TYPE_NOTI ||
                 type === notiActions.NOTI_TYPE_ACCOUNT ||
-                type === notiActions.NOTI_TYPE_PUSH
+                type === notiActions.NOTI_TYPE_PUSH ||
+                type === notiActions.NOTI_TYPE_DONATION
                   ? i18n.t('set:noti')
                   : i18n.t('contact:noticeDetail'),
 
