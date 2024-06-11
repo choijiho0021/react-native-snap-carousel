@@ -59,7 +59,6 @@ const styles = StyleSheet.create({
     marginTop: isIOS ? 20 : 0,
   },
   contentContainer: {
-    paddingTop: 32,
     paddingBottom: 48,
     flexDirection: 'row',
     alignItems: 'center',
@@ -303,7 +302,7 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
   return (
     <Modal visible={visible} transparent>
       <Pressable
-        style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.3)'}}
+        style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
         onPress={onClose}>
         <SafeAreaView key="modal" style={styles.storeBox}>
           <View style={styles.head}>

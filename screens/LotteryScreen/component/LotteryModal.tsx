@@ -99,6 +99,14 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     alignItems: 'center',
     justifyContent: 'center',
+
+    shadowColor: 'rgba(0, 0, 0, 0.11)',
+    shadowOffset: {
+      width: -2,
+      height: 2,
+    },
+    shadowRadius: 6,
+    shadowOpacity: 1,
   },
 
   bodyContainer: {
@@ -310,7 +318,7 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
     <>
       <AppModal
         contentStyle={styles.modalContainer}
-        safeAreaColor="rgba(0, 0, 0, 0.7)"
+        safeAreaColor="rgba(0, 0, 0, 0.8)"
         titleViewStyle={{marginTop: 20}}
         okButtonTitle={i18n.t('redirect')}
         type="division"

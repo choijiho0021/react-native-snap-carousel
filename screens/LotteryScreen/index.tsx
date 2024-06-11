@@ -195,19 +195,12 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     return phase?.num || fortune?.num || 0;
   }, [fortune, phase?.num]);
 
-  useEffect(() => {
-    console.log('phase : ', phase);
-    console.log('@@@ screenNum : ', screenNum);
-  }, [phase, screenNum]);
-
   const lotteryCoupon = useCallback(async () => {
     API.Account.lotteryCoupon({
       iccid,
       token,
       prompt: 'lottery',
     }).then((resp) => {
-      console.log('@@@resp : ', resp);
-
       const couponObj = resp.objects[0]?.coupon;
 
       if (resp.result === 0) {
@@ -218,7 +211,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           charm: resp.objects[0]?.charm,
         });
 
-        console.log('@@@ 쿠폰 결과 resp.objects[0] : ', resp.objects[0]);
         setPhase({
           text: resp.objects[0]?.phrase,
           num: resp.objects[0]?.num,

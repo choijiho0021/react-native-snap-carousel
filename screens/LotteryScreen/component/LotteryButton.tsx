@@ -78,9 +78,7 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
             mode="contain"
             imgStyle={{
               flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: 128,
+              width: 105,
             }}
           />
         </View>
