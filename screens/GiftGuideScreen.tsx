@@ -221,6 +221,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
           />
           <ImageBackground
             source={require('../assets/images/gift/box.png')}
+            resizeMode="stretch"
             style={{
               height: 48,
               width: width - 40,
