@@ -162,7 +162,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   action,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [phase, setPhase] = useState<Fortune>({text: '', num: 0});
+  const [phase, setPhase] = useState<Fortune>({text: '', num: 0, count: 0});
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState('');
@@ -178,6 +178,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     navigation,
     route,
     onBack: () => {
+      if (isLoading) return true;
       setShowShareModal(false);
       navigation.goBack();
       return true;
@@ -194,19 +195,12 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     return phase?.num || fortune?.num || 0;
   }, [fortune, phase?.num]);
 
-  useEffect(() => {
-    console.log('phase : ', phase);
-    console.log('@@@ screenNum : ', screenNum);
-  }, [phase, screenNum]);
-
   const lotteryCoupon = useCallback(async () => {
     API.Account.lotteryCoupon({
       iccid,
       token,
       prompt: 'lottery',
     }).then((resp) => {
-      console.log('@@@resp : ', resp);
-
       const couponObj = resp.objects[0]?.coupon;
 
       if (resp.result === 0) {
@@ -217,8 +211,11 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           charm: resp.objects[0]?.charm,
         });
 
-        console.log('@@@ 쿠폰 결과 resp.objects[0] : ', resp.objects[0]);
-        setPhase({text: resp.objects[0]?.phrase, num: resp.objects[0]?.num});
+        setPhase({
+          text: resp.objects[0]?.phrase,
+          num: resp.objects[0]?.num,
+          count: couponObj?.cnt || 0,
+        });
 
         setIsLoading(false);
 
@@ -396,7 +393,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         </View>
 
         <View style={{paddingHorizontal: 20, marginBottom: 16}}>
-          {fortune?.text && (
+          {fortune?.text && phase?.count > 0 && (
             <Pressable
               style={styles.naviCouponBtn}
               onPress={() => {
@@ -415,6 +412,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     fortune?.text,
     navigation,
     onShare,
+    phase?.count,
     renderShareButton,
     renderTitleAndPhase,
     screenNum,
@@ -453,20 +451,22 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       {shareView()}
-      <ScreenHeader
-        // backHandler={backHandler}
-        headerStyle={{backgroundColor: 'transparent', zIndex: 10}}
-        isStackTop
-        renderRight={
-          <AppSvgIcon
-            name="closeModal"
-            style={styles.btnCnter}
-            onPress={() => {
-              navigation.popToTop();
-            }}
-          />
-        }
-      />
+      {!isLoading && (
+        <ScreenHeader
+          // backHandler={backHandler}
+          headerStyle={{backgroundColor: 'transparent', zIndex: 10}}
+          isStackTop
+          renderRight={
+            <AppSvgIcon
+              name="closeModal"
+              style={styles.btnCnter}
+              onPress={() => {
+                navigation.popToTop();
+              }}
+            />
+          }
+        />
+      )}
       {/* // 메인화면 */}
       {renderBody()}
 

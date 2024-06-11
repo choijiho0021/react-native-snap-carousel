@@ -267,7 +267,7 @@ const convertFileURLtoRkbImage = async (url: string) => {
       }
     });
   } catch (err) {
-    return Promise.reject(new Error('convertURLtoRkbImage failed'));
+    return Promise.reject(new Error(`convertURLtoRkbImage failed : ${err}`));
   }
 };
 

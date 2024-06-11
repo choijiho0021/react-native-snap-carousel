@@ -751,8 +751,8 @@
   "esim:howToCall:etcInfo:subtitle2:ais:txt": "*121*2# + 통화 누른 후 수신된 문자로 확인 가능",
   "esim:howToCall:etcInfo:subtitle2:dtac:txt": "*101*9# + 통화 눌러 확인 가능",
 
-  "esim:lottery:tooltip1": "여행 운세 뽑고, ",
-  "esim:lottery:tooltip2": "랜덤 쿠폰 ",
+  "esim:lottery:tooltip1": "여행 운세 뽑고,",
+  "esim:lottery:tooltip2": "랜덤 쿠폰",
   "esim:lottery:tooltip3": "까지!",
   "esim:lottery:start:pending": "이번 여행\n나의 운세는?",
   "esim:lottery:start": "여행 운세 뽑고, 쿠폰까지!",
@@ -1147,6 +1147,9 @@
   "pym:item:discount": "쿠폰 할인",
   "pym:item:rkbcash": "로깨비캐시 사용",
   "pym:deductAll": "모두 사용",
+
+  "pym:invite:title": "더 할인받고 구매하려면?!",
+  "pym:invite": "친구 초대",
 
   "pym:method:vbank": "무통장 입금 (가상 계좌)",
   "pym:method:vbank:input": "입금 은행을 선택해주세요",

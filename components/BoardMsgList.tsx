@@ -161,6 +161,15 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
 
   useEffect(() => {
     const number = mobile.replace(/-/g, '');
+
+    // 익명이 아닌 경우에만 번호로 자동 새로고침
+    if (number && uid !== 0) {
+      action.board.searchIssueList(number);
+    }
+  }, [action.board, mobile, uid]);
+
+  useEffect(() => {
+    const number = mobile.replace(/-/g, '');
     setData(board.list.filter((item) => item.mobile.includes(number)) || []);
   }, [board.list, mobile]);
 

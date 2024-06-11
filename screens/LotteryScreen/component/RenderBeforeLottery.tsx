@@ -11,7 +11,7 @@ import AppIcon from '@/components/AppIcon';
 const styles = StyleSheet.create({
   noticeContainer: {
     justifyContent: 'flex-end',
-    marginHorizontal: 20,
+    marginHorizontal: 25,
     marginBottom: 20,
   },
   btnLottery: {

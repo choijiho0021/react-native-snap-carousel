@@ -59,8 +59,8 @@ const styles = StyleSheet.create({
     marginTop: isIOS ? 20 : 0,
   },
   contentContainer: {
-    paddingTop: 32,
     paddingBottom: 48,
+
     flexDirection: 'row',
     alignItems: 'center',
     display: 'flex',
@@ -92,33 +92,37 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
 
   const uploadImage = useCallback(async () => {
     const uri = await captureRef.current?.capture?.();
-    const image = Platform.OS === 'android' ? uri : `file://${uri}`;
 
-    const convertImage = await utils.convertFileURLtoRkbImage(image);
+    try {
+      const convertImage = await utils.convertFileURLtoRkbImage(uri || '');
 
-    // image upload
-    const resp = await API.Account.uploadFortuneImage({
-      image: convertImage,
-      user: mobile,
-      token,
-    });
-
-    if (resp?.result === 0) {
-      const serverImageUrl = resp?.objects[0]?.userPictureUrl;
-
-      // fortune Image 필드 갱신
-      const setImageResp = await API.Account.lotteryCoupon({
-        iccid,
+      // image upload
+      const resp = await API.Account.uploadFortuneImage({
+        image: convertImage,
+        user: mobile,
         token,
-        prompt: 'image',
-        fid: parseInt(resp?.objects[0]?.fid, 10), // ref_fortune 값에 넣을 데이터, imageUrl은 리덕스 처리해야하나...
       });
 
-      if (setImageResp?.result !== 0) {
-        console.log('@@@ 전송 에러 ');
-      }
+      if (resp?.result === 0) {
+        const serverImageUrl = resp?.objects[0]?.userPictureUrl;
 
-      return serverImageUrl;
+        // fortune Image 필드 갱신
+        const setImageResp = await API.Account.lotteryCoupon({
+          iccid,
+          token,
+          prompt: 'image',
+          fid: parseInt(resp?.objects[0]?.fid, 10), // ref_fortune 값에 넣을 데이터, imageUrl은 리덕스 처리해야하나...
+        });
+
+        if (setImageResp?.result !== 0) {
+          console.log('@@@ 전송 에러 ');
+        }
+
+        return serverImageUrl;
+      }
+    } catch (e) {
+      console.log('@@@ uploadImage Fail : ', e);
+      setIsShareDisabled(false);
     }
 
     return '';
@@ -303,7 +307,7 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
   return (
     <Modal visible={visible} transparent>
       <Pressable
-        style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.3)'}}
+        style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
         onPress={onClose}>
         <SafeAreaView key="modal" style={styles.storeBox}>
           <View style={styles.head}>

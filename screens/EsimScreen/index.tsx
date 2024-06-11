@@ -315,11 +315,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [subsData],
   );
 
-  // const isFortuneHistory = useMemo(
-  //   () => fortune?.count === 0 && fortune?.text !== '',
-  //   [],
-  // );
-
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
       setShowUsageModal(false);

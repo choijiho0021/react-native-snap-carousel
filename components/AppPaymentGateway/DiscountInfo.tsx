@@ -1,7 +1,7 @@
 import {RootState} from '@reduxjs/toolkit';
 import {bindActionCreators} from 'redux';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Image, Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {AccountModelState} from '@/redux/modules/account';
 import AppText from '@/components/AppText';
@@ -21,6 +21,8 @@ import DropDownHeader from '@/screens/PymMethodScreen/DropDownHeader';
 import ConfirmButton from './ConfirmButton';
 import AppStyledText from '../AppStyledText';
 import AppSvgIcon from '../AppSvgIcon';
+import {navigate} from '@/navigation/navigation';
+import {useNavigation, useRoute} from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   row: {
@@ -78,6 +80,27 @@ const styles = StyleSheet.create({
     marginTop: 13,
     marginRight: 8,
   },
+  inviteRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  inviteButtonContainer: {
+    marginTop: 12,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: colors.backGrey,
+    borderColor: colors.whiteFive,
+    borderWidth: 1,
+    borderRadius: 100,
+    flexDirection: 'row',
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+  },
+  inviteButtonText: {
+    ...appStyles.bold14Text,
+    marginRight: 4,
+  },
 });
 
 type DiscountProps = {
@@ -104,6 +127,8 @@ const DiscountInfo: React.FC<DiscountProps> = ({
   const [rokebiCash, setRokebiCash] = useState('');
   const [checked, setChecked] = useState(true);
   const [editing, setEditing] = useState(false);
+  const navigation = useNavigation();
+  const route = useRoute();
 
   const disabledDeductAll = useMemo(
     () =>
@@ -291,6 +316,35 @@ const DiscountInfo: React.FC<DiscountProps> = ({
             />
           ) : null}
         </View>
+        <Pressable
+          onPress={() => {
+            navigate(navigation, route, 'MyPageStack', {
+              tab: 'HomeStack',
+              screen: 'Invite',
+            });
+          }}
+          style={styles.inviteButtonContainer}>
+          <View style={[styles.inviteRow, {gap: 2}]}>
+            <AppText
+              style={[
+                appStyles.semiBold16Text,
+                {color: colors.clearBlue, lineHeight: 24},
+              ]}>
+              {i18n.t('pym:invite:title')}
+            </AppText>
+            <Image
+              source={require('@/assets/images/esim/emojiMoney.png')}
+              style={{width: 22, height: 22}}
+              resizeMode="contain"
+            />
+          </View>
+          <View style={styles.inviteRow}>
+            <AppText style={styles.inviteButtonText}>
+              {i18n.t('pym:invite')}
+            </AppText>
+            <AppSvgIcon name="rightArrow10" />
+          </View>
+        </Pressable>
       </View>
     </>
   );
