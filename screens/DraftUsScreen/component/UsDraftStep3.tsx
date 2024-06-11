@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: colors.whiteFive,
     paddingVertical: 24,
+    paddingHorizontal: 20,
   },
 });
 
