@@ -169,13 +169,13 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
     (id?: string) => (
       <Pressable style={styles.coupon} onPress={() => setCouponId('')}>
         <AppSvgIcon name="btnCheck" focused={!id} />
-        <View style={styles.line} />
+        {dotLine()}
         <AppText style={appStyles.bold16Text}>
           {i18n.t('pym:coupon:none:sel')}
         </AppText>
       </Pressable>
     ),
-    [],
+    [dotLine],
   );
 
   return (
@@ -203,7 +203,11 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
           ListEmptyComponent={
             <View style={styles.empty}>
               <AppSvgIcon name="imgCoupon" />
-              <AppText style={[appStyles.bold14Text, {color: colors.warmGrey}]}>
+              <AppText
+                style={[
+                  appStyles.bold14Text,
+                  {color: colors.warmGrey, marginTop: 8},
+                ]}>
                 {i18n.t('coupon:none')}
               </AppText>
             </View>

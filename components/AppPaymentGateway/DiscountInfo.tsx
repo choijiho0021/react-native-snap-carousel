@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingLeft: 16,
     marginRight: 8,
+    height: 50,
   },
   button: {
     marginTop: 12,
@@ -61,10 +62,6 @@ const styles = StyleSheet.create({
     borderColor: colors.clearBlue,
     borderWidth: 1,
     borderRadius: 3,
-  },
-  cancelButton: {
-    justifyContent: 'flex-end',
-    marginLeft: 10,
   },
   divider: {
     height: 10,
@@ -79,6 +76,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     marginTop: 13,
+    marginRight: 8,
   },
 });
 
@@ -240,7 +238,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
           <AppText style={[styles.title, {marginLeft: 8}]}>
             {i18n.t('acc:balance')}
           </AppText>
-          {onPress && isCashNotEmpty ? (
+          {isCashNotEmpty ? (
             <AppStyledText
               text={i18n.t('acc:balance:hold')}
               textStyle={{...appStyles.bold16Text, color: colors.clearBlue}}
@@ -249,7 +247,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
           ) : null}
         </View>
         <View key="selcash" style={styles.row}>
-          {onPress ? (
+          {onPress && isCashNotEmpty ? (
             <AppTextInput
               showCancel={(utils.stringToNumber(rokebiCash) || 0) > 0}
               containerStyle={styles.input}
@@ -277,14 +275,6 @@ const DiscountInfo: React.FC<DiscountProps> = ({
               {i18n.t('acc:balance:none')}
             </AppText>
           )}
-          {/* {(utils.stringToNumber(rokebiCash) || 0) > 0 && (
-              <AppButton
-                style={styles.cancelButton}
-                titleStyle={{color: colors.clearBlue}}
-                iconName="btnSearchCancel"
-                onPress={() => setRokebiCash('0')}
-              />
-            )} */}
           {onPress ? (
             <AppButton
               style={styles.button}

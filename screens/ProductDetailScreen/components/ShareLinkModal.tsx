@@ -101,9 +101,6 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
     [params],
   );
 
-  useEffect(() => {
-    console.log('@@@ params : ', params);
-  }, [params]);
   const [isShareDisabled, setIsShareDisabled] = useState(false);
 
   const onShare = useCallback(async (link) => {

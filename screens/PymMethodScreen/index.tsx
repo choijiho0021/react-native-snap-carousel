@@ -122,7 +122,6 @@ const styles = StyleSheet.create({
   confirm: {
     height: 52,
     backgroundColor: colors.clearBlue,
-    marginTop: 32,
   },
 });
 
