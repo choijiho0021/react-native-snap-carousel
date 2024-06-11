@@ -107,6 +107,11 @@ const DiscountInfo: React.FC<DiscountProps> = ({
   const [checked, setChecked] = useState(true);
   const [editing, setEditing] = useState(false);
 
+  const isEmptyCash = useMemo(
+    () => (account?.balance || 0) === 0,
+    [account.balance],
+  );
+
   const disabledDeductAll = useMemo(
     () =>
       (account?.balance || 0) === utils.stringToNumber(rokebiCash) ||
@@ -249,7 +254,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
           ) : null}
         </View>
         <View key="selcash" style={styles.row}>
-          {onPress ? (
+          {onPress && !isEmptyCash ? (
             <AppTextInput
               showCancel={(utils.stringToNumber(rokebiCash) || 0) > 0}
               containerStyle={styles.input}
@@ -285,7 +290,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
                 onPress={() => setRokebiCash('0')}
               />
             )} */}
-          {onPress ? (
+          {onPress && !isEmptyCash ? (
             <AppButton
               style={styles.button}
               titleStyle={[styles.buttonTitle]}
