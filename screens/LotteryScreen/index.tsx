@@ -178,6 +178,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     navigation,
     route,
     onBack: () => {
+      if (isLoading) return true;
       setShowShareModal(false);
       navigation.goBack();
       return true;
@@ -453,20 +454,22 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       {shareView()}
-      <ScreenHeader
-        // backHandler={backHandler}
-        headerStyle={{backgroundColor: 'transparent', zIndex: 10}}
-        isStackTop
-        renderRight={
-          <AppSvgIcon
-            name="closeModal"
-            style={styles.btnCnter}
-            onPress={() => {
-              navigation.popToTop();
-            }}
-          />
-        }
-      />
+      {!isLoading && (
+        <ScreenHeader
+          // backHandler={backHandler}
+          headerStyle={{backgroundColor: 'transparent', zIndex: 10}}
+          isStackTop
+          renderRight={
+            <AppSvgIcon
+              name="closeModal"
+              style={styles.btnCnter}
+              onPress={() => {
+                navigation.popToTop();
+              }}
+            />
+          }
+        />
+      )}
       {/* // 메인화면 */}
       {renderBody()}
 
