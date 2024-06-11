@@ -162,7 +162,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   action,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [phase, setPhase] = useState<Fortune>({text: '', num: 0});
+  const [phase, setPhase] = useState<Fortune>({text: '', num: 0, count: 0});
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState('');
@@ -219,7 +219,11 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         });
 
         console.log('@@@ 쿠폰 결과 resp.objects[0] : ', resp.objects[0]);
-        setPhase({text: resp.objects[0]?.phrase, num: resp.objects[0]?.num});
+        setPhase({
+          text: resp.objects[0]?.phrase,
+          num: resp.objects[0]?.num,
+          count: couponObj?.cnt || 0,
+        });
 
         setIsLoading(false);
 
@@ -397,7 +401,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         </View>
 
         <View style={{paddingHorizontal: 20, marginBottom: 16}}>
-          {fortune?.text && (
+          {fortune?.text && phase?.count > 0 && (
             <Pressable
               style={styles.naviCouponBtn}
               onPress={() => {
@@ -416,6 +420,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     fortune?.text,
     navigation,
     onShare,
+    phase?.count,
     renderShareButton,
     renderTitleAndPhase,
     screenNum,

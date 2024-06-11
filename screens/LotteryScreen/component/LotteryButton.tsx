@@ -89,7 +89,7 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
   }
 
   return (
-    fortune?.count >= 0 && (
+    fortune?.count > 0 && (
       <Pressable
         style={[
           styles.fortuneBtnContainer,
