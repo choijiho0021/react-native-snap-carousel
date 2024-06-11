@@ -1,15 +1,14 @@
-import React, {useCallback, useEffect, useMemo} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
-
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppIcon from '@/components/AppIcon';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
-import {Fortune} from '@/redux/modules/account';
+import {Fortune, isFortuneHistory} from '@/redux/modules/account';
 
 const styles = StyleSheet.create({
   fortuneBtnContainer: {
@@ -58,7 +57,7 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
   }, [fortune, navigation]);
 
   // 운세 문구가 있지만 추첨권이 0개인 경우 다시보기
-  if (fortune?.count === 0 && fortune?.text !== '') {
+  if (isFortuneHistory(fortune)) {
     return (
       <Pressable
         style={styles.fortuneBtnContainer}
@@ -81,6 +80,7 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
               flex: 1,
               justifyContent: 'center',
               alignItems: 'center',
+              width: 128,
             }}
           />
         </View>
@@ -89,7 +89,7 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
   }
 
   return (
-    fortune?.count > 0 && (
+    fortune?.count >= 0 && (
       <Pressable
         style={[
           styles.fortuneBtnContainer,
@@ -117,6 +117,7 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
               flex: 1,
               justifyContent: 'center',
               alignItems: 'center',
+              width: pending ? 146 : 105,
             }}
           />
         </View>

@@ -194,6 +194,10 @@ export type AccountAuth = {
   token?: string;
 };
 
+export const isFortuneHistory = (fortune: Fortune) => {
+  return fortune?.count === 0 && fortune?.text !== '';
+};
+
 export const auth = (state: AccountModelState): AccountAuth => ({
   user: state.mobile,
   pass: state.pin,

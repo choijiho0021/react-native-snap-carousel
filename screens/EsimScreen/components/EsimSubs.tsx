@@ -55,6 +55,7 @@ import HowToCallModal from './HowToCallModal';
 import HtQrModal from './HtQrModal';
 import AppNotiBox from '@/components/AppNotiBox';
 import Env from '@/environment';
+import {isPending} from '@reduxjs/toolkit';
 
 const {isIOS} = Env.get();
 const styles = StyleSheet.create({
@@ -221,6 +222,13 @@ const styles = StyleSheet.create({
     marginRight: 5,
     color: colors.blue,
   },
+
+  border: {
+    borderRadius: 3,
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
+  },
+
   shadow: {
     borderRadius: 3,
     borderWidth: 1,
@@ -1034,6 +1042,8 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           styles.usageListContainer,
           expired || mainSubs.giftStatusCd === 'S'
             ? styles.cardExpiredBg
+            : isTypeDraft
+            ? styles.border
             : styles.shadow,
           isTypeDraft && {paddingBottom: 16},
         ]}>

@@ -125,13 +125,14 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 20,
   },
-  textContainer: {
+  charmContainer: {
     borderRadius: 20,
     paddingHorizontal: 30,
     paddingTop: 30,
     paddingBottom: 25,
     alignItems: 'center',
     borderColor: 'rgb(38, 203, 149)',
+    width: 279,
     borderWidth: 1,
   },
   titleText: {
@@ -197,7 +198,7 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
               colors={['rgb(169,241,208)', 'rgb(10 ,144 ,104)']}
               style={styles.gradientContainer}
             />
-            <View style={styles.textContainer}>
+            <View style={styles.charmContainer}>
               <AppText style={styles.titleText}>
                 {i18n.t('esim:lottery:modal:lose:text')}
               </AppText>
@@ -326,7 +327,7 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
             visible={showSnackbar !== ''}
             onClose={() => setShowSnackbar('')}
             textMessage={i18n.t(showSnackbar)}
-            bottom={-10}
+            bottom={10}
           />
         )}>
         {renderBody()}

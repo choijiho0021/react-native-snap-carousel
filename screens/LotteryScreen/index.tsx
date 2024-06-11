@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     top: 0,
-    height: '110%',
+    height: '115%',
   },
 });
 
@@ -277,7 +277,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         />
         <View style={{paddingVertical: 120, paddingHorizontal: 40}}>
           {renderTitleAndPhase()}
-          <View style={[styles.imageContainer, {marginTop: 10}]}>
+          <View style={[styles.imageContainer, {marginTop: 20}]}>
             <Image
               style={{
                 width: 200,
@@ -317,7 +317,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     } catch (e) {
       console.log('@@@@ share error : ', e);
     }
-  }, [screenNum]);
+  }, []);
 
   const onClick = useCallback(() => {
     // 2초 동안 Loading 표시해주기 코드
