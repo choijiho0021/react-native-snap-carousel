@@ -1,7 +1,7 @@
 import {RootState} from '@reduxjs/toolkit';
 import {bindActionCreators} from 'redux';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Image, Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {AccountModelState} from '@/redux/modules/account';
 import AppText from '@/components/AppText';
@@ -77,6 +77,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginTop: 13,
     marginRight: 8,
+  },
+  inviteRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  inviteButtonContainer: {
+    marginTop: 12,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: colors.backGrey,
+    borderColor: colors.whiteFive,
+    borderWidth: 1,
+    borderRadius: 100,
+    flexDirection: 'row',
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+  },
+  inviteButtonText: {
+    ...appStyles.bold14Text,
+    marginRight: 4,
   },
 });
 
@@ -291,6 +312,32 @@ const DiscountInfo: React.FC<DiscountProps> = ({
             />
           ) : null}
         </View>
+        <Pressable
+          onPress={() => {
+            console.log('@@@@ Pressable');
+          }}
+          style={styles.inviteButtonContainer}>
+          <View style={[styles.inviteRow, {gap: 2}]}>
+            <AppText
+              style={[
+                appStyles.semiBold16Text,
+                {color: colors.clearBlue, lineHeight: 24},
+              ]}>
+              {i18n.t('pym:invite:title')}
+            </AppText>
+            <Image
+              source={require('@/assets/images/esim/emojiMoney.png')}
+              style={{width: 22, height: 22}}
+              resizeMode="contain"
+            />
+          </View>
+          <View style={styles.inviteRow}>
+            <AppText style={styles.inviteButtonText}>
+              {i18n.t('pym:invite')}
+            </AppText>
+            <AppSvgIcon name="rightArrow10" />
+          </View>
+        </Pressable>
       </View>
     </>
   );

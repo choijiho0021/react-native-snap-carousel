@@ -1148,6 +1148,9 @@
   "pym:item:rkbcash": "로깨비캐시 사용",
   "pym:deductAll": "모두 사용",
 
+  "pym:invite:title": "더 할인받고 구매하려면?!",
+  "pym:invite": "친구 초대",
+
   "pym:method:vbank": "무통장 입금 (가상 계좌)",
   "pym:method:vbank:input": "입금 은행을 선택해주세요",
   "pym:vbank:receipt": "현금 영수증",
