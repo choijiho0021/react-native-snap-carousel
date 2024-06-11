@@ -273,7 +273,7 @@
   "resign:confirmModal": "{{info}}\n\n정말 탈퇴하시겠습니까?",
   "resign:finished": "계정 탈퇴가 정상적으로 처리되었습니다.\n이용해주셔서 감사합니다.",
   "resign:placeholder": "기타인 경우 이유를 입력해주세요.\n서비스 개선에 적극적으로 반영하겠습니다.",
-  "resign:fail": "네트워크 문제로 요청이 처리되지 않았습니다.\n인터넷 연결 확인 후 다시 시도 해 주세요[",
+  "resign:fail": "네트워크 문제로 요청이 처리되지 않았습니다.\n인터넷 연결 확인 후 다시 시도해 주세요[",
 
   "set:globalMarket": "Global Market",
 
@@ -1696,7 +1696,8 @@
   "promo:login": "로그인 후 이벤트 참여하기",
   "promo:donate": "기부 동참하기",
   "promo:donate:success": "로깨비 환경 보호 캠페인에 함께해 주셔\n서감사합니다.\n여러분의 기부로 더 나은 지구를 만들 수 있어요!",
-  "promo:donate:fail": "이미 사용 또는 기부 동참한 캐시입니다.",
+  "promo:donate:fail": "네트워크 문제로 요청이 처리되지 않았습니다.\n인터넷 연결 확인 후 다시 시도해 주세요.",
+  "promo:donate:already": "이미 사용 또는 기부 동참한 캐시입니다.",
 
   "local:ok": "네! 확인했어요",
   "local:modal:title": "{{localOpName}} 상품 구매 전\n꼭 확인해주세요!",

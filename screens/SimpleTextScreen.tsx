@@ -390,17 +390,26 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
       setBtnDisabled(true);
 
       if (resp.result === 0) {
+        const isDonated = resp?.objects?.total === 0;
+
         action.account.getAccount({
           iccid: account.iccid,
           token: account.token,
         });
 
-        AppAlert.info(i18n.t('promo:donate:success'), '', () => {
-          navigation.popToTop();
-          navigation.navigate('MyPageStack', {
-            screen: 'CashHistory',
-          });
-        });
+        AppAlert.info(
+          i18n.t(isDonated ? 'promo:donate:already' : 'promo:donate:success'),
+          '',
+          () => {
+            if (!isDonated) {
+              navigation.popToTop();
+              navigation.navigate('MyPageStack', {
+                screen: 'CashHistory',
+                initial: false,
+              });
+            }
+          },
+        );
       } else {
         AppAlert.info(i18n.t('promo:donate:fail'));
       }
@@ -456,6 +465,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
               style={styles.btnClose}
               titleStyle={appStyles.medium18}
               title={i18n.t('close')}
+              onPress={() => navigation.goBack()}
             />
             <AppButton
               style={styles.btnDonate}
