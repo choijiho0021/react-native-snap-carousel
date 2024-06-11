@@ -751,8 +751,8 @@
   "esim:howToCall:etcInfo:subtitle2:ais:txt": "*121*2# + 통화 누른 후 수신된 문자로 확인 가능",
   "esim:howToCall:etcInfo:subtitle2:dtac:txt": "*101*9# + 통화 눌러 확인 가능",
 
-  "esim:lottery:tooltip1": "여행 운세 뽑고, ",
-  "esim:lottery:tooltip2": "랜덤 쿠폰 ",
+  "esim:lottery:tooltip1": "여행 운세 뽑고,",
+  "esim:lottery:tooltip2": "랜덤 쿠폰",
   "esim:lottery:tooltip3": "까지!",
   "esim:lottery:start:pending": "이번 여행\n나의 운세는?",
   "esim:lottery:start": "여행 운세 뽑고, 쿠폰까지!",

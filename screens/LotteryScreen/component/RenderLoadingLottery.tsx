@@ -17,12 +17,13 @@ const styles = StyleSheet.create({
     height: 248,
     position: 'relative',
   },
+
   lottieView: {
-    width: '94%',
-    height: '94%',
+    width: '95%',
+    aspectRatio: 1,
     position: 'absolute',
-    top: 8,
-    left: 8,
+    top: 4,
+    left: 4,
   },
   appIcon: {
     width: 248,
@@ -41,11 +42,13 @@ const RenderLoadingLottery: React.FC<RenderLoadingLotteryProps> = ({}) => {
       <View style={styles.motionContainer}>
         <View style={styles.overlayContainer}>
           <LottieView
+            hardwareAccelerationAndroid
             autoPlay
             loop
             style={styles.lottieView}
             source={require('@/assets/animation/lucky.json')}
             resizeMode="cover"
+            renderMode="HARDWARE"
           />
           <AppIcon
             imgStyle={styles.appIcon}
