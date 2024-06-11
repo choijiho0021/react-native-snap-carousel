@@ -216,8 +216,11 @@ const QrInfoScreen = () => {
   const [cardState, setCardState] = useState<CardState>('N');
   const [isFail, setIsFail] = useState(false);
 
+  const canCheckEsim = useMemo(
+    () => params.mainSubs.partner?.startsWith('cmi') || false,
+    [params.mainSubs.partner],
+  );
   const scrollRef = useRef<ScrollView>();
-  const navigation = useNavigation();
 
   const getCardState = useCallback((state: string) => {
     switch (state) {
@@ -326,7 +329,9 @@ const QrInfoScreen = () => {
         <AppBackButton title={i18n.t('esim:qrInfo')} />
       </View>
       <ScrollView style={styles.container} ref={scrollRef}>
-        <View style={styles.guideBanner}>{renderInfo(scrollRef)}</View>
+        {canCheckEsim && (
+          <View style={styles.guideBanner}>{renderInfo(scrollRef)}</View>
+        )}
         <View style={{...styles.box, paddingBottom: 38}}>
           <AppText style={styles.title}>{i18n.t('esim:qr')}</AppText>
           {showQR(params.mainSubs)}
@@ -349,7 +354,7 @@ const QrInfoScreen = () => {
           )}
         </View>
 
-        {params.mainSubs.partner?.startsWith('cmi') && (
+        {canCheckEsim && (
           <View style={{...styles.box, paddingHorizontal: 0}}>
             <AppText
               style={[

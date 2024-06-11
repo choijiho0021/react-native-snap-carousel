@@ -81,14 +81,14 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
           color={isCanceled ? colors.warmGrey : colors.black}
           valueStyle={appStyles.price}
           balanceStyle={{
-            ...appStyles.normal16Text,
+            ...appStyles.robotoBold16Text,
             fontWeight: 'bold',
             fontSize: isDeviceSize('medium') ? 22 : 24,
           }}
           currencyStyle={{
             ...appStyles.normal16Text,
             fontWeight: 'bold',
-            fontSize: isDeviceSize('medium') ? 20 : 22,
+            fontSize: isDeviceSize('medium') ? 18 : 20,
             top: -1,
           }}
           format="price"

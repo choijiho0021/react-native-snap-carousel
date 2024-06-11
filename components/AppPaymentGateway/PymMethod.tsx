@@ -183,37 +183,14 @@ const PymMethod: React.FC<PymMethodProps> = ({
     );
   }, [id, onPress, rcptType, value]);
 
-  return disabled ? (
-    (['easy', 'card'] as const).map((k, i) => (
-      <View style={styles.container}>
-        <View key={k} style={{marginBottom: 12}}>
-          <Pressable
-            style={[
-              styles.row,
-              {
-                paddingTop: 24,
-                paddingBottom: 16,
-                borderTopWidth: i > 0 ? 1 : 0,
-                borderTopColor: colors.lightGrey,
-              },
-            ]}>
-            <AppSvgIcon name="btnRadio" focused={false} />
-            <AppText
-              style={{
-                ...appStyles.bold16Text,
-                marginLeft: 6,
-                color: colors.greyish,
-              }}>
-              {i18n.t(`pym:method:${k}`)}
-            </AppText>
-          </Pressable>
-        </View>
-      </View>
-    ))
-  ) : (
+  return (
     <DropDownHeader
       title={i18n.t('pym:method')}
-      summary={i18n.t(value.startsWith('card') ? `pym:${value}` : value)}>
+      summary={
+        disabled
+          ? ''
+          : i18n.t(value.startsWith('card') ? `pym:${value}` : value)
+      }>
       <View style={styles.container}>
         {(['easy', 'card'] as const).map((k, i) => (
           <View key={k} style={{marginBottom: 24}}>
@@ -222,7 +199,7 @@ const PymMethod: React.FC<PymMethodProps> = ({
                 styles.row,
                 {
                   paddingTop: 24,
-                  paddingBottom: method === k ? 16 : 0,
+                  paddingBottom: !disabled && method === k ? 16 : 0,
                   borderTopWidth: i > 0 ? 1 : 0,
                   borderTopColor: colors.lightGrey,
                 },
@@ -237,12 +214,12 @@ const PymMethod: React.FC<PymMethodProps> = ({
                   }
                 }
               }}>
-              <AppSvgIcon name="btnRadio" focused={method === k} />
+              <AppSvgIcon name="btnRadio" focused={!disabled && method === k} />
               <AppText style={{...appStyles.bold16Text, marginLeft: 6}}>
                 {i18n.t(`pym:method:${k}`)}
               </AppText>
             </Pressable>
-            {k === method ? (
+            {!disabled && k === method ? (
               k === 'easy' ? (
                 <PymButtonList
                   selected={selected}

@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
   empty: {
     flex: 1,
     alignItems: 'center',
-    marginTop: '30%',
+    marginTop: '20%',
   },
   middleDot: {
     ...appStyles.medium14,
@@ -243,21 +243,16 @@ const CouponScreen: React.FC<CouponProps> = ({
               style={{
                 ...appStyles.medium16,
                 flex: 1,
+                height: 40,
                 lineHeight: undefined,
               }}
+              clearButtonMode="while-editing"
               placeholder={i18n.t('coupon:inputCode')}
               value={value}
               onChangeText={setCode}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
             />
-            {value.length > 0 && focused && (
-              <AppButton
-                style={{justifyContent: 'flex-end', marginLeft: 10}}
-                iconName="btnSearchCancel"
-                onPress={() => setCode('')}
-              />
-            )}
           </View>
           <AppButton
             style={styles.regBtn}
@@ -272,7 +267,7 @@ const CouponScreen: React.FC<CouponProps> = ({
         <AppText style={styles.title}>{i18n.t('coupon:mine')}</AppText>
       </>
     ),
-    [focused, regCoupon],
+    [regCoupon],
   );
 
   return (
@@ -295,7 +290,11 @@ const CouponScreen: React.FC<CouponProps> = ({
         ListEmptyComponent={
           <View style={styles.empty}>
             <AppSvgIcon name="imgCoupon" />
-            <AppText style={[appStyles.bold14Text, {color: colors.warmGrey}]}>
+            <AppText
+              style={[
+                appStyles.bold14Text,
+                {color: colors.warmGrey, marginTop: 8},
+              ]}>
               {i18n.t('coupon:none')}
             </AppText>
           </View>

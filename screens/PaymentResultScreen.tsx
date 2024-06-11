@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     borderWidth: 1,
     borderTopEndRadius: 12,
+    borderTopLeftRadius: 12,
     borderBottomEndRadius: 3,
     borderColor: colors.whiteFive,
     shadowColor: 'rgba(166, 168, 172, 0.16)',
