@@ -1,6 +1,7 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
+  AppState,
   Image,
   ImageBackground,
   Platform,
@@ -167,6 +168,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState('');
+  const appState = useRef('unknown');
 
   const [coupon, setCoupon] = useState<LotteryCouponType>({
     cnt: 0,
@@ -195,6 +197,21 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const screenNum = useMemo(() => {
     return phase?.num || fortune?.num || 0;
   }, [fortune, phase?.num]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (['inactive', 'background'].includes(nextAppState)) {
+        console.log('App has background');
+        setShowShareModal(false);
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     if (isHistory) {
