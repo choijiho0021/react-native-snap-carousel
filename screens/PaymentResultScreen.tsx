@@ -55,9 +55,10 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     justifyContent: 'flex-start',
     borderWidth: 1,
-    borderTopEndRadius: 12,
+    borderTopRightRadius: 12,
     borderTopLeftRadius: 12,
-    borderBottomEndRadius: 3,
+    borderBottomLeftRadius: 3,
+    borderBottomRightRadius: 3,
     borderColor: colors.whiteFive,
     shadowColor: 'rgba(166, 168, 172, 0.16)',
     shadowOffset: {
@@ -379,7 +380,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
           />
           {!isSuccess && params?.errorMsg && (
             <>
-              <AppDashBar style={{width: '150%', right: 20}} />
+              {dotLine()}
 
               <View style={{gap: 6}}>
                 <View style={{gap: 6, flexDirection: 'row'}}>

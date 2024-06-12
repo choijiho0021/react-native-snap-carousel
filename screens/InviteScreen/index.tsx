@@ -336,7 +336,6 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
       <View style={appStyles.header}>
         <AppBackButton
           onPress={() => {
-            navigation.popToTop();
             navigation.goBack();
           }}
           title={i18n.t('inv:title')}
