@@ -2,6 +2,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   Image,
+  ImageBackground,
   Platform,
   Pressable,
   SafeAreaView,
@@ -195,6 +196,18 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     return phase?.num || fortune?.num || 0;
   }, [fortune, phase?.num]);
 
+  useEffect(() => {
+    if (isHistory) {
+      // 2초 동안 Loading 표시해주기 코드
+      setIsLoading(true);
+
+      // 뽑기 , 임시로 2초 타임아웃
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 2000);
+    }
+  }, [isHistory]);
+
   const lotteryCoupon = useCallback(async () => {
     API.Account.lotteryCoupon({
       iccid,
@@ -295,11 +308,11 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const shareInstaStory = useCallback(async () => {
     try {
       const uri = await ref.current?.capture?.();
-      const image = Platform.OS === 'android' ? uri : `file://${uri}`;
 
       if (uri) {
         const shareOptions = {
-          stickerImage: image,
+          stickerImage: uri,
+          // ImageBackground: image,
           backgroundBottomColor: colors.black,
           backgroundTopColor: colors.black,
           social: Share.Social.INSTAGRAM_STORIES,
