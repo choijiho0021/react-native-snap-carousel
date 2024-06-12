@@ -22,7 +22,7 @@ import AppText from '@/components/AppText';
 import KakaoSDK from '@/components/NativeModule/KakaoSDK';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {AccountModelState} from '@/redux/modules/account';
+import {AccountModelState, Fortune} from '@/redux/modules/account';
 import {utils} from '@/utils/utils';
 
 const {isProduction, webViewHost, isIOS} = Env.get();
@@ -87,9 +87,6 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
   onShareInsta,
   captureRef,
 }) => {
-  // 연타 방지
-  const [isShareDisabled, setIsShareDisabled] = useState(false);
-
   const uploadImage = useCallback(async () => {
     const uri = await captureRef.current?.capture?.();
 
@@ -122,7 +119,6 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
       }
     } catch (e) {
       console.log('@@@ uploadImage Fail : ', e);
-      setIsShareDisabled(false);
     }
 
     return '';
@@ -151,22 +147,13 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
     ) => {
       getBase64(imgLink).then(async (base64) => {
         try {
-          let resp: Promise<any>;
-
           if (type === 'single') {
-            resp = await Share.shareSingle({...shareOptions, url: base64});
+            Share.shareSingle({...shareOptions, url: base64});
           } else if (type === 'open') {
-            resp = await Share.open({...shareOptions, url: base64});
-          }
-
-          if (resp) {
-            resp.then(() => {
-              setIsShareDisabled(false);
-            });
+            Share.open({...shareOptions, url: base64});
           }
         } catch (e) {
           console.log('@@@@ share error : ', e);
-          setIsShareDisabled(false);
         }
       });
     },
@@ -209,7 +196,6 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
       });
 
       console.log('@@@ onPressKakao Result : ', resp);
-      setIsShareDisabled(false);
     },
 
     [],
@@ -250,14 +236,6 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
 
   const onSharePress = useCallback(
     async (type: SharePlatfromType) => {
-      setIsShareDisabled(true);
-
-      console.log('@@@ isShareDisabled : ', isShareDisabled);
-      if (isShareDisabled) {
-        console.log('@@@ 중복 클릭 방지');
-        return '';
-      }
-
       if (type === 'insta' && onShareInsta) {
         onShareInsta();
         return 'insta send success';
@@ -283,7 +261,7 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
         }
       });
     },
-    [iccid, isShareDisabled, onShareInsta, sharePlatform, token, uploadImage],
+    [iccid, onShareInsta, sharePlatform, token, uploadImage],
   );
 
   const renderContentFortune = useCallback(() => {

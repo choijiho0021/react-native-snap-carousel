@@ -247,7 +247,7 @@ export const renderInfo = (navigation, isReserving, fortune?: Fortune) => {
             </AppText>
           </View>
           <View style={{alignItems: 'flex-end', marginRight: 120}}>
-            <Triangle width={14} height={10} color={colors.violet500} />
+            <AppIcon name="triangle14" />
           </View>
         </View>
       </View>

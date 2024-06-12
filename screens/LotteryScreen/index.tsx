@@ -1,7 +1,9 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
+  AppState,
   Image,
+  ImageBackground,
   Platform,
   Pressable,
   SafeAreaView,
@@ -166,6 +168,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState('');
+  const appState = useRef('unknown');
 
   const [coupon, setCoupon] = useState<LotteryCouponType>({
     cnt: 0,
@@ -194,6 +197,33 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const screenNum = useMemo(() => {
     return phase?.num || fortune?.num || 0;
   }, [fortune, phase?.num]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (['inactive', 'background'].includes(nextAppState)) {
+        console.log('App has background');
+        setShowShareModal(false);
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isHistory) {
+      // 2초 동안 Loading 표시해주기 코드
+      setIsLoading(true);
+
+      // 뽑기 , 임시로 2초 타임아웃
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 2000);
+    }
+  }, [isHistory]);
 
   const lotteryCoupon = useCallback(async () => {
     API.Account.lotteryCoupon({
@@ -295,11 +325,10 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const shareInstaStory = useCallback(async () => {
     try {
       const uri = await ref.current?.capture?.();
-      const image = Platform.OS === 'android' ? uri : `file://${uri}`;
 
       if (uri) {
         const shareOptions = {
-          stickerImage: image,
+          backgroundImage: uri,
           backgroundBottomColor: colors.black,
           backgroundTopColor: colors.black,
           social: Share.Social.INSTAGRAM_STORIES,
