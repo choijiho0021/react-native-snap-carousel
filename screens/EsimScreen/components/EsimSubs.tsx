@@ -545,7 +545,8 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           {isEditMode
             ? renderSwitch()
             : mainSubs.flagImage !== '' &&
-              notCardInfo && (
+              !expired &&
+              mainSubs.giftStatusCd !== 'S' && (
                 <Image
                   source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
                   style={{
