@@ -176,7 +176,6 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
 }) => {
   const [oldCart, setOldCart] = useState<Partial<CartModelState>>();
   const isSuccess = useMemo(() => params?.pymResult || false, [params]);
-  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const {iccid, token, mobile} = account;
@@ -207,8 +206,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
       });
       navigation.navigate('MyPageStack', {screen: 'MyPage'});
       // 일반 상품, 충전 상품 -> eSIM 화면 이동
-    }
-    if (cart.esimIccid) {
+    } else if (cart.esimIccid) {
       // 충전 또는 연장 상품의 경우 충전내역으로 이동
       const main = order.subs?.find((s) => s.subsIccid === cart.esimIccid);
 
