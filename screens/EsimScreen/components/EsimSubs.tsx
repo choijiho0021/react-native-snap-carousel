@@ -553,7 +553,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
                     width: 40,
                     height: 30,
                     marginRight: 10,
-                    alignSelf: 'flex-start',
+                    alignSelf: 'center',
                   }}
                 />
               )}
