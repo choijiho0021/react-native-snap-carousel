@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 12,
-    height: 48,
+    height: 50,
     width: 96,
     borderColor: colors.clearBlue,
     borderWidth: 1,
@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginTop: 13,
     marginRight: 8,
+    height: 50,
   },
   inviteRow: {
     flexDirection: 'row',
@@ -318,10 +319,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
         </View>
         <Pressable
           onPress={() => {
-            navigate(navigation, route, 'MyPageStack', {
-              tab: 'HomeStack',
-              screen: 'Invite',
-            });
+            navigation.navigate('HomeStack', {screen: 'Invite'});
           }}
           style={styles.inviteButtonContainer}>
           <View style={[styles.inviteRow, {gap: 2}]}>

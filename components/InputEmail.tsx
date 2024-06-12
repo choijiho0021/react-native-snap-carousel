@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     borderColor: colors.lightGrey,
     paddingLeft: 16,
+    height: 50,
   },
   textInput: {
     ...appStyles.medium16,
@@ -182,7 +183,7 @@ const InputEmail: React.FC<InputEmailProps> = ({
                 ]}>
                 {domain || i18n.t('email:input')}
               </AppText>
-              <AppIcon name="triangle" />
+              <AppIcon name={domain ? 'triangle' : 'greyTriangle'} />
             </View>
           </Pressable>
         )}
