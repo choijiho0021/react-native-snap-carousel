@@ -267,16 +267,14 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
   const renderContentFortune = useCallback(() => {
     return ['kakao', 'sms', 'insta', 'more'].map((type) => (
       <View key={type} style={{justifyContent: 'center'}}>
-        <View style={{height: 80, rowGap: 6, alignContent: 'center'}}>
-          <AppSvgIcon
-            key={`${type}Icon`}
-            onPress={() => onSharePress(type as SharePlatfromType)}
-            name={`${type}Icon`}
-          />
-          <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
-            {i18n.t(`cart:share:${type}`)}
-          </AppText>
-        </View>
+        <Pressable onPress={() => onSharePress(type as SharePlatfromType)}>
+          <View style={{height: 80, rowGap: 6, alignContent: 'center'}}>
+            <AppSvgIcon key={`${type}Icon`} name={`${type}Icon`} />
+            <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>
+              {i18n.t(`cart:share:${type}`)}
+            </AppText>
+          </View>
+        </Pressable>
       </View>
     ));
   }, [onSharePress]);
