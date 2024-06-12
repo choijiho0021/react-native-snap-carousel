@@ -415,6 +415,14 @@ const TabNavigator = ({
       />
       <Tab.Screen
         name="MyPageStack"
+        listeners={({navigation, route}) => ({
+          tabPress: (e) => {
+            navigation.navigate('MyPageStack', {screen: 'MyPage'});
+
+            // 기본 이벤트 중단
+            e.preventDefault();
+          },
+        })}
         component={loggedIn ? MyPageStackComponent : AuthStack}
         options={({route}) => ({
           headerShown: false,

@@ -147,8 +147,6 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
     ) => {
       getBase64(imgLink).then(async (base64) => {
         try {
-          let resp: Promise<any>;
-
           if (type === 'single') {
             Share.shareSingle({...shareOptions, url: base64});
           } else if (type === 'open') {
