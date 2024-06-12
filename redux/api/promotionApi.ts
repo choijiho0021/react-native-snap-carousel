@@ -267,10 +267,10 @@ const createContent = ({
   token?: string;
   link: string;
 }) => {
-  if (!msg || !nid || !image || !token) {
+  if (!nid || !image || !token) {
     return api.reject(
       api.E_INVALID_ARGUMENT,
-      `missing parameter: msg:${msg} nid:${nid} token:${token} image:${image}`,
+      `missing parameter: nid:${nid} token:${token} image:${image}`,
     );
   }
 
@@ -280,7 +280,7 @@ const createContent = ({
       method: 'POST',
       headers: api.withToken(token, 'json', {Accept: 'application/json'}),
       body: JSON.stringify({
-        msg,
+        msg: msg || ' ',
         ref_subscription: nid,
         image,
         gift_link: link,
