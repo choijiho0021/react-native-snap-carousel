@@ -311,8 +311,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
       if (uri) {
         const shareOptions = {
-          stickerImage: uri,
-          // ImageBackground: image,
+          backgroundImage: uri,
           backgroundBottomColor: colors.black,
           backgroundTopColor: colors.black,
           social: Share.Social.INSTAGRAM_STORIES,
