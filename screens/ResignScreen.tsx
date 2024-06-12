@@ -428,7 +428,7 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
           : i18n.t(radioButtons[reasonIdx].id),
       );
 
-      if (rsp.result && rsp.result >= 0) {
+      if (rsp.result >= 0) {
         showFinishModal();
       } else {
         showFailModal();
