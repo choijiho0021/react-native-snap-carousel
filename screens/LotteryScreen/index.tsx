@@ -175,6 +175,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState('');
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
+  const [isGetResult, setIsGetResult] = useState(false); // 모달창 뜨고 쿠폰함 바로가기 보여주기용
 
   const appState = useRef('unknown');
 
@@ -290,7 +291,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         // 뽑기 , 임시로 3초 타임아웃
         setTimeout(() => {
           action.account.checkLottery({iccid, token, prompt: 'check'});
-
+          setIsGetResult(true);
           setShowCouponModal(true);
         }, 3000);
       } else {
@@ -459,7 +460,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         </View>
 
         <View style={{paddingHorizontal: 20, marginBottom: 16}}>
-          {fortune?.text && phase?.count > 0 && (
+          {fortune?.text && phase?.count > 0 && isGetResult && (
             <Pressable
               style={styles.naviCouponBtn}
               onPress={() => {
@@ -476,6 +477,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     );
   }, [
     fortune?.text,
+    isGetResult,
     navigation,
     onShare,
     phase?.count,
