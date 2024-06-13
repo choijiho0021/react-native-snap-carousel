@@ -1,5 +1,6 @@
 /* eslint-disable eqeqeq */
 import _ from 'underscore';
+import CookieManager from '@react-native-cookies/cookies';
 import {retrieveData, storeData, removeData} from '@/utils/utils';
 import {AccountAuth} from '@/redux/modules/account';
 import api, {ApiResult} from './api';
@@ -156,6 +157,8 @@ const logIn = async ({user, pass}: {user: string; pass: string}) => {
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
   if (!pass)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: pass');
+
+  await CookieManager.clearAll();
 
   const rsp = await logInOnce({user, pass});
   if (rsp.result == 0) return Promise.resolve(rsp);
