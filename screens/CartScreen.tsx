@@ -2,30 +2,20 @@ import {useFocusEffect, RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Map as ImmutableMap} from 'immutable';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {
-  FlatList,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {FlatList, SafeAreaView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
-import AppAlert from '@/components/AppAlert';
-import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppText from '@/components/AppText';
 import CartItem from '@/components/CartItem';
 import ChargeSummary from '@/components/ChargeSummary';
 import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
-import api from '@/redux/api/api';
 import {RkbOrderItem} from '@/redux/api/cartApi';
 import {Currency} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
@@ -44,41 +34,18 @@ import {
 import i18n from '@/utils/i18n';
 import ChatTalk from '@/components/ChatTalk';
 import ScreenHeader from '@/components/ScreenHeader';
+import ButtonWithPrice from './EsimScreen/components/ButtonWithPrice';
 import AppStyledText from '@/components/AppStyledText';
+import {appStyles} from '@/constants/Styles';
 
 const {esimCurrency, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
-  sumBox: {
-    flex: 1,
-    height: '100%',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderTopColor: colors.lightGrey,
-    borderTopWidth: 1,
-  },
   container: {
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'stretch',
     backgroundColor: colors.white,
-  },
-  btnBuy: {
-    flex: 1,
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  btnBuyText: {
-    ...appStyles.normal16Text,
-    textAlign: 'center',
-  },
-  buttonBox: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    height: 52,
   },
   emptyView: {
     flex: 1,
@@ -127,6 +94,11 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     () => total.price.value === 0,
     [total.price.value],
   );
+
+  useEffect(() => {
+    if (checked.size > 0) action.cart.saveChecked({checked});
+  }, [action.cart, checked]);
+
   const onChecked = useCallback((key: string) => {
     setChecked((prev) => prev.update(key, (v) => !v));
   }, []);
@@ -240,12 +212,16 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     setQty((prev) =>
       cart.cartItems.reduce((acc, cur) => acc.set(cur.key, cur.qty), prev),
     );
-    setChecked((prev) =>
-      cart.cartItems.reduce(
-        (acc, cur) => acc.update(cur.key, (v) => (v === undefined ? true : v)),
-        prev,
-      ),
-    );
+
+    // checked 읽기
+    if (cart.cartItems && checked.size === 0) {
+      setChecked((prev) =>
+        cart.cartItems.reduce(
+          (acc, cur) => acc.update(cur.key, (v: any) => cur.checked),
+          prev,
+        ),
+      );
+    }
 
     if (!loading.current) {
       cart.cartItems.forEach((i) => {
@@ -257,7 +233,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         }
       });
     }
-  }, [action.product, cart.cartItems, product.prodList]);
+  }, [action.product, cart.cartItems, checked.size, product.prodList]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -300,6 +276,22 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     return utils.toCurrency(amount.value, amount.currency);
   }, [total]);
 
+  const priceTitle = useCallback(
+    () => (
+      <AppStyledText
+        text={i18n.t('cart:purchase', {cnt: total.cnt})}
+        textStyle={{
+          ...appStyles.normal18Text,
+          color: colors.white,
+          textAlign: 'center',
+          margin: 5,
+        }}
+        format={{b: {...appStyles.bold18Text, color: colors.white}}}
+      />
+    ),
+    [total.cnt],
+  );
+
   return _.isEmpty(list) ? (
     empty()
   ) : (
@@ -318,39 +310,13 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         onClose={() => setShowSnackbar(false)}
         textMessage={i18n.t('cart:remove')}
       />
-      <View style={styles.buttonBox}>
-        <View style={styles.sumBox}>
-          <AppText style={[styles.btnBuyText, {color: colors.black}]}>
-            {i18n.t('esim:charge:amount')}
-          </AppText>
-          <AppText style={[appStyles.bold16Text, {color: colors.black}]}>
-            {utils.currencyString(pymPrice.value)}
-          </AppText>
-          <AppText>{i18n.t(pymPrice.currency)}</AppText>
-        </View>
-        <Pressable
-          style={[
-            styles.btnBuy,
-            {
-              backgroundColor: disablePurchase
-                ? colors.warmGrey
-                : colors.clearBlue,
-            },
-          ]}
-          onPress={onPurchase}
-          disabled={disablePurchase}>
-          <AppStyledText
-            text={i18n.t('cart:purchase', {cnt: total.cnt})}
-            textStyle={{
-              ...appStyles.normal18Text,
-              color: colors.white,
-              textAlign: 'center',
-              margin: 5,
-            }}
-            format={{b: {...appStyles.bold18Text, color: colors.white}}}
-          />
-        </Pressable>
-      </View>
+      <ButtonWithPrice
+        amount={String(pymPrice.value) || '0'}
+        currency={i18n.t('esim:charge:addOn:currency')}
+        onPress={onPurchase}
+        disable={disablePurchase}
+        title={priceTitle()}
+      />
       <ChatTalk visible bottom={(isIOS ? 100 : 70) - tabBarHeight} />
     </SafeAreaView>
   );

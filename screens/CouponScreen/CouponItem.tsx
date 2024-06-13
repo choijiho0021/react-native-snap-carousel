@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     ...appStyles.medium14,
     lineHeight: 20,
     color: colors.warmGrey,
-    marginVertical: 6,
+    marginBottom: 6,
   },
   descBold: {
     ...appStyles.bold14Text,
@@ -23,22 +23,17 @@ const styles = StyleSheet.create({
   date: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 6,
   },
   dday: {
     ...appStyles.bold12Text,
-    color: colors.clearBlue,
-    backgroundColor: colors.veryLightBlue,
     height: 20,
-    paddingHorizontal: 6,
     paddingVertical: 2,
+    paddingHorizontal: 6,
     borderRadius: 3,
-    borderWidth: 1,
-    borderColor: colors.veryLightBlue,
     marginRight: 8,
-  },
-  urgent: {
-    backgroundColor: colors.backRed,
-    color: colors.redError,
+    backgroundColor: colors.veryLightBlue,
+    color: colors.clearBlue,
   },
 });
 
@@ -64,10 +59,10 @@ const CouponItem = ({item}: {item: RkbCoupon}) => {
       ) : percentage ? (
         <AppText style={appStyles.robotoBold22Text}>{percentage}</AppText>
       ) : null}
-      <AppText style={{...appStyles.bold16Text, marginTop: 8}}>
+      <AppText style={{...appStyles.bold16Text, marginTop: 8, marginBottom: 6}}>
         {prDisp}
       </AppText>
-      <View style={{marginVertical: 2}}>
+      <View>
         <AppStyledText
           textStyle={styles.desc}
           text={prDesc || ''}
@@ -80,10 +75,20 @@ const CouponItem = ({item}: {item: RkbCoupon}) => {
         />
       </View>
       <View style={styles.date}>
-        <AppText style={[styles.dday, diff < 10 ? styles.urgent : undefined]}>
-          {diff === 0 ? 'D-DAY' : `D-${diff}`}
-        </AppText>
-        <AppText style={appStyles.medium14}>
+        <View
+          style={[
+            styles.dday,
+            diff < 10 ? {backgroundColor: colors.backRed} : {},
+          ]}>
+          <AppText
+            style={[
+              appStyles.bold12Text,
+              diff < 10 ? {color: colors.redError} : {color: colors.clearBlue},
+            ]}>
+            {diff === 0 ? 'D-DAY' : `D-${diff}`}
+          </AppText>
+        </View>
+        <AppText style={{...appStyles.medium14, color: colors.black}}>
           {endDate.format('yyyy.MM.DD 까지')}
         </AppText>
       </View>

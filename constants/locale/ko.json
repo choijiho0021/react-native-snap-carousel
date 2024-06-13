@@ -47,6 +47,7 @@
   "noti": "알림",
   "done": "완료",
   "lowest": "최저",
+  "hour": "시간",
   "min": "분",
   "sec": "초",
   "now": "현재",
@@ -89,6 +90,8 @@
   "android": "안드로이드폰",
   "ios": "아이폰",
   "rkbCash": "캐시",
+  "failure": "실패",
+  "send": "발송",
 
   "purchase:date": "{{date}} 구매",
 
@@ -270,6 +273,7 @@
   "resign:confirmModal": "{{info}}\n\n정말 탈퇴하시겠습니까?",
   "resign:finished": "계정 탈퇴가 정상적으로 처리되었습니다.\n이용해주셔서 감사합니다.",
   "resign:placeholder": "기타인 경우 이유를 입력해주세요.\n서비스 개선에 적극적으로 반영하겠습니다.",
+  "resign:fail": "네트워크 문제로 요청이 처리되지 않았습니다.\n인터넷 연결 확인 후 다시 시도해 주세요[",
 
   "set:globalMarket": "Global Market",
 
@@ -356,7 +360,7 @@
   "addr:mandatory": "*",
 
   "his:detail": "상세 내역",
-  "his:etcCnt": " 외 %% 개",
+  "his:etcCnt": " 외 %%개",
   "his:purchaseDate": "구매 시각",
   "his:today": "다음 데이터 리셋 시간까지만 사용 가능",
   "his:remainDays": "남은 사용기간 동안 사용 가능",
@@ -582,7 +586,7 @@
   "cart:couponDiscount": "할인쿠폰 사용",
   "cart:dlvCost": "배송비",
   "cart:totalCost": "최종 결제 금액",
-  "cart:totalCntX": "총 %% 개",
+  "cart:totalCntX": "총 %%개",
   "cart:dlvCostNotice": "* 3만원 이상 구매시 배송료 무료",
   "cart:toCart": "카트에 넣기",
   // "cart:buy": "바로 구매",
@@ -602,6 +606,7 @@
   "cart:unpublishedError": "현재 판매 중지된 상품이 포함된 주문입니다.\n확인 버튼을 눌러 상품 정보 업데이트 후 다시 주문 부탁드립니다.😊",
 
   "cart:share:kakao": "카카오톡",
+  "cart:share:insta": "인스타그램\n스토리",
   "cart:share:sms": "메세지",
   "cart:share:more": "더보기",
   "cart:share": "공유하기",
@@ -628,7 +633,7 @@
   "esim:U": "사용완료",
   "esim:sendGift": "선물하기",
   "esim:draft": "총 %개 발권하기",
-  "esim:draft:failNoti": "<b>발권 실패! 고객센터로 문의해 주세요.</b>",
+  "esim:draft:failNoti": "<b>발송 지연! 고객센터로 문의해 주세요.</b>",
   "esim:etcCnt": "외 %%개",
   "esim:orderNo": "주문번호",
   "esim:orderDate": "주문일자",
@@ -650,7 +655,6 @@
   "esim:until:KST": "{{time}}",
   "esim:expired": "기한만료",
   "esim:expired:ht": "사용종료",
-  "esim:refresh": " \u00B7  화면을 아래로 당기면 상품을 새로 가져올 수 있어요\n \u00B7  도움이 필요하시면 상단 오른쪽의 물음표를 눌러주세요",
   "esim:qr": "QR 코드",
   "esim:showQR": "QR 코드 등록",
   "esim:manualInput": "수동 입력 정보",
@@ -746,6 +750,39 @@
   "esim:howToCall:etcInfo:subtitle2:dtac:title": "통화 잔액",
   "esim:howToCall:etcInfo:subtitle2:ais:txt": "*121*2# + 통화 누른 후 수신된 문자로 확인 가능",
   "esim:howToCall:etcInfo:subtitle2:dtac:txt": "*101*9# + 통화 눌러 확인 가능",
+
+  "esim:lottery:tooltip1": "여행 운세 뽑고,",
+  "esim:lottery:tooltip2": "랜덤 쿠폰",
+  "esim:lottery:tooltip3": "까지!",
+  "esim:lottery:start:pending": "이번 여행\n나의 운세는?",
+  "esim:lottery:start": "여행 운세 뽑고, 쿠폰까지!",
+  "esim:lottery:loading": "두근두근",
+  "esim:lottery:history": "여행 운세 다시보기",
+  "esim:lottery:title": "이번 여행 운세는?",
+  "esim:lottery:title:history": "나의 여행 운세",
+  "esim:lottery:wait": "'쿠폰 당첨 결과도 곧 나와요!'",
+  "esim:lottery:coupon:cnt": "열어보지 않은 쿠폰이 %d개 있네요.\n당첨 여부를 확인해보세요!",
+  "esim:lottery:button": "여행 운세 및 랜덤 쿠폰 뽑기",
+  "esim:lottery:notice:dot": "\u00B7",
+
+  "esim:lottery:notice1": "쿠폰 당첨 기회는 발권당 1번 부여됩니다.",
+
+  "esim:lottery:notice2": "여행 운세 및 쿠폰을 확인하지 않으면 쿠폰 당첨 기회가 누적되며,확인 시 누적된 기회가 일괄 소진됩니다.",
+  "esim:lottery:button:navi": "쿠폰함 바로가기",
+  "esim:lottery:modal:win": "행운이 찾아왔어요 :)\n쿠폰 당첨! ",
+  "esim:lottery:modal:win:text": "쿠폰함에서 확인해보세요.",
+  "esim:lottery:modal:win:coupon": "COUPON",
+  "esim:lottery:modal:lose": "아쉽게도 쿠폰에\n당첨되지 않았어요.",
+  "esim:lottery:modal:lose:text": "행운이 가득한\n 여행 부적을 드려요♥︎",
+  "esim:lottery:modal:save": "부적 저장",
+  "esim:lottery:share:desc": "[로밍도깨비 eSIM] 나의 여행 운세를 공유해요.\n이번 여행 운세가 궁금하다면, eSIM 구매 후 확인해 보세요!",
+  "esim:lottery:coupon:count": "내 쿠폰 기회 : <h>$count번</h>",
+
+  "esim:lottery:share:img": "이미지 저장",
+  "esim:lottery:share:sns": "SNS 공유",
+  "esim:lottery:share:story": "스토리 공유",
+
+  "esim:lottery:title:before": "랜덤 쿠폰까지!",
 
   "esim:time:usable": "상품 사용기간",
   "esim:time:dataReset": "데이터 리셋 시간",
@@ -1111,6 +1148,9 @@
   "pym:item:rkbcash": "로깨비캐시 사용",
   "pym:deductAll": "모두 사용",
 
+  "pym:invite:title": "더 할인받고 구매하려면?!",
+  "pym:invite": "친구 초대",
+
   "pym:method:vbank": "무통장 입금 (가상 계좌)",
   "pym:method:vbank:input": "입금 은행을 선택해주세요",
   "pym:vbank:receipt": "현금 영수증",
@@ -1132,6 +1172,12 @@
   "guide:detail": "더 자세히 알고 싶다면?",
 
   "noti:empty": "알림이 없습니다",
+  "noti:readAll": "모두 읽음",
+  "noti:now": "지금",
+  "noti:minBefore": "{{min}}분 전",
+  "noti:hourBefore": "{{hour}}시간 전",
+  "noti:dayBefore": "{{day}}일 전",
+  "noti:notice": "받은 알림은 180일 동안 보관됩니다.",
 
   "search:list": "최근 검색",
   "search:err": "최근 검색이 없습니다",
@@ -1313,8 +1359,8 @@
   "inv:upper4": "친구가 고객님의 초대로 로밍도깨비 eSIM을\n최초 가입하면, 바로 적립됩니다.",
   "inv:upper5": "※ 캐시 유효기간 : 지급일로부터 1년",
   "inv:lower1": "초대 인원에 제한이 없어요!",
-  "inv:lower2": "<b>한명</b>이 가입하면,",
-  "inv:lower3": "<b>열명</b>이 가입하면,",
+  "inv:lower2": "<b>한 명</b>이 가입하면,",
+  "inv:lower3": "<b>열 명</b>이 가입하면,",
   "inv:lower4": "로깨비",
   "inv:lower5": "cash",
   "inv:statDesc": "어쩌면 내 여행 데이터는 공짜!?",
@@ -1638,6 +1684,8 @@
   "cashHistory:type:point_deduct": "상품 구매",
   "cashHistory:type:point_add": "캐시 적립",
   "cashHistory:type:point_exp": "캐시 소멸",
+  "cashHistory:type:dona": "캐시 소멸",
+  "cashHistory:recharge:failure": "충전 실패! 고객센터로 문의해 주세요.",
 
   "promo:join:open": "이벤트 참여",
   "promo:join:joined": "이벤트 참여 완료",
@@ -1646,6 +1694,10 @@
   "promo:join:fail": "이벤트 참여 실패",
   "promo:join:ing": "시도중 ...",
   "promo:login": "로그인 후 이벤트 참여하기",
+  "promo:donate": "기부 동참하기",
+  "promo:donate:success": "로깨비 환경 보호 캠페인에 함께해 주셔\n서감사합니다.\n여러분의 기부로 더 나은 지구를 만들 수 있어요!",
+  "promo:donate:fail": "네트워크 문제로 요청이 처리되지 않았습니다.\n인터넷 연결 확인 후 다시 시도해 주세요.",
+  "promo:donate:already": "이미 사용 또는 기부 동참한 캐시입니다.",
 
   "local:ok": "네! 확인했어요",
   "local:modal:title": "{{localOpName}} 상품 구매 전\n꼭 확인해주세요!",
@@ -1680,5 +1732,22 @@
   "daily:filter:1024000": "올데이",
 
   "network:filter:fiveG": "5G속도",
-  "network:filter:else": "LTE/3G"
+  "network:filter:else": "LTE/3G",
+
+  "qrInfo:cardCheck:title": "단말 등록 확인",
+  "qrInfo:cardCheck:subTitle:N": "eSIM이 단말에\n잘 등록되었는지 확인해보세요!",
+  "qrInfo:cardCheck:subTitle:R": "단말에 <c>등록되지 않은</c>\neSIM입니다.",
+  "qrInfo:cardCheck:subTitle:DE": "단말에 <c>정상 등록</c>된\neSIM입니다",
+  "qrInfo:cardCheck:subTitle:E": "단말에 <c>정상 등록</c>된\neSIM입니다",
+  "qrInfo:cardCheck:subTitle:D": "단말에 <c>등록 후 삭제</c>된\neSIM입니다",
+  "qrInfo:cardCheck:desc:R": "계속 등록 실패한다면 고객센터에 문의하여 도움을 받아보세요!",
+  "qrInfo:cardCheck:desc:DE": "현지 도착 후 eSIM 회선을 켜서 사용하세요!",
+  "qrInfo:cardCheck:desc:E": "로밍도깨비와 함께 즐거운 여행하세요!",
+  "qrInfo:cardCheck:desc:D": "<b>재등록 가능한 상품</b>이므로, 사용을 원하시는 경우 다시 등록해보세요!",
+  "qrInfo:cardCheck:desc:fail": "<b>조회 실패하였습니다.</b> 다시 시도해 주세요.",
+  "qrinfo:scrollTxt1": "eSIM 등록 후!",
+  "qrinfo:scrollTxt2": "잘 등록된 건지 확인하고 싶다면?",
+  "qrInfo:cardCheck": "확인하기",
+  "qrInfo:reCardCheck": "다시 확인하기",
+  "qrInfo:cardCheck:wait": "확인중..."
 }

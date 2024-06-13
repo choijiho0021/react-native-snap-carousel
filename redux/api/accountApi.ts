@@ -3,7 +3,7 @@ import {Buffer} from 'buffer';
 import moment from 'moment';
 import utils from '@/redux/api/utils';
 import api, {ApiResult, ApiToken, DrupalNode, DrupalNodeJsonApi} from './api';
-import {CashExpire, CashHistory} from '@/redux/modules/account';
+import {CashExpire, CashHistory, Fortune} from '@/redux/modules/account';
 import {Currency} from './productApi';
 
 export type RkbAccount = {
@@ -209,6 +209,28 @@ const getAccount = ({iccid, token}: {iccid?: string; token?: string}) => {
   );
 };
 
+const donateCash = ({
+  iccid,
+  token,
+  ids,
+}: {
+  iccid?: string;
+  token?: string;
+  ids?: number[];
+}) => {
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.cash)}/${iccid}?_format=json`,
+    {
+      method: 'PATCH',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({dona: {ids}}),
+    },
+    (resp) => {
+      return resp;
+    },
+  );
+};
+
 const getCashHistory = ({iccid, token}: {iccid?: string; token?: string}) => {
   return api.callHttpGet<CashHistory>(
     `${api.httpUrl(api.path.rokApi.rokebi.cash)}/${iccid}?_format=json`,
@@ -381,6 +403,44 @@ const uploadPicture = ({
   );
 };
 
+const uploadFortuneImage = ({
+  image,
+  user,
+  token,
+}: {
+  image: RkbImage;
+  user?: string;
+  token?: string;
+}) => {
+  // images가 없는 경우에는 성공으로 처리
+  if (_.isEmpty(image))
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: image');
+  if (!user)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
+  if (!token)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
+
+  const url = `${api.httpUrl(
+    api.path.uploadFile,
+  )}/node/fortune_image/field_image?_format=hal_json`;
+
+  const headers = api.withToken(token, 'octet-stream', {
+    'Content-Disposition': `file;filename="${user}_fortune.${image.mime.replace(
+      'image/',
+      '',
+    )}"`,
+  });
+
+  return api.callHttp(
+    url,
+    {
+      method: 'POST',
+      headers,
+      body: Buffer.from(image.data, 'base64'),
+    },
+    toFile,
+  );
+};
 // get my coupons
 const getMyCoupon = ({token}: {token: string}) => {
   return api.callHttpGet(
@@ -411,6 +471,28 @@ const registerCoupon = ({
   );
 };
 
+// register coupon
+const lotteryCoupon = ({
+  prompt,
+  iccid,
+  token,
+  fid,
+}: {
+  prompt: 'lottery' | 'check' | 'image';
+  iccid: string;
+  token: string;
+  fid?: number;
+}) => {
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.lottery)}?_format=json`,
+    {
+      method: 'POST',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({prompt, fid}),
+    },
+  );
+};
+
 export default {
   toAccount,
   toFile,
@@ -423,4 +505,7 @@ export default {
   uploadPicture,
   getMyCoupon,
   registerCoupon,
+  lotteryCoupon,
+  donateCash,
+  uploadFortuneImage,
 };

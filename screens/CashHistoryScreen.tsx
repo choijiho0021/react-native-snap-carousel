@@ -329,10 +329,10 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   const showDetail = useCallback((item: CashHistory) => {
     const {order_id, expire_dt} = item;
 
-    if (order_id || expire_dt) {
+    if (order_id || expire_dt || ['cash_refund', 'dona'].includes(item?.type)) {
       return (
         <View style={{marginLeft: 73}}>
-          {item.order_id && (
+          {(item.order_id || item.type === 'dona') && (
             <AppText style={styles.detailText}>
               {item.order_title || ''}
             </AppText>
@@ -344,6 +344,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               })}
             </AppText>
           )}
+
           {item.type === 'cash_refund' && (
             <AppText style={styles.detailText}>
               {i18n.t('cashHistory:detail:refund')}
@@ -679,10 +680,22 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         }}>
         <Pressable style={styles.showExpPtBox} onPress={() => showExpirePt()}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <AppText style={appStyles.bold14Text}>
+            <AppText
+              style={[
+                appStyles.bold14Text,
+                {
+                  lineHeight: 24,
+                },
+              ]}>
               {i18n.t('cashHistory:expirePt')}
             </AppText>
-            <AppText style={appStyles.normal14Text}>
+            <AppText
+              style={[
+                appStyles.normal14Text,
+                {
+                  lineHeight: 24,
+                },
+              ]}>
               {i18n.t('cashHistory:in1Month')}
             </AppText>
           </View>

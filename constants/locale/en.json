@@ -47,6 +47,7 @@
   "noti": "Notice",
   "done": "Done",
   "lowest": "From",
+  "hour": "hour",
   "min": "min",
   "sec": "sec",
   "now": "now",
@@ -86,6 +87,8 @@
   "imei2:esim": "IMEI2(eSIM)",
   "android": "Android",
   "ios": "IOS",
+  "failure": "실패",
+  "send": "발송",
 
   "purchase:date": "{{date}}",
 
@@ -258,6 +261,7 @@
   "resign:confirmModal": "{{info}}\n\nDo you really wish to delete the account?",
   "resign:finished": "Your account has been successfully deleted.\nThank you for using our service.",
   "resign:placeholder": "Would you like to tell us more?",
+  "resign:fail": "네트워크 문제로 요청이 처리되지 않았습니다.\n인터넷 연결 확인 후 다시 시도 해 주세요[",
 
   "set:globalMarket": "Global Market",
 
@@ -588,7 +592,7 @@
   "esim:U": "Used up",
   "esim:sendGift": "Gift this Item",
   "esim:draft": "총 %개 발권하기",
-  "esim:draft:failNoti": "<b>발권 실패! 고객센터로 문의해 주세요.</b>",
+  "esim:draft:failNoti": "<b>발송 지연! 고객센터로 문의해 주세요.</b>",
   "esim:etcCnt": "%% case",
   "esim:draftNotice": "You can check the product information after draft!",
   "esim:orderNo": "Purchase ID",
@@ -948,6 +952,11 @@
   "guide:detail": "If you need More Info",
 
   "noti:empty": "No notifications",
+  "noti:readAll": "모두 읽음",
+  "noti:now": "지금",
+  "noti:minBefore": "{{min}}분 전",
+  "noti:hourBefore": "{{hour}}시간 전",
+  "noti:dayBefore": "{{day}}일 전",
 
   "search:list": "Recent Search",
   "search:err": "No recent search",
@@ -1431,6 +1440,7 @@
   "cashHistory:type:point_deduct": "point_deduct",
   "cashHistory:type:point_add": "point_add",
   "cashHistory:type:point_exp": "point_exp",
+  "cashHistory:recharge:failure": "충전 실패! 고객센터로 문의해 주세요.",
 
   "promo:join:open": "Paticipate the Event",
   "promo:join:joined": "Successfully Participated.",

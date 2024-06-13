@@ -15,7 +15,6 @@ import {RouteProp} from '@react-navigation/native';
 import {bindActionCreators, RootState} from 'redux';
 import {connect} from 'react-redux';
 import {StackNavigationProp} from '@react-navigation/stack';
-import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -287,6 +286,12 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
   const images = useMemo(() => Object.keys(guideImage), []);
   // const params = useMemo(() => route?.params || {}, [route?.params]);
 
+  useCallback(() => {
+    return () => {
+      navigation.popToTop();
+    };
+  }, [navigation]);
+
   useEffect(() => {
     const {iccid, uuid, imsi} = route?.params || {};
     if (iccid && uuid && imsi) {
@@ -430,6 +435,9 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
             overflow="hidden"
             sliderWidth={sliderWidth}
             itemWidth={sliderWidth}
+            pagingEnabled
+            enableMomentum={false}
+            decelerationRate={'fast'}
           />
 
           <Pagination

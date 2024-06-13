@@ -1,7 +1,7 @@
 import {RootState} from '@reduxjs/toolkit';
 import {bindActionCreators} from 'redux';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Image, Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {AccountModelState} from '@/redux/modules/account';
 import AppText from '@/components/AppText';
@@ -21,7 +21,8 @@ import DropDownHeader from '@/screens/PymMethodScreen/DropDownHeader';
 import ConfirmButton from './ConfirmButton';
 import AppStyledText from '../AppStyledText';
 import AppSvgIcon from '../AppSvgIcon';
-import moment from 'moment';
+import {navigate} from '@/navigation/navigation';
+import {useNavigation, useRoute} from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   row: {
@@ -34,7 +35,8 @@ const styles = StyleSheet.create({
   },
   title: {
     ...appStyles.bold16Text,
-    color: colors.warmGrey,
+    color: colors.black,
+    lineHeight: undefined,
     flex: 1,
   },
   buttonTitle: {
@@ -53,18 +55,15 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingLeft: 16,
     marginRight: 8,
+    height: 50,
   },
   button: {
     marginTop: 12,
-    height: 48,
+    height: 50,
     width: 96,
     borderColor: colors.clearBlue,
     borderWidth: 1,
     borderRadius: 3,
-  },
-  cancelButton: {
-    justifyContent: 'flex-end',
-    marginLeft: 10,
   },
   divider: {
     height: 10,
@@ -72,13 +71,36 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   nobal: {
-    color: colors.clearBlue,
+    color: colors.greyish,
     borderWidth: 1,
     borderColor: colors.lightGrey,
     borderRadius: 3,
     paddingVertical: 12,
     paddingHorizontal: 16,
     marginTop: 13,
+    marginRight: 8,
+    height: 50,
+  },
+  inviteRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  inviteButtonContainer: {
+    marginTop: 12,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: colors.backGrey,
+    borderColor: colors.whiteFive,
+    borderWidth: 1,
+    borderRadius: 100,
+    flexDirection: 'row',
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+  },
+  inviteButtonText: {
+    ...appStyles.bold14Text,
+    marginRight: 4,
   },
 });
 
@@ -104,8 +126,10 @@ const DiscountInfo: React.FC<DiscountProps> = ({
 }) => {
   const discount = useMemo(() => cart.pymReq?.discount, [cart.pymReq]);
   const [rokebiCash, setRokebiCash] = useState('');
-  const [checked, setChecked] = useState(true);
+  const [checked, setChecked] = useState(false);
   const [editing, setEditing] = useState(false);
+  const navigation = useNavigation();
+  const route = useRoute();
 
   const disabledDeductAll = useMemo(
     () =>
@@ -185,13 +209,19 @@ const DiscountInfo: React.FC<DiscountProps> = ({
         <View style={styles.container}>
           <View
             key="coupon"
-            style={[styles.row, {justifyContent: 'space-between'}]}>
+            style={[
+              styles.row,
+              {
+                justifyContent: 'space-between',
+                marginBottom: 12,
+              },
+            ]}>
             <AppText style={styles.title}>{i18n.t('pym:coupon')}</AppText>
             {(cart.promo?.length || 0) > 0 ? (
               <Pressable
                 style={styles.row}
                 onPress={() => toggleMaxPromo(checked)}>
-                <AppIcon name="btnCheck2" checked={checked} size={22} />
+                <AppIcon name="btnCheck3" checked={checked} size={22} />
                 <AppText style={{...appStyles.medium16, marginLeft: 8}}>
                   {i18n.t('pym:coupon:max')}
                 </AppText>
@@ -209,7 +239,16 @@ const DiscountInfo: React.FC<DiscountProps> = ({
                       : 'pym:no:coupon',
                   )
             }
-            titleStyle={appStyles.robotoBold16Text}
+            titleStyle={[
+              appStyles.robotoBold16Text,
+              {
+                color:
+                  (cart.promo?.length || 0) > 0
+                    ? colors.clearBlue
+                    : colors.greyish,
+                lineHeight: undefined,
+              },
+            ]}
             buttonTitle={i18n.t('pym:sel:coupon:title')}
             onPress={() => {
               onPress?.();
@@ -225,10 +264,10 @@ const DiscountInfo: React.FC<DiscountProps> = ({
           <AppText style={[styles.title, {marginLeft: 8}]}>
             {i18n.t('acc:balance')}
           </AppText>
-          {onPress && isCashNotEmpty ? (
+          {isCashNotEmpty ? (
             <AppStyledText
               text={i18n.t('acc:balance:hold')}
-              textStyle={{...appStyles.bold14Text, color: colors.clearBlue}}
+              textStyle={{...appStyles.bold16Text, color: colors.clearBlue}}
               data={{cash: utils.numberToCommaString(account.balance || 0)}}
             />
           ) : null}
@@ -241,7 +280,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
               onCancel={() => setRokebiCash('0')}
               style={{
                 ...styles.title,
-                color: colors.clearBlue,
+                color: isCashNotEmpty ? colors.clearBlue : colors.greyish,
               }}
               allowFontScaling={false}
               keyboardType="numeric"
@@ -262,15 +301,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
               {i18n.t('acc:balance:none')}
             </AppText>
           )}
-          {/* {(utils.stringToNumber(rokebiCash) || 0) > 0 && (
-              <AppButton
-                style={styles.cancelButton}
-                titleStyle={{color: colors.clearBlue}}
-                iconName="btnSearchCancel"
-                onPress={() => setRokebiCash('0')}
-              />
-            )} */}
-          {onPress && isCashNotEmpty ? (
+          {onPress ? (
             <AppButton
               style={styles.button}
               titleStyle={[styles.buttonTitle]}
@@ -278,14 +309,40 @@ const DiscountInfo: React.FC<DiscountProps> = ({
               // 보유캐시와 사용할 캐시가 같거나, 상품 결제 금액과 사용할 캐시가 같을 때 비활성화
               disabled={disabledDeductAll}
               disableStyle={{
-                backgroundColor: colors.lightGrey,
-                borderColor: colors.whiteTwo,
+                backgroundColor: colors.whiteTwo,
+                borderColor: colors.lightGrey,
               }}
               disableColor={colors.greyish}
               onPress={() => action.cart.deductRokebiCash(account.balance)}
             />
           ) : null}
         </View>
+        <Pressable
+          onPress={() => {
+            navigation.navigate('HomeStack', {screen: 'Invite'});
+          }}
+          style={styles.inviteButtonContainer}>
+          <View style={[styles.inviteRow, {gap: 2}]}>
+            <AppText
+              style={[
+                appStyles.semiBold16Text,
+                {color: colors.clearBlue, lineHeight: 24},
+              ]}>
+              {i18n.t('pym:invite:title')}
+            </AppText>
+            <Image
+              source={require('@/assets/images/esim/emojiMoney.png')}
+              style={{width: 22, height: 22}}
+              resizeMode="contain"
+            />
+          </View>
+          <View style={styles.inviteRow}>
+            <AppText style={styles.inviteButtonText}>
+              {i18n.t('pym:invite')}
+            </AppText>
+            <AppSvgIcon name="rightArrow10" />
+          </View>
+        </Pressable>
       </View>
     </>
   );

@@ -18,7 +18,6 @@ const styles = StyleSheet.create({
   notiText: {...appStyles.normal20Text, color: colors.white, lineHeight: 28},
   notiBoldText: {...appStyles.bold20Text, color: colors.white, lineHeight: 28},
   cancelItemFrame: {
-    paddingHorizontal: 16,
     borderWidth: 1,
     backgroundColor: colors.white,
     borderColor: colors.whiteFive,
@@ -55,6 +54,7 @@ const styles = StyleSheet.create({
   },
   dashContainer: {
     overflow: 'hidden',
+    backgroundColor: colors.white,
   },
   dashFrame: {
     borderStyle: 'dashed',
@@ -176,7 +176,11 @@ const ProductDetailRender: React.FC<ProductDetailRenderPros> = ({
       </View>
 
       <View key="cancelFrame" style={frameStyle || styles.cancelItemFrame}>
-        <ProductDetailList orderItems={orderItems} listTitle={listTitle} />
+        <ProductDetailList
+          orderItems={orderItems}
+          listTitle={listTitle}
+          style={{paddingHorizontal: 16}}
+        />
         {isBody && bodyComponent}
         {isFooter && footerComponent}
       </View>

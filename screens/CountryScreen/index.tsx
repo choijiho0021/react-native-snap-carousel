@@ -7,13 +7,12 @@ import {
   SafeAreaView,
   StyleSheet,
   View,
-  BackHandler,
+  Pressable,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {Map as ImmutableMap} from 'immutable';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
@@ -29,6 +28,9 @@ import Env from '@/environment';
 import TabBar from './TabBar';
 import ToolTip from './ToolTip';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
+import AppText from '@/components/AppText';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import {appStyles} from '@/constants/Styles';
 
 const {isIOS} = Env.get();
 
@@ -49,6 +51,13 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: colors.white,
     alignItems: 'center',
+  },
+  headPress: {
+    marginRight: 10,
+    height: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 20,
   },
 });
 
@@ -200,13 +209,16 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <AppBackButton
-          title={headerTitle}
-          style={{marginRight: 10, height: 56}}
+        <Pressable
+          style={styles.headPress}
           onPress={() => {
             navigation.goBack();
-          }}
-        />
+          }}>
+          <AppSvgIcon name="btnBack" />
+          <AppText style={[appStyles.subTitle, {marginLeft: 16, fontSize: 20}]}>
+            {headerTitle}
+          </AppText>
+        </Pressable>
         {(headerTitle.includes('(로컬망)') ||
           headerTitle.includes('(local)')) &&
           isFocused && <ToolTip />}

@@ -504,9 +504,9 @@ const resign = async (
       }),
     },
     ({result}) => {
-      return result?.code === 0
+      return result === 0
         ? api.success([])
-        : api.failure(result?.code, result?.error, result?.desc);
+        : api.failure(api.E_REQUEST_FAILED, 'resign is failed');
     },
   );
 };

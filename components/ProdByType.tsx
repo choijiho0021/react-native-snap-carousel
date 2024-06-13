@@ -77,8 +77,8 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
   ]);
   const [list, setList] = useState<DailyProdFilterList[]>([]);
 
-  const toNetworkFileter = useCallback((network?: string) => {
-    if (network === '5G/LTE') return 'fiveG';
+  const toNetworkFileter = useCallback((promoFlag?: string[]) => {
+    if (promoFlag?.includes('fiveG')) return 'fiveG';
     return 'else';
   }, []);
 
@@ -86,7 +86,7 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
     () =>
       prodData.filter((p) => {
         const networkMatch = networkFilter.includes(
-          toNetworkFileter(p.network),
+          toNetworkFileter(p.promoFlag),
         );
         const volumeMatch = filter === 'all' || p.volume === filter;
         return networkMatch && volumeMatch;
@@ -97,8 +97,8 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
   const showNetFilter = useMemo(
     () =>
       prodData.length > 1 &&
-      prodData.some((elm) => toNetworkFileter(elm.network) === 'fiveG') &&
-      prodData.some((elm) => toNetworkFileter(elm.network) === 'else'),
+      prodData.some((elm) => toNetworkFileter(elm.promoFlag) === 'fiveG') &&
+      prodData.some((elm) => toNetworkFileter(elm.promoFlag) === 'else'),
     [prodData, toNetworkFileter],
   );
 
@@ -155,6 +155,10 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
               onValueChange={setNetworkFileter}
             />
           ) : null}
+          {/* 위 필터 모두 없는 경우 기본 여백 추가 */}
+          {!(prodType === 'daily' && prodData.length > 0) && !showNetFilter && (
+            <View style={{height: 24}} />
+          )}
         </Fragment>
       }
       renderItem={renderItem}

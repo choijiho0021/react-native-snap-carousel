@@ -6,6 +6,7 @@ import React, {
   useState,
 } from 'react';
 import {
+  AppState,
   StyleSheet,
   TextInput,
   TextInputProps,
@@ -13,6 +14,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import _ from 'underscore';
+import moment, {Moment} from 'moment';
 import {useInterval} from '@/utils/useInterval';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -101,13 +103,65 @@ const InputPinInTime: React.FC<
   const [focused, setFocused] = useState(false);
   const ref = useRef<TextInput>();
 
+  const backgroundTimeRef = useRef<Moment>(); // background 시점 시간, listener 내부함수에 써야해서 ref 사용
+
+  const getBackgroundDuration = useCallback(() => {
+    const now = moment();
+
+    const second = backgroundTimeRef?.current
+      ? backgroundTimeRef.current.diff(now, 'seconds')
+      : 0;
+
+    if (backgroundTimeRef?.current) {
+      console.log(
+        '@@@ 줄어드는 시간 체크해보기 : ',
+        backgroundTimeRef.current.diff(now, 'seconds'),
+      );
+    }
+
+    return second;
+  }, []);
+
   useInterval(
     () => {
       if (duration > 0) setDuration((prev) => prev - 1);
-      else onTimeout();
+      else {
+        onTimeout();
+        setTimeoutFlag(true);
+      }
     },
     duration > 0 ? 1000 : null,
   );
+
+  const appState = useRef('unknown');
+
+  useEffect(() => {
+    if (appState.current === 'unknown') {
+      appState.current = 'setting';
+
+      console.log('@setting...');
+      AppState.addEventListener('change', (nextAppState) => {
+        console.log('@@@@@ nextAppState : ', nextAppState);
+
+        if (
+          appState.current.match(/inactive|background/) &&
+          nextAppState === 'active'
+        ) {
+          setDuration((prev) =>
+            prev + getBackgroundDuration() < 0
+              ? 0
+              : prev + getBackgroundDuration(),
+          );
+        }
+
+        if (nextAppState.match(/inactive|background/)) {
+          backgroundTimeRef.current = moment();
+        }
+
+        appState.current = nextAppState;
+      });
+    }
+  }, [getBackgroundDuration]);
 
   useEffect(() => {
     if (inputRef) {
@@ -117,6 +171,7 @@ const InputPinInTime: React.FC<
           setPin('');
           setDuration(0);
           setTimeoutFlag(false);
+          backgroundTimeRef.current = undefined;
         },
       };
     }
@@ -124,12 +179,14 @@ const InputPinInTime: React.FC<
 
   const init = useCallback(() => {
     setTimeoutFlag(false);
-
-    if (countdown) setDuration(props.duration);
+    if (countdown) {
+      setDuration(props.duration);
+    }
   }, [countdown, props.duration]);
 
   const clickable = props.clickable && _.size(pin) === 6;
 
+  // 왜 두번 실행?
   useEffect(() => {
     init();
     return () => {
@@ -192,14 +249,14 @@ const InputPinInTime: React.FC<
       </View>
       {countdown ? (
         <AppText style={styles.timer}>
-          {i18n.t('mobile:timeLeft') +
+          {`${
+            i18n.t('mobile:timeLeft') +
             Math.floor(duration / 60)
               .toString()
-              .padStart(2, '0') +
-            ':' +
-            Math.floor(duration % 60)
-              .toString()
-              .padStart(2, '0')}
+              .padStart(2, '0')
+          }:${Math.floor(duration % 60)
+            .toString()
+            .padStart(2, '0')}`}
         </AppText>
       ) : null}
       <View style={styles.helpBox}>

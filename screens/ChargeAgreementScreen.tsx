@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {StyleSheet, SafeAreaView, View, Pressable} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
@@ -182,6 +182,8 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
 }) => {
   const contents = useMemo(() => params.contents, [params.contents]);
   const usagePeriod = params?.usagePeriod;
+  const scrollRef = useRef<ScrollView>();
+
   const purchaseItems = useMemo(
     () =>
       params?.addOnProd
@@ -292,7 +294,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <ScreenHeader title={params.title} />
       <View style={{position: 'relative', flex: 1}}>
-        <ScrollView style={{flex: 1}}>
+        <ScrollView style={{flex: 1}} ref={scrollRef}>
           <SelectedProdTitle
             isdaily={params?.mainSubs?.daily === 'daily'}
             prodName={params?.mainSubs?.prodName || ''}
@@ -347,7 +349,12 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
         </ScrollView>
         <Pressable
           style={styles.agreement}
-          onPress={() => setIsPressed((prev) => !prev)}>
+          onPress={() => {
+            if (!isPressed) {
+              scrollRef?.current.scrollToEnd();
+            }
+            setIsPressed((prev) => !prev);
+          }}>
           <AppSvgIcon
             name={isPressed ? 'afterCheck' : 'beforeCheck'}
             style={{marginRight: 12}}

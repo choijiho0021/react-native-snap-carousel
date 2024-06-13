@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
     justifyContent: 'space-between',
     alignItems: 'center',
+    height: 50,
   },
   text: {
     ...appStyles.medium18,

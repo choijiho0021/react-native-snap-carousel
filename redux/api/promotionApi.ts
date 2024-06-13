@@ -267,10 +267,10 @@ const createContent = ({
   token?: string;
   link: string;
 }) => {
-  if (!msg || !nid || !image || !token) {
+  if (!nid || !image || !token) {
     return api.reject(
       api.E_INVALID_ARGUMENT,
-      `missing parameter: msg:${msg} nid:${nid} token:${token} image:${image}`,
+      `missing parameter: nid:${nid} token:${token} image:${image}`,
     );
   }
 
@@ -280,7 +280,7 @@ const createContent = ({
       method: 'POST',
       headers: api.withToken(token, 'json', {Accept: 'application/json'}),
       body: JSON.stringify({
-        msg,
+        msg: msg || ' ',
         ref_subscription: nid,
         image,
         gift_link: link,
@@ -380,6 +380,44 @@ const buildShareLink = async ({
     social: {
       title: i18n.t('share:title'),
       descriptionText: i18n.t('share:desc').replace('*', prodName),
+      imageUrl,
+    },
+    navigation: {
+      forcedRedirectEnabled: true,
+    },
+  };
+
+  const url = isShort
+    ? await dynamicLinks().buildShortLink(input)
+    : await dynamicLinks().buildLink(input);
+
+  return url;
+};
+
+// 공통으로 사용할 수 있는 buildLink 만들어보자
+const buildLinkFortune = async ({
+  imageUrl,
+  link,
+  desc,
+  isShort = true,
+}: {
+  imageUrl: string;
+  link: string;
+  desc: string;
+  isShort?: boolean;
+}) => {
+  const input = {
+    link,
+    domainUriPrefix: dynamicLink,
+    ios: {
+      bundleId: Platform.OS === 'ios' ? bundleId : iosBundleId,
+    },
+    android: {
+      packageName: 'com.rokebiesim',
+    },
+    social: {
+      title: i18n.t('share:title'),
+      descriptionText: desc,
       imageUrl,
     },
     navigation: {
@@ -504,5 +542,6 @@ export default {
   invite,
   buildLink,
   buildShareLink,
+  buildLinkFortune,
   getExtraCoupon,
 };

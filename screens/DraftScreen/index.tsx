@@ -125,6 +125,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
           token: token!,
           hidden: false,
         });
+
         navigation.navigate('DraftResult', {
           isSuccess: r?.payload?.result === 0,
         });

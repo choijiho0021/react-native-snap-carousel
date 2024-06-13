@@ -41,6 +41,11 @@ const getAccount = createAsyncThunk(
   API.Account.getAccount,
 );
 
+const checkLottery = createAsyncThunk(
+  'account/createLottery',
+  API.Account.lotteryCoupon,
+);
+
 const getCashHistory = createAsyncThunk(
   'account/getCashHistory',
   API.Account.getCashHistory,
@@ -120,6 +125,7 @@ const changePictureWithToast = reflectWithToast(
 // * - point_add : 포인트 지급
 // * - point_exp : 포인트 소멸
 
+export type Fortune = {text: string; num: number; count: number};
 export type SectionData = {title: string; data: CashHistory[]};
 export type CashHistory = {
   account_id: string;
@@ -179,12 +185,17 @@ export type AccountModelState = {
   isNewUser?: boolean;
   expirePt?: number;
   coupon: RkbCoupon[];
+  fortune?: Fortune;
 };
 
 export type AccountAuth = {
   user?: string;
   pass?: string;
   token?: string;
+};
+
+export const isFortuneHistory = (fortune: Fortune) => {
+  return fortune?.count === 0 && fortune?.text !== '';
 };
 
 export const auth = (state: AccountModelState): AccountAuth => ({
@@ -523,6 +534,18 @@ const slice = createSlice({
       }
     });
 
+    builder.addCase(checkLottery.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      if (result === 0 && objects.length > 0) {
+        state.fortune = {
+          count: objects[0]?.count,
+          text: objects[0]?.fortune,
+          num: objects[0]?.num,
+        } as Fortune;
+      }
+    });
+
     builder.addCase(getCashHistory.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
@@ -679,6 +702,7 @@ export const actions = {
   uploadPicture,
   registerMobile,
   getMyCoupon,
+  checkLottery,
 };
 export type AccountAction = typeof actions;
 

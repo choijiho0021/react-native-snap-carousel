@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
 export interface AppModalProps {
   visible: boolean;
   maxWidth?: string | number;
-  type?: 'normal' | 'close' | 'info' | 'redirect';
+  type?: 'normal' | 'close' | 'info' | 'redirect' | 'division';
   justifyContent?: 'center' | 'flex-end';
   title?: string;
   titleStyle?: TextStyle;
@@ -85,6 +85,7 @@ export interface AppModalProps {
   onCancelClose?: () => void;
   onRequestClose?: () => void;
   bottom?: () => React.ReactNode;
+  renderForward?: () => React.ReactNode;
 }
 
 const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
@@ -107,6 +108,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   visible,
   disableOkButton,
   safeAreaColor = 'rgba(0,0,0,0.5)',
+  renderForward,
   onOkClose = () => {},
   onCancelClose = () => {},
   onRequestClose = () => {
@@ -259,6 +261,26 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
             alignItems: 'center',
             marginHorizontal: contentStyle?.marginHorizontal,
           }}>
+          {type === 'division' && (
+            <View style={{width: '90%', marginBottom: 24}}>
+              <View
+                style={{
+                  marginHorizontal: 20,
+                  paddingTop: 25,
+                  alignSelf: 'flex-end',
+                }}>
+                <Pressable
+                  onPress={onOkClose}
+                  style={{
+                    borderColor: colors.white,
+                    borderWidth: 2,
+                    borderRadius: 100,
+                  }}>
+                  <AppIcon name="boldCancel" />
+                </Pressable>
+              </View>
+            </View>
+          )}
           <View
             style={[
               contentStyle || styles.inner,
@@ -283,6 +305,8 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
             {bottom ? bottom() : getButtonType()}
           </View>
         </View>
+
+        {renderForward && renderForward()}
       </SafeAreaView>
       {justifyContent === 'flex-end' && (
         <SafeAreaView style={{backgroundColor: 'white'}} />

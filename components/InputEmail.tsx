@@ -15,6 +15,7 @@ import AppTextInput from './AppTextInput';
 import Triangle from './Triangle';
 import validationUtil from '@/utils/validationUtil';
 import {API} from '@/redux/api';
+import AppIcon from './AppIcon';
 
 const styles = StyleSheet.create({
   row: {
@@ -29,13 +30,15 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     borderColor: colors.lightGrey,
     paddingLeft: 16,
+    height: 50,
   },
   textInput: {
     ...appStyles.medium16,
     color: colors.greyish,
     textAlignVertical: 'center',
-    paddingVertical: 13,
+    height: 50,
     flex: 1,
+    lineHeight: undefined,
   },
   container: {
     flexDirection: 'row',
@@ -45,7 +48,7 @@ const styles = StyleSheet.create({
   helpText: {
     ...appStyles.normal14Text,
     color: colors.clearBlue,
-    marginTop: 13,
+    marginTop: 6,
   },
 });
 
@@ -154,6 +157,7 @@ const InputEmail: React.FC<InputEmailProps> = ({
           autoCapitalize="none"
           ref={emailRef}
           value={email}
+          multiline={false}
           keyboardType="email-address"
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
@@ -179,7 +183,7 @@ const InputEmail: React.FC<InputEmailProps> = ({
                 ]}>
                 {domain || i18n.t('email:input')}
               </AppText>
-              <Triangle width={8} height={6} color={colors.warmGrey} />
+              <AppIcon name={domain ? 'triangle' : 'greyTriangle'} />
             </View>
           </Pressable>
         )}

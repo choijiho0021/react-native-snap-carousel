@@ -23,7 +23,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {connect} from 'react-redux';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
-import {RkbSubscription} from '@/redux/api/subscriptionApi';
+import {RkbSubscription, checkUsage} from '@/redux/api/subscriptionApi';
 import AppButton from '@/components/AppButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -39,6 +39,7 @@ import {API} from '@/redux/api';
 import ScreenHeader from '@/components/ScreenHeader';
 import {AccountModelState} from '@/redux/modules/account';
 import {RootState} from '@/redux';
+import {actions as orderActions} from '@/redux/modules/order';
 
 const styles = StyleSheet.create({
   chargeBtn: {
@@ -60,10 +61,6 @@ const styles = StyleSheet.create({
     ...appStyles.bold14Text,
     color: colors.warmGrey,
     fontSize: 14,
-  },
-  boldl12Gray: {
-    ...appStyles.bold12Text,
-    color: colors.warmGrey,
   },
   topInfo: {
     marginTop: 20,
@@ -169,7 +166,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 1,
     backgroundColor: colors.lightGrey,
-    marginBottom: 16,
   },
   addOnRow: {
     flexDirection: 'row',
@@ -180,7 +176,10 @@ const styles = StyleSheet.create({
   rechargeTag: {
     paddingHorizontal: 8,
     borderWidth: 1,
-    borderColor: colors.lightGrey,
+    height: 20,
+    marginTop: 16,
+    marginRight: 8,
+    // borderColor: colors.clearBlue,
     justifyContent: 'center',
   },
   newIcon: {
@@ -204,6 +203,25 @@ const styles = StyleSheet.create({
     color: colors.warmGrey,
     alignSelf: 'flex-start',
     marginTop: 16,
+  },
+  addonWarning: {
+    flexDirection: 'row',
+    backgroundColor: colors.veryLightPink,
+    marginHorizontal: 20,
+    height: 46,
+    marginBottom: 24,
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginTop: 10,
+  },
+  extendWarning: {
+    flexDirection: 'row',
+    backgroundColor: colors.veryLightPink,
+    height: 46,
+    marginBottom: 16,
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    width: '100%',
   },
 });
 
@@ -230,10 +248,7 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => {
                 )}
                 <AppText
                   key="name"
-                  style={[
-                    styles.badgeText,
-                    {color: badgeColor.fontColor, top: -1},
-                  ]}>
+                  style={[styles.badgeText, {color: badgeColor.fontColor}]}>
                   {i18n.t(elm)}
                 </AppText>
               </View>
@@ -258,6 +273,7 @@ type ChargeHistoryScreenProps = {
   navigation: ChargeHistoryScreenNavigationProp;
   route: RouteProp<HomeStackParamList, 'ChargeHistory'>;
   account: AccountModelState;
+  refreshing: boolean;
 };
 
 // SVG 파일로 대체 불가. SVG는 이미지가 깨져보임
@@ -268,8 +284,9 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   navigation,
   route: {params},
   account,
+  refreshing,
 }) => {
-  const {mainSubs, chargeablePeriod, onPressUsage, isChargeable} = params || {};
+  const {mainSubs, chargeablePeriod, isChargeable} = params || {};
   const [showModal, setShowModal] = useState(false);
   const [selectedSubs, setSelectedSubs] = useState<RkbSubscription>(mainSubs);
   const [pending, setPending] = useState(false);
@@ -277,7 +294,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   const [status, setStatus] = useState({});
   const [dataUsageOption, setDataUsageOption] = useState({});
   const [orderModalVisible, setOrderModalVisible] = useState<boolean>(false);
-  const [orderType, setOrderType] = useState<OrderType>('purchase');
+  const [orderType, setOrderType] = useState<OrderType>('latest');
   const orderTypeList: OrderType[] = useMemo(() => ['purchase', 'latest'], []);
   const [showTip, setShowTip] = useState(false);
   const blockAnimation = useRef(false);
@@ -298,6 +315,12 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
 
     return unsubscribe;
   }, [navigation]);
+
+  const isPending = useCallback(
+    (statusCd: string) => ['P', 'A', 'R'].includes(statusCd),
+    [],
+  );
+  const isExpired = useCallback((statusCd: string) => statusCd === 'E', []);
 
   const showTop = useCallback(
     (isTop: boolean) => {
@@ -340,7 +363,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
     );
   }, []);
 
-  useEffect(() => {
+  const getSubs = useCallback(() => {
     const {iccid, token} = account;
     if (iccid && token) {
       API.Subscription.getSubscription({
@@ -348,10 +371,21 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         token,
         uuid: mainSubs.subsIccid,
       }).then((rsp) => {
-        if (rsp.result === 0) setChargedSubs(rsp.objects);
+        if (rsp.result === 0) {
+          setChargedSubs(rsp.objects);
+        }
       });
     }
   }, [account, mainSubs.subsIccid]);
+
+  useEffect(() => {
+    getSubs();
+  }, [getSubs]);
+
+  useEffect(() => {
+    // 프로비저닝 푸시알림을 받은 후 getNotiSubs가 호출되면 리프레시 추가
+    if (refreshing) getSubs();
+  }, [getSubs, refreshing]);
 
   const renderTooltip = useCallback(() => {
     return (
@@ -511,6 +545,40 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
     navigation,
   ]);
 
+  const renderDesc = useCallback(
+    (sub: RkbSubscription) => {
+      if (isExpired(sub.statusCd)) {
+        return null;
+      }
+      if (isPending(sub.statusCd)) {
+        return (
+          <View style={{flexDirection: 'row', marginBottom: 24}}>
+            <AppText
+              style={[
+                appStyles.bold14Text,
+                {color: colors.clearBlue, marginRight: 8},
+              ]}>
+              {i18n.t('esim:reserved')}
+            </AppText>
+            <AppSvgIcon
+              name="delivery"
+              style={{marginRight: 8, marginTop: 4}}
+            />
+          </View>
+        );
+      }
+
+      return (
+        <AppText style={{...styles.normal14Gray, marginBottom: 24}}>
+          {sub.prodDays === '1'
+            ? i18n.t('his:today')
+            : i18n.t('his:remainDays')}
+        </AppText>
+      );
+    },
+    [isExpired, isPending],
+  );
+
   const renderItem = useCallback(
     ({item}: {item: RkbSubscription}) => {
       return (
@@ -542,76 +610,127 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                   {utils.removeBracketOfName(item.prodName)}
                 </SplitText>
               </View>
-              <Pressable
-                style={{flexDirection: 'row'}}
-                onPress={() => {
-                  setPending(true);
-                  setSelectedSubs(item);
-                  onPressUsage(item)?.then((u) => {
-                    setUsage(u.usage);
-                    setStatus(u.status);
-                    setDataUsageOption(u.usageOption);
-                    setPending(false);
-                  });
-                  setShowModal(true);
-                }}>
-                <AppText
-                  style={[
-                    appStyles.bold14Text,
-                    {color: colors.clearBlue, marginRight: 8},
-                  ]}>
-                  {i18n.t('esim:checkUsage')}
-                </AppText>
+              {!isExpired(item.statusCd) && (
+                <Pressable
+                  style={{flexDirection: 'row'}}
+                  onPress={() => {
+                    setPending(true);
+                    setSelectedSubs(item);
+                    checkUsage(item)?.then((u) => {
+                      setUsage(u.usage);
+                      setStatus(u.status);
+                      setDataUsageOption(u.usageOption);
+                      setPending(false);
+                    });
+                    setShowModal(true);
+                  }}
+                  disabled={isPending(item.statusCd)}>
+                  <AppText
+                    style={[
+                      appStyles.bold14Text,
+                      {color: colors.clearBlue, marginRight: 8},
+                    ]}>
+                    {i18n.t(
+                      isPending(item.statusCd)
+                        ? 'esim:reserved'
+                        : 'esim:checkUsage',
+                    )}
+                  </AppText>
+                  <AppSvgIcon
+                    name={
+                      isPending(item.statusCd)
+                        ? 'delivery'
+                        : 'rightBlueAngleBracket'
+                    }
+                    style={{marginRight: 8, marginTop: 4}}
+                  />
+                </Pressable>
+              )}
+            </View>
+            {isExpired(item.statusCd) && (
+              <View style={styles.extendWarning}>
                 <AppSvgIcon
-                  name="rightBlueAngleBracket"
+                  name="bannerWarning20"
                   style={{marginRight: 8, marginTop: 4}}
                 />
-              </Pressable>
-            </View>
+                <AppText
+                  style={{...appStyles.bold14Text, color: colors.redError}}>
+                  {i18n.t('cashHistory:recharge:failure')}
+                </AppText>
+              </View>
+            )}
           </View>
 
           <View style={{backgroundColor: colors.whiteTwo}}>
             {addOnData
               .filter((a) => a.refSubs === item.nid)
               .map((k, idx, arr) => (
-                <View style={{flexDirection: 'row', paddingHorizontal: 20}}>
-                  <AppSvgIcon
-                    name="blueBulletPoint"
-                    style={{marginTop: 23, marginRight: 16}}
-                  />
-                  <View style={{flex: 1}}>
-                    <View style={styles.addOnRow}>
-                      <AppText style={appStyles.bold16Text}>
-                        {utils.toDataVolumeString(Number(k.dataVolume))}
-                        {` ${toProdDaysString(Number(k.prodDays))}`}
+                <View style={{}}>
+                  <View style={{flexDirection: 'row', paddingHorizontal: 20}}>
+                    <View
+                      style={{
+                        ...styles.rechargeTag,
+                        borderColor: isExpired(k.statusCd)
+                          ? colors.redError
+                          : colors.clearBlue,
+                      }}>
+                      <AppText
+                        style={{
+                          ...appStyles.bold12Text,
+                          color: isExpired(k.statusCd)
+                            ? colors.redError
+                            : colors.clearBlue,
+                        }}>
+                        {i18n.t(
+                          isExpired(k.statusCd)
+                            ? 'failure'
+                            : isPending(k.statusCd)
+                            ? 'send'
+                            : 'recharge',
+                        )}
                       </AppText>
-                      <View style={styles.rechargeTag}>
-                        <AppText style={styles.boldl12Gray}>
-                          {i18n.t('recharge')}
+                    </View>
+                    <View style={{flex: 1}}>
+                      <View style={styles.addOnRow}>
+                        <AppText style={appStyles.bold16Text}>
+                          {utils.toDataVolumeString(Number(k.dataVolume))}
+                          {` ${toProdDaysString(Number(k.prodDays))}`}
                         </AppText>
                       </View>
-                    </View>
-                    <AppText style={{...styles.normal14Gray, marginBottom: 24}}>
-                      {k.prodDays === '1'
-                        ? i18n.t('his:today')
-                        : i18n.t('his:remainDays')}
-                    </AppText>
 
-                    <View
-                      style={
-                        arr.length - 1 === idx
-                          ? {width: '100%', height: 9}
-                          : styles.divider
-                      }
-                    />
+                      {renderDesc(k)}
+                    </View>
                   </View>
+                  {isExpired(k.statusCd) && (
+                    <View style={styles.addonWarning}>
+                      <AppSvgIcon
+                        name="bannerWarning20"
+                        style={{marginRight: 8, marginTop: 4}}
+                      />
+                      <AppText
+                        style={{
+                          ...appStyles.bold14Text,
+                          color: colors.redError,
+                        }}>
+                        {i18n.t('cashHistory:recharge:failure')}
+                      </AppText>
+                    </View>
+                  )}
+
+                  <View
+                    style={
+                      arr.length - 1 === idx
+                        ? {width: '100%', height: 9}
+                        : styles.divider
+                    }
+                  />
                 </View>
               ))}
           </View>
         </View>
       );
     },
-    [addOnData, onPressUsage, toProdDaysString],
+    [addOnData, isExpired, isPending, renderDesc, toProdDaysString],
   );
 
   return (
@@ -739,6 +858,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   );
 };
 
-export default connect(({account}: RootState) => ({account}))(
-  ChargeHistoryScreen,
-);
+export default connect(({account, status}: RootState) => ({
+  account,
+  refreshing: status.pending[orderActions.getNotiSubs.typePrefix] || false,
+}))(ChargeHistoryScreen);

@@ -226,10 +226,7 @@ const Info: React.FC<InfoProps> = ({
         <Pressable
           style={styles.btnInvite}
           onPress={() =>
-            navigate(navigation, route, 'MyPageStack', {
-              tab: 'HomeStack',
-              screen: 'Invite',
-            })
+            navigation.navigate('MyPageStack', {screen: 'Invite'})
           }>
           <AppIcon name="inviteBanner" />
           <View style={{position: 'absolute', left: 16, bottom: 20}}>

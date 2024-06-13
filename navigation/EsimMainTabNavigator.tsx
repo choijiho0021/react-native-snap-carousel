@@ -73,6 +73,7 @@ import CouponScreen from '@/screens/CouponScreen';
 import DraftUsScreen from '@/screens/DraftUsScreen';
 import PaymentVBankScreen from '@/screens/PaymentVBankScreen';
 import SelectCoupon from '@/screens/SelectCouponScreen';
+import LotteryScreen from '@/screens/LotteryScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -227,6 +228,8 @@ function EsimStackComponent() {
       <EsimStack.Screen name="ChargeType" component={ChargeTypeScreen} />
       <EsimStack.Screen name="Charge" component={ChargeScreen} />
       <EsimStack.Screen name="AddOn" component={AddOnScreen} />
+
+      <EsimStack.Screen name="Faq" component={FaqScreen} />
       <EsimStack.Screen
         name="ChargeAgreement"
         component={ChargeAgreementScreen}
@@ -260,6 +263,7 @@ function EsimStackComponent() {
           component={PaymentGatewayScreen}
         />
         <EsimStack.Screen name="PaymentVBank" component={PaymentVBankScreen} />
+        <EsimStack.Screen name="Lottery" component={LotteryScreen} />
       </EsimStack.Group>
     </EsimStack.Navigator>
   );
@@ -411,6 +415,14 @@ const TabNavigator = ({
       />
       <Tab.Screen
         name="MyPageStack"
+        listeners={({navigation, route}) => ({
+          tabPress: (e) => {
+            navigation.navigate('MyPageStack', {screen: 'MyPage'});
+
+            // 기본 이벤트 중단
+            e.preventDefault();
+          },
+        })}
         component={loggedIn ? MyPageStackComponent : AuthStack}
         options={({route}) => ({
           headerShown: false,

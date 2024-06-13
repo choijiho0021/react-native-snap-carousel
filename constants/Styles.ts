@@ -570,6 +570,14 @@ export const appStyles = StyleSheet.create({
     letterSpacing: 0.29,
     lineHeight: 40,
   },
+  bold36Text: {
+    //        fontFamily: "AppleSDGothicNeo",
+    fontSize: 36,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    letterSpacing: -0.72,
+    lineHeight: 42,
+  },
   robotoSemiBold22Text: {
     fontFamily: 'Roboto',
     fontSize: 22,
@@ -608,6 +616,17 @@ export const appStyles = StyleSheet.create({
     textAlign: 'left',
     lineHeight: 36,
     color: colors.clearBlue,
+  },
+
+  robotoBold24Text: {
+    fontFamily: 'Roboto',
+    fontSize: 24,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'left',
+    lineHeight: 30,
+    color: colors.white,
   },
   robotoBold28Text: {
     fontFamily: 'Roboto',
@@ -649,6 +668,8 @@ export const appStyles = StyleSheet.create({
   confirm: {
     height: 52,
     backgroundColor: colors.clearBlue,
+    marginHorizontal: 20,
+    marginTop: 32,
   },
   medium18: {
     //        fontFamily: "AppleSDGothicNeo",

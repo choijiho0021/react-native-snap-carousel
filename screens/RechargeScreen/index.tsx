@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     // width: isDeviceSize('small') ? 130 : 150,
     flex: 1,
     marginHorizontal: 7.5,
-    height: 48,
+    height: 52,
     borderRadius: 24,
     backgroundColor: colors.white,
     borderStyle: 'solid',
@@ -75,9 +75,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   priceButtonText: {
-    ...appStyles.normal14Text,
-    marginLeft: 0,
-    textAlign: 'left',
+    ...appStyles.price,
+    fontSize: 20,
+    textAlign: 'right',
+    color: colors.warmGrey,
   },
   balance: {
     ...appStyles.robotoBold28Text,

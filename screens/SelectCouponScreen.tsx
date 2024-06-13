@@ -31,6 +31,7 @@ import {
   actions as cartActions,
   CartModelState,
 } from '@/redux/modules/cart';
+import Svg, {Line} from 'react-native-svg';
 
 const styles = StyleSheet.create({
   container: {
@@ -41,7 +42,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: colors.backGrey,
     alignItems: 'center',
-    marginTop: 10,
     marginBottom: 20,
     marginHorizontal: 20,
     paddingHorizontal: 16,
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   coupon: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderColor: colors.gray4,
+    borderColor: colors.lightGrey,
     borderWidth: 1,
     borderRadius: 3,
     marginHorizontal: 20,
@@ -69,8 +69,17 @@ const styles = StyleSheet.create({
   line: {
     width: 1,
     height: '100%',
-    backgroundColor: colors.gray4,
     marginHorizontal: 16,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: colors.gray4,
+    borderRadius: 1,
+  },
+  empty: {
+    flex: 1,
+    alignItems: 'center',
+    marginTop: '30%',
   },
 });
 
@@ -107,15 +116,66 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
     [myCoupon, promo],
   );
 
+  const dotLine = useCallback(
+    () => (
+      <Svg height="100%" width="2" style={{marginHorizontal: 16}}>
+        <Line
+          x1="1"
+          y1="0"
+          x2="1"
+          y2="100%"
+          stroke={colors.gray4}
+          strokeWidth="2"
+          strokeDasharray="4, 2"
+        />
+      </Svg>
+    ),
+    [],
+  );
   const renderCoupon = useCallback(
     ({item}: {item: RkbCoupon}) => (
-      <Pressable style={styles.coupon} onPress={() => setCouponId(item.id)}>
+      <Pressable
+        style={[
+          styles.coupon,
+          {
+            borderColor:
+              item.id === couponId ? colors.clearBlue : colors.lightGrey,
+          },
+        ]}
+        onPress={() => setCouponId(item.id)}>
         <AppSvgIcon name="btnCheck" focused={item.id === couponId} />
-        <View style={styles.line} />
+        {dotLine()}
         <CouponItem item={item} />
       </Pressable>
     ),
-    [couponId],
+    [couponId, dotLine],
+  );
+  const renderListHeader = useCallback(
+    () => (
+      <View style={styles.header}>
+        <AppSvgIcon name="couponColor" style={{marginRight: 8}} />
+        <AppStyledText
+          key="noti"
+          text={i18n.t('pym:sel:coupon:noti')}
+          textStyle={appStyles.medium14}
+          format={{b: styles.noti}}
+        />
+      </View>
+    ),
+    [],
+  );
+
+  const renderListFooter = useCallback(
+    (id?: string) => (
+      <Pressable style={styles.coupon} onPress={() => setCouponId('')}>
+        <AppSvgIcon name="btnCheck" focused={!id} />
+        {dotLine()}
+        <AppText style={appStyles.bold16Text}>
+          {i18n.t('pym:coupon:none:sel')}
+        </AppText>
+      </Pressable>
+    ),
+    [dotLine],
   );
 
   return (
@@ -123,6 +183,8 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
       <ScreenHeader
         isStackTop
         title={i18n.t('pym:sel:coupon:title')}
+        titleStyle={appStyles.bold18Text}
+        headerStyle={{paddingVertical: 30, height: 74}}
         renderRight={
           <AppSvgIcon
             name="closeModal"
@@ -132,36 +194,34 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
         }
       />
       <View style={styles.container}>
-        <View style={styles.header}>
-          <AppSvgIcon name="couponColor" style={{marginRight: 8}} />
-          <AppStyledText
-            key="noti"
-            text={i18n.t('pym:sel:coupon:noti')}
-            textStyle={appStyles.medium14}
-            format={{b: styles.noti}}
-          />
-        </View>
         <FlatList
           style={{flex: 1}}
           data={couponList}
           keyExtractor={(item) => item.id}
           renderItem={renderCoupon}
           extraData={couponToApply}
-          ListFooterComponent={
-            <Pressable style={styles.coupon} onPress={() => setCouponId('')}>
-              <AppSvgIcon name="btnCheck" focused={!couponId} />
-              <View style={styles.line} />
-              <AppText style={appStyles.bold16Text}>
-                {i18n.t('pym:coupon:none:sel')}
+          ListEmptyComponent={
+            <View style={styles.empty}>
+              <AppSvgIcon name="imgCoupon" />
+              <AppText
+                style={[
+                  appStyles.bold14Text,
+                  {color: colors.warmGrey, marginTop: 8},
+                ]}>
+                {i18n.t('coupon:none')}
               </AppText>
-            </Pressable>
+            </View>
+          }
+          ListHeaderComponent={renderListHeader()}
+          ListFooterComponent={
+            couponList?.length > 0 ? renderListFooter(couponId) : null
           }
         />
       </View>
       <AppButton
-        title={`${
-          promo?.find((p) => p.coupon_id === couponId)?.adj?.value || '0'
-        } ${i18n.t('pym:sel:coupon:apply')}`}
+        title={`${Math.abs(
+          promo?.find((p) => p.coupon_id === couponId)?.adj?.value || '0',
+        )}${i18n.t('pym:sel:coupon:apply')}`}
         titleStyle={[appStyles.medium18, {color: colors.white}]}
         onPress={() => {
           if (couponId) {

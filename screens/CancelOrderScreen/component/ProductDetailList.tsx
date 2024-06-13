@@ -1,5 +1,7 @@
 import React, {Fragment, useCallback, useEffect, useMemo, useRef} from 'react';
 import {StyleProp, StyleSheet, View, ViewStyle} from 'react-native';
+import {bindActionCreators, RootState} from 'redux';
+import {connect} from 'react-redux';
 import {colors} from '@/constants/Colors';
 import ProductDetailInfo from './ProductDetailInfo';
 import {ProdInfo} from '@/redux/api/productApi';
@@ -7,14 +9,10 @@ import {RkbOrderItem} from '@/redux/api/cartApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {utils} from '@/utils/utils';
 import {OrderItemType} from '@/redux/api/orderApi';
-
 import {
   actions as productActions,
   ProductModelState,
 } from '@/redux/modules/product';
-
-import {bindActionCreators, RootState} from 'redux';
-import {connect} from 'react-redux';
 
 const styles = StyleSheet.create({
   cancelItem: {
@@ -126,7 +124,7 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
               style={[
                 styles.cancelItem,
                 isLast && {
-                  marginBottom: 0,
+                  marginBottom: 8,
                   borderBottomWidth: 0,
                 },
               ]}

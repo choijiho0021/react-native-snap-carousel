@@ -2,14 +2,19 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
+import {RootState, bindActionCreators} from 'redux';
+import {connect, useDispatch} from 'react-redux';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList, navigate} from '@/navigation/navigation';
-import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
-import {OrderAction} from '@/redux/modules/order';
+import {
+  AccountAction,
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import {ProductModelState} from '@/redux/modules/product';
 import AppIcon from '@/components/AppIcon';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
@@ -59,15 +64,18 @@ type DraftResultScreenProps = {
   pending: boolean;
 
   action: {
-    order: OrderAction;
+    account: AccountAction;
   };
 };
 
 const DraftResultScreen: React.FC<DraftResultScreenProps> = ({
   navigation,
   route,
+  action,
+  account: {iccid, token},
 }) => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const dispatch = useDispatch();
 
   // 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
   BackbuttonHandler({
@@ -85,7 +93,10 @@ const DraftResultScreen: React.FC<DraftResultScreenProps> = ({
 
   useEffect(() => {
     setIsSuccess(route?.params?.isSuccess);
-  }, [route?.params]);
+
+    // subsReload 에 그냥 포함시킬 지 고민
+    action.account.checkLottery({iccid, token, prompt: 'check'});
+  }, [action.account, dispatch, iccid, route?.params, token]);
 
   const renderContent = useCallback(
     () => (
@@ -154,5 +165,14 @@ const DraftResultScreen: React.FC<DraftResultScreenProps> = ({
     </SafeAreaView>
   );
 };
-
-export default DraftResultScreen;
+export default connect(
+  ({account}: RootState) => ({
+    account,
+    pending: false,
+  }),
+  (dispatch) => ({
+    action: {
+      account: bindActionCreators(accountActions, dispatch),
+    },
+  }),
+)(DraftResultScreen);

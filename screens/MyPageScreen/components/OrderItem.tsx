@@ -61,7 +61,11 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
           style={styles.orderValue}
           label={utils.toDateString(item.orderDate, 'YYYY.MM.DD')}
           labelStyle={styles.date}
-          valueStyle={statusColor ? {color: statusColor} : undefined}
+          valueStyle={
+            statusColor
+              ? {...appStyles.bold16Text, color: statusColor}
+              : undefined
+          }
           value={status}
         />
         <LabelText
@@ -77,13 +81,14 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
           color={isCanceled ? colors.warmGrey : colors.black}
           valueStyle={appStyles.price}
           balanceStyle={{
-            ...appStyles.normal16Text,
+            ...appStyles.robotoBold16Text,
             fontWeight: 'bold',
             fontSize: isDeviceSize('medium') ? 22 : 24,
           }}
           currencyStyle={{
             ...appStyles.normal16Text,
-            fontSize: isDeviceSize('medium') ? 16 : 18,
+            fontWeight: 'bold',
+            fontSize: isDeviceSize('medium') ? 18 : 20,
             top: -1,
           }}
           format="price"

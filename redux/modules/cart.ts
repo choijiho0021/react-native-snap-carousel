@@ -141,6 +141,7 @@ const slice = createSlice({
         state.lastTab = lastTab.unshift(action.payload).setSize(2);
       }
     },
+
     // empty cart
     empty: (state) => {
       state.purchaseItems = [];
@@ -166,6 +167,20 @@ const slice = createSlice({
       state.cartItems = cartItems.filter(
         (item) => purchaseItems.findIndex((p) => p.key === item.key) < 0,
       );
+    },
+
+    saveChecked: (state, {payload}) => {
+      const {cartItems} = state;
+      const {checked} = payload;
+
+      state.cartItems = cartItems.map((r) => {
+        const v = checked.get(r?.key);
+
+        return {
+          ...r,
+          checked: v !== undefined ? v : true,
+        };
+      });
     },
 
     applyCoupon: (state, action) => {
@@ -251,6 +266,7 @@ const slice = createSlice({
       const {result, objects} = action.payload;
 
       if (objects) {
+        // 여기다가도 저장해줘야하나?
         storeData(
           `${API.Cart.KEY_INIT_CART}.${action?.meta?.arg?.mobile}`,
           JSON.stringify(objects),
@@ -259,9 +275,23 @@ const slice = createSlice({
 
       if (result === 0 && objects.length > 0) {
         state.cartId = objects[0].orderId;
-        state.cartItems = objects[0].orderItems.filter(
+
+        const selected = objects[0].orderItems.filter(
           (i) => i.type === 'esim_product',
         );
+
+        state.cartItems = selected.map((r) => {
+          const checked = state.cartItems.find(
+            (cart) => r.key === cart.key,
+          )?.checked;
+
+          return {
+            ...r,
+            // 저장되있는 checked 유지하기
+            checked: checked === undefined ? true : checked,
+          };
+        });
+
         state.cartUuid = objects[0].uuid;
       } else {
         state.cartId = undefined;
@@ -329,7 +359,7 @@ const slice = createSlice({
             return selectMaxCoupon(acc, cur);
           }, undefined)?.coupon_id;
 
-          state.couponToApply = maxCouponId;
+          state.couponToApply = undefined;
           state.maxCouponId = maxCouponId;
         }
 

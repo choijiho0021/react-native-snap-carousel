@@ -55,6 +55,7 @@ import HowToCallModal from './HowToCallModal';
 import HtQrModal from './HtQrModal';
 import AppNotiBox from '@/components/AppNotiBox';
 import Env from '@/environment';
+import {isPending} from '@reduxjs/toolkit';
 
 const {isIOS} = Env.get();
 const styles = StyleSheet.create({
@@ -221,6 +222,13 @@ const styles = StyleSheet.create({
     marginRight: 5,
     color: colors.blue,
   },
+
+  border: {
+    borderRadius: 3,
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
+  },
+
   shadow: {
     borderRadius: 3,
     borderWidth: 1,
@@ -467,7 +475,6 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         navigation.navigate('ChargeHistory', {
           mainSubs: item,
           chargeablePeriod,
-          onPressUsage,
           isChargeable: isChargeButton || false,
         });
       }
@@ -479,14 +486,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           isChargeable: isChargeButton || false,
         });
     },
-    [
-      chargeablePeriod,
-      isBC,
-      isChargeButton,
-      isCharged,
-      navigation,
-      onPressUsage,
-    ],
+    [chargeablePeriod, isBC, isChargeButton, isCharged, navigation],
   );
 
   const renderSwitch = useCallback(() => {
@@ -545,14 +545,15 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           {isEditMode
             ? renderSwitch()
             : mainSubs.flagImage !== '' &&
-              notCardInfo && (
+              !expired &&
+              mainSubs.giftStatusCd !== 'S' && (
                 <Image
                   source={{uri: API.default.httpImageUrl(mainSubs.flagImage)}}
                   style={{
                     width: 40,
                     height: 30,
                     marginRight: 10,
-                    alignSelf: 'flex-start',
+                    alignSelf: 'center',
                   }}
                 />
               )}
@@ -1042,6 +1043,8 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           styles.usageListContainer,
           expired || mainSubs.giftStatusCd === 'S'
             ? styles.cardExpiredBg
+            : isTypeDraft
+            ? styles.border
             : styles.shadow,
           isTypeDraft && {paddingBottom: 16},
         ]}>

@@ -3,7 +3,7 @@ import Env from '@/environment';
 import api, {ApiResult, DrupalNode, DrupalNodeJsonApi} from './api';
 import {RkbInfo} from './pageApi';
 
-const {cachePrefix} = Env.get();
+const {isProduction, cachePrefix} = Env.get();
 
 const KEY_INIT_LIST = `${cachePrefix}noti.initList`;
 
@@ -29,25 +29,23 @@ type RkbNotiJson = {
   isRead: string;
   fmt: string;
 };
-
-const toNoti = (data: DrupalNode[] | DrupalNodeJsonApi): ApiResult<RkbNoti> => {
-  // REST API json/noti/list/{id}로 조회하는 경우
-  if (_.isArray(data)) {
+const toNoti = (resp: ApiResult<RkbNotiJson>): ApiResult<RkbNoti> => {
+  if (resp.result === 0) {
     return api.success(
-      data.map((item, idx) => ({
-        key: `${idx}`,
+      resp.objects.map((item) => ({
+        key: item.uuid,
         title: item.title,
         body: item.body,
         created: item.created,
-        notiType: item.noti_type,
+        notiType: item.ntype,
         uuid: item.uuid,
-        mobile: item.name,
-        isRead: item.isRead,
-        format: item.field_format === 'T' ? 'text' : 'html',
-        summary: item.summary,
+        mobile: item.mobile,
+        isRead: item.isRead || 'F',
+        format: item.fmt === 'T' ? 'text' : 'html',
       })),
     );
   }
+
   return api.failure(api.E_NOT_FOUND);
 };
 
@@ -57,44 +55,9 @@ const getNoti = ({mobile}: {mobile?: string}) => {
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: mobile');
 
   return api.callHttpGet(
-    `${api.httpUrl(api.path.noti)}/${mobile}?_format=json`,
+    `${api.httpUrl(api.path.rokApi.rokebi.noti)}/${mobile}?_format=json`,
     toNoti,
     jsonContentType,
-  );
-};
-
-const update = ({
-  uuid,
-  attributes,
-  token,
-}: {
-  uuid?: string;
-  token?: string;
-  attributes?: object;
-}) => {
-  if (!uuid)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: uuid');
-  if (!token)
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
-  if (_.isEmpty(attributes))
-    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: attributes');
-
-  const body = {
-    data: {
-      type: 'node--notification',
-      id: uuid,
-      attributes,
-    },
-  };
-
-  return api.callHttp(
-    `${api.httpUrl(api.path.jsonapi.noti)}/${uuid}`,
-    {
-      method: 'PATCH',
-      headers: api.withToken(token, 'vnd.api+json'),
-      body: JSON.stringify(body),
-    },
-    toNoti,
   );
 };
 
@@ -104,7 +67,15 @@ const read = ({uuid, token}: {uuid: string; token?: string}) => {
   if (!token)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
 
-  return update({uuid, attributes: {field_isread: true}, token});
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.noti)}/${uuid}`,
+    {
+      method: 'PATCH',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({isRead: true}),
+    },
+    toNoti,
+  );
 };
 
 const sendAlimTalk = ({

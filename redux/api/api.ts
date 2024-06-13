@@ -135,11 +135,13 @@ const path = {
       calculateTotal: 'rokebi/order/calc',
       prodAddOn: 'rokebi/prod/addon',
       coupon: 'rokebi/coupon',
+      lottery: 'rokebi/lottery',
       config: 'rokebi/config',
       noti: 'rokebi/noti',
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage/quota',
+      cmiCardInfo: 'api/v1/pvd/pv/cmi/cardInfo',
       cmiStatus: 'api/v1/pvd/pv/cmi/v2/bundle/status',
       quadcell: 'api/v1/pvd/pv/quadcell',
       quadcell2: 'api/v1/pvd/pv/quadcell2',

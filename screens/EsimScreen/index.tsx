@@ -17,7 +17,6 @@ import {RouteProp, useIsFocused} from '@react-navigation/native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {isDefined} from 'validate.js';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -25,21 +24,19 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList, navigate} from '@/navigation/navigation';
 import {RootState} from '@/redux';
-import {API} from '@/redux/api';
 import {
   RkbSubscription,
-  StatusObj,
-  UsageObj,
-  Usage,
   AddOnOptionType,
-  UsageOptionObj,
   STATUS_USED,
   STATUS_EXPIRED,
+  checkUsage,
 } from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
   AccountModelState,
+  Fortune,
   actions as accountActions,
+  isFortuneHistory,
 } from '@/redux/modules/account';
 import {
   actions as orderActions,
@@ -48,7 +45,6 @@ import {
   PAGINATION_SUBS_COUNT,
 } from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import CardInfo from './components/CardInfo';
 import EsimSubs from './components/EsimSubs';
 import EsimModal from './components/EsimModal';
 import GiftModal from './components/GiftModal';
@@ -65,6 +61,9 @@ import {
 } from '@/redux/modules/modal';
 import AppButton from '@/components/AppButton';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
+import LotteryButton from '../LotteryScreen/component/LotteryButton';
+import Triangle from '@/components/Triangle';
+import {windowWidth} from '@/constants/SliderEntry.style';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -97,10 +96,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: 20,
     paddingHorizontal: 20,
+    marginTop: 24,
     height: 64,
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#d2dfff',
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.whiteFive,
     borderRadius: 3,
   },
   rowCenter: {
@@ -113,14 +115,13 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   ifFirstText: {
-    ...appStyles.semiBold15Text,
+    ...appStyles.semiBold16Text,
     lineHeight: 20,
-    color: '#001c65',
+    color: colors.black,
   },
   moveToGuideText: {
-    ...appStyles.normal14Text,
-    lineHeight: 20,
-    color: '#001c65',
+    ...appStyles.bold14Text,
+    color: colors.clearBlue,
   },
   esimHeader: {
     height: 56,
@@ -179,6 +180,28 @@ const styles = StyleSheet.create({
     color: colors.redError,
     lineHeight: 22,
   },
+
+  tooltipContainer: {
+    zIndex: 100,
+    width: 252,
+    position: 'absolute',
+    left: windowWidth / 2 - 128,
+  },
+  tooltipContent: {
+    flexDirection: 'row',
+    backgroundColor: colors.violet500,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 4,
+    borderWidth: 0,
+    padding: 16,
+  },
+  tooltipText: {
+    ...appStyles.bold14Text,
+    color: colors.white,
+    lineHeight: 20,
+    textAlign: 'center',
+  },
 });
 
 type EsimScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Esim'>;
@@ -205,28 +228,54 @@ type EsimScreenProps = {
 //   billionconnect: 1,
 // };
 
-export const renderInfo = (navigation) => (
-  <Pressable
-    style={styles.usrGuideBtn}
-    onPress={() => navigation.navigate('UserGuide')}>
-    <View style={styles.rowCenter}>
-      <AppSvgIcon name="newFlag" style={{marginRight: 8}} />
-      <AppText style={styles.ifFirstText}>{i18n.t('esim:ifFirst')}</AppText>
-    </View>
-    <View style={styles.rowRight}>
-      <AppText style={styles.moveToGuideText}>
-        {i18n.t('esim:moveToGuide')}
-      </AppText>
-      <AppIcon name="iconArrowRightBlack" />
-    </View>
-  </Pressable>
-);
+export const renderInfo = (navigation, isReserving, fortune?: Fortune) => {
+  // 근데 발송중 말고 운세 다시보기로 바뀌면 출력 안해야 정상 아닌가? 질문 필요
+  if (fortune && isReserving && !isFortuneHistory(fortune))
+    return (
+      <View style={{height: 62, marginTop: 24}}>
+        <View style={styles.tooltipContainer}>
+          <View style={styles.tooltipContent}>
+            <AppText style={styles.tooltipText}>
+              {i18n.t('esim:lottery:tooltip1')}
+            </AppText>
+            <AppSvgIcon name="emojiCoupon" />
+            <AppText style={styles.tooltipText}>
+              {i18n.t('esim:lottery:tooltip2')}
+            </AppText>
+            <AppSvgIcon name="emojiCoupon" />
+            <AppText style={styles.tooltipText}>
+              {i18n.t('esim:lottery:tooltip3')}
+            </AppText>
+          </View>
+          <View style={{alignItems: 'flex-end', marginRight: 120}}>
+            <AppIcon name="triangle14" />
+          </View>
+        </View>
+      </View>
+    );
+
+  return (
+    <Pressable
+      style={styles.usrGuideBtn}
+      onPress={() => navigation.navigate('UserGuide')}>
+      <View style={styles.rowCenter}>
+        <AppSvgIcon name="newFlag" style={{marginRight: 8}} />
+        <AppText style={styles.ifFirstText}>{i18n.t('esim:ifFirst')}</AppText>
+      </View>
+      <View style={styles.rowRight}>
+        <AppText style={styles.moveToGuideText}>
+          {i18n.t('esim:moveToGuide')}
+        </AppText>
+      </View>
+    </Pressable>
+  );
+};
 
 const EsimScreen: React.FC<EsimScreenProps> = ({
   navigation,
   route,
   action,
-  account: {iccid, mobile, token, balance, expDate},
+  account: {iccid, mobile, token, balance, expDate, fortune},
   order,
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -260,6 +309,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       return [list, list.findIndex((o) => o.statusCd === STATUS_USED)];
     }, // Pending 상태는 준비중으로 취급하고, 편집모드에서 숨길 수 없도록 한다.
     [isEditMode, order.subs],
+  );
+
+  const isReserving = useMemo(
+    () => subsData?.findIndex((r) => r?.statusCd === 'R') !== -1,
+    [subsData],
   );
 
   useEffect(() => {
@@ -319,146 +373,16 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [action.order, mobile, token],
   );
 
-  const checkCmiData = useCallback(
-    async (
-      item: RkbSubscription,
-    ): Promise<{
-      status: StatusObj;
-      usage: UsageObj;
-      usageOption: UsageOptionObj;
-    }> => {
-      if (item?.subsIccid && item?.packageId) {
-        const {result, objects} = await API.Subscription.cmiGetSubsUsage({
-          iccid: item?.subsIccid,
-          imsi: item?.imsi,
-          orderId: item?.subsOrderNo || 'noOrderId',
-        });
-
-        if (result?.code === 0 && objects.length > 0) return objects[0];
-      }
-      return {
-        status: {statusCd: undefined, endTime: undefined},
-        usage: {
-          quota: undefined,
-          used: undefined,
-          remain: undefined,
-          totalUsed: undefined,
-        },
-        usageOption: {
-          mode: ['stu', 'usa', 'end'],
-        },
-      };
-    },
-    [],
-  );
-
-  const checkQuadcellData = useCallback(
-    async (item: RkbSubscription): Promise<Usage> => {
-      if (item?.imsi) {
-        const {result, objects} = await API.Subscription.quadcellGetUsage({
-          imsi: item.imsi,
-          partner: item.partner!,
-        });
-
-        if (result?.code === 0 && objects.length > 0) return objects[0];
-      }
-      return {
-        status: {statusCd: undefined, endTime: undefined},
-        usage: {
-          quota: undefined,
-          used: undefined,
-          remain: undefined,
-          totalUsed: undefined,
-        },
-        usageOption: {
-          mode: ['stu', 'usa', 'end'],
-        },
-      };
-    },
-    [],
-  );
-
-  const checkBcData = useCallback(
-    async (
-      item: RkbSubscription,
-    ): Promise<{
-      status: StatusObj;
-      usage: UsageObj;
-      usageOption: UsageOptionObj;
-    }> => {
-      if (item?.subsIccid) {
-        const {result, objects} = await API.Subscription.bcGetSubsUsage({
-          subsIccid: item.subsIccid,
-          orderId: item.subsOrderNo,
-          localOpId: item.localOpId,
-        });
-
-        if (result === 0 && objects.length > 0) return objects[0];
-      }
-
-      return {
-        status: {statusCd: undefined, endTime: undefined},
-        usage: {
-          quota: undefined,
-          used: undefined,
-          remain: undefined,
-          totalUsed: undefined,
-        },
-        usageOption: {
-          mode: ['stu', 'end'],
-        },
-      };
-    },
-    [],
-  );
+  const checkLottery = useCallback(() => {
+    action.account.checkLottery({iccid, token, prompt: 'check'});
+  }, [action.account, iccid, token]);
 
   const onPressUsage = useCallback(
     async (item: RkbSubscription, isChargeableParam?: boolean) => {
       setUsageLoading(true);
       setSubs(item);
 
-      let result = {status: {}, usage: {}, usageOption: {}};
-      switch (item.partner) {
-        case 'cmi':
-        case 'cmi2':
-          result = await checkCmiData(item);
-          break;
-        case 'quadcell':
-        case 'quadcell2':
-          result = await checkQuadcellData(item);
-          break;
-        case 'billionconnect':
-          result = await checkBcData(item);
-          break;
-        case 'ht':
-          result = {
-            status: {
-              statusCd: 'A',
-              endTime: moment(item.activationDate)
-                ?.add(Number(item.prodDays) - 1, 'days')
-                ?.endOf('day'),
-            },
-            usage: {quota: 0, used: 0, remain: 0, totalUsed: 0},
-            usageOption: {
-              mode: ['end'],
-            },
-          };
-          break;
-        case 'mosaji':
-          result = {
-            status: {
-              statusCd: 'A',
-            },
-            usage: {quota: 0, used: 0, remain: 0, totalUsed: 0},
-            usageOption: {
-              mode: [],
-            },
-          };
-          break;
-        default:
-          result = await checkCmiData(item);
-          break;
-      }
+      const result = await checkUsage(item);
 
       setIsChargeable(isChargeableParam!);
       setDataStatus(result.status);
@@ -467,7 +391,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       setUsageLoading(false);
       return result;
     },
-    [checkBcData, checkCmiData, checkQuadcellData],
+    [],
   );
 
   const onRefresh = useCallback(
@@ -481,6 +405,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           .then(() => {
             action.account.getAccount({iccid, token});
             getOrders(hidden);
+
+            // hidden이 False 일 때만 해주면 되나?
+            checkLottery();
+
             setIsFirstLoad(false);
           })
           .finally(() => {
@@ -488,7 +416,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           });
       }
     },
-    [action.account, action.order, getOrders, iccid, token],
+    [action.account, action.order, checkLottery, getOrders, iccid, token],
   );
 
   const getIsChargeable = useCallback((sub: RkbSubscription) => {
@@ -535,6 +463,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           hidden: false,
         });
         getOrders(false);
+        checkLottery();
       } else if (actionStr === 'showUsage') {
         const index = subsData?.findIndex((elm) => elm.nid === subsId);
         if (index >= 0) {
@@ -568,7 +497,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
                   main?.expireDate,
                   'YYYY.MM.DD',
                 ),
-                onPressUsage,
                 isChargeable: !main.expireDate?.isBefore(moment()),
               });
             }
@@ -600,7 +528,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
                       mainSubs?.expireDate,
                       'YYYY.MM.DD',
                     ),
-                    onPressUsage,
                     isChargeable: !mainSubs?.expireDate?.isBefore(moment()),
                   });
                 }
@@ -611,6 +538,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     },
     [
       action.order,
+      checkLottery,
       getIsChargeable,
       getOrders,
       iccid,
@@ -626,7 +554,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     const {subsId, actionStr, iccid: subsIccid} = route?.params || {};
 
     if (isFirstLoad) onRefresh(false, true, subsId, actionStr);
-    else if (iccid) getSubsAction(subsId, actionStr, subsIccid);
+    else if (iccid) {
+      getSubsAction(subsId, actionStr, subsIccid);
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [route?.params, isFirstLoad, iccid]);
@@ -706,15 +636,17 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const info = useCallback(
     () =>
       esimGlobal ? null : (
-        <View>
-          <CardInfo
-            iccid={iccid}
-            balance={balance}
-            expDate={expDate}
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: colors.white,
+          }}>
+          {renderInfo(navigation, isReserving, fortune)}
+          <LotteryButton
+            subsData={subsData}
             navigation={navigation}
+            fortune={fortune}
           />
-          {renderInfo(navigation)}
-
           {order.drafts?.length > 0 && (
             <>
               <View style={styles.draftFrame}>
@@ -746,7 +678,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           )}
         </View>
       ),
-    [balance, expDate, iccid, navigation, order.drafts, renderDraft],
+    [fortune, isReserving, navigation, order.drafts, renderDraft, subsData],
   );
 
   useEffect(() => {
@@ -922,7 +854,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 };
 
 export default connect(
-  ({account, order, status, modal}: RootState) => ({
+  ({account, order, modal}: RootState) => ({
     order,
     account,
     modal,

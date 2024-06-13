@@ -58,7 +58,8 @@ const PaymentSummary = ({
     <DropDownHeader
       title={title || i18n.t('cart:pymAmount')}
       expandable={expandable}
-      summary={utils.price(total)}>
+      summary={utils.price(total)}
+      showSummary>
       <View style={styles.priceInfo}>
         {infoList.map((k) => (
           <PaymentItem

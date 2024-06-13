@@ -8,6 +8,7 @@ import {Calendar, LocaleConfig} from 'react-native-calendars';
 import AppBottomModal from './AppBottomModal';
 import moment from 'moment';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import {utils} from '@/utils/utils';
 
 const styles = StyleSheet.create({
   headNotiFrame: {
@@ -87,6 +88,13 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
       .utcOffset('-05:00')
       .add(1, 'days')
       .format('YYYY-MM-DD'); // 2024-01-27
+
+    // 오류 체크용 로그
+    utils.log(
+      `핸드폰의 moment ${moment().format()},, @@@@ moment().utcOffset('-05:00') : ${moment()
+        .utcOffset('-05:00')
+        .format()} \n`,
+    );
 
     const today = moment().isBefore(minDate);
 

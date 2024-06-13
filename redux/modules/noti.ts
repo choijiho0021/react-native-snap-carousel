@@ -21,6 +21,9 @@ const NOTI_TYPE_NOTI = 'noti';
 const NOTI_TYPE_URI = 'uri';
 const NOTI_TYPE_PUSH = 'push';
 const NOTI_TYPE_USAGE = 'usage';
+const NOTI_TYPE_DONATION = 'dona';
+const NOTI_TYPE_PROMOTION = 'promo';
+const NOTI_TYPE_COUPON = 'cpn';
 
 const initNotiList = createAsyncThunk(
   'noti/initNotiList',
@@ -161,7 +164,7 @@ const slice = createSlice({
     builder.addCase(readNoti.fulfilled, (state, {payload}) => {
       const {result, objects} = payload;
 
-      if (result === 0 && objects) {
+      if (result === 0 && objects.length > 0) {
         const notiList = state.notiList.map((elm) =>
           elm.uuid === objects[0].uuid ? {...elm, isRead: 'T'} : elm,
         );
@@ -188,6 +191,9 @@ export const actions = {
   NOTI_TYPE_EVENT,
   NOTI_TYPE_PUSH,
   NOTI_TYPE_USAGE,
+  NOTI_TYPE_DONATION,
+  NOTI_TYPE_PROMOTION,
+  NOTI_TYPE_COUPON,
   sendLog,
   getNotiList,
   readNoti,

@@ -57,7 +57,7 @@ const FloatCheckButton: React.FC<FloatCheckButtonPros> = ({
       style={styles.agreement}>
       <AppIcon
         style={{marginRight: 12}}
-        name="btnCheck2"
+        name="btnCheck3"
         checked={checked}
         size={22}
       />

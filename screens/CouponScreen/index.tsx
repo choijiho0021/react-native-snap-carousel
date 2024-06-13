@@ -2,6 +2,7 @@ import React, {memo, useCallback, useEffect, useState} from 'react';
 import {bindActionCreators} from 'redux';
 import {
   FlatList,
+  Image,
   Keyboard,
   RefreshControl,
   SafeAreaView,
@@ -14,6 +15,8 @@ import {RootState} from '@reduxjs/toolkit';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList, goBack} from '@/navigation/navigation';
 import i18n from '@/utils/i18n';
+
+import AppIcon from '@/components/AppIcon';
 import AppBackButton from '@/components/AppBackButton';
 import {
   AccountAction,
@@ -46,7 +49,7 @@ const styles = StyleSheet.create({
   coupon: {
     paddingHorizontal: 20,
     paddingVertical: 16,
-    borderColor: colors.gray4,
+    borderColor: colors.lightGrey,
     borderWidth: 1,
     borderRadius: 3,
     marginHorizontal: 20,
@@ -81,6 +84,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.clearBlue,
   },
   bottom: {
+    marginTop: 32,
     paddingVertical: 40,
     backgroundColor: colors.backGrey,
   },
@@ -92,7 +96,7 @@ const styles = StyleSheet.create({
   empty: {
     flex: 1,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: '20%',
   },
   middleDot: {
     ...appStyles.medium14,
@@ -236,21 +240,31 @@ const CouponScreen: React.FC<CouponProps> = ({
               {borderColor: changing ? colors.clearBlue : colors.lightGrey},
             ]}>
             <AppTextInput
-              style={{flex: 1}}
+              style={{
+                ...appStyles.medium16,
+                flex: 1,
+                height: 40,
+                lineHeight: undefined,
+              }}
+              // clearButtonMode="while-editing"
               placeholder={i18n.t('coupon:inputCode')}
               value={value}
               onChangeText={setCode}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
             />
-            {value.length > 0 && (
+            {value.length > 0 && focused && (
               <AppButton
-                style={{justifyContent: 'flex-end', marginLeft: 10}}
+                style={{
+                  justifyContent: 'flex-end',
+                  marginLeft: 10,
+                }}
                 iconName="btnSearchCancel"
                 onPress={() => setCode('')}
               />
             )}
           </View>
+
           <AppButton
             style={styles.regBtn}
             title={i18n.t('coupon:reg')}
@@ -287,7 +301,11 @@ const CouponScreen: React.FC<CouponProps> = ({
         ListEmptyComponent={
           <View style={styles.empty}>
             <AppSvgIcon name="imgCoupon" />
-            <AppText style={[appStyles.bold14Text, {color: colors.warmGrey}]}>
+            <AppText
+              style={[
+                appStyles.bold14Text,
+                {color: colors.warmGrey, marginTop: 8},
+              ]}>
               {i18n.t('coupon:none')}
             </AppText>
           </View>

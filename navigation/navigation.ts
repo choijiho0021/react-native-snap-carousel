@@ -20,8 +20,10 @@ import {GuideOption} from '@/screens/UserGuideScreen/GuideHomeScreen';
 import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
 import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 import {PaymentRule} from '@/redux/modules/product';
+import {ViewStyle} from 'react-native';
+import {Fortune} from '@/redux/modules/account';
 
-export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti';
+export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti' | 'page';
 export type PymMethodScreenMode =
   | 'cart'
   | 'roaming_product'
@@ -74,9 +76,14 @@ type SimpleTextParams = {
   mode?: SimpleTextScreenMode;
   body?: string;
   bodyTitle?: string;
+  created?: Moment;
   text?: string;
   rule?: Record<string, string>;
   nid?: number;
+  btnStyle?: ViewStyle;
+  showIcon?: boolean;
+  showCloseModal?: boolean;
+  notiType?: string;
   image?: {
     success?: string;
     failure?: string;
@@ -179,12 +186,10 @@ export type HomeStackParamList = {
   Gift: {mainSubs: RkbSubscription};
   ChargeHistory: {
     mainSubs: RkbSubscription;
-    onPressUsage: (
-      subs: RkbSubscription,
-    ) => Promise<{usage: any; status: any; usageOption: UsageOptionObj}>;
     chargeablePeriod: string;
     isChargeable: boolean;
   };
+  Lottery: {count: number; fortune?: Fortune; onPress: (v: number) => void};
   ChargeDetail: {
     data: RkbProduct;
     chargeablePeriod: string;

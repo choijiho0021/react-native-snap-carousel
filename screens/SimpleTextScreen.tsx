@@ -57,6 +57,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
+
+  buttonBox: {
+    flexDirection: 'row',
+  },
+
+  btnClose: {
+    flex: 1,
+    backgroundColor: colors.white,
+    borderTopWidth: 1,
+    borderColor: colors.lightGrey,
+  },
+  btnDonate: {
+    flex: 1,
+    height: 52,
+    backgroundColor: colors.clearBlue,
+  },
   container: {
     flex: 1,
     alignItems: 'stretch',
@@ -81,6 +97,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
     color: '#ffffff',
+  },
+  divider: {
+    borderBottomWidth: 1,
+    margin: 16,
+    marginBottom: 0,
+    borderBottomColor: colors.lightGrey,
   },
 });
 
@@ -111,6 +133,8 @@ type SimpleTextScreenProps = {
   };
 };
 
+const {webViewHost} = Env.get();
+
 const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
   const {
     navigation,
@@ -129,6 +153,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<SimpleTextScreenMode>('html');
   const [promoResult, setPromoResult] = useState('');
+  const [btnDisabled, setBtnDisabled] = useState(false);
 
   useEffect(() => {
     if (info.infoMap) setBody(info.infoMap.get(infoMapKey, [])[0]?.body || '');
@@ -270,6 +295,12 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     [action.info, info, infoMapKey],
   );
 
+  const getIds = useCallback((input: string) => {
+    const parts = input.split('/');
+    const idsString = parts[1];
+    return idsString.split(',').map((id: string) => parseInt(id, 10));
+  }, []);
+
   const defineSource = useCallback(
     (m: SimpleTextScreenMode) => {
       if (m === 'text')
@@ -299,6 +330,9 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
       return (
         <WebView
           style={styles.container}
+          containerStyle={
+            route?.params?.mode === 'page' ? {marginHorizontal: 10} : undefined
+          }
           originWhitelist={['*']}
           onMessage={onMessage}
           source={{
@@ -311,7 +345,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
         />
       );
     },
-    [body, bodyTitle, onMessage],
+    [body, bodyTitle, onMessage, route?.params?.mode],
   );
 
   useEffect(() => {
@@ -335,7 +369,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
   }, [getContent, route, route.params]);
 
   const {loggedIn, iccid, token} = account;
-  const {image} = route.params;
+  const {image, showIcon, showCloseModal, btnStyle} = route.params;
   const title = useMemo(() => {
     if (isProdEvent) {
       return loggedIn ? `promo:join:${eventStatus}` : 'promo:login';
@@ -347,26 +381,114 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     ['joined', 'invalid'].includes(eventStatus) ||
     ['promo:join:ing', 'promo:join:fail'].includes(promoResult);
 
+  const donate = useCallback(() => {
+    API.Account.donateCash({
+      iccid,
+      token,
+      ids: getIds(route?.params?.notiType),
+    }).then((resp) => {
+      setBtnDisabled(true);
+
+      if (resp.result === 0) {
+        const isDonated = resp?.objects?.total === 0;
+
+        action.account.getAccount({
+          iccid: account.iccid,
+          token: account.token,
+        });
+
+        AppAlert.info(
+          i18n.t(isDonated ? 'promo:donate:already' : 'promo:donate:success'),
+          '',
+          () => {
+            if (!isDonated) {
+              navigation.popToTop();
+              navigation.navigate('MyPageStack', {
+                screen: 'CashHistory',
+                initial: false,
+              });
+            }
+          },
+        );
+      } else {
+        AppAlert.info(i18n.t('promo:donate:fail'));
+      }
+    });
+  }, [
+    account.iccid,
+    account.token,
+    action.account,
+    getIds,
+    iccid,
+    navigation,
+    route?.params?.notiType,
+    token,
+  ]);
+
+  const renderContentTitle = useCallback(() => {
+    return (
+      <>
+        <View
+          style={{
+            marginHorizontal: 20,
+            gap: 8,
+            marginTop: 24,
+          }}>
+          <AppText style={appStyles.bold24Text}>
+            {route.params.bodyTitle}
+          </AppText>
+          <AppText style={[appStyles.semiBold14Text, {color: colors.warmGrey}]}>
+            {route?.params?.created?.format('MM월 DD일')}
+          </AppText>
+        </View>
+        <View style={styles.divider} />
+      </>
+    );
+  }, [route.params.bodyTitle, route.params?.created]);
+
   return (
     <SafeAreaView style={styles.screen}>
       <View style={appStyles.header}>
-        <AppBackButton title={route.params?.title} />
+        <AppBackButton
+          title={route.params?.title}
+          showIcon={showIcon}
+          showCloseModal={showCloseModal}
+        />
       </View>
+      {mode === 'page' && renderContentTitle()}
       {defineSource(mode)}
       <AppActivityIndicator visible={pending || loading} />
-      {!route.params?.rule?.sku?.startsWith('event-multi') && (
-        <AppButton
-          style={styles.button}
-          type="primary"
-          title={
-            disabled
-              ? i18n.t(title)
-              : route.params?.rule?.btnTitle || i18n.t(title)
-          }
-          disabled={disabled}
-          onPress={onPress}
-        />
-      )}
+      {!route.params?.rule?.sku?.startsWith('event-multi') &&
+        (mode === 'page' ? (
+          <View style={styles.buttonBox}>
+            <AppButton
+              style={styles.btnClose}
+              titleStyle={appStyles.medium18}
+              title={i18n.t('close')}
+              onPress={() => navigation.goBack()}
+            />
+            <AppButton
+              style={styles.btnDonate}
+              title={i18n.t('promo:donate')}
+              disabled={btnDisabled}
+              onPress={() => {
+                donate();
+              }}
+            />
+          </View>
+        ) : (
+          <AppButton
+            style={[styles.button, btnStyle]}
+            type="primary"
+            title={
+              disabled
+                ? i18n.t(title)
+                : route.params?.rule?.btnTitle || i18n.t(title)
+            }
+            disabled={disabled}
+            onPress={onPress}
+          />
+        ))}
 
       <AppModal
         type="close"
