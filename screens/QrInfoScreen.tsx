@@ -226,7 +226,7 @@ const QrInfoScreen = () => {
 
   const getCardState = useCallback((state: string) => {
     switch (state) {
-      case 'Release':
+      case 'Released':
         setCardState('R');
         setIsFail(false);
         break;
