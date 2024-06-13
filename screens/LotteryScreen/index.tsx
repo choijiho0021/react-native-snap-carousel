@@ -3,8 +3,6 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   AppState,
   Image,
-  ImageBackground,
-  Platform,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -212,18 +210,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       subscription.remove();
     };
   }, []);
-
-  useEffect(() => {
-    if (isHistory) {
-      // 2초 동안 Loading 표시해주기 코드
-      setIsLoading(true);
-
-      // 뽑기 , 임시로 2초 타임아웃
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 2000);
-    }
-  }, [isHistory]);
 
   const lotteryCoupon = useCallback(async () => {
     API.Account.lotteryCoupon({
