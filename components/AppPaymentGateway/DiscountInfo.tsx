@@ -319,7 +319,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
         </View>
         <Pressable
           onPress={() => {
-            navigation.navigate('HomeStack', {screen: 'Invite'});
+            navigation.navigate('Invite');
           }}
           style={styles.inviteButtonContainer}>
           <View style={[styles.inviteRow, {gap: 2}]}>
