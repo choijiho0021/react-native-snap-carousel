@@ -151,19 +151,17 @@ const logInOnce = ({user, pass}: {user: string; pass: string}) => {
   );
 };
 
-const logIn0 = async ({user, pass}: {user: string; pass: string}) => {
+const logIn = async ({user, pass}: {user: string; pass: string}) => {
   if (!user)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
   if (!pass)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: pass');
 
-  await logOut();
-
   const rsp = await logInOnce({user, pass});
   if (rsp.result == 0) return Promise.resolve(rsp);
 
   // 실패한 경우
-  console.log('@@@ logout and try again');
+  console.log('@@@ logout and try again', rsp);
   await logOut();
   return logInOnce({user, pass});
 };
@@ -185,6 +183,7 @@ function releaseLock() {
   lock = false;
 }
 
+/*
 const logIn = async ({user, pass}: {user: string; pass: string}) => {
   return acquireLock()
     .then(() => {
@@ -192,6 +191,7 @@ const logIn = async ({user, pass}: {user: string; pass: string}) => {
     })
     .finally(() => releaseLock());
 };
+*/
 
 const update = ({
   uid,
