@@ -5998,9 +5998,9 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         />
       </G>
       <Defs>
-        <clipPath id="4vlqgsafha">
+        <ClipPath id="4vlqgsafha">
           <Path fill="#fff" d="M0 0h16v16H0z" />
-        </clipPath>
+        </ClipPath>
       </Defs>
     </Svg>,
   ],
