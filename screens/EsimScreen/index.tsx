@@ -200,6 +200,7 @@ const styles = StyleSheet.create({
     ...appStyles.bold14Text,
     color: colors.white,
     lineHeight: 20,
+    textAlign: 'center',
   },
 });
 
