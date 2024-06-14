@@ -517,22 +517,41 @@ const resign = async (
 const saveClientLog = ({mobile, log}: {mobile?: string; log: string}) => {
   if (!log) return api.reject(api.E_INVALID_ARGUMENT, 'missing argument: log');
 
-  return api.callHttp(
-    `${api.rokHttpUrl(api.path.rokApi.pv.saveLog)}`,
-    {
-      method: 'POST',
-      headers: api.headers('json'),
-      body: JSON.stringify({
-        account: mobile,
-        log,
-      }),
-    },
-    (rsp = {}) => {
-      return rsp.result?.code === 0
-        ? api.success([])
-        : api.failure(api.FAILED, rsp.result?.error);
-    },
-  );
+  const MAX_LOG_LENGTH = 20000;
+  let start = 0;
+
+  while (start < log.length) {
+    let end = start + MAX_LOG_LENGTH;
+    if (end < log.length) {
+      // \n이 마지막에 위치하도록 조정
+      const lastNewline = log.lastIndexOf('$$$', end);
+      if (lastNewline > start) {
+        end = lastNewline + 1; // \n 포함
+      }
+    }
+    const sliceLog = log.slice(start, end);
+
+    api.callHttp(
+      `${api.rokHttpUrl(api.path.rokApi.pv.saveLog)}`,
+      {
+        method: 'POST',
+        headers: api.headers('json'),
+        body: JSON.stringify({
+          account: mobile,
+          log: sliceLog,
+        }),
+      },
+      (rsp = {}) => {
+        return rsp.result?.code === 0
+          ? api.success([])
+          : api.failure(api.FAILED, rsp.result?.error);
+      },
+    );
+
+    start = end;
+  }
+
+  return api.success([]);
 };
 
 export default {
