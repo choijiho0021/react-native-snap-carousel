@@ -773,7 +773,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         contentContainerStyle={[
           {paddingBottom: 34},
           _.isEmpty(subsData) &&
-            (_.isEmpty(order.drafts) || isEditMode) && {flex: 1},
+            (_.isEmpty(order.drafts) || isEditMode) && {
+              flexGrow: 1,
+            },
         ]}
         ListEmptyComponent={empty}
         onScrollToIndexFailed={(rsp) => {
