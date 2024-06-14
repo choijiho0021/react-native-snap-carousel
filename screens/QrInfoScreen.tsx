@@ -218,6 +218,11 @@ const QrInfoScreen = () => {
   const [cardState, setCardState] = useState<CardState>('N');
   const [isFail, setIsFail] = useState(false);
 
+  const stateColor = useMemo(() => {
+    if (cardState === 'R') return colors.clearBlue;
+    if (['E', 'DE'].includes(cardState)) return colors.shamrock;
+    if (cardState === 'D') return colors.redError;
+  }, [cardState]);
   const canCheckEsim = useMemo(
     () => params.mainSubs.partner?.startsWith('cmi') || false,
     [params.mainSubs.partner],
@@ -358,23 +363,51 @@ const QrInfoScreen = () => {
 
         {canCheckEsim && (
           <View style={{...styles.box, paddingHorizontal: 0}}>
-            <AppText
-              style={[
-                appStyles.bold20Text,
-                {marginTop: 4, paddingHorizontal: 20},
-              ]}>
-              {i18n.t('qrInfo:cardCheck:title')}
-            </AppText>
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <AppText
+                style={[
+                  appStyles.bold20Text,
+                  {marginTop: 4, paddingHorizontal: 20},
+                ]}>
+                {i18n.t('qrInfo:cardCheck:title')}
+              </AppText>
+              {['R', 'E', 'DE', 'D'].includes(cardState) && (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}>
+                  <AppSvgIcon
+                    name={
+                      cardState === 'R'
+                        ? 'blueBang'
+                        : cardState === 'D'
+                        ? 'redWarning'
+                        : 'greenCheck'
+                    }
+                    style={{marginRight: 2}}
+                  />
+                  <AppText
+                    style={[
+                      appStyles.bold16Text,
+                      {color: stateColor, marginRight: 20},
+                    ]}>
+                    {i18n.t(`qrInfo:state:${cardState}`)}
+                  </AppText>
+                </View>
+              )}
+            </View>
 
             <View style={styles.cardCheckTxt}>
               <View>
                 <AppStyledText
                   text={i18n.t(`qrInfo:cardCheck:subTitle:${cardState}`)}
                   textStyle={styles.cardCheckSubTitle}
-                  format={{c: {color: colors.clearBlue}}}
+                  format={{c: {color: stateColor}}}
                 />
 
-                {(showBtn || loading) && (
+                {showBtn || loading ? (
                   <Pressable
                     onPress={() => checkCmiInstall(params.mainSubs)}
                     style={styles.checkBtn}>
@@ -388,6 +421,8 @@ const QrInfoScreen = () => {
                       )}
                     </AppText>
                   </Pressable>
+                ) : (
+                  <View style={{height: 40}} />
                 )}
               </View>
               <AppIcon name={`DeviceReg${cardState}`} />
