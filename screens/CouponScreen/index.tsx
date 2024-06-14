@@ -246,14 +246,25 @@ const CouponScreen: React.FC<CouponProps> = ({
                 height: 40,
                 lineHeight: undefined,
               }}
-              clearButtonMode="while-editing"
+              // clearButtonMode="while-editing"
               placeholder={i18n.t('coupon:inputCode')}
               value={value}
               onChangeText={setCode}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
             />
+            {value.length > 0 && focused && (
+              <AppButton
+                style={{
+                  justifyContent: 'flex-end',
+                  marginLeft: 10,
+                }}
+                iconName="btnSearchCancel"
+                onPress={() => setCode('')}
+              />
+            )}
           </View>
+
           <AppButton
             style={styles.regBtn}
             title={i18n.t('coupon:reg')}

@@ -158,8 +158,10 @@ const styles = StyleSheet.create({
     height: 64,
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.whiteFive,
+    backgroundColor: colors.backGrey,
     borderRadius: 3,
+    borderColor: colors.whiteFive,
+    borderWidth: 1,
   },
   rowRight: {
     flexDirection: 'row',
@@ -224,7 +226,7 @@ const QrInfoScreen = () => {
 
   const getCardState = useCallback((state: string) => {
     switch (state) {
-      case 'Release':
+      case 'Released':
         setCardState('R');
         setIsFail(false);
         break;
@@ -320,7 +322,7 @@ const QrInfoScreen = () => {
       if (!showBtn) {
         setShowBtn(true);
       }
-    }, 20000);
+    }, 10000);
   }, [showBtn]);
 
   return (
@@ -393,7 +395,9 @@ const QrInfoScreen = () => {
             {(['R', 'E', 'DE', 'D'].includes(cardState) || isFail) && (
               <View style={styles.cardCheckDesc}>
                 <AppSvgIcon
-                  name="regCardInfo"
+                  name={
+                    isFail || cardState === 'D' ? 'regCardWarn' : 'regCardInfo'
+                  }
                   style={{marginRight: 4, top: 2}}
                 />
                 <AppStyledText

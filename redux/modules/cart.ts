@@ -359,7 +359,7 @@ const slice = createSlice({
             return selectMaxCoupon(acc, cur);
           }, undefined)?.coupon_id;
 
-          state.couponToApply = maxCouponId;
+          state.couponToApply = undefined;
           state.maxCouponId = maxCouponId;
         }
 

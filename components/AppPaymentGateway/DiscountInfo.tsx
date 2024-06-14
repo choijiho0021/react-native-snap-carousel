@@ -126,7 +126,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
 }) => {
   const discount = useMemo(() => cart.pymReq?.discount, [cart.pymReq]);
   const [rokebiCash, setRokebiCash] = useState('');
-  const [checked, setChecked] = useState(true);
+  const [checked, setChecked] = useState(false);
   const [editing, setEditing] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
@@ -319,7 +319,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
         </View>
         <Pressable
           onPress={() => {
-            navigation.navigate('HomeStack', {screen: 'Invite'});
+            navigation.navigate('Invite');
           }}
           style={styles.inviteButtonContainer}>
           <View style={[styles.inviteRow, {gap: 2}]}>

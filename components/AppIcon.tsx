@@ -49,6 +49,7 @@ const images: Record<string, any[]> = {
   DeviceRegN: [require(`${esimPath}Device_reg_N.png`)],
   DeviceRegR: [require(`${esimPath}Device_reg_R.png`)],
   DeviceRegE: [require(`${esimPath}Device_reg_E.png`)],
+  DeviceRegDE: [require(`${esimPath}Device_reg_E.png`)],
   DeviceRegD: [require(`${esimPath}Device_reg_D.png`)],
 };
 
