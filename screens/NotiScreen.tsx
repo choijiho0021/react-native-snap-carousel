@@ -508,12 +508,14 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
         />
       )}
 
-      <View style={styles.notice}>
-        <AppSvgIcon name="bannerMark3" />
-        <AppText style={[appStyles.bold16Text, {color: colors.warmGrey}]}>
-          {i18n.t('noti:notice')}
-        </AppText>
-      </View>
+      {!isNotice && (
+        <View style={styles.notice}>
+          <AppSvgIcon name="bannerMark3" />
+          <AppText style={[appStyles.bold16Text, {color: colors.warmGrey}]}>
+            {i18n.t('noti:notice')}
+          </AppText>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
