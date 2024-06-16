@@ -52,7 +52,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>esimnaverlogin</string>
+			<string>naver</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>esimnaverlogin</string>
