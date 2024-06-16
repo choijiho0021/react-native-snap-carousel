@@ -1193,6 +1193,7 @@
   "changeEmail:fail": "Failed to register email.",
 
   "socialLogin:kakao": "Login with Kakao",
+  "socialLogin:naver": "Login with Naver",
   "socialLogin:apple": "Sign in with Apple",
   "socialLogin:google": "Sign in with Google",
   "socialLogin:facebook": "Sign in with Facebook",

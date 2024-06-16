@@ -1,82 +1,102 @@
-// // naver login for commit
-// import React, {memo, useCallback} from 'react';
-// import {Alert, StyleSheet, View} from 'react-native';
-// import {
-//   ConfigParam,
-//   getProfile,
-//   NaverLogin,
-//   TokenResponse,
-// } from '@react-native-seoul/naver-login';
-// import AppButton from '@/components/AppButton';
-// import {AuthCallback} from '@/components/SocialLogin';
-// import Env from '@/environment';
+import React, {memo, useCallback, useEffect} from 'react';
+import {StyleSheet, View} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
+import NaverLogin from '@react-native-seoul/naver-login';
+import AppButton from '@/components/AppButton';
+import i18n from '@/utils/i18n';
+import {appStyles} from '@/constants/Styles';
+import {SocialAuthInfo} from '.';
+import {colors} from '@/constants/Colors';
 
-// const {esimGlobal} = Env.get();
+const consumerKey = 'eDNL03AN1tZ4WKa2vWOb';
+const consumerSecret = '4IEh5ew6PA';
+const appName = '로밍도깨비 eSIM';
+const serviceUrlSchemeIOS = 'esimnaverlogin';
 
-// const styles = StyleSheet.create({
-//   button: {
-//     alignItems: 'center',
-//   },
-// });
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  viewStyle: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 2,
+    height: 52,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: colors.black,
+  },
+  btnStyle: {
+    width: '100%',
+  },
+});
 
-// const NaverLoginButton = ({onAuth}: {onAuth: AuthCallback}) => {
-//   const getProfileInfo = useCallback(
-//     async (token: string) => {
-//       const res = await getProfile(token);
-//       if (res.resultcode === '024') {
-//         Alert.alert('Login Failed', res.message);
-//         return;
-//       }
+const NaverLoginButton = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
+  useEffect(() => {
+    NaverLogin.initialize({
+      appName,
+      consumerKey,
+      consumerSecret,
+      serviceUrlSchemeIOS,
+      disableNaverAppAuthIOS: true,
+    });
+  }, []);
 
-//       if (onAuth) {
-//         onAuth({
-//           user: res.response.id,
-//           pass: token,
-//           authorized: true,
-//           email: res.response.email,
-//           mobile: res.response.mobile.replace(/-/gi, ''),
-//         });
-//       }
-//     },
-//     [onAuth],
-//   );
+  const onPress = useCallback(async () => {
+    try {
+      const {successResponse} = await NaverLogin.login();
 
-//   const onPress = useCallback(async () => {
-//     const iosKeys: ConfigParam = {
-//       // kConsumerKey => naver application client ID
-//       // kCosumerSecret => naver application secret key
-//       kConsumerKey: '', // client ID
-//       kConsumerSecret: '',
-//       kServiceAppName: '로밍도깨비 eSIM', // app name
-//       kServiceAppUrlScheme: esimGlobal ? 'globalnaverlogin' : 'esimnaverlogin', // only for iOS // naverlogin
-//     };
+      if (successResponse) {
+        const {accessToken} = successResponse;
+        if (accessToken) {
+          const profileResult = await NaverLogin.getProfile(accessToken);
+          const {resultcode, response} = profileResult;
+          if (resultcode === '00') {
+            console.log('@@@@ response', response);
+            const {id, email, mobile} = response;
+            await AsyncStorage.setItem('login.naver.user', id);
+            if (accessToken)
+              await AsyncStorage.setItem('login.naver.pass', accessToken);
 
-//     await NaverLogin.login(iosKeys, (err?: Error, token?: TokenResponse) => {
-//       // accessToken: string;
-//       // refreshToken: string;
-//       // expiresAt: string;
-//       // tokenType: string;
-//       console.log('\n\n  Token is fetched  ::\n\n ', token, iosKeys);
+            let storedEmail = email || '';
+            if (email) {
+              await AsyncStorage.setItem('login.naver.email', email);
+            } else {
+              storedEmail =
+                (await AsyncStorage.getItem('login.naver.email')) || '';
+            }
 
-//       if (err) {
-//         console.log('login error', err);
-//         return;
-//       }
-//       if (token) getProfileInfo(token.accessToken);
-//     });
-//   }, [getProfileInfo]);
+            if (mobile)
+              onAuth?.({
+                kind: 'naver',
+                user: id,
+                pass: accessToken,
+                mobile: mobile.replace(/-/g, ''),
+                authorized: true,
+                email: storedEmail,
+              });
+          }
+        }
+      }
+    } catch (error) {
+      console.log('@@@ naver login failed', error);
+    }
+  }, [onAuth]);
 
-//   return (
-//     <View style={styles.button}>
-//       <AppButton
-//         iconName="naverLogin"
-//         style={{
-//           width: 44, // You must specify a width
-//           height: 44, // You must specify a height
-//         }}
-//         onPress={onPress}
-//       />
-//     </View>
-//   );
-// };
-// export default memo(NaverLoginButton);
+  return (
+    <View style={styles.container}>
+      <AppButton
+        iconName="naverLogin"
+        title={i18n.t('socialLogin:naver')}
+        titleStyle={{...appStyles.medium16, marginLeft: 5, color: colors.black}}
+        viewStyle={styles.viewStyle}
+        style={styles.btnStyle}
+        onPress={onPress}
+      />
+    </View>
+  );
+};
+export default memo(NaverLoginButton);

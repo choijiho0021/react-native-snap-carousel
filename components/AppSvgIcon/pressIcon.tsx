@@ -3589,6 +3589,27 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  naverLogin: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#ufb9tg9dua)">
+        <Rect x="1" y="1" width="18" height="18" rx="3" fill="#17DC34" />
+        <Path
+          d="M11.427 10.282 8.446 6H6v8h2.573V9.718L11.53 14H14V6h-2.573v4.282z"
+          fill="#fff"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="ufb9tg9dua">
+          <Path fill="#fff" transform="translate(1 1)" d="M0 0h18v18H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
   leftCalendarIcon: [
     <Svg
       width="20"

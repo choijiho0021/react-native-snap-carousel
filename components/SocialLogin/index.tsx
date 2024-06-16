@@ -10,6 +10,7 @@ import AppleLogin from './AppleLogin';
 import GoogleLogin from './GoogleLogin';
 import KakaoLogin from './KakaoLogin';
 import FacebookLogin from './FacebookLogin';
+import NaverLoginButton from './NaverLogin';
 
 const {esimGlobal} = Env.get();
 
@@ -21,7 +22,7 @@ export type SocialAuthInfo = {
   email?: string;
   mobile?: string;
   profileImageUrl?: string;
-  kind: 'kakao' | 'ios' | 'google' | 'apple' | 'facebook';
+  kind: 'kakao' | 'ios' | 'google' | 'apple' | 'facebook' | 'naver';
 };
 
 const styles = StyleSheet.create({
@@ -44,7 +45,7 @@ const styles = StyleSheet.create({
   btnGroup: {
     marginTop: 20,
     marginHorizontal: 20,
-    height: 116,
+    height: 168,
   },
 });
 
@@ -60,6 +61,7 @@ const SocialLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
       </View>
       <View style={styles.btnGroup}>
         {/* <NaverLoginButton onAuth={onAuth} /> */}
+        {!esimGlobal && <NaverLoginButton onAuth={onAuth} />}
         {!esimGlobal && <KakaoLogin onAuth={onAuth} />}
         {Platform.OS === 'android' && <GoogleLogin onAuth={onAuth} />}
         {appleAuth.isSupported && <AppleLogin onAuth={onAuth} />}
