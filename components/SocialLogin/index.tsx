@@ -10,7 +10,7 @@ import AppleLogin from './AppleLogin';
 import GoogleLogin from './GoogleLogin';
 import KakaoLogin from './KakaoLogin';
 import FacebookLogin from './FacebookLogin';
-import NaverLoginButton from './NaverLogin';
+import NaverLoginButton from './NaverLoginButton';
 
 const {esimGlobal} = Env.get();
 
