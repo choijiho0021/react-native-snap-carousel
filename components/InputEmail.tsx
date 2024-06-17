@@ -59,6 +59,7 @@ export type InputEmailRef = {
 type InputEmailProps = {
   inputRef?: React.MutableRefObject<InputEmailRef | null>;
   currentEmail?: string; // current email
+  socialEmail?: string;
   domain: string;
   placeholder?: string;
   onChange?: (email: string) => void;
@@ -68,13 +69,14 @@ type InputEmailProps = {
 const InputEmail: React.FC<InputEmailProps> = ({
   inputRef,
   currentEmail,
+  socialEmail,
   domain,
   placeholder,
   onChange,
   onPress = () => {},
 }) => {
   const emailRef = useRef<TextInput>();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(socialEmail || '');
   const [focused, setFocused] = useState(false);
   const [inValid, setInValid] = useState('');
   const [currentValue, setCurrentValue] = useState(currentEmail);

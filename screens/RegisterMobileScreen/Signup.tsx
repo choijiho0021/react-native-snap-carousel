@@ -36,7 +36,7 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import {LinkModelState} from '@/redux/modules/link';
 import ScreenHeader from '@/components/ScreenHeader';
-import DomainListModal from '@/components/DomainListModal';
+import DomainListModal, {emailDomainList} from '@/components/DomainListModal';
 import ConfirmPolicy from './ConfirmPolicy';
 
 const styles = StyleSheet.create({
@@ -90,10 +90,18 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [confirm, setConfirm] = useState({mandatory: false, optional: false});
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(
+    route?.params?.email ? route?.params?.email : '',
+  );
   const emailRef = useRef<InputEmailRef>(null);
   const [showDomainModal, setShowDomainModal] = useState(false);
-  const [domain, setDomain] = useState('');
+  const [domain, setDomain] = useState(
+    route?.params?.email?.split('@')?.[1]
+      ? emailDomainList.includes(route?.params?.email?.split('@')?.[1])
+        ? route?.params?.email?.split('@')?.[1]
+        : 'input'
+      : '',
+  );
 
   const {profileImageUrl, pin, status, mobile} = useMemo(
     () => route?.params || {},
@@ -273,6 +281,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
           </AppText>
           <InputEmail
             inputRef={emailRef}
+            socialEmail={email?.split('@')?.[0]}
             domain={domain}
             onChange={setEmail}
             onPress={() => setShowDomainModal(true)}
