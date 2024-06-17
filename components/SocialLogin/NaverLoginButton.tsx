@@ -41,7 +41,7 @@ const NaverLoginButton = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
       consumerKey,
       consumerSecret,
       serviceUrlSchemeIOS,
-      disableNaverAppAuthIOS: true,
+      // disableNaverAppAuthIOS: true,
     });
   }, []);
 
