@@ -17,6 +17,7 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import analytics from '@react-native-firebase/analytics';
+import moment from 'moment';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppIcon from '@/components/AppIcon';
@@ -39,7 +40,6 @@ import i18n from '@/utils/i18n';
 import validationUtil from '@/utils/validationUtil';
 import {LinkModelState} from '@/redux/modules/link';
 import ScreenHeader from '@/components/ScreenHeader';
-import moment from 'moment';
 
 const {isProduction, isIOS} = Env.get();
 
@@ -113,6 +113,11 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const recommender = useMemo(
     () => link?.params?.recommender,
     [link?.params?.recommender],
+  );
+
+  const referrer = useMemo(
+    () => link?.params?.referrer,
+    [link?.params?.referrer],
   );
 
   useEffect(() => {
