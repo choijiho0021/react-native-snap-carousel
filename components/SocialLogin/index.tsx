@@ -45,7 +45,6 @@ const styles = StyleSheet.create({
   btnGroup: {
     marginTop: 20,
     marginHorizontal: 20,
-    height: 168,
   },
 });
 
@@ -59,7 +58,7 @@ const SocialLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
         </AppText>
         <View style={styles.divider} />
       </View>
-      <View style={styles.btnGroup}>
+      <View style={{...styles.btnGroup, height: esimGlobal ? 116 : 168}}>
         {/* <NaverLoginButton onAuth={onAuth} /> */}
         {!esimGlobal && <NaverLoginButton onAuth={onAuth} />}
         {!esimGlobal && <KakaoLogin onAuth={onAuth} />}
