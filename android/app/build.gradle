@@ -325,6 +325,8 @@ dependencies {
     implementation project(':@react-native-camera-roll_camera-roll')
     implementation project(':@react-native-community_netinfo')
 
+     implementation project(':react-native-seoul-naver-login')
+
 
 //    addUnimodulesDependencies([exclude: ['expo-file-system','expo-image-loader','expo-permissions','expo-constants']])
 }
