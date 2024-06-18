@@ -55,7 +55,6 @@ const NaverLoginButton = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
           const profileResult = await NaverLogin.getProfile(accessToken);
           const {resultcode, response} = profileResult;
           if (resultcode === '00') {
-            console.log('@@@@ response', response);
             const {id, email, mobile} = response;
             await AsyncStorage.setItem('login.naver.user', id);
             if (accessToken)
