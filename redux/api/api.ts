@@ -320,7 +320,7 @@ const callHttp = async <T>(
 ): Promise<ApiResult<T>> => {
   const config: RequestInit = {
     ...param,
-    credentials: 'same-origin',
+    credentials: 'include',
     // mode: 'no-cors',
   };
   const {timeout = 40000, ignoreError = false, isJson = true} = option;
