@@ -7,11 +7,9 @@ import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {SocialAuthInfo} from '.';
 import {colors} from '@/constants/Colors';
+import Env from '@/environment';
 
-const consumerKey = 'eDNL03AN1tZ4WKa2vWOb';
-const consumerSecret = '4IEh5ew6PA';
-const appName = '로밍도깨비 eSIM';
-const serviceUrlSchemeIOS = 'esimnaverlogin';
+const {naver} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -36,12 +34,12 @@ const styles = StyleSheet.create({
 
 const NaverLoginButton = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
   useEffect(() => {
+    console.log('@@@@ naver', naver);
     NaverLogin.initialize({
-      appName,
-      consumerKey,
-      consumerSecret,
-      serviceUrlSchemeIOS,
-      // disableNaverAppAuthIOS: true,
+      appName: '로밍도깨비 eSIM',
+      consumerKey: naver.consumerKey,
+      consumerSecret: naver.consumerSecret,
+      serviceUrlSchemeIOS: 'esimnaverlogin',
     });
   }, []);
 
