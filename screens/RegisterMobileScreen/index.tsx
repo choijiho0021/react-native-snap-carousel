@@ -18,6 +18,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import analytics from '@react-native-firebase/analytics';
 import moment from 'moment';
+import AsyncStorage from '@react-native-community/async-storage';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppIcon from '@/components/AppIcon';
@@ -316,6 +317,8 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
         setMobile(drupalId);
         setAuthorized(isAuthorized);
+
+        AsyncStorage.setItem('social.login', kind);
 
         if (isNew) {
           // new login

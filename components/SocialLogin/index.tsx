@@ -1,6 +1,7 @@
 import appleAuth from '@invertase/react-native-apple-authentication';
-import React, {memo} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {Platform, StyleSheet, View} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import Env from '@/environment';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -48,7 +49,26 @@ const styles = StyleSheet.create({
   },
 });
 
+const initialHist = {
+  kakao: false,
+  ios: false,
+  google: false,
+  apple: false,
+  facebook: false,
+  naver: false,
+};
+
 const SocialLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
+  const [socialLoginHist, setSocialLoginHist] = useState(initialHist);
+
+  useEffect(() => {
+    AsyncStorage.getItem('social.login').then((v) => {
+      if (v && initialHist.hasOwnProperty(v)) {
+        setSocialLoginHist({...initialHist, [v]: true});
+      }
+    });
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.easyLoginTitle}>
@@ -59,7 +79,6 @@ const SocialLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
         <View style={styles.divider} />
       </View>
       <View style={{...styles.btnGroup, height: esimGlobal ? 116 : 168}}>
-        {/* <NaverLoginButton onAuth={onAuth} /> */}
         {!esimGlobal && <NaverLoginButton onAuth={onAuth} />}
         {!esimGlobal && <KakaoLogin onAuth={onAuth} />}
         {Platform.OS === 'android' && <GoogleLogin onAuth={onAuth} />}
