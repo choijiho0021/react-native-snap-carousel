@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 7.5,
     height: 52,
-    borderRadius: 24,
+    borderRadius: 100,
     backgroundColor: colors.white,
     borderStyle: 'solid',
     borderWidth: 1,
