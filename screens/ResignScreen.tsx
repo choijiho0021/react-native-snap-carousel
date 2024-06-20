@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    height: 243,
+    height: 264,
     backgroundColor: colors.clearBlue,
   },
   radioBtnContainer: {
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     top: 156,
     position: 'absolute',
     backgroundColor: colors.white,
-    borderRadius: 2,
+    borderRadius: 3,
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: colors.lightGrey,
@@ -85,13 +85,22 @@ const styles = StyleSheet.create({
   },
   resignWhy: {
     ...appStyles.bold16Text,
-    marginBottom: 4,
+    lineHeight: 24,
+    marginBottom: 2,
+  },
+  resignWhy2: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
+    color: colors.warmGrey,
+  },
+  resignButtonText: {
+    ...appStyles.normal16Text,
+    lineHeight: 22,
   },
   confirmResign: {
     backgroundColor: colors.backGrey,
     paddingHorizontal: 20,
-    paddingTop: 30,
-    paddingBottom: 48,
+    paddingVertical: 32,
     marginTop: 480,
   },
   divider: {
@@ -113,12 +122,16 @@ const styles = StyleSheet.create({
     margin: 5,
     color: colors.white,
   },
-  textInput: {
+  textInputContainer: {
     padding: 16,
     height: 120,
+    borderRadius: 3,
     borderStyle: 'solid',
     borderWidth: 1,
-    textAlignVertical: 'top',
+  },
+  textInput: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
   },
   noteTitle: {
     display: 'flex',
@@ -139,6 +152,20 @@ const styles = StyleSheet.create({
     ...appStyles.bold14Text,
     lineHeight: 22,
     color: colors.warmGrey,
+  },
+  agreementBox: {
+    marginTop: 24,
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 8,
+    paddingVertical: 21,
+    paddingHorizontal: 20,
+    borderRadius: 3,
+    backgroundColor: colors.white,
+  },
+  agreementBoxText: {
+    ...appStyles.medium16,
+    lineHeight: 22,
   },
 });
 
@@ -500,34 +527,35 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
         <View style={styles.radioBtnContainer}>
           <View style={{width: '100%'}}>
             <AppText style={styles.resignWhy}>{i18n.t('resign:why')}</AppText>
-            <AppText style={appStyles.normal14Text}>
-              {i18n.t('resign:info')}
-            </AppText>
+            <AppText style={styles.resignWhy2}>{i18n.t('resign:info')}</AppText>
             <View style={styles.divider} />
             {radioButtons.map(({id}, idx) => (
               <Pressable
-                style={{flexDirection: 'row', paddingVertical: 16}}
+                style={{
+                  flexDirection: 'row',
+                  paddingVertical: 16,
+                  paddingBottom: idx === 6 ? 16 : 12,
+                }}
                 key={id}
                 hitSlop={10}
                 onPress={() => setReasonIdx(idx)}>
                 <AppIcon
-                  style={{marginRight: 6}}
+                  style={{marginRight: 8}}
                   name="btnCheck"
                   focused={idx === reasonIdx}
                 />
-                <AppText style={appStyles.normal16Text}>
+                <AppText style={styles.resignButtonText}>
                   {i18n.t(radioButtons[idx].id)}
                 </AppText>
               </Pressable>
             ))}
             <AppTextInput
-              style={[
-                styles.textInput,
-                {
-                  borderColor: editable ? colors.black : colors.lightGrey,
-                  backgroundColor: editable ? colors.white : colors.whiteTwo,
-                },
-              ]}
+              containerStyle={{
+                ...styles.textInputContainer,
+                borderColor: editable ? colors.black : colors.lightGrey,
+                backgroundColor: editable ? colors.white : colors.whiteTwo,
+              }}
+              style={styles.textInput}
               multiline
               onChangeText={(v) => setOtherReason(v)}
               placeholder={i18n.t('resign:placeholder')}
@@ -561,16 +589,13 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
           ))}
 
           <Pressable
-            style={{flexDirection: 'row', paddingVertical: 16}}
+            style={styles.agreementBox}
             key={1}
             hitSlop={10}
             onPress={() => setIsConfirm((value) => !value)}>
-            <AppIcon
-              style={{marginRight: 6}}
-              name="btnCheck2"
-              focused={isConfirm}
-            />
-            <AppText style={appStyles.normal16Text}>
+            <AppSvgIcon name={isConfirm ? 'afterCheck' : 'beforeCheck'} />
+
+            <AppText style={styles.agreementBoxText}>
               {i18n.t(`resign:isConfirm`)}
             </AppText>
           </Pressable>
