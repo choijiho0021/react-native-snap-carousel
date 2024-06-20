@@ -114,8 +114,8 @@ const styles = StyleSheet.create({
   checkBtn: {
     width: 120,
     height: 40,
-    backgroundColor: colors.clearBlue,
     justifyContent: 'center',
+    borderRadius: 3,
   },
   checkBtnTxt: {
     ...appStyles.semiBold16Text,
@@ -128,6 +128,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     flexDirection: 'row',
+  },
+  cardCheckDescTxt: {
+    ...appStyles.medium14,
+    marginRight: 20,
   },
   cardCheckTxt: {
     flexDirection: 'row',
@@ -377,7 +381,14 @@ const QrInfoScreen = () => {
                 {(showBtn || loading) && (
                   <Pressable
                     onPress={() => checkCmiInstall(params.mainSubs)}
-                    style={styles.checkBtn}>
+                    style={[
+                      styles.checkBtn,
+                      {
+                        backgroundColor: loading
+                          ? colors.dodgerBlue
+                          : colors.clearBlue,
+                      },
+                    ]}>
                     <AppText style={styles.checkBtnTxt}>
                       {i18n.t(
                         loading
@@ -401,7 +412,7 @@ const QrInfoScreen = () => {
                   style={{marginRight: 4, top: 2}}
                 />
                 <AppStyledText
-                  textStyle={appStyles.medium14}
+                  textStyle={styles.cardCheckDescTxt}
                   text={i18n.t(
                     isFail
                       ? 'qrInfo:cardCheck:desc:fail'
