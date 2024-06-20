@@ -259,9 +259,13 @@
   "resign:cntInfo": "You have traveled with us for {{count}} time(s).",
   "resign:noCnt": "Try ROKEBI eSIM easy to use and convenient.\nEnojy travelling with ROKEBI!",
   "resign:confirmModal": "{{info}}\n\nDo you really wish to delete the account?",
-  "resign:finished": "Your account has been successfully deleted.\nThank you for using our service.",
+  "resign:finished:title": "계정 탈퇴가 정상적으로 처리되었습니다.",
+  "resign:finished": "데이터가 필요한 순간, 로밍도깨비를 다시 찾아주세요!",
   "resign:placeholder": "Would you like to tell us more?",
-  "resign:fail": "네트워크 문제로 요청이 처리되지 않았습니다.\n인터넷 연결 확인 후 다시 시도 해 주세요[",
+  "resign:fail:title": "계정 탈퇴 실패하였습니다.",
+  "resign:fail": "네트워크 문제로 요청이 처리되지 않았습니다. 인터넷 연결 확인 후 다시 시도해 주세요.",
+  "resign:disable:reason": "탈퇴 이유를 입력해 주세요.",
+  "resign:disable:agreement": "탈퇴 전 유의사항 확인 후 동의해주세요.",
 
   "set:globalMarket": "Global Market",
 

@@ -112,7 +112,6 @@ const styles = StyleSheet.create({
   button: {
     ...appStyles.normal16Text,
     height: 52,
-    backgroundColor: colors.clearBlue,
     color: colors.white,
     textAlign: 'center',
   },
@@ -120,7 +119,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal18Text,
     textAlign: 'center',
     margin: 5,
-    color: colors.white,
   },
   textInputContainer: {
     padding: 16,
@@ -166,6 +164,23 @@ const styles = StyleSheet.create({
   agreementBoxText: {
     ...appStyles.medium16,
     lineHeight: 22,
+  },
+  showInfoModalBox: {
+    marginHorizontal: 30,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 10,
+  },
+  modalText: {
+    ...appStyles.medium16,
+    lineHeight: 24,
+    letterSpacing: -0.32,
+  },
+  modalBoldText: {
+    ...appStyles.bold16Text,
+    lineHeight: 24,
+    letterSpacing: -0.32,
+    color: colors.black,
   },
 });
 
@@ -395,10 +410,17 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
   action,
   pending,
 }) => {
-  const [reasonIdx, setReasonIdx] = useState<number>(0);
+  const [reasonIdx, setReasonIdx] = useState<number>(-1);
   const [otherReason, setOtherReason] = useState<string>('');
   const [isConfirm, setIsConfirm] = useState<boolean>(false);
 
+  const isDisabled = useMemo(
+    () =>
+      !isConfirm ||
+      reasonIdx < 0 ||
+      (reasonIdx === 5 && otherReason.length < 1),
+    [isConfirm, otherReason.length, reasonIdx],
+  );
   const editable = useMemo(
     () => reasonIdx === radioButtons.length - 1,
     [reasonIdx],
@@ -445,25 +467,27 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
     navigation,
   ]);
 
-  const showFinishModal = useCallback(() => {
-    action.modal.renderModal(() => (
-      <AppModalContent
-        title={i18n.t('resign:finished')}
-        type="info"
-        onOkClose={logout}
-      />
-    ));
-  }, [action.modal, logout]);
-
-  const showFailModal = useCallback(() => {
-    action.modal.renderModal(() => (
-      <AppModalContent
-        title={i18n.t('resign:fail')}
-        type="info"
-        onOkClose={logout}
-      />
-    ));
-  }, [action.modal, logout]);
+  const showInfoModal = useCallback(
+    ({
+      title,
+      body,
+      onOkClose,
+    }: {
+      title?: string;
+      body?: string;
+      onOkClose?: () => void;
+    }) => {
+      action.modal.renderModal(() => (
+        <AppModalContent type="info" onOkClose={onOkClose}>
+          <View style={styles.showInfoModalBox}>
+            {title && <AppText style={styles.modalBoldText}>{title}</AppText>}
+            {body && <AppText style={styles.modalText}>{body}</AppText>}
+          </View>
+        </AppModalContent>
+      ));
+    },
+    [action.modal],
+  );
 
   const resign = useCallback(async () => {
     const {uid, token} = account;
@@ -477,20 +501,20 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
           : i18n.t(radioButtons[reasonIdx].id),
       );
 
-      if (rsp.result >= 0) {
-        showFinishModal();
-      } else {
-        showFailModal();
-      }
+      showInfoModal({
+        title: i18n.t(`resign:${rsp.result >= 0 ? 'finished' : 'fail'}:title`),
+        body: i18n.t(`resign:${rsp.result >= 0 ? 'finished' : 'fail'}`),
+        onOkClose: logout,
+      });
     }
   }, [
     account,
     action.modal,
     isConfirm,
+    logout,
     otherReason,
     reasonIdx,
-    showFailModal,
-    showFinishModal,
+    showInfoModal,
   ]);
 
   const showConfirmModal = useCallback(() => {
@@ -602,14 +626,33 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
         </View>
 
         <AppButton
-          style={styles.button}
+          style={{
+            ...styles.button,
+            backgroundColor: isDisabled ? colors.lightGrey : colors.clearBlue,
+          }}
           type="primary"
-          titleStyle={styles.buttonTitle}
-          disableColor={colors.warmGrey}
-          disableBackgroundColor={colors.lightGrey}
-          disabled={!isConfirm}
+          titleStyle={{
+            ...styles.buttonTitle,
+            color: isDisabled ? colors.warmGrey : colors.white,
+          }}
           title={i18n.t('resign')}
-          onPress={() => showConfirmModal()}
+          pressedStyle={
+            isDisabled
+              ? {backgroundColor: colors.lightGrey}
+              : {backgroundColor: colors.dodgerBlue}
+          }
+          onPress={() => {
+            if (isDisabled)
+              showInfoModal({
+                body: i18n.t(
+                  `resign:disable:${
+                    reasonIdx < 0 || reasonIdx === 5 ? 'reason' : 'agreement'
+                  }`,
+                ),
+                onOkClose: () => action.modal.closeModal(),
+              });
+            else showConfirmModal();
+          }}
         />
         <AppActivityIndicator visible={pending} />
       </ScrollView>
