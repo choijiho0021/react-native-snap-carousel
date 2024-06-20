@@ -179,7 +179,7 @@ export type HomeStackParamList = {
 
   Draft: {orderId: number};
   DraftUs: {orderId: number};
-  DraftResult: {isSuccess: boolean; prods: ProdInfo[]};
+  DraftResult: {isSuccess: boolean};
   CancelOrder: {orderId: number};
   CancelResult: {isSuccess: boolean; orderId: number; prods: ProdInfo[]};
 

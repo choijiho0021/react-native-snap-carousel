@@ -15,6 +15,12 @@ import ViewShot from 'react-native-view-shot';
 import LinearGradient from 'react-native-linear-gradient';
 import Share from 'react-native-share';
 import {RootState} from '@reduxjs/toolkit';
+import {
+  PERMISSIONS,
+  RESULTS,
+  check,
+  openSettings,
+} from 'react-native-permissions';
 import {colors} from '@/constants/Colors';
 import {bindActionCreators} from 'redux';
 import i18n from '@/utils/i18n';
@@ -38,12 +44,6 @@ import RenderBeforeLottery from './component/RenderBeforeLottery';
 import RenderLoadingLottery from './component/RenderLoadingLottery';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppSnackBar from '@/components/AppSnackBar';
-import {
-  PERMISSIONS,
-  RESULTS,
-  check,
-  openSettings,
-} from 'react-native-permissions';
 import AppAlert from '@/components/AppAlert';
 
 const styles = StyleSheet.create({
