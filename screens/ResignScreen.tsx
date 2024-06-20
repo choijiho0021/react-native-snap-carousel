@@ -42,6 +42,7 @@ import AppModalContent from '@/components/ModalContent/AppModalContent';
 import ScreenHeader from '@/components/ScreenHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
+import ResignConfirmModal from '@/components/ResignConfirmModal';
 
 const radioButtons = [
   {id: 'resign:reason1'},
@@ -425,13 +426,7 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
     () => reasonIdx === radioButtons.length - 1,
     [reasonIdx],
   );
-  const [purchaseCnt, resignInfo] = useMemo(() => {
-    const count = order.subs.length;
-    return [
-      count,
-      count > 0 ? i18n.t('resign:cntInfo', {count}) : i18n.t('resign:noCnt'),
-    ];
-  }, [order.subs.length]);
+  const purchaseCnt = useMemo(() => order.subs.length, [order.subs.length]);
 
   useEffect(() => {
     if (purchaseCnt <= 0) {
@@ -516,27 +511,6 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
     reasonIdx,
     showInfoModal,
   ]);
-
-  const showConfirmModal = useCallback(() => {
-    action.modal.renderModal(() => (
-      <AppModalContent
-        title={i18n.t('resign:confirmModal', {
-          info: resignInfo,
-        })}
-        type="normal"
-        onCancelClose={resign}
-        onOkClose={() => {
-          navigation.popToTop();
-          navigation.navigate('HomeStack', {screen: 'Home'});
-          action.modal.closeModal();
-        }}
-        cancelButtonTitle={i18n.t('yes')}
-        cancelButtonStyle={{color: colors.black, marginRight: 60}}
-        okButtonTitle={i18n.t('no')}
-        okButtonStyle={{color: colors.clearBlue}}
-      />
-    ));
-  }, [action.modal, navigation, resign, resignInfo]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -651,7 +625,18 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
                 ),
                 onOkClose: () => action.modal.closeModal(),
               });
-            else showConfirmModal();
+            else
+              action.modal.renderModal(() => (
+                <ResignConfirmModal
+                  onCancelClose={resign}
+                  onOkClose={() => {
+                    navigation.popToTop();
+                    navigation.navigate('HomeStack', {screen: 'Home'});
+                    action.modal.closeModal();
+                  }}
+                  purchaseCnt={purchaseCnt}
+                />
+              ));
           }}
         />
         <AppActivityIndicator visible={pending} />
