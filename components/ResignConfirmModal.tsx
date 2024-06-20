@@ -89,6 +89,7 @@ const ResignConfirmModal: React.FC<ResignConfirmModalProps> = ({
           ]}
           key={kind}
           title={i18n.t(`resign:confirmModal:${kind}`)}
+          type={isCancel ? 'primary' : 'secondary'}
           titleStyle={{
             ...styles.buttonText,
             color: isCancel ? colors.white : colors.black,
