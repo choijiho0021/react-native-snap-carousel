@@ -40,6 +40,8 @@ import AppTextInput from '@/components/AppTextInput';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import ScreenHeader from '@/components/ScreenHeader';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import AppStyledText from '@/components/AppStyledText';
 
 const radioButtons = [
   {id: 'resign:reason1'},
@@ -86,7 +88,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   confirmResign: {
-    backgroundColor: colors.whiteTwo,
+    backgroundColor: colors.backGrey,
     paddingHorizontal: 20,
     paddingTop: 30,
     paddingBottom: 48,
@@ -117,6 +119,26 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderWidth: 1,
     textAlignVertical: 'top',
+  },
+  noteTitle: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 12,
+  },
+  noteTitleText: {
+    ...appStyles.bold18Text,
+    lineHeight: 24,
+  },
+  notiBodyText: {
+    ...appStyles.normal14Text,
+    lineHeight: 22,
+    color: colors.warmGrey,
+  },
+  notiBodyTextBold: {
+    ...appStyles.bold14Text,
+    lineHeight: 22,
+    color: colors.warmGrey,
   },
 });
 
@@ -517,21 +539,24 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
         </View>
 
         <View style={styles.confirmResign}>
-          <AppText style={[appStyles.bold14Text, {marginBottom: 10}]}>
-            {i18n.t('resign:note')}
-          </AppText>
+          <View style={styles.noteTitle}>
+            <AppSvgIcon name="cautionRed" />
+            <AppText style={styles.noteTitleText}>
+              {i18n.t('resign:note')}
+            </AppText>
+          </View>
+
           {['1', '2', '3'].map((elm) => (
             <View key={elm} style={{flexDirection: 'row', paddingRight: 20}}>
               <AppText
-                style={[
-                  appStyles.normal14Text,
-                  {width: 20, textAlign: 'center'},
-                ]}>
+                style={[styles.notiBodyText, {width: 20, textAlign: 'center'}]}>
                 {'\u2022'}
               </AppText>
-              <AppText style={appStyles.normal14Text}>
-                {i18n.t(`resign:confirm${elm}`)}
-              </AppText>
+              <AppStyledText
+                text={i18n.t(`resign:confirm${elm}`)}
+                textStyle={styles.notiBodyText}
+                format={{b: styles.notiBodyTextBold}}
+              />
             </View>
           ))}
 
