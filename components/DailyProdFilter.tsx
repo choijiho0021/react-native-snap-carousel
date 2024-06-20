@@ -6,6 +6,7 @@ import {colors} from '@/constants/Colors';
 import AppButton from './AppButton';
 import {appStyles} from '../constants/Styles';
 import AppSvgIcon from './AppSvgIcon';
+import {SelectedTabType} from '@/screens/CountryScreen';
 
 const styles = StyleSheet.create({
   button: {
@@ -16,23 +17,50 @@ const styles = StyleSheet.create({
   },
 });
 
-export type DailyProdFilterList = 'all' | '500' | '1024' | '2048' | '3072';
+export type DailyProdFilterList =
+  | 'all'
+  | '500'
+  | '1024'
+  | '2048'
+  | '3072'
+  | '4096'
+  | '5120'
+  | '1024000';
 
 type DailyProdFilterProps = {
   onValueChange: (v: DailyProdFilterList) => void;
   filterList: DailyProdFilterList[];
+  selectedTab?: SelectedTabType;
 };
 
 const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
   onValueChange,
   filterList,
+  selectedTab,
 }) => {
   const scrollRef = useRef<ScrollView>();
   const [scrollWidth, setScrollWidth] = useState<number>(0);
   const [contentWidth, setContentWidth] = useState<number>(0);
-  const [filter, setFilter] = useState<DailyProdFilterList>('all');
+  const [filter, setFilter] = useState<DailyProdFilterList>(
+    selectedTab?.volume || 'all',
+  );
   const [scrollEnd, setScrollEnd] = useState<boolean>(false);
   const [showIcon, setShowIcon] = useState<boolean>(true);
+
+  const moveToEnd = useCallback(() => {
+    scrollRef?.current?.scrollToEnd();
+    setTimeout(() => {
+      setShowIcon(false);
+    }, 300);
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (selectedTab?.scroll === 'end') {
+        moveToEnd();
+      }
+    }, 1000);
+  }, [moveToEnd, selectedTab?.scroll]);
 
   useEffect(() => {
     setShowIcon(contentWidth >= scrollWidth);
@@ -67,20 +95,11 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
             justifyContent: 'center',
             backgroundColor: 'transparent',
           }}>
-          <AppSvgIcon
-            name="scrollRightArrow"
-            style={{}}
-            onPress={() => {
-              scrollRef?.current.scrollToEnd();
-              setTimeout(() => {
-                setShowIcon(false);
-              }, 300);
-            }}
-          />
+          <AppSvgIcon name="scrollRightArrow" style={{}} onPress={moveToEnd} />
         </View>
       </View>
     ),
-    [],
+    [moveToEnd],
   );
 
   const handleScroll = useCallback((event) => {

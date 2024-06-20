@@ -732,7 +732,10 @@ function go(key , className){
     key: key,
     value: document.getElementsByClassName(className)[0].getAttribute('value'),
     ios: document.getElementsByClassName(className)[0].getAttribute('ios'),
-    aos: document.getElementsByClassName(className)[0].getAttribute('aos')
+    aos: document.getElementsByClassName(className)[0].getAttribute('aos'),
+    type: document.getElementsByClassName(className)[0].getAttribute('type'),
+    volume: document.getElementsByClassName(className)[0].getAttribute('volume'),
+    scroll: document.getElementsByClassName(className)[0].getAttribute('scroll')
   };
   window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
 }

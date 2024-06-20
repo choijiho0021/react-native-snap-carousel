@@ -207,7 +207,12 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
 
           if (cmd.value || cmd.ios || cmd.aos) {
             action.product.getProdOfPartner(partnerList);
-            navigation.navigate('Country', {partner: partnerList});
+            navigation.navigate('Country', {
+              partner: partnerList,
+              type: cmd.type,
+              volume: cmd.volume,
+              scroll: cmd.scroll,
+            });
           }
 
           break;

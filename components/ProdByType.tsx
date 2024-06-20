@@ -15,6 +15,7 @@ import {RkbProduct} from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';
 import DailyProdFilter, {DailyProdFilterList} from './DailyProdFilter';
 import NetworkFilter, {NetworkFilterList} from './NetworkFilter';
+import {SelectedTabType} from '@/screens/CountryScreen';
 
 const styles = StyleSheet.create({
   emptyImage: {
@@ -47,6 +48,7 @@ const position = (idx: number, arr: RkbProduct[]) => {
 type ProdByTypeProps = {
   prodData: RkbProduct[];
   prodType: 'daily' | 'total';
+  selectedTab?: SelectedTabType;
   isCharge?: boolean;
   onPress: (prod: RkbProduct) => void;
   onTop?: (v: boolean) => void;
@@ -66,11 +68,16 @@ const DEFAULT_FILTER_LIST = [
 const ProdByType: React.FC<ProdByTypeProps> = ({
   prodData,
   prodType,
+  selectedTab,
   isCharge = false,
   onPress,
   onTop = () => {},
 }) => {
-  const [filter, setFilter] = useState<DailyProdFilterList>('all');
+  const [filter, setFilter] = useState<DailyProdFilterList>(
+    selectedTab?.type === 'daily' && selectedTab?.volume
+      ? selectedTab?.volume
+      : 'all',
+  );
   const [networkFilter, setNetworkFileter] = useState<NetworkFilterList[]>([
     'fiveG',
     'else',
@@ -147,6 +154,7 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
             <DailyProdFilter
               filterList={['all', ...list]}
               onValueChange={setFilter}
+              selectedTab={selectedTab}
             />
           ) : null}
           {showNetFilter ? (
