@@ -73,10 +73,15 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
   onPress,
   onTop = () => {},
 }) => {
+  const isSelectedTabUsable = useMemo(
+    () =>
+      selectedTab?.type === 'daily' &&
+      !!selectedTab?.volume &&
+      !!prodData.find((p) => p.volume === selectedTab?.volume),
+    [prodData, selectedTab?.type, selectedTab?.volume],
+  );
   const [filter, setFilter] = useState<DailyProdFilterList>(
-    selectedTab?.type === 'daily' && selectedTab?.volume
-      ? selectedTab?.volume
-      : 'all',
+    (isSelectedTabUsable && selectedTab?.volume) || 'all',
   );
   const [networkFilter, setNetworkFileter] = useState<NetworkFilterList[]>([
     'fiveG',
@@ -154,7 +159,7 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
             <DailyProdFilter
               filterList={['all', ...list]}
               onValueChange={setFilter}
-              selectedTab={selectedTab}
+              selectedTab={isSelectedTabUsable ? selectedTab : undefined}
             />
           ) : null}
           {showNetFilter ? (

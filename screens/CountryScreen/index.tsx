@@ -197,7 +197,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           onTop={onTop}
           onPress={onPress}
           isCharge={false}
-          selectedTab={key === 'daily' ? selectedTab : undefined}
+          selectedTab={key === selectedTab?.type ? selectedTab : undefined}
         />
       ),
     [onPress, onTop, prodData, selectedTab],
@@ -210,7 +210,11 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const renderSelectedPane = useCallback(() => {
     return prodData.length > 0 && isFocused ? (
       <Tab.Navigator
-        initialRouteName={prodData[0].length === 0 ? 'total' : 'daily'}
+        initialRouteName={
+          prodData[0].length === 0 || selectedTab.type === 'total'
+            ? 'total'
+            : 'daily'
+        }
         tabBar={(props) => <TabBar {...props} />}
         sceneContainerStyle={{backgroundColor: colors.white}}>
         {['daily', 'total'].map((k) => (
@@ -223,7 +227,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         ))}
       </Tab.Navigator>
     ) : null;
-  }, [isFocused, prodData, renderProdType]);
+  }, [isFocused, prodData, renderProdType, selectedTab.type]);
 
   return (
     <SafeAreaView style={styles.container}>
