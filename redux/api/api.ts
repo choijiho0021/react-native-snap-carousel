@@ -10,6 +10,7 @@ import {parseJson, retrieveData, storeData} from '@/utils/utils';
 import store from '@/store';
 import {actions as ToastActions, Toast} from '@/redux/modules/toast';
 import utils from '@/redux/api/utils';
+import slice from '../modules/cart';
 
 export type Langcode = 'ko' | 'en';
 const {scheme, apiUrl, esimGlobal, rokApiUrl, cachePrefix} = Env.get();
@@ -379,12 +380,9 @@ const callHttp = async <T>(
             const js = await response.json();
 
             // config에는 상품정보 등 큰 정보가 많아 제외 -- 추후 결과값을 성공 / 실패 로만 남기는 로그를 추가할 필요성이 있음
-            if (!url.includes('config'))
-              utils.log(
-                `${moment().tz('Asia/Seoul').format()} ${url} ${JSON.stringify(
-                  js,
-                )}\n`,
-              );
+            if (!url.includes('config')) {
+              utils.log(`${url} ${JSON.stringify(js)}\n`);
+            }
 
             return callback(js, response.headers.get('set-cookie'));
           } catch (ex) {

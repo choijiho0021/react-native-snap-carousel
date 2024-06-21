@@ -390,7 +390,9 @@ const extractProdName = (str) => {
 
 export const log = (str: string) => {
   // store.dispatch(ToastActions.push(Toast.NOT_LOADED));
-  store.dispatch(LogActions.append(str));
+  store.dispatch(
+    LogActions.append(`$$$${moment().tz('Asia/Seoul').format()} :${str}`),
+  );
 };
 
 export default {
