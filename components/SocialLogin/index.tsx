@@ -28,7 +28,7 @@ export type SocialAuthInfo = {
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 36,
+    paddingBottom: 24,
   },
   divider: {
     marginHorizontal: 20,
@@ -39,13 +39,17 @@ const styles = StyleSheet.create({
   },
   easyLoginTitle: {
     flexDirection: 'row',
-    // height: 30,
     marginVertical: 20,
     alignItems: 'center',
   },
   btnGroup: {
-    marginTop: 20,
-    marginHorizontal: 20,
+    marginTop: 24,
+    marginHorizontal: 12,
+    height: 99,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'flex-start',
   },
 });
 
@@ -78,7 +82,7 @@ const SocialLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
         </AppText>
         <View style={styles.divider} />
       </View>
-      <View style={{...styles.btnGroup, height: esimGlobal ? 116 : 168}}>
+      <View style={styles.btnGroup}>
         {!esimGlobal && <NaverLoginButton onAuth={onAuth} />}
         {!esimGlobal && <KakaoLogin onAuth={onAuth} />}
         {Platform.OS === 'android' && <GoogleLogin onAuth={onAuth} />}
