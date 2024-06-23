@@ -197,7 +197,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           onTop={onTop}
           onPress={onPress}
           isCharge={false}
-          selectedTab={key === selectedTab?.type ? selectedTab : undefined}
+          selectedTabParam={key === selectedTab?.type ? selectedTab : undefined}
         />
       ),
     [onPress, onTop, prodData, selectedTab],

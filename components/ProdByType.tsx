@@ -48,7 +48,7 @@ const position = (idx: number, arr: RkbProduct[]) => {
 type ProdByTypeProps = {
   prodData: RkbProduct[];
   prodType: 'daily' | 'total';
-  selectedTab?: SelectedTabType;
+  selectedTabParam?: SelectedTabType;
   isCharge?: boolean;
   onPress: (prod: RkbProduct) => void;
   onTop?: (v: boolean) => void;
@@ -68,11 +68,13 @@ const DEFAULT_FILTER_LIST = [
 const ProdByType: React.FC<ProdByTypeProps> = ({
   prodData,
   prodType,
-  selectedTab,
+  selectedTabParam,
   isCharge = false,
   onPress,
   onTop = () => {},
 }) => {
+  const [selectedTab, setSelectedTab] = useState(selectedTabParam);
+
   const isSelectedTabUsable = useMemo(
     () =>
       selectedTab?.type === 'daily' &&
@@ -158,8 +160,20 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
           {prodType === 'daily' && prodData.length > 0 ? (
             <DailyProdFilter
               filterList={['all', ...list]}
-              onValueChange={setFilter}
-              selectedTab={isSelectedTabUsable ? selectedTab : undefined}
+              onValueChange={(v) => {
+                if (selectedTab?.type)
+                  setSelectedTab({
+                    type: undefined,
+                    volume: undefined,
+                    scroll: undefined,
+                  });
+                setFilter(v);
+              }}
+              selectedTab={
+                isSelectedTabUsable && selectedTab?.type
+                  ? selectedTab
+                  : undefined
+              }
             />
           ) : null}
           {showNetFilter ? (
