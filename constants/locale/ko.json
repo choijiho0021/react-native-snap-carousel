@@ -1453,6 +1453,7 @@
   "socialLogin:facebook": "Facebook 로그인",
 
   "socialLogin:hist": "최근 로그인",
+  "socialLogin:from:naver": "네이버 로그인하면 3초만에 상품 연동!",
 
   "userGuide:home:title": "eSIM 사용 어렵지 않아요!\n가이드를 순서대로\n확인해주세요.",
   "userGuide:esimReg:title": "eSIM 등록",

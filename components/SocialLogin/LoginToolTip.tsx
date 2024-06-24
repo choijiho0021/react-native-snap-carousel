@@ -15,14 +15,12 @@ const styles = StyleSheet.create({
     borderLeftWidth: 8,
     borderRightWidth: 8,
     borderBottomWidth: 11,
-    borderBottomColor: 'rgba(44, 44, 44, 0.92)',
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
   },
   textFrame: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: 'rgba(44, 44, 44, 0.92)',
     borderRadius: 3,
   },
   text: {
@@ -34,11 +32,15 @@ const styles = StyleSheet.create({
 
 const LoginToolTip = ({
   socialLoginHist,
+  fromNaver,
 }: {
   socialLoginHist: SocialLoginHistType;
+  fromNaver: boolean;
 }) => {
   const position = useMemo(() => {
     switch (true) {
+      case fromNaver:
+        return 'center';
       case socialLoginHist?.kakao:
         return 'flex-start';
       case socialLoginHist?.naver:
@@ -49,19 +51,26 @@ const LoginToolTip = ({
       default:
         return 'center';
     }
-  }, [socialLoginHist]);
+  }, [fromNaver, socialLoginHist]);
 
   return (
     <View style={{...styles.container, alignItems: position}}>
       <View
         style={{
           ...styles.triangle,
+          borderBottomColor: fromNaver ? colors.naverGreen : colors.black92,
           marginLeft: position === 'flex-start' ? 20 : 0,
           marginRight: position === 'flex-end' ? 20 : 0,
         }}
       />
-      <View style={styles.textFrame}>
-        <AppText style={styles.text}>{i18n.t('socialLogin:hist')}</AppText>
+      <View
+        style={{
+          ...styles.textFrame,
+          backgroundColor: fromNaver ? colors.naverGreen : colors.black92,
+        }}>
+        <AppText style={styles.text}>
+          {i18n.t(fromNaver ? 'socialLogin:from:naver' : 'socialLogin:hist')}
+        </AppText>
       </View>
     </View>
   );

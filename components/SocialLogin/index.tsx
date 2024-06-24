@@ -78,7 +78,14 @@ const initialHist = {
   naver: false,
 };
 
-const SocialLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
+const SocialLogin = ({
+  onAuth,
+  referrer,
+}: {
+  onAuth: (v: SocialAuthInfo) => void;
+  referrer?: string;
+}) => {
+  const fromNaver = useMemo(() => referrer === 'naver', [referrer]);
   const [socialLoginHist, setSocialLoginHist] =
     useState<SocialLoginHistType>(initialHist);
 
@@ -107,8 +114,12 @@ const SocialLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
           {appleAuth.isSupported && <AppleLogin onAuth={onAuth} />}
           {esimGlobal && <FacebookLogin onAuth={onAuth} />}
         </View>
-        {Object.values(socialLoginHist).some((value) => value === true) && (
-          <LoginToolTip socialLoginHist={socialLoginHist} />
+        {(Object.values(socialLoginHist).some((value) => value === true) ||
+          referrer === 'naver') && (
+          <LoginToolTip
+            socialLoginHist={socialLoginHist}
+            fromNaver={fromNaver}
+          />
         )}
       </View>
     </View>

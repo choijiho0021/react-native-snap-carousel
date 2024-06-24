@@ -385,7 +385,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           />
         </View>
       </KeyboardAwareScrollView>
-      {!isKeyboardShow && <SocialLogin onAuth={onAuth} />}
+      {!isKeyboardShow && <SocialLogin onAuth={onAuth} referrer={referrer} />}
 
       <AppActivityIndicator visible={pending || loading} />
     </SafeAreaView>
