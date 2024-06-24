@@ -6435,6 +6435,20 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  facebookNew: [
+    <Svg
+      width="56"
+      height="56"
+      viewBox="0 0 56 56"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="28" cy="28" r="28" fill="#3B5998" />
+      <Path
+        d="m33.148 29.84.674-4.131h-4.215v-2.68c0-1.13.59-2.233 2.477-2.233H34V17.28S32.261 17 30.598 17c-3.47 0-5.74 1.978-5.74 5.56v3.149H21v4.13h3.858v9.987c1.574.232 3.176.232 4.75 0V29.84h3.54z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

@@ -115,12 +115,13 @@ const SocialLogin = ({
           {esimGlobal && <FacebookLogin onAuth={onAuth} />}
         </View>
         {(Object.values(socialLoginHist).some((value) => value === true) ||
-          referrer === 'naver') && (
-          <LoginToolTip
-            socialLoginHist={socialLoginHist}
-            fromNaver={fromNaver}
-          />
-        )}
+          referrer === 'naver') &&
+          !esimGlobal && (
+            <LoginToolTip
+              socialLoginHist={socialLoginHist}
+              fromNaver={fromNaver}
+            />
+          )}
       </View>
     </View>
   );
