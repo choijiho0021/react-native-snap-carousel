@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
 
 export type InputEmailRef = {
   focus: () => void;
+  blur: () => void;
 };
 
 type InputEmailProps = {
@@ -134,6 +135,7 @@ const InputEmail: React.FC<InputEmailProps> = ({
     if (inputRef) {
       inputRef.current = {
         focus: () => emailRef.current?.focus(),
+        blur: () => emailRef.current?.blur(),
       };
     }
   }, [domain, email, inputRef]);

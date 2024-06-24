@@ -322,7 +322,10 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
             socialEmail={email?.split('@')?.[0]}
             domain={domain}
             onChange={setEmail}
-            onPress={() => setShowDomainModal(true)}
+            onPress={() => {
+              emailRef?.current?.blur();
+              setShowDomainModal(true);
+            }}
             placeholder={i18n.t('reg:email')}
           />
         </View>
