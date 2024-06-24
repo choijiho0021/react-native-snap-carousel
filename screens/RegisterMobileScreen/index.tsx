@@ -356,7 +356,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <ScreenHeader
-        title={i18n.t('mobile:header')}
         backHandler={() => {
           initState();
           navigation.goBack();
