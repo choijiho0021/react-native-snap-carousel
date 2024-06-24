@@ -93,9 +93,6 @@ const DraftResultScreen: React.FC<DraftResultScreenProps> = ({
 
   useEffect(() => {
     setIsSuccess(route?.params?.isSuccess);
-
-    // subsReload 에 그냥 포함시킬 지 고민
-    action.account.checkLottery({iccid, token, prompt: 'check'});
   }, [action.account, dispatch, iccid, route?.params, token]);
 
   const renderContent = useCallback(

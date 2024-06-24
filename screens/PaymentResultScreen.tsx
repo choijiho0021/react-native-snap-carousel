@@ -319,7 +319,6 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   const getTitle = useCallback(() => {
     let result = <></>;
     const etcCount = getCountItems(oldCart?.purchaseItems, true);
-    console.log('@@@etc count : ', etcCount);
 
     if (parseInt(etcCount, 10) > 0)
       result = (
