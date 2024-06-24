@@ -1206,6 +1206,8 @@
 
   "socialLogin:hist": "최근 로그인",
   "socialLogin:from:naver": "네이버 로그인하면 3초만에 상품 연동!",
+  "socialLogin:from:naver:ment": "<b>네이버 스토어</b> 주문 시 <b>작성한 번호</b>로 회원 가입해 주세요!",
+  "socialLogin:from:referrer:ment": "주문 시 <b>작성한 번호</b>로 회원 가입해 주세요!",
 
   "userGuide:home:title": "Using eSIM is not difficult!\nPlease check the guide\nin order",
   "userGuide:esimReg:title": "Register eSIM",

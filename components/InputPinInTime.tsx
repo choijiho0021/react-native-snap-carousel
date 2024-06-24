@@ -2,6 +2,7 @@ import React, {
   PropsWithChildren,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -22,6 +23,8 @@ import i18n from '@/utils/i18n';
 import AppButton from './AppButton';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
+import AppStyledText from './AppStyledText';
+import AppSvgIcon from './AppSvgIcon';
 
 const styles = StyleSheet.create({
   container: {
@@ -68,6 +71,54 @@ const styles = StyleSheet.create({
     color: colors.black,
     flex: 1,
   },
+  referrerNaver: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 4,
+    alignItems: 'flex-start',
+    marginTop: 16,
+  },
+  referrerText: {
+    ...appStyles.medium14,
+    lineHeight: 20,
+    color: colors.black,
+  },
+  referrerTextBold: {
+    ...appStyles.bold14Text,
+    lineHeight: 20,
+    color: colors.naverGreen,
+  },
+  referrer: {
+    marginTop: 4,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  triangle: {
+    width: 11,
+    borderLeftWidth: 8,
+    borderRightWidth: 8,
+    borderBottomWidth: 11,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: colors.black92,
+  },
+  textFrame: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 3,
+    backgroundColor: colors.black92,
+  },
+  text: {
+    ...appStyles.medium14,
+    lineHeight: 20,
+    color: colors.white,
+  },
+  textBold: {
+    ...appStyles.bold14Text,
+    lineHeight: 20,
+    color: colors.lightYellow2,
+  },
 });
 
 export type InputPinRef = {
@@ -84,6 +135,7 @@ type InputPinInTimeProps = {
   onPress: (v: string) => void;
   inputRef?: React.MutableRefObject<InputPinRef | null>;
   style?: ViewStyle;
+  referrer?: string;
 };
 
 const InputPinInTime: React.FC<
@@ -95,8 +147,10 @@ const InputPinInTime: React.FC<
   onPress,
   inputRef,
   style,
+  referrer,
   ...props
 }) => {
+  const fromNaver = useMemo(() => referrer === 'naver', [referrer]);
   const [pin, setPin] = useState('');
   const [duration, setDuration] = useState(0);
   const [timeoutFlag, setTimeoutFlag] = useState(false);
@@ -258,6 +312,28 @@ const InputPinInTime: React.FC<
             .toString()
             .padStart(2, '0')}`}
         </AppText>
+      ) : referrer ? (
+        fromNaver ? (
+          <View style={styles.referrerNaver}>
+            <AppSvgIcon name="naverIconNew" />
+            <AppStyledText
+              text={i18n.t('socialLogin:from:naver:ment')}
+              textStyle={styles.referrerText}
+              format={{b: styles.referrerTextBold}}
+            />
+          </View>
+        ) : (
+          <View style={styles.referrer}>
+            <View style={styles.triangle} />
+            <View style={styles.textFrame}>
+              <AppStyledText
+                text={i18n.t('socialLogin:from:referrer:ment')}
+                textStyle={styles.text}
+                format={{b: styles.textBold}}
+              />
+            </View>
+          </View>
+        )
       ) : null}
       <View style={styles.helpBox}>
         <AppText

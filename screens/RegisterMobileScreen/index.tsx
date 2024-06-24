@@ -382,9 +382,11 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             onPress={onPressPin}
             duration={180}
             inputRef={inputRef}
+            referrer={referrer}
           />
         </View>
       </KeyboardAwareScrollView>
+
       {!isKeyboardShow && <SocialLogin onAuth={onAuth} referrer={referrer} />}
 
       <AppActivityIndicator visible={pending || loading} />

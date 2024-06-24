@@ -6379,6 +6379,62 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  naverIconNew: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#41j0g4knxa)">
+        <Rect
+          x="1"
+          y="1"
+          width="18"
+          height="18"
+          rx="3"
+          fill="url(#oksxh5hz3b)"
+        />
+        <Rect
+          x="1"
+          y="1"
+          width="18"
+          height="18"
+          rx="3"
+          fill="url(#kx0142h7zc)"
+        />
+        <Path
+          d="M11.427 10.282 8.446 6H6v8h2.573V9.718L11.53 14H14V6h-2.573v4.282z"
+          fill="#fff"
+        />
+      </G>
+      <Defs>
+        <LinearGradient
+          id="oksxh5hz3b"
+          x1="5"
+          y1="13"
+          x2="17"
+          y2="13"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#05C2E7" />
+          <Stop offset="1" stopColor="#4764E6" />
+        </LinearGradient>
+        <LinearGradient
+          id="kx0142h7zc"
+          x1="10"
+          y1="4"
+          x2="10"
+          y2="15"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#17DC34" />
+          <Stop offset="1" stopColor="#17DC34" stopOpacity="0" />
+        </LinearGradient>
+        <ClipPath id="41j0g4knxa">
+          <Path fill="#fff" transform="translate(1 1)" d="M0 0h18v18H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
 };
 
 export default pressIcons;
