@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 14,
     paddingHorizontal: 20,
+    paddingBottom: 40,
   },
   mobileBox: {
     borderWidth: 1,
