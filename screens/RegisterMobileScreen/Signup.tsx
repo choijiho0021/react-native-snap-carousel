@@ -73,7 +73,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   text: {
-    ...appStyles.normal18Text,
+    ...appStyles.medium18,
+    lineHeight: 26,
     textAlign: 'center',
     color: colors.white,
   },
@@ -346,7 +347,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
         title={i18n.t('mobile:signup')}
         titleStyle={styles.text}
         disabled={!confirm.mandatory || !email}
-        disableColor={colors.black}
+        disableColor={colors.greyish}
         disableBackgroundColor={colors.lightGrey}
         onPress={submitHandler}
         type="primary"
