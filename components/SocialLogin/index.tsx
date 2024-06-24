@@ -100,7 +100,7 @@ const SocialLogin = ({
     useState<SocialLoginHistType>(initialHist);
 
   useEffect(() => {
-    AsyncStorage.getItem('social.login').then((v) => {
+    AsyncStorage.getItem('login.hist').then((v) => {
       if (v && initialHist.hasOwnProperty(v)) {
         setSocialLoginHist({...initialHist, [v]: true});
       }

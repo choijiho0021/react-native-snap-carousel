@@ -65,16 +65,50 @@ const styles = StyleSheet.create({
     letterSpacing: -0.6,
     color: colors.black,
   },
+  mobileWithToolTip: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 12,
+  },
   mobileAuth: {
+    marginTop: 12,
     ...appStyles.bold18Text,
     lineHeight: 22,
     color: colors.black,
   },
-
+  tooltip: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  tooltipBox: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: colors.black92,
+    borderRadius: 3,
+  },
+  tooltipText: {
+    ...appStyles.medium14,
+    lineHeight: 20,
+    color: colors.white,
+  },
+  triangel: {
+    borderLeftWidth: 8,
+    borderRightWidth: 8,
+    borderTopWidth: 11,
+    width: 11,
+    marginLeft: 20,
+    borderTopColor: colors.black92,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+  },
   row: {
-    paddingVertical: 40,
+    paddingtop: 40,
+    paddingBottom: 28,
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  emptyToolTip: {
+    height: 47,
   },
 });
 
@@ -117,6 +151,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const [timeoutFlag, setTimeoutFlag] = useState(false);
   const [isKeyboardShow, setIsKeyboardShow] = useState(false);
   const [status, setStatus] = useState<TrackingStatus>();
+  const [recentNormal, setRecentNormal] = useState(false);
   const controller = useRef(new AbortController());
   const mounted = useRef(false);
   const mobileRef = useRef<InputMobileRef>(null);
@@ -131,6 +166,12 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     () => link?.params?.referrer,
     [link?.params?.referrer],
   );
+
+  useEffect(() => {
+    AsyncStorage.getItem('login.hist').then((v) => {
+      if (v && v === 'normal') setRecentNormal(true);
+    });
+  }, []);
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
@@ -277,7 +318,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
           if (resp.result === 0 && mounted.current) {
             setAuthorized(_.isEmpty(resp.objects) ? true : undefined);
-
+            AsyncStorage.setItem('login.hist', 'normal');
             if (!_.isEmpty(resp.objects)) {
               signIn({mobile, pin: value});
             } else {
@@ -329,7 +370,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         setMobile(drupalId);
         setAuthorized(isAuthorized);
 
-        AsyncStorage.setItem('social.login', kind);
+        AsyncStorage.setItem('login.hist', kind);
 
         if (isNew) {
           // new login
@@ -372,9 +413,23 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             <AppText style={styles.titleText}>{i18n.t('mobile:title')}</AppText>
             <AppIcon name="earth" />
           </View>
-          <AppText style={styles.mobileAuth}>
-            {i18n.t('mobile:easyLogin')}
-          </AppText>
+          <View style={styles.mobileWithToolTip}>
+            <AppText style={styles.mobileAuth}>
+              {i18n.t('mobile:easyLogin')}
+            </AppText>
+            {recentNormal ? (
+              <View style={styles.tooltip}>
+                <View style={styles.tooltipBox}>
+                  <AppText style={styles.tooltipText}>
+                    {i18n.t('socialLogin:hist')}
+                  </AppText>
+                </View>
+                <View style={styles.triangel} />
+              </View>
+            ) : (
+              <View style={styles.emptyToolTip} />
+            )}
+          </View>
 
           <InputMobile
             onPress={sendSms}
@@ -382,6 +437,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             disabled={(authNoti && authorized) || loading}
             authorized={authorized}
             inputRef={mobileRef}
+            marginTop={3}
           />
           <InputPinInTime
             style={{marginTop: 8, flex: 1}}

@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
-    marginTop: 16,
   },
   button: {
     width: 80,
@@ -65,6 +64,7 @@ type InputMobileProps = {
   authorized?: boolean;
   disabled: boolean;
   inputRef?: React.MutableRefObject<InputMobileRef | null>;
+  marginTop?: number;
 };
 
 const InputMobile: React.FC<InputMobileProps> = ({
@@ -73,6 +73,7 @@ const InputMobile: React.FC<InputMobileProps> = ({
   authorized,
   disabled,
   inputRef,
+  marginTop,
 }) => {
   const [mobile, setMobile] = useState('');
   const [value, setValue] = useState('');
@@ -127,7 +128,7 @@ const InputMobile: React.FC<InputMobileProps> = ({
 
   return (
     <View>
-      <View style={styles.row}>
+      <View style={{...styles.row, marginTop: marginTop || 16}}>
         <AppTextInput
           showCancel
           containerStyle={{
