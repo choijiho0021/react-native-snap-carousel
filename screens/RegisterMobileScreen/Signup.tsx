@@ -37,6 +37,7 @@ import {LinkModelState} from '@/redux/modules/link';
 import ScreenHeader from '@/components/ScreenHeader';
 import DomainListModal, {emailDomainList} from '@/components/DomainListModal';
 import ConfirmPolicy from './ConfirmPolicy';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const styles = StyleSheet.create({
   title: {
@@ -149,6 +150,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
         : 'input'
       : '',
   );
+  const [showSnackBar, setShowSnackBar] = useState(false);
 
   const {profileImageUrl, pin, status, mobile} = useMemo(
     () => route?.params || {},
@@ -259,6 +261,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
 
           signIn({mobile, pin}, profileImageUrl);
         } else {
+          setShowSnackBar(true);
           console.log('sign up failed', resp);
           throw new Error('failed to login');
         }
@@ -333,7 +336,9 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
         </View>
 
         <View style={styles.mobile}>
-          <AppText style={styles.subTitle}>{i18n.t('signup:mobile')}</AppText>
+          <AppText style={styles.subTitle}>
+            {i18n.t(mobile?.startsWith('100') ? 'signup:id' : 'signup:mobile')}
+          </AppText>
           <View style={styles.mobileBox}>
             <AppText style={styles.mobileText}>
               {utils.toPhoneNumber(mobile)}
@@ -354,6 +359,14 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
       />
 
       <AppActivityIndicator visible={pending || loading} />
+      <AppSnackBar
+        visible={showSnackBar}
+        textMessage={i18n.t('promo:donate:fail')}
+        bottom={20}
+        preIcon="cautionRed"
+        onClose={() => setShowSnackBar(false)}
+        hideCancel
+      />
       <DomainListModal
         style={{right: 20, top: 200}}
         visible={showDomainModal}
