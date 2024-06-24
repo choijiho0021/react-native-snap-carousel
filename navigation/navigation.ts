@@ -8,7 +8,7 @@ import {ViewStyle} from 'react-native';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {RkbInfo} from '@/redux/api/pageApi';
 import {BoardMsgStatus} from '@/redux/api/boardApi';
-import {RkbSubscription, UsageOptionObj} from '@/redux/api/subscriptionApi';
+import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {
   Currency,
@@ -23,6 +23,7 @@ import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 import {PaymentRule} from '@/redux/modules/product';
 import {Fortune} from '@/redux/modules/account';
 import {DailyProdFilterList} from '@/components/DailyProdFilter';
+import {SocialAuthInfoKind} from '@/components/SocialLogin';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti' | 'page';
 export type PymMethodScreenMode =
@@ -251,6 +252,7 @@ export type HomeStackParamList = {
   SelectCoupon: undefined;
   Coupon: undefined;
   Signup: {
+    kind?: SocialAuthInfoKind;
     pin: string;
     mobile: string;
     status?: string;

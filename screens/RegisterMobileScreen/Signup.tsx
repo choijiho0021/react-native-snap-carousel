@@ -14,6 +14,7 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import analytics, {firebase} from '@react-native-firebase/analytics';
+import AsyncStorage from '@react-native-community/async-storage';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppButton from '@/components/AppButton';
@@ -151,6 +152,10 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
       : '',
   );
   const [showSnackBar, setShowSnackBar] = useState(false);
+  const kind = useMemo(
+    () => route?.params?.kind || 'normal',
+    [route?.params?.kind],
+  );
 
   const {profileImageUrl, pin, status, mobile} = useMemo(
     () => route?.params || {},
@@ -258,7 +263,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
             await Settings.setAdvertiserTrackingEnabled(true);
             analytics().logEvent('esim_sign_up');
           }
-
+          AsyncStorage.setItem('login.hist', kind);
           signIn({mobile, pin}, profileImageUrl);
         } else {
           setShowSnackBar(true);
@@ -280,6 +285,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
     confirm.optional,
     deviceModel,
     email,
+    kind,
     loading,
     mobile,
     pending,

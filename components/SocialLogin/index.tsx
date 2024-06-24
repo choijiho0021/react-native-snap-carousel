@@ -16,6 +16,14 @@ import LoginToolTip from './LoginToolTip';
 
 const {esimGlobal} = Env.get();
 
+export type SocialAuthInfoKind =
+  | 'kakao'
+  | 'ios'
+  | 'google'
+  | 'apple'
+  | 'facebook'
+  | 'naver';
+
 export type SocialAuthInfo = {
   user: string;
   pass: string;
@@ -24,7 +32,7 @@ export type SocialAuthInfo = {
   email?: string;
   mobile?: string;
   profileImageUrl?: string;
-  kind: 'kakao' | 'ios' | 'google' | 'apple' | 'facebook' | 'naver';
+  kind: SocialAuthInfoKind;
 };
 
 const styles = StyleSheet.create({

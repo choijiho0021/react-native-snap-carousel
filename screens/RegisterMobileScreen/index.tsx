@@ -318,8 +318,8 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
           if (resp.result === 0 && mounted.current) {
             setAuthorized(_.isEmpty(resp.objects) ? true : undefined);
-            AsyncStorage.setItem('login.hist', 'normal');
             if (!_.isEmpty(resp.objects)) {
+              AsyncStorage.setItem('login.hist', 'normal');
               signIn({mobile, pin: value});
             } else {
               actions.account.updateAccount({isNewUser: true});
@@ -370,12 +370,11 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         setMobile(drupalId);
         setAuthorized(isAuthorized);
 
-        AsyncStorage.setItem('login.hist', kind);
-
         if (isNew) {
           // new login
           // create account
           navigation.navigate('Signup', {
+            kind,
             profileImageUrl,
             pin: pass,
             status,
@@ -384,6 +383,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           });
         } else {
           // account exist. try login
+          AsyncStorage.setItem('login.hist', kind);
           signIn({mobile: drupalId, pin: pass});
         }
       }
