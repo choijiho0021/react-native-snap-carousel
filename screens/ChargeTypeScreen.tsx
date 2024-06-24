@@ -248,7 +248,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         );
       } else {
         navigation.navigate('Charge', {
-          mainSubs: chargeableItem || mainSubs,
+          chargeableItem,
           chargeablePeriod:
             utils.toDateString(chargeableItem?.expireDate, 'YYYY.MM.DD') ||
             chargeablePeriod,
@@ -266,7 +266,6 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     chargeablePeriod,
     extensionDisReason,
     extensionExpireCheck,
-    mainSubs,
     navigation,
     renderChargeModal,
   ]);

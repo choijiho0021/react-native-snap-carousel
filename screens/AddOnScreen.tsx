@@ -482,7 +482,7 @@ const AddOnScreen: React.FC<AddOnScreenScreenProps> = ({
               type: 'addOn',
               usagePeriod,
               status,
-              mainSubs: chargeableItem,
+              chargeableItem,
               expireTime,
               contents: {
                 chargeProd: selectedAddOnProd?.title || '',
