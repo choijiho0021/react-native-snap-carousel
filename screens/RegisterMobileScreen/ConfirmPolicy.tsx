@@ -96,7 +96,7 @@ const ConfirmPolicy = ({
     () => [
       {
         key: 'contract',
-        label: i18n.t('cfm:contract') + i18n.t('cfm:mandatory'),
+        label: i18n.t('cfm:mandatory') + i18n.t('cfm:contract'),
         param: {
           key: 'setting:contract',
           title: i18n.t('cfm:contract'),
@@ -105,7 +105,7 @@ const ConfirmPolicy = ({
       },
       {
         key: 'personalInfo',
-        label: i18n.t('cfm:personalInfo') + i18n.t('cfm:mandatory'),
+        label: i18n.t('cfm:mandatory') + i18n.t('cfm:personalInfo'),
         param: {
           key: 'setting:privacy',
           title: i18n.t('cfm:personalInfo'),
@@ -114,7 +114,7 @@ const ConfirmPolicy = ({
       },
       {
         key: 'marketing',
-        label: i18n.t('cfm:marketing') + i18n.t('cfm:optional'),
+        label: i18n.t('cfm:optional') + i18n.t('cfm:marketing'),
         param: {
           key: 'mkt:agreement',
           title: i18n.t('cfm:marketing'),

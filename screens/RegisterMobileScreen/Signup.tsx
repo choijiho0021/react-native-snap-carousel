@@ -19,7 +19,6 @@ import AppAlert from '@/components/AppAlert';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import InputEmail, {InputEmailRef} from '@/components/InputEmail';
-import Profile from '@/components/Profile';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
@@ -40,6 +39,33 @@ import DomainListModal, {emailDomainList} from '@/components/DomainListModal';
 import ConfirmPolicy from './ConfirmPolicy';
 
 const styles = StyleSheet.create({
+  title: {
+    marginTop: 24,
+    paddingHorizontal: 20,
+    display: 'flex',
+    gap: 8,
+    flexDirection: 'column',
+  },
+  titleWelcome: {
+    ...appStyles.bold24Text,
+    lineHeight: 28,
+    color: colors.black,
+  },
+  titleInfo: {
+    ...appStyles.medium16,
+    lineHeight: 24,
+    letterSpacing: -0.16,
+    color: colors.black,
+  },
+  email: {
+    marginTop: 32,
+    paddingHorizontal: 20,
+  },
+  subTitle: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 20,
+    marginBottom: 6,
+  },
   confirm: {
     width: '100%',
     height: 52,
@@ -57,6 +83,25 @@ const styles = StyleSheet.create({
     alignContent: 'stretch',
     flexDirection: 'column',
     backgroundColor: colors.white,
+  },
+  mobile: {
+    flex: 1,
+    marginTop: 14,
+    paddingHorizontal: 20,
+  },
+  mobileBox: {
+    borderWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 13,
+    backgroundColor: colors.backGrey,
+    borderColor: colors.lightGrey,
+    borderRadius: 3,
+  },
+  mobileText: {
+    ...appStyles.medium16,
+    lineHeight: 24,
+    letterSpacing: -0.16,
+    color: colors.black,
   },
 });
 
@@ -251,7 +296,6 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <ScreenHeader
-        title={i18n.t('signup:title')}
         backHandler={() =>
           navigation.reset({index: 0, routes: [{name: 'RegisterMobile'}]})
         }
@@ -262,23 +306,17 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
         enableOnAndroid
         enableResetScrollToCoords={false}
         keyboardShouldPersistTaps="handled">
-        <View style={{marginTop: 40}}>
-          <Profile
-            email={email}
-            mobile={mobile}
-            userPictureUrl={profileImageUrl}
-          />
+        <View style={styles.title}>
+          <AppText style={styles.titleWelcome}>
+            {i18n.t('signup:title:welcome')}
+          </AppText>
+          <AppText style={styles.titleInfo}>
+            {i18n.t('signup:title:info')}
+          </AppText>
         </View>
 
-        <View
-          style={{
-            marginTop: 20,
-            paddingHorizontal: 20,
-            flex: 1,
-          }}>
-          <AppText style={{...appStyles.semiBold14Text, marginBottom: 6}}>
-            {i18n.t('mobile:email')}
-          </AppText>
+        <View style={styles.email}>
+          <AppText style={styles.subTitle}>{i18n.t('mobile:email')}</AppText>
           <InputEmail
             inputRef={emailRef}
             socialEmail={email?.split('@')?.[0]}
@@ -287,6 +325,15 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
             onPress={() => setShowDomainModal(true)}
             placeholder={i18n.t('reg:email')}
           />
+        </View>
+
+        <View style={styles.mobile}>
+          <AppText style={styles.subTitle}>{i18n.t('signup:mobile')}</AppText>
+          <View style={styles.mobileBox}>
+            <AppText style={styles.mobileText}>
+              {utils.toPhoneNumber(mobile)}
+            </AppText>
+          </View>
         </View>
         <ConfirmPolicy onMove={onMove} onChange={setConfirm} />
       </KeyboardAwareScrollView>

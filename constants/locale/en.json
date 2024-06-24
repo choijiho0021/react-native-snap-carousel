@@ -1,4 +1,5 @@
 {
+  "next": "next",
   "select": "Select",
   "store": "Store",
   "home": "Home",
@@ -294,14 +295,23 @@
   "mobile:authMismatch": "Auth code is not correct",
   "mobile:timeout": "Auth code is expired. Please try again.",
   "mobile:inputInTime": "* Please input the auth code within 3 minutes",
+  "mobile:timeLeft": "남은 시간 ",
+  "mobile:email": "이메일",
+  "mobile:signup": "회원 가입하기",
+  "signup:title": "회원 가입",
+
+  "signup:title:welcome": "환영해요!\n회원 정보를 확인하세요.",
+  "signup:title:info": "상품 발송 시 사용하는 정보입니다.",
+
+  "signup:mobile": "회원 번호",
 
   "email:input": "Manual",
 
   "cfm:contract": "I agree to terms and conditions ",
-  "cfm:required": "(Required)",
+  "cfm:required": "(Required) ",
   "cfm:personalInfo": "I agree to  privacy policy ",
   "cfm:marketing": "I agree to receive marketing info ",
-  "cfm:optional": "(Optional)",
+  "cfm:optional": "(Optional) ",
   "cfm:accept": "Accept",
 
   "purchase:address": "Delivery Address",

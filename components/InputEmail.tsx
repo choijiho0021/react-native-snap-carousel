@@ -12,7 +12,6 @@ import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
-import Triangle from './Triangle';
 import validationUtil from '@/utils/validationUtil';
 import {API} from '@/redux/api';
 import AppIcon from './AppIcon';
@@ -46,7 +45,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   helpText: {
-    ...appStyles.normal14Text,
+    ...appStyles.medium14,
+    lineHeight: 20,
     color: colors.clearBlue,
     marginTop: 6,
   },
