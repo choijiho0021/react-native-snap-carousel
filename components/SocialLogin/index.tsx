@@ -30,6 +30,11 @@ export type SocialAuthInfo = {
 const styles = StyleSheet.create({
   container: {
     paddingBottom: 24,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    backgroundColor: colors.white,
+    height: 217,
   },
   divider: {
     marginHorizontal: 20,

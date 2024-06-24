@@ -56,6 +56,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     paddingHorizontal: 20,
+    position: 'relative',
+    paddingBottom: 217,
   },
   titleText: {
     ...appStyles.bold30Text,
@@ -397,7 +399,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         </View>
         {!isKeyboardShow && <SocialLogin onAuth={onAuth} referrer={referrer} />}
       </KeyboardAwareScrollView>
-
       <AppActivityIndicator visible={pending || loading} />
     </SafeAreaView>
   );
