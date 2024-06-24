@@ -38,6 +38,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightGrey,
     alignContent: 'center',
   },
+  dividerText: {
+    ...appStyles.medium18,
+    lineHeight: 22,
+    color: colors.gray2,
+  },
   easyLoginTitle: {
     flexDirection: 'row',
     marginVertical: 20,
@@ -101,7 +106,7 @@ const SocialLogin = ({
     <View style={styles.container}>
       <View style={styles.easyLoginTitle}>
         <View style={styles.divider} />
-        <AppText style={[appStyles.medium18, {color: colors.gray2}]}>
+        <AppText style={styles.dividerText}>
           {i18n.t('login:easyLogin')}
         </AppText>
         <View style={styles.divider} />
