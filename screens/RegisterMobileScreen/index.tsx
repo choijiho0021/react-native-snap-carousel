@@ -417,7 +417,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             <AppText style={styles.mobileAuth}>
               {i18n.t('mobile:easyLogin')}
             </AppText>
-            {recentNormal ? (
+            {recentNormal && !referrer ? (
               <View style={styles.tooltip}>
                 <View style={styles.tooltipBox}>
                   <AppText style={styles.tooltipText}>
