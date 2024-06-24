@@ -1204,6 +1204,8 @@
   "socialLogin:google": "Sign in with Google",
   "socialLogin:facebook": "Sign in with Facebook",
 
+  "socialLogin:hist": "최근 로그인",
+
   "userGuide:home:title": "Using eSIM is not difficult!\nPlease check the guide\nin order",
   "userGuide:esimReg:title": "Register eSIM",
   "userGuide:esimReg:body": "Registering eSIM in the device",

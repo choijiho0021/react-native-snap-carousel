@@ -12,6 +12,7 @@ import GoogleLogin from './GoogleLogin';
 import KakaoLogin from './KakaoLogin';
 import FacebookLogin from './FacebookLogin';
 import NaverLoginButton from './NaverLoginButton';
+import LoginToolTip from './LoginToolTip';
 
 const {esimGlobal} = Env.get();
 
@@ -43,15 +44,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   btnGroup: {
-    marginTop: 24,
-    marginHorizontal: 12,
-    height: 99,
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
+  btnWithToolTip: {
+    marginTop: 24,
+    marginHorizontal: 56,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    gap: 4,
+    height: 107,
+  },
 });
+
+export type SocialLoginHistType = {
+  kakao: boolean;
+  ios: boolean;
+  google: boolean;
+  apple: boolean;
+  facebook: boolean;
+  naver: boolean;
+};
 
 const initialHist = {
   kakao: false,
@@ -63,7 +79,8 @@ const initialHist = {
 };
 
 const SocialLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
-  const [socialLoginHist, setSocialLoginHist] = useState(initialHist);
+  const [socialLoginHist, setSocialLoginHist] =
+    useState<SocialLoginHistType>(initialHist);
 
   useEffect(() => {
     AsyncStorage.getItem('social.login').then((v) => {
@@ -82,12 +99,17 @@ const SocialLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
         </AppText>
         <View style={styles.divider} />
       </View>
-      <View style={styles.btnGroup}>
-        {!esimGlobal && <NaverLoginButton onAuth={onAuth} />}
-        {!esimGlobal && <KakaoLogin onAuth={onAuth} />}
-        {Platform.OS === 'android' && <GoogleLogin onAuth={onAuth} />}
-        {appleAuth.isSupported && <AppleLogin onAuth={onAuth} />}
-        {esimGlobal && <FacebookLogin onAuth={onAuth} />}
+      <View style={styles.btnWithToolTip}>
+        <View style={styles.btnGroup}>
+          {!esimGlobal && <KakaoLogin onAuth={onAuth} />}
+          {!esimGlobal && <NaverLoginButton onAuth={onAuth} />}
+          {Platform.OS === 'android' && <GoogleLogin onAuth={onAuth} />}
+          {appleAuth.isSupported && <AppleLogin onAuth={onAuth} />}
+          {esimGlobal && <FacebookLogin onAuth={onAuth} />}
+        </View>
+        {Object.values(socialLoginHist).some((value) => value === true) && (
+          <LoginToolTip socialLoginHist={socialLoginHist} />
+        )}
       </View>
     </View>
   );

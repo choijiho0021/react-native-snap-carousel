@@ -1452,6 +1452,8 @@
   "socialLogin:google": "Google로 로그인",
   "socialLogin:facebook": "Facebook 로그인",
 
+  "socialLogin:hist": "최근 로그인",
+
   "userGuide:home:title": "eSIM 사용 어렵지 않아요!\n가이드를 순서대로\n확인해주세요.",
   "userGuide:esimReg:title": "eSIM 등록",
   "userGuide:esimReg:body": "단말에 eSIM 상품을 등록하기",
