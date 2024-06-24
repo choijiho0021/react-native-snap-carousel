@@ -17,7 +17,6 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import analytics from '@react-native-firebase/analytics';
-import moment from 'moment';
 import AsyncStorage from '@react-native-community/async-storage';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
@@ -45,14 +44,6 @@ import ScreenHeader from '@/components/ScreenHeader';
 const {isProduction, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
-  title: {
-    paddingHorizontal: 20,
-    paddingTop: 40,
-  },
-  mobileAuth: {
-    ...appStyles.h1,
-    paddingTop: 50,
-  },
   container: {
     paddingTop: 20,
     flex: 1,
@@ -60,9 +51,27 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: colors.white,
   },
-  row: {
-    flexDirection: 'row',
+  title: {
     flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    paddingHorizontal: 20,
+  },
+  titleText: {
+    ...appStyles.bold30Text,
+    lineHeight: 36,
+    letterSpacing: -0.6,
+    color: colors.black,
+  },
+  mobileAuth: {
+    ...appStyles.bold18Text,
+    lineHeight: 22,
+    color: colors.black,
+  },
+
+  row: {
+    paddingVertical: 40,
+    flexDirection: 'row',
     justifyContent: 'space-between',
   },
 });
@@ -354,17 +363,18 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       <KeyboardAwareScrollView
         enableOnAndroid
         enableResetScrollToCoords={false}
-        keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{flexGrow: 1}}
+        style={{flex: 1}}>
         <View style={styles.title}>
           <View style={styles.row}>
-            <AppText style={appStyles.bold30Text}>
-              {i18n.t('mobile:title')}
-            </AppText>
+            <AppText style={styles.titleText}>{i18n.t('mobile:title')}</AppText>
             <AppIcon name="earth" />
           </View>
           <AppText style={styles.mobileAuth}>
             {i18n.t('mobile:easyLogin')}
           </AppText>
+
           <InputMobile
             onPress={sendSms}
             authNoti={authNoti}
@@ -373,7 +383,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             inputRef={mobileRef}
           />
           <InputPinInTime
-            style={{marginTop: 20}}
+            style={{marginTop: 8, flex: 1}}
             clickable={editablePin || !isProduction}
             editable={pinEditable}
             authorized={mobile ? authorized : undefined}
@@ -385,9 +395,8 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             referrer={referrer}
           />
         </View>
+        {!isKeyboardShow && <SocialLogin onAuth={onAuth} referrer={referrer} />}
       </KeyboardAwareScrollView>
-
-      {!isKeyboardShow && <SocialLogin onAuth={onAuth} referrer={referrer} />}
 
       <AppActivityIndicator visible={pending || loading} />
     </SafeAreaView>
