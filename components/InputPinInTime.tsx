@@ -61,10 +61,11 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   helpBox: {
-    marginTop: 13,
+    marginTop: 6,
   },
   helpText: {
-    ...appStyles.normal14Text,
+    ...appStyles.medium14,
+    lineHeight: 20,
     color: colors.clearBlue,
   },
   input: {
@@ -157,6 +158,10 @@ const InputPinInTime: React.FC<
   const [timeoutFlag, setTimeoutFlag] = useState(false);
   const [focused, setFocused] = useState(false);
   const ref = useRef<TextInput>();
+  const showHelpBox = useMemo(
+    () => typeof authorized !== 'undefined' || timeoutFlag,
+    [authorized, timeoutFlag],
+  );
 
   const backgroundTimeRef = useRef<Moment>(); // background 시점 시간, listener 내부함수에 써야해서 ref 사용
 
@@ -302,6 +307,23 @@ const InputPinInTime: React.FC<
           disableBackgroundColor={colors.backGrey}
         />
       </View>
+      {showHelpBox && (
+        <View style={styles.helpBox}>
+          <AppText
+            style={[
+              styles.helpText,
+              {color: authorized ? colors.clearBlue : colors.tomato},
+            ]}>
+            {i18n.t(
+              timeoutFlag
+                ? 'mobile:timeout'
+                : authorized
+                ? 'mobile:authMatch'
+                : 'mobile:authMismatch',
+            )}
+          </AppText>
+        </View>
+      )}
       {countdown ? (
         <AppText style={styles.timer}>
           {`${
@@ -336,24 +358,6 @@ const InputPinInTime: React.FC<
           </View>
         )
       ) : null}
-      <View style={styles.helpBox}>
-        <AppText
-          style={[
-            styles.helpText,
-            {color: authorized ? colors.clearBlue : colors.tomato},
-          ]}>
-          {typeof authorized === 'undefined' && !timeoutFlag
-            ? null
-            : i18n.t(
-                // eslint-disable-next-line no-nested-ternary
-                timeoutFlag
-                  ? 'mobile:timeout'
-                  : authorized
-                  ? 'mobile:authMatch'
-                  : 'mobile:authMismatch',
-              )}
-        </AppText>
-      </View>
     </View>
   );
 };
