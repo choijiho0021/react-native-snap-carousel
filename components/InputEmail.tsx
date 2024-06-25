@@ -138,15 +138,19 @@ const InputEmail: React.FC<InputEmailProps> = ({
   }, [inValid, onChange]);
 
   const onPressDomain = useCallback(() => {
-    actions.modal.renderModal(() => (
-      <DomainListModal
-        setDomain={(v) => {
-          setDomain(v);
-          if (v !== 'input') inputRef?.current?.blur();
-        }}
-      />
-    ));
+    inputRef?.current?.blur();
+    actions.modal.renderModal(() => <DomainListModal setDomain={setDomain} />);
   }, [actions.modal, inputRef, setDomain]);
+
+  useEffect(() => {
+    if (domain === 'input') {
+      setTimeout(() => {
+        if (inputRef?.current) {
+          inputRef?.current?.focus();
+        }
+      }, 100); // Delay to ensure the component has fully rendered
+    }
+  }, [domain, inputRef]);
 
   return (
     <View>
