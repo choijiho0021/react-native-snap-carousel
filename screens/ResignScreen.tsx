@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
   },
   resignTitle: {
     ...appStyles.bold24Text,
+    lineHeight: 30,
     marginTop: 72,
     marginLeft: 20,
   },
@@ -208,7 +209,7 @@ type ResignScreenProps = {
 };
 
 const ImgResignDokebi = () => (
-  <View style={{marginTop: 52, marginRight: 32}}>
+  <View style={{marginTop: 57, marginRight: 32}}>
     <Svg
       width="87"
       height="125"
