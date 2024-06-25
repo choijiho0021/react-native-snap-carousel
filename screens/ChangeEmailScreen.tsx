@@ -155,13 +155,9 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
           <InputEmail
             currentEmail={email}
             domain={domain}
-            onPress={() =>
-              actions.modal.renderModal(() => (
-                <DomainListModal setDomain={setDomain} />
-              ))
-            }
             onChange={setNewEmail}
             placeholder={i18n.t('chg:email')}
+            setDomain={setDomain}
           />
         </View>
 
