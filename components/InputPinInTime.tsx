@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
   },
   input: {
     ...appStyles.medium16,
+    lineHeight: 0,
     color: colors.black,
     flex: 1,
     textAlignVertical: 'center',

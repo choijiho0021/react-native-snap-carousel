@@ -32,10 +32,10 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     height: 50,
     marginRight: 8,
-    textAlignVertical: 'center',
   },
   input: {
     ...appStyles.medium16,
+    lineHeight: 0,
     color: colors.black,
     paddingHorizontal: 16,
     marginRight: 20,
