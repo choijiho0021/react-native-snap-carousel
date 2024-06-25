@@ -155,7 +155,7 @@ const InputEmail: React.FC<InputEmailProps> = ({
           ]}
           placeholder={placeholder}
           placeholderTextColor={colors.greyish}
-          returnKeyType="next"
+          returnKeyType={domain === 'input' ? 'done' : 'next'}
           enablesReturnKeyAutomatically
           onChangeText={setEmail}
           autoCapitalize="none"

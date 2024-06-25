@@ -335,7 +335,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
             domain={domain}
             onChange={setEmail}
             onPress={() => {
-              emailRef?.current?.blur();
+              if (domain !== 'input') emailRef?.current?.blur();
               actions.modal.renderModal(() => (
                 <DomainListModal setDomain={setDomain} />
               ));
