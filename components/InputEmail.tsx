@@ -48,7 +48,6 @@ const styles = StyleSheet.create({
     ...appStyles.medium14,
     lineHeight: 20,
     color: colors.clearBlue,
-    marginTop: 6,
   },
 });
 
@@ -195,13 +194,15 @@ const InputEmail: React.FC<InputEmailProps> = ({
           </Pressable>
         )}
       </View>
-      <AppText
-        style={[
-          styles.helpText,
-          {color: validated ? colors.clearBlue : colors.errorBackground},
-        ]}>
-        {inValid ? i18n.t(inValid) : ''}
-      </AppText>
+      <View style={{height: 20, marginTop: 6}}>
+        <AppText
+          style={[
+            styles.helpText,
+            {color: validated ? colors.clearBlue : colors.errorBackground},
+          ]}>
+          {inValid ? i18n.t(inValid) : ''}
+        </AppText>
+      </View>
     </View>
   );
 };
