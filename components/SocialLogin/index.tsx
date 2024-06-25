@@ -132,9 +132,10 @@ const SocialLogin = ({
           {appleAuth.isSupported && <AppleLogin onAuth={onAuth} />}
           {esimGlobal && <FacebookLogin onAuth={onAuth} />}
         </View>
-        {Object.values(socialLoginHist).some((value) => value === true) &&
-          !referrer &&
-          !esimGlobal && (
+        {!esimGlobal &&
+          ((Object.values(socialLoginHist).some((value) => value === true) &&
+            !referrer) ||
+            fromNaver) && (
             <LoginToolTip
               socialLoginHist={socialLoginHist}
               fromNaver={fromNaver}
