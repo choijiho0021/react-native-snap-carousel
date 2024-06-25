@@ -608,9 +608,9 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
           type="primary"
           titleStyle={{
             ...styles.buttonTitle,
-            color: isDisabled ? colors.warmGrey : colors.white,
+            color: isDisabled ? colors.greyish : colors.white,
           }}
-          title={i18n.t('resign')}
+          title={i18n.t('resign:button')}
           pressedStyle={
             isDisabled
               ? {backgroundColor: colors.lightGrey}

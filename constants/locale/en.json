@@ -242,6 +242,7 @@
   "set:netstat:disconnected": "네트워크 연결 실패",
 
   "resign": "Delete Account",
+  "resign:button": "Delete Account",
   "resign:why": "Please let us know why you are leaving us.",
   "resign:info": "We will do our best to meet your standards",
   "resign:title": "Are you really\ngoing to leave us?",
