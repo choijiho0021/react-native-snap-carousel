@@ -19,11 +19,7 @@ import {
   AccountAction,
   actions as accountActions,
 } from '@/redux/modules/account';
-import {
-  actions as toastActions,
-  Toast,
-  ToastAction,
-} from '@/redux/modules/toast';
+import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import Env from '@/environment';
@@ -116,7 +112,6 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
   email,
 }) => {
   const [newEmail, setNewEmail] = useState<string>('');
-  const [showDomainModal, setShowDomainModal] = useState(false);
   const [domain, setDomain] = useState('');
 
   const changeEmail = useCallback(() => {
