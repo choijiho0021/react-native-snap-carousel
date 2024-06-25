@@ -160,7 +160,11 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
           <InputEmail
             currentEmail={email}
             domain={domain}
-            onPress={() => setShowDomainModal(true)}
+            onPress={() =>
+              actions.modal.renderModal(() => (
+                <DomainListModal setDomain={setDomain} />
+              ))
+            }
             onChange={setNewEmail}
             placeholder={i18n.t('chg:email')}
           />
@@ -179,14 +183,6 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
           title={i18n.t('changeEmail:save')}
           onPress={changeEmail}
           type="primary"
-        />
-        <DomainListModal
-          style={{right: 20, top: 200}}
-          visible={showDomainModal}
-          onClose={(v) => {
-            setDomain(v);
-            setShowDomainModal(false);
-          }}
         />
       </KeyboardAvoidingView>
     </SafeAreaView>

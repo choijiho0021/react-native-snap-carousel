@@ -27,6 +27,7 @@ import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {RkbImage} from '@/redux/api/accountApi';
 import {ApiResult} from '@/redux/api/api';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import {
   AccountAction,
   AccountModelState,
@@ -126,6 +127,7 @@ type RegisterMobileScreenProps = {
 
   actions: {
     account: AccountAction;
+    modal: ModalAction;
   };
 };
 
@@ -143,7 +145,6 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
     route?.params?.email ? route?.params?.email : '',
   );
   const emailRef = useRef<InputEmailRef>(null);
-  const [showDomainModal, setShowDomainModal] = useState(false);
   const [domain, setDomain] = useState(
     route?.params?.email?.split('@')?.[1]
       ? emailDomainList.includes(route?.params?.email?.split('@')?.[1])
@@ -335,7 +336,9 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
             onChange={setEmail}
             onPress={() => {
               emailRef?.current?.blur();
-              setShowDomainModal(true);
+              actions.modal.renderModal(() => (
+                <DomainListModal setDomain={setDomain} />
+              ));
             }}
             placeholder={i18n.t('reg:email')}
           />
@@ -352,17 +355,17 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
           </View>
         </View>
         <ConfirmPolicy onMove={onMove} onChange={setConfirm} />
+        <AppButton
+          style={styles.confirm}
+          title={i18n.t('mobile:signup')}
+          titleStyle={styles.text}
+          disabled={!confirm.mandatory || !email}
+          disableColor={colors.greyish}
+          disableBackgroundColor={colors.lightGrey}
+          onPress={submitHandler}
+          type="primary"
+        />
       </KeyboardAwareScrollView>
-      <AppButton
-        style={styles.confirm}
-        title={i18n.t('mobile:signup')}
-        titleStyle={styles.text}
-        disabled={!confirm.mandatory || !email}
-        disableColor={colors.greyish}
-        disableBackgroundColor={colors.lightGrey}
-        onPress={submitHandler}
-        type="primary"
-      />
 
       <AppActivityIndicator visible={pending || loading} />
       <AppSnackBar
@@ -372,14 +375,6 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
         preIcon="cautionRed"
         onClose={() => setShowSnackBar(false)}
         hideCancel
-      />
-      <DomainListModal
-        style={{right: 20, top: 200}}
-        visible={showDomainModal}
-        onClose={(v) => {
-          setDomain(v);
-          setShowDomainModal(false);
-        }}
       />
     </SafeAreaView>
   );
@@ -393,6 +388,9 @@ export default connect(
       status.pending[accountActions.logInAndGetAccount.typePrefix] || false,
   }),
   (dispatch) => ({
-    actions: {account: bindActionCreators(accountActions, dispatch)},
+    actions: {
+      account: bindActionCreators(accountActions, dispatch),
+      modal: bindActionCreators(modalActions, dispatch),
+    },
   }),
 )(SignupScreen);

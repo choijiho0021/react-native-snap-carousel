@@ -169,6 +169,9 @@ const InputEmail: React.FC<InputEmailProps> = ({
             setEmail('');
             setInValid('changeEmail:invalidEmail');
           }}
+          onSubmitEditing={() => {
+            if (domain !== 'input') onPress();
+          }}
         />
 
         {domain !== 'input' && (
