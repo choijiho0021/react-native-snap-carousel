@@ -11,7 +11,7 @@ import {colors} from '@/constants/Colors';
 import {HomeStackParamList, goBack} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {RkbOrder} from '@/redux/api/orderApi';
-import {AccountModelState} from '@/redux/modules/account';
+import {AccountAction, AccountModelState} from '@/redux/modules/account';
 import {
   actions as orderActions,
   OrderAction,
@@ -87,6 +87,7 @@ type DraftUsScreenProps = {
   action: {
     order: OrderAction;
     modal: ModalAction;
+    account: AccountAction;
   };
 };
 
@@ -190,16 +191,29 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
             token: token!,
             hidden: false,
           });
-          navigation.navigate('DraftResult', {
-            isSuccess: result?.payload?.result === 0,
-          });
+
+          action.account.checkLottery({iccid, token, prompt: 'check'});
+
+          if (draftOrder?.orderType === 'refundable') {
+            // 바로 운세뽑기로 이동
+
+            navigation.navigate('Lottery');
+          } else {
+            // 근데 발권은 refundable만 되니까 발권 완료 페이지는 삭제되는건가?
+            navigation.navigate('DraftResult', {
+              isSuccess: r?.payload?.result === 0,
+            });
+          }
         }
       });
   }, [
     actDate,
+    action.account,
     action.order,
-    deviceData,
+    deviceData.eid,
+    deviceData.imei2,
     draftOrder?.orderId,
+    draftOrder?.orderType,
     iccid,
     navigation,
     token,
@@ -329,6 +343,7 @@ export default connect(
   (dispatch) => ({
     action: {
       order: bindActionCreators(orderActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch),
       product: bindActionCreators(productActions, dispatch),
       modal: bindActionCreators(modalActions, dispatch),
     },

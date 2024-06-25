@@ -32,6 +32,7 @@ import {
   CartModelState,
 } from '@/redux/modules/cart';
 import Svg, {Line} from 'react-native-svg';
+import moment, {Moment} from 'moment';
 
 const styles = StyleSheet.create({
   container: {
@@ -100,6 +101,11 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
 }) => {
   const navigation = useNavigation();
   const [couponId, setCouponId] = useState(couponToApply);
+
+  const remainTime = useCallback((endDate?: Moment) => {
+    return Math.floor(endDate?.diff(moment(), 'days', true) || 0);
+  }, []);
+
   const couponList = useMemo(
     () =>
       promo
@@ -111,9 +117,11 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
         })
         .filter((c) => !!c)
         .sort((a, b) => {
-          return a?.adj > b?.adj ? 1 : -1;
+          if (a?.adj > b?.adj) return 1;
+          if (a?.adj < b?.adj) return -1;
+          return remainTime(a?.endDate) > remainTime(b?.endDate) ? 1 : -1;
         }) || [],
-    [myCoupon, promo],
+    [myCoupon, promo, remainTime],
   );
 
   const dotLine = useCallback(

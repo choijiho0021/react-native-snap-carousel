@@ -161,17 +161,35 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
   }, []);
 
   const capture = useCallback(async () => {
-    if (Platform.OS === 'android' && !(await hasAndroidPermission())) {
-      action.toast.push('toast:perm:gallery');
-      return;
-    }
+    let checkNewPermission = false;
 
-    ref.current?.capture().then((uri) => {
-      CameraRoll.save(uri, {type: 'photo', album: i18n.t('rcpt:album')}).then(
-        () => action.toast.push('rcpt:saved'),
-      );
-    });
-  }, [action.toast, hasAndroidPermission]);
+    const permission =
+      Platform.OS === 'ios'
+        ? PERMISSIONS.IOS.PHOTO_LIBRARY
+        : PERMISSIONS.ANDROID.READ_MEDIA_IMAGES;
+
+    const result = await check(permission);
+
+    checkNewPermission = result === RESULTS.GRANTED;
+
+    if (checkNewPermission) {
+      try {
+        ref.current?.capture().then((uri) => {
+          CameraRoll.save(uri, {
+            type: 'photo',
+            album: i18n.t('rcpt:album'),
+          }).then(() => action.toast.push('rcpt:saved'));
+        });
+      } catch (e) {
+        console.log('fail to capture : ', e);
+      }
+    } else {
+      // 사진 앨범 조회 권한을 요청한다.
+      AppAlert.confirm(i18n.t('settings'), i18n.t('acc:permPhoto'), {
+        ok: () => openSettings(),
+      });
+    }
+  }, [action.toast]);
 
   const share = useCallback(async () => {
     if (!isShareDisabled) {

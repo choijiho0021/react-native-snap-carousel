@@ -553,7 +553,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   useEffect(() => {
     const {subsId, actionStr, iccid: subsIccid} = route?.params || {};
 
-    if (isFirstLoad) onRefresh(false, true, subsId, actionStr);
+    // actionStr = reload, esim 최초 진입 시 subs 중복 호출 현상 방지
+    if (isFirstLoad && actionStr !== 'reload')
+      onRefresh(false, true, subsId, actionStr);
     else if (iccid) {
       getSubsAction(subsId, actionStr, subsIccid);
     }

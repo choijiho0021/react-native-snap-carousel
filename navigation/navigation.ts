@@ -179,7 +179,7 @@ export type HomeStackParamList = {
 
   Draft: {orderId: number};
   DraftUs: {orderId: number};
-  DraftResult: {isSuccess: boolean; prods: ProdInfo[]};
+  DraftResult: {isSuccess: boolean};
   CancelOrder: {orderId: number};
   CancelResult: {isSuccess: boolean; orderId: number; prods: ProdInfo[]};
 
@@ -197,7 +197,7 @@ export type HomeStackParamList = {
     subsIccid?: string;
   };
   Charge: {
-    mainSubs: RkbSubscription;
+    chargeableItem: RkbSubscription;
     chargeablePeriod: string;
   };
   ChargeType: {
@@ -208,7 +208,7 @@ export type HomeStackParamList = {
     chargedSubs?: RkbSubscription[];
   };
   ChargeAgreement: {
-    mainSubs: RkbSubscription;
+    chargeableItem: RkbSubscription;
     addOnProd?: RkbAddOnProd;
     extensionProd?: RkbProduct;
     title: string;
