@@ -148,7 +148,7 @@ const InputEmail: React.FC<InputEmailProps> = ({
         if (inputRef?.current) {
           inputRef?.current?.focus();
         }
-      }, 100); // Delay to ensure the component has fully rendered
+      }, 100);
     }
   }, [domain, inputRef]);
 

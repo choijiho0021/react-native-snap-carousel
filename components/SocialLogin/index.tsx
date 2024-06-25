@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     ...appStyles.medium18,
     lineHeight: 22,
     color: colors.gray2,
+    marginHorizontal: 32,
   },
   easyLoginTitle: {
     flexDirection: 'row',
