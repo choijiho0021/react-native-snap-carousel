@@ -1,16 +1,18 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   StyleSheet,
   SafeAreaView,
   View,
   Platform,
   Pressable,
+  Linking,
 } from 'react-native';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {RouteProp, useRoute} from '@react-navigation/native';
 import Clipboard from '@react-native-community/clipboard';
 import {ScrollView} from 'react-native-gesture-handler';
 import QRCode from 'react-native-qrcode-svg';
 import _ from 'underscore';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {colors} from '@/constants/Colors';
 import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
@@ -24,21 +26,14 @@ import AppCopyBtn from '@/components/AppCopyBtn';
 import {API} from '@/redux/api';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppIcon from '@/components/AppIcon';
+import TabBar from './CountryScreen/TabBar';
 
 const {isIOS} = Env.get();
+const Tab = createMaterialTopTabNavigator();
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
-  guideBanner: {
-    marginTop: 24,
-    marginBottom: 4,
-  },
   box: {
     marginHorizontal: 20,
-    marginTop: 24,
     borderWidth: 1,
     borderColor: colors.whiteFive,
     backgroundColor: colors.white,
@@ -62,11 +57,11 @@ const styles = StyleSheet.create({
   title: {
     ...appStyles.semiBold20Text,
     lineHeight: 24,
+    marginBottom: 16,
     color: colors.black,
   },
   esimManualInputInfo: {
-    marginTop: 8,
-    marginBottom: 29,
+    marginBottom: 24,
   },
   copyBox: {
     paddingHorizontal: 20,
@@ -87,7 +82,8 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
   modalBody: {
-    marginTop: 8,
+    marginTop: 32,
+    marginHorizontal: 20,
   },
   center: {
     marginTop: 35,
@@ -97,9 +93,10 @@ const styles = StyleSheet.create({
     borderColor: colors.clearBlue,
     paddingVertical: 13,
     paddingHorizontal: 13,
+    marginHorizontal: 20,
   },
   qrText: {
-    ...appStyles.normal14Text,
+    ...appStyles.normal16Text,
     lineHeight: 20,
     color: colors.black,
   },
@@ -108,7 +105,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  divider: {
+  lastSpace: {
     height: 30,
   },
   checkBtn: {
@@ -168,6 +165,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     textAlign: 'right',
   },
+  oneTouchTxt: {
+    ...appStyles.semiBold16Text,
+    width: '100%',
+    color: colors.white,
+    textAlign: 'center',
+  },
+  oneTouchReg: {
+    marginTop: 24,
+    backgroundColor: colors.clearBlue,
+    paddingVertical: 8,
+  },
+  oneTouchInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+  },
+  badge: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    width: 36,
+    height: 16,
+    borderRadius: 30,
+    backgroundColor: colors.purplyBlue,
+    marginLeft: 2,
+  },
+  tabTitle: {
+    ...appStyles.medium18,
+    lineHeight: 26,
+    color: colors.gray2,
+  },
+  selectedTabTitle: {
+    ...appStyles.bold18Text,
+    color: colors.black,
+  },
 });
 
 type ParamList = {
@@ -178,6 +210,8 @@ type ParamList = {
 
 const showQR = (subs: RkbSubscription) => (
   <View style={styles.modalBody}>
+    <AppText style={styles.title}>{i18n.t('esim:showQR')}</AppText>
+
     {_.isEmpty(subs.qrCode) ? (
       <View style={styles.center}>
         <AppText>{i18n.t('esim:showQR:nothing')}</AppText>
@@ -187,10 +221,10 @@ const showQR = (subs: RkbSubscription) => (
         <AppStyledText
           textStyle={styles.qrText}
           text={i18n.t('esim:showQR:body_new')}
-          format={{b: {fontWeight: 'bold', color: colors.black}}}
+          format={{b: {...appStyles.normal16Text, color: colors.clearBlue}}}
         />
         <View style={styles.center}>
-          <QRCode value={subs.qrCode} />
+          <QRCode value={subs.qrCode} size={149} />
         </View>
       </View>
     )}
@@ -202,7 +236,12 @@ const esimManualInputInfo = () => (
     <AppStyledText
       textStyle={styles.qrText}
       text={i18n.t('esim:manualInput:body_new')}
-      format={{b: {fontWeight: 'bold', color: colors.black}}}
+      format={{
+        b: {
+          ...appStyles.normal16Text,
+          color: colors.clearBlue,
+        },
+      }}
     />
   </View>
 );
@@ -217,7 +256,11 @@ const QrInfoScreen = () => {
   const [showBtn, setShowBtn] = useState(true);
   const [cardState, setCardState] = useState<CardState>('N');
   const [isFail, setIsFail] = useState(false);
-
+  const oneTouchLink = useMemo(
+    () =>
+      `https://esimsetup.apple.com/esim_qrcode_provisioning?carddata=LPA:1$${params.mainSubs?.smdpAddr}$${params.mainSubs?.actCode}`,
+    [params.mainSubs?.actCode, params.mainSubs?.smdpAddr],
+  );
   const stateColor = useMemo(() => {
     if (cardState === 'R') return colors.clearBlue;
     if (['E', 'DE'].includes(cardState)) return colors.shamrock;
@@ -227,7 +270,6 @@ const QrInfoScreen = () => {
     () => params.mainSubs.partner?.startsWith('cmi') || false,
     [params.mainSubs.partner],
   );
-  const scrollRef = useRef<ScrollView>();
 
   const getCardState = useCallback((state: string) => {
     switch (state) {
@@ -330,126 +372,234 @@ const QrInfoScreen = () => {
     }, 10000);
   }, [showBtn]);
 
+  const renderManual = useCallback(
+    () => (
+      <View style={styles.modalBody}>
+        <AppText style={styles.title}>{i18n.t('esim:manualInput')}</AppText>
+        <View style={styles.esimManualInputInfo}>{esimManualInputInfo()}</View>
+        {isIOS ? (
+          <View>
+            {renderCode(i18n.t('esim:smdp'), params.mainSubs?.smdpAddr || '')}
+            {renderCode(i18n.t('esim:actCode'), params.mainSubs?.actCode || '')}
+          </View>
+        ) : (
+          renderCode(i18n.t('esim:actCode'), params.mainSubs?.qrCode || '')
+        )}
+      </View>
+    ),
+    [
+      params.mainSubs?.actCode,
+      params.mainSubs?.qrCode,
+      params.mainSubs?.smdpAddr,
+      renderCode,
+    ],
+  );
+
+  const renderOneTouch = useCallback(
+    () => (
+      <View style={styles.modalBody}>
+        <View style={styles.oneTouchInfo}>
+          <View style={{width: 233}}>
+            <AppText style={styles.title}>{i18n.t('esim:oneTouch')}</AppText>
+            <AppStyledText
+              textStyle={styles.qrText}
+              text={i18n.t('esim:oneTouch:txt')}
+              format={{b: {...appStyles.normal16Text, color: colors.clearBlue}}}
+            />
+          </View>
+          <AppIcon name="oneTouch" />
+        </View>
+
+        <Pressable
+          onPress={() => Linking.openURL(oneTouchLink)}
+          style={styles.oneTouchReg}>
+          <AppText style={styles.oneTouchTxt}>
+            {i18n.t('esim:oneTouch:reg')}
+          </AppText>
+        </Pressable>
+      </View>
+    ),
+    [oneTouchLink],
+  );
+
+  const renderCheckReg = useCallback(
+    () => (
+      <View style={{...styles.box, paddingHorizontal: 0}}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <AppText
+            style={[
+              appStyles.bold20Text,
+              {marginTop: 4, paddingHorizontal: 20},
+            ]}>
+            {i18n.t('qrInfo:cardCheck:title')}
+          </AppText>
+          {['R', 'E', 'DE', 'D'].includes(cardState) && (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <AppSvgIcon
+                name={
+                  cardState === 'R'
+                    ? 'blueBang'
+                    : cardState === 'D'
+                    ? 'redWarning'
+                    : 'greenCheck'
+                }
+                style={{marginRight: 2}}
+              />
+              <AppText
+                style={[
+                  appStyles.bold16Text,
+                  {color: stateColor, marginRight: 20},
+                ]}>
+                {i18n.t(`qrInfo:state:${cardState}`)}
+              </AppText>
+            </View>
+          )}
+        </View>
+
+        <View style={styles.cardCheckTxt}>
+          <View>
+            <AppStyledText
+              text={i18n.t(`qrInfo:cardCheck:subTitle:${cardState}`)}
+              textStyle={styles.cardCheckSubTitle}
+              format={{c: {color: stateColor}}}
+            />
+
+            {showBtn || loading ? (
+              <Pressable
+                onPress={() => checkCmiInstall(params.mainSubs)}
+                style={styles.checkBtn}>
+                <AppText style={styles.checkBtnTxt}>
+                  {i18n.t(
+                    loading
+                      ? 'qrInfo:cardCheck:wait'
+                      : cardState === 'N'
+                      ? 'qrInfo:cardCheck'
+                      : 'qrInfo:reCardCheck',
+                  )}
+                </AppText>
+              </Pressable>
+            ) : (
+              <View style={{height: 40}} />
+            )}
+          </View>
+          <AppIcon name={`DeviceReg${cardState}`} />
+        </View>
+        {(['R', 'E', 'DE', 'D'].includes(cardState) || isFail) && (
+          <View style={styles.cardCheckDesc}>
+            <AppSvgIcon
+              name={isFail || cardState === 'D' ? 'regCardWarn' : 'regCardInfo'}
+              style={{marginRight: 4, top: 2}}
+            />
+            <AppStyledText
+              textStyle={appStyles.medium14}
+              text={i18n.t(
+                isFail
+                  ? 'qrInfo:cardCheck:desc:fail'
+                  : `qrInfo:cardCheck:desc:${cardState}`,
+              )}
+              format={{b: {color: colors.redError}}}
+            />
+          </View>
+        )}
+      </View>
+    ),
+    [
+      cardState,
+      checkCmiInstall,
+      isFail,
+      loading,
+      params.mainSubs,
+      showBtn,
+      stateColor,
+    ],
+  );
+
+  const CustomTabTitle = ({k, navigation}) => {
+    const isFocused = navigation?.isFocused();
+
+    return (
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <AppText style={isFocused ? styles.selectedTabTitle : styles.tabTitle}>
+          {i18n.t(`qrInfo:tab:${k}`)}
+        </AppText>
+        {k === 'oneTouch' && (
+          <View style={styles.badge}>
+            <AppText
+              style={{
+                ...appStyles.semiBold11Text,
+                color: colors.white,
+              }}>
+              {i18n.t('localOp:tag:N')}
+            </AppText>
+          </View>
+        )}
+      </View>
+    );
+  };
+
+  const renderTab = useCallback(
+    (key: string) => () => {
+      return (
+        <ScrollView>
+          {key === 'manual' && renderManual()}
+          {key === 'qr' && showQR(params.mainSubs)}
+          {key === 'oneTouch' && renderOneTouch()}
+          <View
+            style={{
+              width: '100%',
+              height: 10,
+              backgroundColor: colors.whiteTwo,
+              marginVertical: 40,
+            }}
+          />
+          {canCheckEsim && renderCheckReg()}
+        </ScrollView>
+      );
+    },
+    [
+      canCheckEsim,
+      params.mainSubs,
+      renderCheckReg,
+      renderManual,
+      renderOneTouch,
+    ],
+  );
+
+  const renderSelectedPane = useCallback(() => {
+    return (
+      <Tab.Navigator
+        initialRouteName="reg"
+        tabBar={(props) => <TabBar {...props} />}
+        screenOptions={{animationEnabled: false, swipeEnabled: false}}
+        sceneContainerStyle={{backgroundColor: colors.white}}>
+        {['oneTouch', 'qr', 'manual'].map((k) => (
+          <Tab.Screen
+            key={k}
+            name={k}
+            component={renderTab(k)}
+            options={({navigation}) => {
+              return {
+                lazy: true,
+                title: <CustomTabTitle k={k} navigation={navigation} />, // Use the custom tab title component
+              };
+            }}
+          />
+        ))}
+      </Tab.Navigator>
+    );
+  }, [renderTab]);
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
       <View style={appStyles.header}>
         <AppBackButton title={i18n.t('esim:qrInfo')} />
       </View>
-      <ScrollView style={styles.container} ref={scrollRef}>
-        {canCheckEsim && (
-          <View style={styles.guideBanner}>{renderInfo(scrollRef)}</View>
-        )}
-        <View style={{...styles.box, paddingBottom: 38}}>
-          <AppText style={styles.title}>{i18n.t('esim:qr')}</AppText>
-          {showQR(params.mainSubs)}
-        </View>
-        <View style={{...styles.box, paddingBottom: 38}}>
-          <AppText style={styles.title}>{i18n.t('esim:manualInput')}</AppText>
-          <View style={styles.esimManualInputInfo}>
-            {esimManualInputInfo()}
-          </View>
-          {isIOS ? (
-            <View>
-              {renderCode(i18n.t('esim:smdp'), params.mainSubs?.smdpAddr || '')}
-              {renderCode(
-                i18n.t('esim:actCode'),
-                params.mainSubs?.actCode || '',
-              )}
-            </View>
-          ) : (
-            renderCode(i18n.t('esim:actCode'), params.mainSubs?.qrCode || '')
-          )}
-        </View>
-
-        {canCheckEsim && (
-          <View style={{...styles.box, paddingHorizontal: 0}}>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <AppText
-                style={[
-                  appStyles.bold20Text,
-                  {marginTop: 4, paddingHorizontal: 20},
-                ]}>
-                {i18n.t('qrInfo:cardCheck:title')}
-              </AppText>
-              {['R', 'E', 'DE', 'D'].includes(cardState) && (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}>
-                  <AppSvgIcon
-                    name={
-                      cardState === 'R'
-                        ? 'blueBang'
-                        : cardState === 'D'
-                        ? 'redWarning'
-                        : 'greenCheck'
-                    }
-                    style={{marginRight: 2}}
-                  />
-                  <AppText
-                    style={[
-                      appStyles.bold16Text,
-                      {color: stateColor, marginRight: 20},
-                    ]}>
-                    {i18n.t(`qrInfo:state:${cardState}`)}
-                  </AppText>
-                </View>
-              )}
-            </View>
-
-            <View style={styles.cardCheckTxt}>
-              <View>
-                <AppStyledText
-                  text={i18n.t(`qrInfo:cardCheck:subTitle:${cardState}`)}
-                  textStyle={styles.cardCheckSubTitle}
-                  format={{c: {color: stateColor}}}
-                />
-
-                {showBtn || loading ? (
-                  <Pressable
-                    onPress={() => checkCmiInstall(params.mainSubs)}
-                    style={styles.checkBtn}>
-                    <AppText style={styles.checkBtnTxt}>
-                      {i18n.t(
-                        loading
-                          ? 'qrInfo:cardCheck:wait'
-                          : cardState === 'N'
-                          ? 'qrInfo:cardCheck'
-                          : 'qrInfo:reCardCheck',
-                      )}
-                    </AppText>
-                  </Pressable>
-                ) : (
-                  <View style={{height: 40}} />
-                )}
-              </View>
-              <AppIcon name={`DeviceReg${cardState}`} />
-            </View>
-            {(['R', 'E', 'DE', 'D'].includes(cardState) || isFail) && (
-              <View style={styles.cardCheckDesc}>
-                <AppSvgIcon
-                  name={
-                    isFail || cardState === 'D' ? 'regCardWarn' : 'regCardInfo'
-                  }
-                  style={{marginRight: 4, top: 2}}
-                />
-                <AppStyledText
-                  textStyle={appStyles.medium14}
-                  text={i18n.t(
-                    isFail
-                      ? 'qrInfo:cardCheck:desc:fail'
-                      : `qrInfo:cardCheck:desc:${cardState}`,
-                  )}
-                  format={{b: {color: colors.redError}}}
-                />
-              </View>
-            )}
-          </View>
-        )}
-        <View style={styles.divider} />
-      </ScrollView>
+      {renderSelectedPane()}
+      <View style={styles.lastSpace} />
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}
