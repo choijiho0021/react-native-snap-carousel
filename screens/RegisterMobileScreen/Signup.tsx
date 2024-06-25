@@ -169,6 +169,14 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
   );
 
   useEffect(() => {
+    if (kind === 'normal') {
+      if (!email) {
+        emailRef?.current?.focus();
+      }
+    }
+  }, [email, kind]);
+
+  useEffect(() => {
     if (loggedIn) {
       const {stack, screen, params, goBack} = route?.params || {};
 
