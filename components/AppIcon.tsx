@@ -51,6 +51,7 @@ const images: Record<string, any[]> = {
   DeviceRegE: [require(`${esimPath}Device_reg_E.png`)],
   DeviceRegDE: [require(`${esimPath}Device_reg_E.png`)],
   DeviceRegD: [require(`${esimPath}Device_reg_D.png`)],
+  oneTouch: [require(`${esimPath}oneTouch.png`)],
 };
 
 interface AppIconProps {
