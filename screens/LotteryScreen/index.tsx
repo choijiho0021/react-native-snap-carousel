@@ -493,20 +493,21 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       return <RenderLoadingLottery />;
     }
 
-    if (phase?.text || isHistory) {
-      return (
-        <>
-          <LinearGradient
-            // Background Linear Gradient
-            colors={GRADIENT_COLOR_LIST[screenNum]}
-            style={styles.gradientContainer}
-          />
-          {renderAfterLottery()}
-        </>
-      );
-    }
+    // 렌더링 순서 변경, 잠시 다른 화면이 뜨는 현상이 있음.
 
-    return <RenderBeforeLottery count={fortune?.count} onClick={onClick} />;
+    if (!phase?.text && !isHistory)
+      return <RenderBeforeLottery count={fortune?.count} onClick={onClick} />;
+
+    return (
+      <>
+        <LinearGradient
+          // Background Linear Gradient
+          colors={GRADIENT_COLOR_LIST[screenNum]}
+          style={styles.gradientContainer}
+        />
+        {renderAfterLottery()}
+      </>
+    );
   }, [
     fortune,
     isHistory,
