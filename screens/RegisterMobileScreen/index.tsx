@@ -411,7 +411,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         <View style={styles.title}>
           <View style={styles.row}>
             <AppText style={styles.titleText}>{i18n.t('mobile:title')}</AppText>
-            <AppIcon name="earth" />
+            <AppIcon name="earth" style={{marginRight: 12}} />
           </View>
           <View style={styles.mobileWithToolTip}>
             <AppText style={styles.mobileAuth}>
