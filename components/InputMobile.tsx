@@ -19,8 +19,9 @@ const styles = StyleSheet.create({
   },
   text: {
     ...appStyles.semiBold16Text,
-    color: '#ffffff',
+    color: colors.lightGrey,
     lineHeight: 24,
+    letterSpacing: -0.16,
   },
   inputBox: {
     flex: 1,
@@ -31,13 +32,15 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     height: 50,
     marginRight: 8,
+    textAlignVertical: 'center',
   },
   input: {
-    ...appStyles.normal16Text,
+    ...appStyles.medium16,
     color: colors.black,
-    paddingHorizontal: 10,
+    paddingHorizontal: 16,
     marginRight: 20,
-    paddingVertical: 10,
+    paddingVertical: 13,
+    textAlignVertical: 'center',
     flex: 1,
   },
   row: {

@@ -300,7 +300,7 @@
   "mobile:header": "로그인",
   "mobile:title": "여행을\n시작해 볼까요?",
   "mobile:easyLogin": "휴대폰 번호로 시작하기",
-  "mobile:input": "- 없이 숫자만 입력",
+  "mobile:input": "휴대폰 번호 입력",
   "mobile:auth": "인증번호 입력",
   "mobile:sendAuth": "인증",
   "mobile:resendAuth": "재전송",

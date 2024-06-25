@@ -34,7 +34,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   inputWrapper: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 13,
     borderWidth: 1,
     borderRadius: 3,
     height: 50,
@@ -69,9 +70,10 @@ const styles = StyleSheet.create({
     color: colors.clearBlue,
   },
   input: {
-    ...appStyles.normal16Text,
+    ...appStyles.medium16,
     color: colors.black,
     flex: 1,
+    textAlignVertical: 'center',
   },
   referrerNaver: {
     display: 'flex',
