@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 1,
     alignItems: 'center',
+    gap: 8,
   },
   comfirmText: {
     ...appStyles.normal16Text,
