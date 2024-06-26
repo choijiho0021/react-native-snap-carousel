@@ -17,13 +17,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 1,
     alignItems: 'center',
-    gap: 8,
   },
   comfirmText: {
     ...appStyles.normal16Text,
     lineHeight: 22,
     letterSpacing: -0.16,
     color: colors.black,
+    marginRight: 8,
   },
   container: {
     alignContent: 'stretch',
