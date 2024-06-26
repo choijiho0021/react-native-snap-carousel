@@ -6299,7 +6299,6 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
-<<<<<<< HEAD
   redWarning: [
     <Svg
       width="16"
@@ -6334,7 +6333,10 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
       <Path
         d="M8.667 12a.667.667 0 1 1-1.334 0 .667.667 0 0 1 1.334 0zM7.333 6.571C7.333 6.256 7.632 6 8 6c.368 0 .667.256.667.571V9.43c0 .315-.299.571-.667.571-.368 0-.667-.256-.667-.571V6.57z"
-=======
+        fill="#fff"
+      />
+    </Svg>,
+  ],
   naverNew: [
     <Svg
       width="56"
@@ -6345,12 +6347,10 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Rect width="56" height="56" rx="28" fill="#03C75A" />
       <Path
         d="m31.632 28.716-7.588-10.9h-6.226V38.18h6.55v-10.9l7.527 10.9h6.287V17.816h-6.55v10.9z"
->>>>>>> fdd6164cda45555a037b24cbc271d25e96fc7140
         fill="#fff"
       />
     </Svg>,
   ],
-<<<<<<< HEAD
   greenCheck: [
     <Svg
       width="16"
@@ -6363,7 +6363,9 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         clipRule="evenodd"
         d="M11.909 5.247a1 1 0 0 1 .095 1.41l-3.82 4.377a1 1 0 0 1-1.467.043l-2.43-2.47a1 1 0 0 1 1.426-1.402l1.673 1.7 3.112-3.563a1 1 0 0 1 1.41-.095z"
         fill="#00AD50"
-=======
+      />
+    </Svg>,
+  ],
   kakaoNew: [
     <Svg
       width="56"
@@ -6497,7 +6499,6 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Path
         d="m33.148 29.84.674-4.131h-4.215v-2.68c0-1.13.59-2.233 2.477-2.233H34V17.28S32.261 17 30.598 17c-3.47 0-5.74 1.978-5.74 5.56v3.149H21v4.13h3.858v9.987c1.574.232 3.176.232 4.75 0V29.84h3.54z"
         fill="#fff"
->>>>>>> fdd6164cda45555a037b24cbc271d25e96fc7140
       />
     </Svg>,
   ],
