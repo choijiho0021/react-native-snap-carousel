@@ -1,5 +1,4 @@
 import React, {memo, useCallback} from 'react';
-import {StyleSheet, View} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {
   AccessToken,
@@ -7,29 +6,8 @@ import {
   GraphRequestManager,
   LoginManager,
 } from 'react-native-fbsdk-next';
-import AppButton from '../AppButton';
 import {SocialAuthInfo} from '.';
-import i18n from '@/utils/i18n';
-import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  viewStyle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#3B5998',
-    borderRadius: 2,
-    height: 52,
-    marginTop: 12,
-  },
-  btnStyle: {
-    width: '100%',
-  },
-});
+import AppSvgIcon from '../AppSvgIcon';
 
 const FacebookLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
   const getPublicProfile = useCallback(
@@ -82,17 +60,6 @@ const FacebookLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
     );
   }, [getPublicProfile]);
 
-  return (
-    <View style={styles.container}>
-      <AppButton
-        iconName="facebookLogin"
-        title={i18n.t('socialLogin:facebook')}
-        titleStyle={{...appStyles.medium16, marginLeft: 5, color: colors.white}}
-        viewStyle={styles.viewStyle}
-        style={styles.btnStyle}
-        onPress={onPress}
-      />
-    </View>
-  );
+  return <AppSvgIcon name="facebookNew" onPress={onPress} />;
 };
 export default memo(FacebookLogin);

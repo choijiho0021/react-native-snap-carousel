@@ -2,14 +2,18 @@ import React, {memo} from 'react';
 import {
   Modal,
   Pressable,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
+  View,
   ViewStyle,
 } from 'react-native';
+import {useDispatch} from 'react-redux';
 import {colors} from '@/constants/Colors';
 import AppText from './AppText';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
+import {actions as modalActions} from '@/redux/modules/modal';
 
 export const emailDomainList = [
   'naver.com',
@@ -21,60 +25,60 @@ export const emailDomainList = [
 ];
 
 const styles = StyleSheet.create({
-  menu: {
-    width: 254,
-    position: 'absolute',
+  container: {
+    marginTop: 'auto',
+    paddingVertical: 20,
     backgroundColor: colors.white,
-    borderRadius: 12,
-    shadowColor: colors.black10,
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
-    shadowRadius: 64,
-    shadowOpacity: 1,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
   },
   menuItem: {
-    height: 44,
-    backgroundColor: colors.menu,
-    borderBottomColor: colors.menuBorder,
-    borderBottomWidth: 1,
-    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: colors.white,
+    display: 'flex',
+    justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    paddingHorizontal: 16,
+  },
+  menuItemText: {
+    ...appStyles.medium18,
+    lineHeight: 22,
+    color: colors.black,
   },
 });
 
-const DomainListModal = ({
-  visible,
-  style,
-  onClose,
-}: {
-  visible: boolean;
-  style: ViewStyle;
-  onClose: (v: string) => void;
-}) => {
+const DomainListModal = ({setDomain}: {setDomain: (v: string) => void}) => {
+  const dispatch = useDispatch();
   return (
-    <Modal visible={visible} transparent>
-      <Pressable style={{flex: 1}} onPress={() => onClose('')}>
-        <ScrollView style={[styles.menu, style]}>
+    <SafeAreaView style={{flex: 1}}>
+      <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
+        <Pressable
+          style={{flex: 1}}
+          onPress={() => dispatch(modalActions.closeModal())}
+        />
+        <View style={styles.container}>
           {emailDomainList.map((v) => (
             <Pressable
               key={v}
               style={styles.menuItem}
-              onPress={() => onClose(v)}>
-              <AppText style={appStyles.medium18}>{v}</AppText>
+              onPress={() => {
+                setDomain(v);
+                dispatch(modalActions.closeModal());
+              }}>
+              <AppText style={styles.menuItemText}>{v}</AppText>
             </Pressable>
           ))}
           <Pressable
             key="input"
             style={[styles.menuItem, {borderBottomWidth: 0}]}
-            onPress={() => onClose('input')}>
-            <AppText style={appStyles.medium18}>{i18n.t('his:input')}</AppText>
+            onPress={() => {
+              setDomain('input');
+              dispatch(modalActions.closeModal());
+            }}>
+            <AppText style={styles.menuItemText}>{i18n.t('his:input')}</AppText>
           </Pressable>
-        </ScrollView>
-      </Pressable>
-    </Modal>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 };
 

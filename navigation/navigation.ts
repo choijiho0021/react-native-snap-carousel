@@ -4,10 +4,11 @@ import {
   RouteProp,
 } from '@react-navigation/native';
 import {Moment} from 'moment';
+import {ViewStyle} from 'react-native';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {RkbInfo} from '@/redux/api/pageApi';
 import {BoardMsgStatus} from '@/redux/api/boardApi';
-import {RkbSubscription, UsageOptionObj} from '@/redux/api/subscriptionApi';
+import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {
   Currency,
@@ -20,8 +21,9 @@ import {GuideOption} from '@/screens/UserGuideScreen/GuideHomeScreen';
 import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
 import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 import {PaymentRule} from '@/redux/modules/product';
-import {ViewStyle} from 'react-native';
 import {Fortune} from '@/redux/modules/account';
+import {DailyProdFilterList} from '@/components/DailyProdFilter';
+import {SocialAuthInfoKind} from '@/components/SocialLogin';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti' | 'page';
 export type PymMethodScreenMode =
@@ -135,7 +137,12 @@ export type HomeStackParamList = {
   BoardMsgAdd: {key: string; status: BoardMsgStatus};
   Faq: FaqRouteParam;
   Guide: undefined;
-  Country: {partner: string[]};
+  Country: {
+    partner: string[];
+    type?: string;
+    volume?: DailyProdFilterList;
+    scroll?: string;
+  };
   Payment: PaymentParams;
   PaymentGateway: PaymentParams;
   PymMethod: {isPaid?: boolean; pymPrice?: number; mode?: PymMethodScreenMode};
@@ -247,6 +254,7 @@ export type HomeStackParamList = {
   SelectCoupon: undefined;
   Coupon: undefined;
   Signup: {
+    kind?: SocialAuthInfoKind;
     pin: string;
     mobile: string;
     status?: string;

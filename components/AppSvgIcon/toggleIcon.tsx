@@ -324,10 +324,11 @@ const toggleIcons: Record<string, React.ReactElement[]> = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M14.909 8.247a1 1 0 0 1 .095 1.41l-3.82 4.377a1 1 0 0 1-1.467.043l-2.43-2.47a1 1 0 1 1 1.426-1.402l1.673 1.7 3.112-3.563a1 1 0 0 1 1.41-.095z"
-        fill="#2A7FF6"
+        d="m6 10 3.913 5L16 7"
+        stroke="#2A7FF6"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </Svg>,
     <Svg
@@ -337,10 +338,11 @@ const toggleIcons: Record<string, React.ReactElement[]> = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M14.909 8.247a1 1 0 0 1 .095 1.41l-3.82 4.377a1 1 0 0 1-1.467.043l-2.43-2.47a1 1 0 1 1 1.426-1.402l1.673 1.7 3.112-3.563a1 1 0 0 1 1.41-.095z"
-        fill="#AAA"
+        d="m6 10 3.913 5L16 7"
+        stroke="#D8D8D8"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </Svg>,
   ],

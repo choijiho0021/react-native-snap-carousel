@@ -34,6 +34,9 @@
 #import <SafariServices/SafariServices.h>
 #import <FBSDKCoreKit/FBSDKCoreKit-Swift.h>
 
+// Naver Login
+#import <NaverThirdPartyLogin/NaverThirdPartyLoginConnection.h>
+
 #import "AppDelegate.h"
 
 #import <React/RCTBundleURLProvider.h>
@@ -154,7 +157,10 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
-  
+  if ([url.scheme isEqualToString:@"esimnaverlogin"]) {
+    return [[NaverThirdPartyLoginConnection getSharedInstance] application:application openURL:url options:options];
+  }
+
   [NaverTracker setInflow:url];
   
   if([RNKakaoLogins isKakaoTalkLoginUrl:url]) {

@@ -259,13 +259,16 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
           <>
             <LinearGradient
               colors={['rgba(255, 255, 255, 0)', 'white']} // 투명에서 흰색으로 그라디언트 색상 설정
-              style={[styles.gradientStyle]}
+              style={styles.gradientStyle}
             />
             <View style={styles.bottom}>
               <AppButton
                 style={[
                   styles.reasonButton,
-                  {backgroundColor: colors.clearBlue},
+                  {
+                    backgroundColor: colors.clearBlue,
+                    borderColor: colors.clearBlue,
+                  },
                 ]}
                 title={i18n.t('tutorial:close')}
                 titleStyle={[styles.boldText, {color: 'white'}]}
@@ -286,7 +289,7 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
           <>
             <LinearGradient
               colors={['rgba(255, 255, 255, 0)', 'white']} // 투명에서 흰색으로 그라디언트 색상 설정
-              style={[styles.gradientStyle]}
+              style={styles.gradientStyle}
             />
             <View style={[styles.bottom, {justifyContent: 'space-between'}]}>
               {/* <Pressable style={styles.touchableOpacity} onPress={() => skip()}>
@@ -295,7 +298,7 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
               </AppText>
             </Pressable> */}
               <AppButton
-                key={`buttonSkip`}
+                key="buttonSkip"
                 style={[styles.reasonButton, {marginRight: 12}]}
                 titleStyle={[styles.reasonButtonText]}
                 onPress={() => skip()}
@@ -303,10 +306,13 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
               />
 
               <AppButton
-                key={`buttonNext`}
+                key="buttonNext"
                 style={[
                   styles.reasonButton,
-                  {backgroundColor: colors.clearBlue},
+                  {
+                    backgroundColor: colors.clearBlue,
+                    borderColor: colors.clearBlue,
+                  },
                 ]}
                 titleStyle={[styles.boldText, {color: 'white'}]}
                 onPress={() => carouselRef.current?.snapToNext()}

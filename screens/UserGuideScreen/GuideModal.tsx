@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {memo, useCallback} from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {actions as modalActions} from '@/redux/modules/modal';
@@ -12,6 +12,7 @@ import AppStyledText from '@/components/AppStyledText';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppButton from '@/components/AppButton';
 import {GuideOption} from './GuideHomeScreen';
+import {API} from '@/redux/api';
 
 const styles = StyleSheet.create({
   row: {
@@ -93,6 +94,7 @@ const GuideModal = ({
   guideOption: GuideOption;
   isHome: boolean;
 }) => {
+  const [localRegProdList, setLocalRegProdList] = useState('');
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const renderNoticeText = useCallback(
@@ -111,6 +113,24 @@ const GuideModal = ({
     ),
     [],
   );
+
+  useEffect(() => {
+    API.Page.getPageByCategory('guide:reg.local')
+      .then((resp) => {
+        if (resp.result === 0 && resp.objects.length > 0) {
+          const body = resp.objects[0].body
+            ?.replace(/<\/p>/gi, '')
+            .replace(/<p>/gi, '')
+            .replace(/\n/gi, '');
+          if (body) {
+            setLocalRegProdList(body);
+          }
+        }
+      })
+      .catch((err) => {
+        console.log('failed to get page', err);
+      });
+  }, []);
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -152,9 +172,7 @@ const GuideModal = ({
                 {i18n.t('userGuide:modal:notice:title')}
               </AppText>
             </View>
-            <AppText style={styles.noticeBody}>
-              {i18n.t('userGuide:modal:notice:body')}
-            </AppText>
+            <AppText style={styles.noticeBody}>{localRegProdList}</AppText>
             <View style={styles.listBox}>
               {[1, 2].map((v) => renderNoticeText(v))}
             </View>

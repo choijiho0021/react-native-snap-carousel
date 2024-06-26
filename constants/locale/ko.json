@@ -1,4 +1,5 @@
 {
+  "next": "다음",
   "select": "선택",
   "store": "스토어",
   "home": "홈",
@@ -253,9 +254,10 @@
   "set:netstat:disconnected": "네트워크 연결 실패",
 
   "resign": "계정 탈퇴",
+  "resign:button": "계정 탈퇴하기",
   "resign:why": "계정을 탈퇴하려는 이유를 알려주세요.",
   "resign:info": "서비스 개선에 적극적으로 반영하도록 하겠습니다.",
-  "resign:title": "고객님\n정말 떠나시는 건가요?",
+  "resign:title": "고객님,\n정말 떠나시는 건가요?",
   "resign:reason1": "원하는 지역 서비스 없음",
   "resign:reason2": "서비스 이용 불편",
   "resign:reason3": "가격 불만족",
@@ -264,16 +266,23 @@
   "resign:reason6": "기타",
 
   "resign:note": "탈퇴 전 꼭 읽어주세요",
-  "resign:confirm1": "계정을 탈퇴하시면 구매내역 및 상품정보 등의 사용내역 및 보유하고 계시는 로깨비 캐시는 삭제 및 자동 소멸하며, 재가입 시에도 복원되지 않습니다.",
-  "resign:confirm2": "계정 탈퇴 후 재가입 시, 회원가입 이벤트에 재참여하실 수 없습니다.",
+
+  "resign:confirm1": "계정을 탈퇴하시면 구매내역, 상품정보 등의 <b>사용내역</b> 및 보유하고 계시는 <b>로깨비 캐시와 쿠폰은 삭제 및 자동 소멸</b>하며, <b>재가입 시에도 복원되지 않습니다.</b>",
+  "resign:confirm2": "계정 탈퇴 후 <b>재가입 시, 신규 가입 이벤트에 재참여하실 수 없습니다.</b>",
   "resign:confirm3": "계정 탈퇴 후 전자상거래법에 따라 보존해야 하는 정보는 해당 법률에 따른 기간 보관 후 폐기됩니다.",
-  "resign:isConfirm": "안내사항을 확인하였으며 동의합니다.",
-  "resign:cntInfo": "고객님은 로밍도깨비와 {{count}}번의 여행을 함께했어요.",
-  "resign:noCnt": "로밍도깨비 eSIM이 얼마나 쉽고 편리한지 경험해보세요.\n즐거운 여행이 고객님을 기다리고 있어요!",
-  "resign:confirmModal": "{{info}}\n\n정말 탈퇴하시겠습니까?",
-  "resign:finished": "계정 탈퇴가 정상적으로 처리되었습니다.\n이용해주셔서 감사합니다.",
+  "resign:isConfirm": "유의사항을 확인하였으며 동의합니다.",
+  "resign:cntInfo": "고객님은 로밍도깨비와 <b>{count}번</b>의 여행을 함께했어요.",
+  "resign:noCnt": "로밍도깨비 eSIM이\n얼마나 쉽고 편리한지 경험해 보세요.\n<b>즐거운 여행이 고객님을 기다리고 있어요!</b>",
+  "resign:finished:title": "계정 탈퇴가 정상적으로 처리되었습니다.",
+  "resign:finished": "데이터가 필요한 순간, 로밍도깨비를 다시 찾아주세요!",
   "resign:placeholder": "기타인 경우 이유를 입력해주세요.\n서비스 개선에 적극적으로 반영하겠습니다.",
-  "resign:fail": "네트워크 문제로 요청이 처리되지 않았습니다.\n인터넷 연결 확인 후 다시 시도해 주세요[",
+  "resign:fail:title": "계정 탈퇴 실패하였습니다.",
+  "resign:fail": "네트워크 문제로 요청이 처리되지 않았습니다. 인터넷 연결 확인 후 다시 시도해 주세요.",
+  "resign:disable:reason": "탈퇴 이유를 입력해 주세요.",
+  "resign:disable:agreement": "탈퇴 전 유의사항 확인 후 동의해주세요.",
+  "resign:confirmModal:title": "정말 탈퇴하시겠습니까?",
+  "resign:confirmModal:resign": "탈퇴하기",
+  "resign:confirmModal:cancel": "유지하기",
 
   "set:globalMarket": "Global Market",
 
@@ -291,28 +300,34 @@
 
   "mobile:header": "로그인",
   "mobile:title": "여행을\n시작해 볼까요?",
-  "mobile:easyLogin": "휴대폰 간편 로그인",
-  "mobile:input": "- 없이 숫자만 입력",
+  "mobile:easyLogin": "휴대폰 번호로 시작하기",
+  "mobile:input": "휴대폰 번호 입력",
   "mobile:auth": "인증번호 입력",
   "mobile:sendAuth": "인증",
   "mobile:resendAuth": "재전송",
   "mobile:authMatch": "인증번호가 확인되었습니다",
-  "mobile:authMismatch": "잘못된 인증번호 입니다",
+  "mobile:authMismatch": "잘못된 인증번호입니다.",
   "mobile:timeout": "인증번호가 만료되었습니다. 다시 시도해주세요.",
   "mobile:inputInTime": "* 3분 이내로 인증번호(6자리)를 입력해주세요.",
   "mobile:timeLeft": "남은 시간 ",
-  "mobile:email": "상품 발송 이메일",
+  "mobile:email": "이메일",
   "mobile:signup": "회원 가입하기",
   "signup:title": "회원 가입",
 
+  "signup:title:welcome": "환영해요!\n회원 정보를 확인하세요.",
+  "signup:title:info": "상품 발송 시 사용하는 정보입니다.",
+
+  "signup:id": "회원 번호",
+  "signup:mobile": "휴대폰 번호",
+
   "email:input": "선택하기",
 
-  "cfm:all": "다음 약관에 모두 동의합니다.",
+  "cfm:all": "약관에 모두 동의합니다.",
   "cfm:contract": "이용 약관 동의",
-  "cfm:personalInfo": "개인정보 수집목적 및 이용동의",
-  "cfm:marketing": "맞춤안내 및 마케팅 정보 수신동의",
-  "cfm:mandatory": " (필수)",
-  "cfm:optional": " (선택)",
+  "cfm:personalInfo": "개인 정보 수집 목적 및 이용 동의",
+  "cfm:marketing": "마케팅 정보 수신동의",
+  "cfm:mandatory": "(필수) ",
+  "cfm:optional": "(선택) ",
   "cfm:accept": "동의",
 
   "purchase:address": "배송 주소",
@@ -1442,9 +1457,15 @@
   "changeEmail:invalidEmail": "이메일 형식이 올바르지 않습니다.",
 
   "socialLogin:kakao": "카카오 로그인",
+  "socialLogin:naver": "네이버 로그인",
   "socialLogin:apple": "Apple로 로그인",
   "socialLogin:google": "Google로 로그인",
   "socialLogin:facebook": "Facebook 로그인",
+
+  "socialLogin:hist": "최근 로그인",
+  "socialLogin:from:naver": "네이버 로그인하면 3초만에 상품 연동!",
+  "socialLogin:from:naver:ment": "<b>네이버 스토어</b> 주문 시 <b>작성한 번호</b>로 회원 가입해 주세요!",
+  "socialLogin:from:referrer:ment": "주문 시 <b>작성한 번호</b>로 회원 가입해 주세요!",
 
   "userGuide:home:title": "eSIM 사용 어렵지 않아요!\n가이드를 순서대로\n확인해주세요.",
   "userGuide:esimReg:title": "eSIM 등록",
@@ -1456,7 +1477,6 @@
   "userGuide:modal:body": "네 그럼요!\n아래 일부 상품을 제외<s>하고는</s>\n<b>한국에서 등록 가능</b><s>합니다.</s>",
 
   "userGuide:modal:notice:title": "현지 등록 권고 상품",
-  "userGuide:modal:notice:body": "글로벌 146개국, 글로벌 147개국, 몽골, 인도, 터키, 사우디아라비아, 우즈베키스탄, 브라질, 멕시코, 아르헨티나, 태국(로컬망), 미국(로컬망), 베트남(로컬망)",
   "userGuide:modal:notice:list1": "위 상품은 <b>국내에서 상품 등록 시</b> 즉시 사용 시작되어 <b>사용 기간이 소진될 수 있습니다.</b>",
   "userGuide:modal:notice:list2": "현지 도착 후 상품을 단말에 등록해주세요.",
 

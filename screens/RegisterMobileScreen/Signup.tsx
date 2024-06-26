@@ -14,12 +14,12 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import analytics, {firebase} from '@react-native-firebase/analytics';
+import AsyncStorage from '@react-native-community/async-storage';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import InputEmail, {InputEmailRef} from '@/components/InputEmail';
-import Profile from '@/components/Profile';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
@@ -27,6 +27,7 @@ import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import {RkbImage} from '@/redux/api/accountApi';
 import {ApiResult} from '@/redux/api/api';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import {
   AccountAction,
   AccountModelState,
@@ -36,10 +37,38 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import {LinkModelState} from '@/redux/modules/link';
 import ScreenHeader from '@/components/ScreenHeader';
-import DomainListModal from '@/components/DomainListModal';
+import {emailDomainList} from '@/components/DomainListModal';
 import ConfirmPolicy from './ConfirmPolicy';
+import AppSnackBar from '@/components/AppSnackBar';
 
 const styles = StyleSheet.create({
+  title: {
+    marginTop: 24,
+    paddingHorizontal: 20,
+    display: 'flex',
+    gap: 8,
+    flexDirection: 'column',
+  },
+  titleWelcome: {
+    ...appStyles.bold24Text,
+    lineHeight: 28,
+    color: colors.black,
+  },
+  titleInfo: {
+    ...appStyles.medium16,
+    lineHeight: 24,
+    letterSpacing: -0.16,
+    color: colors.black,
+  },
+  email: {
+    marginTop: 32,
+    paddingHorizontal: 20,
+  },
+  subTitle: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 20,
+    marginBottom: 6,
+  },
   confirm: {
     width: '100%',
     height: 52,
@@ -47,7 +76,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   text: {
-    ...appStyles.normal18Text,
+    ...appStyles.medium18,
+    lineHeight: 26,
     textAlign: 'center',
     color: colors.white,
   },
@@ -57,6 +87,26 @@ const styles = StyleSheet.create({
     alignContent: 'stretch',
     flexDirection: 'column',
     backgroundColor: colors.white,
+  },
+  mobile: {
+    flex: 1,
+    marginTop: 14,
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+  },
+  mobileBox: {
+    borderWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 13,
+    backgroundColor: colors.backGrey,
+    borderColor: colors.lightGrey,
+    borderRadius: 3,
+  },
+  mobileText: {
+    ...appStyles.medium16,
+    lineHeight: 24,
+    letterSpacing: -0.16,
+    color: colors.black,
   },
 });
 
@@ -77,6 +127,7 @@ type RegisterMobileScreenProps = {
 
   actions: {
     account: AccountAction;
+    modal: ModalAction;
   };
 };
 
@@ -90,10 +141,22 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [confirm, setConfirm] = useState({mandatory: false, optional: false});
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(
+    route?.params?.email ? route?.params?.email : '',
+  );
   const emailRef = useRef<InputEmailRef>(null);
-  const [showDomainModal, setShowDomainModal] = useState(false);
-  const [domain, setDomain] = useState('');
+  const [domain, setDomain] = useState(
+    route?.params?.email?.split('@')?.[1]
+      ? emailDomainList.includes(route?.params?.email?.split('@')?.[1])
+        ? route?.params?.email?.split('@')?.[1]
+        : 'input'
+      : '',
+  );
+  const [showSnackBar, setShowSnackBar] = useState(false);
+  const kind = useMemo(
+    () => route?.params?.kind || 'normal',
+    [route?.params?.kind],
+  );
 
   const {profileImageUrl, pin, status, mobile} = useMemo(
     () => route?.params || {},
@@ -104,6 +167,18 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
     () => link?.params?.recommender,
     [link?.params?.recommender],
   );
+
+  useEffect(() => {
+    if (kind === 'normal') {
+      if (!email) {
+        setTimeout(() => {
+          if (emailRef?.current) {
+            emailRef?.current?.focus();
+          }
+        }, 100);
+      }
+    }
+  }, [email, kind]);
 
   useEffect(() => {
     if (loggedIn) {
@@ -201,9 +276,10 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
             await Settings.setAdvertiserTrackingEnabled(true);
             analytics().logEvent('esim_sign_up');
           }
-
+          AsyncStorage.setItem('login.hist', kind);
           signIn({mobile, pin}, profileImageUrl);
         } else {
+          setShowSnackBar(true);
           console.log('sign up failed', resp);
           throw new Error('failed to login');
         }
@@ -222,6 +298,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
     confirm.optional,
     deviceModel,
     email,
+    kind,
     loading,
     mobile,
     pending,
@@ -243,7 +320,6 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <ScreenHeader
-        title={i18n.t('signup:title')}
         backHandler={() =>
           navigation.reset({index: 0, routes: [{name: 'RegisterMobile'}]})
         }
@@ -254,52 +330,58 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
         enableOnAndroid
         enableResetScrollToCoords={false}
         keyboardShouldPersistTaps="handled">
-        <View style={{marginTop: 40}}>
-          <Profile
-            email={email}
-            mobile={mobile}
-            userPictureUrl={profileImageUrl}
-          />
+        <View style={styles.title}>
+          <AppText style={styles.titleWelcome}>
+            {i18n.t('signup:title:welcome')}
+          </AppText>
+          <AppText style={styles.titleInfo}>
+            {i18n.t('signup:title:info')}
+          </AppText>
         </View>
 
-        <View
-          style={{
-            marginTop: 20,
-            paddingHorizontal: 20,
-            flex: 1,
-          }}>
-          <AppText style={{...appStyles.semiBold14Text, marginBottom: 6}}>
-            {i18n.t('mobile:email')}
-          </AppText>
+        <View style={styles.email}>
+          <AppText style={styles.subTitle}>{i18n.t('mobile:email')}</AppText>
           <InputEmail
             inputRef={emailRef}
+            socialEmail={email?.split('@')?.[0]}
             domain={domain}
+            setDomain={setDomain}
             onChange={setEmail}
-            onPress={() => setShowDomainModal(true)}
             placeholder={i18n.t('reg:email')}
           />
         </View>
+
+        <View style={styles.mobile}>
+          <AppText style={styles.subTitle}>
+            {i18n.t(mobile?.startsWith('100') ? 'signup:id' : 'signup:mobile')}
+          </AppText>
+          <View style={styles.mobileBox}>
+            <AppText style={styles.mobileText}>
+              {utils.toPhoneNumber(mobile)}
+            </AppText>
+          </View>
+        </View>
         <ConfirmPolicy onMove={onMove} onChange={setConfirm} />
+        <AppButton
+          style={styles.confirm}
+          title={i18n.t('mobile:signup')}
+          titleStyle={styles.text}
+          disabled={!confirm.mandatory || !email}
+          disableColor={colors.greyish}
+          disableBackgroundColor={colors.lightGrey}
+          onPress={submitHandler}
+          type="primary"
+        />
       </KeyboardAwareScrollView>
-      <AppButton
-        style={styles.confirm}
-        title={i18n.t('mobile:signup')}
-        titleStyle={styles.text}
-        disabled={!confirm.mandatory || !email}
-        disableColor={colors.black}
-        disableBackgroundColor={colors.lightGrey}
-        onPress={submitHandler}
-        type="primary"
-      />
 
       <AppActivityIndicator visible={pending || loading} />
-      <DomainListModal
-        style={{right: 20, top: 200}}
-        visible={showDomainModal}
-        onClose={(v) => {
-          setDomain(v);
-          setShowDomainModal(false);
-        }}
+      <AppSnackBar
+        visible={showSnackBar}
+        textMessage={i18n.t('promo:donate:fail')}
+        bottom={20}
+        preIcon="cautionRed"
+        onClose={() => setShowSnackBar(false)}
+        hideCancel
       />
     </SafeAreaView>
   );
@@ -313,6 +395,9 @@ export default connect(
       status.pending[accountActions.logInAndGetAccount.typePrefix] || false,
   }),
   (dispatch) => ({
-    actions: {account: bindActionCreators(accountActions, dispatch)},
+    actions: {
+      account: bindActionCreators(accountActions, dispatch),
+      modal: bindActionCreators(modalActions, dispatch),
+    },
   }),
 )(SignupScreen);

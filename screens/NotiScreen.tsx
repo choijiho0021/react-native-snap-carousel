@@ -66,6 +66,8 @@ const styles = StyleSheet.create({
   },
   titleText: {
     ...appStyles.bold16Text,
+    lineHeight: 24,
+    letterSpacing: -0.16,
   },
   notiText: {
     width: '90%',
@@ -75,8 +77,7 @@ const styles = StyleSheet.create({
     ...appStyles.medium14,
     // height: 48,
     width: '100%',
-    lineHeight: 24,
-    letterSpacing: 0.23,
+    lineHeight: 22,
     color: colors.black,
   },
   icon: {
@@ -181,7 +182,7 @@ const NotiListItem0 = ({
           key="icon"
           name={getIconName(item.notiType || '')}
           size={10}
-          style={{marginTop: 7}}
+          style={{marginTop: 7, marginRight: 6}}
         />
         <View key="notitext" style={styles.notiText}>
           <View style={styles.title}>

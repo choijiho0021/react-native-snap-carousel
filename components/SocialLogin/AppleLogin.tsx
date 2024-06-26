@@ -1,31 +1,8 @@
 import React, {memo, useCallback, useEffect} from 'react';
-import {StyleSheet, View} from 'react-native';
 import appleAuth from '@invertase/react-native-apple-authentication';
 import AsyncStorage from '@react-native-community/async-storage';
 import {SocialAuthInfo} from '.';
-import {appStyles} from '@/constants/Styles';
-import AppButton from '../AppButton';
-import i18n from '@/utils/i18n';
-
-const styles = StyleSheet.create({
-  button: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 12,
-  },
-  viewStyle: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'black',
-    borderRadius: 2,
-    height: 52,
-  },
-  btnStyle: {
-    width: '100%',
-  },
-});
+import AppSvgIcon from '../AppSvgIcon';
 
 const AppleLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
   const onPress = useCallback(async () => {
@@ -90,17 +67,6 @@ const AppleLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
     });
   }, []); // passing in an empty array as the second argument ensures this is only ran once when component mounts initially.
 
-  return (
-    <View style={styles.button}>
-      <AppButton
-        iconName="appleLogin"
-        title={i18n.t('socialLogin:apple')}
-        titleStyle={{...appStyles.medium16, marginLeft: 5, color: 'white'}}
-        viewStyle={styles.viewStyle}
-        style={styles.btnStyle}
-        onPress={onPress}
-      />
-    </View>
-  );
+  return <AppSvgIcon name="appleNew" onPress={onPress} />;
 };
 export default memo(AppleLogin);

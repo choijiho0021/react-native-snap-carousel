@@ -3589,6 +3589,27 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  naverLogin: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#ufb9tg9dua)">
+        <Rect x="1" y="1" width="18" height="18" rx="3" fill="#17DC34" />
+        <Path
+          d="M11.427 10.282 8.446 6H6v8h2.573V9.718L11.53 14H14V6h-2.573v4.282z"
+          fill="#fff"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="ufb9tg9dua">
+          <Path fill="#fff" transform="translate(1 1)" d="M0 0h18v18H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
   leftCalendarIcon: [
     <Svg
       width="20"
@@ -6333,6 +6354,20 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  naverNew: [
+    <Svg
+      width="56"
+      height="56"
+      viewBox="0 0 56 56"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect width="56" height="56" rx="28" fill="#03C75A" />
+      <Path
+        d="m31.632 28.716-7.588-10.9h-6.226V38.18h6.55v-10.9l7.527 10.9h6.287V17.816h-6.55v10.9z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
   greenCheck: [
     <Svg
       width="16"
@@ -6345,6 +6380,142 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         clipRule="evenodd"
         d="M11.909 5.247a1 1 0 0 1 .095 1.41l-3.82 4.377a1 1 0 0 1-1.467.043l-2.43-2.47a1 1 0 0 1 1.426-1.402l1.673 1.7 3.112-3.563a1 1 0 0 1 1.41-.095z"
         fill="#00AD50"
+      />
+    </Svg>,
+  ],
+  kakaoNew: [
+    <Svg
+      width="56"
+      height="56"
+      viewBox="0 0 56 56"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect width="56" height="56" rx="28" fill="#F9E000" />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M28 36.91c7.38 0 13.364-4.558 13.364-10.181 0-5.624-5.983-10.182-13.364-10.182-7.38 0-13.364 4.558-13.364 10.182 0 3.76 2.676 7.045 6.657 8.808l-1.039 4.765a.3.3 0 0 0 .471.305l5.2-3.818c.677.08 1.37.121 2.075.121z"
+        fill="#3B1C1C"
+      />
+    </Svg>,
+  ],
+  googleNew: [
+    <Svg
+      width="56"
+      height="56"
+      viewBox="0 0 56 56"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="28" cy="28" r="27.5" fill="#fff" stroke="#D8D8D8" />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M39.52 28.271c0-.851-.076-1.67-.218-2.455H28v4.642h6.458a5.52 5.52 0 0 1-2.394 3.622v3.011h3.878c2.269-2.09 3.578-5.166 3.578-8.82z"
+        fill="#4285F4"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M28 40.001c3.24 0 5.957-1.074 7.942-2.907l-3.878-3.01c-1.075.72-2.45 1.144-4.064 1.144-3.125 0-5.77-2.11-6.714-4.947h-4.01v3.11A11.995 11.995 0 0 0 28 40z"
+        fill="#34A853"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M21.285 30.279a7.213 7.213 0 0 1-.376-2.28c0-.791.137-1.56.377-2.28v-3.11h-4.01A11.994 11.994 0 0 0 16 28c0 1.936.464 3.769 1.276 5.389l4.01-3.11z"
+        fill="#FBBC05"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M28 20.773c1.762 0 3.344.605 4.587 1.794l3.442-3.442C33.951 17.19 31.235 16 28 16c-4.69 0-8.749 2.69-10.723 6.61l4.009 3.11c.943-2.836 3.589-4.947 6.714-4.947z"
+        fill="#EA4335"
+      />
+    </Svg>,
+  ],
+  appleNew: [
+    <Svg
+      width="56"
+      height="56"
+      viewBox="0 0 56 56"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="28" cy="28" r="28" fill="#000" />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M31.806 17.989c-.87 1.017-2.33 1.78-3.494 1.78-.132 0-.263-.016-.345-.032a2.118 2.118 0 0 1-.049-.445c0-1.303.673-2.575 1.41-3.385.936-1.065 2.495-1.86 3.79-1.907.034.143.05.318.05.493 0 1.287-.574 2.574-1.362 3.496zm-5.705 20.537c-.585.243-1.14.474-1.89.474-1.609 0-2.724-1.43-4.004-3.178-1.493-2.066-2.707-5.26-2.707-8.28 0-4.863 3.265-7.438 6.48-7.438.939 0 1.797.334 2.56.63.61.238 1.16.451 1.64.451.418 0 .938-.199 1.545-.431.847-.325 1.862-.713 3-.713.722 0 3.363.064 5.102 2.48l-.062.04c-.428.274-2.71 1.733-2.71 4.727 0 3.703 3.33 5.021 3.445 5.053l-.02.06c-.11.328-.632 1.893-1.752 3.484-1.1 1.526-2.264 3.083-4.003 3.083-.857 0-1.403-.234-1.967-.476-.602-.258-1.224-.525-2.266-.525-1.047 0-1.738.288-2.391.56z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
+  naverIconNew: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#41j0g4knxa)">
+        <Rect
+          x="1"
+          y="1"
+          width="18"
+          height="18"
+          rx="3"
+          fill="url(#oksxh5hz3b)"
+        />
+        <Rect
+          x="1"
+          y="1"
+          width="18"
+          height="18"
+          rx="3"
+          fill="url(#kx0142h7zc)"
+        />
+        <Path
+          d="M11.427 10.282 8.446 6H6v8h2.573V9.718L11.53 14H14V6h-2.573v4.282z"
+          fill="#fff"
+        />
+      </G>
+      <Defs>
+        <LinearGradient
+          id="oksxh5hz3b"
+          x1="5"
+          y1="13"
+          x2="17"
+          y2="13"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#05C2E7" />
+          <Stop offset="1" stopColor="#4764E6" />
+        </LinearGradient>
+        <LinearGradient
+          id="kx0142h7zc"
+          x1="10"
+          y1="4"
+          x2="10"
+          y2="15"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#17DC34" />
+          <Stop offset="1" stopColor="#17DC34" stopOpacity="0" />
+        </LinearGradient>
+        <ClipPath id="41j0g4knxa">
+          <Path fill="#fff" transform="translate(1 1)" d="M0 0h18v18H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
+  facebookNew: [
+    <Svg
+      width="56"
+      height="56"
+      viewBox="0 0 56 56"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="28" cy="28" r="28" fill="#3B5998" />
+      <Path
+        d="m33.148 29.84.674-4.131h-4.215v-2.68c0-1.13.59-2.233 2.477-2.233H34V17.28S32.261 17 30.598 17c-3.47 0-5.74 1.978-5.74 5.56v3.149H21v4.13h3.858v9.987c1.574.232 3.176.232 4.75 0V29.84h3.54z"
+        fill="#fff"
       />
     </Svg>,
   ],

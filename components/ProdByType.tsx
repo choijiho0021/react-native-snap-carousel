@@ -15,6 +15,7 @@ import {RkbProduct} from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';
 import DailyProdFilter, {DailyProdFilterList} from './DailyProdFilter';
 import NetworkFilter, {NetworkFilterList} from './NetworkFilter';
+import {SelectedTabType} from '@/screens/CountryScreen';
 
 const styles = StyleSheet.create({
   emptyImage: {
@@ -47,6 +48,7 @@ const position = (idx: number, arr: RkbProduct[]) => {
 type ProdByTypeProps = {
   prodData: RkbProduct[];
   prodType: 'daily' | 'total';
+  selectedTabParam?: SelectedTabType;
   isCharge?: boolean;
   onPress: (prod: RkbProduct) => void;
   onTop?: (v: boolean) => void;
@@ -66,11 +68,23 @@ const DEFAULT_FILTER_LIST = [
 const ProdByType: React.FC<ProdByTypeProps> = ({
   prodData,
   prodType,
+  selectedTabParam,
   isCharge = false,
   onPress,
   onTop = () => {},
 }) => {
-  const [filter, setFilter] = useState<DailyProdFilterList>('all');
+  const [selectedTab, setSelectedTab] = useState(selectedTabParam);
+
+  const isSelectedTabUsable = useMemo(
+    () =>
+      selectedTab?.type === 'daily' &&
+      !!selectedTab?.volume &&
+      !!prodData.find((p) => p.volume === selectedTab?.volume),
+    [prodData, selectedTab?.type, selectedTab?.volume],
+  );
+  const [filter, setFilter] = useState<DailyProdFilterList>(
+    (isSelectedTabUsable && selectedTab?.volume) || 'all',
+  );
   const [networkFilter, setNetworkFileter] = useState<NetworkFilterList[]>([
     'fiveG',
     'else',
@@ -146,7 +160,20 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
           {prodType === 'daily' && prodData.length > 0 ? (
             <DailyProdFilter
               filterList={['all', ...list]}
-              onValueChange={setFilter}
+              onValueChange={(v) => {
+                if (selectedTab?.type)
+                  setSelectedTab({
+                    type: undefined,
+                    volume: undefined,
+                    scroll: undefined,
+                  });
+                setFilter(v);
+              }}
+              selectedTab={
+                isSelectedTabUsable && selectedTab?.type
+                  ? selectedTab
+                  : undefined
+              }
             />
           ) : null}
           {showNetFilter ? (

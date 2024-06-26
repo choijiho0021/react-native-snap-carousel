@@ -12,6 +12,7 @@
 //#import "RNKakaoLogins.h"
 #import <React/RCTLinkingManager.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
+#import <NaverThirdPartyLogin/NaverThirdPartyLoginConnection.h>
 
 @implementation AppDelegate(Rokebi)
 
@@ -19,6 +20,11 @@
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
+
+  // naver
+  if ([url.scheme isEqualToString:@"esimnaverlogin"]) {
+    return [[NaverThirdPartyLoginConnection getSharedInstance] application:application openURL:url options:options];
+  }
   
   [NaverTracker setInflow:url];
   
