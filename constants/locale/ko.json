@@ -324,8 +324,8 @@
 
   "cfm:all": "약관에 모두 동의합니다.",
   "cfm:contract": "이용 약관 동의",
-  "cfm:personalInfo": "개인정보 수집목적 및 이용동의",
-  "cfm:marketing": "맞춤안내 및 마케팅 정보 수신동의",
+  "cfm:personalInfo": "개인 정보 수집 목적 및 이용 동의",
+  "cfm:marketing": "마케팅 정보 수신동의",
   "cfm:mandatory": "(필수) ",
   "cfm:optional": "(선택) ",
   "cfm:accept": "동의",
