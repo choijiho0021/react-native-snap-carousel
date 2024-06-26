@@ -1,6 +1,6 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -19,19 +19,14 @@ import {
   AccountAction,
   actions as accountActions,
 } from '@/redux/modules/account';
-import {
-  actions as toastActions,
-  Toast,
-  ToastAction,
-} from '@/redux/modules/toast';
+import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import Env from '@/environment';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import ScreenHeader from '@/components/ScreenHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import InputEmail from '@/components/InputEmail';
-import DomainListModal from '@/components/DomainListModal';
+import InputEmail, {InputEmailRef} from '@/components/InputEmail';
 
 const {isIOS} = Env.get();
 
@@ -116,8 +111,8 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
   email,
 }) => {
   const [newEmail, setNewEmail] = useState<string>('');
-  const [showDomainModal, setShowDomainModal] = useState(false);
   const [domain, setDomain] = useState('');
+  const emailRef = useRef<InputEmailRef>(null);
 
   const changeEmail = useCallback(() => {
     actions.account.changeEmail(newEmail).then((rsp) => {
@@ -158,11 +153,12 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
           </AppText>
 
           <InputEmail
+            inputRef={emailRef}
             currentEmail={email}
             domain={domain}
-            onPress={() => setShowDomainModal(true)}
             onChange={setNewEmail}
             placeholder={i18n.t('chg:email')}
+            setDomain={setDomain}
           />
         </View>
 
@@ -179,14 +175,6 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
           title={i18n.t('changeEmail:save')}
           onPress={changeEmail}
           type="primary"
-        />
-        <DomainListModal
-          style={{right: 20, top: 200}}
-          visible={showDomainModal}
-          onClose={(v) => {
-            setDomain(v);
-            setShowDomainModal(false);
-          }}
         />
       </KeyboardAvoidingView>
     </SafeAreaView>

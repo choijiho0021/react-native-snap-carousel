@@ -115,6 +115,10 @@ type Env = {
     hecto: Record<string, string>;
   };
   cachePrefix: string;
+  naver: {
+    consumerKey: string;
+    consumerSecret: string;
+  };
 };
 
 const env: Env = {
@@ -155,6 +159,7 @@ const env: Env = {
         },
   specialCategories,
   cachePrefix: `${esimGlobal ? 'g.' : ''}${isProduction ? '' : 'd.'}`,
+  naver: secureData.naver,
 };
 
 function get() {

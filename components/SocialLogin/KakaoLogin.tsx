@@ -1,30 +1,9 @@
 import React, {memo, useCallback} from 'react';
-import {StyleSheet, View} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import KakaoSDK from '@/components/NativeModule/KakaoSDK';
 import AppButton from '@/components/AppButton';
-import i18n from '@/utils/i18n';
-import {appStyles} from '@/constants/Styles';
 import {SocialAuthInfo} from '.';
-import {colors} from '@/constants/Colors';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  viewStyle: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F7E600',
-    borderRadius: 2,
-    height: 52,
-  },
-  btnStyle: {
-    width: '100%',
-  },
-});
+import AppSvgIcon from '../AppSvgIcon';
 
 const KakaoLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
   const onPress = useCallback(async () => {
@@ -66,17 +45,6 @@ const KakaoLogin = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
     }
   }, [onAuth]);
 
-  return (
-    <View style={styles.container}>
-      <AppButton
-        iconName="kakaoLogin"
-        title={i18n.t('socialLogin:kakao')}
-        titleStyle={{...appStyles.medium16, marginLeft: 5, color: colors.black}}
-        viewStyle={styles.viewStyle}
-        style={styles.btnStyle}
-        onPress={onPress}
-      />
-    </View>
-  );
+  return <AppSvgIcon name="kakaoNew" onPress={onPress} />;
 };
 export default memo(KakaoLogin);
