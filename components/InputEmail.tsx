@@ -19,6 +19,9 @@ import {API} from '@/redux/api';
 import AppIcon from './AppIcon';
 import DomainListModal from './DomainListModal';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   row: {
@@ -32,7 +35,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 3,
     borderColor: colors.lightGrey,
-    paddingLeft: 16,
+    paddingLeft: isIOS ? 16 : 14,
     height: 50,
   },
   textInput: {
