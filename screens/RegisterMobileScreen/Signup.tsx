@@ -37,7 +37,7 @@ import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import {LinkModelState} from '@/redux/modules/link';
 import ScreenHeader from '@/components/ScreenHeader';
-import DomainListModal, {emailDomainList} from '@/components/DomainListModal';
+import {emailDomainList} from '@/components/DomainListModal';
 import ConfirmPolicy from './ConfirmPolicy';
 import AppSnackBar from '@/components/AppSnackBar';
 
@@ -171,7 +171,11 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
   useEffect(() => {
     if (kind === 'normal') {
       if (!email) {
-        emailRef?.current?.focus();
+        setTimeout(() => {
+          if (emailRef?.current) {
+            emailRef?.current?.focus();
+          }
+        }, 100);
       }
     }
   }, [email, kind]);
