@@ -3,6 +3,7 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   AppState,
   Image,
+  ImageBackground,
   Platform,
   Pressable,
   SafeAreaView,
@@ -176,6 +177,8 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [showSnackbar, setShowSnackbar] = useState('');
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
   const [isGetResult, setIsGetResult] = useState(false); // 모달창 뜨고 쿠폰함 바로가기 보여주기용
+
+  const {type} = route?.params;
 
   const appState = useRef('unknown');
 
@@ -493,59 +496,93 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       return <RenderLoadingLottery />;
     }
 
-    // 렌더링 순서 변경, 잠시 다른 화면이 뜨는 현상이 있음.
-
-    if (!phase?.text && !isHistory)
-      return <RenderBeforeLottery count={fortune?.count} onClick={onClick} />;
+    if (phase?.text || isHistory) {
+      return (
+        <>
+          <LinearGradient
+            // Background Linear Gradient
+            colors={GRADIENT_COLOR_LIST[screenNum]}
+            style={styles.gradientContainer}
+          />
+          {renderAfterLottery()}
+        </>
+      );
+    }
 
     return (
-      <>
-        <LinearGradient
-          // Background Linear Gradient
-          colors={GRADIENT_COLOR_LIST[screenNum]}
-          style={styles.gradientContainer}
-        />
-        {renderAfterLottery()}
-      </>
+      <RenderBeforeLottery
+        type={type}
+        count={fortune?.count}
+        onClick={onClick}
+      />
     );
   }, [
-    fortune,
+    fortune?.count,
     isHistory,
     isLoading,
     onClick,
     phase?.text,
     renderAfterLottery,
+    type,
     screenNum,
   ]);
+
+  const renderHeader = useCallback(() => {
+    return (
+      <>
+        {!isLoading && (
+          <ScreenHeader
+            // backHandler={backHandler}
+            headerStyle={{backgroundColor: 'transparent', zIndex: 10}}
+            isStackTop
+            renderRight={
+              <AppSvgIcon
+                name="closeModal"
+                style={styles.btnCnter}
+                onPress={() => {
+                  navigation.popToTop();
+                }}
+              />
+            }
+          />
+        )}
+      </>
+    );
+  }, [isLoading, navigation]);
+
+  const renderByType = useCallback(() => {
+    if (type === 'draft') {
+      return (
+        <ImageBackground
+          resizeMode="cover"
+          source={require('@/assets/images/esim/lotteryBackground.png')}
+          style={{flex: 1}}>
+          {renderHeader()}
+
+          {/* // 메인화면 */}
+          {renderBody()}
+        </ImageBackground>
+      );
+    }
+    return (
+      <>
+        {renderHeader()}
+
+        {/* // 메인화면 */}
+        {renderBody()}
+      </>
+    );
+  }, [renderBody, renderHeader, type]);
 
   return (
     <SafeAreaView style={styles.container}>
       {shareView()}
-      {!isLoading && (
-        <ScreenHeader
-          // backHandler={backHandler}
-          headerStyle={{backgroundColor: 'transparent', zIndex: 10}}
-          isStackTop
-          renderRight={
-            <AppSvgIcon
-              name="closeModal"
-              style={styles.btnCnter}
-              onPress={() => {
-                navigation.popToTop();
-              }}
-            />
-          }
-        />
-      )}
-      {/* // 메인화면 */}
-      {renderBody()}
-
+      {renderByType()}
       <LotteryModal
         visible={showCouponModal}
         coupon={coupon}
         onClose={() => setShowCouponModal(false)}
       />
-
       {/* 공유 어떻게 할지 정해지면 props 수정 필요 */}
       <LotteryShareModal
         captureRef={ref}
@@ -561,7 +598,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           setShowShareModal(false);
         }}
       />
-
       <AppSnackBar
         visible={showSnackbar !== ''}
         onClose={() => setShowSnackbar('')}

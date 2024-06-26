@@ -124,17 +124,23 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
         orderId: draftOrder?.orderId,
         token,
       })
-      .then((r) => {
+      .then(async (r) => {
         action.order.subsReload({
           iccid: iccid!,
           token: token!,
           hidden: false,
         });
-        action.account.checkLottery({iccid, token, prompt: 'check'});
+        await action.account.checkLottery({
+          iccid,
+          token,
+          prompt: 'check',
+        });
 
         if (draftOrder?.orderType === 'refundable') {
           // 바로 운세뽑기로 이동
-          navigation.navigate('Lottery');
+          navigation.navigate('Lottery', {
+            type: 'draft',
+          });
         } else {
           // 근데 발권은 refundable만 되니까 발권 완료 페이지는 삭제되는건가?
           // 확인 후 삭제

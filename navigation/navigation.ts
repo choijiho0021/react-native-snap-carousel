@@ -189,7 +189,9 @@ export type HomeStackParamList = {
     chargeablePeriod: string;
     isChargeable: boolean;
   };
-  Lottery: {count: number; fortune?: Fortune; onPress: (v: number) => void};
+  Lottery: {
+    type: 'draft' | 'history';
+  };
   ChargeDetail: {
     data: RkbProduct;
     chargeablePeriod: string;
