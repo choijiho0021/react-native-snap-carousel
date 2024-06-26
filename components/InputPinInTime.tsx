@@ -25,6 +25,9 @@ import AppText from './AppText';
 import AppTextInput from './AppTextInput';
 import AppStyledText from './AppStyledText';
 import AppSvgIcon from './AppSvgIcon';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -34,8 +37,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   inputWrapper: {
-    paddingHorizontal: 16,
-    paddingVertical: 13,
+    paddingHorizontal: isIOS ? 16 : 14,
+    paddingVertical: isIOS ? 13 : 0,
     borderWidth: 1,
     borderRadius: 3,
     height: 50,
@@ -71,7 +74,7 @@ const styles = StyleSheet.create({
   },
   input: {
     ...appStyles.medium16,
-    lineHeight: 0,
+    lineHeight: isIOS ? 0 : 24,
     color: colors.black,
     flex: 1,
     textAlignVertical: 'center',

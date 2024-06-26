@@ -9,6 +9,9 @@ import validationUtil, {ValidationResult} from '@/utils/validationUtil';
 import AppText from './AppText';
 import AppButton from './AppButton';
 import AppTextInput from './AppTextInput';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   helpText: {
@@ -32,14 +35,14 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     height: 50,
     marginRight: 8,
+    paddingVertical: isIOS ? 13 : 0,
+    paddingHorizontal: isIOS ? 16 : 14,
   },
   input: {
     ...appStyles.medium16,
-    lineHeight: 0,
+    lineHeight: isIOS ? 0 : 24,
     color: colors.black,
-    paddingHorizontal: 16,
     marginRight: 20,
-    paddingVertical: 13,
     textAlignVertical: 'center',
     flex: 1,
   },
