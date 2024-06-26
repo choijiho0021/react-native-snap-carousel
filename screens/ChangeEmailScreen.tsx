@@ -1,6 +1,6 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -26,8 +26,7 @@ import Env from '@/environment';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import ScreenHeader from '@/components/ScreenHeader';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import InputEmail from '@/components/InputEmail';
-import DomainListModal from '@/components/DomainListModal';
+import InputEmail, {InputEmailRef} from '@/components/InputEmail';
 
 const {isIOS} = Env.get();
 
@@ -113,6 +112,7 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
 }) => {
   const [newEmail, setNewEmail] = useState<string>('');
   const [domain, setDomain] = useState('');
+  const emailRef = useRef<InputEmailRef>(null);
 
   const changeEmail = useCallback(() => {
     actions.account.changeEmail(newEmail).then((rsp) => {
@@ -153,6 +153,7 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
           </AppText>
 
           <InputEmail
+            inputRef={emailRef}
             currentEmail={email}
             domain={domain}
             onChange={setNewEmail}
