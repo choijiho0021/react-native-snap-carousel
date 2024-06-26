@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
   textInput: {
     ...appStyles.normal14Text,
     lineHeight: 20,
+    textAlignVertical: 'top',
   },
   noteTitle: {
     display: 'flex',
