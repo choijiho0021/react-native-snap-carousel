@@ -338,7 +338,7 @@ const InputPinInTime: React.FC<
             .toString()
             .padStart(2, '0')}`}
         </AppText>
-      ) : referrer ? (
+      ) : referrer && !showHelpBox ? (
         fromNaver ? (
           <View style={styles.referrerNaver}>
             <AppSvgIcon name="naverIconNew" />
