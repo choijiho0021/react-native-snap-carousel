@@ -4351,6 +4351,17 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  goToDown: [
+    <Svg
+      width="44"
+      height="44"
+      viewBox="0 0 44 44"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect x="2" y="2" width="40" height="40" rx="20" fill="#fff" />
+      <Path d="m14 20 8 8 8-8" stroke="#2C2C2C" strokeLinecap="round" />
+    </Svg>,
+  ],
   applepay: [
     <Svg
       width="99"
