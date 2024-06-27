@@ -1232,6 +1232,7 @@
 
   "userGuide:modal:title": "Can I pre-register\nthe eSIM product in Korea?",
   "userGuide:modal:body": "Yes, of course!\nExcept for some products below,\n<b>Registration is available in Korea</b>.",
+  "userGuide:modal:body:empty": "현재 상품 리스트를 가져올 수 없습니다.\n잠시 후 다시 시도해 주세요.",
 
   "userGuide:modal:notice:title": "Local Registered Product",
   "userGuide:modal:notice:list1": "The above product starts to be used immediately <b>upon product registration in Korea</b>, and <b>the period of use may be exhausted.</b>",
