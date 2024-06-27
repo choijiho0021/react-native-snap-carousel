@@ -575,7 +575,8 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   }, [renderBody, renderHeader, type]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={{marginHorizontal: type === 'draft' ? 0 : 20, flex: 1}}>
       {shareView()}
       {renderByType()}
       <LotteryModal

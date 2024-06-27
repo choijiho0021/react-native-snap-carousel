@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   },
   btnLotteryDraft: {
     width: windowWidth - 40,
-    left: 20,
+    // left: 20,
     bottom: 16,
     position: 'absolute',
     paddingHorizontal: 20,
