@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     paddingHorizontal: 20,
     paddingTop: 28,
+    borderRadius: 3,
     ...Platform.select({
       ios: {
         shadowColor: 'rgb(52, 62, 95)',
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
     }),
   },
   title: {
-    ...appStyles.semiBold20Text,
+    ...appStyles.bold20Text,
     lineHeight: 24,
     marginBottom: 16,
     color: colors.black,
@@ -71,6 +72,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     backgroundColor: colors.whiteTwo,
     marginVertical: 5,
+    borderRadius: 3,
   },
   copyBoxTitle: {
     ...appStyles.normal16Text,
@@ -94,14 +96,20 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: colors.clearBlue,
+    borderRadius: 2,
     paddingVertical: 13,
     paddingHorizontal: 13,
     marginHorizontal: 20,
   },
   qrText: {
     ...appStyles.normal16Text,
-    lineHeight: 20,
+    lineHeight: 22,
     color: colors.black,
+  },
+  qrTextBold: {
+    ...appStyles.normal16Text,
+    lineHeight: 22,
+    color: colors.clearBlue,
   },
   codeContent: {
     flexDirection: 'row',
@@ -136,7 +144,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   cardCheckSubTitle: {
-    ...appStyles.robotoSemiBold16Text,
+    ...appStyles.semiBold16Text,
+    lineHeight: 22,
     marginTop: 24,
     marginBottom: 16,
   },
@@ -170,13 +179,14 @@ const styles = StyleSheet.create({
   },
   oneTouchTxt: {
     ...appStyles.semiBold16Text,
+    lineHeight: 24,
+    letterSpacing: -0.16,
     width: '100%',
     color: colors.white,
     textAlign: 'center',
   },
   oneTouchReg: {
     marginTop: 24,
-    height: 40,
     backgroundColor: colors.clearBlue,
     paddingVertical: 8,
     borderRadius: 3,
@@ -210,6 +220,15 @@ const styles = StyleSheet.create({
     ...appStyles.medium14,
     marginRight: 20,
   },
+  cardCheckTitleTxt: {
+    ...appStyles.bold20Text,
+    paddingHorizontal: 20,
+    lineHeight: 24,
+  },
+  cardCheckBodyTxt: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 22,
+  },
 });
 
 type ParamList = {
@@ -231,7 +250,7 @@ const showQR = (subs: RkbSubscription) => (
         <AppStyledText
           textStyle={styles.qrText}
           text={i18n.t('esim:showQR:body_new')}
-          format={{b: {...appStyles.normal16Text, color: colors.clearBlue}}}
+          format={{b: styles.qrTextBold}}
         />
         <View style={styles.center}>
           <QRCode value={subs.qrCode} size={149} />
@@ -246,12 +265,7 @@ const esimManualInputInfo = () => (
     <AppStyledText
       textStyle={styles.qrText}
       text={i18n.t('esim:manualInput:body_new')}
-      format={{
-        b: {
-          ...appStyles.normal16Text,
-          color: colors.clearBlue,
-        },
-      }}
+      format={{b: styles.qrTextBold}}
     />
   </View>
 );
@@ -432,7 +446,7 @@ const QrInfoScreen = () => {
             <AppStyledText
               textStyle={styles.qrText}
               text={i18n.t('esim:oneTouch:txt')}
-              format={{b: {...appStyles.normal16Text, color: colors.clearBlue}}}
+              format={{b: styles.qrTextBold}}
             />
           </View>
           <AppIcon name="oneTouch" />
@@ -452,11 +466,7 @@ const QrInfoScreen = () => {
     () => (
       <View style={{...styles.box, paddingHorizontal: 0}}>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <AppText
-            style={[
-              appStyles.bold20Text,
-              {marginTop: 4, paddingHorizontal: 20},
-            ]}>
+          <AppText style={styles.cardCheckTitleTxt}>
             {i18n.t('qrInfo:cardCheck:title')}
           </AppText>
           {['R', 'E', 'DE', 'D'].includes(cardState) && (
@@ -476,10 +486,11 @@ const QrInfoScreen = () => {
                 style={{marginRight: 2}}
               />
               <AppText
-                style={[
-                  appStyles.bold16Text,
-                  {color: stateColor, marginRight: 20},
-                ]}>
+                style={{
+                  ...styles.cardCheckBodyTxt,
+                  color: stateColor,
+                  marginRight: 20,
+                }}>
                 {i18n.t(`qrInfo:state:${cardState}`)}
               </AppText>
             </View>
