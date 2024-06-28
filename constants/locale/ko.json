@@ -682,6 +682,7 @@
   "esim:oneTouch": "원터치 등록",
   "esim:oneTouch:txt": "간편하게 터치 한 번으로!\n<b>클릭하면</b> 사용 중인 단말에 <b>eSIM이 즉시 등록돼요.</b>",
   "esim:oneTouch:reg": "원터치 등록하기",
+  "esim:oneTouch:needUpdate": "iOS 17.4 이상 버전이 설치되어 있는 단말에서만 사용할 수 있는 기능입니다.",
   "esim:smdp": "SM-DP+주소",
   "esim:actCode": "활성화 코드",
   "esim:iccid": "ICCID",
