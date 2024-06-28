@@ -102,27 +102,23 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
   const navigation = useNavigation();
   const [couponId, setCouponId] = useState(couponToApply);
 
-  const remainTime = useCallback((endDate?: Moment) => {
-    return Math.floor(endDate?.diff(moment(), 'days', true) || 0);
-  }, []);
+  const couponList = useMemo(() => {
+    if (!promo) return [];
 
-  const couponList = useMemo(
-    () =>
-      promo
-        ?.map((p) => {
-          return {
-            ...myCoupon.find((c) => c.id === p.coupon_id),
-            adj: p?.adj?.value || 0,
-          };
-        })
-        .filter((c) => !!c)
-        .sort((a, b) => {
-          if (a?.adj > b?.adj) return 1;
-          if (a?.adj < b?.adj) return -1;
-          return remainTime(a?.endDate) > remainTime(b?.endDate) ? 1 : -1;
-        }) || [],
-    [myCoupon, promo, remainTime],
-  );
+    return myCoupon
+      ?.map((c) => {
+        const p = promo.find((p) => p.promo_id === c.promoId);
+
+        return {
+          ...c,
+          adj: p?.adj?.value || 0,
+        };
+      })
+      .filter((c) => c.adj !== 0)
+      .sort((a, b) => {
+        return a?.adj > b?.adj ? 1 : -1;
+      });
+  }, [myCoupon, promo]);
 
   const dotLine = useCallback(
     () => (
@@ -158,6 +154,7 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
     ),
     [couponId, dotLine],
   );
+
   const renderListHeader = useCallback(
     () => (
       <View style={styles.header}>
