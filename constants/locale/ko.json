@@ -682,6 +682,7 @@
   "esim:oneTouch": "원터치 등록",
   "esim:oneTouch:txt": "간편하게 터치 한 번으로!\n<b>클릭하면</b> 사용 중인 단말에 <b>eSIM이 즉시 등록돼요.</b>",
   "esim:oneTouch:reg": "원터치 등록하기",
+  "esim:oneTouch:needUpdate": "iOS 17.4 이상 버전이 설치되어 있는 단말에서만 사용할 수 있는 기능입니다.",
   "esim:smdp": "SM-DP+주소",
   "esim:actCode": "활성화 코드",
   "esim:iccid": "ICCID",
@@ -781,6 +782,9 @@
   "esim:lottery:coupon:cnt": "열어보지 않은 쿠폰이 %d개 있네요.\n당첨 여부를 확인해보세요!",
   "esim:lottery:button": "여행 운세 및 랜덤 쿠폰 뽑기",
   "esim:lottery:notice:dot": "\u00B7",
+
+  "esim:lottery:draft:text1": "발권 완료되었습니다.",
+  "esim:lottery:draft:text2": "상품을 기다리는 동안 ,\n여행 운세를 점쳐드릴게요 :)",
 
   "esim:lottery:notice1": "쿠폰 당첨 기회는 발권당 1번 부여됩니다.",
 

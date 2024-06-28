@@ -50,7 +50,9 @@ const LotteryButton: React.FC<LotteryButtonProps> = ({
   }, [isPending, subsData]);
 
   const navigateLottery = useCallback(() => {
-    navigation.navigate('Lottery');
+    navigation.navigate('Lottery', {
+      type: 'history',
+    });
   }, [navigation]);
 
   // 운세 문구가 있지만 추첨권이 0개인 경우 다시보기

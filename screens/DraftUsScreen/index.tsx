@@ -170,7 +170,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
         imei2: deviceData.imei2,
         token,
       })
-      .then((result) => {
+      .then(async (result) => {
         if (result?.payload?.result !== 0)
           AppAlert.info(
             [api.E_INVALID_PARAMETER, api.E_RESOURCE_NOT_FOUND].includes(
@@ -192,12 +192,18 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
             hidden: false,
           });
 
-          action.account.checkLottery({iccid, token, prompt: 'check'});
+          await action.account.checkLottery({
+            iccid,
+            token,
+            prompt: 'check',
+          });
 
           if (draftOrder?.orderType === 'refundable') {
             // 바로 운세뽑기로 이동
 
-            navigation.navigate('Lottery');
+            navigation.navigate('Lottery', {
+              type: 'draft',
+            });
           } else {
             // 근데 발권은 refundable만 되니까 발권 완료 페이지는 삭제되는건가?
             navigation.navigate('DraftResult', {

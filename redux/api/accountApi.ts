@@ -28,6 +28,7 @@ export type RkbCoupon = {
   prDesc: string;
   startDate: moment.Moment;
   endDate: moment.Moment;
+  promoId: string;
   offer: {
     percentage?: string;
     amount?: Currency;
@@ -118,6 +119,7 @@ const toCoupon = (
     pr_desc: string;
     start_date: string;
     end_date: string;
+    promo_id: string;
     offer: {
       percentage?: string;
       amount?: {
@@ -156,6 +158,7 @@ const toCoupon = (
             startDate: item.start_date ? moment(item.start_date) : undefined,
             endDate: item.end_date ? moment(item.end_date) : undefined,
             offer: {percentage: p, amount: a},
+            promoId: item.promo_id,
           } as RkbCoupon;
         })
         .filter(
