@@ -13,6 +13,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 import QRCode from 'react-native-qrcode-svg';
 import _ from 'underscore';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import DeviceInfo from 'react-native-device-info';
 import {colors} from '@/constants/Colors';
 import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
@@ -27,6 +28,8 @@ import {API} from '@/redux/api';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppIcon from '@/components/AppIcon';
 import TabBar from './CountryScreen/TabBar';
+import {utils} from '@/utils/utils';
+import AppModal from '@/components/AppModal';
 
 const {isIOS} = Env.get();
 const Tab = createMaterialTopTabNavigator();
@@ -113,6 +116,7 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: colors.clearBlue,
     justifyContent: 'center',
+    borderRadius: 3,
   },
   checkBtnTxt: {
     ...appStyles.semiBold16Text,
@@ -175,6 +179,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
     backgroundColor: colors.clearBlue,
     paddingVertical: 8,
+    borderRadius: 3,
   },
   oneTouchInfo: {
     flexDirection: 'row',
@@ -256,6 +261,11 @@ const QrInfoScreen = () => {
   const [showBtn, setShowBtn] = useState(true);
   const [cardState, setCardState] = useState<CardState>('N');
   const [isFail, setIsFail] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const tabList = useMemo(
+    () => (isIOS ? ['oneTouch', 'qr', 'manual'] : ['qr', 'manual']),
+    [],
+  );
   const oneTouchLink = useMemo(
     () =>
       `https://esimsetup.apple.com/esim_qrcode_provisioning?carddata=LPA:1$${params.mainSubs?.smdpAddr}$${params.mainSubs?.actCode}`,
@@ -395,6 +405,19 @@ const QrInfoScreen = () => {
     ],
   );
 
+  const onPressOnetouch = useCallback(() => {
+    const osVersion = utils.stringToNumber(DeviceInfo.getSystemVersion()) || 0;
+    if (osVersion >= 17.4) {
+      Linking.openURL(oneTouchLink);
+    } else {
+      setVisible(true);
+      // console.log('aaaaa osVersion', osVersion);
+      // AppAlert.info(i18n.t('esim:oneTouch:needUpdate'), '', () => {
+      //   console.log('aaaaa osVersion', osVersion);
+      // });
+    }
+  }, [oneTouchLink]);
+
   const renderOneTouch = useCallback(
     () => (
       <View style={styles.modalBody}>
@@ -410,16 +433,14 @@ const QrInfoScreen = () => {
           <AppIcon name="oneTouch" />
         </View>
 
-        <Pressable
-          onPress={() => Linking.openURL(oneTouchLink)}
-          style={styles.oneTouchReg}>
+        <Pressable onPress={onPressOnetouch} style={styles.oneTouchReg}>
           <AppText style={styles.oneTouchTxt}>
             {i18n.t('esim:oneTouch:reg')}
           </AppText>
         </Pressable>
       </View>
     ),
-    [oneTouchLink],
+    [onPressOnetouch],
   );
 
   const renderCheckReg = useCallback(
@@ -576,7 +597,7 @@ const QrInfoScreen = () => {
         tabBar={(props) => <TabBar {...props} />}
         screenOptions={{animationEnabled: false, swipeEnabled: false}}
         sceneContainerStyle={{backgroundColor: colors.white}}>
-        {['oneTouch', 'qr', 'manual'].map((k) => (
+        {tabList.map((k) => (
           <Tab.Screen
             key={k}
             name={k}
@@ -591,7 +612,7 @@ const QrInfoScreen = () => {
         ))}
       </Tab.Navigator>
     );
-  }, [renderTab]);
+  }, [renderTab, tabList]);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
@@ -604,6 +625,12 @@ const QrInfoScreen = () => {
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}
         textMessage={i18n.t('esim:copyMsg')}
+      />
+      <AppModal
+        title={i18n.t('esim:oneTouch:needUpdate')}
+        type="info"
+        onOkClose={() => setVisible(false)}
+        visible={visible}
       />
     </SafeAreaView>
   );
