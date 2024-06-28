@@ -4351,6 +4351,17 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  goToDown: [
+    <Svg
+      width="44"
+      height="44"
+      viewBox="0 0 44 44"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect x="2" y="2" width="40" height="40" rx="20" fill="#fff" />
+      <Path d="m14 20 8 8 8-8" stroke="#2C2C2C" strokeLinecap="round" />
+    </Svg>,
+  ],
   applepay: [
     <Svg
       width="99"
@@ -4377,6 +4388,23 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         fillRule="evenodd"
         clipRule="evenodd"
         d="M8 .667a6 6 0 0 0-6 6v4.666l-.297.445a1 1 0 0 0 .832 1.555h10.93a1 1 0 0 0 .832-1.555L14 11.333V6.666a6 6 0 0 0-6-6z"
+        fill="#FFC82D"
+      />
+    </Svg>,
+  ],
+
+  bell24: [
+    <Svg
+      width="25"
+      height="24"
+      viewBox="0 0 25 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="12.5" cy="20" r="3" fill="#EE4423" />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12.5 1a9 9 0 0 0-9 9v7l-.964 1.445A1 1 0 0 0 3.368 20h18.263a1 1 0 0 0 .832-1.555L21.5 17v-7a9 9 0 0 0-9-9z"
         fill="#FFC82D"
       />
     </Svg>,
