@@ -54,13 +54,18 @@ const styles = StyleSheet.create({
     // height: esimGlobal ? 120 : 100,
     marginTop: 4,
     paddingHorizontal: 20,
-    paddingVertical: 14,
+    paddingVertical: 16,
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
+  iconFrame: {
+    display: 'flex',
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 6,
+  },
   title: {
-    marginBottom: 11,
-    marginTop: 5,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -70,17 +75,19 @@ const styles = StyleSheet.create({
     letterSpacing: -0.16,
   },
   notiText: {
-    width: '90%',
-    // height: 98,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 6,
+    flex: 1,
   },
   body: {
     ...appStyles.medium14,
-    // height: 48,
     width: '100%',
     lineHeight: 22,
     color: colors.black,
   },
   icon: {
+    marginLeft: 16,
     justifyContent: 'center',
     alignItems: 'flex-end',
     width: 10,
@@ -96,6 +103,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 32,
     gap: 4,
+  },
+  bottomText: {
+    ...appStyles.medium14,
+    lineHeight: 22,
+    color: colors.warmGrey,
   },
 });
 
@@ -178,12 +190,13 @@ const NotiListItem0 = ({
           },
         ]}>
         {/* icon */}
-        <AppIcon
-          key="icon"
-          name={getIconName(item.notiType || '')}
-          size={10}
-          style={{marginTop: 7, marginRight: 6}}
-        />
+        <View style={styles.iconFrame}>
+          <AppIcon
+            key="icon"
+            name={getIconName(item.notiType || '')}
+            size={10}
+          />
+        </View>
         <View key="notitext" style={styles.notiText}>
           <View style={styles.title}>
             <AppText
@@ -203,17 +216,12 @@ const NotiListItem0 = ({
               (item.summary || item.body)?.replace(/\n{1,}/g, '\n'),
             )}
           </AppText>
-          <AppText
-            key="titleText"
-            style={[
-              appStyles.medium14,
-              {color: colors.warmGrey, marginTop: 6},
-            ]}>
+          <AppText key="titleText" style={styles.bottomText}>
             {formatNotificationDate(item.created)}
           </AppText>
         </View>
         <View key="iconview" style={styles.icon}>
-          <AppIcon key="icon" name="iconArrowRight" size={10} />
+          <AppIcon key="icon" name="rightArrow10" size={10} />
         </View>
       </View>
     </Pressable>
