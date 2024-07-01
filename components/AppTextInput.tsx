@@ -6,6 +6,7 @@ const AppTextInput = React.forwardRef<
   any,
   PropsWithChildren<TextInputProps> & {
     containerStyle?: ViewStyle;
+    cancelButtonStyle?: ViewStyle;
     showCancel?: boolean;
     onCancel?: () => void;
   }
@@ -17,6 +18,7 @@ const AppTextInput = React.forwardRef<
       value,
       onCancel,
       containerStyle,
+      cancelButtonStyle,
       ...props
     },
     ref,
@@ -40,7 +42,7 @@ const AppTextInput = React.forwardRef<
           />
           {value && value.length > 0 && (
             <AppButton
-              style={{paddingHorizontal: 18}}
+              style={cancelButtonStyle || {paddingHorizontal: 18}}
               iconName="btnSearchCancel"
               onPress={() => onCancel?.()}
             />

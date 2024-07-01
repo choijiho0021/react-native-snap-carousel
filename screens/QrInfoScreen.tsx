@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   cardCheckSubTitle: {
-    ...appStyles.semiBold16Text,
+    ...appStyles.normal16Text,
     lineHeight: 22,
     marginBottom: 16,
   },

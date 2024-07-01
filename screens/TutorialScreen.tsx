@@ -267,7 +267,7 @@ const TutorialScreen: React.FC<TutorialScreenProps> = (props) => {
                   styles.reasonButton,
                   {
                     backgroundColor: colors.clearBlue,
-                    borderColor: colors.clearBlue,
+                    borderWidth: 0,
                   },
                 ]}
                 title={i18n.t('tutorial:close')}
