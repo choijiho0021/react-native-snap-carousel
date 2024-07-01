@@ -54,6 +54,8 @@ const NaverLoginButton = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
       }
     } catch (error) {
       console.log('@@@ naver login failed', error);
+    } finally {
+      NaverLogin.logout();
     }
   }, [onAuth]);
 
