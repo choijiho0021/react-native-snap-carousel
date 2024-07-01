@@ -1053,6 +1053,7 @@
 
   "pym:card:sel": "카드 선택",
   "pym:card:noSelect": "결제에 사용할 카드를 선택해주세요.",
+  "pym:card:noSelect:small": "사용할 카드를 선택해 주세요.",
   "pym:card01": "하나카드",
   "pym:card02": "우리카드",
   "pym:card03": "롯데카드",
@@ -1169,6 +1170,7 @@
   "pym:deductAll": "모두 사용",
 
   "pym:invite:title": "더 할인받고 구매하려면?!",
+  "pym:invite:title:small": "더 할인받으려면?!",
   "pym:invite": "친구 초대",
 
   "pym:method:vbank": "무통장 입금 (가상 계좌)",

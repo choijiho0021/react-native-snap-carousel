@@ -12,6 +12,7 @@ import {PaymentParams} from '@/navigation/navigation';
 import DropDownHeader from '@/screens/PymMethodScreen/DropDownHeader';
 import AppSvgIcon from '../AppSvgIcon';
 import {Currency} from '@/redux/api/productApi';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   container: {
@@ -118,7 +119,9 @@ const PymMethod: React.FC<PymMethodProps> = ({
       <View>
         <DropDownButton
           title={i18n.t(
-            value?.startsWith('card') ? `pym:${value}` : 'pym:card:noSelect',
+            value?.startsWith('card')
+              ? `pym:${value}`
+              : `pym:card:noSelect${isDeviceSize('small') ? ':small' : ''}`,
           )}
           onPress={disabled ? () => {} : () => onPress('card')}
         />
