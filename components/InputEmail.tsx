@@ -35,7 +35,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 3,
     borderColor: colors.lightGrey,
-    paddingLeft: isIOS ? 16 : 14,
+    paddingLeft: isIOS ? 12 : 10,
+
     height: 50,
   },
   textInput: {
@@ -159,9 +160,11 @@ const InputEmail: React.FC<InputEmailProps> = ({
     <View>
       <View style={styles.container}>
         <AppTextInput
-          showCancel
+          showCancel={focused}
+          cancelButtonStyle={{paddingLeft: 8}}
           containerStyle={{
             ...styles.wrapper,
+            paddingRight: 12,
             borderColor: focused ? colors.clearBlue : colors.lightGrey,
           }}
           style={[
