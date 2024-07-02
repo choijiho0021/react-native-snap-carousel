@@ -110,7 +110,7 @@ const ConfirmPolicy = ({
         label: i18n.t('cfm:mandatory') + i18n.t('cfm:contract'),
         param: {
           key: 'setting:contract',
-          title: i18n.t('cfm:contract'),
+          title: i18n.t('cfm:contract:title'),
           ...commonParam,
         },
       },
@@ -119,7 +119,7 @@ const ConfirmPolicy = ({
         label: i18n.t('cfm:mandatory') + i18n.t('cfm:personalInfo'),
         param: {
           key: 'setting:privacy',
-          title: i18n.t('cfm:personalInfo'),
+          title: i18n.t('cfm:personalInfo:title'),
           ...commonParam,
         },
       },
@@ -128,7 +128,7 @@ const ConfirmPolicy = ({
         label: i18n.t('cfm:optional') + i18n.t('cfm:marketing'),
         param: {
           key: 'mkt:agreement',
-          title: i18n.t('cfm:marketing'),
+          title: i18n.t('cfm:marketing:title'),
           ...commonParam,
         },
       },
