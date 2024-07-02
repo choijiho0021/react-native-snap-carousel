@@ -74,9 +74,7 @@ const RenderBeforeLottery: React.FC<RenderBeforeLotteryProps> = ({
   }, []);
 
   useEffect(() => {
-    // 적당한 화면 너비 찾아서 뺴야하는데..?
-
-    setShowButton(windowHeight - 853 > 0);
+    setShowButton(windowHeight - 900 > 0);
   }, []);
 
   const handleScroll = useCallback((event) => {
@@ -99,7 +97,6 @@ const RenderBeforeLottery: React.FC<RenderBeforeLotteryProps> = ({
           ref={scrollViewRef}
           onScroll={handleScroll}
           onLayout={(event) => {
-            console.log('@@@ event : ', event);
             handleScroll(event);
           }}
           scrollEventThrottle={16}
