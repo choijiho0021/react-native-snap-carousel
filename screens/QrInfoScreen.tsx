@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -7,7 +7,12 @@ import {
   Pressable,
   Linking,
 } from 'react-native';
-import {RouteProp, useRoute} from '@react-navigation/native';
+import {
+  RouteProp,
+  useFocusEffect,
+  useIsFocused,
+  useRoute,
+} from '@react-navigation/native';
 import Clipboard from '@react-native-community/clipboard';
 import {ScrollView} from 'react-native-gesture-handler';
 import QRCode from 'react-native-qrcode-svg';
@@ -284,6 +289,10 @@ const QrInfoScreen = () => {
     () => (isIOS ? ['oneTouch', 'qr', 'manual'] : ['qr', 'manual']),
     [],
   );
+  const oneTouchScrollRefs = useRef<ScrollView | null>();
+  const qrScrollRefs = useRef<ScrollView | null>();
+  const manualScrollRefs = useRef<ScrollView | null>();
+
   const oneTouchLink = useMemo(
     () =>
       `https://esimsetup.apple.com/esim_qrcode_provisioning?carddata=LPA:1$${params.mainSubs?.smdpAddr}$${params.mainSubs?.actCode}`,
@@ -298,6 +307,15 @@ const QrInfoScreen = () => {
     () => params.mainSubs.partner?.startsWith('cmi') || false,
     [params.mainSubs.partner],
   );
+
+  const scrollToEnd = (key: string) => {
+    if (key === 'oneTouch' && oneTouchScrollRefs.current)
+      oneTouchScrollRefs.current.scrollToEnd({animated: true});
+    if (key === 'qr' && qrScrollRefs.current)
+      qrScrollRefs.current.scrollToEnd({animated: true});
+    if (key === 'manual' && manualScrollRefs.current)
+      manualScrollRefs.current.scrollToEnd({animated: true});
+  };
 
   const getCardState = useCallback((state: string) => {
     switch (state) {
@@ -343,28 +361,6 @@ const QrInfoScreen = () => {
       return {};
     },
     [getCardState],
-  );
-
-  const renderInfo = useCallback(
-    (scrollRef) => (
-      <Pressable
-        style={styles.scrollBtn}
-        onPress={() => scrollRef?.current.scrollToEnd()}>
-        <AppSvgIcon name="qrInfoQuestion" style={{marginRight: 8}} />
-        <View style={styles.rowCenter}>
-          <AppText style={styles.scrollTxt1}>
-            {i18n.t('qrinfo:scrollTxt1')}
-          </AppText>
-          <AppText style={styles.scrollTxt2}>
-            {i18n.t('qrinfo:scrollTxt2')}
-          </AppText>
-        </View>
-        <View style={styles.rowRight}>
-          <AppIcon name="lower" />
-        </View>
-      </Pressable>
-    ),
-    [],
   );
 
   const copyToClipboard = useCallback((value?: string) => {
@@ -582,8 +578,16 @@ const QrInfoScreen = () => {
 
   const renderTab = useCallback(
     (key: string) => () => {
+      const setScrollRef = (ref, key) => {
+        if (ref) {
+          if (key === 'oneTouch') oneTouchScrollRefs.current = ref;
+          if (key === 'qr') qrScrollRefs.current = ref;
+          if (key === 'manual') manualScrollRefs.current = ref;
+        }
+      };
+
       return (
-        <ScrollView>
+        <ScrollView ref={(ref) => setScrollRef(ref, key)}>
           {key === 'manual' && renderManual()}
           {key === 'qr' && showQR(params.mainSubs)}
           {key === 'oneTouch' && renderOneTouch()}
@@ -613,7 +617,10 @@ const QrInfoScreen = () => {
       <Tab.Navigator
         initialRouteName="reg"
         tabBar={(props) => <TabBar {...props} />}
-        screenOptions={{animationEnabled: false, swipeEnabled: false}}
+        screenOptions={{
+          animationEnabled: false,
+          swipeEnabled: false,
+        }}
         sceneContainerStyle={{backgroundColor: colors.white}}>
         {tabList.map((k) => (
           <Tab.Screen
