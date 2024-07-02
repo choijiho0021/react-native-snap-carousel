@@ -6,12 +6,11 @@ import {
   check,
   openSettings,
 } from 'react-native-permissions';
+import ViewShot from 'react-native-view-shot';
 import utils from '@/redux/api/utils';
 import i18n from './i18n';
 import AppAlert from '@/components/AppAlert';
-import ViewShot from 'react-native-view-shot';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
-import {ToastAction} from '@/redux/modules/toast';
 
 const UniAsyncStorage =
   require('@react-native-community/async-storage').default;

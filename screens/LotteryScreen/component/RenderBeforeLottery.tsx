@@ -74,7 +74,7 @@ const RenderBeforeLottery: React.FC<RenderBeforeLotteryProps> = ({
   }, []);
 
   useEffect(() => {
-    setShowButton(windowHeight - 853 > 0);
+    setShowButton(windowHeight - 900 > 0);
   }, []);
 
   const handleScroll = useCallback((event) => {
@@ -97,7 +97,6 @@ const RenderBeforeLottery: React.FC<RenderBeforeLotteryProps> = ({
           ref={scrollViewRef}
           onScroll={handleScroll}
           onLayout={(event) => {
-            console.log('@@@ event : ', event);
             handleScroll(event);
           }}
           scrollEventThrottle={16}
@@ -134,19 +133,21 @@ const RenderBeforeLottery: React.FC<RenderBeforeLotteryProps> = ({
               ]}>
               {i18n.t('esim:lottery:title')}
             </AppText>
-            <AppStyledText
-              text={i18n
-                .t('esim:lottery:coupon:count')
-                .replace('$count', count.toString())}
-              textStyle={[
-                appStyles.bold18Text,
-                {color: colors.black, lineHeight: 26, marginTop: 16},
-              ]}
-              format={{
-                h: {color: colors.blue},
-              }}
-              numberOfLines={2}
-            />
+            {count > 1 && (
+              <AppStyledText
+                text={i18n
+                  .t('esim:lottery:coupon:count')
+                  .replace('$count', count.toString())}
+                textStyle={[
+                  appStyles.bold18Text,
+                  {color: colors.black, lineHeight: 26, marginTop: 16},
+                ]}
+                format={{
+                  h: {color: colors.blue},
+                }}
+                numberOfLines={2}
+              />
+            )}
           </View>
 
           <AppIcon
@@ -237,19 +238,21 @@ const RenderBeforeLottery: React.FC<RenderBeforeLotteryProps> = ({
             style={[appStyles.bold36Text, {color: colors.black, marginTop: 6}]}>
             {i18n.t('esim:lottery:title')}
           </AppText>
-          <AppStyledText
-            text={i18n
-              .t('esim:lottery:coupon:count')
-              .replace('$count', count.toString())}
-            textStyle={[
-              appStyles.bold18Text,
-              {color: colors.black, lineHeight: 26, marginTop: 16},
-            ]}
-            format={{
-              h: {color: colors.blue},
-            }}
-            numberOfLines={2}
-          />
+          {count > 1 && (
+            <AppStyledText
+              text={i18n
+                .t('esim:lottery:coupon:count')
+                .replace('$count', count.toString())}
+              textStyle={[
+                appStyles.bold18Text,
+                {color: colors.black, lineHeight: 26, marginTop: 16},
+              ]}
+              format={{
+                h: {color: colors.blue},
+              }}
+              numberOfLines={2}
+            />
+          )}
         </View>
 
         <AppIcon

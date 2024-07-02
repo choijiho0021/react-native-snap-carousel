@@ -23,6 +23,7 @@ import AppStyledText from '../AppStyledText';
 import AppSvgIcon from '../AppSvgIcon';
 import {navigate} from '@/navigation/navigation';
 import {useNavigation, useRoute} from '@react-navigation/native';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   row: {
@@ -328,7 +329,9 @@ const DiscountInfo: React.FC<DiscountProps> = ({
                 appStyles.semiBold16Text,
                 {color: colors.clearBlue, lineHeight: 24},
               ]}>
-              {i18n.t('pym:invite:title')}
+              {i18n.t(
+                `pym:invite:title${isDeviceSize('small') ? ':small' : ''}`,
+              )}
             </AppText>
             <Image
               source={require('@/assets/images/esim/emojiMoney.png')}

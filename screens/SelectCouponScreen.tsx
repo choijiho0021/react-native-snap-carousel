@@ -6,10 +6,11 @@ import {
   View,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
-import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {memo, useCallback, useMemo, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
+import Svg, {Line} from 'react-native-svg';
 import {colors} from '@/constants/Colors';
 import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
@@ -20,19 +21,13 @@ import AppStyledText from '@/components/AppStyledText';
 import CouponItem from './CouponScreen/CouponItem';
 import {AccountModelState} from '@/redux/modules/account';
 import {RkbCoupon} from '@/redux/api/accountApi';
-import {
-  actions as toastActions,
-  Toast,
-  ToastAction,
-} from '@/redux/modules/toast';
+import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppText from '@/components/AppText';
 import {
   CartAction,
   actions as cartActions,
   CartModelState,
 } from '@/redux/modules/cart';
-import Svg, {Line} from 'react-native-svg';
-import moment, {Moment} from 'moment';
 
 const styles = StyleSheet.create({
   container: {
@@ -66,16 +61,6 @@ const styles = StyleSheet.create({
   noti: {
     ...appStyles.bold14Text,
     color: colors.clearBlue,
-  },
-  line: {
-    width: 1,
-    height: '100%',
-    marginHorizontal: 16,
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    borderColor: colors.gray4,
-    borderRadius: 1,
   },
   empty: {
     flex: 1,
