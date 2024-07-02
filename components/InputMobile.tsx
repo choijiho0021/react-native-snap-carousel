@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   },
   text: {
     ...appStyles.semiBold16Text,
-    color: colors.lightGrey,
+    color: colors.white,
     lineHeight: 24,
     letterSpacing: -0.16,
   },
