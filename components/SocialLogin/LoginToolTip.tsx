@@ -12,9 +12,10 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   triangle: {
+    width: 12,
     borderLeftWidth: 8,
     borderRightWidth: 8,
-    borderBottomWidth: 11,
+    borderBottomWidth: 12,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
   },

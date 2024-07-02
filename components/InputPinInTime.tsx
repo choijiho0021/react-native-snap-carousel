@@ -103,10 +103,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   triangle: {
-    width: 11,
+    width: 12,
     borderLeftWidth: 8,
     borderRightWidth: 8,
-    borderBottomWidth: 11,
+    borderBottomWidth: 12,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
     borderBottomColor: colors.black92,
