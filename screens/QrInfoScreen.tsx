@@ -146,7 +146,6 @@ const styles = StyleSheet.create({
   cardCheckSubTitle: {
     ...appStyles.normal16Text,
     lineHeight: 22,
-    marginTop: 24,
     marginBottom: 16,
   },
   scrollTxt1: {
@@ -430,10 +429,6 @@ const QrInfoScreen = () => {
       Linking.openURL(oneTouchLink);
     } else {
       setVisible(true);
-      // console.log('aaaaa osVersion', osVersion);
-      // AppAlert.info(i18n.t('esim:oneTouch:needUpdate'), '', () => {
-      //   console.log('aaaaa osVersion', osVersion);
-      // });
     }
   }, [oneTouchLink]);
 
@@ -498,7 +493,7 @@ const QrInfoScreen = () => {
         </View>
 
         <View style={styles.cardCheckTxt}>
-          <View>
+          <View style={{marginTop: 24}}>
             <AppStyledText
               text={i18n.t(`qrInfo:cardCheck:subTitle:${cardState}`)}
               textStyle={styles.cardCheckSubTitle}
@@ -530,7 +525,7 @@ const QrInfoScreen = () => {
               <View style={{height: 40}} />
             )}
           </View>
-          <AppIcon name={`DeviceReg${cardState}`} />
+          <AppIcon name={`DeviceReg${cardState}`} style={{marginTop: 24}} />
         </View>
         {(['R', 'E', 'DE', 'D'].includes(cardState) || isFail) && (
           <View style={styles.cardCheckDesc}>
