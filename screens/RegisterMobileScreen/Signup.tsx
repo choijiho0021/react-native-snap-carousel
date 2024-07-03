@@ -16,7 +16,11 @@ import {RouteProp} from '@react-navigation/native';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import AsyncStorage from '@react-native-community/async-storage';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppAlert from '@/components/AppAlert';
+import {
+  actions as toastActions,
+  ToastAction,
+  Toast,
+} from '@/redux/modules/toast';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import InputEmail, {InputEmailRef} from '@/components/InputEmail';
@@ -40,6 +44,7 @@ import ScreenHeader from '@/components/ScreenHeader';
 import {emailDomainList} from '@/components/DomainListModal';
 import ConfirmPolicy from './ConfirmPolicy';
 import AppSnackBar from '@/components/AppSnackBar';
+import AppAlert from '@/components/AppAlert';
 
 const styles = StyleSheet.create({
   title: {
@@ -128,6 +133,7 @@ type RegisterMobileScreenProps = {
   actions: {
     account: AccountAction;
     modal: ModalAction;
+    toast: ToastAction;
   };
 };
 
@@ -247,14 +253,11 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
 
       isValid = resp.result === 0;
       if (resp.result !== 0) {
-        // duplicated email error
-        if (
-          resp.result !== API.default.E_RESOURCE_NOT_FOUND ||
-          !resp.message?.includes('Duplicate')
-        ) {
-          // 정상이거나, duplicated email 인 경우는 화면 상태 갱신 필요
+        if (resp.message?.includes('Duplicate')) {
           throw new Error('Duplicated email');
         }
+
+        throw new Error('network error');
       }
 
       if (isValid) {
@@ -266,6 +269,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
           deviceModel,
           recommender,
         };
+
         const rsp = await API.User.signUp(payload);
 
         if (rsp.result === 0 && !_.isEmpty(rsp.objects)) {
@@ -283,16 +287,15 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
         }
       }
     } catch (err) {
-      console.log('sign up failed', err);
       if (err instanceof Error && err.message.includes('Duplicated')) {
-        AppAlert.info(i18n.t('reg:usingEmail'));
-      } else {
-        AppAlert.error(i18n.t('reg:fail'));
-      }
+        actions.toast.push('reg:usingEmail');
+      } else actions.toast.push(Toast.FAIL_NETWORK);
+      console.log('sign up failed', err);
     }
 
     setLoading(false);
   }, [
+    actions.toast,
     confirm.optional,
     deviceModel,
     email,
@@ -396,6 +399,7 @@ export default connect(
     actions: {
       account: bindActionCreators(accountActions, dispatch),
       modal: bindActionCreators(modalActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch),
     },
   }),
 )(SignupScreen);
