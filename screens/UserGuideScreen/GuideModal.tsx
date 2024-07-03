@@ -64,6 +64,16 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.black,
   },
+  emptyBody: {
+    paddingHorizontal: 8,
+    paddingVertical: 16,
+  },
+  emptyBodyText: {
+    ...appStyles.medium16,
+    lineHeight: 24,
+    textAlign: 'center',
+    color: colors.warmGrey,
+  },
   listBox: {
     marginTop: 12,
     paddingHorizontal: 8,
@@ -165,14 +175,22 @@ const GuideModal = ({
           />
 
           <View style={styles.noticeBox}>
-            <View
-              style={[styles.row, {alignItems: 'center', marginBottom: 10}]}>
+            <View style={[styles.row, {alignItems: 'center', marginBottom: 8}]}>
               <AppSvgIcon name="notice" />
               <AppText style={styles.noticeTitle}>
                 {i18n.t('userGuide:modal:notice:title')}
               </AppText>
             </View>
-            <AppText style={styles.noticeBody}>{localRegProdList}</AppText>
+            {localRegProdList ? (
+              <AppText style={styles.noticeBody}>{localRegProdList}</AppText>
+            ) : (
+              <View style={styles.emptyBody}>
+                <AppText style={styles.emptyBodyText}>
+                  {i18n.t('userGuide:modal:body:empty')}
+                </AppText>
+              </View>
+            )}
+
             <View style={styles.listBox}>
               {[1, 2].map((v) => renderNoticeText(v))}
             </View>

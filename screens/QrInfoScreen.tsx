@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -7,12 +7,18 @@ import {
   Pressable,
   Linking,
 } from 'react-native';
-import {RouteProp, useRoute} from '@react-navigation/native';
+import {
+  RouteProp,
+  useFocusEffect,
+  useIsFocused,
+  useRoute,
+} from '@react-navigation/native';
 import Clipboard from '@react-native-community/clipboard';
 import {ScrollView} from 'react-native-gesture-handler';
 import QRCode from 'react-native-qrcode-svg';
 import _ from 'underscore';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import DeviceInfo from 'react-native-device-info';
 import {colors} from '@/constants/Colors';
 import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
@@ -27,6 +33,8 @@ import {API} from '@/redux/api';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppIcon from '@/components/AppIcon';
 import TabBar from './CountryScreen/TabBar';
+import {utils} from '@/utils/utils';
+import AppModal from '@/components/AppModal';
 
 const {isIOS} = Env.get();
 const Tab = createMaterialTopTabNavigator();
@@ -39,6 +47,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     paddingHorizontal: 20,
     paddingTop: 28,
+    borderRadius: 3,
     ...Platform.select({
       ios: {
         shadowColor: 'rgb(52, 62, 95)',
@@ -55,7 +64,7 @@ const styles = StyleSheet.create({
     }),
   },
   title: {
-    ...appStyles.semiBold20Text,
+    ...appStyles.bold20Text,
     lineHeight: 24,
     marginBottom: 16,
     color: colors.black,
@@ -68,6 +77,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     backgroundColor: colors.whiteTwo,
     marginVertical: 5,
+    borderRadius: 3,
   },
   copyBoxTitle: {
     ...appStyles.normal16Text,
@@ -91,14 +101,20 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: colors.clearBlue,
+    borderRadius: 2,
     paddingVertical: 13,
     paddingHorizontal: 13,
     marginHorizontal: 20,
   },
   qrText: {
     ...appStyles.normal16Text,
-    lineHeight: 20,
+    lineHeight: 22,
     color: colors.black,
+  },
+  qrTextBold: {
+    ...appStyles.normal16Text,
+    lineHeight: 22,
+    color: colors.clearBlue,
   },
   codeContent: {
     flexDirection: 'row',
@@ -111,8 +127,8 @@ const styles = StyleSheet.create({
   checkBtn: {
     width: 120,
     height: 40,
-    backgroundColor: colors.clearBlue,
     justifyContent: 'center',
+    borderRadius: 3,
   },
   checkBtnTxt: {
     ...appStyles.semiBold16Text,
@@ -133,8 +149,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   cardCheckSubTitle: {
-    ...appStyles.robotoSemiBold16Text,
-    marginTop: 24,
+    ...appStyles.normal16Text,
+    lineHeight: 22,
     marginBottom: 16,
   },
   scrollTxt1: {
@@ -167,6 +183,8 @@ const styles = StyleSheet.create({
   },
   oneTouchTxt: {
     ...appStyles.semiBold16Text,
+    lineHeight: 24,
+    letterSpacing: -0.16,
     width: '100%',
     color: colors.white,
     textAlign: 'center',
@@ -175,6 +193,8 @@ const styles = StyleSheet.create({
     marginTop: 24,
     backgroundColor: colors.clearBlue,
     paddingVertical: 8,
+    borderRadius: 3,
+    justifyContent: 'center',
   },
   oneTouchInfo: {
     flexDirection: 'row',
@@ -200,6 +220,19 @@ const styles = StyleSheet.create({
     ...appStyles.bold18Text,
     color: colors.black,
   },
+  cardCheckDescTxt: {
+    ...appStyles.medium14,
+    marginRight: 20,
+  },
+  cardCheckTitleTxt: {
+    ...appStyles.bold20Text,
+    paddingHorizontal: 20,
+    lineHeight: 24,
+  },
+  cardCheckBodyTxt: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 22,
+  },
 });
 
 type ParamList = {
@@ -221,7 +254,7 @@ const showQR = (subs: RkbSubscription) => (
         <AppStyledText
           textStyle={styles.qrText}
           text={i18n.t('esim:showQR:body_new')}
-          format={{b: {...appStyles.normal16Text, color: colors.clearBlue}}}
+          format={{b: styles.qrTextBold}}
         />
         <View style={styles.center}>
           <QRCode value={subs.qrCode} size={149} />
@@ -236,12 +269,7 @@ const esimManualInputInfo = () => (
     <AppStyledText
       textStyle={styles.qrText}
       text={i18n.t('esim:manualInput:body_new')}
-      format={{
-        b: {
-          ...appStyles.normal16Text,
-          color: colors.clearBlue,
-        },
-      }}
+      format={{b: styles.qrTextBold}}
     />
   </View>
 );
@@ -256,6 +284,20 @@ const QrInfoScreen = () => {
   const [showBtn, setShowBtn] = useState(true);
   const [cardState, setCardState] = useState<CardState>('N');
   const [isFail, setIsFail] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const tabList = useMemo(
+    () => (isIOS ? ['oneTouch', 'qr', 'manual'] : ['qr', 'manual']),
+    [],
+  );
+  const canUseOneTouch = useMemo(
+    () => (utils.stringToNumber(DeviceInfo.getSystemVersion()) || 0) >= 17.4,
+    [],
+  );
+
+  const oneTouchScrollRefs = useRef<ScrollView | null>();
+  const qrScrollRefs = useRef<ScrollView | null>();
+  const manualScrollRefs = useRef<ScrollView | null>();
+
   const oneTouchLink = useMemo(
     () =>
       `https://esimsetup.apple.com/esim_qrcode_provisioning?carddata=LPA:1$${params.mainSubs?.smdpAddr}$${params.mainSubs?.actCode}`,
@@ -270,6 +312,15 @@ const QrInfoScreen = () => {
     () => params.mainSubs.partner?.startsWith('cmi') || false,
     [params.mainSubs.partner],
   );
+
+  const scrollToEnd = (key: string) => {
+    if (key === 'oneTouch' && oneTouchScrollRefs.current)
+      oneTouchScrollRefs.current.scrollToEnd({animated: true});
+    if (key === 'qr' && qrScrollRefs.current)
+      qrScrollRefs.current.scrollToEnd({animated: true});
+    if (key === 'manual' && manualScrollRefs.current)
+      manualScrollRefs.current.scrollToEnd({animated: true});
+  };
 
   const getCardState = useCallback((state: string) => {
     switch (state) {
@@ -315,28 +366,6 @@ const QrInfoScreen = () => {
       return {};
     },
     [getCardState],
-  );
-
-  const renderInfo = useCallback(
-    (scrollRef) => (
-      <Pressable
-        style={styles.scrollBtn}
-        onPress={() => scrollRef?.current.scrollToEnd()}>
-        <AppSvgIcon name="qrInfoQuestion" style={{marginRight: 8}} />
-        <View style={styles.rowCenter}>
-          <AppText style={styles.scrollTxt1}>
-            {i18n.t('qrinfo:scrollTxt1')}
-          </AppText>
-          <AppText style={styles.scrollTxt2}>
-            {i18n.t('qrinfo:scrollTxt2')}
-          </AppText>
-        </View>
-        <View style={styles.rowRight}>
-          <AppIcon name="lower" />
-        </View>
-      </Pressable>
-    ),
-    [],
   );
 
   const copyToClipboard = useCallback((value?: string) => {
@@ -404,33 +433,27 @@ const QrInfoScreen = () => {
             <AppStyledText
               textStyle={styles.qrText}
               text={i18n.t('esim:oneTouch:txt')}
-              format={{b: {...appStyles.normal16Text, color: colors.clearBlue}}}
+              format={{b: styles.qrTextBold}}
             />
           </View>
           <AppIcon name="oneTouch" />
         </View>
 
-        <Pressable
-          onPress={() => Linking.openURL(oneTouchLink)}
-          style={styles.oneTouchReg}>
+        <Pressable onPress={() => setVisible(true)} style={styles.oneTouchReg}>
           <AppText style={styles.oneTouchTxt}>
             {i18n.t('esim:oneTouch:reg')}
           </AppText>
         </Pressable>
       </View>
     ),
-    [oneTouchLink],
+    [],
   );
 
   const renderCheckReg = useCallback(
     () => (
       <View style={{...styles.box, paddingHorizontal: 0}}>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <AppText
-            style={[
-              appStyles.bold20Text,
-              {marginTop: 4, paddingHorizontal: 20},
-            ]}>
+          <AppText style={styles.cardCheckTitleTxt}>
             {i18n.t('qrInfo:cardCheck:title')}
           </AppText>
           {['R', 'E', 'DE', 'D'].includes(cardState) && (
@@ -450,10 +473,11 @@ const QrInfoScreen = () => {
                 style={{marginRight: 2}}
               />
               <AppText
-                style={[
-                  appStyles.bold16Text,
-                  {color: stateColor, marginRight: 20},
-                ]}>
+                style={{
+                  ...styles.cardCheckBodyTxt,
+                  color: stateColor,
+                  marginRight: 20,
+                }}>
                 {i18n.t(`qrInfo:state:${cardState}`)}
               </AppText>
             </View>
@@ -461,7 +485,7 @@ const QrInfoScreen = () => {
         </View>
 
         <View style={styles.cardCheckTxt}>
-          <View>
+          <View style={{marginTop: 24}}>
             <AppStyledText
               text={i18n.t(`qrInfo:cardCheck:subTitle:${cardState}`)}
               textStyle={styles.cardCheckSubTitle}
@@ -471,7 +495,14 @@ const QrInfoScreen = () => {
             {showBtn || loading ? (
               <Pressable
                 onPress={() => checkCmiInstall(params.mainSubs)}
-                style={styles.checkBtn}>
+                style={[
+                  styles.checkBtn,
+                  {
+                    backgroundColor: loading
+                      ? colors.dodgerBlue
+                      : colors.clearBlue,
+                  },
+                ]}>
                 <AppText style={styles.checkBtnTxt}>
                   {i18n.t(
                     loading
@@ -486,7 +517,7 @@ const QrInfoScreen = () => {
               <View style={{height: 40}} />
             )}
           </View>
-          <AppIcon name={`DeviceReg${cardState}`} />
+          <AppIcon name={`DeviceReg${cardState}`} style={{marginTop: 24}} />
         </View>
         {(['R', 'E', 'DE', 'D'].includes(cardState) || isFail) && (
           <View style={styles.cardCheckDesc}>
@@ -495,7 +526,7 @@ const QrInfoScreen = () => {
               style={{marginRight: 4, top: 2}}
             />
             <AppStyledText
-              textStyle={appStyles.medium14}
+              textStyle={styles.cardCheckDescTxt}
               text={i18n.t(
                 isFail
                   ? 'qrInfo:cardCheck:desc:fail'
@@ -543,8 +574,16 @@ const QrInfoScreen = () => {
 
   const renderTab = useCallback(
     (key: string) => () => {
+      const setScrollRef = (ref, key) => {
+        if (ref) {
+          if (key === 'oneTouch') oneTouchScrollRefs.current = ref;
+          if (key === 'qr') qrScrollRefs.current = ref;
+          if (key === 'manual') manualScrollRefs.current = ref;
+        }
+      };
+
       return (
-        <ScrollView>
+        <ScrollView ref={(ref) => setScrollRef(ref, key)}>
           {key === 'manual' && renderManual()}
           {key === 'qr' && showQR(params.mainSubs)}
           {key === 'oneTouch' && renderOneTouch()}
@@ -574,9 +613,12 @@ const QrInfoScreen = () => {
       <Tab.Navigator
         initialRouteName="reg"
         tabBar={(props) => <TabBar {...props} />}
-        screenOptions={{animationEnabled: false, swipeEnabled: false}}
+        screenOptions={{
+          animationEnabled: false,
+          swipeEnabled: false,
+        }}
         sceneContainerStyle={{backgroundColor: colors.white}}>
-        {['oneTouch', 'qr', 'manual'].map((k) => (
+        {tabList.map((k) => (
           <Tab.Screen
             key={k}
             name={k}
@@ -591,7 +633,7 @@ const QrInfoScreen = () => {
         ))}
       </Tab.Navigator>
     );
-  }, [renderTab]);
+  }, [renderTab, tabList]);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
@@ -604,6 +646,22 @@ const QrInfoScreen = () => {
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}
         textMessage={i18n.t('esim:copyMsg')}
+      />
+      <AppModal
+        title={i18n.t(
+          canUseOneTouch
+            ? 'esim:oneTouch:modal:txt'
+            : 'esim:oneTouch:needUpdate',
+        )}
+        type={canUseOneTouch ? 'normal' : 'info'}
+        onOkClose={() =>
+          canUseOneTouch ? Linking.openURL(oneTouchLink) : setVisible(false)
+        }
+        onCancelClose={() => setVisible(false)}
+        visible={visible}
+        okButtonTitle={i18n.t(canUseOneTouch ? 'esim:oneTouch:modal:ok' : 'ok')}
+        cancelButtonTitle={i18n.t('esim:oneTouch:modal:next')}
+        cancelButtonStyle={{color: colors.black, marginRight: 60}}
       />
     </SafeAreaView>
   );

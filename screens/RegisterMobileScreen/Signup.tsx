@@ -169,16 +169,14 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
   );
 
   useEffect(() => {
-    if (kind === 'normal') {
-      if (!email) {
-        setTimeout(() => {
-          if (emailRef?.current) {
-            emailRef?.current?.focus();
-          }
-        }, 100);
+    setTimeout(() => {
+      if (!route?.params?.email) {
+        if (emailRef?.current) {
+          emailRef?.current?.focus();
+        }
       }
-    }
-  }, [email, kind]);
+    }, 100);
+  }, [route?.params?.email]);
 
   useEffect(() => {
     if (loggedIn) {
