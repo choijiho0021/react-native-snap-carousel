@@ -1,4 +1,4 @@
-import React, {memo, PropsWithChildren} from 'react';
+import React, {memo, PropsWithChildren, useCallback, useState} from 'react';
 import {TextInput, TextInputProps, View, ViewStyle} from 'react-native';
 import AppButton from './AppButton';
 
@@ -9,6 +9,8 @@ const AppTextInput = React.forwardRef<
     cancelButtonStyle?: ViewStyle;
     showCancel?: boolean;
     onCancel?: () => void;
+    onFocus?: () => void;
+    onBlur?: () => void;
   }
 >(
   (
@@ -19,10 +21,24 @@ const AppTextInput = React.forwardRef<
       onCancel,
       containerStyle,
       cancelButtonStyle,
+      onFocus,
+      onBlur,
       ...props
     },
     ref,
   ) => {
+    const [isFocused, setIsFocused] = useState(false);
+
+    const handleFocus = useCallback(() => {
+      setIsFocused(true);
+      if (onFocus) onFocus();
+    }, [onFocus]);
+
+    const handleBlur = useCallback(() => {
+      setIsFocused(false);
+      if (onBlur) onBlur();
+    }, [onBlur]);
+
     if (showCancel) {
       return (
         <View
@@ -39,8 +55,10 @@ const AppTextInput = React.forwardRef<
             {...props}
             value={value}
             allowFontScaling={allowFontScaling}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
           />
-          {value && value.length > 0 && (
+          {isFocused && value && value.length > 0 && (
             <AppButton
               style={cancelButtonStyle || {paddingHorizontal: 18}}
               iconName="btnSearchCancel"
@@ -57,7 +75,9 @@ const AppTextInput = React.forwardRef<
           ref={ref}
           value={value}
           {...props}
-          allowFontScaling={allowFontScaling}>
+          allowFontScaling={allowFontScaling}
+          onFocus={handleFocus}
+          onBlur={handleBlur}>
           {props.children}
         </TextInput>
       </View>
@@ -66,7 +86,9 @@ const AppTextInput = React.forwardRef<
         ref={ref}
         value={value}
         {...props}
-        allowFontScaling={allowFontScaling}>
+        allowFontScaling={allowFontScaling}
+        onFocus={handleFocus}
+        onBlur={handleBlur}>
         {props.children}
       </TextInput>
     );
