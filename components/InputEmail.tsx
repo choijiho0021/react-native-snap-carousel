@@ -72,6 +72,7 @@ type InputEmailProps = {
   placeholder?: string;
   setDomain: (v: string) => void;
   onChange?: (email: string) => void;
+  isValid?: (v: boolean) => void;
   actions: {
     modal: ModalAction;
   };
@@ -85,6 +86,7 @@ const InputEmail: React.FC<InputEmailProps> = ({
   placeholder,
   setDomain,
   onChange,
+  isValid,
   actions,
 }) => {
   const [email, setEmail] = useState(socialEmail || '');
@@ -133,13 +135,22 @@ const InputEmail: React.FC<InputEmailProps> = ({
         }
       }
     }
-  }, [checkValid, currentEmail, currentValue, domain, email, onChange]);
+  }, [
+    checkValid,
+    currentEmail,
+    currentValue,
+    domain,
+    email,
+    isValid,
+    onChange,
+  ]);
 
   useEffect(() => {
     if (inValid !== 'changeEmail:usable') {
+      if (isValid) isValid(false);
       onChange?.('');
-    }
-  }, [inValid, onChange]);
+    } else if (isValid) isValid(true);
+  }, [inValid, isValid, onChange]);
 
   const onPressDomain = useCallback(() => {
     inputRef?.current?.blur();
