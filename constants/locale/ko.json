@@ -93,6 +93,7 @@
   "rkbCash": "캐시",
   "failure": "실패",
   "send": "발송",
+  "send": "발송",
 
   "purchase:date": "{{date}} 구매",
 
@@ -686,6 +687,9 @@
   "esim:oneTouch:txt": "간편하게 터치 한 번으로!\n<b>클릭하면</b> 사용 중인 단말에 <b>eSIM이 즉시 등록돼요.</b>",
   "esim:oneTouch:reg": "원터치 등록하기",
   "esim:oneTouch:needUpdate": "iOS 17.4 이상 버전이 설치되어 있는 단말에서만 사용할 수 있는 기능입니다.",
+  "esim:oneTouch:modal:txt": "지금 eSIM을 등록할까요?",
+  "esim:oneTouch:modal:ok": "등록 시작",
+  "esim:oneTouch:modal:next": "다음에",
   "esim:smdp": "SM-DP+주소",
   "esim:actCode": "활성화 코드",
   "esim:iccid": "ICCID",
@@ -1338,6 +1342,7 @@
   "toast:perm:gallery": "갤러리 접근 권한이 없습니다.",
   "toast:esim:hide": "구매 eSIM 목록에서 숨김 처리되어 있는 상품입니다.\n숨김 해제 후 사용량을 확인할 수 있습니다.",
   "toast:esim:notExist": "구매 eSIM 목록에 없는 상품입니다.",
+  "toast:failedNetwork": "네트워크 문제로 요청이 처리되지 않았습니다.\n인터넷 연결 확인 후 다시 시도해 주세요.",
 
   "mypage:idCheckTitle": "로깨비톡 ID 확인",
   "mypage:manualInput:body": "아래의 정보를 사용하여 <color:'#2a7ff6'>로깨비 톡</color>에 로그인할 수 있습니다",

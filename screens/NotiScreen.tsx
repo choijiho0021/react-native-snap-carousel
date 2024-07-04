@@ -210,7 +210,7 @@ const NotiListItem0 = ({
           <AppText
             key="body"
             style={styles.body}
-            numberOfLines={2}
+            numberOfLines={6}
             ellipsizeMode="tail">
             {utils.htmlToString(
               (item.summary || item.body)?.replace(/\n{1,}/g, '\n'),

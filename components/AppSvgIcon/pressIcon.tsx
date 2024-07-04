@@ -4549,6 +4549,20 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  bannerMark4: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="12" cy="12" r="11" fill="#EE4423" />
+      <Path
+        d="M13 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM11 8a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V8z"
+        fill="#FFE3DD"
+      />
+    </Svg>,
+  ],
   bannerCheckBlue2: [
     <Svg
       width="24"

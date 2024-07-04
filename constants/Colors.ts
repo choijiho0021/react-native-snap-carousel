@@ -23,6 +23,7 @@ export const colors = {
   primary01: '#47559d',
   gray02: '#acacac',
   black: '#2c2c2c',
+  black92: 'rgba(44,44,44, 0.92)',
   clearBlue: '#2a7ff6',
   dodgerBlue: '#4f99ff',
   warmGrey: '#777777',

@@ -289,6 +289,11 @@ const QrInfoScreen = () => {
     () => (isIOS ? ['oneTouch', 'qr', 'manual'] : ['qr', 'manual']),
     [],
   );
+  const canUseOneTouch = useMemo(
+    () => (utils.stringToNumber(DeviceInfo.getSystemVersion()) || 0) >= 17.4,
+    [],
+  );
+
   const oneTouchScrollRefs = useRef<ScrollView | null>();
   const qrScrollRefs = useRef<ScrollView | null>();
   const manualScrollRefs = useRef<ScrollView | null>();
@@ -419,15 +424,6 @@ const QrInfoScreen = () => {
     ],
   );
 
-  const onPressOnetouch = useCallback(() => {
-    const osVersion = utils.stringToNumber(DeviceInfo.getSystemVersion()) || 0;
-    if (osVersion >= 17.4) {
-      Linking.openURL(oneTouchLink);
-    } else {
-      setVisible(true);
-    }
-  }, [oneTouchLink]);
-
   const renderOneTouch = useCallback(
     () => (
       <View style={styles.modalBody}>
@@ -443,14 +439,14 @@ const QrInfoScreen = () => {
           <AppIcon name="oneTouch" />
         </View>
 
-        <Pressable onPress={onPressOnetouch} style={styles.oneTouchReg}>
+        <Pressable onPress={() => setVisible(true)} style={styles.oneTouchReg}>
           <AppText style={styles.oneTouchTxt}>
             {i18n.t('esim:oneTouch:reg')}
           </AppText>
         </Pressable>
       </View>
     ),
-    [onPressOnetouch],
+    [],
   );
 
   const renderCheckReg = useCallback(
@@ -652,10 +648,20 @@ const QrInfoScreen = () => {
         textMessage={i18n.t('esim:copyMsg')}
       />
       <AppModal
-        title={i18n.t('esim:oneTouch:needUpdate')}
-        type="info"
-        onOkClose={() => setVisible(false)}
+        title={i18n.t(
+          canUseOneTouch
+            ? 'esim:oneTouch:modal:txt'
+            : 'esim:oneTouch:needUpdate',
+        )}
+        type={canUseOneTouch ? 'normal' : 'info'}
+        onOkClose={() =>
+          canUseOneTouch ? Linking.openURL(oneTouchLink) : setVisible(false)
+        }
+        onCancelClose={() => setVisible(false)}
         visible={visible}
+        okButtonTitle={i18n.t(canUseOneTouch ? 'esim:oneTouch:modal:ok' : 'ok')}
+        cancelButtonTitle={i18n.t('esim:oneTouch:modal:next')}
+        cancelButtonStyle={{color: colors.black, marginRight: 60}}
       />
     </SafeAreaView>
   );

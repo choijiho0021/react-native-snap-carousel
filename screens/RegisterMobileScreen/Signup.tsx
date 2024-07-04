@@ -5,7 +5,9 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {Settings} from 'react-native-fbsdk-next';
 import {
   Keyboard,
+  Pressable,
   SafeAreaView,
+  ScrollView,
   StatusBar,
   StyleSheet,
   View,
@@ -16,7 +18,11 @@ import {RouteProp} from '@react-navigation/native';
 import analytics, {firebase} from '@react-native-firebase/analytics';
 import AsyncStorage from '@react-native-community/async-storage';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppAlert from '@/components/AppAlert';
+import {
+  actions as toastActions,
+  ToastAction,
+  Toast,
+} from '@/redux/modules/toast';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import InputEmail, {InputEmailRef} from '@/components/InputEmail';
@@ -40,6 +46,7 @@ import ScreenHeader from '@/components/ScreenHeader';
 import {emailDomainList} from '@/components/DomainListModal';
 import ConfirmPolicy from './ConfirmPolicy';
 import AppSnackBar from '@/components/AppSnackBar';
+import AppAlert from '@/components/AppAlert';
 
 const styles = StyleSheet.create({
   title: {
@@ -128,6 +135,7 @@ type RegisterMobileScreenProps = {
   actions: {
     account: AccountAction;
     modal: ModalAction;
+    toast: ToastAction;
   };
 };
 
@@ -139,6 +147,8 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
   actions,
   pending,
 }) => {
+  const scrollRef = useRef<ScrollView>();
+  const [mailValid, setMailValid] = useState(false);
   const [loading, setLoading] = useState(false);
   const [confirm, setConfirm] = useState({mandatory: false, optional: false});
   const [email, setEmail] = useState(
@@ -167,6 +177,34 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
     () => link?.params?.recommender,
     [link?.params?.recommender],
   );
+
+  useEffect(() => {
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        if (email && domain) {
+          scrollRef.current?.scrollToEnd();
+        }
+      },
+    );
+
+    // 컴포넌트가 언마운트될 때 리스너 제거
+    return () => {
+      keyboardDidHideListener.remove();
+    };
+  }, [domain, email]);
+
+  useEffect(() => {
+    if (mailValid && domain) {
+      scrollRef.current?.scrollToEnd();
+    }
+  }, [domain, mailValid]);
+
+  useEffect(() => {
+    if (confirm.mandatory) {
+      scrollRef.current?.scrollToEnd();
+    }
+  }, [confirm.mandatory]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -247,14 +285,11 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
 
       isValid = resp.result === 0;
       if (resp.result !== 0) {
-        // duplicated email error
-        if (
-          resp.result !== API.default.E_RESOURCE_NOT_FOUND ||
-          !resp.message?.includes('Duplicate')
-        ) {
-          // 정상이거나, duplicated email 인 경우는 화면 상태 갱신 필요
+        if (resp.message?.includes('Duplicate')) {
           throw new Error('Duplicated email');
         }
+
+        throw new Error('network error');
       }
 
       if (isValid) {
@@ -266,6 +301,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
           deviceModel,
           recommender,
         };
+
         const rsp = await API.User.signUp(payload);
 
         if (rsp.result === 0 && !_.isEmpty(rsp.objects)) {
@@ -283,16 +319,15 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
         }
       }
     } catch (err) {
-      console.log('sign up failed', err);
       if (err instanceof Error && err.message.includes('Duplicated')) {
-        AppAlert.info(i18n.t('reg:usingEmail'));
-      } else {
-        AppAlert.error(i18n.t('reg:fail'));
-      }
+        actions.toast.push('reg:usingEmail');
+      } else actions.toast.push(Toast.FAIL_NETWORK);
+      console.log('sign up failed', err);
     }
 
     setLoading(false);
   }, [
+    actions.toast,
     confirm.optional,
     deviceModel,
     email,
@@ -323,6 +358,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
         }
       />
       <KeyboardAwareScrollView
+        ref={scrollRef}
         style={{flex: 1}}
         contentContainerStyle={{flexGrow: 1}}
         enableOnAndroid
@@ -345,6 +381,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
             domain={domain}
             setDomain={setDomain}
             onChange={setEmail}
+            isValid={setMailValid}
             placeholder={i18n.t('reg:email')}
           />
         </View>
@@ -360,18 +397,17 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
           </View>
         </View>
         <ConfirmPolicy onMove={onMove} onChange={setConfirm} />
-        <AppButton
-          style={styles.confirm}
-          title={i18n.t('mobile:signup')}
-          titleStyle={styles.text}
-          disabled={!confirm.mandatory || !email}
-          disableColor={colors.greyish}
-          disableBackgroundColor={colors.lightGrey}
-          onPress={submitHandler}
-          type="primary"
-        />
       </KeyboardAwareScrollView>
-
+      <AppButton
+        style={styles.confirm}
+        title={i18n.t('mobile:signup')}
+        titleStyle={styles.text}
+        disabled={!confirm.mandatory || !email}
+        disableColor={colors.greyish}
+        disableBackgroundColor={colors.lightGrey}
+        onPress={submitHandler}
+        type="primary"
+      />
       <AppActivityIndicator visible={pending || loading} />
       <AppSnackBar
         visible={showSnackBar}
@@ -396,6 +432,7 @@ export default connect(
     actions: {
       account: bindActionCreators(accountActions, dispatch),
       modal: bindActionCreators(modalActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch),
     },
   }),
 )(SignupScreen);
