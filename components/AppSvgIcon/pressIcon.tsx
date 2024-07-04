@@ -784,51 +784,145 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
-      <G clipPath="url(#a5avg8trsa)">
-        <Rect
-          x="1"
-          y="1"
-          width="18"
-          height="18"
-          rx="3"
-          fill="url(#zzscewo07b)"
-        />
-        <Rect
-          x="1"
-          y="1"
-          width="18"
-          height="18"
-          rx="3"
-          fill="url(#gzi4ew4roc)"
-        />
-        <Path
-          d="M11.427 10.282 8.446 6H6v8h2.573V9.718L11.53 14H14V6h-2.573v4.282z"
-          fill="#fff"
-        />
+      <G clipPath="url(#clip0_9061_60037)">
+        <G clipPath="url(#clip1_9061_60037)">
+          <Rect
+            width="20"
+            height="20"
+            rx="3"
+            fill="url(#paint0_linear_9061_60037)"
+          />
+          <Rect
+            width="20"
+            height="20"
+            rx="3"
+            fill="url(#paint1_linear_9061_60037)"
+          />
+          <Path
+            d="M11.5853 10.3135L8.27316 5.55566H5.55554V14.4446H8.41471V9.68672L11.6985 14.4446H14.4444V5.55566H11.5853V10.3135Z"
+            fill="white"
+          />
+        </G>
       </G>
       <Defs>
         <LinearGradient
-          id="zzscewo07b"
-          x1="5"
-          y1="13"
-          x2="17"
-          y2="13"
+          id="paint0_linear_9061_60037"
+          x1="4.44444"
+          y1="13.3333"
+          x2="17.7778"
+          y2="13.3333"
           gradientUnits="userSpaceOnUse">
           <Stop stopColor="#05C2E7" />
           <Stop offset="1" stopColor="#4764E6" />
         </LinearGradient>
         <LinearGradient
-          id="gzi4ew4roc"
+          id="paint1_linear_9061_60037"
           x1="10"
-          y1="4"
+          y1="3.33333"
           x2="10"
-          y2="15"
+          y2="15.5556"
           gradientUnits="userSpaceOnUse">
           <Stop stopColor="#17DC34" />
           <Stop offset="1" stopColor="#17DC34" stopOpacity="0" />
         </LinearGradient>
-        <ClipPath id="a5avg8trsa">
-          <Path fill="#fff" transform="translate(1 1)" d="M0 0h18v18H0z" />
+        <ClipPath id="clip0_9061_60037">
+          <Rect width="20" height="20" fill="white" />
+        </ClipPath>
+        <ClipPath id="clip1_9061_60037">
+          <Rect width="20" height="20" fill="white" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
+  b2bIcon: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#zvmvezlr8a)">
+        <G clipPath="url(#kgbuoesaxb)">
+          <Rect width="20" height="20" rx="3" fill="#0038FF" />
+          <Path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M11.04 4.229c-1.063.313-1.9 1.056-2.36 1.635a.853.853 0 0 0 .15 1.19.84.84 0 0 0 1.187-.114c.323-.406.901-.897 1.546-1.087.571-.168 1.238-.123 1.973.612.734.734.78 1.4.611 1.973-.19.644-.68 1.223-1.087 1.546a.84.84 0 0 0-.115 1.187c.298.369.831.436 1.191.15.579-.46 1.323-1.298 1.636-2.361.334-1.135.15-2.465-1.058-3.674-1.209-1.209-2.539-1.392-3.674-1.057z"
+            fill="#fff"
+          />
+          <Path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M7.938 12.062a.846.846 0 0 1-.018-1.196l2.946-2.946a.846.846 0 0 1 1.196.017.846.846 0 0 1 .018 1.197L9.134 12.08a.846.846 0 0 1-1.196-.018z"
+            fill="#fff"
+          />
+          <Path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M4.228 11.04c.313-1.063 1.057-1.9 1.635-2.36a.853.853 0 0 1 1.191.15.84.84 0 0 1-.114 1.187c-.407.323-.898.901-1.087 1.546-.169.571-.123 1.238.611 1.973.735.734 1.402.78 1.973.611.645-.19 1.223-.68 1.546-1.087a.84.84 0 0 1 1.188-.115c.369.298.436.831.15 1.191-.46.579-1.299 1.323-2.361 1.636-1.135.334-2.465.15-3.674-1.058-1.209-1.209-1.392-2.539-1.058-3.674z"
+            fill="#fff"
+          />
+        </G>
+      </G>
+      <Defs>
+        <ClipPath id="zvmvezlr8a">
+          <Path fill="#fff" d="M0 0h20v20H0z" />
+        </ClipPath>
+        <ClipPath id="kgbuoesaxb">
+          <Path fill="#fff" d="M0 0h20v20H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
+  waugIcon: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#d6u3onngha)">
+        <G clipPath="url(#7mgx7jb5hb)">
+          <Rect width="20" height="20" rx="3" fill="#1C1C1E" />
+          <Path
+            d="m13.661 5-1.393 4.092-1.402-4.08L9.13 5.01 7.705 9.092 6.338 5H4.444l2.23 6.667h2.03l1.288-3.683 1.265 3.683h2.03L15.555 5H13.66z"
+            fill="#fff"
+          />
+          <Path d="M13.5 13.334h-7V15h7v-1.666z" fill="#FF0076" />
+        </G>
+      </G>
+      <Defs>
+        <ClipPath id="d6u3onngha">
+          <Path fill="#fff" d="M0 0h20v20H0z" />
+        </ClipPath>
+        <ClipPath id="7mgx7jb5hb">
+          <Path fill="#fff" d="M0 0h20v20H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
+  carrotIcon: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#wsy7qfto5a)">
+        <G clipPath="url(#2pg6zy8d3b)">
+          <Rect width="20" height="20" rx="3" fill="#FF4600" />
+          <Path
+            d="M15.481 9.42a.075.075 0 0 0 .074-.082c-.31-2.828-2.589-4.894-5.538-4.894-3.174 0-5.573 2.395-5.573 5.556 0 3.16 2.399 5.555 5.573 5.555 2.95 0 5.229-2.068 5.538-4.893a.072.072 0 0 0-.074-.081h-4.75a.075.075 0 0 0-.074.075v1.528c0 .352-.26.66-.6.682a.647.647 0 0 1-.68-.656V7.822c0-.352.26-.66.6-.681.373-.022.68.279.68.655V9.35c0 .041.033.075.073.075h4.751V9.42z"
+            fill="#fff"
+          />
+        </G>
+      </G>
+      <Defs>
+        <ClipPath id="wsy7qfto5a">
+          <Path fill="#fff" d="M0 0h20v20H0z" />
+        </ClipPath>
+        <ClipPath id="2pg6zy8d3b">
+          <Path fill="#fff" d="M0 0h20v20H0z" />
         </ClipPath>
       </Defs>
     </Svg>,

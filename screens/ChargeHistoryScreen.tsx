@@ -225,7 +225,33 @@ const styles = StyleSheet.create({
   },
 });
 
-export const renderPromoFlag = (flags: string[], isStore: boolean) => {
+export const renderPromoFlag = (
+  flags: string[],
+  isStore: boolean,
+  storeName?: string,
+) => {
+  let icon = 'naverIcon';
+
+  if (isStore && storeName) {
+    switch (storeName) {
+      case 'N':
+        icon = 'naverIcon';
+        break;
+      case 'B':
+        icon = 'b2bIcon';
+        break;
+      case 'W':
+        icon = 'waugIcon';
+        break;
+      case 'C':
+        icon = 'carrotIcon';
+        break;
+      default:
+        icon = 'naverIcon';
+        break;
+    }
+  }
+
   return (
     <Fragment>
       {promoFlagSort(flags)
@@ -255,9 +281,7 @@ export const renderPromoFlag = (flags: string[], isStore: boolean) => {
             </View>
           );
         })}
-      {isStore && (
-        <AppSvgIcon name="naverIcon" style={{justifyContent: 'center'}} />
-      )}
+      {isStore && <AppSvgIcon name={icon} style={{justifyContent: 'center'}} />}
     </Fragment>
   );
 };
@@ -602,7 +626,11 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
               <View style={{flex: 1}}>
                 <SplitText
                   renderExpend={() =>
-                    renderPromoFlag(item.promoFlag || [], item.isStore)
+                    renderPromoFlag(
+                      item.promoFlag || [],
+                      item.isStore,
+                      item.storeName,
+                    )
                   }
                   numberOfLines={2}
                   style={{...appStyles.bold16Text, marginRight: 8}}
