@@ -254,7 +254,7 @@ export const renderPromoFlag = ({
 
   if (storeName) {
     if (storeName === 'B') {
-      const b2b = storeOrderId?.split('-')?.[0];
+      const b2b = storeOrderId?.split('-')?.[0]?.toLowerCase();
       if (b2b && b2b in b2bIconMap) {
         icon = b2bIconMap[b2b];
       } else {
