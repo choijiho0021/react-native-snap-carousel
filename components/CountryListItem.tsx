@@ -160,7 +160,7 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
                 ]}>
                 {title}
               </AppText>
-              {renderPromoFlag(item.promoFlag || [], false)}
+              {renderPromoFlag({flags: item.promoFlag || [], isStore: false})}
             </View>
             <AppPrice
               price={item.price}

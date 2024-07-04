@@ -23,7 +23,11 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {connect} from 'react-redux';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
-import {RkbSubscription, checkUsage} from '@/redux/api/subscriptionApi';
+import {
+  RkbSubscription,
+  checkUsage,
+  storeNameType,
+} from '@/redux/api/subscriptionApi';
 import AppButton from '@/components/AppButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -225,31 +229,38 @@ const styles = StyleSheet.create({
   },
 });
 
-export const renderPromoFlag = (
-  flags: string[],
-  isStore: boolean,
-  storeName?: string,
-) => {
+const iconMap = {
+  N: 'naverIcon',
+  W: 'waugIcon',
+  B: 'b2bIcon',
+};
+
+const b2bIconMap = {
+  carrot: 'carrotIcon',
+};
+
+export const renderPromoFlag = ({
+  flags,
+  isStore,
+  storeName,
+  storeOrderId,
+}: {
+  flags: string[];
+  isStore: boolean;
+  storeName?: storeNameType;
+  storeOrderId?: string;
+}) => {
   let icon = 'naverIcon';
 
-  if (isStore && storeName) {
-    switch (storeName) {
-      case 'N':
-        icon = 'naverIcon';
-        break;
-      case 'B':
-        icon = 'b2bIcon';
-        break;
-      case 'W':
-        icon = 'waugIcon';
-        break;
-      case 'C':
-        icon = 'carrotIcon';
-        break;
-      default:
-        icon = 'naverIcon';
-        break;
-    }
+  if (storeName) {
+    if (storeName === 'B') {
+      const b2b = storeOrderId?.split('-')?.[0];
+      if (b2b && b2b in b2bIconMap) {
+        icon = b2bIconMap[b2b];
+      } else {
+        icon = iconMap.B;
+      }
+    } else icon = iconMap[storeName];
   }
 
   return (
@@ -302,7 +313,6 @@ type ChargeHistoryScreenProps = {
 
 // SVG 파일로 대체 불가. SVG는 이미지가 깨져보임
 const dailyCardImg = require('../assets/images/esim/dailyCard.png');
-const totalCardImg = require('../assets/images/esim/totalCard.png');
 
 const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   navigation,
@@ -626,11 +636,12 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
               <View style={{flex: 1}}>
                 <SplitText
                   renderExpend={() =>
-                    renderPromoFlag(
-                      item.promoFlag || [],
-                      item.isStore,
-                      item.storeName,
-                    )
+                    renderPromoFlag({
+                      flags: item.promoFlag || [],
+                      isStore: item.isStore,
+                      storeName: item.storeName,
+                      storeOrderId: item.storeOrderId,
+                    })
                   }
                   numberOfLines={2}
                   style={{...appStyles.bold16Text, marginRight: 8}}
