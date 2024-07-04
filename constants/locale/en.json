@@ -637,6 +637,7 @@
   "esim:expired": "Expired",
   "esim:refresh": " \u00B7  Pull down to refresh!\n \u00B7  If you need help, press the question mark.",
   "esim:qr": "QR Code",
+  "esim:regEsim": "eSIM 등록",
   "esim:showQR": "QR Code",
   "esim:manualInput": "QR Info",
   "esim:qrInfo": "QR Info",

@@ -783,7 +783,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               ...styles.esimButton,
               color: isEditMode ? colors.lightGrey : colors.black,
             }}
-            title={i18n.t('esim:showQR')}
+            title={i18n.t('esim:regEsim')}
             onPress={() => navigation.navigate('QrInfo', {mainSubs})}
           />
         )}
