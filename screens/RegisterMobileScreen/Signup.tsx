@@ -397,10 +397,6 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
           </View>
         </View>
         <ConfirmPolicy onMove={onMove} onChange={setConfirm} />
-        <Pressable
-          style={{backgroundColor: 'red', width: 100, height: 300}}
-          onPress={() => scrollRef?.current.scrollToEnd()}
-        />
       </KeyboardAwareScrollView>
       <AppButton
         style={styles.confirm}
