@@ -4,6 +4,7 @@ import {
   Easing,
   StyleSheet,
   TouchableOpacity,
+  View,
   ViewStyle,
 } from 'react-native';
 import {connect} from 'react-redux';
@@ -15,6 +16,7 @@ import {RootState} from '@/redux';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import AppText from './AppText';
+import AppIcon from './AppIcon';
 
 const styles = StyleSheet.create({
   container: {
@@ -26,15 +28,18 @@ const styles = StyleSheet.create({
     right: 0,
   },
   content: {
-    backgroundColor: colors.black,
+    backgroundColor: colors.black92,
     width: '80%',
-    // borderRadius: 10,
-    padding: 10,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
   text: {
     ...appStyles.normal14Text,
     color: colors.white,
-    textAlign: 'center',
+    lineHeight: 20,
+    textAlign: 'left',
   },
 });
 
@@ -165,8 +170,9 @@ class AppToast extends PureComponent<AppToastProps, AppToastState> {
         style={[styles.container, style]}
         activeOpacity={0.5}
         onPress={this.onPress}>
-        <Animated.View style={styles.content}>
-          <AppText style={styles.text}> {text} </AppText>
+        <Animated.View style={[styles.content, {alignContent: 'center'}]}>
+          <AppIcon name="bannerMark4" />
+          <AppText style={styles.text}>{text}</AppText>
         </Animated.View>
       </TouchableOpacity>
     ) : null;

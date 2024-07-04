@@ -417,7 +417,7 @@ const callHttp = async <T>(
     return failure(FAILED, response.statusText, response.status);
   } catch (err) {
     console.log('@@@ request failed', err, url);
-    if (!ignoreError) store.dispatch(ToastActions.push(Toast.NOT_LOADED));
+    if (!ignoreError) store.dispatch(ToastActions.push(Toast.FAIL_NETWORK));
     return failure(E_REQUEST_FAILED, 'API failed', 498);
   }
 };

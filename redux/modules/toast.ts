@@ -9,6 +9,7 @@ export const Toast = {
   NOT_LOADED: 'toast:failedToLoad',
   NOT_UPDATED: 'toast:failedToUpdate',
   COPY_SUCCESS: 'toast:copySuccess',
+  FAIL_NETWORK: 'toast:failedNetwork',
 };
 
 interface ToastModelState {

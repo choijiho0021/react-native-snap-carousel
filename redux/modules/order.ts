@@ -194,7 +194,7 @@ const getOrderList = (orders) => {
     .toArray();
 };
 
-// 질문 필요 reflectWithToast
+// 기존 NOT_LOADED는 냅두기
 const getSubsWithToast = reflectWithToast(getSubs, Toast.NOT_LOADED, {
   '1': 'toast:esim:hide',
   '-1001': 'toast:esim:notExist',

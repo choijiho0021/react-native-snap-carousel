@@ -1058,6 +1058,7 @@
 
   "pym:card:sel": "카드 선택",
   "pym:card:noSelect": "결제에 사용할 카드를 선택해주세요.",
+  "pym:card:noSelect:small": "사용할 카드를 선택해 주세요.",
   "pym:card01": "하나카드",
   "pym:card02": "우리카드",
   "pym:card03": "롯데카드",
@@ -1174,6 +1175,7 @@
   "pym:deductAll": "모두 사용",
 
   "pym:invite:title": "더 할인받고 구매하려면?!",
+  "pym:invite:title:small": "더 할인받으려면?!",
   "pym:invite": "친구 초대",
 
   "pym:method:vbank": "무통장 입금 (가상 계좌)",
@@ -1337,6 +1339,7 @@
   "toast:perm:gallery": "갤러리 접근 권한이 없습니다.",
   "toast:esim:hide": "구매 eSIM 목록에서 숨김 처리되어 있는 상품입니다.\n숨김 해제 후 사용량을 확인할 수 있습니다.",
   "toast:esim:notExist": "구매 eSIM 목록에 없는 상품입니다.",
+  "toast:failedNetwork": "네트워크 문제로 요청이 처리되지 않았습니다.\n인터넷 연결 확인 후 다시 시도해 주세요.",
 
   "mypage:idCheckTitle": "로깨비톡 ID 확인",
   "mypage:manualInput:body": "아래의 정보를 사용하여 <color:'#2a7ff6'>로깨비 톡</color>에 로그인할 수 있습니다",
