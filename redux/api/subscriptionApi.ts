@@ -152,6 +152,8 @@ export enum AddOnOptionType {
   BOTH = 'B',
 }
 
+export type storeNameType = 'N' | 'W' | 'B';
+
 export type RkbSubscription = {
   nid: string;
   key: string;
@@ -203,7 +205,8 @@ export type RkbSubscription = {
   resetTime?: string;
   localOpId?: string;
   extLocalOps?: string[];
-  storeName?: string;
+  storeName?: storeNameType;
+  storeOrderId?: string;
 };
 
 export const getMoment = (str: string) =>

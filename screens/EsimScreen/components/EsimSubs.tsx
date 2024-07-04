@@ -562,11 +562,12 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
             renderExpend={() =>
               !isDisabled(mainSubs) &&
               !isCharged &&
-              renderPromoFlag(
-                mainSubs.promoFlag || [],
-                mainSubs.isStore,
-                mainSubs.storeName,
-              )
+              renderPromoFlag({
+                flags: mainSubs.promoFlag || [],
+                isStore: mainSubs.isStore,
+                storeName: mainSubs.storeName,
+                storeOrderId: mainSubs.storeOrderId,
+              })
             }
             style={[
               [STATUS_RESERVED, STATUS_PENDING, STATUS_ACTIVE].includes(
