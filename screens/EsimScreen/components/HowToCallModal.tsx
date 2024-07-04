@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useMemo} from 'react';
+import React, {memo, useCallback} from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import AppModal from '@/components/AppModal';
 import {colors} from '@/constants/Colors';
@@ -82,10 +82,6 @@ const styles = StyleSheet.create({
     marginRight: 4,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  verLine: {
-    marginTop: 7,
-    marginRight: 12,
   },
 });
 type HowToCallModalProps = {

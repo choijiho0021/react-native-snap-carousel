@@ -324,9 +324,9 @@
   "email:input": "선택하기",
 
   "cfm:all": "약관에 모두 동의합니다.",
-  "cfm:contract": "이용 약관 동의",
+  "cfm:contract": "서비스 이용 약관 동의",
   "cfm:contract:title": "서비스 이용 약관",
-  "cfm:personalInfo": "개인 정보 수집 목적 및 이용 동의",
+  "cfm:personalInfo": "개인정보 수집 및 이용 약관 동의",
   "cfm:personalInfo:title": "개인 정보 수집 및 이용 약관",
   "cfm:marketing": "마케팅 정보 수신동의",
   "cfm:marketing:title": "마케팅 정보 수신 동의",
