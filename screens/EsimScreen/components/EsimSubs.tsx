@@ -18,6 +18,7 @@ import {bindActionCreators} from 'redux';
 import moment from 'moment';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useNavigation} from '@react-navigation/native';
+import {isPending} from '@reduxjs/toolkit';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -55,7 +56,6 @@ import HowToCallModal from './HowToCallModal';
 import HtQrModal from './HtQrModal';
 import AppNotiBox from '@/components/AppNotiBox';
 import Env from '@/environment';
-import {isPending} from '@reduxjs/toolkit';
 
 const {isIOS} = Env.get();
 const styles = StyleSheet.create({
@@ -562,7 +562,11 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
             renderExpend={() =>
               !isDisabled(mainSubs) &&
               !isCharged &&
-              renderPromoFlag(mainSubs.promoFlag || [], mainSubs.isStore)
+              renderPromoFlag(
+                mainSubs.promoFlag || [],
+                mainSubs.isStore,
+                mainSubs.storeName,
+              )
             }
             style={[
               [STATUS_RESERVED, STATUS_PENDING, STATUS_ACTIVE].includes(

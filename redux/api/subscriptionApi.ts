@@ -203,6 +203,7 @@ export type RkbSubscription = {
   resetTime?: string;
   localOpId?: string;
   extLocalOps?: string[];
+  storeName?: string;
 };
 
 export const getMoment = (str: string) =>
