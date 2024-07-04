@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
 });
 type HowToCallModalProps = {
   visible: boolean;
-  clMtd: string; // "ustotal" | "usdaily" | "ais" | "dtac"  | "mvtotal" | "vndaily"
+  clMtd: string; // "ustotal" | "usdaily" | "ais" | "dtac"  | "mvtotal" | "vndaily" | "vtdaily"
   onOkClose: () => void;
 };
 
@@ -99,49 +99,43 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
   clMtd,
   onOkClose,
 }) => {
-  const renderNumCheck = useCallback(
-    () => (
-      <>
-        <AppText style={styles.subtitle}>
-          {i18n.t('esim:howToCall:numCheck')}
-        </AppText>
+  const renderMethodTitle = useCallback((num: string) => {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}>
+        <AppSvgIcon name="bannerCheckBlue" />
+        <AppText style={styles.way}>{`${i18n.t(
+          'esim:howToCall:numCheck:way',
+        )}${num}`}</AppText>
+      </View>
+    );
+  }, []);
 
-        <View style={styles.greyBox}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <AppSvgIcon name="bannerCheckBlue" />
-            <AppText style={styles.way}>{`${i18n.t(
-              'esim:howToCall:numCheck:way',
-            )}1`}</AppText>
-          </View>
-          <AppText style={styles.wayTxt}>
+  const renderMethodWay1 = useCallback(
+    (isAlone = false) => {
+      return (
+        <>
+          <AppText style={[styles.wayTxt, isAlone && {marginTop: 0}]}>
             {i18n.t(`esim:howToCall:numCheck:way1:${clMtd}`)}
           </AppText>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <AppSvgIcon name="bannerCheckBlue" />
-            <AppText style={styles.way}>{`${i18n.t(
-              'esim:howToCall:numCheck:way',
-            )}2`}</AppText>
-          </View>
-          <AppText style={styles.wayTxt}>
-            {i18n.t(`esim:howToCall:numCheck:way2:txt`)}
-          </AppText>
-          <View style={{marginBottom: 6}}>
-            <AppStyledText
-              text={i18n.t(`esim:howToCall:numCheck:way2:ios`)}
-              textStyle={appStyles.bold14Text}
-              format={{
-                h: {color: colors.darkBlue, fontWeight: '700'},
-                g: {color: colors.warmGrey},
-              }}
-              numberOfLines={2}
-            />
-          </View>
+        </>
+      );
+    },
+    [clMtd],
+  );
+
+  const renderMethodWay2 = useCallback((isAlone = false) => {
+    return (
+      <>
+        <AppText style={[styles.wayTxt, isAlone && {marginTop: 0}]}>
+          {i18n.t(`esim:howToCall:numCheck:way2:txt`)}
+        </AppText>
+        <View style={{marginBottom: 6}}>
           <AppStyledText
-            text={i18n.t(`esim:howToCall:numCheck:way2:aos`)}
+            text={i18n.t(`esim:howToCall:numCheck:way2:ios`)}
             textStyle={appStyles.bold14Text}
             format={{
               h: {color: colors.darkBlue, fontWeight: '700'},
@@ -150,9 +144,47 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
             numberOfLines={2}
           />
         </View>
+        <AppStyledText
+          text={i18n.t(`esim:howToCall:numCheck:way2:aos`)}
+          textStyle={appStyles.bold14Text}
+          format={{
+            h: {color: colors.darkBlue, fontWeight: '700'},
+            g: {color: colors.warmGrey},
+          }}
+          numberOfLines={2}
+        />
+      </>
+    );
+  }, []);
+
+  const renderMethodAlone = useCallback(() => {
+    return renderMethodWay2(true);
+  }, [renderMethodWay2]);
+
+  const renderMethod = useCallback(() => {
+    return (
+      <>
+        {renderMethodTitle('1')}
+        {renderMethodWay1()}
+        {renderMethodTitle('2')}
+        {renderMethodWay2()}
+      </>
+    );
+  }, [renderMethodTitle, renderMethodWay1, renderMethodWay2]);
+
+  const renderNumCheck = useCallback(
+    () => (
+      <>
+        <AppText style={styles.subtitle}>
+          {i18n.t('esim:howToCall:numCheck')}
+        </AppText>
+
+        <View style={styles.greyBox}>
+          {clMtd === 'vtdaily' ? renderMethodAlone() : renderMethod()}
+        </View>
       </>
     ),
-    [clMtd],
+    [clMtd, renderMethod, renderMethodAlone],
   );
 
   const rednerDomestic = useCallback(
@@ -344,7 +376,8 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
 
         {['ais', 'dtac', 'ustotal'].includes(clMtd) && rednerInternational()}
 
-        {['ais', 'dtac', 'mvtotal'].includes(clMtd) && renderEtcInfo()}
+        {['ais', 'dtac', 'mvtotal', 'vtdaily'].includes(clMtd) &&
+          renderEtcInfo()}
         <View style={{height: 24, width: '100%'}} />
       </ScrollView>
     </AppModal>
