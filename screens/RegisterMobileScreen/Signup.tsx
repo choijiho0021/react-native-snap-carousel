@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
   mobileBox: {
     borderWidth: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingVertical: 13,
     backgroundColor: colors.backGrey,
     borderColor: colors.lightGrey,

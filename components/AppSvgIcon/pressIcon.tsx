@@ -6544,6 +6544,44 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  arrowUpGreen12: [
+    <Svg
+      width="12"
+      height="8"
+      viewBox="0 0 12 8"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path d="M5.2 1.067a1 1 0 0 1 1.6 0L12 8H0l5.2-6.933z" fill="#03C75A" />
+    </Svg>,
+  ],
+  arrowUpBlack12: [
+    <Svg
+      width="12"
+      height="8"
+      viewBox="0 0 12 8"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M5.2 1.067a1 1 0 0 1 1.6 0L12 8H0l5.2-6.933z"
+        fill="#2C2C2C"
+        fillOpacity=".92"
+      />
+    </Svg>,
+  ],
+  arrowDownBlack12: [
+    <Svg
+      width="12"
+      height="8"
+      viewBox="0 0 12 8"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M6.8 6.933a1 1 0 0 1-1.6 0L0 0h12L6.8 6.933z"
+        fill="#2C2C2C"
+        fillOpacity=".92"
+      />
+    </Svg>,
+  ],
 };
 
 export default pressIcons;
