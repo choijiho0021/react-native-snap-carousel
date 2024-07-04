@@ -11,7 +11,11 @@ import {colors} from '@/constants/Colors';
 import {HomeStackParamList, goBack} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {RkbOrder} from '@/redux/api/orderApi';
-import {AccountAction, AccountModelState} from '@/redux/modules/account';
+import {
+  AccountAction,
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import {
   actions as orderActions,
   OrderAction,
