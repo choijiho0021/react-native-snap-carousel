@@ -110,6 +110,7 @@ const getDetailList = (clMtd: string) => {
       return [1];
     case 'ustotal':
     case 'ais':
+    case 'vtdaily':
       return [1, 2];
     case 'dtac':
       return [1, 2, 3, 4];

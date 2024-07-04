@@ -1043,6 +1043,7 @@
   "prodDetail:callMethod:title": "통화·문자 정책",
   "prodDetail:callMethod:box:feature:M": "문자가능",
   "prodDetail:callMethod:box:feature:V": "통화가능",
+  "prodDetail:callMethod:box:feature:MV": "통화·문자 가능",
 
   "prodDetail:callMethod:box:contents:default1:us": "미국 내 통화·문자 발신 무제한",
   "prodDetail:callMethod:box:contents:default2:us": "국제 통화 발신 무제한",

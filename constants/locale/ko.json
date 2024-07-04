@@ -1278,7 +1278,7 @@
   "prodDetail:callMethod:box:contents:default1:dtac": "기본 제공 15바트",
   "prodDetail:callMethod:box:contents:default1:mvtotal": "몰디브 내 통화 150분 무료",
   "prodDetail:callMethod:box:contents:default2:mvtotal": "몰디브 내 문자 150건 무료",
-
+  "prodDetail:callMethod:box:contents:default1:vtdaily": "베트남 내 통화 60분 무료",
   "prodDetail:callMethod:box:contents:detail1:usdaily": "국제 통화·문자 발신 미지원 상품입니다.",
   "prodDetail:callMethod:box:contents:detail1:ustotal": "국제 통화 지원 국가",
   "prodDetail:callMethod:box:contents:detail2:ustotal": "국제 문자 발신 미지원 상품입니다.",
@@ -1289,6 +1289,8 @@
   "prodDetail:callMethod:box:contents:detail3:dtac": "태국 내 1분 = 1바트 / 국제 1분 = 4바트",
   "prodDetail:callMethod:box:contents:detail4:dtac": "문자 미지원 상품입니다.",
   "prodDetail:callMethod:box:contents:detail1:mvtotal": "국제 통화·문자 발신 미지원 상품입니다.",
+  "prodDetail:callMethod:box:contents:detail1:vtdaily": "베트남 내 Vinaphone 이용자 간 무료 통화 30분, 문자 50건 추가 제공",
+  "prodDetail:callMethod:box:contents:detail2:vtdaily": "국제 통화·문자 발신 미지원 상품입니다.",
 
   "prodDetail:callMethod:box:detail:ustotal:country": "한국, 멕시코, 싱가포르, 이스라엘, 인도, 중국, 파키스탄, 포르투갈, 폴란드, 홍콩",
   "prodDetail:callMethod:box:detail:ustotal:notice": "※ 이 외 국가로 국제 통화 발신 불가합니다.",
