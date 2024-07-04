@@ -304,7 +304,7 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
 
           <View style={{flexDirection: 'row', marginTop: 12}}>
             <AppSvgIcon name="checkedDarkBlueSmall" style={{marginRight: 4}} />
-            <View style={{marginRight: 4}}>
+            <View style={{flex: 1, marginRight: 4}}>
               <AppText style={{...styles.darkblueBold14, marginBottom: 4}}>
                 {i18n.t(`esim:howToCall:etcInfo:subtitle1:${clMtd}:title`)}
               </AppText>
