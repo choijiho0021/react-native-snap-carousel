@@ -4,7 +4,6 @@ import {
   Easing,
   StyleSheet,
   TouchableOpacity,
-  View,
   ViewStyle,
 } from 'react-native';
 import {connect} from 'react-redux';
@@ -13,7 +12,11 @@ import _ from 'underscore';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
-import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
+import {
+  actions as toastActions,
+  ToastAction,
+  Toast,
+} from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import AppText from './AppText';
 import AppIcon from './AppIcon';
@@ -29,13 +32,15 @@ const styles = StyleSheet.create({
   },
   content: {
     backgroundColor: colors.black92,
-    width: '80%',
+
     padding: 16,
+    marginHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
   },
   text: {
+    flex: 1,
     ...appStyles.normal14Text,
     color: colors.white,
     lineHeight: 20,
