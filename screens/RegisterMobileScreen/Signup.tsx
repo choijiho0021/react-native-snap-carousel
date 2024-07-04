@@ -5,7 +5,9 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {Settings} from 'react-native-fbsdk-next';
 import {
   Keyboard,
+  Pressable,
   SafeAreaView,
+  ScrollView,
   StatusBar,
   StyleSheet,
   View,
@@ -101,7 +103,7 @@ const styles = StyleSheet.create({
   },
   mobileBox: {
     borderWidth: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingVertical: 13,
     backgroundColor: colors.backGrey,
     borderColor: colors.lightGrey,
@@ -145,6 +147,8 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
   actions,
   pending,
 }) => {
+  const scrollRef = useRef<ScrollView>();
+  const [mailValid, setMailValid] = useState(false);
   const [loading, setLoading] = useState(false);
   const [confirm, setConfirm] = useState({mandatory: false, optional: false});
   const [email, setEmail] = useState(
@@ -173,6 +177,34 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
     () => link?.params?.recommender,
     [link?.params?.recommender],
   );
+
+  useEffect(() => {
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        if (email && domain) {
+          scrollRef.current?.scrollToEnd();
+        }
+      },
+    );
+
+    // 컴포넌트가 언마운트될 때 리스너 제거
+    return () => {
+      keyboardDidHideListener.remove();
+    };
+  }, [domain, email]);
+
+  useEffect(() => {
+    if (mailValid && domain) {
+      scrollRef.current?.scrollToEnd();
+    }
+  }, [domain, mailValid]);
+
+  useEffect(() => {
+    if (confirm.mandatory) {
+      scrollRef.current?.scrollToEnd();
+    }
+  }, [confirm.mandatory]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -326,6 +358,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
         }
       />
       <KeyboardAwareScrollView
+        ref={scrollRef}
         style={{flex: 1}}
         contentContainerStyle={{flexGrow: 1}}
         enableOnAndroid
@@ -348,6 +381,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
             domain={domain}
             setDomain={setDomain}
             onChange={setEmail}
+            isValid={setMailValid}
             placeholder={i18n.t('reg:email')}
           />
         </View>
@@ -363,18 +397,17 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
           </View>
         </View>
         <ConfirmPolicy onMove={onMove} onChange={setConfirm} />
-        <AppButton
-          style={styles.confirm}
-          title={i18n.t('mobile:signup')}
-          titleStyle={styles.text}
-          disabled={!confirm.mandatory || !email}
-          disableColor={colors.greyish}
-          disableBackgroundColor={colors.lightGrey}
-          onPress={submitHandler}
-          type="primary"
-        />
       </KeyboardAwareScrollView>
-
+      <AppButton
+        style={styles.confirm}
+        title={i18n.t('mobile:signup')}
+        titleStyle={styles.text}
+        disabled={!confirm.mandatory || !email}
+        disableColor={colors.greyish}
+        disableBackgroundColor={colors.lightGrey}
+        onPress={submitHandler}
+        type="primary"
+      />
       <AppActivityIndicator visible={pending || loading} />
       <AppSnackBar
         visible={showSnackBar}

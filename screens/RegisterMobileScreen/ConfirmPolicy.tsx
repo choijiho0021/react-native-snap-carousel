@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
   col: {
     display: 'flex',
     flexDirection: 'column',
-    gap: 24,
+    gap: 8,
   },
   confirmList: {
     flexDirection: 'row',
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     alignContent: 'stretch',
     flexDirection: 'column',
     backgroundColor: colors.backGrey,
-    paddingVertical: 32,
+    paddingVertical: 24,
     paddingHorizontal: 20,
   },
   row: {
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     backgroundColor: colors.white,
     borderRadius: 3,
-    marginBottom: 24,
+    marginBottom: 16,
   },
   title: {
     ...appStyles.bold16Text,
@@ -110,7 +110,7 @@ const ConfirmPolicy = ({
         label: i18n.t('cfm:mandatory') + i18n.t('cfm:contract'),
         param: {
           key: 'setting:contract',
-          title: i18n.t('cfm:contract'),
+          title: i18n.t('cfm:contract:title'),
           ...commonParam,
         },
       },
@@ -119,7 +119,7 @@ const ConfirmPolicy = ({
         label: i18n.t('cfm:mandatory') + i18n.t('cfm:personalInfo'),
         param: {
           key: 'setting:privacy',
-          title: i18n.t('cfm:personalInfo'),
+          title: i18n.t('cfm:personalInfo:title'),
           ...commonParam,
         },
       },
@@ -128,7 +128,7 @@ const ConfirmPolicy = ({
         label: i18n.t('cfm:optional') + i18n.t('cfm:marketing'),
         param: {
           key: 'mkt:agreement',
-          title: i18n.t('cfm:marketing'),
+          title: i18n.t('cfm:marketing:title'),
           ...commonParam,
         },
       },

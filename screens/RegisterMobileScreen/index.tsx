@@ -40,6 +40,7 @@ import i18n from '@/utils/i18n';
 import validationUtil from '@/utils/validationUtil';
 import {LinkModelState} from '@/redux/modules/link';
 import ScreenHeader from '@/components/ScreenHeader';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const {isProduction, isIOS} = Env.get();
 
@@ -55,6 +56,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-start',
+    paddingTop: 40,
     paddingHorizontal: 20,
     position: 'relative',
     paddingBottom: 217,
@@ -91,16 +93,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: colors.white,
   },
-  triangel: {
-    borderLeftWidth: 8,
-    borderRightWidth: 8,
-    borderTopWidth: 11,
-    width: 11,
-    marginLeft: 20,
-    borderTopColor: colors.black92,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-  },
+
   row: {
     paddingtop: 40,
     paddingBottom: 28,
@@ -424,7 +417,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
                     {i18n.t('socialLogin:hist')}
                   </AppText>
                 </View>
-                <View style={styles.triangel} />
+                <AppSvgIcon name="arrowDownBlack12" style={{marginLeft: 20}} />
               </View>
             ) : (
               <View style={styles.emptyToolTip} />
@@ -437,7 +430,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             disabled={(authNoti && authorized) || loading}
             authorized={authorized}
             inputRef={mobileRef}
-            marginTop={3}
+            marginTop={6}
           />
           <InputPinInTime
             style={{marginTop: 8, flex: 1}}
