@@ -23,6 +23,7 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 import ScreenHeader from '@/components/ScreenHeader';
 import {AccountModelState} from '@/redux/modules/account';
 import api from '@/redux/api/api';
+import {utils} from '@/utils/utils';
 
 const styles = StyleSheet.create({
   container: {
@@ -84,21 +85,51 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
   const [addonEnable, setAddonEnable] = useState(false);
   const [expireTime, setExpireTime] = useState<Moment>();
   const [status, setStatus] = useState<UsageStatusType>();
-  const [addOnDisReasonText, setAddOnDisReasonText] = useState('');
+  const [addOnDisReason, setAddOnDisReason] = useState('');
   const [addonProds, setAddonProds] = useState<RkbAddOnProd[]>([]);
-  const [chargeLoading, setChargeLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
   const extensionEnable = useRef(false);
   const extensionExpireCheck = extensionEnable.current && isChargeable;
   const extensionDisReason = useMemo(() => {
     if (!extensionEnable.current) {
       if (!isChargeable) {
-        return 'expired';
+        return i18n.t('esim:charge:disReason:extension:expired');
       }
-      return 'unsupported';
+      return i18n.t('esim:charge:disReason:extension:unsupported');
     }
     return '';
   }, [isChargeable]);
+
+  const unsupportExtension = useCallback(() => {
+    extensionEnable.current = false;
+    setAddOnDisReason(i18n.t(`esim:chargeType:addOn:unsupported`));
+  }, []);
+
+  const unsupportAddon = useCallback(() => {
+    setAddonEnable(false);
+    setAddOnDisReason(i18n.t(`esim:chargeType:addOn:unsupported`));
+  }, []);
+
+  const checkChargeOption = useCallback(
+    (sub: RkbSubscription) => {
+      const {addOnOption} = sub;
+
+      if (addOnOption === AddOnOptionType.NEVER || !addOnOption) {
+        unsupportExtension();
+        unsupportAddon();
+      } else if (addOnOption === AddOnOptionType.ADD_ON) {
+        setAddonEnable(true);
+        unsupportExtension();
+      } else if (addOnOption === AddOnOptionType.BOTH) {
+        setAddonEnable(true);
+        extensionEnable.current = true;
+      } else if (addOnOption === AddOnOptionType.EXTENSTION) {
+        extensionEnable.current = true;
+        unsupportAddon();
+      }
+    },
+    [unsupportAddon, unsupportExtension],
+  );
 
   const getAddOnProduct = useCallback(async () => {
     setAddonLoading(true);
@@ -121,10 +152,14 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         };
       } = rsp;
 
-      if (links?.charge === 'N') {
-        setAddOnDisReasonText(links?.msg?.kr);
-        setAddonEnable(false);
-      } else if (
+      // console.log('@@@ result : ', result);
+      // console.log('@@@ objects : ', objects);
+      // console.log('@@@ links : ', links);
+
+      // console.log('@@@ params?.chargedSubs : ', params?.chargedSubs);
+
+      // 조건 변경 무조건 chargedSubs 조회하고, ChargeOption 확인
+      if (
         result === 0 ||
         result === api.E_INVALID_STATUS ||
         result === EXCEED_CHARGE_QUADCELL_RSP
@@ -134,14 +169,15 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         if (mainSubs.partner?.startsWith('quadcell')) chargedItem = mainSubs;
         else if (params?.chargedSubs) {
           chargedItem = params?.chargedSubs?.find(
-            (r) => r.nid === links.refSubs.id,
+            (r) => r.nid === links?.refSubs.id,
           );
         } else
           chargedItem =
-            mainSubs.nid === links.refSubs.id ? mainSubs : undefined;
+            mainSubs.nid === links?.refSubs.id ? mainSubs : undefined;
 
-        if (!chargedItem) {
-          setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:`));
+        if (!chargedItem || !links?.refSubs) {
+          setAddOnDisReason(i18n.t(`esim:chargeType:addOn:`));
+          extensionEnable.current = false;
           setAddonEnable(false);
           setAddonLoading(false);
           return;
@@ -150,58 +186,31 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         const statusCd = links.refSubs.status;
         const endTime = links.refSubs.expireTime;
 
+        checkChargeOption(chargedItem);
+
         setExpireTime(moment(endTime));
         setStatus(statusCd);
-
-        setChargeableItem(chargedItem);
-        setAddonEnable(true);
         setAddonProds(objects);
+        setChargeableItem(chargedItem);
+
+        if (links?.charge === 'N') {
+          setAddOnDisReason(links?.msg?.kr);
+          setAddonEnable(false);
+        }
       } else {
-        setAddonEnable(false);
-        setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:`));
+        setAddOnDisReason(i18n.t(`esim:chargeType:addOn:`));
+        extensionEnable.current = false;
       }
 
       // 모종의 이유로 실패, 모든 분기 진입 못할 시 '잠시 후 다시 시도해주세요' 출력
     }
     setAddonLoading(false);
-  }, [mainSubs, params?.chargedSubs]);
-
-  const unsupportExtension = useCallback(() => {
-    extensionEnable.current = false;
-    setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:unsupported`));
-  }, []);
-
-  const unsupportAddon = useCallback(() => {
-    setAddonEnable(false);
-    setAddOnDisReasonText(i18n.t(`esim:chargeType:addOn:unsupported`));
-  }, []);
+  }, [checkChargeOption, mainSubs, params?.chargedSubs]);
 
   // 상품 비활성화 여부 체크하는 로직
   useEffect(() => {
-    const {addOnOption} = mainSubs;
-
-    // 충전 조건 1. 용량 충전 불가능 상품
-    if (addOnOption === AddOnOptionType.ADD_ON) {
-      setAddonEnable(true);
-      unsupportExtension();
-    }
-    if (addOnOption === AddOnOptionType.BOTH) {
-      setAddonEnable(true);
-      extensionEnable.current = true;
-    }
-    if (addOnOption === AddOnOptionType.EXTENSTION) {
-      extensionEnable.current = true;
-      unsupportAddon();
-      return;
-    }
-    if (addOnOption === AddOnOptionType.NEVER || !addOnOption) {
-      unsupportExtension();
-      unsupportAddon();
-      return;
-    }
-
-    getAddOnProduct();
-  }, [getAddOnProduct, mainSubs, unsupportAddon, unsupportExtension]);
+    if (mainSubs) getAddOnProduct();
+  }, [getAddOnProduct, mainSubs]);
 
   const renderChargeModal = useCallback(
     (type: 'addOn' | 'extension', onPress, disabed, reason) => {
@@ -221,7 +230,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
 
   // 연장하기
   const onPressExtension = useCallback(async () => {
-    if (extensionExpireCheck) {
+    if (extensionExpireCheck && chargeableItem) {
       const checked = await AsyncStorage.getItem(
         'esim.charge.extension.modal.check',
       );
@@ -233,43 +242,41 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           'extension',
           onPressExtension,
           !extensionExpireCheck,
-          i18n.t(`esim:charge:disReason:extension:${extensionDisReason}`),
+          extensionDisReason,
         );
       } else {
         navigation.navigate('Charge', {
-          mainSubs,
-          chargeablePeriod,
+          chargeableItem,
+          chargeablePeriod:
+            utils.toDateString(chargeableItem?.expireDate, 'YYYY.MM.DD') ||
+            chargeablePeriod,
         });
       }
     } else {
+      extensionEnable.current = false;
       setShowSnackBar({
-        text: i18n.t(`esim:charge:disReason:extension:${extensionDisReason}`),
+        text: extensionDisReason,
         visible: true,
         type: 'extension',
       });
     }
   }, [
+    chargeableItem,
     chargeablePeriod,
     extensionDisReason,
     extensionExpireCheck,
-    mainSubs,
     navigation,
     renderChargeModal,
   ]);
 
   const onPressAddon = useCallback(async () => {
-    if (addonEnable) {
+    if (addonEnable && chargeableItem) {
       const checked = await AsyncStorage.getItem(
         'esim.charge.addon.modal.check',
       );
       if (checked !== 'checked') {
         AsyncStorage.setItem('esim.charge.addon.modal.check', 'checked');
-        renderChargeModal(
-          'addOn',
-          onPressAddon,
-          !addonEnable,
-          addOnDisReasonText,
-        );
+        renderChargeModal('addOn', onPressAddon, !addonEnable, addOnDisReason);
       } else {
         navigation.navigate('AddOn', {
           chargeableItem,
@@ -279,14 +286,18 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
         });
       }
     } else {
+      setAddonEnable(false);
       setShowSnackBar({
-        text: addOnDisReasonText,
+        text:
+          addOnDisReason === ''
+            ? i18n.t('esim:charge:disReason:extension:')
+            : addOnDisReason, // i18n.t('esim:charge:disReason:extension:'),
         visible: true,
         type: 'addOn',
       });
     }
   }, [
-    addOnDisReasonText,
+    addOnDisReason,
     addonEnable,
     addonProds,
     chargeableItem,
@@ -316,7 +327,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           title={i18n.t(`esim:charge:type:addOn:detail`)}
           onPress={onPressAddon}
           disabled={!addonEnable}
-          disReason={addOnDisReasonText}
+          disReason={addOnDisReason}
         />
         <ChargeTypeButton
           type="extension"
@@ -324,9 +335,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           title={i18n.t(`esim:charge:type:extension:detail`)}
           onPress={onPressExtension}
           disabled={!extensionExpireCheck}
-          disReason={i18n.t(
-            `esim:charge:disReason:extension:${extensionDisReason}`,
-          )}
+          disReason={extensionDisReason}
         />
         <AppSnackBar
           visible={showSnackBar.visible}
@@ -334,7 +343,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
           textMessage={showSnackBar.text}
           bottom={20}
           preIcon={
-            (showSnackBar.type === 'addOn' && addOnDisReasonText === '') ||
+            (showSnackBar.type === 'addOn' && addOnDisReason === '') ||
             (showSnackBar.type === 'extension' && extensionDisReason === '')
               ? undefined
               : 'cautionRed'

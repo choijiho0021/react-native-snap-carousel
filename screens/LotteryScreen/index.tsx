@@ -16,6 +16,12 @@ import ViewShot from 'react-native-view-shot';
 import LinearGradient from 'react-native-linear-gradient';
 import Share from 'react-native-share';
 import {RootState} from '@reduxjs/toolkit';
+import {
+  PERMISSIONS,
+  RESULTS,
+  check,
+  openSettings,
+} from 'react-native-permissions';
 import {colors} from '@/constants/Colors';
 import {bindActionCreators} from 'redux';
 import i18n from '@/utils/i18n';
@@ -39,6 +45,7 @@ import RenderBeforeLottery from './component/RenderBeforeLottery';
 import RenderLoadingLottery from './component/RenderLoadingLottery';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppSnackBar from '@/components/AppSnackBar';
+import AppAlert from '@/components/AppAlert';
 
 const styles = StyleSheet.create({
   container: {
@@ -168,7 +175,25 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState('');
+  const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
+  const [isGetResult, setIsGetResult] = useState(false); // 모달창 뜨고 쿠폰함 바로가기 보여주기용
+
+  const {type} = route?.params;
+
   const appState = useRef('unknown');
+
+  useEffect(() => {
+    const checkPermission = async () => {
+      const permission =
+        Platform.OS === 'ios'
+          ? PERMISSIONS.IOS.PHOTO_LIBRARY
+          : PERMISSIONS.ANDROID.READ_MEDIA_IMAGES;
+      const result = await check(permission);
+      setHasPhotoPermission(result === RESULTS.GRANTED);
+    };
+
+    checkPermission();
+  }, []);
 
   const [coupon, setCoupon] = useState<LotteryCouponType>({
     cnt: 0,
@@ -198,6 +223,35 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     return phase?.num || fortune?.num || 0;
   }, [fortune, phase?.num]);
 
+  const saveToGallery = useCallback(async () => {
+    let checkNewPermission = false;
+    if (!hasPhotoPermission) {
+      const permission =
+        Platform.OS === 'ios'
+          ? PERMISSIONS.IOS.PHOTO_LIBRARY
+          : PERMISSIONS.ANDROID.READ_MEDIA_IMAGES;
+      const result = await check(permission);
+
+      console.log('@@@@ result : ', result);
+
+      checkNewPermission = result === RESULTS.GRANTED;
+    }
+    if (hasPhotoPermission || checkNewPermission) {
+      try {
+        captureScreen(ref).then((r) => {
+          if (r) setShowSnackbar(r);
+        });
+      } catch (e) {
+        console.log('fail to capture : ', e);
+      }
+    } else {
+      // 사진 앨범 조회 권한을 요청한다.
+      AppAlert.confirm(i18n.t('settings'), i18n.t('acc:permPhoto'), {
+        ok: () => openSettings(),
+      });
+    }
+  }, [hasPhotoPermission]);
+
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (['inactive', 'background'].includes(nextAppState)) {
@@ -212,18 +266,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       subscription.remove();
     };
   }, []);
-
-  useEffect(() => {
-    if (isHistory) {
-      // 2초 동안 Loading 표시해주기 코드
-      setIsLoading(true);
-
-      // 뽑기 , 임시로 2초 타임아웃
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 2000);
-    }
-  }, [isHistory]);
 
   const lotteryCoupon = useCallback(async () => {
     API.Account.lotteryCoupon({
@@ -252,7 +294,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         // 뽑기 , 임시로 3초 타임아웃
         setTimeout(() => {
           action.account.checkLottery({iccid, token, prompt: 'check'});
-
+          setIsGetResult(true);
           setShowCouponModal(true);
         }, 3000);
       } else {
@@ -398,10 +440,9 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           {renderShareButton(
             i18n.t('esim:lottery:share:img'),
             'btnShare1',
-            () =>
-              captureScreen(ref).then((r) => {
-                if (r) setShowSnackbar(r);
-              }),
+            () => {
+              saveToGallery();
+            },
           )}
 
           <View style={styles.dividerSmall} />
@@ -422,7 +463,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         </View>
 
         <View style={{paddingHorizontal: 20, marginBottom: 16}}>
-          {fortune?.text && phase?.count > 0 && (
+          {fortune?.text && phase?.count > 0 && isGetResult && (
             <Pressable
               style={styles.naviCouponBtn}
               onPress={() => {
@@ -439,11 +480,13 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     );
   }, [
     fortune?.text,
+    isGetResult,
     navigation,
     onShare,
     phase?.count,
     renderShareButton,
     renderTitleAndPhase,
+    saveToGallery,
     screenNum,
     shareInstaStory,
   ]);
@@ -466,45 +509,80 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       );
     }
 
-    return <RenderBeforeLottery count={fortune?.count} onClick={onClick} />;
+    return (
+      <RenderBeforeLottery
+        type={type}
+        count={fortune?.count}
+        onClick={onClick}
+      />
+    );
   }, [
-    fortune,
+    fortune?.count,
     isHistory,
     isLoading,
     onClick,
     phase?.text,
     renderAfterLottery,
+    type,
     screenNum,
   ]);
 
-  return (
-    <SafeAreaView style={styles.container}>
-      {shareView()}
-      {!isLoading && (
-        <ScreenHeader
-          // backHandler={backHandler}
-          headerStyle={{backgroundColor: 'transparent', zIndex: 10}}
-          isStackTop
-          renderRight={
-            <AppSvgIcon
-              name="closeModal"
-              style={styles.btnCnter}
-              onPress={() => {
-                navigation.popToTop();
-              }}
-            />
-          }
-        />
-      )}
-      {/* // 메인화면 */}
-      {renderBody()}
+  const renderHeader = useCallback(() => {
+    return (
+      <>
+        {!isLoading && (
+          <ScreenHeader
+            // backHandler={backHandler}
+            headerStyle={{backgroundColor: 'transparent', zIndex: 10}}
+            isStackTop
+            renderRight={
+              <AppSvgIcon
+                name="closeModal"
+                style={styles.btnCnter}
+                onPress={() => {
+                  navigation.popToTop();
+                }}
+              />
+            }
+          />
+        )}
+      </>
+    );
+  }, [isLoading, navigation]);
 
+  const renderByType = useCallback(() => {
+    if (type === 'draft') {
+      return (
+        <ImageBackground
+          resizeMode="cover"
+          source={require('@/assets/images/esim/lotteryBackground.png')}
+          style={{flex: 1}}>
+          {renderHeader()}
+
+          {/* // 메인화면 */}
+          {renderBody()}
+        </ImageBackground>
+      );
+    }
+    return (
+      <>
+        {renderHeader()}
+
+        {/* // 메인화면 */}
+        {renderBody()}
+      </>
+    );
+  }, [renderBody, renderHeader, type]);
+
+  return (
+    <SafeAreaView style={{flex: 1}}>
+      {shareView()}
+      {renderByType()}
       <LotteryModal
         visible={showCouponModal}
         coupon={coupon}
         onClose={() => setShowCouponModal(false)}
       />
-
       {/* 공유 어떻게 할지 정해지면 props 수정 필요 */}
       <LotteryShareModal
         captureRef={ref}
@@ -520,11 +598,10 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           setShowShareModal(false);
         }}
       />
-
       <AppSnackBar
         visible={showSnackbar !== ''}
         onClose={() => setShowSnackbar('')}
-        textMessage={i18n.t(showSnackbar)}
+        textMessage={showSnackbar !== '' ? i18n.t(showSnackbar) : ''}
       />
     </SafeAreaView>
   );

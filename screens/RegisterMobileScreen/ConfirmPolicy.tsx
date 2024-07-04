@@ -7,32 +7,52 @@ import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 
 const styles = StyleSheet.create({
+  col: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8,
+  },
   confirmList: {
     flexDirection: 'row',
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 1,
+    alignItems: 'center',
+    gap: 8,
+  },
+  comfirmText: {
+    ...appStyles.normal16Text,
+    lineHeight: 22,
+    letterSpacing: -0.16,
+    color: colors.black,
+    marginRight: 8,
   },
   container: {
     alignContent: 'stretch',
     flexDirection: 'column',
     backgroundColor: colors.backGrey,
-    paddingBottom: 32,
+    paddingVertical: 24,
+    paddingHorizontal: 20,
   },
   row: {
     flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'space-between',
   },
   titleBox: {
+    display: 'flex',
     flexDirection: 'row',
-    paddingVertical: 24,
-    marginHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.lightGrey,
+    gap: 8,
+    paddingVertical: 21,
+    paddingHorizontal: 16,
+    backgroundColor: colors.white,
+    borderRadius: 3,
+    marginBottom: 16,
   },
   title: {
     ...appStyles.bold16Text,
-    flex: 1,
-    marginLeft: 8,
+    lineHeight: 22,
+    color: colors.black,
   },
 });
 
@@ -55,21 +75,12 @@ const RegisterMobileListItem0 = ({
 }) => {
   return (
     <View style={styles.confirmList}>
-      <Pressable onPress={() => onPress(item.key)} style={{paddingVertical: 8}}>
-        <AppIcon
-          style={{marginRight: 10}}
-          name="policyCheck"
-          checked={confirmed}
-        />
+      <Pressable onPress={() => onPress(item.key)}>
+        <AppIcon name="policyCheck" checked={confirmed} />
       </Pressable>
-      <Pressable
-        onPress={() => onMove(item.key)}
-        style={[styles.row, {paddingVertical: 8}]}>
-        <AppText style={appStyles.normal16Text}>{item.label}</AppText>
-        <AppIcon
-          style={{marginRight: 10, marginTop: 5}}
-          name="iconArrowRight"
-        />
+      <Pressable onPress={() => onMove(item.key)} style={styles.row}>
+        <AppText style={styles.comfirmText}>{item.label}</AppText>
+        <AppIcon name="iconArrowRight" />
       </Pressable>
     </View>
   );
@@ -96,28 +107,28 @@ const ConfirmPolicy = ({
     () => [
       {
         key: 'contract',
-        label: i18n.t('cfm:contract') + i18n.t('cfm:mandatory'),
+        label: i18n.t('cfm:mandatory') + i18n.t('cfm:contract'),
         param: {
           key: 'setting:contract',
-          title: i18n.t('cfm:contract'),
+          title: i18n.t('cfm:contract:title'),
           ...commonParam,
         },
       },
       {
         key: 'personalInfo',
-        label: i18n.t('cfm:personalInfo') + i18n.t('cfm:mandatory'),
+        label: i18n.t('cfm:mandatory') + i18n.t('cfm:personalInfo'),
         param: {
           key: 'setting:privacy',
-          title: i18n.t('cfm:personalInfo'),
+          title: i18n.t('cfm:personalInfo:title'),
           ...commonParam,
         },
       },
       {
         key: 'marketing',
-        label: i18n.t('cfm:marketing') + i18n.t('cfm:optional'),
+        label: i18n.t('cfm:optional') + i18n.t('cfm:marketing'),
         param: {
           key: 'mkt:agreement',
-          title: i18n.t('cfm:marketing'),
+          title: i18n.t('cfm:marketing:title'),
           ...commonParam,
         },
       },
@@ -172,17 +183,19 @@ const ConfirmPolicy = ({
         <AppIcon name="checkBox" checked={checkAll} />
         <AppText style={styles.title}>{i18n.t('cfm:all')}</AppText>
       </Pressable>
-      {confirmList.map((item) => (
-        <RegisterMobileListItem
-          key={item.key}
-          item={item}
-          confirmed={confirm[item.key]}
-          onPress={(key) =>
-            setConfirm((prev) => ({...prev, [key]: !prev[key]}))
-          }
-          onMove={() => onMove?.(item.param)}
-        />
-      ))}
+      <View style={styles.col}>
+        {confirmList.map((item) => (
+          <RegisterMobileListItem
+            key={item.key}
+            item={item}
+            confirmed={confirm[item.key]}
+            onPress={(key) =>
+              setConfirm((prev) => ({...prev, [key]: !prev[key]}))
+            }
+            onMove={() => onMove?.(item.param)}
+          />
+        ))}
+      </View>
     </View>
   );
 };

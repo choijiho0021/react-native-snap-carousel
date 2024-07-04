@@ -80,27 +80,32 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
   action,
 }) => {
   const {prodByLocalOp, prodList} = product;
-  const {mainSubs, chargeablePeriod} = params || {};
+  const {chargeableItem, chargeablePeriod} = params || {};
   const isTop = useRef(true);
   const blockAnimation = useRef(false);
   const animatedValue = useRef(new Animated.Value(264)).current;
 
   const prodData = useMemo(() => {
-    if (mainSubs?.localOpId) {
+    if (chargeableItem?.localOpId) {
       return makeProdData(
         prodList,
         prodByLocalOp,
-        [mainSubs?.localOpId].concat(mainSubs?.extLocalOps || []),
+        [chargeableItem?.localOpId].concat(chargeableItem?.extLocalOps || []),
       );
     }
     return [];
-  }, [mainSubs.extLocalOps, mainSubs?.localOpId, prodByLocalOp, prodList]);
+  }, [
+    chargeableItem.extLocalOps,
+    chargeableItem?.localOpId,
+    prodByLocalOp,
+    prodList,
+  ]);
 
   useEffect(() => {
-    if (mainSubs?.localOpId) {
-      action.product.getProdOfPartner([mainSubs?.localOpId]);
+    if (chargeableItem?.localOpId) {
+      action.product.getProdOfPartner([chargeableItem?.localOpId]);
     }
-  }, [action.product, mainSubs?.localOpId]);
+  }, [action.product, chargeableItem?.localOpId]);
 
   const onPress = useCallback(
     (data: RkbProduct) =>
@@ -108,7 +113,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
         title: i18n.t('esim:charge:type:extension'),
         type: 'extension',
         extensionProd: data,
-        mainSubs,
+        chargeableItem,
         contents: {
           chargeProd: data.name,
           noticeTitle: i18n.t('esim:charge:extension:notice:title'),
@@ -117,7 +122,7 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
           ),
         },
       }),
-    [navigation, mainSubs],
+    [navigation, chargeableItem],
   );
 
   const onTop = useCallback(
@@ -158,8 +163,8 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
 
       <Animated.View style={{height: animatedValue}}>
         <SelectedProdTitle
-          isdaily={mainSubs?.daily === 'daily'}
-          prodName={mainSubs?.prodName || ''}
+          isdaily={chargeableItem?.daily === 'daily'}
+          prodName={chargeableItem?.prodName || ''}
         />
         <View style={styles.whiteBox}>
           <View style={styles.greyBox}>

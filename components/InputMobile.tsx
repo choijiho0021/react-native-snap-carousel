@@ -9,6 +9,9 @@ import validationUtil, {ValidationResult} from '@/utils/validationUtil';
 import AppText from './AppText';
 import AppButton from './AppButton';
 import AppTextInput from './AppTextInput';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   helpText: {
@@ -19,8 +22,9 @@ const styles = StyleSheet.create({
   },
   text: {
     ...appStyles.semiBold16Text,
-    color: '#ffffff',
+    color: colors.white,
     lineHeight: 24,
+    letterSpacing: -0.16,
   },
   inputBox: {
     flex: 1,
@@ -31,20 +35,21 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     height: 50,
     marginRight: 8,
+    paddingVertical: isIOS ? 13 : 0,
+    paddingHorizontal: isIOS ? 16 : 14,
   },
   input: {
-    ...appStyles.normal16Text,
+    ...appStyles.medium16,
+    lineHeight: isIOS ? 0 : 24,
     color: colors.black,
-    paddingHorizontal: 10,
     marginRight: 20,
-    paddingVertical: 10,
+    textAlignVertical: 'center',
     flex: 1,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
-    marginTop: 16,
   },
   button: {
     width: 80,
@@ -65,6 +70,7 @@ type InputMobileProps = {
   authorized?: boolean;
   disabled: boolean;
   inputRef?: React.MutableRefObject<InputMobileRef | null>;
+  marginTop?: number;
 };
 
 const InputMobile: React.FC<InputMobileProps> = ({
@@ -73,6 +79,7 @@ const InputMobile: React.FC<InputMobileProps> = ({
   authorized,
   disabled,
   inputRef,
+  marginTop,
 }) => {
   const [mobile, setMobile] = useState('');
   const [value, setValue] = useState('');
@@ -127,7 +134,7 @@ const InputMobile: React.FC<InputMobileProps> = ({
 
   return (
     <View>
-      <View style={styles.row}>
+      <View style={{...styles.row, marginTop: marginTop || 16}}>
         <AppTextInput
           showCancel
           containerStyle={{

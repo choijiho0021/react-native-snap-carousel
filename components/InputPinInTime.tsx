@@ -2,6 +2,7 @@ import React, {
   PropsWithChildren,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -22,15 +23,22 @@ import i18n from '@/utils/i18n';
 import AppButton from './AppButton';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
+import AppStyledText from './AppStyledText';
+import AppSvgIcon from './AppSvgIcon';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
+    flex: 1,
   },
   inputWrapper: {
-    paddingHorizontal: 10,
+    paddingHorizontal: isIOS ? 16 : 14,
+    paddingVertical: isIOS ? 13 : 0,
     borderWidth: 1,
     borderRadius: 3,
     height: 50,
@@ -57,16 +65,58 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   helpBox: {
-    marginTop: 13,
+    marginTop: 6,
   },
   helpText: {
-    ...appStyles.normal14Text,
+    ...appStyles.medium14,
+    lineHeight: 20,
     color: colors.clearBlue,
   },
   input: {
-    ...appStyles.normal16Text,
+    ...appStyles.medium16,
+    lineHeight: isIOS ? 0 : 24,
     color: colors.black,
     flex: 1,
+    textAlignVertical: 'center',
+  },
+  referrerNaver: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 4,
+    alignItems: 'flex-start',
+    marginTop: 16,
+  },
+  referrerText: {
+    ...appStyles.medium14,
+    lineHeight: 20,
+    color: colors.black,
+  },
+  referrerTextBold: {
+    ...appStyles.bold14Text,
+    lineHeight: 20,
+    color: colors.naverGreen,
+  },
+  referrer: {
+    marginTop: 4,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  textFrame: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 3,
+    backgroundColor: colors.black92,
+  },
+  text: {
+    ...appStyles.medium14,
+    lineHeight: 20,
+    color: colors.white,
+  },
+  textBold: {
+    ...appStyles.bold14Text,
+    lineHeight: 20,
+    color: colors.lightYellow2,
   },
 });
 
@@ -84,6 +134,7 @@ type InputPinInTimeProps = {
   onPress: (v: string) => void;
   inputRef?: React.MutableRefObject<InputPinRef | null>;
   style?: ViewStyle;
+  referrer?: string;
 };
 
 const InputPinInTime: React.FC<
@@ -95,13 +146,19 @@ const InputPinInTime: React.FC<
   onPress,
   inputRef,
   style,
+  referrer,
   ...props
 }) => {
+  const fromNaver = useMemo(() => referrer === 'naver', [referrer]);
   const [pin, setPin] = useState('');
   const [duration, setDuration] = useState(0);
   const [timeoutFlag, setTimeoutFlag] = useState(false);
   const [focused, setFocused] = useState(false);
   const ref = useRef<TextInput>();
+  const showHelpBox = useMemo(
+    () => typeof authorized !== 'undefined' || timeoutFlag,
+    [authorized, timeoutFlag],
+  );
 
   const backgroundTimeRef = useRef<Moment>(); // background 시점 시간, listener 내부함수에 써야해서 ref 사용
 
@@ -247,6 +304,23 @@ const InputPinInTime: React.FC<
           disableBackgroundColor={colors.backGrey}
         />
       </View>
+      {showHelpBox && (
+        <View style={styles.helpBox}>
+          <AppText
+            style={[
+              styles.helpText,
+              {color: authorized ? colors.clearBlue : colors.tomato},
+            ]}>
+            {i18n.t(
+              timeoutFlag
+                ? 'mobile:timeout'
+                : authorized
+                ? 'mobile:authMatch'
+                : 'mobile:authMismatch',
+            )}
+          </AppText>
+        </View>
+      )}
       {countdown ? (
         <AppText style={styles.timer}>
           {`${
@@ -258,25 +332,29 @@ const InputPinInTime: React.FC<
             .toString()
             .padStart(2, '0')}`}
         </AppText>
+      ) : referrer && !showHelpBox ? (
+        fromNaver ? (
+          <View style={styles.referrerNaver}>
+            <AppSvgIcon name="naverIconNew" />
+            <AppStyledText
+              text={i18n.t('socialLogin:from:naver:ment')}
+              textStyle={styles.referrerText}
+              format={{b: styles.referrerTextBold}}
+            />
+          </View>
+        ) : (
+          <View style={styles.referrer}>
+            <AppSvgIcon name="arrowUpBlack12" />
+            <View style={styles.textFrame}>
+              <AppStyledText
+                text={i18n.t('socialLogin:from:referrer:ment')}
+                textStyle={styles.text}
+                format={{b: styles.textBold}}
+              />
+            </View>
+          </View>
+        )
       ) : null}
-      <View style={styles.helpBox}>
-        <AppText
-          style={[
-            styles.helpText,
-            {color: authorized ? colors.clearBlue : colors.tomato},
-          ]}>
-          {typeof authorized === 'undefined' && !timeoutFlag
-            ? null
-            : i18n.t(
-                // eslint-disable-next-line no-nested-ternary
-                timeoutFlag
-                  ? 'mobile:timeout'
-                  : authorized
-                  ? 'mobile:authMatch'
-                  : 'mobile:authMismatch',
-              )}
-        </AppText>
-      </View>
     </View>
   );
 };

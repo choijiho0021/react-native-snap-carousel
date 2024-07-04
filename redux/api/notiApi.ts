@@ -28,6 +28,7 @@ type RkbNotiJson = {
   mobile: string;
   isRead: string;
   fmt: string;
+  summary: string;
 };
 const toNoti = (resp: ApiResult<RkbNotiJson>): ApiResult<RkbNoti> => {
   if (resp.result === 0) {
@@ -42,6 +43,7 @@ const toNoti = (resp: ApiResult<RkbNotiJson>): ApiResult<RkbNoti> => {
         mobile: item.mobile,
         isRead: item.isRead || 'F',
         format: item.fmt === 'T' ? 'text' : 'html',
+        summary: item?.summary,
       })),
     );
   }

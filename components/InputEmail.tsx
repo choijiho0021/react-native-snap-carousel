@@ -6,16 +6,22 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {StyleSheet, TextInput, Pressable, View} from 'react-native';
+import {bindActionCreators} from 'redux';
+import {StyleSheet, Pressable, View} from 'react-native';
+import {connect} from 'react-redux';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
-import Triangle from './Triangle';
 import validationUtil from '@/utils/validationUtil';
 import {API} from '@/redux/api';
 import AppIcon from './AppIcon';
+import DomainListModal from './DomainListModal';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   row: {
@@ -29,7 +35,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 3,
     borderColor: colors.lightGrey,
-    paddingLeft: 16,
+    paddingLeft: isIOS ? 12 : 10,
+
     height: 50,
   },
   textInput: {
@@ -46,35 +53,43 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   helpText: {
-    ...appStyles.normal14Text,
+    ...appStyles.medium14,
+    lineHeight: 20,
     color: colors.clearBlue,
-    marginTop: 6,
   },
 });
 
 export type InputEmailRef = {
   focus: () => void;
+  blur: () => void;
 };
 
 type InputEmailProps = {
   inputRef?: React.MutableRefObject<InputEmailRef | null>;
   currentEmail?: string; // current email
+  socialEmail?: string;
   domain: string;
   placeholder?: string;
+  setDomain: (v: string) => void;
   onChange?: (email: string) => void;
-  onPress?: () => void;
+  isValid?: (v: boolean) => void;
+  actions: {
+    modal: ModalAction;
+  };
 };
 
 const InputEmail: React.FC<InputEmailProps> = ({
   inputRef,
   currentEmail,
+  socialEmail,
   domain,
   placeholder,
+  setDomain,
   onChange,
-  onPress = () => {},
+  isValid,
+  actions,
 }) => {
-  const emailRef = useRef<TextInput>();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(socialEmail || '');
   const [focused, setFocused] = useState(false);
   const [inValid, setInValid] = useState('');
   const [currentValue, setCurrentValue] = useState(currentEmail);
@@ -120,29 +135,47 @@ const InputEmail: React.FC<InputEmailProps> = ({
         }
       }
     }
-  }, [checkValid, currentEmail, currentValue, domain, email, onChange]);
+  }, [
+    checkValid,
+    currentEmail,
+    currentValue,
+    domain,
+    email,
+    isValid,
+    onChange,
+  ]);
 
   useEffect(() => {
     if (inValid !== 'changeEmail:usable') {
+      if (isValid) isValid(false);
       onChange?.('');
-    }
-  }, [inValid, onChange]);
+    } else if (isValid) isValid(true);
+  }, [inValid, isValid, onChange]);
+
+  const onPressDomain = useCallback(() => {
+    inputRef?.current?.blur();
+    actions.modal.renderModal(() => <DomainListModal setDomain={setDomain} />);
+  }, [actions.modal, inputRef, setDomain]);
 
   useEffect(() => {
-    if (inputRef) {
-      inputRef.current = {
-        focus: () => emailRef.current?.focus(),
-      };
+    if (domain === 'input') {
+      setTimeout(() => {
+        if (inputRef?.current) {
+          inputRef?.current?.focus();
+        }
+      }, 100);
     }
-  }, [domain, email, inputRef]);
+  }, [domain, inputRef]);
 
   return (
     <View>
       <View style={styles.container}>
         <AppTextInput
-          showCancel
+          showCancel={focused}
+          cancelButtonStyle={{paddingLeft: 8}}
           containerStyle={{
             ...styles.wrapper,
+            paddingRight: 12,
             borderColor: focused ? colors.clearBlue : colors.lightGrey,
           }}
           style={[
@@ -151,11 +184,11 @@ const InputEmail: React.FC<InputEmailProps> = ({
           ]}
           placeholder={placeholder}
           placeholderTextColor={colors.greyish}
-          returnKeyType="next"
+          returnKeyType={domain === 'input' ? 'done' : 'next'}
           enablesReturnKeyAutomatically
           onChangeText={setEmail}
           autoCapitalize="none"
-          ref={emailRef}
+          ref={inputRef}
           value={email}
           multiline={false}
           keyboardType="email-address"
@@ -165,16 +198,20 @@ const InputEmail: React.FC<InputEmailProps> = ({
             setEmail('');
             setInValid('changeEmail:invalidEmail');
           }}
+          onSubmitEditing={() => {
+            if (domain !== 'input') onPressDomain();
+          }}
         />
 
         {domain !== 'input' && (
+          // eslint-disable-next-line react-native/no-raw-text
           <AppText style={[appStyles.medium16, {marginHorizontal: 6}]}>
             @
           </AppText>
         )}
 
         {domain !== 'input' && (
-          <Pressable style={styles.wrapper} onPress={onPress}>
+          <Pressable style={styles.wrapper} onPress={onPressDomain}>
             <View style={[styles.row, {paddingVertical: 13}]}>
               <AppText
                 style={[
@@ -188,15 +225,24 @@ const InputEmail: React.FC<InputEmailProps> = ({
           </Pressable>
         )}
       </View>
-      <AppText
-        style={[
-          styles.helpText,
-          {color: validated ? colors.clearBlue : colors.errorBackground},
-        ]}>
-        {inValid ? i18n.t(inValid) : ''}
-      </AppText>
+      <View style={{height: 20, marginTop: 6}}>
+        <AppText
+          style={[
+            styles.helpText,
+            {color: validated ? colors.clearBlue : colors.errorBackground},
+          ]}>
+          {inValid ? i18n.t(inValid) : ''}
+        </AppText>
+      </View>
     </View>
   );
 };
 
-export default memo(InputEmail);
+export default connect(
+  () => ({}),
+  (dispatch) => ({
+    actions: {
+      modal: bindActionCreators(modalActions, dispatch),
+    },
+  }),
+)(memo(InputEmail));

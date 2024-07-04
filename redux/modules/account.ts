@@ -15,7 +15,7 @@ import {Moment} from 'moment';
 import VersionCheck from 'react-native-version-check';
 import DeviceInfo from 'react-native-device-info';
 import {API} from '@/redux/api';
-import {removeData, retrieveData, storeData} from '@/utils/utils';
+import {removeData, retrieveData, storeData, utils} from '@/utils/utils';
 import {RkbCoupon, RkbFile, RkbImage} from '@/redux/api/accountApi';
 import api, {ApiResult} from '@/redux/api/api';
 import {actions as toastActions, reflectWithToast, Toast} from './toast';
@@ -25,8 +25,9 @@ import {actions as notiActions} from './noti';
 import {actions as cartActions} from './cart';
 import Env from '@/environment';
 import userApi from '@/redux/api/userApi';
+import CookieManager from '@react-native-cookies/cookies';
 
-const {cachePrefix} = Env.get();
+const {cachePrefix, scheme, apiUrl} = Env.get();
 
 const getToken = createAsyncThunk('account/getToken', API.User.getToken);
 const logIn = createAsyncThunk('acccount/logIn', API.User.logIn);
@@ -319,6 +320,10 @@ const logInAndGetAccount = createAsyncThunk(
               }
             });
           }
+
+          CookieManager.get(`${scheme}://${apiUrl}`).then((val) => {
+            utils.log(`@@@ current cookie : ${val}`);
+          });
 
           dispatch(getUserId({name: obj.current_user.name}));
           dispatch(notiActions.getNotiList({mobile: obj.current_user.name}));

@@ -1,4 +1,5 @@
 {
+  "next": "next",
   "select": "Select",
   "store": "Store",
   "home": "Home",
@@ -241,6 +242,7 @@
   "set:netstat:disconnected": "네트워크 연결 실패",
 
   "resign": "Delete Account",
+  "resign:button": "Delete Account",
   "resign:why": "Please let us know why you are leaving us.",
   "resign:info": "We will do our best to meet your standards",
   "resign:title": "Are you really\ngoing to leave us?",
@@ -256,12 +258,18 @@
   "resign:confirm2": "You will not be eligible to participate the promotion events for new users if you open your account again.",
   "resign:confirm3": "Information mandated to be stored by the law will be discarded after the period set by the law",
   "resign:isConfirm": "I have read and agree to the terms above.",
-  "resign:cntInfo": "You have traveled with us for {{count}} time(s).",
+  "resign:cntInfo": "You have traveled with us for <b>{count}</b> time(s).",
   "resign:noCnt": "Try ROKEBI eSIM easy to use and convenient.\nEnojy travelling with ROKEBI!",
-  "resign:confirmModal": "{{info}}\n\nDo you really wish to delete the account?",
-  "resign:finished": "Your account has been successfully deleted.\nThank you for using our service.",
+  "resign:finished:title": "계정 탈퇴가 정상적으로 처리되었습니다.",
+  "resign:finished": "데이터가 필요한 순간, 로밍도깨비를 다시 찾아주세요!",
   "resign:placeholder": "Would you like to tell us more?",
-  "resign:fail": "네트워크 문제로 요청이 처리되지 않았습니다.\n인터넷 연결 확인 후 다시 시도 해 주세요[",
+  "resign:fail:title": "계정 탈퇴 실패하였습니다.",
+  "resign:fail": "네트워크 문제로 요청이 처리되지 않았습니다. 인터넷 연결 확인 후 다시 시도해 주세요.",
+  "resign:disable:reason": "탈퇴 이유를 입력해 주세요.",
+  "resign:disable:agreement": "탈퇴 전 유의사항 확인 후 동의해주세요.",
+  "resign:confirmModal:title": "정말 탈퇴하시겠습니까?",
+  "resign:confirmModal:resign": "탈퇴하기",
+  "resign:confirmModal:cancel": "유지하기",
 
   "set:globalMarket": "Global Market",
 
@@ -288,14 +296,27 @@
   "mobile:authMismatch": "Auth code is not correct",
   "mobile:timeout": "Auth code is expired. Please try again.",
   "mobile:inputInTime": "* Please input the auth code within 3 minutes",
+  "mobile:timeLeft": "남은 시간 ",
+  "mobile:email": "이메일",
+  "mobile:signup": "회원 가입하기",
+  "signup:title": "회원 가입",
+
+  "signup:title:welcome": "환영해요!\n회원 정보를 확인하세요.",
+  "signup:title:info": "상품 발송 시 사용하는 정보입니다.",
+
+  "signup:id": "회원 번호",
+  "signup:mobile": "휴대폰 번호",
 
   "email:input": "Manual",
 
   "cfm:contract": "I agree to terms and conditions ",
-  "cfm:required": "(Required)",
+  "cfm:required": "(Required) ",
   "cfm:personalInfo": "I agree to  privacy policy ",
+  "cfm:contract:title": "서비스 이용 약관",
+  "cfm:personalInfo:title": "개인 정보 수집 및 이용 약관",
+  "cfm:marketing:title": "마케팅 정보 수신 동의",
   "cfm:marketing": "I agree to receive marketing info ",
-  "cfm:optional": "(Optional)",
+  "cfm:optional": "(Optional) ",
   "cfm:accept": "Accept",
 
   "purchase:address": "Delivery Address",
@@ -624,6 +645,9 @@
   "esim:showQR:body": "Go to <color:'#2a7ff6'>Setting>Cellular>Add cellular plan</color>, then scan QR code below. (You can scan this QR Code on another device).",
   "esim:showQR:body_aos": "Follow the user guide to register QR code.\n<color:'#2a7ff6'>You can scan this QR code on another device!</color>",
   "esim:showQR:body_new": "It's easier to scan QR code if you display it \nin <b>another device</b>!",
+  "esim:oneTouch": "원터치 등록",
+  "esim:oneTouch:txt": "간편하게 터치 한 번으로!\n<b>클릭하면</b> 사용 중인 단말에 <b>eSIM이 즉시 등록돼요.</b>",
+  "esim:oneTouch:reg": "원터치 등록하기",
   "esim:smdp": "SM-DP+ Address",
   "esim:actCode": "Activation Code",
   "esim:iccid": "ICCID",
@@ -1193,9 +1217,15 @@
   "changeEmail:fail": "Failed to register email.",
 
   "socialLogin:kakao": "Login with Kakao",
+  "socialLogin:naver": "Login with Naver",
   "socialLogin:apple": "Sign in with Apple",
   "socialLogin:google": "Sign in with Google",
   "socialLogin:facebook": "Sign in with Facebook",
+
+  "socialLogin:hist": "최근 로그인",
+  "socialLogin:from:naver": "네이버 로그인하면 3초만에 상품 연동!",
+  "socialLogin:from:naver:ment": "<b>네이버 스토어</b> 주문 시 <b>작성한 번호</b>로 회원 가입해 주세요!",
+  "socialLogin:from:referrer:ment": "주문 시 <b>작성한 번호</b>로 회원 가입해 주세요!",
 
   "userGuide:home:title": "Using eSIM is not difficult!\nPlease check the guide\nin order",
   "userGuide:esimReg:title": "Register eSIM",
@@ -1205,9 +1235,9 @@
 
   "userGuide:modal:title": "Can I pre-register\nthe eSIM product in Korea?",
   "userGuide:modal:body": "Yes, of course!\nExcept for some products below,\n<b>Registration is available in Korea</b>.",
+  "userGuide:modal:body:empty": "현재 상품 리스트를 가져올 수 없습니다.\n잠시 후 다시 시도해 주세요.",
 
   "userGuide:modal:notice:title": "Local Registered Product",
-  "userGuide:modal:notice:body": "global 146 countries, global 147 countries, Mongolia, India, Turkey, Saudi Arabia, Uzbekistan, Brazil, Mexico, Argentina, Thailand (local)",
   "userGuide:modal:notice:list1": "The above product starts to be used immediately <b>upon product registration in Korea</b>, and <b>the period of use may be exhausted.</b>",
   "userGuide:modal:notice:list2": "After arriving at the site, register the product on the device.",
 

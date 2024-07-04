@@ -14,7 +14,11 @@ import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {RkbOrder} from '@/redux/api/orderApi';
-import {AccountModelState} from '@/redux/modules/account';
+import {
+  AccountAction,
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import {
   actions as orderActions,
   OrderAction,
@@ -80,6 +84,7 @@ type DraftScreenProps = {
   action: {
     order: OrderAction;
     modal: ModalAction;
+    account: AccountAction;
   };
 };
 
@@ -119,18 +124,40 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
         orderId: draftOrder?.orderId,
         token,
       })
-      .then((r) => {
+      .then(async (r) => {
         action.order.subsReload({
           iccid: iccid!,
           token: token!,
           hidden: false,
         });
-
-        navigation.navigate('DraftResult', {
-          isSuccess: r?.payload?.result === 0,
+        await action.account.checkLottery({
+          iccid,
+          token,
+          prompt: 'check',
         });
+
+        if (draftOrder?.orderType === 'refundable') {
+          // 바로 운세뽑기로 이동
+          navigation.navigate('Lottery', {
+            type: 'draft',
+          });
+        } else {
+          // 근데 발권은 refundable만 되니까 발권 완료 페이지는 삭제되는건가?
+          // 확인 후 삭제
+          navigation.navigate('DraftResult', {
+            isSuccess: r?.payload?.result === 0,
+          });
+        }
       });
-  }, [action.order, draftOrder?.orderId, token, iccid, navigation]);
+  }, [
+    action.order,
+    action.account,
+    draftOrder?.orderId,
+    draftOrder?.orderType,
+    token,
+    iccid,
+    navigation,
+  ]);
 
   const renderCheckButton = useCallback(() => {
     return (
@@ -220,6 +247,7 @@ export default connect(
   (dispatch) => ({
     action: {
       order: bindActionCreators(orderActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch),
       product: bindActionCreators(productActions, dispatch),
       modal: bindActionCreators(modalActions, dispatch),
     },

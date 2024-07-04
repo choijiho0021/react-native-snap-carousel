@@ -189,12 +189,12 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
       params?.addOnProd
         ? [
             API.Product.toPurchaseAddOnItem(
-              params.mainSubs.key,
+              params.chargeableItem.key,
               params.addOnProd,
             ),
           ]
         : [API.Product.toPurchaseItem(params?.extensionProd)],
-    [params?.addOnProd, params?.extensionProd, params?.mainSubs.key],
+    [params?.addOnProd, params?.extensionProd, params?.chargeableItem.key],
   );
   const expPeriod = useMemo(() => moment().add(180, 'day'), []);
   const [isPressed, setIsPressed] = useState(false);
@@ -207,8 +207,8 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
       action.cart.purchase({
         purchaseItems,
         balance,
-        esimIccid: params.mainSubs.subsIccid,
-        mainSubsId: params.mainSubs.nid,
+        esimIccid: params.chargeableItem.subsIccid,
+        chargeableItemId: params.chargeableItem.nid,
       });
 
       navigation.navigate('PymMethod', {mode: 'roaming_product'});
@@ -233,7 +233,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
     action.modal,
     isPressed,
     navigation,
-    params.mainSubs,
+    params.chargeableItem,
     purchaseItems,
   ]);
 
@@ -296,8 +296,8 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
       <View style={{position: 'relative', flex: 1}}>
         <ScrollView style={{flex: 1}} ref={scrollRef}>
           <SelectedProdTitle
-            isdaily={params?.mainSubs?.daily === 'daily'}
-            prodName={params?.mainSubs?.prodName || ''}
+            isdaily={params?.chargeableItem?.daily === 'daily'}
+            prodName={params?.chargeableItem?.prodName || ''}
             isAddOn={!!params?.addOnProd}
           />
 

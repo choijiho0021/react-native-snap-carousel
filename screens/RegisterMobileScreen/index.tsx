@@ -17,6 +17,7 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import analytics from '@react-native-firebase/analytics';
+import AsyncStorage from '@react-native-community/async-storage';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppIcon from '@/components/AppIcon';
@@ -39,19 +40,11 @@ import i18n from '@/utils/i18n';
 import validationUtil from '@/utils/validationUtil';
 import {LinkModelState} from '@/redux/modules/link';
 import ScreenHeader from '@/components/ScreenHeader';
-import moment from 'moment';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const {isProduction, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
-  title: {
-    paddingHorizontal: 20,
-    paddingTop: 40,
-  },
-  mobileAuth: {
-    ...appStyles.h1,
-    paddingTop: 50,
-  },
   container: {
     paddingTop: 20,
     flex: 1,
@@ -59,10 +52,56 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: colors.white,
   },
-  row: {
-    flexDirection: 'row',
+  title: {
     flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    paddingTop: 40,
+    paddingHorizontal: 20,
+    position: 'relative',
+    paddingBottom: 217,
+  },
+  titleText: {
+    ...appStyles.bold30Text,
+    lineHeight: 36,
+    letterSpacing: -0.6,
+    color: colors.black,
+  },
+  mobileWithToolTip: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 12,
+  },
+  mobileAuth: {
+    marginTop: 12,
+    ...appStyles.bold18Text,
+    lineHeight: 22,
+    color: colors.black,
+  },
+  tooltip: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  tooltipBox: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: colors.black92,
+    borderRadius: 3,
+  },
+  tooltipText: {
+    ...appStyles.medium14,
+    lineHeight: 20,
+    color: colors.white,
+  },
+
+  row: {
+    paddingtop: 40,
+    paddingBottom: 28,
+    flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  emptyToolTip: {
+    height: 47,
   },
 });
 
@@ -105,6 +144,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const [timeoutFlag, setTimeoutFlag] = useState(false);
   const [isKeyboardShow, setIsKeyboardShow] = useState(false);
   const [status, setStatus] = useState<TrackingStatus>();
+  const [recentNormal, setRecentNormal] = useState(false);
   const controller = useRef(new AbortController());
   const mounted = useRef(false);
   const mobileRef = useRef<InputMobileRef>(null);
@@ -114,6 +154,17 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     () => link?.params?.recommender,
     [link?.params?.recommender],
   );
+
+  const referrer = useMemo(
+    () => link?.params?.referrer,
+    [link?.params?.referrer],
+  );
+
+  useEffect(() => {
+    AsyncStorage.getItem('login.hist').then((v) => {
+      if (v && v === 'normal') setRecentNormal(true);
+    });
+  }, []);
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
@@ -260,8 +311,8 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
 
           if (resp.result === 0 && mounted.current) {
             setAuthorized(_.isEmpty(resp.objects) ? true : undefined);
-
             if (!_.isEmpty(resp.objects)) {
+              AsyncStorage.setItem('login.hist', 'normal');
               signIn({mobile, pin: value});
             } else {
               actions.account.updateAccount({isNewUser: true});
@@ -316,6 +367,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           // new login
           // create account
           navigation.navigate('Signup', {
+            kind,
             profileImageUrl,
             pin: pass,
             status,
@@ -324,6 +376,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
           });
         } else {
           // account exist. try login
+          AsyncStorage.setItem('login.hist', kind);
           signIn({mobile: drupalId, pin: pass});
         }
       }
@@ -337,7 +390,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <ScreenHeader
-        title={i18n.t('mobile:header')}
         backHandler={() => {
           initState();
           navigation.goBack();
@@ -346,26 +398,42 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       <KeyboardAwareScrollView
         enableOnAndroid
         enableResetScrollToCoords={false}
-        keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{flexGrow: 1}}
+        style={{flex: 1}}>
         <View style={styles.title}>
           <View style={styles.row}>
-            <AppText style={appStyles.bold30Text}>
-              {i18n.t('mobile:title')}
-            </AppText>
-            <AppIcon name="earth" />
+            <AppText style={styles.titleText}>{i18n.t('mobile:title')}</AppText>
+            <AppIcon name="earth" style={{marginRight: 12}} />
           </View>
-          <AppText style={styles.mobileAuth}>
-            {i18n.t('mobile:easyLogin')}
-          </AppText>
+          <View style={styles.mobileWithToolTip}>
+            <AppText style={styles.mobileAuth}>
+              {i18n.t('mobile:easyLogin')}
+            </AppText>
+            {recentNormal && !referrer ? (
+              <View style={styles.tooltip}>
+                <View style={styles.tooltipBox}>
+                  <AppText style={styles.tooltipText}>
+                    {i18n.t('socialLogin:hist')}
+                  </AppText>
+                </View>
+                <AppSvgIcon name="arrowDownBlack12" style={{marginLeft: 20}} />
+              </View>
+            ) : (
+              <View style={styles.emptyToolTip} />
+            )}
+          </View>
+
           <InputMobile
             onPress={sendSms}
             authNoti={authNoti}
             disabled={(authNoti && authorized) || loading}
             authorized={authorized}
             inputRef={mobileRef}
+            marginTop={6}
           />
           <InputPinInTime
-            style={{marginTop: 20}}
+            style={{marginTop: 8, flex: 1}}
             clickable={editablePin || !isProduction}
             editable={pinEditable}
             authorized={mobile ? authorized : undefined}
@@ -374,15 +442,11 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
             onPress={onPressPin}
             duration={180}
             inputRef={inputRef}
+            referrer={referrer}
           />
         </View>
+        {!isKeyboardShow && <SocialLogin onAuth={onAuth} referrer={referrer} />}
       </KeyboardAwareScrollView>
-      {!isKeyboardShow && (
-        <View style={{justifyContent: 'center', marginBottom: 36}}>
-          <SocialLogin onAuth={onAuth} />
-        </View>
-      )}
-
       <AppActivityIndicator visible={pending || loading} />
     </SafeAreaView>
   );

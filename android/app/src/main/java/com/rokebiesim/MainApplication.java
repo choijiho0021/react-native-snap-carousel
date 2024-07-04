@@ -52,6 +52,7 @@ import com.zoontek.rnlocalize.RNLocalizePackage;
 import com.reactnativecommunity.clipboard.ClipboardPackage;
 import com.ninty.system.setting.SystemSettingPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
+import com.dooboolab.naverlogin.RNNaverLoginPackage;
 
 import com.zoyi.channel.plugin.android.ChannelIO;
 import com.zoyi.channel.rn.RNChannelIOPackage;
@@ -160,6 +161,7 @@ public class MainApplication extends Application implements ReactApplication {
                 protected List<ReactPackage> getPackages() {
                     return Arrays.<ReactPackage>asList(
                             new MainReactPackage(),
+            new RNNaverLoginPackage(),
             new RNGoogleSigninPackage(),
             new FBSDKPackage(),
             new RNCConfigPackage(),

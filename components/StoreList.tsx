@@ -26,9 +26,11 @@ const styles = StyleSheet.create({
   text: {
     ...appStyles.normal16Text,
     fontSize: isDeviceSize('small') ? 16 : 18,
+    lineHeight: 20,
     textAlign: 'left',
     color: colors.clearBlue,
     fontWeight: '600',
+    top: -1,
   },
 
   image: {

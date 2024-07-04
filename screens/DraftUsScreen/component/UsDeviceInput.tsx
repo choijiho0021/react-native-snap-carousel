@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
   },
   eidFrame: {
     flex: 1,
+    color: colors.black,
     ...appStyles.medium16,
   },
   showSearchBar: {

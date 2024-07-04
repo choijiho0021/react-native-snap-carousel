@@ -202,7 +202,7 @@ function CartStackComponent() {
         <CartStack.Screen name="SimpleTextModal" component={SimpleTextScreen} />
       </CartStack.Group>
       <CartStack.Screen name="PaymentResult" component={PaymentResultScreen} />
-
+      <CartStack.Screen name="Invite" component={InviteScreen} />
       <CartStack.Group screenOptions={{animationEnabled: true}}>
         <CartStack.Screen
           name="PaymentGateway"

@@ -230,6 +230,17 @@ export const appStyles = StyleSheet.create({
     padding: 0,
     margin: 0,
   },
+  semiBold11Text: {
+    //        fontFamily: "AppleSDGothicNeo",
+    fontSize: 11,
+    fontWeight: '600',
+    fontStyle: 'normal',
+    lineHeight: 16,
+    letterSpacing: 0,
+    color: colors.black,
+    padding: 0,
+    margin: 0,
+  },
   semiBold13Text: {
     //        fontFamily: "AppleSDGothicNeo",
     fontSize: 13,
@@ -732,7 +743,10 @@ function go(key , className){
     key: key,
     value: document.getElementsByClassName(className)[0].getAttribute('value'),
     ios: document.getElementsByClassName(className)[0].getAttribute('ios'),
-    aos: document.getElementsByClassName(className)[0].getAttribute('aos')
+    aos: document.getElementsByClassName(className)[0].getAttribute('aos'),
+    type: document.getElementsByClassName(className)[0].getAttribute('type'),
+    volume: document.getElementsByClassName(className)[0].getAttribute('volume'),
+    scroll: document.getElementsByClassName(className)[0].getAttribute('scroll')
   };
   window.ReactNativeWebView.postMessage(JSON.stringify(cmd));
 }

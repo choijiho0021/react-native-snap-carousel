@@ -23,6 +23,7 @@ import AppStyledText from '../AppStyledText';
 import AppSvgIcon from '../AppSvgIcon';
 import {navigate} from '@/navigation/navigation';
 import {useNavigation, useRoute} from '@react-navigation/native';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   row: {
@@ -126,7 +127,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
 }) => {
   const discount = useMemo(() => cart.pymReq?.discount, [cart.pymReq]);
   const [rokebiCash, setRokebiCash] = useState('');
-  const [checked, setChecked] = useState(true);
+  const [checked, setChecked] = useState(false);
   const [editing, setEditing] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
@@ -319,7 +320,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
         </View>
         <Pressable
           onPress={() => {
-            navigation.navigate('HomeStack', {screen: 'Invite'});
+            navigation.navigate('Invite');
           }}
           style={styles.inviteButtonContainer}>
           <View style={[styles.inviteRow, {gap: 2}]}>
@@ -328,7 +329,9 @@ const DiscountInfo: React.FC<DiscountProps> = ({
                 appStyles.semiBold16Text,
                 {color: colors.clearBlue, lineHeight: 24},
               ]}>
-              {i18n.t('pym:invite:title')}
+              {i18n.t(
+                `pym:invite:title${isDeviceSize('small') ? ':small' : ''}`,
+              )}
             </AppText>
             <Image
               source={require('@/assets/images/esim/emojiMoney.png')}

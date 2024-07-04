@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderStyle: 'solid',
     borderWidth: 1,
+    borderRadius: 3,
   },
   text: {
     ...appStyles.normal14Text,

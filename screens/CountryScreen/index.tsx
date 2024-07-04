@@ -31,6 +31,7 @@ import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppText from '@/components/AppText';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {appStyles} from '@/constants/Styles';
+import {DailyProdFilterList} from '@/components/DailyProdFilter';
 
 const {isIOS} = Env.get();
 
@@ -102,6 +103,11 @@ type CountryScreenProps = {
 };
 
 // type ProdDataType = {title: string; data: RkbProduct[]};
+export type SelectedTabType = {
+  type?: string;
+  volume?: DailyProdFilterList;
+  scroll?: string;
+};
 
 const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const {navigation, route, product} = props;
@@ -116,6 +122,11 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
     () => API.Product.getTitle(localOpList.get(route.params?.partner[0])),
     [localOpList, route.params?.partner],
   );
+  const [selectedTab, setSelectedTab] = useState({
+    type: route.params?.type,
+    volume: route.params?.volume,
+    scroll: route.params?.scroll,
+  });
   const animatedValue = useRef(new Animated.Value(150)).current;
   const isFocused = useIsFocused();
 
@@ -135,7 +146,13 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   }, [localOpList, prodByLocalOp, prodList, route.params.partner]);
 
   const onPress = useCallback(
-    (prod: RkbProduct) =>
+    (prod: RkbProduct) => {
+      setSelectedTab({
+        type: undefined,
+        volume: undefined,
+        scroll: undefined,
+      });
+
       navigation.navigate('ProductDetail', {
         title: prod.name,
         item: API.Product.toPurchaseItem(prod),
@@ -148,7 +165,8 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         partnerId: prod.partnerId,
         partner: localOpList.get(prod.partnerId)?.partner,
         prod,
-      }),
+      });
+    },
     [imageUrl, localOpDetails, localOpList, navigation],
   );
 
@@ -179,9 +197,10 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
           onTop={onTop}
           onPress={onPress}
           isCharge={false}
+          selectedTabParam={key === selectedTab?.type ? selectedTab : undefined}
         />
       ),
-    [onPress, onTop, prodData],
+    [onPress, onTop, prodData, selectedTab],
   );
 
   BackbuttonHandler({
@@ -191,7 +210,11 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
   const renderSelectedPane = useCallback(() => {
     return prodData.length > 0 && isFocused ? (
       <Tab.Navigator
-        initialRouteName={prodData[0].length === 0 ? 'total' : 'daily'}
+        initialRouteName={
+          prodData[0].length === 0 || selectedTab.type === 'total'
+            ? 'total'
+            : 'daily'
+        }
         tabBar={(props) => <TabBar {...props} />}
         sceneContainerStyle={{backgroundColor: colors.white}}>
         {['daily', 'total'].map((k) => (
@@ -204,7 +227,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
         ))}
       </Tab.Navigator>
     ) : null;
-  }, [isFocused, prodData, renderProdType]);
+  }, [isFocused, prodData, renderProdType, selectedTab.type]);
 
   return (
     <SafeAreaView style={styles.container}>

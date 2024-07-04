@@ -87,6 +87,8 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
   onShareInsta,
   captureRef,
 }) => {
+  const [isShareDisabled, setIsShareDisabled] = useState(false);
+
   const uploadImage = useCallback(async () => {
     const uri = await captureRef.current?.capture?.();
 
@@ -173,6 +175,7 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
   );
   const onPressShareMore = useCallback(
     (imgLink: string) => {
+      setIsShareDisabled(false);
       onPressShare('open', imgLink, {
         message: i18n.t('esim:lottery:share:desc'),
         failOnCancel: false,
@@ -203,6 +206,7 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
 
   const sharePlatform = useCallback(
     (pictureUrl: string, type: string) => {
+      if (type === 'more') setIsShareDisabled(true);
       const serverImageUrl = API.default.httpImageUrl(pictureUrl);
 
       //  kakao 때만 동적 링크 필요
@@ -223,7 +227,7 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
         });
       }
 
-      if (type === 'more') {
+      if (type === 'more' && isShareDisabled) {
         onPressShareMore(serverImageUrl);
       }
 
@@ -231,7 +235,12 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
         onPressShareMessage(serverImageUrl);
       }
     },
-    [onPressShareKakaoForFortune, onPressShareMessage, onPressShareMore],
+    [
+      isShareDisabled,
+      onPressShareKakaoForFortune,
+      onPressShareMessage,
+      onPressShareMore,
+    ],
   );
 
   const onSharePress = useCallback(
