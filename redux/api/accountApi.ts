@@ -21,7 +21,7 @@ export type RkbAccount = {
   iccid?: string;
 };
 
-export type RkbCoupon = {
+export interface RkbCoupon {
   id: string;
   prName: string;
   prDisp: string;
@@ -33,7 +33,11 @@ export type RkbCoupon = {
     percentage?: string;
     amount?: Currency;
   };
-};
+}
+
+export interface RkbCouponWithAdj extends RkbCoupon {
+  adj?: Currency;
+}
 
 const toAccount = (
   data: DrupalNode[] | DrupalNodeJsonApi,

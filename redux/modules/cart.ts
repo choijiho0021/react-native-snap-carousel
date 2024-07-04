@@ -19,13 +19,13 @@ import {storeData, retrieveData, utils, parseJson} from '@/utils/utils';
 import {actions as orderAction} from './order';
 import {actions as accountAction} from './account';
 import {availableRokebiCash} from '@/components/AppPaymentGateway/DiscountInfo';
+import {RkbCoupon, RkbCouponWithAdj} from '../api/accountApi';
 
 const {esimCurrency} = Env.get();
 
-const selectMaxCoupon = (acc: OrderPromo, cur: OrderPromo) => {
-  if (!acc || cur.adj?.value < acc.adj?.value) return cur;
-  if (cur.adj?.value === acc.adj?.value && cur.endDate?.isBefore(acc.endDate))
-    return cur;
+const selectMaxCoupon = (acc: RkbCouponWithAdj, cur: RkbCouponWithAdj) => {
+  if (!acc || cur?.adj?.value < acc?.adj?.value) return cur;
+  if (cur?.adj === acc?.adj && cur.endDate?.isBefore(acc.endDate)) return cur;
   return acc;
 };
 
@@ -184,11 +184,15 @@ const slice = createSlice({
     },
 
     applyCoupon: (state, action) => {
-      const {couponId, maxDiscount, accountCash} = action.payload;
+      const {couponId, maxDiscount, accountCash, couponList} = action.payload;
 
-      const maxDiscountCpn = state.promo?.reduce((acc, cur) => {
-        return selectMaxCoupon(acc, cur);
-      }, undefined)?.coupon_id;
+      const maxDiscountCpn = couponList
+        ? couponList?.reduce((acc, cur) => {
+            return selectMaxCoupon(acc, cur);
+          }, undefined)?.id
+        : state.promo?.reduce((acc, cur) => {
+            return selectMaxCoupon(acc, cur);
+          }, undefined)?.coupon_id;
 
       if (maxDiscount) {
         state.couponToApply = maxDiscountCpn;
@@ -196,10 +200,11 @@ const slice = createSlice({
         state.couponToApply = couponId;
       }
       state.maxCouponId = maxDiscountCpn;
+
       // couponToApply == undefined 이면, discount도 undefined로 설정된다.
-      const promo = state.promo?.find(
-        (p) => p.coupon_id === state.couponToApply,
-      );
+      const promo: RkbCouponWithAdj = couponList
+        ? couponList?.find((c) => c.id === state.couponToApply)
+        : state.promo?.find((p) => p.coupon_id === state.couponToApply);
 
       // 쿠폰 적용 시 결제 값이 음수가 되지 않도록 사용할 캐시 재계산
       if (promo && state?.pymReq?.rkbcash?.value > 0) {
