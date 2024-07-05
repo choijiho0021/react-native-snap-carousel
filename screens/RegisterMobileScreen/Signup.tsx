@@ -154,6 +154,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
   const [email, setEmail] = useState(
     route?.params?.email ? route?.params?.email : '',
   );
+
   const emailRef = useRef<InputEmailRef>(null);
   const [domain, setDomain] = useState(
     route?.params?.email?.split('@')?.[1]
@@ -162,6 +163,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
         : 'input'
       : '',
   );
+  const prevDomain = useRef(domain);
   const [showSnackBar, setShowSnackBar] = useState(false);
   const kind = useMemo(
     () => route?.params?.kind || 'normal',
@@ -195,10 +197,13 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
   }, [domain, email]);
 
   useEffect(() => {
-    if (mailValid && domain) {
+    if (mailValid && prevDomain.current !== domain) {
       scrollRef.current?.scrollToEnd();
+      prevDomain.current = domain;
     }
-  }, [domain, mailValid]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [domain]);
 
   useEffect(() => {
     if (confirm.mandatory) {
