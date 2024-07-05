@@ -40,7 +40,9 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
       <View style={styles.productFrame}>
         <SplitText
           numberOfLines={2}
-          renderExpend={() => renderPromoFlag(item.promoFlag || [], false)}
+          renderExpend={() =>
+            renderPromoFlag({flags: item?.promoFlag || [], isStore: false})
+          }
           style={{...appStyles.bold16Text, marginRight: 6}}
           ellipsizeMode="tail">
           {utils.removeBracketOfName(item?.title)}
