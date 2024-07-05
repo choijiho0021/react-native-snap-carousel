@@ -654,9 +654,12 @@ const QrInfoScreen = () => {
             : 'esim:oneTouch:needUpdate',
         )}
         type={canUseOneTouch ? 'normal' : 'info'}
-        onOkClose={() =>
-          canUseOneTouch ? Linking.openURL(oneTouchLink) : setVisible(false)
-        }
+        onOkClose={() => {
+          if (canUseOneTouch) {
+            Linking.openURL(oneTouchLink);
+          }
+          setVisible(false);
+        }}
         onCancelClose={() => setVisible(false)}
         visible={visible}
         okButtonTitle={i18n.t(canUseOneTouch ? 'esim:oneTouch:modal:ok' : 'ok')}

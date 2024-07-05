@@ -380,7 +380,14 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             <ProductDetailNotice fieldNoticeOption={fieldNoticeOption} />
           )}
           {clMtd &&
-            ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(clMtd) &&
+            [
+              'ustotal',
+              'usdaily',
+              'ais',
+              'dtac',
+              'mvtotal',
+              'vtdaily',
+            ].includes(clMtd) &&
             ftr && <ProductDetailCallMethod clMtd={clMtd} ftr={ftr} />}
         </View>
       )

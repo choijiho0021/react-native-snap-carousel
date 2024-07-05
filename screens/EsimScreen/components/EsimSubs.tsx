@@ -788,7 +788,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               ...styles.esimButton,
               color: isEditMode ? colors.lightGrey : colors.black,
             }}
-            title={i18n.t('esim:showQR')}
+            title={i18n.t('esim:regEsim')}
             onPress={() => navigation.navigate('QrInfo', {mainSubs})}
           />
         )}
@@ -883,7 +883,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   const renderHowToCall = useCallback(() => {
     const showHowModal =
       mainSubs?.clMtd &&
-      ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(
+      ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal', 'vtdaily'].includes(
         mainSubs?.clMtd,
       );
     if (showHowModal)
