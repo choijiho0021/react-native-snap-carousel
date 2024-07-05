@@ -25,19 +25,25 @@ const styles = StyleSheet.create({
   title: {
     ...appStyles.bold20Text,
     marginTop: 42,
-    marginBottom: 18,
+    marginBottom: 20,
   },
   subtitle: {
     ...appStyles.bold16Text,
     color: colors.clearBlue,
     marginTop: 16,
     marginBottom: 8,
+    lineHeight: 24,
+  },
+  phone: {
+    ...appStyles.bold14Text,
+    lineHeight: 22,
   },
   greyBox: {
     backgroundColor: colors.backGrey,
     paddingHorizontal: 12,
     paddingVertical: 16,
     marginBottom: 8,
+    borderRadius: 3,
   },
   way: {
     ...appStyles.bold14Text,
@@ -69,10 +75,15 @@ const styles = StyleSheet.create({
     ...appStyles.bold14Text,
     color: colors.darkBlue,
     marginBottom: 4,
+    lineHeight: 22,
   },
   warmGreyBold14: {
     ...appStyles.bold14Text,
     color: colors.warmGrey,
+  },
+  checkSmall: {
+    marginRight: 4,
+    paddingVertical: 3,
   },
   tip: {
     width: 40,
@@ -132,7 +143,7 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
         <View style={{marginBottom: 6}}>
           <AppStyledText
             text={i18n.t(`esim:howToCall:numCheck:way2:ios`)}
-            textStyle={appStyles.bold14Text}
+            textStyle={styles.phone}
             format={{
               h: {color: colors.darkBlue, fontWeight: '700'},
               g: {color: colors.warmGrey},
@@ -142,7 +153,7 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
         </View>
         <AppStyledText
           text={i18n.t(`esim:howToCall:numCheck:way2:aos`)}
-          textStyle={appStyles.bold14Text}
+          textStyle={styles.phone}
           format={{
             h: {color: colors.darkBlue, fontWeight: '700'},
             g: {color: colors.warmGrey},
@@ -248,7 +259,7 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
 
         <View style={{marginLeft: 20}}>
           <View style={{flexDirection: 'row'}}>
-            <AppSvgIcon name="checkedDarkBlueSmall" style={{marginRight: 4}} />
+            <AppSvgIcon name="checkedDarkBlueSmall" style={styles.checkSmall} />
             <View>
               <AppText style={styles.darkblueBold14}>
                 {i18n.t(`esim:howToCall:international:${clMtd}:ex:title`)}
@@ -299,7 +310,7 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
           </AppText>
 
           <View style={{flexDirection: 'row', marginTop: 12}}>
-            <AppSvgIcon name="checkedDarkBlueSmall" style={{marginRight: 4}} />
+            <AppSvgIcon name="checkedDarkBlueSmall" style={styles.checkSmall} />
             <View style={{flex: 1, marginRight: 4}}>
               <AppText style={{...styles.darkblueBold14, marginBottom: 4}}>
                 {i18n.t(`esim:howToCall:etcInfo:subtitle1:${clMtd}:title`)}
@@ -315,7 +326,7 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
             <View style={{flexDirection: 'row', marginTop: 12}}>
               <AppSvgIcon
                 name="checkedDarkBlueSmall"
-                style={{marginRight: 4}}
+                style={styles.checkSmall}
               />
               <View style={{marginRight: 4}}>
                 <AppText style={{...styles.darkblueBold14, marginBottom: 4}}>

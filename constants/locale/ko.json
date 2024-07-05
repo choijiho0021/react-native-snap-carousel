@@ -774,7 +774,7 @@
   "esim:howToCall:etcInfo:subtitle1:ais:title": "잔여 데이터 및 기간",
   "esim:howToCall:etcInfo:subtitle1:dtac:title": "데이터 사용량",
   "esim:howToCall:etcInfo:subtitle1:mvtotal:title": "잔여 통화·문자량",
-  "esim:howToCall:etcInfo:subtitle1:vtdaily:title": "잔여 통화·문자량",
+  "esim:howToCall:etcInfo:subtitle1:vtdaily:title": "잔여 데이터·통화량",
   "esim:howToCall:etcInfo:subtitle1:ais:txt": "*121*3# + 통화 누른 후 수신된 문자로 확인 가능",
   "esim:howToCall:etcInfo:subtitle1:dtac:txt": "*101*1*9# + 통화 눌러 확인 가능",
   "esim:howToCall:etcInfo:subtitle1:mvtotal:txt": "5555 번호로 “Balance” 문자 전송 후 수신된 문자로 확인 가능",
