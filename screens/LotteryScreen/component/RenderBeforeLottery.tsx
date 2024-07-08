@@ -73,10 +73,6 @@ const RenderBeforeLottery: React.FC<RenderBeforeLotteryProps> = ({
     }
   }, []);
 
-  useEffect(() => {
-    setShowButton(windowHeight - 900 > 0);
-  }, []);
-
   const handleScroll = useCallback((event) => {
     const {contentOffset, contentSize, layoutMeasurement} = event.nativeEvent;
     const isBottom =
@@ -94,10 +90,12 @@ const RenderBeforeLottery: React.FC<RenderBeforeLotteryProps> = ({
       <>
         <ScrollView
           style={{flex: 1}}
+          bounces={false}
           ref={scrollViewRef}
           onScroll={handleScroll}
-          onLayout={(event) => {
-            handleScroll(event);
+          onContentSizeChange={(w, h) => {
+            // 56 headerHeight
+            setShowButton(h + 56 - windowHeight > 0);
           }}
           scrollEventThrottle={16}
           scrollEnabled>
