@@ -44,6 +44,7 @@ type PromoFlag =
   | 'doubleSizeup'
   | 'tripleSizeup'
   | 'fiveG';
+
 const specialCategories: Record<string, PromoFlag> = esimGlobal
   ? isProduction
     ? {
