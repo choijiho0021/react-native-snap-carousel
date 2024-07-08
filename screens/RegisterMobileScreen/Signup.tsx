@@ -197,13 +197,11 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
   }, [domain, email]);
 
   useEffect(() => {
-    if (mailValid && prevDomain.current !== domain) {
+    if (mailValid && prevDomain.current !== domain && domain !== 'input') {
       scrollRef.current?.scrollToEnd();
       prevDomain.current = domain;
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [domain]);
+  }, [domain, mailValid]);
 
   useEffect(() => {
     if (confirm.mandatory) {
