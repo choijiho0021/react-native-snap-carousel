@@ -202,6 +202,8 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
             prompt: 'check',
           });
 
+          navigation.popToTop();
+
           if (draftOrder?.orderType === 'refundable') {
             // 바로 운세뽑기로 이동
 
