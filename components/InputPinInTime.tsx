@@ -102,6 +102,15 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
   },
+  triangle: {
+    width: 12,
+    borderLeftWidth: 8,
+    borderRightWidth: 8,
+    borderBottomWidth: 12,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: colors.black92,
+  },
   textFrame: {
     paddingHorizontal: 16,
     paddingVertical: 8,
@@ -344,7 +353,7 @@ const InputPinInTime: React.FC<
           </View>
         ) : (
           <View style={styles.referrer}>
-            <AppSvgIcon name="arrowUpBlack12" />
+            <View style={styles.triangle} />
             <View style={styles.textFrame}>
               <AppStyledText
                 text={i18n.t('socialLogin:from:referrer:ment')}
