@@ -313,6 +313,7 @@ type ChargeHistoryScreenProps = {
 
 // SVG 파일로 대체 불가. SVG는 이미지가 깨져보임
 const dailyCardImg = require('../assets/images/esim/dailyCard.png');
+const totalCardImg = require('../assets/images/esim/totalCard.png');
 
 const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   navigation,

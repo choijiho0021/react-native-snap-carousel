@@ -189,7 +189,7 @@ const ProductDetailCallMethod: React.FC<ProductDetailCallMethodProps> = ({
           {showCallDetail &&
             detailList.length > 0 &&
             detailList.map((i) => (
-              <View key={`detail${clMtd}${i}`}>
+              <View key={`detail${clMtd}${i}`} style={{marginRight: 20}}>
                 <TextWithCheck
                   text={i18n.t(
                     `prodDetail:callMethod:box:contents:detail${i}:${clMtd}`,

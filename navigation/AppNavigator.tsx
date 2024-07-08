@@ -212,7 +212,13 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         }
 
         if (url.includes('gift')) {
-          refNavigate({stack: 'EsimStack', screen: 'Esim'});
+          refNavigate({
+            stack: 'EsimStack',
+            screen: 'Esim',
+            params: {
+              actionStr: 'reload',
+            },
+          });
         } else {
           refNavigate({stack: 'MyPageStack', screen: 'MyPage'});
         }
