@@ -15,6 +15,18 @@ import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 const UniAsyncStorage =
   require('@react-native-community/async-storage').default;
 
+const checkPhotoPermissionAlert = () => {
+  AppAlert.confirm(
+    i18n.t('acc:permPhoto:title'),
+    i18n.t('acc:permPhoto'),
+    {
+      ok: () => openSettings(),
+    },
+    undefined,
+    i18n.t('setting'),
+  );
+};
+
 const storeData = async (key: string, value: any, isEncrypt?: boolean) => {
   if (!key) return undefined;
 
@@ -121,6 +133,7 @@ const captureScreen = async (ref: React.MutableRefObject<ViewShot>) => {
 
 export {utils};
 export {
+  checkPhotoPermissionAlert,
   storeData,
   retrieveData,
   removeData,

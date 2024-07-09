@@ -9,18 +9,12 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {
-  check,
-  openSettings,
-  PERMISSIONS,
-  RESULTS,
-} from 'react-native-permissions';
+import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import ImagePicker from 'react-native-image-crop-picker';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppAlert from '@/components/AppAlert';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
@@ -43,6 +37,7 @@ import AppSnackBar from '@/components/AppSnackBar';
 import ChatTalk from '@/components/ChatTalk';
 import Env from '@/environment';
 import ScreenHeader from '@/components/ScreenHeader';
+import {checkPhotoPermissionAlert} from '@/utils/utils';
 
 const {isIOS} = Env.get();
 
@@ -190,7 +185,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
       navigation.navigate('RegisterMobile', {
         goBack: () => navigation.goBack(),
       });
-    } else if (hasPhotoPermission || checkNewPermission) {
+    } else if (false) {
       if (ImagePicker) {
         ImagePicker.openPicker({
           width: 76 * 3,
@@ -213,9 +208,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
       }
     } else {
       // 사진 앨범 조회 권한을 요청한다.
-      AppAlert.confirm(i18n.t('settings'), i18n.t('acc:permPhoto'), {
-        ok: () => openSettings(),
-      });
+      checkPhotoPermissionAlert();
     }
   }, [
     action.account,

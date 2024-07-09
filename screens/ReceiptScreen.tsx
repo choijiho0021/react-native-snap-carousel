@@ -35,6 +35,7 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import AppAlert from '@/components/AppAlert';
 import Env from '@/environment';
 import ScreenHeader from '@/components/ScreenHeader';
+import {checkPhotoPermissionAlert} from '@/utils/utils';
 
 const {esimGlobal} = Env.get();
 
@@ -185,9 +186,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
       }
     } else {
       // 사진 앨범 조회 권한을 요청한다.
-      AppAlert.confirm(i18n.t('settings'), i18n.t('acc:permPhoto'), {
-        ok: () => openSettings(),
-      });
+      checkPhotoPermissionAlert();
     }
   }, [action.toast]);
 
