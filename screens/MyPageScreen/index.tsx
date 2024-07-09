@@ -185,7 +185,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
       navigation.navigate('RegisterMobile', {
         goBack: () => navigation.goBack(),
       });
-    } else if (false) {
+    } else if (hasPhotoPermission || checkNewPermission) {
       if (ImagePicker) {
         ImagePicker.openPicker({
           width: 76 * 3,
