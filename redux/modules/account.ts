@@ -90,7 +90,16 @@ const receiveAndGetGift = createAsyncThunk(
       ({payload}) => {
         if (payload?.result?.code === 0) {
           dispatch(promotionActions.removeGiftAndRecommender({sender, gift}));
-          return dispatch(orderActions.getSubsWithToast({iccid, token}));
+          dispatch(
+            orderActions.getSubsWithToast({
+              iccid: iccid!,
+              token: token!,
+              hidden: false,
+              subsId: undefined,
+              reset: true,
+            }),
+          );
+          return undefined;
         }
         return undefined;
       },
@@ -310,8 +319,9 @@ const logInAndGetAccount = createAsyncThunk(
                   dispatch(getUserId({name: resp?.objects[0]?.mobile})).then(
                     ({payload: resp2}) => {
                       if (resp2?.result === 0) {
-                        if (resp2?.objects[0]?.id !== sender)
+                        if (resp2?.objects[0]?.id !== sender) {
                           dispatch(receiveAndGetGift({sender, gift}));
+                        }
                       }
                     },
                   );
