@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const toVolumeStr = (volume: number) => {
+export const toVolumeStr = (volume: number) => {
   if (volume <= 1000) return `${volume}MB`;
   return `${volume / 1024}GB`;
 };

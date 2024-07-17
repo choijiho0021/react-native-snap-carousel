@@ -22,7 +22,6 @@ import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
 import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 import {PaymentRule} from '@/redux/modules/product';
 import {Fortune} from '@/redux/modules/account';
-import {DailyProdFilterList} from '@/components/DailyProdFilter';
 import {SocialAuthInfoKind} from '@/components/SocialLogin';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti' | 'page';
@@ -140,7 +139,7 @@ export type HomeStackParamList = {
   Country: {
     partner: string[];
     type?: string;
-    volume?: DailyProdFilterList;
+    volume?: String;
     scroll?: string;
   };
   Payment: PaymentParams;
