@@ -7,7 +7,7 @@ import {Moment} from 'moment';
 import {ViewStyle} from 'react-native';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {RkbInfo} from '@/redux/api/pageApi';
-import {BoardMsgStatus} from '@/redux/api/boardApi';
+import {BoardMsgStatus, RkbBoard} from '@/redux/api/boardApi';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {
@@ -132,7 +132,12 @@ export type HomeStackParamList = {
   ContactBoard: ContactBoardRouteParam;
   EventBoard: EventBoardRouteParam;
   UserGuide: undefined;
-  BoardMsgResp: {uuid: string; status?: BoardMsgStatus; isEvent?: boolean};
+  BoardMsgResp: {
+    uuid?: string;
+    item?: RkbBoard;
+    status?: BoardMsgStatus;
+    isEvent?: boolean;
+  };
   BoardMsgAdd: {key: string; status: BoardMsgStatus};
   Faq: FaqRouteParam;
   Guide: undefined;
