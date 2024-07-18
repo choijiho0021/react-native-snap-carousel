@@ -16,12 +16,7 @@ import ViewShot from 'react-native-view-shot';
 import LinearGradient from 'react-native-linear-gradient';
 import Share from 'react-native-share';
 import {RootState} from '@reduxjs/toolkit';
-import {
-  PERMISSIONS,
-  RESULTS,
-  check,
-  openSettings,
-} from 'react-native-permissions';
+import {PERMISSIONS, RESULTS, check} from 'react-native-permissions';
 import {colors} from '@/constants/Colors';
 import {bindActionCreators} from 'redux';
 import i18n from '@/utils/i18n';
@@ -39,13 +34,12 @@ import {
 import {API} from '@/redux/api';
 import AppIcon from '@/components/AppIcon';
 import LotteryModal from './component/LotteryModal';
-import {captureScreen} from '@/utils/utils';
+import {captureScreen, checkPhotoPermissionAlert} from '@/utils/utils';
 import LotteryShareModal from './component/LotteryShareModal';
 import RenderBeforeLottery from './component/RenderBeforeLottery';
 import RenderLoadingLottery from './component/RenderLoadingLottery';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppSnackBar from '@/components/AppSnackBar';
-import AppAlert from '@/components/AppAlert';
 
 const styles = StyleSheet.create({
   container: {
@@ -246,9 +240,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       }
     } else {
       // 사진 앨범 조회 권한을 요청한다.
-      AppAlert.confirm(i18n.t('settings'), i18n.t('acc:permPhoto'), {
-        ok: () => openSettings(),
-      });
+      checkPhotoPermissionAlert();
     }
   }, [hasPhotoPermission]);
 
