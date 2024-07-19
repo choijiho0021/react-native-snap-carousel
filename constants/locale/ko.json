@@ -1215,7 +1215,7 @@
   "noti:minBefore": "{{min}}분 전",
   "noti:hourBefore": "{{hour}}시간 전",
   "noti:dayBefore": "{{day}}일 전",
-  "noti:notice": "받은 알림은 180일 동안 보관됩니다.",
+  "noti:notice": "받은 알림은 30일 동안 보관됩니다.",
 
   "search:list": "최근 검색",
   "search:err": "최근 검색이 없습니다",
