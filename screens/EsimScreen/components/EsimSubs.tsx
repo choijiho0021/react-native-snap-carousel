@@ -740,26 +740,28 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   ]);
 
   const QRnCopyInfo = useCallback(() => {
+    const prod = product.prodList.get(mainSubs?.prodId || '0');
+    const testProductReg = /test/;
+
     return (
       <View style={styles.activeBottomBox}>
-        <AppButton
-          style={{
-            flex: 1,
-            marginRight: 8,
-            backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
-            paddingVertical: 8,
-            borderRadius: 3,
-          }}
-          titleStyle={{
-            ...styles.esimButton,
-            color: isEditMode ? colors.lightGrey : colors.black,
-          }}
-          title={i18n.t('esim:prodInfo')}
-          onPress={() => {
-            const prod = product.prodList.get(mainSubs?.prodId || '0');
-            const localOp = product.localOpList.get(prod?.partnerId || '0');
+        {prod && !testProductReg.test(prod.sku) && (
+          <AppButton
+            style={{
+              flex: 1,
+              marginRight: 8,
+              backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
+              paddingVertical: 8,
+              borderRadius: 3,
+            }}
+            titleStyle={{
+              ...styles.esimButton,
+              color: isEditMode ? colors.lightGrey : colors.black,
+            }}
+            title={i18n.t('esim:prodInfo')}
+            onPress={() => {
+              const localOp = product.localOpList.get(prod?.partnerId || '0');
 
-            if (prod)
               navigation.navigate('ProductDetail', {
                 title: prod.name,
                 item: API.Product.toPurchaseItem(prod),
@@ -772,8 +774,9 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
                 img: localOp?.imageUrl,
                 prod,
               });
-          }}
-        />
+            }}
+          />
+        )}
 
         {!isht && (
           <AppButton
