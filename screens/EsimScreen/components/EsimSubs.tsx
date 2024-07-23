@@ -741,11 +741,10 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
   const QRnCopyInfo = useCallback(() => {
     const prod = product.prodList.get(mainSubs?.prodId || '0');
-    const testProductReg = /test/;
 
     return (
       <View style={styles.activeBottomBox}>
-        {prod && !testProductReg.test(prod.sku) && (
+        {prod && (
           <AppButton
             style={{
               flex: 1,
