@@ -143,24 +143,6 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
     setReceipt(params?.receipt);
   }, [navigation, params?.order, params?.receipt]);
 
-  const hasAndroidPermission = useCallback(async () => {
-    const permission =
-      Platform.Version >= 33
-        ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
-        : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
-
-    const hasPermission = await check(permission);
-    if (hasPermission === RESULTS.GRANTED) {
-      return true;
-    }
-
-    AppAlert.confirm(i18n.t('settings'), i18n.t('acc:permPhoto'), {
-      ok: () => openSettings(),
-    });
-
-    return false;
-  }, []);
-
   const capture = useCallback(async () => {
     let checkNewPermission = false;
 

@@ -222,7 +222,6 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
           link,
           desc: i18n.t('esim:lottery:share:desc'),
         }).then(async (url) => {
-          console.log('@@@ 만들어진 url 링크 확인 : ', url);
           onPressShareKakaoForFortune(url, serverImageUrl || '');
         });
       }
