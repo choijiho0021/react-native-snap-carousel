@@ -31,7 +31,6 @@ import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppText from '@/components/AppText';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {appStyles} from '@/constants/Styles';
-import {DailyProdFilterList} from '@/components/DailyProdFilter';
 
 const {isIOS} = Env.get();
 
@@ -105,7 +104,7 @@ type CountryScreenProps = {
 // type ProdDataType = {title: string; data: RkbProduct[]};
 export type SelectedTabType = {
   type?: string;
-  volume?: DailyProdFilterList;
+  volume?: String;
   scroll?: string;
 };
 

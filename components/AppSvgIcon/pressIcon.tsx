@@ -5813,7 +5813,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           y2="7.098"
           gradientUnits="userSpaceOnUse">
           <Stop stopColor="#DAEEFF" />
-          <Stop offset=".646" stopColor="#2A7FF6" />
+          <Stop offset="0.646" stopColor="#2A7FF6" />
         </LinearGradient>
         <LinearGradient
           id="com4wx3fab"
@@ -5823,7 +5823,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           y2="22.545"
           gradientUnits="userSpaceOnUse">
           <Stop stopColor="#DAEEFF" />
-          <Stop offset=".646" stopColor="#2A7FF6" />
+          <Stop offset="0.646" stopColor="#2A7FF6" />
         </LinearGradient>
       </Defs>
     </Svg>,
@@ -5873,7 +5873,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           y2="7.098"
           gradientUnits="userSpaceOnUse">
           <Stop stopColor="#FFDAD2" />
-          <Stop offset=".646" stopColor="#EE4423" />
+          <Stop offset="0.646" stopColor="#EE4423" />
         </LinearGradient>
         <LinearGradient
           id="4yl8t38w0b"
@@ -5893,7 +5893,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           y2="23.262"
           gradientUnits="userSpaceOnUse">
           <Stop stopColor="#FFDAD2" />
-          <Stop offset=".646" stopColor="#EE4423" />
+          <Stop offset="0.646" stopColor="#EE4423" />
         </LinearGradient>
       </Defs>
     </Svg>,

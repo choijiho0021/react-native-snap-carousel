@@ -152,7 +152,7 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   const [data, setData] = useState<RkbBoard[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [status, setStatus] = useState('');
-  const [selected, setSelected] = useState('');
+  const [selected, setSelected] = useState<RkbBoard>();
   const [mobile, setMobile] = useState('');
 
   useEffect(() => {
@@ -174,9 +174,9 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   }, [board.list, mobile]);
 
   const onPress = useCallback(
-    (uuid: string, st: string) => {
+    (item: RkbBoard, st: string) => {
       navigation.navigate('BoardMsgResp', {
-        uuid,
+        item,
         status: st,
       });
     },
@@ -202,15 +202,15 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   }, [onPress, selected, status]);
 
   const onPressItem = useCallback(
-    (uuid: string, st: string) => () => {
+    (item: RkbBoard, st: string) => () => {
       if (uid === 0) {
         // anonymous인 경우에는 비밀 번호를 입력받아서 일치하면 보여준다.
         setShowModal(true);
-        setSelected(uuid);
+        setSelected(item);
         setStatus(st);
       } else {
         // login 한 경우에는 곧바로 응답 결과를 보여준다.
-        onPress(uuid, st);
+        onPress(item, st);
       }
     },
     [onPress, uid],
@@ -219,7 +219,7 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   // 입력된 PIN이 일치하는지 확인한다.
   const onValidate = useCallback(
     (value: string): ValidationResult => {
-      const item = data.find((i) => i.uuid === selected);
+      const item = data.find((i) => selected && i.uuid === selected.uuid);
 
       // PIN match
       if (item && item.pin === value) return undefined;
@@ -251,7 +251,7 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   const renderItem = useCallback(
     ({item}: {item: RkbBoard}) => (
       <BoardMsg
-        onPress={onPressItem(item.uuid, item.statusCode)}
+        onPress={onPressItem(item, item.statusCode)}
         item={item}
         uid={uid}
       />

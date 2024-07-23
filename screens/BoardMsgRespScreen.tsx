@@ -1,5 +1,5 @@
-import {useRoute} from '@react-navigation/native';
-import React, {useEffect, useMemo, useState} from 'react';
+import {RouteProp, useRoute} from '@react-navigation/native';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {RootState} from '@/redux';
@@ -11,6 +11,18 @@ import {
 import i18n from '@/utils/i18n';
 import {AccountModelState} from '@/redux/modules/account';
 import ResultScreen from './BoardScreen/ResultScreen';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {BoardMsgStatus, RkbBoard} from '@/redux/api/boardApi';
+
+// type BoardMsgRespScreenNavigationProp = StackNavigationProp<
+//   HomeStackParamList,
+//   'BoardMsgResp'
+// >;
+
+type BoardMsgRespScreenRouteProp = RouteProp<
+  HomeStackParamList,
+  'BoardMsgResp'
+>;
 
 type BoardMsgRespScreenProps = {
   board: BoardModelState;
@@ -28,36 +40,47 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
   pending,
   action,
 }) => {
-  const route = useRoute();
-  const [idx, setIdx] = useState<number>();
-  const issue = useMemo(
-    () => (idx !== undefined && idx >= 0 ? board?.list[idx] : undefined),
-    [board?.list, idx],
-  );
+  const route = useRoute<BoardMsgRespScreenRouteProp>();
+  const [issue, setIssue] = useState<RkbBoard | undefined>(route?.params?.item);
   const resp = useMemo(() => board?.comment?.[0] || {}, [board?.comment]);
 
+  const getComment = useCallback(
+    (uuid: string, status?: BoardMsgStatus) => {
+      if (status === 'Closed') {
+        const {token} = account;
+        action.board.getIssueResp({uuid, token});
+      } else {
+        action.board.resetIssueComment();
+      }
+    },
+    [account, action.board],
+  );
+
   useEffect(() => {
-    const {uuid, status} = route?.params || {};
-
-    if (uuid) {
-      action.board.getIssueList(false).then(() => {
-        setIdx(board.list.findIndex((item) => item.uuid === uuid));
-
-        if (status === 'Closed') {
-          const {token} = account;
-          action.board.getIssueResp({uuid, token});
-        } else {
-          action.board.resetIssueComment();
-        }
-      });
+    if (!issue) {
+      action.board.getIssueList();
     }
-  }, [account, action.board, board.list, route?.params]);
+  }, [action.board, issue]);
+
+  useEffect(() => {
+    const {uuid} = route?.params || {};
+
+    if (!issue && uuid) {
+      setIssue(board.list.find((bd) => bd.uuid === uuid));
+    }
+  }, [board.list, issue, route?.params]);
+
+  useEffect(() => {
+    const {status} = route?.params || {};
+
+    if (issue && !issue?.replyMsg) getComment(issue.uuid, status);
+  }, [getComment, issue, route?.params]);
 
   return (
     <ResultScreen
       issue={issue}
       title={i18n.t('board:title')}
-      resp={resp?.body}
+      resp={issue?.replyMsg || resp?.body}
       pending={pending}
     />
   );

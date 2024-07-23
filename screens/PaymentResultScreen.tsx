@@ -3,16 +3,11 @@ import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import moment from 'moment';
+import Svg, {Line} from 'react-native-svg';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {PaymentItem} from '@/components/PaymentItemInfo';
@@ -40,10 +35,6 @@ import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppIcon from '@/components/AppIcon';
 import {getItemsOrderType} from '@/redux/models/purchaseItem';
-import api from '@/redux/api/api';
-import AppAlert from '@/components/AppAlert';
-import AppDashBar from '@/components/AppDashBar';
-import Svg, {Line} from 'react-native-svg';
 
 const {esimGlobal} = Env.get();
 
@@ -119,27 +110,6 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     paddingVertical: 8,
   },
-
-  dashContainer: {
-    overflow: 'hidden',
-  },
-  dashFrame: {
-    borderStyle: 'dashed',
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
-    margin: -1,
-    height: 0,
-    marginVertical: 23,
-  },
-  dash: {
-    width: '100%',
-  },
-
-  headerNoti: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderColor: colors.lightGrey,
-  },
 });
 
 type PaymentResultScreenNavigationProp = StackNavigationProp<
@@ -178,26 +148,29 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   const [oldCart, setOldCart] = useState<Partial<CartModelState>>();
   const isSuccess = useMemo(() => params?.pymResult || false, [params]);
 
-  useEffect(() => {
+  const subsReload = useCallback(() => {
     const {iccid, token, mobile} = account;
-
-    // 구매 이력을 다시 읽어 온다.
-    // this.props.action.order.getOrders(this.props.auth)
-    // 사용 내역을 다시 읽어 온다.
-    action.order.getSubs({iccid: iccid!, token: token!});
-    action.order.getOrders({
-      user: mobile,
-      token,
-      state: 'validation',
-      orderType: 'refundable',
-      page: 0,
-    });
-    action.noti.getNotiList({mobile: account.mobile});
-  }, [account, action.noti, action.order]);
+    if (order.subs.length !== 0)
+      action.order.getSubs({iccid: iccid!, token: token!});
+    if (order.orders.size !== 0 && order.orderList.length !== 0)
+      action.order.getOrders({
+        user: mobile,
+        token,
+        state: 'validation',
+        orderType: 'refundable',
+        page: 0,
+      });
+  }, [
+    account,
+    action.order,
+    order.orderList.length,
+    order.orders.size,
+    order.subs.length,
+  ]);
 
   const onNavigateScreen = useCallback(() => {
     navigation.popToTop();
-
+    action.noti.getNotiList({mobile: account.mobile});
     // 캐시 구매 -> 내 계정 화면으로 이동
     if (params?.mode === 'recharge') {
       action.order.subsReload({
@@ -217,21 +190,23 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
           chargeablePeriod: utils.toDateString(main?.expireDate, 'YYYY.MM.DD'),
           isChargeable: !main.expireDate?.isBefore(moment()),
         });
-    } else
+    } else {
+      subsReload();
       navigation.navigate('EsimStack', {
         screen: 'Esim',
-        params: {
-          actionStr: 'reload',
-        },
       });
+    }
   }, [
     account?.iccid,
+    account.mobile,
     account?.token,
+    action.noti,
     action.order,
     cart.esimIccid,
     navigation,
     order.subs,
     params?.mode,
+    subsReload,
   ]);
 
   // 결제 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
