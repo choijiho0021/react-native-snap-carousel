@@ -5947,7 +5947,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Path d="M16.168 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" fill="#fff" />
     </Svg>,
   ],
-  btnShare1: [
+  btnShareImg: [
     <Svg
       width="21"
       height="20"
@@ -5962,7 +5962,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
 
-  btnShare2: [
+  btnShareSns: [
     <Svg
       width="21"
       height="20"
@@ -5978,7 +5978,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
 
-  btnShareInsta: [
+  btnShareStory: [
     <Svg
       width="21"
       height="20"
