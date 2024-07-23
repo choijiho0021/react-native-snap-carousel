@@ -1830,6 +1830,20 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  btnSearchOn20: [
+    <Svg
+      width="20"
+      height="21"
+      viewBox="0 0 20 21"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="8.5" cy="9" r="6" stroke="#2C2C2C" />
+      <Path
+        d="M12.126 13.626a.432.432 0 0 1 .61 0l4.138 4.137a.432.432 0 0 1-.61.61l-4.138-4.136a.432.432 0 0 1 0-.61z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
   btnSearchCancel: [
     <Svg
       width="16"

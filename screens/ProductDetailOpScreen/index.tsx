@@ -105,17 +105,13 @@ const styles = StyleSheet.create({
   textInput: {
     ...appStyles.normal16Text,
     flex: 1,
-    paddingLeft: 15,
+    paddingLeft: 8,
+    lineHeight: 24,
+    paddingBottom: 2,
   },
   nolist: {
     marginVertical: 60,
     textAlign: 'center',
-  },
-  searchDivider: {
-    backgroundColor: colors.lightGrey,
-    width: 2,
-    height: '40%',
-    marginHorizontal: 20,
   },
   header: {
     flexDirection: 'row',
@@ -152,6 +148,7 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
   const [searchWord, setSearchWord] = useState<string>('');
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
   const [toggledList, setToggledList] = useState<Set<number>>(new Set([]));
+  const [focused, setFocused] = useState<boolean>(false);
 
   useEffect(() => {
     if (route?.params?.apn) {
@@ -299,7 +296,19 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
         {i18n.t('prodDetailOp:subTitle')}
       </AppText>
 
-      <View style={styles.showSearchBar}>
+      <View
+        style={[
+          styles.showSearchBar,
+          {borderColor: focused ? colors.clearBlue : colors.black},
+        ]}>
+        <AppIcon
+          name="btnSearchOn20"
+          style={{
+            height: 19,
+            width: 20,
+            marginLeft: 4,
+          }}
+        />
         <AppTextInput
           style={styles.textInput}
           // clearButtonMode="while-editing"
@@ -309,14 +318,19 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
             setSearchWord(val);
           }}
           value={searchWord}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
         />
         {searchWord !== '' && (
           <Fragment>
-            <AppSvgIcon name="clear" onPress={() => setSearchWord('')} />
-            <View style={styles.searchDivider} />
+            <AppSvgIcon
+              style={{marginRight: 6}}
+              name="clear"
+              disabled
+              onPress={() => setSearchWord('')}
+            />
           </Fragment>
         )}
-        <AppIcon name="btnSearchOn" style={{marginRight: 15}} />
       </View>
 
       <View style={styles.divider} />
