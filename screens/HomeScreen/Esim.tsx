@@ -889,6 +889,7 @@ const Esim: React.FC<EsimProps> = ({
             height: 10,
           }}
           renderTabBar={() => null}
+          swipeEnabled={false}
         />
       )}
 

@@ -194,7 +194,11 @@ const ChargeScreen: React.FC<ChargeScreenProps> = ({
               key={k}
               name={k}
               component={renderProdType(k)}
-              options={{lazy: true, title: i18n.t(`country:${k}`)}}
+              options={{
+                lazy: true,
+                title: i18n.t(`country:${k}`),
+                swipeEnabled: false,
+              }}
             />
           ))}
         </Tab.Navigator>
