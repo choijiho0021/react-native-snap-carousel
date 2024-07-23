@@ -86,6 +86,7 @@ import ScreenHeader from '@/components/ScreenHeader';
 import AppSnackBar from '@/components/AppSnackBar';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import ExitModal from './component/ExitModal';
+import AppIcon from '@/components/AppIcon';
 
 const {esimGlobal, isIOS, cachePrefix} = Env.get();
 
@@ -828,9 +829,18 @@ const Esim: React.FC<EsimProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <ScreenHeader
-        title={`${i18n.t('esim')}${esimGlobal ? ' Store' : ''}`}
+        // title={`${i18n.t('esim')}${esimGlobal ? ' Store' : ''}`}
         showIcon={false}
         isStackTop
+        renderLeft={
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+            }}>
+            <AppIcon key-="rokebiLogo" name="rokebiLogo" />
+          </View>
+        }
         renderRight={
           <View
             style={{
