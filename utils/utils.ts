@@ -7,13 +7,18 @@ import {
   openSettings,
 } from 'react-native-permissions';
 import ViewShot from 'react-native-view-shot';
+import {CameraRoll} from '@react-native-camera-roll/camera-roll';
+import {getAnalytics} from '@react-native-firebase/analytics';
 import utils from '@/redux/api/utils';
 import i18n from './i18n';
 import AppAlert from '@/components/AppAlert';
-import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 
 const UniAsyncStorage =
   require('@react-native-community/async-storage').default;
+
+const logAnalytics = (event: string) => {
+  getAnalytics().logEvent(event);
+};
 
 const checkPhotoPermissionAlert = () => {
   AppAlert.confirm(
@@ -133,6 +138,7 @@ const captureScreen = async (ref: React.MutableRefObject<ViewShot>) => {
 
 export {utils};
 export {
+  logAnalytics,
   checkPhotoPermissionAlert,
   storeData,
   retrieveData,

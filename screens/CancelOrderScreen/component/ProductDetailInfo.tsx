@@ -3,7 +3,6 @@ import {StyleSheet, ViewStyle, View, StyleProp} from 'react-native';
 import {colors} from '@/constants/Colors';
 import SplitText from '@/components/SplitText';
 import AppText from '@/components/AppText';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {utils} from '@/utils/utils';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';

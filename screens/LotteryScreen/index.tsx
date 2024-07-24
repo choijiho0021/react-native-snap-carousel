@@ -34,12 +34,17 @@ import {
 import {API} from '@/redux/api';
 import AppIcon from '@/components/AppIcon';
 import LotteryModal from './component/LotteryModal';
-import {captureScreen, checkPhotoPermissionAlert} from '@/utils/utils';
+import {
+  captureScreen,
+  checkPhotoPermissionAlert,
+  logAnalytics,
+} from '@/utils/utils';
 import LotteryShareModal from './component/LotteryShareModal';
 import RenderBeforeLottery from './component/RenderBeforeLottery';
 import RenderLoadingLottery from './component/RenderLoadingLottery';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppSnackBar from '@/components/AppSnackBar';
+import {firebase, getAnalytics} from '@react-native-firebase/analytics';
 
 const styles = StyleSheet.create({
   container: {
@@ -208,6 +213,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   });
 
   const ref = useRef<ViewShot>();
+
   // 다시보기 구분하는 코드
   const isHistory = useMemo(() => {
     return fortune?.count === 0 && fortune?.text && phase?.text === '';
@@ -244,6 +250,57 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     }
   }, [hasPhotoPermission]);
 
+  const onShare = useCallback(() => {
+    setShowShareModal(true);
+  }, []);
+
+  const shareInstaStory = useCallback(async () => {
+    try {
+      const uri = await ref.current?.capture?.();
+
+      if (uri) {
+        const shareOptions = {
+          backgroundImage: uri,
+          backgroundBottomColor: colors.black,
+          backgroundTopColor: colors.black,
+          social: Share.Social.INSTAGRAM_STORIES,
+          appId: 'fb147522690488197',
+        };
+
+        const result = await Share.shareSingle(shareOptions).then((rsp) => {
+          if (rsp?.success && rsp?.message.includes('instagram'))
+            logAnalytics('instagram_share_success');
+        });
+
+        console.log('@@@@ result : ', result);
+      } else {
+        console.log('@@@  empty uri');
+      }
+    } catch (e) {
+      console.log('@@@@ share error : ', e);
+    }
+  }, []);
+
+  const buttonList = [
+    {
+      key: 'Img',
+      onClick: () => {
+        saveToGallery();
+      },
+    },
+    {
+      key: 'Sns',
+      onClick: () => {
+        onShare();
+      },
+    },
+    {
+      key: 'Story',
+      onClick: () => {
+        shareInstaStory();
+      },
+    },
+  ];
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (['inactive', 'background'].includes(nextAppState)) {
@@ -294,10 +351,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       }
     });
   }, [action.account, iccid, token]);
-
-  const onShare = useCallback(() => {
-    setShowShareModal(true);
-  }, []);
 
   const renderTitleAndPhase = useCallback(() => {
     return (
@@ -356,29 +409,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     );
   }, [renderTitleAndPhase, screenNum]);
 
-  const shareInstaStory = useCallback(async () => {
-    try {
-      const uri = await ref.current?.capture?.();
-
-      if (uri) {
-        const shareOptions = {
-          backgroundImage: uri,
-          backgroundBottomColor: colors.black,
-          backgroundTopColor: colors.black,
-          social: Share.Social.INSTAGRAM_STORIES,
-          appId: 'fb147522690488197',
-        };
-        const result = await Share.shareSingle(shareOptions);
-
-        console.log('@@@@ result : ', result);
-      } else {
-        console.log('@@@  empty uri');
-      }
-    } catch (e) {
-      console.log('@@@@ share error : ', e);
-    }
-  }, []);
-
   const onClick = useCallback(() => {
     // 2초 동안 Loading 표시해주기 코드
     setIsLoading(true);
@@ -429,29 +459,19 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           </View>
         </View>
         <View style={styles.btnContainer}>
-          {renderShareButton(
-            i18n.t('esim:lottery:share:img'),
-            'btnShare1',
-            () => {
-              saveToGallery();
-            },
-          )}
-
-          <View style={styles.dividerSmall} />
-
-          {renderShareButton(
-            i18n.t('esim:lottery:share:sns'),
-            'btnShare2',
-            onShare,
-          )}
-
-          <View style={styles.dividerSmall} />
-
-          {renderShareButton(
-            i18n.t('esim:lottery:share:story'),
-            'btnShareInsta',
-            () => shareInstaStory(),
-          )}
+          {buttonList.map((r, idx) => (
+            <>
+              {renderShareButton(
+                i18n.t(`esim:lottery:share${r.key}`),
+                `btnShare${r.key}`,
+                () => {
+                  logAnalytics(`${i18n.t(`esim:lottery:event${r.key}`)}_try`);
+                  r.onClick();
+                },
+              )}
+              {idx !== 2 && <View style={styles.dividerSmall} />}
+            </>
+          ))}
         </View>
 
         <View style={{paddingHorizontal: 20, marginBottom: 16}}>

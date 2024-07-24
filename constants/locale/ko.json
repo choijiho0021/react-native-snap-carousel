@@ -816,9 +816,12 @@
   "esim:lottery:share:desc": "[로밍도깨비 eSIM] 나의 여행 운세를 공유해요.\n이번 여행 운세가 궁금하다면, eSIM 구매 후 확인해 보세요!",
   "esim:lottery:coupon:count": "내 쿠폰 기회 : <h>$count번</h>",
 
-  "esim:lottery:share:img": "이미지 저장",
-  "esim:lottery:share:sns": "SNS 공유",
-  "esim:lottery:share:story": "스토리 공유",
+  "esim:lottery:shareImg": "이미지 저장",
+  "esim:lottery:shareSns": "SNS 공유",
+  "esim:lottery:shareStory": "스토리 공유",
+  "esim:lottery:eventImg": "fortune_image_save",
+  "esim:lottery:eventSns": "sns_share_try",
+  "esim:lottery:eventStory": "insta_share_try",
 
   "esim:lottery:title:before": "랜덤 쿠폰까지!",
 

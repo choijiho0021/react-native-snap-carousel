@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -9,9 +9,9 @@ import {
 import {RouteProp} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {colors} from '@/constants/Colors';
 import AppText from '@/components/AppText';
-import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import AppStyledText from '@/components/AppStyledText';

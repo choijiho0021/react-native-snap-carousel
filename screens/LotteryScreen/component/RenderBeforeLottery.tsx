@@ -190,7 +190,6 @@ const RenderBeforeLottery: React.FC<RenderBeforeLotteryProps> = ({
               zIndex: 1,
             }}
             onPress={() => {
-              console.log('@@@ 내려가기 버튼 클릭');
               scrollToBottom();
             }}>
             <AppIcon name="goToDown" />

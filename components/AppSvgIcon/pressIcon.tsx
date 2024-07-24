@@ -1830,6 +1830,20 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  btnSearchOn20: [
+    <Svg
+      width="20"
+      height="21"
+      viewBox="0 0 20 21"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="8.5" cy="9" r="6" stroke="#2C2C2C" />
+      <Path
+        d="M12.126 13.626a.432.432 0 0 1 .61 0l4.138 4.137a.432.432 0 0 1-.61.61l-4.138-4.136a.432.432 0 0 1 0-.61z"
+        fill="#2C2C2C"
+      />
+    </Svg>,
+  ],
   btnSearchCancel: [
     <Svg
       width="16"
@@ -5947,7 +5961,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Path d="M16.168 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" fill="#fff" />
     </Svg>,
   ],
-  btnShare1: [
+  btnShareImg: [
     <Svg
       width="21"
       height="20"
@@ -5962,7 +5976,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
 
-  btnShare2: [
+  btnShareSns: [
     <Svg
       width="21"
       height="20"
@@ -5978,7 +5992,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
     </Svg>,
   ],
 
-  btnShareInsta: [
+  btnShareStory: [
     <Svg
       width="21"
       height="20"
