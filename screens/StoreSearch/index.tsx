@@ -214,17 +214,17 @@ const HeaderTitle0 = ({
             }}
             iconName="btnSearchCancel"
           />
-          <View style={styles.divider} />
+          {/* <View style={styles.divider} /> */}
         </View>
       )}
-      <AppButton
+      {/* <AppButton
         style={styles.showSearchBar}
         onPress={() => {
           Keyboard.dismiss();
           search(word, true);
         }}
         iconName="btnSearchOff"
-      />
+      /> */}
     </View>
   );
 };
