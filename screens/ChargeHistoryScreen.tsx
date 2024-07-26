@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   badge: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 4,
+    marginRight: 4,
     height: 20,
     alignSelf: 'center',
     borderRadius: 3,
@@ -242,22 +242,19 @@ const b2bIconMap = {
 export const renderPromoFlag = ({
   flags,
   isStore,
-  isReceved, // 선물 받은 상품인지 여부
+  isReceived, // 선물 받은 상품인지 여부
   storeName,
   storeOrderId,
 }: {
   flags: string[];
   isStore: boolean;
-  isReceved: boolean;
+  isReceived: boolean;
   storeName?: storeNameType;
   storeOrderId?: string;
 }) => {
   let icon = 'naverIcon';
 
-  console.log('aaaaa gift', isReceved);
-  console.log('aaaaa storeName', storeName);
-  console.log('aaaaa storeOrderId', storeOrderId);
-  if (storeName) {
+  if (storeName && storeName !== 'R') {
     if (storeName === 'B') {
       const b2b = storeOrderId?.split('-')?.[0]?.toLowerCase();
       if (b2b && b2b in b2bIconMap) {
@@ -270,40 +267,38 @@ export const renderPromoFlag = ({
 
   return (
     <Fragment>
-      {promoFlagSort(flags)
-        .filter((elm) => elm !== 'hot')
-        .map((elm) => {
-          const badgeColor = getPromoFlagColor(elm);
-          return (
-            <View
-              key={elm}
-              style={[
-                styles.badge,
-                {
-                  paddingHorizontal: elm === 'fiveG' ? 2 : 8,
-                  backgroundColor: badgeColor.backgroundColor,
-                },
-              ]}>
-              <View style={{flexDirection: 'row'}}>
-                {elm === 'fiveG' && (
-                  <AppSvgIcon name="fiveG" style={{justifyContent: 'center'}} />
-                )}
-                <AppText
-                  key="name"
-                  style={[styles.badgeText, {color: badgeColor.fontColor}]}>
-                  {i18n.t(elm)}
-                </AppText>
-              </View>
+      {promoFlagSort(flags).map((elm) => {
+        const badgeColor = getPromoFlagColor(elm);
+        return (
+          <View
+            key={elm}
+            style={[
+              styles.badge,
+              {
+                paddingHorizontal: elm === 'fiveG' ? 2 : 8,
+                backgroundColor: badgeColor.backgroundColor,
+              },
+            ]}>
+            <View style={{flexDirection: 'row'}}>
+              {elm === 'fiveG' && (
+                <AppSvgIcon name="fiveG" style={{justifyContent: 'center'}} />
+              )}
+              <AppText
+                key="name"
+                style={[styles.badgeText, {color: badgeColor.fontColor}]}>
+                {i18n.t(elm)}
+              </AppText>
             </View>
-          );
-        })}
+          </View>
+        );
+      })}
       {isStore && (
         <AppSvgIcon
           name={icon}
           style={{justifyContent: 'center', marginRight: 4}}
         />
       )}
-      {!(storeName && storeName === 'R') && isReceved && (
+      {!(storeName && storeName === 'R') && isReceived && (
         <AppSvgIcon name="giftIcon" style={{justifyContent: 'center'}} />
       )}
     </Fragment>
@@ -653,7 +648,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                     renderPromoFlag({
                       flags: item.promoFlag || [],
                       isStore: item.isStore,
-                      isReceved: item.giftStatusCd === 'R',
+                      isReceived: item.giftStatusCd === 'R',
                       storeName: item.storeName,
                       storeOrderId: item.storeOrderId,
                     })
