@@ -242,16 +242,21 @@ const b2bIconMap = {
 export const renderPromoFlag = ({
   flags,
   isStore,
+  isReceved, // 선물 받은 상품인지 여부
   storeName,
   storeOrderId,
 }: {
   flags: string[];
   isStore: boolean;
+  isReceved: boolean;
   storeName?: storeNameType;
   storeOrderId?: string;
 }) => {
   let icon = 'naverIcon';
 
+  console.log('aaaaa gift', isReceved);
+  console.log('aaaaa storeName', storeName);
+  console.log('aaaaa storeOrderId', storeOrderId);
   if (storeName) {
     if (storeName === 'B') {
       const b2b = storeOrderId?.split('-')?.[0]?.toLowerCase();
@@ -292,7 +297,15 @@ export const renderPromoFlag = ({
             </View>
           );
         })}
-      {isStore && <AppSvgIcon name={icon} style={{justifyContent: 'center'}} />}
+      {isStore && (
+        <AppSvgIcon
+          name={icon}
+          style={{justifyContent: 'center', marginRight: 4}}
+        />
+      )}
+      {!(storeName && storeName === 'R') && isReceved && (
+        <AppSvgIcon name="giftIcon" style={{justifyContent: 'center'}} />
+      )}
     </Fragment>
   );
 };
@@ -640,6 +653,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                     renderPromoFlag({
                       flags: item.promoFlag || [],
                       isStore: item.isStore,
+                      isReceved: item.giftStatusCd === 'R',
                       storeName: item.storeName,
                       storeOrderId: item.storeOrderId,
                     })

@@ -152,7 +152,7 @@ export enum AddOnOptionType {
   BOTH = 'B',
 }
 
-export type storeNameType = 'N' | 'W' | 'B';
+export type storeNameType = 'N' | 'W' | 'B' | 'R';
 
 export type RkbSubscription = {
   nid: string;

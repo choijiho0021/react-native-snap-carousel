@@ -6652,6 +6652,33 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  giftIcon: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#6p50i8uk2a)">
+        <G clipPath="url(#d98ig4udyb)">
+          <Rect y="4" width="20" height="16" rx="3" fill="#2A7FF6" />
+          <Path fill="#FFD357" d="M8 4h4v16H8z" />
+          <Path
+            d="M10.722 9.802a1 1 0 0 1-1.449.006L3.655 3.946a1 1 0 0 1-.008-1.375L5.735.34A1 1 0 0 1 7.188.33L9.95 3.218l2.796-2.91a1 1 0 0 1 1.433-.01l2.143 2.173a1 1 0 0 1 .015 1.389l-5.615 5.942z"
+            fill="#EE4423"
+          />
+        </G>
+      </G>
+      <Defs>
+        <ClipPath id="6p50i8uk2a">
+          <Path fill="#fff" d="M0 0h20v20H0z" />
+        </ClipPath>
+        <ClipPath id="d98ig4udyb">
+          <Path fill="#fff" d="M0 0h20v20H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
 };
 
 export default pressIcons;

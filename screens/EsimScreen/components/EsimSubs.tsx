@@ -565,6 +565,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               renderPromoFlag({
                 flags: mainSubs.promoFlag || [],
                 isStore: mainSubs.isStore,
+                isReceived: mainSubs.giftStatusCd === 'R',
                 storeName: mainSubs.storeName,
                 storeOrderId: mainSubs.storeOrderId,
               })
