@@ -74,7 +74,7 @@ import {
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
-import PromotionCarousel from './component/PromotionCarousel';
+import PromotionCarousel from '@/components/PromotionCarousel';
 import NotiModal from './component/NotiModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
@@ -491,7 +491,7 @@ const Esim: React.FC<EsimProps> = ({
 
   const renderCarousel = useCallback(() => {
     const promotionBanner = promotion.filter(
-      (elm) => elm.imageUrl && elm?.rule?.type !== 'popUp',
+      (elm) => elm.imageUrl && elm?.show?.includes('Home'),
     );
     if (promotionBanner.length > 0) {
       return (

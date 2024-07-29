@@ -3,7 +3,13 @@ import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import {
+  Dimensions,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import moment from 'moment';
@@ -35,6 +41,8 @@ import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppIcon from '@/components/AppIcon';
 import {getItemsOrderType} from '@/redux/models/purchaseItem';
+import PromotionCarousel from '@/components/PromotionCarousel';
+import {RkbPromotion} from '@/redux/api/promotionApi';
 
 const {esimGlobal} = Env.get();
 
@@ -42,6 +50,7 @@ const styles = StyleSheet.create({
   box: {
     flex: 1,
     backgroundColor: colors.white,
+    marginBottom: 24,
     paddingHorizontal: 16,
     paddingVertical: 24,
     justifyContent: 'flex-start',
@@ -85,7 +94,6 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     backgroundColor: colors.white,
-    marginHorizontal: 20,
   },
   status: {
     ...appStyles.bold24Text,
@@ -129,6 +137,7 @@ type PaymentResultScreenProps = {
   account: AccountModelState;
   cart: CartModelState;
   order: OrderModelState;
+  promotion: RkbPromotion[];
 
   action: {
     noti: NotiAction;
@@ -143,10 +152,19 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   account,
   cart,
   order,
+  promotion,
   action,
 }) => {
   const [oldCart, setOldCart] = useState<Partial<CartModelState>>();
   const isSuccess = useMemo(() => params?.pymResult || false, [params]);
+  const [dimensions, setDimensions] = useState(Dimensions.get('window'));
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({window}) => {
+      setDimensions(window);
+    });
+    return () => subscription?.remove();
+  }, []);
 
   const subsReload = useCallback(() => {
     const {iccid, token, mobile} = account;
@@ -305,121 +323,136 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     return result;
   }, [oldCart?.purchaseItems]);
 
+  const renderPromotion = useCallback(() => {
+    const promotionBanner = promotion.filter(
+      (elm) => elm.imageUrl && elm?.show?.includes('PaymentResult'),
+    );
+
+    return (
+      <PromotionCarousel width={dimensions.width} promotion={promotionBanner} />
+    );
+  }, [dimensions.width, promotion]);
+
   return (
     <SafeAreaView
       style={{flex: 1, alignItems: 'stretch', backgroundColor: colors.white}}>
       <ScrollView style={styles.scrollView}>
-        <AppText style={styles.status}>
-          {i18n.t(isSuccess ? 'his:pym:success' : 'his:pym:fail')}
-        </AppText>
-        <AppText style={appStyles.normal16Text}>
-          {i18n.t(isSuccess ? 'his:pym:withus' : 'his:pym:tryagain')}
-        </AppText>
-
-        {isSuccess ? (
-          <AppSvgIcon name="stampSuccess" style={styles.stamp} />
-        ) : (
-          <AppSvgIcon name="stampFail" style={styles.stamp} />
-        )}
-        <View style={styles.box}>
-          <AppText style={appStyles.bold18Text}>
-            {oldCart?.purchaseItems?.[0].title}
-            {getTitle()}
+        <View style={{marginHorizontal: 20}}>
+          <AppText style={styles.status}>
+            {i18n.t(isSuccess ? 'his:pym:success' : 'his:pym:fail')}
           </AppText>
-          <View style={styles.divider} />
-          <PaymentItem
-            title={i18n.t('his:pymAmount')}
-            value={utils.price(oldCart?.pymPrice)}
-            valueStyle={
-              isSuccess
-                ? {
-                    ...appStyles.bold16Text,
-                    color: colors.clearBlue,
-                  }
-                : {...appStyles.roboto16Text}
-            }
-          />
-          <PaymentItem
-            title={i18n.t('pym:method')}
-            value={
-              params.pay_method === 'card'
-                ? `${i18n.t(`pym:card${params.card}`)}/${
-                    params?.installmentMonths === '0'
-                      ? i18n.t('pym:pay:atonce')
-                      : `${params?.installmentMonths}${i18n.t('pym:duration')}`
-                  }`
-                : i18n.t(`pym:${params.pay_method}`)
-            }
-            valueStyle={appStyles.roboto16Text}
-          />
-          {!isSuccess && params?.errorMsg && (
-            <>
-              {dotLine()}
+          <AppText style={appStyles.normal16Text}>
+            {i18n.t(isSuccess ? 'his:pym:withus' : 'his:pym:tryagain')}
+          </AppText>
 
-              <View style={{gap: 6}}>
-                <View style={{gap: 6, flexDirection: 'row'}}>
-                  <AppSvgIcon name="bannerWarning20" />
-                  <AppText
-                    style={{
-                      ...appStyles.bold14Text,
-                      color: colors.redBold,
-                    }}>
-                    {i18n.t('pym:failReason')}
-                  </AppText>
-                </View>
-                <View>
-                  <AppText
-                    style={{...appStyles.medium14, color: colors.redBold}}>
-                    {utils.getParam(params?.errorMsg)?.error || ''}
-                  </AppText>
-                </View>
-              </View>
-            </>
+          {isSuccess ? (
+            <AppSvgIcon name="stampSuccess" style={styles.stamp} />
+          ) : (
+            <AppSvgIcon name="stampFail" style={styles.stamp} />
           )}
-
-          {isSuccess && (
-            <AppButton
-              style={styles.detailButton}
-              titleStyle={{
-                ...appStyles.medium14,
-                lineHeight: 24,
-              }}
-              title={i18n.t(`pym:detail`)}
-              onPress={() => {
-                navigation.popToTop();
-
-                navigation.navigate('PurchaseDetail', {
-                  orderId: oldCart?.orderId?.toString(),
-                });
-              }}
+          <View style={styles.box}>
+            <AppText style={appStyles.bold18Text}>
+              {oldCart?.purchaseItems?.[0].title}
+              {getTitle()}
+            </AppText>
+            <View style={styles.divider} />
+            <PaymentItem
+              title={i18n.t('his:pymAmount')}
+              value={utils.price(oldCart?.pymPrice)}
+              valueStyle={
+                isSuccess
+                  ? {
+                      ...appStyles.bold16Text,
+                      color: colors.clearBlue,
+                    }
+                  : {...appStyles.roboto16Text}
+              }
             />
-          )}
-          {isSuccess &&
-            oldCart?.purchaseItems &&
-            getItemsOrderType(oldCart.purchaseItems) === 'refundable' && (
+            <PaymentItem
+              title={i18n.t('pym:method')}
+              value={
+                params.pay_method === 'card'
+                  ? `${i18n.t(`pym:card${params.card}`)}/${
+                      params?.installmentMonths === '0'
+                        ? i18n.t('pym:pay:atonce')
+                        : `${params?.installmentMonths}${i18n.t(
+                            'pym:duration',
+                          )}`
+                    }`
+                  : i18n.t(`pym:${params.pay_method}`)
+              }
+              valueStyle={appStyles.roboto16Text}
+            />
+            {!isSuccess && params?.errorMsg && (
               <>
                 {dotLine()}
 
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    gap: 6,
-                    // backgroundColor: 'red',
-                  }}>
-                  <AppIcon name="bannerMark2" />
-                  <AppText
-                    style={{
-                      ...appStyles.bold14Text,
-                      color: colors.warmGrey,
-                      lineHeight: 20,
-                      flex: 1,
-                    }}>
-                    {i18n.t('his:pym:alert')}
-                  </AppText>
+                <View style={{gap: 6}}>
+                  <View style={{gap: 6, flexDirection: 'row'}}>
+                    <AppSvgIcon name="bannerWarning20" />
+                    <AppText
+                      style={{
+                        ...appStyles.bold14Text,
+                        color: colors.redBold,
+                      }}>
+                      {i18n.t('pym:failReason')}
+                    </AppText>
+                  </View>
+                  <View>
+                    <AppText
+                      style={{...appStyles.medium14, color: colors.redBold}}>
+                      {utils.getParam(params?.errorMsg)?.error || ''}
+                    </AppText>
+                  </View>
                 </View>
               </>
             )}
+
+            {isSuccess && (
+              <AppButton
+                style={styles.detailButton}
+                titleStyle={{
+                  ...appStyles.medium14,
+                  lineHeight: 24,
+                }}
+                title={i18n.t(`pym:detail`)}
+                onPress={() => {
+                  navigation.popToTop();
+
+                  navigation.navigate('PurchaseDetail', {
+                    orderId: oldCart?.orderId?.toString(),
+                  });
+                }}
+              />
+            )}
+            {isSuccess &&
+              oldCart?.purchaseItems &&
+              getItemsOrderType(oldCart.purchaseItems) === 'refundable' && (
+                <>
+                  {dotLine()}
+
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      gap: 6,
+                      // backgroundColor: 'red',
+                    }}>
+                    <AppIcon name="bannerMark2" />
+                    <AppText
+                      style={{
+                        ...appStyles.bold14Text,
+                        color: colors.warmGrey,
+                        lineHeight: 20,
+                        flex: 1,
+                      }}>
+                      {i18n.t('his:pym:alert')}
+                    </AppText>
+                  </View>
+                </>
+              )}
+          </View>
         </View>
+        {renderPromotion()}
       </ScrollView>
 
       {isSuccess ? (
@@ -460,10 +493,11 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
 };
 
 export default connect(
-  ({account, cart, order}: RootState) => ({
+  ({account, cart, order, promotion}: RootState) => ({
     account,
     cart,
     order,
+    promotion: promotion.promotion,
   }),
   (dispatch) => ({
     action: {
