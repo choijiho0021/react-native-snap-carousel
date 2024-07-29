@@ -324,7 +324,7 @@ const Esim: React.FC<EsimProps> = ({
   );
 
   const onPressItem = useCallback(
-    async (info: RkbPriceInfo) => {
+    async (info: RkbPriceInfo, prodTitle?: String) => {
       const localOp = product.localOpList.get(info?.partner || '');
 
       if (localOp?.notice) {

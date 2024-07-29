@@ -174,9 +174,11 @@ const MAX_HISTORY_LENGTH = 7;
 
 const HeaderTitle0 = ({
   search,
+  setSearchWord,
   searchWord,
 }: {
   search: (v: string, b: boolean) => void;
+  setSearchWord: (w: string) => void;
   searchWord?: string;
 }) => {
   const [word, setWord] = useState(searchWord || '');
@@ -198,6 +200,7 @@ const HeaderTitle0 = ({
         enablesReturnKeyAutomatically
         onSubmitEditing={() => search(word, true)}
         onChangeText={(value: string) => {
+          setSearchWord(value);
           search(value, false);
           setWord(value);
         }}
@@ -209,6 +212,7 @@ const HeaderTitle0 = ({
           <AppButton
             style={[styles.showSearchBar, {paddingRight: 20}]}
             onPress={() => {
+              setSearchWord('');
               search('', false);
               setWord('');
             }}
@@ -294,34 +298,9 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
       });
   }, []);
 
-  const onPressItem = useCallback(
-    async (info: RkbPriceInfo) => {
-      if (searchWord.length > 0) {
-        Analytics.trackEvent('Page_View_Count', {
-          page: 'Move To Country with Searching',
-        });
-
-        const status = await getTrackingStatus();
-        if (status === 'authorized') {
-          const params = {
-            _valueToSum: 1,
-            fb_search_string: searchWord,
-            fb_content_type: 'Country',
-            success: 1,
-          };
-          AppEventsLogger.logEvent('fb_mobile_search', params);
-        }
-      }
-
-      action.product.getProdOfPartner(info.partnerList);
-      navigation.navigate('Country', {partner: info.partnerList});
-    },
-    [action.product, navigation, searchWord],
-  );
-
   const search = useCallback(
     (word: string, isSearching = false) => {
-      setSearchWord(word);
+      // setSearchWord(word);
 
       // 중복 제거 후 최대 7개까지 저장한다. 저장 형식 : ex) 대만,중국,일본
       if (isSearching && word && !word.match(',')) {
@@ -339,6 +318,32 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
       }
     },
     [searchList],
+  );
+
+  const onPressItem = useCallback(
+    async (info: RkbPriceInfo, prodTitle?: string) => {
+      if (searchWord.length > 0) {
+        Analytics.trackEvent('Page_View_Count', {
+          page: 'Move To Country with Searching',
+        });
+
+        const status = await getTrackingStatus();
+        if (status === 'authorized') {
+          const params = {
+            _valueToSum: 1,
+            fb_search_string: searchWord,
+            fb_content_type: 'Country',
+            success: 1,
+          };
+          AppEventsLogger.logEvent('fb_mobile_search', params);
+        }
+      }
+
+      if (prodTitle) search(prodTitle, true);
+      action.product.getProdOfPartner(info.partnerList);
+      navigation.navigate('Country', {partner: info.partnerList});
+    },
+    [action.product, navigation, search, searchWord],
   );
 
   const renderSearchWord = useCallback(() => {
@@ -368,7 +373,10 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
             <Pressable
               key={elm}
               style={styles.searchList}
-              onPress={() => search(elm, true)}>
+              onPress={() => {
+                setSearchWord(elm);
+                search(elm, true);
+              }}>
               <AppText key="Text" style={styles.searchListText}>
                 {elm}
               </AppText>
@@ -393,7 +401,10 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
                 <Pressable
                   key={utils.generateKey(elm2 + idx)}
                   style={styles.recommebdItem}
-                  onPress={() => search(elm2, true)}>
+                  onPress={() => {
+                    setSearchWord(elm2);
+                    search(elm2, true);
+                  }}>
                   <AppText style={styles.recommendText}>{elm2}</AppText>
                 </Pressable>
               ) : (
@@ -477,7 +488,11 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <HeaderTitle search={search} searchWord={searchWord} />
+      <HeaderTitle
+        search={search}
+        setSearchWord={setSearchWord}
+        searchWord={searchWord}
+      />
       <AppActivityIndicator visible={querying} />
       {searchWord ? (
         renderStoreList(searchWord)
