@@ -682,6 +682,7 @@
   "esim:howToCall:numCheck:way1:ustotal": "미국 도착 후 eSIM 설치 시 수신된 문자로 확인 가능",
   "esim:howToCall:numCheck:way1:usdaily": "미국 도착 후 eSIM 설치 시 수신된 문자로 확인 가능",
   "esim:howToCall:numCheck:way1:dtac": "*102*9# + 통화 눌러 확인 가능",
+  "esim:howToCall:numCheck:way1:vtdaily": "*111# 통화 누른 후 수신된 문자로 확인 가능",
   "esim:howToCall:numCheck:way2:txt": "단말의 설정 화면에서 확인 가능",
   "esim:howToCall:numCheck:way2:ios": "<h>아이폰 :</h> <g>설정 > 전화 > 나의 전화번호</g>",
   "esim:howToCall:numCheck:way2:aos": "<h>안드로이드폰 :</h> <g>설정 > 휴대전화 정보</g>",
