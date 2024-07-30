@@ -434,6 +434,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         contentContainerStyle={{minHeight: '100%'}}
         showsVerticalScrollIndicator={false}
         enableOnAndroid
+        keyboardShouldPersistTaps="handled"
         enableResetScrollToCoords={false}>
         <DropDownHeader
           title={i18n.t('pym:title')}
