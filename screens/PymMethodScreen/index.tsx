@@ -322,6 +322,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           prefix = 'v_';
         }
 
+        const isSave = pymMethodRef?.current?.getIsSave();
         const params = {
           pg: payMethod?.key,
           pay_method: payMethod?.method,
@@ -343,6 +344,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           receipt,
           selected,
           pymMethod: selected,
+          isSave,
         } as PaymentParams;
 
         setClickable(true);

@@ -16,6 +16,7 @@ import {Currency} from '@/redux/api/productApi';
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: 20,
+    paddingBottom: 24,
   },
   title: {
     ...appStyles.bold16Text,
@@ -40,6 +41,10 @@ const styles = StyleSheet.create({
     borderColor: colors.gray,
     borderWidth: 1,
     color: colors.black,
+  },
+  rowCenter: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 
@@ -70,6 +75,7 @@ const DropDownButton = memo(DropDownButton0);
 
 export type PymMethodRef = {
   getExtraInfo: () => PaymentParams['receipt'];
+  getIsSave: () => boolean;
 };
 
 type PymMethodProps = {
@@ -89,6 +95,7 @@ const PymMethod: React.FC<PymMethodProps> = ({
 }) => {
   const [method, setMethod] = useState<'easy' | 'card' | 'vbank'>('easy');
   const [selected, setSelected] = useState('');
+  const [isSave, setIsSave] = useState(true);
   const [idType, setIdType] = useState<'m' | 'c' | 'b'>('m');
   const [id, setId] = useState('');
   const [rcptType, setRcptType] = useState<'p' | 'b' | 'n'>('p');
@@ -96,13 +103,15 @@ const PymMethod: React.FC<PymMethodProps> = ({
     () => price.currency === 'KRW' && price.value <= 0,
     [price.currency, price.value],
   );
+
   useEffect(() => {
     if (pymMethodRef) {
       pymMethodRef.current = {
         getExtraInfo: () => ({id, idType, type: rcptType}),
+        getIsSave: () => isSave,
       };
     }
-  }, [id, idType, pymMethodRef, rcptType]);
+  }, [id, idType, isSave, pymMethodRef, rcptType]);
 
   useEffect(() => {
     if (value?.startsWith('card')) setMethod('card');
@@ -236,6 +245,17 @@ const PymMethod: React.FC<PymMethodProps> = ({
             ) : null}
           </View>
         ))}
+        <Pressable
+          style={styles.rowCenter}
+          disabled={disabled}
+          onPress={() => {
+            setIsSave((pre) => !pre);
+          }}>
+          <AppIcon name="btnCheck3" checked={isSave && !disabled} size={22} />
+          <AppText style={[appStyles.normal16Text, {marginLeft: 6}]}>
+            {i18n.t('pym:saveMethod')}
+          </AppText>
+        </Pressable>
       </View>
     </DropDownHeader>
   );
