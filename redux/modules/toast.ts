@@ -10,10 +10,18 @@ export const Toast = {
   NOT_UPDATED: 'toast:failedToUpdate',
   COPY_SUCCESS: 'toast:copySuccess',
   FAIL_NETWORK: 'toast:failedNetwork',
+  NOT_OPENED: 'toast:failedToOpen',
+};
+
+export type ToastIconType = 'bannerMarkToastError' | 'bannerMarkToastSuccess';
+
+export type ToastParam = {
+  msg: string;
+  toastIcon?: ToastIconType;
 };
 
 interface ToastModelState {
-  messages: string[];
+  messages: ToastParam[];
 }
 
 type ToastObj = {
@@ -32,7 +40,7 @@ const slice = createSlice({
   initialState,
   reducers: {
     init: () => initialState,
-    push: (state, action: PayloadAction<string>) => {
+    push: (state, action: PayloadAction<ToastParam>) => {
       const {messages} = state;
       const newMsg = action.payload || Toast.NOT_LOADED;
 
@@ -59,16 +67,31 @@ export const reflectWithToast =
         const result = resp.payload ? resp.payload.result : resp.result;
 
         if (result === 1) {
-          dispatch(slice.actions.push(toastObj?.[1] || toastType));
+          dispatch(slice.actions.push({msg: toastObj?.[1] || toastType}));
         } else if (result === -1001) {
-          dispatch(slice.actions.push(toastObj?.['-1001'] || toastType));
+          dispatch(
+            slice.actions.push({
+              msg: toastObj?.['-1001'] || toastType,
+              toastIcon: 'bannerMarkToastError',
+            }),
+          );
         } else if (result !== 0) {
-          dispatch(slice.actions.push(toastType));
+          dispatch(
+            slice.actions.push({
+              msg: toastType,
+              toastIcon: 'bannerMarkToastError',
+            }),
+          );
         }
         return resp;
       },
       (err) => {
-        dispatch(slice.actions.push(toastObj?.err || toastType));
+        dispatch(
+          slice.actions.push({
+            msg: toastObj?.err || toastType,
+            toastIcon: 'bannerMarkToastError',
+          }),
+        );
         return err;
       },
     );

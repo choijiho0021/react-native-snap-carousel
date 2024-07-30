@@ -16,6 +16,8 @@ import {
   actions as toastActions,
   ToastAction,
   Toast,
+  ToastParam,
+  ToastIconType,
 } from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
 import AppText from './AppText';
@@ -49,7 +51,7 @@ const styles = StyleSheet.create({
 });
 
 type AppToastProps = {
-  toastMsgBox: string[];
+  toastMsgBox: ToastParam[];
   closable?: boolean;
   style?: ViewStyle;
   action: {
@@ -61,6 +63,7 @@ type AppToastState = {
   isShown: boolean;
   opacity: Animated.Value;
   text?: string;
+  toastIcon?: ToastIconType;
 };
 
 class AppToast extends PureComponent<AppToastProps, AppToastState> {
@@ -141,13 +144,20 @@ class AppToast extends PureComponent<AppToastProps, AppToastState> {
 
   show({duration}: {duration?: number} = {}) {
     const {toastMsgBox} = this.props;
-    const text = toastMsgBox[0];
+    const text = toastMsgBox[0].msg;
+
+    const {toastIcon} = toastMsgBox[0];
     if (text) {
       if (_.isNumber(duration)) {
         this.duration = Number(duration);
       }
 
-      if (this.mounted) this.setState({isShown: true, text: i18n.t(text)});
+      if (this.mounted)
+        this.setState({
+          isShown: true,
+          toastIcon,
+          text: i18n.t(text),
+        });
 
       Animated.timing(this.state.opacity, {
         toValue: 1,
@@ -168,7 +178,7 @@ class AppToast extends PureComponent<AppToastProps, AppToastState> {
 
   render() {
     const {style} = this.props;
-    const {isShown, text} = this.state;
+    const {isShown, text, toastIcon} = this.state;
 
     return isShown ? (
       <TouchableOpacity
@@ -176,7 +186,7 @@ class AppToast extends PureComponent<AppToastProps, AppToastState> {
         activeOpacity={0.5}
         onPress={this.onPress}>
         <Animated.View style={[styles.content, {alignContent: 'center'}]}>
-          <AppIcon name="bannerMark4" />
+          {toastIcon && <AppIcon name={toastIcon} />}
           <AppText style={styles.text}>{text}</AppText>
         </Animated.View>
       </TouchableOpacity>

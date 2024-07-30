@@ -215,7 +215,10 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
         titleStyle={[appStyles.medium18, {color: colors.white}]}
         onPress={() => {
           if (couponId) {
-            action.toast.push('pym:coupon:select');
+            action.toast.push({
+              msg: 'pym:coupon:select',
+              toastIcon: 'bannerMarkToastSuccess',
+            });
           }
           action.cart.applyCoupon({couponId, accountCash: balance, couponList});
           navigation.goBack();

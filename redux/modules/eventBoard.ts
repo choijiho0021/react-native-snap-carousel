@@ -38,7 +38,12 @@ const postAndGetList = createAsyncThunk(
       postEventAttach({images: issue.images, user: mobile, token}),
     ).then(({payload}) => {
       if (payload?.find((p) => p.result !== 0)) {
-        dispatch(ToastActions.push('event:fail:loading'));
+        dispatch(
+          ToastActions.push({
+            msg: 'event:fail:loading',
+            toastIcon: 'bannerMarkToastError',
+          }),
+        );
         return Promise.reject(new Error('failed to post images'));
       }
       const images = payload ? payload.map((item) => item.objects[0]) : [];

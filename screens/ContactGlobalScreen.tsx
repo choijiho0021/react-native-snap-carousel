@@ -163,7 +163,10 @@ const ContactGlobalScreen: React.FC<ContactScreenProps> = ({
             );
           } else {
             KakaoSDK.KakaoChannel.chat(channelId).catch(() => {
-              action.toast.push(Toast.NOT_OPENED);
+              action.toast.push({
+                msg: Toast.NOT_OPENED,
+                toastIcon: 'bannerMarkToastError',
+              });
             });
           }
 

@@ -5,7 +5,6 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {Settings} from 'react-native-fbsdk-next';
 import {
   Keyboard,
-  Pressable,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -46,7 +45,6 @@ import ScreenHeader from '@/components/ScreenHeader';
 import {emailDomainList} from '@/components/DomainListModal';
 import ConfirmPolicy from './ConfirmPolicy';
 import AppSnackBar from '@/components/AppSnackBar';
-import AppAlert from '@/components/AppAlert';
 
 const styles = StyleSheet.create({
   title: {
@@ -323,8 +321,15 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
       }
     } catch (err) {
       if (err instanceof Error && err.message.includes('Duplicated')) {
-        actions.toast.push('reg:usingEmail');
-      } else actions.toast.push(Toast.FAIL_NETWORK);
+        actions.toast.push({
+          msg: 'reg:usingEmail',
+          toastIcon: 'bannerMarkToastSuccess',
+        });
+      } else
+        actions.toast.push({
+          msg: Toast.FAIL_NETWORK,
+          toastIcon: 'bannerMarkToastError',
+        });
       console.log('sign up failed', err);
     }
 

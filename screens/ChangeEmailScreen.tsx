@@ -117,11 +117,17 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
   const changeEmail = useCallback(() => {
     actions.account.changeEmail(newEmail).then((rsp) => {
       if (rsp?.payload?.result === 0) {
-        actions.toast.push('changeEmail:saveInfo');
+        actions.toast.push({
+          msg: 'changeEmail:saveInfo',
+          toastIcon: 'bannerMarkToastSuccess',
+        });
         navigation.goBack();
       } else {
         Keyboard.dismiss();
-        actions.toast.push('changeEmail:fail');
+        actions.toast.push({
+          msg: 'changeEmail:fail',
+          toastIcon: 'bannerMarkToastError',
+        });
       }
     });
   }, [actions.account, actions.toast, navigation, newEmail]);

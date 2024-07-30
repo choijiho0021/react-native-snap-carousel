@@ -378,6 +378,7 @@ const callHttp = async <T>(
 
           try {
             const js = await response.json();
+            // console.log('API response', url, response.status, js);
 
             // config에는 상품정보 등 큰 정보가 많아 제외 -- 추후 결과값을 성공 / 실패 로만 남기는 로그를 추가할 필요성이 있음
             if (!url.includes('config')) {
@@ -417,7 +418,13 @@ const callHttp = async <T>(
     return failure(FAILED, response.statusText, response.status);
   } catch (err) {
     console.log('@@@ request failed', err, url);
-    if (!ignoreError) store.dispatch(ToastActions.push(Toast.FAIL_NETWORK));
+    if (!ignoreError)
+      store.dispatch(
+        ToastActions.push({
+          msg: Toast.FAIL_NETWORK,
+          toastIcon: 'bannerMarkToastError',
+        }),
+      );
     return failure(E_REQUEST_FAILED, 'API failed', 498);
   }
 };
