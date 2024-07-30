@@ -392,6 +392,7 @@
   "his:timeStd": "Based on KST",
 
   "his:cancel": "Cancel Payment",
+  "his:partialCancel": "부분 환불",
   "his:paymentDetail": "Payment Detail",
   "his:shipmentInfo": "Shipment Info",
   "his:shipmentState": "Shipment Status",
