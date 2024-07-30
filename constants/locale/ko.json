@@ -1499,6 +1499,8 @@
   "userGuide:esimReg:body": "단말에 eSIM 상품을 등록하기",
   "userGuide:checkSetting:title": "설정 확인",
   "userGuide:checkSetting:body": "지금 내 설정, 맞는걸까?\neSIM 설정 확인하기",
+  "userGuide:esimDel:title": "<b14>사용 종료된 eSIM을 삭제하고 싶다면?</b14>",
+  "userGuide:esimDel:body": "",
 
   "userGuide:modal:title": "eSIM 상품을 한국에서\n미리 등록하고 가도 될까요?",
   "userGuide:modal:body": "네 그럼요!\n아래 일부 상품을 제외<s>하고는</s>\n<b>한국에서 등록 가능</b><s>합니다.</s>",

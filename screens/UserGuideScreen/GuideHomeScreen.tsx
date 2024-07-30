@@ -1,5 +1,5 @@
 import React, {memo, useEffect, useState} from 'react';
-import {StyleSheet, SafeAreaView} from 'react-native';
+import {StyleSheet, SafeAreaView, ScrollView, View} from 'react-native';
 import {useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-community/async-storage';
 import {useNavigation} from '@react-navigation/native';
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type GuideOption = 'esimReg' | 'checkSetting';
+export type GuideOption = 'esimReg' | 'checkSetting' | 'esimDel';
 
 const GuideHomeScreen = () => {
   const dispatch = useDispatch();
@@ -32,37 +32,44 @@ const GuideHomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <GuideHeader onPress={() => navigation.goBack()} />
+      <ScrollView style={{flex: 1}}>
+        <GuideHeader onPress={() => navigation.goBack()} />
 
-      <GuideTitle title={i18n.t('userGuide:home:title')} />
+        <GuideTitle title={i18n.t('userGuide:home:title')} />
 
-      <AppIcon name="guideHomeLogo" style={styles.logo} />
+        <AppIcon name="guideHomeLogo" style={styles.logo} />
 
-      {['esimReg', 'checkSetting'].map((v) => (
-        <GuideButton
-          key={v}
-          item={v}
-          onPress={async () => {
-            setGuideOption(v);
-            const checked = await AsyncStorage.getItem(
-              'esim.guide.modal.check',
-            );
-
-            if (v === 'esimReg' && checked !== 'checked') {
-              AsyncStorage.setItem('esim.guide.modal.check', 'checked');
-
-              dispatch(
-                modalActions.renderModal(() => (
-                  <GuideModal guideOption={guideOption} isHome />
-                )),
+        {['esimReg', 'checkSetting', 'esimDel'].map((v) => (
+          <GuideButton
+            key={v}
+            item={v}
+            style={v === 'esimDel' && {marginTop: 36, marginBottom: 36}}
+            onPress={async () => {
+              setGuideOption(v);
+              const checked = await AsyncStorage.getItem(
+                'esim.guide.modal.check',
               );
-            } else {
-              navigation.navigate('UserGuideSelectRegion', {guideOption: v});
-            }
-          }}
-          isHome
-        />
-      ))}
+
+              if (v === 'esimReg' && checked !== 'checked') {
+                AsyncStorage.setItem('esim.guide.modal.check', 'checked');
+
+                dispatch(
+                  modalActions.renderModal(() => (
+                    <GuideModal guideOption={guideOption} isHome />
+                  )),
+                );
+              } else if (v === 'esimDel') {
+                navigation?.navigate('UserGuideStep', {
+                  guideOption: v,
+                });
+              } else {
+                navigation.navigate('UserGuideSelectRegion', {guideOption: v});
+              }
+            }}
+            isHome
+          />
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 };

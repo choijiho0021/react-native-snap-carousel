@@ -1,5 +1,5 @@
-import React, {memo, useState} from 'react';
-import {StyleSheet, View, Pressable} from 'react-native';
+import React, {memo, useMemo, useState} from 'react';
+import {StyleSheet, View, Pressable, StyleProp, ViewStyle} from 'react-native';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
@@ -46,12 +46,15 @@ const GuideButton = ({
   item,
   isHome = true,
   onPress,
+  style,
 }: {
   item: string;
   onPress: () => void;
   isHome: boolean;
+  style?: StyleProp<ViewStyle>;
 }) => {
   const [isPressed, setIsPressed] = useState(false);
+  const isBonusButton = useMemo(() => ['us', 'esimDel'].includes(item), [item]);
 
   return (
     <Pressable
@@ -59,13 +62,20 @@ const GuideButton = ({
       style={[
         styles.btn,
         {backgroundColor: isPressed ? colors.backGrey : colors.white},
+        style,
       ]}
       onPress={onPress}
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}>
-      <View>
-        <View style={{flexDirection: 'row', alignItems: 'center', gap: 6}}>
-          {item === 'us' && <AppSvgIcon name="cautionIconClearBlue" />}
+      <View style={{flex: 1}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6,
+            marginRight: 40,
+          }}>
+          {isBonusButton && <AppSvgIcon name="cautionIconClearBlue" />}
           <AppStyledText
             textStyle={styles.btnTitle}
             text={
@@ -78,10 +88,15 @@ const GuideButton = ({
                 ...appStyles.bold16Text,
                 color: colors.clearBlue,
               },
+
+              b14: {
+                ...appStyles.bold14Text,
+                color: colors.clearBlue,
+              },
             }}
           />
         </View>
-        {isHome && (
+        {isHome && i18n.t(`userGuide:${item}:body`) !== '' && (
           <View style={{marginTop: 4}}>
             <AppText style={styles.btnBody}>
               {i18n.t(`userGuide:${item}:body`)}
@@ -89,7 +104,7 @@ const GuideButton = ({
           </View>
         )}
       </View>
-      <AppSvgIcon name="rightArrow20" />
+      <AppSvgIcon name={isBonusButton ? 'rightArrowBlue20' : 'rightArrow20'} />
     </Pressable>
   );
 };
