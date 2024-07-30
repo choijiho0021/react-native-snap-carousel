@@ -5896,7 +5896,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           x2="109.255"
           y2="83.647"
           gradientUnits="userSpaceOnUse">
-          <Stop offset=".506" stopColor="#EE4423" />
+          <Stop offset="0.506" stopColor="#EE4423" />
           <Stop offset="1" stopColor="#FFDAD2" />
         </LinearGradient>
         <LinearGradient
