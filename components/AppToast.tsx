@@ -144,9 +144,9 @@ class AppToast extends PureComponent<AppToastProps, AppToastState> {
 
   show({duration}: {duration?: number} = {}) {
     const {toastMsgBox} = this.props;
-    const text = toastMsgBox[0].msg;
+    const text = toastMsgBox[0]?.msg;
+    const toastIcon = toastMsgBox[0]?.toastIcon;
 
-    const {toastIcon} = toastMsgBox[0];
     if (text) {
       if (_.isNumber(duration)) {
         this.duration = Number(duration);
