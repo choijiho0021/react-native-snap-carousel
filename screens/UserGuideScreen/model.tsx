@@ -383,8 +383,7 @@ export const getImageList = (
         page5: [require(`${dir}/ios/esimDel/img_4.png`)],
         pageLast: [require(`${dir}/iconRokebiLast.png`)],
       };
-    }
-    if (guideOption === 'esimReg') {
+    } else if (guideOption === 'esimReg') {
       if (region === 'korea') {
         imageList = {
           page1: [require(`${dir}/iconKoreaSmall.png`)],
@@ -529,6 +528,7 @@ export const getImageList = (
       pageLast: [require(`${dir}/iconRokebiLast.png`)],
     };
   }
+
   return imageList;
 };
 
@@ -1243,7 +1243,7 @@ const getIosEsimDelGuide = () => {
       key: 'page3',
       title: renderText(`userGuide:ios:esimDel:stepTitle2`),
       step: 2,
-      tip: () => tipView({id: 'userGuide:ios:esimDel:tipPage2_1'}, true, true),
+      tip: () => tipView({id: 'userGuide:ios:esimDel:tipPage2_1'}),
     },
     {
       key: 'page4',
