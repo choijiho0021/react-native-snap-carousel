@@ -449,7 +449,16 @@ export const getImageList = (
     }
   }
   // Android 일 때
-  else if (guideOption === 'esimReg') {
+  else if (guideOption === 'esimDel') {
+    imageList = {
+      page1: [require(`${dir}/iconEsimDel.png`)],
+      page2: [require(`${dir}/android/esimReg/img_1.png`)],
+      page3: [require(`${dir}/android/esimReg/img_2.png`)],
+      page4: [require(`${dir}/android/esimReg/img_3.png`)],
+      page5: [require(`${dir}/android/esimReg/img_4.png`)],
+      page6: [require(`${dir}/android/esimReg/img_5.png`)],
+    };
+  } else if (guideOption === 'esimReg') {
     if (region === 'korea') {
       imageList = {
         page1: [require(`${dir}/iconKoreaSmall.png`)],
@@ -1208,6 +1217,42 @@ const getAosConfigLocalGuide = () => {
   ];
 };
 
+const getAosEsimDelGuide = () => {
+  return [
+    {
+      key: 'page1',
+      title: renderText('userGuide:galaxy:esimDel:stepTitle0'),
+      step: 0,
+    },
+    {
+      key: 'page2',
+      title: renderText(`userGuide:stepsTitle1:galaxy:checkSetting`),
+      step: 1,
+      stepPreText: 'korea',
+    },
+    {
+      key: 'page3',
+      title: renderText(`userGuide::checkSetting:done`),
+      step: 2,
+    },
+    {
+      key: 'page4',
+      title: renderText(`userGuide::checkSetting:done`),
+      step: 3,
+    },
+    {
+      key: 'page5',
+      title: renderText(`userGuide::checkSetting:done`),
+      step: 4,
+    },
+    {
+      key: 'page6',
+      title: renderText(`userGuide::checkSetting:done`),
+      step: 5,
+    },
+  ];
+};
+
 export const getGuideImages = (
   guideOption: GuideOption,
   region: GuideRegion,
@@ -1226,6 +1271,11 @@ export const getGuideImages = (
   }
 
   // Android
+
+  if (guideOption === 'esimDel') {
+    console.log('@@@@ esimDelGuide');
+    return getAosEsimDelGuide();
+  }
 
   if (guideOption === 'esimReg') {
     console.log('@@@@ getAndroidGuide');
