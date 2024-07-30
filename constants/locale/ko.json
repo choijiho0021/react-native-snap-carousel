@@ -1566,20 +1566,28 @@
   "userGuide:stepsTitle8:us:ios": "<b>‘메인’</b>의 데이터 로밍은 <b>OFF</b>해주세요.",
   "userGuide:stepsTitle9:us:ios": "<b>eSIM 활성화가 완료</b>되면\n<b>통신사 안내 문자</b>가 전송됩니다.\n",
 
+  "userGuide:ios:esimDel:stepTitle0": "<b>eSIM 삭제</b> 가이드",
+  "userGuide:ios:esimDel:stepTitle1": "<b>설정>셀룰러</b>에서\n<b>삭제할 eSIM을 선택</b>해 주세요.",
+  "userGuide:ios:esimDel:stepTitle2": "하단의 <b>eSIM 삭제 버튼</b>을\n눌러주세요.",
+  "userGuide:ios:esimDel:stepTitle3": "<b>eSIM 삭제</b>를 눌러주세요.",
+  "userGuide:ios:esimDel:stepTitle4": "<b>연락처 업데이트</b>를 선택해 주세요.",
+  "userGuide:ios:esimDel:stepTitle5": "<b>eSIM 삭제가</b>\n<b>완료되었습니다!</b>",
+
+  "userGuide:ios:esimDel:tipPage1_1": "가이드 상에서는 편의를 위해 새로 추가한 로밍도깨비 eSIM을 '여행용'으로 설정했어요.",
+  "userGuide:ios:esimDel:tipPage2_1": "여행이 끝난 후 <b>eSIM 사용이 모두 종료되었을 때</b> 삭제를 진행해 주세요.",
+
+  "userGuide:ios:esimDel:tipPage4_1": "eSIM 삭제를 모두 진행한 뒤에도 설정>셀룰러에 <b>'eSIM 없음'이 남아있다면 다시 클릭하여 연락처 업데이트를 진행</b>해 주세요.",
+  "userGuide:ios:esimDel:tipPage4_2": "eSIM 설치 및 삭제 과정에서 사용하던 유심이 잠길 수 있어요. 한국 통신사 정책으로 인한 문제로, <b>이용 중인 한국 통신사 고객센터로 문의</b> 부탁드립니다.",
+
   "userGuide:galaxy:esimDel:stepTitle0": "<b>eSIM 삭제</b> 가이드",
-  "userGuide:galaxy:esimDel:stepTitle1": "<b>설정>셀룰러</b>에서\n<b>삭제할 eSIM을 선택</b>해 주세요.",
-  "userGuide:galaxy:esimDel:stepTitle2": "하단의 <b>eSIM 삭제 버튼</b>을\n눌러주세요.",
-  "userGuide:galaxy:esimDel:stepTitle3": "<b>eSIM 삭제</b>를 눌러주세요.",
-  "userGuide:galaxy:esimDel:stepTitle4": "<b>연락처 업데이트</b>를 선택해 주세요.",
-  "userGuide:galaxy:esimDel:stepTitle5": "<b>eSIM 삭제가</b>\n<b>완료되었습니다!</b>",
+  "userGuide:galaxy:esimDel:stepTitle1": "<b>설정> 연결> SIM 관리자</b>에서\n<b>삭제할 eSIM을 선택</b>해 주세요.",
+  "userGuide:galaxy:esimDel:stepTitle2": "하단의 <b>삭제 버튼</b>을 눌러주세요.",
+  "userGuide:galaxy:esimDel:stepTitle3": "<b>삭제</b>를 눌러주세요.",
+  "userGuide:galaxy:esimDel:stepTitle4": "<b>eSIM 삭제가</b>\n<b>완료되었습니다!</b>",
 
   "userGuide:tail:contact:title:esimDel": "삭제 시 어려운 점이 있으신가요?",
 
-  "userGuide:galaxy:esimDel:tipPage1_1": "가이드 상에서는 편의를 위해 새로 추가한 로밍도깨비 eSIM을 '여행용'으로 설정했어요.",
   "userGuide:galaxy:esimDel:tipPage2_1": "여행이 끝난 후 <b>eSIM 사용이 모두 종료되었을 때</b> 삭제를 진행해 주세요.",
-
-  "userGuide:galaxy:esimDel:tipPage4_1": "eSIM 삭제를 모두 진행한 뒤에도 설정>셀룰러에 <b>'eSIM 없음'이 남아있다면 다시 클릭하여 연락처 업데이트를 진행</b>해 주세요.",
-  "userGuide:galaxy:esimDel:tipPage4_2": "eSIM 설치 및 삭제 과정에서 사용하던 유심이 잠길 수 있어요. 한국 통신사 정책으로 인한 문제로, <b>이용 중인 한국 통신사 고객센터로 문의</b> 부탁드립니다.",
 
   "userGuide:us:tipPage4_1": "셀룰러 요금제 레이블을 설정하면, 각 요금제를 구별하기 쉬워요.",
   "userGuide:us:tipPage4_2": "<b>가이드 상에서는 편의를 위해 새로 추가한 로밍도깨비 eSIM을 ‘여행용’으로 설정했어요.</b>",

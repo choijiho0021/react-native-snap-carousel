@@ -374,6 +374,16 @@ export const getImageList = (
   let imageList: Record<string, any[]> = {};
 
   if (isIOS) {
+    if (guideOption === 'esimDel') {
+      imageList = {
+        page1: [require(`${dir}/iconEsimDel.png`)],
+        page2: [require(`${dir}/ios/esimDel/img_1.png`)],
+        page3: [require(`${dir}/ios/esimDel/img_2.png`)],
+        page4: [require(`${dir}/ios/esimDel/img_3.png`)],
+        page5: [require(`${dir}/ios/esimDel/img_4.png`)],
+        pageLast: [require(`${dir}/iconRokebiLast.png`)],
+      };
+    }
     if (guideOption === 'esimReg') {
       if (region === 'korea') {
         imageList = {
@@ -455,7 +465,6 @@ export const getImageList = (
       page2: [require(`${dir}/android/esimDel/img_1.png`)],
       page3: [require(`${dir}/android/esimDel/img_2.png`)],
       page4: [require(`${dir}/android/esimDel/img_3.png`)],
-      page5: [require(`${dir}/android/esimDel/img_4.png`)],
       pageLast: [require(`${dir}/iconRokebiLast.png`)],
     };
   } else if (guideOption === 'esimReg') {
@@ -1217,6 +1226,45 @@ const getAosConfigLocalGuide = () => {
   ];
 };
 
+const getIosEsimDelGuide = () => {
+  return [
+    {
+      key: 'page1',
+      title: renderText('userGuide:ios:esimDel:stepTitle0'),
+      step: 0,
+    },
+    {
+      key: 'page2',
+      title: renderText(`userGuide:ios:esimDel:stepTitle1`),
+      step: 1,
+      tip: () => tipView({id: 'userGuide:ios:esimDel:tipPage1_1'}),
+    },
+    {
+      key: 'page3',
+      title: renderText(`userGuide:ios:esimDel:stepTitle2`),
+      step: 2,
+      tip: () => tipView({id: 'userGuide:ios:esimDel:tipPage2_1'}, true, true),
+    },
+    {
+      key: 'page4',
+      title: renderText(`userGuide:ios:esimDel:stepTitle3`),
+      step: 3,
+    },
+    {
+      key: 'page5',
+      title: renderText(`userGuide:ios:esimDel:stepTitle4`),
+      step: 4,
+      tip: () =>
+        renderTipList('userGuide:ios:esimDel:tipPage4', 'dot', false, 2),
+    },
+    {
+      key: 'page6',
+      title: renderText(`userGuide:ios:esimDel:stepTitle5`),
+      step: 5,
+    },
+  ];
+};
+
 const getAosEsimDelGuide = () => {
   return [
     {
@@ -1228,7 +1276,6 @@ const getAosEsimDelGuide = () => {
       key: 'page2',
       title: renderText(`userGuide:galaxy:esimDel:stepTitle1`),
       step: 1,
-      tip: () => tipView({id: 'userGuide:galaxy:esimDel:tipPage1_1'}),
     },
     {
       key: 'page3',
@@ -1246,13 +1293,6 @@ const getAosEsimDelGuide = () => {
       key: 'page5',
       title: renderText(`userGuide:galaxy:esimDel:stepTitle4`),
       step: 4,
-      tip: () =>
-        renderTipList('userGuide:galaxy:esimDel:tipPage4', 'dot', false, 2),
-    },
-    {
-      key: 'page6',
-      title: renderText(`userGuide:galaxy:esimDel:stepTitle5`),
-      step: 5,
     },
   ];
 };
@@ -1262,6 +1302,9 @@ export const getGuideImages = (
   region: GuideRegion,
 ): GuideImage[] => {
   if (isIOS) {
+    if (guideOption === 'esimDel') {
+      return getIosEsimDelGuide();
+    }
     if (guideOption === 'esimReg') {
       return getIosEsimRegGuide(guideOption, region);
     }
