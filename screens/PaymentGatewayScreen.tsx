@@ -182,10 +182,8 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
             let text = 'cart:systemError';
             if (resp?.result === api.E_RESOURCE_NOT_FOUND)
               text = 'cart:soldOut';
-            else if (resp?.status === api.API_STATUS_PREFAILED)
-              text = 'cart:cashChanged';
             AppAlert.info(i18n.t(text));
-            navigation.goBack();
+            navigation.popToTop();
           } else {
             setIsOrderReady(true);
             if (params.pay_method.startsWith('vbank')) {
@@ -204,8 +202,9 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
           }
         })
         .catch(() => {
-          AppAlert.info(i18n.t('cart:systemError'));
-          navigation.goBack();
+          AppAlert.info(i18n.t('cart:systemError'), '', () =>
+            navigation.popToTop(),
+          );
         });
     }
   }, [

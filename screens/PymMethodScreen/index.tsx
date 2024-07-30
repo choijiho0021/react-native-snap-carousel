@@ -207,6 +207,10 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     );
   }, [product.rule.ccard]);
 
+  const alertErrorGoHome = useCallback(() => {
+    AppAlert.info(i18n.t('cart:systemError'), '', () => navigation.popToTop());
+  }, [navigation]);
+
   const installmentMonthsList = useMemo(
     () =>
       [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((k) => ({
@@ -305,11 +309,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
               action.product.getAllProduct(true);
 
-              AppAlert.info(i18n.t('cart:unpublishedError'), '', () =>
-                navigation.popToTop(),
-              );
+              alertErrorGoHome();
             } else {
-              AppAlert.info(i18n.t('cart:systemError'));
+              alertErrorGoHome();
             }
           }
         });

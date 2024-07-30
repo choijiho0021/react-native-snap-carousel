@@ -398,7 +398,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     if (payload.result === api.E_RESOURCE_NOT_FOUND) {
       AppAlert.info(i18n.t(message));
     } else {
-      AppAlert.info(i18n.t('cart:systemError'));
+      AppAlert.info(i18n.t('cart:systemError'), '', () =>
+        navigation.popToTop(),
+      );
     }
   }, []);
 
