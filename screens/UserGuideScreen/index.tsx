@@ -232,6 +232,12 @@ const UserGuideScreen = () => {
     [],
   );
 
+  const checkInfo = useMemo(() => {
+    if (guideOption === 'esimDel') return [1, 2];
+
+    return region === 'us' ? [1, 2, 3, 4] : [1, 2, 3];
+  }, [guideOption, region]);
+
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {
       setDimensions(window);
@@ -283,13 +289,13 @@ const UserGuideScreen = () => {
             />
           </View>
 
-          {guideOption === 'esimReg' && (
+          {['esimReg', 'esimDel'].includes(guideOption) && (
             <View style={styles.checkInfo}>
               <AppText style={appStyles.bold18Text}>
-                {i18n.t('userGuide:checkInfo')}
+                {i18n.t(`userGuide:${guideOption}:checkInfo`)}
               </AppText>
               <View style={{marginTop: 8}}>
-                {(region === 'us' ? [1, 2, 3, 4] : [1, 2, 3]).map((k) => (
+                {checkInfo.map((k) => (
                   <View key={k} style={{flexDirection: 'row'}}>
                     <AppText
                       style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
@@ -301,7 +307,7 @@ const UserGuideScreen = () => {
                         text={i18n.t(
                           `userGuide${
                             region === 'us' ? ':us' : ''
-                          }:checkInfo${k}`,
+                          }:${guideOption}:checkInfo${k}`,
                         )}
                         format={{
                           b: [appStyles.bold14Text, {color: colors.clearBlue}],
@@ -554,7 +560,11 @@ const UserGuideScreen = () => {
           <AppText style={styles.contactTitle}>
             {i18n.t(
               `userGuide:tail:contact:title${
-                guideOption === 'esimReg' ? '' : ':checkSetting'
+                guideOption === 'esimReg'
+                  ? ''
+                  : guideOption === 'esimDel'
+                  ? ':esimDel'
+                  : ':checkSetting' // default tail title.?
               }`,
             )}
           </AppText>
