@@ -452,11 +452,11 @@ export const getImageList = (
   else if (guideOption === 'esimDel') {
     imageList = {
       page1: [require(`${dir}/iconEsimDel.png`)],
-      page2: [require(`${dir}/android/esimReg/img_1.png`)],
-      page3: [require(`${dir}/android/esimReg/img_2.png`)],
-      page4: [require(`${dir}/android/esimReg/img_3.png`)],
-      page5: [require(`${dir}/android/esimReg/img_4.png`)],
-      page6: [require(`${dir}/android/esimReg/img_5.png`)],
+      page2: [require(`${dir}/android/esimDel/img_1.png`)],
+      page3: [require(`${dir}/android/esimDel/img_2.png`)],
+      page4: [require(`${dir}/android/esimDel/img_3.png`)],
+      page5: [require(`${dir}/android/esimDel/img_4.png`)],
+      pageLast: [require(`${dir}/iconRokebiLast.png`)],
     };
   } else if (guideOption === 'esimReg') {
     if (region === 'korea') {
@@ -1234,7 +1234,8 @@ const getAosEsimDelGuide = () => {
       key: 'page3',
       title: renderText(`userGuide:galaxy:esimDel:stepTitle2`),
       step: 2,
-      tip: () => tipView({id: 'userGuide:galaxy:esimDel:tipPage2_1'}),
+      tip: () =>
+        tipView({id: 'userGuide:galaxy:esimDel:tipPage2_1'}, true, true),
     },
     {
       key: 'page4',
