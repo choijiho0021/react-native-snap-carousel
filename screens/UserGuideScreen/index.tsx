@@ -560,7 +560,11 @@ const UserGuideScreen = () => {
           <AppText style={styles.contactTitle}>
             {i18n.t(
               `userGuide:tail:contact:title${
-                guideOption === 'esimReg' ? '' : ':checkSetting'
+                guideOption === 'esimReg'
+                  ? ''
+                  : guideOption === 'esimDel'
+                  ? ':esimDel'
+                  : ':checkSetting' // default tail title.?
               }`,
             )}
           </AppText>

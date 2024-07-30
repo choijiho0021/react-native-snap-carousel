@@ -1226,28 +1226,31 @@ const getAosEsimDelGuide = () => {
     },
     {
       key: 'page2',
-      title: renderText(`userGuide:stepsTitle1:galaxy:checkSetting`),
+      title: renderText(`userGuide:galaxy:esimDel:stepTitle1`),
       step: 1,
-      stepPreText: 'korea',
+      tip: () => tipView({id: 'userGuide:galaxy:esimDel:tipPage1_1'}),
     },
     {
       key: 'page3',
-      title: renderText(`userGuide::checkSetting:done`),
+      title: renderText(`userGuide:galaxy:esimDel:stepTitle2`),
       step: 2,
+      tip: () => tipView({id: 'userGuide:galaxy:esimDel:tipPage2_1'}),
     },
     {
       key: 'page4',
-      title: renderText(`userGuide::checkSetting:done`),
+      title: renderText(`userGuide:galaxy:esimDel:stepTitle3`),
       step: 3,
     },
     {
       key: 'page5',
-      title: renderText(`userGuide::checkSetting:done`),
+      title: renderText(`userGuide:galaxy:esimDel:stepTitle4`),
       step: 4,
+      tip: () =>
+        renderTipList('userGuide:galaxy:esimDel:tipPage4', 'dot', false, 2),
     },
     {
       key: 'page6',
-      title: renderText(`userGuide::checkSetting:done`),
+      title: renderText(`userGuide:galaxy:esimDel:stepTitle5`),
       step: 5,
     },
   ];
