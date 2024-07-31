@@ -309,7 +309,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
               action.product.getAllProduct(true);
 
-              alertErrorGoHome();
+              AppAlert.info(i18n.t('cart:unpublishedError'), '', () =>
+                navigation.popToTop(),
+              );
             } else {
               alertErrorGoHome();
             }

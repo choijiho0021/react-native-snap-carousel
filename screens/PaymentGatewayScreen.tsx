@@ -9,7 +9,15 @@ import moment from 'moment';
 import AppAlert from '@/components/AppAlert';
 import {HomeStackParamList} from '@/navigation/navigation';
 import api, {ApiResult} from '@/redux/api/api';
-import {actions as cartActions, CartAction} from '@/redux/modules/cart';
+import {
+  actions as cartActions,
+  CartAction,
+  CartModelState,
+} from '@/redux/modules/cart';
+import {
+  ProductAction,
+  actions as productActions,
+} from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {PaymentInfo} from '@/redux/api/cartApi';
 import AppPaymentGateway, {
@@ -43,9 +51,11 @@ type PaymentGatewayScreenProps = {
   navigation: PaymentGatewayScreenNavigationProp;
   route: PaymentGatewayScreenRouteProp;
   account: AccountModelState;
+  cart: CartModelState;
 
   action: {
     cart: CartAction;
+    product: ProductAction;
   };
 };
 
@@ -90,6 +100,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
   navigation,
   account,
   action,
+  cart,
 }) => {
   const [isOrderReady, setIsOrderReady] = useState(false);
   const pymInfo = useMemo(
@@ -178,10 +189,33 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       action.cart
         .makeOrderAndPurchase(pymInfo)
         .then(({payload: resp}) => {
+          // 카드결제 탭이랑 같은 응답처리, 함수로 따로 뺴기.
           if (!resp || resp.result < 0) {
             let text = 'cart:systemError';
             if (resp?.result === api.E_RESOURCE_NOT_FOUND)
               text = 'cart:soldOut';
+            else if (resp?.result === api.E_STATUS_EXPIRED) {
+              text = 'cart:unpublishedError';
+
+              // product status is changed.
+              const skuList = resp?.message.split(',');
+              if (skuList?.length > 0 && cart.cartId) {
+                cart?.cartItems
+                  .filter((elm) => skuList.includes(elm.prod.sku))
+                  .forEach((elm) => {
+                    // remove it from the cart
+                    if (elm.orderItemId) {
+                      action.cart.cartRemove({
+                        orderId: cart.cartId,
+                        orderItemId: elm.orderItemId,
+                      });
+                    }
+                  });
+              }
+
+              action.product.getAllProduct(true);
+            } else if (resp?.status === api.API_STATUS_PREFAILED)
+              text = 'cart:cashChanged';
             AppAlert.info(i18n.t(text));
             navigation.popToTop();
           } else {
@@ -210,7 +244,10 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
   }, [
     account.token,
     action.cart,
+    action.product,
     callback,
+    cart.cartId,
+    cart?.cartItems,
     navigation,
     params,
     params.isPaid,
@@ -282,10 +319,11 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
 };
 
 export default connect(
-  ({account}: RootState) => ({account}),
+  ({account, cart}: RootState) => ({account, cart}),
   (dispatch) => ({
     action: {
       cart: bindActionCreators(cartActions, dispatch),
+      product: bindActionCreators(productActions, dispatch),
     },
   }),
 )(PaymentGatewayScreen);
