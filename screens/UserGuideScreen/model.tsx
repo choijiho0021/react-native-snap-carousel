@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   tipContainer: {
     alignItems: 'center',
-    width: '100%',
+    width: '95%',
   },
   tipTextContainer: {
     flexDirection: 'row',
@@ -257,7 +257,7 @@ const tipView = (
   <View style={styles.tipContainer}>
     {renderTitle && renderTips()}
     {renderTip(params)}
-    {(!renderTitle || marginBottom) && <View style={{marginBottom: 36}} />}
+    {(!renderTitle || marginBottom) && <View style={{marginBottom: 0}} />}
   </View>
 );
 
@@ -316,6 +316,7 @@ const renderNoticeBox = ({
           justifyContent: 'center',
           paddingHorizontal: 20,
           paddingVertical: 10,
+          marginTop: 12,
         }}>
         {title && (
           <AppStyledText

@@ -398,7 +398,6 @@ const UserGuideScreen = () => {
           <View
             style={{
               alignItems: 'center',
-              marginBottom: !data.tip ? 0 : 12,
             }}>
             {data.stepTitle === 'Bonus' ? (
               <>
@@ -461,7 +460,7 @@ const UserGuideScreen = () => {
           </View>
 
           {data.tip && (
-            <View style={{marginBottom: data.noticeBox ? 12 : 0}}>
+            <View style={{marginTop: 12}}>
               {isCheckLocal && data.localTip ? data.localTip() : data.tip()}
             </View>
           )}
@@ -479,7 +478,7 @@ const UserGuideScreen = () => {
               <AppText
                 style={[
                   appStyles.semiBold13Text,
-                  {color: colors.warmGrey, marginBottom: 12, marginTop: 18},
+                  {color: colors.warmGrey, marginTop: 12},
                 ]}>
                 {data.caption}
               </AppText>
