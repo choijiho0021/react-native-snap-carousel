@@ -76,7 +76,7 @@ const GuideSelectRegionScreen = () => {
                 )),
               )
             }>
-            <AppSvgIcon name="noticeFlag" style={{marginRight: 8}} />
+            <AppSvgIcon name="noticeFlagPurple" style={{marginRight: 8}} />
             <View>
               <AppText style={styles.boxTitle}>
                 {i18n.t('userGuide:selectRegion:esimReg:notice:title')}
