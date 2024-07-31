@@ -298,17 +298,15 @@ const renderNoticeBox = ({
   title,
   body,
   isShow,
-  marginBottom = 16,
 }: {
   title?: string;
   body: string[];
   isShow: boolean;
-  marginBottom?: number;
 }) => {
   if (!isShow) return null;
 
   return (
-    <View style={{width: '100%', marginBottom}}>
+    <View style={{width: '100%'}}>
       <View
         style={{
           backgroundColor: colors.veryLightBlue,
@@ -1004,7 +1002,6 @@ const getAosEsimRegGuide = (guideOption: GuideOption, region: GuideRegion) => {
           renderNoticeBox({
             body: ['userGuide:noticeBox:us:body1'],
             isShow: true,
-            marginBottom: 60,
           }),
         stepTitle: 'Bonus',
       },

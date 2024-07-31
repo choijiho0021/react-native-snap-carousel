@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 20,
     backgroundColor: colors.black,
-    marginBottom: 14,
+    marginBottom: 2,
     marginTop: 20,
   },
   stepText: {
@@ -182,8 +182,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     borderRadius: 20,
-    marginBottom: 13,
-    marginTop: 14,
   },
   buttonContainer: {
     flex: 1.0,
@@ -349,7 +347,7 @@ const UserGuideScreen = () => {
         </ScrollView>
       );
     },
-    [guideOption, region],
+    [checkInfo, guideOption, region],
   );
 
   const renderArrowBtn = (
@@ -400,7 +398,7 @@ const UserGuideScreen = () => {
           <View
             style={{
               alignItems: 'center',
-              marginBottom: data.stepTitle === 'Bonus' ? 0 : 21,
+              marginBottom: !data.tip ? 0 : 12,
             }}>
             {data.stepTitle === 'Bonus' ? (
               <>
@@ -425,7 +423,11 @@ const UserGuideScreen = () => {
                     </AppText>
                   </View>
                 </LinearGradient>
-                {isCheckLocal && data.localTitle ? data.localTitle : data.title}
+                <View style={{marginVertical: 10}}>
+                  {isCheckLocal && data.localTitle
+                    ? data.localTitle
+                    : data.title}
+                </View>
               </>
             ) : (
               <>
@@ -449,26 +451,19 @@ const UserGuideScreen = () => {
                       }`}
                   </AppText>
                 </View>
-                {isCheckLocal && data.localTitle ? data.localTitle : data.title}
+                <View style={{marginVertical: 10}}>
+                  {isCheckLocal && data.localTitle
+                    ? data.localTitle
+                    : data.title}
+                </View>
               </>
             )}
           </View>
 
-          {data.tip ? (
-            <View
-              style={
-                data.noticeBox
-                  ? {marginBottom: 12}
-                  : {marginBottom: isIOS ? 21 : data.step === 2 ? 0 : 38}
-              }>
+          {data.tip && (
+            <View style={{marginBottom: data.noticeBox ? 12 : 0}}>
               {isCheckLocal && data.localTip ? data.localTip() : data.tip()}
             </View>
-          ) : !isIOS ? (
-            <View style={{height: 23}} />
-          ) : guideOption === 'checkSetting' && data.noticeBox ? (
-            <View style={{height: 0}} />
-          ) : (
-            <View style={{height: 79}} />
           )}
 
           {data.noticeBox && data.noticeBox(isCheckLocal)}
@@ -495,6 +490,7 @@ const UserGuideScreen = () => {
                 height: Math.ceil(
                   imageSource.height * (dimensions.width / imageSource.width),
                 ),
+                marginTop: 22,
               }}
               source={image}
               resizeMode="cover"
