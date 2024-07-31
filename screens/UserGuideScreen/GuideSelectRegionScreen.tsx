@@ -105,7 +105,7 @@ const GuideSelectRegionScreen = () => {
         ))}
 
         {guideOption === 'esimReg' && (
-          <View style={{marginTop: 80, marginBottom: 40}}>
+          <View style={{marginVertical: 12}}>
             <GuideButton
               key={'us'}
               item={'us'}

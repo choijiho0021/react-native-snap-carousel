@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   tailNoticeText: {
     ...appStyles.bold16Text,
     lineHeight: 24,
-    color: colors.clearBlue,
+    color: colors.warmGrey,
   },
   btn: {
     padding: 30,
@@ -318,6 +318,16 @@ const UserGuideScreen = () => {
             </View>
           )}
 
+          {data.isLocalBox && (
+            <Pressable
+              style={{marginTop: 34}}
+              onPress={() => {
+                setIsCheckLocal(true);
+                carouselRef.current?.snapToNext();
+              }}>
+              {data.isLocalBox()}
+            </Pressable>
+          )}
           <View
             style={[
               styles.slideGuide,
@@ -333,17 +343,6 @@ const UserGuideScreen = () => {
               </AppText>
             </View>
           </View>
-
-          {data.isLocalBox && (
-            <Pressable
-              style={{marginTop: 34}}
-              onPress={() => {
-                setIsCheckLocal(true);
-                carouselRef.current?.snapToNext();
-              }}>
-              {data.isLocalBox()}
-            </Pressable>
-          )}
         </ScrollView>
       );
     },
@@ -533,7 +532,7 @@ const UserGuideScreen = () => {
                 },
               ]}>
               <AppSvgIcon
-                name="noticeFlag"
+                name="noticeFlagPurple"
                 style={{marginRight: 8, marginTop: 2}}
               />
               <AppText style={styles.tailNoticeText}>

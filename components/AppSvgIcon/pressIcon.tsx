@@ -1589,6 +1589,22 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Rect x="11" y="5" width="2" height="7" rx="1" fill="#fff" />
     </Svg>,
   ],
+
+  noticeFlagPurple: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect x="1" y="1" width="22" height="22" rx="3" fill="#5B16EF" />
+      <Path
+        d="M11 8a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM13 16a1 1 0 1 1-2 0v-5a1 1 0 1 1 2 0v5z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
+
   threeArrows: [
     <Svg
       width="16"
