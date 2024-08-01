@@ -346,7 +346,12 @@ const logInAndGetAccount = createAsyncThunk(
       })
       .catch((err) => {
         console.log('@@@ login failed', err);
-        dispatch(toastActions.push('reg:failedToLogIn'));
+        dispatch(
+          toastActions.push({
+            msg: 'reg:failedToLogIn',
+            toastIcon: 'bannerMarkToastError',
+          }),
+        );
         return api.reject(api.E_INVALID_STATUS, 'failed to login');
       });
   },

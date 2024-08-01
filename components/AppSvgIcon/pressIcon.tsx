@@ -1589,6 +1589,22 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Rect x="11" y="5" width="2" height="7" rx="1" fill="#fff" />
     </Svg>,
   ],
+
+  noticeFlagPurple: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect x="1" y="1" width="22" height="22" rx="3" fill="#5B16EF" />
+      <Path
+        d="M11 8a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM13 16a1 1 0 1 1-2 0v-5a1 1 0 1 1 2 0v5z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
+
   threeArrows: [
     <Svg
       width="16"
@@ -4579,7 +4595,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
-  bannerMark4: [
+  bannerMarkToastError: [
     <Svg
       width="24"
       height="24"
@@ -4590,6 +4606,22 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Path
         d="M13 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM11 8a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V8z"
         fill="#FFE3DD"
+      />
+    </Svg>,
+  ],
+  bannerMarkToastSuccess: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="12" cy="12" r="11" fill="#00AD50" />
+      <Path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M15.909 9.247a1 1 0 0 1 .095 1.41l-3.82 4.377a1 1 0 0 1-1.467.043l-2.43-2.47a1 1 0 1 1 1.426-1.402l1.673 1.7 3.112-3.563a1 1 0 0 1 1.41-.095z"
+        fill="#fff"
       />
     </Svg>,
   ],

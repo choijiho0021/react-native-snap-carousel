@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   tipContainer: {
     alignItems: 'center',
-    width: '100%',
+    width: '95%',
   },
   tipTextContainer: {
     flexDirection: 'row',
@@ -257,7 +257,7 @@ const tipView = (
   <View style={styles.tipContainer}>
     {renderTitle && renderTips()}
     {renderTip(params)}
-    {(!renderTitle || marginBottom) && <View style={{marginBottom: 36}} />}
+    {(!renderTitle || marginBottom) && <View style={{marginBottom: 0}} />}
   </View>
 );
 
@@ -298,17 +298,15 @@ const renderNoticeBox = ({
   title,
   body,
   isShow,
-  marginBottom = 16,
 }: {
   title?: string;
   body: string[];
   isShow: boolean;
-  marginBottom?: number;
 }) => {
   if (!isShow) return null;
 
   return (
-    <View style={{width: '100%', marginBottom}}>
+    <View style={{width: '100%'}}>
       <View
         style={{
           backgroundColor: colors.veryLightBlue,
@@ -318,6 +316,7 @@ const renderNoticeBox = ({
           justifyContent: 'center',
           paddingHorizontal: 20,
           paddingVertical: 10,
+          marginTop: 12,
         }}>
         {title && (
           <AppStyledText
@@ -1004,7 +1003,6 @@ const getAosEsimRegGuide = (guideOption: GuideOption, region: GuideRegion) => {
           renderNoticeBox({
             body: ['userGuide:noticeBox:us:body1'],
             isShow: true,
-            marginBottom: 60,
           }),
         stepTitle: 'Bonus',
       },

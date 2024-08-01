@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 20,
     backgroundColor: colors.black,
-    marginBottom: 14,
+    marginBottom: 2,
     marginTop: 20,
   },
   stepText: {
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   tailNoticeText: {
     ...appStyles.bold16Text,
     lineHeight: 24,
-    color: colors.clearBlue,
+    color: colors.warmGrey,
   },
   btn: {
     padding: 30,
@@ -182,8 +182,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     borderRadius: 20,
-    marginBottom: 13,
-    marginTop: 14,
   },
   buttonContainer: {
     flex: 1.0,
@@ -320,6 +318,16 @@ const UserGuideScreen = () => {
             </View>
           )}
 
+          {data.isLocalBox && (
+            <Pressable
+              style={{marginTop: 34}}
+              onPress={() => {
+                setIsCheckLocal(true);
+                carouselRef.current?.snapToNext();
+              }}>
+              {data.isLocalBox()}
+            </Pressable>
+          )}
           <View
             style={[
               styles.slideGuide,
@@ -335,21 +343,10 @@ const UserGuideScreen = () => {
               </AppText>
             </View>
           </View>
-
-          {data.isLocalBox && (
-            <Pressable
-              style={{marginTop: 34}}
-              onPress={() => {
-                setIsCheckLocal(true);
-                carouselRef.current?.snapToNext();
-              }}>
-              {data.isLocalBox()}
-            </Pressable>
-          )}
         </ScrollView>
       );
     },
-    [guideOption, region],
+    [checkInfo, guideOption, region],
   );
 
   const renderArrowBtn = (
@@ -400,7 +397,6 @@ const UserGuideScreen = () => {
           <View
             style={{
               alignItems: 'center',
-              marginBottom: data.stepTitle === 'Bonus' ? 0 : 21,
             }}>
             {data.stepTitle === 'Bonus' ? (
               <>
@@ -425,7 +421,11 @@ const UserGuideScreen = () => {
                     </AppText>
                   </View>
                 </LinearGradient>
-                {isCheckLocal && data.localTitle ? data.localTitle : data.title}
+                <View style={{marginVertical: 10}}>
+                  {isCheckLocal && data.localTitle
+                    ? data.localTitle
+                    : data.title}
+                </View>
               </>
             ) : (
               <>
@@ -449,26 +449,19 @@ const UserGuideScreen = () => {
                       }`}
                   </AppText>
                 </View>
-                {isCheckLocal && data.localTitle ? data.localTitle : data.title}
+                <View style={{marginVertical: 10}}>
+                  {isCheckLocal && data.localTitle
+                    ? data.localTitle
+                    : data.title}
+                </View>
               </>
             )}
           </View>
 
-          {data.tip ? (
-            <View
-              style={
-                data.noticeBox
-                  ? {marginBottom: 12}
-                  : {marginBottom: isIOS ? 21 : data.step === 2 ? 0 : 38}
-              }>
+          {data.tip && (
+            <View style={{marginTop: 12}}>
               {isCheckLocal && data.localTip ? data.localTip() : data.tip()}
             </View>
-          ) : !isIOS ? (
-            <View style={{height: 23}} />
-          ) : guideOption === 'checkSetting' && data.noticeBox ? (
-            <View style={{height: 0}} />
-          ) : (
-            <View style={{height: 79}} />
           )}
 
           {data.noticeBox && data.noticeBox(isCheckLocal)}
@@ -484,7 +477,7 @@ const UserGuideScreen = () => {
               <AppText
                 style={[
                   appStyles.semiBold13Text,
-                  {color: colors.warmGrey, marginBottom: 12, marginTop: 18},
+                  {color: colors.warmGrey, marginTop: 12},
                 ]}>
                 {data.caption}
               </AppText>
@@ -495,6 +488,7 @@ const UserGuideScreen = () => {
                 height: Math.ceil(
                   imageSource.height * (dimensions.width / imageSource.width),
                 ),
+                marginTop: 22,
               }}
               source={image}
               resizeMode="cover"
@@ -538,7 +532,7 @@ const UserGuideScreen = () => {
                 },
               ]}>
               <AppSvgIcon
-                name="noticeFlag"
+                name="noticeFlagPurple"
                 style={{marginRight: 8, marginTop: 2}}
               />
               <AppText style={styles.tailNoticeText}>

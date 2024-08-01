@@ -161,7 +161,12 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
           CameraRoll.save(uri, {
             type: 'photo',
             album: i18n.t('rcpt:album'),
-          }).then(() => action.toast.push('rcpt:saved'));
+          }).then(() =>
+            action.toast.push({
+              msg: 'rcpt:saved',
+              toastIcon: 'bannerMarkToastSuccess',
+            }),
+          );
         });
       } catch (e) {
         console.log('fail to capture : ', e);
