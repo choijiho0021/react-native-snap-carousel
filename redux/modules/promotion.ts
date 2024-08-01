@@ -159,7 +159,7 @@ const slice = createSlice({
       const giftImage = invite?.rule?.gift;
 
       const popUpPromotionMap = objects.reduce((acc, cur) => {
-        if (cur.rule?.display?.type !== 'banner' && !cur.popUpDisabled) {
+        if (!cur.popUpDisabled) {
           if (acc.has(cur.rule?.display?.routeName)) {
             acc.set(
               cur.rule?.display?.routeName,

@@ -63,6 +63,7 @@ export type PaymentParams = {
   paymentRule?: PaymentRule;
   selected?: string;
   pymMethod?: string;
+  isSave?: boolean;
 };
 
 type ChargeAgreementContents = {

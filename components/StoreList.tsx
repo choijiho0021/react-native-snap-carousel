@@ -78,7 +78,7 @@ const CountryItem0 = ({
 }: {
   item: RkbPriceInfo[];
   localOpList: ImmutableMap<string, RkbLocalOp>;
-  onPress?: (p: RkbPriceInfo) => void;
+  onPress?: (p: RkbPriceInfo, prodTitle?: string) => void;
   columns: number;
   width: number;
   index: number;
@@ -115,12 +115,12 @@ const CountryItem0 = ({
       {item.map((elm, idx) => {
         // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
         const localOp = localOpList?.get(elm.partner);
-
+        const prodTitle = API.Product.getTitle(localOp);
         return (
           <View
             key={elm.country}
             style={{flex: 1, marginLeft: idx >= 1 ? 14 : 0}}>
-            <Pressable onPress={() => onPress?.(elm)}>
+            <Pressable onPress={() => onPress?.(elm, prodTitle)}>
               <View style={styles.image}>
                 {(index <= 4 || showImage) && (
                   <ProductImg
@@ -135,7 +135,7 @@ const CountryItem0 = ({
               </View>
 
               <AppText key="cntry" style={styles.cntry}>
-                {API.Product.getTitle(localOp)}
+                {prodTitle}
               </AppText>
               {renderPrice(elm.minPrice)}
             </Pressable>
@@ -161,7 +161,7 @@ export type StoreListRef = {
 type StoreListProps = {
   localOpList: ImmutableMap<string, RkbLocalOp>;
   data: RkbPriceInfo[][];
-  onPress: (p: RkbPriceInfo) => void;
+  onPress: (p: RkbPriceInfo, prodTitle: string) => void;
   onScrollEndDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   onEndReached?: () => void;
   scrollEnabled?: boolean;

@@ -39,8 +39,12 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
   }, [item.orderItems]);
 
   const [status, statusColor, isCanceled] = useMemo(() => {
-    if (item.state === 'canceled')
+    if (item.paymentList.find((elm) => elm.state === 'partially_refunded'))
+      return [i18n.t('his:partialCancel'), colors.tomato, true];
+
+    if (item.state === 'canceled') {
       return [i18n.t('his:cancel'), colors.tomato, true];
+    }
 
     if (item.orderType === 'refundable' && item.state === 'validation')
       return [i18n.t('his:draft'), colors.clearBlue, false];
@@ -50,7 +54,7 @@ const OrderItem = ({item, onPress}: {item: RkbOrder; onPress: () => void}) => {
       return [i18n.t('his:ready'), colors.clearBlue, false];
 
     return [undefined];
-  }, [item.orderType, item.state, item.usageList]);
+  }, [item.orderType, item.paymentList, item.state, item.usageList]);
 
   if (_.isEmpty(item.orderItems)) return <View />;
 

@@ -164,10 +164,6 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
     );
   }, []);
 
-  const renderMethodAlone = useCallback(() => {
-    return renderMethodWay2(true);
-  }, [renderMethodWay2]);
-
   const renderMethod = useCallback(() => {
     return (
       <>
@@ -186,12 +182,10 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
           {i18n.t('esim:howToCall:numCheck')}
         </AppText>
 
-        <View style={styles.greyBox}>
-          {clMtd === 'vtdaily' ? renderMethodAlone() : renderMethod()}
-        </View>
+        <View style={styles.greyBox}>{renderMethod()}</View>
       </>
     ),
-    [clMtd, renderMethod, renderMethodAlone],
+    [renderMethod],
   );
 
   const rednerDomestic = useCallback(

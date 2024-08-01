@@ -40,7 +40,11 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
         <SplitText
           numberOfLines={2}
           renderExpend={() =>
-            renderPromoFlag({flags: item?.promoFlag || [], isStore: false})
+            renderPromoFlag({
+              flags: item?.promoFlag || [],
+              isStore: false,
+              isReceived: false,
+            })
           }
           style={{...appStyles.bold16Text, marginRight: 6}}
           ellipsizeMode="tail">

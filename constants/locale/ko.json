@@ -127,7 +127,7 @@
   "store:apn": "APN 설정",
   "store:name": "선택한 상품",
   "store:startDate": "시작 날짜",
-  "store:search": "국가, 도시를 입력하세요",
+  "store:search": "국가 또는 지역명을 입력하세요.",
   "store:asia": "아시아",
   "store:middle": "중동",
   "store:america": "아메리카",
@@ -407,6 +407,7 @@
   "his:timeStd": "한국 시각 기준",
 
   "his:cancel": "구매 취소",
+  "his:partialCancel": "부분 환불",
   "his:cancelAmount": "구매 취소 금액",
   "his:cancelText": "\u00B7 최초 결제 수단으로 환불 처리됩니다.\n\u00B7 결제 수단에 따라 최종 환불까지 3-5영업일이 소요될 수 있습니다.",
   "his:paymentDetail": "결제 상세",
@@ -728,6 +729,7 @@
   "esim:howToCall:numCheck:way1:ustotal": "미국 도착 후 eSIM 설치 시 수신된 문자로 확인 가능",
   "esim:howToCall:numCheck:way1:usdaily": "미국 도착 후 eSIM 설치 시 수신된 문자로 확인 가능",
   "esim:howToCall:numCheck:way1:dtac": "*102*9# + 통화 눌러 확인 가능",
+  "esim:howToCall:numCheck:way1:vtdaily": "*111# 통화 누른 후 수신된 문자로 확인 가능",
   "esim:howToCall:numCheck:way1:mvtotal": "5555 번호로 “Balance” 문자 전송 후 수신된 문자로 확인 가능",
 
   "esim:howToCall:numCheck:way2:txt": "단말의 설정 화면에서 확인 가능",
@@ -1203,6 +1205,7 @@
   "pym:vbank:acnt": "입금 계좌",
   "pym:vbank:until": "입금 기한",
   "pym:vbank:prod": "상품 정보",
+  "pym:saveMethod": "선택한 결제 수단을 다음에도 사용",
 
   "err:login": "로그인 후 상품 구매하기",
   "err:body": "본문이 없습니다",

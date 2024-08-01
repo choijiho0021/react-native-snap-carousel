@@ -132,13 +132,15 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       }
 
       if (pymResult) {
+        if (params.isSave)
+          storeData(`${cachePrefix}cache.pym.method`, params.pymMethod);
+
         await navigation.setParams({isPaid: true});
         action.cart.updateOrder(pymInfo);
       }
 
       if (status !== 'check' || pymResult) {
         console.log('@@@ pym method', params.pymMethod);
-        storeData(`${cachePrefix}cache.pym.method`, params.pymMethod);
 
         // status = 'next', 'cancel' 이거나, pymResult = true인 경우 다음 페이지로 이동
         navigation.replace('PaymentResult', {
@@ -163,6 +165,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       navigation,
       params.card,
       params?.installmentMonths,
+      params.isSave,
       params.mode,
       params.pay_method,
       params.paymentRule,
