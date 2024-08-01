@@ -69,6 +69,13 @@ const styles = StyleSheet.create({
     marginTop: isIOS ? 40 : 60,
     width: '100%',
   },
+  checkInfoDel: {
+    backgroundColor: colors.white,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 20,
+    marginTop: 256,
+    width: '100%',
+  },
   slideGuide: {
     flex: 2,
     flexDirection: 'row',
@@ -288,7 +295,12 @@ const UserGuideScreen = () => {
           </View>
 
           {['esimReg', 'esimDel'].includes(guideOption) && (
-            <View style={styles.checkInfo}>
+            <View
+              style={
+                guideOption === 'esimDel'
+                  ? styles.checkInfoDel
+                  : styles.checkInfo
+              }>
               <AppText style={appStyles.bold18Text}>
                 {i18n.t(`userGuide:${guideOption}:checkInfo`)}
               </AppText>
