@@ -410,6 +410,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     sendable,
     isChargeButton,
     isOutstanding,
+    isChargeable,
   ] = useMemo(() => {
     const now = moment();
     const checkHt = mainSubs.partner === 'ht';
@@ -434,10 +435,15 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       (mainSubs.cnt || 0) === 1 &&
       !isDraft(mainSubs?.statusCd);
 
+    // 확인 후 변경. ExpireDate이 아니라 lastExpireDate 쓰기
+    const getIsChargeable = !(
+      mainSubs.expireDate && mainSubs.expireDate.isBefore(now)
+    );
+
     const getIsChargeButton =
       mainSubs?.addOnOption &&
       mainSubs.addOnOption !== AddOnOptionType.NEVER &&
-      !(mainSubs.expireDate && mainSubs.expireDate.isBefore(now));
+      getIsChargeable;
 
     return [
       checkHt,
@@ -453,6 +459,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       getSendable,
       getIsChargeButton,
       getIsOutstanding,
+      getIsChargeable,
     ];
   }, [mainSubs]);
 
@@ -493,7 +500,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         navigation.navigate('ChargeHistory', {
           mainSubs: item,
           chargeablePeriod,
-          isChargeable: isChargeButton || false,
+          isChargeable: isChargeable || false,
         });
       }
       // isBC 대신 애드온 옵션으로 처리하기로 결정됨
@@ -501,10 +508,10 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         navigation.navigate('ChargeType', {
           mainSubs: item,
           chargeablePeriod,
-          isChargeable: isChargeButton || false,
+          isChargeable: isChargeable || false,
         });
     },
-    [chargeablePeriod, isBC, isChargeButton, isCharged, navigation],
+    [chargeablePeriod, isBC, isChargeable, isCharged, navigation],
   );
 
   const renderSwitch = useCallback(() => {

@@ -30,7 +30,6 @@ import {
   STATUS_USED,
   STATUS_EXPIRED,
   checkUsage,
-  STATUS_OUTSTANDING,
 } from '@/redux/api/subscriptionApi';
 import {
   AccountAction,
