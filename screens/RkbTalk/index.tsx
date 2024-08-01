@@ -17,6 +17,8 @@ import {
   Session,
 } from 'sip.js';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
+import AppTextInput from '@/components/AppTextInput';
+import {colors} from '@/constants/Colors';
 
 const styles = StyleSheet.create({
   body: {
@@ -39,12 +41,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'lightgray',
   },
+  input: {
+    marginTop: 20,
+    height: 44,
+    marginHorizontal: 20,
+    borderColor: colors.warmGrey,
+    color: colors.black,
+  },
 });
 
 const RkbTalk = () => {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [userAgent, setUserAgent] = useState<UserAgent | null>(null);
   const [inviter, setInviter] = useState<Inviter | null>(null);
+  const [destination, setDestination] = useState('');
 
   // Options for SimpleUser
   const register = useCallback(() => {
@@ -97,57 +107,53 @@ const RkbTalk = () => {
     console.log('@@@ cleanup');
   }, []);
 
-  const makeCall = useCallback(() => {
-    if (userAgent) {
-      userAgent.start().then(async () => {
-        // try {
-        const target = UserAgent.makeURI('sip:9000@talk.rokebi.com');
+  const makeCall = useCallback(
+    (dest: string) => {
+      if (userAgent) {
+        userAgent.start().then(async () => {
+          // try {
+          // const target = UserAgent.makeURI('sip:9000@talk.rokebi.com');
+          const target = UserAgent.makeURI(`sip:${dest}@talk.rokebi.com`);
+          console.log('@@@ target', dest, target);
 
-        const inv = new Inviter(userAgent, target, {
-          sessionDescriptionHandlerOptions: {
-            constraints: {
-              audio: true,
-              video: false,
+          const inv = new Inviter(userAgent, target, {
+            sessionDescriptionHandlerOptions: {
+              constraints: {
+                audio: true,
+                video: false,
+              },
             },
-          },
+          });
+
+          inv.stateChange.addListener((state: SessionState) => {
+            console.log(`Session state changed to ${state}`);
+            switch (state) {
+              case SessionState.Initial:
+                break;
+              case SessionState.Establishing:
+                break;
+              case SessionState.Established:
+                setupRemoteMedia(inv);
+                break;
+              case SessionState.Terminating:
+              // fall through
+              case SessionState.Terminated:
+                cleanupMedia();
+                break;
+              default:
+                throw new Error('Unknown session state.');
+            }
+          });
+
+          await inv.invite();
+          setInviter(inv);
         });
-
-        inv.stateChange.addListener((state: SessionState) => {
-          console.log(`Session state changed to ${state}`);
-          switch (state) {
-            case SessionState.Initial:
-              break;
-            case SessionState.Establishing:
-              break;
-            case SessionState.Established:
-              setupRemoteMedia(inv);
-              break;
-            case SessionState.Terminating:
-            // fall through
-            case SessionState.Terminated:
-              cleanupMedia();
-              break;
-            default:
-              throw new Error('Unknown session state.');
-          }
-        });
-
-        await inv.invite();
-        setInviter(inv);
-      });
-    } else {
-      console.log('@@@ user agent not found');
-    }
-  }, [cleanupMedia, setupRemoteMedia, userAgent]);
-
-  const stop = useCallback(() => {
-    console.log('stop');
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-      stream.release();
-      setStream(null);
-    }
-  }, [stream]);
+      } else {
+        console.log('@@@ user agent not found');
+      }
+    },
+    [cleanupMedia, setupRemoteMedia, userAgent],
+  );
 
   const releaseCall = useCallback(() => {
     if (inviter) {
@@ -181,13 +187,25 @@ const RkbTalk = () => {
           <Pressable onPress={register} style={styles.button}>
             <Text>Register</Text>
           </Pressable>
-          <Pressable onPress={makeCall} style={styles.button}>
+          <Pressable
+            onPress={() => makeCall(destination)}
+            style={styles.button}>
             <Text>Call</Text>
           </Pressable>
           <Pressable onPress={releaseCall} style={styles.button}>
             <Text>Stop</Text>
           </Pressable>
         </View>
+        <AppTextInput
+          style={styles.input}
+          placeholder="Destination"
+          placeholderTextColor={colors.greyish}
+          keyboardType="numeric"
+          returnKeyType="done"
+          enablesReturnKeyAutomatically
+          onChangeText={(v) => setDestination(v)}
+          value={destination}
+        />
         {stream && <RTCView streamURL={stream.toURL()} style={styles.stream} />}
       </SafeAreaView>
     </>
