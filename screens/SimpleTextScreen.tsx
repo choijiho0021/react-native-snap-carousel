@@ -163,7 +163,6 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     ({nativeEvent: {data}}) => {
       const cmd = parseJson(data);
       let partnerList: string[] = [];
-
       switch (cmd.key) {
         // uuid를 받아서 해당 페이지로 이동 추가
         case 'moveToPage':

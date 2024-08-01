@@ -13,7 +13,7 @@ import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import i18n from '@/utils/i18n';
 import ProductDetailInfo from './component/ProductDetailInfo';
-import {RkbOrder} from '@/redux/api/orderApi';
+import {OrderItemType, RkbOrder} from '@/redux/api/orderApi';
 import {OrderModelState, isExpiredDraft} from '@/redux/modules/order';
 import AppIcon from '@/components/AppIcon';
 import {
@@ -100,7 +100,7 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
   action,
 }) => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  const [prods, setProds] = useState<ProdDesc[]>([]);
+  const [prods, setProds] = useState<OrderItemType[]>([]);
   const [orderResult, setOrderResult] = useState<RkbOrder>();
 
   // 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
@@ -115,8 +115,6 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
   });
 
   useEffect(() => {
-    console.log('@@@@ 이거 호출 여러번 하나?');
-
     if (!route?.params?.orderId) return;
 
     setIsSuccess(route?.params?.isSuccess);
@@ -125,8 +123,8 @@ const CancelResultScreen: React.FC<CancelResultScreenProps> = ({
   }, [order.orders, route?.params]);
 
   const renderItem = useCallback(
-    ({item, isLast}: {item: ProdDesc; isLast?: boolean}) => {
-      return Array.from({length: item.qty}, (_, index) => {
+    ({item, isLast}: {item: OrderItemType; isLast?: boolean}) => {
+      return Array.from({length: item?.qty || 0}, (_, index) => {
         return (
           <ProductDetailInfo
             style={[styles.item, isLast && {borderBottomWidth: 0}]}

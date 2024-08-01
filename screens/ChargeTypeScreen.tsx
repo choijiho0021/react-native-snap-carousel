@@ -311,7 +311,7 @@ const ChargeTypeScreen: React.FC<ChargeTypeScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <ScreenHeader title={i18n.t('esim:charge')} />
 
-      <AppActivityIndicator visible={addonLoading || chargeLoading} />
+      <AppActivityIndicator visible={addonLoading} />
       <ScrollView style={{flex: 1}}>
         <View style={styles.top}>
           <AppText style={styles.topText}>{i18n.t('esim:charge:type')}</AppText>

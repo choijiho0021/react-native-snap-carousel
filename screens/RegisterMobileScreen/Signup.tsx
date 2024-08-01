@@ -5,7 +5,6 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {Settings} from 'react-native-fbsdk-next';
 import {
   Keyboard,
-  Pressable,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -46,7 +45,6 @@ import ScreenHeader from '@/components/ScreenHeader';
 import {emailDomainList} from '@/components/DomainListModal';
 import ConfirmPolicy from './ConfirmPolicy';
 import AppSnackBar from '@/components/AppSnackBar';
-import AppAlert from '@/components/AppAlert';
 
 const styles = StyleSheet.create({
   title: {
@@ -154,6 +152,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
   const [email, setEmail] = useState(
     route?.params?.email ? route?.params?.email : '',
   );
+
   const emailRef = useRef<InputEmailRef>(null);
   const [domain, setDomain] = useState(
     route?.params?.email?.split('@')?.[1]
@@ -162,6 +161,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
         : 'input'
       : '',
   );
+  const prevDomain = useRef(domain);
   const [showSnackBar, setShowSnackBar] = useState(false);
   const kind = useMemo(
     () => route?.params?.kind || 'normal',
@@ -195,8 +195,9 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
   }, [domain, email]);
 
   useEffect(() => {
-    if (mailValid && domain) {
+    if (mailValid && prevDomain.current !== domain && domain !== 'input') {
       scrollRef.current?.scrollToEnd();
+      prevDomain.current = domain;
     }
   }, [domain, mailValid]);
 
@@ -320,8 +321,15 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
       }
     } catch (err) {
       if (err instanceof Error && err.message.includes('Duplicated')) {
-        actions.toast.push('reg:usingEmail');
-      } else actions.toast.push(Toast.FAIL_NETWORK);
+        actions.toast.push({
+          msg: 'reg:usingEmail',
+          toastIcon: 'bannerMarkToastSuccess',
+        });
+      } else
+        actions.toast.push({
+          msg: Toast.FAIL_NETWORK,
+          toastIcon: 'bannerMarkToastError',
+        });
       console.log('sign up failed', err);
     }
 

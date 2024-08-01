@@ -110,6 +110,7 @@ const getDetailList = (clMtd: string) => {
       return [1];
     case 'ustotal':
     case 'ais':
+    case 'vtdaily':
       return [1, 2];
     case 'dtac':
       return [1, 2, 3, 4];
@@ -188,7 +189,7 @@ const ProductDetailCallMethod: React.FC<ProductDetailCallMethodProps> = ({
           {showCallDetail &&
             detailList.length > 0 &&
             detailList.map((i) => (
-              <View key={`detail${clMtd}${i}`}>
+              <View key={`detail${clMtd}${i}`} style={{marginRight: 20}}>
                 <TextWithCheck
                   text={i18n.t(
                     `prodDetail:callMethod:box:contents:detail${i}:${clMtd}`,

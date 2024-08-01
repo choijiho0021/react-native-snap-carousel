@@ -6,7 +6,7 @@ import {
   View,
 } from 'react-native';
 import {bindActionCreators} from 'redux';
-import React, {memo, useCallback, useMemo, useState} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
@@ -20,7 +20,7 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
 import CouponItem from './CouponScreen/CouponItem';
 import {AccountModelState} from '@/redux/modules/account';
-import {RkbCoupon} from '@/redux/api/accountApi';
+import {RkbCoupon, RkbCouponWithAdj} from '@/redux/api/accountApi';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import AppText from '@/components/AppText';
 import {
@@ -87,7 +87,7 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
   const navigation = useNavigation();
   const [couponId, setCouponId] = useState(couponToApply);
 
-  const couponList = useMemo(() => {
+  const couponList: RkbCouponWithAdj[] = useMemo(() => {
     if (!promo) return [];
 
     return myCoupon
@@ -96,12 +96,12 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
 
         return {
           ...c,
-          adj: p?.adj?.value || 0,
+          adj: {currency: p?.adj?.currency, value: p?.adj?.value || 0},
         };
       })
-      .filter((c) => c.adj !== 0)
+      .filter((c) => c?.adj.value !== 0)
       .sort((a, b) => {
-        return a?.adj > b?.adj ? 1 : -1;
+        return a.adj?.value > b?.adj?.value ? 1 : -1;
       });
   }, [myCoupon, promo]);
 
@@ -210,15 +210,17 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
       </View>
       <AppButton
         title={`${Math.abs(
-          promo?.find((p) => p.coupon_id === couponId)?.adj?.value || '0',
+          couponList?.find((r) => r.id === couponId)?.adj?.value || '0',
         )}${i18n.t('pym:sel:coupon:apply')}`}
         titleStyle={[appStyles.medium18, {color: colors.white}]}
         onPress={() => {
           if (couponId) {
-            action.toast.push('pym:coupon:select');
+            action.toast.push({
+              msg: 'pym:coupon:select',
+              toastIcon: 'bannerMarkToastSuccess',
+            });
           }
-
-          action.cart.applyCoupon({couponId, accountCash: balance});
+          action.cart.applyCoupon({couponId, accountCash: balance, couponList});
           navigation.goBack();
         }}
         style={appStyles.confirm}

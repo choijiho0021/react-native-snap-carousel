@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {Linking, StyleSheet, View} from 'react-native';
 import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
@@ -14,7 +14,6 @@ import AppAlert from '@/components/AppAlert';
 import {hectoWebViewHtml} from './ConfigHecto';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {colors} from '@/constants/Colors';
 
 export type PaymentResultCallbackParam = 'next' | 'cancel' | 'check';
 

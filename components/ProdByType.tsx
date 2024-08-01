@@ -13,7 +13,7 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 import {RkbProduct} from '@/redux/api/productApi';
 import i18n from '@/utils/i18n';
-import DailyProdFilter, {DailyProdFilterList} from './DailyProdFilter';
+import DailyProdFilter from './DailyProdFilter';
 import NetworkFilter, {NetworkFilterList} from './NetworkFilter';
 import {SelectedTabType} from '@/screens/CountryScreen';
 
@@ -82,14 +82,14 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
       !!prodData.find((p) => p.volume === selectedTab?.volume),
     [prodData, selectedTab?.type, selectedTab?.volume],
   );
-  const [filter, setFilter] = useState<DailyProdFilterList>(
+  const [filter, setFilter] = useState<String>(
     (isSelectedTabUsable && selectedTab?.volume) || 'all',
   );
   const [networkFilter, setNetworkFileter] = useState<NetworkFilterList[]>([
     'fiveG',
     'else',
   ]);
-  const [list, setList] = useState<DailyProdFilterList[]>([]);
+  const [list, setList] = useState<String[]>([]);
 
   const toNetworkFileter = useCallback((promoFlag?: string[]) => {
     if (promoFlag?.includes('fiveG')) return 'fiveG';
@@ -143,11 +143,13 @@ const ProdByType: React.FC<ProdByTypeProps> = ({
   );
 
   useEffect(() => {
-    setList(
-      DEFAULT_FILTER_LIST.filter((r) =>
-        prodData.find((prod) => prod.volume === r),
-      ) as DailyProdFilterList[],
-    );
+    const uniqueArray = Array.from(new Set(prodData.map((elm) => elm.volume)));
+    const sortedArray = uniqueArray
+      .map(Number)
+      .sort((a, b) => a - b)
+      .map(String);
+
+    setList(sortedArray);
   }, [prodData]);
 
   return (

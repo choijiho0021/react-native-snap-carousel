@@ -10,7 +10,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -32,6 +32,7 @@ import {
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 
 import {
+  checkAndLoadProdList,
   ProductAction,
   actions as productActions,
   ProductModelState,
@@ -261,6 +262,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
 
   const [method, setMethod] = useState<RkbPayment>();
   const [checked, setChecked] = useState<boolean>(false);
+  const dispatch = useDispatch();
 
   const onBackStep = useCallback(() => {
     setStep((prev) => (prev - 1 <= 0 ? 0 : prev - 1));
@@ -292,19 +294,6 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
     }
   }, [method, order?.orders, route.params.orderId]);
 
-  // 함수로 묶기
-  const getProdDate = useCallback(() => {
-    if (!loading.current && (selectedOrder?.orderItems?.length || 0) > 0) {
-      selectedOrder?.orderItems.forEach((i) => {
-        if (!product.prodList.has(i.uuid)) {
-          // 해당 Uuid로 없다면 서버에서 가져온다.
-          action.product.getProdByUuid(i.uuid);
-          loading.current = true;
-        }
-      });
-    }
-  }, [action.product, selectedOrder?.orderItems, product.prodList]);
-
   const onCheck = useCallback(() => {
     if (!checked) scrollRef.current?.scrollToEnd();
 
@@ -314,25 +303,29 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
   useEffect(() => {
     if (!selectedOrder?.orderItems) return;
 
-    getProdDate();
+    checkAndLoadProdList(
+      loading,
+      selectedOrder?.orderItems,
+      product.prodList,
+      dispatch,
+    );
 
-    const prodList: ProdInfo[] = selectedOrder.orderItems.map((r) => {
-      const prod = product.prodList.get(r.uuid);
-      return prod
-        ? {
-            title: prod.name,
-            field_description: prod.field_description,
-            promoFlag: prod.promoFlag,
-            qty: r.qty,
-          }
-        : undefined;
-    });
+    const prodList: ProdInfo[] = selectedOrder.orderItems
+      .map((r) => {
+        const prod = product.prodList.get(r.uuid);
+        return prod
+          ? {
+              title: prod.name,
+              field_description: prod.field_description,
+              promoFlag: prod.promoFlag,
+              qty: r.qty,
+            }
+          : undefined;
+      })
+      .filter((r) => r);
 
-    const isNeedUpdate = prodList.some((item) => item === null);
-
-    if (isNeedUpdate) getProdDate();
-    else setProds(prodList);
-  }, [getProdDate, product.prodList, selectedOrder]);
+    setProds(prodList);
+  }, [dispatch, product.prodList, selectedOrder]);
 
   const renderStep1 = useCallback(() => {
     return (

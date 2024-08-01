@@ -208,7 +208,7 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
         purchaseItems,
         balance,
         esimIccid: params.chargeableItem.subsIccid,
-        chargeableItemId: params.chargeableItem.nid,
+        mainSubsId: params.chargeableItem.nid,
       });
 
       navigation.navigate('PymMethod', {mode: 'roaming_product'});

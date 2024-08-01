@@ -1,21 +1,20 @@
-import dynamicLinks, {
-  FirebaseDynamicLinksTypes,
-} from '@react-native-firebase/dynamic-links';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
 import Share from 'react-native-share';
 import _ from 'underscore';
 import moment from 'moment';
+import {Platform} from 'react-native';
 import api, {ApiResult, DrupalNode, Langcode} from './api';
 import Env from '@/environment';
 import i18n from '@/utils/i18n';
 import {parseJson, retrieveData, utils} from '@/utils/utils';
 import {RkbProdByCountry} from './productApi';
-import {Country} from '.';
-import {Platform} from 'react-native';
 
 const POPUP_DIS_DAYS = 7;
 const {bundleId, appStoreId, dynamicLink, webViewHost, iosBundleId} = Env.get();
 
 export type RkbPromotion = {
+  show: string[];
+  type: string;
   uuid: string;
   title: string;
   imageUrl?: string;
@@ -87,6 +86,7 @@ const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
           item.field_promotion_rule &&
           parseJson(item.field_promotion_rule?.replace(/&quot;/g, '"'));
         return {
+          show: rule?.display?.show,
           uuid: item.uuid,
           title: item.title,
           imageUrl: item.field_image,

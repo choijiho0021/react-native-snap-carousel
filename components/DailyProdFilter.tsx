@@ -7,6 +7,7 @@ import AppButton from './AppButton';
 import {appStyles} from '../constants/Styles';
 import AppSvgIcon from './AppSvgIcon';
 import {SelectedTabType} from '@/screens/CountryScreen';
+import {toVolumeStr} from './CountryListItem';
 
 const styles = StyleSheet.create({
   button: {
@@ -17,19 +18,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export type DailyProdFilterList =
-  | 'all'
-  | '500'
-  | '1024'
-  | '2048'
-  | '3072'
-  | '4096'
-  | '5120'
-  | '1024000';
-
 type DailyProdFilterProps = {
-  onValueChange: (v: DailyProdFilterList) => void;
-  filterList: DailyProdFilterList[];
+  onValueChange: (v: String) => void;
+  filterList: String[];
   selectedTab?: SelectedTabType;
 };
 
@@ -41,9 +32,7 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
   const scrollRef = useRef<ScrollView>();
   const [scrollWidth, setScrollWidth] = useState<number>(0);
   const [contentWidth, setContentWidth] = useState<number>(0);
-  const [filter, setFilter] = useState<DailyProdFilterList>(
-    selectedTab?.volume || 'all',
-  );
+  const [filter, setFilter] = useState<String>(selectedTab?.volume || 'all');
   const [scrollEnd, setScrollEnd] = useState<boolean>(false);
   const [showIcon, setShowIcon] = useState<boolean>(true);
 
@@ -128,6 +117,12 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
     [contentWidth],
   );
 
+  const filterTitle = useCallback((volume: String) => {
+    if (volume === 'all') return i18n.t(`daily:filter:${volume}`);
+    if (volume === '1024000') return i18n.t(`daily:filter:${volume}`);
+    return toVolumeStr(Number(volume));
+  }, []);
+
   return (
     <View
       style={{
@@ -154,7 +149,7 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
         showsHorizontalScrollIndicator={false}>
         <View style={{width: 20, height: 34}} />
 
-        {filterList.map((elm, idx) => (
+        {filterList.map((elm) => (
           <AppButton
             onPress={() => {
               setFilter(elm);
@@ -176,7 +171,7 @@ const DailyProdFilter: React.FC<DailyProdFilterProps> = ({
                 color: elm === filter ? colors.white : colors.black,
               },
             ]}
-            title={i18n.t(`daily:filter:${elm}`)}
+            title={filterTitle(elm)}
           />
         ))}
 

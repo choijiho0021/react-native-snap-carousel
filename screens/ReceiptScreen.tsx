@@ -35,6 +35,7 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import AppAlert from '@/components/AppAlert';
 import Env from '@/environment';
 import ScreenHeader from '@/components/ScreenHeader';
+import {checkPhotoPermissionAlert} from '@/utils/utils';
 
 const {esimGlobal} = Env.get();
 
@@ -142,24 +143,6 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
     setReceipt(params?.receipt);
   }, [navigation, params?.order, params?.receipt]);
 
-  const hasAndroidPermission = useCallback(async () => {
-    const permission =
-      Platform.Version >= 33
-        ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
-        : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
-
-    const hasPermission = await check(permission);
-    if (hasPermission === RESULTS.GRANTED) {
-      return true;
-    }
-
-    AppAlert.confirm(i18n.t('settings'), i18n.t('acc:permPhoto'), {
-      ok: () => openSettings(),
-    });
-
-    return false;
-  }, []);
-
   const capture = useCallback(async () => {
     let checkNewPermission = false;
 
@@ -178,16 +161,19 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
           CameraRoll.save(uri, {
             type: 'photo',
             album: i18n.t('rcpt:album'),
-          }).then(() => action.toast.push('rcpt:saved'));
+          }).then(() =>
+            action.toast.push({
+              msg: 'rcpt:saved',
+              toastIcon: 'bannerMarkToastSuccess',
+            }),
+          );
         });
       } catch (e) {
         console.log('fail to capture : ', e);
       }
     } else {
       // 사진 앨범 조회 권한을 요청한다.
-      AppAlert.confirm(i18n.t('settings'), i18n.t('acc:permPhoto'), {
-        ok: () => openSettings(),
-      });
+      checkPhotoPermissionAlert();
     }
   }, [action.toast]);
 

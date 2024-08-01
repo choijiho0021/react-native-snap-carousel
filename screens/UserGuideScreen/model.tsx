@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   tipContainer: {
     alignItems: 'center',
-    width: '100%',
+    width: '95%',
   },
   tipTextContainer: {
     flexDirection: 'row',
@@ -257,7 +257,7 @@ const tipView = (
   <View style={styles.tipContainer}>
     {renderTitle && renderTips()}
     {renderTip(params)}
-    {(!renderTitle || marginBottom) && <View style={{marginBottom: 36}} />}
+    {(!renderTitle || marginBottom) && <View style={{marginBottom: 0}} />}
   </View>
 );
 
@@ -298,17 +298,15 @@ const renderNoticeBox = ({
   title,
   body,
   isShow,
-  marginBottom = 16,
 }: {
   title?: string;
   body: string[];
   isShow: boolean;
-  marginBottom?: number;
 }) => {
   if (!isShow) return null;
 
   return (
-    <View style={{width: '100%', marginBottom}}>
+    <View style={{width: '100%'}}>
       <View
         style={{
           backgroundColor: colors.veryLightBlue,
@@ -318,6 +316,7 @@ const renderNoticeBox = ({
           justifyContent: 'center',
           paddingHorizontal: 20,
           paddingVertical: 10,
+          marginTop: 12,
         }}>
         {title && (
           <AppStyledText
@@ -374,7 +373,16 @@ export const getImageList = (
   let imageList: Record<string, any[]> = {};
 
   if (isIOS) {
-    if (guideOption === 'esimReg') {
+    if (guideOption === 'esimDel') {
+      imageList = {
+        page1: [require(`${dir}/iconEsimDel.png`)],
+        page2: [require(`${dir}/ios/esimDel/img_1.png`)],
+        page3: [require(`${dir}/ios/esimDel/img_2.png`)],
+        page4: [require(`${dir}/ios/esimDel/img_3.png`)],
+        page5: [require(`${dir}/ios/esimDel/img_4.png`)],
+        pageLast: [require(`${dir}/iconRokebiLast.png`)],
+      };
+    } else if (guideOption === 'esimReg') {
       if (region === 'korea') {
         imageList = {
           page1: [require(`${dir}/iconKoreaSmall.png`)],
@@ -449,7 +457,15 @@ export const getImageList = (
     }
   }
   // Android 일 때
-  else if (guideOption === 'esimReg') {
+  else if (guideOption === 'esimDel') {
+    imageList = {
+      page1: [require(`${dir}/iconEsimDel.png`)],
+      page2: [require(`${dir}/android/esimDel/img_1.png`)],
+      page3: [require(`${dir}/android/esimDel/img_2.png`)],
+      page4: [require(`${dir}/android/esimDel/img_3.png`)],
+      pageLast: [require(`${dir}/iconRokebiLast.png`)],
+    };
+  } else if (guideOption === 'esimReg') {
     if (region === 'korea') {
       imageList = {
         page1: [require(`${dir}/iconKoreaSmall.png`)],
@@ -511,6 +527,7 @@ export const getImageList = (
       pageLast: [require(`${dir}/iconRokebiLast.png`)],
     };
   }
+
   return imageList;
 };
 
@@ -532,564 +549,416 @@ export type GuideImage = {
   stepTitle?: string;
 };
 
-export const getGuideImages = (
-  guideOption: GuideOption,
-  region: GuideRegion,
-): GuideImage[] => {
+const getIosEsimRegGuide = (guideOption: GuideOption, region: GuideRegion) => {
   let guideImages: GuideImage[] = [];
-
-  if (isIOS) {
-    if (guideOption === 'esimReg') {
-      // ios, 등록, 한국
-      if (region === 'korea') {
-        guideImages = [
-          {
-            key: 'page1',
-            title: renderText(
-              `userGuide:ios:${guideOption}:${region}:stepTitle0`,
-              true,
-            ),
-            step: 0,
-          },
-          {
-            key: 'page2',
-            title: renderText(`userGuide:stepsTitle1:ios`),
-            step: 1,
-          },
-          {
-            key: 'page3',
-            title: renderText(`userGuide:stepsTitle2:ios`),
-            step: 2,
-            tip: () => renderTipList('userGuide:tipPage3', 'num', false, 2),
-          },
-          {
-            key: 'page4',
-            title: renderText('userGuide:stepsTitle3:ios'),
-            step: 2,
-            tip: () => tipView({id: 'userGuide:tipPage4_1'}),
-            caption: i18n.t('userGuide:step3:caption'),
-          },
-          {
-            key: 'page5',
-            title: renderText('userGuide:stepsTitle4:ios'),
-            step: 3,
-          },
-          {
-            key: 'page6',
-            title: renderText('userGuide:stepsTitle5:ios'),
-            step: 4,
-            tip: () => renderTipList('userGuide:tipPage5', 'dot'),
-          },
-          {
-            key: 'page7',
-            title: renderText('userGuide:stepsTitle6:ios'),
-            step: 5,
-            tip: () => tipView({id: 'userGuide:tipPage7_1'}, false),
-          },
-          {
-            key: 'page8',
-            title: renderText('userGuide:stepsTitle8:ios'),
-            tip: () => tipView({id: 'userGuide:tipPage7_1'}, false),
-            step: 6,
-          },
-          {
-            key: 'page9',
-            title: renderText('userGuide:stepsTitle9:ios'),
-            step: 7,
-            tip: () => renderTipList('userGuide:tipPage9', 'dot'),
-          },
-          {
-            key: 'page10',
-            title: renderText('userGuide:stepsTitle10:ios'),
-            step: 8,
-            tip: () => tipView({id: 'userGuide:tipPage10_1'}),
-            noticeBox: () =>
-              renderNoticeBox({
-                title: 'userGuide:noticeBox:local:title',
-                body: ['userGuide:noticeBox:local:body1'],
-                isShow: true,
-              }),
-          },
-          {
-            key: 'page11',
-            title: renderText('userGuide:stepsTitle11:ios'),
-            step: 9,
-            tip: () => tipView({id: 'userGuide:tipPage11_1'}),
-            noticeBox: () =>
-              renderNoticeBox({
-                title: 'userGuide:noticeBox:local:title',
-                body: ['userGuide:noticeBox:local:body2'],
-                isShow: true,
-              }),
-          },
-          {
-            key: 'page12',
-            title: renderText('userGuide:stepsTitle12:ios'),
-            step: 99,
-          },
-        ];
-      } else if (region === 'us') {
-        guideImages = [
-          {
-            key: 'page1',
-            title: renderText(
-              `userGuide:ios:${guideOption}:${region}:stepTitle0`,
-              true,
-            ),
-            step: 0,
-          },
-          {
-            key: 'page2',
-            title: renderText(`userGuide:stepsTitle1:us:ios`),
-            step: 1,
-          },
-          {
-            key: 'page3',
-            title: renderText(`userGuide:stepsTitle2:us:ios`),
-            step: 2,
-          },
-          {
-            key: 'page4',
-            title: renderText('userGuide:stepsTitle3:us:ios'),
-            step: 3,
-            tip: () => renderTipList('userGuide:us:tipPage4', 'dot'),
-          },
-          {
-            key: 'page5',
-            title: renderText('userGuide:stepsTitle4:us:ios'),
-            step: 4,
-            tip: () => renderTipList('userGuide:us:tipPage5', 'dot', false, 3),
-          },
-          {
-            key: 'page6',
-            title: renderText('userGuide:stepsTitle5:us:ios'),
-            step: 5,
-            tip: () => tipView({id: 'userGuide:us:tipPage6_2'}, true),
-          },
-          {
-            key: 'page7',
-            title: renderText('userGuide:stepsTitle6:us:ios'),
-            step: 6,
-            tip: () => renderTipList('userGuide:us:tipPage6', 'dot', false),
-          },
-          {
-            key: 'page8',
-            title: renderText('userGuide:stepsTitle7:us:ios'),
-            step: 7,
-          },
-          {
-            key: 'page9',
-            title: renderText('userGuide:stepsTitle8:us:ios'),
-            step: 8,
-            noticeBox: () =>
-              renderNoticeBox({
-                title: 'userGuide:us:ios:caution:title',
-                body: ['userGuide:us:ios:caution:body'],
-                isShow: true,
-              }),
-          },
-          {
-            key: 'page10',
-            title: renderText('userGuide:stepsTitle9:us:ios'),
-            step: 9,
-          },
-          {
-            key: 'page12',
-            title: renderText('userGuide:stepsTitle12:ios:local'),
-            step: 99,
-          },
-        ];
-      }
-      // ios, esim등록, 현지 선택
-      else {
-        guideImages = [
-          {
-            key: 'page1',
-            title: renderText(
-              `userGuide:ios:${guideOption}:${region}:stepTitle0`,
-              true,
-            ),
-            step: 0,
-          },
-          {
-            key: 'page2',
-            title: renderText(`userGuide:stepsTitle1:ios`),
-            step: 1,
-          },
-          {
-            key: 'page3',
-            title: renderText(`userGuide:stepsTitle2:ios`),
-            step: 2,
-            tip: () => renderTipList('userGuide:tipPage3', 'num', false, 2),
-          },
-          {
-            key: 'page4',
-            title: renderText('userGuide:stepsTitle3:ios'),
-            step: 2,
-            tip: () => tipView({id: 'userGuide:tipPage4_1'}),
-            caption: i18n.t('userGuide:step3:caption'),
-          },
-          {
-            key: 'page5',
-            title: renderText('userGuide:stepsTitle4:ios'),
-            step: 3,
-          },
-          {
-            key: 'page6',
-            title: renderText('userGuide:stepsTitle5:ios'),
-            step: 4,
-            tip: () => renderTipList('userGuide:tipPage5', 'dot'),
-          },
-          {
-            key: 'page7',
-            title: renderText('userGuide:stepsTitle6:ios'),
-            step: 5,
-            tip: () => tipView({id: 'userGuide:tipPage7_1'}, false),
-          },
-          {
-            key: 'page8',
-            title: renderText('userGuide:stepsTitle8:ios'),
-            tip: () => tipView({id: 'userGuide:tipPage7_1'}, false),
-            step: 6,
-          },
-          {
-            key: 'page9',
-            title: renderText('userGuide:stepsTitle9:ios'),
-            step: 7,
-            tip: () => renderTipList('userGuide:tipPage9', 'dot'),
-          },
-          {
-            key: 'page10',
-            title: renderText('userGuide:stepsTitle10:ios'),
-            step: 8,
-            tip: () => tipView({id: 'userGuide:tipPage10_1'}),
-          },
-          {
-            key: 'page11',
-            title: renderText('userGuide:stepsTitle11:ios:local'),
-            step: 9,
-            noticeBox: () =>
-              renderNoticeBox({
-                title: 'userGuide:noticeBox:local:title',
-                body: ['userGuide:noticeBox:local:body3'],
-                isShow: true,
-              }),
-          },
-          {
-            key: 'page12',
-            title: renderText('userGuide:stepsTitle12:ios:local'),
-            step: 99,
-          },
-        ];
-      }
-    } else if (region === 'korea') {
-      guideImages = [
-        {
-          key: 'page1',
-          title: renderText('userGuide:ios:checkSetting:korea:stepTitle0'),
-          step: 0,
-        },
-        {
-          key: 'page2',
-          title: renderText('userGuide:stepsTitle1:ios:checkSetting'),
-          step: 1,
-          stepPreText: 'korea',
-        },
-        {
-          key: 'page3',
-          title: renderText('userGuide:stepsTitle2:ios:checkSetting'),
-          step: 2,
-          stepPreText: 'korea',
-        },
-        {
-          key: 'page4',
-          title: renderText('userGuide::checkSetting:done'),
-          step: 99,
-        },
-      ];
-    } else {
-      guideImages = [
-        {
-          key: 'page1',
-          title: renderText('userGuide:ios:checkSetting:local:stepTitle0'),
-          step: 0,
-          isLocalBox: () => renderIsLocalBox(),
-        },
-        {
-          key: 'page2',
-          title: renderText('userGuide:stepsTitle4:ios:checkSetting'),
-          localTitle: renderText(
-            'userGuide:stepsTitle4:ios:checkSetting:local',
-          ),
-          noticeBox: (isCheckLocal: boolean) =>
-            renderNoticeBox({
-              title: 'userGuide:stepsTitle4:ios:caution:title',
-              body: ['userGuide:stepsTitle4:ios:caution:body'],
-              isShow: isCheckLocal,
-            }),
-          step: 1,
-          stepPreText: 'local',
-        },
-        {
-          key: 'page3',
-          title: renderText('userGuide:stepsTitle5:ios:checkSetting'),
-          step: 2,
-          stepPreText: 'local',
-        },
-        {
-          key: 'page4',
-          title: renderText('userGuide:stepsTitle6:ios:checkSetting'),
-          step: 3,
-          stepPreText: 'local',
-          noticeBox: (isCheckLocal: boolean) =>
-            renderNoticeBox({
-              title: 'userGuide:stepsTitle6:ios:caution:title',
-              body: ['userGuide:stepsTitle6:ios:caution:body1'],
-              isShow: isCheckLocal,
-            }),
-        },
-        {
-          key: 'page5',
-          title: renderText('userGuide:stepsTitle7:ios:checkSetting'),
-          step: 4,
-          stepPreText: 'local',
-        },
-        {
-          key: 'page6',
-          title: renderText('userGuide:stepsTitle8:ios:checkSetting'),
-          step: 99,
-        },
-      ];
-    }
-  }
-  // Android
-  else if (guideOption === 'esimReg') {
-    if (region === 'korea') {
-      guideImages = [
-        {
-          key: 'page1',
-          title: renderText('userGuide:ios:esimReg:korea:stepTitle0'),
-          step: 0,
-        },
-        {
-          key: 'page2',
-          title: renderText(`userGuide:stepsTitle1:galaxy`),
-          step: 1,
-        },
-        {
-          key: 'page3',
-          title: renderText(`userGuide:stepsTitle2:galaxy`),
-          step: 2,
-          tip: () =>
-            renderTipList(
-              'userGuide:tipPage2:galaxy',
-              'num',
-              false,
-              2,
-              tipPage2TextComponent,
-            ),
-        },
-        {
-          key: 'page4',
-          title: renderText(`userGuide:stepsTitle3:galaxy`),
-          step: 2,
-          tip: () => tipView({id: 'userGuide:tipPage3:galaxy'}),
-        },
-        {
-          key: 'page5',
-          title: renderText(`userGuide:stepsTitle4:galaxy`),
-          step: 3,
-        },
-        {
-          key: 'page6',
-          title: renderText(`userGuide:stepsTitle5:galaxy`),
-          step: 4,
-        },
-        {
-          key: 'page7',
-          title: renderText(`userGuide:stepsTitle6:galaxy`),
-          step: 5,
-        },
-        {
-          key: 'page8',
-          title: renderText(`userGuide:stepsTitle7:galaxy`),
-          step: 6,
-          tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}, true),
-          noticeBox: () =>
-            renderNoticeBox({
-              title: 'userGuide:noticeBox:local:title',
-              body: ['userGuide:noticeBox:local:body4'],
-              isShow: true,
-            }),
-        },
-        {
-          key: 'page9',
-          title: renderText(`userGuide:stepsTitle8:galaxy`),
-          step: 7,
-          tip: () => tipView({id: 'userGuide:tipPage10_1'}),
-          noticeBox: () =>
-            renderNoticeBox({
-              title: 'userGuide:noticeBox:local:title',
-              body: ['userGuide:noticeBox:local:body1'],
-              isShow: true,
-            }),
-        },
-        {
-          key: 'page10',
-          title: renderText(`userGuide:stepsTitle9:galaxy`),
-          step: 8,
-          tip: () => renderTipList('userGuide:tipPage10:galaxy', 'dot', true),
-        },
-        {
-          key: 'page11',
-          title: renderText(`userGuide:stepsTitle12:ios`),
-          step: 6,
-        },
-      ];
-    } else if (region === 'us') {
-      guideImages = [
-        {
-          key: 'page1',
-          title: renderText('userGuide:ios:esimReg:us:stepTitle0'),
-          step: 0,
-        },
-        {
-          key: 'page2',
-          title: renderText(`userGuide:stepsTitle1:galaxy`),
-          step: 1,
-        },
-        {
-          key: 'page3',
-          title: renderText(`userGuide:stepsTitle2:us:android`),
-          step: 2,
-        },
-        {
-          key: 'page4',
-          title: renderText(`userGuide:stepsTitle3:us:android`),
-          step: 3,
-        },
-        {
-          key: 'page5',
-          title: renderText(`userGuide:stepsTitle4:us:android`),
-          step: 4,
-        },
-        {
-          key: 'page6',
-          title: renderText(`userGuide:stepsTitle5:us:android`),
-          step: 5,
-        },
-        {
-          key: 'page7',
-          title: renderText(`userGuide:stepsTitle6:us:android`),
-          step: 6,
-          tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}, true),
-          noticeBox: () =>
-            renderNoticeBox({
-              body: ['userGuide:noticeBox:us:body1'],
-              isShow: true,
-              marginBottom: 60,
-            }),
-          stepTitle: 'Bonus',
-        },
-        {
-          key: 'page8',
-          title: renderText(`userGuide:stepsTitle10:galaxy:local`),
-          step: 6,
-          tip: () => renderTipList('userGuide:tipPageLast', 'dot'),
-        },
-      ];
-    }
-    // 현지 등록
-    else {
-      guideImages = [
-        {
-          key: 'page1',
-          title: renderText('userGuide:ios:esimReg:local:stepTitle0'),
-          step: 0,
-        },
-        {
-          key: 'page2',
-          title: renderText(`userGuide:stepsTitle1:galaxy`),
-          step: 1,
-        },
-        {
-          key: 'page3',
-          title: renderText(`userGuide:stepsTitle2:galaxy`),
-          step: 2,
-          tip: () =>
-            renderTipList(
-              'userGuide:tipPage2:galaxy',
-              'num',
-              false,
-              2,
-              tipPage2TextComponent,
-            ),
-        },
-        {
-          key: 'page4',
-          title: renderText(`userGuide:stepsTitle3:galaxy`),
-          step: 2,
-          tip: () => tipView({id: 'userGuide:tipPage3:galaxy'}),
-        },
-        {
-          key: 'page5',
-          title: renderText(`userGuide:stepsTitle4:galaxy`),
-          step: 3,
-        },
-        {
-          key: 'page6',
-          title: renderText(`userGuide:stepsTitle5:galaxy`),
-          step: 4,
-        },
-        {
-          key: 'page7',
-          title: renderText(`userGuide:stepsTitle6:galaxy`),
-          step: 5,
-        },
-        {
-          key: 'page8',
-          title: renderText(`userGuide:stepsTitle7:galaxy`),
-          step: 6,
-          tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}, true),
-          noticeBox: () =>
-            renderNoticeBox({
-              title: 'userGuide:noticeBox:local:title',
-              body: ['userGuide:noticeBox:local:body4'],
-              isShow: true,
-            }),
-        },
-        {
-          key: 'page9',
-          title: renderText(`userGuide:stepsTitle8:galaxy`),
-          step: 7,
-          tip: () => tipView({id: 'userGuide:tipPage10_1'}),
-        },
-        {
-          key: 'page10',
-          title: renderText(`userGuide:stepsTitle10:galaxy:local`),
-          step: 6,
-          tip: () => renderTipList('userGuide:tipPageLast', 'dot'),
-        },
-      ];
-    }
-  }
-  // 설정
-  else if (region === 'korea') {
+  // ios, 등록, 한국
+  if (region === 'korea') {
     guideImages = [
       {
         key: 'page1',
-        title: renderText('userGuide:ios:checkSetting:korea:stepTitle0'),
+        title: renderText(
+          `userGuide:ios:${guideOption}:${region}:stepTitle0`,
+          true,
+        ),
         step: 0,
       },
       {
         key: 'page2',
-        title: renderText(`userGuide:stepsTitle1:galaxy:checkSetting`),
+        title: renderText(`userGuide:stepsTitle1:ios`),
         step: 1,
-        stepPreText: 'korea',
       },
       {
         key: 'page3',
-        title: renderText(`userGuide::checkSetting:done`),
+        title: renderText(`userGuide:stepsTitle2:ios`),
+        step: 2,
+        tip: () => renderTipList('userGuide:tipPage3', 'num', false, 2),
+      },
+      {
+        key: 'page4',
+        title: renderText('userGuide:stepsTitle3:ios'),
+        step: 2,
+        tip: () => tipView({id: 'userGuide:tipPage4_1'}),
+        caption: i18n.t('userGuide:step3:caption'),
+      },
+      {
+        key: 'page5',
+        title: renderText('userGuide:stepsTitle4:ios'),
+        step: 3,
+      },
+      {
+        key: 'page6',
+        title: renderText('userGuide:stepsTitle5:ios'),
+        step: 4,
+        tip: () => renderTipList('userGuide:tipPage5', 'dot'),
+      },
+      {
+        key: 'page7',
+        title: renderText('userGuide:stepsTitle6:ios'),
+        step: 5,
+        tip: () => tipView({id: 'userGuide:tipPage7_1'}, false),
+      },
+      {
+        key: 'page8',
+        title: renderText('userGuide:stepsTitle8:ios'),
+        tip: () => tipView({id: 'userGuide:tipPage7_1'}, false),
+        step: 6,
+      },
+      {
+        key: 'page9',
+        title: renderText('userGuide:stepsTitle9:ios'),
+        step: 7,
+        tip: () => renderTipList('userGuide:tipPage9', 'dot'),
+      },
+      {
+        key: 'page10',
+        title: renderText('userGuide:stepsTitle10:ios'),
+        step: 8,
+        tip: () => tipView({id: 'userGuide:tipPage10_1'}),
+        noticeBox: () =>
+          renderNoticeBox({
+            title: 'userGuide:noticeBox:local:title',
+            body: ['userGuide:noticeBox:local:body1'],
+            isShow: true,
+          }),
+      },
+      {
+        key: 'page11',
+        title: renderText('userGuide:stepsTitle11:ios'),
+        step: 9,
+        tip: () => tipView({id: 'userGuide:tipPage11_1'}),
+        noticeBox: () =>
+          renderNoticeBox({
+            title: 'userGuide:noticeBox:local:title',
+            body: ['userGuide:noticeBox:local:body2'],
+            isShow: true,
+          }),
+      },
+      {
+        key: 'page12',
+        title: renderText('userGuide:stepsTitle12:ios'),
+        step: 99,
+      },
+    ];
+  } else if (region === 'us') {
+    guideImages = [
+      {
+        key: 'page1',
+        title: renderText(
+          `userGuide:ios:${guideOption}:${region}:stepTitle0`,
+          true,
+        ),
+        step: 0,
+      },
+      {
+        key: 'page2',
+        title: renderText(`userGuide:stepsTitle1:us:ios`),
+        step: 1,
+      },
+      {
+        key: 'page3',
+        title: renderText(`userGuide:stepsTitle2:us:ios`),
+        step: 2,
+      },
+      {
+        key: 'page4',
+        title: renderText('userGuide:stepsTitle3:us:ios'),
+        step: 3,
+        tip: () => renderTipList('userGuide:us:tipPage4', 'dot'),
+      },
+      {
+        key: 'page5',
+        title: renderText('userGuide:stepsTitle4:us:ios'),
+        step: 4,
+        tip: () => renderTipList('userGuide:us:tipPage5', 'dot', false, 3),
+      },
+      {
+        key: 'page6',
+        title: renderText('userGuide:stepsTitle5:us:ios'),
+        step: 5,
+        tip: () => tipView({id: 'userGuide:us:tipPage6_2'}, true),
+      },
+      {
+        key: 'page7',
+        title: renderText('userGuide:stepsTitle6:us:ios'),
+        step: 6,
+        tip: () => renderTipList('userGuide:us:tipPage6', 'dot', false),
+      },
+      {
+        key: 'page8',
+        title: renderText('userGuide:stepsTitle7:us:ios'),
+        step: 7,
+      },
+      {
+        key: 'page9',
+        title: renderText('userGuide:stepsTitle8:us:ios'),
+        step: 8,
+        noticeBox: () =>
+          renderNoticeBox({
+            title: 'userGuide:us:ios:caution:title',
+            body: ['userGuide:us:ios:caution:body'],
+            isShow: true,
+          }),
+      },
+      {
+        key: 'page10',
+        title: renderText('userGuide:stepsTitle9:us:ios'),
+        step: 9,
+      },
+      {
+        key: 'page12',
+        title: renderText('userGuide:stepsTitle12:ios:local'),
+        step: 99,
+      },
+    ];
+  }
+  // ios, esim등록, 현지 선택
+  else {
+    guideImages = [
+      {
+        key: 'page1',
+        title: renderText(
+          `userGuide:ios:${guideOption}:${region}:stepTitle0`,
+          true,
+        ),
+        step: 0,
+      },
+      {
+        key: 'page2',
+        title: renderText(`userGuide:stepsTitle1:ios`),
+        step: 1,
+      },
+      {
+        key: 'page3',
+        title: renderText(`userGuide:stepsTitle2:ios`),
+        step: 2,
+        tip: () => renderTipList('userGuide:tipPage3', 'num', false, 2),
+      },
+      {
+        key: 'page4',
+        title: renderText('userGuide:stepsTitle3:ios'),
+        step: 2,
+        tip: () => tipView({id: 'userGuide:tipPage4_1'}),
+        caption: i18n.t('userGuide:step3:caption'),
+      },
+      {
+        key: 'page5',
+        title: renderText('userGuide:stepsTitle4:ios'),
+        step: 3,
+      },
+      {
+        key: 'page6',
+        title: renderText('userGuide:stepsTitle5:ios'),
+        step: 4,
+        tip: () => renderTipList('userGuide:tipPage5', 'dot'),
+      },
+      {
+        key: 'page7',
+        title: renderText('userGuide:stepsTitle6:ios'),
+        step: 5,
+        tip: () => tipView({id: 'userGuide:tipPage7_1'}, false),
+      },
+      {
+        key: 'page8',
+        title: renderText('userGuide:stepsTitle8:ios'),
+        tip: () => tipView({id: 'userGuide:tipPage7_1'}, false),
+        step: 6,
+      },
+      {
+        key: 'page9',
+        title: renderText('userGuide:stepsTitle9:ios'),
+        step: 7,
+        tip: () => renderTipList('userGuide:tipPage9', 'dot'),
+      },
+      {
+        key: 'page10',
+        title: renderText('userGuide:stepsTitle10:ios'),
+        step: 8,
+        tip: () => tipView({id: 'userGuide:tipPage10_1'}),
+      },
+      {
+        key: 'page11',
+        title: renderText('userGuide:stepsTitle11:ios:local'),
+        step: 9,
+        noticeBox: () =>
+          renderNoticeBox({
+            title: 'userGuide:noticeBox:local:title',
+            body: ['userGuide:noticeBox:local:body3'],
+            isShow: true,
+          }),
+      },
+      {
+        key: 'page12',
+        title: renderText('userGuide:stepsTitle12:ios:local'),
+        step: 99,
+      },
+    ];
+  }
+
+  return guideImages;
+};
+
+const getIosConfigKrGuide = () => {
+  return [
+    {
+      key: 'page1',
+      title: renderText('userGuide:ios:checkSetting:korea:stepTitle0'),
+      step: 0,
+    },
+    {
+      key: 'page2',
+      title: renderText('userGuide:stepsTitle1:ios:checkSetting'),
+      step: 1,
+      stepPreText: 'korea',
+    },
+    {
+      key: 'page3',
+      title: renderText('userGuide:stepsTitle2:ios:checkSetting'),
+      step: 2,
+      stepPreText: 'korea',
+    },
+    {
+      key: 'page4',
+      title: renderText('userGuide::checkSetting:done'),
+      step: 99,
+    },
+  ];
+};
+
+const getIosLocalConfig = () => {
+  return [
+    {
+      key: 'page1',
+      title: renderText('userGuide:ios:checkSetting:local:stepTitle0'),
+      step: 0,
+      isLocalBox: () => renderIsLocalBox(),
+    },
+    {
+      key: 'page2',
+      title: renderText('userGuide:stepsTitle4:ios:checkSetting'),
+      localTitle: renderText('userGuide:stepsTitle4:ios:checkSetting:local'),
+      noticeBox: (isCheckLocal: boolean) =>
+        renderNoticeBox({
+          title: 'userGuide:stepsTitle4:ios:caution:title',
+          body: ['userGuide:stepsTitle4:ios:caution:body'],
+          isShow: isCheckLocal,
+        }),
+      step: 1,
+      stepPreText: 'local',
+    },
+    {
+      key: 'page3',
+      title: renderText('userGuide:stepsTitle5:ios:checkSetting'),
+      step: 2,
+      stepPreText: 'local',
+    },
+    {
+      key: 'page4',
+      title: renderText('userGuide:stepsTitle6:ios:checkSetting'),
+      step: 3,
+      stepPreText: 'local',
+      noticeBox: (isCheckLocal: boolean) =>
+        renderNoticeBox({
+          title: 'userGuide:stepsTitle6:ios:caution:title',
+          body: ['userGuide:stepsTitle6:ios:caution:body1'],
+          isShow: isCheckLocal,
+        }),
+    },
+    {
+      key: 'page5',
+      title: renderText('userGuide:stepsTitle7:ios:checkSetting'),
+      step: 4,
+      stepPreText: 'local',
+    },
+    {
+      key: 'page6',
+      title: renderText('userGuide:stepsTitle8:ios:checkSetting'),
+      step: 99,
+    },
+  ];
+};
+
+const getAosEsimRegGuide = (guideOption: GuideOption, region: GuideRegion) => {
+  let guideImages: GuideImage[] = [];
+
+  if (region === 'korea') {
+    guideImages = [
+      {
+        key: 'page1',
+        title: renderText('userGuide:ios:esimReg:korea:stepTitle0'),
+        step: 0,
+      },
+      {
+        key: 'page2',
+        title: renderText(`userGuide:stepsTitle1:galaxy`),
+        step: 1,
+      },
+      {
+        key: 'page3',
+        title: renderText(`userGuide:stepsTitle2:galaxy`),
+        step: 2,
+        tip: () =>
+          renderTipList(
+            'userGuide:tipPage2:galaxy',
+            'num',
+            false,
+            2,
+            tipPage2TextComponent,
+          ),
+      },
+      {
+        key: 'page4',
+        title: renderText(`userGuide:stepsTitle3:galaxy`),
+        step: 2,
+        tip: () => tipView({id: 'userGuide:tipPage3:galaxy'}),
+      },
+      {
+        key: 'page5',
+        title: renderText(`userGuide:stepsTitle4:galaxy`),
+        step: 3,
+      },
+      {
+        key: 'page6',
+        title: renderText(`userGuide:stepsTitle5:galaxy`),
+        step: 4,
+      },
+      {
+        key: 'page7',
+        title: renderText(`userGuide:stepsTitle6:galaxy`),
+        step: 5,
+      },
+      {
+        key: 'page8',
+        title: renderText(`userGuide:stepsTitle7:galaxy`),
+        step: 6,
+        tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}, true),
+        noticeBox: () =>
+          renderNoticeBox({
+            title: 'userGuide:noticeBox:local:title',
+            body: ['userGuide:noticeBox:local:body4'],
+            isShow: true,
+          }),
+      },
+      {
+        key: 'page9',
+        title: renderText(`userGuide:stepsTitle8:galaxy`),
+        step: 7,
+        tip: () => tipView({id: 'userGuide:tipPage10_1'}),
+        noticeBox: () =>
+          renderNoticeBox({
+            title: 'userGuide:noticeBox:local:title',
+            body: ['userGuide:noticeBox:local:body1'],
+            isShow: true,
+          }),
+      },
+      {
+        key: 'page10',
+        title: renderText(`userGuide:stepsTitle9:galaxy`),
+        step: 8,
+        tip: () => renderTipList('userGuide:tipPage10:galaxy', 'dot', true),
+      },
+      {
+        key: 'page11',
+        title: renderText(`userGuide:stepsTitle12:ios`),
         step: 6,
       },
     ];
@@ -1097,111 +966,379 @@ export const getGuideImages = (
     guideImages = [
       {
         key: 'page1',
-        title: renderText('userGuide:galaxy:checkSetting:local:stepTitle0'),
+        title: renderText('userGuide:ios:esimReg:us:stepTitle0'),
         step: 0,
-        isLocalBox: () => renderIsLocalBox(),
       },
       {
         key: 'page2',
-        title: renderText(`userGuide:stepsTitle4:galaxy:checkSetting`),
+        title: renderText(`userGuide:stepsTitle1:galaxy`),
         step: 1,
-        stepPreText: 'local',
       },
       {
         key: 'page3',
-        title: renderText(`userGuide:stepsTitle5:galaxy:checkSetting`), // ysjoung
+        title: renderText(`userGuide:stepsTitle2:us:android`),
         step: 2,
-        stepPreText: 'local',
-        noticeBox: (isCheckLocal: boolean) =>
-          renderNoticeBox({
-            title: 'userGuide:stepsTitle5:galaxy:caution:title',
-            body: ['userGuide:stepsTitle5:galaxy:caution:body1'],
-            isShow: isCheckLocal, // 현지(로컬망)인 경우에 보여주도록 함
-          }),
       },
       {
         key: 'page4',
-        title: renderText(`userGuide:stepsTitle6:galaxy:checkSetting`),
+        title: renderText(`userGuide:stepsTitle3:us:android`),
         step: 3,
-        stepPreText: 'local',
       },
       {
         key: 'page5',
-        title: renderText(`userGuide:stepsTitle7:galaxy`),
-        localTitle: renderText(`userGuide:stepsTitle7:galaxy:localNet`),
-
+        title: renderText(`userGuide:stepsTitle4:us:android`),
         step: 4,
-        stepPreText: 'local',
-        tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}),
-        localTip: () => tipView({id: 'userGuide:tipPage7:galaxy:localNet'}),
-        noticeBox: (isCheckLocal: boolean) =>
-          renderNoticeBox({
-            title: 'userGuide:stepsTitle7:galaxy:caution:title',
-            body: ['userGuide:stepsTitle7:galaxy:caution:body'],
-            isShow: isCheckLocal,
-          }),
       },
       {
         key: 'page6',
-        title: renderText(`userGuide:stepsTitle10:galaxy:checkSetting`),
+        title: renderText(`userGuide:stepsTitle5:us:android`),
+        step: 5,
+      },
+      {
+        key: 'page7',
+        title: renderText(`userGuide:stepsTitle6:us:android`),
         step: 6,
+        tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}, true),
+        noticeBox: () =>
+          renderNoticeBox({
+            body: ['userGuide:noticeBox:us:body1'],
+            isShow: true,
+          }),
+        stepTitle: 'Bonus',
+      },
+      {
+        key: 'page8',
+        title: renderText(`userGuide:stepsTitle10:galaxy:local`),
+        step: 6,
+        tip: () => renderTipList('userGuide:tipPageLast', 'dot'),
       },
     ];
-  } else {
+  }
+  // 현지 등록
+  else {
     guideImages = [
       {
         key: 'page1',
-        title: renderText('userGuide:galaxy:checkSetting:local:stepTitle0'),
+        title: renderText('userGuide:ios:esimReg:local:stepTitle0'),
         step: 0,
-        isLocalBox: () => renderIsLocalBox(),
       },
       {
         key: 'page2',
-        title: renderText(`userGuide:stepsTitle4:galaxy:checkSetting`),
+        title: renderText(`userGuide:stepsTitle1:galaxy`),
         step: 1,
-        stepPreText: 'local',
       },
       {
         key: 'page3',
-        title: renderText(`userGuide:stepsTitle5:galaxy:checkSetting`), // ysjoung
+        title: renderText(`userGuide:stepsTitle2:galaxy`),
         step: 2,
-        stepPreText: 'local',
-        noticeBox: (isCheckLocal: boolean) =>
-          renderNoticeBox({
-            title: 'userGuide:stepsTitle5:galaxy:caution:title',
-            body: ['userGuide:stepsTitle5:galaxy:caution:body1'],
-            isShow: isCheckLocal, // 현지(로컬망)인 경우에 보여주도록 함
-          }),
+        tip: () =>
+          renderTipList(
+            'userGuide:tipPage2:galaxy',
+            'num',
+            false,
+            2,
+            tipPage2TextComponent,
+          ),
       },
       {
         key: 'page4',
-        title: renderText(`userGuide:stepsTitle6:galaxy:checkSetting`),
-        step: 3,
-        stepPreText: 'local',
+        title: renderText(`userGuide:stepsTitle3:galaxy`),
+        step: 2,
+        tip: () => tipView({id: 'userGuide:tipPage3:galaxy'}),
       },
       {
         key: 'page5',
-        title: renderText(`userGuide:stepsTitle7:galaxy`),
-        localTitle: renderText(`userGuide:stepsTitle7:galaxy:localNet`),
-
-        step: 4,
-        stepPreText: 'local',
-        tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}),
-        localTip: () => tipView({id: 'userGuide:tipPage7:galaxy:localNet'}),
-        noticeBox: (isCheckLocal: boolean) =>
-          renderNoticeBox({
-            title: 'userGuide:stepsTitle7:galaxy:caution:title',
-            body: ['userGuide:stepsTitle7:galaxy:caution:body'],
-            isShow: isCheckLocal,
-          }),
+        title: renderText(`userGuide:stepsTitle4:galaxy`),
+        step: 3,
       },
       {
         key: 'page6',
-        title: renderText(`userGuide:stepsTitle10:galaxy:checkSetting`),
+        title: renderText(`userGuide:stepsTitle5:galaxy`),
+        step: 4,
+      },
+      {
+        key: 'page7',
+        title: renderText(`userGuide:stepsTitle6:galaxy`),
+        step: 5,
+      },
+      {
+        key: 'page8',
+        title: renderText(`userGuide:stepsTitle7:galaxy`),
         step: 6,
+        tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}, true),
+        noticeBox: () =>
+          renderNoticeBox({
+            title: 'userGuide:noticeBox:local:title',
+            body: ['userGuide:noticeBox:local:body4'],
+            isShow: true,
+          }),
+      },
+      {
+        key: 'page9',
+        title: renderText(`userGuide:stepsTitle8:galaxy`),
+        step: 7,
+        tip: () => tipView({id: 'userGuide:tipPage10_1'}),
+      },
+      {
+        key: 'page10',
+        title: renderText(`userGuide:stepsTitle10:galaxy:local`),
+        step: 6,
+        tip: () => renderTipList('userGuide:tipPageLast', 'dot'),
       },
     ];
   }
 
   return guideImages;
+};
+
+const getAosConfigUsGuide = () => {
+  return [
+    {
+      key: 'page1',
+      title: renderText('userGuide:galaxy:checkSetting:local:stepTitle0'),
+      step: 0,
+      isLocalBox: () => renderIsLocalBox(),
+    },
+    {
+      key: 'page2',
+      title: renderText(`userGuide:stepsTitle4:galaxy:checkSetting`),
+      step: 1,
+      stepPreText: 'local',
+    },
+    {
+      key: 'page3',
+      title: renderText(`userGuide:stepsTitle5:galaxy:checkSetting`), // ysjoung
+      step: 2,
+      stepPreText: 'local',
+      noticeBox: (isCheckLocal: boolean) =>
+        renderNoticeBox({
+          title: 'userGuide:stepsTitle5:galaxy:caution:title',
+          body: ['userGuide:stepsTitle5:galaxy:caution:body1'],
+          isShow: isCheckLocal, // 현지(로컬망)인 경우에 보여주도록 함
+        }),
+    },
+    {
+      key: 'page4',
+      title: renderText(`userGuide:stepsTitle6:galaxy:checkSetting`),
+      step: 3,
+      stepPreText: 'local',
+    },
+    {
+      key: 'page5',
+      title: renderText(`userGuide:stepsTitle7:galaxy`),
+      localTitle: renderText(`userGuide:stepsTitle7:galaxy:localNet`),
+
+      step: 4,
+      stepPreText: 'local',
+      tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}),
+      localTip: () => tipView({id: 'userGuide:tipPage7:galaxy:localNet'}),
+      noticeBox: (isCheckLocal: boolean) =>
+        renderNoticeBox({
+          title: 'userGuide:stepsTitle7:galaxy:caution:title',
+          body: ['userGuide:stepsTitle7:galaxy:caution:body'],
+          isShow: isCheckLocal,
+        }),
+    },
+    {
+      key: 'page6',
+      title: renderText(`userGuide:stepsTitle10:galaxy:checkSetting`),
+      step: 6,
+    },
+  ];
+};
+
+const getAosConfigKrGuide = () => {
+  return [
+    {
+      key: 'page1',
+      title: renderText('userGuide:ios:checkSetting:korea:stepTitle0'),
+      step: 0,
+    },
+    {
+      key: 'page2',
+      title: renderText(`userGuide:stepsTitle1:galaxy:checkSetting`),
+      step: 1,
+      stepPreText: 'korea',
+    },
+    {
+      key: 'page3',
+      title: renderText(`userGuide::checkSetting:done`),
+      step: 6,
+    },
+  ];
+};
+
+const getAosConfigLocalGuide = () => {
+  return [
+    {
+      key: 'page1',
+      title: renderText('userGuide:galaxy:checkSetting:local:stepTitle0'),
+      step: 0,
+      isLocalBox: () => renderIsLocalBox(),
+    },
+    {
+      key: 'page2',
+      title: renderText(`userGuide:stepsTitle4:galaxy:checkSetting`),
+      step: 1,
+      stepPreText: 'local',
+    },
+    {
+      key: 'page3',
+      title: renderText(`userGuide:stepsTitle5:galaxy:checkSetting`), // ysjoung
+      step: 2,
+      stepPreText: 'local',
+      noticeBox: (isCheckLocal: boolean) =>
+        renderNoticeBox({
+          title: 'userGuide:stepsTitle5:galaxy:caution:title',
+          body: ['userGuide:stepsTitle5:galaxy:caution:body1'],
+          isShow: isCheckLocal, // 현지(로컬망)인 경우에 보여주도록 함
+        }),
+    },
+    {
+      key: 'page4',
+      title: renderText(`userGuide:stepsTitle6:galaxy:checkSetting`),
+      step: 3,
+      stepPreText: 'local',
+    },
+    {
+      key: 'page5',
+      title: renderText(`userGuide:stepsTitle7:galaxy`),
+      localTitle: renderText(`userGuide:stepsTitle7:galaxy:localNet`),
+
+      step: 4,
+      stepPreText: 'local',
+      tip: () => tipView({id: 'userGuide:tipPage7:galaxy'}),
+      localTip: () => tipView({id: 'userGuide:tipPage7:galaxy:localNet'}),
+      noticeBox: (isCheckLocal: boolean) =>
+        renderNoticeBox({
+          title: 'userGuide:stepsTitle7:galaxy:caution:title',
+          body: ['userGuide:stepsTitle7:galaxy:caution:body'],
+          isShow: isCheckLocal,
+        }),
+    },
+    {
+      key: 'page6',
+      title: renderText(`userGuide:stepsTitle10:galaxy:checkSetting`),
+      step: 6,
+    },
+  ];
+};
+
+const getIosEsimDelGuide = () => {
+  return [
+    {
+      key: 'page1',
+      title: renderText('userGuide:ios:esimDel:stepTitle0'),
+      step: 0,
+    },
+    {
+      key: 'page2',
+      title: renderText(`userGuide:ios:esimDel:stepTitle1`),
+      step: 1,
+      tip: () => tipView({id: 'userGuide:ios:esimDel:tipPage1_1'}),
+    },
+    {
+      key: 'page3',
+      title: renderText(`userGuide:ios:esimDel:stepTitle2`),
+      step: 2,
+      tip: () => tipView({id: 'userGuide:ios:esimDel:tipPage2_1'}),
+    },
+    {
+      key: 'page4',
+      title: renderText(`userGuide:ios:esimDel:stepTitle3`),
+      step: 3,
+    },
+    {
+      key: 'page5',
+      title: renderText(`userGuide:ios:esimDel:stepTitle4`),
+      step: 4,
+      tip: () =>
+        renderTipList('userGuide:ios:esimDel:tipPage4', 'dot', false, 2),
+    },
+    {
+      key: 'page6',
+      title: renderText(`userGuide:ios:esimDel:stepTitle5`),
+      step: 5,
+    },
+  ];
+};
+
+const getAosEsimDelGuide = () => {
+  return [
+    {
+      key: 'page1',
+      title: renderText('userGuide:galaxy:esimDel:stepTitle0'),
+      step: 0,
+    },
+    {
+      key: 'page2',
+      title: renderText(`userGuide:galaxy:esimDel:stepTitle1`),
+      step: 1,
+    },
+    {
+      key: 'page3',
+      title: renderText(`userGuide:galaxy:esimDel:stepTitle2`),
+      step: 2,
+      tip: () =>
+        tipView({id: 'userGuide:galaxy:esimDel:tipPage2_1'}, true, true),
+    },
+    {
+      key: 'page4',
+      title: renderText(`userGuide:galaxy:esimDel:stepTitle3`),
+      step: 3,
+    },
+    {
+      key: 'page5',
+      title: renderText(`userGuide:galaxy:esimDel:stepTitle4`),
+      step: 4,
+    },
+  ];
+};
+
+export const getGuideImages = (
+  guideOption: GuideOption,
+  region: GuideRegion,
+): GuideImage[] => {
+  if (isIOS) {
+    if (guideOption === 'esimDel') {
+      return getIosEsimDelGuide();
+    }
+    if (guideOption === 'esimReg') {
+      return getIosEsimRegGuide(guideOption, region);
+    }
+    if (region === 'korea') {
+      return getIosConfigKrGuide();
+    }
+
+    // ios는 설정 > 미국이 없다?  getIosConfigUsGuide();
+
+    return getIosLocalConfig();
+  }
+
+  // Android
+
+  if (guideOption === 'esimDel') {
+    console.log('@@@@ esimDelGuide');
+    return getAosEsimDelGuide();
+  }
+
+  if (guideOption === 'esimReg') {
+    console.log('@@@@ getAndroidGuide');
+    return getAosEsimRegGuide(guideOption, region);
+  }
+
+  // 설정
+  if (region === 'korea') {
+    console.log('@@@@ getConfigKrGuide');
+    return getAosConfigKrGuide();
+  }
+
+  // 사용 위치 못 찾음. 확인 후 삭제하기
+  if (region === 'us') {
+    console.log('@@@@ getConfigUsGuide');
+    return getAosConfigUsGuide();
+  }
+
+  console.log('@@@@ getConfigLocalGuide');
+  return getAosConfigLocalGuide();
 };

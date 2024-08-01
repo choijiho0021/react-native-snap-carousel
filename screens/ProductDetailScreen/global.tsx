@@ -196,7 +196,7 @@ const ProductDetailGlobalScreen: React.FC<ProductDetailScreenProps> = ({
           }
           break;
         case 'copy':
-          action.toast.push(Toast.COPY_SUCCESS);
+          action.toast.push({msg: Toast.COPY_SUCCESS});
           break;
         default:
           Clipboard.setString(cmd.value);
@@ -215,7 +215,10 @@ const ProductDetailGlobalScreen: React.FC<ProductDetailScreenProps> = ({
       );
     } else {
       KakaoSDK.KakaoChannel.chat(channelId).catch(() => {
-        action.toast.push(Toast.NOT_OPENED);
+        action.toast.push({
+          msg: Toast.NOT_OPENED,
+          toastIcon: 'bannerMarkToastError',
+        });
       });
     }
   }, [action.toast]);

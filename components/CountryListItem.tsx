@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const toVolumeStr = (volume: number) => {
+export const toVolumeStr = (volume: number) => {
   if (volume <= 1000) return `${volume}MB`;
   return `${volume / 1024}GB`;
 };
@@ -160,7 +160,11 @@ const CountryListItem: React.FC<CountryListItemProps> = ({
                 ]}>
                 {title}
               </AppText>
-              {renderPromoFlag(item.promoFlag || [], false)}
+              {renderPromoFlag({
+                flags: item.promoFlag || [],
+                isStore: false,
+                isReceived: false,
+              })}
             </View>
             <AppPrice
               price={item.price}

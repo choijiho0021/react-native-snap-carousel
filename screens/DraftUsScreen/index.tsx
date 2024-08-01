@@ -12,9 +12,9 @@ import {HomeStackParamList, goBack} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {
+  actions as accountActions,
   AccountAction,
   AccountModelState,
-  actions as accountActions,
 } from '@/redux/modules/account';
 import {
   actions as orderActions,
@@ -201,6 +201,8 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
             token,
             prompt: 'check',
           });
+
+          navigation.popToTop();
 
           if (draftOrder?.orderType === 'refundable') {
             // 바로 운세뽑기로 이동

@@ -467,6 +467,19 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
     [onPress],
   );
 
+  const renderFooter = useCallback(() => {
+    if (!isNotice && data && data.length > 0)
+      return (
+        <View style={styles.notice}>
+          <AppSvgIcon name="bannerMark3" />
+          <AppText style={[appStyles.bold16Text, {color: colors.warmGrey}]}>
+            {i18n.t('noti:notice')}
+          </AppText>
+        </View>
+      );
+    return null;
+  }, [data, isNotice]);
+
   return (
     <SafeAreaView key="container" style={styles.container}>
       <ScreenHeader
@@ -506,6 +519,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
           ListEmptyComponent={
             <AppText style={styles.emptyPage}>{i18n.t('noti:empty')}</AppText>
           }
+          ListFooterComponent={renderFooter}
           refreshControl={
             <RefreshControl
               refreshing={pending}
@@ -515,15 +529,6 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             />
           }
         />
-      )}
-
-      {!isNotice && (
-        <View style={styles.notice}>
-          <AppSvgIcon name="bannerMark3" />
-          <AppText style={[appStyles.bold16Text, {color: colors.warmGrey}]}>
-            {i18n.t('noti:notice')}
-          </AppText>
-        </View>
       )}
     </SafeAreaView>
   );

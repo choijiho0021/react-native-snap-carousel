@@ -23,7 +23,7 @@ import KakaoSDK from '@/components/NativeModule/KakaoSDK';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {AccountModelState, Fortune} from '@/redux/modules/account';
-import {utils} from '@/utils/utils';
+import {logAnalytics, utils} from '@/utils/utils';
 
 const {isProduction, webViewHost, isIOS} = Env.get();
 
@@ -222,16 +222,19 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
           link,
           desc: i18n.t('esim:lottery:share:desc'),
         }).then(async (url) => {
-          console.log('@@@ 만들어진 url 링크 확인 : ', url);
+          logAnalytics('kakao_share_try');
+
           onPressShareKakaoForFortune(url, serverImageUrl || '');
         });
       }
 
       if (type === 'more' && isShareDisabled) {
+        logAnalytics('more_share_try');
         onPressShareMore(serverImageUrl);
       }
 
       if (type === 'sms') {
+        logAnalytics('sms_share_try');
         onPressShareMessage(serverImageUrl);
       }
     },
