@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
 
 type ResultScreenProps = {
   pending: boolean;
-  issue: RkbBoardBase;
+  issue?: RkbBoardBase;
   title: string;
   showStatus: boolean;
   eventList?: RkbEvent[];

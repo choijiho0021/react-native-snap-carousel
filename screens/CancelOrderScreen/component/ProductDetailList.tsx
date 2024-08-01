@@ -1,7 +1,7 @@
 import React, {Fragment, useCallback, useEffect, useMemo, useRef} from 'react';
 import {StyleProp, StyleSheet, View, ViewStyle} from 'react-native';
 import {bindActionCreators, RootState} from 'redux';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import {colors} from '@/constants/Colors';
 import ProductDetailInfo from './ProductDetailInfo';
 import {ProdInfo} from '@/redux/api/productApi';
@@ -10,6 +10,7 @@ import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {utils} from '@/utils/utils';
 import {OrderItemType} from '@/redux/api/orderApi';
 import {
+  checkAndLoadProdList,
   actions as productActions,
   ProductModelState,
 } from '@/redux/modules/product';
@@ -40,25 +41,16 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
   action,
 }) => {
   const loading = useRef(false);
+  const dispatch = useDispatch();
 
-  // 함수로 묶기
-  const getProdDate = useCallback(() => {
-    if (!loading.current && (orderItems?.length || 0) > 0) {
-      orderItems.forEach((i) => {
-        if (!product.prodList.has(i?.key || i?.uuid)) {
-          // 해당 Uuid로 없다면 서버에서 가져온다.
+  useEffect(() => {
+    if (orderItems.findIndex((i) => i.type === 'rch') > -1) return;
 
-          action.product.getProdByUuid(i?.key || i?.uuid);
-          loading.current = true;
-        }
-      });
-    }
-  }, [action.product, orderItems, product.prodList]);
+    checkAndLoadProdList(loading, orderItems, product.prodList, dispatch);
+  }, [action.product, dispatch, orderItems, product.prodList]);
 
   const prodList = useMemo(() => {
     if (!orderItems) return [];
-
-    getProdDate();
 
     const prods = orderItems
       .map((item) => {
@@ -98,11 +90,8 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
       })
       .filter((r) => r !== null);
 
-    const isNeedUpdate = prods.some((item) => item === null);
-
-    if (isNeedUpdate) getProdDate();
     return prods;
-  }, [getProdDate, orderItems, product.prodList]);
+  }, [orderItems, product.prodList]);
 
   const renderItem = useCallback(
     ({

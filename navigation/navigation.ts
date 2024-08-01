@@ -7,7 +7,7 @@ import {Moment} from 'moment';
 import {ViewStyle} from 'react-native';
 import {RkbOrder} from '@/redux/api/orderApi';
 import {RkbInfo} from '@/redux/api/pageApi';
-import {BoardMsgStatus} from '@/redux/api/boardApi';
+import {BoardMsgStatus, RkbBoard} from '@/redux/api/boardApi';
 import {RkbSubscription} from '@/redux/api/subscriptionApi';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {
@@ -22,7 +22,6 @@ import {GuideRegion} from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
 import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 import {PaymentRule} from '@/redux/modules/product';
 import {Fortune} from '@/redux/modules/account';
-import {DailyProdFilterList} from '@/components/DailyProdFilter';
 import {SocialAuthInfoKind} from '@/components/SocialLogin';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti' | 'page';
@@ -64,6 +63,7 @@ export type PaymentParams = {
   paymentRule?: PaymentRule;
   selected?: string;
   pymMethod?: string;
+  isSave?: boolean;
 };
 
 type ChargeAgreementContents = {
@@ -133,14 +133,19 @@ export type HomeStackParamList = {
   ContactBoard: ContactBoardRouteParam;
   EventBoard: EventBoardRouteParam;
   UserGuide: undefined;
-  BoardMsgResp: {uuid: string; status?: BoardMsgStatus; isEvent?: boolean};
+  BoardMsgResp: {
+    uuid?: string;
+    item?: RkbBoard;
+    status?: BoardMsgStatus;
+    isEvent?: boolean;
+  };
   BoardMsgAdd: {key: string; status: BoardMsgStatus};
   Faq: FaqRouteParam;
   Guide: undefined;
   Country: {
     partner: string[];
     type?: string;
-    volume?: DailyProdFilterList;
+    volume?: String;
     scroll?: string;
   };
   Payment: PaymentParams;

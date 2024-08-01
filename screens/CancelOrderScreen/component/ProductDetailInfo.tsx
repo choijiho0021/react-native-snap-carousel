@@ -3,7 +3,6 @@ import {StyleSheet, ViewStyle, View, StyleProp} from 'react-native';
 import {colors} from '@/constants/Colors';
 import SplitText from '@/components/SplitText';
 import AppText from '@/components/AppText';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {utils} from '@/utils/utils';
 import {renderPromoFlag} from '@/screens/ChargeHistoryScreen';
@@ -40,7 +39,13 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
       <View style={styles.productFrame}>
         <SplitText
           numberOfLines={2}
-          renderExpend={() => renderPromoFlag(item.promoFlag || [], false)}
+          renderExpend={() =>
+            renderPromoFlag({
+              flags: item?.promoFlag || [],
+              isStore: false,
+              isReceived: false,
+            })
+          }
           style={{...appStyles.bold16Text, marginRight: 6}}
           ellipsizeMode="tail">
           {utils.removeBracketOfName(item?.title)}

@@ -16,12 +16,7 @@ import ViewShot from 'react-native-view-shot';
 import LinearGradient from 'react-native-linear-gradient';
 import Share from 'react-native-share';
 import {RootState} from '@reduxjs/toolkit';
-import {
-  PERMISSIONS,
-  RESULTS,
-  check,
-  openSettings,
-} from 'react-native-permissions';
+import {PERMISSIONS, RESULTS, check} from 'react-native-permissions';
 import {colors} from '@/constants/Colors';
 import {bindActionCreators} from 'redux';
 import i18n from '@/utils/i18n';
@@ -39,13 +34,17 @@ import {
 import {API} from '@/redux/api';
 import AppIcon from '@/components/AppIcon';
 import LotteryModal from './component/LotteryModal';
-import {captureScreen} from '@/utils/utils';
+import {
+  captureScreen,
+  checkPhotoPermissionAlert,
+  logAnalytics,
+} from '@/utils/utils';
 import LotteryShareModal from './component/LotteryShareModal';
 import RenderBeforeLottery from './component/RenderBeforeLottery';
 import RenderLoadingLottery from './component/RenderLoadingLottery';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppSnackBar from '@/components/AppSnackBar';
-import AppAlert from '@/components/AppAlert';
+import {firebase, getAnalytics} from '@react-native-firebase/analytics';
 
 const styles = StyleSheet.create({
   container: {
@@ -214,6 +213,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   });
 
   const ref = useRef<ViewShot>();
+
   // 다시보기 구분하는 코드
   const isHistory = useMemo(() => {
     return fortune?.count === 0 && fortune?.text && phase?.text === '';
@@ -246,12 +246,61 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       }
     } else {
       // 사진 앨범 조회 권한을 요청한다.
-      AppAlert.confirm(i18n.t('settings'), i18n.t('acc:permPhoto'), {
-        ok: () => openSettings(),
-      });
+      checkPhotoPermissionAlert();
     }
   }, [hasPhotoPermission]);
 
+  const onShare = useCallback(() => {
+    setShowShareModal(true);
+  }, []);
+
+  const shareInstaStory = useCallback(async () => {
+    try {
+      const uri = await ref.current?.capture?.();
+
+      if (uri) {
+        const shareOptions = {
+          backgroundImage: uri,
+          backgroundBottomColor: colors.black,
+          backgroundTopColor: colors.black,
+          social: Share.Social.INSTAGRAM_STORIES,
+          appId: 'fb147522690488197',
+        };
+
+        const result = await Share.shareSingle(shareOptions).then((rsp) => {
+          if (rsp?.success && rsp?.message.includes('instagram'))
+            logAnalytics('instagram_share_success');
+        });
+
+        console.log('@@@@ result : ', result);
+      } else {
+        console.log('@@@  empty uri');
+      }
+    } catch (e) {
+      console.log('@@@@ share error : ', e);
+    }
+  }, []);
+
+  const buttonList = [
+    {
+      key: 'Img',
+      onClick: () => {
+        saveToGallery();
+      },
+    },
+    {
+      key: 'Sns',
+      onClick: () => {
+        onShare();
+      },
+    },
+    {
+      key: 'Story',
+      onClick: () => {
+        shareInstaStory();
+      },
+    },
+  ];
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (['inactive', 'background'].includes(nextAppState)) {
@@ -302,10 +351,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       }
     });
   }, [action.account, iccid, token]);
-
-  const onShare = useCallback(() => {
-    setShowShareModal(true);
-  }, []);
 
   const renderTitleAndPhase = useCallback(() => {
     return (
@@ -364,29 +409,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     );
   }, [renderTitleAndPhase, screenNum]);
 
-  const shareInstaStory = useCallback(async () => {
-    try {
-      const uri = await ref.current?.capture?.();
-
-      if (uri) {
-        const shareOptions = {
-          backgroundImage: uri,
-          backgroundBottomColor: colors.black,
-          backgroundTopColor: colors.black,
-          social: Share.Social.INSTAGRAM_STORIES,
-          appId: 'fb147522690488197',
-        };
-        const result = await Share.shareSingle(shareOptions);
-
-        console.log('@@@@ result : ', result);
-      } else {
-        console.log('@@@  empty uri');
-      }
-    } catch (e) {
-      console.log('@@@@ share error : ', e);
-    }
-  }, []);
-
   const onClick = useCallback(() => {
     // 2초 동안 Loading 표시해주기 코드
     setIsLoading(true);
@@ -437,29 +459,19 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           </View>
         </View>
         <View style={styles.btnContainer}>
-          {renderShareButton(
-            i18n.t('esim:lottery:share:img'),
-            'btnShare1',
-            () => {
-              saveToGallery();
-            },
-          )}
-
-          <View style={styles.dividerSmall} />
-
-          {renderShareButton(
-            i18n.t('esim:lottery:share:sns'),
-            'btnShare2',
-            onShare,
-          )}
-
-          <View style={styles.dividerSmall} />
-
-          {renderShareButton(
-            i18n.t('esim:lottery:share:story'),
-            'btnShareInsta',
-            () => shareInstaStory(),
-          )}
+          {buttonList.map((r, idx) => (
+            <>
+              {renderShareButton(
+                i18n.t(`esim:lottery:share${r.key}`),
+                `btnShare${r.key}`,
+                () => {
+                  logAnalytics(`${i18n.t(`esim:lottery:event${r.key}`)}_try`);
+                  r.onClick();
+                },
+              )}
+              {idx !== 2 && <View style={styles.dividerSmall} />}
+            </>
+          ))}
         </View>
 
         <View style={{paddingHorizontal: 20, marginBottom: 16}}>

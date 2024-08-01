@@ -58,6 +58,8 @@ export type RkbPayment = {
   paymentGateway: string;
   paymentMethod: string;
   remote_id?: string;
+  state?: string;
+  balance?: string;
 };
 
 export type OrderState =
@@ -115,6 +117,8 @@ type RkbOrderJson = {
     pg: string;
     pm: string;
     id: string;
+    st: string;
+    bl: string;
   }[];
   subs: {
     nid: string;
@@ -162,6 +166,8 @@ const toOrder = (
               paymentGateway: p.pg,
               paymentMethod: p.pm,
               remote_id: p.id,
+              state: p.st,
+              balance: p.bl,
             })),
           } as RkbOrder;
         })

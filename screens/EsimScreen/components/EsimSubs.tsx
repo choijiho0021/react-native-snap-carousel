@@ -18,6 +18,7 @@ import {bindActionCreators} from 'redux';
 import moment from 'moment';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useNavigation} from '@react-navigation/native';
+import {isPending} from '@reduxjs/toolkit';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -55,7 +56,6 @@ import HowToCallModal from './HowToCallModal';
 import HtQrModal from './HtQrModal';
 import AppNotiBox from '@/components/AppNotiBox';
 import Env from '@/environment';
-import {isPending} from '@reduxjs/toolkit';
 
 const {isIOS} = Env.get();
 const styles = StyleSheet.create({
@@ -562,7 +562,13 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
             renderExpend={() =>
               !isDisabled(mainSubs) &&
               !isCharged &&
-              renderPromoFlag(mainSubs.promoFlag || [], mainSubs.isStore)
+              renderPromoFlag({
+                flags: mainSubs.promoFlag || [],
+                isStore: mainSubs.isStore,
+                isReceived: mainSubs.giftStatusCd === 'R',
+                storeName: mainSubs.storeName,
+                storeOrderId: mainSubs.storeOrderId,
+              })
             }
             style={[
               [STATUS_RESERVED, STATUS_PENDING, STATUS_ACTIVE].includes(
@@ -735,26 +741,27 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   ]);
 
   const QRnCopyInfo = useCallback(() => {
+    const prod = product.prodList.get(mainSubs?.prodId || '0');
+
     return (
       <View style={styles.activeBottomBox}>
-        <AppButton
-          style={{
-            flex: 1,
-            marginRight: 8,
-            backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
-            paddingVertical: 8,
-            borderRadius: 3,
-          }}
-          titleStyle={{
-            ...styles.esimButton,
-            color: isEditMode ? colors.lightGrey : colors.black,
-          }}
-          title={i18n.t('esim:prodInfo')}
-          onPress={() => {
-            const prod = product.prodList.get(mainSubs?.prodId || '0');
-            const localOp = product.localOpList.get(prod?.partnerId || '0');
+        {prod && (
+          <AppButton
+            style={{
+              flex: 1,
+              marginRight: 8,
+              backgroundColor: isEditMode ? colors.backGrey : colors.gray4,
+              paddingVertical: 8,
+              borderRadius: 3,
+            }}
+            titleStyle={{
+              ...styles.esimButton,
+              color: isEditMode ? colors.lightGrey : colors.black,
+            }}
+            title={i18n.t('esim:prodInfo')}
+            onPress={() => {
+              const localOp = product.localOpList.get(prod?.partnerId || '0');
 
-            if (prod)
               navigation.navigate('ProductDetail', {
                 title: prod.name,
                 item: API.Product.toPurchaseItem(prod),
@@ -767,8 +774,9 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
                 img: localOp?.imageUrl,
                 prod,
               });
-          }}
-        />
+            }}
+          />
+        )}
 
         {!isht && (
           <AppButton
@@ -783,7 +791,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               ...styles.esimButton,
               color: isEditMode ? colors.lightGrey : colors.black,
             }}
-            title={i18n.t('esim:showQR')}
+            title={i18n.t('esim:regEsim')}
             onPress={() => navigation.navigate('QrInfo', {mainSubs})}
           />
         )}
@@ -878,7 +886,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   const renderHowToCall = useCallback(() => {
     const showHowModal =
       mainSubs?.clMtd &&
-      ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(
+      ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal', 'vtdaily'].includes(
         mainSubs?.clMtd,
       );
     if (showHowModal)

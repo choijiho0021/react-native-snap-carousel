@@ -23,7 +23,11 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {connect} from 'react-redux';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
-import {RkbSubscription, checkUsage} from '@/redux/api/subscriptionApi';
+import {
+  RkbSubscription,
+  checkUsage,
+  storeNameType,
+} from '@/redux/api/subscriptionApi';
 import AppButton from '@/components/AppButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -79,7 +83,7 @@ const styles = StyleSheet.create({
   badge: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 4,
+    marginRight: 4,
     height: 20,
     alignSelf: 'center',
     borderRadius: 3,
@@ -225,38 +229,77 @@ const styles = StyleSheet.create({
   },
 });
 
-export const renderPromoFlag = (flags: string[], isStore: boolean) => {
+const iconMap = {
+  N: 'naverIcon',
+  W: 'waugIcon',
+  B: 'b2bIcon',
+};
+
+const b2bIconMap = {
+  carrot: 'carrotIcon',
+};
+
+export const renderPromoFlag = ({
+  flags,
+  isStore,
+  isReceived, // 선물 받은 상품인지 여부
+  storeName,
+  storeOrderId,
+}: {
+  flags: string[];
+  isStore: boolean;
+  isReceived: boolean;
+  storeName?: storeNameType;
+  storeOrderId?: string;
+}) => {
+  let icon = 'naverIcon';
+
+  if (storeName && storeName !== 'R') {
+    if (storeName === 'B') {
+      const b2b = storeOrderId?.split('-')?.[0]?.toLowerCase();
+      if (b2b && b2b in b2bIconMap) {
+        icon = b2bIconMap[b2b];
+      } else {
+        icon = iconMap.B;
+      }
+    } else icon = iconMap[storeName];
+  }
+
   return (
     <Fragment>
-      {promoFlagSort(flags)
-        .filter((elm) => elm !== 'hot')
-        .map((elm) => {
-          const badgeColor = getPromoFlagColor(elm);
-          return (
-            <View
-              key={elm}
-              style={[
-                styles.badge,
-                {
-                  paddingHorizontal: elm === 'fiveG' ? 2 : 8,
-                  backgroundColor: badgeColor.backgroundColor,
-                },
-              ]}>
-              <View style={{flexDirection: 'row'}}>
-                {elm === 'fiveG' && (
-                  <AppSvgIcon name="fiveG" style={{justifyContent: 'center'}} />
-                )}
-                <AppText
-                  key="name"
-                  style={[styles.badgeText, {color: badgeColor.fontColor}]}>
-                  {i18n.t(elm)}
-                </AppText>
-              </View>
+      {promoFlagSort(flags).map((elm) => {
+        const badgeColor = getPromoFlagColor(elm);
+        return (
+          <View
+            key={elm}
+            style={[
+              styles.badge,
+              {
+                paddingHorizontal: elm === 'fiveG' ? 2 : 8,
+                backgroundColor: badgeColor.backgroundColor,
+              },
+            ]}>
+            <View style={{flexDirection: 'row'}}>
+              {elm === 'fiveG' && (
+                <AppSvgIcon name="fiveG" style={{justifyContent: 'center'}} />
+              )}
+              <AppText
+                key="name"
+                style={[styles.badgeText, {color: badgeColor.fontColor}]}>
+                {i18n.t(elm)}
+              </AppText>
             </View>
-          );
-        })}
+          </View>
+        );
+      })}
       {isStore && (
-        <AppSvgIcon name="naverIcon" style={{justifyContent: 'center'}} />
+        <AppSvgIcon
+          name={icon}
+          style={{justifyContent: 'center', marginRight: 4}}
+        />
+      )}
+      {!(storeName && storeName === 'R') && isReceived && (
+        <AppSvgIcon name="giftIcon" style={{justifyContent: 'center'}} />
       )}
     </Fragment>
   );
@@ -602,7 +645,13 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
               <View style={{flex: 1}}>
                 <SplitText
                   renderExpend={() =>
-                    renderPromoFlag(item.promoFlag || [], item.isStore)
+                    renderPromoFlag({
+                      flags: item.promoFlag || [],
+                      isStore: item.isStore,
+                      isReceived: item.giftStatusCd === 'R',
+                      storeName: item.storeName,
+                      storeOrderId: item.storeOrderId,
+                    })
                   }
                   numberOfLines={2}
                   style={{...appStyles.bold16Text, marginRight: 8}}

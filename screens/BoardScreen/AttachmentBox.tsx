@@ -7,12 +7,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {
-  PERMISSIONS,
-  RESULTS,
-  check,
-  openSettings,
-} from 'react-native-permissions';
+import {PERMISSIONS, RESULTS, check} from 'react-native-permissions';
 import ImagePicker, {Image as CropImage} from 'react-native-image-crop-picker';
 import _ from 'underscore';
 import {List} from 'immutable';
@@ -23,7 +18,6 @@ import {appStyles} from '@/constants/Styles';
 import AppText from '@/components/AppText';
 import {attachmentSize} from '@/constants/SliderEntry.style';
 import utils from '@/redux/api/utils';
-import AppAlert from '@/components/AppAlert';
 import {RkbEvent} from '@/redux/api/promotionApi';
 import {EventParamImagesType} from '../EventBoardScreen/ApplyEvent';
 import AppIcon from '@/components/AppIcon';
@@ -31,6 +25,7 @@ import ImgWithIndicator from './ImgWithIndicator';
 import {API} from '@/redux/api';
 import {actions as modalActions} from '@/redux/modules/modal';
 import PreviewImageModal from './PreviewImagesModal';
+import {checkPhotoPermissionAlert} from '@/utils/utils';
 
 const styles = StyleSheet.create({
   container: {
@@ -153,9 +148,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
       }
     } else {
       // 사진 앨범 조회 권한을 요청한다.
-      AppAlert.confirm(i18n.t('settings'), i18n.t('acc:permPhoto'), {
-        ok: () => openSettings(),
-      });
+      checkPhotoPermissionAlert();
     }
   }, [hasPhotoPermission, imageQuality, onPress, setAttachment]);
 

@@ -1,5 +1,5 @@
 import React, {memo} from 'react';
-import {StyleSheet, View, ViewStyle, TextStyle} from 'react-native';
+import {StyleSheet, View, ViewStyle, TextStyle, Pressable} from 'react-native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppButton from './AppButton';
@@ -35,7 +35,10 @@ const TabHeader = ({
   disabledTintColor = whiteTwo,
 }: {
   index: number;
-  routes: {key: string; title: string}[];
+  routes: {
+    key: string;
+    title: string | ((selected: boolean) => React.JSX.Element);
+  }[];
   onIndexChange: (n: number) => void;
   style?: ViewStyle;
   titleStyle?: TextStyle;
@@ -43,21 +46,46 @@ const TabHeader = ({
   seletedStyle?: TextStyle;
   disabledTintColor?: string;
 }) => {
+  const renderTitle = (
+    elm: {
+      key: string;
+      title: string | ((selected: boolean) => React.JSX.Element);
+    },
+    idx: number,
+  ) => {
+    if (typeof elm.title === 'string') {
+      return (
+        <AppButton
+          style={{flex: 1}}
+          titleStyle={[
+            titleStyle,
+            idx === index ? {color: tintColor} : {},
+            idx === index ? seletedStyle : {},
+          ]}
+          title={elm.title}
+          onPress={() => onIndexChange(idx)}
+        />
+      );
+    }
+    return (
+      <Pressable
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        onPress={() => onIndexChange(idx)}>
+        {elm.title(idx === index)}
+      </Pressable>
+    );
+  };
+
   return (
     <View style={[{paddingHorizontal: 20}, style || styles.whiteTwoBackground]}>
       <View style={styles.tabView}>
         {routes.map((elm, idx) => (
           <View key={elm.key} style={{flex: 1}}>
-            <AppButton
-              style={{flex: 1}}
-              titleStyle={[
-                titleStyle,
-                idx === index ? {color: tintColor} : {},
-                idx === index ? seletedStyle : {},
-              ]}
-              title={elm.title}
-              onPress={() => onIndexChange(idx)}
-            />
+            {renderTitle(elm, idx)}
             <View
               style={{
                 height: 2,

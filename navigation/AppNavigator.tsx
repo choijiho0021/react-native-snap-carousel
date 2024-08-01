@@ -148,6 +148,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   const [savedPopup, setSavedPopup] = useState();
   const runDynamicLink = useRef(false);
   const appState = useRef('unknown');
+  const routeNameRef = useRef();
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {
@@ -212,7 +213,13 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         }
 
         if (url.includes('gift')) {
-          refNavigate({stack: 'EsimStack', screen: 'Esim'});
+          refNavigate({
+            stack: 'EsimStack',
+            screen: 'Esim',
+            params: {
+              actionStr: 'reload',
+            },
+          });
         } else {
           refNavigate({stack: 'MyPageStack', screen: 'MyPage'});
         }
@@ -712,7 +719,25 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   return (
     <NavigationContainer
       ref={navigationRef}
-      onStateChange={(state) => {
+      onReady={async () => {
+        if (navigationRef?.current?.getCurrentRoute() && routeNameRef) {
+          routeNameRef.current =
+            navigationRef?.current?.getCurrentRoute()?.name;
+        }
+      }}
+      onStateChange={async (state) => {
+        const previousName = routeNameRef.current;
+        const currentName = navigationRef?.current?.getCurrentRoute()?.name;
+
+        if (previousName !== currentName) {
+          await analytics().logScreenView({
+            screen_name: currentName, // `${previousName}>${currentName}`,
+            screen_class: currentName,
+          });
+
+          routeNameRef.current = currentName;
+        }
+
         const lastTab = getActiveRouteName(state);
         setLastRouteName(lastTab);
         if (lastRouteName !== lastTab && lastTab !== 'Home') {

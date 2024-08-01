@@ -17,6 +17,9 @@ import utils from '@/redux/api/utils';
 import {retrieveData, storeData} from '@/utils/utils';
 import {reloadOrCallApi} from '@/redux/api/api';
 import Env from '@/environment';
+import {RkbOrderItem} from '../api/cartApi';
+import {PurchaseItem} from '../models/purchaseItem';
+import {OrderItemType} from '../api/orderApi';
 
 const {cachePrefix} = Env.get();
 
@@ -257,6 +260,22 @@ const updateProdList = (state, action) => {
     state.prodList = state.prodList.merge(
       ImmutableMap(objects.map((item) => [item.key, item])),
     );
+  }
+};
+
+export const checkAndLoadProdList = (
+  loading: React.MutableRefObject<boolean>,
+  items: RkbOrderItem[] | PurchaseItem[] | OrderItemType[],
+  prodList: ImmutableMap<string, RkbProduct>,
+  dispatch: any,
+) => {
+  if (!loading.current && (items?.length || 0) > 0) {
+    items.forEach((i) => {
+      if (!prodList.has(i?.key || i?.uuid)) {
+        dispatch(getProdByUuid(i?.key || i?.uuid));
+        loading.current = true;
+      }
+    });
   }
 };
 

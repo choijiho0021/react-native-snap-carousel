@@ -380,20 +380,32 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             <ProductDetailNotice fieldNoticeOption={fieldNoticeOption} />
           )}
           {clMtd &&
-            ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal'].includes(clMtd) &&
+            [
+              'ustotal',
+              'usdaily',
+              'ais',
+              'dtac',
+              'mvtotal',
+              'vtdaily',
+            ].includes(clMtd) &&
             ftr && <ProductDetailCallMethod clMtd={clMtd} ftr={ftr} />}
         </View>
       )
     );
   }, [descData, prod]);
 
-  const soldOut = useCallback((payload: ApiResult<any>, message: string) => {
-    if (payload.result === api.E_RESOURCE_NOT_FOUND) {
-      AppAlert.info(i18n.t(message));
-    } else {
-      AppAlert.info(i18n.t('cart:systemError'));
-    }
-  }, []);
+  const soldOut = useCallback(
+    (payload: ApiResult<any>, message: string) => {
+      if (payload.result === api.E_RESOURCE_NOT_FOUND) {
+        AppAlert.info(i18n.t(message), '', () => navigation.popToTop());
+      } else {
+        AppAlert.info(i18n.t('cart:systemError'), '', () =>
+          navigation.popToTop(),
+        );
+      }
+    },
+    [navigation],
+  );
 
   const onPressBtnCart = useCallback(async () => {
     const {loggedIn} = account;

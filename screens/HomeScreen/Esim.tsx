@@ -74,7 +74,7 @@ import {
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import pushNoti from '@/utils/pushNoti';
-import PromotionCarousel from './component/PromotionCarousel';
+import PromotionCarousel from '@/components/PromotionCarousel';
 import NotiModal from './component/NotiModal';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppVerModal from './component/AppVerModal';
@@ -86,6 +86,7 @@ import ScreenHeader from '@/components/ScreenHeader';
 import AppSnackBar from '@/components/AppSnackBar';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import ExitModal from './component/ExitModal';
+import AppIcon from '@/components/AppIcon';
 
 const {esimGlobal, isIOS, cachePrefix} = Env.get();
 
@@ -323,7 +324,7 @@ const Esim: React.FC<EsimProps> = ({
   );
 
   const onPressItem = useCallback(
-    async (info: RkbPriceInfo) => {
+    async (info: RkbPriceInfo, prodTitle?: String) => {
       const localOp = product.localOpList.get(info?.partner || '');
 
       if (localOp?.notice) {
@@ -490,7 +491,7 @@ const Esim: React.FC<EsimProps> = ({
 
   const renderCarousel = useCallback(() => {
     const promotionBanner = promotion.filter(
-      (elm) => elm.imageUrl && elm?.rule?.type !== 'popUp',
+      (elm) => elm.imageUrl && elm?.show?.includes('Home'),
     );
     if (promotionBanner.length > 0) {
       return (
@@ -828,9 +829,18 @@ const Esim: React.FC<EsimProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <ScreenHeader
-        title={`${i18n.t('esim')}${esimGlobal ? ' Store' : ''}`}
+        // title={`${i18n.t('esim')}${esimGlobal ? ' Store' : ''}`}
         showIcon={false}
         isStackTop
+        renderLeft={
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+            }}>
+            <AppIcon key-="rokebiLogo" name="rokebiLogo" />
+          </View>
+        }
         renderRight={
           <View
             style={{
@@ -879,6 +889,7 @@ const Esim: React.FC<EsimProps> = ({
             height: 10,
           }}
           renderTabBar={() => null}
+          swipeEnabled={false}
         />
       )}
 

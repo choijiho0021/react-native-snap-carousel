@@ -45,6 +45,7 @@ export type RkbBoard = RkbBoardBase & {
   mobile: string;
   pin: string;
   replyImages: string[];
+  replyMsg?: string;
 };
 
 const toBoard = (data: DrupalBoard[]): ApiResult<RkbBoard> => {
@@ -63,6 +64,7 @@ const toBoard = (data: DrupalBoard[]): ApiResult<RkbBoard> => {
         status: statusToString(item.field_issue_status || 'O'), // pin, status, statusCode
         images: item.field_images.split(', ') || [],
         replyImages: item.field_reply_images.split(', ') || [],
+        replyMsg: item.field_reply_body,
       })),
     );
   }

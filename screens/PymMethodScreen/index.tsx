@@ -207,6 +207,10 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     );
   }, [product.rule.ccard]);
 
+  const alertErrorGoHome = useCallback(() => {
+    AppAlert.info(i18n.t('cart:systemError'), '', () => navigation.popToTop());
+  }, [navigation]);
+
   const installmentMonthsList = useMemo(
     () =>
       [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((k) => ({
@@ -309,7 +313,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
                 navigation.popToTop(),
               );
             } else {
-              AppAlert.info(i18n.t('cart:systemError'));
+              alertErrorGoHome();
             }
           }
         });
@@ -322,6 +326,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           prefix = 'v_';
         }
 
+        const isSave = pymMethodRef?.current?.getIsSave();
         const params = {
           pg: payMethod?.key,
           pay_method: payMethod?.method,
@@ -343,6 +348,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           receipt,
           selected,
           pymMethod: selected,
+          isSave,
         } as PaymentParams;
 
         setClickable(true);
@@ -353,6 +359,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       account,
       action.cart,
       action.product,
+      alertErrorGoHome,
       cart.cartId,
       cart?.cartItems,
       cart.pymPrice?.value,
@@ -432,6 +439,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         contentContainerStyle={{minHeight: '100%'}}
         showsVerticalScrollIndicator={false}
         enableOnAndroid
+        keyboardShouldPersistTaps="handled"
         enableResetScrollToCoords={false}>
         <DropDownHeader
           title={i18n.t('pym:title')}

@@ -5,12 +5,19 @@ import AppText from '../AppText';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
-import AppSvgIcon from '../AppSvgIcon';
 
 const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flexDirection: 'column',
+  },
+  triangle: {
+    width: 12,
+    borderLeftWidth: 8,
+    borderRightWidth: 8,
+    borderBottomWidth: 12,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
   },
   textFrame: {
     paddingHorizontal: 16,
@@ -49,9 +56,10 @@ const LoginToolTip = ({
 
   return (
     <View style={{...styles.container, alignItems: position}}>
-      <AppSvgIcon
-        name={fromNaver ? 'arrowUpGreen12' : 'arrowUpBlack12'}
+      <View
         style={{
+          ...styles.triangle,
+          borderBottomColor: fromNaver ? colors.naverGreen : colors.black92,
           marginLeft: position === 'flex-start' ? 20 : 0,
           marginRight: position === 'flex-end' ? 20 : 0,
         }}

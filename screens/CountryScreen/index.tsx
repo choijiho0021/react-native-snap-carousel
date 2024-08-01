@@ -31,7 +31,6 @@ import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppText from '@/components/AppText';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {appStyles} from '@/constants/Styles';
-import {DailyProdFilterList} from '@/components/DailyProdFilter';
 
 const {isIOS} = Env.get();
 
@@ -105,7 +104,7 @@ type CountryScreenProps = {
 // type ProdDataType = {title: string; data: RkbProduct[]};
 export type SelectedTabType = {
   type?: string;
-  volume?: DailyProdFilterList;
+  volume?: String;
   scroll?: string;
 };
 
@@ -222,7 +221,11 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
             key={k}
             name={k}
             component={renderProdType(k)}
-            options={{lazy: true, title: i18n.t(`country:${k}`)}}
+            options={{
+              lazy: true,
+              title: i18n.t(`country:${k}`),
+              swipeEnabled: false,
+            }}
           />
         ))}
       </Tab.Navigator>

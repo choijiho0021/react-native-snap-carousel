@@ -1,11 +1,10 @@
-import React, {memo, useCallback, useEffect, useState} from 'react';
+import React, {memo, useCallback, useState} from 'react';
 import {StyleSheet, View, SafeAreaView} from 'react-native';
 import {TabView} from 'react-native-tab-view';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useRoute} from '@react-navigation/native';
 import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {windowWidth} from '@/constants/SliderEntry.style';
 import AppTabHeader from '@/components/AppTabHeader';
 

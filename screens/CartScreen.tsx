@@ -3,7 +3,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {Map as ImmutableMap} from 'immutable';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, View} from 'react-native';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
@@ -30,6 +30,7 @@ import {
   actions as productActions,
   ProductAction,
   ProductModelState,
+  checkAndLoadProdList,
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import ChatTalk from '@/components/ChatTalk';
@@ -87,6 +88,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
   });
   const [showSnackBar, setShowSnackbar] = useState(false);
   const loading = useRef(false);
+  const dispatch = useDispatch();
 
   const tabBarHeight = useBottomTabBarHeight();
 
@@ -223,17 +225,8 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
       );
     }
 
-    if (!loading.current) {
-      cart.cartItems.forEach((i) => {
-        if (!product.prodList.has(i.key)) {
-          // action.product.getProdBySku(i.prod.sku);
-          console.log('@@@ i.prod.uuid', i.prod.uuid);
-          action.product.getProdByUuid(i.prod.uuid);
-          loading.current = true;
-        }
-      });
-    }
-  }, [action.product, cart.cartItems, checked.size, product.prodList]);
+    checkAndLoadProdList(loading, cart.cartItems, product.prodList, dispatch);
+  }, [cart.cartItems, checked.size, dispatch, product.prodList]);
 
   useFocusEffect(
     React.useCallback(() => {
