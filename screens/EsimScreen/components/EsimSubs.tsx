@@ -660,6 +660,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   }, [failed]);
 
   const topInfo = useCallback(() => {
+    if (isOutstanding) return <View style={{height: 7}} />;
     if (isht) {
       console.log('@@@@ mainSubs.statusCd = ', mainSubs.statusCd);
 
@@ -702,7 +703,6 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         </>
       );
     }
-    if (isOutstanding) return <View style={{height: 7}} />;
     return (
       <>
         {failNotiBox()}
