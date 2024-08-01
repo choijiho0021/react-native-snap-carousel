@@ -74,6 +74,7 @@ import DraftUsScreen from '@/screens/DraftUsScreen';
 import PaymentVBankScreen from '@/screens/PaymentVBankScreen';
 import SelectCoupon from '@/screens/SelectCouponScreen';
 import LotteryScreen from '@/screens/LotteryScreen';
+import RkbTalk from '@/screens/RkbTalk';
 
 const {esimGlobal} = Env.get();
 
@@ -86,6 +87,7 @@ const styles = StyleSheet.create({
 const HomeStack = createStackNavigator<HomeStackParamList>();
 const CartStack = createStackNavigator();
 const EsimStack = createStackNavigator();
+const TalkStack = createStackNavigator();
 const MyPageStack = createStackNavigator();
 
 const screenOptions = {
@@ -269,6 +271,14 @@ function EsimStackComponent() {
   );
 }
 
+function TalkStackComponent() {
+  return (
+    <TalkStack.Navigator screenOptions={screenOptions}>
+      <TalkStack.Screen name="RkbTalk" component={RkbTalk} />
+    </TalkStack.Navigator>
+  );
+}
+
 function MyPageStackComponent() {
   return (
     <MyPageStack.Navigator screenOptions={screenOptions}>
@@ -408,6 +418,28 @@ const TabNavigator = ({
             <AppIcon
               focused={focused}
               name="btnEsim"
+              style={styles.tabBarIcon}
+            />
+          ),
+        })}
+      />
+      <Tab.Screen
+        name="TalkStack"
+        component={loggedIn ? TalkStackComponent : AuthStack}
+        options={({route}) => ({
+          headerShown: false,
+          tabBarStyle: {
+            display:
+              !!loggedIn &&
+              (getFocusedRouteNameFromRoute(route) || 'Talk') === 'Talk'
+                ? 'flex'
+                : 'none',
+          },
+          tabBarLabel: ({focused}) => tabBarLabel(focused, 'cart'),
+          tabBarIcon: ({focused}) => (
+            <BadgedIcon
+              focused={focused}
+              name="btnCart"
               style={styles.tabBarIcon}
             />
           ),
