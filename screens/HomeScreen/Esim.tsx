@@ -61,11 +61,7 @@ import {
   NotiAction,
   NotiModelState,
 } from '@/redux/modules/noti';
-import {
-  actions as orderActions,
-  OrderAction,
-  PAGINATION_SUBS_COUNT,
-} from '@/redux/modules/order';
+import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import {
   actions as productActions,
   ProductAction,

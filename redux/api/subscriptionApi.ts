@@ -13,6 +13,7 @@ const STATUS_INACTIVE = 'I'; // 미사용
 export const STATUS_RESERVED = 'R'; // 사용 대기중
 const STATUS_CANCELED = 'C'; // 취소
 export const STATUS_EXPIRED = 'E'; // 사용 기간 종료, 발권 실패
+export const STATUS_OUTSTANDING = 'O'; // 환불대기기간
 export const STATUS_USED = 'U'; // 사용 완료
 export const STATUS_PENDING = 'P'; // 지연 , 상품 배송 중
 export const STATUS_DRAFT = 'D'; // 발권중
@@ -556,7 +557,7 @@ const getSubscription = ({
     uuid || '0'
   }?_format=json${hidden ? '' : '&hidden=0'}${
     subsId && subsId !== '0' ? `&subsId=${subsId}` : ''
-  }&iccid=${iccid}&count=${count}&offset=${offset}&ver=v2`;
+  }&iccid=${iccid}&count=${count}&offset=${offset}&ver=v3`;
 
   return api.callHttpGet(
     url,

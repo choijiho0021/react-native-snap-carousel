@@ -31,6 +31,7 @@ import {
   RkbSubscription,
   STATUS_ACTIVE,
   STATUS_EXPIRED,
+  STATUS_OUTSTANDING,
   STATUS_PENDING,
   STATUS_RESERVED,
 } from '@/redux/api/subscriptionApi';
@@ -408,33 +409,50 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     notCardInfo,
     sendable,
     isChargeButton,
+    isOutstanding,
   ] = useMemo(() => {
     const now = moment();
     const checkHt = mainSubs.partner === 'ht';
     const expd = mainSubs.lastExpireDate?.isBefore(now) || false;
     const isFailed = mainSubs.statusCd === STATUS_EXPIRED;
 
+    const getIsCharged = (mainSubs.cnt || 0) > 1;
+
+    const getIsOutstanding: boolean =
+      mainSubs.statusCd === STATUS_OUTSTANDING && !getIsCharged; // 충전상품이 존재하는 경우는 예외로
+
+    const getNotCardInfo: boolean =
+      !expd &&
+      mainSubs.giftStatusCd !== 'S' &&
+      mainSubs.type !== API.Subscription.CALL_PRODUCT &&
+      !isFailed &&
+      !getIsOutstanding;
+
+    const getSendable =
+      !expd &&
+      !mainSubs.giftStatusCd &&
+      (mainSubs.cnt || 0) === 1 &&
+      !isDraft(mainSubs?.statusCd);
+
+    const getIsChargeButton =
+      mainSubs?.addOnOption &&
+      mainSubs.addOnOption !== AddOnOptionType.NEVER &&
+      !(mainSubs.expireDate && mainSubs.expireDate.isBefore(now));
+
     return [
       checkHt,
       isDraft(mainSubs?.statusCd),
 
       // mainSubs?.addOnOption 이 없는 경우도 NEVER
-      (mainSubs.cnt || 0) > 1,
+      getIsCharged,
       mainSubs.partner === 'billionconnect',
       expd,
       isFailed,
       utils.toDateString(mainSubs.expireDate, 'YYYY.MM.DD'),
-      !expd &&
-        mainSubs.giftStatusCd !== 'S' &&
-        mainSubs.type !== API.Subscription.CALL_PRODUCT &&
-        !isFailed,
-      !expd &&
-        !mainSubs.giftStatusCd &&
-        (mainSubs.cnt || 0) === 1 &&
-        !isDraft(mainSubs?.statusCd),
-      mainSubs?.addOnOption &&
-        mainSubs.addOnOption !== AddOnOptionType.NEVER &&
-        !(mainSubs.expireDate && mainSubs.expireDate.isBefore(now)),
+      getNotCardInfo,
+      getSendable,
+      getIsChargeButton,
+      getIsOutstanding,
     ];
   }, [mainSubs]);
 
@@ -535,7 +553,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         <Pressable
           style={styles.prodTitle}
           onPress={() => {
-            if (isTypeDraft || failed) return;
+            if (isTypeDraft || failed || isOutstanding) return;
 
             if (notCardInfo) {
               setShowMoreInfo((prev) => !prev);
@@ -601,7 +619,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
             </View>
           ) : (
             // R 발송중인 상태에선 상품 발송중 표시
-            !(isTypeDraft || failed) && (
+            !(isTypeDraft || failed || isOutstanding) && (
               <View style={styles.arrow}>
                 <AppSvgIcon name={showMoreInfo ? 'topArrow' : 'bottomArrow'} />
               </View>
@@ -618,8 +636,9 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     renderSwitch,
     expired,
     isCharged,
-    showMoreInfo,
     failed,
+    showMoreInfo,
+    isOutstanding,
     flatListRef,
     index,
   ]);
@@ -683,6 +702,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         </>
       );
     }
+    if (isOutstanding) return <View style={{height: 7}} />;
     return (
       <>
         {failNotiBox()}
@@ -725,6 +745,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     );
   }, [
     isht,
+    isOutstanding,
     failNotiBox,
     notCardInfo,
     mainSubs.type,
@@ -1054,6 +1075,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
             ? styles.border
             : styles.shadow,
           isTypeDraft && {paddingBottom: 16},
+          isOutstanding && {opacity: 0.6},
         ]}>
         {title()}
         <View
