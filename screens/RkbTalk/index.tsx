@@ -10,6 +10,8 @@ import {
 } from 'sip.js';
 import Keypad, {KeypadRef} from './Keypad';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
+import AppAlert from '@/components/AppAlert';
+import AppText from '@/components/AppText';
 
 const styles = StyleSheet.create({
   body: {
@@ -68,18 +70,15 @@ const RkbTalk = () => {
     /*
     const remoteStream = new MediaStream();
     session.sessionDescriptionHandler?.peerConnection
-      .getReceivers()
+      ?.getReceivers()
       .forEach((receiver) => {
         if (receiver.track) {
+          console.log('@@@ add track');
           remoteStream.addTrack(receiver.track);
         }
       });
-
-    if (refAudio.current) {
-      refAudio.current.srcObject = remoteStream;
-      refAudio.current.play();
-    }
       */
+
     console.log('@@@ setup');
   }, []);
 
@@ -90,48 +89,87 @@ const RkbTalk = () => {
   const makeCall = useCallback(() => {
     const dest = keypadRef.current?.getValue();
     if (userAgent && dest) {
-      userAgent.start().then(async () => {
-        // try {
-        // const target = UserAgent.makeURI('sip:9000@talk.rokebi.com');
-        const target = UserAgent.makeURI(`sip:${dest}@talk.rokebi.com`);
-        console.log('@@@ target', dest, target);
+      userAgent
+        .start()
+        .then(async () => {
+          // try {
+          // const target = UserAgent.makeURI('sip:9000@talk.rokebi.com');
+          const target = UserAgent.makeURI(`sip:${dest}@talk.rokebi.com`);
+          console.log('@@@ target', dest, target);
 
-        const inv = new Inviter(userAgent, target, {
-          sessionDescriptionHandlerOptions: {
-            constraints: {
-              audio: true,
-              video: false,
+          const inv = new Inviter(userAgent, target, {
+            sessionDescriptionHandlerOptions: {
+              constraints: {
+                audio: true,
+                video: false,
+              },
             },
-          },
+          });
+
+          /*
+          inv.sessionDescriptionHandler?.peerConnectionDelegate({
+            onconnectionstatechange: (event) => {
+              console.log('@@@ connection state change', event);
+            },
+            ondatachannel: (event) => {
+              console.log('@@@ data channel', event);
+            },
+            onicecandidate: (event) => {
+              console.log('@@@ ice candidate', event);
+            },
+            onicecandidateerror: (event) => {
+              console.log('@@@ ice candidate error', event);
+            },
+            oniceconnectionstatechange: (event) => {
+              console.log('@@@ ice connection state change', event);
+            },
+            onicegatheringstatechange: (event) => {
+              console.log('@@@ ice gathering state change', event);
+            },
+            onnegotiationneeded: (event) => {
+              console.log('@@@ negotiation needed', event);
+            },
+            onsignalingstatechange: (event) => {
+              console.log('@@@ signaling state change', event);
+            },
+            ontrack: (event) => {
+              console.log('@@@ track', event);
+            },
+          });
+          */
+
+          inv.stateChange.addListener((state: SessionState) => {
+            console.log(`Session state changed to ${state}`);
+
+            setSessionState(state);
+
+            switch (state) {
+              case SessionState.Initial:
+                break;
+              case SessionState.Establishing:
+                break;
+              case SessionState.Established:
+                setupRemoteMedia(inv);
+                break;
+              case SessionState.Terminating:
+              // fall through
+              case SessionState.Terminated:
+                cleanupMedia();
+                break;
+              default:
+                throw new Error('Unknown session state.');
+            }
+          });
+
+          await inv.invite();
+          setInviter(inv);
+        })
+        .catch((err) => {
+          AppAlert.error(`Failed to make call:${err}`);
+          console.log('@@@', err);
         });
-
-        inv.stateChange.addListener((state: SessionState) => {
-          console.log(`Session state changed to ${state}`);
-
-          setSessionState(state);
-
-          switch (state) {
-            case SessionState.Initial:
-              break;
-            case SessionState.Establishing:
-              break;
-            case SessionState.Established:
-              setupRemoteMedia(inv);
-              break;
-            case SessionState.Terminating:
-            // fall through
-            case SessionState.Terminated:
-              cleanupMedia();
-              break;
-            default:
-              throw new Error('Unknown session state.');
-          }
-        });
-
-        await inv.invite();
-        setInviter(inv);
-      });
     } else {
+      AppAlert.error('User agent not found', '');
       console.log('@@@ user agent not found');
     }
   }, [cleanupMedia, setupRemoteMedia, userAgent]);
@@ -180,6 +218,7 @@ const RkbTalk = () => {
     <>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView style={styles.body}>
+        <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
         <Keypad
           style={styles.keypad}
           keypadRef={keypadRef}

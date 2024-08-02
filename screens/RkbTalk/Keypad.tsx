@@ -174,6 +174,7 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
                     prev.length > 0 ? prev.substring(0, prev.length - 1) : prev,
                   )
                 }
+                onLongPress={() => setDest('')}
               />
             </View>
           </>

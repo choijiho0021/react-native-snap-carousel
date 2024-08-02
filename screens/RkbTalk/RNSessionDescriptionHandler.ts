@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import {
   RTCPeerConnection,
   MediaStream,
@@ -9,9 +10,17 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
   logger: Console;
 
   _localMediaStream: MediaStream | undefined;
+
   _remoteMediaStream: MediaStream | undefined;
+
   _peerConnection: RTCPeerConnection;
+
   sessionDescriptionHandlerConfiguration: any;
+
+  private _dataChannel: any;
+
+  mediaStreamFactory: (constraints: any) => Promise<MediaStream>;
+  _peerConnectionDelegate: any;
 
   /**
    * Constructor
@@ -41,8 +50,9 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
         ? undefined
         : options.peerConnectionConfiguration,
     );
-    // this.initPeerConnectionEventHandlers();
+    this.initPeerConnectionEventHandlers();
   }
+
   /**
    * The local media stream currently being sent.
    *
@@ -59,6 +69,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
   get localMediaStream() {
     return this._localMediaStream;
   }
+
   /**
    * The remote media stream currently being received.
    *
@@ -75,12 +86,14 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
   get remoteMediaStream() {
     return this._remoteMediaStream;
   }
+
   /**
    * The data channel. Undefined before it is created.
    */
   get dataChannel() {
     return this._dataChannel;
   }
+
   /**
    * The peer connection. Undefined if peer connection has closed.
    *
@@ -113,6 +126,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
   get peerConnection() {
     return this._peerConnection;
   }
+
   /**
    * A delegate which provides access to the peer connection event handlers.
    *
@@ -142,21 +156,25 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
   get peerConnectionDelegate() {
     return this._peerConnectionDelegate;
   }
+
   set peerConnectionDelegate(delegate) {
     this._peerConnectionDelegate = delegate;
   }
+
   // The addtrack event does not get fired when JavaScript code explicitly adds tracks to the stream (by calling addTrack()).
   // https://developer.mozilla.org/en-US/docs/Web/API/MediaStream/onaddtrack
   static dispatchAddTrackEvent(stream, track) {
     // not defined in RN
     // stream.dispatchEvent(new MediaStreamTrackEvent('addtrack', {track}));
   }
+
   // The removetrack event does not get fired when JavaScript code explicitly removes tracks from the stream (by calling removeTrack()).
   // https://developer.mozilla.org/en-US/docs/Web/API/MediaStream/onremovetrack
   static dispatchRemoveTrackEvent(stream, track) {
     // not defined in RN
     // stream.dispatchEvent(new MediaStreamTrackEvent('removetrack', {track}));
   }
+
   /**
    * Stop tracks and close peer connection.
    */
@@ -177,6 +195,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
     this._peerConnection.close();
     this._peerConnection = undefined;
   }
+
   /**
    * Helper function to enable/disable media tracks.
    * @param enable - If true enable tracks, otherwise disable tracks.
@@ -192,6 +211,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       }
     });
   }
+
   /**
    * Helper function to enable/disable media tracks.
    * @param enable - If true enable tracks, otherwise disable tracks.
@@ -207,6 +227,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       }
     });
   }
+
   /**
    * Creates an offer or answer.
    * @param options - Options bucket.
@@ -268,11 +289,12 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       })
       .catch((error) => {
         this.logger.error(
-          'RNSessionDescriptionHandler.getDescription failed - ' + error,
+          `RNSessionDescriptionHandler.getDescription failed - ${error}`,
         );
         throw error;
       });
   }
+
   /**
    * Returns true if the SessionDescriptionHandler can handle the Content-Type described by a SIP message.
    * @param contentType - The content type that is in the SIP Message.
@@ -281,6 +303,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
     this.logger.debug('RNSessionDescriptionHandler.hasDescription');
     return contentType === 'application/sdp';
   }
+
   /**
    * Called when ICE gathering completes and resolves any waiting promise.
    * @remarks
@@ -310,6 +333,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       this.iceGatheringCompleteReject = undefined;
     }
   }
+
   /**
    * Send DTMF via RTP (RFC 4733).
    * Returns true if DTMF send is successful, false otherwise.
@@ -355,6 +379,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
     );
     return true;
   }
+
   /**
    * Sets an offer or answer.
    * @param sdp - The session description.
@@ -388,6 +413,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
         throw error;
       });
   }
+
   /**
    * Applies modifiers to SDP prior to setting the local or remote description.
    * @param sdp - SDP to modify.
@@ -410,6 +436,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
         return {sdp: modified.sdp, type: modified.type};
       });
   }
+
   /**
    * Create a data channel.
    * @remarks
@@ -470,6 +497,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
         );
     }
   }
+
   /**
    * Depending on current signaling state, create a local offer or answer.
    * @param options - Session description handler options.
@@ -511,6 +539,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
         );
     }
   }
+
   /**
    * Get a media stream from the media stream factory and set the local media stream.
    * @param options - Session description handler options.
@@ -553,6 +582,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       (mediaStream) => this.setLocalMediaStream(mediaStream),
     );
   }
+
   /**
    * Sets the peer connection's sender tracks and local media stream tracks.
    *
@@ -653,6 +683,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
     }
     return trackUpdates.reduce((p, x) => p.then(() => x), Promise.resolve());
   }
+
   /**
    * Gets the peer connection's local session description.
    */
@@ -669,6 +700,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
     }
     return Promise.resolve(sdp);
   }
+
   /**
    * Sets the peer connection's local session description.
    * @param sessionDescription - sessionDescription The session description.
@@ -680,6 +712,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
     }
     return this._peerConnection.setLocalDescription(sessionDescription);
   }
+
   /**
    * Sets the peer connection's remote session description.
    * @param sessionDescription - The session description.
@@ -721,6 +754,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
     }
     return this._peerConnection.setRemoteDescription({sdp, type});
   }
+
   /**
    * Sets a remote media stream track.
    *
@@ -766,6 +800,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       RNSessionDescriptionHandler.dispatchAddTrackEvent(remoteStream, track);
     }
   }
+
   /**
    * Depending on the current signaling state and the session hold state, update transceiver direction.
    * @param options - Session description handler options.
@@ -987,6 +1022,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
     }
     return Promise.resolve();
   }
+
   /**
    * Wait for ICE gathering to complete.
    * @param restart - If true, waits if current state is "complete" (waits for transition to "complete").
@@ -1035,6 +1071,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
     });
     return this.iceGatheringCompletePromise;
   }
+
   /**
    * Initializes the peer connection event handlers
    */
