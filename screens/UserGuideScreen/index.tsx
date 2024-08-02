@@ -69,12 +69,18 @@ const styles = StyleSheet.create({
     marginTop: isIOS ? 40 : 60,
     width: '100%',
   },
+  checkInfoDel: {
+    backgroundColor: colors.white,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 20,
+    marginTop: 256,
+    width: '100%',
+  },
   slideGuide: {
-    flex: 2,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: isIOS ? 42 : 72,
+    marginVertical: 40,
   },
   slideGuideBox: {
     flexDirection: 'row',
@@ -162,10 +168,11 @@ const styles = StyleSheet.create({
   },
   contactFrame: {
     width: '100%',
+    flex: 1,
+    justifyContent: 'flex-end',
     paddingHorizontal: 20,
-    paddingTop: 40,
-    paddingBottom: 64,
-    backgroundColor: colors.backGrey,
+    paddingBottom: 25,
+    backgroundColor: colors.white,
   },
   contact: {
     width: '100%',
@@ -269,7 +276,10 @@ const UserGuideScreen = () => {
         <ScrollView
           style={styles.container}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{alignItems: 'center'}}>
+          contentContainerStyle={[
+            {alignItems: 'center'},
+            isDeviceSize('large') ? undefined : {flex: 1},
+          ]}>
           <View style={{alignItems: 'center', marginTop: 40}}>
             {data?.title}
           </View>
@@ -287,60 +297,75 @@ const UserGuideScreen = () => {
             />
           </View>
 
-          {['esimReg', 'esimDel'].includes(guideOption) && (
-            <View style={styles.checkInfo}>
-              <AppText style={appStyles.bold18Text}>
-                {i18n.t(`userGuide:${guideOption}:checkInfo`)}
-              </AppText>
-              <View style={{marginTop: 8}}>
-                {checkInfo.map((k) => (
-                  <View key={k} style={{flexDirection: 'row'}}>
-                    <AppText
-                      style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
-                      •
-                    </AppText>
-                    <View style={{flex: 1}}>
-                      <AppStyledText
-                        textStyle={styles.checkInfoText}
-                        text={i18n.t(
-                          `userGuide${
-                            region === 'us' ? ':us' : ''
-                          }:${guideOption}:checkInfo${k}`,
-                        )}
-                        format={{
-                          b: [appStyles.bold14Text, {color: colors.clearBlue}],
-                        }}
-                      />
-                    </View>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-
-          {data.isLocalBox && (
-            <Pressable
-              style={{marginTop: 34}}
-              onPress={() => {
-                setIsCheckLocal(true);
-                carouselRef.current?.snapToNext();
-              }}>
-              {data.isLocalBox()}
-            </Pressable>
-          )}
           <View
-            style={[
-              styles.slideGuide,
-              guideOption === 'checkSetting' && {
-                marginTop: 0,
-                marginBottom: isIOS ? 42 : 83,
-              },
-            ]}>
-            <View style={styles.slideGuideBox}>
-              <AppSvgIcon key="threeArrows" name="threeArrows" />
-              <AppText style={styles.slideText}>
-                {i18n.t('userGuide:slideLeft')}
-              </AppText>
+            style={{
+              width: '100%',
+              flex: 1,
+              justifyContent: 'flex-end',
+            }}>
+            {['esimReg', 'esimDel'].includes(guideOption) && (
+              <View
+                style={
+                  guideOption === 'esimDel'
+                    ? styles.checkInfoDel
+                    : styles.checkInfo
+                }>
+                <AppText style={appStyles.bold18Text}>
+                  {i18n.t(`userGuide:${guideOption}:checkInfo`)}
+                </AppText>
+                <View style={{marginTop: 8}}>
+                  {checkInfo.map((k) => (
+                    <View key={k} style={{flexDirection: 'row'}}>
+                      <AppText
+                        style={[appStyles.normal16Text, {marginHorizontal: 5}]}>
+                        •
+                      </AppText>
+                      <View style={{flex: 1}}>
+                        <AppStyledText
+                          textStyle={styles.checkInfoText}
+                          text={i18n.t(
+                            `userGuide${
+                              region === 'us' ? ':us' : ''
+                            }:${guideOption}:checkInfo${k}`,
+                          )}
+                          format={{
+                            b: [
+                              appStyles.bold14Text,
+                              {color: colors.clearBlue},
+                            ],
+                          }}
+                        />
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            )}
+
+            {data.isLocalBox && (
+              <Pressable
+                style={{marginTop: 34}}
+                onPress={() => {
+                  setIsCheckLocal(true);
+                  carouselRef.current?.snapToNext();
+                }}>
+                {data.isLocalBox()}
+              </Pressable>
+            )}
+            <View
+              style={[
+                styles.slideGuide,
+                guideOption === 'checkSetting' && {
+                  marginTop: 0,
+                  marginBottom: isIOS ? 42 : 83,
+                },
+              ]}>
+              <View style={styles.slideGuideBox}>
+                <AppSvgIcon key="threeArrows" name="threeArrows" />
+                <AppText style={styles.slideText}>
+                  {i18n.t('userGuide:slideLeft')}
+                </AppText>
+              </View>
             </View>
           </View>
         </ScrollView>
@@ -396,6 +421,7 @@ const UserGuideScreen = () => {
           ]}>
           <View
             style={{
+              marginBottom: 12,
               alignItems: 'center',
             }}>
             {data.stepTitle === 'Bonus' ? (
@@ -449,7 +475,7 @@ const UserGuideScreen = () => {
                       }`}
                   </AppText>
                 </View>
-                <View style={{marginVertical: 10}}>
+                <View style={{marginTop: 2, paddingVertical: 10}}>
                   {isCheckLocal && data.localTitle
                     ? data.localTitle
                     : data.title}
@@ -459,7 +485,7 @@ const UserGuideScreen = () => {
           </View>
 
           {data.tip && (
-            <View style={{marginTop: 12}}>
+            <View style={{marginBottom: 12}}>
               {isCheckLocal && data.localTip ? data.localTip() : data.tip()}
             </View>
           )}
@@ -470,14 +496,15 @@ const UserGuideScreen = () => {
             style={{
               width: '100%',
               flex: 1,
-              justifyContent: 'flex-end',
+              // justifyContent: 'flex-end',
               alignItems: 'center',
+              marginTop: 10,
             }}>
             {data.caption ? (
               <AppText
                 style={[
                   appStyles.semiBold13Text,
-                  {color: colors.warmGrey, marginTop: 12},
+                  {color: colors.warmGrey, marginBottom: 12},
                 ]}>
                 {data.caption}
               </AppText>
@@ -488,7 +515,6 @@ const UserGuideScreen = () => {
                 height: Math.ceil(
                   imageSource.height * (dimensions.width / imageSource.width),
                 ),
-                marginTop: 22,
               }}
               source={image}
               resizeMode="cover"
@@ -508,7 +534,10 @@ const UserGuideScreen = () => {
           backgroundColor: colors.white,
         }}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.tailPageTitle}>
+        contentContainerStyle={[
+          styles.tailPageTitle,
+          isDeviceSize('large') ? undefined : {flex: 1},
+        ]}>
         <View style={{alignItems: 'center', marginTop: 20, marginBottom: 48}}>
           {data?.title}
         </View>
@@ -548,7 +577,7 @@ const UserGuideScreen = () => {
             })}
           </View>
         ) : (
-          <View style={isIOS ? {height: 80} : {height: 166}} />
+          <View style={isIOS ? {height: 180} : {height: 166}} />
         )}
         <View style={styles.contactFrame}>
           <AppText style={styles.contactTitle}>
@@ -633,7 +662,7 @@ const UserGuideScreen = () => {
     <SafeAreaView
       style={{
         ...styles.container,
-        backgroundColor: carouselIdx === 0 ? colors.white : colors.paleGreyTwo,
+        backgroundColor: colors.white,
       }}>
       <ChatTalk
         isClicked={chatTalkClicked}

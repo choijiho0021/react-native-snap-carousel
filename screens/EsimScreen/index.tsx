@@ -836,7 +836,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           }}
         />
       )}
-
       {isEditMode && (
         <AppButton
           style={styles.confirm}
