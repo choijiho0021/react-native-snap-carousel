@@ -10799,10 +10799,10 @@ react-native-calendars@1.1303.0:
   optionalDependencies:
     moment "^2.29.4"
 
-react-native-channel-plugin@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/react-native-channel-plugin/-/react-native-channel-plugin-0.9.0.tgz#17b3a606054c3c2e41c2785fee654ea1a0e8eac7"
-  integrity sha512-It7kHwi/Bltog/C3jWST71OxygyyehoH32WvOvxrk9OVAEvYglJwljMw7PJO66FCm3pWwAbDC4+BQ04LYU5Gow==
+react-native-channel-plugin@0.7.12:
+  version "0.7.12"
+  resolved "https://registry.yarnpkg.com/react-native-channel-plugin/-/react-native-channel-plugin-0.7.12.tgz#ffc47608ba30ff29dd0ebaef2785267c76d47cff"
+  integrity sha512-1TNPZMBmtkS4/82rM8H7Dg5Ru/UPOqWuOjY/uxOUf8gYi6q3DmlP+CigexzrBgQ4mQqS6lHNuWSpxdjSwZRy8w==
 
 react-native-circular-progress@^1.3.7:
   version "1.4.0"
