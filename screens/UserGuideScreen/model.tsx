@@ -613,13 +613,6 @@ const getIosEsimRegGuide = (guideOption: GuideOption, region: GuideRegion) => {
         key: 'page10',
         title: renderText('userGuide:stepsTitle10:ios'),
         step: 8,
-        tip: () => tipView({id: 'userGuide:tipPage10_1'}),
-        noticeBox: () =>
-          renderNoticeBox({
-            title: 'userGuide:noticeBox:local:title',
-            body: ['userGuide:noticeBox:local:body1'],
-            isShow: true,
-          }),
       },
       {
         key: 'page11',
@@ -773,7 +766,6 @@ const getIosEsimRegGuide = (guideOption: GuideOption, region: GuideRegion) => {
         key: 'page10',
         title: renderText('userGuide:stepsTitle10:ios'),
         step: 8,
-        tip: () => tipView({id: 'userGuide:tipPage10_1'}),
       },
       {
         key: 'page11',
@@ -942,13 +934,6 @@ const getAosEsimRegGuide = (guideOption: GuideOption, region: GuideRegion) => {
         key: 'page9',
         title: renderText(`userGuide:stepsTitle8:galaxy`),
         step: 7,
-        tip: () => tipView({id: 'userGuide:tipPage10_1'}),
-        noticeBox: () =>
-          renderNoticeBox({
-            title: 'userGuide:noticeBox:local:title',
-            body: ['userGuide:noticeBox:local:body1'],
-            isShow: true,
-          }),
       },
       {
         key: 'page10',
@@ -1077,7 +1062,6 @@ const getAosEsimRegGuide = (guideOption: GuideOption, region: GuideRegion) => {
         key: 'page9',
         title: renderText(`userGuide:stepsTitle8:galaxy`),
         step: 7,
-        tip: () => tipView({id: 'userGuide:tipPage10_1'}),
       },
       {
         key: 'page10',
