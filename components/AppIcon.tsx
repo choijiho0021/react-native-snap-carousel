@@ -41,6 +41,7 @@ const images: Record<string, any[]> = {
   giftGuideStep1: [require(`${giftPath}img_step1.png`)],
   giftGuideStep2: [require(`${giftPath}img_step2.png`)],
   giftGuideStep3: [require(`${giftPath}img_step3.png`)],
+  giftGuideStep4: [require(`${giftPath}img_step4.png`)],
   gift: [require(`${giftPath}img_gift.png`)],
   fortuneBtnSmall: [require(`${esimPath}banner_lucky_s.png`)],
   fortuneBtnBig: [require(`${esimPath}banner_lucky_l.png`)],

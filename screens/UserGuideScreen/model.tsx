@@ -102,6 +102,15 @@ const styles = StyleSheet.create({
     letterSpacing: -0.28,
     color: colors.deepDarkBlue,
   },
+  noticeBoxContainer: {
+    backgroundColor: colors.veryLightBlue,
+    borderRadius: 16,
+    marginHorizontal: 30,
+    alignContent: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
   isLocalBox: {
     paddingVertical: 26,
     paddingHorizontal: 30,
@@ -306,18 +315,8 @@ const renderNoticeBox = ({
   if (!isShow) return null;
 
   return (
-    <View style={{width: '100%'}}>
-      <View
-        style={{
-          backgroundColor: colors.veryLightBlue,
-          borderRadius: 16,
-          marginHorizontal: 30,
-          alignContent: 'center',
-          justifyContent: 'center',
-          paddingHorizontal: 20,
-          paddingVertical: 10,
-          marginTop: 12,
-        }}>
+    <View style={{width: '100%', marginBottom: 12}}>
+      <View style={styles.noticeBoxContainer}>
         {title && (
           <AppStyledText
             text={i18n.t(title)}
@@ -1107,7 +1106,7 @@ const getAosConfigUsGuide = () => {
     },
     {
       key: 'page3',
-      title: renderText(`userGuide:stepsTitle5:galaxy:checkSetting`), // ysjoung
+      title: renderText(`userGuide:stepsTitle5:galaxy:checkSetting`),
       step: 2,
       stepPreText: 'local',
       noticeBox: (isCheckLocal: boolean) =>
@@ -1184,7 +1183,7 @@ const getAosConfigLocalGuide = () => {
     },
     {
       key: 'page3',
-      title: renderText(`userGuide:stepsTitle5:galaxy:checkSetting`), // ysjoung
+      title: renderText(`userGuide:stepsTitle5:galaxy:checkSetting`),
       step: 2,
       stepPreText: 'local',
       noticeBox: (isCheckLocal: boolean) =>
