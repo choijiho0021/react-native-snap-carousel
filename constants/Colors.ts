@@ -86,6 +86,6 @@ export const colors = {
   menuBorder: 'rgba(60, 60, 67, 0.36)',
   clearBlue8: 'rgba(42, 127, 246, 0.08)',
   naverGreen: '#03C731',
-  black92: 'rgba(44, 44, 44, 0.92)',
   lightYellow2: '#FFD357',
+  green: '#00cc66',
 };
