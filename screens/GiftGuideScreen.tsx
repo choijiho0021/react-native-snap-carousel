@@ -170,15 +170,15 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
           <Step key="1" step="1" marginTop={36}>
             {renderText('gift:guide2-1')}
           </Step>
-          <Step key="2" step="2" marginTop={36}>
+          <Step key="2" step="2" marginTop={62}>
             {renderText('gift:guide2-2-1')}
             {renderText('gift:guide2-2-2')}
           </Step>
-          <Step key="3" step="3" marginTop={31}>
+          <Step key="3" step="3" marginTop={62}>
             {renderText('gift:guide2-3-1')}
             {renderText('gift:guide2-3-2')}
           </Step>
-          <Step key="4" step="4" marginTop={64}>
+          <Step key="4" step="4" marginTop={62}>
             {renderText('gift:guide2-4-1')}
             {renderText('gift:guide2-4-2')}
           </Step>
