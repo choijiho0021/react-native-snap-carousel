@@ -8,6 +8,7 @@ import {
   Registerer,
   Session,
 } from 'sip.js';
+import {useFocusEffect} from '@react-navigation/native';
 import Keypad, {KeypadRef} from './Keypad';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
 import AppAlert from '@/components/AppAlert';
@@ -33,38 +34,40 @@ const RkbTalk = () => {
   );
 
   // Options for SimpleUser
-  useEffect(() => {
-    const transportOptions = {
-      server: 'wss://talk.rokebi.com:8089/ws',
-    };
-    const uri = UserAgent.makeURI('sip:07079190190@talk.rokebi.com');
-    const userAgentOptions: UserAgentOptions = {
-      authorizationPassword: 'ua123123',
-      authorizationUsername: '07079190190',
-      transportOptions,
-      uri,
-      sessionDescriptionHandlerFactory: (session, options) => {
-        return new RNSessionDescriptionHandler(session, options);
-      },
-      sessionDescriptionHandlerFactoryOptions: {
-        iceServers: [{urls: 'stun:talk.rokebi.com:3478'}],
-        iceGatheringTimeout: 3,
-      },
-    };
-    const ua = new UserAgent(userAgentOptions);
-    const registerer = new Registerer(ua);
-    ua.start().then(() => {
-      console.log('@@@ register');
-      registerer.register();
-    });
-    setUserAgent(ua);
-
-    return () => {
-      ua.stop().then((state) => {
-        console.log('@@@ UA stopped', state);
+  useFocusEffect(
+    React.useCallback(() => {
+      const transportOptions = {
+        server: 'wss://talk.rokebi.com:8089/ws',
+      };
+      const uri = UserAgent.makeURI('sip:07079190190@talk.rokebi.com');
+      const userAgentOptions: UserAgentOptions = {
+        authorizationPassword: 'ua123123',
+        authorizationUsername: '07079190190',
+        transportOptions,
+        uri,
+        sessionDescriptionHandlerFactory: (session, options) => {
+          return new RNSessionDescriptionHandler(session, options);
+        },
+        sessionDescriptionHandlerFactoryOptions: {
+          iceServers: [{urls: 'stun:talk.rokebi.com:3478'}],
+          iceGatheringTimeout: 3,
+        },
+      };
+      const ua = new UserAgent(userAgentOptions);
+      const registerer = new Registerer(ua);
+      ua.start().then(() => {
+        console.log('@@@ register');
+        registerer.register();
       });
-    };
-  }, []);
+      setUserAgent(ua);
+
+      return () => {
+        ua.stop().then((state) => {
+          console.log('@@@ UA stopped', state);
+        });
+      };
+    }, []),
+  );
 
   const setupRemoteMedia = useCallback((session: Session) => {
     /*
