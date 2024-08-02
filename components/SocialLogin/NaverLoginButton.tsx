@@ -11,8 +11,8 @@ const NaverLoginButton = ({onAuth}: {onAuth: (v: SocialAuthInfo) => void}) => {
   useEffect(() => {
     NaverLogin.initialize({
       appName: '로밍도깨비 eSIM',
-      consumerKey: naver.consumerKey,
-      consumerSecret: naver.consumerSecret,
+      consumerKey: naver?.consumerKey,
+      consumerSecret: naver?.consumerSecret,
       serviceUrlSchemeIOS: 'esimnaverlogin',
     });
   }, []);
