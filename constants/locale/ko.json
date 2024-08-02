@@ -1840,5 +1840,8 @@
   "qrInfo:cardCheck:wait": "확인중...",
   "qrInfo:tab:oneTouch": "원터치",
   "qrInfo:tab:qr": "QR코드",
-  "qrInfo:tab:manual": "수동입력"
+  "qrInfo:tab:manual": "수동입력",
+
+  "talk:speaker": "스피커폰",
+  "talk:keypad": "키패드"
 }
