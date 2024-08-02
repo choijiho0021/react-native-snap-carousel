@@ -435,11 +435,11 @@ const TabNavigator = ({
                 ? 'flex'
                 : 'none',
           },
-          tabBarLabel: ({focused}) => tabBarLabel(focused, 'cart'),
+          tabBarLabel: ({focused}) => tabBarLabel(focused, 'talk'),
           tabBarIcon: ({focused}) => (
-            <BadgedIcon
+            <AppIcon
               focused={focused}
-              name="btnCart"
+              name="keyCall"
               style={styles.tabBarIcon}
             />
           ),

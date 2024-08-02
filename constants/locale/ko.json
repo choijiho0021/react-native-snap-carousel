@@ -1842,6 +1842,7 @@
   "qrInfo:tab:qr": "QR코드",
   "qrInfo:tab:manual": "수동입력",
 
+  "talk": "전화",
   "talk:speaker": "스피커폰",
   "talk:keypad": "키패드"
 }
