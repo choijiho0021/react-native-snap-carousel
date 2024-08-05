@@ -16,6 +16,7 @@ import {
   RkbSubscription,
   sortSubs,
   STATUS_EXPIRED,
+  STATUS_OUTSTANDING,
   STATUS_USED,
   SubscriptionParam,
 } from '@/redux/api/subscriptionApi';
@@ -260,7 +261,9 @@ const mergeSubs = (org: RkbSubscription[], subs: RkbSubscription[]) => {
 };
 
 export const isDraft = (state: string) =>
-  !(STATUS_USED === state) && !(STATUS_EXPIRED === state);
+  !(STATUS_USED === state) &&
+  !(STATUS_EXPIRED === state) &&
+  !(STATUS_OUTSTANDING === state);
 
 export const isExpiredDraft = (orderDate: Moment) => {
   return moment().diff(orderDate, 'day') >= 7;

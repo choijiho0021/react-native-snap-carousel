@@ -364,6 +364,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
     [],
   );
   const isExpired = useCallback((statusCd: string) => statusCd === 'E', []);
+  const isOutstanding = useCallback((statusCd: string) => statusCd === 'O', []);
 
   const showTop = useCallback(
     (isTop: boolean) => {
@@ -399,6 +400,11 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
     });
     return [prod, addOn];
   }, [data]);
+
+  const disableButtonByOutstand = useMemo(
+    () => data?.findIndex((r) => isOutstanding(r.statusCd)) !== -1,
+    [data, isOutstanding],
+  );
 
   useEffect(() => {
     retrieveData('chargeHistoryTooltip').then((elm) =>
@@ -631,7 +637,12 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
             borderColor: colors.lightGrey,
             marginBottom: 16,
           }}>
-          <View style={{alignItems: 'center', paddingHorizontal: 20}}>
+          <View
+            style={{
+              alignItems: 'center',
+              paddingHorizontal: 20,
+              opacity: isOutstanding(item.statusCd) ? 0.6 : 1,
+            }}>
             <AppText style={styles.purchaseText}>
               {i18n.t('purchase:date', {
                 date: utils.toDateString(
@@ -673,11 +684,18 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                     });
                     setShowModal(true);
                   }}
-                  disabled={isPending(item.statusCd)}>
+                  disabled={
+                    isPending(item.statusCd) || isOutstanding(item.statusCd)
+                  }>
                   <AppText
                     style={[
                       appStyles.bold14Text,
-                      {color: colors.clearBlue, marginRight: 8},
+                      {
+                        color: isOutstanding(item.statusCd)
+                          ? colors.warmGrey
+                          : colors.clearBlue,
+                        marginRight: 8,
+                      },
                     ]}>
                     {i18n.t(
                       isPending(item.statusCd)
@@ -689,6 +707,8 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                     name={
                       isPending(item.statusCd)
                         ? 'delivery'
+                        : isOutstanding(item.statusCd)
+                        ? 'rightGreyAngleBracket'
                         : 'rightBlueAngleBracket'
                     }
                     style={{marginRight: 8, marginTop: 4}}
@@ -714,7 +734,10 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
             {addOnData
               .filter((a) => a.refSubs === item.nid)
               .map((k, idx, arr) => (
-                <View style={{}}>
+                <View
+                  style={{
+                    opacity: isOutstanding(k.statusCd) ? 0.6 : 1,
+                  }}>
                   <View style={{flexDirection: 'row', paddingHorizontal: 20}}>
                     <View
                       style={{
@@ -779,7 +802,14 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         </View>
       );
     },
-    [addOnData, isExpired, isPending, renderDesc, toProdDaysString],
+    [
+      addOnData,
+      isExpired,
+      isOutstanding,
+      isPending,
+      renderDesc,
+      toProdDaysString,
+    ],
   );
 
   return (
@@ -890,7 +920,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         <SafeAreaView style={{backgroundColor: colors.white}} />
       </Modal>
 
-      {isChargeable && (
+      {!disableButtonByOutstand && (
         <View style={{position: 'relative'}}>
           <AppSvgIcon name="speechBubble" style={styles.newIcon} />
           <AppText style={styles.newText}>{i18n.t('new')}</AppText>
