@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     marginVertical: 9,
     borderRadius: 3,
     borderWidth: 1,
-    borderColor: colors.whiteTwo,
+    borderColor: colors.whiteFive,
     justifyContent: 'center',
 
     shadowColor: colors.shadow1,

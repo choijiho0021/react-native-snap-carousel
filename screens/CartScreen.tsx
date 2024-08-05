@@ -8,7 +8,6 @@ import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import AppIcon from '@/components/AppIcon';
-import AppSnackBar from '@/components/AppSnackBar';
 import AppText from '@/components/AppText';
 import CartItem from '@/components/CartItem';
 import ChargeSummary from '@/components/ChargeSummary';
@@ -86,7 +85,6 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
     cnt: 0,
     price: utils.toCurrency(0, esimCurrency),
   });
-  const [showSnackBar, setShowSnackbar] = useState(false);
   const loading = useRef(false);
   const dispatch = useDispatch();
 
@@ -297,11 +295,6 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         ListFooterComponent={
           <ChargeSummary totalCnt={total.cnt} totalPrice={total.price} />
         }
-      />
-      <AppSnackBar
-        visible={showSnackBar}
-        onClose={() => setShowSnackbar(false)}
-        textMessage={i18n.t('cart:remove')}
       />
       <ButtonWithPrice
         amount={String(pymPrice.value) || '0'}

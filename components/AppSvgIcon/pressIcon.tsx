@@ -1371,6 +1371,28 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Circle cx="11" cy="12" r="2" fill="#194C94" />
     </Svg>,
   ],
+  rightGreyAngleBracket: [
+    <Svg
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clip-path="url(#2ok86ecf6a)">
+        <Path
+          d="M4.5.5 9 5 4.5 9.5"
+          stroke="#AAA"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="2ok86ecf6a">
+          <Path fill="#fff" d="M0 0h10v10H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
   rightBlueAngleBracket: [
     <Svg
       width="10"

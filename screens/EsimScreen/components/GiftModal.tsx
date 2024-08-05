@@ -25,9 +25,6 @@ const styles = StyleSheet.create({
     height: 62,
     flex: 1,
   },
-  btnTitle: {
-    color: colors.warmGrey,
-  },
   btn2: {
     position: 'absolute',
     width: 112,

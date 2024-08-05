@@ -731,7 +731,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
 
         if (previousName !== currentName) {
           await analytics().logScreenView({
-            screen_name: currentName, // `${previousName}>${currentName}`,
+            screen_name: `${previousName}>${currentName}`,
             screen_class: currentName,
           });
 
