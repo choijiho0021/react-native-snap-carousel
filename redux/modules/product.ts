@@ -89,7 +89,6 @@ const getParams = async () => {
   };
 };
 
-// Step 2: createAsyncThunk 안에서 reloadOrCallApi 호출 시 params를 전달하도록 변경
 const getAllProduct = createAsyncThunk(
   'product/getAllProduct',
   async (reload, thunkAPI) => {
