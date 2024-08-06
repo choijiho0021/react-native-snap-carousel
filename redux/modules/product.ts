@@ -81,10 +81,31 @@ const getProductByLocalOp = createAsyncThunk(
   API.Product.getProductByLocalOp,
 );
 
+const getParams = async () => {
+  const mobile = await retrieveData(API.User.KEY_MOBILE, true);
+  return {
+    id: mobile,
+    timestamp: moment().unix().toString(),
+  };
+};
+
+// Step 2: createAsyncThunk 안에서 reloadOrCallApi 호출 시 params를 전달하도록 변경
 const getAllProduct = createAsyncThunk(
   'product/getAllProduct',
-  reloadOrCallApi('cache.allProd', 'all', API.Product.getAllProduct),
+  async (reload, thunkAPI) => {
+    const params = await getParams();
+    return reloadOrCallApi(
+      'cache.allProd',
+      params,
+      API.Product.getAllProduct,
+    )(reload, thunkAPI);
+  },
 );
+
+// const getAllProduct = createAsyncThunk(
+//   'product/getAllProduct',
+//   reloadOrCallApi('cache.allProd', undefined, API.Product.getAllProduct),
+// );
 
 const getProdOfPartner = createAsyncThunk(
   'product/getProdOfPartner',
@@ -109,16 +130,19 @@ const init = createAsyncThunk(
   'product/init',
   async (reloadAll: boolean, {dispatch}) => {
     let reload = reloadAll || false;
-
     if (!reload) {
       const timestamp = await retrieveData(`${cachePrefix}cache.timestamp`);
+      const mobile = await retrieveData(API.User.KEY_MOBILE, true);
       if (!timestamp) reload = true;
       else {
-        const rsp = await dispatch(getPaymentRule()).unwrap();
+        const rsp = await dispatch(
+          getPaymentRule({id: mobile, timestamp: moment().unix().toString()}),
+        ).unwrap();
         if (
           rsp?.timestamp_prod &&
           moment(rsp?.timestamp_prod).utcOffset(9, true).isAfter(timestamp)
         ) {
+          console.log('aaaaa time', moment(rsp?.timestamp_prod).unix());
           reload = true;
         }
       }
