@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useRef, useEffect} from 'react';
+import React, {useState, useCallback, useRef} from 'react';
 import {SafeAreaView, StyleSheet, StatusBar} from 'react-native';
 import {
   SessionState,
@@ -9,6 +9,7 @@ import {
   Session,
 } from 'sip.js';
 import {useFocusEffect} from '@react-navigation/native';
+import InCallManager from 'react-native-incall-manager';
 import Keypad, {KeypadRef} from './Keypad';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
 import AppAlert from '@/components/AppAlert';
@@ -32,6 +33,7 @@ const RkbTalk = () => {
   const [sessionState, setSessionState] = useState<SessionState>(
     SessionState.Initial,
   );
+  const [speakerPhone, setSpeakerPhone] = useState(false);
 
   // Options for SimpleUser
   useFocusEffect(
@@ -209,6 +211,12 @@ const RkbTalk = () => {
           break;
         case 'hangup':
           releaseCall();
+          break;
+        case 'speaker':
+          setSpeakerPhone((prev) => {
+            InCallManager.setSpeakerphoneOn(!prev);
+            return !prev;
+          });
           break;
         default:
           break;
