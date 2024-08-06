@@ -151,9 +151,9 @@ const NotiListItem0 = ({
 
   // type : notiCash, notiData, notiMarketing, notiNotice, notiReceipt
   const getIconName = useCallback((type: string) => {
-    switch (type.split('/')[0]) {
+    const split = type.split('/');
+    switch (split[0]) {
       case notiActions.NOTI_TYPE_PYM:
-      case notiActions.NOTI_TYPE_PROVISION:
         return 'notiReceipt';
 
       case notiActions.NOTI_TYPE_DONATION:
@@ -163,6 +163,10 @@ const NotiListItem0 = ({
 
       case notiActions.NOTI_TYPE_PROMOTION:
         return 'notiMarketing';
+
+      case notiActions.NOTI_TYPE_PROVISION:
+        if (split.includes('ht')) return 'notiData';
+        return 'notiReceipt';
 
       // case notiActions.NOTI_TYPE_ACCOUNT:
       // case notiActions.NOTI_TYPE_URI:
