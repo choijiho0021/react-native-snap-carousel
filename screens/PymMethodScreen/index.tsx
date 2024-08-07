@@ -312,6 +312,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               AppAlert.info(i18n.t('cart:unpublishedError'), '', () =>
                 navigation.popToTop(),
               );
+            } else if (resp?.status === api.API_STATUS_CONFLICT) {
+              action.product.getAllProduct(true);
+              AppAlert.info(i18n.t('cart:paymentNotMatch'), '', () =>
+                navigation.popToTop(),
+              );
             } else {
               alertErrorGoHome();
             }

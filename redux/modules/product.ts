@@ -91,7 +91,7 @@ const getParams = async () => {
 
 const getAllProduct = createAsyncThunk(
   'product/getAllProduct',
-  async (reload, thunkAPI) => {
+  async (reload: boolean, thunkAPI) => {
     const params = await getParams();
     return reloadOrCallApi(
       'cache.allProd',
