@@ -327,6 +327,7 @@ dependencies {
 
      implementation project(':react-native-seoul-naver-login')
 
+    implementation 'org.jetbrains:annotations:16.0.2'
 
 //    addUnimodulesDependencies([exclude: ['expo-file-system','expo-image-loader','expo-permissions','expo-constants']])
 }

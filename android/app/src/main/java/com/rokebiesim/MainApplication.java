@@ -83,6 +83,12 @@ import com.reactnativepagerview.PagerViewPackage;
 import com.navercorp.ntracker.ntrackersdk.NTrackerExt;
 import com.navercorp.ntracker.ntrackersdk.NTrackerPhase;
 
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Build;
+import org.jetbrains.annotations.Nullable;
+
 public class MainApplication extends Application implements ReactApplication {
 
     public SharedPreferences prefs;
@@ -234,7 +240,14 @@ public class MainApplication extends Application implements ReactApplication {
         return mReactNativeHost;
     }
 
-
+    @Override
+    public Intent registerReceiver(@Nullable BroadcastReceiver receiver, IntentFilter filter) {
+        if (Build.VERSION.SDK_INT >= 34 && getApplicationInfo().targetSdkVersion >= 34) {
+            return super.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED);
+        } else {
+            return super.registerReceiver(receiver, filter);
+        }
+    }
 
     @Override
     public void onCreate() {
