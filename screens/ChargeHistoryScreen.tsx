@@ -300,10 +300,7 @@ export const renderPromoFlag = ({
         />
       )}
       {!isReplaced && isReceived && (
-        <AppSvgIcon
-          name="giftIcon"
-          style={{justifyContent: 'center', marginLeft: 4}}
-        />
+        <AppSvgIcon name="giftIcon" style={{justifyContent: 'center'}} />
       )}
     </Fragment>
   );
