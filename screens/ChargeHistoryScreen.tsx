@@ -253,8 +253,8 @@ export const renderPromoFlag = ({
   storeOrderId?: string;
 }) => {
   let icon = 'naverIcon';
-
-  if (storeName && storeName !== 'R') {
+  const isReplaced = storeName === 'R';
+  if (storeName && !isReplaced) {
     if (storeName === 'B') {
       const b2b = storeOrderId?.split('-')?.[0]?.toLowerCase();
       if (b2b && b2b in b2bIconMap) {
@@ -293,13 +293,13 @@ export const renderPromoFlag = ({
           </View>
         );
       })}
-      {isStore && (
+      {!isReplaced && isStore && (
         <AppSvgIcon
           name={icon}
           style={{justifyContent: 'center', marginRight: 8}}
         />
       )}
-      {!(storeName && storeName === 'R') && isReceived && (
+      {!isReplaced && isReceived && (
         <AppSvgIcon name="giftIcon" style={{justifyContent: 'center'}} />
       )}
     </Fragment>
