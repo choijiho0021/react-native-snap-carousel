@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     alignSelf: 'flex-start',
     paddingHorizontal: 20,
-    marginTop: 256,
+    marginTop: 18,
     width: '100%',
   },
   slideGuide: {
@@ -272,14 +272,15 @@ const UserGuideScreen = () => {
 
   const renderHeadPage = useCallback(
     (data: GuideImage) => {
+      const containStyle =
+        guideOption !== 'esimDel' && isDeviceSize('large')
+          ? undefined
+          : {flex: 1};
       return (
         <ScrollView
           style={styles.container}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={[
-            {alignItems: 'center'},
-            isDeviceSize('medium') ? undefined : {flex: 1},
-          ]}>
+          contentContainerStyle={[{alignItems: 'center'}, containStyle]}>
           <View style={{alignItems: 'center', marginTop: 40}}>
             {data?.title}
           </View>
