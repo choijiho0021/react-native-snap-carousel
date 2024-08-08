@@ -455,7 +455,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const getSubsAction = useCallback(
     async (subsId?: string, actionStr?: string, subsIccid?: string) => {
-      // 첫번째로 로딩 시 숨긴 subs를 제외하고 10개만 가져오도록 함
       if (actionStr === 'reload') {
         action.order.subsReload({
           iccid: iccid!,
@@ -556,7 +555,9 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     // actionStr = reload, esim 최초 진입 시 subs 중복 호출 현상 방지
     if (isFirstLoad && actionStr !== 'reload')
       onRefresh(false, true, subsId, actionStr);
-    else if (iccid) {
+    else if (actionStr === 'scrollToTop') {
+      flatListRef?.current?.scrollToOffset({animated: true, offset: 0});
+    } else if (iccid) {
       getSubsAction(subsId, actionStr, subsIccid);
     }
 
@@ -810,7 +811,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           />
         }
       />
-
       <EsimModal
         visible={showModal === 'usage'}
         subs={subs}

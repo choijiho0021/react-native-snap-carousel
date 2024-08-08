@@ -212,6 +212,9 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
       subsReload();
       navigation.navigate('EsimStack', {
         screen: 'Esim',
+        params: {
+          actionStr: 'scrollToTop',
+        },
       });
     }
   }, [

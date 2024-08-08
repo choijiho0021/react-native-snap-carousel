@@ -445,7 +445,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
                 type === notiActions.NOTI_TYPE_ACCOUNT ||
                 type === notiActions.NOTI_TYPE_PUSH ||
                 type === notiActions.NOTI_TYPE_DONATION
-                  ? i18n.t('set:noti')
+                  ? i18n.t('set:notiDetail')
                   : i18n.t('contact:noticeDetail'),
 
               created: moment(created),
