@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   },
   value: {
     ...appStyles.semiBold16Text,
-    lineHeight: 36,
+    lineHeight: 24,
   },
   box: {
     padding: 20,
