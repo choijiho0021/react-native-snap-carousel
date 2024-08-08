@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     borderColor: colors.whiteFive,
     borderRadius: 3,
     marginHorizontal: 20,
-    marginTop: 24,
+    marginBottom: 16,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
