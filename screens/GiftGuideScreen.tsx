@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: colors.white,
-    backgroundColor: colors.black,
+    // backgroundColor: colors.black,
   },
   text: {
     ...appStyles.semiBold16Text,

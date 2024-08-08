@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   badge: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 4,
+    marginRight: 8,
     height: 20,
     alignSelf: 'center',
     borderRadius: 3,
@@ -267,6 +267,7 @@ export const renderPromoFlag = ({
 
   return (
     <Fragment>
+      <View style={{width: 8, height: 1}} />
       {promoFlagSort(flags).map((elm) => {
         const badgeColor = getPromoFlagColor(elm);
         return (
@@ -295,7 +296,7 @@ export const renderPromoFlag = ({
       {isStore && (
         <AppSvgIcon
           name={icon}
-          style={{justifyContent: 'center', marginRight: 4}}
+          style={{justifyContent: 'center', marginRight: 8}}
         />
       )}
       {!(storeName && storeName === 'R') && isReceived && (
@@ -923,7 +924,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         <SafeAreaView style={{backgroundColor: colors.white}} />
       </Modal>
 
-      {!disableButtonByOutstand && (
+      {!disableButtonByOutstand && isChargeable && (
         <View style={{position: 'relative'}}>
           <AppSvgIcon name="speechBubble" style={styles.newIcon} />
           <AppText style={styles.newText}>{i18n.t('new')}</AppText>

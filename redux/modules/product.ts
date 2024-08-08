@@ -141,7 +141,6 @@ const init = createAsyncThunk(
           rsp?.timestamp_prod &&
           moment(rsp?.timestamp_prod).utcOffset(9, true).isAfter(timestamp)
         ) {
-          console.log('aaaaa time', moment(rsp?.timestamp_prod).unix());
           reload = true;
         }
       }
