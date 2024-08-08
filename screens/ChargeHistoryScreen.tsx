@@ -920,7 +920,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         <SafeAreaView style={{backgroundColor: colors.white}} />
       </Modal>
 
-      {!disableButtonByOutstand && (
+      {!disableButtonByOutstand && isChargeable && (
         <View style={{position: 'relative'}}>
           <AppSvgIcon name="speechBubble" style={styles.newIcon} />
           <AppText style={styles.newText}>{i18n.t('new')}</AppText>
