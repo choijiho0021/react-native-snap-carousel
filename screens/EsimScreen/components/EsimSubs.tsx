@@ -436,9 +436,8 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       !isDraft(mainSubs?.statusCd);
 
     // 확인 후 변경. ExpireDate이 아니라 lastExpireDate 쓰기
-    const getIsChargeable = !(
-      mainSubs.expireDate && mainSubs.expireDate.isBefore(now)
-    );
+    const getIsChargeable =
+      mainSubs.expireDate && mainSubs.expireDate.isAfter(now);
 
     const getIsChargeButton =
       mainSubs?.addOnOption &&
