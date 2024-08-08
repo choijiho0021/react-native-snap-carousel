@@ -4,6 +4,7 @@ import {
   AppState,
   Image,
   ImageBackground,
+  Linking,
   Platform,
   Pressable,
   SafeAreaView,
@@ -44,7 +45,9 @@ import RenderBeforeLottery from './component/RenderBeforeLottery';
 import RenderLoadingLottery from './component/RenderLoadingLottery';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppSnackBar from '@/components/AppSnackBar';
-import {firebase, getAnalytics} from '@react-native-firebase/analytics';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -257,8 +260,13 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const shareInstaStory = useCallback(async () => {
     try {
       const uri = await ref.current?.capture?.();
+      const isInstall = await Share.isPackageInstalled('com.instagram.android'); // android만
 
-      if (uri) {
+      if (!isInstall?.isInstalled && !isIOS)
+        Linking.openURL(
+          'https://play.google.com/store/apps/details?id=com.instagram.android',
+        );
+      else if (uri) {
         const shareOptions = {
           backgroundImage: uri,
           backgroundBottomColor: colors.black,
@@ -266,13 +274,11 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           social: Share.Social.INSTAGRAM_STORIES,
           appId: 'fb147522690488197',
         };
-
-        const result = await Share.shareSingle(shareOptions).then((rsp) => {
+        Share.shareSingle(shareOptions).then((rsp) => {
+          console.log('@@@ rsp : ', rsp);
           if (rsp?.success && rsp?.message.includes('instagram'))
             logAnalytics('instagram_share_success');
         });
-
-        console.log('@@@@ result : ', result);
       } else {
         console.log('@@@  empty uri');
       }
@@ -281,26 +287,30 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     }
   }, []);
 
-  const buttonList = [
-    {
-      key: 'Img',
-      onClick: () => {
-        saveToGallery();
+  const buttonList = useMemo(
+    () => [
+      {
+        key: 'Img',
+        onClick: () => {
+          saveToGallery();
+        },
       },
-    },
-    {
-      key: 'Sns',
-      onClick: () => {
-        onShare();
+      {
+        key: 'Sns',
+        onClick: () => {
+          onShare();
+        },
       },
-    },
-    {
-      key: 'Story',
-      onClick: () => {
-        shareInstaStory();
+      {
+        key: 'Story',
+        onClick: () => {
+          shareInstaStory();
+        },
       },
-    },
-  ];
+    ],
+    [onShare, saveToGallery, shareInstaStory],
+  );
+
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (['inactive', 'background'].includes(nextAppState)) {
@@ -491,16 +501,14 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       </View>
     );
   }, [
+    buttonList,
     fortune?.text,
     isGetResult,
     navigation,
-    onShare,
     phase?.count,
     renderShareButton,
     renderTitleAndPhase,
-    saveToGallery,
     screenNum,
-    shareInstaStory,
   ]);
 
   const renderBody = useCallback(() => {
