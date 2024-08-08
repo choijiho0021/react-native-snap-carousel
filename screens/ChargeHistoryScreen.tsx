@@ -299,7 +299,10 @@ export const renderPromoFlag = ({
         />
       )}
       {!(storeName && storeName === 'R') && isReceived && (
-        <AppSvgIcon name="giftIcon" style={{justifyContent: 'center'}} />
+        <AppSvgIcon
+          name="giftIcon"
+          style={{justifyContent: 'center', marginLeft: 4}}
+        />
       )}
     </Fragment>
   );
