@@ -686,7 +686,11 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
               </View>
               {!isExpired(item.statusCd) && (
                 <Pressable
-                  style={{flexDirection: 'row'}}
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
                   onPress={() => {
                     setPending(true);
                     setSelectedSubs(item);
