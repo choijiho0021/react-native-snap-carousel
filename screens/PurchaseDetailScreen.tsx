@@ -133,8 +133,6 @@ const styles = StyleSheet.create({
   secondaryButton: {
     flex: 1,
     height: 52,
-    borderColor: colors.lightGrey,
-    borderTopWidth: 1,
     color: colors.white,
   },
   secondaryButtonText: {

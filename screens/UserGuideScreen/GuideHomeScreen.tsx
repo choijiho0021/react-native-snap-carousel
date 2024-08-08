@@ -32,9 +32,8 @@ const GuideHomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={{flex: 1}}>
-        <GuideHeader onPress={() => navigation.goBack()} />
-
+      <GuideHeader onPress={() => navigation.goBack()} />
+      <ScrollView style={{flex: 1, paddingTop: 40}}>
         <GuideTitle title={i18n.t('userGuide:home:title')} />
 
         <AppIcon name="guideHomeLogo" style={styles.logo} />
