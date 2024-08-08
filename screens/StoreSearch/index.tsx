@@ -198,7 +198,7 @@ const HeaderTitle0 = ({
         placeholderTextColor={colors.greyish}
         returnKeyType="search"
         enablesReturnKeyAutomatically
-        onSubmitEditing={() => search(word, true)}
+        // onSubmitEditing={() => search(word, true)}
         onChangeText={(value: string) => {
           setSearchWord(value);
           search(value, false);
@@ -300,20 +300,19 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
 
   const search = useCallback(
     (word: string, isSearching = false) => {
-      // setSearchWord(word);
-
+      const histword = word.trim();
       // 중복 제거 후 최대 7개까지 저장한다. 저장 형식 : ex) 대만,중국,일본
-      if (isSearching && word && !word.match(',')) {
+      if (isSearching && histword && !word.match(',')) {
         if (searchList.length > 0) {
-          const wordIdx = searchList.findIndex((elm) => elm === word);
-          const hist = [word].concat(
-            wordIdx < 0 ? searchList : searchList.filter((h) => h !== word),
+          const wordIdx = searchList.findIndex((elm) => elm === histword);
+          const hist = [histword].concat(
+            wordIdx < 0 ? searchList : searchList.filter((h) => h !== histword),
           );
           storeData('searchHist', hist.join(','));
           setSearchList(hist.slice(0, 7));
         } else {
-          storeData('searchHist', word);
-          setSearchList(word?.split(','));
+          storeData('searchHist', histword);
+          setSearchList(histword?.split(','));
         }
       }
     },
@@ -403,7 +402,6 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
                   style={styles.recommebdItem}
                   onPress={() => {
                     setSearchWord(elm2);
-                    search(elm2, true);
                   }}>
                   <AppText style={styles.recommendText}>{elm2}</AppText>
                 </Pressable>
