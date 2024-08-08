@@ -77,6 +77,7 @@ const ButtonWithPrice = ({
           styles.paymentBtn,
           {backgroundColor: disable ? colors.line : colors.clearBlue},
         ]}
+        disabled={disable}
         type="primary"
         onPress={onPress}
         title={title || i18n.t('esim:charge:payment')}

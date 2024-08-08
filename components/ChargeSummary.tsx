@@ -17,6 +17,11 @@ const styles = StyleSheet.create({
   summary: {
     height: 36,
   },
+  priceTxt: {
+    ...appStyles.bold22Text,
+    textAlignVertical: 'center',
+    height: 36,
+  },
 });
 
 const ChargeSummary = ({
@@ -42,8 +47,8 @@ const ChargeSummary = ({
         labelStyle={{...appStyles.bold14Text, color: colors.warmGrey}}
         value={totalPrice}
         color={colors.clearBlue}
-        balanceStyle={appStyles.bold22Text}
-        currencyStyle={appStyles.bold22Text}
+        balanceStyle={styles.priceTxt}
+        currencyStyle={styles.priceTxt}
       />
       <View style={{flexDirection: 'row'}}>
         <AppText

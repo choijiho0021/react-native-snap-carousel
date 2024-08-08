@@ -211,9 +211,17 @@ const reqRokebiPaymentVBank = ({
   );
 };
 
-const getRokebiPaymentRule = () => {
+const getRokebiPaymentRule = ({
+  id = '',
+  timestamp,
+}: {
+  id?: string;
+  timestamp: string;
+}) => {
   return api.callHttpGet(
-    `${api.httpUrl(api.path.rokApi.rokebi.paymentRule)}?_format=json`,
+    `${api.httpUrl(
+      api.path.rokApi.rokebi.paymentRule,
+    )}?_format=json&${timestamp}=${id}`,
   ) as Promise<unknown> as Promise<PaymentRule>;
 };
 
