@@ -607,6 +607,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
                 alignSelf: 'center',
                 marginRight: mainSubs.isStore ? 8 : 0,
               },
+              isOutstanding && {color: colors.greyish},
             ]}
             numberOfLines={2}
             ellipsizeMode="tail">
@@ -1079,7 +1080,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           styles.usageListContainer,
           expired || mainSubs.giftStatusCd === 'S'
             ? styles.cardExpiredBg
-            : isTypeDraft
+            : isTypeDraft || isOutstanding
             ? styles.border
             : styles.shadow,
           isTypeDraft && {paddingBottom: 16},
