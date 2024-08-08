@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
   logo: {
     alignSelf: 'flex-end',
     marginRight: 20,
+    marginBottom: 24,
   },
 });
 
@@ -42,7 +43,7 @@ const GuideHomeScreen = () => {
           <GuideButton
             key={v}
             item={v}
-            style={v === 'esimDel' && {marginTop: 36, marginBottom: 36}}
+            style={v === 'esimDel' && {marginTop: 20, marginBottom: 36}}
             onPress={async () => {
               setGuideOption(v);
               const checked = await AsyncStorage.getItem(

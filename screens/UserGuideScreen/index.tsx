@@ -278,7 +278,7 @@ const UserGuideScreen = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={[
             {alignItems: 'center'},
-            isDeviceSize('large') ? undefined : {flex: 1},
+            isDeviceSize('medium') ? undefined : {flex: 1},
           ]}>
           <View style={{alignItems: 'center', marginTop: 40}}>
             {data?.title}
