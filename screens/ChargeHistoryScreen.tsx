@@ -174,15 +174,15 @@ const styles = StyleSheet.create({
   addOnRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 16,
     marginBottom: 8,
   },
   rechargeTag: {
     paddingHorizontal: 8,
     borderWidth: 1,
     height: 20,
-    marginTop: 16,
+    marginTop: 4,
     marginRight: 8,
+    borderRadius: 3,
     // borderColor: colors.clearBlue,
     justifyContent: 'center',
   },
@@ -206,7 +206,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: colors.warmGrey,
     alignSelf: 'flex-start',
-    marginTop: 16,
   },
   addonWarning: {
     flexDirection: 'row',
@@ -602,11 +601,15 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
       }
       if (isPending(sub.statusCd)) {
         return (
-          <View style={{flexDirection: 'row', marginBottom: 24}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginBottom: 24,
+            }}>
             <AppText
               style={[
                 appStyles.bold14Text,
-                {color: colors.clearBlue, marginRight: 8},
+                {color: colors.clearBlue, marginRight: 8, lineHeight: 20},
               ]}>
               {i18n.t('esim:reserved')}
             </AppText>
@@ -631,18 +634,22 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
 
   const renderItem = useCallback(
     ({item}: {item: RkbSubscription}) => {
+      const outstanding = isOutstanding(item.statusCd);
+
       return (
         <View
           style={{
             borderWidth: 1,
             borderColor: colors.lightGrey,
             marginBottom: 16,
+            borderRadius: 3,
           }}>
           <View
             style={{
               alignItems: 'center',
               paddingHorizontal: 20,
-              opacity: isOutstanding(item.statusCd) ? 0.6 : 1,
+              opacity: outstanding ? 0.6 : 1,
+              paddingVertical: 16,
             }}>
             <AppText style={styles.purchaseText}>
               {i18n.t('purchase:date', {
@@ -652,9 +659,8 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                 ),
               })}
             </AppText>
-            <View
-              style={{flexDirection: 'row', marginBottom: 16, marginTop: 6}}>
-              <View style={{flex: 1}}>
+            <View style={{flexDirection: 'row', marginTop: 6}}>
+              <View style={{flex: 1, marginVertical: 3}}>
                 <SplitText
                   renderExpend={() =>
                     renderPromoFlag({
@@ -666,7 +672,14 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                     })
                   }
                   numberOfLines={2}
-                  style={{...appStyles.bold16Text, marginRight: 8}}
+                  style={[
+                    {
+                      ...appStyles.bold16Text,
+                      lineHeight: 24,
+                      marginRight: 8,
+                    },
+                    outstanding && {color: colors.greyish},
+                  ]}
                   ellipsizeMode="tail">
                   {utils.removeBracketOfName(item.prodName)}
                 </SplitText>
@@ -685,16 +698,12 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                     });
                     setShowModal(true);
                   }}
-                  disabled={
-                    isPending(item.statusCd) || isOutstanding(item.statusCd)
-                  }>
+                  disabled={isPending(item.statusCd) || outstanding}>
                   <AppText
                     style={[
                       appStyles.bold14Text,
                       {
-                        color: isOutstanding(item.statusCd)
-                          ? colors.warmGrey
-                          : colors.clearBlue,
+                        color: outstanding ? colors.warmGrey : colors.clearBlue,
                         marginRight: 8,
                       },
                     ]}>
@@ -708,7 +717,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                     name={
                       isPending(item.statusCd)
                         ? 'delivery'
-                        : isOutstanding(item.statusCd)
+                        : outstanding
                         ? 'rightGreyAngleBracket'
                         : 'rightBlueAngleBracket'
                     }
@@ -737,9 +746,14 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
               .map((k, idx, arr) => (
                 <View
                   style={{
-                    opacity: isOutstanding(k.statusCd) ? 0.6 : 1,
+                    opacity: outstanding ? 0.6 : 1,
                   }}>
-                  <View style={{flexDirection: 'row', paddingHorizontal: 20}}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      paddingHorizontal: 20,
+                      paddingTop: 24,
+                    }}>
                     <View
                       style={{
                         ...styles.rechargeTag,
@@ -765,7 +779,14 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                     </View>
                     <View style={{flex: 1}}>
                       <View style={styles.addOnRow}>
-                        <AppText style={appStyles.bold16Text}>
+                        <AppText
+                          style={[
+                            appStyles.bold16Text,
+                            {lineHeight: 24},
+                            outstanding && {
+                              color: colors.greyish,
+                            },
+                          ]}>
                           {utils.toDataVolumeString(Number(k.dataVolume))}
                           {` ${toProdDaysString(Number(k.prodDays))}`}
                         </AppText>
