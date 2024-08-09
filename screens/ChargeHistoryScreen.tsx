@@ -725,7 +725,11 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                         ? 'rightGreyAngleBracket'
                         : 'rightBlueAngleBracket'
                     }
-                    style={{marginRight: 8, marginTop: 4}}
+                    style={{
+                      marginRight: 8,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
                   />
                 </Pressable>
               )}
