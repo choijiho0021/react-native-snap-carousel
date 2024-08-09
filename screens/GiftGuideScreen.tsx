@@ -31,8 +31,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 const {width} = Dimensions.get('window');
 
-// const width = 320;
-const SAMLL_BOX_WIDTH = 350;
+const SAMLL_BOX_WIDTH = 300;
 
 const styles = StyleSheet.create({
   container: {
