@@ -270,6 +270,7 @@ export const renderPromoFlag = ({
       {promoFlagSort(flags).map((elm) => {
         const badgeColor = getPromoFlagColor(elm);
         return (
+          // Special categories 태그
           <View
             key={elm}
             style={[
@@ -292,12 +293,14 @@ export const renderPromoFlag = ({
           </View>
         );
       })}
-      {!isReplaced && isStore && (
+      {/* 채널 아이콘 ex)네이버 쿠팡 */}
+      {!isReplaced && !isReceived && isStore && (
         <AppSvgIcon
           name={icon}
           style={{justifyContent: 'center', marginRight: 8}}
         />
       )}
+      {/* 선물받은 아이콘 */}
       {!isReplaced && isReceived && (
         <AppSvgIcon name="giftIcon" style={{justifyContent: 'center'}} />
       )}
