@@ -31,6 +31,8 @@ import LinearGradient from 'react-native-linear-gradient';
 
 const {width} = Dimensions.get('window');
 
+const SAMLL_BOX_WIDTH = 350;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -53,6 +55,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: colors.white,
+    opacity: 0.7,
     // backgroundColor: colors.black,
   },
   text: {
@@ -126,6 +129,11 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
     [],
   );
 
+  const boxImage =
+    width <= SAMLL_BOX_WIDTH
+      ? require('../assets/images/gift/box_320.png')
+      : require('../assets/images/gift/box.png');
+
   return (
     <SafeAreaView style={styles.container}>
       <ScreenHeader title={i18n.t('gift:title')} />
@@ -193,7 +201,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
             <AppText
               style={[
                 appStyles.bold16Text,
-                {color: 'white', flex: 1, textAlign: 'center', opacity: 0.7},
+                {color: 'white', flex: 1, textAlign: 'center'},
               ]}>
               Tip.
             </AppText>
@@ -224,20 +232,45 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
             data={{cash: gift}}
           />
           <ImageBackground
-            source={require('../assets/images/gift/box.png')}
+            source={boxImage}
             resizeMode="stretch"
             style={{
-              height: 48,
+              height: width <= SAMLL_BOX_WIDTH ? 65 : 48,
               width: width - 40,
               flexDirection: 'row',
               alignItems: 'flex-end',
-              paddingBottom: 10,
+              paddingTop: 10,
               marginTop: 0,
+              paddingBottom: 11,
             }}>
-            <AppSvgIcon name="pin" style={{marginLeft: 8, marginRight: 6}} />
-            <AppText style={[appStyles.normal14Text, {color: colors.white}]}>
-              {i18n.t('gift:tip-5')}
-            </AppText>
+            <AppSvgIcon
+              name="pin"
+              style={
+                width <= SAMLL_BOX_WIDTH
+                  ? {
+                      marginLeft: 8,
+                      marginRight: 6,
+                      alignSelf: 'center',
+                      paddingTop: 5,
+                    }
+                  : {marginLeft: 8, marginRight: 6}
+              }
+            />
+            <View style={{flex: 1}}>
+              <AppText
+                style={[
+                  appStyles.normal14Text,
+                  {
+                    color: colors.white,
+                    letterSpacing: -0.56,
+                    alignItems: 'center',
+                    // backgroundColor: 'red',
+                    lineHeight: 18,
+                  },
+                ]}>
+                {i18n.t('gift:tip-5')}
+              </AppText>
+            </View>
           </ImageBackground>
           <AppButton
             title={i18n.t('gift:btn')}
@@ -259,7 +292,10 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
               {i18n.t('middleDot')}
             </AppText>
             <AppText
-              style={[appStyles.normal13, {color: colors.white, opacity: 0.7}]}>
+              style={[
+                appStyles.normal13,
+                {color: colors.white, opacity: 0.7, flexWrap: 'wrap'},
+              ]}>
               {i18n.t('gift:tip-6')}
             </AppText>
           </View>
@@ -270,7 +306,12 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
             <AppText
               style={[
                 appStyles.normal13,
-                {marginBottom: 40, color: colors.white, opacity: 0.7},
+                {
+                  marginBottom: 40,
+                  color: colors.white,
+                  opacity: 0.7,
+                  flexWrap: 'wrap',
+                },
               ]}>
               {i18n.t('gift:tip-7')}
             </AppText>
