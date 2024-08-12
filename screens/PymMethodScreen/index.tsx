@@ -207,10 +207,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     );
   }, [product.rule.ccard]);
 
-  const alertErrorGoHome = useCallback(() => {
-    AppAlert.info(i18n.t('cart:systemError'), '', () => navigation.popToTop());
-  }, [navigation]);
-
   const installmentMonthsList = useMemo(
     () =>
       [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((k) => ({
@@ -287,10 +283,12 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               mode,
             });
           } else {
+            let text = 'cart:systemError';
             setClickable(true);
             if (resp.result === api.E_RESOURCE_NOT_FOUND) {
-              AppAlert.info(i18n.t('cart:soldOut'));
+              text = 'cart:soldOut';
             } else if (resp.result === api.E_STATUS_EXPIRED) {
+              text = 'cart:unpublishedError';
               // product status is changed.
               const skuList = resp?.message.split(',');
               if (skuList?.length > 0 && cart.cartId) {
@@ -308,18 +306,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               }
 
               action.product.getAllProduct(true);
-
-              AppAlert.info(i18n.t('cart:unpublishedError'), '', () =>
-                navigation.popToTop(),
-              );
             } else if (resp?.status === api.API_STATUS_CONFLICT) {
               action.product.getAllProduct(true);
-              AppAlert.info(i18n.t('cart:paymentNotMatch'), '', () =>
-                navigation.popToTop(),
-              );
-            } else {
-              alertErrorGoHome();
+              text = 'cart:paymentNotMatch';
             }
+            AppAlert.info(i18n.t(text), '', () => navigation.popToTop());
           }
         });
       } else {
@@ -364,7 +355,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       account,
       action.cart,
       action.product,
-      alertErrorGoHome,
       cart.cartId,
       cart?.cartItems,
       cart.pymPrice?.value,
