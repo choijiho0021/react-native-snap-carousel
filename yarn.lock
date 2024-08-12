@@ -2343,7 +2343,7 @@
   resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-2.7.7.tgz#6e19c3a72a482be015f5194794e6c14efe8762e8"
   integrity sha512-CTHthVmx8ujlH/u5AnxLQfsheh/DoEbo+Kbx0HGTlbKVLC1eZ4Kr9jXIIUcwB7JEgOXifdZIPQCsoTc/7GQ0ag==
 
-"@react-native-seoul/naver-login@4.0.1":
+"@react-native-seoul/naver-login@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@react-native-seoul/naver-login/-/naver-login-4.0.1.tgz#a332633906948bce73df3ed2a3432d069599fe77"
   integrity sha512-EHA/aW0cn/O2ypeTus2DRE2+R1vcHmhiVHGNMeIBGueM+SvCZxtNyEIacVE7zGve0gkScZbeihlNUm0CfPnGIQ==
