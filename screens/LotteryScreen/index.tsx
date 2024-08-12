@@ -257,35 +257,45 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     setShowShareModal(true);
   }, []);
 
+  const shareInsta = useCallback((uri?: string) => {
+    if (uri) {
+      const shareOptions = {
+        backgroundImage: uri,
+        backgroundBottomColor: colors.black,
+        backgroundTopColor: colors.black,
+        social: Share.Social.INSTAGRAM_STORIES,
+        appId: 'fb147522690488197',
+      };
+      Share.shareSingle(shareOptions).then((rsp) => {
+        if (rsp?.success && rsp?.message.includes('instagram'))
+          logAnalytics('instagram_share_success');
+      });
+    } else {
+      console.log('@@@  empty uri');
+    }
+  }, []);
+
   const shareInstaStory = useCallback(async () => {
     try {
       const uri = await ref.current?.capture?.();
-      const isInstall = await Share.isPackageInstalled('com.instagram.android'); // android만
 
-      if (!isInstall?.isInstalled && !isIOS)
-        Linking.openURL(
-          'https://play.google.com/store/apps/details?id=com.instagram.android',
+      if (!isIOS) {
+        const isInstall = await Share.isPackageInstalled(
+          'com.instagram.android',
         );
-      else if (uri) {
-        const shareOptions = {
-          backgroundImage: uri,
-          backgroundBottomColor: colors.black,
-          backgroundTopColor: colors.black,
-          social: Share.Social.INSTAGRAM_STORIES,
-          appId: 'fb147522690488197',
-        };
-        Share.shareSingle(shareOptions).then((rsp) => {
-          console.log('@@@ rsp : ', rsp);
-          if (rsp?.success && rsp?.message.includes('instagram'))
-            logAnalytics('instagram_share_success');
-        });
-      } else {
-        console.log('@@@  empty uri');
+
+        if (!isInstall?.isInstalled)
+          Linking.openURL(
+            'https://play.google.com/store/apps/details?id=com.instagram.android',
+          );
+        else shareInsta(uri);
       }
+
+      shareInsta(uri);
     } catch (e) {
       console.log('@@@@ share error : ', e);
     }
-  }, []);
+  }, [shareInsta]);
 
   const buttonList = useMemo(
     () => [
