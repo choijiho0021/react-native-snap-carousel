@@ -279,7 +279,9 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     try {
       const uri = await ref.current?.capture?.();
 
-      if (!isIOS) {
+      if (isIOS) {
+        shareInsta(uri);
+      } else {
         const isInstall = await Share.isPackageInstalled(
           'com.instagram.android',
         );
@@ -290,8 +292,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           );
         else shareInsta(uri);
       }
-
-      shareInsta(uri);
     } catch (e) {
       console.log('@@@@ share error : ', e);
     }
