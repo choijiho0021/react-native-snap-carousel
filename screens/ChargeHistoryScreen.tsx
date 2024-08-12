@@ -266,16 +266,17 @@ export const renderPromoFlag = ({
 
   return (
     <Fragment>
-      <View style={{width: 8, height: 1}} />
-      {promoFlagSort(flags).map((elm) => {
+      <View style={{width: 4, height: 1}} />
+      {promoFlagSort([flags]).map((elm) => {
         const badgeColor = getPromoFlagColor(elm);
         return (
+          // Special categories 태그
           <View
             key={elm}
             style={[
               styles.badge,
               {
-                paddingHorizontal: elm === 'fiveG' ? 2 : 8,
+                paddingHorizontal: elm === 'fiveG' ? 2 : 4,
                 backgroundColor: badgeColor.backgroundColor,
               },
             ]}>
@@ -292,12 +293,14 @@ export const renderPromoFlag = ({
           </View>
         );
       })}
-      {!isReplaced && isStore && (
+      {/* 채널 아이콘 ex)네이버 쿠팡 */}
+      {!isReplaced && !isReceived && isStore && (
         <AppSvgIcon
           name={icon}
-          style={{justifyContent: 'center', marginRight: 8}}
+          style={{justifyContent: 'center', marginRight: 4}}
         />
       )}
+      {/* 선물받은 아이콘 */}
       {!isReplaced && isReceived && (
         <AppSvgIcon name="giftIcon" style={{justifyContent: 'center'}} />
       )}

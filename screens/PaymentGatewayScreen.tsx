@@ -223,8 +223,10 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
             }
             // else if (resp?.status === api.API_STATUS_PREFAILED)
             //   text = 'cart:paymentNotMatch';
-            AppAlert.info(i18n.t(text));
-            navigation.popToTop();
+            AppAlert.info(i18n.t(text), '', () => navigation.popToTop());
+
+            // AppAlert.info(i18n.t(text));
+            // navigation.popToTop();
           } else {
             setIsOrderReady(true);
             if (params.pay_method.startsWith('vbank')) {

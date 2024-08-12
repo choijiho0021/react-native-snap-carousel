@@ -604,7 +604,6 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
                 : styles.usageTitleBold,
               {
                 alignSelf: 'center',
-                marginRight: mainSubs.isStore ? 8 : 0,
               },
               isOutstanding && {color: colors.greyish},
             ]}

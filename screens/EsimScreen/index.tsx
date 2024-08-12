@@ -533,6 +533,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               });
           }
         }
+      } else if (actionStr === 'scrollToTop') {
+        flatListRef?.current?.scrollToOffset({animated: true, offset: 0});
       }
     },
     [
@@ -550,19 +552,26 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   useEffect(() => {
+    const {subsId, actionStr} = route?.params || {};
+
+    if (isFirstLoad) {
+      // actionStr = reload, esim 최초 진입 시 subs 중복 호출 현상 방지
+      if (actionStr === 'reload')
+        navigation.setParams({
+          actionStr: undefined,
+        });
+      else onRefresh(false, true, subsId, actionStr);
+    }
+  }, [route?.params, isFirstLoad, iccid, onRefresh, navigation]);
+
+  useEffect(() => {
     const {subsId, actionStr, iccid: subsIccid} = route?.params || {};
 
-    // actionStr = reload, esim 최초 진입 시 subs 중복 호출 현상 방지
-    if (isFirstLoad && actionStr !== 'reload')
-      onRefresh(false, true, subsId, actionStr);
-    else if (actionStr === 'scrollToTop') {
-      flatListRef?.current?.scrollToOffset({animated: true, offset: 0});
-    } else if (iccid) {
+    if (!isFirstLoad && actionStr) {
+      console.log('aaaaa getSubsAction', isFirstLoad);
       getSubsAction(subsId, actionStr, subsIccid);
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [route?.params, isFirstLoad, iccid]);
+  }, [route?.params, isFirstLoad, iccid, getSubsAction]);
 
   const empty = useCallback(() => {
     return _.isEmpty(order.drafts) || isEditMode ? (
