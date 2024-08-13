@@ -267,7 +267,7 @@ export const renderPromoFlag = ({
   return (
     <Fragment>
       <View style={{width: 4, height: 1}} />
-      {promoFlagSort([flags]).map((elm) => {
+      {promoFlagSort(flags).map((elm) => {
         const badgeColor = getPromoFlagColor(elm);
         return (
           // Special categories 태그
