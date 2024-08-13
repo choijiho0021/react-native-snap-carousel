@@ -28,6 +28,7 @@ import {
   actions as cartActions,
   CartModelState,
 } from '@/redux/modules/cart';
+import moment from 'moment';
 
 const styles = StyleSheet.create({
   container: {
@@ -101,7 +102,10 @@ const SelectCoupon: React.FC<SelectCouponProps> = ({
       })
       .filter((c) => c?.adj.value !== 0)
       .sort((a, b) => {
-        return a.adj?.value > b?.adj?.value ? 1 : -1;
+        if (a.adj?.value !== b.adj?.value) {
+          return a.adj?.value - b.adj?.value;
+        }
+        return moment(a.endDate).isAfter(moment(b.endDate)) ? 1 : -1;
       });
   }, [myCoupon, promo]);
 
