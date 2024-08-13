@@ -152,25 +152,25 @@ type PymMethodScreenProps = {
 
 const {esimGlobal, impId, cachePrefix} = Env.get();
 const defaultCardList = [
-  '14',
-  '12',
-  '04',
-  '06',
-  '03',
-  '41',
-  '02',
-  '01',
-  '11',
-  '43',
-  '56',
-  '55',
-  '35',
-  '51',
-  '32',
-  '33',
-  '48',
-  '52',
-  '71',
+  ['14', '신한카드'],
+  ['12', '삼성카드'],
+  ['04', '현대카드'],
+  ['06', 'KB국민카드'],
+  ['03', '롯데카드'],
+  ['41', 'NH농협카드'],
+  ['02', '우리카드'],
+  ['01', '하나카드'],
+  ['11', 'BC카드'],
+  ['43', '씨티카드'],
+  ['56', '카카오뱅크'],
+  ['55', '케이뱅크카드'],
+  ['35', '산업카드'],
+  ['51', '수협카드'],
+  ['32', '광주카드'],
+  ['33', '전북카드'],
+  ['48', '신협체크카드'],
+  ['52', '제주카드'],
+  ['71', '우체국체크'],
 ];
 
 const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
@@ -198,8 +198,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         label: v,
         value: `card${k}`,
       })) ||
-      defaultCardList.map((k) => ({
-        label: i18n.t(`pym:card${k}`),
+      defaultCardList.map(([k, v]) => ({
+        label: v,
         value: `card${k}`,
       }))
     );
