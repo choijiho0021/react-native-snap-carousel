@@ -51,20 +51,22 @@ const ProductDetailInfo: React.FC<ProductDetailInfoPros> = ({
           {utils.removeBracketOfName(item?.title)}
         </SplitText>
       </View>
-      <View>
-        <AppText
-          key="desc"
-          numberOfLines={2}
-          ellipsizeMode="tail"
-          style={[
-            appStyles.medium14,
-            {
-              color: colors.warmGrey,
-            },
-          ]}>
-          {item?.field_description}
-        </AppText>
-      </View>
+      {item?.field_description && (
+        <View>
+          <AppText
+            key="desc"
+            numberOfLines={2}
+            ellipsizeMode="tail"
+            style={[
+              appStyles.medium14,
+              {
+                color: colors.warmGrey,
+              },
+            ]}>
+            {item?.field_description}
+          </AppText>
+        </View>
+      )}
 
       {showPriceInfo && (
         <View style={{flexDirection: 'row'}}>
