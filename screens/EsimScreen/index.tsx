@@ -568,7 +568,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     const {subsId, actionStr, iccid: subsIccid} = route?.params || {};
 
     if (!isFirstLoad && actionStr) {
-      console.log('aaaaa getSubsAction', isFirstLoad);
       getSubsAction(subsId, actionStr, subsIccid);
     }
   }, [route?.params, isFirstLoad, iccid, getSubsAction]);

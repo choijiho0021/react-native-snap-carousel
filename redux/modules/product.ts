@@ -135,7 +135,10 @@ const init = createAsyncThunk(
       if (!timestamp) reload = true;
       else {
         const rsp = await dispatch(
-          getPaymentRule({id: mobile, timestamp: moment().unix().toString()}),
+          getPaymentRule({
+            id: mobile || '',
+            timestamp: moment().unix().toString(),
+          }),
         ).unwrap();
         if (
           rsp?.timestamp_prod &&
@@ -174,7 +177,13 @@ const refresh = createAsyncThunk(
     const timestamp = await retrieveData(`${cachePrefix}cache.timestamp`);
     if (!timestamp) reload = true;
     else {
-      const rsp = await dispatch(getPaymentRule()).unwrap();
+      const mobile = await retrieveData(API.User.KEY_MOBILE, true);
+      const rsp = await dispatch(
+        getPaymentRule({
+          id: mobile || '',
+          timestamp: moment().unix().toString(),
+        }),
+      ).unwrap();
       if (
         rsp?.timestamp_prod &&
         moment(rsp?.timestamp_prod).utcOffset(9, true).isAfter(timestamp)
