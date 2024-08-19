@@ -329,7 +329,7 @@ const totalCardImg = require('../assets/images/esim/totalCard.png');
 const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   navigation,
   route: {params},
-  account,
+  account: {iccid, token},
   refreshing,
 }) => {
   const {mainSubs, chargeablePeriod, isChargeable} = params || {};
@@ -416,7 +416,6 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   }, []);
 
   const getSubs = useCallback(() => {
-    const {iccid, token} = account;
     if (iccid && token) {
       API.Subscription.getSubscription({
         iccid,
@@ -428,7 +427,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         }
       });
     }
-  }, [account, mainSubs.subsIccid]);
+  }, [iccid, token, mainSubs.subsIccid]);
 
   useEffect(() => {
     getSubs();
