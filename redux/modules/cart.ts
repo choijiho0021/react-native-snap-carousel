@@ -201,18 +201,23 @@ const slice = createSlice({
       }
       state.maxCouponId = maxDiscountCpn;
 
-      // couponToApply == undefined 이면, discount도 undefined로 설정된다.
       const promo: RkbCouponWithAdj = couponList
         ? couponList?.find((c) => c.id === state.couponToApply)
         : state.promo?.find((p) => p.coupon_id === state.couponToApply);
 
-      // 쿠폰 적용 시 결제 값이 음수가 되지 않도록 사용할 캐시 재계산
-      if (promo && state?.pymReq?.rkbcash?.value > 0) {
-        const maxPrice =
-          (state.pymReq?.subtotal?.value || 0) + (promo?.adj?.value || 0);
+      const activeRkbCash = state.pymReq?.rkbcash?.value || 0;
+      const couponDiscountValue = -(promo?.adj?.value || 0); // 헷갈려서 양수로 바꿔서 계산
+      const price = state.pymReq?.subtotal?.value || 0;
 
-        // 할인된 상품의 가격을 넘어선 안되고, 계정이 가진 캐시보다 커선 안된다.
-        const min = availableRokebiCash(maxPrice, accountCash);
+      if (promo && activeRkbCash > 0) {
+        // 로깨비 캐시 + 쿠폰 할인 값이 상품 가격을 넘기면 쿠폰 할인 가격만큼 빼서 사용할 로꺠비 캐시 재설정
+        const calculatedRkbCash =
+          activeRkbCash + couponDiscountValue > price
+            ? price - couponDiscountValue
+            : activeRkbCash;
+
+        // 계정이 현재 가진 로깨비 캐시의 양을 넘기면 안된다.
+        const min = availableRokebiCash(calculatedRkbCash, accountCash);
 
         state.pymReq = {
           ...state.pymReq,
