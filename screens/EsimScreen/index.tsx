@@ -455,6 +455,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const getSubsAction = useCallback(
     async (subsId?: string, actionStr?: string, subsIccid?: string) => {
+      navigation.setParams({
+        actionStr: undefined,
+      });
+
       if (actionStr === 'reload') {
         action.order.subsReload({
           iccid: iccid!,
@@ -487,7 +491,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       } else if (actionStr === 'navigate') {
         if (subsIccid) {
           const main = order.subs?.find((s) => s.subsIccid === subsIccid);
-
           if (main) {
             if ((main.cnt || 0) > 1) {
               navigation.navigate('ChargeHistory', {
@@ -536,10 +539,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       } else if (actionStr === 'scrollToTop') {
         flatListRef?.current?.scrollToOffset({animated: true, offset: 0});
       }
-
-      navigation.setParams({
-        actionStr: undefined,
-      });
     },
     [
       action.order,
