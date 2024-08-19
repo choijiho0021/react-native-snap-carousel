@@ -536,6 +536,10 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       } else if (actionStr === 'scrollToTop') {
         flatListRef?.current?.scrollToOffset({animated: true, offset: 0});
       }
+
+      navigation.setParams({
+        actionStr: undefined,
+      });
     },
     [
       action.order,
