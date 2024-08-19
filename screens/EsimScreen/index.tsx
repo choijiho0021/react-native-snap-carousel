@@ -280,9 +280,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [showUsageModal, setShowUsageModal] = useState<boolean | undefined>(
-    route?.params?.actionStr === 'showUsage',
-  );
+  const [showUsageModal, setShowUsageModal] = useState<boolean>(false);
   const [subs, setSubs] = useState<RkbSubscription>();
   const [usageLoading, setUsageLoading] = useState(false);
   const [showGiftModal, setShowGiftModal] = useState<boolean | undefined>();
@@ -429,29 +427,16 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   }, []);
 
   useEffect(() => {
-    const {actionStr} = route?.params || {};
-
-    if (actionStr === 'showUsage' && showUsageSubsId && !isEditMode) {
+    if (showUsageSubsId && !isEditMode) {
       const index = subsData?.findIndex((elm) => elm.nid === showUsageSubsId);
 
       if (index >= 0) {
         setShowUsageModal(true);
         onPressUsage(subsData[index], getIsChargeable(subsData[index]));
-        navigation.setParams({
-          actionStr: undefined,
-        });
         flatListRef?.current?.scrollToIndex({index, animated: true});
       }
     }
-  }, [
-    getIsChargeable,
-    isEditMode,
-    navigation,
-    onPressUsage,
-    route?.params,
-    showUsageSubsId,
-    subsData,
-  ]);
+  }, [getIsChargeable, isEditMode, onPressUsage, showUsageSubsId, subsData]);
 
   const getSubsAction = useCallback(
     async (subsId?: string, actionStr?: string, subsIccid?: string) => {
@@ -469,6 +454,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         checkLottery();
       } else if (actionStr === 'showUsage') {
         const index = subsData?.findIndex((elm) => elm.nid === subsId);
+
         if (index >= 0) {
           setSelectedIdx(index);
           setShowUsageModal(true);
