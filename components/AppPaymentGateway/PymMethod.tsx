@@ -119,8 +119,9 @@ const PymMethod: React.FC<PymMethodProps> = ({
     else {
       setMethod('easy');
       setSelected(value || 'pym:kakao');
+      onPress(value || 'pym:kakao');
     }
-  }, [value]);
+  }, [onPress, value]);
 
   const renderCardButton = useCallback(() => {
     return (
