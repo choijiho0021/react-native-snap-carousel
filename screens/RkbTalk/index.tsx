@@ -1,19 +1,19 @@
-import React, {useState, useCallback, useRef} from 'react';
-import {SafeAreaView, StyleSheet, StatusBar} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {SafeAreaView, StatusBar, StyleSheet} from 'react-native';
+import InCallManager from 'react-native-incall-manager';
 import {
-  SessionState,
-  UserAgent,
   Inviter,
-  UserAgentOptions,
   Registerer,
   Session,
+  SessionState,
+  UserAgent,
+  UserAgentOptions,
 } from 'sip.js';
-import {useFocusEffect} from '@react-navigation/native';
-import InCallManager from 'react-native-incall-manager';
+import AppText from '@/components/AppText';
+import AppAlert from '@/components/AppAlert';
 import Keypad, {KeypadRef} from './Keypad';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
-import AppAlert from '@/components/AppAlert';
-import AppText from '@/components/AppText';
 
 const styles = StyleSheet.create({
   body: {
@@ -34,6 +34,7 @@ const RkbTalk = () => {
     SessionState.Initial,
   );
   const [speakerPhone, setSpeakerPhone] = useState(false);
+  const [rnSession, setRnSession] = useState<RNSessionDescriptionHandler>();
 
   // Options for SimpleUser
   useFocusEffect(
@@ -41,14 +42,16 @@ const RkbTalk = () => {
       const transportOptions = {
         server: 'wss://talk.rokebi.com:8089/ws',
       };
-      const uri = UserAgent.makeURI('sip:07079190190@talk.rokebi.com');
+      const uri = UserAgent.makeURI('sip:01087898720@talk.rokebi.com');
       const userAgentOptions: UserAgentOptions = {
-        authorizationPassword: 'ua123123',
-        authorizationUsername: '07079190190',
+        authorizationPassword: '000000',
+        authorizationUsername: '01087898720',
         transportOptions,
         uri,
         sessionDescriptionHandlerFactory: (session, options) => {
-          return new RNSessionDescriptionHandler(session, options);
+          const s = new RNSessionDescriptionHandler(session, options);
+          setRnSession(s);
+          return s;
         },
         sessionDescriptionHandlerFactoryOptions: {
           iceServers: [{urls: 'stun:talk.rokebi.com:3478'}],
@@ -202,6 +205,21 @@ const RkbTalk = () => {
       }
     }
   }, [inviter]);
+
+  useEffect(() => {
+    if (rnSession)
+      rnSession?._eventEmitter.on('onconnectionstatechange', (e) => {
+        console.log('onconnectionstatechange: ', e);
+        switch (e) {
+          case 'disconnected':
+          case 'failed':
+            releaseCall();
+            break;
+          default:
+            break;
+        }
+      });
+  }, [releaseCall, rnSession]);
 
   const onPressKeypad = useCallback(
     (k) => {

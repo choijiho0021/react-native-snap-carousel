@@ -1,8 +1,9 @@
 /* eslint-disable no-underscore-dangle */
+import EventEmitter from 'events';
 import {
-  RTCPeerConnection,
-  MediaStream,
   mediaDevices,
+  MediaStream,
+  RTCPeerConnection,
 } from 'react-native-webrtc';
 import {SessionDescriptionHandler} from 'sip.js';
 
@@ -20,7 +21,10 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
   private _dataChannel: any;
 
   mediaStreamFactory: (constraints: any) => Promise<MediaStream>;
+
   _peerConnectionDelegate: any;
+
+  _eventEmitter: EventEmitter;
 
   /**
    * Constructor
@@ -50,6 +54,8 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
         ? undefined
         : options.peerConnectionConfiguration,
     );
+
+    this._eventEmitter = new EventEmitter();
     this.initPeerConnectionEventHandlers();
   }
 
@@ -201,7 +207,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
    * @param enable - If true enable tracks, otherwise disable tracks.
    */
   enableReceiverTracks(enable) {
-    const peerConnection = this.peerConnection;
+    const {peerConnection} = this;
     if (!peerConnection) {
       throw new Error('Peer connection closed.');
     }
@@ -217,7 +223,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
    * @param enable - If true enable tracks, otherwise disable tracks.
    */
   enableSenderTracks(enable) {
-    const peerConnection = this.peerConnection;
+    const {peerConnection} = this;
     if (!peerConnection) {
       throw new Error('Peer connection closed.');
     }
@@ -234,7 +240,8 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
    * @param modifiers - Modifiers.
    */
   getDescription(options, modifiers) {
-    var _a, _b;
+    let _a;
+    let _b;
     this.logger.debug(
       'RNSessionDescriptionHandler.getDescription',
       options,
@@ -375,7 +382,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       return false;
     }
     this.logger.log(
-      'RNSessionDescriptionHandler.sendDtmf sent via RTP: ' + tones.toString(),
+      `RNSessionDescriptionHandler.sendDtmf sent via RTP: ${tones.toString()}`,
     );
     return true;
   }
@@ -408,7 +415,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       )
       .catch((error) => {
         this.logger.error(
-          'RNSessionDescriptionHandler.setDescription failed - ' + error,
+          `RNSessionDescriptionHandler.setDescription failed - ${error}`,
         );
         throw error;
       });
@@ -492,7 +499,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       default:
         return Promise.reject(
           new Error(
-            'Invalid signaling state ' + this._peerConnection.signalingState,
+            `Invalid signaling state ${this._peerConnection.signalingState}`,
           ),
         );
     }
@@ -534,7 +541,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       default:
         return Promise.reject(
           new Error(
-            'Invalid signaling state ' + this._peerConnection.signalingState,
+            `Invalid signaling state ${this._peerConnection.signalingState}`,
           ),
         );
     }
@@ -549,12 +556,11 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
     if (this._peerConnection === undefined) {
       return Promise.reject(new Error('Peer connection closed.'));
     }
-    let constraints = Object.assign(
-      {},
-      options === null || options === undefined
+    let constraints = {
+      ...(options === null || options === undefined
         ? undefined
-        : options.constraints,
-    );
+        : options.constraints),
+    };
     // if we already have a local media stream...
     if (this.localMediaStreamConstraints) {
       // ignore constraint "downgrades"
@@ -601,7 +607,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
     const localStream = this._localMediaStream;
     const trackUpdates = [];
     const updateTrack = (newTrack) => {
-      const kind = newTrack.kind;
+      const {kind} = newTrack;
       if (kind !== 'audio' && kind !== 'video') {
         throw new Error(`Unknown new track kind ${kind}.`);
       }
@@ -724,7 +730,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
     if (this._peerConnection === undefined) {
       return Promise.reject(new Error('Peer connection closed.'));
     }
-    const sdp = sessionDescription.sdp;
+    const {sdp} = sessionDescription;
     let type;
     switch (this._peerConnection.signalingState) {
       case 'stable':
@@ -742,7 +748,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       default:
         return Promise.reject(
           new Error(
-            'Invalid signaling state ' + this._peerConnection.signalingState,
+            `Invalid signaling state ${this._peerConnection.signalingState}`,
           ),
         );
     }
@@ -1016,7 +1022,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       default:
         return Promise.reject(
           new Error(
-            'Invalid signaling state ' + this._peerConnection.signalingState,
+            `Invalid signaling state ${this._peerConnection.signalingState}`,
           ),
         );
     }
@@ -1058,8 +1064,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       this.iceGatheringCompleteReject = reject;
       if (timeout > 0) {
         this.logger.debug(
-          'RNSessionDescriptionHandler.waitForIceGatheringToComplete - timeout in ' +
-            timeout,
+          `RNSessionDescriptionHandler.waitForIceGatheringToComplete - timeout in ${timeout}`,
         );
         this.iceGatheringCompleteTimeoutId = setTimeout(() => {
           this.logger.debug(
@@ -1082,7 +1087,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
     if (!this._peerConnection) throw new Error('Peer connection undefined.');
     const peerConnection = this._peerConnection;
     peerConnection.onconnectionstatechange = (event) => {
-      var _a;
+      let _a;
       const newState = peerConnection.connectionState;
       this.logger.debug(
         `RNSessionDescriptionHandler.onconnectionstatechange ${newState}`,
@@ -1094,9 +1099,11 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       ) {
         this._peerConnectionDelegate.onconnectionstatechange(event);
       }
+
+      this._eventEmitter.emit('onconnectionstatechange', newState);
     };
     peerConnection.ondatachannel = (event) => {
-      var _a;
+      let _a;
       this.logger.debug(`RNSessionDescriptionHandler.ondatachannel`);
       this._dataChannel = event.channel;
       if (this.onDataChannel) {
@@ -1111,7 +1118,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       }
     };
     peerConnection.onicecandidate = (event) => {
-      var _a;
+      let _a;
       this.logger.debug(`RNSessionDescriptionHandler.onicecandidate`);
       if (
         (_a = this._peerConnectionDelegate) === null || _a === undefined
@@ -1122,7 +1129,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       }
     };
     peerConnection.onicecandidateerror = (event) => {
-      var _a;
+      let _a;
       this.logger.debug(`RNSessionDescriptionHandler.onicecandidateerror`);
       if (
         (_a = this._peerConnectionDelegate) === null || _a === undefined
@@ -1133,7 +1140,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       }
     };
     peerConnection.oniceconnectionstatechange = (event) => {
-      var _a;
+      let _a;
       const newState = peerConnection.iceConnectionState;
       this.logger.debug(
         `RNSessionDescriptionHandler.oniceconnectionstatechange ${newState}`,
@@ -1147,7 +1154,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       }
     };
     peerConnection.onicegatheringstatechange = (event) => {
-      var _a;
+      let _a;
       const newState = peerConnection.iceGatheringState;
       this.logger.debug(
         `RNSessionDescriptionHandler.onicegatheringstatechange ${newState}`,
@@ -1164,7 +1171,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       }
     };
     peerConnection.onnegotiationneeded = (event) => {
-      var _a;
+      let _a;
       this.logger.debug(`RNSessionDescriptionHandler.onnegotiationneeded`);
       if (
         (_a = this._peerConnectionDelegate) === null || _a === undefined
@@ -1175,7 +1182,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       }
     };
     peerConnection.onsignalingstatechange = (event) => {
-      var _a;
+      let _a;
       const newState = peerConnection.signalingState;
       this.logger.debug(
         `RNSessionDescriptionHandler.onsignalingstatechange ${newState}`,
@@ -1189,8 +1196,8 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
       }
     };
     peerConnection.ontrack = (event) => {
-      var _a;
-      const kind = event.track.kind;
+      let _a;
+      const {kind} = event.track;
       const enabled = event.track.enabled ? 'enabled' : 'disabled';
       this.logger.debug(
         `RNSessionDescriptionHandler.ontrack ${kind} ${enabled}`,
