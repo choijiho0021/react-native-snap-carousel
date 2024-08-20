@@ -42,10 +42,10 @@ const RkbTalk = () => {
       const transportOptions = {
         server: 'wss://talk.rokebi.com:8089/ws',
       };
-      const uri = UserAgent.makeURI('sip:01087898720@talk.rokebi.com');
+      const uri = UserAgent.makeURI('sip:07079190190@talk.rokebi.com');
       const userAgentOptions: UserAgentOptions = {
-        authorizationPassword: '000000',
-        authorizationUsername: '01087898720',
+        authorizationPassword: 'ua123123',
+        authorizationUsername: '07079190190',
         transportOptions,
         uri,
         sessionDescriptionHandlerFactory: (session, options) => {
