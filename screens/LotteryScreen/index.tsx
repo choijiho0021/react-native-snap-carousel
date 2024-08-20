@@ -179,6 +179,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [showSnackbar, setShowSnackbar] = useState('');
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
   const [isGetResult, setIsGetResult] = useState(false); // 모달창 뜨고 쿠폰함 바로가기 보여주기용
+  const [disableBtn, setDisableBtn] = useState(false); // 모달 결과 출력 전까지 버튼 금지
 
   const {type} = route?.params;
 
@@ -342,6 +343,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       token,
       prompt: 'lottery',
     }).then((resp) => {
+      setDisableBtn(true);
       const couponObj = resp.objects[0]?.coupon;
 
       if (resp.result === 0) {
@@ -365,7 +367,8 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           action.account.checkLottery({iccid, token, prompt: 'check'});
           setIsGetResult(true);
           setShowCouponModal(true);
-        }, 3000);
+          setDisableBtn(false);
+        }, 2000);
       } else {
         // 실패했을 땐 어떻게 해야할 지??
       }
@@ -485,8 +488,10 @@ const LotteryScreen: React.FC<LotteryProps> = ({
                 i18n.t(`esim:lottery:share${r.key}`),
                 `btnShare${r.key}`,
                 () => {
-                  logAnalytics(`${i18n.t(`esim:lottery:event${r.key}`)}_try`);
-                  r.onClick();
+                  if (!disableBtn) {
+                    logAnalytics(`${i18n.t(`esim:lottery:event${r.key}`)}_try`);
+                    r.onClick();
+                  }
                 },
               )}
               {idx !== 2 && <View style={styles.dividerSmall} />}
