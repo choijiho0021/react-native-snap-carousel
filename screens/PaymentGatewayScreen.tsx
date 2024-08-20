@@ -217,10 +217,16 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
               }
 
               action.product.getAllProduct(true);
-            } else if (resp?.status === api.API_STATUS_PREFAILED)
-              text = 'cart:cashChanged';
-            AppAlert.info(i18n.t(text));
-            navigation.popToTop();
+            } else if (resp?.status === api.API_STATUS_CONFLICT) {
+              action.product.getAllProduct(true);
+              text = 'cart:paymentNotMatch';
+            }
+            // else if (resp?.status === api.API_STATUS_PREFAILED)
+            //   text = 'cart:paymentNotMatch';
+            AppAlert.info(i18n.t(text), '', () => navigation.popToTop());
+
+            // AppAlert.info(i18n.t(text));
+            // navigation.popToTop();
           } else {
             setIsOrderReady(true);
             if (params.pay_method.startsWith('vbank')) {

@@ -200,7 +200,7 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
     dispatch(accountActions.clearCookies());
 
     // load product list
-    dispatch(productActions.init());
+    dispatch(productActions.init(false));
 
     if (!esimApp) {
       // 공지 사항 가져오기

@@ -60,8 +60,8 @@ const GuideSelectRegionScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <GuideHeader onPress={() => navigation?.goBack()} />
+      <GuideHeader onPress={() => navigation?.goBack()} />
+      <ScrollView style={{paddingTop: 40}}>
         <GuideTitle
           title={i18n.t(`userGuide:selectRegion:${guideOption}:title`)}
         />

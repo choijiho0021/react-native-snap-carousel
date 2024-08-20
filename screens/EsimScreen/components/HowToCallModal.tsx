@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     ...appStyles.bold20Text,
     marginTop: 42,
     marginBottom: 20,
+    lineHeight: 30,
   },
   subtitle: {
     ...appStyles.bold16Text,

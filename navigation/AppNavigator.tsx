@@ -404,7 +404,11 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
           const linkPath = schemeSplit[schemeSplit.length - 1];
 
           if (linkPath === 'draft') {
-            refNavigate({stack: 'EsimStack', screen: 'Esim'});
+            refNavigate({
+              stack: 'EsimStack',
+              screen: 'Esim',
+              params: {actionStr: 'reload'},
+            });
           } else gift(url, params);
         }
       }

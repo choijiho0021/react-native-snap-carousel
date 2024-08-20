@@ -113,6 +113,7 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
   const [newEmail, setNewEmail] = useState<string>('');
   const [domain, setDomain] = useState('');
   const emailRef = useRef<InputEmailRef>(null);
+  const [lock, setLock] = useState(false);
 
   const changeEmail = useCallback(() => {
     actions.account.changeEmail(newEmail).then((rsp) => {
@@ -123,6 +124,7 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
         });
         navigation.goBack();
       } else {
+        setLock(true);
         Keyboard.dismiss();
         actions.toast.push({
           msg: 'changeEmail:fail',
@@ -177,7 +179,7 @@ const ChangeEmailScreen: React.FC<ChangeEmailScreenProps> = ({
             styles.buttonTitle,
             {color: newEmail ? colors.white : colors.warmGrey},
           ]}
-          disabled={!newEmail}
+          disabled={!newEmail || lock}
           title={i18n.t('changeEmail:save')}
           onPress={changeEmail}
           type="primary"

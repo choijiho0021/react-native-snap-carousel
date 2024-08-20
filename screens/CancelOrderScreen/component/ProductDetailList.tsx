@@ -77,16 +77,13 @@ const ProductDetailList: React.FC<ProductDetailListPros> = ({
 
         const prod = product.prodList.get(item?.key || item?.uuid);
 
-        if (prod)
-          return {
-            title: prod.name,
-            field_description: prod?.field_description,
-            promoFlag: prod.promoFlag,
-            qty: item.qty,
-            price,
-          };
-
-        return null;
+        return {
+          title: item.title,
+          field_description: prod?.field_description,
+          promoFlag: prod?.promoFlag,
+          qty: item.qty,
+          price,
+        };
       })
       .filter((r) => r !== null);
 

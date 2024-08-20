@@ -278,7 +278,7 @@ const CouponScreen: React.FC<CouponProps> = ({
         <AppText style={styles.title}>{i18n.t('coupon:mine')}</AppText>
       </>
     ),
-    [regCoupon],
+    [focused, regCoupon],
   );
 
   return (

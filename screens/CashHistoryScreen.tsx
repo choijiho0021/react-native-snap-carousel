@@ -703,8 +703,17 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <AppPrice
               price={utils.toCurrency(expirePt || 0, esimCurrency)}
-              balanceStyle={[appStyles.bold18Text, {color: colors.redError}]}
-              currencyStyle={[appStyles.bold16Text, {color: colors.redError}]}
+              balanceStyle={[
+                appStyles.bold18Text,
+                {color: colors.redError, lineHeight: 24},
+              ]}
+              currencyStyle={[
+                appStyles.bold16Text,
+                {
+                  color: colors.redError,
+                  lineHeight: 22,
+                },
+              ]}
             />
             <AppSvgIcon name="rightArrow10" style={{marginLeft: 8}} />
           </View>
