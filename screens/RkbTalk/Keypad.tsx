@@ -115,13 +115,8 @@ type KeypadProps = {
 
 const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
   const [dest, setDest] = useState('');
+  const [dtmf, setDtmf] = useState('');
   const [showKeypad, setShowKeypad] = useState(false);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      setShowKeypad(false);
-    }, []),
-  );
 
   useEffect(() => {
     if (keypadRef) {
@@ -149,6 +144,17 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
     [onPress],
   );
 
+  const closeKeypad = useCallback(() => {
+    setShowKeypad(false);
+    setDtmf('');
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      closeKeypad();
+    }, [closeKeypad]),
+  );
+
   const renderKey = useCallback(
     (st?: SessionState) => {
       if (
@@ -166,7 +172,11 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
                   <Pressable
                     style={styles.key}
                     key={d}
-                    onPress={() => setDest((prev) => prev + d)}>
+                    onPress={() =>
+                      showKeypad
+                        ? setDtmf((prev) => prev + d)
+                        : setDest((prev) => prev + d)
+                    }>
                     <Text style={styles.keyText}>{d}</Text>
                   </Pressable>
                 ))}
@@ -183,7 +193,7 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
                 ]}
                 onPress={() => {
                   onPress?.(showKeypad ? 'hangup' : 'call');
-                  setShowKeypad(false);
+                  closeKeypad();
                 }}
               />
               {showKeypad ? (
@@ -192,7 +202,7 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
                     styles.empty,
                     {alignItems: 'center', justifyContent: 'center'},
                   ]}
-                  onPress={() => setShowKeypad(false)}>
+                  onPress={() => closeKeypad()}>
                   <AppText style={appStyles.bold14Text}>가리기</AppText>
                 </Pressable>
               ) : (
@@ -234,20 +244,20 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
               style={[styles.call, {backgroundColor: colors.tomato}]}
               onPress={() => {
                 onPress?.('hangup');
-                setShowKeypad(false);
+                closeKeypad();
               }}
             />
           </View>
         </>
       );
     },
-    [onPress, renderKeyButton, showKeypad],
+    [closeKeypad, onPress, renderKeyButton, showKeypad],
   );
 
   return (
     <View style={style}>
       <View style={styles.input}>
-        <Text style={styles.dest}>{dest}</Text>
+        <Text style={styles.dest}>{showKeypad ? dtmf : dest}</Text>
       </View>
       {renderKey(state)}
     </View>
