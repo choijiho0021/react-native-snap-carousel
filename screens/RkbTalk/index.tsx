@@ -1,6 +1,6 @@
 import {useFocusEffect} from '@react-navigation/native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {SafeAreaView, StatusBar, StyleSheet} from 'react-native';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {SafeAreaView, StatusBar, StyleSheet, View} from 'react-native';
 import InCallManager from 'react-native-incall-manager';
 import {
   Inviter,
@@ -14,6 +14,12 @@ import AppText from '@/components/AppText';
 import AppAlert from '@/components/AppAlert';
 import Keypad, {KeypadRef} from './Keypad';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
+import PhoneCertModal from './component/PhoneCertModal';
+import WebView from 'react-native-webview';
+import {
+  inicisButton,
+  inicisWebviewHtml,
+} from '@/components/AppPaymentGateway/ConfigInicis';
 
 const styles = StyleSheet.create({
   body: {
@@ -35,6 +41,12 @@ const RkbTalk = () => {
   );
   const [speakerPhone, setSpeakerPhone] = useState(false);
   const [rnSession, setRnSession] = useState<RNSessionDescriptionHandler>();
+  const [modal, setModal] = useState(false);
+
+  const injected = useRef(false);
+  const ref = useRef<WebView>(null);
+
+  const html = useMemo(() => inicisButton(), []);
 
   // Options for SimpleUser
   useFocusEffect(
@@ -243,17 +255,112 @@ const RkbTalk = () => {
     [makeCall, releaseCall],
   );
 
+  const onLoadEnd = useCallback(({nativeEvent: event}) => {
+    if (event.url.startsWith('about') && !injected.current) {
+      ref.current?.injectJavaScript('start_script();');
+      injected.current = true;
+    }
+  }, []);
+
+  const onShouldStartLoadWithRequest = useCallback(
+    (event: ShouldStartLoadRequest): boolean => {
+      console.log('@@@ PG ', event.url);
+      console.log('@@@@ event : ', event.loading);
+
+      return true;
+
+      // if (event.url.includes(pgWebViewConfig.cancelUrl)) {
+      //   callback('cancel', decodeURI(event?.url));
+      //   return false;
+      // }
+
+      // if (pgWebViewConfig.nextUrl === event.url) {
+      //   callback('next');
+      //   return false;
+      // }
+
+      // if (
+      //   event.url.startsWith('about:blank') ||
+      //   event.url.indexOf('blank') !== -1
+      // ) {
+      //   setLoading(false);
+      //   return true;
+      // }
+
+      // console.log('@@@ url : ', event.url, ', setLoading : true');
+      // if (event.url.startsWith('http://') || event.url.startsWith('https://')) {
+      //   // 결제사의 비밀번호 입력 화면 같은 특정 웹 페이지는 loading false -> onLoadEnd 호출을 안해서 loading 값 참조
+      //   setLoading(event?.loading || false);
+      //   return true;
+      // }
+
+      // Linking.openURL(utils.intentToUrl(event.url)).catch((err) => {
+      //   AppAlert.info(i18n.t('pym:noAppScheme'), i18n.t('ok'), () =>
+      //     callback('cancel'),
+      //   );
+      // });
+
+      return false;
+    },
+    [],
+  );
+
   return (
     <>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView style={styles.body}>
         <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
+
+        <WebView
+          style={{flex: 1}}
+          ref={ref}
+          javaScriptEnabled
+          mixedContentMode="compatibility"
+          // onMessage={onMessage}
+          originWhitelist={['*']}
+          sharedCookiesEnabled
+          javaScriptCanOpenWindowsAutomatically
+          onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
+          onLoadEnd={onLoadEnd}
+          source={{html: html}}
+        />
         <Keypad
           style={styles.keypad}
           keypadRef={keypadRef}
           onPress={onPressKeypad}
           state={sessionState}
         />
+        {/* <PhoneCertModal
+          visible={true}
+          isCloseBtn={false}
+          onClose={() => {
+            console.log('@@@ close');
+          }}
+          title={
+            <View>
+              <AppText>데이터만 있으면 언제 어디서든 톡톡!</AppText>
+            </View>
+          }
+          body={
+            <View style={{marginHorizontal: 20, backgroundColor: 'red'}}>
+           
+
+              <WebView
+                style={{flex: 1}}
+                ref={ref}
+                javaScriptEnabled
+                mixedContentMode="compatibility"
+                // onMessage={onMessage}
+                originWhitelist={['*']}
+                sharedCookiesEnabled
+                javaScriptCanOpenWindowsAutomatically
+                // onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
+                onLoadEnd={onLoadEnd}
+                source={{html: html}}
+              />
+            </View>
+          }
+        /> */}
       </SafeAreaView>
     </>
   );

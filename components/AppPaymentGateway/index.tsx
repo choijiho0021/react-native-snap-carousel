@@ -35,6 +35,8 @@ const loadingImg = require('../../assets/images/loading_1.mp4');
 const pgWebViewHtml = (info: PaymentParams) => {
   const pg = info.paymentRule?.[info.card || info.pay_method] || '';
   if (pg === 'T') return hectoWebViewHtml(info);
+
+  console.log('info : ', info);
   return inicisWebviewHtml(info);
 };
 
@@ -227,7 +229,7 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         javaScriptCanOpenWindowsAutomatically
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         onLoadEnd={onLoadEnd}
-        source={{html}}
+        source={{html: html}}
       />
       {loading ? <>{renderLoading()}</> : null}
     </>
