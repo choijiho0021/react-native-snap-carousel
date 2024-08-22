@@ -8,11 +8,14 @@ import {
   StyleProp,
 } from 'react-native';
 import {SessionState} from 'sip.js';
+import {useFocusEffect} from '@react-navigation/native';
 import {colors} from '@/constants/Colors';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
+import CallAction from './CallAction';
+import {appStyles} from '@/constants/Styles';
 
 const buttonSize = isDeviceSize('medium', true) ? 70 : 80;
 console.log('@@@ buton size', buttonSize, windowWidth);
@@ -112,6 +115,13 @@ type KeypadProps = {
 
 const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
   const [dest, setDest] = useState('');
+  const [showKeypad, setShowKeypad] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setShowKeypad(false);
+    }, []),
+  );
 
   useEffect(() => {
     if (keypadRef) {
@@ -128,7 +138,10 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
           key={key}
           name={key}
           style={styles.key}
-          onPress={() => onPress?.(key)}
+          onPress={() => {
+            if (key === 'keypad') setShowKeypad((prev) => !prev);
+            else onPress?.(key);
+          }}
         />
         <AppText>{i18n.t(`talk:${key}`)}</AppText>
       </View>
@@ -141,7 +154,9 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
       if (
         !st ||
         st === SessionState.Initial ||
-        st === SessionState.Terminated
+        st === SessionState.Terminated ||
+        (showKeypad &&
+          [SessionState.Established, SessionState.Establishing].includes(st))
       ) {
         return (
           <>
@@ -161,21 +176,40 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
               <View style={styles.empty} />
               <AppSvgIcon
                 key="call"
-                name="keyCall"
-                style={[styles.call, {backgroundColor: colors.green}]}
-                onPress={() => onPress?.('call')}
+                name={showKeypad ? 'keyHangup' : 'keyCall'}
+                style={[
+                  styles.call,
+                  {backgroundColor: showKeypad ? colors.tomato : colors.green},
+                ]}
+                onPress={() => {
+                  onPress?.(showKeypad ? 'hangup' : 'call');
+                  setShowKeypad(false);
+                }}
               />
-              <AppSvgIcon
-                key="del"
-                name="keyDel"
-                style={styles.empty}
-                onPress={() =>
-                  setDest((prev) =>
-                    prev.length > 0 ? prev.substring(0, prev.length - 1) : prev,
-                  )
-                }
-                onLongPress={() => setDest('')}
-              />
+              {showKeypad ? (
+                <Pressable
+                  style={[
+                    styles.empty,
+                    {alignItems: 'center', justifyContent: 'center'},
+                  ]}
+                  onPress={() => setShowKeypad(false)}>
+                  <AppText style={appStyles.bold14Text}>가리기</AppText>
+                </Pressable>
+              ) : (
+                <AppSvgIcon
+                  key="del"
+                  name="keyDel"
+                  style={styles.empty}
+                  onPress={() =>
+                    setDest((prev) =>
+                      prev.length > 0
+                        ? prev.substring(0, prev.length - 1)
+                        : prev,
+                    )
+                  }
+                  onLongPress={() => setDest('')}
+                />
+              )}
             </View>
           </>
         );
@@ -198,13 +232,16 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
               key="call"
               name="keyHangup"
               style={[styles.call, {backgroundColor: colors.tomato}]}
-              onPress={() => onPress?.('hangup')}
+              onPress={() => {
+                onPress?.('hangup');
+                setShowKeypad(false);
+              }}
             />
           </View>
         </>
       );
     },
-    [onPress, renderKeyButton],
+    [onPress, renderKeyButton, showKeypad],
   );
 
   return (
