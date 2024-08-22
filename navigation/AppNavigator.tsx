@@ -26,7 +26,6 @@ import {
   Linking,
   Platform,
   Modal,
-  AppState,
 } from 'react-native';
 import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
@@ -62,7 +61,6 @@ import ProgressiveImage from '@/components/ProgressiveImage';
 import i18n from '@/utils/i18n';
 import {isFolderOpen} from '@/constants/SliderEntry.style';
 import {ProductModelState} from '@/redux/modules/product';
-import AppAlert from '@/components/AppAlert';
 
 const {isIOS, esimGlobal} = Env.get();
 const MainStack = createStackNavigator();
@@ -133,9 +131,9 @@ type RegisterMobileScreenProps = {
 const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   store,
   modal,
-  link,
-  product,
-  promotion,
+  link: {url, linkPath},
+  product: {prodList, localOpList, ready},
+  promotion: {popUpPromotionMap},
   actions,
 }) => {
   const navigationRef = useNavigationContainerRef();
@@ -147,7 +145,6 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const [savedPopup, setSavedPopup] = useState();
   const runDynamicLink = useRef(false);
-  const appState = useRef('unknown');
   const routeNameRef = useRef();
 
   useEffect(() => {
@@ -291,20 +288,20 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
 
   const linkSave = useCallback(
     async ({
-      url,
+      linkUrl,
       params,
       utmParameters,
       linkPath,
     }: {
-      url?: string;
+      linkUrl?: string;
       params?: urlParamObj;
       linkPath?: string;
       utmParameters?: any;
     }) => {
-      if (url) {
+      if (linkUrl) {
         store.dispatch(
           linkActions.update({
-            url,
+            linkUrl,
             params,
             utmParameters,
             linkPath,
@@ -333,11 +330,11 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       if (
         url?.indexOf('product') > -1 &&
         params?.uuid &&
-        product.prodList.size > 0 &&
-        product.localOpList.size > 0
+        prodList.size > 0 &&
+        localOpList.size > 0
       ) {
-        const prod = product.prodList.get(params.uuid);
-        const localOp = product.localOpList.get(params.uuid);
+        const prod = prodList.get(params.uuid);
+        const localOp = localOpList.get(params.uuid);
 
         if (prod)
           return {
@@ -365,24 +362,24 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
 
       return {stack: undefined, screen: undefined, naviParams: undefined};
     },
-    [product.localOpList, product.prodList],
+    [localOpList, prodList],
   );
 
   const handleDynamicLink = useCallback(
     async (dLink: FirebaseDynamicLinksTypes.DynamicLink | null) => {
-      const url = dLink?.url;
-      const params: urlParamObj = utils.getParam(url);
+      const linkUrl = dLink?.url;
+      const params: urlParamObj = utils.getParam(linkUrl);
       const isSupport = await getIsSupport();
       const isFirst = await checkFistLaunch();
 
       linkSave({
-        url,
+        linkUrl,
         params,
         utmParameters: dLink?.utmParameters,
         linkPath: params?.linkPath,
       });
 
-      const {stack, screen, naviParams} = getNaviParams(url, params);
+      const {stack, screen, naviParams} = getNaviParams(linkUrl, params);
       if (isSupport || Platform.OS === 'ios') {
         if (isFirst) {
           refNavigate({
@@ -398,18 +395,18 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
             initial: false,
             params: naviParams,
           });
-        } else if (url) {
-          const urlSplit = url.split('?');
+        } else if (linkUrl) {
+          const urlSplit = linkUrl.split('?');
           const schemeSplit = urlSplit[0].split('/');
-          const linkPath = schemeSplit[schemeSplit.length - 1];
+          const lastSegment = schemeSplit[schemeSplit.length - 1];
 
-          if (linkPath === 'draft') {
+          if (lastSegment === 'draft') {
             refNavigate({
               stack: 'EsimStack',
               screen: 'Esim',
               params: {actionStr: 'reload'},
             });
-          } else gift(url, params);
+          } else gift(linkUrl, params);
         }
       }
     },
@@ -423,13 +420,13 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   }, [handleDynamicLink]);
 
   useEffect(() => {
-    if (product?.ready && !runDynamicLink.current) {
+    if (ready && !runDynamicLink.current) {
       runDynamicLink.current = true;
       dynamicLinks()
         .getInitialLink()
         .then((l) => handleDynamicLink(l));
     }
-  }, [handleDynamicLink, product.ready]);
+  }, [handleDynamicLink, ready]);
 
   const setPopupDisabled = useCallback(
     (popUp?: RkbPromotion) => {
@@ -558,11 +555,9 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
 
   const showPopUp = useCallback(
     (routeName: string) => {
-      const popUpList = promotion?.popUpPromotionMap?.get(routeName);
+      const popUpList = popUpPromotionMap?.get(routeName);
 
       if (popUpList) {
-        const {url, linkPath} = link;
-
         let popUp = popUpList.find((elm) => !elm.rule?.cond?.linkPath);
 
         if (url) {
@@ -595,7 +590,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         }
       }
     },
-    [dimensions.width, link, promotion?.popUpPromotionMap],
+    [dimensions.width, linkPath, popUpPromotionMap, url],
   );
 
   useEffect(() => {
@@ -628,9 +623,9 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   }, [actions.modal, closedPopUp, popUpModalBody, popUpPromo]);
 
   const deepLinkHandler = useCallback(
-    async (url: string) => {
+    async (linkUrl: string) => {
       const isSupport = await getIsSupport();
-      const urlSplit = url.split('?');
+      const urlSplit = linkUrl.split('?');
 
       if (
         isSupport &&
@@ -638,13 +633,13 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
         urlSplit &&
         urlSplit.length >= 2
       ) {
-        const params = utils.getParam(url);
+        const params = utils.getParam(linkUrl);
         const schemeSplit = urlSplit[0].split('/');
-        const linkPath = schemeSplit[schemeSplit.length - 1];
+        const lastSegment = schemeSplit[schemeSplit.length - 1];
 
-        linkSave({url, params, linkPath});
+        linkSave({linkUrl, params, linkPath: lastSegment});
 
-        switch (linkPath) {
+        switch (lastSegment) {
           case 'PROMOTION':
             refNavigate({
               stack: 'HomeStack',
@@ -711,8 +706,8 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   }, [deepLinkHandler]);
 
   useEffect(() => {
-    const addListenerLink = ({url}) => {
-      if (url) deepLinkHandler(url);
+    const addListenerLink = ({url: incomingUrl}) => {
+      if (incomingUrl) deepLinkHandler(incomingUrl);
     };
 
     Linking.addEventListener('url', addListenerLink);

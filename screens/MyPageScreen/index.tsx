@@ -79,12 +79,11 @@ type MyPageScreenProps = {
 
 const MyPageScreen: React.FC<MyPageScreenProps> = ({
   navigation,
-  account,
-  order,
+  account: {uid, loggedIn, mobile, token, iccid},
+  order: {orderList, orders},
   pending,
   action,
 }) => {
-  const {uid} = account;
   const flatListRef = useRef<FlatList>(null);
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -111,72 +110,53 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
     }
 
     // Logout시에 mount가 새로 되는데 login 페이지로 안가기 위해서 isFocused 조건 추가
-    if (!account.loggedIn && navigation.isFocused()) {
+    if (!loggedIn && navigation.isFocused()) {
       navigation.navigate('RegisterMobile', {
         goBack: () => navigation.goBack(),
       });
     } else {
       didMount();
     }
-  }, [account.loggedIn, checkPhotoPermission, navigation]);
+  }, [checkPhotoPermission, loggedIn, navigation]);
 
   useFocusEffect(
     React.useCallback(() => {
-      if (!account.loggedIn) {
+      if (!loggedIn) {
         navigation.navigate('RegisterMobile', {
           goBack: () => navigation.goBack(),
         });
       } else {
         action.order.getOrders({
-          user: account.mobile,
-          token: account.token,
+          user: mobile,
+          token,
           page: 0,
         });
         flatListRef.current?.scrollToOffset({animated: false, offset: 0});
       }
-    }, [
-      account.loggedIn,
-      account.mobile,
-      account.token,
-      navigation,
-      action.order,
-    ]),
+    }, [loggedIn, navigation, action.order, mobile, token]),
   );
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
 
-    action.account.getUserId({
-      name: account.mobile,
-      token: account.token,
+    action.account.getUserId({name: mobile});
+
+    action.account.getMyCoupon({token: token!});
+
+    action.order.getOrders({user: mobile, token, page: 0}).then((resp) => {
+      if (resp) {
+        action.account.getAccount({iccid, token}).then((r) => {
+          if (r) setRefreshing(false);
+        });
+      }
     });
-
-    action.account.getMyCoupon({token: account.token});
-
-    action.order
-      .getOrders({user: account.mobile, token: account.token, page: 0})
-      .then((resp) => {
-        if (resp) {
-          action.account
-            .getAccount({iccid: account.iccid, token: account.token})
-            .then((r) => {
-              if (r) setRefreshing(false);
-            });
-        }
-      });
-  }, [
-    account.iccid,
-    account.mobile,
-    account.token,
-    action.account,
-    action.order,
-  ]);
+  }, [action.account, action.order, iccid, mobile, token]);
 
   const getNextOrder = useCallback(() => {
-    if (order.orderList.length > 0) {
-      action.order.getOrders({user: account.mobile, token: account.token});
+    if (orderList.length > 0) {
+      action.order.getOrders({user: mobile, token});
     }
-  }, [account.mobile, account.token, action.order, order.orderList.length]);
+  }, [action.order, mobile, orderList.length, token]);
 
   const changePhoto = useCallback(async () => {
     const checkNewPermission = await checkPhotoPermission();
@@ -228,7 +208,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
 
   const renderOrder = useCallback(
     ({item}) => {
-      const orderItem = order.orders.get(item);
+      const orderItem = orders.get(item);
       return orderItem ? (
         <OrderItem
           item={orderItem}
@@ -236,7 +216,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
         />
       ) : null;
     },
-    [navigation, order.orders],
+    [navigation, orders],
   );
 
   return (
@@ -255,7 +235,7 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
       <FlatList
         style={{flex: 1, marginTop: 24}}
         ref={flatListRef}
-        data={order.orderList}
+        data={orderList}
         keyExtractor={(item) => `${item}`}
         ListHeaderComponent={<Info onChangePhoto={changePhoto} />}
         ListFooterComponent={<View style={{height: 40, width: '100%'}} />}

@@ -138,9 +138,23 @@ const {webViewHost} = Env.get();
 const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
   const {
     navigation,
-    route,
-    info,
-    account,
+    route: {
+      params: {
+        rule,
+        mode = 'html',
+        text,
+        bodyTitle = '',
+        key,
+        image,
+        showIcon,
+        showCloseModal,
+        btnStyle,
+        notiType = 'noti',
+        created,
+      } = {},
+    },
+    info: {infoMap},
+    account: {iccid, token, loggedIn},
     eventStatus,
     isProdEvent,
     pending,
@@ -148,16 +162,16 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
   } = props;
 
   const [body, setBody] = useState('');
-  const [bodyTitle, setBodyTitle] = useState('');
+  // const [bodyTitle, setBodyTitle] = useState('');
   const [infoMapKey, setInfoMapKey] = useState('');
   const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState<SimpleTextScreenMode>('html');
+  // const [mode, setMode] = useState<SimpleTextScreenMode>('html');
   const [promoResult, setPromoResult] = useState('');
   const [btnDisabled, setBtnDisabled] = useState(false);
 
   useEffect(() => {
-    if (info.infoMap) setBody(info.infoMap.get(infoMapKey, [])[0]?.body || '');
-  }, [info.infoMap, infoMapKey]);
+    if (infoMap) setBody(infoMap.get(infoMapKey, [])[0]?.body || '');
+  }, [infoMap, infoMapKey]);
 
   const onMessage = useCallback(
     ({nativeEvent: {data}}) => {
@@ -216,7 +230,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
 
           break;
         case 'moveToEvent':
-          if (!account.loggedIn) {
+          if (!loggedIn) {
             action.modal.renderModal(() => (
               <AppModalContent
                 title={i18n.t('event:login')}
@@ -241,13 +255,10 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
           break;
       }
     },
-    [account.loggedIn, action.info, action.modal, action.product, navigation],
+    [action.info, action.modal, action.product, loggedIn, navigation],
   );
 
   const onPress = useCallback(async () => {
-    const {rule} = route.params;
-    const {iccid, token, loggedIn} = account;
-
     if (
       rule &&
       isProdEvent &&
@@ -281,22 +292,27 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     } else {
       navigation.goBack();
     }
-  }, [account, eventStatus, isProdEvent, navigation, route.params]);
+  }, [eventStatus, iccid, isProdEvent, loggedIn, navigation, rule, token]);
 
   const getContent = useCallback(
-    ({key, bodyTitle: title}: {key: string; bodyTitle?: string}) => {
-      const {infoMap} = info;
-      const infoKey = key === 'noti' && title ? title : key;
+    ({
+      key: contentKey,
+      bodyTitle: title,
+    }: {
+      key: string;
+      bodyTitle?: string;
+    }) => {
+      const infoKey = contentKey === 'noti' && title ? title : contentKey;
       setInfoMapKey(infoKey);
       if (infoMap.has(infoKey)) {
         setBody(infoMap.get(infoMapKey, [])[0]?.body || '');
-      } else if (key === 'noti' && title) {
+      } else if (contentKey === 'noti' && title) {
         action.info.getInfoByTitle(infoMapKey);
       } else {
         action.info.getInfoList(infoMapKey);
       }
     },
-    [action.info, info, infoMapKey],
+    [action.info, infoMap, infoMapKey],
   );
 
   const getIds = useCallback((input: string) => {
@@ -334,9 +350,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
       return (
         <WebView
           style={styles.container}
-          containerStyle={
-            route?.params?.mode === 'page' ? {marginHorizontal: 10} : undefined
-          }
+          containerStyle={mode === 'page' ? {marginHorizontal: 10} : undefined}
           originWhitelist={['*']}
           onMessage={onMessage}
           source={{
@@ -349,31 +363,24 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
         />
       );
     },
-    [body, bodyTitle, onMessage, route?.params?.mode],
+    [body, bodyTitle, mode, onMessage],
   );
 
   useEffect(() => {
-    const {params} = route;
-
-    if (params.mode) setMode(params.mode);
-    setLoading(params.mode !== 'text');
-  }, [navigation, route]);
+    setLoading(mode !== 'text');
+  }, [mode, navigation]);
 
   useEffect(() => {
-    const {params} = route || {};
-
-    if (params && params.text) {
-      setBody(params.text);
-      setBodyTitle(params.bodyTitle || '');
-    } else if (params.key) {
-      getContent({key: params.key, bodyTitle: params.bodyTitle});
+    if (text) {
+      setBody(text);
+      // setBodyTitle(bodyTitle || '');
+    } else if (key) {
+      getContent({key, bodyTitle});
     } else {
       setBody(i18n.t('err:body'));
     }
-  }, [getContent, route, route.params]);
+  }, [bodyTitle, getContent, key, text]);
 
-  const {loggedIn, iccid, token} = account;
-  const {image, showIcon, showCloseModal, btnStyle} = route.params;
   const title = useMemo(() => {
     if (isProdEvent) {
       return loggedIn ? `promo:join:${eventStatus}` : 'promo:login';
@@ -389,7 +396,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     API.Account.donateCash({
       iccid,
       token,
-      ids: getIds(route?.params?.notiType),
+      ids: getIds(notiType),
     }).then((resp) => {
       setBtnDisabled(true);
 
@@ -397,8 +404,8 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
         const isDonated = resp?.objects?.total === 0;
 
         action.account.getAccount({
-          iccid: account.iccid,
-          token: account.token,
+          iccid,
+          token,
         });
 
         AppAlert.info(
@@ -418,16 +425,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
         AppAlert.info(i18n.t('promo:donate:fail'));
       }
     });
-  }, [
-    account.iccid,
-    account.token,
-    action.account,
-    getIds,
-    iccid,
-    navigation,
-    route?.params?.notiType,
-    token,
-  ]);
+  }, [action.account, getIds, iccid, navigation, notiType, token]);
 
   const renderContentTitle = useCallback(() => {
     return (
@@ -438,23 +436,21 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
             gap: 8,
             marginTop: 24,
           }}>
-          <AppText style={appStyles.bold24Text}>
-            {route.params.bodyTitle}
-          </AppText>
+          <AppText style={appStyles.bold24Text}>{bodyTitle}</AppText>
           <AppText style={[appStyles.semiBold14Text, {color: colors.warmGrey}]}>
-            {route?.params?.created?.format('MM월 DD일')}
+            {created?.format('MM월 DD일')}
           </AppText>
         </View>
         <View style={styles.divider} />
       </>
     );
-  }, [route.params.bodyTitle, route.params?.created]);
+  }, [bodyTitle, created]);
 
   return (
     <SafeAreaView style={styles.screen}>
       <View style={appStyles.header}>
         <AppBackButton
-          title={route.params?.title}
+          title={title}
           showIcon={showIcon}
           showCloseModal={showCloseModal}
         />
@@ -462,7 +458,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
       {mode === 'page' && renderContentTitle()}
       {defineSource(mode)}
       <AppActivityIndicator visible={pending || loading} />
-      {!route.params?.rule?.sku?.startsWith('event-multi') &&
+      {!rule?.sku?.startsWith('event-multi') &&
         (mode === 'page' ? (
           <View style={styles.buttonBox}>
             <AppButton
@@ -484,11 +480,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
           <AppButton
             style={[styles.button, btnStyle]}
             type="primary"
-            title={
-              disabled
-                ? i18n.t(title)
-                : route.params?.rule?.btnTitle || i18n.t(title)
-            }
+            title={disabled ? i18n.t(title) : rule?.btnTitle || i18n.t(title)}
             disabled={disabled}
             onPress={onPress}
           />
@@ -509,7 +501,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
         onOkClose={() => {
           setPromoResult('');
           if (promoResult === 'promo:join:joined') {
-            const sku = route.params?.rule?.sku;
+            const sku = rule?.sku;
             if (sku?.startsWith('rch-') || sku?.startsWith('pnt-')) {
               action.account.getAccount({iccid, token});
               // go to MyPage after recharge & point promotion

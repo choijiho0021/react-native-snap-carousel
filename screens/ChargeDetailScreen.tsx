@@ -95,7 +95,7 @@ type ProductDetailScreenProps = {
 const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
   navigation,
   route: {params},
-  account,
+  account: {balance},
   action,
 }) => {
   const purchaseItems = useMemo(
@@ -104,8 +104,6 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
   );
 
   const onPressBtnPurchase = useCallback(() => {
-    const {balance} = account;
-
     // 구매 품목을 갱신한다.
     action.cart.purchase({
       purchaseItems,
@@ -116,7 +114,7 @@ const ChargeDetailScreen: React.FC<ProductDetailScreenProps> = ({
     navigation.navigate('PymMethod', {
       mode: 'roaming_product',
     });
-  }, [account, action.cart, navigation, params?.subsIccid, purchaseItems]);
+  }, [action.cart, balance, navigation, params?.subsIccid, purchaseItems]);
 
   const titleText = useCallback(
     (text: string, prodName: string, name: string) => (

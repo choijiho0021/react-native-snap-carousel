@@ -108,10 +108,12 @@ export type SelectedTabType = {
   scroll?: string;
 };
 
-const CountryScreen: React.FC<CountryScreenProps> = (props) => {
-  const {navigation, route, product} = props;
-  const {localOpList, prodByLocalOp, prodList} = product;
-
+const CountryScreen: React.FC<CountryScreenProps> = ({
+  navigation,
+  route,
+  pending,
+  product: {localOpList, prodByLocalOp, prodList},
+}) => {
   const [prodData, setProdData] = useState<RkbProduct[][]>([]);
   const [imageUrl, setImageUrl] = useState<string>();
   const [localOpDetails, setLocalOpDetails] = useState<string>();
@@ -261,7 +263,7 @@ const CountryScreen: React.FC<CountryScreenProps> = (props) => {
 
       {renderSelectedPane()}
 
-      <AppActivityIndicator visible={props.pending} />
+      <AppActivityIndicator visible={pending} />
       <ChatTalk visible bottom={isIOS ? 100 : 70} />
     </SafeAreaView>
   );

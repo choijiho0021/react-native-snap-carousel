@@ -408,7 +408,7 @@ const ImgResignDokebi = () => (
 
 const ResignScreen: React.FC<ResignScreenProps> = ({
   navigation,
-  account,
+  account: {iccid, token, uid},
   order,
   action,
   pending,
@@ -432,13 +432,11 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
 
   useEffect(() => {
     if (purchaseCnt <= 0) {
-      const {iccid: initIccid, token} = account;
-
-      if (initIccid && token) {
-        action.order.getSubsWithToast({iccid: initIccid, token});
+      if (iccid && token) {
+        action.order.getSubsWithToast({iccid, token});
       }
     }
-  }, [account, action.order, purchaseCnt]);
+  }, [action.order, iccid, purchaseCnt, token]);
 
   const logout = useCallback(() => {
     navigation.navigate('Home');
@@ -487,7 +485,6 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
   );
 
   const resign = useCallback(async () => {
-    const {uid, token} = account;
     action.modal.closeModal();
 
     if (isConfirm) {
@@ -505,13 +502,14 @@ const ResignScreen: React.FC<ResignScreenProps> = ({
       });
     }
   }, [
-    account,
     action.modal,
     isConfirm,
     logout,
     otherReason,
     reasonIdx,
     showInfoModal,
+    token,
+    uid,
   ]);
 
   return (

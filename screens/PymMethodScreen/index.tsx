@@ -6,9 +6,7 @@ import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import moment from 'moment';
 import AppAlert from '@/components/AppAlert';
-import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -176,12 +174,13 @@ const defaultCardList = [
 const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   navigation,
   route,
-  account,
-  cart,
-  info,
-  product,
+  account: {mobile, email, token, isSupportDev},
+  cart: {cartId, cartItems, pymPrice, pymReq, purchaseItems},
+  info: {infoMap},
+  product: {rule},
   action,
 }) => {
+  const {params: {mode} = {}} = route;
   const [selected, setSelected] = useState('pym:kakao');
   const [clickable, setClickable] = useState(true);
   const [policyChecked, setPolicyChecked] = useState(false);
@@ -189,12 +188,10 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [showSelectCard, setShowSelectCard] = useState(false);
   const [showInstallmentMonths, setShowInstallmentMonths] = useState(false);
   const [installmentMonths, setInstallmentMonths] = useState('0');
-
-  const mode = useMemo(() => route.params.mode, [route.params.mode]);
   const pymMethodRef = useRef<PymMethodRef>(null);
   const creditCardList = useMemo(() => {
     return (
-      product.rule.ccard?.map(([k, v]) => ({
+      rule.ccard?.map(([k, v]) => ({
         label: v,
         value: `card${k}`,
       })) ||
@@ -203,7 +200,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         value: `card${k}`,
       }))
     );
-  }, [product.rule.ccard]);
+  }, [rule.ccard]);
 
   const installmentMonthsList = useMemo(
     () =>
@@ -215,22 +212,22 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   );
 
   useEffect(() => {
-    action.account.getMyCoupon({token: account?.token}).then(() => {
+    action.account.getMyCoupon({token: token!}).then(() => {
       action.cart.prepareOrder();
     });
-  }, [account?.token, action.account, action.cart]);
+  }, [action.account, action.cart, token]);
 
   useEffect(() => {
-    if (!info.infoMap.has(infoKey)) {
+    if (!infoMap.has(infoKey)) {
       action.info.getInfoList(infoKey);
     }
-  }, [action.info, info.infoMap]);
+  }, [action.info, infoMap]);
 
   useEffect(() => {
     Analytics.trackEvent('Page_View_Count', {
-      page: `Payment - ${route.params?.mode}`,
+      page: `Payment - ${mode}`,
     });
-  }, [route.params]);
+  }, [mode]);
 
   useEffect(() => {
     async function getPymMethod() {
@@ -244,7 +241,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     (passingAlert: boolean) => {
       if (!clickable) return;
 
-      if (!passingAlert && !account.isSupportDev) {
+      if (!passingAlert && !isSupportDev) {
         setShowUnsupAlert(true);
         return;
       }
@@ -256,19 +253,18 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         : selected.startsWith('vbank')
         ? API.Payment.method['pym:vbank']
         : API.Payment.method[selected];
-      if (!payMethod && cart.pymPrice?.value !== 0) return;
+      if (!payMethod && pymPrice?.value !== 0) return;
 
-      const {mobile, email} = account;
       const scheme = esimGlobal ? 'RokebiGlobal' : 'RokebiEsim';
 
       // 로깨비캐시 결제
-      if (cart.pymPrice?.value === 0) {
+      if (pymPrice?.value === 0) {
         // if the payment amount is zero, call the old API payNorder
         const pymInfo = createPaymentInfoForRokebiCash({
           impId,
           mobile,
           digital: true,
-          deduct: cart.pymReq?.rkbcash,
+          deduct: pymReq?.rkbcash,
         });
 
         // payNorder에서 재고 확인 - resp.result값으로 비교
@@ -289,14 +285,14 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               text = 'cart:unpublishedError';
               // product status is changed.
               const skuList = resp?.message.split(',');
-              if (skuList?.length > 0 && cart.cartId) {
-                cart?.cartItems
+              if (skuList?.length > 0 && cartId) {
+                cartItems
                   .filter((elm) => skuList.includes(elm.prod.sku))
                   .forEach((elm) => {
                     // remove it from the cart
                     if (elm.orderItemId) {
                       action.cart.cartRemove({
-                        orderId: cart.cartId,
+                        orderId: cartId,
                         orderItemId: elm.orderItemId,
                       });
                     }
@@ -328,8 +324,8 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           installmentMonths,
           merchant_uid: `${prefix}${mobile}_${new Date().getTime()}`,
           name: i18n.t('appTitle'),
-          amount: cart.pymPrice?.value, // 실제 결제 금액 (로깨비캐시 제외)
-          rokebi_cash: cart.pymReq?.rkbcash?.value, // balance 차감 금액
+          amount: pymPrice?.value, // 실제 결제 금액 (로깨비캐시 제외)
+          rokebi_cash: pymReq?.rkbcash?.value, // balance 차감 금액
           buyer_tel: mobile,
           buyer_name: mobile,
           buyer_email: email,
@@ -337,7 +333,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           app_scheme: scheme,
           language: payMethod?.language || i18n.locale,
           digital: true,
-          paymentRule: product.rule,
+          paymentRule: rule,
           mode,
           receipt,
           selected,
@@ -350,18 +346,20 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       }
     },
     [
-      account,
       action.cart,
       action.product,
-      cart.cartId,
-      cart?.cartItems,
-      cart.pymPrice?.value,
-      cart.pymReq?.rkbcash,
+      cartId,
+      cartItems,
       clickable,
+      email,
       installmentMonths,
+      isSupportDev,
+      mobile,
       mode,
       navigation,
-      product.rule,
+      pymPrice?.value,
+      pymReq?.rkbcash,
+      rule,
       selected,
     ],
   );
@@ -397,7 +395,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     return action.modal.renderModal(() => (
       <AppModalContent
         title={
-          (cart.pymReq?.discount?.value || 0) < 0
+          (pymReq?.discount?.value || 0) < 0
             ? i18n.t('pym:goBack:alert')
             : i18n.t('pym:goBack:alert2')
         }
@@ -415,7 +413,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         okButtonStyle={{color: colors.clearBlue}}
       />
     ));
-  }, [action.modal, cart.pymReq?.discount?.value, navigation, route]);
+  }, [action.modal, navigation, pymReq?.discount?.value, route]);
 
   BackbuttonHandler({
     navigation,
@@ -438,17 +436,14 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           title={i18n.t('pym:title')}
           style={{paddingTop: 16, paddingBottom: 20}}
           titleStyle={styles.productTitle}
-          summary={`${cart.purchaseItems.reduce(
-            (acc, cur) => acc + cur.qty,
-            0,
-          )}개`}>
+          summary={`${purchaseItems.reduce((acc, cur) => acc + cur.qty, 0)}개`}>
           <ProductDetailList
             style={{
               paddingBottom: 0,
               paddingHorizontal: 20,
             }}
             showPriceInfo
-            orderItems={cart.purchaseItems}
+            orderItems={purchaseItems}
           />
         </DropDownHeader>
 
@@ -457,7 +452,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         <View style={styles.changeEmail}>
           <AppText style={styles.title}>{i18n.t('pym:email')}</AppText>
           <ConfirmButton
-            title={account.email}
+            title={email}
             buttonTitle={i18n.t('changeEmail:short')}
             onPress={() => navigation.navigate('ChangeEmail')}
           />
@@ -471,7 +466,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         <View style={styles.divider} />
 
-        <PaymentSummary data={cart.pymReq} total={cart.pymPrice} mode={mode} />
+        <PaymentSummary data={pymReq} total={pymPrice} mode={mode} />
 
         <View style={styles.divider} />
 
@@ -480,7 +475,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
           value={selected}
           installmentMonths={installmentMonths}
           onPress={setPymMethod}
-          price={cart?.pymPrice}
+          price={pymPrice}
         />
 
         {/* 가변영역 설정 */}
@@ -488,16 +483,14 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
 
         <PolicyChecker onPress={setPolicyChecked} />
         <AppButton
-          title={i18n
-            .t('cart:payment')
-            .replace('%%', utils.price(cart.pymPrice))}
+          title={i18n.t('cart:payment').replace('%%', utils.price(pymPrice))}
           titleStyle={[appStyles.medium18, {color: colors.white}]}
           disableColor={colors.greyish}
           disableStyle={{backgroundColor: colors.lightGrey}}
           disabled={
-            (cart.pymPrice?.value !== 0 && !selected) ||
+            (pymPrice?.value !== 0 && !selected) ||
             !policyChecked ||
-            (cart.pymPrice?.value !== 0 && selected === 'card:noSelect')
+            (pymPrice?.value !== 0 && selected === 'card:noSelect')
           }
           disabledCanOnPress
           disabledOnPress={() => {

@@ -115,10 +115,10 @@ export type HomeStackParamList = {
     prod?: RkbProduct;
   };
   ProductDetailOp: {
-    title: string;
-    desc1: string;
-    desc2: string;
-    apn: string;
+    title?: string;
+    desc1?: string;
+    desc2?: string;
+    apn?: string;
   };
   RegisterSim: {back: string; title: string};
   NewSim: undefined;

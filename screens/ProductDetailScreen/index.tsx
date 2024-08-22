@@ -199,26 +199,25 @@ type ProductDetailScreenProps = {
 };
 
 const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
-  product,
+  product: {descData, prodList},
   navigation,
   route,
   action,
-  account,
+  account: {loggedIn},
   cart,
 }) => {
+  const {item, prod, uuid, partner, partnerId, img, listPrice, title} =
+    route?.params || {};
   const [showSnackBar, setShowSnackBar] = useState<{
     text: string;
     visible: boolean;
   }>({text: '', visible: false});
   const [status, setStatus] = useState<TrackingStatus>();
-  const purchaseItems = useMemo(
-    () => (route.params?.item ? [route.params.item] : []),
-    [route.params?.item],
-  );
+  const purchaseItems = useMemo(() => (item ? [item] : []), [item]);
 
-  const prod = useMemo(() => {
-    return route.params?.prod || product.prodList.get(route.params?.uuid || '');
-  }, [product.prodList, route.params?.prod, route.params?.uuid]);
+  const selectedProd = useMemo(() => {
+    return prod || prodList.get(uuid || '');
+  }, [prod, prodList, uuid]);
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -230,15 +229,16 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   const [price, setPrice] = useState<Currency>();
   const [showChargeInfoModal, setShowChargeInfoModal] = useState(false);
   const dispatch = useDispatch();
-  const descData: DescData = useMemo(
-    () => product.descData.get(prod?.key || route.params?.uuid),
-    [prod?.key, product.descData, route.params?.uuid],
+  const selectedKey = useMemo(
+    () => selectedProd?.key || uuid || '',
+    [uuid, selectedProd?.key],
+  );
+  const selectedDescData: DescData | undefined = useMemo(
+    () => descData.get(selectedKey),
+    [descData, selectedKey],
   );
 
-  const isht = useMemo(
-    () => route?.params?.partner === 'ht',
-    [route?.params?.partner],
-  );
+  const isht = useMemo(() => partner === 'ht', [partner]);
 
   BackbuttonHandler({
     navigation,
@@ -250,13 +250,13 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   });
 
   useEffect(() => {
-    if (!product.descData.get(prod?.key || route.params?.uuid)) {
-      dispatch(productAction.getProdDesc(prod?.key || route.params?.uuid));
+    if (!descData.get(selectedKey)) {
+      dispatch(productAction.getProdDesc(selectedKey));
       setLoading(true);
     } else {
       setLoading(false);
     }
-  }, [dispatch, prod, product.descData, route.params?.uuid]);
+  }, [descData, dispatch, selectedKey]);
 
   useEffect(() => {
     getTrackingStatus().then((elm) => setStatus(elm));
@@ -321,10 +321,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
           break;
         case 'apn':
-          if (descData?.desc?.apn)
+          if (selectedDescData?.desc?.apn)
             navigation.navigate('ProductDetailOp', {
-              title: route.params?.title,
-              apn: descData?.desc?.apn,
+              title,
+              apn: selectedDescData?.desc?.apn,
             });
 
           break;
@@ -334,22 +334,22 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           break;
       }
     },
-    [descData?.desc?.apn, navigation, route.params?.title],
+    [navigation, selectedDescData?.desc?.apn, title],
   );
 
   const renderProdDetail = useCallback(() => {
-    const isDaily = prod?.field_daily === 'daily';
+    const isDaily = selectedProd?.field_daily === 'daily';
     const volume =
-      Number(prod?.volume) > 500
-        ? (Number(prod?.volume) / 1024).toString()
-        : prod?.volume || '';
-    const volumeUnit = Number(prod?.volume) > 500 ? 'GB' : 'MB';
+      Number(selectedProd?.volume) > 500
+        ? (Number(selectedProd?.volume) / 1024).toString()
+        : selectedProd?.volume || '';
+    const volumeUnit = Number(selectedProd?.volume) > 500 ? 'GB' : 'MB';
 
-    const clMtd = descData?.desc?.clMtd;
-    const ftr = descData?.desc?.ftr;
-    const prodDays = prod?.days;
+    const clMtd = selectedDescData?.desc?.clMtd;
+    const ftr = selectedDescData?.desc?.ftr;
+    const prodDays = selectedProd?.days;
 
-    const fieldNoticeOption = descData?.fieldNoticeOption || [];
+    const fieldNoticeOption = selectedDescData?.fieldNoticeOption || [];
 
     return (
       prod &&
@@ -359,9 +359,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             isDaily={isDaily}
             volume={volume}
             volumeUnit={volumeUnit}
-            desc1={descData?.desc?.desc1 || ''}
-            desc2={descData?.desc?.desc2 || ''}
-            prodName={prod?.name || ''}
+            desc1={selectedDescData?.desc?.desc1 || ''}
+            desc2={selectedDescData?.desc?.desc2 || ''}
+            prodName={selectedProd?.name || ''}
             prodDays={prodDays || ''}
           />
           <ProductDetailSixIcon
@@ -370,10 +370,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             volumeUnit={volumeUnit}
             ftr={ftr || ''}
             prodDays={prodDays || ''}
-            fup={prod?.fup || ''}
-            network={prod?.network || ''}
-            hotspot={prod?.hotspot || ''}
-            addonOption={descData.addonOption || ''}
+            fup={selectedProd?.fup || ''}
+            network={selectedProd?.network || ''}
+            hotspot={selectedProd?.hotspot || ''}
+            addonOption={selectedDescData?.addonOption || ''}
             setShowChargeInfoModal={setShowChargeInfoModal}
           />
           {fieldNoticeOption.length > 0 && (
@@ -392,7 +392,23 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         </View>
       )
     );
-  }, [descData, prod]);
+  }, [
+    descData,
+    prod,
+    selectedDescData?.addonOption,
+    selectedDescData?.desc?.clMtd,
+    selectedDescData?.desc?.desc1,
+    selectedDescData?.desc?.desc2,
+    selectedDescData?.desc?.ftr,
+    selectedDescData?.fieldNoticeOption,
+    selectedProd?.days,
+    selectedProd?.field_daily,
+    selectedProd?.fup,
+    selectedProd?.hotspot,
+    selectedProd?.name,
+    selectedProd?.network,
+    selectedProd?.volume,
+  ]);
 
   const soldOut = useCallback(
     (payload: ApiResult<any>, message: string) => {
@@ -408,7 +424,6 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   );
 
   const onPressBtnCart = useCallback(async () => {
-    const {loggedIn} = account;
     setIsButtonDisabled(true);
 
     if (status === 'authorized') {
@@ -436,7 +451,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       const isOverCart = cartNumber + qty > PURCHASE_LIMIT;
 
       // 10개 초과 시 카트에 10개 담는 추가 요청사항
-      const item = isOverCart
+      const purchaseItem = isOverCart
         ? {...purchaseItems[0], qty: PURCHASE_LIMIT - cartNumber}
         : {...purchaseItems[0], qty};
 
@@ -448,11 +463,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         });
       } else {
         action.cart
-          .cartAddAndGet({
-            // purchaseItems: {...purchaseItems, qty: qty.get(purchaseItems[0].key)},
-            // purchaseItems: {...purchaseItems},
-            purchaseItems: [item],
-          })
+          .cartAddAndGet({purchaseItems: [purchaseItem]})
           .then(({payload: resp}) => {
             if (resp.result === 0) {
               if (isOverCart) {
@@ -475,10 +486,10 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       setIsButtonDisabled(false);
     }, 3000);
   }, [
-    account,
     action.cart,
     cart.cartItems,
     isButtonDisabled,
+    loggedIn,
     navigation,
     purchaseItems,
     qty,
@@ -492,17 +503,17 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     setIsButtonDisabled(true);
     setShowModal(false);
 
-    if (!account.loggedIn && !isButtonDisabled) {
+    if (!loggedIn && !isButtonDisabled) {
       navigation.navigate('RegisterMobile', {
         goBack: () => navigation.goBack(),
       });
     }
 
-    const item: PurchaseItem = {...purchaseItems[0], qty};
+    const purchaseItem: PurchaseItem = {...purchaseItems[0], qty};
 
     if (!isButtonDisabled) {
       // 구매 품목을 갱신한다.
-      action.cart.purchase({purchaseItems: [item], isCart: false});
+      action.cart.purchase({purchaseItems: [purchaseItem], isCart: false});
       resetModalInfo();
       navigation.navigate('PymMethod', {
         mode: 'roaming_product',
@@ -513,9 +524,9 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       setIsButtonDisabled(false);
     }, 3000);
   }, [
-    account.loggedIn,
     action.cart,
     isButtonDisabled,
+    loggedIn,
     navigation,
     purchaseItems,
     qty,
@@ -566,35 +577,26 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             <AppButton
               style={[styles.secondaryButton, {marginRight: 12}]}
               title={i18n.t('cart:saveCart')}
-              onPress={!account.loggedIn ? onPressBtnRegCard : onPressBtnCart}
+              onPress={!loggedIn ? onPressBtnRegCard : onPressBtnCart}
               titleStyle={[appStyles.medium18, {color: colors.black}]}
             />
           )}
           <AppButton
             style={styles.mainButton}
             title={i18n.t('cart:purchaseNow')}
-            onPress={!account.loggedIn ? onPressBtnRegCard : onPressBtnPurchase}
+            onPress={!loggedIn ? onPressBtnRegCard : onPressBtnPurchase}
             titleStyle={[appStyles.medium18, {color: colors.white}]}
           />
         </View>
       </View>
     );
-  }, [
-    isht,
-    account.loggedIn,
-    onPressBtnRegCard,
-    onPressBtnCart,
-    onPressBtnPurchase,
-  ]);
+  }, [isht, loggedIn, onPressBtnCart, onPressBtnPurchase, onPressBtnRegCard]);
 
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.header}>
-        <AppBackButton
-          title={route.params?.title}
-          style={{width: '70%', height: 56}}
-        />
-        {account.loggedIn && (
+        <AppBackButton title={title} style={{width: '70%', height: 56}} />
+        {loggedIn && (
           <AppCartButton
             onPress={() => navigation.navigate('Cart', {showHeader: true})}
             iconName="btnHeaderCart"
@@ -607,13 +609,13 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
 
         <ScrollView style={{flex: 1}}>
           {renderProdDetail()}
-          {descData?.body && (
+          {selectedDescData?.body && (
             <ProductDetailBody
-              body={descData?.body}
+              body={selectedDescData?.body}
               onMessage={onMessage}
-              descApn={descData?.desc?.apn || ''}
-              prodName={prod?.name || ''}
-              isDaily={prod?.field_daily === 'daily'}
+              descApn={selectedDescData?.desc?.apn || ''}
+              prodName={selectedProd?.name || ''}
+              isDaily={selectedProd?.field_daily === 'daily'}
             />
           )}
         </ScrollView>
@@ -716,11 +718,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         }}
         purchaseItem={purchaseItems[0]}
         params={{
-          partnerId: route?.params?.partnerId,
-          uuid: route?.params?.uuid,
-          img: route?.params?.img,
-          listPrice: route.params?.listPrice,
-          price: route.params?.price,
+          partnerId,
+          uuid,
+          img,
+          listPrice,
+          price,
         }}
       />
 

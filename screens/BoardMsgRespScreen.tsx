@@ -36,7 +36,7 @@ type BoardMsgRespScreenProps = {
 
 const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
   board,
-  account,
+  account: {token},
   pending,
   action,
 }) => {
@@ -47,13 +47,12 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
   const getComment = useCallback(
     (uuid: string, status?: BoardMsgStatus) => {
       if (status === 'Closed') {
-        const {token} = account;
         action.board.getIssueResp({uuid, token});
       } else {
         action.board.resetIssueComment();
       }
     },
-    [account, action.board],
+    [action.board, token],
   );
 
   useEffect(() => {

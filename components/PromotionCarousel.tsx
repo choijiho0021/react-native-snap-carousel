@@ -108,7 +108,7 @@ type PromotionCarouselProps = {
 
 const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   promotion,
-  product,
+  product: {prodList},
   action,
   width,
   checkNeedUpdate,
@@ -128,7 +128,6 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
       ) {
         checkNeedUpdate();
       } else if (item.product_uuid) {
-        const {prodList} = product;
         const prod = prodList.get(item.product_uuid);
 
         if (prod) {
@@ -165,7 +164,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
         navigation.navigate('Faq');
       }
     },
-    [action.info, checkNeedUpdate, navigation, product],
+    [action.info, checkNeedUpdate, navigation, prodList],
   );
 
   const renderDots = useCallback(
