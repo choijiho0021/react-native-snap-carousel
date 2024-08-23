@@ -23,6 +23,7 @@ import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 import {PaymentRule} from '@/redux/modules/product';
 import {Fortune} from '@/redux/modules/account';
 import {SocialAuthInfoKind} from '@/components/SocialLogin';
+import {RkbEvent} from '@/redux/api/promotionApi';
 
 export type SimpleTextScreenMode = 'text' | 'uri' | 'html' | 'noti' | 'page';
 export type PymMethodScreenMode =
@@ -91,7 +92,7 @@ type SimpleTextParams = {
     failure?: string;
   };
 };
-type PurchaseDetailParams = {orderId: string};
+type PurchaseDetailParams = {orderId?: string | number};
 
 export type HomeStackParamList = {
   Home: undefined;
@@ -132,21 +133,23 @@ export type HomeStackParamList = {
   Contact: undefined;
   ContactBoard: ContactBoardRouteParam;
   EventBoard: EventBoardRouteParam;
-  UserGuide: undefined;
   BoardMsgResp: {
     uuid?: string;
     item?: RkbBoard;
     status?: BoardMsgStatus;
     isEvent?: boolean;
   };
+  BoardMsgList: undefined;
+  PromotionCarousel: {};
   BoardMsgAdd: {key: string; status: BoardMsgStatus};
   Faq: FaqRouteParam;
   Guide: undefined;
   Country: {
-    partner: string[];
+    partner?: string[];
     type?: string;
     volume?: String;
     scroll?: string;
+    prodOfCountry?: RkbProduct[];
   };
   Payment: PaymentParams;
   PaymentGateway: PaymentParams;
@@ -154,13 +157,13 @@ export type HomeStackParamList = {
   FindAddress: undefined;
   PaymentResult: {
     pymResult: boolean;
-    status: string;
+    status?: string;
     pay_method: string;
     card?: string;
     mode?: string;
     errorMsg?: string;
     installmentMonths?: string;
-    paymentParams: {
+    paymentParams?: {
       key: string;
       pg: string;
       token: string;
@@ -184,7 +187,7 @@ export type HomeStackParamList = {
   };
 
   MyPage: undefined;
-  Recharge: {mode: string};
+  Recharge: {mode?: string};
   Invite: undefined;
   InvitePromo: undefined;
   GiftGuide: undefined;
@@ -267,6 +270,44 @@ export type HomeStackParamList = {
     profileImageUrl?: string;
   };
   SimpleTextForAuth: Record<string, string>;
+  EventResult: {
+    issue?: RkbEventBoard;
+    title: string;
+    showStatus?: boolean;
+    eventList?: RkbEvent[];
+  };
+  UserGuideStep: {
+    guideOption?: GuideOption;
+    region?: string;
+  };
+  GuideSelectRegion: {
+    guideOption: GuideOption;
+  };
+  UserGuideSelectRegion: {
+    guideOption: GuideOption;
+  };
+  GuideModal: {
+    guideOption: GuideOption;
+  };
+  CreateAppContainer: undefined;
+  SimpleTextModal: {};
+  DiscountInfo: undefined;
+  PolicyChecker: undefined;
+  EsimStack: {
+    screen: string;
+    params?: {
+      clickPromotion?: boolean;
+      iccid?: string;
+      nid?: string;
+      subsId?: string;
+      actionStr?: string;
+    };
+  };
+  MyPageStack: {
+    screen: string;
+    params?: {};
+    initial?: boolean;
+  };
 };
 
 export const navigate = (

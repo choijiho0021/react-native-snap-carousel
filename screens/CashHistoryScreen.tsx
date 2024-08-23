@@ -654,7 +654,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 
           <Pressable
             style={styles.rechargeBox}
-            onPress={() => navigation.navigate('Recharge')}>
+            onPress={() => navigation.navigate('Recharge', {})}>
             <AppSvgIcon name="cashHistoryPlus" style={{marginRight: 4}} />
             <AppText style={styles.rechargeBoxText}>
               {i18n.t('acc:goRecharge')}

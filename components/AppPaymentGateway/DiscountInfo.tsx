@@ -3,6 +3,8 @@ import {bindActionCreators} from 'redux';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {Image, Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {AccountModelState} from '@/redux/modules/account';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -21,8 +23,7 @@ import DropDownHeader from '@/screens/PymMethodScreen/DropDownHeader';
 import ConfirmButton from './ConfirmButton';
 import AppStyledText from '../AppStyledText';
 import AppSvgIcon from '../AppSvgIcon';
-import {navigate} from '@/navigation/navigation';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({
   row: {
@@ -118,6 +119,11 @@ export const availableRokebiCash = (balance: number, productPrice: number) => {
   return Math.min(balance, productPrice);
 };
 
+type DiscountInfoNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'DiscountInfo'
+>;
+
 const DiscountInfo: React.FC<DiscountProps> = ({
   account,
   cart,
@@ -128,8 +134,7 @@ const DiscountInfo: React.FC<DiscountProps> = ({
   const [rokebiCash, setRokebiCash] = useState('');
   const [checked, setChecked] = useState(false);
   const [editing, setEditing] = useState(false);
-  const navigation = useNavigation();
-  const route = useRoute();
+  const navigation = useNavigation<DiscountInfoNavigationProp>();
 
   const disabledDeductAll = useMemo(
     () =>

@@ -2,11 +2,13 @@ import React, {memo, useCallback, useState, useMemo} from 'react';
 import Analytics from 'appcenter-analytics';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({
   rowCenter: {
@@ -27,8 +29,13 @@ const styles = StyleSheet.create({
   },
 });
 
+type PolicyCheckerNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'PolicyChecker'
+>;
+
 const PolicyChecker = ({onPress}: {onPress?: (v: boolean) => void}) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<PolicyCheckerNavigationProp>();
   const [checked, setChecked] = useState(false);
 
   const commonParam = useMemo(

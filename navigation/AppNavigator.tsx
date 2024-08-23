@@ -183,15 +183,9 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     (url: string, json: urlParamObj) => {
       // gift 금액은 서버에서 처리
       if (url.includes('recommender') && navigationRef?.current) {
-        const {loggedIn, userId, token} = store.getState().account;
+        const {loggedIn, userId} = store.getState().account;
 
         if (loggedIn) {
-          // API.User.registeRecommender({
-          //   token,
-          //   recommender: json?.recommender,
-          //   uuid: userId,
-          // });
-
           if (userId !== json?.recommender) {
             store.dispatch(
               accountActions.receiveAndGetGift({
@@ -291,7 +285,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       linkUrl,
       params,
       utmParameters,
-      linkPath,
+      linkPath: internalLinkPath,
     }: {
       linkUrl?: string;
       params?: urlParamObj;
@@ -304,7 +298,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
             linkUrl,
             params,
             utmParameters,
-            linkPath,
+            linkPath: internalLinkPath,
           }),
         );
       }

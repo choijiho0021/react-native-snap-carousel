@@ -119,10 +119,11 @@ const CountryScreen: React.FC<CountryScreenProps> = ({
   const [localOpDetails, setLocalOpDetails] = useState<string>();
   const isTop = useRef(true);
   const blockAnimation = useRef(false);
-  const headerTitle = useMemo(
-    () => API.Product.getTitle(localOpList.get(route.params?.partner[0])),
-    [localOpList, route.params?.partner],
-  );
+  const headerTitle = useMemo(() => {
+    if (route?.params?.partner && route?.params?.partner.length > 0)
+      return API.Product.getTitle(localOpList.get(route?.params?.partner[0]));
+    return '';
+  }, [localOpList, route.params?.partner]);
   const [selectedTab, setSelectedTab] = useState({
     type: route.params?.type,
     volume: route.params?.volume,

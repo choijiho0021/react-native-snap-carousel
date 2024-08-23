@@ -274,8 +274,8 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
   const isNotice = useMemo(() => mode === 'info', [mode]);
   const data = useMemo(() => {
     // clone the list to sort
-    const list = isNotice ? infoMap.get('info') : _.clone(notiList);
-    return list?.sort((a, b) => -a.created.localeCompare(b.created));
+    const infoList = isNotice ? infoMap.get('info') : _.clone(notiList);
+    return infoList?.sort((a, b) => -a.created.localeCompare(b.created));
   }, [infoMap, isNotice, notiList]);
 
   const readAllDisabled = useMemo(

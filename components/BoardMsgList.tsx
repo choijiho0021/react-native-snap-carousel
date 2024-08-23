@@ -13,7 +13,7 @@ import {useNavigation} from '@react-navigation/native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
-import {RkbBoard} from '@/redux/api/boardApi';
+import {BoardMsgStatus, RkbBoard} from '@/redux/api/boardApi';
 import utils from '@/redux/api/utils';
 import {AccountModelState} from '@/redux/modules/account';
 import {
@@ -29,6 +29,8 @@ import AppModalForm from './AppModalForm';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
 import BoardMsg from './BoardMsg';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({
   noList: {
@@ -130,6 +132,11 @@ const InputMobile0 = ({
 };
 const InputMobile = memo(InputMobile0);
 
+type BoardMsgListNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'BoardMsgList'
+>;
+
 type BoardMsgListProps = {
   board: BoardModelState;
   account: AccountModelState;
@@ -148,7 +155,7 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
   pending,
   uid,
 }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<BoardMsgListNavigationProp>();
   const [data, setData] = useState<RkbBoard[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [status, setStatus] = useState('');
@@ -175,10 +182,17 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
 
   const onPress = useCallback(
     (item: RkbBoard, st: string) => {
-      navigation.navigate('BoardMsgResp', {
-        item,
-        status: st,
-      });
+      if (st === 'Open' || st === 'Closed' || st === 'Processing') {
+        navigation.navigate('BoardMsgResp', {
+          item,
+          status: st as BoardMsgStatus,
+        });
+      } else {
+        navigation.navigate('BoardMsgResp', {
+          item,
+          status: 'Open',
+        });
+      }
     },
     [navigation],
   );

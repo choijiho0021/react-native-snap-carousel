@@ -25,6 +25,8 @@ import i18n from '@/utils/i18n';
 import {actions as infoActions, InfoAction} from '@/redux/modules/info';
 import AppCarousel from '@/components/AppCarousel';
 import utils from '@/redux/api/utils';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 export const DOT_MARGIN = 6;
 export const INACTIVE_DOT_WIDTH = 6;
@@ -96,6 +98,11 @@ const PromotionImage = memo(
   (prev, next) => prev.item.imageUrl === next.item.imageUrl,
 );
 
+type PromotionCarouselNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'PromotionCarousel'
+>;
+
 type PromotionCarouselProps = {
   promotion: RkbPromotion[];
   product: ProductModelState;
@@ -113,7 +120,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   width,
   checkNeedUpdate,
 }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<PromotionCarouselNavigationProp>();
   const [activeSlide, setActiveSlide] = useState(promotion.length - 1);
 
   const onPress = useCallback(

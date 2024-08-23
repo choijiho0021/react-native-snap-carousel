@@ -14,9 +14,10 @@ import {
   ScrollView,
   Dimensions,
   Pressable,
-  Platform,
 } from 'react-native';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {colors} from '@/constants/Colors';
 import Env from '@/environment';
 import {
@@ -35,7 +36,7 @@ import {getImage} from '@/utils/utils';
 import AppCarousel, {AppCarouselRef} from '@/components/AppCarousel';
 import {ContactListItem} from '../ContactScreen';
 import ChatTalk from '@/components/ChatTalk';
-import LinearGradient from 'react-native-linear-gradient';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const {isIOS} = Env.get();
 // const isIOS = false;
@@ -206,9 +207,14 @@ const styles = StyleSheet.create({
   },
 });
 
+type UserGuideScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'UserGuideStep'
+>;
+
 const UserGuideScreen = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
+  const navigation = useNavigation<UserGuideScreenNavigationProp>();
+  const route = useRoute<RouteProp<HomeStackParamList, 'UserGuideStep'>>();
   const [carouselIdx, setCarouselIdx] = useState(0);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const [chatTalkClicked, setChatTalkClicked] = useState(false);
