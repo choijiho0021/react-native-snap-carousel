@@ -107,7 +107,7 @@ export type KeypadRef = {
 type KeyType = 'call' | 'hangup' | 'speaker' | 'keypad';
 
 type KeypadProps = {
-  onPress?: (k: KeyType) => void;
+  onPress?: (k: KeyType, d?: string) => void;
   style: StyleProp<ViewStyle>;
   keypadRef?: React.MutableRefObject<KeypadRef | null>;
   state?: SessionState;
@@ -172,11 +172,12 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
                   <Pressable
                     style={styles.key}
                     key={d}
-                    onPress={() =>
-                      showKeypad
-                        ? setDtmf((prev) => prev + d)
-                        : setDest((prev) => prev + d)
-                    }>
+                    onPress={() => {
+                      if (showKeypad) {
+                        setDtmf((prev) => prev + d);
+                        onPress?.('keypad', d);
+                      } else setDest((prev) => prev + d);
+                    }}>
                     <Text style={styles.keyText}>{d}</Text>
                   </Pressable>
                 ))}

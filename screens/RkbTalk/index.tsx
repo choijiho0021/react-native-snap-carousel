@@ -35,6 +35,7 @@ const RkbTalk = () => {
   );
   const [speakerPhone, setSpeakerPhone] = useState(false);
   const [rnSession, setRnSession] = useState<RNSessionDescriptionHandler>();
+  const [dtmfSession, setDtmfSession] = useState<Session>();
 
   // Options for SimpleUser
   useFocusEffect(
@@ -44,7 +45,7 @@ const RkbTalk = () => {
       };
       const uri = UserAgent.makeURI('sip:07079190190@talk.rokebi.com');
       const userAgentOptions: UserAgentOptions = {
-        authorizationPassword: 'ua123123',
+        authorizationPassword: 'ua123123', // 000000
         authorizationUsername: '07079190190',
         transportOptions,
         uri,
@@ -87,6 +88,7 @@ const RkbTalk = () => {
       });
       */
 
+    setDtmfSession(session);
     console.log('@@@ setup');
   }, []);
 
@@ -213,6 +215,8 @@ const RkbTalk = () => {
         switch (e) {
           case 'disconnected':
           case 'failed':
+          case 'closed':
+          case 'completed':
             releaseCall();
             break;
           default:
@@ -222,7 +226,7 @@ const RkbTalk = () => {
   }, [releaseCall, rnSession]);
 
   const onPressKeypad = useCallback(
-    (k) => {
+    (k: string, d?: string) => {
       switch (k) {
         case 'call':
           makeCall();
@@ -236,11 +240,25 @@ const RkbTalk = () => {
             return !prev;
           });
           break;
+        case 'keypad':
+          const opt = {
+            requestOptions: {
+              body: {
+                contentDisposition: 'render',
+                contentType: 'application/dtmf-relay',
+                content: `Signal=${d}\r\nDuration=1000`,
+              },
+            },
+          };
+
+          dtmfSession?.info(opt);
+          console.log('@@@ send dtmf', d);
+          break;
         default:
           break;
       }
     },
-    [makeCall, releaseCall],
+    [dtmfSession, makeCall, releaseCall],
   );
 
   return (
