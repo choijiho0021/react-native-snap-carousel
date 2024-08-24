@@ -1,5 +1,4 @@
 /* eslint-disable no-underscore-dangle */
-import EventEmitter from 'events';
 import {
   mediaDevices,
   MediaStream,
@@ -23,8 +22,6 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
   mediaStreamFactory: (constraints: any) => Promise<MediaStream>;
 
   _peerConnectionDelegate: any;
-
-  _eventEmitter: EventEmitter;
 
   /**
    * Constructor
@@ -55,7 +52,6 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
         : options.peerConnectionConfiguration,
     );
 
-    this._eventEmitter = new EventEmitter();
     this.initPeerConnectionEventHandlers();
   }
 
@@ -1097,15 +1093,14 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
           ? undefined
           : _a.onconnectionstatechange
       ) {
-        this._peerConnectionDelegate.onconnectionstatechange(event);
+        this._peerConnectionDelegate.onconnectionstatechange(newState);
       }
-
-      this._eventEmitter.emit('onconnectionstatechange', newState);
     };
     peerConnection.ondatachannel = (event) => {
       let _a;
       this.logger.debug(`RNSessionDescriptionHandler.ondatachannel`);
       this._dataChannel = event.channel;
+      console.log('@@@ on data channel', event);
       if (this.onDataChannel) {
         this.onDataChannel(this._dataChannel);
       }

@@ -1,5 +1,5 @@
 import {useFocusEffect} from '@react-navigation/native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {SafeAreaView, StatusBar, StyleSheet} from 'react-native';
 import InCallManager from 'react-native-incall-manager';
 import {
@@ -34,46 +34,7 @@ const RkbTalk = () => {
     SessionState.Initial,
   );
   const [speakerPhone, setSpeakerPhone] = useState(false);
-  const [rnSession, setRnSession] = useState<RNSessionDescriptionHandler>();
   const [dtmfSession, setDtmfSession] = useState<Session>();
-
-  // Options for SimpleUser
-  useFocusEffect(
-    React.useCallback(() => {
-      const transportOptions = {
-        server: 'wss://talk.rokebi.com:8089/ws',
-      };
-      const uri = UserAgent.makeURI('sip:07079190190@talk.rokebi.com');
-      const userAgentOptions: UserAgentOptions = {
-        authorizationPassword: 'ua123123', // 000000
-        authorizationUsername: '07079190190',
-        transportOptions,
-        uri,
-        sessionDescriptionHandlerFactory: (session, options) => {
-          const s = new RNSessionDescriptionHandler(session, options);
-          setRnSession(s);
-          return s;
-        },
-        sessionDescriptionHandlerFactoryOptions: {
-          iceServers: [{urls: 'stun:talk.rokebi.com:3478'}],
-          iceGatheringTimeout: 3,
-        },
-      };
-      const ua = new UserAgent(userAgentOptions);
-      const registerer = new Registerer(ua);
-      ua.start().then(() => {
-        console.log('@@@ register');
-        registerer.register();
-      });
-      setUserAgent(ua);
-
-      return () => {
-        ua.stop().then((state) => {
-          console.log('@@@ UA stopped', state);
-        });
-      };
-    }, []),
-  );
 
   const setupRemoteMedia = useCallback((session: Session) => {
     /*
@@ -116,40 +77,8 @@ const RkbTalk = () => {
             },
           });
 
-          /*
-          inv.sessionDescriptionHandler?.peerConnectionDelegate({
-            onconnectionstatechange: (event) => {
-              console.log('@@@ connection state change', event);
-            },
-            ondatachannel: (event) => {
-              console.log('@@@ data channel', event);
-            },
-            onicecandidate: (event) => {
-              console.log('@@@ ice candidate', event);
-            },
-            onicecandidateerror: (event) => {
-              console.log('@@@ ice candidate error', event);
-            },
-            oniceconnectionstatechange: (event) => {
-              console.log('@@@ ice connection state change', event);
-            },
-            onicegatheringstatechange: (event) => {
-              console.log('@@@ ice gathering state change', event);
-            },
-            onnegotiationneeded: (event) => {
-              console.log('@@@ negotiation needed', event);
-            },
-            onsignalingstatechange: (event) => {
-              console.log('@@@ signaling state change', event);
-            },
-            ontrack: (event) => {
-              console.log('@@@ track', event);
-            },
-          });
-          */
-
           inv.stateChange.addListener((state: SessionState) => {
-            console.log(`Session state changed to ${state}`);
+            console.log(`@@@ inviter session state changed to ${state}`);
 
             setSessionState(state);
 
@@ -171,8 +100,26 @@ const RkbTalk = () => {
             }
           });
 
-          await inv.invite();
-          setInviter(inv);
+          inv.invite().then(() => {
+            const {sessionDescriptionHandler} = inv;
+
+            if (sessionDescriptionHandler) {
+              sessionDescriptionHandler.peerConnectionDelegate = {
+                onconnectionstatechange: (state) => {
+                  console.log('@@@ conn state changed', state, inv.state);
+                  if (
+                    inv.state === SessionState.Established &&
+                    ['disconnected', 'failed', 'closed', 'completed'].includes(
+                      state,
+                    )
+                  ) {
+                    inv.bye();
+                  }
+                },
+              };
+            }
+            setInviter(inv);
+          });
         })
         .catch((err) => {
           AppAlert.error(`Failed to make call:${err}`);
@@ -205,25 +152,9 @@ const RkbTalk = () => {
           console.log('unknown state');
           break;
       }
+      setSessionState(inviter.state);
     }
   }, [inviter]);
-
-  useEffect(() => {
-    if (rnSession)
-      rnSession?._eventEmitter.on('onconnectionstatechange', (e) => {
-        console.log('onconnectionstatechange: ', e);
-        switch (e) {
-          case 'disconnected':
-          case 'failed':
-          case 'closed':
-          case 'completed':
-            releaseCall();
-            break;
-          default:
-            break;
-        }
-      });
-  }, [releaseCall, rnSession]);
 
   const onPressKeypad = useCallback(
     (k: string, d?: string) => {
@@ -259,6 +190,47 @@ const RkbTalk = () => {
       }
     },
     [dtmfSession, makeCall, releaseCall],
+  );
+
+  // Options for SimpleUser
+  // TODO
+  // 1: register 상태 확인하기. register 실패한 경우 AOR이 여러개 생겨서 호가 안됨
+  // register 실패하면 deactivate
+  // AOR 개수 확인
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const transportOptions = {
+        server: 'wss://talk.rokebi.com:8089/ws',
+      };
+      const uri = UserAgent.makeURI('sip:01059119737@talk.rokebi.com');
+      const userAgentOptions: UserAgentOptions = {
+        authorizationPassword: '000000', // 000000
+        authorizationUsername: '01059119737',
+        transportOptions,
+        uri,
+        sessionDescriptionHandlerFactory: (session, options) => {
+          return new RNSessionDescriptionHandler(session, options);
+        },
+        sessionDescriptionHandlerFactoryOptions: {
+          iceServers: [{urls: 'stun:talk.rokebi.com:3478'}],
+          iceGatheringTimeout: 3,
+        },
+      };
+      const ua = new UserAgent(userAgentOptions);
+      const registerer = new Registerer(ua);
+      ua.start().then(() => {
+        console.log('@@@ register');
+        registerer.register();
+      });
+      setUserAgent(ua);
+
+      return () => {
+        ua.stop().then((state) => {
+          console.log('@@@ UA stopped', state);
+        });
+      };
+    }, []),
   );
 
   return (
