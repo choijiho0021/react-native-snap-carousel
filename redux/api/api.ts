@@ -139,6 +139,7 @@ const path = {
       lottery: 'rokebi/lottery',
       config: 'rokebi/config',
       noti: 'rokebi/noti',
+      talk: 'rokebi/talk',
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage/quota',

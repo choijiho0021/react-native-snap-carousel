@@ -14,6 +14,7 @@ import AppText from '@/components/AppText';
 import AppAlert from '@/components/AppAlert';
 import Keypad, {KeypadRef} from './Keypad';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
+import {API} from '@/redux/api';
 
 const styles = StyleSheet.create({
   body: {
@@ -35,6 +36,12 @@ const RkbTalk = () => {
   );
   const [speakerPhone, setSpeakerPhone] = useState(false);
   const [dtmfSession, setDtmfSession] = useState<Session>();
+
+  const getMaxCallTime = useCallback(() => {
+    API.TalkApi.getChannelInfo({mobile: '01059119737'}).then((rsp) => {
+      console.log('@@@ max call time', rsp);
+    });
+  }, []);
 
   const setupRemoteMedia = useCallback((session: Session) => {
     /*
@@ -107,13 +114,20 @@ const RkbTalk = () => {
               sessionDescriptionHandler.peerConnectionDelegate = {
                 onconnectionstatechange: (state) => {
                   console.log('@@@ conn state changed', state, inv.state);
-                  if (
-                    inv.state === SessionState.Established &&
-                    ['disconnected', 'failed', 'closed', 'completed'].includes(
-                      state,
-                    )
-                  ) {
-                    inv.bye();
+                  if (inv.state === SessionState.Established) {
+                    switch (state) {
+                      case 'disconnected':
+                      case 'failed':
+                      case 'closed':
+                      case 'completed':
+                        inv.bye();
+                        break;
+                      case 'connecting':
+                        getMaxCallTime();
+                        break;
+                      default:
+                        break;
+                    }
                   }
                 },
               };
@@ -129,7 +143,7 @@ const RkbTalk = () => {
       AppAlert.error('User agent not found', '');
       console.log('@@@ user agent not found');
     }
-  }, [cleanupMedia, setupRemoteMedia, userAgent]);
+  }, [cleanupMedia, getMaxCallTime, setupRemoteMedia, userAgent]);
 
   const releaseCall = useCallback(() => {
     if (inviter) {
@@ -218,6 +232,26 @@ const RkbTalk = () => {
         },
       };
       const ua = new UserAgent(userAgentOptions);
+      ua.delegate = {
+        onInvite: () => {
+          console.log('@@@ recv invite');
+        },
+        onMessage: (message) => {
+          console.log('@@@ recv message');
+          console.log('Received a SIP MESSAGE:', message);
+
+          // Extract the body of the SIP MESSAGE
+          const {body} = message;
+
+          // Process the received message
+          if (body) {
+            console.log('Message Content:', body);
+          }
+          // Automatically respond with a 200 OK
+          message.accept();
+        },
+      };
+
       const registerer = new Registerer(ua);
       ua.start().then(() => {
         console.log('@@@ register');
