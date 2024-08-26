@@ -10,6 +10,7 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
@@ -29,7 +30,6 @@ import AppModalForm from './AppModalForm';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
 import BoardMsg from './BoardMsg';
-import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({

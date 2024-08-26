@@ -10,7 +10,7 @@ import {
 } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import Analytics from 'appcenter-analytics';
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import SimCardsManagerModule from 'react-native-sim-cards-manager';
 import DeviceInfo from 'react-native-device-info';
 import {bindActionCreators} from 'redux';
@@ -143,9 +143,9 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   const [closedPopUp, setClosedPopUp] = useState<string[]>([]);
   const [lastRouteName, setLastRouteName] = useState<string>();
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
-  const [savedPopup, setSavedPopup] = useState();
+  const [savedPopup, setSavedPopup] = useState<RkbPromotion>();
   const runDynamicLink = useRef(false);
-  const routeNameRef = useRef();
+  const routeNameRef = useRef<string>();
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {
@@ -180,30 +180,31 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   );
 
   const gift = useCallback(
-    (url: string, json: urlParamObj) => {
+    (linkUrl: string, json: urlParamObj) => {
       // gift 금액은 서버에서 처리
-      if (url.includes('recommender') && navigationRef?.current) {
+      if (linkUrl.includes('recommender') && navigationRef?.current) {
         const {loggedIn, userId} = store.getState().account;
 
-        if (loggedIn) {
-          if (userId !== json?.recommender) {
+        if (json?.recommender && json?.gift)
+          if (loggedIn) {
+            if (userId !== json?.recommender) {
+              store.dispatch(
+                accountActions.receiveAndGetGift({
+                  sender: json?.recommender,
+                  gift: json?.gift, // 선물하기 - 상품
+                }),
+              );
+            }
+          } else {
             store.dispatch(
-              accountActions.receiveAndGetGift({
-                sender: json?.recommender,
-                gift: json?.gift, // 선물하기 - 상품
+              promotionActions.saveGiftAndRecommender({
+                recommender: json?.recommender,
+                gift: json?.gift,
               }),
             );
           }
-        } else {
-          store.dispatch(
-            promotionActions.saveGiftAndRecommender({
-              recommender: json?.recommender,
-              gift: json?.gift,
-            }),
-          );
-        }
 
-        if (url.includes('gift')) {
+        if (linkUrl.includes('gift')) {
           refNavigate({
             stack: 'EsimStack',
             screen: 'Esim',
@@ -315,14 +316,15 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
 
   const getNaviParams = useCallback(
     (
-      url?: string,
+      linkUrl?: string,
       params?: urlParamObj,
     ): {stack?: string; screen?: string; naviParams?: any} => {
       const canNavigate =
         params?.hasOwnProperty('stack') && params?.hasOwnProperty('screen');
 
       if (
-        url?.indexOf('product') > -1 &&
+        linkUrl &&
+        linkUrl.indexOf('product') > -1 &&
         params?.uuid &&
         prodList.size > 0 &&
         localOpList.size > 0
@@ -700,7 +702,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
   }, [deepLinkHandler]);
 
   useEffect(() => {
-    const addListenerLink = ({url: incomingUrl}) => {
+    const addListenerLink = ({url: incomingUrl}: {url: string}) => {
       if (incomingUrl) deepLinkHandler(incomingUrl);
     };
 
@@ -713,7 +715,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
     <NavigationContainer
       ref={navigationRef}
       onReady={async () => {
-        if (navigationRef?.current?.getCurrentRoute() && routeNameRef) {
+        if (routeNameRef && navigationRef?.current?.getCurrentRoute()) {
           routeNameRef.current =
             navigationRef?.current?.getCurrentRoute()?.name;
         }

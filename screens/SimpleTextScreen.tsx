@@ -133,8 +133,6 @@ type SimpleTextScreenProps = {
   };
 };
 
-const {webViewHost} = Env.get();
-
 const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
   const {
     navigation,
@@ -328,7 +326,9 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
           <ScrollView style={styles.scrollContainer}>
             <View style={styles.container}>
               {bodyTitle && (
-                <AppText style={styles.bodyTitle}>{`${bodyTitle}\n\n`}</AppText>
+                <AppText style={styles.bodyTitle}>
+                  {`${bodyTitle}\n\n`}m
+                </AppText>
               )}
               <AppText style={styles.text}>{utils.htmlToString(body)}</AppText>
             </View>
@@ -385,8 +385,11 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     if (isProdEvent) {
       return loggedIn ? `promo:join:${eventStatus}` : 'promo:login';
     }
+    if (props?.route?.params?.title) {
+      return props?.route?.params?.title;
+    }
     return 'ok';
-  }, [eventStatus, isProdEvent, loggedIn]);
+  }, [eventStatus, isProdEvent, loggedIn, props?.route?.params?.title]);
 
   const disabled =
     ['joined', 'invalid'].includes(eventStatus) ||

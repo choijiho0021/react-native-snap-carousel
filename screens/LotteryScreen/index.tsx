@@ -517,6 +517,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     );
   }, [
     buttonList,
+    disableBtn,
     fortune?.text,
     isGetResult,
     navigation,

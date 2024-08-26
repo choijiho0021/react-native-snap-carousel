@@ -34,7 +34,7 @@ type BoardItemListProps = {
   data: RkbBoard[] | RkbEventBoard[];
   uid: number;
   refreshing?: boolean;
-  onPress: (item: RkbBoard | RkbEventBoard) => void;
+  onPress: (item: RkbBoard | RkbEventBoard | RkbEventBoard) => void;
   onScrollEndDrag: () => void;
   onRefresh: () => void;
 };
@@ -60,7 +60,7 @@ const BoardItemList: React.FC<BoardItemListProps> = ({
   );
 
   const renderItem = useCallback(
-    ({item}: {item: RkbBoard | RkbEventBoard}) => (
+    ({item}: {item: RkbBoard | RkbEventBoard | RkbEventBoard}) => (
       <BoardMsg onPress={() => onPress(item)} item={item} uid={uid} />
     ),
     [onPress, uid],

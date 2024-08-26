@@ -28,7 +28,7 @@ export type SocialAuthInfo = {
   user: string;
   pass: string;
   token?: string | null;
-  authorized: boolean;
+  authorized?: boolean;
   email?: string;
   mobile?: string;
   profileImageUrl?: string;

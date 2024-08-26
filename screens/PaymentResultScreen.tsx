@@ -279,7 +279,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
 
       // 성공했을 때만
       // 카트를 비운다.
-      if (isSuccess) action.cart.makeEmpty({orderId, token});
+      if (isSuccess) action.cart.makeEmpty();
     }
   }, [action.cart, isSuccess, orderId, purchaseItems, pymPrice, pymReq, token]);
 

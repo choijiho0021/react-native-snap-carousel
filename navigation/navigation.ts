@@ -174,9 +174,7 @@ export type HomeStackParamList = {
   AddProfile: undefined;
   PurchaseDetail: PurchaseDetailParams;
   RegisterMobile: {screen?: string; goBack?: () => void};
-  Main: undefined;
   Settings: undefined;
-  Auth: {screen: string};
   HeaderTitle: undefined;
   Esim: {
     clickPromotion?: boolean;
@@ -187,7 +185,7 @@ export type HomeStackParamList = {
   };
 
   MyPage: undefined;
-  Recharge: {mode?: string};
+  Recharge: {mode?: string} | undefined;
   Invite: undefined;
   InvitePromo: undefined;
   GiftGuide: undefined;
@@ -257,7 +255,7 @@ export type HomeStackParamList = {
     region: GuideRegion;
   };
   EsimSubs: {};
-  CashHistory: {};
+  CashHistory: undefined;
   ChangeEmail: undefined;
   SelectCoupon: undefined;
   Coupon: undefined;
@@ -293,6 +291,9 @@ export type HomeStackParamList = {
   SimpleTextModal: {};
   DiscountInfo: undefined;
   PolicyChecker: undefined;
+  QrInfo: {mainSubs: RkbSubscription};
+  MyEventList: undefined;
+  InfoNavigationProp: undefined;
   EsimStack: {
     screen: string;
     params?: {
@@ -308,6 +309,25 @@ export type HomeStackParamList = {
     params?: {};
     initial?: boolean;
   };
+  HomeStack: {
+    screen: string;
+    params?: {};
+    initial?: boolean;
+  };
+  Auth:
+    | {
+        screen: string;
+        params?: {};
+        initial?: boolean;
+      }
+    | undefined;
+  Main:
+    | {
+        screen: string;
+        params?: {};
+        initial?: boolean;
+      }
+    | undefined;
 };
 
 export const navigate = (

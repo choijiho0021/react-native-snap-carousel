@@ -548,7 +548,7 @@ const CancelOrderScreen: React.FC<CancelOrderScreenProps> = ({
         navigation.navigate('CancelResult', {
           isSuccess: resp?.result === 0,
           prods,
-          orderId: selectedOrder?.orderId,
+          orderId: selectedOrder?.orderId!,
         });
       });
   }, [

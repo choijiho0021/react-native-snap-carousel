@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {memo, useCallback, useState, useMemo, useEffect} from 'react';
+import React, {memo, useCallback, useState} from 'react';
 import {
   Animated,
   Image,
@@ -14,6 +14,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import VersionCheck from 'react-native-version-check';
+import {StackNavigationProp} from '@react-navigation/stack';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -25,7 +26,6 @@ import i18n from '@/utils/i18n';
 import {actions as infoActions, InfoAction} from '@/redux/modules/info';
 import AppCarousel from '@/components/AppCarousel';
 import utils from '@/redux/api/utils';
-import {StackNavigationProp} from '@react-navigation/stack';
 import {HomeStackParamList} from '@/navigation/navigation';
 
 export const DOT_MARGIN = 6;
