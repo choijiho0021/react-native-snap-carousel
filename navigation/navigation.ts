@@ -173,7 +173,12 @@ export type HomeStackParamList = {
   CustomerProfile: undefined;
   AddProfile: undefined;
   PurchaseDetail: PurchaseDetailParams;
-  RegisterMobile: {screen?: string; goBack?: () => void};
+  RegisterMobile: {
+    screen?: string;
+    stack?: string;
+    params?: object;
+    goBack?: () => void;
+  };
   Settings: undefined;
   HeaderTitle: undefined;
   Esim: {

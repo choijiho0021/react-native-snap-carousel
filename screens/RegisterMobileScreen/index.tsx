@@ -40,6 +40,7 @@ import i18n from '@/utils/i18n';
 import validationUtil from '@/utils/validationUtil';
 import {LinkModelState} from '@/redux/modules/link';
 import ScreenHeader from '@/components/ScreenHeader';
+import {removeData, retrieveData} from '@/utils/utils';
 
 const {isProduction, isIOS} = Env.get();
 
@@ -136,6 +137,8 @@ type RegisterMobileScreenProps = {
   };
 };
 
+type Credential = {mobile: string; pin: string};
+
 const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   account: {loggedIn, isNewUser},
   link,
@@ -153,20 +156,62 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const [isKeyboardShow, setIsKeyboardShow] = useState(false);
   const [status, setStatus] = useState<TrackingStatus>();
   const [recentNormal, setRecentNormal] = useState(false);
+  const [credentials, setCredentials] = useState<Credential>();
+  const loginCnt = useRef(0); // 자동로그인 시도 횟수
   const controller = useRef(new AbortController());
   const mounted = useRef(false);
   const mobileRef = useRef<InputMobileRef>(null);
   const inputRef = useRef<InputPinRef>(null);
+  const referrer = useMemo(
+    () => link?.params?.referrer,
+    [link?.params?.referrer],
+  );
 
   const recommender = useMemo(
     () => link?.params?.recommender,
     [link?.params?.recommender],
   );
 
-  const referrer = useMemo(
-    () => link?.params?.referrer,
-    [link?.params?.referrer],
-  );
+  useEffect(() => {
+    const fetchCredentials = async () => {
+      try {
+        const savedMobile = await retrieveData(API.User.KEY_MOBILE, true);
+        const savedPin = await retrieveData(API.User.KEY_PIN, true);
+
+        if (savedMobile && savedPin) {
+          setCredentials({
+            mobile: savedMobile,
+            pin: savedPin,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to retrieve credentials:', error);
+      }
+    };
+
+    fetchCredentials();
+  }, []);
+
+  const login = useCallback(async () => {
+    if (credentials && loginCnt.current < 5) {
+      actions.account.logInAndGetAccount(credentials);
+      loginCnt.current += 1;
+    }
+
+    if (loginCnt.current >= 5) {
+      await removeData(API.User.KEY_MOBILE);
+      await removeData(API.User.KEY_PIN);
+    }
+  }, [actions.account, credentials]);
+
+  useEffect(() => {
+    if (credentials) {
+      const intervalId = setInterval(login, 5000);
+
+      return () => clearInterval(intervalId);
+    }
+    return () => {};
+  }, [credentials, login]);
 
   useEffect(() => {
     AsyncStorage.getItem('login.hist').then((v) => {
@@ -226,14 +271,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       }
       setAuthorized(true);
     }
-  }, [
-    isNewUser,
-    link.url,
-    loggedIn,
-    navigation,
-    route?.params,
-    route?.params?.rule,
-  ]);
+  }, [isNewUser, link.url, loggedIn, navigation, route?.params]);
 
   useEffect(() => {
     const {current} = controller;
