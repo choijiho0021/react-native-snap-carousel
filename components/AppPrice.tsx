@@ -8,12 +8,12 @@ import i18n from '@/utils/i18n';
 import AppText from './AppText';
 import {colors} from '@/constants/Colors';
 
-const {esimGlobal} = Env.get();
+const {esimGlobal, isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: isIOS ? 'center' : undefined,
   },
   price: {
     ...appStyles.price,

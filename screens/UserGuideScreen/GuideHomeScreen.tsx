@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
   logo: {
     alignSelf: 'flex-end',
     marginRight: 20,
+    marginBottom: 24,
   },
 });
 
@@ -32,9 +33,8 @@ const GuideHomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={{flex: 1}}>
-        <GuideHeader onPress={() => navigation.goBack()} />
-
+      <GuideHeader onPress={() => navigation.goBack()} />
+      <ScrollView style={{flex: 1, paddingTop: 40}}>
         <GuideTitle title={i18n.t('userGuide:home:title')} />
 
         <AppIcon name="guideHomeLogo" style={styles.logo} />
@@ -43,7 +43,7 @@ const GuideHomeScreen = () => {
           <GuideButton
             key={v}
             item={v}
-            style={v === 'esimDel' && {marginTop: 36, marginBottom: 36}}
+            style={v === 'esimDel' && {marginTop: 20, marginBottom: 36}}
             onPress={async () => {
               setGuideOption(v);
               const checked = await AsyncStorage.getItem(

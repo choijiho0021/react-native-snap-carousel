@@ -280,9 +280,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [showUsageModal, setShowUsageModal] = useState<boolean | undefined>(
-    route?.params?.actionStr === 'showUsage',
-  );
+  const [showUsageModal, setShowUsageModal] = useState<boolean>(false);
   const [subs, setSubs] = useState<RkbSubscription>();
   const [usageLoading, setUsageLoading] = useState(false);
   const [showGiftModal, setShowGiftModal] = useState<boolean | undefined>();
@@ -429,33 +427,23 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   }, []);
 
   useEffect(() => {
-    const {actionStr} = route?.params || {};
-
-    if (actionStr === 'showUsage' && showUsageSubsId && !isEditMode) {
+    if (showUsageSubsId && !isEditMode) {
       const index = subsData?.findIndex((elm) => elm.nid === showUsageSubsId);
 
       if (index >= 0) {
         setShowUsageModal(true);
         onPressUsage(subsData[index], getIsChargeable(subsData[index]));
-        navigation.setParams({
-          actionStr: undefined,
-        });
         flatListRef?.current?.scrollToIndex({index, animated: true});
       }
     }
-  }, [
-    getIsChargeable,
-    isEditMode,
-    navigation,
-    onPressUsage,
-    route?.params,
-    showUsageSubsId,
-    subsData,
-  ]);
+  }, [getIsChargeable, isEditMode, onPressUsage, showUsageSubsId, subsData]);
 
   const getSubsAction = useCallback(
     async (subsId?: string, actionStr?: string, subsIccid?: string) => {
-      // 첫번째로 로딩 시 숨긴 subs를 제외하고 10개만 가져오도록 함
+      navigation.setParams({
+        actionStr: undefined,
+      });
+
       if (actionStr === 'reload') {
         action.order.subsReload({
           iccid: iccid!,
@@ -466,6 +454,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         checkLottery();
       } else if (actionStr === 'showUsage') {
         const index = subsData?.findIndex((elm) => elm.nid === subsId);
+
         if (index >= 0) {
           setSelectedIdx(index);
           setShowUsageModal(true);
@@ -488,7 +477,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       } else if (actionStr === 'navigate') {
         if (subsIccid) {
           const main = order.subs?.find((s) => s.subsIccid === subsIccid);
-
           if (main) {
             if ((main.cnt || 0) > 1) {
               navigation.navigate('ChargeHistory', {
@@ -534,6 +522,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
               });
           }
         }
+      } else if (actionStr === 'scrollToTop') {
+        flatListRef?.current?.scrollToOffset({animated: true, offset: 0});
       }
     },
     [
@@ -551,17 +541,25 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   useEffect(() => {
+    const {subsId, actionStr} = route?.params || {};
+
+    if (isFirstLoad) {
+      // actionStr = reload, esim 최초 진입 시 subs 중복 호출 현상 방지
+      if (actionStr === 'reload')
+        navigation.setParams({
+          actionStr: undefined,
+        });
+      else onRefresh(false, true, subsId, actionStr);
+    }
+  }, [route?.params, isFirstLoad, iccid, onRefresh, navigation]);
+
+  useEffect(() => {
     const {subsId, actionStr, iccid: subsIccid} = route?.params || {};
 
-    // actionStr = reload, esim 최초 진입 시 subs 중복 호출 현상 방지
-    if (isFirstLoad && actionStr !== 'reload')
-      onRefresh(false, true, subsId, actionStr);
-    else if (iccid) {
+    if (!isFirstLoad && actionStr) {
       getSubsAction(subsId, actionStr, subsIccid);
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [route?.params, isFirstLoad, iccid]);
+  }, [route?.params, isFirstLoad, iccid, getSubsAction]);
 
   const empty = useCallback(() => {
     return _.isEmpty(order.drafts) || isEditMode ? (
@@ -810,7 +808,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           />
         }
       />
-
       <EsimModal
         visible={showModal === 'usage'}
         subs={subs}

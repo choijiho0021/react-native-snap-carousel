@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   badge: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 4,
+    marginRight: 8,
     height: 20,
     alignSelf: 'center',
     borderRadius: 3,
@@ -174,15 +174,15 @@ const styles = StyleSheet.create({
   addOnRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 16,
     marginBottom: 8,
   },
   rechargeTag: {
     paddingHorizontal: 8,
     borderWidth: 1,
     height: 20,
-    marginTop: 16,
+    marginTop: 4,
     marginRight: 8,
+    borderRadius: 3,
     // borderColor: colors.clearBlue,
     justifyContent: 'center',
   },
@@ -206,7 +206,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: colors.warmGrey,
     alignSelf: 'flex-start',
-    marginTop: 16,
   },
   addonWarning: {
     flexDirection: 'row',
@@ -253,8 +252,8 @@ export const renderPromoFlag = ({
   storeOrderId?: string;
 }) => {
   let icon = 'naverIcon';
-
-  if (storeName && storeName !== 'R') {
+  const isReplaced = storeName === 'R';
+  if (storeName && !isReplaced) {
     if (storeName === 'B') {
       const b2b = storeOrderId?.split('-')?.[0]?.toLowerCase();
       if (b2b && b2b in b2bIconMap) {
@@ -267,15 +266,17 @@ export const renderPromoFlag = ({
 
   return (
     <Fragment>
+      <View style={{width: 4, height: 1}} />
       {promoFlagSort(flags).map((elm) => {
         const badgeColor = getPromoFlagColor(elm);
         return (
+          // Special categories 태그
           <View
             key={elm}
             style={[
               styles.badge,
               {
-                paddingHorizontal: elm === 'fiveG' ? 2 : 8,
+                paddingHorizontal: elm === 'fiveG' ? 2 : 4,
                 backgroundColor: badgeColor.backgroundColor,
               },
             ]}>
@@ -292,13 +293,15 @@ export const renderPromoFlag = ({
           </View>
         );
       })}
-      {isStore && (
+      {/* 채널 아이콘 ex)네이버 쿠팡 */}
+      {!isReplaced && !isReceived && isStore && (
         <AppSvgIcon
           name={icon}
           style={{justifyContent: 'center', marginRight: 4}}
         />
       )}
-      {!(storeName && storeName === 'R') && isReceived && (
+      {/* 선물받은 아이콘 */}
+      {!isReplaced && isReceived && (
         <AppSvgIcon name="giftIcon" style={{justifyContent: 'center'}} />
       )}
     </Fragment>
@@ -326,7 +329,7 @@ const totalCardImg = require('../assets/images/esim/totalCard.png');
 const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   navigation,
   route: {params},
-  account,
+  account: {iccid, token},
   refreshing,
 }) => {
   const {mainSubs, chargeablePeriod, isChargeable} = params || {};
@@ -413,7 +416,6 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
   }, []);
 
   const getSubs = useCallback(() => {
-    const {iccid, token} = account;
     if (iccid && token) {
       API.Subscription.getSubscription({
         iccid,
@@ -425,7 +427,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         }
       });
     }
-  }, [account, mainSubs.subsIccid]);
+  }, [iccid, token, mainSubs.subsIccid]);
 
   useEffect(() => {
     getSubs();
@@ -601,11 +603,15 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
       }
       if (isPending(sub.statusCd)) {
         return (
-          <View style={{flexDirection: 'row', marginBottom: 24}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginBottom: 24,
+            }}>
             <AppText
               style={[
                 appStyles.bold14Text,
-                {color: colors.clearBlue, marginRight: 8},
+                {color: colors.clearBlue, marginRight: 8, lineHeight: 20},
               ]}>
               {i18n.t('esim:reserved')}
             </AppText>
@@ -630,18 +636,22 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
 
   const renderItem = useCallback(
     ({item}: {item: RkbSubscription}) => {
+      const outstanding = isOutstanding(item.statusCd);
+
       return (
         <View
           style={{
             borderWidth: 1,
             borderColor: colors.lightGrey,
             marginBottom: 16,
+            borderRadius: 3,
           }}>
           <View
             style={{
               alignItems: 'center',
               paddingHorizontal: 20,
-              opacity: isOutstanding(item.statusCd) ? 0.6 : 1,
+              opacity: outstanding ? 0.6 : 1,
+              paddingVertical: 16,
             }}>
             <AppText style={styles.purchaseText}>
               {i18n.t('purchase:date', {
@@ -651,9 +661,8 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                 ),
               })}
             </AppText>
-            <View
-              style={{flexDirection: 'row', marginBottom: 16, marginTop: 6}}>
-              <View style={{flex: 1}}>
+            <View style={{flexDirection: 'row', marginTop: 6}}>
+              <View style={{flex: 1, marginVertical: 3}}>
                 <SplitText
                   renderExpend={() =>
                     renderPromoFlag({
@@ -665,14 +674,25 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                     })
                   }
                   numberOfLines={2}
-                  style={{...appStyles.bold16Text, marginRight: 8}}
+                  style={[
+                    {
+                      ...appStyles.bold16Text,
+                      lineHeight: 24,
+                      marginRight: 8,
+                    },
+                    outstanding && {color: colors.greyish},
+                  ]}
                   ellipsizeMode="tail">
                   {utils.removeBracketOfName(item.prodName)}
                 </SplitText>
               </View>
               {!isExpired(item.statusCd) && (
                 <Pressable
-                  style={{flexDirection: 'row'}}
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
                   onPress={() => {
                     setPending(true);
                     setSelectedSubs(item);
@@ -684,16 +704,12 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                     });
                     setShowModal(true);
                   }}
-                  disabled={
-                    isPending(item.statusCd) || isOutstanding(item.statusCd)
-                  }>
+                  disabled={isPending(item.statusCd) || outstanding}>
                   <AppText
                     style={[
                       appStyles.bold14Text,
                       {
-                        color: isOutstanding(item.statusCd)
-                          ? colors.warmGrey
-                          : colors.clearBlue,
+                        color: outstanding ? colors.warmGrey : colors.clearBlue,
                         marginRight: 8,
                       },
                     ]}>
@@ -707,11 +723,15 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                     name={
                       isPending(item.statusCd)
                         ? 'delivery'
-                        : isOutstanding(item.statusCd)
+                        : outstanding
                         ? 'rightGreyAngleBracket'
                         : 'rightBlueAngleBracket'
                     }
-                    style={{marginRight: 8, marginTop: 4}}
+                    style={{
+                      marginRight: 8,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
                   />
                 </Pressable>
               )}
@@ -736,9 +756,14 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
               .map((k, idx, arr) => (
                 <View
                   style={{
-                    opacity: isOutstanding(k.statusCd) ? 0.6 : 1,
+                    opacity: outstanding ? 0.6 : 1,
                   }}>
-                  <View style={{flexDirection: 'row', paddingHorizontal: 20}}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      paddingHorizontal: 20,
+                      paddingTop: 24,
+                    }}>
                     <View
                       style={{
                         ...styles.rechargeTag,
@@ -764,7 +789,14 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
                     </View>
                     <View style={{flex: 1}}>
                       <View style={styles.addOnRow}>
-                        <AppText style={appStyles.bold16Text}>
+                        <AppText
+                          style={[
+                            appStyles.bold16Text,
+                            {lineHeight: 24},
+                            outstanding && {
+                              color: colors.greyish,
+                            },
+                          ]}>
                           {utils.toDataVolumeString(Number(k.dataVolume))}
                           {` ${toProdDaysString(Number(k.prodDays))}`}
                         </AppText>
@@ -920,7 +952,7 @@ const ChargeHistoryScreen: React.FC<ChargeHistoryScreenProps> = ({
         <SafeAreaView style={{backgroundColor: colors.white}} />
       </Modal>
 
-      {!disableButtonByOutstand && (
+      {!disableButtonByOutstand && isChargeable && (
         <View style={{position: 'relative'}}>
           <AppSvgIcon name="speechBubble" style={styles.newIcon} />
           <AppText style={styles.newText}>{i18n.t('new')}</AppText>

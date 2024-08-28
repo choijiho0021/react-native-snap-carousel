@@ -595,6 +595,7 @@
   "cart:notToCart": "Due to out of stock, can't add to the cart.",
   "cart:systemError": "Due to system error, The service does not work properly. \nPlease try again in a few min.",
   "cart:unpublishedError": "현재 판매 중지된 상품이 포함된 주문입니다.\n확인 버튼을 눌러 상품 정보 업데이트 후 다시 주문 부탁드립니다.😊",
+  "cart:paymentNotMatch": "가격 변동이 포함된 상품이 포함된 주문입니다. 확인 버튼을 눌러 상품정보 업데이트 후 다시 진행해 주세요.",
 
   "usim:toRokebiCash": "Exchange Amount\n",
   "usim:balance": "ROKEBI Cash",
@@ -767,7 +768,7 @@
   "esim:charge:addOn:currency": "$",
   "esim:charge:addOn:title": "{{period}} {{volume}} 충전",
   "esim:charge:addOn:body": "충전한 데이터는 {{date}}까지 사용 가능합니다.",
-  "esim:charge:addOn:notice:today": "충전 데이터는 <b>오늘 데이터 리셋 시간까지만</b> 사용 가능",
+  "esim:charge:addOn:notice:today": "충전 데이터는 <b>다음 데이터 리셋 시간까지만</b> 사용 가능",
   "esim:charge:addOn:notice:remainDays": "충전 데이터는 <b>남은 사용기간 동안</b> 사용 가능",
   "esim:charge:addOn:resetTime:cmi": "<b>데이터 리셋 시간:</b> {{expireTime}}(KST)",
   "esim:charge:addOn:resetTime:cmi2": "<b>데이터 리셋 시간:</b> {expireTime}(KST)",

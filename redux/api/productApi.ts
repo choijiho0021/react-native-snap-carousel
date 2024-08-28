@@ -498,9 +498,17 @@ const getProductByLocalOp = (partnerId: string) => {
   );
 };
 
-const getAllProduct = () => {
+const getAllProduct = ({
+  id = '',
+  timestamp,
+}: {
+  id?: string;
+  timestamp: string;
+}) => {
   return api.callHttpGet(
-    api.httpUrl(`${api.path.rokApi.rokebi.config}/allprod?_format=json`),
+    api.httpUrl(
+      `${api.path.rokApi.rokebi.config}/allprod?_format=json&${timestamp}=${id}`,
+    ),
     toAllProduct,
   );
 };

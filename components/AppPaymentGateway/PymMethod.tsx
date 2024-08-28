@@ -118,9 +118,10 @@ const PymMethod: React.FC<PymMethodProps> = ({
     else if (value?.startsWith('vbank')) setMethod('vbank');
     else {
       setMethod('easy');
-      setSelected(value);
+      setSelected(value || 'pym:kakao');
+      onPress(value || 'pym:kakao');
     }
-  }, [value]);
+  }, [onPress, value]);
 
   const renderCardButton = useCallback(() => {
     return (

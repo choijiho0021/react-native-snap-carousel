@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Modal,
   Platform,
@@ -175,10 +175,11 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
   );
   const onPressShareMore = useCallback(
     (imgLink: string) => {
-      setIsShareDisabled(false);
       onPressShare('open', imgLink, {
         message: i18n.t('esim:lottery:share:desc'),
         failOnCancel: false,
+      }).finally(() => {
+        setIsShareDisabled(false);
       });
     },
     [onPressShare],
@@ -206,7 +207,6 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
 
   const sharePlatform = useCallback(
     (pictureUrl: string, type: string) => {
-      if (type === 'more') setIsShareDisabled(true);
       const serverImageUrl = API.default.httpImageUrl(pictureUrl);
 
       //  kakao 때만 동적 링크 필요
@@ -228,9 +228,11 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
         });
       }
 
-      if (type === 'more' && isShareDisabled) {
-        logAnalytics('more_share_try');
-        onPressShareMore(serverImageUrl);
+      if (type === 'more' && !isShareDisabled) {
+        setTimeout(() => {
+          logAnalytics('more_share_try');
+          onPressShareMore(serverImageUrl);
+        }, 500);
       }
 
       if (type === 'sms') {
@@ -248,6 +250,8 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
 
   const onSharePress = useCallback(
     async (type: SharePlatfromType) => {
+      if (type !== 'more') setIsShareDisabled(false);
+
       if (type === 'insta' && onShareInsta) {
         onShareInsta();
         return 'insta send success';
@@ -262,7 +266,6 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
           const pictureUrl = resp?.objects[0]
             ? resp?.objects[0]?.userPictureUrl
             : '';
-
           if (pictureUrl) {
             sharePlatform(pictureUrl, type);
           } else {
@@ -279,7 +282,11 @@ const LotteryShareModal: React.FC<LotteryShareModalProps> = ({
   const renderContentFortune = useCallback(() => {
     return ['kakao', 'sms', 'insta', 'more'].map((type) => (
       <View key={type} style={{justifyContent: 'center'}}>
-        <Pressable onPress={() => onSharePress(type as SharePlatfromType)}>
+        <Pressable
+          onPress={() => {
+            setIsShareDisabled(true);
+            onSharePress(type as SharePlatfromType);
+          }}>
           <View style={{height: 80, rowGap: 6, alignContent: 'center'}}>
             <AppSvgIcon key={`${type}Icon`} name={`${type}Icon`} />
             <AppText style={[appStyles.normal14Text, {textAlign: 'center'}]}>

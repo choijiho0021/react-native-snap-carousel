@@ -436,9 +436,8 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       !isDraft(mainSubs?.statusCd);
 
     // 확인 후 변경. ExpireDate이 아니라 lastExpireDate 쓰기
-    const getIsChargeable = !(
-      mainSubs.expireDate && mainSubs.expireDate.isBefore(now)
-    );
+    const getIsChargeable =
+      mainSubs.expireDate && mainSubs.expireDate.isAfter(now);
 
     const getIsChargeButton =
       mainSubs?.addOnOption &&
@@ -605,8 +604,8 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
                 : styles.usageTitleBold,
               {
                 alignSelf: 'center',
-                marginRight: mainSubs.isStore ? 8 : 0,
               },
+              isOutstanding && {color: colors.greyish},
             ]}
             numberOfLines={2}
             ellipsizeMode="tail">
@@ -1079,7 +1078,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           styles.usageListContainer,
           expired || mainSubs.giftStatusCd === 'S'
             ? styles.cardExpiredBg
-            : isTypeDraft
+            : isTypeDraft || isOutstanding
             ? styles.border
             : styles.shadow,
           isTypeDraft && {paddingBottom: 16},

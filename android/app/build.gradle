@@ -140,8 +140,8 @@ android {
         multiDexEnabled true
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
-        versionCode 198
-        versionName "1.5.4"
+        versionCode 207
+        versionName "1.5.5"
         multiDexEnabled true
         resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
         resValue "string", "build_config_package", "com.rokebiesim"
@@ -327,6 +327,7 @@ dependencies {
 
      implementation project(':react-native-seoul-naver-login')
 
+    implementation 'org.jetbrains:annotations:16.0.2'
 
 //    addUnimodulesDependencies([exclude: ['expo-file-system','expo-image-loader','expo-permissions','expo-constants']])
 }
