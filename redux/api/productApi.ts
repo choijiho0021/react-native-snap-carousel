@@ -171,7 +171,6 @@ export type RkbProduct = {
   field_daily: string;
   volume: string;
   partnerId: string;
-  categoryId: string[];
   days: number;
   variationId: string;
   field_description: string;
@@ -237,7 +236,6 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
           field_daily: item.field_daily,
           volume: item.field_data_volume,
           partnerId: item.partner_id,
-          categoryId: item.field_product_categories,
           days: utils.stringToNumber(item.field_days) || 0,
           variationId: item.variations && item.variations[0],
           field_description: item.field_description,
@@ -273,8 +271,6 @@ type RkbAllProdJson = {
   dys: string;
   fup: string;
   pid: string;
-  ct: string;
-  ctl: string;
   var: string;
   dsc: string;
   desc: string;
@@ -302,7 +298,6 @@ const toAllProduct = (data: RkbAllProdJson[]): ApiResult<RkbProduct> => {
           field_daily: item.da,
           volume: item.vol,
           partnerId: item.pid,
-          categoryId: item.ct,
           days: utils.stringToNumber(item.dys) || 0,
           variationId: item.var,
           field_description: item.dsc,
@@ -444,7 +439,7 @@ const toColumnList = (v: RkbPriceInfo[]) => {
   return v
     .reduce((acc, cur) => {
       // grouping by country
-      const idx = acc.findIndex((a) => a.country === cur.country);
+      const idx = acc.findIndex((a) => a.title === cur.title);
       if (idx < 0) return acc.concat(cur);
       acc[idx].weight = Math.max(acc[idx].weight, cur.weight);
       acc[idx].partnerList.push(cur.partner);
@@ -454,7 +449,7 @@ const toColumnList = (v: RkbPriceInfo[]) => {
       );
       return acc;
     }, [] as RkbPriceInfo[])
-    .sort((a, b) => b.weight - a.weight)
+    .sort((a, b) => a.weight - b.weight)
     .reduce((acc, cur) => {
       // 2단 list로 변환
       if (acc.length === 0) return [[cur]];
@@ -563,6 +558,7 @@ const getAddOnProduct = (subsId: string) => {
 
 export type RkbProdByCountry = {
   category: string;
+  categoryItem: string;
   country: string;
   price: string;
   partner: string;
@@ -571,13 +567,28 @@ export type RkbProdByCountry = {
   tags?: string;
 };
 
+export type RkbProdCategory = {
+  name: string;
+  tid: string;
+  depth: string;
+  weight: string;
+};
+
 type RkbProdByCntryJson = {
   ct: string;
+  cti: string;
   pt: string;
   co: string;
   pr: string;
   dis: string;
   tgs: string;
+};
+
+type RkbProdCategoryJson = {
+  name: string;
+  tid: string;
+  depth: string;
+  weight: string;
 };
 
 const toProdByCntry = (
@@ -587,11 +598,29 @@ const toProdByCntry = (
     return api.success(
       data.map((item) => ({
         category: item.ct,
+        categoryItem: item.cti,
         country: item.co,
         partner: item.pt,
         price: item.pr,
         max_discount: item.dis,
         tags: item.tgs,
+      })),
+    );
+  }
+
+  return api.failure(api.E_NOT_FOUND);
+};
+
+const toProdCategory = (
+  data: RkbProdCategoryJson[],
+): ApiResult<RkbProdCategory> => {
+  if (_.isArray(data)) {
+    return api.success(
+      data.map((item) => ({
+        name: item.name,
+        tid: item.tid,
+        depth: item.depth,
+        weight: item.weight,
       })),
     );
   }
@@ -605,6 +634,13 @@ const productByCountry = () => {
       `${api.path.rokApi.rokebi.config}/bycntry_${Platform.OS}?_format=json`,
     ),
     toProdByCntry,
+  );
+};
+
+const productCategory = () => {
+  return api.callHttpGet<RkbProdCategory>(
+    api.httpUrl(`${api.path.prodCategory}?_format=json`),
+    toProdCategory,
   );
 };
 
@@ -622,6 +658,7 @@ export default {
   getLocalOp,
   getProdCountry,
   productByCountry,
+  productCategory,
   getProductByUuid,
   getAddOnProduct,
 };

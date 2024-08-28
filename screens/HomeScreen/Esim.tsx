@@ -190,30 +190,17 @@ const Esim: React.FC<EsimProps> = ({
   const [savedIndex, setSavedIndex] = useState(0);
   const routes = useMemo(
     () =>
-      [
-        {
-          key: API.Product.category.asia,
-          title: i18n.t('store:asia'),
-          category: '아시아',
-        },
-        {
-          key: API.Product.category.europe,
-          title: i18n.t('store:europe'),
-          category: '유럽',
-        },
-        {
-          key: API.Product.category.usaAu,
-          title: i18n.t('store:usa/au'),
-          category: '미주/호주',
-        },
-        {
-          key: API.Product.category.multi,
-          title: i18n.t('store:multi'),
-          category: '복수 국가',
-        },
-      ] as TabViewRoute[],
-    [],
+      product.prodCategory
+        .filter((item) => item.depth === '2')
+        .valueSeq()
+        .sortBy((item) => Number(item.weight))
+        .map((elm) => ({
+          key: elm.tid,
+          title: product.prodCategory.get(elm.tid)?.name,
+        })),
+    [product.prodCategory],
   );
+
   const [popUpVisible, setPopUpVisible] = useState<boolean>();
   const [isClosedPopUp, setIsClosedPopUp] = useState<boolean>(false);
   const [popupDisabled, setPopupDisabled] = useState(true);

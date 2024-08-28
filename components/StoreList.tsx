@@ -115,12 +115,11 @@ const CountryItem0 = ({
       {item.map((elm, idx) => {
         // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
         const localOp = localOpList?.get(elm.partner);
-        const prodTitle = API.Product.getTitle(localOp);
         return (
           <View
             key={elm.country}
             style={{flex: 1, marginLeft: idx >= 1 ? 14 : 0}}>
-            <Pressable onPress={() => onPress?.(elm, prodTitle)}>
+            <Pressable onPress={() => onPress?.(elm, elm.title)}>
               <View style={styles.image}>
                 {(index <= 4 || showImage) && (
                   <ProductImg
@@ -135,7 +134,7 @@ const CountryItem0 = ({
               </View>
 
               <AppText key="cntry" style={styles.cntry}>
-                {prodTitle}
+                {elm.title}
               </AppText>
               {renderPrice(elm.minPrice)}
             </Pressable>
