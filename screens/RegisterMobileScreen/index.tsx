@@ -177,7 +177,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       try {
         const savedMobile = await retrieveData(API.User.KEY_MOBILE, true);
         const savedPin = await retrieveData(API.User.KEY_PIN, true);
-
         if (savedMobile && savedPin) {
           setCredentials({
             mobile: savedMobile,
@@ -196,11 +195,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     if (credentials && loginCnt.current < 5) {
       actions.account.logInAndGetAccount(credentials);
       loginCnt.current += 1;
-    }
-
-    if (loginCnt.current >= 5) {
-      await removeData(API.User.KEY_MOBILE);
-      await removeData(API.User.KEY_PIN);
     }
   }, [actions.account, credentials]);
 
