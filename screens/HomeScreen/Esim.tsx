@@ -431,7 +431,7 @@ const Esim: React.FC<EsimProps> = ({
     ({route: sceneRoute}: {route: TabViewRoute}) => (
       <StoreList
         key={sceneRoute.key}
-        data={product.priceInfo.get(sceneRoute.key, [] as RkbPriceInfo[][])}
+        data={product.priceInfoTab.get(sceneRoute.key, [] as RkbPriceInfo[][])}
         onPress={onPressItem}
         localOpList={product.localOpList}
         width={dimensions.width}
@@ -446,7 +446,7 @@ const Esim: React.FC<EsimProps> = ({
       dimensions.width,
       onPressItem,
       product.localOpList,
-      product.priceInfo,
+      product.priceInfoTab,
       runAnimation,
     ],
   );
@@ -668,14 +668,14 @@ const Esim: React.FC<EsimProps> = ({
     if (
       product.localOpList.size > 0 &&
       product.prodByCountry.length > 0 &&
-      product.priceInfo.size === 0
+      product.priceInfo.length === 0
     ) {
       action.product.updatePriceInfo();
     }
   }, [
     action.product,
     product.localOpList.size,
-    product.priceInfo.size,
+    product.priceInfo.length,
     product.prodByCountry.length,
   ]);
 

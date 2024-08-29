@@ -236,7 +236,8 @@ export interface ProductModelState {
   ready: boolean;
   prodByCountry: RkbProdByCountry[];
   prodCategory: ImmutableMap<string, RkbProdCategory>;
-  priceInfo: ImmutableMap<string, RkbPriceInfo[][]>;
+  priceInfo: RkbPriceInfo[];
+  priceInfoTab: ImmutableMap<string, RkbPriceInfo[][]>;
   prodByLocalOp: ImmutableMap<string, string[]>;
   prodCountry: string[];
   rule: PaymentRule;
@@ -253,7 +254,8 @@ const initialState: ProductModelState = {
   partnerId: '',
   ready: false,
   prodByCountry: [],
-  priceInfo: ImmutableMap(),
+  priceInfo: [],
+  priceInfoTab: ImmutableMap(),
   prodByLocalOp: ImmutableMap(),
   prodCountry: [],
   rule: {
@@ -319,35 +321,40 @@ export const checkAndLoadProdList = (
   }
 };
 
+//
 const slice = createSlice({
   name: 'product',
   initialState,
   reducers: {
     updateProduct: updateProdList,
     updatePriceInfo: (state) => {
-      state.priceInfo = state.prodByCountry
-        .reduce((acc, cur) => {
-          const country = cur.country.split(',');
-          const elm = {
-            ...cur,
-            weight: state.prodCategory?.get(cur.categoryItem)?.weight || 0,
-            search: `${cur.country},${Country.getName(
-              country,
-              'ko',
-              state.prodCountry,
-            )},${Country.getName(country, 'en', state.prodCountry)},${
-              cur.categoryItem
-            }`,
-            title: state.prodCategory?.get(cur.categoryItem)?.name,
-            partnerList: [cur.partner],
-            minPrice: utils.stringToCurrency(cur.price),
-            maxDiscount: Number(cur.max_discount),
+      const priceInfo = API.Product.toGroupByTitle(
+        state.prodByCountry.map((elm) => {
+          const cItem = state.prodCategory?.get(elm.categoryItem);
+          return {
+            ...elm,
+            weight: cItem?.weight || 0,
+            title: cItem?.name,
+            search: cItem?.name,
+            partnerList: [elm.partner],
+            minPrice: utils.stringToCurrency(elm.price),
+            maxDiscount: Number(elm.max_discount),
           } as RkbPriceInfo;
-          return acc.update(cur.category, (prev) =>
-            prev ? prev.concat(elm) : [elm],
-          );
+        }),
+        state.prodCountry,
+      );
+      state.priceInfo = priceInfo;
+
+      state.priceInfoTab = priceInfo
+        .reduce((acc, cur) => {
+          if (cur.category) {
+            return acc.update(cur.category, (prev) =>
+              prev ? prev.concat(cur) : [cur],
+            );
+          }
+          return acc;
         }, ImmutableMap<string, RkbPriceInfo[]>())
-        .map((v) => API.Product.toColumnList(v));
+        .map((elm) => API.Product.toColumnList(elm));
     },
   },
 
@@ -412,11 +419,7 @@ const slice = createSlice({
           const country = o.country.split(',');
           return {
             ...o,
-            search: `${o.country},${Country.getName(
-              country,
-              'ko',
-              state.prodCountry,
-            )},${Country.getName(country, 'en', state.prodCountry)}`,
+            country,
             maxDiscount: Number(o.max_discount),
           };
         });

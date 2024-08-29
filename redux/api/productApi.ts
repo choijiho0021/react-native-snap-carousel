@@ -13,6 +13,7 @@ import {colors} from '@/constants/Colors';
 import Env from '@/environment';
 import {parseJson} from '@/utils/utils';
 import {EXCEED_CHARGE_QUADCELL_RSP} from '@/screens/ChargeTypeScreen';
+import {Country} from '.';
 
 const {specialCategories} = Env.get();
 
@@ -435,29 +436,45 @@ const toProdCountry = (
   return api.failure(api.E_NOT_FOUND);
 };
 
+// title을 기준으로 합친 후 검색어 추가
+const toGroupByTitle = (v: RkbPriceInfo[], prodCountry: string[]) => {
+  return (
+    v
+      .reduce((acc, cur) => {
+        // grouping by country
+        const idx = acc.findIndex((a) => a.title === cur.title);
+        if (idx < 0) return acc.concat(cur);
+        if (cur.country && acc[idx].country)
+          acc[idx].country = [...Set([...acc[idx].country, ...cur?.country])];
+        if (cur.partner) acc[idx].partnerList.push(cur.partner);
+        acc[idx].minPrice.value = Math.min(
+          acc[idx].minPrice.value,
+          cur.minPrice.value,
+        );
+        return acc;
+      }, [] as RkbPriceInfo[])
+      // search 검색어 추가 elm.search는 홈화면에서 보이는 title
+      .map((elm) => ({
+        ...elm,
+        search: `${elm.search},${elm.country},${Country.getName(
+          elm.country,
+          'ko',
+          prodCountry,
+        )},${Country.getName(elm.country, 'en', prodCountry)}`,
+      }))
+      .sort((a, b) => a.weight - b.weight)
+  );
+};
+
+// 2단 list로 변환
 const toColumnList = (v: RkbPriceInfo[]) => {
-  return v
-    .reduce((acc, cur) => {
-      // grouping by country
-      const idx = acc.findIndex((a) => a.title === cur.title);
-      if (idx < 0) return acc.concat(cur);
-      acc[idx].weight = Math.max(acc[idx].weight, cur.weight);
-      acc[idx].partnerList.push(cur.partner);
-      acc[idx].minPrice.value = Math.min(
-        acc[idx].minPrice.value,
-        cur.minPrice.value,
-      );
-      return acc;
-    }, [] as RkbPriceInfo[])
-    .sort((a, b) => a.weight - b.weight)
-    .reduce((acc, cur) => {
-      // 2단 list로 변환
-      if (acc.length === 0) return [[cur]];
-      const last = acc[acc.length - 1];
-      return last.length <= 1
-        ? acc.slice(0, acc.length - 1).concat([last.concat(cur)])
-        : acc.concat([[cur]]);
-    }, [] as RkbPriceInfo[][]);
+  return v.reduce((acc, cur) => {
+    if (acc.length === 0) return [[cur]];
+    const last = acc[acc.length - 1];
+    return last.length <= 1
+      ? acc.slice(0, acc.length - 1).concat([last.concat(cur)])
+      : acc.concat([[cur]]);
+  }, [] as RkbPriceInfo[][]);
 };
 
 const toAddOnProd = (data: DrupalAddonProd[]): ApiResult<RkbAddOnProd> => {
@@ -559,7 +576,7 @@ const getAddOnProduct = (subsId: string) => {
 export type RkbProdByCountry = {
   category: string;
   categoryItem: string;
-  country: string;
+  country: string[];
   price: string;
   partner: string;
   max_discount: string;
@@ -648,6 +665,7 @@ export default {
   category,
   toPurchaseItem,
   toPurchaseAddOnItem,
+  toGroupByTitle,
   toColumnList,
   getTitle,
   getProduct,

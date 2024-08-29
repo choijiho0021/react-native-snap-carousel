@@ -418,21 +418,11 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
   // 국가 검색
   const renderStoreList = useCallback(
     (key: string) => {
-      const filtered = product.prodByCountry
-        .filter((v) =>
-          v.search
-            ?.toLowerCase()
-            ?.match(key?.toLowerCase().replace(/[{}()* ]/g, '')),
-        )
-        .map(
-          (v) =>
-            ({
-              ...v,
-              weight: product.localOpList.get(v.partner)?.weight || 0,
-              partnerList: [v.partner],
-              minPrice: utils.stringToCurrency(v.price),
-            } as RkbPriceInfo),
-        );
+      const filtered = product.priceInfo.filter((v) =>
+        v.search
+          ?.toLowerCase()
+          ?.match(key?.toLowerCase().replace(/[{}()* ]/g, '')),
+      );
 
       const list = API.Product.toColumnList(filtered);
 
@@ -449,7 +439,7 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
         </View>
       );
     },
-    [dimensions.width, onPressItem, product.localOpList, product.prodByCountry],
+    [dimensions.width, onPressItem, product.localOpList, product.priceInfo],
   );
 
   useEffect(() => {
