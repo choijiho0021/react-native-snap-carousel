@@ -274,12 +274,11 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
   );
 
   const submitHandler = useCallback(async () => {
-    Keyboard.dismiss();
-    let isValid = true;
-
     if (loading || pending) return;
 
     setLoading(true);
+    Keyboard.dismiss();
+    let isValid = true;
 
     try {
       const resp = await API.User.confirmEmail({email});
@@ -410,7 +409,7 @@ const SignupScreen: React.FC<RegisterMobileScreenProps> = ({
         style={styles.confirm}
         title={i18n.t('mobile:signup')}
         titleStyle={styles.text}
-        disabled={!confirm.mandatory || !email}
+        disabled={!confirm.mandatory || !email || loading || pending}
         disableColor={colors.greyish}
         disableBackgroundColor={colors.lightGrey}
         onPress={submitHandler}
