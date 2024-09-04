@@ -1,6 +1,6 @@
 import {useFocusEffect} from '@react-navigation/native';
-import React, {useCallback, useRef, useState} from 'react';
-import {SafeAreaView, StatusBar, StyleSheet} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {SafeAreaView, StatusBar, StyleSheet, View} from 'react-native';
 import InCallManager from 'react-native-incall-manager';
 import {
   Inviter,
@@ -10,11 +10,15 @@ import {
   UserAgent,
   UserAgentOptions,
 } from 'sip.js';
-import AppText from '@/components/AppText';
 import AppAlert from '@/components/AppAlert';
+import AppButton from '@/components/AppButton';
+import AppText from '@/components/AppText';
+import {colors} from '@/constants/Colors';
+import {appStyles} from '@/constants/Styles';
+import {API} from '@/redux/api';
+import {useInterval} from '@/utils/useInterval';
 import Keypad, {KeypadRef} from './Keypad';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
-import {API} from '@/redux/api';
 
 const styles = StyleSheet.create({
   body: {
@@ -36,12 +40,58 @@ const RkbTalk = () => {
   );
   const [speakerPhone, setSpeakerPhone] = useState(false);
   const [dtmfSession, setDtmfSession] = useState<Session>();
+  const [duration, setDuration] = useState(1);
+  const [maxTime, setMaxTime] = useState<number>(0);
+  const [time, setTime] = useState<string>('');
 
   const getMaxCallTime = useCallback(() => {
     API.TalkApi.getChannelInfo({mobile: '01059119737'}).then((rsp) => {
-      console.log('@@@ max call time', rsp);
+      if (rsp?.result === 0) {
+        const m =
+          rsp?.objects?.channel?.variable?.MAX_CALL_TIME?.match(/^[^:]+/);
+
+        console.log('@@@ max call time', m);
+        if (m?.length > 0) setMaxTime(Number(m[0]) / 1000);
+      }
+      // console.log('@@@ max call time', rsp);
     });
   }, []);
+
+  const makeSeconds = useCallback((num: number) => {
+    return (num < 10 ? '0' : '') + num;
+  }, []);
+
+  const limit = useCallback(
+    (t: number) => {
+      if (t < 61) {
+        setTime(`00:${makeSeconds(t)}`);
+      } else {
+        const mins = Math.floor(t / 60);
+        const secs = t - mins * 60;
+
+        setTime(`${makeSeconds(mins)}:${makeSeconds(secs)}`);
+      }
+    },
+    [makeSeconds],
+  );
+
+  useInterval(
+    () => {
+      if (sessionState === SessionState.Established) {
+        setDuration((prev) => prev + 1);
+        limit(duration);
+      }
+    },
+    sessionState === SessionState.Established ? 1000 : null,
+    // maxTime - duration >= 0 ? 1000 : null,
+  );
+
+  useEffect(() => {
+    if (inviter && maxTime && maxTime - duration < 0) {
+      inviter?.bye();
+      setSessionState(inviter?.state);
+    }
+  }, [duration, inviter, maxTime]);
 
   const setupRemoteMedia = useCallback((session: Session) => {
     /*
@@ -62,6 +112,9 @@ const RkbTalk = () => {
 
   const cleanupMedia = useCallback(() => {
     console.log('@@@ cleanup');
+    setDuration(1);
+    setMaxTime();
+    setTime('');
   }, []);
 
   const makeCall = useCallback(() => {
@@ -120,6 +173,7 @@ const RkbTalk = () => {
                       case 'failed':
                       case 'closed':
                       case 'completed':
+                        cleanupMedia();
                         inv.bye();
                         break;
                       case 'connecting':
@@ -272,6 +326,12 @@ const RkbTalk = () => {
       <StatusBar barStyle="dark-content" />
       <SafeAreaView style={styles.body}>
         <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
+
+        <AppButton
+          style={{height: 50, backgroundColor: colors.veryLightBlue}}
+          title={time}
+          titleStyle={{...appStyles.bold14Text, color: colors.clearBlue}}
+        />
         <Keypad
           style={styles.keypad}
           keypadRef={keypadRef}
