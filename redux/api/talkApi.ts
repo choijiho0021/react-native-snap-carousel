@@ -7,4 +7,10 @@ const getChannelInfo = ({mobile}: {mobile: string}) => {
   );
 };
 
-export default {getChannelInfo};
+const getTalkPoint = ({mobile}: {mobile: string}) => {
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.rokApi.rokebi.point)}/${mobile}?_format=json`,
+  );
+};
+
+export default {getChannelInfo, getTalkPoint};

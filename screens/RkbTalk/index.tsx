@@ -43,6 +43,16 @@ const RkbTalk = () => {
   const [duration, setDuration] = useState(1);
   const [maxTime, setMaxTime] = useState<number>(0);
   const [time, setTime] = useState<string>('');
+  const [point, setPoint] = useState<number>(0);
+
+  useEffect(() => {
+    API.TalkApi.getTalkPoint({mobile: '01059119737'}).then((rsp) => {
+      console.log('@@@ point', rsp);
+      if (rsp?.result === 0) {
+        setPoint(rsp?.objects?.tpnt);
+      }
+    });
+  }, []);
 
   const getMaxCallTime = useCallback(() => {
     API.TalkApi.getChannelInfo({mobile: '01059119737'}).then((rsp) => {
@@ -326,12 +336,15 @@ const RkbTalk = () => {
       <StatusBar barStyle="dark-content" />
       <SafeAreaView style={styles.body}>
         <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
+        <AppText style={{marginLeft: 10}}>{time}</AppText>
 
-        <AppButton
-          style={{height: 50, backgroundColor: colors.veryLightBlue}}
-          title={time}
-          titleStyle={{...appStyles.bold14Text, color: colors.clearBlue}}
-        />
+        <View style={{backgroundColor: colors.deepDarkBlue}}>
+          <AppButton
+            style={{height: 50, backgroundColor: colors.veryLightBlue}}
+            title={`톡 포인트: ${point}p`}
+            titleStyle={{...appStyles.bold14Text, color: colors.clearBlue}}
+          />
+        </View>
         <Keypad
           style={styles.keypad}
           keypadRef={keypadRef}
