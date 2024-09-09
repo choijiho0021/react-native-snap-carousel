@@ -439,7 +439,7 @@ const TabNavigator = ({
           tabBarIcon: ({focused}) => (
             <AppIcon
               focused={focused}
-              name="keyCall"
+              name="btnCall"
               style={styles.tabBarIcon}
             />
           ),

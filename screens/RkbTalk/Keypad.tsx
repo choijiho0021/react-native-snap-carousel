@@ -1,23 +1,21 @@
+import {useFocusEffect} from '@react-navigation/native';
 import React, {memo, useCallback, useEffect, useState} from 'react';
 import {
   Pressable,
-  StyleSheet,
-  View,
-  Text,
-  ViewStyle,
   StyleProp,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
 } from 'react-native';
 import {SessionState} from 'sip.js';
-import {useFocusEffect} from '@react-navigation/native';
-import {colors} from '@/constants/Colors';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import AppText from '@/components/AppText';
+import {colors} from '@/constants/Colors';
 import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 import i18n from '@/utils/i18n';
-import AppText from '@/components/AppText';
-import CallAction from './CallAction';
-import {appStyles} from '@/constants/Styles';
 
-const buttonSize = isDeviceSize('medium', true) ? 70 : 80;
+const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 console.log('@@@ buton size', buttonSize, windowWidth);
 
 const styles = StyleSheet.create({
@@ -28,20 +26,24 @@ const styles = StyleSheet.create({
   key: {
     width: buttonSize,
     height: buttonSize,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: colors.whiteFive,
+    borderRadius: buttonSize / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: buttonSize / 2,
-    marginBottom: 20,
+    marginBottom: 12,
   },
   keyText: {
     fontSize: 30,
     fontWeight: 'bold',
     fontStyle: 'normal',
-    letterSpacing: 0.49,
+    lineHeight: 36,
+    letterSpacing: -0.6,
     textAlign: 'center',
+    color: colors.black,
+  },
+  textCallHist: {
+    fontSize: 16,
+    fontStyle: 'normal',
+    lineHeight: 24,
     color: colors.black,
   },
   dest: {
@@ -90,6 +92,13 @@ const keys = [
   ['1', '2', '3'],
   ['4', '5', '6'],
   ['7', '8', '9'],
+  ['keyNation', '0', 'keyDel'],
+];
+
+const callKeys = [
+  ['1', '2', '3'],
+  ['4', '5', '6'],
+  ['7', '8', '9'],
   ['*', '0', '#'],
 ];
 
@@ -108,15 +117,28 @@ type KeyType = 'call' | 'hangup' | 'speaker' | 'keypad';
 
 type KeypadProps = {
   onPress?: (k: KeyType, d?: string) => void;
+  onChange: (d?: string) => void;
   style: StyleProp<ViewStyle>;
   keypadRef?: React.MutableRefObject<KeypadRef | null>;
   state?: SessionState;
+  talkPoint?: React.JSX.Element;
 };
 
-const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
+const Keypad: React.FC<KeypadProps> = ({
+  keypadRef,
+  style,
+  onPress,
+  onChange,
+  talkPoint,
+  state,
+}) => {
   const [dest, setDest] = useState('');
   const [dtmf, setDtmf] = useState('');
   const [showKeypad, setShowKeypad] = useState(false);
+
+  useEffect(() => {
+    onChange(dest);
+  }, [dest, onChange]);
 
   useEffect(() => {
     if (keypadRef) {
@@ -168,36 +190,67 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
           <>
             {keys.map((row, i) => (
               <View style={styles.row} key={i}>
-                {row.map((d) => (
-                  <Pressable
-                    style={styles.key}
-                    key={d}
-                    onPress={() => {
-                      if (showKeypad) {
-                        setDtmf((prev) => prev + d);
-                        onPress?.('keypad', d);
-                      } else setDest((prev) => prev + d);
-                    }}>
-                    <Text style={styles.keyText}>{d}</Text>
-                  </Pressable>
-                ))}
+                {row.map((d) => {
+                  switch (d) {
+                    case 'keyNation':
+                      return <AppSvgIcon key={d} name={d} style={styles.key} />;
+                    case 'keyDel':
+                      return (
+                        <AppSvgIcon
+                          key={d}
+                          name={d}
+                          style={styles.key}
+                          onPress={() =>
+                            setDest((prev) =>
+                              prev.length > 0
+                                ? prev.substring(0, prev.length - 1)
+                                : prev,
+                            )
+                          }
+                          onLongPress={() => setDest('')}
+                        />
+                      );
+                    default:
+                      return (
+                        <Pressable
+                          style={styles.key}
+                          key={d}
+                          onPress={() => {
+                            if (showKeypad) {
+                              setDtmf((prev) => prev + d);
+                              onPress?.('keypad', d);
+                            } else setDest((prev) => prev + d);
+                          }}>
+                          <Text style={styles.keyText}>{d}</Text>
+                        </Pressable>
+                      );
+                  }
+                })}
               </View>
             ))}
             <View style={styles.row}>
-              <View style={styles.empty} />
+              <Pressable
+                style={[styles.key, {marginBottom: 0}]}
+                key="contacts"
+                onPress={() => {}}>
+                <Text style={styles.textCallHist}>연락처</Text>
+              </Pressable>
               <AppSvgIcon
                 key="call"
                 name={showKeypad ? 'keyHangup' : 'keyCall'}
-                style={[
-                  styles.call,
-                  {backgroundColor: showKeypad ? colors.tomato : colors.green},
-                ]}
+                style={styles.call}
                 onPress={() => {
                   onPress?.(showKeypad ? 'hangup' : 'call');
                   closeKeypad();
                 }}
               />
-              {showKeypad ? (
+              <Pressable
+                style={[styles.key, {marginBottom: 0}]}
+                key="hist"
+                onPress={() => {}}>
+                <Text style={styles.textCallHist}>통화기록</Text>
+              </Pressable>
+              {/* {showKeypad ? (
                 <Pressable
                   style={[
                     styles.empty,
@@ -220,7 +273,7 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
                   }
                   onLongPress={() => setDest('')}
                 />
-              )}
+              )} */}
             </View>
           </>
         );
@@ -257,9 +310,10 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
 
   return (
     <View style={style}>
-      <View style={styles.input}>
+      {/* <View style={styles.input}>
         <Text style={styles.dest}>{showKeypad ? dtmf : dest}</Text>
-      </View>
+      </View> */}
+      {talkPoint}
       {renderKey(state)}
     </View>
   );

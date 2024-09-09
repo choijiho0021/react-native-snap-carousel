@@ -1,6 +1,13 @@
 import {useFocusEffect} from '@react-navigation/native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {SafeAreaView, StatusBar, StyleSheet, View} from 'react-native';
+import {
+  Pressable,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  TouchableHighlight,
+  View,
+} from 'react-native';
 import InCallManager from 'react-native-incall-manager';
 import {
   Inviter,
@@ -10,6 +17,7 @@ import {
   UserAgent,
   UserAgentOptions,
 } from 'sip.js';
+import Tooltip from 'react-native-walkthrough-tooltip';
 import AppAlert from '@/components/AppAlert';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
@@ -19,16 +27,55 @@ import {API} from '@/redux/api';
 import {useInterval} from '@/utils/useInterval';
 import Keypad, {KeypadRef} from './Keypad';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import CallToolTip from './CallToolTip';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+
+const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 
 const styles = StyleSheet.create({
   body: {
     flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
     backgroundColor: 'white',
   },
   keypad: {
-    flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
+  emergency: {
+    flex: 1,
+    textAlign: 'right',
+    marginRight: 20,
+    fontSize: 16,
+    fontWeight: '600',
+    fontStyle: 'normal',
+    lineHeight: 24,
+    letterSpacing: -0.16,
+    color: colors.clearBlue,
+  },
+  myPoint: {
+    fontSize: 16,
+    lineHeight: 24,
+    letterSpacing: -0.16,
+  },
+  pointBold: {
+    marginLeft: 12,
+    marginRight: 8,
+    color: colors.clearBlue,
+    fontWeight: 'bold',
+  },
+  dest: {
+    height: buttonSize / 2,
+    fontSize: 36,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    lineHeight: buttonSize / 2,
+    letterSpacing: -0.28,
+    color: colors.black,
+    textAlignVertical: 'bottom',
+  },
+  input: {alignItems: 'center'},
 });
 
 const RkbTalk = () => {
@@ -44,6 +91,8 @@ const RkbTalk = () => {
   const [maxTime, setMaxTime] = useState<number>(0);
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
+  const [visible, setVisible] = useState(true);
+  const [dest, setDest] = useState('');
 
   useEffect(() => {
     API.TalkApi.getTalkPoint({mobile: '01059119737'}).then((rsp) => {
@@ -331,26 +380,100 @@ const RkbTalk = () => {
     }, []),
   );
 
+  const talkPointBtn = useCallback(() => {
+    return (
+      <>
+        <Pressable
+          style={{
+            flex: 1,
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
+          }}>
+          <View
+            style={{
+              justifyContent: 'center',
+              height: 40,
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingHorizontal: 16,
+              marginHorizontal: 92,
+              borderWidth: 1,
+              borderColor: colors.lightGrey,
+            }}>
+            <AppSvgIcon
+              key="talkPoint"
+              name="talkPoint"
+              style={{marginRight: 6}}
+            />
+            <AppText style={styles.myPoint}>나의 톡포인트</AppText>
+            <AppText style={[styles.myPoint, styles.pointBold]}>
+              {point}P
+            </AppText>
+            <AppSvgIcon key="rightArrow10" name="rightArrow10" />
+          </View>
+        </Pressable>
+        <View style={{flex: 1}} />
+      </>
+    );
+  }, [point]);
+
   return (
     <>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView style={styles.body}>
-        <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
-        <AppText style={{marginLeft: 10}}>{time}</AppText>
-
-        <View style={{backgroundColor: colors.deepDarkBlue}}>
-          <AppButton
-            style={{height: 50, backgroundColor: colors.veryLightBlue}}
-            title={`톡 포인트: ${point}p`}
-            titleStyle={{...appStyles.bold14Text, color: colors.clearBlue}}
-          />
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            marginTop: 8,
+            height: 40,
+            alignItems: 'center',
+          }}>
+          <View
+            style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
+            <View style={{flex: 1}} />
+            {/* <AppText style={{flex: 1}}>대한민국</AppText> */}
+            {/* <AppText style={[styles.emergency, {color: colors.black}]}>
+              대한민국
+            </AppText> */}
+            <AppText style={styles.emergency}>긴급통화</AppText>
+          </View>
+          {/* 
+          top: 48
+          <CallToolTip text="통화가 필요한 긴급 상황이라면!" icon="bell" /> */}
         </View>
-        <Keypad
-          style={styles.keypad}
-          keypadRef={keypadRef}
-          onPress={onPressKeypad}
-          state={sessionState}
-        />
+        <AppText
+          style={{
+            width: 85,
+            height: 22,
+            fontFamily: 'AppleSDGothicNeo',
+            fontSize: 14,
+            fontWeight: '500',
+            fontStyle: 'normal',
+            lineHeight: 22,
+            letterSpacing: 0,
+            textAlign: 'left',
+            color: colors.GRAY_600_TEXT_777,
+          }}>
+          {time}
+        </AppText>
+
+        {/* <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
+        <AppText style={{marginLeft: 10}}>{time}</AppText> */}
+        <View style={[styles.input, {height: 44, marginTop: 16}]}>
+          <AppText style={styles.dest}>{dest}</AppText>
+        </View>
+        <View style={{flex: 1}}>{talkPointBtn()}</View>
+        <View>
+          <Keypad
+            style={styles.keypad}
+            keypadRef={keypadRef}
+            onPress={onPressKeypad}
+            onChange={(d) => setDest(d || '')}
+            state={sessionState}
+          />
+          <View style={{height: 40}} />
+        </View>
       </SafeAreaView>
     </>
   );
