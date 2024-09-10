@@ -93,6 +93,24 @@ const RkbTalk = () => {
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
   const [digit, setDigit] = useState('');
+  const initial = useMemo(
+    () =>
+      !sessionState ||
+      [SessionState.Initial, SessionState.Terminated].includes(sessionState),
+    [sessionState],
+  );
+  // const calling = useMemo(
+  //   () => [SessionState.Establishing].includes(sessionState),
+  //   [sessionState],
+  // );
+  const connected = useMemo(
+    () => [SessionState.Established].includes(sessionState),
+    [sessionState],
+  );
+  // const end = useMemo(
+  //   () => [SessionState.Terminated].includes(sessionState),
+  //   [sessionState],
+  // );
 
   // 국가번호
   const splitCC = useMemo(
@@ -426,6 +444,38 @@ const RkbTalk = () => {
     );
   }, [point]);
 
+  const info = useCallback(() => {
+    if (initial) return talkPointBtn();
+    if (connected)
+      <AppText
+        style={{
+          height: 22,
+          fontSize: 14,
+          fontWeight: '500',
+          fontStyle: 'normal',
+          lineHeight: 22,
+          letterSpacing: 0,
+          textAlign: 'center',
+          color: colors.clearBlue,
+          marginTop: 24,
+        }}>
+        {time}
+      </AppText>;
+    return (
+      <AppText
+        style={{
+          color: colors.warmGrey,
+          fontSize: 16,
+          fontWeight: 'normal',
+          fontStyle: 'normal',
+          lineHeight: 40,
+          letterSpacing: -0.16,
+          textAlign: 'center',
+        }}>
+        통화 연결 중...
+      </AppText>
+    );
+  }, [connected, initial, talkPointBtn, time]);
   return (
     <>
       <StatusBar barStyle="dark-content" />
@@ -447,25 +497,16 @@ const RkbTalk = () => {
                 대한민국
               </AppText>
             )}
-            <AppText style={styles.emergency}>긴급통화</AppText>
+            {initial && <AppText style={styles.emergency}>긴급통화</AppText>}
           </View>
         </View>
         <CallToolTip text="통화가 필요한 긴급 상황이라면!" icon="bell" />
-        <AppText
-          style={{
-            width: 85,
-            height: 22,
-            fontSize: 14,
-            fontWeight: '500',
-            fontStyle: 'normal',
-            lineHeight: 22,
-            letterSpacing: 0,
-            textAlign: 'left',
-            color: colors.gray,
-          }}>
-          {time}
-        </AppText>
 
+        {/* {maxTime && (
+          <AppText style={{textAlign: 'center', color: colors.warmGrey}}>
+            남은 통화 {Math.floor((maxTime || 0) / 60)}분
+          </AppText>
+        )} */}
         {/* <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
         <AppText style={{marginLeft: 10}}>{time}</AppText> */}
         <View style={[styles.input, {height: 44, marginTop: 16}]}>
@@ -476,7 +517,7 @@ const RkbTalk = () => {
             {splitCC?.length > 0 ? splitCC[1] : digit}
           </AppText>
         </View>
-        <View style={{flex: 1}}>{talkPointBtn()}</View>
+        <View style={{flex: 1}}>{info()}</View>
         <View>
           <Keypad
             style={styles.keypad}
