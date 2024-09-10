@@ -6,16 +6,14 @@ import {
   Platform,
   Pressable,
   Linking,
-  Modal,
-  Image,
 } from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import Clipboard from '@react-native-community/clipboard';
 import {ScrollView} from 'react-native-gesture-handler';
 import QRCode from 'react-native-qrcode-svg';
 import _ from 'underscore';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import DeviceInfo from 'react-native-device-info';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {colors} from '@/constants/Colors';
 import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
@@ -33,8 +31,7 @@ import {utils} from '@/utils/utils';
 import AppModal from '@/components/AppModal';
 import AppTabHeader from '@/components/AppTabHeader';
 import OneTouchGuideModal from './OneTouchGuideModal';
-import {HomeStackParamList, navigate} from '@/navigation/navigation';
-import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const {isIOS} = Env.get();
 
