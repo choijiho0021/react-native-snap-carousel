@@ -1515,5 +1515,10 @@
   "daily:filter:1024000": "올데이",
 
   "network:filter:fiveG": "5G속도",
-  "network:filter:else": "LTE/3G"
+  "network:filter:else": "LTE/3G",
+
+  "talk": "통화",
+  "talk:speaker": "스피커폰",
+  "talk:keypad": "키패드",
+  "talk:mypoint": "나의 톡포인트"
 }
