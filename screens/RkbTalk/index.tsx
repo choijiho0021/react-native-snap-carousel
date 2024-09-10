@@ -75,7 +75,10 @@ const styles = StyleSheet.create({
     color: colors.black,
     textAlignVertical: 'bottom',
   },
-  input: {alignItems: 'center'},
+  input: {
+    alignItems: 'center',
+    marginHorizontal: 20,
+  },
 });
 
 const RkbTalk = () => {
@@ -442,18 +445,18 @@ const RkbTalk = () => {
           top: 48
           <CallToolTip text="통화가 필요한 긴급 상황이라면!" icon="bell" /> */}
         </View>
+        <CallToolTip text="통화가 필요한 긴급 상황이라면!" icon="bell" />
         <AppText
           style={{
             width: 85,
             height: 22,
-            fontFamily: 'AppleSDGothicNeo',
             fontSize: 14,
             fontWeight: '500',
             fontStyle: 'normal',
             lineHeight: 22,
             letterSpacing: 0,
             textAlign: 'left',
-            color: colors.GRAY_600_TEXT_777,
+            color: colors.gray,
           }}>
           {time}
         </AppText>
@@ -461,7 +464,9 @@ const RkbTalk = () => {
         {/* <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
         <AppText style={{marginLeft: 10}}>{time}</AppText> */}
         <View style={[styles.input, {height: 44, marginTop: 16}]}>
-          <AppText style={styles.dest}>{dest}</AppText>
+          <AppText style={styles.dest} numberOfLines={1} ellipsizeMode="head">
+            {dest}
+          </AppText>
         </View>
         <View style={{flex: 1}}>{talkPointBtn()}</View>
         <View>
