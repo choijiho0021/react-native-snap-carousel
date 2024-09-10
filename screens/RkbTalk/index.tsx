@@ -1,11 +1,10 @@
 import {useFocusEffect} from '@react-navigation/native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   Pressable,
   SafeAreaView,
   StatusBar,
   StyleSheet,
-  TouchableHighlight,
   View,
 } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
@@ -17,12 +16,10 @@ import {
   UserAgent,
   UserAgentOptions,
 } from 'sip.js';
-import Tooltip from 'react-native-walkthrough-tooltip';
 import AppAlert from '@/components/AppAlert';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
 import {useInterval} from '@/utils/useInterval';
 import Keypad, {KeypadRef} from './Keypad';
@@ -30,6 +27,7 @@ import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import CallToolTip from './CallToolTip';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import i18n from '@/utils/i18n';
 
 const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 
@@ -94,8 +92,16 @@ const RkbTalk = () => {
   const [maxTime, setMaxTime] = useState<number>(0);
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
-  const [visible, setVisible] = useState(true);
-  const [dest, setDest] = useState('');
+  const [digit, setDigit] = useState('');
+
+  // 국가번호
+  const splitCC = useMemo(
+    () =>
+      digit?.slice(0, 2)?.includes('82')
+        ? [digit?.slice(0, 2), digit?.slice(2)]
+        : [],
+    [digit],
+  );
 
   useEffect(() => {
     API.TalkApi.getTalkPoint({mobile: '01059119737'}).then((rsp) => {
@@ -408,7 +414,7 @@ const RkbTalk = () => {
               name="talkPoint"
               style={{marginRight: 6}}
             />
-            <AppText style={styles.myPoint}>나의 톡포인트</AppText>
+            <AppText style={styles.myPoint}>{i18n.t('talk:mypoint')}</AppText>
             <AppText style={[styles.myPoint, styles.pointBold]}>
               {point}P
             </AppText>
@@ -436,14 +442,13 @@ const RkbTalk = () => {
             style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
             <View style={{flex: 1}} />
             {/* <AppText style={{flex: 1}}>대한민국</AppText> */}
-            {/* <AppText style={[styles.emergency, {color: colors.black}]}>
-              대한민국
-            </AppText> */}
+            {splitCC.length > 0 && (
+              <AppText style={[styles.emergency, {color: colors.black}]}>
+                대한민국
+              </AppText>
+            )}
             <AppText style={styles.emergency}>긴급통화</AppText>
           </View>
-          {/* 
-          top: 48
-          <CallToolTip text="통화가 필요한 긴급 상황이라면!" icon="bell" /> */}
         </View>
         <CallToolTip text="통화가 필요한 긴급 상황이라면!" icon="bell" />
         <AppText
@@ -465,7 +470,10 @@ const RkbTalk = () => {
         <AppText style={{marginLeft: 10}}>{time}</AppText> */}
         <View style={[styles.input, {height: 44, marginTop: 16}]}>
           <AppText style={styles.dest} numberOfLines={1} ellipsizeMode="head">
-            {dest}
+            <AppText style={[styles.dest, {color: colors.clearBlue}]}>
+              {splitCC?.length > 0 ? splitCC[0] : ''}
+            </AppText>
+            {splitCC?.length > 0 ? splitCC[1] : digit}
           </AppText>
         </View>
         <View style={{flex: 1}}>{talkPointBtn()}</View>
@@ -474,7 +482,7 @@ const RkbTalk = () => {
             style={styles.keypad}
             keypadRef={keypadRef}
             onPress={onPressKeypad}
-            onChange={(d) => setDest(d || '')}
+            onChange={(d) => setDigit(d || '')}
             state={sessionState}
           />
           <View style={{height: 40}} />
