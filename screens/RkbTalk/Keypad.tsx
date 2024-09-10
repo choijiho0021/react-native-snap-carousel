@@ -9,6 +9,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import {SessionState} from 'sip.js';
+import Lottie from 'lottie-react-native';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -82,7 +83,6 @@ const styles = StyleSheet.create({
   keyButtonRow: {
     width: '100%',
     paddingHorizontal: 50,
-    marginBottom: 50,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -134,11 +134,13 @@ const Keypad: React.FC<KeypadProps> = ({
 }) => {
   const [dest, setDest] = useState('');
   const [dtmf, setDtmf] = useState('');
-  const [showKeypad, setShowKeypad] = useState(false);
+  const [showKeypad, setShowKeypad] = useState(true);
+  const [pressed, setPressed] = useState<string>();
+  const [prsDigit, setPrsDigit] = useState<string>();
 
   useEffect(() => {
-    onChange(dest);
-  }, [dest, onChange]);
+    onChange(showKeypad ? dtmf : dest);
+  }, [dest, dtmf, onChange, showKeypad]);
 
   useEffect(() => {
     if (keypadRef) {
@@ -154,22 +156,27 @@ const Keypad: React.FC<KeypadProps> = ({
         <AppSvgIcon
           key={key}
           name={key}
+          focused={key === pressed}
           style={styles.key}
           onPress={() => {
+            setPressed((prev) => (prev === key ? undefined : key));
             if (key === 'keypad') setShowKeypad((prev) => !prev);
             else onPress?.(key);
           }}
         />
-        <AppText>{i18n.t(`talk:${key}`)}</AppText>
       </View>
     ),
-    [onPress],
+    [onPress, pressed],
   );
 
   const closeKeypad = useCallback(() => {
     setShowKeypad(false);
-    setDtmf('');
+    setPressed('');
   }, []);
+
+  useEffect(() => {
+    if (state === SessionState.Terminated) closeKeypad();
+  }, [closeKeypad, state]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -179,6 +186,13 @@ const Keypad: React.FC<KeypadProps> = ({
 
   const renderKey = useCallback(
     (st?: SessionState) => {
+      const calling = ![
+        SessionState.Established,
+        SessionState.Terminated,
+      ].includes(st);
+
+      const connected = [SessionState.Established].includes(st);
+
       if (
         !st ||
         st === SessionState.Initial ||
@@ -186,9 +200,10 @@ const Keypad: React.FC<KeypadProps> = ({
         (showKeypad &&
           [SessionState.Established, SessionState.Establishing].includes(st))
       ) {
+        // 기본 화면
         return (
           <>
-            {keys.map((row, i) => (
+            {(showKeypad ? callKeys : keys).map((row, i) => (
               <View style={styles.row} key={i}>
                 {row.map((d) => {
                   switch (d) {
@@ -213,8 +228,15 @@ const Keypad: React.FC<KeypadProps> = ({
                     default:
                       return (
                         <Pressable
-                          style={styles.key}
+                          style={[
+                            styles.key,
+                            d === prsDigit && {
+                              backgroundColor: colors.backGrey,
+                            },
+                          ]}
                           key={d}
+                          onPressIn={() => setPrsDigit(d)}
+                          onPressOut={() => setPrsDigit('')}
                           onPress={() => {
                             if (showKeypad) {
                               setDtmf((prev) => prev + d);
@@ -229,12 +251,16 @@ const Keypad: React.FC<KeypadProps> = ({
               </View>
             ))}
             <View style={styles.row}>
-              <Pressable
-                style={[styles.key, {marginBottom: 0}]}
-                key="contacts"
-                onPress={() => {}}>
-                <Text style={styles.textCallHist}>연락처</Text>
-              </Pressable>
+              {showKeypad ? (
+                <View style={styles.key} />
+              ) : (
+                <Pressable
+                  style={[styles.key, {marginBottom: 0}]}
+                  key="contacts"
+                  onPress={() => {}}>
+                  <Text style={styles.textCallHist}>연락처</Text>
+                </Pressable>
+              )}
               <AppSvgIcon
                 key="call"
                 name={showKeypad ? 'keyHangup' : 'keyCall'}
@@ -247,8 +273,12 @@ const Keypad: React.FC<KeypadProps> = ({
               <Pressable
                 style={[styles.key, {marginBottom: 0}]}
                 key="hist"
-                onPress={() => {}}>
-                <Text style={styles.textCallHist}>통화기록</Text>
+                onPress={() => {
+                  if (showKeypad) closeKeypad();
+                }}>
+                <Text style={styles.textCallHist}>
+                  {showKeypad ? '닫기' : '통화기록'}
+                </Text>
               </Pressable>
               {/* {showKeypad ? (
                 <Pressable
@@ -282,20 +312,33 @@ const Keypad: React.FC<KeypadProps> = ({
       // while talking
       return (
         <>
-          <View style={styles.keypad}>
-            <View
-              style={{width: 150, height: 150, backgroundColor: 'yellow'}}
-            />
+          <View
+            style={[
+              styles.keypad,
+              (connected || showKeypad) && {justifyContent: 'flex-end'},
+            ]}>
+            {calling && (
+              <>
+                <View />
+                <Lottie
+                  style={{width: 100, height: 100}}
+                  autoPlay
+                  loop
+                  source={require('@/assets/images/lottie/call_blue.json')}
+                />
+              </>
+            )}
             <View style={styles.keyButtonRow}>
-              {renderKeyButton('speaker')}
+              {renderKeyButton('mute')}
               {renderKeyButton('keypad')}
+              {renderKeyButton('speaker')}
             </View>
           </View>
           <View style={styles.row}>
             <AppSvgIcon
               key="call"
               name="keyHangup"
-              style={[styles.call, {backgroundColor: colors.tomato}]}
+              style={styles.call}
               onPress={() => {
                 onPress?.('hangup');
                 closeKeypad();
@@ -305,7 +348,7 @@ const Keypad: React.FC<KeypadProps> = ({
         </>
       );
     },
-    [closeKeypad, onPress, renderKeyButton, showKeypad],
+    [closeKeypad, onPress, prsDigit, renderKeyButton, showKeypad],
   );
 
   return (
