@@ -108,8 +108,8 @@ const GuideButton = ({
               {i18n.t(`userGuide:${item}:body`)}
             </AppText>
             {item === 'checkSetting' && (
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <AppSvgIcon name="greyWarning" />
+              <View style={{flexDirection: 'row', paddingRight: 20}}>
+                <AppSvgIcon name="greyWarning" style={{top: 4}} />
                 <AppText style={styles.btnBody2}>
                   {i18n.t(`userGuide:${item}:body2`)}
                 </AppText>
