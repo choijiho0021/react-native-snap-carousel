@@ -447,20 +447,22 @@ const RkbTalk = () => {
   const info = useCallback(() => {
     if (initial) return talkPointBtn();
     if (connected)
-      <AppText
-        style={{
-          height: 22,
-          fontSize: 14,
-          fontWeight: '500',
-          fontStyle: 'normal',
-          lineHeight: 22,
-          letterSpacing: 0,
-          textAlign: 'center',
-          color: colors.clearBlue,
-          marginTop: 24,
-        }}>
-        {time}
-      </AppText>;
+      return (
+        <AppText
+          style={{
+            height: 22,
+            fontSize: 14,
+            fontWeight: '500',
+            fontStyle: 'normal',
+            lineHeight: 22,
+            letterSpacing: 0,
+            textAlign: 'center',
+            color: colors.clearBlue,
+            marginTop: 24,
+          }}>
+          {time}
+        </AppText>
+      );
     return (
       <AppText
         style={{
@@ -469,6 +471,8 @@ const RkbTalk = () => {
           fontWeight: 'normal',
           fontStyle: 'normal',
           lineHeight: 40,
+          height: 40,
+          marginTop: 24,
           letterSpacing: -0.16,
           textAlign: 'center',
         }}>
