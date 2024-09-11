@@ -114,6 +114,8 @@ const getDetailList = (clMtd: string) => {
       return [1, 2];
     case 'dtac':
       return [1, 2, 3, 4];
+    case 'latotal':
+      return [1];
     default:
       return [];
   }

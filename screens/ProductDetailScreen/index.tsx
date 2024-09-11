@@ -387,6 +387,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               'dtac',
               'mvtotal',
               'vtdaily',
+              'latotal',
             ].includes(clMtd) &&
             ftr && <ProductDetailCallMethod clMtd={clMtd} ftr={ftr} />}
         </View>
