@@ -16,7 +16,6 @@ import AppSnackBar from '@/components/AppSnackBar';
 import i18n from '@/utils/i18n';
 import Env from '@/environment';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import utils from '@/redux/api/utils';
 import {API} from '@/redux/api';
 
 const {appId, talkPluginKey, esimGlobal} = Env.get();

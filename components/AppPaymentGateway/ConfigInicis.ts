@@ -1,7 +1,6 @@
 import CryptoJS from 'crypto-js';
 import Env from '@/environment';
 import {PaymentParams} from '@/navigation/navigation';
-import moment from 'moment';
 
 const {payment, isProduction, scheme, apiUrl} = Env.get();
 
@@ -41,6 +40,7 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
     // reserved += `&d_card=${info.card}&d_quota=0&cardshowopt=${info.card}:3`;
     reserved += `&d_card=${info.card}&d_quota=${info.installmentMonths || '0'}`;
   }
+
   const timestamp = Date.now();
   const hash = CryptoJS.SHA512(
     info.amount.toString() +
@@ -91,13 +91,10 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
 </html>`;
 };
 
-export const inicisButton = () => {
+export const inicisButton = (accountId: string) => {
   const info = {
     amount: 2200,
     app_scheme: 'RokebiEsim',
-    buyer_email: 'testadid@gmail.com',
-    buyer_name: '01010002003',
-    buyer_tel: '01010002003',
     card: '',
     digital: true,
     escrow: false,
@@ -145,24 +142,50 @@ export const inicisButton = () => {
     selected: 'pym:kakao',
   };
 
+  const mid = 'INIiasTest'; // 테스트 MID 입니다. 계약한 상점 MID 로 변경 필요
+  const apiKey = 'TGdxb2l3enJDWFRTbTgvREU3MGYwUT09'; // 테스트 MID 에 대한 apiKey
+  const timestamp = Date.now();
+  const mTxId = `t_${timestamp}_00001111${accountId}`;
+  const reservedMsg = 'isUseToken=Y'; // 결과조회 응답시 개인정보 SEED 암호화 처리 요청
+
+  // 등록가맹점 확인
+  const authHash_plainText = mid + mTxId + apiKey;
+
+  const flgFixedUser = 'Y'; // 특정 사용자 고정 사용, 미사용시 N
+
+  // const timestamp = Date.now();
+  // const mid = 'INIpayTest';
+  // const mTxId = timestamp;
+  // const key = 'ItEQKi3rY7uvDS8l';
+  const userName = '최지호'; // 사용자 이름
+  const userPhone = '01021035030'; // 사용자 전화번호
+  const userBirth = '19961115'; // 사용자 생년월일
+  const reqSvcCd = '01'; // 요청구분코드 ["01":간편인증, "02":전자서명]
+
+  // const userHash = CryptoJS.SHA256(
+  //   userName + mid + userPhone + mTxId + userBirth + reqSvcCd,
+  // ).toString(CryptoJS.enc.Base64);
+
+  const userHash = CryptoJS.SHA256(
+    userName + mid + userPhone + mTxId + userBirth + reqSvcCd,
+  ).toString();
+
   let reserved = opt[info.pay_method] || '';
   if (info.card) {
     // reserved += `&d_card=${info.card}&d_quota=0&cardshowopt=${info.card}:3`;
     reserved += `&d_card=${info.card}&d_quota=${info.installmentMonths || '0'}`;
   }
-  const timestamp = Date.now();
-  const hash = CryptoJS.SHA512(
-    info.amount.toString() +
-      info.merchant_uid +
-      timestamp +
-      payment.inicis.HASHKEY,
-  ).toString(CryptoJS.enc.Base64);
+  // const hash = CryptoJS.SHA512(mid + mTxId + key).toString(CryptoJS.enc.Base64);
 
-  console.log('@@@ hash : ', hash);
+  // const hash = CryptoJS.SHA256(authHash_plainText).toString(
+  //   CryptoJS.enc.Base64,
+  // );
+
+  const hash = CryptoJS.SHA256(authHash_plainText).toString();
 
   return `<html> 
 <head> 
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
     <title>통합본인인증 요청</title> 
     <style>
     		html, body, input, textarea{font-family:FontAwesome; font-size:13px; line-height:18px; color: #000;}
@@ -175,19 +198,21 @@ export const inicisButton = () => {
     		h4 {width:150px;}
     </style>
     
-    <script language="javascript"> 
-    	function callSa()
+    <script type='text/javascript'>
+      ${debugScript}
+      function start_script() {
+        const myform = document.saForm;
+        myform.action = "${configInicis.WEBVIEW_ENDPOINT_CERT}";
+        myform.target = "_self";
+        myform.submit();
+        }
+      function callSa()
     	{
-    		let window = popupCenter();
-    		if(window != undefined && window != null)
-    		{
-    			document.saForm.setAttribute("target", "sa_popup");
-    			document.saForm.setAttribute("post", "post");
-    			document.saForm.setAttribute("action", "https://sa.inicis.com/auth");
-    			document.saForm.submit();
-    		}
+        document.saForm.setAttribute("target", "_self");
+        document.saForm.setAttribute("post", "post");
+        document.saForm.setAttribute("action", "https://sa.inicis.com/auth"); 
+        document.saForm.submit();
     	}
-    
     	function popupCenter() {
     		let _width = 400;
     		let _height = 620;
@@ -202,12 +227,12 @@ export const inicisButton = () => {
 
     <h1 style="margin:50px 0px 50px 0px">통합본인인증 Sample</h1>
 	
-    <form name="saForm">
+    <form name="saForm" method="post" accept-charset="utf-8">
 	
 	    <table>
 	    	<tr>
                 <td><h4>mid</h4></td>
-	    	    <td><input type="text" name="mid" value="${payment.inicis.MID}"</td>
+	    	    <td><input type="text" name="mid" value="${mid}"</td>
 	    	</tr>
 	    	<tr>
                 <td><h4>reqSvcCd</h4></td>
@@ -219,10 +244,29 @@ export const inicisButton = () => {
             </tr>
 	    	<tr>   
 	    	    <td><h4>mTxId</h4></td>
-	    	    <td><input type="text" name="mTxId" value="${moment().format(
-              'mm:ss',
-            )}"></td>
+	    	    <td><input type="text" name="mTxId" value="${mTxId}"></td>
             </tr>
+        <tr>
+	    	<tr>   
+	    	    <td><h4>flgFixedUser</h4></td>
+	    	    <td><input type="text" name="flgFixedUser" value="${flgFixedUser}"></td>
+            </tr>
+        <tr>
+          <td><h4>userName</h4></td>
+          <td><input type="text" name="userName" value="${userName}"></td>
+          </tr>
+        <tr>
+          <td><h4>userPhone</h4></td>
+          <td><input type="text" name="userPhone" value="${userPhone}"></td>
+          </tr>
+        <tr>
+          <td><h4>userBirth</h4></td>
+          <td><input type="text" name="userBirth" value="${userBirth}"></td>
+        </tr>
+        <tr>
+          <td><h4>userHash</h4></td>
+          <td><input type="text" name="userHash" value="${userHash}"></td>
+        </tr> 
 	    	<tr>    
 	    	    <td><h4>authHash</h4></td>
 	    	    <td><input type="text" name="authHash" value="${hash}"></td>
@@ -230,52 +274,66 @@ export const inicisButton = () => {
 	    	<tr>    
 	    	    <td><h4>flgFixedUser</h4></td>
 	    	    <td><input type="text" name="flgFixedUser" value="N"></td>
-            </tr>
-	    	<tr>    
-	    	    <td><h4>userName</h4></td>
-	    	    <td><input type="text" name="userName" value="${info.name}"></td>
-            </tr>
-	    	<tr>    
-	    	    <td><h4>userPhone</h4></td>
-	    	    <td><input type="text" name="userPhone" value="${info.buyer_tel}"></td>
-            </tr>
-	    	<tr>    
-	    	    <td><h4>userBirth</h4></td>
-	    	    <td><input type="text" name="userBirth" value="${'19961115'}"></td>
-            </tr>
+            </tr> 
 	    	<tr>    
 	    	    <td><h4>reservedMsg</h4></td>
-	    	    <td><input type="text" name="reservedMsg" value="<%=reservedMsg %>"></td>
+	    	    <td><input type="text" name="reservedMsg" value="${reservedMsg}"></td>
             </tr>
 	    	<tr>    
-	    	    <td><h4>directAgency</h4></td>
-	    	    <td><input type="text" name="directAgency" value="PASS"></td>
-	    	</tr>
-	    	<tr>    
                 <td><h4>successUrl</h4></td>
-	    	    <td><input type="text" name="successUrl" value="https://www.rokebi.com/success.jsp"></td>
+	    	    <td><input type="text" name="successUrl" value="http://64.110.75.203/api/v1/pvd/auth/realName"></td>
              </tr>
 	    	<tr>   
 	    	    <td><h4>failUrl</h4></td>
-	    	    <td><input type="text" name="failUrl" value="https://www.rokebi.com/success.jsp"></td>
+	    	    <td><input type="text" name="failUrl" value="http://64.110.75.203/api/v1/pvd/auth/realName"></td>
                 <!-- successUrl/failUrl 은 분리하여도 됩니다. !-->
         	</tr>
 	    	
 	    </table>
     </form>	
-	
-    <table>
-		<tr>
-			<td>
-				<div>
-					<button class="Btn" onclick="callSa();">인증요청</button>
-				</div>
-			</td>
-		</tr>
-	</table>
-
-</table>
 
 </body>
 </html>`;
 };
+
+export const successHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Success</title>
+</head>
+<body>
+    <h1>Success Page</h1>
+    <p>인증 수신</p>
+    
+    <!-- Example static content based on JSP logic -->
+    <p>resultCode: 0000</p>
+    <p>resultMsg: 인증 성공</p>
+    
+    <!-- Simulating what would happen in JSP -->
+    <script>
+        // Assume that the JSP dynamic content is processed here
+        // This is a placeholder to represent how the content might be filled in
+        function displayResult() {
+            // Assuming resultCode and resultMsg are received dynamically
+            const resultCode = "0000"; // Mock result code
+            const resultMsg = "인증 성공"; // Mock result message
+            
+            document.body.innerHTML += "<p>인증 결과: " + resultMsg + "</p>";
+            
+            if (resultCode === "0000") {
+                document.body.innerHTML += "<p>인증 성공?</p>";
+                // Add logic to handle a successful result
+            } else {
+                document.body.innerHTML += "<p>인증 실패?</p>";
+                // Add logic to handle a failed result
+            }
+        }
+
+        displayResult();
+    </script>
+</body>
+</html>
+`;

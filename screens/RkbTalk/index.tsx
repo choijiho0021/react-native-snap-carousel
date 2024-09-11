@@ -18,8 +18,17 @@ import PhoneCertModal from './component/PhoneCertModal';
 import WebView from 'react-native-webview';
 import {
   inicisButton,
-  inicisWebviewHtml,
+  successHTML,
 } from '@/components/AppPaymentGateway/ConfigInicis';
+import {bindActionCreators} from 'redux';
+import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
+import {RootState} from '@/redux';
+import {connect} from 'react-redux';
+import {
+  AccountAction,
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 
 const styles = StyleSheet.create({
   body: {
@@ -32,7 +41,14 @@ const styles = StyleSheet.create({
   },
 });
 
-const RkbTalk = () => {
+type RkbScreenProps = {
+  account: AccountModelState;
+  action: {
+    account: AccountAction;
+  };
+};
+
+const RkbTalk: React.FC<RkbScreenProps> = ({account: {mobile}}) => {
   const [userAgent, setUserAgent] = useState<UserAgent | null>(null);
   const [inviter, setInviter] = useState<Inviter | null>(null);
   const keypadRef = useRef<KeypadRef>(null);
@@ -46,7 +62,19 @@ const RkbTalk = () => {
   const injected = useRef(false);
   const ref = useRef<WebView>(null);
 
-  const html = useMemo(() => inicisButton(), []);
+  const [html, setHtml] = useState(inicisButton(''));
+
+  useEffect(() => {
+    if (mobile) setHtml(inicisButton(mobile));
+  }, [mobile]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // 인증된건지 확인, 로그아웃 -> account 에 값 지우는 명령 호출해야함.
+      // console.log('@@@@ account : ', );s
+      setModal(true);
+    }, []),
+  );
 
   // Options for SimpleUser
   useFocusEffect(
@@ -257,15 +285,38 @@ const RkbTalk = () => {
 
   const onLoadEnd = useCallback(({nativeEvent: event}) => {
     if (event.url.startsWith('about') && !injected.current) {
-      ref.current?.injectJavaScript('start_script();');
-      injected.current = true;
+      setTimeout(() => {
+        ref.current?.injectJavaScript('start_script();');
+        injected.current = true;
+      }, 500);
+    }
+  }, []);
+
+  const callback = useCallback(async (status: any, errorMsg?: string) => {
+    console.log('Status : ', status);
+
+    if (status !== 'check') {
+      console.log('@@@ pym method status', status);
     }
   }, []);
 
   const onShouldStartLoadWithRequest = useCallback(
     (event: ShouldStartLoadRequest): boolean => {
-      console.log('@@@ PG ', event.url);
+      console.log('@@@ event : ', event);
+
+      console.log(
+        '@@@ PG ',
+        event.url,
+        ', decode : ',
+        decodeURIComponent(event.url),
+      );
       console.log('@@@@ event : ', event.loading);
+      if (event?.url === 'https://www.rokebi.com/success.jsp') {
+        console.log('@@@@@ event : ', event);
+        setHtml(successHTML);
+      }
+
+      // if (event?.loading) return false;
 
       return true;
 
@@ -311,7 +362,7 @@ const RkbTalk = () => {
       <SafeAreaView style={styles.body}>
         <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
 
-        <WebView
+        {/* <WebView
           style={{flex: 1}}
           ref={ref}
           javaScriptEnabled
@@ -323,47 +374,48 @@ const RkbTalk = () => {
           onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
           onLoadEnd={onLoadEnd}
           source={{html: html}}
-        />
+        /> */}
         <Keypad
           style={styles.keypad}
           keypadRef={keypadRef}
           onPress={onPressKeypad}
           state={sessionState}
         />
-        {/* <PhoneCertModal
-          visible={true}
-          isCloseBtn={false}
-          onClose={() => {
-            console.log('@@@ close');
-          }}
-          title={
-            <View>
-              <AppText>데이터만 있으면 언제 어디서든 톡톡!</AppText>
-            </View>
-          }
-          body={
-            <View style={{marginHorizontal: 20, backgroundColor: 'red'}}>
-           
+        <PhoneCertModal
+          visible={modal}
+          setVisible={setModal}
 
-              <WebView
-                style={{flex: 1}}
-                ref={ref}
-                javaScriptEnabled
-                mixedContentMode="compatibility"
-                // onMessage={onMessage}
-                originWhitelist={['*']}
-                sharedCookiesEnabled
-                javaScriptCanOpenWindowsAutomatically
-                // onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
-                onLoadEnd={onLoadEnd}
-                source={{html: html}}
-              />
-            </View>
-          }
-        /> */}
+          // body={
+          //   <View style={{marginHorizontal: 20, backgroundColor: 'red'}}>
+
+          //     <WebView
+          //       style={{flex: 1}}
+          //       ref={ref}
+          //       javaScriptEnabled
+          //       mixedContentMode="compatibility"
+          //       // onMessage={onMessage}
+          //       originWhitelist={['*']}
+          //       sharedCookiesEnabled
+          //       javaScriptCanOpenWindowsAutomatically
+          //       // onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
+          //       onLoadEnd={onLoadEnd}
+          //       source={{html: html}}
+          //     />
+          //   </View>
+          // }
+        />
       </SafeAreaView>
     </>
   );
 };
 
-export default RkbTalk;
+export default connect(
+  ({account}: RootState) => ({
+    account,
+  }),
+  (dispatch) => ({
+    action: {
+      account: bindActionCreators(accountActions, dispatch),
+    },
+  }),
+)(RkbTalk);

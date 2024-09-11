@@ -4,18 +4,17 @@ import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
 import Video from 'react-native-video';
 import moment from 'moment';
-import {useFocusEffect} from '@react-navigation/native';
-import {inicisWebviewHtml} from './ConfigInicis';
-import AppText from '../AppText';
 import i18n from '@/utils/i18n';
-import {PaymentParams} from '@/navigation/navigation';
+import {AuthParams} from '@/navigation/navigation';
 import utils from '@/redux/api/utils';
 import AppAlert from '@/components/AppAlert';
-import {hectoWebViewHtml} from './ConfigHecto';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
+import {useFocusEffect} from '@react-navigation/native';
+import AppText from '@/components/AppText';
+import {inicisButton} from '@/components/AppPaymentGateway/ConfigInicis';
 
-export type PaymentResultCallbackParam = 'next' | 'cancel' | 'check';
+export type AuthResultCallbackParam = 'next' | 'cancel' | 'check';
 
 const {isIOS} = Env.get();
 
@@ -25,21 +24,20 @@ export const pgWebViewConfig = {
   nextUrl: 'https://localhost/next',
 };
 
-type PaymentGatewayScreenProps = {
-  info: PaymentParams;
-  callback: (result: PaymentResultCallbackParam, errorMsg?: string) => void;
+type AuthGatewayScreenProps = {
+  info: AuthParams;
+  callback: (result: AuthResultCallbackParam, errorMsg?: string) => void;
 };
 
-const loadingImg = require('../../assets/images/loading_1.mp4');
+// const loadingImg = require('../../assets/images/loading_1.mp4');
 
-const pgWebViewHtml = (info: PaymentParams) => {
-  const pg = info.paymentRule?.[info.card || info.pay_method] || '';
+const pgWebViewHtml = (info: AuthParams) => {
+  const pg = info?.AuthRule?.[info.card || info.pay_method] || '';
 
   console.log('@@@ pg : ', pg);
-  if (pg === 'T') return hectoWebViewHtml(info);
 
   console.log('info : ', info);
-  return inicisWebviewHtml(info);
+  return inicisButton(info);
 };
 
 const styles = StyleSheet.create({
@@ -87,10 +85,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
-  info,
-  callback,
-}) => {
+const AppAuthGateway: React.FC<AuthGatewayScreenProps> = ({info, callback}) => {
   const [loading, setLoading] = useState(true);
 
   const injected = useRef(false);
@@ -172,14 +167,14 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
     return (
       <>
         <View style={styles.loading}>
-          <Video
+          {/* <Video
             source={loadingImg}
             repeat
             style={styles.backgroundVideo}
             resizeMode="cover"
             mixWithOthers="mix"
-          />
-          {/* <AppText style={styles.infoText}>{i18n.t('pym:loadingInfo')}</AppText> */}
+          /> */}
+          <AppText style={styles.infoText}>{i18n.t('pym:loadingInfo')}</AppText>
         </View>
 
         {loading && (
@@ -243,4 +238,4 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
   );
 };
 
-export default AppPaymentGateway;
+export default AppAuthGateway;

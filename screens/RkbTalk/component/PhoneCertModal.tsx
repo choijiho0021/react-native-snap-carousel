@@ -1,24 +1,24 @@
-import React, {ReactNode} from 'react';
-import {
-  Modal,
-  Pressable,
-  SafeAreaView,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewProps,
-  ViewStyle,
-} from 'react-native';
+import React, {useMemo} from 'react';
+import {Image, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
-import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
+import AppBottomModal from '@/screens/DraftUsScreen/component/AppBottomModal';
+import AppStyledText from '@/components/AppStyledText';
+import i18n from '@/utils/i18n';
+
+import Env from '@/environment';
+import AppButton from '@/components/AppButton';
+import AppAuthGateway from './AuthGateway';
+import {useNavigation} from '@react-navigation/native';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
-  storeBox: {
+  bodyBox: {
     position: 'absolute',
     paddingTop: 20,
     paddingBottom: 40,
@@ -52,63 +52,82 @@ const styles = StyleSheet.create({
 
 type PhoneCertModalProps = {
   visible: boolean;
-  isCloseBtn: boolean;
-  onClose: () => void;
-  title?: string;
-  body: ReactNode;
-  height: number;
-  isCloseTouch: boolean;
-  containerStyle?: StyleProp<ViewStyle>;
-  headerStyle?: StyleProp<ViewStyle>;
+  setVisible: (val: boolean) => void;
+  onClickButton: (val) => void;
 };
 
 const PhoneCertModal: React.FC<PhoneCertModalProps> = ({
+  setVisible,
   visible,
-  isCloseBtn,
-  onClose,
-  title,
-  body,
-  height,
-  isCloseTouch = true,
-  containerStyle,
-  headerStyle,
+  onClickButton,
 }) => {
+  const navigation = useNavigation();
+  const title = useMemo(() => {
+    return (
+      <View
+        style={{
+          paddingVertical: 24,
+          height: 108,
+        }}>
+        <AppText style={[appStyles.bold24Text, {lineHeight: 30}]}>
+          {`데이터만 있으면\n언제 어디서든 톡톡!`}
+          {/* {i18n.t('"데이터만 있으면\n언제 어디서든 톡톡!"')} */}
+        </AppText>
+      </View>
+    );
+  }, []);
+
+  const body = useMemo(() => {
+    return (
+      <View style={{paddingHorizontal: 20, paddingBottom: 16}}>
+        <View style={{marginBottom: 48, gap: 8}}>
+          <AppStyledText
+            text={`<b>휴대폰 본인인증</b>\n로깨비톡 이용을 위해 본인 인증이 필요해요.`}
+            textStyle={[
+              appStyles.medium16,
+              {color: colors.black, lineHeight: 24, letterSpacing: -0.16},
+            ]}
+            format={{b: [appStyles.bold16Text, {color: colors.clearBlue}]}}
+          />
+          <AppStyledText
+            text={'로그아웃 시 인증 정보는 초기화됩니다.'}
+            textStyle={[appStyles.semiBold14Text, {color: colors.gray2}]}
+          />
+          <Image
+            style={{alignSelf: 'center', marginTop: 28}}
+            source={require('@/assets/images/rkbtalk/imgVerification.png')}
+            resizeMode="stretch"
+          />
+        </View>
+        <AppButton
+          style={{
+            width: '100%',
+            alignItems: 'center',
+            height: 52,
+            backgroundColor: colors.blue,
+          }}
+          title="인증하기"
+          onPress={() => {
+            // onClickButton('test');
+            setVisible(false);
+            navigation.navigate('AuthGateway', {});
+          }}
+        />
+      </View>
+    );
+  }, []);
   return (
-    <Modal
+    <AppBottomModal
       visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={() => onClose()}>
-      <Pressable
-        style={[
-          {
-            flex: 1,
-            backgroundColor: 'rgba(0, 0, 0, 0.3)',
-          },
-          containerStyle,
-        ]}
-        onPress={isCloseTouch ? onClose : () => {}}>
-        <SafeAreaView key="modal" style={[styles.storeBox, {height}]}>
-          <Pressable>
-            {title && (
-              <View style={[styles.head, headerStyle]}>
-                <AppText style={appStyles.bold18Text}>{title}</AppText>
-                {isCloseBtn && (
-                  <View style={styles.modalClose}>
-                    <AppSvgIcon
-                      name="closeModal"
-                      key="closeModal"
-                      onPress={onClose}
-                    />
-                  </View>
-                )}
-              </View>
-            )}
-            {body}
-          </Pressable>
-        </SafeAreaView>
-      </Pressable>
-    </Modal>
+      isCloseBtn={false}
+      onClose={() => {
+        setVisible(false);
+      }}
+      height={isIOS ? 540 : 510}
+      headerStyle={{height: isIOS ? 124 : 80}}
+      title={title}
+      body={body}
+    />
   );
 };
 
