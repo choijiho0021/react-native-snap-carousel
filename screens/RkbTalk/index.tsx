@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {
   Inviter,
   Registerer,
@@ -99,6 +100,11 @@ const RkbTalk = () => {
       ? Math.floor((checkRemain <= 0 ? 0 : checkRemain) / 60)
       : undefined;
   }, [duration, maxTime]);
+
+  const {top} = useSafeAreaInsets();
+  const showWarning = useMemo(() => {
+    return (min && min <= 2) || false;
+  }, [min]);
 
   const initial = useMemo(
     () =>
@@ -497,7 +503,13 @@ const RkbTalk = () => {
 
   return (
     <>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar
+        backgroundColor={showWarning ? colors.redError : colors.white}
+        barStyle="dark-content" // default
+      />
+      {showWarning && (
+        <View style={{backgroundColor: colors.redError, height: top}} />
+      )}
       <SafeAreaView style={styles.body}>
         <View
           style={{
@@ -554,10 +566,31 @@ const RkbTalk = () => {
           </AppText>
         )}
         <CallToolTip text="통화가 필요한 긴급 상황이라면!" icon="bell" />
-
-        <AppText style={{textAlign: 'center', color: colors.warmGrey}}>
-          {maxTime && isNumber(min || 0) ? `남은 통화 ${min}분` : ''}
-        </AppText>
+        {connected && (
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            {showWarning && (
+              <AppSvgIcon
+                style={{justifyContent: 'center', alignItems: 'center'}}
+                name="callWarning"
+              />
+            )}
+            <AppText
+              style={[
+                {
+                  textAlign: 'center',
+                  color: colors.warmGrey,
+                },
+                showWarning && {color: colors.redError, marginLeft: 6},
+              ]}>
+              {maxTime && isNumber(min || 0) ? `남은 통화 ${min}분` : ''}
+            </AppText>
+          </View>
+        )}
 
         {/* <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
         <AppText style={{marginLeft: 10}}>{time}</AppText> */}
@@ -577,6 +610,7 @@ const RkbTalk = () => {
             onPress={onPressKeypad}
             onChange={(d) => setDigit(d || '')}
             state={sessionState}
+            showWarning={showWarning}
           />
           <View style={{height: 40}} />
         </View>

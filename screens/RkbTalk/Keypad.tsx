@@ -1,4 +1,5 @@
 import {useFocusEffect} from '@react-navigation/native';
+import Lottie from 'lottie-react-native';
 import React, {memo, useCallback, useEffect, useState} from 'react';
 import {
   Pressable,
@@ -9,12 +10,9 @@ import {
   ViewStyle,
 } from 'react-native';
 import {SessionState} from 'sip.js';
-import Lottie from 'lottie-react-native';
-import AppSvgIcon from '@/components/AppSvgIcon';
-import AppText from '@/components/AppText';
-import {colors} from '@/constants/Colors';
 import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
-import i18n from '@/utils/i18n';
+import {colors} from '@/constants/Colors';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 console.log('@@@ buton size', buttonSize, windowWidth);
@@ -46,20 +44,6 @@ const styles = StyleSheet.create({
     fontStyle: 'normal',
     lineHeight: 24,
     color: colors.black,
-  },
-  dest: {
-    height: buttonSize / 2,
-    fontSize: 36,
-    fontWeight: 'bold',
-    fontStyle: 'normal',
-    lineHeight: buttonSize / 2,
-    letterSpacing: -0.28,
-    color: colors.black,
-  },
-  input: {
-    marginBottom: isDeviceSize('medium') ? 66 : 23,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   empty: {
     width: buttonSize,
@@ -121,7 +105,7 @@ type KeypadProps = {
   style: StyleProp<ViewStyle>;
   keypadRef?: React.MutableRefObject<KeypadRef | null>;
   state?: SessionState;
-  talkPoint?: React.JSX.Element;
+  showWarning: boolean;
 };
 
 const Keypad: React.FC<KeypadProps> = ({
@@ -129,8 +113,8 @@ const Keypad: React.FC<KeypadProps> = ({
   style,
   onPress,
   onChange,
-  talkPoint,
   state,
+  showWarning = false,
 }) => {
   const [dest, setDest] = useState('');
   const [dtmf, setDtmf] = useState('');
@@ -169,6 +153,7 @@ const Keypad: React.FC<KeypadProps> = ({
     [onPress, pressed],
   );
 
+  // dtmf는 keypad를 닫았다가 다시 열 경우에도 이전 이력 남아있어야 하는지 확인 필요
   const closeKeypad = useCallback(() => {
     setShowKeypad(false);
     setPressed('');
@@ -312,20 +297,27 @@ const Keypad: React.FC<KeypadProps> = ({
       // while talking
       return (
         <>
+          {/* TODO:// 통화 2분이내일 경우 motion적용 필요 */}
           <View
             style={[
               styles.keypad,
-              (connected || showKeypad) && {justifyContent: 'flex-end'},
+              ((connected && !showWarning) || showKeypad) && {
+                justifyContent: 'flex-end',
+              },
             ]}>
-            {calling && (
+            {(calling || showWarning) && (
               <>
                 <View />
                 <Lottie
-                  style={{width: 100, height: 100}}
+                  style={[
+                    {width: 100, height: 100},
+                    showWarning && {justifyContent: 'center'},
+                  ]}
                   autoPlay
                   loop
                   source={require('@/assets/images/lottie/call_blue.json')}
                 />
+                {showWarning && <View />}
               </>
             )}
             <View style={styles.keyButtonRow}>
@@ -348,7 +340,7 @@ const Keypad: React.FC<KeypadProps> = ({
         </>
       );
     },
-    [closeKeypad, onPress, prsDigit, renderKeyButton, showKeypad],
+    [closeKeypad, onPress, prsDigit, renderKeyButton, showKeypad, showWarning],
   );
 
   return (
@@ -356,7 +348,6 @@ const Keypad: React.FC<KeypadProps> = ({
       {/* <View style={styles.input}>
         <Text style={styles.dest}>{showKeypad ? dtmf : dest}</Text>
       </View> */}
-      {talkPoint}
       {renderKey(state)}
     </View>
   );
