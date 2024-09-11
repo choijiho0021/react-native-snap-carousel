@@ -1235,8 +1235,7 @@ const getIosEsimDelGuide = () => {
       key: 'page5',
       title: renderText(`userGuide:ios:esimDel:stepTitle4`),
       step: 4,
-      tip: () =>
-        renderTipList('userGuide:ios:esimDel:tipPage4', 'dot', false, 2),
+      tip: () => tipView({id: 'userGuide:ios:esimDel:tipPage4_1'}),
     },
     {
       key: 'page6',
