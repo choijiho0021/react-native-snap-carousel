@@ -34,8 +34,6 @@ type AuthGatewayScreenProps = {
 const pgWebViewHtml = (info: AuthParams) => {
   const pg = info?.AuthRule?.[info.card || info.pay_method] || '';
 
-  console.log('@@@ pg : ', pg);
-
   console.log('info : ', info);
   return inicisButton(info);
 };
@@ -138,7 +136,6 @@ const AppAuthGateway: React.FC<AuthGatewayScreenProps> = ({info, callback}) => {
         event.url.indexOf('blank') !== -1
       ) {
         setLoading(false);
-        console.log('@@@ 1 ');
         return true;
       }
 
@@ -146,7 +143,6 @@ const AppAuthGateway: React.FC<AuthGatewayScreenProps> = ({info, callback}) => {
       if (event.url.startsWith('http://') || event.url.startsWith('https://')) {
         // 결제사의 비밀번호 입력 화면 같은 특정 웹 페이지는 loading false -> onLoadEnd 호출을 안해서 loading 값 참조
         setLoading(event?.loading || false);
-        console.log('@@@@ 2');
         return true;
       }
 
@@ -213,10 +209,6 @@ const AppAuthGateway: React.FC<AuthGatewayScreenProps> = ({info, callback}) => {
       injected.current = true;
     }
   }, []);
-
-  useEffect(() => {
-    console.log('@@@ html : ', html);
-  }, [html]);
 
   return (
     <>
