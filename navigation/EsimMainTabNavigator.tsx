@@ -75,7 +75,6 @@ import PaymentVBankScreen from '@/screens/PaymentVBankScreen';
 import SelectCoupon from '@/screens/SelectCouponScreen';
 import LotteryScreen from '@/screens/LotteryScreen';
 import RkbTalk from '@/screens/RkbTalk';
-import AppAuthGatewayScreen from '@/screens/RkbTalk/component/AppAuthGatewayScreen';
 import AuthGatewayScreen from '@/screens/RkbTalk/component/AuthGatewayScreen';
 
 const {esimGlobal} = Env.get();
@@ -277,7 +276,10 @@ function TalkStackComponent() {
   return (
     <TalkStack.Navigator screenOptions={screenOptions}>
       <TalkStack.Screen name="RkbTalk" component={RkbTalk} />
-      <MyPageStack.Screen name="AuthGateway" component={AuthGatewayScreen} />
+      <TalkStack.Group
+        screenOptions={{animationEnabled: true, presentation: 'modal'}}>
+        <TalkStack.Screen name="AuthGateway" component={AuthGatewayScreen} />
+      </TalkStack.Group>
     </TalkStack.Navigator>
   );
 }

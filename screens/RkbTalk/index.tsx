@@ -1,4 +1,4 @@
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {SafeAreaView, StatusBar, StyleSheet, View} from 'react-native';
 import InCallManager from 'react-native-incall-manager';
@@ -13,15 +13,10 @@ import {
 import AppText from '@/components/AppText';
 import AppAlert from '@/components/AppAlert';
 import Keypad, {KeypadRef} from './Keypad';
-import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
-import PhoneCertModal from './component/PhoneCertModal';
+
 import WebView from 'react-native-webview';
-import {
-  inicisButton,
-  successHTML,
-} from '@/components/AppPaymentGateway/ConfigInicis';
+import {inicisButton} from '@/components/AppPaymentGateway/ConfigInicis';
 import {bindActionCreators} from 'redux';
-import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
 import {RootState} from '@/redux';
 import {connect} from 'react-redux';
 import {
@@ -29,6 +24,7 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
+import PhoneCertBox from './component/PhoneCertBox';
 
 const styles = StyleSheet.create({
   body: {
@@ -58,9 +54,12 @@ const RkbTalk: React.FC<RkbScreenProps> = ({account: {mobile}}) => {
   const [speakerPhone, setSpeakerPhone] = useState(false);
   const [rnSession, setRnSession] = useState<RNSessionDescriptionHandler>();
   const [modal, setModal] = useState(false);
+  const navigation = useNavigation();
 
   const injected = useRef(false);
   const ref = useRef<WebView>(null);
+
+  const [isSuccessAuth, setIsSuccessAuth] = useState(false);
 
   const [html, setHtml] = useState(inicisButton(''));
 
@@ -292,118 +291,32 @@ const RkbTalk: React.FC<RkbScreenProps> = ({account: {mobile}}) => {
     }
   }, []);
 
-  const callback = useCallback(async (status: any, errorMsg?: string) => {
-    console.log('Status : ', status);
-
-    if (status !== 'check') {
-      console.log('@@@ pym method status', status);
-    }
-  }, []);
-
-  const onShouldStartLoadWithRequest = useCallback(
-    (event: ShouldStartLoadRequest): boolean => {
-      console.log('@@@ event : ', event);
-
-      console.log(
-        '@@@ PG ',
-        event.url,
-        ', decode : ',
-        decodeURIComponent(event.url),
-      );
-      console.log('@@@@ event : ', event.loading);
-      if (event?.url === 'https://www.rokebi.com/success.jsp') {
-        console.log('@@@@@ event : ', event);
-        setHtml(successHTML);
-      }
-
-      // if (event?.loading) return false;
-
-      return true;
-
-      // if (event.url.includes(pgWebViewConfig.cancelUrl)) {
-      //   callback('cancel', decodeURI(event?.url));
-      //   return false;
-      // }
-
-      // if (pgWebViewConfig.nextUrl === event.url) {
-      //   callback('next');
-      //   return false;
-      // }
-
-      // if (
-      //   event.url.startsWith('about:blank') ||
-      //   event.url.indexOf('blank') !== -1
-      // ) {
-      //   setLoading(false);
-      //   return true;
-      // }
-
-      // console.log('@@@ url : ', event.url, ', setLoading : true');
-      // if (event.url.startsWith('http://') || event.url.startsWith('https://')) {
-      //   // 결제사의 비밀번호 입력 화면 같은 특정 웹 페이지는 loading false -> onLoadEnd 호출을 안해서 loading 값 참조
-      //   setLoading(event?.loading || false);
-      //   return true;
-      // }
-
-      // Linking.openURL(utils.intentToUrl(event.url)).catch((err) => {
-      //   AppAlert.info(i18n.t('pym:noAppScheme'), i18n.t('ok'), () =>
-      //     callback('cancel'),
-      //   );
-      // });
-
-      return false;
-    },
-    [],
-  );
-
-  return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView style={styles.body}>
+  const renderBody = useMemo(() => {
+    return isSuccessAuth ? (
+      <>
         <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
 
-        {/* <WebView
-          style={{flex: 1}}
-          ref={ref}
-          javaScriptEnabled
-          mixedContentMode="compatibility"
-          // onMessage={onMessage}
-          originWhitelist={['*']}
-          sharedCookiesEnabled
-          javaScriptCanOpenWindowsAutomatically
-          onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
-          onLoadEnd={onLoadEnd}
-          source={{html: html}}
-        /> */}
         <Keypad
           style={styles.keypad}
           keypadRef={keypadRef}
           onPress={onPressKeypad}
           state={sessionState}
         />
-        <PhoneCertModal
-          visible={modal}
-          setVisible={setModal}
+      </>
+    ) : (
+      <PhoneCertBox />
+    );
+  }, [isSuccessAuth, onPressKeypad, sessionState]);
 
-          // body={
-          //   <View style={{marginHorizontal: 20, backgroundColor: 'red'}}>
-
-          //     <WebView
-          //       style={{flex: 1}}
-          //       ref={ref}
-          //       javaScriptEnabled
-          //       mixedContentMode="compatibility"
-          //       // onMessage={onMessage}
-          //       originWhitelist={['*']}
-          //       sharedCookiesEnabled
-          //       javaScriptCanOpenWindowsAutomatically
-          //       // onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
-          //       onLoadEnd={onLoadEnd}
-          //       source={{html: html}}
-          //     />
-          //   </View>
-          // }
-        />
+  return (
+    <>
+      <StatusBar barStyle="dark-content" />
+      <SafeAreaView
+        style={[
+          styles.body,
+          {backgroundColor: isSuccessAuth ? 'white' : 'rgba(0, 0, 0, 0.3)'},
+        ]}>
+        {renderBody}
       </SafeAreaView>
     </>
   );

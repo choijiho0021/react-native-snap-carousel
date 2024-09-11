@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {Image, StyleSheet, View} from 'react-native';
+import {Image, SafeAreaView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import AppText from '@/components/AppText';
@@ -31,6 +31,19 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
   },
+  storeBox: {
+    position: 'absolute',
+    paddingTop: 20,
+    paddingBottom: 40,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    borderColor: colors.line,
+    shadowColor: colors.black8,
+    height: 480,
+    bottom: 0,
+    width: '100%',
+  },
   modalClose: {
     justifyContent: 'center',
     // height: 56,
@@ -39,7 +52,7 @@ const styles = StyleSheet.create({
     height: 26,
   },
   head: {
-    height: 74,
+    height: 120,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignContent: 'center',
@@ -50,18 +63,13 @@ const styles = StyleSheet.create({
   },
 });
 
-type PhoneCertModalProps = {
-  visible: boolean;
-  setVisible: (val: boolean) => void;
+type PhoneCertBoxProps = {
   onClickButton: (val) => void;
 };
 
-const PhoneCertModal: React.FC<PhoneCertModalProps> = ({
-  setVisible,
-  visible,
-  onClickButton,
-}) => {
+const PhoneCertBox: React.FC<PhoneCertBoxProps> = ({onClickButton}) => {
   const navigation = useNavigation();
+
   const title = useMemo(() => {
     return (
       <View
@@ -79,7 +87,11 @@ const PhoneCertModal: React.FC<PhoneCertModalProps> = ({
 
   const body = useMemo(() => {
     return (
-      <View style={{paddingHorizontal: 20, paddingBottom: 16}}>
+      <View
+        style={{
+          paddingHorizontal: 20,
+          paddingBottom: 16,
+        }}>
         <View style={{marginBottom: 48, gap: 8}}>
           <AppStyledText
             text={`<b>휴대폰 본인인증</b>\n로깨비톡 이용을 위해 본인 인증이 필요해요.`}
@@ -109,30 +121,30 @@ const PhoneCertModal: React.FC<PhoneCertModalProps> = ({
           title="인증하기"
           onPress={() => {
             // onClickButton('test');
-            setVisible(false);
+            // setVisible(false);
             navigation.navigate('AuthGateway', {});
           }}
         />
       </View>
     );
   }, []);
+
   return (
-    <AppBottomModal
-      visible={visible}
-      isCloseBtn={false}
-      onClose={() => {
-        setVisible(false);
-      }}
-      height={isIOS ? 540 : 510}
-      headerStyle={{height: isIOS ? 124 : 80}}
-      title={title}
-      body={body}
-    />
+    <View style={{flex: 1}}>
+      <SafeAreaView key="modal" style={[styles.storeBox]}>
+        {title && (
+          <View style={[styles.head]}>
+            <AppText style={appStyles.bold18Text}>{title}</AppText>
+          </View>
+        )}
+        {body}
+      </SafeAreaView>
+    </View>
   );
 };
 
-// export default memo(PhoneCertModal);
+// export default memo(PhoneCertBox);
 
 export default connect(({product}: RootState) => ({
   product,
-}))(PhoneCertModal);
+}))(PhoneCertBox);
