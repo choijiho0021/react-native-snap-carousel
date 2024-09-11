@@ -1,4 +1,5 @@
 import {useFocusEffect} from '@react-navigation/native';
+import moment from 'moment-timezone';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   Pressable,
@@ -17,17 +18,16 @@ import {
   UserAgentOptions,
 } from 'sip.js';
 import AppAlert from '@/components/AppAlert';
-import AppButton from '@/components/AppButton';
+import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {API} from '@/redux/api';
+import i18n from '@/utils/i18n';
 import {useInterval} from '@/utils/useInterval';
+import CallToolTip from './CallToolTip';
 import Keypad, {KeypadRef} from './Keypad';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
-import AppSvgIcon from '@/components/AppSvgIcon';
-import CallToolTip from './CallToolTip';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
-import i18n from '@/utils/i18n';
 
 const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 
@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
   emergency: {
     flex: 1,
     textAlign: 'right',
-    marginRight: 20,
     fontSize: 16,
     fontWeight: '600',
     fontStyle: 'normal',
@@ -93,16 +92,23 @@ const RkbTalk = () => {
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
   const [digit, setDigit] = useState('');
+  const min = useMemo(() => {
+    const checkRemain = (maxTime || 0) - duration;
+    return maxTime
+      ? Math.floor((checkRemain <= 0 ? 0 : checkRemain) / 60)
+      : undefined;
+  }, [duration, maxTime]);
+
   const initial = useMemo(
     () =>
       !sessionState ||
       [SessionState.Initial, SessionState.Terminated].includes(sessionState),
     [sessionState],
   );
-  // const calling = useMemo(
-  //   () => [SessionState.Establishing].includes(sessionState),
-  //   [sessionState],
-  // );
+  const calling = useMemo(
+    () => [SessionState.Establishing].includes(sessionState),
+    [sessionState],
+  );
   const connected = useMemo(
     () => [SessionState.Established].includes(sessionState),
     [sessionState],
@@ -113,6 +119,8 @@ const RkbTalk = () => {
   // );
 
   // 국가번호
+  // api로 데이터 가져오도록 변경 필요
+  // 영어, 한국어 국가명 필요
   const splitCC = useMemo(
     () =>
       digit?.slice(0, 2)?.includes('82')
@@ -480,6 +488,7 @@ const RkbTalk = () => {
       </AppText>
     );
   }, [connected, initial, talkPointBtn, time]);
+
   return (
     <>
       <StatusBar barStyle="dark-content" />
@@ -493,22 +502,54 @@ const RkbTalk = () => {
             alignItems: 'center',
           }}>
           <View
-            style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              marginHorizontal: 20,
+            }}>
             <View style={{flex: 1}} />
             {/* <AppText style={{flex: 1}}>대한민국</AppText> */}
             {splitCC.length > 0 && (
-              <AppText style={[styles.emergency, {color: colors.black}]}>
-                대한민국
-              </AppText>
+              <>
+                <AppSvgIcon
+                  style={{
+                    width: 9.4,
+                    alignContent: 'flex-end',
+                    justifyContent: 'flex-end',
+                  }}
+                  name="KR"
+                />
+                <AppText
+                  style={[
+                    styles.emergency,
+                    {
+                      marginLeft: 6,
+                      justifyContent: 'flex-start',
+                      color: colors.black,
+                      textAlign: 'center',
+                    },
+                  ]}>
+                  대한민국
+                </AppText>
+              </>
             )}
-            {initial && <AppText style={styles.emergency}>긴급통화</AppText>}
+            <AppText style={styles.emergency}>
+              {initial ? '긴급통화' : ''}
+            </AppText>
           </View>
         </View>
+        <AppText style={{textAlign: 'center', color: colors.warmGrey}}>
+          {`현지시간 ${moment()
+            .tz(moment.tz.zonesForCountry('KR')[0])
+            .format('HH:mm')}`}
+        </AppText>
         <CallToolTip text="통화가 필요한 긴급 상황이라면!" icon="bell" />
 
-        {/* {maxTime && (
+        {/* {maxTime && isNumber(min) && (
           <AppText style={{textAlign: 'center', color: colors.warmGrey}}>
-            남은 통화 {Math.floor((maxTime || 0) / 60)}분
+            남은 통화 {min}분
           </AppText>
         )} */}
         {/* <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
