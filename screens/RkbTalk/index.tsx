@@ -78,6 +78,73 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 20,
   },
+  talkBtn: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+  },
+  talkBtnView: {
+    justifyContent: 'center',
+    height: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginHorizontal: 92,
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+  },
+  timer: {
+    height: 22,
+    fontSize: 14,
+    fontWeight: '500',
+    fontStyle: 'normal',
+    lineHeight: 22,
+    letterSpacing: 0,
+    textAlign: 'center',
+    color: colors.clearBlue,
+    marginTop: 24,
+  },
+  connecting: {
+    color: colors.warmGrey,
+    fontSize: 16,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    lineHeight: 40,
+    height: 40,
+    marginTop: 24,
+    letterSpacing: -0.16,
+    textAlign: 'center',
+  },
+  topView: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 8,
+    height: 40,
+    alignItems: 'center',
+  },
+  topRow: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginHorizontal: 20,
+  },
+  flagIcon: {
+    width: 9.4,
+    alignContent: 'flex-end',
+    justifyContent: 'flex-end',
+  },
+  nation: {
+    marginLeft: 6,
+    justifyContent: 'flex-start',
+    color: colors.black,
+    textAlign: 'center',
+  },
+  connectedView: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 const RkbTalk = () => {
@@ -430,23 +497,8 @@ const RkbTalk = () => {
   const talkPointBtn = useCallback(() => {
     return (
       <>
-        <Pressable
-          style={{
-            flex: 1,
-            flexDirection: 'column',
-            justifyContent: 'flex-end',
-          }}>
-          <View
-            style={{
-              justifyContent: 'center',
-              height: 40,
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingHorizontal: 16,
-              marginHorizontal: 92,
-              borderWidth: 1,
-              borderColor: colors.lightGrey,
-            }}>
+        <Pressable style={styles.talkBtn}>
+          <View style={styles.talkBtnView}>
             <AppSvgIcon
               key="talkPoint"
               name="talkPoint"
@@ -454,7 +506,7 @@ const RkbTalk = () => {
             />
             <AppText style={styles.myPoint}>{i18n.t('talk:mypoint')}</AppText>
             <AppText style={[styles.myPoint, styles.pointBold]}>
-              {point}P
+              {`${point}P`}
             </AppText>
             <AppSvgIcon key="rightArrow10" name="rightArrow10" />
           </View>
@@ -466,38 +518,9 @@ const RkbTalk = () => {
 
   const info = useCallback(() => {
     if (initial) return talkPointBtn();
-    if (connected)
-      return (
-        <AppText
-          style={{
-            height: 22,
-            fontSize: 14,
-            fontWeight: '500',
-            fontStyle: 'normal',
-            lineHeight: 22,
-            letterSpacing: 0,
-            textAlign: 'center',
-            color: colors.clearBlue,
-            marginTop: 24,
-          }}>
-          {time}
-        </AppText>
-      );
+    if (connected) return <AppText style={styles.timer}>{time}</AppText>;
     return (
-      <AppText
-        style={{
-          color: colors.warmGrey,
-          fontSize: 16,
-          fontWeight: 'normal',
-          fontStyle: 'normal',
-          lineHeight: 40,
-          height: 40,
-          marginTop: 24,
-          letterSpacing: -0.16,
-          textAlign: 'center',
-        }}>
-        통화 연결 중...
-      </AppText>
+      <AppText style={styles.connecting}>{i18n.t('talk:connecting')}</AppText>
     );
   }, [connected, initial, talkPointBtn, time]);
 
@@ -511,68 +534,34 @@ const RkbTalk = () => {
         <View style={{backgroundColor: colors.redError, height: top}} />
       )}
       <SafeAreaView style={styles.body}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-            marginTop: 8,
-            height: 40,
-            alignItems: 'center',
-          }}>
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              marginHorizontal: 20,
-            }}>
+        <View style={styles.topView}>
+          <View style={styles.topRow}>
             <View style={{flex: 1}} />
-            {/* <AppText style={{flex: 1}}>대한민국</AppText> */}
             {printCCInfo && (
               <>
-                <AppSvgIcon
-                  style={{
-                    width: 9.4,
-                    alignContent: 'flex-end',
-                    justifyContent: 'flex-end',
-                  }}
-                  name="KR"
-                />
-                <AppText
-                  style={[
-                    styles.emergency,
-                    {
-                      marginLeft: 6,
-                      justifyContent: 'flex-start',
-                      color: colors.black,
-                      textAlign: 'center',
-                    },
-                  ]}>
+                <AppSvgIcon style={styles.flagIcon} name="KR" />
+                <AppText style={[styles.emergency, styles.nation]}>
                   대한민국
                 </AppText>
               </>
             )}
             <AppText style={styles.emergency}>
-              {initial ? '긴급통화' : ''}
+              {initial ? i18n.t('talk:emergencyCall') : ''}
             </AppText>
           </View>
         </View>
         {printCCInfo && (
           <AppText style={{textAlign: 'center', color: colors.warmGrey}}>
-            {`현지시간 ${moment()
-              .tz(moment.tz.zonesForCountry('KR')[0])
-              .format('HH:mm')}`}
+            {i18n.t(`talk:localTime`, {
+              time: moment()
+                .tz(moment.tz.zonesForCountry('KR')[0])
+                .format('HH:mm'),
+            })}
           </AppText>
         )}
-        <CallToolTip text="통화가 필요한 긴급 상황이라면!" icon="bell" />
+        <CallToolTip text="" icon="bell" />
         {connected && (
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+          <View style={styles.connectedView}>
             {showWarning && (
               <AppSvgIcon
                 style={{justifyContent: 'center', alignItems: 'center'}}
@@ -587,7 +576,11 @@ const RkbTalk = () => {
                 },
                 showWarning && {color: colors.redError, marginLeft: 6},
               ]}>
-              {maxTime && isNumber(min || 0) ? `남은 통화 ${min}분` : ''}
+              {maxTime && isNumber(min || 0)
+                ? i18n.t(`talk:remain`, {
+                    min,
+                  })
+                : ''}
             </AppText>
           </View>
         )}

@@ -1850,5 +1850,10 @@
   "talk": "통화",
   "talk:speaker": "스피커폰",
   "talk:keypad": "키패드",
-  "talk:mypoint": "나의 톡포인트"
+  "talk:mypoint": "나의 톡포인트",
+  "talk:connecting": "통화 연결 중...",
+  "talk:emergencyText": "통화가 필요한 긴급 상황이라면!",
+  "talk:emergencyCall": "긴급통화",
+  "talk:localTime": "현지시간 {{time}}",
+  "talk:remain": "남은 통화 {{min}}분"
 }
