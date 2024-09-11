@@ -17,6 +17,7 @@ import {
   UserAgent,
   UserAgentOptions,
 } from 'sip.js';
+import {isNumber} from 'underscore';
 import AppAlert from '@/components/AppAlert';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
@@ -88,7 +89,7 @@ const RkbTalk = () => {
   const [speakerPhone, setSpeakerPhone] = useState(false);
   const [dtmfSession, setDtmfSession] = useState<Session>();
   const [duration, setDuration] = useState(1);
-  const [maxTime, setMaxTime] = useState<number>(0);
+  const [maxTime, setMaxTime] = useState<number>();
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
   const [digit, setDigit] = useState('');
@@ -123,10 +124,15 @@ const RkbTalk = () => {
   // 영어, 한국어 국가명 필요
   const splitCC = useMemo(
     () =>
-      digit?.slice(0, 2)?.includes('82')
+      ['82', '20'].includes(digit?.slice(0, 2))
         ? [digit?.slice(0, 2), digit?.slice(2)]
         : [],
     [digit],
+  );
+
+  const printCCInfo = useMemo(
+    () => splitCC?.length > 0 && (initial || calling),
+    [calling, initial, splitCC?.length],
   );
 
   useEffect(() => {
@@ -511,7 +517,7 @@ const RkbTalk = () => {
             }}>
             <View style={{flex: 1}} />
             {/* <AppText style={{flex: 1}}>대한민국</AppText> */}
-            {splitCC.length > 0 && (
+            {printCCInfo && (
               <>
                 <AppSvgIcon
                   style={{
@@ -540,18 +546,19 @@ const RkbTalk = () => {
             </AppText>
           </View>
         </View>
-        <AppText style={{textAlign: 'center', color: colors.warmGrey}}>
-          {`현지시간 ${moment()
-            .tz(moment.tz.zonesForCountry('KR')[0])
-            .format('HH:mm')}`}
-        </AppText>
+        {printCCInfo && (
+          <AppText style={{textAlign: 'center', color: colors.warmGrey}}>
+            {`현지시간 ${moment()
+              .tz(moment.tz.zonesForCountry('KR')[0])
+              .format('HH:mm')}`}
+          </AppText>
+        )}
         <CallToolTip text="통화가 필요한 긴급 상황이라면!" icon="bell" />
 
-        {/* {maxTime && isNumber(min) && (
-          <AppText style={{textAlign: 'center', color: colors.warmGrey}}>
-            남은 통화 {min}분
-          </AppText>
-        )} */}
+        <AppText style={{textAlign: 'center', color: colors.warmGrey}}>
+          {maxTime && isNumber(min || 0) ? `남은 통화 ${min}분` : ''}
+        </AppText>
+
         {/* <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
         <AppText style={{marginLeft: 10}}>{time}</AppText> */}
         <View style={[styles.input, {height: 44, marginTop: 16}]}>
