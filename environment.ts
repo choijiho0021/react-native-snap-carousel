@@ -32,7 +32,7 @@ const iosBundleId = esimGlobal
 // Dynamic Link
 const dynamicLink = 'https://rokebi.page.link';
 
-const isProduction = true; Config.NODE_ENV === 'production';
+const isProduction = Config.NODE_ENV === 'production';
 
 // test 계정
 impId = isProduction ? impId : 'imp54175831';
@@ -172,8 +172,8 @@ function get() {
       : codePushLabel.productionAndroid;
   } else {
     env.label = env.isIOS
-      ? codePushLabel.productionIOS
-      : codePushLabel.productionAndroid;
+      ? codePushLabel.stagingIOS
+      : codePushLabel.stagingAndroid;
   }
 
   // if (appId === 'esim' || appId === 'global') {
@@ -187,12 +187,12 @@ function get() {
         : 'https://www.rokebi.com';
       break;
     default:
-      env.scheme = 'https';
-      env.rokApiUrl = 'svcapp.rokebi.com';
-      env.apiUrl = esimGlobal ? 'global.rokebi.com' : 'esim.rokebi.com';
+      env.scheme = 'http';
+      env.rokApiUrl = 'tb-svcapp.rokebi.com';
+      env.apiUrl = esimGlobal ? 'tb-global.rokebi.com' : 'tb-esim.rokebi.com';
       env.webViewHost = esimGlobal
-        ? 'https://www.rokebi.com/us'
-        : 'https://www.rokebi.com';
+        ? 'http://tb.rokebi.com/us'
+        : 'http://tb.rokebi.com';
       break;
   }
   return env;
