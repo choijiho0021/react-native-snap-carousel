@@ -1,80 +1,77 @@
-import React from 'react';
-import {connect} from 'react-redux';
-import {StyleSheet} from 'react-native';
-import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import React from 'react';
+import {StyleSheet} from 'react-native';
+import {connect} from 'react-redux';
+import AppIcon from '@/components/AppIcon';
+import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import AppIcon from '@/components/AppIcon';
-
-import HomeScreenEsim from '@/screens/HomeScreen/Esim';
-import TutorialScreen from '@/screens/TutorialScreen';
-
-import CountryScreen from '@/screens/CountryScreen';
-import ProductDetailScreen from '@/screens/ProductDetailScreen';
-import ProductDetailOpScreen from '@/screens/ProductDetailOpScreen';
-
-import SettingsScreen from '@/screens/SettingsScreen';
-import AccountSettingsScreen from '@/screens/AccountSettingsScreen';
-import ResignScreen from '@/screens/ResignScreen';
-import ChangeEmailScreen from '@/screens/ChangeEmailScreen';
-import ReceiptScreen from '@/screens/ReceiptScreen';
-import ExtraCouponScreen from '@/screens/ExtraCouponScreen';
-import CashHistoryScreen from '@/screens/CashHistoryScreen';
-import i18n from '@/utils/i18n';
-import RechargeScreen from '@/screens/RechargeScreen';
-import CartScreen from '@/screens/CartScreen';
-import MyPageScreen from '@/screens/MyPageScreen/index';
-import InviteScreen from '@/screens/InviteScreen/index';
-import NotiScreen from '@/screens/NotiScreen';
-import PaymentResultScreen from '@/screens/PaymentResultScreen';
-import PurchaseDetailScreen from '@/screens/PurchaseDetailScreen';
-import ContactScreen from '@/screens/ContactScreen';
-import ContactBoardScreen from '@/screens/ContactBoardScreen';
-import PymMethodScreen from '@/screens/PymMethodScreen';
-import StoreSearchScreen from '@/screens/StoreSearch';
-import BoardMsgRespScreen from '@/screens/BoardMsgRespScreen';
-import SimpleTextScreen from '@/screens/SimpleTextScreen';
-import EsimScreen from '@/screens/EsimScreen';
-import GiftScreen from '@/screens/GiftScreen';
-import GiftGuideScreen from '@/screens/GiftGuideScreen';
-import FaqScreen from '@/screens/FaqScreen';
-import {RootState} from '@/redux';
-import AuthStack from './AuthStackNavigator';
-import {HomeStackParamList} from './navigation';
-import BadgedIcon from './component/BadgedIcon';
-import RedirectHKScreen from '@/screens/RedirectHKScreen';
-import ChargeScreen from '@/screens/ChargeScreen';
-import ChargeHistoryScreen from '@/screens/ChargeHistoryScreen';
-import ChargeDetailScreen from '@/screens/ChargeDetailScreen';
-import QrInfoScreen from '@/screens/QrInfoScreen';
-import UserGuideScreen from '@/screens/UserGuideScreen';
-import GlobalGuideScreen from '@/screens/UserGuideScreen/global/GlobalGuide';
-import PaymentGatewayScreen from '@/screens/PaymentGatewayScreen';
-import {CartModelState} from '@/redux/modules/cart';
-import AppText from '@/components/AppText';
-import GuideHomeScreen from '@/screens/UserGuideScreen/GuideHomeScreen';
-import GuideSelectRegionScreen from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
 import Env from '@/environment';
-import EventBoardScreen from '@/screens/EventBoardScreen';
-import EventResultScreen from '@/screens/BoardScreen/ResultScreen';
-import ChargeTypeScreen from '@/screens/ChargeTypeScreen';
+import {RootState} from '@/redux';
+import {CartModelState} from '@/redux/modules/cart';
+import {ModalModelState} from '@/redux/modules/modal';
+import AccountSettingsScreen from '@/screens/AccountSettingsScreen';
 import AddOnScreen from '@/screens/AddOnScreen';
-import ChargeAgreementScreen from '@/screens/ChargeAgreementScreen';
-import InvitePromoScreen from '@/screens/InvitePromoScreen';
-import DraftScreen from '@/screens/DraftScreen';
-import DraftResultScreen from '@/screens/DraftScreen/DraftResult';
+import BoardMsgRespScreen from '@/screens/BoardMsgRespScreen';
+import EventResultScreen from '@/screens/BoardScreen/ResultScreen';
 import CancelOrderScreen from '@/screens/CancelOrderScreen';
 import CancelResultScreen from '@/screens/CancelOrderScreen/CancelResult';
-import {ModalModelState} from '@/redux/modules/modal';
-import RegisterMobileScreen from '@/screens/RegisterMobileScreen';
+import CartScreen from '@/screens/CartScreen';
+import CashHistoryScreen from '@/screens/CashHistoryScreen';
+import ChangeEmailScreen from '@/screens/ChangeEmailScreen';
+import ChargeAgreementScreen from '@/screens/ChargeAgreementScreen';
+import ChargeDetailScreen from '@/screens/ChargeDetailScreen';
+import ChargeHistoryScreen from '@/screens/ChargeHistoryScreen';
+import ChargeScreen from '@/screens/ChargeScreen';
+import ChargeTypeScreen from '@/screens/ChargeTypeScreen';
+import ContactBoardScreen from '@/screens/ContactBoardScreen';
+import ContactScreen from '@/screens/ContactScreen';
+import CountryScreen from '@/screens/CountryScreen';
 import CouponScreen from '@/screens/CouponScreen';
+import DraftScreen from '@/screens/DraftScreen';
+import DraftResultScreen from '@/screens/DraftScreen/DraftResult';
 import DraftUsScreen from '@/screens/DraftUsScreen';
-import PaymentVBankScreen from '@/screens/PaymentVBankScreen';
-import SelectCoupon from '@/screens/SelectCouponScreen';
+import EsimScreen from '@/screens/EsimScreen';
+import EventBoardScreen from '@/screens/EventBoardScreen';
+import ExtraCouponScreen from '@/screens/ExtraCouponScreen';
+import FaqScreen from '@/screens/FaqScreen';
+import GiftGuideScreen from '@/screens/GiftGuideScreen';
+import GiftScreen from '@/screens/GiftScreen';
+import HomeScreenEsim from '@/screens/HomeScreen/Esim';
+import InvitePromoScreen from '@/screens/InvitePromoScreen';
+import InviteScreen from '@/screens/InviteScreen/index';
 import LotteryScreen from '@/screens/LotteryScreen';
+import MyPageScreen from '@/screens/MyPageScreen/index';
+import NotiScreen from '@/screens/NotiScreen';
+import PaymentGatewayScreen from '@/screens/PaymentGatewayScreen';
+import PaymentResultScreen from '@/screens/PaymentResultScreen';
+import PaymentVBankScreen from '@/screens/PaymentVBankScreen';
+import ProductDetailOpScreen from '@/screens/ProductDetailOpScreen';
+import ProductDetailScreen from '@/screens/ProductDetailScreen';
+import PurchaseDetailScreen from '@/screens/PurchaseDetailScreen';
+import PymMethodScreen from '@/screens/PymMethodScreen';
+import QrInfoScreen from '@/screens/QrInfoScreen';
+import ReceiptScreen from '@/screens/ReceiptScreen';
+import RechargeScreen from '@/screens/RechargeScreen';
+import RedirectHKScreen from '@/screens/RedirectHKScreen';
+import RegisterMobileScreen from '@/screens/RegisterMobileScreen';
+import ResignScreen from '@/screens/ResignScreen';
 import RkbTalk from '@/screens/RkbTalk';
+import SelectCoupon from '@/screens/SelectCouponScreen';
+import SettingsScreen from '@/screens/SettingsScreen';
+import SimpleTextScreen from '@/screens/SimpleTextScreen';
+import StoreSearchScreen from '@/screens/StoreSearch';
+import TutorialScreen from '@/screens/TutorialScreen';
+import UserGuideScreen from '@/screens/UserGuideScreen';
+import GlobalGuideScreen from '@/screens/UserGuideScreen/global/GlobalGuide';
+import GuideHomeScreen from '@/screens/UserGuideScreen/GuideHomeScreen';
+import GuideSelectRegionScreen from '@/screens/UserGuideScreen/GuideSelectRegionScreen';
+import i18n from '@/utils/i18n';
+import AuthStack from './AuthStackNavigator';
+import BadgedIcon from './component/BadgedIcon';
+import {HomeStackParamList} from './navigation';
 
 const {esimGlobal} = Env.get();
 
@@ -359,6 +356,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
+            height: 83,
             display:
               (getFocusedRouteNameFromRoute(route) || 'Home') === 'Home'
                 ? 'flex'
@@ -381,6 +379,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
+            height: 83,
             display:
               !!loggedIn &&
               cart?.cartItems?.length === 0 &&
@@ -406,6 +405,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
+            height: 83,
             display:
               !!loggedIn &&
               modal.showTabbar &&
@@ -429,6 +429,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
+            height: 83,
             display:
               !!loggedIn &&
               (getFocusedRouteNameFromRoute(route) || 'Talk') === 'Talk'
@@ -459,6 +460,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
+            height: 83,
             display:
               !!loggedIn &&
               (getFocusedRouteNameFromRoute(route) || 'MyPage') === 'MyPage'
