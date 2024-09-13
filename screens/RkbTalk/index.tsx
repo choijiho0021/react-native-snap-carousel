@@ -18,7 +18,7 @@ import WebView from 'react-native-webview';
 import {inicisButton} from '@/components/AppPaymentGateway/ConfigInicis';
 import {bindActionCreators} from 'redux';
 import {RootState} from '@/redux';
-import {connect} from 'react-redux';
+import {connect, DispatchProp} from 'react-redux';
 import {
   AccountAction,
   AccountModelState,
@@ -44,7 +44,10 @@ type RkbScreenProps = {
   };
 };
 
-const RkbTalk: React.FC<RkbScreenProps> = ({account: {mobile}}) => {
+const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
+  account: {mobile, realMobile, iccid, token},
+  dispatch,
+}) => {
   const [userAgent, setUserAgent] = useState<UserAgent | null>(null);
   const [inviter, setInviter] = useState<Inviter | null>(null);
   const keypadRef = useRef<KeypadRef>(null);
@@ -65,7 +68,8 @@ const RkbTalk: React.FC<RkbScreenProps> = ({account: {mobile}}) => {
 
   useEffect(() => {
     if (mobile) setHtml(inicisButton(mobile));
-  }, [mobile]);
+    if (realMobile) setIsSuccessAuth(true);
+  }, [mobile, realMobile]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -291,9 +295,17 @@ const RkbTalk: React.FC<RkbScreenProps> = ({account: {mobile}}) => {
     }
   }, []);
 
+  const reCheck = useCallback(() => {
+    dispatch(accountActions.getAccount({iccid, token}));
+  }, [dispatch, iccid, token]);
+
   const renderBody = useMemo(() => {
     return isSuccessAuth ? (
       <>
+        <AppText
+          style={{
+            marginLeft: 10,
+          }}>{`test. current realMobile : ${realMobile}`}</AppText>
         <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
 
         <Keypad
@@ -306,7 +318,7 @@ const RkbTalk: React.FC<RkbScreenProps> = ({account: {mobile}}) => {
     ) : (
       <PhoneCertBox />
     );
-  }, [isSuccessAuth, onPressKeypad, sessionState]);
+  }, [isSuccessAuth, onPressKeypad, realMobile, sessionState]);
 
   return (
     <>

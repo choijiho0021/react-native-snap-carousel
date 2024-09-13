@@ -92,96 +92,29 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
 };
 
 export const inicisButton = (accountId: string) => {
-  const info = {
-    amount: 2200,
-    app_scheme: 'RokebiEsim',
-    card: '',
-    digital: true,
-    escrow: false,
-    installmentMonths: '0',
-    isSave: true,
-    language: 'ko',
-    merchant_uid: 'r_01010002003_1724225714104',
-    mode: 'roaming_product',
-    name: '로밍도깨비',
-    pay_method: 'kakaopay',
-    paymentRule: {
-      '01': 'I',
-      '02': 'I',
-      '03': 'I',
-      '04': 'I',
-      '06': 'I',
-      '11': 'I',
-      '12': 'I',
-      '14': 'I',
-      '32': 'I',
-      '33': 'I',
-      '35': 'I',
-      '41': 'I',
-      '43': 'I',
-      '48': 'I',
-      '51': 'I',
-      '52': 'I',
-      '54': 'I',
-      '55': 'I',
-      '56': 'I',
-      '71': 'I',
-      ccard: [],
-      inicis_enabled: '1',
-      kakaopay: 'I',
-      maintenance: {message: 'test', state: '0'},
-      naverpay: 'I',
-      payco: 'I',
-      timestamp_dev: '2023-03-25T17:24:11',
-      timestamp_prod: '2024-08-21T14:12:00',
-    },
-    pg: 'html5_inicis',
-    pymMethod: 'pym:kakao',
-    receipt: undefined,
-    rokebi_cash: undefined,
-    selected: 'pym:kakao',
-  };
-
-  const mid = 'INIiasTest'; // 테스트 MID 입니다. 계약한 상점 MID 로 변경 필요
+  // const mid = 'uangel1'; // 테스트 MID 입니다. 계약한 상점 MID 로 변경 필요
+  const mid = 'INIpayTest';
   const apiKey = 'TGdxb2l3enJDWFRTbTgvREU3MGYwUT09'; // 테스트 MID 에 대한 apiKey
+  const key = 'ItEQKi3rY7uvDS8l';
+
   const timestamp = Date.now();
   const mTxId = `t_${timestamp}_00001111${accountId}`;
-  const reservedMsg = 'isUseToken=Y'; // 결과조회 응답시 개인정보 SEED 암호화 처리 요청
 
-  // 등록가맹점 확인
+  console.log('@@@ mTxId : ', mTxId);
   const authHash_plainText = mid + mTxId + apiKey;
+  const hash = CryptoJS.SHA256(authHash_plainText).toString();
 
+  const reservedMsg = 'isUseToken=Y'; // 결과조회 응답시 개인정보 SEED 암호화 처리 요청
   const flgFixedUser = 'Y'; // 특정 사용자 고정 사용, 미사용시 N
 
-  // const timestamp = Date.now();
-  // const mid = 'INIpayTest';
-  // const mTxId = timestamp;
-  // const key = 'ItEQKi3rY7uvDS8l';
   const userName = '최지호'; // 사용자 이름
-  const userPhone = '01021035030'; // 사용자 전화번호
+  const userPhone = '01021035031'; // 사용자 전화번호
   const userBirth = '19961115'; // 사용자 생년월일
   const reqSvcCd = '01'; // 요청구분코드 ["01":간편인증, "02":전자서명]
-
-  // const userHash = CryptoJS.SHA256(
-  //   userName + mid + userPhone + mTxId + userBirth + reqSvcCd,
-  // ).toString(CryptoJS.enc.Base64);
 
   const userHash = CryptoJS.SHA256(
     userName + mid + userPhone + mTxId + userBirth + reqSvcCd,
   ).toString();
-
-  let reserved = opt[info.pay_method] || '';
-  if (info.card) {
-    // reserved += `&d_card=${info.card}&d_quota=0&cardshowopt=${info.card}:3`;
-    reserved += `&d_card=${info.card}&d_quota=${info.installmentMonths || '0'}`;
-  }
-  // const hash = CryptoJS.SHA512(mid + mTxId + key).toString(CryptoJS.enc.Base64);
-
-  // const hash = CryptoJS.SHA256(authHash_plainText).toString(
-  //   CryptoJS.enc.Base64,
-  // );
-
-  const hash = CryptoJS.SHA256(authHash_plainText).toString();
 
   return `<html> 
 <head> 
@@ -270,10 +203,6 @@ export const inicisButton = (accountId: string) => {
 	    	<tr>    
 	    	    <td><h4>authHash</h4></td>
 	    	    <td><input type="text" name="authHash" value="${hash}"></td>
-            </tr>
-	    	<tr>    
-	    	    <td><h4>flgFixedUser</h4></td>
-	    	    <td><input type="text" name="flgFixedUser" value="N"></td>
             </tr> 
 	    	<tr>    
 	    	    <td><h4>reservedMsg</h4></td>
@@ -281,11 +210,11 @@ export const inicisButton = (accountId: string) => {
             </tr>
 	    	<tr>    
                 <td><h4>successUrl</h4></td>
-	    	    <td><input type="text" name="successUrl" value="http://64.110.75.203/api/v1/pvd/auth/realName"></td>
+	    	    <td><input type="text" name="successUrl" value="https://cb58-211-109-10-2.ngrok-free.app/api/v1/pvd/auth/rn"></td>
              </tr>
 	    	<tr>   
 	    	    <td><h4>failUrl</h4></td>
-	    	    <td><input type="text" name="failUrl" value="http://64.110.75.203/api/v1/pvd/auth/realName"></td>
+	    	    <td><input type="text" name="failUrl" value="https://cb58-211-109-10-2.ngrok-free.app/api/v1/pvd/auth/rn"></td>
                 <!-- successUrl/failUrl 은 분리하여도 됩니다. !-->
         	</tr>
 	    	
@@ -295,45 +224,3 @@ export const inicisButton = (accountId: string) => {
 </body>
 </html>`;
 };
-
-export const successHTML = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Success</title>
-</head>
-<body>
-    <h1>Success Page</h1>
-    <p>인증 수신</p>
-    
-    <!-- Example static content based on JSP logic -->
-    <p>resultCode: 0000</p>
-    <p>resultMsg: 인증 성공</p>
-    
-    <!-- Simulating what would happen in JSP -->
-    <script>
-        // Assume that the JSP dynamic content is processed here
-        // This is a placeholder to represent how the content might be filled in
-        function displayResult() {
-            // Assuming resultCode and resultMsg are received dynamically
-            const resultCode = "0000"; // Mock result code
-            const resultMsg = "인증 성공"; // Mock result message
-            
-            document.body.innerHTML += "<p>인증 결과: " + resultMsg + "</p>";
-            
-            if (resultCode === "0000") {
-                document.body.innerHTML += "<p>인증 성공?</p>";
-                // Add logic to handle a successful result
-            } else {
-                document.body.innerHTML += "<p>인증 실패?</p>";
-                // Add logic to handle a failed result
-            }
-        }
-
-        displayResult();
-    </script>
-</body>
-</html>
-`;

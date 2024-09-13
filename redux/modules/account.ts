@@ -196,12 +196,14 @@ export type AccountModelState = {
   expirePt?: number;
   coupon: RkbCoupon[];
   fortune?: Fortune;
+  realMobile?: string;
 };
 
 export type AccountAuth = {
   user?: string;
   pass?: string;
   token?: string;
+  realMobile?: string;
 };
 
 export const isFortuneHistory = (fortune: Fortune) => {
@@ -212,6 +214,7 @@ export const auth = (state: AccountModelState): AccountAuth => ({
   user: state.mobile,
   pass: state.pin,
   token: state.token,
+  realMobile: state.realMobile,
 });
 
 const changeNotiToken = createAsyncThunk(
@@ -410,6 +413,8 @@ const updateAccountState = (
   if (payload.deviceToken) newState.deviceToken = payload.deviceToken;
   if (payload.old_deviceToken || payload.old_fcmToken)
     newState.old_deviceToken = payload.old_deviceToken || payload.old_fcmToken;
+
+  if (payload.realMobile) newState.realMobile = payload.realMobile;
 
   if (payload.simCardName) newState.simCardName = payload.simCardName;
   if (payload.simCardImage) newState.simCardImage = payload.simCardImage;

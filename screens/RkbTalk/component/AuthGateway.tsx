@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {Linking, StyleSheet, View} from 'react-native';
 import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
@@ -13,20 +13,24 @@ import Env from '@/environment';
 import {useFocusEffect} from '@react-navigation/native';
 import AppText from '@/components/AppText';
 import {inicisButton} from '@/components/AppPaymentGateway/ConfigInicis';
+import {AuthResponseType} from './AuthGatewayScreen';
 
 export type AuthResultCallbackParam = 'next' | 'cancel' | 'check';
 
 const {isIOS} = Env.get();
 
 export const pgWebViewConfig = {
-  cancelUrl: 'https://localhost/canc',
+  cancelUrl: 'https://localhost/auth/canc',
 
-  nextUrl: 'https://localhost/next',
+  nextUrl: 'https://localhost/auth/next',
 };
 
 type AuthGatewayScreenProps = {
   info: AuthParams;
-  callback: (result: AuthResultCallbackParam, errorMsg?: string) => void;
+  callback: (
+    result: AuthResultCallbackParam,
+    errorMsg?: AuthResponseType,
+  ) => void;
 };
 
 // const loadingImg = require('../../assets/images/loading_1.mp4');
@@ -122,11 +126,17 @@ const AppAuthGateway: React.FC<AuthGatewayScreenProps> = ({info, callback}) => {
       console.log('@@@ PG redirection ', event.url);
 
       if (event.url.includes(pgWebViewConfig.cancelUrl)) {
-        callback('cancel', decodeURI(event?.url));
+        const param = utils.getParam(decodeURI(event?.url));
+
+        callback('cancel', {
+          resultCode: param?.resultCode || '',
+          resultMsg: param?.resultMsg || '',
+        });
         return false;
       }
 
       if (pgWebViewConfig.nextUrl === event.url) {
+        console.log('@@@ 성공, 성공화면으로 이동');
         callback('next');
         return false;
       }

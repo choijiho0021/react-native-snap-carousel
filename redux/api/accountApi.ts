@@ -55,6 +55,7 @@ const toAccount = (
         actDate: item.field_activation_date,
         firstActDate: item.field_first_activation_date,
         mobile: item.field_mobile,
+        realMobile: item.field_real_mobile,
         old_deviceToken: item.field_device_token,
         old_fcmToken: item.field_fcm_token,
         userAccount: item.field_ref_user_account,
@@ -83,6 +84,7 @@ const toAccount = (
           data.field_first_activation_date &&
           data.field_first_activation_date[0].value,
         mobile: data.field_mobile && data.field_mobile[0].value,
+        realMobile: data.field_real_mobile && data.field_real_mobile[0].value,
         old_deviceToken:
           data.field_device_token && data.field_device_token[0].value,
         old_fcmToken: data.field_fcm_token && data.field_fcm_token[0].value,
@@ -104,6 +106,7 @@ const toAccount = (
         actDate: item.attributes.field_activation_date,
         firstActDate: item.attributes.field_first_activation_date,
         mobile: item.attributes.field_mobile,
+        realMobile: item.attributes.field_real_mobile,
         old_deviceToken: item.attributes.field_device_token,
         old_fcmToken: item.attributes.field_fcm_token,
         isPushNotiEnabled: item.attributes.field_is_notification_enabled,
@@ -208,10 +211,15 @@ const getAccount = ({iccid, token}: {iccid?: string; token?: string}) => {
 
   return api.callHttpGet(
     `${api.httpUrl(api.path.rokApi.rokebi.account)}/${iccid}?_format=json`,
-    (rsp) =>
-      rsp.result === 0
+    (rsp) => {
+      const result = toAccount(rsp.objects);
+
+      console.log('@@@@ result : ', result);
+
+      return rsp.result === 0
         ? toAccount(rsp.objects)
-        : api.failure(rsp.result, rsp.error),
+        : api.failure(rsp.result, rsp.error);
+    },
     api.withToken(token, 'json'),
   );
 };

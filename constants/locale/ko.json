@@ -1846,5 +1846,6 @@
 
   "talk": "전화",
   "talk:speaker": "스피커폰",
-  "talk:keypad": "키패드"
+  "talk:keypad": "키패드",
+  "talk:authGateway:title": "실명인증"
 }
