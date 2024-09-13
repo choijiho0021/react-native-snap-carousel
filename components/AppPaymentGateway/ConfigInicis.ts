@@ -92,29 +92,27 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
 };
 
 export const inicisButton = (accountId: string) => {
-  // const mid = 'uangel1'; // 테스트 MID 입니다. 계약한 상점 MID 로 변경 필요
-  const mid = 'INIpayTest';
+  const mid = 'INIiasTest'; // 테스트 MID 입니다. 계약한 상점 MID 로 변경 필요
   const apiKey = 'TGdxb2l3enJDWFRTbTgvREU3MGYwUT09'; // 테스트 MID 에 대한 apiKey
-  const key = 'ItEQKi3rY7uvDS8l';
-
   const timestamp = Date.now();
   const mTxId = `t_${timestamp}_00001111${accountId}`;
-
-  console.log('@@@ mTxId : ', mTxId);
-  const authHash_plainText = mid + mTxId + apiKey;
-  const hash = CryptoJS.SHA256(authHash_plainText).toString();
-
   const reservedMsg = 'isUseToken=Y'; // 결과조회 응답시 개인정보 SEED 암호화 처리 요청
+
+  // 등록가맹점 확인
+  const authHash_plainText = mid + mTxId + apiKey;
+
   const flgFixedUser = 'Y'; // 특정 사용자 고정 사용, 미사용시 N
 
   const userName = '최지호'; // 사용자 이름
-  const userPhone = '01021035031'; // 사용자 전화번호
+  const userPhone = '01021035030'; // 사용자 전화번호
   const userBirth = '19961115'; // 사용자 생년월일
   const reqSvcCd = '01'; // 요청구분코드 ["01":간편인증, "02":전자서명]
 
   const userHash = CryptoJS.SHA256(
     userName + mid + userPhone + mTxId + userBirth + reqSvcCd,
   ).toString();
+
+  const hash = CryptoJS.SHA256(authHash_plainText).toString();
 
   return `<html> 
 <head> 
@@ -203,6 +201,10 @@ export const inicisButton = (accountId: string) => {
 	    	<tr>    
 	    	    <td><h4>authHash</h4></td>
 	    	    <td><input type="text" name="authHash" value="${hash}"></td>
+            </tr>
+	    	<tr>    
+	    	    <td><h4>flgFixedUser</h4></td>
+	    	    <td><input type="text" name="flgFixedUser" value="N"></td>
             </tr> 
 	    	<tr>    
 	    	    <td><h4>reservedMsg</h4></td>
@@ -210,11 +212,11 @@ export const inicisButton = (accountId: string) => {
             </tr>
 	    	<tr>    
                 <td><h4>successUrl</h4></td>
-	    	    <td><input type="text" name="successUrl" value="https://cb58-211-109-10-2.ngrok-free.app/api/v1/pvd/auth/rn"></td>
+	    	    <td><input type="text" name="successUrl" value="http://64.110.75.203/api/v1/pvd/auth/rn/realName"></td>
              </tr>
 	    	<tr>   
 	    	    <td><h4>failUrl</h4></td>
-	    	    <td><input type="text" name="failUrl" value="https://cb58-211-109-10-2.ngrok-free.app/api/v1/pvd/auth/rn"></td>
+	    	    <td><input type="text" name="failUrl" value="http://64.110.75.203/api/v1/pvd/auth/rn/realName"></td>
                 <!-- successUrl/failUrl 은 분리하여도 됩니다. !-->
         	</tr>
 	    	
