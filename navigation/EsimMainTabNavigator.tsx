@@ -276,10 +276,7 @@ function TalkStackComponent() {
   return (
     <TalkStack.Navigator screenOptions={screenOptions}>
       <TalkStack.Screen name="RkbTalk" component={RkbTalk} />
-      <TalkStack.Group
-        screenOptions={{animationEnabled: true, presentation: 'modal'}}>
-        <TalkStack.Screen name="AuthGateway" component={AuthGatewayScreen} />
-      </TalkStack.Group>
+      <TalkStack.Screen name="AuthGateway" component={AuthGatewayScreen} />
     </TalkStack.Navigator>
   );
 }
@@ -431,24 +428,26 @@ const TabNavigator = ({
       <Tab.Screen
         name="TalkStack"
         component={loggedIn ? TalkStackComponent : AuthStack}
-        options={({route}) => ({
-          headerShown: false,
-          tabBarStyle: {
-            display:
-              !!loggedIn &&
-              (getFocusedRouteNameFromRoute(route) || 'Talk') === 'Talk'
-                ? 'flex'
-                : 'none',
-          },
-          tabBarLabel: ({focused}) => tabBarLabel(focused, 'talk'),
-          tabBarIcon: ({focused}) => (
-            <AppIcon
-              focused={focused}
-              name="keyCall"
-              style={styles.tabBarIcon}
-            />
-          ),
-        })}
+        options={({route}) => {
+          return {
+            headerShown: false,
+            tabBarStyle: {
+              display:
+                !!loggedIn &&
+                (getFocusedRouteNameFromRoute(route) || 'RkbTalk') === 'RkbTalk'
+                  ? 'flex'
+                  : 'none',
+            },
+            tabBarLabel: ({focused}) => tabBarLabel(focused, 'talk'),
+            tabBarIcon: ({focused}) => (
+              <AppIcon
+                focused={focused}
+                name="keyCall"
+                style={styles.tabBarIcon}
+              />
+            ),
+          };
+        }}
       />
       <Tab.Screen
         name="MyPageStack"
