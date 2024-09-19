@@ -8,7 +8,7 @@ import {HomeStackParamList} from '@/navigation/navigation';
 
 import i18n from '@/utils/i18n';
 import {PaymentResultCallbackParam} from '@/components/AppPaymentGateway';
-import {
+import account, {
   AccountAction,
   AccountModelState,
   actions as accountActions,
@@ -20,10 +20,7 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import AppAuthGateway from './AuthGateway';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {utils} from '@/utils/utils';
 import AppButton from '@/components/AppButton';
-
-const {isIOS} = Env.get();
 
 type PaymentGatewayScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
@@ -49,14 +46,12 @@ const styles = StyleSheet.create({
   button: {
     height: 52,
     width: 200,
-    paddingVertical: 13,
+    paddingVertical: 11,
     alignItems: 'center',
     borderWidth: 1,
-  },
-  normalBtnTitle: {
-    ...appStyles.normal16Text,
-    textAlign: 'right',
-    width: '100%',
+    borderColor: colors.paleGray4,
+    backgroundColor: colors.clearBlue,
+    borderRadius: 100,
   },
 });
 
@@ -66,9 +61,8 @@ export type AuthResponseType = {
 };
 
 const AuthGatewayScreen: React.FC<AuthGatewayScreenProps> = ({
-  route: {params},
   navigation,
-  account: {iccid, token},
+  account: {iccid, token, mobile},
   actions,
 }) => {
   const [isResult, setIsResult] = useState(false);
@@ -77,22 +71,20 @@ const AuthGatewayScreen: React.FC<AuthGatewayScreenProps> = ({
     resultMsg: '',
     resultCode: '0',
   });
+  const [count, setCount] = useState(0);
 
   const callback = useCallback(
     async (status: PaymentResultCallbackParam, errorMsg?: AuthResponseType) => {
       if (status === 'cancel') {
-        // 실패했을 때
-        // flag 값 변경으로 result 화면에 실패문구랑 같이 다시 시도 버튼 추가하기
+        // 플래그 값 정리
+        setCount((prev) => prev + 1);
         setIsResult(true);
         setIsSuccess(false);
         if (errorMsg) setResultParam(errorMsg);
       } else {
-        // 성공, 모달 닫기, realMobile을 reduxStore account에 저장하기
-        // getAccount 써도되는지 확인하기
-
         actions.account.getAccount({iccid, token});
         setIsSuccess(true);
-        navigation.goBack(); // goBack 하면 어디가는지 확인
+        navigation.goBack();
       }
     },
     [actions.account, iccid, navigation, token],
@@ -108,9 +100,15 @@ const AuthGatewayScreen: React.FC<AuthGatewayScreenProps> = ({
               flex: 1,
               gap: 6,
               alignItems: 'center',
-              justifyContent: 'center',
+              justifyContent: 'space-between',
             }}>
-            <View style={{gap: 6, alignItems: 'center'}}>
+            <View
+              style={{
+                flex: 1,
+                gap: 6,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
               <AppSvgIcon name="bannerWarning20" />
               <AppText
                 style={{
@@ -120,24 +118,35 @@ const AuthGatewayScreen: React.FC<AuthGatewayScreenProps> = ({
                 }}>
                 {resultParam.resultMsg.replaceAll('+', ' ')}
               </AppText>
-              <AppText>{`에러 코드 : ${resultParam.resultCode}`}</AppText>
+              <AppText>
+                {i18n
+                  .t('talk:auth:fail:code')
+                  .replace('%', resultParam.resultCode)}
+              </AppText>
               <AppButton
                 style={styles.button}
-                title={i18n.t('ok')}
+                title={i18n.t('talk:auth:retry')}
+                titleStyle={[appStyles.normal16Text, {color: colors.white}]}
                 type="primary"
-                onPress={() => {}}
+                onPress={() => {
+                  setIsResult(false);
+                }}
               />
+            </View>
+            <View style={{height: 80}}>
+              {count > 1 && <AppText>{i18n.t('talk:auth:fail')}</AppText>}
             </View>
           </View>
         );
       }
     }
-    return <AppAuthGateway info={params} callback={callback} />;
+    return <AppAuthGateway mobile={mobile || ''} callback={callback} />;
   }, [
     callback,
+    count,
     isResult,
     isSuccess,
-    params,
+    mobile,
     resultParam.resultCode,
     resultParam.resultMsg,
   ]);
@@ -145,11 +154,7 @@ const AuthGatewayScreen: React.FC<AuthGatewayScreenProps> = ({
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
       <View style={appStyles.header}>
-        <AppBackButton
-          title={i18n.t('talk:authGateway:title')}
-          disabled={params.isPaid}
-          showIcon={!params.isPaid}
-        />
+        <AppBackButton title={i18n.t('talk:authGateway:title')} />
       </View>
       {renderBody()}
 
@@ -162,7 +167,7 @@ export default connect(
   ({account}: RootState) => ({account}),
   (dispatch) => ({
     actions: {
-      accoune: bindActionCreators(accountActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch),
     },
   }),
 )(AuthGatewayScreen);

@@ -56,28 +56,12 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
   );
   const [speakerPhone, setSpeakerPhone] = useState(false);
   const [rnSession, setRnSession] = useState<RNSessionDescriptionHandler>();
-  const [modal, setModal] = useState(false);
-  const navigation = useNavigation();
-
-  const injected = useRef(false);
-  const ref = useRef<WebView>(null);
 
   const [isSuccessAuth, setIsSuccessAuth] = useState(false);
 
-  const [html, setHtml] = useState(inicisButton(''));
-
   useEffect(() => {
-    if (mobile) setHtml(inicisButton(mobile));
-    if (realMobile) setIsSuccessAuth(true);
+    setIsSuccessAuth((realMobile || '') !== '');
   }, [mobile, realMobile]);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      // 인증된건지 확인, 로그아웃 -> account 에 값 지우는 명령 호출해야함.
-      // console.log('@@@@ account : ', );s
-      setModal(true);
-    }, []),
-  );
 
   // Options for SimpleUser
   useFocusEffect(
@@ -285,19 +269,6 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
     },
     [makeCall, releaseCall],
   );
-
-  const onLoadEnd = useCallback(({nativeEvent: event}) => {
-    if (event.url.startsWith('about') && !injected.current) {
-      setTimeout(() => {
-        ref.current?.injectJavaScript('start_script();');
-        injected.current = true;
-      }, 500);
-    }
-  }, []);
-
-  const reCheck = useCallback(() => {
-    dispatch(accountActions.getAccount({iccid, token}));
-  }, [dispatch, iccid, token]);
 
   const renderBody = useMemo(() => {
     return isSuccessAuth ? (

@@ -35,13 +35,6 @@ type AuthGatewayScreenProps = {
 
 // const loadingImg = require('../../assets/images/loading_1.mp4');
 
-const pgWebViewHtml = (info: AuthParams) => {
-  const pg = info?.AuthRule?.[info.card || info.pay_method] || '';
-
-  console.log('info : ', info);
-  return inicisButton(info);
-};
-
 const styles = StyleSheet.create({
   backgroundVideo: {
     position: 'absolute',
@@ -87,12 +80,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const AppAuthGateway: React.FC<AuthGatewayScreenProps> = ({info, callback}) => {
+const AppAuthGateway: React.FC<AuthGatewayScreenProps> = ({
+  mobile,
+  callback,
+}) => {
   const [loading, setLoading] = useState(true);
 
   const injected = useRef(false);
   const ref = useRef<WebView>(null);
-  const html = useMemo(() => pgWebViewHtml(info), [info]);
+  const html = useMemo(() => inicisButton(mobile), [mobile]);
 
   // 화면 빠져나간 경우도 로딩 취소
 
@@ -135,7 +131,7 @@ const AppAuthGateway: React.FC<AuthGatewayScreenProps> = ({info, callback}) => {
         return false;
       }
 
-      if (pgWebViewConfig.nextUrl === event.url) {
+      if (event.url.includes(pgWebViewConfig.nextUrl)) {
         console.log('@@@ 성공, 성공화면으로 이동');
         callback('next');
         return false;

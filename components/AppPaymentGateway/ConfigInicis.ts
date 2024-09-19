@@ -101,8 +101,8 @@ export const inicisButton = (accountId: string) => {
   // 등록가맹점 확인
   const authHash_plainText = mid + mTxId + apiKey;
 
+  // 테스트용
   const flgFixedUser = 'Y'; // 특정 사용자 고정 사용, 미사용시 N
-
   const userName = '최지호'; // 사용자 이름
   const userPhone = '01021035030'; // 사용자 전화번호
   const userBirth = '19961115'; // 사용자 생년월일
@@ -159,70 +159,24 @@ export const inicisButton = (accountId: string) => {
     <h1 style="margin:50px 0px 50px 0px">통합본인인증 Sample</h1>
 	
     <form name="saForm" method="post" accept-charset="utf-8">
-	
-	    <table>
-	    	<tr>
-                <td><h4>mid</h4></td>
-	    	    <td><input type="text" name="mid" value="${mid}"</td>
-	    	</tr>
-	    	<tr>
-                <td><h4>reqSvcCd</h4></td>
-	    	    <td><input type="text" name="reqSvcCd" value="01"></td>           
-            </tr>
-	    	<tr>  
-	    	    <td><h4>identifier</h4></td>
-	    	    <td><input type="text" name="identifier" value="테스트서명입니다."></td>
-            </tr>
-	    	<tr>   
-	    	    <td><h4>mTxId</h4></td>
-	    	    <td><input type="text" name="mTxId" value="${mTxId}"></td>
-            </tr>
-        <tr>
-	    	<tr>   
-	    	    <td><h4>flgFixedUser</h4></td>
-	    	    <td><input type="text" name="flgFixedUser" value="${flgFixedUser}"></td>
-            </tr>
-        <tr>
-          <td><h4>userName</h4></td>
-          <td><input type="text" name="userName" value="${userName}"></td>
-          </tr>
-        <tr>
-          <td><h4>userPhone</h4></td>
-          <td><input type="text" name="userPhone" value="${userPhone}"></td>
-          </tr>
-        <tr>
-          <td><h4>userBirth</h4></td>
-          <td><input type="text" name="userBirth" value="${userBirth}"></td>
-        </tr>
-        <tr>
-          <td><h4>userHash</h4></td>
-          <td><input type="text" name="userHash" value="${userHash}"></td>
-        </tr> 
-	    	<tr>    
-	    	    <td><h4>authHash</h4></td>
-	    	    <td><input type="text" name="authHash" value="${hash}"></td>
-            </tr>
-	    	<tr>    
-	    	    <td><h4>flgFixedUser</h4></td>
-	    	    <td><input type="text" name="flgFixedUser" value="N"></td>
-            </tr> 
-	    	<tr>    
-	    	    <td><h4>reservedMsg</h4></td>
-	    	    <td><input type="text" name="reservedMsg" value="${reservedMsg}"></td>
-            </tr>
-	    	<tr>    
-                <td><h4>successUrl</h4></td>
-	    	    <td><input type="text" name="successUrl" value="http://64.110.75.203/api/v1/pvd/auth/rn/realName"></td>
-             </tr>
-	    	<tr>   
-	    	    <td><h4>failUrl</h4></td>
-	    	    <td><input type="text" name="failUrl" value="http://64.110.75.203/api/v1/pvd/auth/rn/realName"></td>
-                <!-- successUrl/failUrl 은 분리하여도 됩니다. !-->
-        	</tr>
-	    	
-	    </table>
+	    <input type="hidden" type="text" name="mid" value="${mid}">
+      <input type="hidden" type="text" name="reqSvcCd" value="01">
+      <input type="hidden" type="text" name="identifier" value="테스트서명입니다.">
+      <input type="hidden" type="text" name="mTxId" value="${mTxId}">
+      <input type="hidden" type="text" name="flgFixedUser" value="${flgFixedUser}">
+      <input type="hidden" type="text" name="userName" value="${userName}">
+      <input type="hidden" type="text" name="userPhone" value="${userPhone}">
+      <input type="hidden" type="text" name="userBirth" value="${userBirth}">
+      <input type="hidden" type="text" name="userHash" value="${userHash}">
+      <input type="hidden" type="text" name="authHash" value="${hash}">
+      <input type="hidden" type="text" name="flgFixedUser" value="N">
+      <input type="hidden" type="text" name="reservedMsg" value="${reservedMsg}">
+      <input type="hidden" type="text" name="successUrl" value="http://64.110.75.203/api/v1/pvd/auth/rn">
+      <input type="hidden" type="text" name="failUrl" value="http://64.110.75.203/api/v1/pvd/auth/rn">
     </form>	
 
 </body>
 </html>`;
 };
+
+// TB : 64.110.75.203 , 상용 : ? 환경변수나 secure.json에 넣기
