@@ -2,7 +2,7 @@ import CryptoJS from 'crypto-js';
 import Env from '@/environment';
 import {PaymentParams} from '@/navigation/navigation';
 
-const {payment, isProduction, scheme, apiUrl} = Env.get();
+const {payment, isProduction, scheme, apiUrl, inicisAuthHost} = Env.get();
 
 export const debugScript = isProduction
   ? ''
@@ -19,6 +19,7 @@ export const configInicis = {
   confirmUrl: (pymId: string) =>
     `${scheme}://${apiUrl}/rokebi/payment/inicis?v2`,
   notiUrl: `${scheme}://${apiUrl}/rokebi/payment/inicis?noti`,
+  authUrl: `${scheme}://${inicisAuthHost}/api/v1/pvd/auth/rn`,
   WEBVIEW_ENDPOINT: 'https://mobile.inicis.com/smart/payment/',
   WEBVIEW_ENDPOINT_CERT: 'https://sa.inicis.com/auth',
 };
@@ -171,8 +172,8 @@ export const inicisButton = (accountId: string) => {
       <input type="hidden" type="text" name="authHash" value="${hash}">
       <input type="hidden" type="text" name="flgFixedUser" value="N">
       <input type="hidden" type="text" name="reservedMsg" value="${reservedMsg}">
-      <input type="hidden" type="text" name="successUrl" value="http://64.110.75.203/api/v1/pvd/auth/rn">
-      <input type="hidden" type="text" name="failUrl" value="http://64.110.75.203/api/v1/pvd/auth/rn">
+      <input type="hidden" type="text" name="successUrl" value="${configInicis.authUrl}">
+      <input type="hidden" type="text" name="failUrl" value="${configInicis.authUrl}">
     </form>	
 
 </body>
