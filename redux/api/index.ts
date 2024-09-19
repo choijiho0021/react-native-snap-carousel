@@ -18,6 +18,7 @@ import Api from './api';
 import Country from './country';
 import Utils from './utils';
 import AppVersion from './appVersionApi';
+import TalkApi from './talkApi';
 
 const API = {
   get default() {
@@ -73,6 +74,9 @@ const API = {
   },
   get AppVersion() {
     return AppVersion;
+  },
+  get TalkApi() {
+    return TalkApi;
   },
 };
 

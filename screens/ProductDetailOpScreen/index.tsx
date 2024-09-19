@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   showSearchBar: {
     marginBottom: 48,
     marginHorizontal: 20,
-    height: 43,
+    height: 49,
     alignItems: 'center',
     borderStyle: 'solid',
     borderBottomWidth: 1,
@@ -321,12 +321,11 @@ const ProductDetailOpScreen: React.FC<ProductDetailOpScreenProps> = ({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
         />
-        {searchWord !== '' && (
+        {searchWord !== '' && focused && (
           <Fragment>
             <AppSvgIcon
               style={{marginRight: 6}}
               name="clear"
-              disabled
               onPress={() => setSearchWord('')}
             />
           </Fragment>

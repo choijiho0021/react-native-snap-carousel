@@ -151,9 +151,9 @@ const NotiListItem0 = ({
 
   // type : notiCash, notiData, notiMarketing, notiNotice, notiReceipt
   const getIconName = useCallback((type: string) => {
-    switch (type.split('/')[0]) {
+    const split = type.split('/');
+    switch (split[0]) {
       case notiActions.NOTI_TYPE_PYM:
-      case notiActions.NOTI_TYPE_PROVISION:
         return 'notiReceipt';
 
       case notiActions.NOTI_TYPE_DONATION:
@@ -163,6 +163,10 @@ const NotiListItem0 = ({
 
       case notiActions.NOTI_TYPE_PROMOTION:
         return 'notiMarketing';
+
+      case notiActions.NOTI_TYPE_PROVISION:
+        if (split.includes('ht')) return 'notiData';
+        return 'notiReceipt';
 
       // case notiActions.NOTI_TYPE_ACCOUNT:
       // case notiActions.NOTI_TYPE_URI:
@@ -441,7 +445,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
                 type === notiActions.NOTI_TYPE_ACCOUNT ||
                 type === notiActions.NOTI_TYPE_PUSH ||
                 type === notiActions.NOTI_TYPE_DONATION
-                  ? i18n.t('set:noti')
+                  ? i18n.t('set:notiDetail')
                   : i18n.t('contact:noticeDetail'),
 
               created: moment(created),

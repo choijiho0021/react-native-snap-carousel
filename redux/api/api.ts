@@ -29,6 +29,7 @@ const E_REFUNDED = -1010;
 const E_ALREADY_EXIST = -1011;
 const E_INVALID_PARAMETER = -1016;
 const API_STATUS_PREFAILED = 412;
+const API_STATUS_CONFLICT = 409;
 const API_STATUS_INIT = 0;
 const API_STATUS_TRYING = 1;
 const API_STATUS_DONE = 2;
@@ -139,6 +140,7 @@ const path = {
       lottery: 'rokebi/lottery',
       config: 'rokebi/config',
       noti: 'rokebi/noti',
+      talk: 'rokebi/talk',
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage/quota',
@@ -485,6 +487,7 @@ export default {
   E_REFUNDED,
   E_ALREADY_EXIST,
   API_STATUS_PREFAILED,
+  API_STATUS_CONFLICT,
   API_STATUS_INIT,
   API_STATUS_TRYING,
   API_STATUS_DONE,

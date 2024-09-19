@@ -1,7 +1,15 @@
 import {useFocusEffect} from '@react-navigation/native';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {SafeAreaView, StatusBar, StyleSheet} from 'react-native';
+import {
+  Pressable,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  View,
+} from 'react-native';
+import moment from 'moment-timezone';
 import InCallManager from 'react-native-incall-manager';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {
   Inviter,
   Registerer,
@@ -10,8 +18,16 @@ import {
   UserAgent,
   UserAgentOptions,
 } from 'sip.js';
-import AppText from '@/components/AppText';
+import {isNumber} from 'underscore';
 import AppAlert from '@/components/AppAlert';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import AppText from '@/components/AppText';
+import {colors} from '@/constants/Colors';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {API} from '@/redux/api';
+import i18n from '@/utils/i18n';
+import {useInterval} from '@/utils/useInterval';
+import CallToolTip from './CallToolTip';
 import Keypad, {KeypadRef} from './Keypad';
 
 import {bindActionCreators} from 'redux';
@@ -23,15 +39,121 @@ import {
   actions as accountActions,
 } from '@/redux/modules/account';
 import PhoneCertBox from './component/PhoneCertBox';
+import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
+
+const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 
 const styles = StyleSheet.create({
   body: {
     flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
     backgroundColor: 'white',
   },
   keypad: {
+    justifyContent: 'flex-start',
+  },
+  emergency: {
     flex: 1,
+    textAlign: 'right',
+    fontSize: 16,
+    fontWeight: '600',
+    fontStyle: 'normal',
+    lineHeight: 24,
+    letterSpacing: -0.16,
+    color: colors.clearBlue,
+  },
+  myPoint: {
+    fontSize: 16,
+    lineHeight: 24,
+    letterSpacing: -0.16,
+  },
+  pointBold: {
+    marginLeft: 12,
+    marginRight: 8,
+    color: colors.clearBlue,
+    fontWeight: 'bold',
+  },
+  dest: {
+    height: buttonSize / 2,
+    fontSize: 36,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    lineHeight: buttonSize / 2,
+    letterSpacing: -0.28,
+    color: colors.black,
+    textAlignVertical: 'bottom',
+  },
+  input: {
+    alignItems: 'center',
+    marginHorizontal: 20,
+  },
+  talkBtn: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+  },
+  talkBtnView: {
     justifyContent: 'center',
+    height: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginHorizontal: 92,
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+  },
+  timer: {
+    height: 22,
+    fontSize: 14,
+    fontWeight: '500',
+    fontStyle: 'normal',
+    lineHeight: 22,
+    letterSpacing: 0,
+    textAlign: 'center',
+    color: colors.clearBlue,
+    marginTop: 24,
+  },
+  connecting: {
+    color: colors.warmGrey,
+    fontSize: 16,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    lineHeight: 40,
+    height: 40,
+    marginTop: 24,
+    letterSpacing: -0.16,
+    textAlign: 'center',
+  },
+  topView: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 8,
+    height: 40,
+    alignItems: 'center',
+  },
+  topRow: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginHorizontal: 20,
+  },
+  flagIcon: {
+    width: 9.4,
+    alignContent: 'flex-end',
+    justifyContent: 'flex-end',
+  },
+  nation: {
+    marginLeft: 6,
+    justifyContent: 'flex-start',
+    color: colors.black,
+    textAlign: 'center',
+  },
+  connectedView: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
@@ -53,7 +175,18 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
     SessionState.Initial,
   );
   const [speakerPhone, setSpeakerPhone] = useState(false);
-  const [rnSession, setRnSession] = useState<RNSessionDescriptionHandler>();
+  const [dtmfSession, setDtmfSession] = useState<Session>();
+  const [duration, setDuration] = useState(1);
+  const [maxTime, setMaxTime] = useState<number>();
+  const [time, setTime] = useState<string>('');
+  const [point, setPoint] = useState<number>(0);
+  const [digit, setDigit] = useState('');
+  const min = useMemo(() => {
+    const checkRemain = (maxTime || 0) - duration;
+    return maxTime
+      ? Math.floor((checkRemain <= 0 ? 0 : checkRemain) / 60)
+      : undefined;
+  }, [duration, maxTime]);
 
   const [isSuccessAuth, setIsSuccessAuth] = useState(false);
 
@@ -61,43 +194,102 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
     setIsSuccessAuth((realMobile || '') !== '');
   }, [mobile, realMobile]);
 
-  // Options for SimpleUser
-  useFocusEffect(
-    React.useCallback(() => {
-      const transportOptions = {
-        server: 'wss://talk.rokebi.com:8089/ws',
-      };
-      const uri = UserAgent.makeURI('sip:07079190190@talk.rokebi.com');
-      const userAgentOptions: UserAgentOptions = {
-        authorizationPassword: 'ua123123',
-        authorizationUsername: '07079190190',
-        transportOptions,
-        uri,
-        sessionDescriptionHandlerFactory: (session, options) => {
-          const s = new RNSessionDescriptionHandler(session, options);
-          setRnSession(s);
-          return s;
-        },
-        sessionDescriptionHandlerFactoryOptions: {
-          iceServers: [{urls: 'stun:talk.rokebi.com:3478'}],
-          iceGatheringTimeout: 3,
-        },
-      };
-      const ua = new UserAgent(userAgentOptions);
-      const registerer = new Registerer(ua);
-      ua.start().then(() => {
-        console.log('@@@ register');
-        registerer.register();
-      });
-      setUserAgent(ua);
-
-      return () => {
-        ua.stop().then((state) => {
-          console.log('@@@ UA stopped', state);
-        });
-      };
-    }, []),
+  const {top} = useSafeAreaInsets();
+  const showWarning = useMemo(() => {
+    return (min && min <= 2) || false;
+  }, [min]);
+  const initial = useMemo(
+    () =>
+      !sessionState ||
+      [SessionState.Initial, SessionState.Terminated].includes(sessionState),
+    [sessionState],
   );
+  const calling = useMemo(
+    () => [SessionState.Establishing].includes(sessionState),
+    [sessionState],
+  );
+  const connected = useMemo(
+    () => [SessionState.Established].includes(sessionState),
+    [sessionState],
+  );
+  // const end = useMemo(
+  //   () => [SessionState.Terminated].includes(sessionState),
+  //   [sessionState],
+  // );
+
+  // 국가번호
+  // api로 데이터 가져오도록 변경 필요
+  // 영어, 한국어 국가명 필요
+  const splitCC = useMemo(
+    () =>
+      ['82', '20'].includes(digit?.slice(0, 2))
+        ? [digit?.slice(0, 2), digit?.slice(2)]
+        : [],
+    [digit],
+  );
+
+  const printCCInfo = useMemo(
+    () => splitCC?.length > 0 && (initial || calling),
+    [calling, initial, splitCC?.length],
+  );
+
+  useEffect(() => {
+    API.TalkApi.getTalkPoint({mobile: '01059119737'}).then((rsp) => {
+      console.log('@@@ point', rsp);
+      if (rsp?.result === 0) {
+        setPoint(rsp?.objects?.tpnt);
+      }
+    });
+  }, []);
+
+  const getMaxCallTime = useCallback(() => {
+    API.TalkApi.getChannelInfo({mobile: '01059119737'}).then((rsp) => {
+      if (rsp?.result === 0) {
+        const m =
+          rsp?.objects?.channel?.variable?.MAX_CALL_TIME?.match(/^[^:]+/);
+
+        console.log('@@@ max call time', m);
+        if (m?.length > 0) setMaxTime(Number(m[0]) / 1000);
+      }
+      // console.log('@@@ max call time', rsp);
+    });
+  }, []);
+
+  const makeSeconds = useCallback((num: number) => {
+    return (num < 10 ? '0' : '') + num;
+  }, []);
+
+  const limit = useCallback(
+    (t: number) => {
+      if (t < 61) {
+        setTime(`00:${makeSeconds(t)}`);
+      } else {
+        const mins = Math.floor(t / 60);
+        const secs = t - mins * 60;
+
+        setTime(`${makeSeconds(mins)}:${makeSeconds(secs)}`);
+      }
+    },
+    [makeSeconds],
+  );
+
+  useInterval(
+    () => {
+      if (sessionState === SessionState.Established) {
+        setDuration((prev) => prev + 1);
+        limit(duration);
+      }
+    },
+    sessionState === SessionState.Established ? 1000 : null,
+    // maxTime - duration >= 0 ? 1000 : null,
+  );
+
+  useEffect(() => {
+    if (inviter && maxTime && maxTime - duration < 0) {
+      inviter?.bye();
+      setSessionState(inviter?.state);
+    }
+  }, [duration, inviter, maxTime]);
 
   const setupRemoteMedia = useCallback((session: Session) => {
     /*
@@ -112,11 +304,15 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
       });
       */
 
+    setDtmfSession(session);
     console.log('@@@ setup');
   }, []);
 
   const cleanupMedia = useCallback(() => {
     console.log('@@@ cleanup');
+    setDuration(1);
+    setMaxTime();
+    setTime('');
   }, []);
 
   const makeCall = useCallback(() => {
@@ -139,40 +335,8 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
             },
           });
 
-          /*
-          inv.sessionDescriptionHandler?.peerConnectionDelegate({
-            onconnectionstatechange: (event) => {
-              console.log('@@@ connection state change', event);
-            },
-            ondatachannel: (event) => {
-              console.log('@@@ data channel', event);
-            },
-            onicecandidate: (event) => {
-              console.log('@@@ ice candidate', event);
-            },
-            onicecandidateerror: (event) => {
-              console.log('@@@ ice candidate error', event);
-            },
-            oniceconnectionstatechange: (event) => {
-              console.log('@@@ ice connection state change', event);
-            },
-            onicegatheringstatechange: (event) => {
-              console.log('@@@ ice gathering state change', event);
-            },
-            onnegotiationneeded: (event) => {
-              console.log('@@@ negotiation needed', event);
-            },
-            onsignalingstatechange: (event) => {
-              console.log('@@@ signaling state change', event);
-            },
-            ontrack: (event) => {
-              console.log('@@@ track', event);
-            },
-          });
-          */
-
           inv.stateChange.addListener((state: SessionState) => {
-            console.log(`Session state changed to ${state}`);
+            console.log(`@@@ inviter session state changed to ${state}`);
 
             setSessionState(state);
 
@@ -194,8 +358,34 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
             }
           });
 
-          await inv.invite();
-          setInviter(inv);
+          inv.invite().then(() => {
+            const {sessionDescriptionHandler} = inv;
+
+            if (sessionDescriptionHandler) {
+              sessionDescriptionHandler.peerConnectionDelegate = {
+                onconnectionstatechange: (state) => {
+                  console.log('@@@ conn state changed', state, inv.state);
+                  if (inv.state === SessionState.Established) {
+                    switch (state) {
+                      case 'disconnected':
+                      case 'failed':
+                      case 'closed':
+                      case 'completed':
+                        cleanupMedia();
+                        inv.bye();
+                        break;
+                      case 'connecting':
+                        getMaxCallTime();
+                        break;
+                      default:
+                        break;
+                    }
+                  }
+                },
+              };
+            }
+            setInviter(inv);
+          });
         })
         .catch((err) => {
           AppAlert.error(`Failed to make call:${err}`);
@@ -205,7 +395,7 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
       AppAlert.error('User agent not found', '');
       console.log('@@@ user agent not found');
     }
-  }, [cleanupMedia, setupRemoteMedia, userAgent]);
+  }, [cleanupMedia, getMaxCallTime, setupRemoteMedia, userAgent]);
 
   const releaseCall = useCallback(() => {
     if (inviter) {
@@ -228,26 +418,12 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
           console.log('unknown state');
           break;
       }
+      setSessionState(inviter.state);
     }
   }, [inviter]);
 
-  useEffect(() => {
-    if (rnSession)
-      rnSession?._eventEmitter.on('onconnectionstatechange', (e) => {
-        console.log('onconnectionstatechange: ', e);
-        switch (e) {
-          case 'disconnected':
-          case 'failed':
-            releaseCall();
-            break;
-          default:
-            break;
-        }
-      });
-  }, [releaseCall, rnSession]);
-
   const onPressKeypad = useCallback(
-    (k) => {
+    (k: string, d?: string) => {
       switch (k) {
         case 'call':
           makeCall();
@@ -261,37 +437,230 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
             return !prev;
           });
           break;
+        case 'keypad':
+          const opt = {
+            requestOptions: {
+              body: {
+                contentDisposition: 'render',
+                contentType: 'application/dtmf-relay',
+                content: `Signal=${d}\r\nDuration=1000`,
+              },
+            },
+          };
+
+          dtmfSession?.info(opt);
+          console.log('@@@ send dtmf', d);
+          break;
         default:
           break;
       }
     },
-    [makeCall, releaseCall],
+    [dtmfSession, makeCall, releaseCall],
   );
+
+  const talkPointBtn = useCallback(() => {
+    return (
+      <>
+        <Pressable style={styles.talkBtn}>
+          <View style={styles.talkBtnView}>
+            <AppSvgIcon
+              key="talkPoint"
+              name="talkPoint"
+              style={{marginRight: 6}}
+            />
+            <AppText style={styles.myPoint}>{i18n.t('talk:mypoint')}</AppText>
+            <AppText style={[styles.myPoint, styles.pointBold]}>
+              {`${point}P`}
+            </AppText>
+            <AppSvgIcon key="rightArrow10" name="rightArrow10" />
+          </View>
+        </Pressable>
+        <View style={{flex: 1}} />
+      </>
+    );
+  }, [point]);
+
+  const info = useCallback(() => {
+    if (initial) return talkPointBtn();
+    if (connected) return <AppText style={styles.timer}>{time}</AppText>;
+    return (
+      <AppText style={styles.connecting}>{i18n.t('talk:connecting')}</AppText>
+    );
+  }, [connected, initial, talkPointBtn, time]);
 
   const renderBody = useMemo(() => {
     return isSuccessAuth ? (
       <>
-        <AppText
-          style={{
-            marginLeft: 10,
-          }}>{`test. current realMobile : ${realMobile}`}</AppText>
-        <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
+        <View style={styles.topView}>
+          <View style={styles.topRow}>
+            <View style={{flex: 1}} />
+            <AppText
+              style={{
+                marginLeft: 10,
+              }}>{`test. current realMobile : ${realMobile}`}</AppText>
+            <AppText
+              style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
 
-        <Keypad
-          style={styles.keypad}
-          keypadRef={keypadRef}
-          onPress={onPressKeypad}
-          state={sessionState}
-        />
+            {printCCInfo && (
+              <>
+                <AppSvgIcon style={styles.flagIcon} name="KR" />
+                <AppText style={[styles.emergency, styles.nation]}>
+                  대한민국
+                </AppText>
+              </>
+            )}
+            <AppText style={styles.emergency}>
+              {initial ? i18n.t('talk:emergencyCall') : ''}
+            </AppText>
+          </View>
+        </View>
+        {printCCInfo && (
+          <AppText style={{textAlign: 'center', color: colors.warmGrey}}>
+            {i18n.t(`talk:localTime`, {
+              time: moment()
+                .tz(moment.tz.zonesForCountry('KR')[0])
+                .format('HH:mm'),
+            })}
+          </AppText>
+        )}
+        <CallToolTip text="" icon="bell" />
+        {connected && (
+          <View style={styles.connectedView}>
+            {showWarning && (
+              <AppSvgIcon
+                style={{justifyContent: 'center', alignItems: 'center'}}
+                name="callWarning"
+              />
+            )}
+            <AppText
+              style={[
+                {
+                  textAlign: 'center',
+                  color: colors.warmGrey,
+                },
+                showWarning && {color: colors.redError, marginLeft: 6},
+              ]}>
+              {maxTime && isNumber(min || 0)
+                ? i18n.t(`talk:remain`, {
+                    min,
+                  })
+                : ''}
+            </AppText>
+          </View>
+        )}
+
+        {/* <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
+    <AppText style={{marginLeft: 10}}>{time}</AppText> */}
+        <View style={[styles.input, {height: 44, marginTop: 16}]}>
+          <AppText style={styles.dest} numberOfLines={1} ellipsizeMode="head">
+            <AppText style={[styles.dest, {color: colors.clearBlue}]}>
+              {splitCC?.length > 0 ? splitCC[0] : ''}
+            </AppText>
+            {splitCC?.length > 0 ? splitCC[1] : digit}
+          </AppText>
+        </View>
+        <View style={{flex: 1}}>{info()}</View>
+        <View>
+          <Keypad
+            style={styles.keypad}
+            keypadRef={keypadRef}
+            onPress={onPressKeypad}
+            onChange={(d) => setDigit(d || '')}
+            state={sessionState}
+            showWarning={showWarning}
+          />
+          <View style={{height: 40}} />
+        </View>
       </>
     ) : (
       <PhoneCertBox />
     );
-  }, [isSuccessAuth, onPressKeypad, realMobile, sessionState]);
+  }, [
+    connected,
+    digit,
+    info,
+    initial,
+    isSuccessAuth,
+    maxTime,
+    min,
+    onPressKeypad,
+    printCCInfo,
+    realMobile,
+    sessionState,
+    showWarning,
+    splitCC,
+  ]);
+
+  // Options for SimpleUser
+  // TODO
+  // 1: register 상태 확인하기. register 실패한 경우 AOR이 여러개 생겨서 호가 안됨
+  // register 실패하면 deactivate
+  // AOR 개수 확인
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const transportOptions = {
+        server: 'wss://talk.rokebi.com:8089/ws',
+      };
+      const uri = UserAgent.makeURI('sip:01059119737@talk.rokebi.com');
+      const userAgentOptions: UserAgentOptions = {
+        authorizationPassword: '000000', // 000000
+        authorizationUsername: '01059119737',
+        transportOptions,
+        uri,
+        sessionDescriptionHandlerFactory: (session, options) => {
+          return new RNSessionDescriptionHandler(session, options);
+        },
+        sessionDescriptionHandlerFactoryOptions: {
+          iceServers: [{urls: 'stun:talk.rokebi.com:3478'}],
+          iceGatheringTimeout: 3,
+        },
+      };
+      const ua = new UserAgent(userAgentOptions);
+      ua.delegate = {
+        onInvite: () => {
+          console.log('@@@ recv invite');
+        },
+        onMessage: (message) => {
+          console.log('@@@ recv message');
+          console.log('Received a SIP MESSAGE:', message);
+
+          // Extract the body of the SIP MESSAGE
+          const {body} = message;
+
+          // Process the received message
+          if (body) {
+            console.log('Message Content:', body);
+          }
+          // Automatically respond with a 200 OK
+          message.accept();
+        },
+      };
+
+      const registerer = new Registerer(ua);
+      ua.start().then(() => {
+        console.log('@@@ register');
+        registerer.register();
+      });
+      setUserAgent(ua);
+
+      return () => {
+        ua.stop().then((state) => {
+          console.log('@@@ UA stopped', state);
+        });
+      };
+    }, []),
+  );
 
   return (
     <>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar
+        backgroundColor={showWarning ? colors.redError : colors.white}
+        barStyle="dark-content" // default
+      />
+      {showWarning && (
+        <View style={{backgroundColor: colors.redError, height: top}} />
+      )}
       <SafeAreaView
         style={[
           styles.body,

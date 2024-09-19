@@ -133,8 +133,6 @@ const styles = StyleSheet.create({
   secondaryButton: {
     flex: 1,
     height: 52,
-    borderColor: colors.lightGrey,
-    borderTopWidth: 1,
     color: colors.white,
   },
   secondaryButtonText: {
@@ -527,7 +525,13 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         <AppButton
           style={[
             styles.secondaryButton,
-            {backgroundColor: isValidation ? colors.white : colors.clearBlue},
+            isValidation
+              ? {
+                  backgroundColor: colors.white,
+                  borderTopColor: colors.lightGrey,
+                  borderTopWidth: 1,
+                }
+              : {backgroundColor: colors.clearBlue},
           ]}
           type="secondary"
           title={i18n.t('his:receipt')}

@@ -680,7 +680,8 @@ export const appStyles = StyleSheet.create({
     height: 52,
     backgroundColor: colors.clearBlue,
     marginHorizontal: 20,
-    marginTop: 32,
+    marginBottom: 20,
+    marginTop: 16,
   },
   medium18: {
     //        fontFamily: "AppleSDGothicNeo",

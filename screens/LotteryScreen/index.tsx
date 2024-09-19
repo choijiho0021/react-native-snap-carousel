@@ -4,6 +4,7 @@ import {
   AppState,
   Image,
   ImageBackground,
+  Linking,
   Platform,
   Pressable,
   SafeAreaView,
@@ -44,7 +45,9 @@ import RenderBeforeLottery from './component/RenderBeforeLottery';
 import RenderLoadingLottery from './component/RenderLoadingLottery';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppSnackBar from '@/components/AppSnackBar';
-import {firebase, getAnalytics} from '@react-native-firebase/analytics';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -176,6 +179,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [showSnackbar, setShowSnackbar] = useState('');
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
   const [isGetResult, setIsGetResult] = useState(false); // 모달창 뜨고 쿠폰함 바로가기 보여주기용
+  const [disableBtn, setDisableBtn] = useState(false); // 모달 결과 출력 전까지 버튼 금지
 
   const {type} = route?.params;
 
@@ -254,53 +258,70 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     setShowShareModal(true);
   }, []);
 
+  const shareInsta = useCallback((uri?: string) => {
+    if (uri) {
+      const shareOptions = {
+        backgroundImage: uri,
+        backgroundBottomColor: colors.black,
+        backgroundTopColor: colors.black,
+        social: Share.Social.INSTAGRAM_STORIES,
+        appId: 'fb147522690488197',
+      };
+      Share.shareSingle(shareOptions).then((rsp) => {
+        if (rsp?.success && rsp?.message.includes('instagram'))
+          logAnalytics('instagram_share_success');
+      });
+    } else {
+      console.log('@@@  empty uri');
+    }
+  }, []);
+
   const shareInstaStory = useCallback(async () => {
     try {
       const uri = await ref.current?.capture?.();
 
-      if (uri) {
-        const shareOptions = {
-          backgroundImage: uri,
-          backgroundBottomColor: colors.black,
-          backgroundTopColor: colors.black,
-          social: Share.Social.INSTAGRAM_STORIES,
-          appId: 'fb147522690488197',
-        };
-
-        const result = await Share.shareSingle(shareOptions).then((rsp) => {
-          if (rsp?.success && rsp?.message.includes('instagram'))
-            logAnalytics('instagram_share_success');
-        });
-
-        console.log('@@@@ result : ', result);
+      if (isIOS) {
+        shareInsta(uri);
       } else {
-        console.log('@@@  empty uri');
+        const isInstall = await Share.isPackageInstalled(
+          'com.instagram.android',
+        );
+
+        if (!isInstall?.isInstalled)
+          Linking.openURL(
+            'https://play.google.com/store/apps/details?id=com.instagram.android',
+          );
+        else shareInsta(uri);
       }
     } catch (e) {
       console.log('@@@@ share error : ', e);
     }
-  }, []);
+  }, [shareInsta]);
 
-  const buttonList = [
-    {
-      key: 'Img',
-      onClick: () => {
-        saveToGallery();
+  const buttonList = useMemo(
+    () => [
+      {
+        key: 'Img',
+        onClick: () => {
+          saveToGallery();
+        },
       },
-    },
-    {
-      key: 'Sns',
-      onClick: () => {
-        onShare();
+      {
+        key: 'Sns',
+        onClick: () => {
+          onShare();
+        },
       },
-    },
-    {
-      key: 'Story',
-      onClick: () => {
-        shareInstaStory();
+      {
+        key: 'Story',
+        onClick: () => {
+          shareInstaStory();
+        },
       },
-    },
-  ];
+    ],
+    [onShare, saveToGallery, shareInstaStory],
+  );
+
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (['inactive', 'background'].includes(nextAppState)) {
@@ -322,6 +343,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       token,
       prompt: 'lottery',
     }).then((resp) => {
+      setDisableBtn(true);
       const couponObj = resp.objects[0]?.coupon;
 
       if (resp.result === 0) {
@@ -345,7 +367,8 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           action.account.checkLottery({iccid, token, prompt: 'check'});
           setIsGetResult(true);
           setShowCouponModal(true);
-        }, 3000);
+          setDisableBtn(false);
+        }, 2000);
       } else {
         // 실패했을 땐 어떻게 해야할 지??
       }
@@ -465,8 +488,10 @@ const LotteryScreen: React.FC<LotteryProps> = ({
                 i18n.t(`esim:lottery:share${r.key}`),
                 `btnShare${r.key}`,
                 () => {
-                  logAnalytics(`${i18n.t(`esim:lottery:event${r.key}`)}_try`);
-                  r.onClick();
+                  if (!disableBtn) {
+                    logAnalytics(`${i18n.t(`esim:lottery:event${r.key}`)}_try`);
+                    r.onClick();
+                  }
                 },
               )}
               {idx !== 2 && <View style={styles.dividerSmall} />}
@@ -491,16 +516,14 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       </View>
     );
   }, [
+    buttonList,
     fortune?.text,
     isGetResult,
     navigation,
-    onShare,
     phase?.count,
     renderShareButton,
     renderTitleAndPhase,
-    saveToGallery,
     screenNum,
-    shareInstaStory,
   ]);
 
   const renderBody = useCallback(() => {

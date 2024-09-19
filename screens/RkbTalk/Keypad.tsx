@@ -1,23 +1,20 @@
+import {useFocusEffect} from '@react-navigation/native';
+import Lottie from 'lottie-react-native';
 import React, {memo, useCallback, useEffect, useState} from 'react';
 import {
   Pressable,
-  StyleSheet,
-  View,
-  Text,
-  ViewStyle,
   StyleProp,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
 } from 'react-native';
 import {SessionState} from 'sip.js';
-import {useFocusEffect} from '@react-navigation/native';
+import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 import {colors} from '@/constants/Colors';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
-import i18n from '@/utils/i18n';
-import AppText from '@/components/AppText';
-import CallAction from './CallAction';
-import {appStyles} from '@/constants/Styles';
 
-const buttonSize = isDeviceSize('medium', true) ? 70 : 80;
+const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 console.log('@@@ buton size', buttonSize, windowWidth);
 
 const styles = StyleSheet.create({
@@ -28,35 +25,25 @@ const styles = StyleSheet.create({
   key: {
     width: buttonSize,
     height: buttonSize,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: colors.whiteFive,
+    borderRadius: buttonSize / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: buttonSize / 2,
-    marginBottom: 20,
+    marginBottom: 12,
   },
   keyText: {
     fontSize: 30,
     fontWeight: 'bold',
     fontStyle: 'normal',
-    letterSpacing: 0.49,
+    lineHeight: 36,
+    letterSpacing: -0.6,
     textAlign: 'center',
     color: colors.black,
   },
-  dest: {
-    height: buttonSize / 2,
-    fontSize: 36,
-    fontWeight: 'bold',
+  textCallHist: {
+    fontSize: 16,
     fontStyle: 'normal',
-    lineHeight: buttonSize / 2,
-    letterSpacing: -0.28,
+    lineHeight: 24,
     color: colors.black,
-  },
-  input: {
-    marginBottom: isDeviceSize('medium') ? 66 : 23,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   empty: {
     width: buttonSize,
@@ -80,13 +67,19 @@ const styles = StyleSheet.create({
   keyButtonRow: {
     width: '100%',
     paddingHorizontal: 50,
-    marginBottom: 50,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
 });
 
 const keys = [
+  ['1', '2', '3'],
+  ['4', '5', '6'],
+  ['7', '8', '9'],
+  ['keyNation', '0', 'keyDel'],
+];
+
+const callKeys = [
   ['1', '2', '3'],
   ['4', '5', '6'],
   ['7', '8', '9'],
@@ -107,16 +100,31 @@ export type KeypadRef = {
 type KeyType = 'call' | 'hangup' | 'speaker' | 'keypad';
 
 type KeypadProps = {
-  onPress?: (k: KeyType) => void;
+  onPress?: (k: KeyType, d?: string) => void;
+  onChange: (d?: string) => void;
   style: StyleProp<ViewStyle>;
   keypadRef?: React.MutableRefObject<KeypadRef | null>;
   state?: SessionState;
+  showWarning: boolean;
 };
 
-const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
+const Keypad: React.FC<KeypadProps> = ({
+  keypadRef,
+  style,
+  onPress,
+  onChange,
+  state,
+  showWarning = false,
+}) => {
   const [dest, setDest] = useState('');
   const [dtmf, setDtmf] = useState('');
-  const [showKeypad, setShowKeypad] = useState(false);
+  const [showKeypad, setShowKeypad] = useState(true);
+  const [pressed, setPressed] = useState<string>();
+  const [prsDigit, setPrsDigit] = useState<string>();
+
+  useEffect(() => {
+    onChange(showKeypad ? dtmf : dest);
+  }, [dest, dtmf, onChange, showKeypad]);
 
   useEffect(() => {
     if (keypadRef) {
@@ -132,22 +140,28 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
         <AppSvgIcon
           key={key}
           name={key}
+          focused={key === pressed}
           style={styles.key}
           onPress={() => {
+            setPressed((prev) => (prev === key ? undefined : key));
             if (key === 'keypad') setShowKeypad((prev) => !prev);
             else onPress?.(key);
           }}
         />
-        <AppText>{i18n.t(`talk:${key}`)}</AppText>
       </View>
     ),
-    [onPress],
+    [onPress, pressed],
   );
 
+  // dtmf는 keypad를 닫았다가 다시 열 경우에도 이전 이력 남아있어야 하는지 확인 필요
   const closeKeypad = useCallback(() => {
     setShowKeypad(false);
-    setDtmf('');
+    setPressed('');
   }, []);
+
+  useEffect(() => {
+    if (state === SessionState.Terminated) closeKeypad();
+  }, [closeKeypad, state]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -157,6 +171,13 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
 
   const renderKey = useCallback(
     (st?: SessionState) => {
+      const calling = ![
+        SessionState.Established,
+        SessionState.Terminated,
+      ].includes(st);
+
+      const connected = [SessionState.Established].includes(st);
+
       if (
         !st ||
         st === SessionState.Initial ||
@@ -164,39 +185,87 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
         (showKeypad &&
           [SessionState.Established, SessionState.Establishing].includes(st))
       ) {
+        // 기본 화면
         return (
           <>
-            {keys.map((row, i) => (
+            {(showKeypad ? callKeys : keys).map((row, i) => (
               <View style={styles.row} key={i}>
-                {row.map((d) => (
-                  <Pressable
-                    style={styles.key}
-                    key={d}
-                    onPress={() =>
-                      showKeypad
-                        ? setDtmf((prev) => prev + d)
-                        : setDest((prev) => prev + d)
-                    }>
-                    <Text style={styles.keyText}>{d}</Text>
-                  </Pressable>
-                ))}
+                {row.map((d) => {
+                  switch (d) {
+                    case 'keyNation':
+                      return <AppSvgIcon key={d} name={d} style={styles.key} />;
+                    case 'keyDel':
+                      return (
+                        <AppSvgIcon
+                          key={d}
+                          name={d}
+                          style={styles.key}
+                          onPress={() =>
+                            setDest((prev) =>
+                              prev.length > 0
+                                ? prev.substring(0, prev.length - 1)
+                                : prev,
+                            )
+                          }
+                          onLongPress={() => setDest('')}
+                        />
+                      );
+                    default:
+                      return (
+                        <Pressable
+                          style={[
+                            styles.key,
+                            d === prsDigit && {
+                              backgroundColor: colors.backGrey,
+                            },
+                          ]}
+                          key={d}
+                          onPressIn={() => setPrsDigit(d)}
+                          onPressOut={() => setPrsDigit('')}
+                          onPress={() => {
+                            if (showKeypad) {
+                              setDtmf((prev) => prev + d);
+                              onPress?.('keypad', d);
+                            } else setDest((prev) => prev + d);
+                          }}>
+                          <Text style={styles.keyText}>{d}</Text>
+                        </Pressable>
+                      );
+                  }
+                })}
               </View>
             ))}
             <View style={styles.row}>
-              <View style={styles.empty} />
+              {showKeypad ? (
+                <View style={styles.key} />
+              ) : (
+                <Pressable
+                  style={[styles.key, {marginBottom: 0}]}
+                  key="contacts"
+                  onPress={() => {}}>
+                  <Text style={styles.textCallHist}>연락처</Text>
+                </Pressable>
+              )}
               <AppSvgIcon
                 key="call"
                 name={showKeypad ? 'keyHangup' : 'keyCall'}
-                style={[
-                  styles.call,
-                  {backgroundColor: showKeypad ? colors.tomato : colors.green},
-                ]}
+                style={styles.call}
                 onPress={() => {
                   onPress?.(showKeypad ? 'hangup' : 'call');
                   closeKeypad();
                 }}
               />
-              {showKeypad ? (
+              <Pressable
+                style={[styles.key, {marginBottom: 0}]}
+                key="hist"
+                onPress={() => {
+                  if (showKeypad) closeKeypad();
+                }}>
+                <Text style={styles.textCallHist}>
+                  {showKeypad ? '닫기' : '통화기록'}
+                </Text>
+              </Pressable>
+              {/* {showKeypad ? (
                 <Pressable
                   style={[
                     styles.empty,
@@ -219,7 +288,7 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
                   }
                   onLongPress={() => setDest('')}
                 />
-              )}
+              )} */}
             </View>
           </>
         );
@@ -228,20 +297,40 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
       // while talking
       return (
         <>
-          <View style={styles.keypad}>
-            <View
-              style={{width: 150, height: 150, backgroundColor: 'yellow'}}
-            />
+          {/* TODO:// 통화 2분이내일 경우 motion적용 필요 */}
+          <View
+            style={[
+              styles.keypad,
+              ((connected && !showWarning) || showKeypad) && {
+                justifyContent: 'flex-end',
+              },
+            ]}>
+            {(calling || showWarning) && (
+              <>
+                <View />
+                <Lottie
+                  style={[
+                    {width: 100, height: 100},
+                    showWarning && {justifyContent: 'center'},
+                  ]}
+                  autoPlay
+                  loop
+                  source={require('@/assets/images/lottie/call_blue.json')}
+                />
+                {showWarning && <View />}
+              </>
+            )}
             <View style={styles.keyButtonRow}>
-              {renderKeyButton('speaker')}
+              {renderKeyButton('mute')}
               {renderKeyButton('keypad')}
+              {renderKeyButton('speaker')}
             </View>
           </View>
           <View style={styles.row}>
             <AppSvgIcon
               key="call"
               name="keyHangup"
-              style={[styles.call, {backgroundColor: colors.tomato}]}
+              style={styles.call}
               onPress={() => {
                 onPress?.('hangup');
                 closeKeypad();
@@ -251,14 +340,14 @@ const Keypad: React.FC<KeypadProps> = ({keypadRef, style, onPress, state}) => {
         </>
       );
     },
-    [closeKeypad, onPress, renderKeyButton, showKeypad],
+    [closeKeypad, onPress, prsDigit, renderKeyButton, showKeypad, showWarning],
   );
 
   return (
     <View style={style}>
-      <View style={styles.input}>
+      {/* <View style={styles.input}>
         <Text style={styles.dest}>{showKeypad ? dtmf : dest}</Text>
-      </View>
+      </View> */}
       {renderKey(state)}
     </View>
   );

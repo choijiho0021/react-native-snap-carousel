@@ -45,6 +45,8 @@ import PromotionCarousel from '@/components/PromotionCarousel';
 import {RkbPromotion} from '@/redux/api/promotionApi';
 
 const {esimGlobal} = Env.get();
+const {width: viewportWidth} = Dimensions.get('window');
+const windowWidth = viewportWidth;
 
 const styles = StyleSheet.create({
   box: {
@@ -212,6 +214,9 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
       subsReload();
       navigation.navigate('EsimStack', {
         screen: 'Esim',
+        params: {
+          actionStr: 'scrollToTop',
+        },
       });
     }
   }, [
@@ -291,7 +296,10 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
 
   const dotLine = useCallback(
     () => (
-      <Svg height="2" width="150%" style={{marginVertical: 23, right: 50}}>
+      <Svg
+        height="2"
+        width={windowWidth - 40}
+        style={{marginVertical: 23, right: 18}}>
         <Line
           x1="0"
           y1="1"

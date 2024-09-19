@@ -153,7 +153,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
         action.info.getInfoList('info');
         navigation.navigate('SimpleText', {
           key: 'noti',
-          title: i18n.t('set:noti'),
+          title: i18n.t('set:notiDetail'),
           bodyTitle: item.notice.title,
           body: item.notice.body,
           nid: item.notice.nid,

@@ -152,27 +152,25 @@ type PymMethodScreenProps = {
 
 const {esimGlobal, impId, cachePrefix} = Env.get();
 const defaultCardList = [
-  '41',
-  '03',
-  '04',
-  '06',
-  '11',
-  '12',
-  '14',
-  '34',
-  '38',
-  '32',
-  '35',
-  '33',
-  '95',
-  '43',
-  '48',
-  '51',
-  '52',
-  '54',
-  '55',
-  '56',
-  '71',
+  ['14', '신한카드'],
+  ['12', '삼성카드'],
+  ['04', '현대카드'],
+  ['06', 'KB국민카드'],
+  ['03', '롯데카드'],
+  ['41', 'NH농협카드'],
+  ['02', '우리카드'],
+  ['01', '하나카드'],
+  ['11', 'BC카드'],
+  ['43', '씨티카드'],
+  ['56', '카카오뱅크'],
+  ['55', '케이뱅크카드'],
+  ['35', '산업카드'],
+  ['51', '수협카드'],
+  ['32', '광주카드'],
+  ['33', '전북카드'],
+  ['48', '신협체크카드'],
+  ['52', '제주카드'],
+  ['71', '우체국체크'],
 ];
 
 const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
@@ -200,16 +198,12 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
         label: v,
         value: `card${k}`,
       })) ||
-      defaultCardList.map((k) => ({
-        label: i18n.t(`pym:card${k}`),
+      defaultCardList.map(([k, v]) => ({
+        label: v,
         value: `card${k}`,
       }))
     );
   }, [product.rule.ccard]);
-
-  const alertErrorGoHome = useCallback(() => {
-    AppAlert.info(i18n.t('cart:systemError'), '', () => navigation.popToTop());
-  }, [navigation]);
 
   const installmentMonthsList = useMemo(
     () =>
@@ -287,10 +281,12 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               mode,
             });
           } else {
+            let text = 'cart:systemError';
             setClickable(true);
             if (resp.result === api.E_RESOURCE_NOT_FOUND) {
-              AppAlert.info(i18n.t('cart:soldOut'));
+              text = 'cart:soldOut';
             } else if (resp.result === api.E_STATUS_EXPIRED) {
+              text = 'cart:unpublishedError';
               // product status is changed.
               const skuList = resp?.message.split(',');
               if (skuList?.length > 0 && cart.cartId) {
@@ -308,13 +304,11 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               }
 
               action.product.getAllProduct(true);
-
-              AppAlert.info(i18n.t('cart:unpublishedError'), '', () =>
-                navigation.popToTop(),
-              );
-            } else {
-              alertErrorGoHome();
+            } else if (resp?.status === api.API_STATUS_CONFLICT) {
+              action.product.getAllProduct(true);
+              text = 'cart:paymentNotMatch';
             }
+            AppAlert.info(i18n.t(text), '', () => navigation.popToTop());
           }
         });
       } else {
@@ -359,7 +353,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       account,
       action.cart,
       action.product,
-      alertErrorGoHome,
       cart.cartId,
       cart?.cartItems,
       cart.pymPrice?.value,

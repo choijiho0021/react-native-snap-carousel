@@ -2,10 +2,13 @@ import React, {memo} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {colors} from '@/constants/Colors';
 import i18n from '@/utils/i18n';
+import Env from '@/environment';
 import {appStyles} from '@/constants/Styles';
 import {Currency} from '@/redux/api/productApi';
 import LabelText from './LabelText';
 import AppText from './AppText';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   price: {
@@ -15,7 +18,11 @@ const styles = StyleSheet.create({
     borderTopColor: colors.black,
   },
   summary: {
+    alignItems: 'center',
     height: 36,
+  },
+  priceTxt: {
+    ...appStyles.bold22Text,
   },
 });
 
@@ -42,8 +49,8 @@ const ChargeSummary = ({
         labelStyle={{...appStyles.bold14Text, color: colors.warmGrey}}
         value={totalPrice}
         color={colors.clearBlue}
-        balanceStyle={appStyles.bold22Text}
-        currencyStyle={appStyles.bold22Text}
+        balanceStyle={[styles.priceTxt, {top: isIOS ? undefined : 2}]}
+        currencyStyle={styles.priceTxt}
       />
       <View style={{flexDirection: 'row'}}>
         <AppText

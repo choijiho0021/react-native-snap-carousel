@@ -309,11 +309,10 @@ const checkCmiData = async (
       imsi: item?.imsi,
       orderId: item?.subsOrderNo || 'noOrderId',
     });
-
     if (result?.code === 0 && objects.length > 0) return objects[0];
   }
   return {
-    status: {statusCd: undefined, endTime: undefined},
+    status: {statusCd: 'E', endTime: undefined},
     usage: {
       quota: undefined,
       used: undefined,
@@ -336,7 +335,7 @@ const checkQuadcellData = async (item: RkbSubscription): Promise<Usage> => {
     if (result?.code === 0 && objects.length > 0) return objects[0];
   }
   return {
-    status: {statusCd: undefined, endTime: undefined},
+    status: {statusCd: 'E', endTime: undefined},
     usage: {
       quota: undefined,
       used: undefined,
@@ -367,7 +366,7 @@ const checkBcData = async (
   }
 
   return {
-    status: {statusCd: undefined, endTime: undefined},
+    status: {statusCd: 'E', endTime: undefined},
     usage: {
       quota: undefined,
       used: undefined,

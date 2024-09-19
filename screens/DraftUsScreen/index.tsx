@@ -37,6 +37,7 @@ import AppAlert from '@/components/AppAlert';
 import api from '@/redux/api/api';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import ScreenHeader from '@/components/ScreenHeader';
+import AppModal from '@/components/AppModal';
 
 const styles = StyleSheet.create({
   container: {
@@ -118,6 +119,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   const [isClickButton, setIsClickButton] = useState(false);
   const [deviceInputType, setDeviceInputType] =
     useState<UsDeviceInputType>('none');
+  const [modal, setModal] = useState('');
 
   const [deviceData, setDeviceData] = useState<DeviceDataType>({
     eid: '',
@@ -176,18 +178,12 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
       })
       .then(async (result) => {
         if (result?.payload?.result !== 0)
-          AppAlert.info(
+          setModal(
             [api.E_INVALID_PARAMETER, api.E_RESOURCE_NOT_FOUND].includes(
               result?.payload?.result,
             )
               ? result?.payload?.desc
               : '알 수 없는 오류로 발권에 실패했습니다.',
-            '',
-            () => {
-              setStep(1);
-              setIsClickButton(false);
-              setChecked(false);
-            },
           );
         else {
           action.order.subsReload({
@@ -342,6 +338,17 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
         hideCancel
       />
       <AppActivityIndicator visible={pending} />
+      <AppModal
+        title={modal}
+        type="info"
+        onOkClose={() => {
+          setStep(1);
+          setIsClickButton(false);
+          setChecked(false);
+          setModal('');
+        }}
+        visible={modal !== ''}
+      />
     </SafeAreaView>
   );
 };
