@@ -1,6 +1,6 @@
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {SafeAreaView, StatusBar, StyleSheet, View} from 'react-native';
+import {SafeAreaView, StatusBar, StyleSheet} from 'react-native';
 import InCallManager from 'react-native-incall-manager';
 import {
   Inviter,
@@ -14,8 +14,6 @@ import AppText from '@/components/AppText';
 import AppAlert from '@/components/AppAlert';
 import Keypad, {KeypadRef} from './Keypad';
 
-import WebView from 'react-native-webview';
-import {inicisButton} from '@/components/AppPaymentGateway/ConfigInicis';
 import {bindActionCreators} from 'redux';
 import {RootState} from '@/redux';
 import {connect, DispatchProp} from 'react-redux';
