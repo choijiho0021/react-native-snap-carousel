@@ -1,11 +1,11 @@
 import {StyleSheet, View} from 'react-native';
 import React, {useCallback} from 'react';
+import LottieView from 'lottie-react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import {appStyles} from '@/constants/Styles';
 import i18n from '@/utils/i18n';
 import AppText from '@/components/AppText';
 import AppIcon from '@/components/AppIcon';
-import LottieView from 'lottie-react-native';
-import LinearGradient from 'react-native-linear-gradient';
 
 const styles = StyleSheet.create({
   motionContainer: {
