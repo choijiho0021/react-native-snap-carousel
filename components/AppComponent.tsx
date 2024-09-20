@@ -23,6 +23,7 @@ import Env from '@/environment';
 import AppNavigator from '@/navigation/AppNavigator';
 import {actions as accountActions} from '@/redux/modules/account';
 import {actions as infoActions} from '@/redux/modules/info';
+import {initLog, actions as logActions} from '@/redux/modules/log';
 import {
   actions as productActions,
   ProductModelState,
@@ -198,7 +199,8 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
   const loadResourcesAsync = useCallback(async () => {
     // clear caches
     dispatch(accountActions.clearCookies());
-
+    // customer log init
+    dispatch(initLog());
     // load product list
     dispatch(productActions.init(false));
 

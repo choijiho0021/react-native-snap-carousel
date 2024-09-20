@@ -11,7 +11,7 @@ import {Currency, CurrencyCode} from './productApi';
 import {urlParamObj} from '@/redux/modules/link';
 import {parseJson} from '@/utils/utils';
 import store from '@/store';
-import {actions as LogActions} from '@/redux/modules/log';
+import {appendLog, actions as LogActions} from '@/redux/modules/log';
 
 const {esimCurrency} = Env.get();
 const dateTimeFmt = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})*$/;
@@ -390,9 +390,7 @@ const extractProdName = (str) => {
 
 export const log = (str: string) => {
   // store.dispatch(ToastActions.push(Toast.NOT_LOADED));
-  store.dispatch(
-    LogActions.append(`$$$${moment().tz('Asia/Seoul').format()} :${str}`),
-  );
+  store.dispatch(appendLog(`$$$${moment().tz('Asia/Seoul').format()} :${str}`));
 };
 
 export default {
