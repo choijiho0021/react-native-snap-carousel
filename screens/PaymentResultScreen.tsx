@@ -151,8 +151,8 @@ type PaymentResultScreenProps = {
 const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   navigation,
   route: {params},
-  account,
-  cart,
+  account: {iccid, token, mobile},
+  cart: {pymReq, purchaseItems, pymPrice, orderId, esimIccid},
   order,
   promotion,
   action,
@@ -169,7 +169,6 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   }, []);
 
   const subsReload = useCallback(() => {
-    const {iccid, token, mobile} = account;
     if (order.subs.length !== 0)
       action.order.getSubs({iccid: iccid!, token: token!});
     if (order.orders.size !== 0 && order.orderList.length !== 0)
@@ -181,28 +180,30 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
         page: 0,
       });
   }, [
-    account,
     action.order,
+    iccid,
+    mobile,
     order.orderList.length,
     order.orders.size,
     order.subs.length,
+    token,
   ]);
 
   const onNavigateScreen = useCallback(() => {
     navigation.popToTop();
-    action.noti.getNotiList({mobile: account.mobile});
+    action.noti.getNotiList({mobile});
     // 캐시 구매 -> 내 계정 화면으로 이동
     if (params?.mode === 'recharge') {
       action.order.subsReload({
-        iccid: account?.iccid!,
-        token: account?.token!,
+        iccid: iccid!,
+        token: token!,
         hidden: false,
       });
       navigation.navigate('MyPageStack', {screen: 'MyPage'});
       // 일반 상품, 충전 상품 -> eSIM 화면 이동
-    } else if (cart.esimIccid) {
+    } else if (esimIccid) {
       // 충전 또는 연장 상품의 경우 충전내역으로 이동
-      const main = order.subs?.find((s) => s.subsIccid === cart.esimIccid);
+      const main = order.subs?.find((s) => s.subsIccid === esimIccid);
 
       if (main)
         navigation.navigate('ChargeHistory', {
@@ -220,16 +221,16 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
       });
     }
   }, [
-    account?.iccid,
-    account.mobile,
-    account?.token,
     action.noti,
     action.order,
-    cart.esimIccid,
+    esimIccid,
+    iccid,
+    mobile,
     navigation,
     order.subs,
     params?.mode,
     subsReload,
+    token,
   ]);
 
   // 결제 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
@@ -271,9 +272,6 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   }, [action.cart, navigation, oldCart?.purchaseItems]);
 
   useEffect(() => {
-    const {pymReq, purchaseItems, pymPrice, orderId} = cart;
-    const {token} = account;
-
     // cart를 비우는게 맞나??
 
     if (purchaseItems.length > 0) {
@@ -281,18 +279,18 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
 
       // 성공했을 때만
       // 카트를 비운다.
-      if (isSuccess) action.cart.makeEmpty({orderId, token});
+      if (isSuccess) action.cart.makeEmpty();
     }
-  }, [account, action.cart, cart, isSuccess]);
+  }, [action.cart, isSuccess, orderId, purchaseItems, pymPrice, pymReq, token]);
 
   useEffect(() => {
     Analytics.trackEvent('Payment', {
       payment: `${params?.mode} Payment${isSuccess ? ' Success' : ' Fail'}`,
     });
-    if (cart?.pymPrice && cart?.pymPrice.value > 0 && isSuccess) {
+    if (pymPrice && pymPrice.value > 0 && isSuccess) {
       analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_payment`);
     }
-  }, [cart?.pymPrice, isSuccess, params?.mode]);
+  }, [isSuccess, params?.mode, pymPrice]);
 
   const dotLine = useCallback(
     () => (

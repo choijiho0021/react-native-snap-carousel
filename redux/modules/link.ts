@@ -38,9 +38,9 @@ const slice = createSlice({
       return initialState;
     },
     update: (state, action) => {
-      const {url, recommender, gift, utmParameters, linkPath, params} =
+      const {linkUrl, recommender, gift, utmParameters, linkPath, params} =
         action.payload || {};
-      state.url = url;
+      state.url = linkUrl;
       state.recommender = recommender;
       state.gift = gift;
       state.utmParameters = utmParameters;

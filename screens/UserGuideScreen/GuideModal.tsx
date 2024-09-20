@@ -2,6 +2,7 @@ import {useNavigation} from '@react-navigation/native';
 import React, {memo, useCallback, useEffect, useState} from 'react';
 import {Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 import {useDispatch} from 'react-redux';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {actions as modalActions} from '@/redux/modules/modal';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
@@ -13,6 +14,7 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import AppButton from '@/components/AppButton';
 import {GuideOption} from './GuideHomeScreen';
 import {API} from '@/redux/api';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({
   row: {
@@ -97,6 +99,11 @@ const styles = StyleSheet.create({
   },
 });
 
+type GuideModalNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'GuideModal'
+>;
+
 const GuideModal = ({
   guideOption,
   isHome = true,
@@ -106,7 +113,7 @@ const GuideModal = ({
 }) => {
   const [localRegProdList, setLocalRegProdList] = useState('');
   const dispatch = useDispatch();
-  const navigation = useNavigation();
+  const navigation = useNavigation<GuideModalNavigationProp>();
   const renderNoticeText = useCallback(
     (idx: number) => (
       <View key={idx} style={[styles.noticeTextContainer, {marginRight: 36}]}>

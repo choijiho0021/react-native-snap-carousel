@@ -272,7 +272,7 @@ type hkRegStatusType =
 const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
   navigation,
   route,
-  account,
+  account: {token},
   action,
 }) => {
   const [activeSlide, setActiveSlide] = useState(0);
@@ -284,7 +284,6 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
   const [showModal, setShowModal] = useState<boolean>(false);
   const [params, setParams] = useState<Object>(route?.params || {});
   const images = useMemo(() => Object.keys(guideImage), []);
-  // const params = useMemo(() => route?.params || {}, [route?.params]);
 
   useCallback(() => {
     return () => {
@@ -328,15 +327,13 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
 
   const updateTag = useCallback(
     (tag: string) => {
-      const {token} = account;
-
       action.order.updateSubsAndOrderTag({
         uuid: params?.uuid,
         tag,
         token: token || '',
       });
     },
-    [account, action.order, params?.uuid],
+    [action.order, params?.uuid, token],
   );
 
   const checkAndUpdateTag = useCallback(async () => {

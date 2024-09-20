@@ -219,18 +219,9 @@ type OrderType = 'latest' | 'old';
 const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   navigation,
   action,
-  account,
+  account: {iccid, token, balance, cashHistory = [], cashExpire, expirePt = 0},
   // pending,
 }) => {
-  const {
-    iccid,
-    token,
-    balance,
-    cashHistory = [],
-    cashExpire,
-    expirePt = 0,
-  } = account;
-
   const [orderType, setOrderType] = useState<OrderType>('latest');
   const [dataFilter, setDataFilter] = useState<string>('A');
   const [showSnackBar, setShowSnackbar] = useState(false);
@@ -663,7 +654,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 
           <Pressable
             style={styles.rechargeBox}
-            onPress={() => navigation.navigate('Recharge')}>
+            onPress={() => navigation.navigate('Recharge', {})}>
             <AppSvgIcon name="cashHistoryPlus" style={{marginRight: 4}} />
             <AppText style={styles.rechargeBoxText}>
               {i18n.t('acc:goRecharge')}

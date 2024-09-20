@@ -211,6 +211,8 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
   account,
   action,
 }) => {
+  const {stat} = promotion || {};
+  const {promo, signupGift, recommenderGift} = stat || {};
   const [showSnackBar, setShowSnackbar] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
@@ -227,9 +229,6 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
       if (account.loggedIn) {
         action.promotion.getPromotionStat();
       }
-
-      // MyScreenStack에서 미로그인 시 RegisterMobile로 보내도록 수정되어 필요없어짐
-      // else {
     }
   }, [account.loggedIn, action.promotion, navigation]);
 
@@ -293,7 +292,6 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
   );
 
   const statBox = useCallback(() => {
-    const {stat} = promotion;
     return (
       <View style={styles.benefitBox}>
         {Object.keys(stat)?.map(
@@ -318,9 +316,7 @@ const InviteScreen: React.FC<InviteScreenProps> = ({
         )}
       </View>
     );
-  }, [promotion]);
-
-  const {promo, signupGift, recommenderGift} = promotion.stat;
+  }, [stat]);
 
   const showPromo = useMemo(
     () => promo && moment().isBetween(moment(promo.from), moment(promo.to)),

@@ -913,9 +913,15 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   const renderHowToCall = useCallback(() => {
     const showHowModal =
       mainSubs?.clMtd &&
-      ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal', 'vtdaily'].includes(
-        mainSubs?.clMtd,
-      );
+      [
+        'ustotal',
+        'usdaily',
+        'ais',
+        'dtac',
+        'mvtotal',
+        'vtdaily',
+        'latotal',
+      ].includes(mainSubs?.clMtd);
     if (showHowModal)
       return (
         <View>

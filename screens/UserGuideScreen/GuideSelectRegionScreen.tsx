@@ -6,7 +6,7 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
 import {colors} from '@/constants/Colors';
 import AppText from '@/components/AppText';
@@ -18,6 +18,8 @@ import GuideModal from './GuideModal';
 import GuideHeader from './GuideHeader';
 import GuideTitle from './GuideTitle';
 import GuideButton from './GuideButton';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const styles = StyleSheet.create({
   container: {
@@ -47,12 +49,17 @@ const styles = StyleSheet.create({
 });
 
 export type GuideRegion = 'korea' | 'local' | 'us';
-export type GuideOption = 'esimReg' | 'checkSetting';
+export type GuideOption = 'esimReg' | 'esimDel' | 'checkSetting';
+
+type GuideSelectRegionScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'GuideSelectRegion'
+>;
 
 const GuideSelectRegionScreen = () => {
   const dispatch = useDispatch();
-  const navigation = useNavigation();
-  const route = useRoute();
+  const navigation = useNavigation<GuideSelectRegionScreenNavigationProp>();
+  const route = useRoute<RouteProp<HomeStackParamList, 'GuideSelectRegion'>>();
   const guideOption: GuideOption = useMemo(
     () => route.params?.guideOption,
     [route.params?.guideOption],
@@ -107,8 +114,8 @@ const GuideSelectRegionScreen = () => {
         {guideOption === 'esimReg' && (
           <View style={{marginVertical: 12}}>
             <GuideButton
-              key={'us'}
-              item={'us'}
+              key="us"
+              item="us"
               onPress={() => {
                 navigation?.navigate('UserGuideStep', {
                   guideOption,

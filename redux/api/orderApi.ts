@@ -272,7 +272,7 @@ const getOrderById = ({
 export type CancelOrderParam = {
   orderId?: number;
   token?: string;
-  reason?: CancelKeywordType;
+  reason?: CancelKeywordType | string;
 };
 
 const cancelOrder = ({orderId, token, reason}: CancelOrderParam) => {

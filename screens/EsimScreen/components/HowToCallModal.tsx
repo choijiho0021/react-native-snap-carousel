@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
 });
 type HowToCallModalProps = {
   visible: boolean;
-  clMtd: string; // "ustotal" | "usdaily" | "ais" | "dtac"  | "mvtotal" | "vndaily" | "vtdaily"
+  clMtd: string; // "ustotal" | "usdaily" | "ais" | "dtac"  | "mvtotal" | "vndaily" | "vtdaily" | "latotal"
   onOkClose: () => void;
 };
 
@@ -378,7 +378,7 @@ const HowToCallModal: React.FC<HowToCallModalProps> = ({
 
         {['ais', 'dtac', 'ustotal'].includes(clMtd) && rednerInternational()}
 
-        {['ais', 'dtac', 'mvtotal', 'vtdaily'].includes(clMtd) &&
+        {['ais', 'dtac', 'mvtotal', 'vtdaily', 'latotal'].includes(clMtd) &&
           renderEtcInfo()}
         <View style={{height: 24, width: '100%'}} />
       </ScrollView>

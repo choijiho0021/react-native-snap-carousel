@@ -40,6 +40,12 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.warmGrey,
   },
+  btnBody2: {
+    ...appStyles.medium16,
+    lineHeight: 24,
+    color: colors.warmGrey,
+    marginLeft: 4,
+  },
 });
 
 const GuideButton = ({
@@ -101,6 +107,14 @@ const GuideButton = ({
             <AppText style={styles.btnBody}>
               {i18n.t(`userGuide:${item}:body`)}
             </AppText>
+            {item === 'checkSetting' && (
+              <View style={{flexDirection: 'row', paddingRight: 20}}>
+                <AppSvgIcon name="greyWarning" style={{top: 4}} />
+                <AppText style={styles.btnBody2}>
+                  {i18n.t(`userGuide:${item}:body2`)}
+                </AppText>
+              </View>
+            )}
           </View>
         )}
       </View>

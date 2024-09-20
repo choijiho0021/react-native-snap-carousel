@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Animated, Easing, StyleSheet, View} from 'react-native';
+import {Animated, Easing, Platform, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -16,6 +16,8 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 import {API} from '@/redux/api';
 import AppSnackBar from '@/components/AppSnackBar';
 import {AccountModelState} from '@/redux/modules/account';
+import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import {checkPhotoPermissionAlert} from '@/utils/utils';
 
 const styles = StyleSheet.create({});
 
@@ -45,6 +47,7 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showSnackBar, setShowSnackbar] = useState(false);
+  const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
 
   const blockAnimation = useRef(false);
   const animatedValue = useRef(new Animated.Value(40)).current;
@@ -88,28 +91,49 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
     [setDeviceData],
   );
 
+  const checkPhotoPermission = useCallback(async () => {
+    if (!hasPhotoPermission) {
+      const permission =
+        Platform.OS === 'ios'
+          ? PERMISSIONS.IOS.PHOTO_LIBRARY
+          : PERMISSIONS.ANDROID.READ_MEDIA_IMAGES;
+      const result = await check(permission);
+
+      setHasPhotoPermission(result === RESULTS.GRANTED);
+      return result === RESULTS.GRANTED;
+    }
+    return true;
+  }, [hasPhotoPermission]);
+
   const onClickDeviceInputBtn = useCallback(
     async (type: UsDeviceInputType) => {
       if (type === 'capture') {
-        if (ImagePicker) {
-          const image = await ImagePicker.openPicker({
-            includeBase64: true,
-            writeTempFile: false,
-            mediaType: 'photo',
-            forceJpb: true,
-            compressImageQuality: 0.1,
-          });
-          setUploadModalVisible(false);
-          setLoading(true);
+        const checkNewPermission = await checkPhotoPermission();
 
-          const formData = new FormData();
-          formData.append('image', {
-            uri: image.path,
-            type: image.mime,
-            name: `App_${account.mobile}.jpg`,
-          });
+        if (checkNewPermission) {
+          // 권한체크 추가
+          if (ImagePicker) {
+            const image = await ImagePicker.openPicker({
+              includeBase64: true,
+              writeTempFile: false,
+              mediaType: 'photo',
+              forceJpb: true,
+              compressImageQuality: 0.1,
+            });
+            setUploadModalVisible(false);
+            setLoading(true);
 
-          await extractFromImage(formData);
+            const formData = new FormData();
+            formData.append('image', {
+              uri: image.path,
+              type: image.mime,
+              name: `App_${account.mobile}.jpg`,
+            });
+
+            await extractFromImage(formData);
+          }
+        } else {
+          checkPhotoPermissionAlert();
         }
 
         setLoading(false);
@@ -118,7 +142,12 @@ const UsDraftStep2: React.FC<UsDraftStep2Props> = ({
       }
       setDeviceInputType(type);
     },
-    [account.mobile, extractFromImage, setDeviceInputType],
+    [
+      account.mobile,
+      checkPhotoPermission,
+      extractFromImage,
+      setDeviceInputType,
+    ],
   );
 
   useEffect(() => {

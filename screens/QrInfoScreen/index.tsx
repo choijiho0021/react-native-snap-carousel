@@ -7,13 +7,13 @@ import {
   Pressable,
   Linking,
 } from 'react-native';
-import {RouteProp, useRoute} from '@react-navigation/native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import Clipboard from '@react-native-community/clipboard';
 import {ScrollView} from 'react-native-gesture-handler';
 import QRCode from 'react-native-qrcode-svg';
 import _ from 'underscore';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import DeviceInfo from 'react-native-device-info';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {colors} from '@/constants/Colors';
 import AppBackButton from '@/components/AppBackButton';
 import i18n from '@/utils/i18n';
@@ -30,6 +30,8 @@ import AppIcon from '@/components/AppIcon';
 import {utils} from '@/utils/utils';
 import AppModal from '@/components/AppModal';
 import AppTabHeader from '@/components/AppTabHeader';
+import OneTouchGuideModal from './OneTouchGuideModal';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const {isIOS} = Env.get();
 
@@ -155,12 +157,29 @@ const styles = StyleSheet.create({
     color: colors.white,
     textAlign: 'center',
   },
+  oneTouchGuideTxt: {
+    ...appStyles.medium16,
+    lineHeight: 24,
+    letterSpacing: -0.16,
+    color: colors.warmGrey,
+    textAlign: 'center',
+    marginHorizontal: 6,
+  },
   oneTouchReg: {
     marginTop: 24,
     backgroundColor: colors.clearBlue,
     paddingVertical: 8,
     borderRadius: 3,
     justifyContent: 'center',
+  },
+  oneTouchGuideBox: {
+    marginTop: 12,
+    backgroundColor: colors.white,
+    paddingVertical: 8,
+    borderRadius: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   oneTouchInfo: {
     flexDirection: 'row',
@@ -204,6 +223,11 @@ const styles = StyleSheet.create({
     height: 50,
     paddingHorizontal: 20,
   },
+  btnCnter: {
+    width: 40,
+    height: 40,
+    marginHorizontal: 18,
+  },
 });
 
 type ParamList = {
@@ -211,6 +235,8 @@ type ParamList = {
     mainSubs: RkbSubscription;
   };
 };
+
+type QrInfoNavigationProp = StackNavigationProp<HomeStackParamList, 'QrInfo'>;
 
 const showQR = (subs: RkbSubscription) => (
   <View style={styles.modalBody}>
@@ -248,11 +274,13 @@ const esimManualInputInfo = () => (
 type CardState = 'N' | 'R' | 'E' | 'DE' | 'D';
 
 const QrInfoScreen = () => {
+  const navigation = useNavigation<QrInfoNavigationProp>();
   const route = useRoute<RouteProp<ParamList, 'QrInfoScreen'>>();
   const params = useMemo(() => route?.params, [route?.params]);
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showBtn, setShowBtn] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const [cardState, setCardState] = useState<CardState>('N');
   const [isFail, setIsFail] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -310,8 +338,8 @@ const QrInfoScreen = () => {
     if (cardState === 'D') return colors.redError;
   }, [cardState]);
   const canCheckEsim = useMemo(
-    () => params.mainSubs.partner?.startsWith('cmi') || false,
-    [params.mainSubs.partner],
+    () => params.mainSubs?.partner?.startsWith('cmi') || false,
+    [params.mainSubs?.partner],
   );
 
   const getCardState = useCallback((state: string) => {
@@ -441,6 +469,16 @@ const QrInfoScreen = () => {
           <AppText style={styles.oneTouchTxt}>
             {i18n.t('esim:oneTouch:reg')}
           </AppText>
+        </Pressable>
+
+        <Pressable
+          onPress={() => setShowModal(true)}
+          style={styles.oneTouchGuideBox}>
+          <AppSvgIcon name="greyWarning" />
+          <AppText style={styles.oneTouchGuideTxt}>
+            {i18n.t('esim:oneTouch:guide')}
+          </AppText>
+          <AppSvgIcon name="rightGreyBracket2" />
         </Pressable>
       </View>
     ),
@@ -575,25 +613,17 @@ const QrInfoScreen = () => {
     ],
   );
 
-  const a = (
-    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-      <AppText>{i18n.t(`qrInfo:tab:oneTouch`)}</AppText>
-      <View style={styles.badge}>
-        <AppText
-          style={{
-            ...appStyles.semiBold11Text,
-            color: colors.white,
-          }}>
-          {i18n.t('localOp:tag:N')}
-        </AppText>
-      </View>
-    </View>
-  );
-
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
       <View style={appStyles.header}>
         <AppBackButton title={i18n.t('esim:qrInfo')} />
+        <AppSvgIcon
+          name="btnCnter"
+          style={styles.btnCnter}
+          onPress={() => {
+            navigation.navigate('EsimStack', {screen: 'Contact'});
+          }}
+        />
       </View>
       <AppTabHeader
         index={index}
@@ -632,6 +662,11 @@ const QrInfoScreen = () => {
         okButtonTitle={i18n.t(canUseOneTouch ? 'esim:oneTouch:modal:ok' : 'ok')}
         cancelButtonTitle={i18n.t('esim:oneTouch:modal:next')}
         cancelButtonStyle={{color: colors.black, marginRight: 60}}
+      />
+
+      <OneTouchGuideModal
+        visible={showModal}
+        onOkClose={() => setShowModal(false)}
       />
     </SafeAreaView>
   );

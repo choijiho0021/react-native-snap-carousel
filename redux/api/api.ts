@@ -54,6 +54,7 @@ const path = {
   accountOfUser: 'json/account/ofuser',
   noti: 'json/noti/list',
   prodByCntry: 'json/product/ccode',
+  prodCategory: 'json/product/category',
   prodList: 'json/product/list',
   prodSku: 'json/product/sku',
   prodUuid: 'json/product/uuid',

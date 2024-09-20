@@ -3,15 +3,16 @@ import {RootState} from '@reduxjs/toolkit';
 import React, {memo, useCallback} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
+import {StackNavigationProp} from '@react-navigation/stack';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import Profile from '@/components/Profile';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import account, {AccountModelState} from '@/redux/modules/account';
+import {AccountModelState} from '@/redux/modules/account';
 import i18n from '@/utils/i18n';
-import {navigate} from '@/navigation/navigation';
+import {HomeStackParamList, navigate} from '@/navigation/navigation';
 import AppIcon from '@/components/AppIcon';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import AppStyledText from '@/components/AppStyledText';
@@ -137,6 +138,11 @@ const btnList = [
   },
 ];
 
+type InfoNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'MyEventList'
+>;
+
 type InfoProps = {
   account: AccountModelState;
   onChangePhoto: () => void;
@@ -146,12 +152,12 @@ const Info: React.FC<InfoProps> = ({
   account: {balance, coupon},
   onChangePhoto,
 }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<InfoNavigationProp>();
   const route = useRoute();
 
   const btnListTitle = useCallback(
     (icon: string, title: any) => {
-      return icon === 'mycoupon' ? (
+      return coupon?.length && icon === 'mycoupon' ? (
         <>
           <AppText style={{...appStyles.bold16Text, marginRight: 4}}>
             {i18n.t(title)}

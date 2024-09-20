@@ -129,7 +129,7 @@ const rechargeChoice =
 
 const RechargeScreen: React.FC<RechargeScreenProps> = ({
   navigation,
-  account,
+  account: {iccid, token, balance = 0},
   action,
 }) => {
   // recharge 상품의 SKU는 'rch-{amount}' 형식을 갖는다.
@@ -138,12 +138,11 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
 
   useEffect(() => {
     return () => {
-      const {iccid, token} = account;
       if (iccid && token) {
         action.order.getSubs({iccid, token});
       }
     };
-  }, [account, action.order, navigation]);
+  }, [action.order, iccid, token]);
 
   const onSubmit = useCallback(() => {
     if (selected) {
@@ -200,8 +199,6 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
     ),
     [selected],
   );
-
-  const {balance = 0} = account;
 
   return (
     <SafeAreaView style={styles.container}>

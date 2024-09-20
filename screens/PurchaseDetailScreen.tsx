@@ -185,7 +185,7 @@ export const isRokebiCash = (pg: string) =>
 const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   navigation,
   route,
-  account,
+  account: {mobile, token},
   orders,
   pending,
   action,
@@ -228,9 +228,6 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
           ),
         );
       } else {
-        // order를 못찾으면, 다시 읽어온다.
-        const {mobile, token} = account;
-
         setLoading(true);
 
         action.order
@@ -253,7 +250,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
       AppAlert.info(i18n.t('his:orderNotFound'));
       navigation.goBack();
     }
-  }, [account, action.order, navigation, orders, route.params]);
+  }, [action.order, mobile, navigation, orders, route.params, token]);
 
   const paymentInfo = useCallback(() => {
     if (!order) return null;
@@ -337,10 +334,10 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
       async function getReceipt() {
         let receipt = null;
         // rokebi receipt
-        if (id && account.token) {
+        if (id && token) {
           const rsp = await API.Payment.getRokebiPaymentReceipt({
             key: id,
-            token: account.token,
+            token,
           });
           if (rsp.result === 0 && rsp.objects[0]) {
             receipt = rsp.objects[0];
@@ -370,7 +367,7 @@ const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
         getReceipt();
       }
     },
-    [account.token, navigation, order],
+    [navigation, order, token],
   );
 
   const getNotiText = useCallback((orderParam: RkbOrder) => {
