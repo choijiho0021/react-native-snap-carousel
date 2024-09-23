@@ -718,8 +718,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     },
   });
 
-  const [isRe, setIsRe] = useState(false);
-
   const navigateToChargeType = useCallback(() => {
     setShowUsageModal(false);
     setDataStatus({});
@@ -805,20 +803,12 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         }}
         refreshControl={
           <RefreshControl
-            refreshing={isRe}
+            refreshing={refreshing}
             onRefresh={() => onRefresh(isEditMode, true)}
             colors={[colors.clearBlue]} // android 전용
             tintColor={colors.clearBlue} // ios 전용
           />
         }
-      />
-
-      <AppButton
-        title="test"
-        style={{height: 100}}
-        onPress={() => {
-          setIsRe((prev) => !prev);
-        }}
       />
 
       <EsimModal

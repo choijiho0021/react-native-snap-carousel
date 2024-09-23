@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {Linking, StyleSheet, View} from 'react-native';
 import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
@@ -13,32 +13,27 @@ import Env from '@/environment';
 import {useFocusEffect} from '@react-navigation/native';
 import AppText from '@/components/AppText';
 import {inicisButton} from '@/components/AppPaymentGateway/ConfigInicis';
+import {AuthResponseType} from './AuthGatewayScreen';
 
 export type AuthResultCallbackParam = 'next' | 'cancel' | 'check';
 
 const {isIOS} = Env.get();
 
 export const pgWebViewConfig = {
-  cancelUrl: 'https://localhost/canc',
+  cancelUrl: 'https://localhost/auth/canc',
 
-  nextUrl: 'https://localhost/next',
+  nextUrl: 'https://localhost/auth/next',
 };
 
 type AuthGatewayScreenProps = {
   info: AuthParams;
-  callback: (result: AuthResultCallbackParam, errorMsg?: string) => void;
+  callback: (
+    result: AuthResultCallbackParam,
+    errorMsg?: AuthResponseType,
+  ) => void;
 };
 
 // const loadingImg = require('../../assets/images/loading_1.mp4');
-
-const pgWebViewHtml = (info: AuthParams) => {
-  const pg = info?.AuthRule?.[info.card || info.pay_method] || '';
-
-  console.log('@@@ pg : ', pg);
-
-  console.log('info : ', info);
-  return inicisButton(info);
-};
 
 const styles = StyleSheet.create({
   backgroundVideo: {
@@ -85,12 +80,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const AppAuthGateway: React.FC<AuthGatewayScreenProps> = ({info, callback}) => {
+const AppAuthGateway: React.FC<AuthGatewayScreenProps> = ({
+  mobile,
+  callback,
+}) => {
   const [loading, setLoading] = useState(true);
 
   const injected = useRef(false);
   const ref = useRef<WebView>(null);
-  const html = useMemo(() => pgWebViewHtml(info), [info]);
+  const html = useMemo(() => inicisButton(mobile), [mobile]);
 
   // 화면 빠져나간 경우도 로딩 취소
 
@@ -124,11 +122,17 @@ const AppAuthGateway: React.FC<AuthGatewayScreenProps> = ({info, callback}) => {
       console.log('@@@ PG redirection ', event.url);
 
       if (event.url.includes(pgWebViewConfig.cancelUrl)) {
-        callback('cancel', decodeURI(event?.url));
+        const param = utils.getParam(decodeURI(event?.url));
+
+        callback('cancel', {
+          resultCode: param?.resultCode || '',
+          resultMsg: param?.resultMsg || '',
+        });
         return false;
       }
 
-      if (pgWebViewConfig.nextUrl === event.url) {
+      if (event.url.includes(pgWebViewConfig.nextUrl)) {
+        console.log('@@@ 성공, 성공화면으로 이동');
         callback('next');
         return false;
       }
@@ -138,7 +142,6 @@ const AppAuthGateway: React.FC<AuthGatewayScreenProps> = ({info, callback}) => {
         event.url.indexOf('blank') !== -1
       ) {
         setLoading(false);
-        console.log('@@@ 1 ');
         return true;
       }
 
@@ -146,7 +149,6 @@ const AppAuthGateway: React.FC<AuthGatewayScreenProps> = ({info, callback}) => {
       if (event.url.startsWith('http://') || event.url.startsWith('https://')) {
         // 결제사의 비밀번호 입력 화면 같은 특정 웹 페이지는 loading false -> onLoadEnd 호출을 안해서 loading 값 참조
         setLoading(event?.loading || false);
-        console.log('@@@@ 2');
         return true;
       }
 
@@ -213,10 +215,6 @@ const AppAuthGateway: React.FC<AuthGatewayScreenProps> = ({info, callback}) => {
       injected.current = true;
     }
   }, []);
-
-  useEffect(() => {
-    console.log('@@@ html : ', html);
-  }, [html]);
 
   return (
     <>

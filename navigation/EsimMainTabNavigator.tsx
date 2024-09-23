@@ -75,7 +75,6 @@ import PaymentVBankScreen from '@/screens/PaymentVBankScreen';
 import SelectCoupon from '@/screens/SelectCouponScreen';
 import LotteryScreen from '@/screens/LotteryScreen';
 import RkbTalk from '@/screens/RkbTalk';
-import AppAuthGatewayScreen from '@/screens/RkbTalk/component/AppAuthGatewayScreen';
 import AuthGatewayScreen from '@/screens/RkbTalk/component/AuthGatewayScreen';
 
 const {esimGlobal} = Env.get();
@@ -277,7 +276,7 @@ function TalkStackComponent() {
   return (
     <TalkStack.Navigator screenOptions={screenOptions}>
       <TalkStack.Screen name="RkbTalk" component={RkbTalk} />
-      <MyPageStack.Screen name="AuthGateway" component={AuthGatewayScreen} />
+      <TalkStack.Screen name="AuthGateway" component={AuthGatewayScreen} />
     </TalkStack.Navigator>
   );
 }
@@ -429,24 +428,26 @@ const TabNavigator = ({
       <Tab.Screen
         name="TalkStack"
         component={loggedIn ? TalkStackComponent : AuthStack}
-        options={({route}) => ({
-          headerShown: false,
-          tabBarStyle: {
-            display:
-              !!loggedIn &&
-              (getFocusedRouteNameFromRoute(route) || 'Talk') === 'Talk'
-                ? 'flex'
-                : 'none',
-          },
-          tabBarLabel: ({focused}) => tabBarLabel(focused, 'talk'),
-          tabBarIcon: ({focused}) => (
-            <AppIcon
-              focused={focused}
-              name="keyCall"
-              style={styles.tabBarIcon}
-            />
-          ),
-        })}
+        options={({route}) => {
+          return {
+            headerShown: false,
+            tabBarStyle: {
+              display:
+                !!loggedIn &&
+                (getFocusedRouteNameFromRoute(route) || 'RkbTalk') === 'RkbTalk'
+                  ? 'flex'
+                  : 'none',
+            },
+            tabBarLabel: ({focused}) => tabBarLabel(focused, 'talk'),
+            tabBarIcon: ({focused}) => (
+              <AppIcon
+                focused={focused}
+                name="keyCall"
+                style={styles.tabBarIcon}
+              />
+            ),
+          };
+        }}
       />
       <Tab.Screen
         name="MyPageStack"
