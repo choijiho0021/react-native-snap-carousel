@@ -438,7 +438,7 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
   //       );
   //     },
   //   });
-  // }, [navigation, route.params, searchBar, toggleSearchBar]);
+  // }, [navigation, searchBar, toggleSearchBar]);
 
   useEffect(() => {
     setSections(sectionKeys.filter((item) => !_.isEmpty(item.data)));
@@ -453,7 +453,11 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
     <SafeAreaView
       style={{flex: 1, backgroundColor: colors.white, alignItems: 'stretch'}}>
       <View style={styles.header}>
-        <AppSearch title={i18n.t('acc:balance')} style={{height: 55}} />
+        <AppSearch
+          title={i18n.t('acc:balance')}
+          style={{height: 55}}
+          onChangeText={onChangeText}
+        />
       </View>
       {showContacts ? (
         _.isEmpty(searchText) ? (
@@ -500,7 +504,6 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
           )
         ) : (
           <FlatList
-            ListHeaderComponent={<AppText>연락처</AppText>}
             data={searchResult}
             renderItem={renderContactList}
             keyExtractor={(item) => item.recordID}

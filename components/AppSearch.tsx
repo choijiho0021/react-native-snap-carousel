@@ -1,5 +1,5 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
-import React, {memo, useCallback} from 'react';
+import React, {memo, useCallback, useState} from 'react';
 import {
   Pressable,
   View,
@@ -27,6 +27,7 @@ const AppSearch = ({
   textProps,
   disable,
   showCloseModal = false,
+  onChangeText,
 }: {
   title?: string;
   titleStyle?: TextStyle;
@@ -38,9 +39,11 @@ const AppSearch = ({
   textProps?: TextProps;
   disable?: boolean;
   showCloseModal?: boolean;
+  onChangeText: (text: string) => void;
 }) => {
   const navigation = useNavigation();
   const route = useRoute();
+  const [focus, setFocus] = useState(false);
 
   const goback = useCallback(() => {
     if (disable) return;
@@ -81,13 +84,15 @@ const AppSearch = ({
             height: 55,
             flex: 1,
             alignItems: 'center',
-            borderBottomColor: colors.lightGrey,
+            borderBottomColor: focus ? colors.clearBlue : colors.lightGrey,
             borderBottomWidth: 1,
           }}>
-          <AppSvgIcon
-            style={{justifyContent: 'center', marginRight: 8}}
-            name="btnSearchBold"
-          />
+          {!focus && (
+            <AppSvgIcon
+              style={{justifyContent: 'center', marginRight: 8}}
+              name="btnSearchBold"
+            />
+          )}
           <AppTextInput
             style={{
               flex: 1,
@@ -98,6 +103,9 @@ const AppSearch = ({
               fontWeight: '600',
               lineHeight: 24,
             }}
+            onFocus={() => setFocus(true)}
+            onBlur={() => setFocus(false)}
+            onChangeText={onChangeText}
             placeholder="이름, 전화번호를 입력하세요"
             // style={styles.textInput}
             returnKeyType="done"
