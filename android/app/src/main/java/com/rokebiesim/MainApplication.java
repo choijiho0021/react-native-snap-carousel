@@ -53,6 +53,8 @@ import com.reactnativecommunity.clipboard.ClipboardPackage;
 import com.ninty.system.setting.SystemSettingPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.dooboolab.naverlogin.RNNaverLoginPackage;
+import com.rt2zz.reactnativecontacts.ReactNativeContacts;
+
 
 import com.zoyi.channel.plugin.android.ChannelIO;
 import com.zoyi.channel.rn.RNChannelIOPackage;
@@ -210,7 +212,9 @@ public class MainApplication extends Application implements ReactApplication {
                             new NetInfoPackage(),
                             new RNCPickerPackage(),
                             new ReactNativeFirebaseAnalyticsPackage(),
-                            new CookieManagerPackage()
+                            new CookieManagerPackage(),
+                            new ReactNativeContacts() // react native contacts
+
 
                     );
                 }

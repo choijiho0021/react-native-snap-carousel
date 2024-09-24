@@ -1898,6 +1898,19 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  btnSearchBold: [
+    <Svg
+      width="20"
+      height="21"
+      viewBox="0 0 20 21"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M17.302 19.216a1 1 0 1 0 1.396-1.432l-1.396 1.432zM15 9.5a6 6 0 0 1-6 6v2a8 8 0 0 0 8-8h-2zm-6 6a6 6 0 0 1-6-6H1a8 8 0 0 0 8 8v-2zm-6-6a6 6 0 0 1 6-6v-2a8 8 0 0 0-8 8h2zm6-6a6 6 0 0 1 6 6h2a8 8 0 0 0-8-8v2zm4.2 11.716 4.102 4 1.396-1.432-4.1-4-1.397 1.432z"
+        fill="#979797"
+      />
+    </Svg>,
+  ],
   btnSearchCancel: [
     <Svg
       width="16"
@@ -4585,6 +4598,30 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm6.4 1.602a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-4.8 9v1.297a.5.5 0 0 0 .5.5h11.8a.5.5 0 0 0 .5-.5v-2.897a.5.5 0 0 0-.141-.348l-3.01-3.104a.5.5 0 0 0-.699-.018l-3.226 2.995a.5.5 0 0 1-.624.045L5.051 9.44a.5.5 0 0 0-.642.063L1.74 12.255a.5.5 0 0 0-.141.348z"
         fill="#2C2C2C"
       />
+    </Svg>,
+  ],
+  imgProfile: [
+    <Svg
+      width="40"
+      height="40"
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="20" cy="20" r="20" fill="#F7F8FA" />
+      <Mask
+        id="erw75dyuya"
+        style="mask-type:luminance"
+        maskUnits="userSpaceOnUse"
+        x="0"
+        y="0"
+        width="40"
+        height="40">
+        <Circle cx="20" cy="20" r="19.5" fill="#fff" stroke="#fff" />
+      </Mask>
+      <G mask="url(#erw75dyuya)" fill="#D8D8D8">
+        <Path d="M29.703 30.388c1.213-.14 1.99-1.357 1.45-2.452-.845-1.71-2.016-3.115-3.596-4.332C25.361 21.912 22.715 21 20 21c-2.715 0-5.36.912-7.557 2.604-1.58 1.217-2.75 2.621-3.596 4.332-.54 1.095.237 2.312 1.45 2.452 2.292.265 5.997.612 9.703.612 3.706 0 7.411-.347 9.703-.612z" />
+        <Circle cx="20" cy="13.833" r="5.833" />
+      </G>
     </Svg>,
   ],
 

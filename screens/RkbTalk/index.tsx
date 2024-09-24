@@ -1,7 +1,10 @@
-import {useFocusEffect} from '@react-navigation/native';
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment-timezone';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
+  Image,
+  Platform,
   Pressable,
   SafeAreaView,
   StatusBar,
@@ -10,6 +13,8 @@ import {
 } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import {
   Inviter,
   Registerer,
@@ -19,11 +24,16 @@ import {
   UserAgentOptions,
 } from 'sip.js';
 import {isNumber} from 'underscore';
+import Contacts from 'react-native-contacts';
+import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
+import {actions as talkActions, TalkAction} from '@/redux/modules/talk';
 import AppAlert from '@/components/AppAlert';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
 import {useInterval} from '@/utils/useInterval';
@@ -130,15 +140,19 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   flagIcon: {
+    flex: 1,
     width: 9.4,
+    // backgroundColor: colors.darkBlue,
+    flexDirection: 'column',
     alignContent: 'flex-end',
     justifyContent: 'flex-end',
   },
   nation: {
-    marginLeft: 6,
+    flex: 1,
+    // marginLeft: 6,
     justifyContent: 'flex-start',
     color: colors.black,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   connectedView: {
     flexDirection: 'row',
@@ -147,7 +161,22 @@ const styles = StyleSheet.create({
   },
 });
 
-const RkbTalk = () => {
+export type RkbTalkNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'Talk'
+>;
+type RkbTalkRouteProp = RouteProp<HomeStackParamList, 'Talk'>;
+
+type RkbTalkProps = {
+  navigation: RkbTalkNavigationProp;
+  route: RkbTalkRouteProp;
+
+  action: {
+    talk: TalkAction;
+  };
+};
+
+const RkbTalk: React.FC<RkbTalkProps> = ({navigation, route, action}) => {
   const [userAgent, setUserAgent] = useState<UserAgent | null>(null);
   const [inviter, setInviter] = useState<Inviter | null>(null);
   const keypadRef = useRef<KeypadRef>(null);
@@ -160,6 +189,7 @@ const RkbTalk = () => {
   const [maxTime, setMaxTime] = useState<number>();
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
+  const [pntError, setPntError] = useState<boolean>(false);
   const [digit, setDigit] = useState('');
   const min = useMemo(() => {
     const checkRemain = (maxTime || 0) - duration;
@@ -192,7 +222,7 @@ const RkbTalk = () => {
   //   [sessionState],
   // );
 
-  // 국가번호
+  // 국가번호 목록 필요
   // api로 데이터 가져오도록 변경 필요
   // 영어, 한국어 국가명 필요
   const splitCC = useMemo(
@@ -208,14 +238,19 @@ const RkbTalk = () => {
     [calling, initial, splitCC?.length],
   );
 
-  useEffect(() => {
+  const getPoint = useCallback(() => {
     API.TalkApi.getTalkPoint({mobile: '01059119737'}).then((rsp) => {
       console.log('@@@ point', rsp);
       if (rsp?.result === 0) {
         setPoint(rsp?.objects?.tpnt);
       }
+      if (!isNumber(rsp?.objects?.tpnt)) setPntError(true);
     });
   }, []);
+
+  useEffect(() => {
+    getPoint();
+  }, [getPoint]);
 
   const getMaxCallTime = useCallback(() => {
     API.TalkApi.getChannelInfo({mobile: '01059119737'}).then((rsp) => {
@@ -494,6 +529,7 @@ const RkbTalk = () => {
     }, []),
   );
 
+  // talkpoint 가져오지 못할 경우 (undefined)
   const talkPointBtn = useCallback(() => {
     return (
       <>
@@ -506,7 +542,7 @@ const RkbTalk = () => {
             />
             <AppText style={styles.myPoint}>{i18n.t('talk:mypoint')}</AppText>
             <AppText style={[styles.myPoint, styles.pointBold]}>
-              {`${point}P`}
+              {`${point || 0}P`}
             </AppText>
             <AppSvgIcon key="rightArrow10" name="rightArrow10" />
           </View>
@@ -538,12 +574,26 @@ const RkbTalk = () => {
           <View style={styles.topRow}>
             <View style={{flex: 1}} />
             {printCCInfo && (
-              <>
-                <AppSvgIcon style={styles.flagIcon} name="KR" />
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Image
+                  resizeMode="contain"
+                  style={[styles.flagIcon, {flex: 1}]}
+                  source={
+                    require(`../../assets/images/flag/34_ES.png`)
+                    // (focused || checked) && source.length > 1 ? source[1] : source[0]
+                  }
+                />
+                {/* <AppSvgIcon style={styles.flagIcon} name="KR" /> */}
                 <AppText style={[styles.emergency, styles.nation]}>
                   대한민국
                 </AppText>
-              </>
+              </View>
             )}
             <AppText style={styles.emergency}>
               {initial ? i18n.t('talk:emergencyCall') : ''}
@@ -559,7 +609,7 @@ const RkbTalk = () => {
             })}
           </AppText>
         )}
-        <CallToolTip text="" icon="bell" />
+        <CallToolTip text={i18n.t('talk:emergencyText')} icon="bell" />
         {connected && (
           <View style={styles.connectedView}>
             {showWarning && (
@@ -598,6 +648,7 @@ const RkbTalk = () => {
         <View style={{flex: 1}}>{info()}</View>
         <View>
           <Keypad
+            navigation={navigation}
             style={styles.keypad}
             keypadRef={keypadRef}
             onPress={onPressKeypad}
@@ -612,4 +663,13 @@ const RkbTalk = () => {
   );
 };
 
-export default RkbTalk;
+export default connect(
+  ({talk}: RootState) => ({
+    talk,
+  }),
+  (dispatch) => ({
+    action: {
+      talk: bindActionCreators(talkActions, dispatch),
+    },
+  }),
+)(RkbTalk);

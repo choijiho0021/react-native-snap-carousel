@@ -13,6 +13,7 @@ import {SessionState} from 'sip.js';
 import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 import {colors} from '@/constants/Colors';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import {RkbTalkNavigationProp} from '.';
 
 const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 console.log('@@@ buton size', buttonSize, windowWidth);
@@ -100,6 +101,7 @@ export type KeypadRef = {
 type KeyType = 'call' | 'hangup' | 'speaker' | 'keypad';
 
 type KeypadProps = {
+  navigation: RkbTalkNavigationProp;
   onPress?: (k: KeyType, d?: string) => void;
   onChange: (d?: string) => void;
   style: StyleProp<ViewStyle>;
@@ -109,6 +111,7 @@ type KeypadProps = {
 };
 
 const Keypad: React.FC<KeypadProps> = ({
+  navigation,
   keypadRef,
   style,
   onPress,
@@ -242,7 +245,9 @@ const Keypad: React.FC<KeypadProps> = ({
                 <Pressable
                   style={[styles.key, {marginBottom: 0}]}
                   key="contacts"
-                  onPress={() => {}}>
+                  onPress={() => {
+                    navigation.navigate('TalkContact');
+                  }}>
                   <Text style={styles.textCallHist}>연락처</Text>
                 </Pressable>
               )}

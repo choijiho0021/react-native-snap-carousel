@@ -63,6 +63,7 @@ import SelectCoupon from '@/screens/SelectCouponScreen';
 import SettingsScreen from '@/screens/SettingsScreen';
 import SimpleTextScreen from '@/screens/SimpleTextScreen';
 import StoreSearchScreen from '@/screens/StoreSearch';
+import TalkContact from '@/screens/TalkContact';
 import TutorialScreen from '@/screens/TutorialScreen';
 import UserGuideScreen from '@/screens/UserGuideScreen';
 import GlobalGuideScreen from '@/screens/UserGuideScreen/global/GlobalGuide';
@@ -272,6 +273,7 @@ function TalkStackComponent() {
   return (
     <TalkStack.Navigator screenOptions={screenOptions}>
       <TalkStack.Screen name="RkbTalk" component={RkbTalk} />
+      <TalkStack.Screen name="TalkContact" component={TalkContact} />
     </TalkStack.Navigator>
   );
 }
@@ -432,7 +434,9 @@ const TabNavigator = ({
             height: 83,
             display:
               !!loggedIn &&
-              (getFocusedRouteNameFromRoute(route) || 'Talk') === 'Talk'
+              ['RkbTalk', 'TalkContact'].includes(
+                getFocusedRouteNameFromRoute(route) || 'RkbTalk',
+              )
                 ? 'flex'
                 : 'none',
           },

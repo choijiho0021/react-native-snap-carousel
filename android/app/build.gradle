@@ -59,6 +59,7 @@ react {
 //         bundleInRelease: false // Add this line
 // ]
 
+
 project.ext.envConfigFiles = [
         esimdebug: ".env.esim.debug",
         esimstaging: ".env.esim.staging",
@@ -328,6 +329,9 @@ dependencies {
      implementation project(':react-native-seoul-naver-login')
 
     implementation 'org.jetbrains:annotations:16.0.2'
+
+    implementation project(':react-native-contacts')
+
 
 //    addUnimodulesDependencies([exclude: ['expo-file-system','expo-image-loader','expo-permissions','expo-constants']])
 }
