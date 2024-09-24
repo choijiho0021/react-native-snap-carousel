@@ -1,12 +1,14 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   FlatList,
-  RefreshControl,
   StyleSheet,
   View,
   Pressable,
   SafeAreaView,
   AppState,
+  Animated,
+  PanResponder,
+  Vibration,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -17,6 +19,7 @@ import {RouteProp, useIsFocused} from '@react-navigation/native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {isDefined} from 'validate.js';
+import LottieView from 'lottie-react-native';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -62,7 +65,6 @@ import {
 import AppButton from '@/components/AppButton';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import LotteryButton from '../LotteryScreen/component/LotteryButton';
-import Triangle from '@/components/Triangle';
 import {windowWidth} from '@/constants/SliderEntry.style';
 
 const {esimGlobal, isIOS} = Env.get();
@@ -278,7 +280,29 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   account: {iccid, mobile, token, balance, expDate, fortune},
   order,
 }) => {
+  const getRandom = useCallback(
+    (num: number) => Math.floor(Math.random() * num) + 1,
+    [],
+  );
+  const PULLHEIGHT = useMemo(() => 150, []);
+
+  const isAnimatingRef = useRef(false);
+  const [refreshTxt, setRefreshTxt] = useState(
+    i18n.t(`esim:refreshTxt${getRandom(5)}`),
+  );
+  // const [lottie, setLottie] = useState(lottieList[getRandom(3)]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const lottieList = [
+    require('@/assets/animation/refreshLoading1.json'),
+    require('@/assets/animation/refreshLoading2.json'),
+    require('@/assets/animation/refreshLoading3.json'),
+  ];
+
+  const animationProgress = useRef(new Animated.Value(0));
+  const pullDownPosition = useRef(new Animated.Value(0));
   const [isEditMode, setIsEditMode] = useState(false);
+  const [lottie, setLottie] = useState(lottieList[0]);
   const [refreshing, setRefreshing] = useState(false);
   const [showUsageModal, setShowUsageModal] = useState<boolean>(false);
   const [subs, setSubs] = useState<RkbSubscription>();
@@ -313,6 +337,23 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     () => subsData?.findIndex((r) => r?.statusCd === 'R') !== -1,
     [subsData],
   );
+
+  useEffect(() => {
+    // pullDownPosition 값이 변할 때마다 호출
+    const listenerId = pullDownPosition.current.addListener(({value}) => {
+      if (value === 0) {
+        animationProgress.current.setValue(0);
+        isAnimatingRef.current = false;
+        setRefreshTxt(i18n.t(`esim:refreshTxt${getRandom(5)}`));
+        setLottie(lottieList[getRandom(3)]);
+      }
+    });
+
+    // 컴포넌트가 언마운트될 때 리스너를 제거
+    return () => {
+      pullDownPosition.current.removeListener(listenerId);
+    };
+  }, [getRandom, lottieList]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
@@ -395,7 +436,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const onRefresh = useCallback(
     // hidden : true (used 상태인 것들 모두) , false (pending, reserve 상태 포함 하여 hidden이 false 것들만)
     (hidden: boolean, reset?: boolean, subsId?: string, actionStr?: string) => {
-      if (iccid) {
+      if (iccid && !refreshing) {
         setRefreshing(true);
 
         action.order
@@ -410,11 +451,34 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             setIsFirstLoad(false);
           })
           .finally(() => {
-            setRefreshing(false);
+            setTimeout(() => setRefreshing(false), 3000);
           });
       }
     },
-    [action.account, action.order, checkLottery, getOrders, iccid, token],
+    [
+      action.account,
+      action.order,
+      checkLottery,
+      getOrders,
+      iccid,
+      refreshing,
+      token,
+    ],
+  );
+
+  const lottiePlayOnce = useCallback(
+    (scrollY: number) => {
+      if (scrollY > PULLHEIGHT * 0.5 && !isAnimatingRef.current) {
+        Vibration.vibrate();
+        isAnimatingRef.current = true;
+        Animated.timing(animationProgress.current, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: false,
+        }).start(() => onRefresh(isEditMode, true));
+      }
+    },
+    [PULLHEIGHT, isEditMode, onRefresh],
   );
 
   const getIsChargeable = useCallback((sub: RkbSubscription) => {
@@ -703,6 +767,37 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     [onRefresh],
   );
 
+  const renderRefresh = useCallback(() => {
+    return (
+      <Animated.View
+        style={[
+          {
+            width: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+          },
+          {height: pullDownPosition.current},
+        ]}>
+        <AppText
+          style={{
+            ...appStyles.bold20Text,
+            color: colors.black,
+          }}>
+          {refreshTxt}
+        </AppText>
+        <LottieView
+          hardwareAccelerationAndroid
+          progress={animationProgress.current}
+          source={lottie}
+          resizeMode="cover"
+          style={{width: '100%', position: 'absolute'}}
+          renderMode="HARDWARE"
+        />
+      </Animated.View>
+    );
+  }, [lottie, refreshTxt]);
+
   BackbuttonHandler({
     navigation,
     onBack: () => {
@@ -731,6 +826,57 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         isChargeable: !subs?.expireDate.isBefore(moment()),
       });
   }, [navigation, subs]);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        // 아래로 당기는 동작일 때만 PanResponder 동작
+        return gestureState.dy > 0;
+      },
+      onPanResponderMove: (evt, gestureState) => {
+        lottiePlayOnce(gestureState.dy);
+
+        pullDownPosition.current.setValue(
+          gestureState.dy > PULLHEIGHT ? PULLHEIGHT : gestureState.dy,
+        );
+      },
+      onPanResponderRelease: () => {
+        // 손을 떼면 다시 높이를 0으로 리셋
+        Animated.timing(pullDownPosition.current, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: false,
+        }).start();
+      },
+    }),
+  ).current;
+
+  const reScrollToIndex = useCallback((rsp) => {
+    const wait = new Promise((resolve) => setTimeout(resolve, 1500));
+    wait.then(() => {
+      flatListRef?.current?.scrollToIndex({
+        index: rsp.index,
+        animated: true,
+      });
+    });
+  }, []);
+
+  const onEndReached = useCallback(() => {
+    if (!order?.subsIsLast && order?.subs?.length > 0) {
+      navigation.setParams({
+        subsId: undefined,
+        iccid: undefined,
+        actionStr: undefined,
+      });
+      onRefresh(isEditMode, false);
+    }
+  }, [
+    isEditMode,
+    navigation,
+    onRefresh,
+    order?.subs?.length,
+    order?.subsIsLast,
+  ]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -761,12 +907,19 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
       <FlatList
         ref={flatListRef}
+        bounces={false}
         data={subsData}
         keyExtractor={(item) => item.nid}
-        ListHeaderComponent={isEditMode ? undefined : info}
+        ListHeaderComponent={() => (
+          <>
+            {renderRefresh()}
+            {!isEditMode && info()}
+          </>
+        )}
         renderItem={renderSubs}
         initialNumToRender={30}
         extraData={[isEditMode, subsData, selectedIdx]}
+        scrollEventThrottle={16} // 스크롤 이벤트 빈도 설정
         contentContainerStyle={[
           {paddingBottom: 34},
           _.isEmpty(subsData) &&
@@ -775,36 +928,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
             },
         ]}
         ListEmptyComponent={empty}
-        onScrollToIndexFailed={(rsp) => {
-          const wait = new Promise((resolve) => setTimeout(resolve, 1500));
-          wait.then(() => {
-            flatListRef?.current?.scrollToIndex({
-              index: rsp.index,
-              animated: true,
-            });
-          });
-        }}
+        onScrollToIndexFailed={reScrollToIndex}
         // 종종 중복 호출이 발생
         onEndReachedThreshold={0.4}
-        onEndReached={() => {
-          if (!order?.subsIsLast && order?.subs?.length > 0) {
-            navigation.setParams({
-              subsId: undefined,
-              iccid: undefined,
-              actionStr: undefined,
-            });
-            onRefresh(isEditMode, false);
-          }
-        }}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => onRefresh(isEditMode, true)}
-            colors={[colors.clearBlue]} // android 전용
-            tintColor={colors.clearBlue} // ios 전용
-          />
-        }
+        onEndReached={onEndReached}
+        // pull to refresh 스크롤 동작
+        {...panResponder.panHandlers}
       />
+
       <EsimModal
         visible={showModal === 'usage'}
         subs={subs}
@@ -851,7 +982,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 };
 
 export default connect(
-  ({account, order, modal}: RootState) => ({
+  ({account, order, modal, status}: RootState) => ({
     order,
     account,
     modal,
