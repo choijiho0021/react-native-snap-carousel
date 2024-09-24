@@ -69,25 +69,17 @@ const toAccount = (
     return api.success([
       {
         nid: utils.stringToNumber(data.nid[0].value) || 0,
-        uuid: data.uuid[0].value,
-        iccid: data.title && data.title[0].value,
-        status: data.field_status && data.field_status[0].value,
-        expDate:
-          data.field_expiration_date && data.field_expiration_date[0].value,
-        balance:
-          (data.field_balance &&
-            utils.stringToNumber(data.field_balance[0].value)) ||
-          0,
-        actDate:
-          data.field_activation_date && data.field_activation_date[0].value,
-        firstActDate:
-          data.field_first_activation_date &&
-          data.field_first_activation_date[0].value,
-        mobile: data.field_mobile && data.field_mobile[0].value,
-        realMobile: data.field_real_mobile && data.field_real_mobile[0].value,
-        old_deviceToken:
-          data.field_device_token && data.field_device_token[0].value,
-        old_fcmToken: data.field_fcm_token && data.field_fcm_token[0].value,
+        uuid: data?.uuid[0].value,
+        iccid: data?.title?.[0]?.value,
+        status: data?.field_status?.[0]?.value,
+        expDate: data?.field_expiration_date?.[0]?.value,
+        balance: utils.stringToNumber(data?.field_balance?.[0]?.value) || 0,
+        actDate: data?.field_activation_date?.[0]?.value,
+        firstActDate: data?.field_first_activation_date?.[0]?.value,
+        mobile: data?.field_mobile?.[0]?.value,
+        realMobile: data?.field_real_mobile?.[0]?.value,
+        old_deviceToken: data?.field_device_token?.[0]?.value,
+        old_fcmToken: data?.field_fcm_token?.[0]?.value,
       },
     ]);
   }
@@ -212,8 +204,6 @@ const getAccount = ({iccid, token}: {iccid?: string; token?: string}) => {
   return api.callHttpGet(
     `${api.httpUrl(api.path.rokApi.rokebi.account)}/${iccid}?_format=json`,
     (rsp) => {
-      const result = toAccount(rsp.objects);
-
       return rsp.result === 0
         ? toAccount(rsp.objects)
         : api.failure(rsp.result, rsp.error);
