@@ -115,6 +115,8 @@ type SettingsScreenNavigationProp = StackNavigationProp<
 type SettingsScreenProps = {
   navigation: SettingsScreenNavigationProp;
 
+  iccid?: string;
+  token?: string;
   isPushNotiEnabled?: boolean;
   loggedIn?: boolean;
   pending: boolean;
@@ -127,7 +129,15 @@ type SettingsScreenProps = {
 };
 
 const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
-  const {navigation, isPushNotiEnabled, loggedIn, pending, action} = props;
+  const {
+    navigation,
+    isPushNotiEnabled,
+    loggedIn,
+    pending,
+    action,
+    iccid,
+    token,
+  } = props;
   const [showModal, setShowModal] = useState(false);
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [showNetStat, setShowNetStat] = useState(false);
@@ -276,31 +286,41 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
   );
 
   const logout = useCallback(() => {
-    Promise.all([
-      action.cart.reset(),
-      action.order.reset(),
-      action.noti.init({mobile: undefined}),
-      action.account.logout(),
-    ]).then(async () => {
-      navigation.navigate('HomeStack', {screen: 'Home'});
-      // TODO : check social login
-      if (Platform.OS === 'ios')
-        PushNotificationIOS.setApplicationIconBadgeNumber(0);
-      else {
-        ShortcutBadge.setCount(0);
-        // const isSignedin = await GoogleSignin.isSignedIn();
-        // if (isSignedin) {
-        //   try {
-        //     GoogleSignin.signOut();
-        //   } catch (e) {
-        //     console.error(e);
-        //   }
-        // }
-      }
+    API.Account.changeRealMobile({iccid, token, realMobile: ''}).then(() => {
+      Promise.all([
+        action.cart.reset(),
+        action.order.reset(),
+        action.noti.init({mobile: undefined}),
+        action.account.logout(),
+      ]).then(async () => {
+        navigation.navigate('HomeStack', {screen: 'Home'});
+        // TODO : check social login
+        if (Platform.OS === 'ios')
+          PushNotificationIOS.setApplicationIconBadgeNumber(0);
+        else {
+          ShortcutBadge.setCount(0);
+          // const isSignedin = await GoogleSignin.isSignedIn();
+          // if (isSignedin) {
+          //   try {
+          //     GoogleSignin.signOut();
+          //   } catch (e) {
+          //     console.error(e);
+          //   }
+          // }
+        }
 
-      setShowModal(false);
+        setShowModal(false);
+      });
     });
-  }, [action.account, action.cart, action.noti, action.order, navigation]);
+  }, [
+    action.account,
+    action.cart,
+    action.noti,
+    action.order,
+    iccid,
+    navigation,
+    token,
+  ]);
 
   const renderItem = useCallback(
     ({item}: {item: SettingsItem}) => (
@@ -360,6 +380,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
 
 export default connect(
   ({account, status}: RootState) => ({
+    token: account.token,
+    iccid: account.iccid,
     loggedIn: account.loggedIn,
     isPushNotiEnabled: account.isPushNotiEnabled,
     pending: status.pending[accountActions.logout.typePrefix] || false,

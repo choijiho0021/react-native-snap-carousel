@@ -355,6 +355,28 @@ const registerMobile = ({
   );
 };
 
+const changeRealMobile = ({
+  iccid,
+  token,
+  realMobile,
+}: {
+  iccid?: string;
+  token?: string;
+  realMobile?: string;
+}) => {
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.account)}/${iccid}?_format=json`,
+    {
+      method: 'PATCH',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({data: {real_mobile: realMobile}}),
+    },
+    (resp) => {
+      return resp;
+    },
+  );
+};
+
 /*
 exif: null
 localIdentifier: "CC95F08C-88C3-4012-9D6D-64A413D254B3/L0/001"
@@ -521,4 +543,5 @@ export default {
   lotteryCoupon,
   donateCash,
   uploadFortuneImage,
+  changeRealMobile,
 };
