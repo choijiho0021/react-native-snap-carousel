@@ -13,4 +13,30 @@ const getTalkPoint = ({mobile}: {mobile: string}) => {
   );
 };
 
-export default {getChannelInfo, getTalkPoint};
+export type TalkSign = 'add' | 'deduct' | 'refund' | 'charge' | 'reward';
+
+const patchTalkPoint = ({
+  mobile,
+  token,
+  sign,
+}: {
+  mobile: string;
+  token: string;
+  sign: TalkSign;
+}) => {
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.point)}/${mobile}?_format=json`,
+    {
+      method: 'PATCH',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({
+        sign,
+      }),
+    },
+    (resp) => {
+      return resp;
+    },
+  );
+};
+
+export default {getChannelInfo, getTalkPoint, patchTalkPoint};

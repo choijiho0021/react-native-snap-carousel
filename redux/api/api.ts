@@ -141,6 +141,7 @@ const path = {
       config: 'rokebi/config',
       noti: 'rokebi/noti',
       talk: 'rokebi/talk',
+      point: 'rokebi/talk/point',
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage/quota',

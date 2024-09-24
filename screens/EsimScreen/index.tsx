@@ -64,6 +64,8 @@ import BackbuttonHandler from '@/components/BackbuttonHandler';
 import LotteryButton from '../LotteryScreen/component/LotteryButton';
 import Triangle from '@/components/Triangle';
 import {windowWidth} from '@/constants/SliderEntry.style';
+import TalkRewardModal from '../RkbTalk/component/TalkRewardModal';
+import talkApi from '@/redux/api/talkApi';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -275,7 +277,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   navigation,
   route,
   action,
-  account: {iccid, mobile, token, fortune},
+  account: {iccid, mobile, token, fortune, isReceivedReward},
   order,
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -296,6 +298,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   const appState = useRef('unknown');
   const [isChargeable, setIsChargeable] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
+  const [isVisibleReward, setIsVisibleReward] = useState(false);
 
   const [subsData, firstUsedIdx] = useMemo(
     () => {
@@ -539,6 +542,13 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       token,
     ],
   );
+
+  // 첫 리워드 조건 체크용
+  useEffect(() => {
+    if (isFocused && isReceivedReward !== undefined && isReceivedReward === 0) {
+      setIsVisibleReward(true);
+    }
+  }, [action.account, mobile, isReceivedReward, isFocused]);
 
   useEffect(() => {
     const {subsId, actionStr} = route?.params || {};
@@ -823,6 +833,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         }}
         isChargeableData={isChargeable}
         onOkClose={navigateToChargeType}
+      />
+
+      <TalkRewardModal
+        visible={isVisibleReward}
+        onClick={() => {
+          action.account.resetFirstReward(); // 모달창 반복 출력 방지
+          setIsVisibleReward(false);
+        }}
       />
       {!esimGlobal && (
         <GiftModal

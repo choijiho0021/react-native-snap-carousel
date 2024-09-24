@@ -253,10 +253,12 @@ export type HomeStackParamList = {
     guideOption: GuideOption;
     region: GuideRegion;
   };
+  TalkReward: {};
   EsimSubs: {};
   CashHistory: {};
   ChangeEmail: undefined;
   SelectCoupon: undefined;
+  RkbTalk: undefined;
   Coupon: undefined;
   Signup: {
     kind?: SocialAuthInfoKind;

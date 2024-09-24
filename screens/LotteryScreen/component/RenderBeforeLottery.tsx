@@ -1,5 +1,5 @@
 import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';

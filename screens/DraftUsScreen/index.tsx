@@ -104,7 +104,7 @@ export type DeviceDataType = {
 const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   navigation,
   route,
-  account: {iccid, token},
+  account: {iccid, token, mobile},
   action,
   order,
   pending,
@@ -149,10 +149,6 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
   );
 
   useEffect(() => {
-    console.log('@@@ draftOrder : ', draftOrder);
-  }, [draftOrder]);
-
-  useEffect(() => {
     if (route?.params?.orderId)
       setDraftOrder(
         order.drafts.find((r) => r.orderId === route.params?.orderId) ||
@@ -192,6 +188,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
             hidden: false,
           });
 
+          action.account.getTalkPoint({mobile});
           await action.account.checkLottery({
             iccid,
             token,
@@ -223,6 +220,7 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
     draftOrder?.orderId,
     draftOrder?.orderType,
     iccid,
+    mobile,
     navigation,
     token,
   ]);

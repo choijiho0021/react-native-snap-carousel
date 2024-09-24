@@ -1,4 +1,8 @@
-import {useFocusEffect} from '@react-navigation/native';
+import {
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   Pressable,
@@ -40,6 +44,7 @@ import {
 } from '@/redux/modules/account';
 import PhoneCertBox from './component/PhoneCertBox';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 
@@ -157,16 +162,20 @@ const styles = StyleSheet.create({
   },
 });
 
+type RkbTalkScreenRouteProp = RouteProp<HomeStackParamList, 'RkbTalk'>;
+
 type RkbScreenProps = {
   account: AccountModelState;
   action: {
     account: AccountAction;
   };
+  route: RkbTalkScreenRouteProp;
 };
 
 const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
   account: {mobile, realMobile, iccid, token},
   dispatch,
+  route,
 }) => {
   const [userAgent, setUserAgent] = useState<UserAgent | null>(null);
   const [inviter, setInviter] = useState<Inviter | null>(null);
@@ -174,6 +183,7 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
   const [sessionState, setSessionState] = useState<SessionState>(
     SessionState.Initial,
   );
+  const navigation = useNavigation();
   const [speakerPhone, setSpeakerPhone] = useState(false);
   const [dtmfSession, setDtmfSession] = useState<Session>();
   const [duration, setDuration] = useState(1);
@@ -234,13 +244,15 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
   );
 
   useEffect(() => {
-    API.TalkApi.getTalkPoint({mobile: '01059119737'}).then((rsp) => {
-      console.log('@@@ point', rsp);
-      if (rsp?.result === 0) {
-        setPoint(rsp?.objects?.tpnt);
-      }
-    });
-  }, []);
+    if (realMobile) {
+      API.TalkApi.getTalkPoint({mobile: realMobile}).then((rsp) => {
+        console.log('@@@@ talkpoint : ', rsp);
+        if (rsp?.result === 0) {
+          setPoint(rsp?.objects?.tpnt || 0);
+        }
+      });
+    }
+  }, [realMobile]);
 
   const getMaxCallTime = useCallback(() => {
     API.TalkApi.getChannelInfo({mobile: '01059119737'}).then((rsp) => {
@@ -560,6 +572,16 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
           </AppText>
         </View>
         <View style={{flex: 1}}>{info()}</View>
+        {/* <AppButton
+          title={'화면 테스트'}
+          onPress={() => navigation.navigate('TalkReward')}
+          style={{
+            flex: 1,
+            backgroundColor: 'red',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        /> */}
         <View>
           <Keypad
             style={styles.keypad}

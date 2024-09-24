@@ -91,7 +91,7 @@ type DraftScreenProps = {
 const DraftScreen: React.FC<DraftScreenProps> = ({
   navigation,
   route,
-  account: {iccid, token},
+  account: {iccid, token, mobile},
   action,
   product,
   order,
@@ -136,6 +136,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
           prompt: 'check',
         });
 
+        action.account.getTalkPoint({mobile});
         navigation.popToTop();
         if (draftOrder?.orderType === 'refundable') {
           // 바로 운세뽑기로 이동
@@ -157,6 +158,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
     draftOrder?.orderType,
     token,
     iccid,
+    mobile,
     navigation,
   ]);
 

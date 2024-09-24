@@ -72,6 +72,8 @@ import i18n from '@/utils/i18n';
 import AuthStack from './AuthStackNavigator';
 import BadgedIcon from './component/BadgedIcon';
 import {HomeStackParamList} from './navigation';
+import AuthGatewayScreen from '@/screens/RkbTalk/component/AuthGatewayScreen';
+import TalkRewardScreen from '@/screens/RkbTalk/component/TalkRewardScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -228,6 +230,8 @@ function EsimStackComponent() {
       <EsimStack.Screen name="Charge" component={ChargeScreen} />
       <EsimStack.Screen name="AddOn" component={AddOnScreen} />
 
+      <EsimStack.Screen name="TalkReward" component={TalkRewardScreen} />
+
       <EsimStack.Screen name="Faq" component={FaqScreen} />
       <EsimStack.Screen
         name="ChargeAgreement"
@@ -273,6 +277,7 @@ function TalkStackComponent() {
     <TalkStack.Navigator screenOptions={screenOptions}>
       <TalkStack.Screen name="RkbTalk" component={RkbTalk} />
       <TalkStack.Screen name="AuthGateway" component={AuthGatewayScreen} />
+      <TalkStack.Screen name="TalkReward" component={TalkRewardScreen} />
     </TalkStack.Navigator>
   );
 }

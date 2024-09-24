@@ -1859,5 +1859,8 @@
   "talk:emergencyText": "통화가 필요한 긴급 상황이라면!",
   "talk:emergencyCall": "긴급통화",
   "talk:localTime": "현지시간 {{time}}",
-  "talk:remain": "남은 통화 {{min}}분"
+  "talk:remain": "남은 통화 {{min}}분",
+  "talk:reward:info1": "• yyyy.mm.dd 이후 발권한 경우에 드리는 리워드에요. 리워드는 계정당 한 번만 발급할 수 있어요.",
+  "talk:reward:info2": "• 리워드로 지급한 톡포인트의 유효기간은 발급일로부터 90일이에요.",
+  "talk:reward:info3": "• 실제로 사용할 시점을 고려해서 톡포인트를 발급받으시는 것을 추천해요!"
 }

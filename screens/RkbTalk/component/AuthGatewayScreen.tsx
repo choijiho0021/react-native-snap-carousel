@@ -8,7 +8,7 @@ import {HomeStackParamList} from '@/navigation/navigation';
 
 import i18n from '@/utils/i18n';
 import {PaymentResultCallbackParam} from '@/components/AppPaymentGateway';
-import account, {
+import {
   AccountAction,
   AccountModelState,
   actions as accountActions,
@@ -17,7 +17,6 @@ import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import Env from '@/environment';
 import AppAuthGateway from './AuthGateway';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppButton from '@/components/AppButton';

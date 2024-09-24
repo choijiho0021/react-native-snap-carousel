@@ -214,8 +214,6 @@ const getAccount = ({iccid, token}: {iccid?: string; token?: string}) => {
     (rsp) => {
       const result = toAccount(rsp.objects);
 
-      console.log('@@@@ result : ', result);
-
       return rsp.result === 0
         ? toAccount(rsp.objects)
         : api.failure(rsp.result, rsp.error);
