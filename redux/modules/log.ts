@@ -3,7 +3,6 @@ import {Reducer} from 'redux-actions';
 import {AnyAction} from 'redux';
 import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {retrieveData, storeData} from '@/utils/utils';
-import {AppDispatch} from '@/store';
 
 export type LogModelState = {
   log: string;
@@ -11,7 +10,7 @@ export type LogModelState = {
 
 export const initLog = createAsyncThunk('log/init', async () => {
   const data = await retrieveData('log');
-  return data;
+  return trimLog(data);
 });
 
 export const appendLog = createAsyncThunk(
@@ -19,10 +18,22 @@ export const appendLog = createAsyncThunk(
   async (payload: string, {dispatch, getState}) => {
     const {log} = getState() as RootState;
 
-    await storeData('log', log.log + payload);
+    await storeData('log', trimLog(log.log + payload));
     return payload;
   },
 );
+
+function trimLog(str: string) {
+  if (str.length > 100000) {
+    const slice = str.slice(-100000);
+    const index = slice.indexOf('$$$');
+    if (index !== -1) {
+      return slice.slice(index - 100000);
+    }
+    return slice.slice(-100000);
+  }
+  return str;
+}
 
 const initialState: LogModelState = {
   log: '',
@@ -32,21 +43,16 @@ const slice = createSlice({
   name: 'log',
   initialState,
   reducers: {
-    append: (state, {payload}) => {
-      state.log += payload;
-      return state;
-    },
-    clear: (state) => {
-      state.log = '';
-      return state;
+    clear: () => {
+      return initialState;
     },
   },
   extraReducers: (builder) => {
     builder.addCase(initLog.fulfilled, (state, action) => {
-      state.log = action.payload; // 데이터를 상태에 추가할 수 있습니다.
+      state.log = action.payload;
     });
     builder.addCase(appendLog.fulfilled, (state, action) => {
-      state.log += action.payload; // 데이터를 상태에 추가할 수 있습니다.
+      state.log = trimLog(state.log + action.payload);
     });
   },
 });
