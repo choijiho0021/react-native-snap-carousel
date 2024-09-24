@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
   },
   inner: {
-    maginHorizontal: 20,
+    marginHorizontal: 20,
     width: '90%',
     paddingTop: 25,
     backgroundColor: 'white',
@@ -86,6 +86,7 @@ export interface AppModalProps {
   onRequestClose?: () => void;
   bottom?: () => React.ReactNode;
   renderForward?: () => React.ReactNode;
+  topClose?: () => React.ReactNode;
 }
 
 const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
@@ -115,6 +116,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
     if (onCancelClose) onCancelClose();
     else onOkClose();
   },
+  topClose = () => {},
   bottom,
 }) => {
   const getButtonType = useCallback(() => {
@@ -242,6 +244,31 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
     },
   });
 
+  const getCloseBtn = useCallback(() => {
+    return topClose.toString() !== '() => {}'
+      ? topClose
+      : type === 'division' && (
+          <View style={{width: '90%', marginBottom: 24}}>
+            <View
+              style={{
+                marginHorizontal: 20,
+                paddingTop: 25,
+                alignSelf: 'flex-end',
+              }}>
+              <Pressable
+                onPress={onOkClose}
+                style={{
+                  borderColor: colors.white,
+                  borderWidth: 2,
+                  borderRadius: 100,
+                }}>
+                <AppIcon name="boldCancel" />
+              </Pressable>
+            </View>
+          </View>
+        );
+  }, [onOkClose, topClose, type]);
+
   return visible ? (
     <Modal
       animationType="fade"
@@ -261,26 +288,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
             alignItems: 'center',
             marginHorizontal: contentStyle?.marginHorizontal,
           }}>
-          {type === 'division' && (
-            <View style={{width: '90%', marginBottom: 24}}>
-              <View
-                style={{
-                  marginHorizontal: 20,
-                  paddingTop: 25,
-                  alignSelf: 'flex-end',
-                }}>
-                <Pressable
-                  onPress={onOkClose}
-                  style={{
-                    borderColor: colors.white,
-                    borderWidth: 2,
-                    borderRadius: 100,
-                  }}>
-                  <AppIcon name="boldCancel" />
-                </Pressable>
-              </View>
-            </View>
-          )}
+          {getCloseBtn()}
           <View
             style={[
               contentStyle || styles.inner,
