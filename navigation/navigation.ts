@@ -269,6 +269,8 @@ export type HomeStackParamList = {
     profileImageUrl?: string;
   };
   SimpleTextForAuth: Record<string, string>;
+  Talk: undefined;
+  TalkContact: undefined;
 };
 
 export const navigate = (

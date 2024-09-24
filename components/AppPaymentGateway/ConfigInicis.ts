@@ -103,15 +103,21 @@ export const inicisButton = (accountId: string) => {
   const authHash_plainText = mid + mTxId + apiKey;
 
   // 테스트용
-  const flgFixedUser = 'Y'; // 특정 사용자 고정 사용, 미사용시 N
-  const userName = '최지호'; // 사용자 이름
-  const userPhone = '01021035030'; // 사용자 전화번호
-  const userBirth = '19961115'; // 사용자 생년월일
-  const reqSvcCd = '01'; // 요청구분코드 ["01":간편인증, "02":전자서명]
+  // const flgFixedUser = 'Y'; // 특정 사용자 고정 사용, 미사용시 N
+  // const userName = '최지호'; // 사용자 이름
+  // const userPhone = '01021035030'; // 사용자 전화번호
+  // const userBirth = '19961115'; // 사용자 생년월일
+  // const reqSvcCd = '01'; // 요청구분코드 ["01":간편인증, "02":전자서명]
 
-  const userHash = CryptoJS.SHA256(
-    userName + mid + userPhone + mTxId + userBirth + reqSvcCd,
-  ).toString();
+  // const userHash = CryptoJS.SHA256(
+  //   userName + mid + userPhone + mTxId + userBirth + reqSvcCd,
+  // ).toString();
+
+  // <input type="hidden" type="text" name="flgFixedUser" value="${flgFixedUser}">
+  // <input type="hidden" type="text" name="userName" value="${userName}">
+  // <input type="hidden" type="text" name="userPhone" value="${userPhone}">
+  // <input type="hidden" type="text" name="userBirth" value="${userBirth}">
+  // <input type="hidden" type="text" name="userHash" value="${userHash}">
 
   const hash = CryptoJS.SHA256(authHash_plainText).toString();
 
@@ -164,11 +170,6 @@ export const inicisButton = (accountId: string) => {
       <input type="hidden" type="text" name="reqSvcCd" value="01">
       <input type="hidden" type="text" name="identifier" value="테스트서명입니다.">
       <input type="hidden" type="text" name="mTxId" value="${mTxId}">
-      <input type="hidden" type="text" name="flgFixedUser" value="${flgFixedUser}">
-      <input type="hidden" type="text" name="userName" value="${userName}">
-      <input type="hidden" type="text" name="userPhone" value="${userPhone}">
-      <input type="hidden" type="text" name="userBirth" value="${userBirth}">
-      <input type="hidden" type="text" name="userHash" value="${userHash}">
       <input type="hidden" type="text" name="authHash" value="${hash}">
       <input type="hidden" type="text" name="flgFixedUser" value="N">
       <input type="hidden" type="text" name="reservedMsg" value="${reservedMsg}">

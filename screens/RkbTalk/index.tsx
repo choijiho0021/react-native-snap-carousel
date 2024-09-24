@@ -3,8 +3,12 @@ import {
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import moment from 'moment-timezone';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
+  Image,
+  Platform,
   Pressable,
   SafeAreaView,
   StatusBar,
@@ -14,6 +18,8 @@ import {
 import moment from 'moment-timezone';
 import InCallManager from 'react-native-incall-manager';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import {
   Inviter,
   Registerer,
@@ -23,11 +29,16 @@ import {
   UserAgentOptions,
 } from 'sip.js';
 import {isNumber} from 'underscore';
+import Contacts from 'react-native-contacts';
+import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
+import {actions as talkActions, TalkAction} from '@/redux/modules/talk';
 import AppAlert from '@/components/AppAlert';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
 import {useInterval} from '@/utils/useInterval';
@@ -145,15 +156,19 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   flagIcon: {
+    flex: 1,
     width: 9.4,
+    // backgroundColor: colors.darkBlue,
+    flexDirection: 'column',
     alignContent: 'flex-end',
     justifyContent: 'flex-end',
   },
   nation: {
-    marginLeft: 6,
+    flex: 1,
+    // marginLeft: 6,
     justifyContent: 'flex-start',
     color: colors.black,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   connectedView: {
     flexDirection: 'row',
@@ -162,20 +177,28 @@ const styles = StyleSheet.create({
   },
 });
 
-type RkbTalkScreenRouteProp = RouteProp<HomeStackParamList, 'RkbTalk'>;
+export type RkbTalkNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'Talk'
+>;
+type RkbTalkRouteProp = RouteProp<HomeStackParamList, 'Talk'>;
 
-type RkbScreenProps = {
+type RkbTalkProps = {
+  navigation: RkbTalkNavigationProp;
+  route: RkbTalkRouteProp;
+
   account: AccountModelState;
   action: {
     account: AccountAction;
+    talk: TalkAction;
   };
-  route: RkbTalkScreenRouteProp;
 };
 
-const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
+const RkbTalk: React.FC<RkbTalkProps> = ({
   account: {mobile, realMobile, iccid, token},
-  dispatch,
+  navigation,
   route,
+  action,
 }) => {
   const [userAgent, setUserAgent] = useState<UserAgent | null>(null);
   const [inviter, setInviter] = useState<Inviter | null>(null);
@@ -183,13 +206,13 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
   const [sessionState, setSessionState] = useState<SessionState>(
     SessionState.Initial,
   );
-  const navigation = useNavigation();
   const [speakerPhone, setSpeakerPhone] = useState(false);
   const [dtmfSession, setDtmfSession] = useState<Session>();
   const [duration, setDuration] = useState(1);
   const [maxTime, setMaxTime] = useState<number>();
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
+  const [pntError, setPntError] = useState<boolean>(false);
   const [digit, setDigit] = useState('');
   const min = useMemo(() => {
     const checkRemain = (maxTime || 0) - duration;
@@ -227,7 +250,7 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
   //   [sessionState],
   // );
 
-  // 국가번호
+  // 국가번호 목록 필요
   // api로 데이터 가져오도록 변경 필요
   // 영어, 한국어 국가명 필요
   const splitCC = useMemo(
@@ -243,19 +266,24 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
     [calling, initial, splitCC?.length],
   );
 
-  useEffect(() => {
+  const getPoint = useCallback(() => {
     if (realMobile) {
       API.TalkApi.getTalkPoint({mobile: realMobile}).then((rsp) => {
-        console.log('@@@@ talkpoint : ', rsp);
+        console.log('@@@ point', rsp);
         if (rsp?.result === 0) {
-          setPoint(rsp?.objects?.tpnt || 0);
+          setPoint(rsp?.objects?.tpnt);
         }
+        if (!isNumber(rsp?.objects?.tpnt)) setPntError(true);
       });
     }
   }, [realMobile]);
 
+  useEffect(() => {
+    getPoint();
+  }, [getPoint]);
+
   const getMaxCallTime = useCallback(() => {
-    API.TalkApi.getChannelInfo({mobile: '01059119737'}).then((rsp) => {
+    API.TalkApi.getChannelInfo({mobile: realMobile}).then((rsp) => {
       if (rsp?.result === 0) {
         const m =
           rsp?.objects?.channel?.variable?.MAX_CALL_TIME?.match(/^[^:]+/);
@@ -470,6 +498,68 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
     [dtmfSession, makeCall, releaseCall],
   );
 
+  // Options for SimpleUser
+  // TODO
+  // 1: register 상태 확인하기. register 실패한 경우 AOR이 여러개 생겨서 호가 안됨
+  // register 실패하면 deactivate
+  // AOR 개수 확인
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const transportOptions = {
+        server: 'wss://talk.rokebi.com:8089/ws',
+      };
+      const uri = UserAgent.makeURI('sip:01059119737@talk.rokebi.com');
+      const userAgentOptions: UserAgentOptions = {
+        authorizationPassword: '000000', // 000000
+        authorizationUsername: '01059119737',
+        transportOptions,
+        uri,
+        sessionDescriptionHandlerFactory: (session, options) => {
+          return new RNSessionDescriptionHandler(session, options);
+        },
+        sessionDescriptionHandlerFactoryOptions: {
+          iceServers: [{urls: 'stun:talk.rokebi.com:3478'}],
+          iceGatheringTimeout: 3,
+        },
+      };
+      const ua = new UserAgent(userAgentOptions);
+      ua.delegate = {
+        onInvite: () => {
+          console.log('@@@ recv invite');
+        },
+        onMessage: (message) => {
+          console.log('@@@ recv message');
+          console.log('Received a SIP MESSAGE:', message);
+
+          // Extract the body of the SIP MESSAGE
+          const {body} = message;
+
+          // Process the received message
+          if (body) {
+            console.log('Message Content:', body);
+          }
+          // Automatically respond with a 200 OK
+          message.accept();
+        },
+      };
+
+      const registerer = new Registerer(ua);
+      ua.start().then(() => {
+        console.log('@@@ register');
+        registerer.register();
+      });
+      setUserAgent(ua);
+
+      return () => {
+        ua.stop().then((state) => {
+          console.log('@@@ UA stopped', state);
+        });
+      };
+    }, []),
+  );
+
+  // talkpoint 가져오지 못할 경우 (undefined)
   const talkPointBtn = useCallback(() => {
     return (
       <>
@@ -482,7 +572,7 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
             />
             <AppText style={styles.myPoint}>{i18n.t('talk:mypoint')}</AppText>
             <AppText style={[styles.myPoint, styles.pointBold]}>
-              {`${point}P`}
+              {`${point || 0}P`}
             </AppText>
             <AppSvgIcon key="rightArrow10" name="rightArrow10" />
           </View>
@@ -514,12 +604,26 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
               style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
 
             {printCCInfo && (
-              <>
-                <AppSvgIcon style={styles.flagIcon} name="KR" />
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Image
+                  resizeMode="contain"
+                  style={[styles.flagIcon, {flex: 1}]}
+                  source={
+                    require(`../../assets/images/flag/34_ES.png`)
+                    // (focused || checked) && source.length > 1 ? source[1] : source[0]
+                  }
+                />
+                {/* <AppSvgIcon style={styles.flagIcon} name="KR" /> */}
                 <AppText style={[styles.emergency, styles.nation]}>
                   대한민국
                 </AppText>
-              </>
+              </View>
             )}
             <AppText style={styles.emergency}>
               {initial ? i18n.t('talk:emergencyCall') : ''}
@@ -535,7 +639,7 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
             })}
           </AppText>
         )}
-        <CallToolTip text="" icon="bell" />
+        <CallToolTip text={i18n.t('talk:emergencyText')} icon="bell" />
         {connected && (
           <View style={styles.connectedView}>
             {showWarning && (
@@ -584,6 +688,7 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
         /> */}
         <View>
           <Keypad
+            navigation={navigation}
             style={styles.keypad}
             keypadRef={keypadRef}
             onPress={onPressKeypad}
@@ -605,6 +710,7 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
     isSuccessAuth,
     maxTime,
     min,
+    navigation,
     onPressKeypad,
     printCCInfo,
     realMobile,
@@ -695,12 +801,14 @@ const RkbTalk: React.FC<RkbScreenProps & DispatchProp> = ({
 };
 
 export default connect(
-  ({account}: RootState) => ({
+  ({account, talk}: RootState) => ({
     account,
+    talk,
   }),
   (dispatch) => ({
     action: {
       account: bindActionCreators(accountActions, dispatch),
+      talk: bindActionCreators(talkActions, dispatch),
     },
   }),
 )(RkbTalk);
