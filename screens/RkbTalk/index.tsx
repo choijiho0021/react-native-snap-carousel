@@ -15,11 +15,9 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import moment from 'moment-timezone';
 import InCallManager from 'react-native-incall-manager';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 import {
   Inviter,
   Registerer,
@@ -38,7 +36,6 @@ import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {HomeStackParamList} from '@/navigation/navigation';
-import {RootState} from '@/redux';
 import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
 import {useInterval} from '@/utils/useInterval';
@@ -47,7 +44,6 @@ import Keypad, {KeypadRef} from './Keypad';
 
 import {bindActionCreators} from 'redux';
 import {RootState} from '@/redux';
-import {connect, DispatchProp} from 'react-redux';
 import {
   AccountAction,
   AccountModelState,
@@ -55,7 +51,6 @@ import {
 } from '@/redux/modules/account';
 import PhoneCertBox from './component/PhoneCertBox';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
-import {HomeStackParamList} from '@/navigation/navigation';
 
 const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 
@@ -506,57 +501,59 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
 
   useFocusEffect(
     React.useCallback(() => {
-      const transportOptions = {
-        server: 'wss://talk.rokebi.com:8089/ws',
-      };
-      const uri = UserAgent.makeURI('sip:01059119737@talk.rokebi.com');
-      const userAgentOptions: UserAgentOptions = {
-        authorizationPassword: '000000', // 000000
-        authorizationUsername: '01059119737',
-        transportOptions,
-        uri,
-        sessionDescriptionHandlerFactory: (session, options) => {
-          return new RNSessionDescriptionHandler(session, options);
-        },
-        sessionDescriptionHandlerFactoryOptions: {
-          iceServers: [{urls: 'stun:talk.rokebi.com:3478'}],
-          iceGatheringTimeout: 3,
-        },
-      };
-      const ua = new UserAgent(userAgentOptions);
-      ua.delegate = {
-        onInvite: () => {
-          console.log('@@@ recv invite');
-        },
-        onMessage: (message) => {
-          console.log('@@@ recv message');
-          console.log('Received a SIP MESSAGE:', message);
+      if (realMobile) {
+        const transportOptions = {
+          server: 'wss://talk.rokebi.com:8089/ws',
+        };
+        const uri = UserAgent.makeURI(`sip:${realMobile}@talk.rokebi.com`);
+        const userAgentOptions: UserAgentOptions = {
+          authorizationPassword: '000000', // 000000
+          authorizationUsername: realMobile,
+          transportOptions,
+          uri,
+          sessionDescriptionHandlerFactory: (session, options) => {
+            return new RNSessionDescriptionHandler(session, options);
+          },
+          sessionDescriptionHandlerFactoryOptions: {
+            iceServers: [{urls: 'stun:talk.rokebi.com:3478'}],
+            iceGatheringTimeout: 3,
+          },
+        };
+        const ua = new UserAgent(userAgentOptions);
+        ua.delegate = {
+          onInvite: () => {
+            console.log('@@@ recv invite');
+          },
+          onMessage: (message) => {
+            console.log('@@@ recv message');
+            console.log('Received a SIP MESSAGE:', message);
 
-          // Extract the body of the SIP MESSAGE
-          const {body} = message;
+            // Extract the body of the SIP MESSAGE
+            const {body} = message;
 
-          // Process the received message
-          if (body) {
-            console.log('Message Content:', body);
-          }
-          // Automatically respond with a 200 OK
-          message.accept();
-        },
-      };
+            // Process the received message
+            if (body) {
+              console.log('Message Content:', body);
+            }
+            // Automatically respond with a 200 OK
+            message.accept();
+          },
+        };
 
-      const registerer = new Registerer(ua);
-      ua.start().then(() => {
-        console.log('@@@ register');
-        registerer.register();
-      });
-      setUserAgent(ua);
-
-      return () => {
-        ua.stop().then((state) => {
-          console.log('@@@ UA stopped', state);
+        const registerer = new Registerer(ua);
+        ua.start().then(() => {
+          console.log('@@@ register');
+          registerer.register();
         });
-      };
-    }, []),
+        setUserAgent(ua);
+
+        return () => {
+          ua.stop().then((state) => {
+            console.log('@@@ UA stopped', state);
+          });
+        };
+      }
+    }, [realMobile]),
   );
 
   // talkpoint 가져오지 못할 경우 (undefined)
@@ -727,57 +724,59 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
 
   useFocusEffect(
     React.useCallback(() => {
-      const transportOptions = {
-        server: 'wss://talk.rokebi.com:8089/ws',
-      };
-      const uri = UserAgent.makeURI('sip:01059119737@talk.rokebi.com');
-      const userAgentOptions: UserAgentOptions = {
-        authorizationPassword: '000000', // 000000
-        authorizationUsername: '01059119737',
-        transportOptions,
-        uri,
-        sessionDescriptionHandlerFactory: (session, options) => {
-          return new RNSessionDescriptionHandler(session, options);
-        },
-        sessionDescriptionHandlerFactoryOptions: {
-          iceServers: [{urls: 'stun:talk.rokebi.com:3478'}],
-          iceGatheringTimeout: 3,
-        },
-      };
-      const ua = new UserAgent(userAgentOptions);
-      ua.delegate = {
-        onInvite: () => {
-          console.log('@@@ recv invite');
-        },
-        onMessage: (message) => {
-          console.log('@@@ recv message');
-          console.log('Received a SIP MESSAGE:', message);
+      if (realMobile) {
+        const transportOptions = {
+          server: 'wss://talk.rokebi.com:8089/ws',
+        };
+        const uri = UserAgent.makeURI(`sip:${realMobile}@talk.rokebi.com`);
+        const userAgentOptions: UserAgentOptions = {
+          authorizationPassword: '000000', // 000000
+          authorizationUsername: realMobile,
+          transportOptions,
+          uri,
+          sessionDescriptionHandlerFactory: (session, options) => {
+            return new RNSessionDescriptionHandler(session, options);
+          },
+          sessionDescriptionHandlerFactoryOptions: {
+            iceServers: [{urls: 'stun:talk.rokebi.com:3478'}],
+            iceGatheringTimeout: 3,
+          },
+        };
+        const ua = new UserAgent(userAgentOptions);
+        ua.delegate = {
+          onInvite: () => {
+            console.log('@@@ recv invite');
+          },
+          onMessage: (message) => {
+            console.log('@@@ recv message');
+            console.log('Received a SIP MESSAGE:', message);
 
-          // Extract the body of the SIP MESSAGE
-          const {body} = message;
+            // Extract the body of the SIP MESSAGE
+            const {body} = message;
 
-          // Process the received message
-          if (body) {
-            console.log('Message Content:', body);
-          }
-          // Automatically respond with a 200 OK
-          message.accept();
-        },
-      };
+            // Process the received message
+            if (body) {
+              console.log('Message Content:', body);
+            }
+            // Automatically respond with a 200 OK
+            message.accept();
+          },
+        };
 
-      const registerer = new Registerer(ua);
-      ua.start().then(() => {
-        console.log('@@@ register');
-        registerer.register();
-      });
-      setUserAgent(ua);
-
-      return () => {
-        ua.stop().then((state) => {
-          console.log('@@@ UA stopped', state);
+        const registerer = new Registerer(ua);
+        ua.start().then(() => {
+          console.log('@@@ register');
+          registerer.register();
         });
-      };
-    }, []),
+        setUserAgent(ua);
+
+        return () => {
+          ua.stop().then((state) => {
+            console.log('@@@ UA stopped', state);
+          });
+        };
+      }
+    }, [realMobile]),
   );
 
   return (
