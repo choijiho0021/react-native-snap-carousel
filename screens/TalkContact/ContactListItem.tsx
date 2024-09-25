@@ -11,16 +11,11 @@ const styles = StyleSheet.create({
     minHeight: 70,
     height: 74,
     flexDirection: 'row',
-    // borderWidth: 1,
   },
   mainTitleContainer: {
     justifyContent: 'center',
     flexDirection: 'column',
     marginLeft: 20,
-
-    // backgroundColor: colors.babyBlue,
-    // borderBottomWidth: 1,
-    // borderBottomColor: colors.whiteTwo,
   },
   descriptionStyle: {
     fontSize: 14,
@@ -58,7 +53,6 @@ const ContactListItem: React.FC<ContactListItemProps> = ({
   data,
   onPress = () => {},
 }) => {
-  console.log('@@ sec ur', data, uri);
   return data ? (
     <Pressable style={styles.itemContainer} onPress={() => onPress(data)}>
       <View style={styles.mainTitleContainer}>

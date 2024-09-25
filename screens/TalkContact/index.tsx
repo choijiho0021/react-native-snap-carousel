@@ -1,52 +1,7 @@
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import {
-  FlatList,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
-import moment from 'moment';
 import AppButton from '@/components/AppButton';
+import AppSearch from '@/components/AppSearch';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
-import {appStyles} from '@/constants/Styles';
-import {HomeStackParamList} from '@/navigation/navigation';
-import i18n from '@/utils/i18n';
-import ScreenHeader from '@/components/ScreenHeader';
-import BackbuttonHandler from '@/components/BackbuttonHandler';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
-import AppStyledText from '@/components/AppStyledText';
-import AppBackButton from '@/components/AppBackButton';
-import AppSearch from '@/components/AppSearch';
-import {connect, useDispatch} from 'react-redux';
-import {RootState} from '@/redux';
-import {bindActionCreators} from 'redux';
-import SectionListSidebar from 'react-native-textindicator-sectionlist-sidebar';
-import {
-  actions as talkActions,
-  TalkAction,
-  TalkModelState,
-} from '@/redux/modules/talk';
-import {
-  check,
-  openSettings,
-  PERMISSIONS,
-  RESULTS,
-} from 'react-native-permissions';
-import AppAlert from '@/components/AppAlert';
-import * as Hangul from 'hangul-js';
 import {
   checkEng,
   checkKor,
@@ -54,10 +9,41 @@ import {
   doubleKor,
   sectionKeys,
 } from '@/constants/CustomTypes';
-import {utils} from '@/utils/utils';
-import {Contact} from 'react-native-contacts';
-import _ from 'underscore';
 import Layout from '@/constants/Layout';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
+import {
+  actions as talkActions,
+  TalkAction,
+  TalkModelState,
+} from '@/redux/modules/talk';
+import i18n from '@/utils/i18n';
+import {utils} from '@/utils/utils';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import * as Hangul from 'hangul-js';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {
+  FlatList,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
+import {Contact} from 'react-native-contacts';
+import {
+  check,
+  openSettings,
+  PERMISSIONS,
+  RESULTS,
+} from 'react-native-permissions';
+import SectionListSidebar from 'react-native-textindicator-sectionlist-sidebar';
+import {connect, useDispatch} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import _ from 'underscore';
 import ContactListItem from './ContactListItem';
 
 const styles = StyleSheet.create({
@@ -145,19 +131,15 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
   action,
 }) => {
   const [showContacts, setShowContacts] = useState(false);
-  const isSuccess = useMemo(() => params?.pymVBank || false, [params]);
-  const [expireDate, amount, vAcntNo] = useMemo(() => {
-    if (params?.info) {
-      const {expireDate, amount, vAcntNo} = params?.info;
-      if (expireDate)
-        return [
-          moment(expireDate, 'YYYYMMDDHHmmss').utcOffset(9, true).format(),
-          amount,
-          vAcntNo,
-        ];
-    }
-    return ['', '', ''];
-  }, [params?.info]);
+  const [searchResult, setSearchResult] = useState<any[]>([]);
+  const [searchText, setSearchText] = useState<string | undefined>(undefined);
+  const [mapContacts, setMapContacts] = React.useState(new Map());
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
+  const [sections, setSections] = useState<any[]>([]);
+  const sectionListRef = useRef();
+  const dispatch = useDispatch();
+  const [scrollY, setScrollY] = useState(-1);
 
   // useEffect(() => {
   //   dispatch(talkActions.getContacts());
@@ -172,11 +154,11 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
           ? PERMISSIONS.IOS.CONTACTS
           : PERMISSIONS.ANDROID.READ_CONTACTS;
       const result = await check(permission);
+      console.log('@@@ res2 ', result);
       return result === RESULTS.GRANTED || result === RESULTS.UNAVAILABLE;
     };
 
     Promise.resolve(checkPermission()).then((r) => {
-      console.log('@@@ res2 ', r);
       setShowContacts(r);
       if (r)
         Promise.resolve(action.talk.getContacts()).then((re) =>
@@ -184,28 +166,6 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
         );
     });
   }, []);
-
-  const onNavigateScreen = useCallback(() => {
-    navigation.popToTop();
-
-    navigation.navigate('EsimStack', {
-      screen: 'Esim',
-      params: {
-        actionStr: 'reload',
-      },
-    });
-  }, [navigation]);
-
-  console.log('@@@ vbank info', params?.info);
-
-  // 결제 완료창에서 뒤로가기 시 확인과 똑같이 처리한다.
-  BackbuttonHandler({
-    navigation,
-    onBack: () => {
-      onNavigateScreen();
-      return true;
-    },
-  });
 
   const beforeSync = useCallback(() => {
     return (
@@ -252,16 +212,6 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
     );
   }, []);
 
-  const [searchResult, setSearchResult] = useState<any[]>([]);
-  const [searchText, setSearchText] = useState<string | undefined>(undefined);
-  const [mapContacts, setMapContacts] = React.useState(new Map());
-  const [loading, setLoading] = useState<boolean>(false);
-  const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
-  const [sections, setSections] = useState<any[]>([]);
-  const sectionListRef = useRef();
-  const dispatch = useDispatch();
-
-  console.log('@@ build cont', contacts);
   const onChangeText = useCallback(
     (text) => {
       const currentMapContacts = mapContacts;
@@ -408,12 +358,6 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
 
   const renderContactList = ({item}) => {
     const val = item || {};
-    console.log(
-      '@@ sec i',
-      val.thumbnailPath,
-      `${val.givenName} ${val.familyName}`,
-      val,
-    );
     return (
       <ContactListItem
         key={val.recordID}
@@ -494,74 +438,80 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
   //       );
   //     },
   //   });
-  // }, [navigation, route.params, searchBar, toggleSearchBar]);
+  // }, [navigation, searchBar, toggleSearchBar]);
 
   useEffect(() => {
     setSections(sectionKeys.filter((item) => !_.isEmpty(item.data)));
   }, []);
 
-  console.log('@@@ sec', sections, searchResult);
+  const onScroll = useCallback((e) => {
+    const yOffset = e.nativeEvent.contentOffset.y;
+    setScrollY(yOffset);
+  }, []);
+
   return (
     <SafeAreaView
       style={{flex: 1, backgroundColor: colors.white, alignItems: 'stretch'}}>
       <View style={styles.header}>
-        <AppSearch title={i18n.t('acc:balance')} style={{height: 55}} />
+        <AppSearch
+          title={i18n.t('acc:balance')}
+          style={{height: 55}}
+          onChangeText={onChangeText}
+        />
       </View>
-      {/* {showContacts ?         <FlatList
-          data={searchResult}
-          renderItem={renderContactList}
-          keyExtractor={(item) => item.recordID}
-        /> : beforeSync()} */}
-      {_.isEmpty(searchText) ? (
-        !_.isEmpty(sections) && (
-          <SectionListSidebar
-            ref={sectionListRef}
-            data={sections}
+      {showContacts ? (
+        _.isEmpty(searchText) ? (
+          !_.isEmpty(sections) && (
+            <SectionListSidebar
+              ref={sectionListRef}
+              data={sections}
+              renderItem={renderContactList}
+              itemHeight={30}
+              sectionHeaderHeight={20}
+              onScroll={onScroll}
+              renderSectionHeader={({section}) => {
+                return (
+                  <>
+                    {section?.key === sections[0]?.key && scrollY <= 0 && (
+                      <View
+                        style={{
+                          marginLeft: 20,
+                          paddingTop: 24,
+                          paddingBottom: 16,
+                          backgroundColor: colors.white,
+                        }}>
+                        <AppText style={appStyles.bold18Text}>연락처</AppText>
+                      </View>
+                    )}
+                    <AppText style={styles.sectionHeader}>
+                      {section?.key}
+                    </AppText>
+                  </>
+                );
+              }}
+              sidebarContainerStyle={{
+                flex: 1,
+                alignSelf: 'flex-end',
+                justifyContent: 'center',
+              }}
+              sidebarItemTextStyle={{
+                ...appStyles.normal12Text,
+                lineHeight: 13,
+                color: colors.clearBlue,
+              }}
+              locale="kor"
+            />
+          )
+        ) : (
+          <FlatList
+            data={searchResult}
             renderItem={renderContactList}
-            itemHeight={30}
-            sectionHeaderHeight={20}
-            // containerStyle={{alignItems: 'center'}}
-            // sidebarItemStyle={}
-            // sidebarItemHeight={520}
-            sectionHeaderStyle={styles.sectionHeader}
-            // sidebarItemStyle={{
-            //   flex: 1,
-            //   // backgroundColor: colors.babyBlue,
-
-            //   alignSelf: 'center',
-            // }}
-            sidebarContainerStyle={{
-              flex: 1,
-              // flexDirection: 'column',
-              alignSelf: 'flex-end',
-              justifyContent: 'center',
-              // height: 600,
-              // backgroundColor: colors.babyBlue,
-              // justifyContent: 'center',
-              // alignContent: 'center',
-              // alignSelf: 'center',
-            }}
-            sidebarItemTextStyle={{
-              ...appStyles.normal12Text,
-              lineHeight: 13,
-              color: colors.clearBlue,
-            }}
-            locale="kor"
+            keyExtractor={(item) => item.recordID}
           />
         )
       ) : (
-        <FlatList
-          ListHeaderComponent={<AppText>연락처</AppText>}
-          data={searchResult}
-          renderItem={renderContactList}
-          keyExtractor={(item) => item.recordID}
-        />
+        beforeSync()
       )}
-      {/* <FlatList
-        data={searchResult}
-        renderItem={renderContactList}
-        keyExtractor={(item) => item.recordID}
-      /> */}
       {/* <View
         style={showSearchBar && _.isEmpty(searchText) && styles.backCover}
       /> */}
