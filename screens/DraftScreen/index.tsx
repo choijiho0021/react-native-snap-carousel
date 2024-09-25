@@ -35,7 +35,6 @@ import GuideBox from '../CancelOrderScreen/component/GuideBox';
 import FloatCheckButton from '../CancelOrderScreen/component/FloatCheckButton';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
-import {ProdInfo} from '@/redux/api/productApi';
 
 const styles = StyleSheet.create({
   container: {

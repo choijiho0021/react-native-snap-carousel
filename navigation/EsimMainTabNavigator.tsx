@@ -75,6 +75,7 @@ import BadgedIcon from './component/BadgedIcon';
 import {HomeStackParamList} from './navigation';
 import AuthGatewayScreen from '@/screens/RkbTalk/component/AuthGatewayScreen';
 import TalkRewardScreen from '@/screens/RkbTalk/component/TalkRewardScreen';
+import TalkPermissionScreen from '@/screens/RkbTalk/component/TalkPermissionScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -280,6 +281,10 @@ function TalkStackComponent() {
       <TalkStack.Screen name="AuthGateway" component={AuthGatewayScreen} />
       <TalkStack.Screen name="TalkReward" component={TalkRewardScreen} />
       <TalkStack.Screen name="TalkContact" component={TalkContact} />
+      <TalkStack.Screen
+        name="TalkPermission"
+        component={TalkPermissionScreen}
+      />
     </TalkStack.Navigator>
   );
 }

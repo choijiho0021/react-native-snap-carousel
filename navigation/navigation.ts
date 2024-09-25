@@ -166,6 +166,7 @@ export type HomeStackParamList = {
       token: string;
     };
   };
+  TalkPermission: undefined;
   CodePush: undefined;
   CustomerProfile: undefined;
   AddProfile: undefined;

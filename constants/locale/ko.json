@@ -1876,5 +1876,14 @@
 
   "talk:reward:modal:body1": "로깨비톡 런칭 기념\n<b>0,000 톡포인트</b>가 도착했어요.",
   "talk:reward:modal:body2": "해외 여행 중에도 <b>30분간 무료 통화</b>에요!\n(한국 발신 기준)",
-  "talk:reward:modal:btn": "자세히 보기"
+  "talk:reward:modal:btn": "자세히 보기",
+
+  "talk:permission:title": "데이터만 있으면 언제 어디서든 톡톡!",
+  "talk:permission:body": "로깨비톡을 이용하시려면\n아래 권한이 필요해요.",
+  "talk:permission:choice": "선택 권한",
+
+  "talk:permission:book": "연락처",
+  "talk:permission:book:body": "로밍도깨비 앱과 내 주소록을 동기화하여\n연락처를 검색하거나 통화를 걸기 위해 사용해요!",
+  "talk:permission:mic": "마이크",
+  "talk:permission:mic:body": "로밍도깨비 앱과 내 주소록을 동기화하여\n연락처를 검색하거나 통화를 걸기 위해 사용해요!"
 }
