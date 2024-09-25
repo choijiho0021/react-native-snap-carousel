@@ -1,4 +1,5 @@
 import AppButton from '@/components/AppButton';
+import AppIcon from '@/components/AppIcon';
 import AppSearch from '@/components/AppSearch';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -29,6 +30,7 @@ import {
   FlatList,
   Platform,
   SafeAreaView,
+  SectionList,
   StyleSheet,
   TextInput,
   View,
@@ -141,11 +143,6 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
   const dispatch = useDispatch();
   const [scrollY, setScrollY] = useState(-1);
 
-  // useEffect(() => {
-  //   dispatch(talkActions.getContacts());
-  //   // action.talk.getContacts();
-  // }, []);
-
   // 권한없는 경우, 통화시에 권한확인 로직 필요
   useEffect(() => {
     const checkPermission = async () => {
@@ -160,10 +157,7 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
 
     Promise.resolve(checkPermission()).then((r) => {
       setShowContacts(r);
-      if (r)
-        Promise.resolve(action.talk.getContacts()).then((re) =>
-          console.log('@@@@@ cont r', re),
-        );
+      if (r) action.talk.getContacts();
     });
   }, []);
 
@@ -212,6 +206,109 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
     );
   }, []);
 
+  const removeDup = useCallback((findSection, item) => {
+    const idx = findSection.data.findIndex((v) => v.recordID === item.recordID);
+    if (idx >= 0) {
+      findSection.data.splice(idx, 1, item);
+    } else {
+      findSection.data.push(item);
+    }
+  }, []);
+
+  const setOtherSection = useCallback(
+    (name: string, item) => {
+      let findSection = {};
+      const currentSectionKeys = sectionKeys;
+      if (checkEng.test(name.substring(0, 1))) {
+        // 영어 section
+        findSection = currentSectionKeys.find(
+          (v) => v.key === name.toUpperCase().substring(0, 1),
+        );
+      } else {
+        // 특수문자 section
+        findSection = currentSectionKeys.find((v) => checkSpecial.test(v.key));
+      }
+
+      removeDup(findSection, item);
+      return findSection;
+    },
+    [removeDup],
+  );
+
+  const setKoSection = useCallback(
+    (item, disassemble) => {
+      const ko = [];
+      doubleKor.forEach((value) => {
+        const double = value.find((v) => v === disassemble[0][0]) || [];
+        const findSection = sectionKeys.find((v) =>
+          _.isEmpty(double) ? v.key === disassemble[0][0] : v.key === value[0],
+        );
+
+        if (_.isEmpty(findSection)) return;
+        removeDup(findSection, item);
+        ko.push(findSection);
+      });
+
+      return ko[0];
+    },
+    [removeDup],
+  );
+
+  const setChosung = useCallback(
+    (currentContacts?: any[]) => {
+      // 한글 이름 중에서 초성, contact map
+      if (!_.isEmpty(currentContacts)) {
+        currentContacts?.map((item) => {
+          const name = item.givenName + item.familyName;
+          // 한글일 경우
+          if (checkKor.test(name)) {
+            const disassemble = Hangul.disassemble(name, true);
+            setKoSection(item, disassemble);
+
+            let cho = '';
+            disassemble.forEach((item) => (cho += item[0]));
+            setMapContacts(mapContacts.set(cho, item));
+          } else {
+            setOtherSection(name, item);
+          }
+        });
+      }
+    },
+    [setKoSection, setOtherSection],
+  );
+
+  const getFirstLetter = useCallback(
+    (item: any) => {
+      // 한글 이름 중에서 초성, contact map
+      const name = item.givenName + item.familyName;
+      let resSection = {};
+      // 한글일 경우
+      if (checkKor.test(name)) {
+        const disassemble = Hangul.disassemble(name, true);
+        resSection = setKoSection(item, disassemble);
+      } else resSection = setOtherSection(name, item);
+
+      return resSection?.key;
+    },
+    [setKoSection, setOtherSection],
+  );
+
+  // 초성검색한 항목 section key 생성
+  const makeSearchResult = useCallback((currentContacts?: any[]) => {
+    if (!_.isEmpty(currentContacts)) {
+      const res = currentContacts?.reduce((acc, cur, idx) => {
+        const key = getFirstLetter(cur);
+        const ai = acc?.findIndex((a) => a?.key === key);
+
+        if (ai >= 0) (acc[ai]?.data || []).push(cur);
+        else (acc || [])?.push({key, title: key, data: [cur]});
+        return acc;
+      }, []);
+
+      return res;
+    }
+  }, []);
+
   const onChangeText = useCallback(
     (text) => {
       const currentMapContacts = mapContacts;
@@ -255,99 +352,16 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
         );
 
         setSearchText(text);
-        setSearchResult([...currentSearchResult, ...phone]);
+        setSearchResult(
+          makeSearchResult([...currentSearchResult, ...phone]) || [],
+        );
       } else {
         setSearchText(text);
-        setSearchResult(currentSearchResult);
+        setSearchResult(makeSearchResult(currentSearchResult) || []);
       }
     },
     [contacts, mapContacts],
   );
-
-  // sortName 사용 X?
-  const sortName = (a: string, b: string) => {
-    const nameA = a.familyName + a.givenName;
-    const nameB = b.familyName + b.givenName;
-
-    const priorityA = checkKor.test(nameA) ? -2 : checkEng.test(nameA) ? -1 : 0;
-    const priorityB = checkKor.test(nameB) ? -2 : checkEng.test(nameB) ? -1 : 0;
-
-    if (priorityA > priorityB) return priorityA;
-    if (priorityA === priorityB)
-      return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
-    return priorityB;
-  };
-
-  const removeDup = useCallback((findSection, item) => {
-    const idx = findSection.data.findIndex((v) => v.recordID === item.recordID);
-    if (idx >= 0) {
-      findSection.data.splice(idx, 1, item);
-    } else {
-      findSection.data.push(item);
-    }
-  }, []);
-
-  const setOtherSection = useCallback(
-    (name: string, item) => {
-      let findSection = {};
-      const currentSectionKeys = sectionKeys;
-      if (checkEng.test(name.substring(0, 1))) {
-        // 영어 section
-        findSection = currentSectionKeys.find(
-          (v) => v.key === name.toUpperCase().substring(0, 1),
-        );
-      } else {
-        // 특수문자 section
-        findSection = currentSectionKeys.find((v) => checkSpecial.test(v.key));
-      }
-
-      removeDup(findSection, item);
-    },
-    [removeDup],
-  );
-
-  const setKoSection = useCallback(
-    (item, disassemble) => {
-      doubleKor.forEach((value) => {
-        const double = value.find((v) => v === disassemble[0][0]) || [];
-        const findSection = sectionKeys.find((v) =>
-          _.isEmpty(double) ? v.key === disassemble[0][0] : v.key === value[0],
-        );
-        if (_.isEmpty(findSection)) return;
-
-        removeDup(findSection, item);
-      });
-    },
-    [removeDup],
-  );
-
-  const setChosung = useCallback(() => {
-    // 확인용, stateContact useCallback 디펜던시 적용시 지우기
-    const currentContacts = contacts;
-    console.log('@@ cho', contacts);
-
-    // 한글 이름 중에서 초성, contact map
-    if (!_.isEmpty(contacts)) {
-      currentContacts.map((item) => {
-        const name = item.givenName + item.familyName;
-        // 한글일 경우
-        if (checkKor.test(name)) {
-          const disassemble = Hangul.disassemble(name, true);
-          setKoSection(item, disassemble);
-
-          let cho = '';
-          disassemble.forEach((item) => (cho += item[0]));
-          setMapContacts(mapContacts.set(cho, item));
-        } else {
-          setOtherSection(name, item);
-        }
-      });
-    }
-  }, [contacts, mapContacts, setKoSection, setOtherSection]);
-
-  useEffect(() => {
-    setChosung();
-  }, [setChosung]);
 
   const onPress = useCallback(
     (contactData: Contact) => {
@@ -405,8 +419,8 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
   }, [onChangeText, toggleSearchBar]);
 
   useEffect(() => {
-    setChosung();
-  }, [setChosung]);
+    setChosung(contacts);
+  }, [setChosung, contacts]);
 
   // useEffect(() => {
   //   navigation.setOptions({
@@ -459,6 +473,7 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
           onChangeText={onChangeText}
         />
       </View>
+      {showContacts && !_.isEmpty(searchText) && <View style={{height: 24}} />}
       {showContacts ? (
         _.isEmpty(searchText) ? (
           !_.isEmpty(sections) && (
@@ -503,10 +518,27 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
             />
           )
         ) : (
-          <FlatList
-            data={searchResult}
+          <SectionList
+            contentContainerStyle={{flexGrow: 1}}
+            sections={searchResult}
             renderItem={renderContactList}
-            keyExtractor={(item) => item.recordID}
+            renderSectionHeader={({section}) => {
+              return (
+                <AppText style={styles.sectionHeader}>{section?.title}</AppText>
+              );
+            }}
+            ListEmptyComponent={
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignSelf: 'center',
+                  alignItems: 'center',
+                }}>
+                <AppIcon style={{marginBottom: 16}} name="imgDot" />
+                <AppText>검색 결과가 없습니다.</AppText>
+              </View>
+            }
           />
         )
       ) : (
