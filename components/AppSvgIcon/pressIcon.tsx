@@ -1020,6 +1020,31 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       </Defs>
     </Svg>,
   ],
+  imgDot: [
+    <Svg
+      width="63"
+      height="62"
+      viewBox="0 0 63 62"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="31.5" cy="31" r="30" fill="url(#ngstt6sjza)" />
+      <Circle cx="17.5" cy="31" r="3" fill="#4F99FF" />
+      <Circle cx="31.5" cy="31" r="3" fill="#4F99FF" />
+      <Circle cx="45.5" cy="31" r="3" fill="#4F99FF" />
+      <Defs>
+        <LinearGradient
+          id="ngstt6sjza"
+          x1="13.722"
+          y1="6.556"
+          x2="61.5"
+          y2="71"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#E1EDFF" />
+          <Stop offset="1" stopColor="#F8FAFE" />
+        </LinearGradient>
+      </Defs>
+    </Svg>,
+  ],
   clear: [
     <Svg
       width="16"
