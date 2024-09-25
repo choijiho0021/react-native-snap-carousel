@@ -1,5 +1,5 @@
-import React, {useCallback, useMemo, useState} from 'react';
-import {Image, Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
+import React from 'react';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import AppText from '@/components/AppText';
 
@@ -12,7 +12,6 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
-import Env from '@/environment';
 import AppButton from '@/components/AppButton';
 import {RouteProp} from '@react-navigation/native';
 import {goBack, HomeStackParamList} from '@/navigation/navigation';
@@ -22,52 +21,7 @@ import AppBackButton from '@/components/AppBackButton';
 import {API} from '@/redux/api';
 import AppAlert from '@/components/AppAlert';
 
-const {isIOS} = Env.get();
-
 const styles = StyleSheet.create({
-  bodyBox: {
-    position: 'absolute',
-    paddingTop: 20,
-    paddingBottom: 40,
-    backgroundColor: 'white',
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    borderColor: colors.line,
-    shadowColor: colors.black8,
-    height: 272,
-    bottom: 0,
-    width: '100%',
-  },
-  storeBox: {
-    position: 'absolute',
-    paddingTop: 20,
-    paddingBottom: 40,
-    backgroundColor: 'white',
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    borderColor: colors.line,
-    shadowColor: colors.black8,
-    height: 480,
-    bottom: 0,
-    width: '100%',
-  },
-  modalClose: {
-    justifyContent: 'center',
-    // height: 56,
-    alignItems: 'flex-end',
-    width: 26,
-    height: 26,
-  },
-  head: {
-    height: 120,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignContent: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 28,
-    gap: 6,
-  },
   modalButtonTitle: {
     ...appStyles.medium18,
     color: colors.white,
@@ -98,8 +52,6 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
   account: {iccid, token, mobile},
   route,
 }) => {
-  const [isFirstReword, setIsFirstReward] = useState(0);
-
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View
@@ -120,16 +72,14 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
             width: '100%',
           }}>
           <AppStyledText
-            text={'로깨비톡 런칭 기념\n<b>0,000 톡포인트</b>가 도착했어요.'}
+            text={i18n.t('talk:reward:title')}
             textStyle={[appStyles.bold22Text, {color: colors.black}]}
             format={{b: {color: colors.redBold}}}
           />
 
           <View style={{marginTop: 30}}>
             <AppStyledText
-              text={
-                '해외 여행 중에도 <b>30분간 무료 통화</b>에요!\n(한국 발신 기준)'
-              }
+              text={i18n.t('talk:reward:body')}
               textStyle={[appStyles.normal16Text, {color: colors.black}]}
               format={{b: [appStyles.bold16Text, {color: colors.redBold}]}}
             />
@@ -171,11 +121,11 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
 
                 if (rsp?.result === 0) {
                   navigation.navigate('RkbTalk');
-                } else AppAlert.info('리워드 지급 대상이 아닙니다.');
+                } else AppAlert.info(i18n.t('talk:reward:error'));
               });
             }
           }}
-          title={'지금 바로 톡포인트 받기'}
+          title={i18n.t('talk:reward:btn')}
           titleStyle={[styles.modalButtonTitle]}
         />
         <AppButton
@@ -184,9 +134,9 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
             backgroundColor: colors.white,
           }}
           onPress={() => {
-            goBack(navgiation, route);
+            goBack(navigation, route);
           }}
-          title={'다음에 받기'}
+          title={i18n.t('talk:reward:btn2')}
           titleStyle={[styles.modalButtonTitle, {color: colors.gray02}]}
         />
       </View>

@@ -2,10 +2,8 @@ import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {Linking, StyleSheet, View} from 'react-native';
 import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
-import Video from 'react-native-video';
 import moment from 'moment';
 import i18n from '@/utils/i18n';
-import {AuthParams} from '@/navigation/navigation';
 import utils from '@/redux/api/utils';
 import AppAlert from '@/components/AppAlert';
 import {appStyles} from '@/constants/Styles';
@@ -26,7 +24,7 @@ export const pgWebViewConfig = {
 };
 
 type AuthGatewayScreenProps = {
-  info: AuthParams;
+  mobile: string;
   callback: (
     result: AuthResultCallbackParam,
     errorMsg?: AuthResponseType,
@@ -36,13 +34,6 @@ type AuthGatewayScreenProps = {
 // const loadingImg = require('../../assets/images/loading_1.mp4');
 
 const styles = StyleSheet.create({
-  backgroundVideo: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 80,
-    right: 0,
-  },
   loading: {
     position: 'absolute',
     left: 0,
@@ -169,13 +160,6 @@ const AppAuthGateway: React.FC<AuthGatewayScreenProps> = ({
     return (
       <>
         <View style={styles.loading}>
-          {/* <Video
-            source={loadingImg}
-            repeat
-            style={styles.backgroundVideo}
-            resizeMode="cover"
-            mixWithOthers="mix"
-          /> */}
           <AppText style={styles.infoText}>{i18n.t('pym:loadingInfo')}</AppText>
         </View>
 
@@ -229,7 +213,7 @@ const AppAuthGateway: React.FC<AuthGatewayScreenProps> = ({
         javaScriptCanOpenWindowsAutomatically
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         onLoadEnd={onLoadEnd}
-        source={{html: html}}
+        source={{html}}
       />
       {loading ? <>{renderLoading()}</> : null}
     </>

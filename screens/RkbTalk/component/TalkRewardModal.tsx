@@ -6,58 +6,13 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppStyledText from '@/components/AppStyledText';
 
-import Env from '@/environment';
+import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import {useNavigation} from '@react-navigation/native';
 import AppModal from '@/components/AppModal';
 import AppIcon from '@/components/AppIcon';
 
-const {isIOS} = Env.get();
-
 const styles = StyleSheet.create({
-  bodyBox: {
-    position: 'absolute',
-    paddingTop: 20,
-    paddingBottom: 40,
-    backgroundColor: 'white',
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    borderColor: colors.line,
-    shadowColor: colors.black8,
-    height: 272,
-    bottom: 0,
-    width: '100%',
-  },
-  storeBox: {
-    position: 'absolute',
-    paddingTop: 20,
-    paddingBottom: 40,
-    backgroundColor: 'white',
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    borderColor: colors.line,
-    shadowColor: colors.black8,
-    height: 480,
-    bottom: 0,
-    width: '100%',
-  },
-  modalClose: {
-    justifyContent: 'center',
-    // height: 56,
-    alignItems: 'flex-end',
-    width: 26,
-    height: 26,
-  },
-  head: {
-    height: 120,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignContent: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 28,
-    gap: 6,
-  },
   modalButtonTitle: {
     ...appStyles.medium18,
     color: colors.white,
@@ -76,20 +31,6 @@ const TalkRewardModal: React.FC<TalkRewardModalProps> = ({
   onClick,
 }) => {
   const navigation = useNavigation();
-
-  const title = useMemo(() => {
-    return (
-      <View
-        style={{
-          paddingVertical: 24,
-          height: 108,
-        }}>
-        <AppText style={[appStyles.bold24Text, {lineHeight: 30}]}>
-          {`데이터만 있으면\n언제 어디서든 톡톡!`}
-        </AppText>
-      </View>
-    );
-  }, []);
 
   return (
     <AppModal
@@ -143,7 +84,7 @@ const TalkRewardModal: React.FC<TalkRewardModalProps> = ({
               navigation.navigate('TalkReward');
               onClick();
             }}
-            title={'자세히 보기'}
+            title={i18n.t('talk:reward:modal:btn')}
             titleStyle={[styles.modalButtonTitle]}
           />
         </View>
@@ -157,16 +98,14 @@ const TalkRewardModal: React.FC<TalkRewardModalProps> = ({
       visible={visible}>
       <View>
         <AppStyledText
-          text={'로깨비톡 런칭 기념\n<b>0,000 톡포인트</b>가 도착했어요.'}
+          text={i18n.t('talk:reward:modal:body1')}
           textStyle={[appStyles.bold22Text, {color: colors.white}]}
           format={{b: {color: colors.redBold}}}
         />
 
         <View style={{marginTop: 30}}>
           <AppStyledText
-            text={
-              '해외 여행 중에도 <b>30분간 무료 통화</b>에요!\n(한국 발신 기준)'
-            }
+            text={i18n.t('talk:reward:modal:body2')}
             textStyle={[appStyles.normal16Text, {color: colors.white}]}
             format={{b: [appStyles.bold16Text, {color: colors.redBold}]}}
           />

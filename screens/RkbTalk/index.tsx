@@ -587,16 +587,12 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     );
   }, [connected, initial, talkPointBtn, time]);
 
-  const renderBody = useMemo(() => {
-    return isSuccessAuth ? (
+  const renderRkbTalkMain = useMemo(
+    () => (
       <>
         <View style={styles.topView}>
           <View style={styles.topRow}>
             <View style={{flex: 1}} />
-            <AppText
-              style={{
-                marginLeft: 10,
-              }}>{`test. current realMobile : ${realMobile}`}</AppText>
             <AppText
               style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
 
@@ -673,16 +669,6 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           </AppText>
         </View>
         <View style={{flex: 1}}>{info()}</View>
-        {/* <AppButton
-          title={'화면 테스트'}
-          onPress={() => navigation.navigate('TalkReward')}
-          style={{
-            flex: 1,
-            backgroundColor: 'red',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        /> */}
         <View>
           <Keypad
             navigation={navigation}
@@ -696,25 +682,26 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           <View style={{height: 40}} />
         </View>
       </>
-    ) : (
-      <PhoneCertBox />
-    );
-  }, [
-    connected,
-    digit,
-    info,
-    initial,
-    isSuccessAuth,
-    maxTime,
-    min,
-    navigation,
-    onPressKeypad,
-    printCCInfo,
-    realMobile,
-    sessionState,
-    showWarning,
-    splitCC,
-  ]);
+    ),
+    [
+      connected,
+      digit,
+      info,
+      initial,
+      maxTime,
+      min,
+      navigation,
+      onPressKeypad,
+      printCCInfo,
+      sessionState,
+      showWarning,
+      splitCC,
+    ],
+  );
+
+  const renderBody = useMemo(() => {
+    return isSuccessAuth ? renderRkbTalkMain : <PhoneCertBox />;
+  }, [isSuccessAuth, renderRkbTalkMain]);
 
   // Options for SimpleUser
   // TODO

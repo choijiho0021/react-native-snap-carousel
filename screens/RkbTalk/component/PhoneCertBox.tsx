@@ -6,31 +6,13 @@ import AppText from '@/components/AppText';
 
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import AppBottomModal from '@/screens/DraftUsScreen/component/AppBottomModal';
 import AppStyledText from '@/components/AppStyledText';
 import i18n from '@/utils/i18n';
 
-import Env from '@/environment';
 import AppButton from '@/components/AppButton';
-import AppAuthGateway from './AuthGateway';
 import {useNavigation} from '@react-navigation/native';
 
-const {isIOS} = Env.get();
-
 const styles = StyleSheet.create({
-  bodyBox: {
-    position: 'absolute',
-    paddingTop: 20,
-    paddingBottom: 40,
-    backgroundColor: 'white',
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    borderColor: colors.line,
-    shadowColor: colors.black8,
-    height: 272,
-    bottom: 0,
-    width: '100%',
-  },
   storeBox: {
     position: 'absolute',
     paddingTop: 20,
@@ -44,13 +26,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
   },
-  modalClose: {
-    justifyContent: 'center',
-    // height: 56,
-    alignItems: 'flex-end',
-    width: 26,
-    height: 26,
-  },
   head: {
     height: 120,
     flexDirection: 'row',
@@ -63,11 +38,9 @@ const styles = StyleSheet.create({
   },
 });
 
-type PhoneCertBoxProps = {
-  onClickButton: (val) => void;
-};
+type PhoneCertBoxProps = {};
 
-const PhoneCertBox: React.FC<PhoneCertBoxProps> = ({onClickButton}) => {
+const PhoneCertBox: React.FC<PhoneCertBoxProps> = ({}) => {
   const navigation = useNavigation();
 
   const title = useMemo(() => {
@@ -78,8 +51,7 @@ const PhoneCertBox: React.FC<PhoneCertBoxProps> = ({onClickButton}) => {
           height: 108,
         }}>
         <AppText style={[appStyles.bold24Text, {lineHeight: 30}]}>
-          {`데이터만 있으면\n언제 어디서든 톡톡!`}
-          {/* {i18n.t('"데이터만 있으면\n언제 어디서든 톡톡!"')} */}
+          {i18n.t('talk:modal:title')}
         </AppText>
       </View>
     );
@@ -94,7 +66,7 @@ const PhoneCertBox: React.FC<PhoneCertBoxProps> = ({onClickButton}) => {
         }}>
         <View style={{marginBottom: 48, gap: 8}}>
           <AppStyledText
-            text={`<b>휴대폰 본인인증</b>\n로깨비톡 이용을 위해 본인 인증이 필요해요.`}
+            text={i18n.t('talk:modal:body')}
             textStyle={[
               appStyles.medium16,
               {color: colors.black, lineHeight: 24, letterSpacing: -0.16},
@@ -102,7 +74,7 @@ const PhoneCertBox: React.FC<PhoneCertBoxProps> = ({onClickButton}) => {
             format={{b: [appStyles.bold16Text, {color: colors.clearBlue}]}}
           />
           <AppStyledText
-            text={'로그아웃 시 인증 정보는 초기화됩니다.'}
+            text={i18n.t('talk:modal:info')}
             textStyle={[appStyles.semiBold14Text, {color: colors.gray2}]}
           />
           <Image
@@ -118,16 +90,14 @@ const PhoneCertBox: React.FC<PhoneCertBoxProps> = ({onClickButton}) => {
             height: 52,
             backgroundColor: colors.blue,
           }}
-          title="인증하기"
+          title={i18n.t('talk:modal:btn')}
           onPress={() => {
-            // onClickButton('test');
-            // setVisible(false);
-            navigation.navigate('AuthGateway', {});
+            navigation.navigate('AuthGateway');
           }}
         />
       </View>
     );
-  }, []);
+  }, [navigation]);
 
   return (
     <View style={{flex: 1}}>
