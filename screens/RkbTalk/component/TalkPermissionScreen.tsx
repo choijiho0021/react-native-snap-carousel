@@ -1,5 +1,5 @@
-import React from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import React, {useCallback} from 'react';
+import {Platform, SafeAreaView, StyleSheet, View} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RouteProp} from '@react-navigation/native';
 import AppText from '@/components/AppText';
@@ -10,6 +10,7 @@ import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import {HomeStackParamList} from '@/navigation/navigation';
 import AppIcon from '@/components/AppIcon';
+import {PERMISSIONS, requestMultiple} from 'react-native-permissions';
 
 const styles = StyleSheet.create({
   modalButtonTitle: {
@@ -38,12 +39,27 @@ type TalkPermissionScreenProps = {
 const TalkPermissionScreen: React.FC<TalkPermissionScreenProps> = ({
   navigation,
 }) => {
+  const onClick = useCallback(async () => {
+    const permissions =
+      Platform.OS === 'ios'
+        ? [PERMISSIONS.IOS.MICROPHONE, PERMISSIONS.IOS.CONTACTS]
+        : [PERMISSIONS.ANDROID.RECORD_AUDIO, PERMISSIONS.ANDROID.READ_CONTACTS];
+
+    const statuses = await requestMultiple(permissions);
+
+    console.log(
+      'MICROPHONE, CONTACTS :',
+      permissions.map((r) => statuses[r]),
+    );
+
+    navigation.goBack();
+  }, [navigation]);
+
   return (
     <SafeAreaView
       style={{
         flex: 1,
         backgroundColor: 'white',
-        // justifyContent: 'space-around',
       }}>
       <View style={{marginHorizontal: 20, flex: 1}}>
         <View style={{gap: 8, marginTop: 80}}>
@@ -51,7 +67,11 @@ const TalkPermissionScreen: React.FC<TalkPermissionScreenProps> = ({
             {i18n.t(`talk:permission:title`)}
           </AppText>
 
-          <AppText style={[appStyles.bold24Text, {color: colors.black}]}>
+          <AppText
+            style={[
+              appStyles.bold24Text,
+              {color: colors.black, lineHeight: 28},
+            ]}>
             {i18n.t(`talk:permission:body`)}
           </AppText>
         </View>
@@ -100,16 +120,14 @@ const TalkPermissionScreen: React.FC<TalkPermissionScreenProps> = ({
           }}
           type="primary"
           onPress={() => {
-            navigation.goBack();
+            onClick();
           }}
-          title={'확인' || i18n.t('talk:reward:btn')}
+          title={i18n.t('talk:permission:btn')}
           titleStyle={[styles.modalButtonTitle]}
         />
       </View>
     </SafeAreaView>
   );
 };
-
-// export default memo(TalkPermissionScreen);
 
 export default TalkPermissionScreen;

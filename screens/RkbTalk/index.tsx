@@ -1,6 +1,7 @@
 import {
   RouteProp,
   useFocusEffect,
+  useIsFocused,
   useNavigation,
 } from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -26,6 +27,7 @@ import {
   UserAgent,
   UserAgentOptions,
 } from 'sip.js';
+import AsyncStorage from '@react-native-community/async-storage';
 import {isNumber} from 'underscore';
 import Contacts from 'react-native-contacts';
 import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
@@ -53,6 +55,7 @@ import PhoneCertBox from './component/PhoneCertBox';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
 import AppModal from '@/components/AppModal';
 import {appStyles} from '@/constants/Styles';
+import AppButton from '@/components/AppButton';
 
 const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 
@@ -174,6 +177,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   modalContent: {
     marginHorizontal: 0,
     backgroundColor: colors.white,
@@ -235,7 +243,6 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [point, setPoint] = useState<number>(0);
   const [pntError, setPntError] = useState<boolean>(false);
   const [digit, setDigit] = useState('');
-  const [showCheckModal, setShowCheckModal] = useState<boolean>(true);
   const min = useMemo(() => {
     const checkRemain = (maxTime || 0) - duration;
     return maxTime
@@ -243,11 +250,24 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       : undefined;
   }, [duration, maxTime]);
 
+  const isFocused = useIsFocused();
   const [isSuccessAuth, setIsSuccessAuth] = useState(false);
 
   useEffect(() => {
     setIsSuccessAuth((realMobile || '') !== '');
   }, [mobile, realMobile]);
+
+  useEffect(() => {
+    // 앱 첫 실행 여부 확인
+    if (realMobile && isFocused) {
+      AsyncStorage.getItem('alreadyRkbLaunched').then((result) => {
+        if (result == null) {
+          navigation.navigate('TalkPermission');
+          AsyncStorage.setItem('alreadyRkbLaunched', 'true');
+        }
+      });
+    }
+  }, [isFocused, navigation, realMobile]);
 
   const {top} = useSafeAreaInsets();
   const showWarning = useMemo(() => {
@@ -734,27 +754,6 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   // register 실패하면 deactivate
   // AOR 개수 확인
 
-  // const renderModal = useMemo(() => {
-  //   <AppModal
-  //     type="close"
-  //     justifyContent="flex-end"
-  //     titleViewStyle={{justifyContent: 'flex-start'}}
-  //     contentStyle={styles.modalContent}
-  //     onOkClose={() => setShowCheckModal(false)}
-  //     visible={showCheckModal}>
-  //     <View
-  //       style={[styles.row, {justifyContent: 'flex-start', marginBottom: 16}]}>
-  //       <AppSvgIcon name="cautionIcon" />
-  //       <AppText style={styles.modalTitleText}>
-  //         {'test'}
-  //       </AppText>
-  //     </View>
-  //     <AppText style={styles.modalBodyText}>
-  //       {'test'}
-  //     </AppText>
-  //   </AppModal>;
-  // }, [showCheckModal]);
-
   useFocusEffect(
     React.useCallback(() => {
       const transportOptions = {
@@ -824,6 +823,21 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           styles.body,
           {backgroundColor: isSuccessAuth ? 'white' : 'rgba(0, 0, 0, 0.3)'},
         ]}>
+        {/* <AppButton
+          style={{
+            width: 120,
+            height: 30,
+            backgroundColor: 'red',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          title={'권한화면테스트1'}
+          onPress={() => {
+            AsyncStorage.removeItem('alreadyRkbLaunched');
+            console.log('@@@ talkpermission btn');
+            // navigation.navigate('TalkPermission');
+          }}
+        /> */}
         {renderBody}
       </SafeAreaView>
     </>

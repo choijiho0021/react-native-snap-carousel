@@ -9,13 +9,11 @@ export async function requestPermission() {
     await requestTrackingPermission();
     await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
     await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
-    await request(PERMISSIONS.IOS.CONTACTS);
     await messaging().requestPermission();
   } else if (Platform.OS === 'android') {
     // await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
     await request(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES);
     await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
-    await request(PERMISSIONS.ANDROID.READ_CONTACTS);
     await messaging().requestPermission();
   }
 }

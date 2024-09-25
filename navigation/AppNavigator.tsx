@@ -26,7 +26,6 @@ import {
   Linking,
   Platform,
   Modal,
-  AppState,
 } from 'react-native';
 import Env from '@/environment';
 import {actions as cartActions} from '@/redux/modules/cart';
