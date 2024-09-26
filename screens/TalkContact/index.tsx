@@ -96,35 +96,31 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     paddingLeft: 20,
     backgroundColor: colors.white,
-    // borderWidth: 1,
-    // borderColor: colors.black,
     alignContent: 'center',
     height: 24,
     lineHeight: 24,
     letterSpacing: -0.16,
-    // textAlignVertical: 'center',
-    // alignItems: 'center',
     color: colors.warmGrey,
   },
 });
 
-type ContactsScreenNavigationProp = StackNavigationProp<
+type TalkContactScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
   'TalkContact'
 >;
 
-type ContactsScreenRouteProp = RouteProp<HomeStackParamList, 'TalkContact'>;
+type TalkContactScreenRouteProp = RouteProp<HomeStackParamList, 'TalkContact'>;
 
-type ContactsScreenProps = {
-  navigation: ContactsScreenNavigationProp;
-  route: ContactsScreenRouteProp;
+type TalkContactScreenProps = {
+  navigation: TalkContactScreenNavigationProp;
+  route: TalkContactScreenRouteProp;
   talk: TalkModelState;
   action: {
     talk: TalkAction;
   };
 };
 
-const ContactsScreen: React.FC<ContactsScreenProps> = ({
+const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
   navigation,
   route: {params},
   talk: {contacts},
@@ -150,13 +146,18 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
           ? PERMISSIONS.IOS.CONTACTS
           : PERMISSIONS.ANDROID.READ_CONTACTS;
       const result = await check(permission);
-      console.log('@@@ res2 ', result);
+
       return result === RESULTS.GRANTED || result === RESULTS.UNAVAILABLE;
     };
 
     Promise.resolve(checkPermission()).then((r) => {
-      setShowContacts(r);
-      if (r) action.talk.getContacts();
+      if (r) {
+        Promise.resolve(action.talk.getContacts()).then((a) => {
+          if (a?.type?.includes('rejected') || a?.payload?.message === 'denied')
+            setShowContacts(false);
+          else setShowContacts(true);
+        });
+      }
     });
   }, []);
 
@@ -583,4 +584,4 @@ export default connect(
       talk: bindActionCreators(talkActions, dispatch),
     },
   }),
-)(ContactsScreen);
+)(TalkContactScreen);
