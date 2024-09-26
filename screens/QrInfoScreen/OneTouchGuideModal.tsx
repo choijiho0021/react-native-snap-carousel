@@ -52,7 +52,7 @@ const OneTouchGuideModal: React.FC<OneTouchGuideModalProps> = ({
           </AppText>
           <AppText
             style={{
-              ...appStyles.medium16,
+              ...appStyles.normal16Text,
               lineHeight: 24,
               color: colors.warmGrey,
             }}>
@@ -74,6 +74,7 @@ const OneTouchGuideModal: React.FC<OneTouchGuideModalProps> = ({
               flex: 1,
               marginTop: 56,
               paddingHorizontal: 20,
+              borderRadius: 8,
             }}
             onPress={() => {}}>
             <View style={styles.title}>
@@ -87,7 +88,7 @@ const OneTouchGuideModal: React.FC<OneTouchGuideModalProps> = ({
 
             <AppStyledText
               text={i18n.t('esim:oneTouch:guide:info1')}
-              textStyle={{...appStyles.medium16, lineHeight: 24}}
+              textStyle={{...appStyles.normal16Text, lineHeight: 24}}
               format={{
                 b: {
                   ...appStyles.bold16Text,
@@ -107,7 +108,7 @@ const OneTouchGuideModal: React.FC<OneTouchGuideModalProps> = ({
                 }}
                 format={{
                   b: {
-                    ...appStyles.medium14,
+                    ...appStyles.bold14Text,
                     lineHeight: 22,
                   },
                 }}
@@ -134,7 +135,8 @@ const OneTouchGuideModal: React.FC<OneTouchGuideModalProps> = ({
             <View
               style={{
                 flexDirection: 'row',
-                marginTop: 24,
+                marginTop: 12,
+                marginBottom: 16,
                 alignItems: 'center',
               }}>
               <AppIcon name="question26" style={{marginRight: 8}} />

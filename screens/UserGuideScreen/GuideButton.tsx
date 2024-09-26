@@ -36,13 +36,19 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
   btnBody: {
-    ...appStyles.semiBold16Text,
+    ...appStyles.medium16,
     lineHeight: 24,
     color: colors.warmGrey,
   },
   btnBody2: {
-    ...appStyles.medium16,
-    lineHeight: 24,
+    ...appStyles.medium14,
+    lineHeight: 22,
+    color: colors.warmGrey,
+    marginLeft: 4,
+  },
+  btnBody2Bold: {
+    ...appStyles.bold14Text,
+    lineHeight: 22,
     color: colors.warmGrey,
     marginLeft: 4,
   },
@@ -110,9 +116,11 @@ const GuideButton = ({
             {item === 'checkSetting' && (
               <View style={{flexDirection: 'row', paddingRight: 20}}>
                 <AppSvgIcon name="greyWarning" style={{top: 4}} />
-                <AppText style={styles.btnBody2}>
-                  {i18n.t(`userGuide:${item}:body2`)}
-                </AppText>
+                <AppStyledText
+                  text={i18n.t(`userGuide:${item}:body2`)}
+                  textStyle={styles.btnBody2}
+                  format={{b: styles.btnBody2Bold}}
+                />
               </View>
             )}
           </View>
