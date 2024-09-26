@@ -29,6 +29,7 @@ import {
 import {isNumber} from 'underscore';
 import Contacts from 'react-native-contacts';
 import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
+import {bindActionCreators} from 'redux';
 import {actions as talkActions, TalkAction} from '@/redux/modules/talk';
 import AppAlert from '@/components/AppAlert';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -42,7 +43,6 @@ import {useInterval} from '@/utils/useInterval';
 import CallToolTip from './CallToolTip';
 import Keypad, {KeypadRef} from './Keypad';
 
-import {bindActionCreators} from 'redux';
 import {RootState} from '@/redux';
 import {
   AccountAction,
@@ -116,7 +116,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.lightGrey,
   },
-
   timer: {
     height: 22,
     fontSize: 14,
@@ -253,6 +252,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const showWarning = useMemo(() => {
     return (min && min <= 2) || false;
   }, [min]);
+
   const initial = useMemo(
     () =>
       !sessionState ||
@@ -535,6 +535,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       const userAgentOptions: UserAgentOptions = {
         authorizationPassword: '000000', // 000000
         authorizationUsername: '01059119737',
+        // authorizationUsername: '01059119737', // 07079190190
         transportOptions,
         uri,
         sessionDescriptionHandlerFactory: (session, options) => {
@@ -581,7 +582,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     }, []),
   );
 
-  // talkpoint 가져오지 못할 경우 (undefined)
+  // talkpoint 가져오지 못할 경우 0 처리
   const talkPointBtn = useCallback(() => {
     return (
       <>
@@ -618,9 +619,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         <View style={styles.topView}>
           <View style={styles.topRow}>
             <View style={{flex: 1}} />
-            <AppText
-              style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
-
+            {/* <AppText  style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText> */}
             {printCCInfo && (
               <View
                 style={{
