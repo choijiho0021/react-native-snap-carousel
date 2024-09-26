@@ -485,7 +485,13 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
           <AppButton
             style={[styles.button, btnStyle]}
             type="primary"
-            title={isProdEvent ? title : rule?.btnTitle || i18n.t('ok')}
+            title={
+              rule?.btnTitle
+                ? rule?.btnTitle
+                : isProdEvent
+                ? title
+                : i18n.t('ok')
+            }
             disabled={disabled}
             onPress={onPress}
           />
