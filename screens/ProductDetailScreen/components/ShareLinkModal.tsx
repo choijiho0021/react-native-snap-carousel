@@ -139,7 +139,7 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
                 },
                 {
                   key: 'country',
-                  value: country.country,
+                  value: country.country.join(','),
                 },
                 {
                   key: 'partnerId',
@@ -163,7 +163,7 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
                 },
                 {
                   key: 'webLink',
-                  value: shareWebViewLink(uuid, country, false, false),
+                  value: shareWebViewLink(uuid, country, false),
                 },
               ]
             : [
@@ -205,7 +205,7 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
                 },
                 {
                   key: 'webLink',
-                  value: shareWebViewLink(uuid, country, false, false),
+                  value: shareWebViewLink(uuid, country, false),
                 },
               ],
       });
