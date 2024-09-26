@@ -382,12 +382,14 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
   }, [bodyTitle, getContent, key, text]);
 
   const title = useMemo(() => {
-    if (isProdEvent) {
-      return loggedIn ? `promo:join:${eventStatus}` : 'promo:login';
-    }
     if (props?.route?.params?.title) {
       return props?.route?.params?.title;
     }
+
+    if (isProdEvent) {
+      return i18n.t(loggedIn ? `promo:join:${eventStatus}` : 'promo:login');
+    }
+
     return 'ok';
   }, [eventStatus, isProdEvent, loggedIn, props?.route?.params?.title]);
 
@@ -483,7 +485,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
           <AppButton
             style={[styles.button, btnStyle]}
             type="primary"
-            title={disabled ? i18n.t(title) : rule?.btnTitle || i18n.t(title)}
+            title={isProdEvent ? title : rule?.btnTitle || i18n.t('ok')}
             disabled={disabled}
             onPress={onPress}
           />
