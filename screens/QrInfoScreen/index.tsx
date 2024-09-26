@@ -168,7 +168,8 @@ const styles = StyleSheet.create({
   oneTouchReg: {
     marginTop: 24,
     backgroundColor: colors.clearBlue,
-    paddingVertical: 8,
+    paddingVertical: 13,
+    paddingHorizontal: 16,
     borderRadius: 3,
     justifyContent: 'center',
   },
@@ -197,12 +198,12 @@ const styles = StyleSheet.create({
     marginLeft: 2,
   },
   tabTitle: {
-    ...appStyles.medium18,
+    ...appStyles.medium16,
     lineHeight: 26,
     color: colors.gray2,
   },
   selectedTabTitle: {
-    ...appStyles.bold18Text,
+    ...appStyles.bold16Text,
     color: colors.black,
   },
   cardCheckDescTxt: {
@@ -222,6 +223,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     height: 50,
     paddingHorizontal: 20,
+    marginTop: 24,
   },
   btnCnter: {
     width: 40,
