@@ -67,76 +67,83 @@ const OneTouchGuideModal: React.FC<OneTouchGuideModalProps> = ({
   return (
     <Modal visible={visible} animationType="fade" transparent>
       <SafeAreaView style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.5)'}}>
-        <View
-          style={{
-            backgroundColor: colors.white,
-            flex: 1,
-            marginTop: 56,
-            paddingHorizontal: 20,
-          }}>
-          <View style={styles.title}>
-            <AppText style={appStyles.bold20Text}>
-              {i18n.t('esim:oneTouch:guide')}
-            </AppText>
-            <Pressable onPress={() => onOkClose()}>
-              <AppIcon name="boldCancelBlack" />
-            </Pressable>
-          </View>
-
-          <AppStyledText
-            text={i18n.t('esim:oneTouch:guide:info1')}
-            textStyle={{...appStyles.medium16, lineHeight: 24}}
-            format={{
-              b: {
-                ...appStyles.bold16Text,
-                lineHeight: 24,
-                color: colors.clearBlue,
-              },
+        <Pressable style={{flex: 1}} onPress={() => onOkClose()}>
+          <Pressable
+            style={{
+              backgroundColor: colors.white,
+              flex: 1,
+              marginTop: 56,
+              paddingHorizontal: 20,
             }}
-          />
+            onPress={() => {}}>
+            <View style={styles.title}>
+              <AppText style={appStyles.bold20Text}>
+                {i18n.t('esim:oneTouch:guide')}
+              </AppText>
+              <Pressable onPress={() => onOkClose()}>
+                <AppIcon name="boldCancelBlack" />
+              </Pressable>
+            </View>
 
-          <View style={{marginVertical: 12}}>
             <AppStyledText
-              text={i18n.t('esim:oneTouch:guide:info2')}
-              textStyle={{
-                ...appStyles.medium14,
-                lineHeight: 22,
-                color: colors.warmGrey,
-              }}
+              text={i18n.t('esim:oneTouch:guide:info1')}
+              textStyle={{...appStyles.medium16, lineHeight: 24}}
               format={{
                 b: {
-                  ...appStyles.medium14,
-                  lineHeight: 22,
+                  ...appStyles.bold16Text,
+                  lineHeight: 24,
+                  color: colors.clearBlue,
                 },
               }}
             />
-          </View>
 
-          <Image
-            source={require('@/assets/images/esim/oneTouchGuide.jpg')}
-            style={{width: '100%', marginBottom: 4}}
-          />
+            <View style={{marginVertical: 12}}>
+              <AppStyledText
+                text={i18n.t('esim:oneTouch:guide:info2')}
+                textStyle={{
+                  ...appStyles.medium14,
+                  lineHeight: 22,
+                  color: colors.warmGrey,
+                }}
+                format={{
+                  b: {
+                    ...appStyles.medium14,
+                    lineHeight: 22,
+                  },
+                }}
+              />
+            </View>
 
-          {renderMarker(
-            'A',
-            i18n.t('esim:oneTouch:guide:marker1:title'),
-            i18n.t('esim:oneTouch:guide:marker1:txt'),
-            colors.clearBlue,
-          )}
-          {renderMarker(
-            'B',
-            i18n.t('esim:oneTouch:guide:marker2:title'),
-            i18n.t('esim:oneTouch:guide:marker2:txt'),
-            colors.shamrock,
-          )}
-          <View
-            style={{flexDirection: 'row', marginTop: 24, alignItems: 'center'}}>
-            <AppIcon name="question26" style={{marginRight: 8}} />
-            <AppText style={appStyles.bold14Text}>
-              {i18n.t('esim:oneTouch:guide:question:txt')}
-            </AppText>
-          </View>
-        </View>
+            <Image
+              source={require('@/assets/images/esim/oneTouchGuide.jpg')}
+              style={{width: '100%', marginBottom: 4}}
+            />
+
+            {renderMarker(
+              'A',
+              i18n.t('esim:oneTouch:guide:marker1:title'),
+              i18n.t('esim:oneTouch:guide:marker1:txt'),
+              colors.clearBlue,
+            )}
+            {renderMarker(
+              'B',
+              i18n.t('esim:oneTouch:guide:marker2:title'),
+              i18n.t('esim:oneTouch:guide:marker2:txt'),
+              colors.shamrock,
+            )}
+            <View
+              style={{
+                flexDirection: 'row',
+                marginTop: 24,
+                alignItems: 'center',
+              }}>
+              <AppIcon name="question26" style={{marginRight: 8}} />
+              <AppText style={appStyles.bold14Text}>
+                {i18n.t('esim:oneTouch:guide:question:txt')}
+              </AppText>
+            </View>
+          </Pressable>
+        </Pressable>
       </SafeAreaView>
     </Modal>
   );
