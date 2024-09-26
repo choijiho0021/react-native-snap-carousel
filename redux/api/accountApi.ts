@@ -67,25 +67,25 @@ const toAccount = (
   if (!_.isEmpty(data._links) || !_.isEmpty(data.nid)) {
     return api.success([
       {
-        nid: utils.stringToNumber(data.nid[0].value) || 0,
+        nid: utils.stringToNumber(data.nid[0]?.value) || 0,
         uuid: data.uuid[0].value,
-        iccid: data.title && data.title[0].value,
-        status: data.field_status && data.field_status[0].value,
+        iccid: data.title && data.title[0]?.value,
+        status: data.field_status && data.field_status[0]?.value,
         expDate:
-          data.field_expiration_date && data.field_expiration_date[0].value,
+          data.field_expiration_date && data.field_expiration_date[0]?.value,
         balance:
           (data.field_balance &&
-            utils.stringToNumber(data.field_balance[0].value)) ||
+            utils.stringToNumber(data.field_balance[0]?.value)) ||
           0,
         actDate:
-          data.field_activation_date && data.field_activation_date[0].value,
+          data.field_activation_date && data.field_activation_date[0]?.value,
         firstActDate:
           data.field_first_activation_date &&
-          data.field_first_activation_date[0].value,
-        mobile: data.field_mobile && data.field_mobile[0].value,
+          data.field_first_activation_date[0]?.value,
+        mobile: data.field_mobile && data.field_mobile[0]?.value,
         old_deviceToken:
-          data.field_device_token && data.field_device_token[0].value,
-        old_fcmToken: data.field_fcm_token && data.field_fcm_token[0].value,
+          data.field_device_token && data.field_device_token[0]?.value,
+        old_fcmToken: data.field_fcm_token && data.field_fcm_token[0]?.value,
       },
     ]);
   }
