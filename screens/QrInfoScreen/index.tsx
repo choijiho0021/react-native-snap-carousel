@@ -594,15 +594,20 @@ const QrInfoScreen = () => {
           {key === 'manual' && renderManual()}
           {key === 'qr' && showQR(params.mainSubs)}
           {key === 'oneTouch' && renderOneTouch()}
-          <View
-            style={{
-              width: '100%',
-              height: 10,
-              backgroundColor: colors.whiteTwo,
-              marginVertical: 40,
-            }}
-          />
-          {canCheckEsim && renderCheckReg()}
+
+          {canCheckEsim && (
+            <>
+              <View
+                style={{
+                  width: '100%',
+                  height: 10,
+                  backgroundColor: colors.whiteTwo,
+                  marginVertical: 40,
+                }}
+              />
+              {renderCheckReg()}
+            </>
+          )}
         </ScrollView>
       );
     },

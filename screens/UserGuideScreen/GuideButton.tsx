@@ -9,7 +9,6 @@ import AppStyledText from '@/components/AppStyledText';
 
 const styles = StyleSheet.create({
   btn: {
-    padding: 30,
     borderWidth: 1,
     borderColor: colors.whiteFive,
     borderRadius: 3,
@@ -36,7 +35,8 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
   btnBody: {
-    ...appStyles.medium16,
+    ...appStyles.normal16Text,
+    fontWeight: undefined,
     lineHeight: 24,
     color: colors.warmGrey,
   },
@@ -73,7 +73,11 @@ const GuideButton = ({
       key={item}
       style={[
         styles.btn,
-        {backgroundColor: isPressed ? colors.backGrey : colors.white},
+        {
+          paddingVertical: item === 'esimDel' ? 24 : 30,
+          paddingHorizontal: 30,
+          backgroundColor: isPressed ? colors.backGrey : colors.white,
+        },
         style,
       ]}
       onPress={onPress}

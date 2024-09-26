@@ -416,7 +416,6 @@ export const appStyles = StyleSheet.create({
     fontSize: 22,
     fontStyle: 'normal',
     lineHeight: 24,
-    letterSpacing: 0.33,
     color: colors.black,
     padding: 0,
     margin: 0,

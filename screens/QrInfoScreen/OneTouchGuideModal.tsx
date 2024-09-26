@@ -6,6 +6,7 @@ import {
   View,
   Image,
   Modal,
+  ScrollView,
 } from 'react-native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -53,6 +54,7 @@ const OneTouchGuideModal: React.FC<OneTouchGuideModalProps> = ({
           <AppText
             style={{
               ...appStyles.normal16Text,
+              fontWeight: undefined,
               lineHeight: 24,
               color: colors.warmGrey,
             }}>
@@ -85,7 +87,6 @@ const OneTouchGuideModal: React.FC<OneTouchGuideModalProps> = ({
                 <AppIcon name="boldCancelBlack" />
               </Pressable>
             </View>
-
             <AppStyledText
               text={i18n.t('esim:oneTouch:guide:info1')}
               textStyle={{...appStyles.normal16Text, lineHeight: 24}}
@@ -117,9 +118,9 @@ const OneTouchGuideModal: React.FC<OneTouchGuideModalProps> = ({
 
             <Image
               source={require('@/assets/images/esim/oneTouchGuide.jpg')}
-              style={{width: '100%', marginBottom: 4}}
+              style={{width: '100%'}}
+              resizeMode="contain"
             />
-
             {renderMarker(
               'A',
               i18n.t('esim:oneTouch:guide:marker1:title'),
