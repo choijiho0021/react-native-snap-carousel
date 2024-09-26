@@ -1,10 +1,11 @@
-import React from 'react';
-import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import _ from 'underscore';
+import React, {useCallback} from 'react';
+import {Image, Pressable, StyleSheet, View} from 'react-native';
 import {Contact} from 'react-native-contacts';
+import _ from 'underscore';
+import AppIcon from '@/components/AppIcon';
+import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import AppIcon from '@/components/AppIcon';
 
 const styles = StyleSheet.create({
   itemContainer: {
@@ -16,15 +17,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'column',
     marginLeft: 20,
-  },
-  descriptionStyle: {
-    fontSize: 14,
-    color: '#515151',
-  },
-  rightAction: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
   },
   icon: {
     height: 40,
@@ -45,15 +37,85 @@ interface ContactListItemProps {
   disabled?: boolean;
   data?: Contact;
   uri?: string;
+  highlight?: number[];
 }
 
 const ContactListItem: React.FC<ContactListItemProps> = ({
   title,
   uri,
   data,
+  highlight,
   onPress = () => {},
 }) => {
-  return data ? (
+  const start = useCallback(() => {
+    return (
+      <AppText style={[appStyles.bold18Text, {color: colors.clearBlue}]}>
+        {title.substring(0, highlight[1] + 1)}
+        <AppText style={appStyles.bold18Text}>
+          {title.substring(highlight[1] + 1)}
+        </AppText>
+      </AppText>
+    );
+  }, [highlight, title]);
+
+  const center = useCallback(() => {
+    return (
+      <AppText style={appStyles.bold18Text}>
+        {title.substring(0, highlight[0])}
+        <AppText style={[appStyles.bold18Text, {color: colors.clearBlue}]}>
+          {title.substring(highlight[0], highlight[1] + 1)}
+        </AppText>
+        {title.substring(highlight[1] + 1)}
+      </AppText>
+    );
+  }, [highlight, title]);
+
+  const end = useCallback(() => {
+    return (
+      <AppText style={appStyles.bold18Text}>
+        {title.substring(0, highlight[0])}
+        <AppText style={[appStyles.bold18Text, {color: colors.clearBlue}]}>
+          {title.substring(highlight[0])}
+        </AppText>
+      </AppText>
+    );
+  }, [highlight, title]);
+
+  const checkHighlight = useCallback(() => {
+    if (highlight && highlight?.length > 0) {
+      return (
+        <View style={[styles.mainTitleContainer, {marginLeft: 16}]}>
+          {highlight[0] === 0
+            ? start()
+            : highlight[0] === title.length - 1
+            ? end()
+            : center()}
+          <AppText
+            style={[
+              appStyles.roboto16Text,
+              {color: colors.warmGrey, lineHeight: 24},
+            ]}>
+            {data?.phoneNumbers[0]?.number}
+          </AppText>
+        </View>
+      );
+    }
+
+    return (
+      <View style={[styles.mainTitleContainer, {marginLeft: 16}]}>
+        <AppText style={appStyles.normal18Text}>{title}</AppText>
+        <AppText
+          style={[
+            appStyles.roboto16Text,
+            {color: colors.warmGrey, lineHeight: 24},
+          ]}>
+          {data?.phoneNumbers[0]?.number}
+        </AppText>
+      </View>
+    );
+  }, [center, data?.phoneNumbers, end, highlight, start, title]);
+
+  return data && title ? (
     <Pressable style={styles.itemContainer} onPress={() => onPress(data)}>
       <View style={styles.mainTitleContainer}>
         {!_.isEmpty(uri) ? (
@@ -62,16 +124,7 @@ const ContactListItem: React.FC<ContactListItemProps> = ({
           <AppIcon name="imgProfile" style={styles.icon} />
         )}
       </View>
-      <View style={[styles.mainTitleContainer, {marginLeft: 16}]}>
-        <Text style={appStyles.normal18Text}>{title}</Text>
-        <Text
-          style={[
-            appStyles.roboto16Text,
-            {color: colors.warmGrey, lineHeight: 24},
-          ]}>
-          {data.phoneNumbers[0]?.number}
-        </Text>
-      </View>
+      {checkHighlight()}
     </Pressable>
   ) : null;
 };

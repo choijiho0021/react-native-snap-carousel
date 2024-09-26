@@ -27,12 +27,10 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import * as Hangul from 'hangul-js';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
-  FlatList,
   Platform,
   SafeAreaView,
   SectionList,
   StyleSheet,
-  TextInput,
   View,
 } from 'react-native';
 import {Contact} from 'react-native-contacts';
@@ -136,6 +134,7 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
   const [searchResult, setSearchResult] = useState<any[]>([]);
   const [searchText, setSearchText] = useState<string | undefined>(undefined);
   const [mapContacts, setMapContacts] = React.useState(new Map());
+  const [highlight, setHighlight] = React.useState(new Map());
   const [loading, setLoading] = useState<boolean>(false);
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [sections, setSections] = useState<any[]>([]);
@@ -318,25 +317,59 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
       const txt = text.toLowerCase();
       const searcher = new Hangul.Searcher(text);
       const chosung: string[] = [];
+      setHighlight(new Map());
+      let currentSearchResult = [];
 
-      // 한글일 경우 초성검색 또는 한글 검색
-      if (checkKor.test(text)) {
-        Array.from(currentMapContacts.keys())
-          .filter((item) => item.includes(text))
-          .forEach((item) => chosung.push(currentMapContacts.get(item)));
+      if (text?.length > 0) {
+        // 한글일 경우 초성검색 또는 한글 검색
+        if (checkKor.test(text)) {
+          Array.from(currentMapContacts.keys())
+            .filter((item) => {
+              // 초성 index
+              const i = item.indexOf(text);
+              if (i >= 0)
+                setHighlight(
+                  highlight.set(currentMapContacts.get(item).recordID, [
+                    i,
+                    i + text.length - 1,
+                  ]),
+                );
+
+              return item.includes(text);
+            })
+            .forEach((item) => chosung.push(currentMapContacts.get(item)));
+          // 한글 초성검색
+          currentSearchResult = chosung;
+
+          if (Hangul.isComplete(text)) {
+            // 한글 글자검색
+            currentSearchResult = currentContacts.filter((item) => {
+              const r = searcher.search(item.givenName + item.familyName) >= 0;
+
+              const h = Hangul.rangeSearch(
+                `${item.givenName} ${item.familyName}`,
+                text,
+              );
+              if (r) setHighlight(highlight.set(item.recordID, h[0]));
+              return r;
+            });
+          }
+        } else {
+          // 영어검색
+          currentSearchResult = currentContacts.filter((item) => {
+            const r = `${item.givenName} ${item.familyName}`
+              .toLowerCase()
+              .indexOf(txt);
+            if (r >= 0) {
+              setHighlight(
+                highlight.set(item.recordID, [r, r + text.length - 1]),
+              );
+            }
+
+            return r >= 0;
+          });
+        }
       }
-
-      const hangulResult = Hangul.isComplete(text)
-        ? currentContacts.filter(
-            (item) => searcher.search(item.givenName + item.familyName) >= 0,
-          )
-        : chosung;
-
-      const currentSearchResult = checkKor.test(text)
-        ? hangulResult
-        : currentContacts.filter((item) =>
-            (item.givenName + item.familyName).toLowerCase().includes(txt),
-          );
 
       if (!_.isEmpty(txtNumber) && text.length === txtNumber.length) {
         const phone = currentContacts.filter(
@@ -370,18 +403,22 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
     [navigation],
   );
 
-  const renderContactList = ({item}) => {
-    const val = item || {};
-    return (
-      <ContactListItem
-        key={val.recordID}
-        title={`${val.givenName} ${val.familyName}`}
-        uri={val.thumbnailPath}
-        data={val}
-        onPress={onPress}
-      />
-    );
-  };
+  const renderContactList = useCallback(
+    ({item}) => {
+      const val = item || {};
+      return (
+        <ContactListItem
+          key={val.recordID}
+          title={`${val.givenName} ${val.familyName}`}
+          uri={val.thumbnailPath}
+          data={val}
+          onPress={onPress}
+          highlight={highlight.get(val?.recordID) || []}
+        />
+      );
+    },
+    [searchText, onPress, highlight],
+  );
 
   const toggleSearchBar = useCallback(
     (val) => {
@@ -397,26 +434,6 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
     },
     [dispatch, navigation],
   );
-  const searchBar = useCallback(() => {
-    return (
-      <View style={styles.searchLine}>
-        <View style={styles.searchBarBorder}>
-          <TextInput
-            onChangeText={onChangeText}
-            placeholder={i18n.t('contact:search')}
-            style={{color: colors.black}}
-            placeholderTextColor={colors.greyish}
-          />
-        </View>
-        <AppButton
-          style={{backgroundColor: colors.white, flex: 0.8}}
-          titleStyle={{color: colors.black}}
-          title="취소"
-          onPress={() => toggleSearchBar(false)}
-        />
-      </View>
-    );
-  }, [onChangeText, toggleSearchBar]);
 
   useEffect(() => {
     setChosung(contacts);
@@ -463,6 +480,13 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
     setScrollY(yOffset);
   }, []);
 
+  const onCancel = useCallback(() => {
+    onChangeText('');
+    setSearchText(undefined);
+    setHighlight(new Map());
+    setSearchResult([]);
+  }, []);
+
   return (
     <SafeAreaView
       style={{flex: 1, backgroundColor: colors.white, alignItems: 'stretch'}}>
@@ -471,6 +495,8 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
           title={i18n.t('acc:balance')}
           style={{height: 55}}
           onChangeText={onChangeText}
+          onCancel={onCancel}
+          value={searchText || ''}
         />
       </View>
       {showContacts && !_.isEmpty(searchText) && <View style={{height: 24}} />}
@@ -544,9 +570,6 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
       ) : (
         beforeSync()
       )}
-      {/* <View
-        style={showSearchBar && _.isEmpty(searchText) && styles.backCover}
-      /> */}
     </SafeAreaView>
   );
 };

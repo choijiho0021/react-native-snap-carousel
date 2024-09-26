@@ -1958,6 +1958,36 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  searchCancelBtn: [
+    <Svg
+      width="16"
+      height="17"
+      viewBox="0 0 16 17"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#on9epzqasa)">
+        <Circle cx="8" cy="8.5" r="8" fill="#D8D8D8" />
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="m4 5.227.727-.727L12 11.773l-.727.727L4 5.227z"
+          fill="#fff"
+        />
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="m11.273 4.5.727.727L4.727 12.5 4 11.773 11.273 4.5z"
+          fill="#fff"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="on9epzqasa">
+          <Path fill="#fff" transform="translate(0 .5)" d="M0 0h16v16H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
+
   btnSearchOff: [
     <Svg
       width="15"
