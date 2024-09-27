@@ -117,9 +117,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  lastSpace: {
-    height: 30,
-  },
   checkBtn: {
     width: 120,
     height: 40,
@@ -645,7 +642,6 @@ const QrInfoScreen = () => {
       {renderTab(routes[index].key)}
 
       {/* {renderSelectedPane()} */}
-      <View style={styles.lastSpace} />
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}

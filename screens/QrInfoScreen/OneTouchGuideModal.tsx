@@ -7,18 +7,20 @@ import {
   Image,
   Modal,
 } from 'react-native';
+import {ScrollView} from 'react-native-gesture-handler';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppText from '@/components/AppText';
 import AppIcon from '@/components/AppIcon';
 import AppStyledText from '@/components/AppStyledText';
 import i18n from '@/utils/i18n';
-import {ScrollView} from 'react-native-gesture-handler';
+import {windowWidth} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   title: {
     paddingTop: 32,
     paddingBottom: 24,
+    paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -74,8 +76,8 @@ const OneTouchGuideModal: React.FC<OneTouchGuideModalProps> = ({
           style={{
             backgroundColor: colors.white,
             flex: 1,
-            paddingHorizontal: 20,
-            borderRadius: 8,
+            borderTopLeftRadius: 8,
+            borderTopRightRadius: 8,
           }}>
           <View style={styles.title}>
             <AppText style={appStyles.bold20Text}>
@@ -85,7 +87,7 @@ const OneTouchGuideModal: React.FC<OneTouchGuideModalProps> = ({
               <AppIcon name="boldCancelBlack" />
             </Pressable>
           </View>
-          <ScrollView>
+          <ScrollView style={{paddingHorizontal: 20}}>
             <AppStyledText
               text={i18n.t('esim:oneTouch:guide:info1')}
               textStyle={{...appStyles.normal16Text, lineHeight: 24}}
@@ -115,11 +117,14 @@ const OneTouchGuideModal: React.FC<OneTouchGuideModalProps> = ({
               />
             </View>
 
-            <Image
-              source={require('@/assets/images/esim/oneTouchGuide.jpg')}
-              style={{width: '100%'}}
-              resizeMode="contain"
-            />
+            <View style={{width: '100%'}}>
+              <Image
+                source={require('@/assets/images/esim/oneTouchGuide.jpg')}
+                style={{width: windowWidth - 40, height: windowWidth - 40}}
+                resizeMode="cover"
+              />
+            </View>
+
             {renderMarker(
               'A',
               i18n.t('esim:oneTouch:guide:marker1:title'),
