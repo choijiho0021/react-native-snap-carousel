@@ -9,7 +9,7 @@ const getChannelInfo = ({mobile}: {mobile: string}) => {
 
 const getTalkPoint = ({mobile}: {mobile: string}) => {
   return api.callHttpGet(
-    `${api.httpUrl(api.path.rokApi.rokebi.point)}/${mobile}?_format=json`,
+    `${api.httpUrl(api.path.rokApi.rokebi.point)}/${mobile}?real`,
   );
 };
 
