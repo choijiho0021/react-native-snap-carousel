@@ -64,6 +64,7 @@ import SettingsScreen from '@/screens/SettingsScreen';
 import SimpleTextScreen from '@/screens/SimpleTextScreen';
 import StoreSearchScreen from '@/screens/StoreSearch';
 import TalkContact from '@/screens/TalkContact';
+import TalkPoint from '@/screens/TalkPoint';
 import TutorialScreen from '@/screens/TutorialScreen';
 import UserGuideScreen from '@/screens/UserGuideScreen';
 import GlobalGuideScreen from '@/screens/UserGuideScreen/global/GlobalGuide';
@@ -285,6 +286,7 @@ function TalkStackComponent() {
         name="TalkPermission"
         component={TalkPermissionScreen}
       />
+      <TalkStack.Screen name="TalkPoint" component={TalkPoint} />
     </TalkStack.Navigator>
   );
 }

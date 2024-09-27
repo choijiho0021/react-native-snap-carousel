@@ -94,11 +94,12 @@ export const getContacts = createAsyncThunk(
         const sortedContacts = (contacts || []).sort((a, b) => sortName(a, b));
         console.log('@@@ cont22', sortedContacts);
         dispatch(slice.actions.updateContact(sortedContacts));
-        return sortedContacts;
+        return sortedContacts || [];
         // dispatch(updateContacts(contacts));
       })
       .catch((err) => {
         console.warn('Permission to access contacts was denied', err);
+        return err;
       });
   },
 );

@@ -88,4 +88,6 @@ export const colors = {
   naverGreen: '#03C731',
   lightYellow2: '#FFD357',
   green: '#00cc66',
+  green500: '#00ad51',
+  deepGreen: '#059a5e',
 };

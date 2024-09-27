@@ -31,6 +31,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {isNumber} from 'underscore';
 import Contacts from 'react-native-contacts';
 import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
+import {bindActionCreators} from 'redux';
 import {actions as talkActions, TalkAction} from '@/redux/modules/talk';
 import AppAlert from '@/components/AppAlert';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -44,7 +45,6 @@ import {useInterval} from '@/utils/useInterval';
 import CallToolTip from './CallToolTip';
 import Keypad, {KeypadRef} from './Keypad';
 
-import {bindActionCreators} from 'redux';
 import {RootState} from '@/redux';
 import {
   AccountAction,
@@ -119,7 +119,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.lightGrey,
   },
-
   timer: {
     height: 22,
     fontSize: 14,
@@ -245,6 +244,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const showWarning = useMemo(() => {
     return (min && min <= 2) || false;
   }, [min]);
+
   const initial = useMemo(
     () =>
       !sessionState ||
@@ -283,7 +283,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const getPoint = useCallback(() => {
     if (realMobile) {
       API.TalkApi.getTalkPoint({mobile: realMobile}).then((rsp) => {
-        console.log('@@@ point', rsp);
+        console.log('@@@ point', rsp, realMobile);
         if (rsp?.result === 0) {
           setPoint(rsp?.objects?.tpnt);
         }
@@ -295,6 +295,23 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   useEffect(() => {
     getPoint();
   }, [getPoint]);
+
+  // 권한없는 경우, 통화시에 권한확인 로직 필요
+  useEffect(() => {
+    const checkPermission = async () => {
+      const permission =
+        Platform.OS === 'ios'
+          ? PERMISSIONS.IOS.CONTACTS
+          : PERMISSIONS.ANDROID.READ_CONTACTS;
+      const result = await check(permission);
+
+      return result === RESULTS.GRANTED || result === RESULTS.UNAVAILABLE;
+    };
+
+    Promise.resolve(checkPermission()).then((r) => {
+      if (r) action.talk.getContacts();
+    });
+  }, [action.talk]);
 
   const getMaxCallTime = useCallback(() => {
     API.TalkApi.getChannelInfo({mobile: '01059119737'}).then((rsp) => {
@@ -527,6 +544,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       const userAgentOptions: UserAgentOptions = {
         authorizationPassword: '000000', // 000000
         authorizationUsername: '01059119737',
+        // authorizationUsername: '01059119737', // 07079190190
         transportOptions,
         uri,
         sessionDescriptionHandlerFactory: (session, options) => {
@@ -573,11 +591,13 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     }, []),
   );
 
-  // talkpoint 가져오지 못할 경우 (undefined)
+  // talkpoint 가져오지 못할 경우 0 처리
   const talkPointBtn = useCallback(() => {
     return (
       <>
-        <Pressable style={styles.talkBtn}>
+        <Pressable
+          style={styles.talkBtn}
+          onPress={() => navigation.navigate('TalkPoint')}>
           <View style={styles.talkBtnView}>
             <AppSvgIcon
               key="talkPoint"
@@ -594,7 +614,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         <View style={{flex: 1}} />
       </>
     );
-  }, [point]);
+  }, [navigation, point]);
 
   const info = useCallback(() => {
     if (initial) return talkPointBtn();
@@ -610,9 +630,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         <View style={styles.topView}>
           <View style={styles.topRow}>
             <View style={{flex: 1}} />
-            <AppText
-              style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
-
+            {/* <AppText  style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText> */}
             {printCCInfo && (
               <View
                 style={{

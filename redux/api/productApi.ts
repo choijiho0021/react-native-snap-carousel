@@ -139,9 +139,14 @@ type DrupalProduct = {
 };
 
 export type CurrencyCode = 'KRW' | 'USD';
+export type PointCode = 'P';
 export type Currency = {
   value: number;
   currency: CurrencyCode;
+};
+export type Point = {
+  value: number;
+  currency: PointCode;
 };
 export type addonOptionType = 'N' | 'A' | 'E' | 'B' | undefined;
 export type ProdDesc = {

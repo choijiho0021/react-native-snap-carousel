@@ -1,4 +1,5 @@
 import AppButton from '@/components/AppButton';
+import AppIcon from '@/components/AppIcon';
 import AppSearch from '@/components/AppSearch';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -26,11 +27,10 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import * as Hangul from 'hangul-js';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
-  FlatList,
   Platform,
   SafeAreaView,
+  SectionList,
   StyleSheet,
-  TextInput,
   View,
 } from 'react-native';
 import {Contact} from 'react-native-contacts';
@@ -96,35 +96,31 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     paddingLeft: 20,
     backgroundColor: colors.white,
-    // borderWidth: 1,
-    // borderColor: colors.black,
     alignContent: 'center',
     height: 24,
     lineHeight: 24,
     letterSpacing: -0.16,
-    // textAlignVertical: 'center',
-    // alignItems: 'center',
     color: colors.warmGrey,
   },
 });
 
-type ContactsScreenNavigationProp = StackNavigationProp<
+type TalkContactScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
   'TalkContact'
 >;
 
-type ContactsScreenRouteProp = RouteProp<HomeStackParamList, 'TalkContact'>;
+type TalkContactScreenRouteProp = RouteProp<HomeStackParamList, 'TalkContact'>;
 
-type ContactsScreenProps = {
-  navigation: ContactsScreenNavigationProp;
-  route: ContactsScreenRouteProp;
+type TalkContactScreenProps = {
+  navigation: TalkContactScreenNavigationProp;
+  route: TalkContactScreenRouteProp;
   talk: TalkModelState;
   action: {
     talk: TalkAction;
   };
 };
 
-const ContactsScreen: React.FC<ContactsScreenProps> = ({
+const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
   navigation,
   route: {params},
   talk: {contacts},
@@ -134,17 +130,13 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
   const [searchResult, setSearchResult] = useState<any[]>([]);
   const [searchText, setSearchText] = useState<string | undefined>(undefined);
   const [mapContacts, setMapContacts] = React.useState(new Map());
+  const [highlight, setHighlight] = React.useState(new Map());
   const [loading, setLoading] = useState<boolean>(false);
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [sections, setSections] = useState<any[]>([]);
   const sectionListRef = useRef();
   const dispatch = useDispatch();
   const [scrollY, setScrollY] = useState(-1);
-
-  // useEffect(() => {
-  //   dispatch(talkActions.getContacts());
-  //   // action.talk.getContacts();
-  // }, []);
 
   // 권한없는 경우, 통화시에 권한확인 로직 필요
   useEffect(() => {
@@ -154,18 +146,20 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
           ? PERMISSIONS.IOS.CONTACTS
           : PERMISSIONS.ANDROID.READ_CONTACTS;
       const result = await check(permission);
-      console.log('@@@ res2 ', result);
+
       return result === RESULTS.GRANTED || result === RESULTS.UNAVAILABLE;
     };
 
     Promise.resolve(checkPermission()).then((r) => {
-      setShowContacts(r);
-      if (r)
-        Promise.resolve(action.talk.getContacts()).then((re) =>
-          console.log('@@@@@ cont r', re),
-        );
+      if (r) {
+        Promise.resolve(action.talk.getContacts()).then((a) => {
+          if (a?.type?.includes('rejected') || a?.payload?.message === 'denied')
+            setShowContacts(false);
+          else setShowContacts(true);
+        });
+      }
     });
-  }, []);
+  }, [action.talk]);
 
   const beforeSync = useCallback(() => {
     return (
@@ -212,72 +206,6 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
     );
   }, []);
 
-  const onChangeText = useCallback(
-    (text) => {
-      const currentMapContacts = mapContacts;
-      const currentContacts = contacts;
-
-      const txtNumber = (utils.stringToNumber(text) || '').toString();
-      const txt = text.toLowerCase();
-      const searcher = new Hangul.Searcher(text);
-      const chosung: string[] = [];
-
-      // 한글일 경우 초성검색 또는 한글 검색
-      if (checkKor.test(text)) {
-        Array.from(currentMapContacts.keys())
-          .filter((item) => item.includes(text))
-          .forEach((item) => chosung.push(currentMapContacts.get(item)));
-      }
-
-      const hangulResult = Hangul.isComplete(text)
-        ? currentContacts.filter(
-            (item) => searcher.search(item.givenName + item.familyName) >= 0,
-          )
-        : chosung;
-
-      const currentSearchResult = checkKor.test(text)
-        ? hangulResult
-        : currentContacts.filter((item) =>
-            (item.givenName + item.familyName).toLowerCase().includes(txt),
-          );
-
-      if (!_.isEmpty(txtNumber) && text.length === txtNumber.length) {
-        const phone = currentContacts.filter(
-          (item) =>
-            !_.isEmpty(
-              item.phoneNumbers.filter((val) =>
-                utils
-                  .stringToNumber(val?.number)
-                  .toString()
-                  .includes(txtNumber),
-              ),
-            ) && !currentSearchResult.includes(item),
-        );
-
-        setSearchText(text);
-        setSearchResult([...currentSearchResult, ...phone]);
-      } else {
-        setSearchText(text);
-        setSearchResult(currentSearchResult);
-      }
-    },
-    [contacts, mapContacts],
-  );
-
-  // sortName 사용 X?
-  const sortName = (a: string, b: string) => {
-    const nameA = a.familyName + a.givenName;
-    const nameB = b.familyName + b.givenName;
-
-    const priorityA = checkKor.test(nameA) ? -2 : checkEng.test(nameA) ? -1 : 0;
-    const priorityB = checkKor.test(nameB) ? -2 : checkEng.test(nameB) ? -1 : 0;
-
-    if (priorityA > priorityB) return priorityA;
-    if (priorityA === priorityB)
-      return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
-    return priorityB;
-  };
-
   const removeDup = useCallback((findSection, item) => {
     const idx = findSection.data.findIndex((v) => v.recordID === item.recordID);
     if (idx >= 0) {
@@ -302,52 +230,172 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
       }
 
       removeDup(findSection, item);
+      return findSection;
     },
     [removeDup],
   );
 
   const setKoSection = useCallback(
     (item, disassemble) => {
+      const ko = [];
       doubleKor.forEach((value) => {
         const double = value.find((v) => v === disassemble[0][0]) || [];
         const findSection = sectionKeys.find((v) =>
           _.isEmpty(double) ? v.key === disassemble[0][0] : v.key === value[0],
         );
-        if (_.isEmpty(findSection)) return;
 
+        if (_.isEmpty(findSection)) return;
         removeDup(findSection, item);
+        ko.push(findSection);
       });
+
+      return ko[0];
     },
     [removeDup],
   );
 
-  const setChosung = useCallback(() => {
-    // 확인용, stateContact useCallback 디펜던시 적용시 지우기
-    const currentContacts = contacts;
-    console.log('@@ cho', contacts);
+  const setChosung = useCallback(
+    (currentContacts?: any[]) => {
+      // 한글 이름 중에서 초성, contact map
+      if (!_.isEmpty(currentContacts)) {
+        currentContacts?.map((item) => {
+          const name = item.givenName + item.familyName;
+          // 한글일 경우
+          if (checkKor.test(name)) {
+            const disassemble = Hangul.disassemble(name, true);
+            setKoSection(item, disassemble);
 
-    // 한글 이름 중에서 초성, contact map
-    if (!_.isEmpty(contacts)) {
-      currentContacts.map((item) => {
-        const name = item.givenName + item.familyName;
-        // 한글일 경우
-        if (checkKor.test(name)) {
-          const disassemble = Hangul.disassemble(name, true);
-          setKoSection(item, disassemble);
+            let cho = '';
+            disassemble.forEach((item) => (cho += item[0]));
+            setMapContacts(mapContacts.set(cho, item));
+          } else {
+            setOtherSection(name, item);
+          }
+        });
+      }
+    },
+    [setKoSection, setOtherSection],
+  );
 
-          let cho = '';
-          disassemble.forEach((item) => (cho += item[0]));
-          setMapContacts(mapContacts.set(cho, item));
-        } else {
-          setOtherSection(name, item);
-        }
-      });
+  const getFirstLetter = useCallback(
+    (item: any) => {
+      // 한글 이름 중에서 초성, contact map
+      const name = item.givenName + item.familyName;
+      let resSection = {};
+      // 한글일 경우
+      if (checkKor.test(name)) {
+        const disassemble = Hangul.disassemble(name, true);
+        resSection = setKoSection(item, disassemble);
+      } else resSection = setOtherSection(name, item);
+
+      return resSection?.key;
+    },
+    [setKoSection, setOtherSection],
+  );
+
+  // 초성검색한 항목 section key 생성
+  const makeSearchResult = useCallback((currentContacts?: any[]) => {
+    if (!_.isEmpty(currentContacts)) {
+      const res = currentContacts?.reduce((acc, cur, idx) => {
+        const key = getFirstLetter(cur);
+        const ai = acc?.findIndex((a) => a?.key === key);
+
+        if (ai >= 0) (acc[ai]?.data || []).push(cur);
+        else (acc || [])?.push({key, title: key, data: [cur]});
+        return acc;
+      }, []);
+
+      return res;
     }
-  }, [contacts, mapContacts, setKoSection, setOtherSection]);
+  }, []);
 
-  useEffect(() => {
-    setChosung();
-  }, [setChosung]);
+  const onChangeText = useCallback(
+    (text) => {
+      const currentMapContacts = mapContacts;
+      const currentContacts = contacts;
+
+      const txtNumber = (utils.stringToNumber(text) || '').toString();
+      const txt = text.toLowerCase();
+      const searcher = new Hangul.Searcher(text);
+      const chosung: string[] = [];
+      setHighlight(new Map());
+      let currentSearchResult = [];
+
+      if (text?.length > 0) {
+        // 한글일 경우 초성검색 또는 한글 검색
+        if (checkKor.test(text)) {
+          Array.from(currentMapContacts.keys())
+            .filter((item) => {
+              // 초성 index
+              const i = item.indexOf(text);
+              if (i >= 0)
+                setHighlight(
+                  highlight.set(currentMapContacts.get(item).recordID, [
+                    i,
+                    i + text.length - 1,
+                  ]),
+                );
+
+              return item.includes(text);
+            })
+            .forEach((item) => chosung.push(currentMapContacts.get(item)));
+          // 한글 초성검색
+          currentSearchResult = chosung;
+
+          if (Hangul.isComplete(text)) {
+            // 한글 글자검색
+            currentSearchResult = currentContacts.filter((item) => {
+              const r = searcher.search(item.givenName + item.familyName) >= 0;
+
+              const h = Hangul.rangeSearch(
+                `${item.givenName} ${item.familyName}`,
+                text,
+              );
+              if (r) setHighlight(highlight.set(item.recordID, h[0]));
+              return r;
+            });
+          }
+        } else {
+          // 영어검색
+          currentSearchResult = currentContacts.filter((item) => {
+            const r = `${item.givenName} ${item.familyName}`
+              .toLowerCase()
+              .indexOf(txt);
+            if (r >= 0) {
+              setHighlight(
+                highlight.set(item.recordID, [r, r + text.length - 1]),
+              );
+            }
+
+            return r >= 0;
+          });
+        }
+      }
+
+      if (!_.isEmpty(txtNumber) && text.length === txtNumber.length) {
+        const phone = currentContacts.filter(
+          (item) =>
+            !_.isEmpty(
+              item.phoneNumbers.filter((val) =>
+                utils
+                  .stringToNumber(val?.number)
+                  .toString()
+                  .includes(txtNumber),
+              ),
+            ) && !currentSearchResult.includes(item),
+        );
+
+        setSearchText(text);
+        setSearchResult(
+          makeSearchResult([...currentSearchResult, ...phone]) || [],
+        );
+      } else {
+        setSearchText(text);
+        setSearchResult(makeSearchResult(currentSearchResult) || []);
+      }
+    },
+    [contacts, mapContacts],
+  );
 
   const onPress = useCallback(
     (contactData: Contact) => {
@@ -356,18 +404,22 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
     [navigation],
   );
 
-  const renderContactList = ({item}) => {
-    const val = item || {};
-    return (
-      <ContactListItem
-        key={val.recordID}
-        title={`${val.givenName} ${val.familyName}`}
-        uri={val.thumbnailPath}
-        data={val}
-        onPress={onPress}
-      />
-    );
-  };
+  const renderContactList = useCallback(
+    ({item}) => {
+      const val = item || {};
+      return (
+        <ContactListItem
+          key={val.recordID}
+          title={`${val.givenName} ${val.familyName}`}
+          uri={val.thumbnailPath}
+          data={val}
+          onPress={onPress}
+          highlight={highlight.get(val?.recordID) || []}
+        />
+      );
+    },
+    [searchText, onPress, highlight],
+  );
 
   const toggleSearchBar = useCallback(
     (val) => {
@@ -383,30 +435,10 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
     },
     [dispatch, navigation],
   );
-  const searchBar = useCallback(() => {
-    return (
-      <View style={styles.searchLine}>
-        <View style={styles.searchBarBorder}>
-          <TextInput
-            onChangeText={onChangeText}
-            placeholder={i18n.t('contact:search')}
-            style={{color: colors.black}}
-            placeholderTextColor={colors.greyish}
-          />
-        </View>
-        <AppButton
-          style={{backgroundColor: colors.white, flex: 0.8}}
-          titleStyle={{color: colors.black}}
-          title="취소"
-          onPress={() => toggleSearchBar(false)}
-        />
-      </View>
-    );
-  }, [onChangeText, toggleSearchBar]);
 
   useEffect(() => {
-    setChosung();
-  }, [setChosung]);
+    setChosung(contacts);
+  }, [setChosung, contacts]);
 
   // useEffect(() => {
   //   navigation.setOptions({
@@ -449,6 +481,13 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
     setScrollY(yOffset);
   }, []);
 
+  const onCancel = useCallback(() => {
+    onChangeText('');
+    setSearchText(undefined);
+    setHighlight(new Map());
+    setSearchResult([]);
+  }, []);
+
   return (
     <SafeAreaView
       style={{flex: 1, backgroundColor: colors.white, alignItems: 'stretch'}}>
@@ -457,8 +496,11 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
           title={i18n.t('acc:balance')}
           style={{height: 55}}
           onChangeText={onChangeText}
+          onCancel={onCancel}
+          value={searchText || ''}
         />
       </View>
+      {showContacts && !_.isEmpty(searchText) && <View style={{height: 24}} />}
       {showContacts ? (
         _.isEmpty(searchText) ? (
           !_.isEmpty(sections) && (
@@ -503,18 +545,32 @@ const ContactsScreen: React.FC<ContactsScreenProps> = ({
             />
           )
         ) : (
-          <FlatList
-            data={searchResult}
+          <SectionList
+            contentContainerStyle={{flexGrow: 1}}
+            sections={searchResult}
             renderItem={renderContactList}
-            keyExtractor={(item) => item.recordID}
+            renderSectionHeader={({section}) => {
+              return (
+                <AppText style={styles.sectionHeader}>{section?.title}</AppText>
+              );
+            }}
+            ListEmptyComponent={
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignSelf: 'center',
+                  alignItems: 'center',
+                }}>
+                <AppIcon style={{marginBottom: 16}} name="imgDot" />
+                <AppText>검색 결과가 없습니다.</AppText>
+              </View>
+            }
           />
         )
       ) : (
         beforeSync()
       )}
-      {/* <View
-        style={showSearchBar && _.isEmpty(searchText) && styles.backCover}
-      /> */}
     </SafeAreaView>
   );
 };
@@ -528,4 +584,4 @@ export default connect(
       talk: bindActionCreators(talkActions, dispatch),
     },
   }),
-)(ContactsScreen);
+)(TalkContactScreen);

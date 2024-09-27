@@ -272,6 +272,7 @@ export type HomeStackParamList = {
   SimpleTextForAuth: Record<string, string>;
   Talk: undefined;
   TalkContact: undefined;
+  TalkPoint: undefined;
 };
 
 export const navigate = (

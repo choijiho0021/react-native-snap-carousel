@@ -1,20 +1,18 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {memo, useCallback, useState} from 'react';
 import {
+  ImageStyle,
   Pressable,
+  TextProps,
+  TextStyle,
   View,
   ViewStyle,
-  TextProps,
-  ImageStyle,
-  TextStyle,
 } from 'react-native';
-import {values} from 'underscore';
-import {appStyles} from '@/constants/Styles';
-import AppText from './AppText';
 import {goBack} from '@/navigation/navigation';
+import {colors} from '@/constants/Colors';
+import AppButton from './AppButton';
 import AppSvgIcon from './AppSvgIcon';
 import AppTextInput from './AppTextInput';
-import {colors} from '@/constants/Colors';
 
 const AppSearch = ({
   title,
@@ -26,8 +24,9 @@ const AppSearch = ({
   imageStyle,
   textProps,
   disable,
-  showCloseModal = false,
+  value,
   onChangeText,
+  onCancel,
 }: {
   title?: string;
   titleStyle?: TextStyle;
@@ -38,8 +37,9 @@ const AppSearch = ({
   imageStyle?: ImageStyle;
   textProps?: TextProps;
   disable?: boolean;
-  showCloseModal?: boolean;
+  value: string;
   onChangeText: (text: string) => void;
+  onCancel: () => void;
 }) => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -113,8 +113,18 @@ const AppSearch = ({
             // onChangeText={onChangeText}
             // maxLength={maxLength}
             // keyboardType={keyboardType}
-            // value={value}
+            value={value}
           />
+          {value?.length > 0 && (
+            <AppButton
+              style={{
+                justifyContent: 'flex-end',
+                marginLeft: 10,
+              }}
+              iconName="searchCancelBtn"
+              onPress={onCancel}
+            />
+          )}
         </View>
       </View>
     </Pressable>

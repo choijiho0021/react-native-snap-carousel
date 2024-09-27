@@ -69,6 +69,7 @@
   "redirect": "바로 가기",
   "KRW": "원",
   "USD": "$",
+  "P": "P",
   "exit": "앱 종료",
   "apn": "APN",
   "startFrom": "~",
@@ -93,7 +94,6 @@
   "ios": "아이폰",
   "rkbCash": "캐시",
   "failure": "실패",
-  "send": "발송",
   "send": "발송",
 
   "purchase:date": "{{date}} 구매",
@@ -1886,5 +1886,11 @@
   "talk:permission:book:body": "로밍도깨비 앱과 내 주소록을 동기화하여\n연락처를 검색하거나 통화를 걸기 위해 사용해요!",
   "talk:permission:mic": "마이크",
   "talk:permission:mic:body": "로밍도깨비 앱과 내 주소록을 동기화하여\n연락처를 검색하거나 통화를 걸기 위해 사용해요!",
-  "talk:permission:btn": "확인"
+  "talk:permission:btn": "확인",
+  "talk:point:filter:A": "전체",
+  "talk:point:filter:Y": "적립",
+  "talk:point:filter:N": "사용•소멸",
+  "talk:point:empty:A": "사용 내역이 없습니다.",
+  "talk:point:empty:Y": "적립 내역이 없습니다.",
+  "talk:point:empty:N": "사용 내역이 없습니다."
 }
