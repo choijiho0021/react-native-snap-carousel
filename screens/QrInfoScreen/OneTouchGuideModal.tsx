@@ -6,7 +6,6 @@ import {
   View,
   Image,
   Modal,
-  ScrollView,
 } from 'react-native';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -14,6 +13,7 @@ import AppText from '@/components/AppText';
 import AppIcon from '@/components/AppIcon';
 import AppStyledText from '@/components/AppStyledText';
 import i18n from '@/utils/i18n';
+import {ScrollView} from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create({
   title: {
@@ -69,24 +69,23 @@ const OneTouchGuideModal: React.FC<OneTouchGuideModalProps> = ({
   return (
     <Modal visible={visible} animationType="fade" transparent>
       <SafeAreaView style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.5)'}}>
-        <Pressable style={{flex: 1}} onPress={() => onOkClose()}>
-          <Pressable
-            style={{
-              backgroundColor: colors.white,
-              flex: 1,
-              marginTop: 56,
-              paddingHorizontal: 20,
-              borderRadius: 8,
-            }}
-            onPress={() => {}}>
-            <View style={styles.title}>
-              <AppText style={appStyles.bold20Text}>
-                {i18n.t('esim:oneTouch:guide')}
-              </AppText>
-              <Pressable onPress={() => onOkClose()}>
-                <AppIcon name="boldCancelBlack" />
-              </Pressable>
-            </View>
+        <Pressable style={{height: 56}} onPress={() => onOkClose()} />
+        <View
+          style={{
+            backgroundColor: colors.white,
+            flex: 1,
+            paddingHorizontal: 20,
+            borderRadius: 8,
+          }}>
+          <View style={styles.title}>
+            <AppText style={appStyles.bold20Text}>
+              {i18n.t('esim:oneTouch:guide')}
+            </AppText>
+            <Pressable onPress={() => onOkClose()}>
+              <AppIcon name="boldCancelBlack" />
+            </Pressable>
+          </View>
+          <ScrollView>
             <AppStyledText
               text={i18n.t('esim:oneTouch:guide:info1')}
               textStyle={{...appStyles.normal16Text, lineHeight: 24}}
@@ -145,9 +144,10 @@ const OneTouchGuideModal: React.FC<OneTouchGuideModalProps> = ({
                 {i18n.t('esim:oneTouch:guide:question:txt')}
               </AppText>
             </View>
-          </Pressable>
-        </Pressable>
+          </ScrollView>
+        </View>
       </SafeAreaView>
+      <SafeAreaView style={{backgroundColor: colors.white}} />
     </Modal>
   );
 };
