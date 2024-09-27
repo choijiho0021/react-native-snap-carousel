@@ -159,7 +159,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
         });
       }
     });
-  }, []);
+  }, [action.talk]);
 
   const beforeSync = useCallback(() => {
     return (
