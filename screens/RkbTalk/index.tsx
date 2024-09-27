@@ -176,34 +176,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  modalContent: {
-    marginHorizontal: 0,
-    backgroundColor: colors.white,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    padding: 20,
-    paddingTop: 24,
-    maxWidth: MAX_WIDTH,
-    width: '100%',
-  },
-  modalTitleText: {
-    ...appStyles.bold18Text,
-    lineHeight: 24,
-    color: colors.redError,
-    marginLeft: 8,
-  },
-  modalBodyText: {
-    ...appStyles.medium16,
-    lineHeight: 24,
-    color: colors.black,
-    marginBottom: 36,
-  },
 });
 
 export type RkbTalkNavigationProp = StackNavigationProp<
