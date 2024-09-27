@@ -2,7 +2,7 @@ import React, {memo, useMemo} from 'react';
 import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
-import {Currency} from '@/redux/api/productApi';
+import {Currency, Point} from '@/redux/api/productApi';
 import utils from '@/redux/api/utils';
 import i18n from '@/utils/i18n';
 import AppText from './AppText';
@@ -33,7 +33,7 @@ const AppPrice = ({
   balanceStyle?: StyleProp<TextStyle>;
   currencyStyle?: StyleProp<TextStyle>;
   showPlus?: boolean;
-  price?: Currency;
+  price?: Currency | Point;
   isDiscounted?: boolean;
 }) => {
   const textStyle: StyleProp<TextStyle> = useMemo(
