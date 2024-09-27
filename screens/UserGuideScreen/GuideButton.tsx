@@ -1,11 +1,21 @@
 import React, {memo, useMemo, useState} from 'react';
-import {StyleSheet, View, Pressable, StyleProp, ViewStyle} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Pressable,
+  StyleProp,
+  ViewStyle,
+  Platform,
+} from 'react-native';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import AppText from '@/components/AppText';
 import AppStyledText from '@/components/AppStyledText';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   btn: {
@@ -117,7 +127,7 @@ const GuideButton = ({
             <AppText style={styles.btnBody}>
               {i18n.t(`userGuide:${item}:body`)}
             </AppText>
-            {item === 'checkSetting' && (
+            {item === 'checkSetting' && isIOS && (
               <View style={{flexDirection: 'row', paddingRight: 20}}>
                 <AppSvgIcon name="greyWarning" style={{top: 4}} />
                 <AppStyledText
