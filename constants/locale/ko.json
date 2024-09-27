@@ -69,6 +69,7 @@
   "redirect": "바로 가기",
   "KRW": "원",
   "USD": "$",
+  "P": "P",
   "exit": "앱 종료",
   "apn": "APN",
   "startFrom": "~",
@@ -93,7 +94,6 @@
   "ios": "아이폰",
   "rkbCash": "캐시",
   "failure": "실패",
-  "send": "발송",
   "send": "발송",
 
   "purchase:date": "{{date}} 구매",
@@ -1876,5 +1876,12 @@
 
   "talk:reward:modal:body1": "로깨비톡 런칭 기념\n<b>0,000 톡포인트</b>가 도착했어요.",
   "talk:reward:modal:body2": "해외 여행 중에도 <b>30분간 무료 통화</b>에요!\n(한국 발신 기준)",
-  "talk:reward:modal:btn": "자세히 보기"
+  "talk:reward:modal:btn": "자세히 보기",
+
+  "talk:point:filter:A": "전체",
+  "talk:point:filter:Y": "적립",
+  "talk:point:filter:N": "사용•소멸",
+  "talk:point:empty:A": "사용 내역이 없습니다.",
+  "talk:point:empty:Y": "적립 내역이 없습니다.",
+  "talk:point:empty:N": "사용 내역이 없습니다."
 }

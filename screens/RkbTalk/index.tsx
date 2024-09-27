@@ -291,7 +291,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const getPoint = useCallback(() => {
     if (realMobile) {
       API.TalkApi.getTalkPoint({mobile: realMobile}).then((rsp) => {
-        console.log('@@@ point', rsp);
+        console.log('@@@ point', rsp, realMobile);
         if (rsp?.result === 0) {
           setPoint(rsp?.objects?.tpnt);
         }
@@ -303,6 +303,23 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   useEffect(() => {
     getPoint();
   }, [getPoint]);
+
+  // 권한없는 경우, 통화시에 권한확인 로직 필요
+  useEffect(() => {
+    const checkPermission = async () => {
+      const permission =
+        Platform.OS === 'ios'
+          ? PERMISSIONS.IOS.CONTACTS
+          : PERMISSIONS.ANDROID.READ_CONTACTS;
+      const result = await check(permission);
+
+      return result === RESULTS.GRANTED || result === RESULTS.UNAVAILABLE;
+    };
+
+    Promise.resolve(checkPermission()).then((r) => {
+      if (r) action.talk.getContacts();
+    });
+  }, [action.talk]);
 
   const getMaxCallTime = useCallback(() => {
     API.TalkApi.getChannelInfo({mobile: '01059119737'}).then((rsp) => {
@@ -586,7 +603,9 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const talkPointBtn = useCallback(() => {
     return (
       <>
-        <Pressable style={styles.talkBtn}>
+        <Pressable
+          style={styles.talkBtn}
+          onPress={() => navigation.navigate('TalkPoint')}>
           <View style={styles.talkBtnView}>
             <AppSvgIcon
               key="talkPoint"
@@ -603,7 +622,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         <View style={{flex: 1}} />
       </>
     );
-  }, [point]);
+  }, [navigation, point]);
 
   const info = useCallback(() => {
     if (initial) return talkPointBtn();
