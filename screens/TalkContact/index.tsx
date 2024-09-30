@@ -40,7 +40,7 @@ import {
   PERMISSIONS,
   RESULTS,
 } from 'react-native-permissions';
-import SectionListSidebar from 'react-native-textindicator-sectionlist-sidebar';
+import SectionListSidebar from './components/SectionListSidebar';
 import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
