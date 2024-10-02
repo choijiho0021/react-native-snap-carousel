@@ -352,6 +352,8 @@ const QrInfoScreen = () => {
         setIsFail(false);
         break;
       case 'Disable':
+      case 'Downloaded':
+      case 'Installed':
         setCardState('DE');
         setIsFail(false);
         break;
