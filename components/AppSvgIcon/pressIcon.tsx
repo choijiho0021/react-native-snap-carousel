@@ -1898,6 +1898,28 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  rightArrowWhite10: [
+    <Svg
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clip-path="url(#9kl0bddi5a)">
+        <Path
+          d="M4.5.5 9 5 4.5 9.5"
+          stroke="#fff"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="9kl0bddi5a">
+          <Path fill="#fff" d="M0 0h10v10H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
   imgCheck: [
     <Svg
       width="50"

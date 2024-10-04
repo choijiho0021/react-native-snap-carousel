@@ -12,6 +12,7 @@ import {bindActionCreators} from 'redux';
 import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {useFocusEffect} from '@react-navigation/native';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
 import i18n from '@/utils/i18n';
@@ -28,12 +29,19 @@ import {
   CashExpire,
   SectionData,
 } from '@/redux/modules/account';
+import {
+  actions as talkActions,
+  PointHistory,
+  TalkAction,
+  TalkModelState,
+} from '@/redux/modules/talk';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import AppSnackBar from '@/components/AppSnackBar';
 import AppPrice from '@/components/AppPrice';
 import Env from '@/environment';
 import AppButton from '@/components/AppButton';
 import {HomeStackParamList} from '@/navigation/navigation';
+import {API} from '@/redux/api';
 
 const {esimCurrency} = Env.get();
 
@@ -123,7 +131,6 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   sectionItemContainer: {
-    // flexDirection: 'row',
     marginHorizontal: 20,
     paddingVertical: 12,
     marginBottom: 8,
@@ -207,10 +214,12 @@ type TalkPointScreenNavigationProp = StackNavigationProp<
 
 type TalkPointScreenProps = {
   navigation: TalkPointScreenNavigationProp;
+  talk: TalkModelState;
   account: AccountModelState;
   pending: boolean;
 
   action: {
+    talk: TalkAction;
     account: AccountAction;
     modal: ModalAction;
   };
@@ -220,11 +229,13 @@ type OrderType = 'latest' | 'old';
 
 const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   navigation,
+  talk,
   action,
   account,
   // pending,
 }) => {
   const {
+    realMobile,
     iccid,
     token,
     balance,
@@ -232,6 +243,8 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
     cashExpire,
     expirePt = 0,
   } = account;
+  const {pointHistory = []} = talk;
+  const [point, setPoint] = useState<number>(0);
 
   const [orderType, setOrderType] = useState<OrderType>('latest');
   const [dataFilter, setDataFilter] = useState<string>('A');
@@ -248,6 +261,25 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
 
   const orderTypeList: OrderType[] = useMemo(() => ['latest', 'old'], []);
   const filterList: string[] = useMemo(() => ['A', 'Y', 'N'], []);
+
+  useEffect(() => {}, []);
+
+  const getPoint = useCallback(() => {
+    if (realMobile) {
+      API.TalkApi.getTalkPoint({mobile: realMobile}).then((rsp) => {
+        if (rsp?.result === 0) {
+          setPoint(rsp?.objects?.tpnt);
+        }
+      });
+    }
+  }, [realMobile]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getPoint();
+      return () => {};
+    }, [getPoint]),
+  );
 
   const beginDragAnimation = useCallback(
     (v: boolean) => {
@@ -311,18 +343,18 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
     const isAsc = orderType === 'old';
 
     return bReverse(
-      cashHistory.map((elm) => ({
+      pointHistory.map((elm) => ({
         title: elm.title,
         data: bReverse(applyFilter(elm.data), isAsc),
       })),
       isAsc,
     ).filter((elm: SectionData) => elm.data.length > 0);
-  }, [applyFilter, bReverse, cashHistory, orderType]);
+  }, [applyFilter, bReverse, pointHistory, orderType]);
 
   const getHistory = useCallback(() => {
-    action.account.getCashHistory({iccid, token});
-    action.account.getCashExpire({iccid, token});
-  }, [action.account, iccid, token]);
+    action.talk.getPointHistory({iccid, token});
+    // action.account.getCashExpire({iccid, token});
+  }, [action.talk, iccid, token]);
 
   useEffect(() => {
     getHistory();
@@ -365,40 +397,39 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
       index,
       section,
     }: {
-      item: CashHistory;
+      item: PointHistory;
       index: number;
       section: SectionData;
     }) => {
       const predate =
-        index > 0 ? section.data[index - 1].create_dt.format('MM.DD') : '';
-      const date = item.create_dt.format('MM.DD');
+        index > 0 ? section.data[index - 1].created.format('MM.DD') : '';
+      const date = item.created.format('MM.DD');
+
+      console.log('@@@ item', item);
+
+      const diff = Number(item.after) - Number(item.before);
+      const plus = diff > 0;
+      const type = item.reason.includes('end')
+        ? 'used'
+        : item.reason.includes('add') || item.reason.includes('charge')
+        ? 'add'
+        : 'expired';
+
+      // plus > 적립
+      //
+
       // 상품 구매, 캐시 충전, 구매 취소의 경우에만 터치 가능
-      const pressable = [
-        'cash_deduct',
-        'point_deduct',
-        'cash_recharge',
-        'cash_refund',
-        'point_refund',
-      ].includes(item.type);
 
       return (
-        <Pressable
-          style={styles.sectionItemContainer}
-          onPress={() => {
-            if (item.order_id && pressable) {
-              navigation.navigate('PurchaseDetail', {
-                orderId: item.order_id,
-              });
-            }
-          }}>
-          <View style={{flexDirection: 'row'}}>
+        <Pressable style={styles.sectionItemContainer}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <AppText
               style={[
-                appStyles.medium14,
+                appStyles.normal16Text,
                 {
-                  marginRight: 23,
-                  width: 50,
-                  lineHeight: 30,
+                  marginRight: 20,
+                  width: 47,
+                  lineHeight: 24,
                   color: colors.black,
                 },
               ]}>
@@ -407,27 +438,24 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
             <View style={{flex: 1}}>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <AppText style={[appStyles.bold16Text, {lineHeight: 30}]}>
-                  {i18n.t(`cashHistory:type:${item.type}`)}
+                  {i18n.t(`talk:point:history:${type}`)}
                 </AppText>
-                {item.order_id && pressable && (
-                  <AppSvgIcon name="rightArrow10" style={{marginLeft: 4}} />
-                )}
               </View>
             </View>
 
             <AppPrice
-              price={utils.toCurrency(item.diff, esimCurrency)}
+              price={utils.toCurrency(diff, 'P')}
               balanceStyle={[
                 appStyles.bold18Text,
                 {
-                  color: item.inc === 'Y' ? colors.clearBlue : colors.redError,
+                  color: plus ? colors.clearBlue : colors.redError,
                   lineHeight: 30,
                 },
               ]}
               currencyStyle={[
                 appStyles.bold16Text,
                 {
-                  color: item.inc === 'Y' ? colors.clearBlue : colors.redError,
+                  color: plus ? colors.clearBlue : colors.redError,
                   lineHeight: 30,
                 },
               ]}
@@ -438,18 +466,28 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
         </Pressable>
       );
     },
-    [navigation, showDetail],
+    [showDetail],
   );
 
   const renderEmpty = useCallback(() => {
-    return (
-      <View style={{alignItems: 'center'}}>
-        <AppSvgIcon name="threeDotsBig" style={{marginBottom: 16}} />
-        <AppText style={{...appStyles.normal16Text, color: colors.warmGrey}}>
-          {i18n.t(`talk:point:empty:${dataFilter}`)}
-        </AppText>
-      </View>
-    );
+    // 종 있는 부분 적용 필요
+    if (dataFilter === 'A')
+      // return (
+      //   <View style={{alignItems: 'center'}}>
+      //     <AppSvgIcon name="threeDotsBig" style={{marginBottom: 16}} />
+      //     <AppText style={{...appStyles.normal16Text, color: colors.warmGrey}}>
+      //       {i18n.t(`talk:point:empty:${dataFilter}`)}
+      //     </AppText>
+      //   </View>
+      // );
+      return (
+        <View style={{alignItems: 'center'}}>
+          <AppSvgIcon name="threeDotsBig" style={{marginBottom: 16}} />
+          <AppText style={{...appStyles.normal16Text, color: colors.warmGrey}}>
+            {i18n.t(`talk:point:empty:${dataFilter}`)}
+          </AppText>
+        </View>
+      );
   }, [dataFilter]);
 
   const renderExpireItem = useCallback((item: CashExpire) => {
@@ -488,7 +526,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
         onPress={() => action.modal.closeModal()}>
         <Pressable style={styles.sortModalContent}>
           <AppText style={[appStyles.bold18Text, {lineHeight: 24}]}>
-            {i18n.t(`cashHistory:orderType`)}
+            {i18n.t(`talk:point:sort:orderType`)}
           </AppText>
           <View style={{marginTop: 28}}>
             {orderTypeList.map((elm) => (
@@ -505,7 +543,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
                       ? styles.selectedTypeText
                       : styles.normalText
                   }>
-                  {i18n.t(`cashHistory:orderType:modal:${elm}`)}
+                  {i18n.t(`talk:point:sort:${elm}`)}
                 </AppText>
                 {orderType === elm && <AppSvgIcon name="selected" />}
               </Pressable>
@@ -660,15 +698,20 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
             name="rokebiLogoSmall"
           />
           <AppText style={[appStyles.roboto14Text, {color: colors.white}]}>
-            보유 톡포인트
+            {i18n.t('talk:point:hold')}
           </AppText>
-          <AppText
-            style={[
+
+          <AppPrice
+            price={utils.toCurrency(point || 0, 'P')}
+            balanceStyle={[
               appStyles.bold28Text,
               {fontFamily: 'Roboto-Regular', color: colors.white, marginTop: 4},
-            ]}>
-            0P
-          </AppText>
+            ]}
+            currencyStyle={[
+              appStyles.bold28Text,
+              {fontFamily: 'Roboto-Regular', color: colors.white, marginTop: 4},
+            ]}
+          />
         </View>
         <Pressable style={styles.showExpPtBox} onPress={() => showExpirePt()}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -677,8 +720,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
                 appStyles.bold14Text,
                 {lineHeight: 24, color: colors.white, opacity: 0.72},
               ]}>
-              소멸 예정
-              {/* {i18n.t('cashHistory:expirePt')} */}
+              {i18n.t('talk:point:expirePt')}
             </AppText>
             <AppText
               style={[
@@ -704,12 +746,12 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
                 },
               ]}
             />
-            <AppSvgIcon name="rightArrow10" style={{marginLeft: 8}} />
+            <AppSvgIcon name="rightArrowWhite10" style={{marginLeft: 8}} />
           </View>
         </Pressable>
       </>
     );
-  }, [expirePt, showExpirePt]);
+  }, [expirePt, point, showExpirePt]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -723,14 +765,13 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
       <Animated.View
         style={{
           overflow: 'hidden',
-          height: animatedValue,
+          // height: animatedValue,
         }}>
         <View style={styles.divider} />
 
         <View key="header" style={styles.hisHeader}>
           <AppText style={styles.historyTitleText}>
-            사용 내역
-            {/* {i18n.t('cashHistory:useHistory')} */}
+            {i18n.t('talk:point:used:history')}
           </AppText>
           <Pressable
             style={{flexDirection: 'row', alignItems: 'center'}}
@@ -738,7 +779,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
             <AppText
               style={[
                 appStyles.medium14,
-                {color: colors.black, marginRight: 8},
+                {color: colors.black, marginRight: 4},
               ]}>
               {i18n.t(`cashHistory:orderType:${orderType}`)}
             </AppText>
@@ -793,8 +834,9 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
 };
 
 export default connect(
-  ({account, status}: RootState) => ({
+  ({account, talk, status}: RootState) => ({
     account,
+    talk,
     pending:
       status.pending[accountActions.getCashHistory.typePrefix] ||
       status.pending[accountActions.getCashExpire.typePrefix] ||
@@ -802,6 +844,7 @@ export default connect(
   }),
   (dispatch) => ({
     action: {
+      talk: bindActionCreators(talkActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
       modal: bindActionCreators(modalActions, dispatch),
     },

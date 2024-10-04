@@ -1878,10 +1878,19 @@
   "talk:reward:modal:body2": "해외 여행 중에도 <b>30분간 무료 통화</b>에요!\n(한국 발신 기준)",
   "talk:reward:modal:btn": "자세히 보기",
 
+  "talk:point:hold": "보유 톡포인트",
+  "talk:point:expirePt": "소멸 예정",
   "talk:point:filter:A": "전체",
   "talk:point:filter:Y": "적립",
   "talk:point:filter:N": "사용•소멸",
   "talk:point:empty:A": "사용 내역이 없습니다.",
   "talk:point:empty:Y": "적립 내역이 없습니다.",
-  "talk:point:empty:N": "사용 내역이 없습니다."
+  "talk:point:empty:N": "톡포인트 사용•소멸 내역이 없어요!",
+  "talk:point:used:history": "사용 내역",
+  "talk:point:sort:orderType": "정렬방식",
+  "talk:point:sort:latest": "최근 내역순",
+  "talk:point:sort:old": "오래된 내역순",
+  "talk:point:history:add": "포인트 적립",
+  "talk:point:history:used": "포인트 사용",
+  "talk:point:history:expired": "포인트 소멸"
 }

@@ -3,8 +3,10 @@ import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import Contacts from 'react-native-contacts';
 import {AnyAction} from 'redux';
 import {Reducer} from 'redux-actions';
+import {Moment} from 'moment';
 import {API} from '@/redux/api';
 import {checkEng, checkKor} from '@/constants/CustomTypes';
+import {SectionData} from './account';
 
 // 10 items per page
 const PAGE_LIMIT = 10;
@@ -12,11 +14,17 @@ const PAGE_UPDATE = 0;
 
 export const updateContacts = createAction('rkbTalk/updateContact');
 export const updateRecordSet = createAction('rkbTalk/updateRecordSet');
-const resetWithoutContacts = createAction('rkbTalk/resetWithoutContacts');
-const getLocalOp = createAsyncThunk(
-  'rkbTalk/getLocalOp',
-  API.Product.getLocalOp,
+const getPointHistory = createAsyncThunk(
+  'rkbTalk/getPointHistory',
+  API.TalkApi.getPointHistory,
 );
+
+export type PointHistory = {
+  before: string;
+  after: string;
+  created: Moment;
+  reason: string;
+};
 
 export const sortName = (a, b) => {
   const nameA = a.familyName + a.givenName;
@@ -35,6 +43,7 @@ export interface TalkModelState {
   point: string;
   recordIDSet: Set<string>;
   contacts: any[];
+  pointHistory: PointHistory[];
 }
 
 const initialState: TalkModelState = {
@@ -84,6 +93,29 @@ const slice = createSlice({
       return {...initialState, contacts: state.contacts};
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(getPointHistory.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      if (result === 0 && objects && objects.length > 0) {
+        const group = objects?.reduce((acc, cur) => {
+          const year = cur.created?.format('YYYY');
+          const idx = acc.findIndex((elm) => elm.title === year);
+
+          if (idx <= -1) {
+            acc.push({title: year, data: [cur] as PointHistory[]});
+          } else {
+            acc[idx].data?.push(cur);
+          }
+          return acc;
+        }, [] as SectionData[]);
+
+        state.pointHistory = group;
+      }
+
+      return state;
+    });
+  },
 });
 
 export const getContacts = createAsyncThunk(
@@ -107,6 +139,7 @@ export const getContacts = createAsyncThunk(
 export const actions = {
   ...slice.actions,
   getContacts,
+  getPointHistory,
   // getTalkPoint,
 };
 

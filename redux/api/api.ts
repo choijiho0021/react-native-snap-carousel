@@ -142,6 +142,7 @@ const path = {
       noti: 'rokebi/noti',
       talk: 'rokebi/talk',
       point: 'rokebi/talk/point',
+      pointLog: 'rokebi/talk/point/log',
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage/quota',

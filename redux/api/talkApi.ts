@@ -1,3 +1,5 @@
+import moment from 'moment';
+import {PointHistory} from '../modules/talk';
 import api from './api';
 
 // get my coupons
@@ -39,4 +41,41 @@ const patchTalkPoint = ({
   );
 };
 
-export default {getChannelInfo, getTalkPoint, patchTalkPoint};
+const getPointHistory = ({
+  iccid,
+  mobile,
+  token,
+}: {
+  iccid?: string;
+  mobile?: string;
+  token?: string;
+}) => {
+  return api.callHttpGet<PointHistory>(
+    iccid
+      ? `${api.httpUrl(api.path.rokApi.rokebi.pointLog)}/${iccid}`
+      : `${api.httpUrl(api.path.rokApi.rokebi.pointLog)}/${mobile}?real`,
+    (rsp) => {
+      return rsp.result === 0
+        ? api.success(
+            rsp.objects.tpnt_log
+              .map(
+                (o) =>
+                  ({
+                    ...o,
+                    created: o.created ? moment(o.created) : undefined,
+                  } as PointHistory),
+              )
+              .sort((a, b) => moment(b.created).diff(moment(a.created))),
+          )
+        : api.failure(rsp.result, rsp.error);
+    },
+    api.withToken(token, 'json'),
+  );
+};
+
+export default {
+  getChannelInfo,
+  getTalkPoint,
+  patchTalkPoint,
+  getPointHistory,
+};
