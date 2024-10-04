@@ -53,6 +53,7 @@ export const colors = {
   pinkishGrey: '#bcbcbc',
   purplyBlue: '#5b16ef',
   babyBlue: '#B7D8FF',
+  aliceBlue: '#e8f0ff',
   paleGreyTwo: '#F5F6F7',
   iceBlue: '#ECF5FF',
   veryLightPink: '#FFE3DD', // rgb 255 227 221

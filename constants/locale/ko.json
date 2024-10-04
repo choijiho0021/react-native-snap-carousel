@@ -1892,5 +1892,14 @@
   "talk:point:sort:old": "오래된 내역순",
   "talk:point:history:add": "포인트 적립",
   "talk:point:history:used": "포인트 사용",
-  "talk:point:history:expired": "포인트 소멸"
+  "talk:point:history:expired": "포인트 소멸",
+
+  "talk:urgent:header": "긴급 통화",
+  "talk:urgent:title": "긴급 상황이 발생하면",
+  "talk:urgent:titleBold": "로깨비톡으로 도움을\n요청하세요.",
+  "talk:urgent:info": "로밍도깨비는 긴급 전화 발신 시 ",
+  "talk:urgent:infoBold": "통화 요금을 부과하지 않아요.",
+  "talk:urgent:point": "•",
+  "talk:urgent:detail1": "로깨비톡에서 아래 긴급 번호로 발신 시에만 무료 통화를 지원합니다.",
+  "talk:urgent:detail2": "로깨비톡은 데이터 기반 통화 서비스로, 데이터·와이파이 등 네트워크가 연결된 상태에서만 사용 가능합니다."
 }
