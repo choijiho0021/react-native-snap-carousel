@@ -91,4 +91,5 @@ export const colors = {
   green: '#00cc66',
   green500: '#00ad51',
   deepGreen: '#059a5e',
+  gray20: '#333333',
 };

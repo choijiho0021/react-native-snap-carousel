@@ -33,6 +33,7 @@ import CouponScreen from '@/screens/CouponScreen';
 import DraftScreen from '@/screens/DraftScreen';
 import DraftResultScreen from '@/screens/DraftScreen/DraftResult';
 import DraftUsScreen from '@/screens/DraftUsScreen';
+import EmergencyCallScreen from '@/screens/EmergencyCallScreen';
 import EsimScreen from '@/screens/EsimScreen';
 import EventBoardScreen from '@/screens/EventBoardScreen';
 import ExtraCouponScreen from '@/screens/ExtraCouponScreen';
@@ -59,12 +60,14 @@ import RedirectHKScreen from '@/screens/RedirectHKScreen';
 import RegisterMobileScreen from '@/screens/RegisterMobileScreen';
 import ResignScreen from '@/screens/ResignScreen';
 import RkbTalk from '@/screens/RkbTalk';
+import AuthGatewayScreen from '@/screens/RkbTalk/component/AuthGatewayScreen';
+import TalkRewardScreen from '@/screens/RkbTalk/component/TalkRewardScreen';
 import SelectCoupon from '@/screens/SelectCouponScreen';
 import SettingsScreen from '@/screens/SettingsScreen';
 import SimpleTextScreen from '@/screens/SimpleTextScreen';
 import StoreSearchScreen from '@/screens/StoreSearch';
 import TalkContact from '@/screens/TalkContact';
-import TalkPoint from '@/screens/TalkPoint';
+import TalkPointScreen from '@/screens/TalkPointScreen';
 import TutorialScreen from '@/screens/TutorialScreen';
 import UserGuideScreen from '@/screens/UserGuideScreen';
 import GlobalGuideScreen from '@/screens/UserGuideScreen/global/GlobalGuide';
@@ -74,8 +77,6 @@ import i18n from '@/utils/i18n';
 import AuthStack from './AuthStackNavigator';
 import BadgedIcon from './component/BadgedIcon';
 import {HomeStackParamList} from './navigation';
-import AuthGatewayScreen from '@/screens/RkbTalk/component/AuthGatewayScreen';
-import TalkRewardScreen from '@/screens/RkbTalk/component/TalkRewardScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -281,7 +282,8 @@ function TalkStackComponent() {
       <TalkStack.Screen name="AuthGateway" component={AuthGatewayScreen} />
       <TalkStack.Screen name="TalkReward" component={TalkRewardScreen} />
       <TalkStack.Screen name="TalkContact" component={TalkContact} />
-      <TalkStack.Screen name="TalkPoint" component={TalkPoint} />
+      <TalkStack.Screen name="TalkPoint" component={TalkPointScreen} />
+      <TalkStack.Screen name="EmergencyCall" component={EmergencyCallScreen} />
     </TalkStack.Navigator>
   );
 }
