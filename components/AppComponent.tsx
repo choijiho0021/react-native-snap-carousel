@@ -16,6 +16,7 @@ import messaging from '@react-native-firebase/messaging';
 import codePush from 'react-native-code-push';
 import Config from 'react-native-config';
 import SystemSetting from 'react-native-system-setting';
+import VersionCheck from 'react-native-version-check';
 import {API} from '@/redux/api';
 import AppAlert from '@/components/AppAlert';
 import AppToast from '@/components/AppToast';
@@ -30,7 +31,7 @@ import {
 } from '@/redux/modules/product';
 import {actions as syncActions} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
-import {retrieveData} from '@/utils/utils';
+import {retrieveData, storeData} from '@/utils/utils';
 import store from '@/store';
 import {RootState} from '@/redux';
 import AppModal from './AppModal';
@@ -202,7 +203,15 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
     // customer log init
     dispatch(initLog());
     // load product list
-    dispatch(productActions.init(false));
+    const oldVer = await retrieveData('AppVer');
+    const ver = VersionCheck.getCurrentVersion();
+
+    const isVersionUpdate = oldVer !== ver;
+    if (isVersionUpdate) {
+      await storeData('AppVer', ver);
+    }
+
+    dispatch(productActions.init(isVersionUpdate));
 
     if (!esimApp) {
       // 공지 사항 가져오기

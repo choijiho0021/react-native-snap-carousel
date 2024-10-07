@@ -342,6 +342,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
               uuid: prod.uuid,
               desc: prod.desc,
               price: prod.price,
+              prod,
               listPrice: prod.listPrice,
               localOpDetails: localOp?.detail,
               partnerId: prod?.partnerId,

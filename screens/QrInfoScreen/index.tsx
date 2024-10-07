@@ -117,9 +117,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  lastSpace: {
-    height: 30,
-  },
   checkBtn: {
     width: 120,
     height: 40,
@@ -168,7 +165,8 @@ const styles = StyleSheet.create({
   oneTouchReg: {
     marginTop: 24,
     backgroundColor: colors.clearBlue,
-    paddingVertical: 8,
+    paddingVertical: 13,
+    paddingHorizontal: 16,
     borderRadius: 3,
     justifyContent: 'center',
   },
@@ -197,12 +195,12 @@ const styles = StyleSheet.create({
     marginLeft: 2,
   },
   tabTitle: {
-    ...appStyles.medium18,
+    ...appStyles.medium16,
     lineHeight: 26,
     color: colors.gray2,
   },
   selectedTabTitle: {
-    ...appStyles.bold18Text,
+    ...appStyles.bold16Text,
     color: colors.black,
   },
   cardCheckDescTxt: {
@@ -222,6 +220,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     height: 50,
     paddingHorizontal: 20,
+    marginTop: 24,
   },
   btnCnter: {
     width: 40,
@@ -353,6 +352,8 @@ const QrInfoScreen = () => {
         setIsFail(false);
         break;
       case 'Disable':
+      case 'Downloaded':
+      case 'Installed':
         setCardState('DE');
         setIsFail(false);
         break;
@@ -592,15 +593,20 @@ const QrInfoScreen = () => {
           {key === 'manual' && renderManual()}
           {key === 'qr' && showQR(params.mainSubs)}
           {key === 'oneTouch' && renderOneTouch()}
-          <View
-            style={{
-              width: '100%',
-              height: 10,
-              backgroundColor: colors.whiteTwo,
-              marginVertical: 40,
-            }}
-          />
-          {canCheckEsim && renderCheckReg()}
+
+          {canCheckEsim && (
+            <>
+              <View
+                style={{
+                  width: '100%',
+                  height: 10,
+                  backgroundColor: colors.whiteTwo,
+                  marginVertical: 40,
+                }}
+              />
+              {renderCheckReg()}
+            </>
+          )}
         </ScrollView>
       );
     },
@@ -638,7 +644,6 @@ const QrInfoScreen = () => {
       {renderTab(routes[index].key)}
 
       {/* {renderSelectedPane()} */}
-      <View style={styles.lastSpace} />
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackBar(false)}

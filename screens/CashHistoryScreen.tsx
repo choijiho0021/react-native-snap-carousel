@@ -464,7 +464,10 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             esimCurrency,
           )}
           balanceStyle={[appStyles.bold18Text, {color: colors.clearBlue}]}
-          currencyStyle={[appStyles.bold16Text, {color: colors.clearBlue}]}
+          currencyStyle={[
+            appStyles.bold16Text,
+            {color: colors.clearBlue, textAlignVertical: 'bottom'},
+          ]}
         />
       </View>
     );
@@ -540,7 +543,10 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               <AppPrice
                 price={utils.toCurrency(expirePt || 0, esimCurrency)}
                 balanceStyle={[appStyles.bold18Text, {color: colors.redError}]}
-                currencyStyle={[appStyles.bold16Text, {color: colors.redError}]}
+                currencyStyle={[
+                  appStyles.bold16Text,
+                  {color: colors.redError, textAlignVertical: 'bottom'},
+                ]}
               />
             </View>
 

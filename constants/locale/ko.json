@@ -1531,7 +1531,7 @@
   "userGuide:esimReg:body": "단말에 eSIM 상품을 등록하기",
   "userGuide:checkSetting:title": "설정 확인",
   "userGuide:checkSetting:body": "등록 후 eSIM 설정 확인하기",
-  "userGuide:checkSetting:body2": "원터치 등록 후에는 설정 확인만 하면 끝!",
+  "userGuide:checkSetting:body2": "<b>원터치 등록 후</b>에는 설정 확인만 하면 끝!",
   "userGuide:esimDel:title": "<b14>사용 종료된 eSIM을 삭제하고 싶다면?</b14>",
   "userGuide:esimDel:body": "",
 

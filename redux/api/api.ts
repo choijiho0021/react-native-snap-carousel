@@ -405,10 +405,12 @@ const callHttp = async <T>(
       response
         .json()
         .then((json) => {
+          utils.log(`[Failed] error ${url} ${JSON.stringify(json)}\n`);
           console.log('failed. error:', url, JSON.stringify(json));
           return callback(json);
         })
         .catch((err) => {
+          utils.log(`[Failed] Failed to decode json:${err.message}\n`);
           return failure(
             E_DECODING_FAILED,
             `Failed to decode json:${err.message}`,
@@ -419,6 +421,7 @@ const callHttp = async <T>(
 
     return failure(FAILED, response.statusText, response.status);
   } catch (err) {
+    utils.log(`[request failed]: ${err} ${url}\n`);
     console.log('@@@ request failed', err, url);
     if (!ignoreError)
       store.dispatch(
