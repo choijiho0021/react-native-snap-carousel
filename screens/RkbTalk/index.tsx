@@ -1,8 +1,4 @@
-import {
-  RouteProp,
-  useFocusEffect,
-  useNavigation,
-} from '@react-navigation/native';
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment-timezone';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
@@ -16,8 +12,10 @@ import {
   View,
 } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
+import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import {
   Inviter,
   Registerer,
@@ -27,32 +25,31 @@ import {
   UserAgentOptions,
 } from 'sip.js';
 import {isNumber} from 'underscore';
-import Contacts from 'react-native-contacts';
-import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
-import {bindActionCreators} from 'redux';
-import {actions as talkActions, TalkAction} from '@/redux/modules/talk';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
+import AppButton from '@/components/AppButton';
+import AppPrice from '@/components/AppPrice';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize, MAX_WIDTH} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
-import {API} from '@/redux/api';
-import i18n from '@/utils/i18n';
-import {useInterval} from '@/utils/useInterval';
-import CallToolTip from './CallToolTip';
-import Keypad, {KeypadRef} from './Keypad';
-
 import {RootState} from '@/redux';
+import {API} from '@/redux/api';
+import utils from '@/redux/api/utils';
 import {
   AccountAction,
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
+import {actions as talkActions, TalkAction} from '@/redux/modules/talk';
+import i18n from '@/utils/i18n';
+import {useInterval} from '@/utils/useInterval';
+import CallToolTip from './CallToolTip';
 import PhoneCertBox from './component/PhoneCertBox';
+import Keypad, {KeypadRef} from './Keypad';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
-import AppModal from '@/components/AppModal';
-import {appStyles} from '@/constants/Styles';
 
 const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 
@@ -227,6 +224,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     SessionState.Initial,
   );
   const [speakerPhone, setSpeakerPhone] = useState(false);
+  const [mute, setMute] = useState(false);
   const [dtmfSession, setDtmfSession] = useState<Session>();
   const [duration, setDuration] = useState(1);
   const [maxTime, setMaxTime] = useState<number>();
@@ -234,7 +232,10 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [point, setPoint] = useState<number>(0);
   const [pntError, setPntError] = useState<boolean>(false);
   const [digit, setDigit] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
   const [showCheckModal, setShowCheckModal] = useState<boolean>(true);
+  const testNumber = '07079190190';
+
   const min = useMemo(() => {
     const checkRemain = (maxTime || 0) - duration;
     return maxTime
@@ -246,7 +247,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
 
   useEffect(() => {
     setIsSuccessAuth((realMobile || '') !== '');
-  }, [mobile, realMobile]);
+  }, [realMobile]);
 
   const {top} = useSafeAreaInsets();
   const showWarning = useMemo(() => {
@@ -290,19 +291,24 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
 
   const getPoint = useCallback(() => {
     if (realMobile) {
+      setRefreshing(true);
       API.TalkApi.getTalkPoint({mobile: realMobile}).then((rsp) => {
         console.log('@@@ point', rsp, realMobile);
         if (rsp?.result === 0) {
           setPoint(rsp?.objects?.tpnt);
         }
         if (!isNumber(rsp?.objects?.tpnt)) setPntError(true);
+        setRefreshing(false);
       });
     }
   }, [realMobile]);
 
-  useEffect(() => {
-    getPoint();
-  }, [getPoint]);
+  useFocusEffect(
+    React.useCallback(() => {
+      getPoint();
+      return () => {};
+    }, [getPoint]),
+  );
 
   // 권한없는 경우, 통화시에 권한확인 로직 필요
   useEffect(() => {
@@ -322,7 +328,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   }, [action.talk]);
 
   const getMaxCallTime = useCallback(() => {
-    API.TalkApi.getChannelInfo({mobile: '01059119737'}).then((rsp) => {
+    // 07079190190, 07079190216
+    API.TalkApi.getChannelInfo({mobile: testNumber}).then((rsp) => {
       if (rsp?.result === 0) {
         const m =
           rsp?.objects?.channel?.variable?.MAX_CALL_TIME?.match(/^[^:]+/);
@@ -388,11 +395,16 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   }, []);
 
   const cleanupMedia = useCallback(() => {
+    setRefreshing(true);
     console.log('@@@ cleanup');
     setDuration(1);
     setMaxTime();
     setTime('');
-  }, []);
+    setTimeout(() => {
+      getPoint();
+    }, 3000);
+    setRefreshing(false);
+  }, [getPoint]);
 
   const makeCall = useCallback(() => {
     const dest = keypadRef.current?.getValue();
@@ -510,6 +522,12 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         case 'hangup':
           releaseCall();
           break;
+        case 'mute':
+          setMute((prev) => {
+            InCallManager.setMicrophoneMute(!prev);
+            return !prev;
+          });
+          break;
         case 'speaker':
           setSpeakerPhone((prev) => {
             InCallManager.setSpeakerphoneOn(!prev);
@@ -548,10 +566,10 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       const transportOptions = {
         server: 'wss://talk.rokebi.com:8089/ws',
       };
-      const uri = UserAgent.makeURI(`sip:01059119737@talk.rokebi.com`);
+      const uri = UserAgent.makeURI(`sip:${testNumber}@talk.rokebi.com`);
       const userAgentOptions: UserAgentOptions = {
         authorizationPassword: '000000', // 000000
-        authorizationUsername: '01059119737',
+        authorizationUsername: testNumber,
         // authorizationUsername: '01059119737', // 07079190190
         transportOptions,
         uri,
@@ -613,9 +631,19 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
               style={{marginRight: 6}}
             />
             <AppText style={styles.myPoint}>{i18n.t('talk:mypoint')}</AppText>
-            <AppText style={[styles.myPoint, styles.pointBold]}>
-              {`${point || 0}P`}
-            </AppText>
+            <AppPrice
+              price={utils.toCurrency(point || 0, 'P')}
+              balanceStyle={[
+                styles.myPoint,
+                styles.pointBold,
+                {marginRight: 0},
+              ]}
+              currencyStyle={[
+                styles.myPoint,
+                styles.pointBold,
+                {marginLeft: 0},
+              ]}
+            />
             <AppSvgIcon key="rightArrow10" name="rightArrow10" />
           </View>
         </Pressable>
@@ -661,9 +689,12 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
                 </AppText>
               </View>
             )}
-            <AppText style={styles.emergency}>
-              {initial ? i18n.t('talk:emergencyCall') : ''}
-            </AppText>
+            <AppButton
+              style={{backgroundColor: colors.white}}
+              titleStyle={styles.emergency}
+              title={initial ? i18n.t('talk:emergencyCall') : ''}
+              onPress={() => navigation.navigate('EmergencyCall')}
+            />
           </View>
         </View>
         {printCCInfo && (
@@ -778,10 +809,10 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       const transportOptions = {
         server: 'wss://talk.rokebi.com:8089/ws',
       };
-      const uri = UserAgent.makeURI(`sip:01059119737@talk.rokebi.com`);
+      const uri = UserAgent.makeURI(`sip:${testNumber}@talk.rokebi.com`);
       const userAgentOptions: UserAgentOptions = {
         authorizationPassword: '000000', // 000000
-        authorizationUsername: '01059119737',
+        authorizationUsername: testNumber,
         transportOptions,
         uri,
         sessionDescriptionHandlerFactory: (session, options) => {
@@ -842,6 +873,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           styles.body,
           {backgroundColor: isSuccessAuth ? 'white' : 'rgba(0, 0, 0, 0.3)'},
         ]}>
+        <AppActivityIndicator visible={refreshing} />
         {renderBody}
       </SafeAreaView>
     </>
