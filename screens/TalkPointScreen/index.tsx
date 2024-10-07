@@ -58,29 +58,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 56,
   },
-  myRemain: {
-    marginVertical: 24,
-    marginHorizontal: 20,
-  },
-  balanceBox: {
-    flexDirection: 'row',
-    marginTop: 4,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  rechargeBox: {
-    flexDirection: 'row',
-    borderColor: colors.lightGrey,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 18,
-    paddingVertical: 8,
-  },
-  rechargeBoxText: {
-    ...appStyles.normal14Text,
-    lineHeight: 24,
-  },
   hisHeader: {
     flexDirection: 'row',
     marginBottom: 24,
@@ -209,7 +186,7 @@ const styles = StyleSheet.create({
 
 type TalkPointScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
-  'CashHistory'
+  'TalkPoint'
 >;
 
 type TalkPointScreenProps = {
@@ -838,7 +815,7 @@ export default connect(
     account,
     talk,
     pending:
-      status.pending[accountActions.getCashHistory.typePrefix] ||
+      status.pending[talkActions.getPointHistory.typePrefix] ||
       status.pending[accountActions.getCashExpire.typePrefix] ||
       false,
   }),
