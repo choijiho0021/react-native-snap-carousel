@@ -125,8 +125,8 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     padding: 16,
     backgroundColor: colors.deepGreen,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 3,
+    borderBottomRightRadius: 3,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -666,8 +666,8 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
             marginTop: 24,
             marginHorizontal: 20,
             height: 104,
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
+            borderTopLeftRadius: 3,
+            borderTopRightRadius: 3,
             backgroundColor: colors.green500,
           }}>
           <AppSvgIcon
