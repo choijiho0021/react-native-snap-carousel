@@ -1,47 +1,49 @@
+import {useFocusEffect} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import moment from 'moment';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
-  StyleSheet,
-  SafeAreaView,
-  View,
-  Pressable,
-  SectionList,
   Animated,
+  Pressable,
+  SafeAreaView,
+  SectionList,
+  StyleSheet,
+  View,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import moment from 'moment';
-import LinearGradient from 'react-native-linear-gradient';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {useFocusEffect} from '@react-navigation/native';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
+import AppButton from '@/components/AppButton';
+import AppPrice from '@/components/AppPrice';
+import AppSnackBar from '@/components/AppSnackBar';
+import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
-import i18n from '@/utils/i18n';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import {utils} from '@/utils/utils';
-import AppSvgIcon from '@/components/AppSvgIcon';
+import Env from '@/environment';
+import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
+import {API} from '@/redux/api';
+import {HistType} from '@/redux/api/talkApi';
 import {
   AccountAction,
   AccountModelState,
   actions as accountActions,
-  CashHistory,
   CashExpire,
+  CashHistory,
   SectionData,
 } from '@/redux/modules/account';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import {
   actions as talkActions,
   PointHistory,
   TalkAction,
   TalkModelState,
 } from '@/redux/modules/talk';
-import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
-import AppSnackBar from '@/components/AppSnackBar';
-import AppPrice from '@/components/AppPrice';
-import Env from '@/environment';
-import AppButton from '@/components/AppButton';
-import {HomeStackParamList} from '@/navigation/navigation';
-import {API} from '@/redux/api';
+import i18n from '@/utils/i18n';
+import {utils} from '@/utils/utils';
 
 const {esimCurrency} = Env.get();
 
@@ -108,6 +110,7 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   sectionItemContainer: {
+    justifyContent: 'center',
     marginHorizontal: 20,
     paddingVertical: 12,
     marginBottom: 8,
@@ -182,6 +185,63 @@ const styles = StyleSheet.create({
     ...appStyles.medium14,
     color: colors.warmGrey,
   },
+  dateText: {
+    ...appStyles.normal16Text,
+    paddingTop: 15,
+    marginRight: 20,
+    width: 47,
+    lineHeight: 24,
+    color: colors.black,
+  },
+  pointBox: {
+    flex: 1,
+    flexDirection: 'column',
+    alignSelf: 'center',
+  },
+  pointRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  expText: {
+    ...appStyles.medium14,
+    lineHeight: 20,
+    color: colors.warmGrey,
+  },
+  filterView: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    marginBottom: 24,
+  },
+  topPtBox: {
+    justifyContent: 'space-between',
+    padding: 16,
+    paddingBottom: 24,
+    marginTop: 24,
+    marginHorizontal: 20,
+    height: 104,
+    borderTopLeftRadius: 3,
+    borderTopRightRadius: 3,
+    backgroundColor: colors.green500,
+  },
+  pointText: {
+    ...appStyles.bold28Text,
+    fontFamily: 'Roboto-Regular',
+    color: colors.white,
+    marginTop: 4,
+  },
+  expBoldText: {
+    ...appStyles.bold14Text,
+    lineHeight: 24,
+    color: colors.white,
+    opacity: 0.72,
+  },
+  expNormalText: {
+    ...appStyles.normal14Text,
+    lineHeight: 24,
+    color: colors.white,
+    opacity: 0.72,
+  },
 });
 
 type TalkPointScreenNavigationProp = StackNavigationProp<
@@ -209,7 +269,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   talk,
   action,
   account,
-  // pending,
+  pending,
 }) => {
   const {
     realMobile,
@@ -305,36 +365,28 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
     ],
   );
 
-  const applyFilter = useCallback(
-    (arr: any[]) =>
-      arr.filter((elm2) => elm2.inc === dataFilter || dataFilter === 'A'),
-    [dataFilter],
-  );
+  const sectionData = useMemo(() => pointHistory, [pointHistory]);
 
-  const bReverse = useCallback((arr: any[], b: boolean) => {
-    if (b) return arr.reverse();
-    return arr;
+  const getType = useCallback((key?: string) => {
+    if (key === 'Y') return 'add';
+    if (key === 'N') return 'deduct';
+    return 'all';
   }, []);
 
-  const sectionData = useMemo(() => {
-    const isAsc = orderType === 'old';
-
-    return bReverse(
-      pointHistory.map((elm) => ({
-        title: elm.title,
-        data: bReverse(applyFilter(elm.data), isAsc),
-      })),
-      isAsc,
-    ).filter((elm: SectionData) => elm.data.length > 0);
-  }, [applyFilter, bReverse, pointHistory, orderType]);
-
-  const getHistory = useCallback(() => {
-    action.talk.getPointHistory({iccid, token});
-    // action.account.getCashExpire({iccid, token});
-  }, [action.talk, iccid, token]);
+  const getHistory = useCallback(
+    ({sort, type}: {sort?: string; type?: HistType}) => {
+      action.talk.getPointHistory({
+        iccid,
+        token,
+        sort,
+        type,
+      });
+    },
+    [action.talk, iccid, token],
+  );
 
   useEffect(() => {
-    getHistory();
+    getHistory({});
   }, [getHistory]);
 
   const showDetail = useCallback((item: CashHistory) => {
@@ -379,71 +431,70 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
       section: SectionData;
     }) => {
       const predate =
-        index > 0 ? section.data[index - 1].created.format('MM.DD') : '';
-      const date = item.created.format('MM.DD');
+        index > 0
+          ? moment.unix(section.data[index - 1].created).format('MM.DD')
+          : '';
+      const date = moment.unix(item.created).format('MM.DD');
 
-      console.log('@@@ item', item);
+      const {diff} = item;
+      const plus = diff?.[0] !== '-';
 
-      const diff = Number(item.after) - Number(item.before);
-      const plus = diff > 0;
-      const type = item.reason.includes('end')
-        ? 'used'
-        : item.reason.includes('add') || item.reason.includes('charge')
+      const type = plus
         ? 'add'
-        : 'expired';
-
-      // plus > 적립
-      //
-
-      // 상품 구매, 캐시 충전, 구매 취소의 경우에만 터치 가능
+        : item.reason.toLocaleLowerCase().includes('exp')
+        ? 'expired'
+        : 'used';
 
       return (
-        <Pressable style={styles.sectionItemContainer}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <AppText
-              style={[
-                appStyles.normal16Text,
-                {
-                  marginRight: 20,
-                  width: 47,
-                  lineHeight: 24,
-                  color: colors.black,
-                },
-              ]}>
+        <Pressable
+          style={[styles.sectionItemContainer, {height: plus ? 74 : 54}]}>
+          <View
+            style={{
+              flexDirection: 'row',
+              height: plus ? 74 : 54,
+            }}>
+            <AppText style={styles.dateText}>
               {index > 0 && predate === date ? '' : date}
             </AppText>
-            <View style={{flex: 1}}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <AppText style={[appStyles.bold16Text, {lineHeight: 30}]}>
-                  {i18n.t(`talk:point:history:${type}`)}
-                </AppText>
-              </View>
-            </View>
+            <View style={styles.pointBox}>
+              <View style={styles.pointRow}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <AppText style={[appStyles.bold16Text, {lineHeight: 30}]}>
+                    {i18n.t(`talk:point:history:${type}`)}
+                  </AppText>
+                </View>
 
-            <AppPrice
-              price={utils.toCurrency(diff, 'P')}
-              balanceStyle={[
-                appStyles.bold18Text,
-                {
-                  color: plus ? colors.clearBlue : colors.redError,
-                  lineHeight: 30,
-                },
-              ]}
-              currencyStyle={[
-                appStyles.bold16Text,
-                {
-                  color: plus ? colors.clearBlue : colors.redError,
-                  lineHeight: 30,
-                },
-              ]}
-              showPlus
-            />
+                <AppPrice
+                  price={utils.toCurrency(diff, 'P')}
+                  balanceStyle={[
+                    appStyles.bold18Text,
+                    {
+                      color: plus ? colors.clearBlue : colors.redError,
+                      lineHeight: 30,
+                    },
+                  ]}
+                  currencyStyle={[
+                    appStyles.bold16Text,
+                    {
+                      color: plus ? colors.clearBlue : colors.redError,
+                      lineHeight: 30,
+                    },
+                  ]}
+                  showPlus
+                />
+              </View>
+              {plus && (
+                <AppText style={styles.expText}>
+                  {i18n.t(`talk:point:expireDate`)}
+                  {moment.unix(item?.expire_at).format('YYYY.MM.DD')}
+                </AppText>
+              )}
+            </View>
           </View>
-          {showDetail(item)}
         </Pressable>
       );
     },
-    [showDetail],
+    [],
   );
 
   const renderEmpty = useCallback(() => {
@@ -511,6 +562,8 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
                 key={elm}
                 onPress={() => {
                   setOrderType(elm);
+                  const sort = elm === 'latest' ? 'desc' : 'asc';
+                  getHistory({type: getType(dataFilter), sort});
                   action.modal.closeModal();
                 }}
                 style={styles.orderTypeItem}>
@@ -530,7 +583,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
         <SafeAreaView style={{backgroundColor: colors.white}} />
       </Pressable>
     ),
-    [action.modal, orderType, orderTypeList],
+    [action.modal, dataFilter, getHistory, getType, orderType, orderTypeList],
   );
 
   const expirePtModalBody = useCallback(
@@ -607,22 +660,18 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   const onPressFilter = useCallback(
     (key: string) => {
       setDataFilter(key);
-
+      const sort = orderType === 'latest' ? 'desc' : 'asc';
+      getHistory({type: getType(key), sort});
       // 데이터 없을 때 호출하면 앱이 죽음
       if (sectionData?.length > 0)
         sectionRef.current?.scrollToLocation({itemIndex: 0, sectionIndex: 0});
     },
-    [sectionData?.length],
+    [getHistory, getType, orderType, sectionData?.length],
   );
 
   const renderFilter = useCallback(
     () => (
-      <View
-        style={{
-          flexDirection: 'row',
-          marginHorizontal: 20,
-          marginBottom: 24,
-        }}>
+      <View style={styles.filterView}>
         {filterList.map((elm) => (
           <Pressable
             onPress={() => onPressFilter(elm)}
@@ -660,50 +709,25 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   const renderTop = useCallback(() => {
     return (
       <>
-        <View
-          style={{
-            padding: 16,
-            marginTop: 24,
-            marginHorizontal: 20,
-            height: 104,
-            borderTopLeftRadius: 3,
-            borderTopRightRadius: 3,
-            backgroundColor: colors.green500,
-          }}>
-          <AppSvgIcon
-            style={{flexDirection: 'row', justifyContent: 'flex-end'}}
-            name="rokebiLogoSmall"
-          />
-          <AppText style={[appStyles.roboto14Text, {color: colors.white}]}>
-            {i18n.t('talk:point:hold')}
-          </AppText>
-
+        <View style={styles.topPtBox}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <AppText style={[appStyles.roboto14Text, {color: colors.white}]}>
+              {i18n.t('talk:point:hold')}
+            </AppText>
+            <AppSvgIcon name="rokebiLogoSmall" />
+          </View>
           <AppPrice
             price={utils.toCurrency(point || 0, 'P')}
-            balanceStyle={[
-              appStyles.bold28Text,
-              {fontFamily: 'Roboto-Regular', color: colors.white, marginTop: 4},
-            ]}
-            currencyStyle={[
-              appStyles.bold28Text,
-              {fontFamily: 'Roboto-Regular', color: colors.white, marginTop: 4},
-            ]}
+            balanceStyle={styles.pointText}
+            currencyStyle={styles.pointText}
           />
         </View>
         <Pressable style={styles.showExpPtBox} onPress={() => showExpirePt()}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <AppText
-              style={[
-                appStyles.bold14Text,
-                {lineHeight: 24, color: colors.white, opacity: 0.72},
-              ]}>
+            <AppText style={styles.expBoldText}>
               {i18n.t('talk:point:expirePt')}
             </AppText>
-            <AppText
-              style={[
-                appStyles.normal14Text,
-                {lineHeight: 24, color: colors.white, opacity: 0.72},
-              ]}>
+            <AppText style={styles.expNormalText}>
               {i18n.t('cashHistory:in1Month')}
             </AppText>
           </View>
@@ -741,8 +765,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
       {/* 30일 이내 소멸예정 캐시 모달  */}
       <Animated.View
         style={{
-          overflow: 'hidden',
-          // height: animatedValue,
+          overflow: 'hidden', // height: animatedValue,
         }}>
         <View style={styles.divider} />
 
@@ -806,6 +829,8 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
         onClose={() => setShowSnackbar(false)}
         textMessage={i18n.t('cashHistory:snackbar')}
       />
+
+      <AppActivityIndicator visible={pending || false} />
     </SafeAreaView>
   );
 };
