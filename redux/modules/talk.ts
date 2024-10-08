@@ -3,7 +3,7 @@ import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import Contacts from 'react-native-contacts';
 import {AnyAction} from 'redux';
 import {Reducer} from 'redux-actions';
-import {Moment} from 'moment';
+import moment, {Moment} from 'moment';
 import {API} from '@/redux/api';
 import {checkEng, checkKor} from '@/constants/CustomTypes';
 import {SectionData} from './account';
@@ -13,6 +13,7 @@ const PAGE_LIMIT = 10;
 const PAGE_UPDATE = 0;
 
 export const updateContacts = createAction('rkbTalk/updateContact');
+export const updateClickedNumber = createAction('rkbTalk/updateClickedNumber');
 export const updateRecordSet = createAction('rkbTalk/updateRecordSet');
 const getPointHistory = createAsyncThunk(
   'rkbTalk/getPointHistory',
@@ -20,10 +21,11 @@ const getPointHistory = createAsyncThunk(
 );
 
 export type PointHistory = {
-  before: string;
-  after: string;
+  diff: string;
+  expire_at: Moment;
   created: Moment;
   reason: string;
+  ref_node: string;
 };
 
 export const sortName = (a, b) => {
@@ -44,10 +46,11 @@ export interface TalkModelState {
   recordIDSet: Set<string>;
   contacts: any[];
   pointHistory: PointHistory[];
+  selectedNum?: string;
 }
 
 const initialState: TalkModelState = {
-  point: '0,000',
+  point: '0',
   recordIDSet: new Set(),
   contacts: [],
 };
@@ -64,12 +67,13 @@ const slice = createSlice({
     //     state.lastTab = lastTab.unshift(action.payload).setSize(2);
     //   }
     // },
-    updateContact: (state, action) => {
-      console.log('@@ cont act@@', action.payload);
-      state.contacts = action.payload;
-      // return {...state, contacts: action.payload};
+    updateClickedNumber: (state, action) => {
+      state.selectedNum = action.payload;
       return state;
-      // return {...initialState, contacts: action.payload};
+    },
+    updateContact: (state, action) => {
+      state.contacts = action.payload;
+      return state;
     },
     updateRecordSet: (state, action) => {
       // storeData('recordIDSet', action.payload || '');
@@ -97,16 +101,15 @@ const slice = createSlice({
     builder.addCase(getPointHistory.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
-      if (result === 0 && objects && objects.length > 0) {
-        const group = objects?.reduce((acc, cur) => {
-          const year = cur.created?.format('YYYY');
+      if (result === 0 && objects && objects.log?.length > 0) {
+        const group = objects?.log?.reduce((acc, cur) => {
+          const year = moment.unix(cur.created).format('YYYY');
           const idx = acc.findIndex((elm) => elm.title === year);
 
           if (idx <= -1) {
             acc.push({title: year, data: [cur] as PointHistory[]});
-          } else {
-            acc[idx].data?.push(cur);
-          }
+          } else acc[idx].data?.push(cur);
+
           return acc;
         }, [] as SectionData[]);
 
@@ -124,10 +127,8 @@ export const getContacts = createAsyncThunk(
     return Contacts.getAll()
       .then((contacts) => {
         const sortedContacts = (contacts || []).sort((a, b) => sortName(a, b));
-        console.log('@@@ cont22', sortedContacts);
         dispatch(slice.actions.updateContact(sortedContacts));
         return sortedContacts || [];
-        // dispatch(updateContacts(contacts));
       })
       .catch((err) => {
         console.warn('Permission to access contacts was denied', err);
