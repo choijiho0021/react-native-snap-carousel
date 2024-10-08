@@ -1,6 +1,13 @@
 import Analytics from 'appcenter-analytics';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {Pressable, StyleSheet, View, ScrollView, ViewStyle} from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  View,
+  ScrollView,
+  ViewStyle,
+  Modal,
+} from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'underscore';
 import {
@@ -10,6 +17,7 @@ import {
 } from '@react-navigation/native';
 import {ChannelIO} from 'react-native-channel-plugin';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {bindActionCreators} from 'redux';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppModal from '@/components/AppModal';
@@ -26,6 +34,20 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import ChatTalk from '@/components/ChatTalk';
 import ScreenHeader from '@/components/ScreenHeader';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
+import AppStyledText from '@/components/AppStyledText';
+import AppTextInput from '@/components/AppTextInput';
+import {AccountModelState} from '@/redux/modules/account';
+import {
+  LogAction,
+  LogModelState,
+  actions as logActions,
+} from '@/redux/modules/log';
+import {API} from '@/redux/api';
+import {
+  actions as toastActions,
+  Toast,
+  ToastAction,
+} from '@/redux/modules/toast';
 
 const {esimGlobal} = Env.get();
 
@@ -125,6 +147,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  closeButtonTitle: {
+    ...appStyles.medium18,
+    color: colors.white,
+    textAlign: 'center',
+    width: '100%',
+  },
+  headerContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 32,
+    paddingBottom: 24,
+  },
+  cliLogMobile: {
+    ...appStyles.medium16,
+    paddingHorizontal: 12,
+    paddingVertical: 13,
+    backgroundColor: colors.lightGrey,
+  },
 });
 type MenuItem = {
   key: string;
@@ -176,13 +215,22 @@ type ContactScreenProps = {
   navigation: NavigationProp<any>;
   route: RouteProp<ParamListBase, string>;
 
+  account: AccountModelState;
+  log: LogModelState;
   noti: NotiModelState;
+
+  action: {
+    log: LogAction;
+    toast: ToastAction;
+  };
 };
 
 const ContactScreen: React.FC<ContactScreenProps> = (props) => {
-  const {navigation, route, noti} = props;
-  const [showModal, setShowModal] = useState(false);
+  const {navigation, route, noti, log, account, action} = props;
+  const [pressCnt, setPressCnt] = useState(0);
+  const [showModal, setShowModal] = useState<string>(''); // cliLog, alim
   const [chatTalkClicked, setChatTalkClicked] = useState(false);
+  const [mobile, setMobile] = useState(account.mobile);
 
   const data = useMemo(
     () => [
@@ -203,11 +251,18 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
   );
 
   useEffect(() => {
+    if (pressCnt >= 5) {
+      setShowModal('cliLog');
+      setPressCnt(0);
+    }
+  }, [pressCnt]);
+
+  useEffect(() => {
     Analytics.trackEvent('Page_View_Count', {page: 'Service Center'});
   }, [navigation]);
 
   useEffect(() => {
-    if (noti.result) setShowModal(true);
+    if (noti.result) setShowModal('alim');
   }, [noti.result]);
 
   // TODO : AppHeader로 옮기기
@@ -215,6 +270,19 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
     navigation,
     route,
   });
+
+  const sendClientLog = useCallback(async () => {
+    // 앱 로그 서버로 전송
+    const resp = await API.User.saveClientLog({mobile, log: log.log});
+    if (resp.result === 0) {
+      action.toast.push({
+        msg: Toast.SAVE_LOG_SUCCESS,
+        toastIcon:
+          resp.result === 0 ? 'bannerMarkToastSuccess' : 'bannerMarkToastError',
+      });
+    }
+    action.log.clear();
+  }, [action.log, action.toast, log.log, mobile]);
 
   const onPress = useCallback(
     (key: string) => {
@@ -279,7 +347,9 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
 
         <View style={styles.infoContainer}>
           <AppText style={styles.contactInfo}>{i18n.t('contact:info')}</AppText>
-          <AppIcon name="imgNotiDokebi" style={{marginRight: 12}} />
+          <Pressable onPress={() => setPressCnt((pre) => pre + 1)}>
+            <AppIcon name="imgNotiDokebi" style={{marginRight: 12}} />
+          </Pressable>
         </View>
 
         <View style={styles.absoluteView}>
@@ -315,15 +385,85 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
               : i18n.t('set:failedToSendAlimTalk')
           }
           type="info"
-          onOkClose={() => setShowModal(false)}
-          visible={showModal}
+          onOkClose={() => setShowModal('')}
+          visible={showModal === 'alim'}
         />
       </ScrollView>
+
+      <Modal visible={showModal === 'cliLog'} animationType="slide">
+        <SafeAreaView style={{flex: 1}}>
+          <View style={{flex: 1}}>
+            <View style={styles.headerContainer}>
+              <ScreenHeader
+                title={i18n.t('cliLog:title')}
+                showIcon={false}
+                renderLeft={
+                  <AppSvgIcon
+                    name="closeModal"
+                    onPress={() => setShowModal('')}
+                  />
+                }
+              />
+            </View>
+            <View style={{flex: 1, marginHorizontal: 20}}>
+              <AppStyledText
+                text={i18n.t('cliLog:txt')}
+                textStyle={appStyles.normal16Text}
+                format={{
+                  b: {...appStyles.semiBold16Text, color: colors.clearBlue},
+                }}
+              />
+              <AppText
+                style={{
+                  marginTop: 32,
+                  marginBottom: 6,
+                  ...appStyles.semiBold14Text,
+                }}>
+                {i18n.t('cliLog:mobile')}
+              </AppText>
+              <AppTextInput
+                style={styles.cliLogMobile}
+                returnKeyType="done"
+                enablesReturnKeyAutomatically
+                onChangeText={(text) => setMobile(text)}
+                editable={!account.loggedIn}
+                maxLength={13}
+                value={mobile}
+              />
+            </View>
+
+            <AppButton
+              style={{
+                height: 52,
+                marginHorizontal: 20,
+                backgroundColor: colors.clearBlue,
+              }}
+              type="primary"
+              onPress={() => {
+                sendClientLog();
+                setShowModal('');
+              }}
+              title={i18n.t('cliLog:btnTitle')}
+              titleStyle={[styles.closeButtonTitle, {color: colors.white}]}
+            />
+          </View>
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 };
 
-export default connect(({noti, status}: RootState) => ({
-  noti,
-  pending: status.pending[notiActions.sendAlimTalk.typePrefix] || false,
-}))(ContactScreen);
+export default connect(
+  ({account, noti, log, status}: RootState) => ({
+    account,
+    noti,
+    log,
+    pending: status.pending[notiActions.sendAlimTalk.typePrefix] || false,
+  }),
+  (dispatch) => ({
+    action: {
+      log: bindActionCreators(logActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch),
+    },
+  }),
+)(ContactScreen);
