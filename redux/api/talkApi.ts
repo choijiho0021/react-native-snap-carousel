@@ -1,4 +1,3 @@
-import moment from 'moment';
 import {PointHistory} from '../modules/talk';
 import api from './api';
 
@@ -41,33 +40,31 @@ const patchTalkPoint = ({
   );
 };
 
+export type HistType = 'add' | 'deduct' | 'all';
+
 const getPointHistory = ({
   iccid,
   mobile,
   token,
+  sort,
+  type,
 }: {
   iccid?: string;
   mobile?: string;
   token?: string;
+  sort?: string;
+  type?: HistType;
 }) => {
+  let cond = 'log';
+  if (sort) cond += `&sort=${sort}`;
+  if (type) cond += `&type=${type}`;
+
   return api.callHttpGet<PointHistory>(
     iccid
-      ? `${api.httpUrl(api.path.rokApi.rokebi.pointLog)}/${iccid}`
+      ? `${api.httpUrl(api.path.rokApi.rokebi.pointLog)}/${iccid}?${cond}`
       : `${api.httpUrl(api.path.rokApi.rokebi.pointLog)}/${mobile}?real`,
     (rsp) => {
-      return rsp.result === 0
-        ? api.success(
-            rsp.objects.tpnt_log
-              .map(
-                (o) =>
-                  ({
-                    ...o,
-                    created: o.created ? moment(o.created) : undefined,
-                  } as PointHistory),
-              )
-              .sort((a, b) => moment(b.created).diff(moment(a.created))),
-          )
-        : api.failure(rsp.result, rsp.error);
+      return rsp;
     },
     api.withToken(token, 'json'),
   );
