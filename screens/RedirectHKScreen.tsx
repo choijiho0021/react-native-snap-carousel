@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     marginBottom: 36,
   },
   hkInfoText: {
-    ...appStyles.normal14Text,
+    ...appStyles.normal16Text,
     lineHeight: 20,
     letterSpacing: 0,
   },
@@ -414,7 +414,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
             text={i18n.t('redirectHK:info1')}
             format={{b: {color: colors.blue}}}
           />
-          <AppText style={[appStyles.bold14Text, {marginTop: 20}]}>
+          <AppText style={[appStyles.bold16Text, {marginTop: 20}]}>
             {i18n.t('redirectHK:info3')}
           </AppText>
         </View>
