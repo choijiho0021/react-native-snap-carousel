@@ -40,6 +40,14 @@ const patchTalkPoint = ({
   );
 };
 
+const getExpPointInfo = ({iccid, token}: {iccid: string; token: string}) => {
+  return api.callHttpGet<PointHistory>(
+    `${api.httpUrl(api.path.rokApi.rokebi.pointLog)}/${iccid}?exp=30&list`,
+    (rsp) => rsp,
+    api.withToken(token, 'json'),
+  );
+};
+
 export type HistType = 'add' | 'deduct' | 'all';
 
 const getPointHistory = ({
@@ -63,9 +71,7 @@ const getPointHistory = ({
     iccid
       ? `${api.httpUrl(api.path.rokApi.rokebi.pointLog)}/${iccid}?${cond}`
       : `${api.httpUrl(api.path.rokApi.rokebi.pointLog)}/${mobile}?real`,
-    (rsp) => {
-      return rsp;
-    },
+    (rsp) => rsp,
     api.withToken(token, 'json'),
   );
 };
@@ -73,6 +79,7 @@ const getPointHistory = ({
 export default {
   getChannelInfo,
   getTalkPoint,
+  getExpPointInfo,
   patchTalkPoint,
   getPointHistory,
 };

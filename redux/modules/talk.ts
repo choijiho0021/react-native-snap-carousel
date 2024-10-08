@@ -15,6 +15,10 @@ const PAGE_UPDATE = 0;
 export const updateContacts = createAction('rkbTalk/updateContact');
 export const updateClickedNumber = createAction('rkbTalk/updateClickedNumber');
 export const updateRecordSet = createAction('rkbTalk/updateRecordSet');
+const getExpPointInfo = createAsyncThunk(
+  'rkbTalk/getExpPointInfo',
+  API.TalkApi.getExpPointInfo,
+);
 const getPointHistory = createAsyncThunk(
   'rkbTalk/getPointHistory',
   API.TalkApi.getPointHistory,
@@ -26,6 +30,11 @@ export type PointHistory = {
   created: Moment;
   reason: string;
   ref_node: string;
+};
+
+export type ExpPointHistory = {
+  expire_at: Moment;
+  point: string;
 };
 
 export const sortName = (a, b) => {
@@ -46,6 +55,8 @@ export interface TalkModelState {
   recordIDSet: Set<string>;
   contacts: any[];
   pointHistory: PointHistory[];
+  expList: ExpPointHistory[];
+  expPoint: string;
   selectedNum?: string;
 }
 
@@ -118,6 +129,16 @@ const slice = createSlice({
 
       return state;
     });
+    builder.addCase(getExpPointInfo.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      if (result === 0 && objects) {
+        state.expList = objects.list || [];
+        state.expPoint = objects.exp;
+        state.point = objects.tpnt;
+      }
+      return state;
+    });
   },
 });
 
@@ -141,6 +162,7 @@ export const actions = {
   ...slice.actions,
   getContacts,
   getPointHistory,
+  getExpPointInfo,
   // getTalkPoint,
 };
 
