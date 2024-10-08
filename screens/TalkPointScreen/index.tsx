@@ -262,7 +262,7 @@ type TalkPointScreenProps = {
   };
 };
 
-type OrderType = 'latest' | 'old';
+type OrderType = 'desc' | 'asc';
 
 const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   navigation,
@@ -283,7 +283,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   const {pointHistory = []} = talk;
   const [point, setPoint] = useState<number>(0);
 
-  const [orderType, setOrderType] = useState<OrderType>('latest');
+  const [orderType, setOrderType] = useState<OrderType>('desc');
   const [dataFilter, setDataFilter] = useState<string>('A');
   const [showSnackBar, setShowSnackbar] = useState(false);
   const isModalBeginDrag = useRef(false);
@@ -296,10 +296,8 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   const dividerAnimatedHeight = useRef(new Animated.Value(0)).current;
   const dividerAnimatedMargin = useRef(new Animated.Value(0)).current;
 
-  const orderTypeList: OrderType[] = useMemo(() => ['latest', 'old'], []);
+  const orderTypeList: OrderType[] = useMemo(() => ['desc', 'asc'], []);
   const filterList: string[] = useMemo(() => ['A', 'Y', 'N'], []);
-
-  useEffect(() => {}, []);
 
   const getPoint = useCallback(() => {
     if (realMobile) {
@@ -531,8 +529,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
                 key={elm}
                 onPress={() => {
                   setOrderType(elm);
-                  const sort = elm === 'latest' ? 'desc' : 'asc';
-                  getHistory({type: getType(dataFilter), sort});
+                  getHistory({type: getType(dataFilter), sort: elm});
                   action.modal.closeModal();
                 }}
                 style={styles.orderTypeItem}>
@@ -629,8 +626,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   const onPressFilter = useCallback(
     (key: string) => {
       setDataFilter(key);
-      const sort = orderType === 'latest' ? 'desc' : 'asc';
-      getHistory({type: getType(key), sort});
+      getHistory({type: getType(key), sort: orderType});
       // 데이터 없을 때 호출하면 앱이 죽음
       if (sectionData?.length > 0)
         sectionRef.current?.scrollToLocation({itemIndex: 0, sectionIndex: 0});
@@ -750,7 +746,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
                 appStyles.medium14,
                 {color: colors.black, marginRight: 4},
               ]}>
-              {i18n.t(`cashHistory:orderType:${orderType}`)}
+              {i18n.t(`talk:point:sort:${orderType}`)}
             </AppText>
             <AppSvgIcon name="sortTriangle" style={{marginRight: 8}} />
           </Pressable>
