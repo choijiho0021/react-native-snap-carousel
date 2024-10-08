@@ -43,7 +43,11 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
-import {actions as talkActions, TalkAction} from '@/redux/modules/talk';
+import {
+  actions as talkActions,
+  TalkAction,
+  TalkModelState,
+} from '@/redux/modules/talk';
 import i18n from '@/utils/i18n';
 import {useInterval} from '@/utils/useInterval';
 import CallToolTip from './CallToolTip';
@@ -205,6 +209,7 @@ type RkbTalkProps = {
   route: RkbTalkRouteProp;
 
   account: AccountModelState;
+  talk: TalkModelState;
   action: {
     account: AccountAction;
     talk: TalkAction;
@@ -213,6 +218,7 @@ type RkbTalkProps = {
 
 const RkbTalk: React.FC<RkbTalkProps> = ({
   account: {mobile, realMobile, iccid, token},
+  talk: {selectedNum},
   navigation,
   route,
   action,
@@ -652,6 +658,12 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     );
   }, [navigation, point]);
 
+  useEffect(() => {
+    if (selectedNum) {
+      keypadRef.current?.setValue(selectedNum);
+    }
+  }, [selectedNum]);
+
   const info = useCallback(() => {
     if (initial) return talkPointBtn();
     if (connected) return <AppText style={styles.timer}>{time}</AppText>;
@@ -659,6 +671,16 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       <AppText style={styles.connecting}>{i18n.t('talk:connecting')}</AppText>
     );
   }, [connected, initial, talkPointBtn, time]);
+
+  const onChange = useCallback(
+    (d) => {
+      setDigit((prev) => {
+        if (prev === selectedNum) action.talk.updateClickedNumber(undefined);
+        return d || '';
+      });
+    },
+    [action.talk, selectedNum],
+  );
 
   const renderRkbTalkMain = useMemo(
     () => (
@@ -749,7 +771,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
             style={styles.keypad}
             keypadRef={keypadRef}
             onPress={onPressKeypad}
-            onChange={(d) => setDigit(d || '')}
+            onChange={onChange}
             state={sessionState}
             showWarning={showWarning}
           />
@@ -765,6 +787,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       maxTime,
       min,
       navigation,
+      onChange,
       onPressKeypad,
       printCCInfo,
       sessionState,

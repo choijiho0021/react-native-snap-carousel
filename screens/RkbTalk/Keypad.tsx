@@ -96,6 +96,7 @@ const desc = [
 
 export type KeypadRef = {
   getValue: () => string;
+  setValue: (v: string) => void;
 };
 
 type KeyType = 'call' | 'hangup' | 'speaker' | 'keypad';
@@ -133,9 +134,13 @@ const Keypad: React.FC<KeypadProps> = ({
     if (keypadRef) {
       keypadRef.current = {
         getValue: () => dest,
+        setValue: (v: string) => {
+          keypadRef.current.value = v;
+          setDest(v);
+        },
       };
     }
-  });
+  }, [dest, keypadRef]);
 
   const renderKeyButton = useCallback(
     (key: KeyType) => (
@@ -158,8 +163,8 @@ const Keypad: React.FC<KeypadProps> = ({
 
   // dtmf는 keypad를 닫았다가 다시 열 경우에도 이전 이력 남아있어야 하는지 확인 필요
   const closeKeypad = useCallback(() => {
-    setShowKeypad(false);
     setPressed('');
+    setShowKeypad(false);
   }, []);
 
   useEffect(() => {
@@ -175,6 +180,7 @@ const Keypad: React.FC<KeypadProps> = ({
   const renderKey = useCallback(
     (st?: SessionState) => {
       const calling = ![
+        SessionState.Initial,
         SessionState.Established,
         SessionState.Terminated,
       ].includes(st);
