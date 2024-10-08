@@ -1879,7 +1879,7 @@
   "talk:reward:modal:btn": "자세히 보기",
 
   "talk:point:hold": "보유 톡포인트",
-  "talk:point:expirePt": "소멸 예정",
+  "talk:point:expirePt": "소멸 예정 톡포인트",
   "talk:point:filter:A": "전체",
   "talk:point:filter:Y": "적립",
   "talk:point:filter:N": "사용•소멸",
@@ -1893,6 +1893,7 @@
   "talk:point:history:add": "포인트 적립",
   "talk:point:history:used": "포인트 사용",
   "talk:point:history:expired": "포인트 소멸",
+  "talk:point:expireDate": "유효기간 : ",
 
   "talk:urgent:header": "긴급 통화",
   "talk:urgent:title": "긴급 상황이 발생하면",
