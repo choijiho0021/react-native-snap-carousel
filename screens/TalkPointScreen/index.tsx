@@ -389,37 +389,6 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
     getHistory({});
   }, [getHistory]);
 
-  const showDetail = useCallback((item: CashHistory) => {
-    const {order_id, expire_dt} = item;
-
-    if (order_id || expire_dt || ['cash_refund', 'dona'].includes(item?.type)) {
-      return (
-        <View style={{marginLeft: 73}}>
-          {(item.order_id || item.type === 'dona') && (
-            <AppText style={styles.detailText}>
-              {item.order_title || ''}
-            </AppText>
-          )}
-          {item.expire_dt && (
-            <AppText style={styles.detailText}>
-              {i18n.t(`cashHistory:detail:expDate`, {
-                date: item.expire_dt.format('YYYY.MM.DD'),
-              })}
-            </AppText>
-          )}
-
-          {item.type === 'cash_refund' && (
-            <AppText style={styles.detailText}>
-              {i18n.t('cashHistory:detail:refund')}
-            </AppText>
-          )}
-        </View>
-      );
-    }
-
-    return null;
-  }, []);
-
   const renderSectionItem = useCallback(
     ({
       item,
