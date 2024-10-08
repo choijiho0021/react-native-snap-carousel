@@ -230,13 +230,21 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
 
           {usageDetail(type, num, needTitle)}
 
-          <Pressable style={styles.callBtn}>
+          <Pressable
+            style={styles.callBtn}
+            onPress={() => {
+              const number = i18n
+                .t(`talk:urgent:${type}:callNumber`)
+                .replace(/[+-]/g, '');
+              action.talk.updateClickedNumber(number);
+              navigation.goBack();
+            }}>
             <AppSvgIcon name="iconCall" />
             <AppText style={styles.callText}>
               {i18n.t(`talk:urgent:${type}:call`)}
             </AppText>
           </Pressable>
-          <Pressable style={styles.kakaoBtn}>
+          <Pressable style={styles.kakaoBtn} onPress={() => {}}>
             <AppSvgIcon name="loginImgKakao" />
             <AppText style={styles.kakaoText}>
               {i18n.t(`talk:urgent:${type}:kakao`)}
@@ -245,7 +253,7 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
         </>
       );
     },
-    [usageDetail],
+    [action.talk, navigation, usageDetail],
   );
 
   return (
