@@ -15,6 +15,8 @@ import {getTrackingStatus} from 'react-native-tracking-transparency';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import moment from 'moment';
+import AsyncStorage from '@react-native-community/async-storage';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
@@ -38,6 +40,8 @@ import {retrieveData, storeData, utils} from '@/utils/utils';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import ChatTalk from '@/components/ChatTalk';
 import Env from '@/environment';
+import LocalModal from '../HomeScreen/component/LocalModal';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 
 const {isIOS} = Env.get();
 
@@ -159,15 +163,6 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     justifyContent: 'flex-end',
   },
-  divider: {
-    borderRightWidth: 1,
-    borderRightColor: colors.lightGrey,
-    height: 12,
-    marginRight: 20,
-    alignSelf: 'center',
-    justifyContent: 'flex-end',
-    backgroundColor: colors.white,
-  },
 });
 
 const MAX_HISTORY_LENGTH = 7;
@@ -246,6 +241,7 @@ type StoreSearchScreenProps = {
   product: ProductModelState;
   action: {
     product: ProductAction;
+    modal: ModalAction;
   };
 };
 
@@ -319,30 +315,42 @@ const StoreSearchScreen: React.FC<StoreSearchScreenProps> = ({
     [searchList],
   );
 
+  const navToCountry = useCallback(
+    (info: RkbPriceInfo) => {
+      action.product.getProdOfPartner(info.partnerList);
+      navigation.navigate('Country', {
+        partner: info.partnerList,
+      });
+    },
+    [action.product, navigation],
+  );
+
   const onPressItem = useCallback(
     async (info: RkbPriceInfo, prodTitle?: string) => {
-      if (searchWord.length > 0) {
-        Analytics.trackEvent('Page_View_Count', {
-          page: 'Move To Country with Searching',
-        });
+      const localOp = product.localOpList.get(info?.partner || '');
 
-        const status = await getTrackingStatus();
-        if (status === 'authorized') {
-          const params = {
-            _valueToSum: 1,
-            fb_search_string: searchWord,
-            fb_content_type: 'Country',
-            success: 1,
-          };
-          AppEventsLogger.logEvent('fb_mobile_search', params);
+      if (prodTitle) search(prodTitle, true);
+
+      if (localOp?.notice) {
+        const item = await AsyncStorage.getItem(
+          `esim.show.local.modal.${localOp?.key}`,
+        );
+        const tm = moment(item, 'YYYY-MM-DD HH:mm:ss');
+
+        if (!tm.isValid() || tm.add(1, 'day').isBefore(moment())) {
+          return action.modal.renderModal(() => (
+            <LocalModal
+              onPress={() => navToCountry(info)}
+              localOpKey={localOp?.key || ''}
+              html={localOp.notice}
+            />
+          ));
         }
       }
 
-      if (prodTitle) search(prodTitle, true);
-      action.product.getProdOfPartner(info.partnerList);
-      navigation.navigate('Country', {partner: info.partnerList});
+      return navToCountry(info);
     },
-    [action.product, navigation, search, searchWord],
+    [action.modal, navToCountry, product.localOpList, search],
   );
 
   const renderSearchWord = useCallback(() => {
@@ -504,6 +512,7 @@ export default connect(
   (dispatch) => ({
     action: {
       product: bindActionCreators(productActions, dispatch),
+      modal: bindActionCreators(modalActions, dispatch),
     },
   }),
 )(StoreSearchScreen);
