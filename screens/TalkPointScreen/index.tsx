@@ -300,14 +300,13 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   const filterList: string[] = useMemo(() => ['A', 'Y', 'N'], []);
 
   const getPoint = useCallback(() => {
-    if (realMobile) {
-      API.TalkApi.getTalkPoint({mobile: realMobile}).then((rsp) => {
-        if (rsp?.result === 0) {
-          setPoint(rsp?.objects?.tpnt);
-        }
+    if (iccid) {
+      action.talk.getExpPointInfo({
+        iccid,
+        token,
       });
     }
-  }, [realMobile]);
+  }, [action.talk, iccid, token]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -575,15 +574,15 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
                 appStyles.bold20Text,
                 {marginHorizontal: 20, marginTop: 28, marginBottom: 24},
               ]}>
-              {i18n.t('cashHistory:expireModalTitle')}
+              {i18n.t('talk:point:expireModalTitle')}
             </AppText>
 
             <View style={styles.expPtBox}>
               <AppText style={appStyles.bold14Text}>
-                {i18n.t('cashHistory:expirePt')}
+                {i18n.t('talk:point:expirePt')}
               </AppText>
               <AppPrice
-                price={utils.toCurrency(expirePt || 0, esimCurrency)}
+                price={utils.toCurrency(talk?.expPoint || 0, esimCurrency)}
                 balanceStyle={[appStyles.bold18Text, {color: colors.redError}]}
                 currencyStyle={[appStyles.bold16Text, {color: colors.redError}]}
               />
@@ -665,11 +664,11 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   );
 
   const showExpirePt = useCallback(() => {
-    if (expirePt <= 0) setShowSnackbar(true);
+    if (talk?.expPoint <= 0) setShowSnackbar(true);
     else {
       action.modal.renderModal(() => expirePtModalBody());
     }
-  }, [action.modal, expirePt, expirePtModalBody]);
+  }, [action.modal, expirePtModalBody, talk?.expPoint]);
 
   const renderTop = useCallback(() => {
     return (
@@ -682,7 +681,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
             <AppSvgIcon name="rokebiLogoSmall" />
           </View>
           <AppPrice
-            price={utils.toCurrency(point || 0, 'P')}
+            price={utils.toCurrency(talk?.point || 0, 'P')}
             balanceStyle={styles.pointText}
             currencyStyle={styles.pointText}
           />
@@ -699,7 +698,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
 
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <AppPrice
-              price={utils.toCurrency(expirePt || 0, 'P')}
+              price={utils.toCurrency(talk?.expPoint || 0, 'P')}
               balanceStyle={[
                 appStyles.bold18Text,
                 {color: colors.white, lineHeight: 24},
@@ -717,7 +716,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
         </Pressable>
       </>
     );
-  }, [expirePt, point, showExpirePt]);
+  }, [showExpirePt, talk?.expPoint, talk?.point]);
 
   return (
     <SafeAreaView style={styles.container}>
