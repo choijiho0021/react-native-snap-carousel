@@ -399,13 +399,9 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
 
   const onPress = useCallback(
     (contactData: Contact) => {
-      navigation.navigate('TalkStack', {
-        screen: 'RkbTalk',
-        params: {
-          dest: contactData?.phoneNumbers[0]?.number,
-        },
-      });
-      // navigation.navigate('ContactDetail', {contact: contactData});
+      const number = contactData?.phoneNumbers[0]?.number?.replace(/[+-]/g, '');
+      action.talk.updateClickedNumber(number);
+      navigation.goBack();
     },
     [navigation],
   );
