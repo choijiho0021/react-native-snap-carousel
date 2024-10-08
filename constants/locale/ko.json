@@ -1862,5 +1862,11 @@
   "qrInfo:cardCheck:wait": "확인중...",
   "qrInfo:tab:oneTouch": "원터치",
   "qrInfo:tab:qr": "QR코드",
-  "qrInfo:tab:manual": "수동입력"
+  "qrInfo:tab:manual": "수동입력",
+
+  "cliLog:title": "문제 전송",
+  "cliLog:txt": "고객센터 요청으로 문제에 대한 자세한 확인이 필요할 경우 사용하는 기능입니다.\n<b>고객센터 문의 전인 경우, 먼저 문의해 주세요!</b>",
+  "cliLog:mobile": "회원 번호 (휴대폰 번호)",
+  "cliLog:btnTitle": "문제 전송하기",
+  "cliLog:save:success": "전송 완료되었습니다.\n문제 확인 후 고객센터를 통해 연락 드릴게요!"
 }

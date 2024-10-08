@@ -11,6 +11,8 @@ export const Toast = {
   COPY_SUCCESS: 'toast:copySuccess',
   FAIL_NETWORK: 'toast:failedNetwork',
   NOT_OPENED: 'toast:failedToOpen',
+
+  SAVE_LOG_SUCCESS: 'cliLog:save:success',
 };
 
 export type ToastIconType = 'bannerMarkToastError' | 'bannerMarkToastSuccess';

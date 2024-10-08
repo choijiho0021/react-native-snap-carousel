@@ -98,6 +98,7 @@ const PaymentVBankScreen: React.FC<PaymentVBankScreenProps> = ({
       <ScreenHeader
         title={i18n.t(isSuccess ? 'his:paymentCompleted' : 'his:paymentFailed')}
         showIcon={false}
+        titleStyle={{marginLeft: 20}}
       />
       <ScrollView style={styles.scrollView}>
         <View>

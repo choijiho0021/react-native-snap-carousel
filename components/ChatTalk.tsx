@@ -11,36 +11,22 @@ import {RootState} from '@reduxjs/toolkit';
 import {connect} from 'react-redux';
 import VersionCheck from 'react-native-version-check';
 import DeviceInfo from 'react-native-device-info';
-import {bindActionCreators} from 'redux';
 import {AccountModelState} from '@/redux/modules/account';
 import AppSnackBar from '@/components/AppSnackBar';
 import i18n from '@/utils/i18n';
 import Env from '@/environment';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
-import utils from '@/redux/api/utils';
-import {API} from '@/redux/api';
-import {
-  LogAction,
-  LogModelState,
-  actions as logActions,
-} from '@/redux/modules/log';
 
 const {appId, talkPluginKey, esimGlobal} = Env.get();
 
 const ChatTalk = ({
   account,
-  log,
-  action,
   visible = false,
   isClicked = false,
   bottom = 20,
   setChatTalkClicked,
 }: {
   account: AccountModelState;
-  log: LogModelState;
-  action: {
-    log: LogAction;
-  };
   visible?: boolean;
   isClicked?: boolean;
   bottom?: number;
@@ -72,9 +58,7 @@ const ChatTalk = ({
 
   const openChannelTalk = useCallback(async () => {
     setLoading(true);
-    // 앱 로그 서버로 전송
-    await API.User.saveClientLog({mobile: account.mobile, log: log.log});
-    action.log.clear();
+
     ChannelIO.boot(settings).then((result) => {
       if (result.status === 'SUCCESS') {
         ChannelIO.showMessenger();
@@ -83,7 +67,7 @@ const ChatTalk = ({
       }
       setLoading(false);
     });
-  }, [account.mobile, action.log, log.log, settings]);
+  }, [settings]);
 
   useEffect(() => {
     if (isClicked && setChatTalkClicked !== undefined) {
@@ -119,14 +103,6 @@ const ChatTalk = ({
   );
 };
 
-export default connect(
-  ({account, log}: RootState) => ({
-    account,
-    log,
-  }),
-  (dispatch) => ({
-    action: {
-      log: bindActionCreators(logActions, dispatch),
-    },
-  }),
-)(ChatTalk);
+export default connect(({account}: RootState) => ({
+  account,
+}))(ChatTalk);
