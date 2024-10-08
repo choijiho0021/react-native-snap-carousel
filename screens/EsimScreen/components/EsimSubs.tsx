@@ -863,6 +863,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
   const renderHkBtn = useCallback(() => {
     const isSuccess = mainSubs.tag?.includes('HA');
+
     if (
       !expired &&
       mainSubs.giftStatusCd !== 'S' &&
