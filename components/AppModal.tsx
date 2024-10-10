@@ -116,7 +116,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
     if (onCancelClose) onCancelClose();
     else onOkClose();
   },
-  topClose = () => {},
+  topClose,
   bottom,
 }) => {
   const getButtonType = useCallback(() => {
@@ -245,7 +245,7 @@ const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
   });
 
   const getCloseBtn = useCallback(() => {
-    return topClose.toString() !== '() => {}'
+    return topClose !== undefined
       ? topClose
       : type === 'division' && (
           <View style={{width: '90%', marginBottom: 24}}>
