@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
 import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import moment, {Moment} from 'moment';
 import Contacts from 'react-native-contacts';
 import {AnyAction} from 'redux';
 import {Reducer} from 'redux-actions';
+import moment, {Moment} from 'moment';
 import {API} from '@/redux/api';
 import {checkEng, checkKor} from '@/constants/CustomTypes';
 import {SectionData} from './account';
@@ -60,7 +60,7 @@ export interface TalkModelState {
   point: string;
   recordIDSet: Set<string>;
   contacts: any[];
-  pointHistory: PointHistory[];
+  pointHistory: SectionData[];
   expList: ExpPointHistory[];
   expPoint: string;
   selectedNum?: string;
