@@ -118,7 +118,7 @@ const slice = createSlice({
     builder.addCase(getPointHistory.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
-      if (result === 0 && objects && objects?.length > 0) {
+      if (result === 0) {
         const group = objects?.reduce((acc, cur) => {
           const year = cur.created.format('YYYY');
 
