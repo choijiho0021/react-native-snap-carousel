@@ -22,16 +22,10 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {HistType} from '@/redux/api/talkApi';
-import {
-  AccountAction,
-  AccountModelState,
-  actions as accountActions,
-  SectionData,
-} from '@/redux/modules/account';
+import {AccountModelState, SectionData} from '@/redux/modules/account';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import {
   actions as talkActions,
@@ -42,8 +36,6 @@ import {
 } from '@/redux/modules/talk';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
-
-const {esimCurrency} = Env.get();
 
 const styles = StyleSheet.create({
   container: {
@@ -302,7 +294,6 @@ type TalkPointScreenProps = {
 
   action: {
     talk: TalkAction;
-    account: AccountAction;
     modal: ModalAction;
   };
 };
@@ -316,15 +307,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   account,
   pending,
 }) => {
-  const {
-    realMobile,
-    iccid,
-    token,
-    balance,
-    cashHistory = [],
-    cashExpire,
-    expirePt = 0,
-  } = account;
+  const {realMobile, iccid, token} = account;
   const {pointHistory = []} = talk;
 
   const [orderType, setOrderType] = useState<OrderType>('desc');
@@ -506,7 +489,6 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   );
 
   const renderEmpty = useCallback(() => {
-    // 종 있는 부분 적용 필요
     if (dataFilter === 'A')
       return (
         <View style={styles.emptyView}>
@@ -881,13 +863,12 @@ export default connect(
     talk,
     pending:
       status.pending[talkActions.getPointHistory.typePrefix] ||
-      status.pending[accountActions.getCashExpire.typePrefix] ||
+      status.pending[talkActions.getExpPointInfo.typePrefix] ||
       false,
   }),
   (dispatch) => ({
     action: {
       talk: bindActionCreators(talkActions, dispatch),
-      account: bindActionCreators(accountActions, dispatch),
       modal: bindActionCreators(modalActions, dispatch),
     },
   }),
