@@ -189,6 +189,7 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
           {Array.from({length: num}, (v, i) => i + 1).map((a, i) => {
             return (
               <View
+                key={a.toString()}
                 style={[styles.rowCenter, i < num - 1 && {marginBottom: 9}]}>
                 <AppSvgIcon style={{marginRight: 8}} name="checkBlueSmall" />
                 <AppText>
