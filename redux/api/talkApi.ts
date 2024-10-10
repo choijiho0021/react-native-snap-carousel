@@ -1,4 +1,5 @@
-import {PointHistory} from '../modules/talk';
+import moment from 'moment';
+import {ExpPointLog, PointHistory} from '../modules/talk';
 import api from './api';
 
 // get my coupons
@@ -41,7 +42,7 @@ const patchTalkPoint = ({
 };
 
 const getExpPointInfo = ({iccid, token}: {iccid: string; token: string}) => {
-  return api.callHttpGet<PointHistory>(
+  return api.callHttpGet<ExpPointLog>(
     `${api.httpUrl(api.path.rokApi.rokebi.pointLog)}/${iccid}?exp=30&list`,
     (rsp) => rsp,
     api.withToken(token, 'json'),
@@ -71,7 +72,20 @@ const getPointHistory = ({
     iccid
       ? `${api.httpUrl(api.path.rokApi.rokebi.pointLog)}/${iccid}?${cond}`
       : `${api.httpUrl(api.path.rokApi.rokebi.pointLog)}/${mobile}?real`,
-    (rsp) => rsp,
+    (rsp) => {
+      return rsp.result === 0
+        ? api.success(
+            rsp.objects.log.map(
+              (o) =>
+                ({
+                  ...o,
+                  created: o.created ? moment.unix(o.created) : undefined,
+                  expire_at: o.expire_at ? moment.unix(o.expire_at) : undefined,
+                } as PointHistory),
+            ),
+          )
+        : api.failure(rsp.result, rsp.error);
+    },
     api.withToken(token, 'json'),
   );
 };

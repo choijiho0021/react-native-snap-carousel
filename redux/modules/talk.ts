@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
 import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import moment, {Moment} from 'moment';
 import Contacts from 'react-native-contacts';
 import {AnyAction} from 'redux';
 import {Reducer} from 'redux-actions';
-import moment, {Moment} from 'moment';
 import {API} from '@/redux/api';
 import {checkEng, checkKor} from '@/constants/CustomTypes';
 import {SectionData} from './account';
@@ -30,6 +30,12 @@ export type PointHistory = {
   created: Moment;
   reason: string;
   ref_node: string;
+};
+
+export type ExpPointLog = {
+  exp: string;
+  list: ExpPointHistory[];
+  tpnt: string;
 };
 
 export type ExpPointHistory = {
@@ -112,9 +118,10 @@ const slice = createSlice({
     builder.addCase(getPointHistory.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
-      if (result === 0 && objects && objects.log?.length > 0) {
-        const group = objects?.log?.reduce((acc, cur) => {
-          const year = moment.unix(cur.created).format('YYYY');
+      if (result === 0 && objects && objects?.length > 0) {
+        const group = objects?.reduce((acc, cur) => {
+          const year = cur.created.format('YYYY');
+
           const idx = acc.findIndex((elm) => elm.title === year);
 
           if (idx <= -1) {
@@ -133,7 +140,14 @@ const slice = createSlice({
       const {result, objects} = action.payload;
 
       if (result === 0 && objects) {
-        state.expList = objects.list || [];
+        state.expList = (objects?.list || []).map(
+          (l) =>
+            ({
+              ...l,
+              expire_at: l.expire_at ? moment.unix(l.expire_at) : undefined,
+            } as ExpPointHistory),
+        );
+
         state.expPoint = objects.exp;
         state.point = objects.tpnt;
       }
