@@ -25,14 +25,11 @@ import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
-import {API} from '@/redux/api';
 import {HistType} from '@/redux/api/talkApi';
 import {
   AccountAction,
   AccountModelState,
   actions as accountActions,
-  CashExpire,
-  CashHistory,
   SectionData,
 } from '@/redux/modules/account';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
@@ -189,10 +186,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: colors.black,
   },
-  detailText: {
-    ...appStyles.medium14,
-    color: colors.warmGrey,
-  },
   dateText: {
     ...appStyles.normal16Text,
     paddingTop: 15,
@@ -272,6 +265,26 @@ const styles = StyleSheet.create({
     ...appStyles.normal17,
     lineHeight: 22,
     color: colors.white,
+  },
+  emptyView: {
+    flex: 1,
+    marginHorizontal: 20,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+  },
+  emptyAllView: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 76,
+    backgroundColor: colors.backGrey,
+    padding: 16,
+  },
+  emptyAllText: {
+    ...appStyles.normal14Text,
+    lineHeight: 22,
+    flex: 1,
+    flexWrap: 'wrap',
   },
 });
 
@@ -495,22 +508,39 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   const renderEmpty = useCallback(() => {
     // 종 있는 부분 적용 필요
     if (dataFilter === 'A')
-      // return (
-      //   <View style={{alignItems: 'center'}}>
-      //     <AppSvgIcon name="threeDotsBig" style={{marginBottom: 16}} />
-      //     <AppText style={{...appStyles.normal16Text, color: colors.warmGrey}}>
-      //       {i18n.t(`talk:point:empty:${dataFilter}`)}
-      //     </AppText>
-      //   </View>
-      // );
       return (
-        <View style={{alignItems: 'center'}}>
-          <AppSvgIcon name="threeDotsBig" style={{marginBottom: 16}} />
-          <AppText style={{...appStyles.normal16Text, color: colors.warmGrey}}>
-            {i18n.t(`talk:point:empty:${dataFilter}`)}
-          </AppText>
+        <View style={styles.emptyView}>
+          <View style={styles.emptyAllView}>
+            <AppSvgIcon style={{marginRight: 8}} name="bell" />
+            <AppText style={styles.emptyAllText}>
+              {i18n.t(`talk:point:empty:${dataFilter}:info1`)}
+              <AppText style={{fontWeight: 'bold'}}>
+                {i18n.t(`talk:point:empty:${dataFilter}:info2`)}
+              </AppText>
+              {i18n.t(`talk:point:empty:${dataFilter}:info3`)}
+              <AppText style={{fontWeight: 'bold'}}>
+                {i18n.t(`talk:point:empty:${dataFilter}:info4`)}
+              </AppText>
+              {i18n.t(`talk:point:empty:${dataFilter}:info5`)}
+            </AppText>
+          </View>
+          <View style={{alignItems: 'center'}}>
+            <AppSvgIcon name="threeDotsBig" style={{marginVertical: 16}} />
+            <AppText
+              style={{...appStyles.normal16Text, color: colors.warmGrey}}>
+              {i18n.t(`talk:point:empty:${dataFilter}`)}
+            </AppText>
+          </View>
         </View>
       );
+    return (
+      <View style={{alignItems: 'center'}}>
+        <AppSvgIcon name="threeDotsBig" style={{marginBottom: 16}} />
+        <AppText style={{...appStyles.normal16Text, color: colors.warmGrey}}>
+          {i18n.t(`talk:point:empty:${dataFilter}`)}
+        </AppText>
+      </View>
+    );
   }, [dataFilter]);
 
   const renderExpireItem = useCallback((item: ExpPointHistory) => {
@@ -807,7 +837,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
         }}
       />
 
-      {renderFilter()}
+      {sectionData?.length > 0 && renderFilter()}
 
       <SectionList
         ref={sectionRef}
