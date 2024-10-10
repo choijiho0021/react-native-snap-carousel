@@ -525,33 +525,39 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
     );
   }, [dataFilter]);
 
-  const renderExpireItem = useCallback((item: ExpPointHistory) => {
-    const dDay = item.expire_at?.diff(moment(), 'days');
-    return (
-      <View
-        key={`${item.expire_at},${item.point}`}
-        style={styles.expPtContainer}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <AppText
-            style={[
-              appStyles.medium16,
-              {color: colors.warmGrey, marginRight: 6},
-            ]}>
-            {item.expire_at?.format('YYYY.MM.DD') + i18n.t('sim:until')}
-          </AppText>
-          <AppText style={[appStyles.bold14Text, {color: colors.redError}]}>
-            {`D-${dDay}`}
-          </AppText>
-        </View>
+  const renderExpireItem = useCallback(
+    (item: ExpPointHistory, index: number) => {
+      const dDay = item?.expire_at?.diff(moment(), 'days');
+      return (
+        <View
+          key={`${item.expire_at}.${item.point}.${index.toString()}`}
+          style={styles.expPtContainer}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <AppText
+              style={[
+                appStyles.medium16,
+                {color: colors.warmGrey, marginRight: 6},
+              ]}>
+              {item?.expire_at?.format('YYYY.MM.DD') + i18n.t('sim:until')}
+            </AppText>
+            <AppText style={[appStyles.bold14Text, {color: colors.redError}]}>
+              {`D-${dDay}`}
+            </AppText>
+          </View>
 
-        <AppPrice
-          price={utils.toCurrency(utils.stringToNumber(item.point) || 0, 'P')}
-          balanceStyle={[appStyles.bold18Text, {color: colors.clearBlue}]}
-          currencyStyle={[appStyles.bold16Text, {color: colors.clearBlue}]}
-        />
-      </View>
-    );
-  }, []);
+          <AppPrice
+            price={utils.toCurrency(
+              utils.stringToNumber(item?.point) || 0,
+              'P',
+            )}
+            balanceStyle={[appStyles.bold18Text, {color: colors.clearBlue}]}
+            currencyStyle={[appStyles.bold16Text, {color: colors.clearBlue}]}
+          />
+        </View>
+      );
+    },
+    [],
+  );
 
   const orderModalBody = useCallback(
     () => (
@@ -627,8 +633,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
             </View>
 
             <View style={{marginBottom: 30}}>
-              {/* expList */}
-              {talk?.expList?.map((elm) => renderExpireItem(elm))}
+              {talk?.expList?.map((elm, index) => renderExpireItem(elm, index))}
             </View>
           </Animated.ScrollView>
 
