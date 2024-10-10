@@ -1,6 +1,7 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback} from 'react';
 import {
+  Linking,
   Pressable,
   SafeAreaView,
   StatusBar,
@@ -203,6 +204,25 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
     },
     [],
   );
+  const openKakaoUrl = useCallback(async (type: string) => {
+    const url =
+      type === 'mofa'
+        ? 'https://pf.kakao.com/_sxjTxcT'
+        : 'https://pf.kakao.com/_aHMYxb';
+
+    // 카카오톡 앱을 통해 열기
+    try {
+      const canOpen = await Linking.canOpenURL(url);
+      if (canOpen) {
+        Linking.openURL(url);
+      } else {
+        // 브라우저에서 열기
+        Linking.openURL(url);
+      }
+    } catch (error) {
+      console.error('카카오 채널 연결 중 오류 발생', error);
+    }
+  }, []);
 
   const callService = useCallback(
     (type: string, num: number, needTitle: boolean = false) => {
@@ -245,7 +265,7 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
               {i18n.t(`talk:urgent:${type}:call`)}
             </AppText>
           </Pressable>
-          <Pressable style={styles.kakaoBtn} onPress={() => {}}>
+          <Pressable style={styles.kakaoBtn} onPress={() => openKakaoUrl(type)}>
             <AppSvgIcon name="loginImgKakao" />
             <AppText style={styles.kakaoText}>
               {i18n.t(`talk:urgent:${type}:kakao`)}
@@ -254,7 +274,7 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
         </>
       );
     },
-    [action.talk, navigation, usageDetail],
+    [action.talk, navigation, openKakaoUrl, usageDetail],
   );
 
   return (
