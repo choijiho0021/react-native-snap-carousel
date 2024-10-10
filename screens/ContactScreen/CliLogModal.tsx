@@ -1,5 +1,12 @@
 import React, {useCallback, useState} from 'react';
-import {SafeAreaView, StyleSheet, View, Modal} from 'react-native';
+import {
+  SafeAreaView,
+  StyleSheet,
+  View,
+  Modal,
+  Pressable,
+  Keyboard,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators, RootState} from 'redux';
 import {colors} from '@/constants/Colors';
@@ -23,6 +30,7 @@ import {
 } from '@/redux/modules/toast';
 import {AccountModelState} from '@/redux/modules/account';
 import {API} from '@/redux/api';
+import utils from '@/redux/api/utils';
 
 const styles = StyleSheet.create({
   closeButtonTitle: {
@@ -40,7 +48,8 @@ const styles = StyleSheet.create({
     ...appStyles.medium16,
     paddingHorizontal: 12,
     paddingVertical: 13,
-    backgroundColor: colors.lightGrey,
+    borderColor: colors.lightGrey,
+    borderWidth: 1,
   },
 });
 
@@ -65,11 +74,14 @@ const CliLogModal: React.FC<CliLogModalProps> = ({
   log,
   action,
 }) => {
-  const [mobile, setMobile] = useState(account.mobile);
+  const [mobile, setMobile] = useState(utils.toPhoneNumber(account.mobile));
 
   const sendClientLog = useCallback(async () => {
     // 앱 로그 서버로 전송
-    const resp = await API.User.saveClientLog({mobile, log: log.log});
+    const resp = await API.User.saveClientLog({
+      mobile: mobile?.replace(/-/g, ''),
+      log: log.log,
+    });
     if (resp.result === 0) {
       action.toast.push({
         msg: Toast.SAVE_LOG_SUCCESS,
@@ -83,7 +95,7 @@ const CliLogModal: React.FC<CliLogModalProps> = ({
   return (
     <Modal visible={visible} animationType="slide">
       <SafeAreaView style={{flex: 1}}>
-        <View style={{flex: 1}}>
+        <Pressable style={{flex: 1}} onPress={() => Keyboard.dismiss()}>
           <View style={styles.headerContainer}>
             <ScreenHeader
               title={i18n.t('cliLog:title')}
@@ -110,10 +122,32 @@ const CliLogModal: React.FC<CliLogModalProps> = ({
               {i18n.t('cliLog:mobile')}
             </AppText>
             <AppTextInput
-              style={styles.cliLogMobile}
+              style={[
+                styles.cliLogMobile,
+                {
+                  backgroundColor: !account.loggedIn
+                    ? colors.white
+                    : colors.backGrey,
+                },
+              ]}
               returnKeyType="done"
+              keyboardType="number-pad"
               enablesReturnKeyAutomatically
               onChangeText={(text) => setMobile(text)}
+              onBlur={() =>
+                setMobile((pre) => {
+                  const str = pre?.replace(/-/g, '');
+                  if (str && str?.length >= 11) {
+                    return utils.toPhoneNumber(str);
+                    // return `${str.substring(0, 3)}-${str.substring(
+                    //   3,
+                    //   7,
+                    // )}-${str?.substring(7, 11)}`;
+                  }
+                  return pre;
+                })
+              }
+              onFocus={() => setMobile((pre) => pre?.replace(/-/g, ''))}
               editable={!account.loggedIn}
               maxLength={13}
               value={mobile}
@@ -134,7 +168,7 @@ const CliLogModal: React.FC<CliLogModalProps> = ({
             title={i18n.t('cliLog:btnTitle')}
             titleStyle={[styles.closeButtonTitle, {color: colors.white}]}
           />
-        </View>
+        </Pressable>
       </SafeAreaView>
     </Modal>
   );
