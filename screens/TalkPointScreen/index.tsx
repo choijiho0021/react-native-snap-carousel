@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   okButton: {
-    ...appStyles.normal16Text,
+    ...appStyles.normal18Text,
     height: 52,
     backgroundColor: colors.clearBlue,
     textAlign: 'center',
@@ -115,6 +115,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     paddingVertical: 12,
     marginBottom: 8,
+  },
+  expModalTitle: {
+    ...appStyles.bold20Text,
+    lineHeight: 30,
+    marginHorizontal: 20,
+    marginTop: 2,
+    marginBottom: 24,
   },
   expPtBox: {
     marginHorizontal: 20,
@@ -242,6 +249,29 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.white,
     opacity: 0.72,
+  },
+  bannerBg: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingLeft: 16,
+    marginTop: 24,
+    marginHorizontal: 20,
+    backgroundColor: colors.vividNavy,
+    height: 80,
+  },
+  bannerTextView: {
+    flexDirection: 'column',
+    marginVertical: 18.5,
+  },
+  bannerSmallText: {
+    ...appStyles.normal13,
+    lineHeight: 18,
+    color: colors.vividYellow,
+  },
+  bannerBigText: {
+    ...appStyles.normal17,
+    lineHeight: 22,
+    color: colors.white,
   },
 });
 
@@ -569,11 +599,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
               colors={[colors.white, 'rgba(255, 255, 255, 0.1)']}
               style={styles.topGradient}
             />
-            <AppText
-              style={[
-                appStyles.bold20Text,
-                {marginHorizontal: 20, marginTop: 28, marginBottom: 24},
-              ]}>
+            <AppText style={styles.expModalTitle}>
               {i18n.t('talk:point:expireModalTitle')}
             </AppText>
 
@@ -719,6 +745,25 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
     );
   }, [showExpirePt, talk?.expPoint, talk?.point]);
 
+  const renderBanner = useCallback(() => {
+    return (
+      <Pressable style={styles.bannerBg}>
+        <View style={styles.bannerTextView}>
+          <AppText style={styles.bannerSmallText}>
+            {i18n.t('talk:point:banner1')}
+          </AppText>
+          <AppText style={styles.bannerBigText}>
+            <AppText style={{fontWeight: 'bold'}}>
+              {i18n.t('talk:point:banner2')}
+            </AppText>
+            {i18n.t('talk:point:banner3')}
+          </AppText>
+        </View>
+        <AppSvgIcon name="rokebiBannerImg" />
+      </Pressable>
+    );
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -733,7 +778,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
           overflow: 'hidden', // height: animatedValue,
         }}>
         <View style={styles.divider} />
-
+        {renderBanner()}
         <View key="header" style={styles.hisHeader}>
           <AppText style={styles.historyTitleText}>
             {i18n.t('talk:point:used:history')}

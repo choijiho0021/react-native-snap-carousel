@@ -77,6 +77,7 @@ export const colors = {
   violet500: '#5b16ef',
   violetbg: '#F3EDFF',
   vividNavy: '#000aff',
+  vividYellow: '#fff500',
   pinkbg: '#ffedfc',
   pink500: '#ff00c8',
   darkNavy: '#263867',
