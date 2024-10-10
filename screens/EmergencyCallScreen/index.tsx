@@ -1,6 +1,7 @@
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
+  Animated,
   Linking,
   Pressable,
   SafeAreaView,
@@ -177,6 +178,20 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
   // pending,
 }) => {
   const insets = useSafeAreaInsets();
+  const [headerColor, setHeaderColor] = useState(colors.aliceBlue);
+  const [viewY, setViewY] = useState(100);
+  const scrollY = useRef(new Animated.Value(0)).current; // Scroll position tracking
+  const onScroll = Animated.event(
+    [{nativeEvent: {contentOffset: {y: scrollY}}}],
+    {useNativeDriver: false},
+  );
+
+  useEffect(() => {
+    scrollY.addListener(({value}) => {
+      if (value >= viewY) setHeaderColor(colors.white);
+      else setHeaderColor(colors.aliceBlue);
+    });
+  }, [scrollY, viewY]);
 
   const usageDetail = useCallback(
     (type: string, num: number, needTitle: boolean = false) => {
@@ -279,16 +294,16 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
 
   return (
     <View style={{flex: 1}}>
-      <View style={{height: insets?.top, backgroundColor: colors.aliceBlue}} />
-      <SafeAreaView style={styles.container}>
+      <View style={{height: insets?.top, backgroundColor: headerColor}} />
+      <SafeAreaView style={[styles.container, {backgroundColor: headerColor}]}>
         <StatusBar
           backgroundColor={colors.aliceBlue}
           // barStyle="dark-content" // default
         />
-        <View style={styles.header}>
+        <View style={[styles.header, {backgroundColor: headerColor}]}>
           <AppBackButton title={i18n.t('talk:urgent:header')} />
         </View>
-        <ScrollView>
+        <ScrollView onScroll={onScroll} scrollEventThrottle={16}>
           {/* style={{backgroundColor: colors.aliceBlue}}> */}
           <View style={{backgroundColor: colors.aliceBlue}}>
             <View style={styles.iconView}>
@@ -334,7 +349,12 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
             </View>
           </View>
 
-          <View style={styles.whiteView}>
+          <View
+            style={styles.whiteView}
+            onLayout={(event) => {
+              const {layout} = event.nativeEvent;
+              setViewY(layout?.y);
+            }}>
             {callService('mofa', 3)}
             <View style={{height: 36}} />
             {callService('119', 4, true)}
