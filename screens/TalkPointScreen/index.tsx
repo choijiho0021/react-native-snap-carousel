@@ -130,7 +130,6 @@ const styles = StyleSheet.create({
   },
   showExpPtBox: {
     marginHorizontal: 20,
-    marginBottom: 32,
     padding: 16,
     backgroundColor: colors.deepGreen,
     borderBottomLeftRadius: 3,
@@ -167,6 +166,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     backgroundColor: colors.whiteTwo,
+    marginVertical: 24,
     height: 10,
     width: '100%',
   },
@@ -247,10 +247,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingLeft: 16,
-    marginTop: 24,
     marginHorizontal: 20,
     backgroundColor: colors.vividNavy,
     height: 80,
+    paddingRight: 3,
+    borderRadius: 3,
   },
   bannerTextView: {
     flexDirection: 'column',
@@ -325,7 +326,6 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
     expirePt = 0,
   } = account;
   const {pointHistory = []} = talk;
-  const [point, setPoint] = useState<number>(0);
 
   const [orderType, setOrderType] = useState<OrderType>('desc');
   const [dataFilter, setDataFilter] = useState<string>('A');
@@ -837,7 +837,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
         }}
       />
 
-      {sectionData?.length > 0 && renderFilter()}
+      {!(sectionData?.length === 0 && dataFilter === 'A') && renderFilter()}
 
       <SectionList
         ref={sectionRef}
