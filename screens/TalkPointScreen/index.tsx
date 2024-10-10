@@ -38,6 +38,7 @@ import {
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import {
   actions as talkActions,
+  ExpPointHistory,
   PointHistory,
   TalkAction,
   TalkModelState,
@@ -397,10 +398,8 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
       section: SectionData;
     }) => {
       const predate =
-        index > 0
-          ? moment.unix(section.data[index - 1].created).format('MM.DD')
-          : '';
-      const date = moment.unix(item.created).format('MM.DD');
+        index > 0 ? section.data[index - 1].created.format('MM.DD') : '';
+      const date = item.created.format('MM.DD');
 
       const {diff} = item;
       const plus = diff?.[0] !== '-';
@@ -452,7 +451,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
               {plus && (
                 <AppText style={styles.expText}>
                   {i18n.t(`talk:point:expireDate`)}
-                  {moment.unix(item?.expire_at).format('YYYY.MM.DD')}
+                  {item?.expire_at?.format('YYYY.MM.DD')}
                 </AppText>
               )}
             </View>
@@ -484,17 +483,19 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
       );
   }, [dataFilter]);
 
-  const renderExpireItem = useCallback((item: CashExpire) => {
-    const dDay = item.expire_dt?.diff(moment(), 'days');
+  const renderExpireItem = useCallback((item: ExpPointHistory) => {
+    const dDay = item.expire_at?.diff(moment(), 'days');
     return (
-      <View key={item.create_dt.unix()} style={styles.expPtContainer}>
+      <View
+        key={`${item.expire_at},${item.point}`}
+        style={styles.expPtContainer}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <AppText
             style={[
               appStyles.medium16,
               {color: colors.warmGrey, marginRight: 6},
             ]}>
-            {item.expire_dt?.format('YYYY.MM.DD') + i18n.t('sim:until')}
+            {item.expire_at?.format('YYYY.MM.DD') + i18n.t('sim:until')}
           </AppText>
           <AppText style={[appStyles.bold14Text, {color: colors.redError}]}>
             {`D-${dDay}`}
@@ -502,10 +503,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
         </View>
 
         <AppPrice
-          price={utils.toCurrency(
-            utils.stringToNumber(item.point) || 0,
-            esimCurrency,
-          )}
+          price={utils.toCurrency(utils.stringToNumber(item.point) || 0, 'P')}
           balanceStyle={[appStyles.bold18Text, {color: colors.clearBlue}]}
           currencyStyle={[appStyles.bold16Text, {color: colors.clearBlue}]}
         />
@@ -564,6 +562,8 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
               flex: 1,
               backgroundColor: colors.white,
               marginTop: modalAnimatedValue,
+              borderTopLeftRadius: 8,
+              borderTopRightRadius: 8,
             }}>
             <LinearGradient
               colors={[colors.white, 'rgba(255, 255, 255, 0.1)']}
@@ -582,14 +582,15 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
                 {i18n.t('talk:point:expirePt')}
               </AppText>
               <AppPrice
-                price={utils.toCurrency(talk?.expPoint || 0, esimCurrency)}
+                price={utils.toCurrency(talk?.expPoint || 0, 'P')}
                 balanceStyle={[appStyles.bold18Text, {color: colors.redError}]}
                 currencyStyle={[appStyles.bold16Text, {color: colors.redError}]}
               />
             </View>
 
             <View style={{marginBottom: 30}}>
-              {cashExpire?.map((elm) => renderExpireItem(elm))}
+              {/* expList */}
+              {talk?.expList?.map((elm) => renderExpireItem(elm))}
             </View>
           </Animated.ScrollView>
 
@@ -614,8 +615,8 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
     ),
     [
       modalAnimatedValue,
-      expirePt,
-      cashExpire,
+      talk?.expPoint,
+      talk?.expList,
       beginDragAnimation,
       renderExpireItem,
       action.modal,
