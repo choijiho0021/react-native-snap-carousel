@@ -384,6 +384,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               'ustotal',
               'usdaily',
               'ais',
+              'ais2',
               'dtac',
               'mvtotal',
               'vtdaily',

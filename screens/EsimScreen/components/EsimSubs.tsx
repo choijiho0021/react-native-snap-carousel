@@ -918,6 +918,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         'ustotal',
         'usdaily',
         'ais',
+        'ais2',
         'dtac',
         'mvtotal',
         'vtdaily',
