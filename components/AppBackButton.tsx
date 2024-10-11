@@ -12,7 +12,6 @@ import {appStyles} from '@/constants/Styles';
 import AppText from './AppText';
 import {goBack} from '@/navigation/navigation';
 import AppSvgIcon from './AppSvgIcon';
-import {values} from 'underscore';
 
 const AppBackButton = ({
   title,

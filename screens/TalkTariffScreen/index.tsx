@@ -1,9 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as Hangul from 'hangul-js';
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {Image, SafeAreaView, SectionList, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
-import AppBackButton from '@/components/AppBackButton';
+import _ from 'underscore';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -11,6 +11,8 @@ import {RootState} from '@/redux';
 import {TalkModelState, TalkTariff} from '@/redux/modules/talk';
 import i18n from '@/utils/i18n';
 import {API} from '@/redux/api';
+import AppSearch from '@/components/AppSearch';
+import EmptyResult from '../TalkContact/components/EmptyResult';
 
 const styles = StyleSheet.create({
   container: {
@@ -24,6 +26,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     alignItems: 'center',
     height: 56,
+    marginBottom: 24,
   },
   row: {
     flexDirection: 'row',
@@ -42,11 +45,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 12,
     color: colors.warmGrey,
-  },
-  contentContainerStyle: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   item: {
     flexDirection: 'row',
@@ -71,16 +69,11 @@ type TalkTariffScreenProps = {
 
 type TariffSectionData = Record<string, {title: string; data: TalkTariff[]}>;
 
-const sectionData = [
-  {
-    title: i18n.t('tariff.favorite'),
-    data: [],
-  },
-];
-
 const favoriteCountry = ['kr', 'us', 'jp'];
 
 const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({talk}) => {
+  const [searchText, setSearchText] = useState('');
+
   const tariffData = useMemo(() => {
     const list = Object.values(talk.tariff).reduce((acc, cur) => {
       let key = cur.name[0];
@@ -100,15 +93,18 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({talk}) => {
       return acc;
     }, {} as TariffSectionData);
 
-    return [
+    return Object.values(list).sort((a, b) => a.title.localeCompare(b.title));
+  }, [talk.tariff]);
+
+  const fav = useMemo(
+    () => [
       {
         title: i18n.t('talk:tariff:favorite'),
         data: favoriteCountry.map((t) => talk.tariff[t]).filter((t) => !!t),
       },
-    ].concat(
-      Object.values(list).sort((a, b) => a.title.localeCompare(b.title)),
-    );
-  }, [talk.tariff]);
+    ],
+    [talk.tariff],
+  );
 
   const renderSectionItem = useCallback(({item}: {item: TalkTariff}) => {
     return (
@@ -134,59 +130,76 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({talk}) => {
     );
   }, []);
 
+  const search = useCallback(
+    (
+      data: {
+        title: string;
+        data: TalkTariff[];
+      }[],
+      text: string,
+    ) => {
+      return text
+        ? data
+            .map((d) => {
+              const filtered = d.data.filter((a) => a.name.includes(text));
+              return _.isEmpty(filtered)
+                ? undefined
+                : {title: d.title, data: filtered};
+            })
+            .filter((d) => !!d)
+        : fav.concat(data);
+    },
+    [fav],
+  );
+
+  const onChangeText = useCallback((v: string) => {
+    setSearchText(v);
+  }, []);
+
+  const onCancel = useCallback(() => {
+    setSearchText('');
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <AppBackButton title="톡포인트" />
+        <AppSearch
+          placeholder={i18n.t('talk:tariff:search')}
+          onChangeText={onChangeText}
+          onCancel={onCancel}
+          value={searchText}
+          textStyle={{...appStyles.semiBold16Text}}
+        />
       </View>
-      <View style={styles.row}>
-        <AppText style={appStyles.bold18Text}>
-          {i18n.t('talk:tariff:country')}
-        </AppText>
-        <View>
-          <View style={styles.row2}>
-            {['wireline', 'mobile'].map((k) => (
-              <AppText style={[appStyles.semiBold12Text, {color: colors.blue}]}>
-                {i18n.t(`talk:tariff:${k}`)}
-              </AppText>
-            ))}
-          </View>
-          <AppText style={[appStyles.bold12Text, {color: colors.gray2}]}>
-            {i18n.t('talk:tariff:desc')}
+      {!searchText ? (
+        <View style={styles.row}>
+          <AppText style={appStyles.bold18Text}>
+            {i18n.t('talk:tariff:country')}
           </AppText>
+          <View>
+            <View style={styles.row2}>
+              {['wireline', 'mobile'].map((k) => (
+                <AppText
+                  style={[appStyles.semiBold12Text, {color: colors.blue}]}>
+                  {i18n.t(`talk:tariff:${k}`)}
+                </AppText>
+              ))}
+            </View>
+            <AppText style={[appStyles.bold12Text, {color: colors.gray2}]}>
+              {i18n.t('talk:tariff:desc')}
+            </AppText>
+          </View>
         </View>
-      </View>
+      ) : null}
 
       <SectionList
-        // ref={sectionRef}
-        sections={tariffData}
-        contentContainerStyle={
-          sectionData.length > 0 ? undefined : styles.contentContainerStyle
-        }
+        sections={search(tariffData, searchText)}
         renderItem={renderSectionItem}
         renderSectionHeader={({section: {title}}) => (
           <AppText style={styles.sectionHeader}>{title}</AppText>
         )}
-        // stickySectionHeadersEnabled
-        // ListEmptyComponent={() => renderEmpty()}
-        // onScrollEndDrag={({
-        //   nativeEvent: {
-        //     contentOffset: {y},
-        //   },
-        // }) => {
-        //   if (isTop.current && y > 178) runAnimation(false);
-        //   else if (!isTop.current && y <= 0) runAnimation(true);
-        // }}
-        // overScrollMode="never"
-        // bounces={false}
+        ListEmptyComponent={<EmptyResult />}
       />
-      {/* <AppSnackBar
-        visible={showSnackBar}
-        onClose={() => setShowSnackbar(false)}
-        textMessage={i18n.t('cashHistory:snackbar')}
-      /> */}
-
-      {/* <AppActivityIndicator visible={pending || false} /> */}
     </SafeAreaView>
   );
 };

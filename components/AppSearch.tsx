@@ -1,45 +1,48 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {memo, useCallback, useState} from 'react';
-import {
-  ImageStyle,
-  Pressable,
-  TextProps,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
+import {ImageStyle, StyleSheet, TextStyle, View} from 'react-native';
 import {goBack} from '@/navigation/navigation';
 import {colors} from '@/constants/Colors';
-import AppButton from './AppButton';
 import AppSvgIcon from './AppSvgIcon';
 import AppTextInput from './AppTextInput';
 
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  input: {
+    marginVertical: 15,
+    marginHorizontal: 20,
+    flexDirection: 'row',
+    height: 55,
+    flex: 1,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+  },
+});
+
 const AppSearch = ({
-  title,
-  titleStyle,
-  disabled = false,
-  showIcon = true,
   onPress,
-  style,
+  textStyle,
   imageStyle,
-  textProps,
   disable,
   value,
+  placeholder,
   onChangeText,
   onCancel,
+  focusColor,
 }: {
-  title?: string;
-  titleStyle?: TextStyle;
-  disabled?: boolean;
-  showIcon?: boolean;
   onPress?: () => void;
-  style?: ViewStyle;
   imageStyle?: ImageStyle;
-  textProps?: TextProps;
+  textStyle?: TextStyle;
   disable?: boolean;
   value: string;
+  placeholder?: string;
   onChangeText: (text: string) => void;
   onCancel: () => void;
+  focusColor?: string;
 }) => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -52,82 +55,50 @@ const AppSearch = ({
   }, [disable, navigation, onPress, route]);
 
   return (
-    <Pressable
-      style={{
-        justifyContent: 'center',
-
-        flex: 1,
-        ...style,
-      }}
-      onPress={goback}
-      disabled={disabled}>
-      <View
-        key="btn"
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          flex: 1,
-        }}>
-        {showIcon ? (
-          <View key="icon" style={{marginLeft: 20, ...imageStyle}}>
-            <AppSvgIcon name="btnBack" />
-          </View>
-        ) : (
-          <View key="empty" style={{marginLeft: 15}} />
-        )}
-
-        <View
-          style={{
-            marginVertical: 15,
-            marginHorizontal: 20,
-            flexDirection: 'row',
-            height: 55,
-            flex: 1,
-            alignItems: 'center',
-            borderBottomColor: focus ? colors.clearBlue : colors.lightGrey,
-            borderBottomWidth: 1,
-          }}>
-          {!focus && (
-            <AppSvgIcon
-              style={{justifyContent: 'center', marginRight: 8}}
-              name="btnSearchBold"
-            />
-          )}
-          <AppTextInput
-            style={{
-              flex: 1,
-              textAlignVertical: 'center',
-              // height: 55,
-              fontSize: 16,
-              marginBottom: 2,
-              fontWeight: '600',
-              lineHeight: 24,
-            }}
-            onFocus={() => setFocus(true)}
-            onBlur={() => setFocus(false)}
-            onChangeText={onChangeText}
-            placeholder="이름, 전화번호를 입력하세요"
-            // style={styles.textInput}
-            returnKeyType="done"
-            enablesReturnKeyAutomatically
-            // onChangeText={onChangeText}
-            // maxLength={maxLength}
-            // keyboardType={keyboardType}
-            value={value}
-          />
-          {value?.length > 0 && (
-            <AppButton
-              style={{
-                justifyContent: 'flex-end',
-                marginLeft: 10,
-              }}
-              iconName="searchCancelBtn"
-              onPress={onCancel}
-            />
-          )}
-        </View>
+    <View style={styles.container}>
+      <View key="icon" style={{marginLeft: 20, ...imageStyle}}>
+        <AppSvgIcon name="btnBack" onPress={goback} />
       </View>
-    </Pressable>
+      <View
+        key="input"
+        style={[
+          styles.input,
+          {
+            borderBottomColor:
+              focus && focusColor ? focusColor : colors.lightGrey,
+          },
+        ]}>
+        {!focus && (
+          <AppSvgIcon
+            style={{justifyContent: 'center', marginRight: 8}}
+            name="btnSearchBold"
+          />
+        )}
+        <AppTextInput
+          style={{
+            flex: 1,
+            textAlignVertical: 'center',
+            // height: 55,
+            fontSize: 16,
+            marginBottom: 2,
+            fontWeight: '600',
+            lineHeight: 24,
+            ...textStyle,
+          }}
+          onFocus={() => setFocus(true)}
+          onBlur={() => setFocus(false)}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          returnKeyType="done"
+          enablesReturnKeyAutomatically
+          // maxLength={maxLength}
+          // keyboardType={keyboardType}
+          value={value}
+          showCancel
+          onCancel={onCancel}
+        />
+      </View>
+    </View>
   );
 };
 

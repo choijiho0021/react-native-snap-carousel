@@ -1,5 +1,4 @@
 import AppButton from '@/components/AppButton';
-import AppIcon from '@/components/AppIcon';
 import AppSearch from '@/components/AppSearch';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -45,6 +44,7 @@ import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import ContactListItem from './ContactListItem';
+import EmptyResult from './components/EmptyResult';
 
 const styles = StyleSheet.create({
   title: {
@@ -70,8 +70,6 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-between',
     backgroundColor: colors.white,
     alignItems: 'center',
     height: 56,
@@ -310,7 +308,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
   }, []);
 
   const onChangeText = useCallback(
-    (text) => {
+    (text: string) => {
       const currentMapContacts = mapContacts;
       const currentContacts = contacts;
 
@@ -490,16 +488,43 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
     setSearchResult([]);
   }, []);
 
+  const renderSectionHeader = useCallback(
+    ({section}) => (
+      <AppText style={styles.sectionHeader}>{section?.title}</AppText>
+    ),
+    [],
+  );
+
+  const renderSectionListHeader = useCallback(
+    ({section}) => (
+      <>
+        {section?.key === sections[0]?.key && scrollY <= 0 && (
+          <View
+            style={{
+              marginLeft: 20,
+              paddingTop: 24,
+              paddingBottom: 16,
+              backgroundColor: colors.white,
+            }}>
+            <AppText style={appStyles.bold18Text}>연락처</AppText>
+          </View>
+        )}
+        <AppText style={styles.sectionHeader}>{section?.key}</AppText>
+      </>
+    ),
+    [],
+  );
+
   return (
     <SafeAreaView
       style={{flex: 1, backgroundColor: colors.white, alignItems: 'stretch'}}>
       <View style={styles.header}>
         <AppSearch
-          title={i18n.t('acc:balance')}
-          style={{height: 55}}
           onChangeText={onChangeText}
           onCancel={onCancel}
           value={searchText || ''}
+          placeholder={i18n.t('talk:contact:search')}
+          focusColor={colors.clearBlue}
         />
       </View>
       {showContacts && !_.isEmpty(searchText) && <View style={{height: 24}} />}
@@ -513,26 +538,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
               itemHeight={30}
               sectionHeaderHeight={20}
               onScroll={onScroll}
-              renderSectionHeader={({section}) => {
-                return (
-                  <>
-                    {section?.key === sections[0]?.key && scrollY <= 0 && (
-                      <View
-                        style={{
-                          marginLeft: 20,
-                          paddingTop: 24,
-                          paddingBottom: 16,
-                          backgroundColor: colors.white,
-                        }}>
-                        <AppText style={appStyles.bold18Text}>연락처</AppText>
-                      </View>
-                    )}
-                    <AppText style={styles.sectionHeader}>
-                      {section?.key}
-                    </AppText>
-                  </>
-                );
-              }}
+              renderSectionHeader={renderSectionListHeader}
               sidebarContainerStyle={{
                 flex: 1,
                 alignSelf: 'flex-end',
@@ -551,23 +557,8 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
             contentContainerStyle={{flexGrow: 1}}
             sections={searchResult}
             renderItem={renderContactList}
-            renderSectionHeader={({section}) => {
-              return (
-                <AppText style={styles.sectionHeader}>{section?.title}</AppText>
-              );
-            }}
-            ListEmptyComponent={
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignSelf: 'center',
-                  alignItems: 'center',
-                }}>
-                <AppIcon style={{marginBottom: 16}} name="imgDot" />
-                <AppText>검색 결과가 없습니다.</AppText>
-              </View>
-            }
+            renderSectionHeader={renderSectionHeader}
+            ListEmptyComponent={<EmptyResult />}
           />
         )
       ) : (

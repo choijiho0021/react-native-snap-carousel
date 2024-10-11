@@ -79,6 +79,7 @@ const getTariff = async () => {
     a.map((t) => [
       t.cc,
       {
+        key: t.cc,
         code: t.code,
         name: t.name,
         flag: t.flag,
