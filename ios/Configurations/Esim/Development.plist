@@ -164,6 +164,11 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>drupal9.rokebi.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
 			<key>esim.rokebi.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
@@ -175,11 +180,6 @@
 				<true/>
 			</dict>
 			<key>tb-esim.rokebi.com</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-			</dict>
-			<key>drupal9.rokebi.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
@@ -220,6 +220,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>사진 또는 동영상을 촬영, 메세지로 전송하여 더욱 원활한 채팅 상담을 진행하기 위해 카메라에 접근하도록 허용합니다.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>연락처 권한을 허용해주세요!</string>
 	<key>NSMainNibFile</key>
 	<string>LaunchScreen</string>
 	<key>NSMicrophoneUsageDescription</key>
