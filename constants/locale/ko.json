@@ -1878,6 +1878,11 @@
   "talk:reward:modal:body2": "해외 여행 중에도 <b>30분간 무료 통화</b>에요!\n(한국 발신 기준)",
   "talk:reward:modal:btn": "자세히 보기",
 
+  "talk:contact": "연락처",
+  "talk:contact:search:empty": "검색 결과가 없습니다.",
+
+  "talk:callHistory": "통화기록",
+
   "talk:point:hold": "보유 톡포인트",
   "talk:point:expirePt": "소멸 예정 톡포인트",
   "talk:point:banner1": "로깨비톡 런칭 기념",

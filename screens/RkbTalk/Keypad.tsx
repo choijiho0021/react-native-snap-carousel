@@ -16,6 +16,7 @@ import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 import {colors} from '@/constants/Colors';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {RkbTalkNavigationProp} from '.';
+import i18n from '@/utils/i18n';
 
 const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 console.log('@@@ buton size', buttonSize, windowWidth);
@@ -101,7 +102,7 @@ export type KeypadRef = {
   setValue: (v: string) => void;
 };
 
-type KeyType = 'call' | 'hangup' | 'speaker' | 'keypad';
+type KeyType = 'call' | 'hangup' | 'speaker' | 'keypad' | 'mute';
 
 type KeypadProps = {
   navigation: RkbTalkNavigationProp;
@@ -277,7 +278,9 @@ const Keypad: React.FC<KeypadProps> = ({
                   onPress={() => {
                     navigation.navigate('TalkContact');
                   }}>
-                  <Text style={styles.textCallHist}>연락처</Text>
+                  <Text style={styles.textCallHist}>
+                    {i18n.t('talk:contact')}
+                  </Text>
                 </Pressable>
               )}
               <AppSvgIcon
@@ -296,7 +299,7 @@ const Keypad: React.FC<KeypadProps> = ({
                   if (showKeypad) closeKeypad();
                 }}>
                 <Text style={styles.textCallHist}>
-                  {showKeypad ? '닫기' : '통화기록'}
+                  {showKeypad ? i18n.t('close') : i18n.t('talk:callHistory')}
                 </Text>
               </Pressable>
               {/* {showKeypad ? (
