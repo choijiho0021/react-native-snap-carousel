@@ -50,11 +50,6 @@ import Env from '@/environment';
 const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-    paddingHorizontal: 20,
-  },
   btnCnter: {
     width: 40,
     height: 40,
@@ -236,8 +231,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           : PERMISSIONS.ANDROID.READ_MEDIA_IMAGES;
       const result = await check(permission);
 
-      console.log('@@@@ result : ', result);
-
       checkNewPermission = result === RESULTS.GRANTED;
     }
     if (hasPhotoPermission || checkNewPermission) {
@@ -360,10 +353,10 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           count: couponObj?.cnt || 0,
         });
 
-        setIsLoading(false);
-
         // 뽑기 , 임시로 3초 타임아웃
         setTimeout(() => {
+          setIsLoading(false);
+
           action.account.checkLottery({iccid, token, prompt: 'check'});
           setIsGetResult(true);
           setShowCouponModal(true);
@@ -432,13 +425,15 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     );
   }, [renderTitleAndPhase, screenNum]);
 
+  // disableBtn로 중복방지 처리가 되어있음.
   const onClick = useCallback(() => {
-    // 2초 동안 Loading 표시해주기 코드
+    // 타임아웃과 별개로 쿠폰발급 API 실행
     setIsLoading(true);
+    lotteryCoupon();
 
-    // 뽑기 , 임시로 2초 타임아웃
+    // Loading false 는 중복 호출되도 상관없음
     setTimeout(() => {
-      lotteryCoupon();
+      setIsLoading(false);
     }, 2000);
   }, [lotteryCoupon]);
 
@@ -528,7 +523,8 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   ]);
 
   const renderBody = useCallback(() => {
-    if (isLoading) {
+    // isLoading false여도 쿠폰정보가 없으면 로딩화면이 출력되야함.
+    if (!isHistory && isLoading && coupon?.title !== '') {
       return <RenderLoadingLottery />;
     }
 
@@ -553,14 +549,15 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       />
     );
   }, [
-    fortune?.count,
     isHistory,
     isLoading,
-    onClick,
+    coupon?.title,
     phase?.text,
-    renderAfterLottery,
     type,
+    fortune?.count,
+    onClick,
     screenNum,
+    renderAfterLottery,
   ]);
 
   const renderHeader = useCallback(() => {
