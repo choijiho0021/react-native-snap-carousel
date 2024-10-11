@@ -433,6 +433,9 @@ const Esim: React.FC<EsimProps> = ({
         key={sceneRoute.key}
         data={product.priceInfoTab.get(sceneRoute.key, [] as RkbPriceInfo[][])}
         onPress={onPressItem}
+        onRefresh={() => {
+          action.product.updatePriceInfo();
+        }}
         localOpList={product.localOpList}
         width={dimensions.width}
         onScrollEndDrag={({nativeEvent}) => {
@@ -443,6 +446,7 @@ const Esim: React.FC<EsimProps> = ({
       />
     ),
     [
+      action.product,
       dimensions.width,
       onPressItem,
       product.localOpList,
