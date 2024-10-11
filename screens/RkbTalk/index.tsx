@@ -24,7 +24,7 @@ import {
   UserAgent,
   UserAgentOptions,
 } from 'sip.js';
-import {isNumber} from 'underscore';
+import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import AppButton from '@/components/AppButton';
@@ -218,9 +218,8 @@ type RkbTalkProps = {
 
 const RkbTalk: React.FC<RkbTalkProps> = ({
   account: {mobile, realMobile, iccid, token},
-  talk: {selectedNum},
+  talk: {selectedNum, tariff},
   navigation,
-  route,
   action,
 }) => {
   const [userAgent, setUserAgent] = useState<UserAgent | null>(null);
@@ -291,6 +290,12 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     [digit],
   );
 
+  useEffect(() => {
+    if (_.isEmpty(tariff)) {
+      action.talk.getTariff();
+    }
+  }, [action.talk, tariff]);
+
   const printCCInfo = useMemo(
     () => splitCC?.length > 0 && (initial || calling),
     [calling, initial, splitCC?.length],
@@ -304,7 +309,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         if (rsp?.result === 0) {
           setPoint(rsp?.objects?.tpnt);
         }
-        if (!isNumber(rsp?.objects?.tpnt)) setPntError(true);
+        if (!_.isNumber(rsp?.objects?.tpnt)) setPntError(true);
         setRefreshing(false);
       });
     }
@@ -747,7 +752,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
                 },
                 showWarning && {color: colors.redError, marginLeft: 6},
               ]}>
-              {maxTime && isNumber(min || 0)
+              {maxTime && _.isNumber(min || 0)
                 ? i18n.t(`talk:remain`, {
                     min,
                   })

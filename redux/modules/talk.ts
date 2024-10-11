@@ -20,6 +20,8 @@ const getPointHistory = createAsyncThunk(
   API.TalkApi.getPointHistory,
 );
 
+const getTariff = createAsyncThunk('rkbTalk/getTariff', API.TalkApi.getTariff);
+
 export type PointHistory = {
   diff: string;
   expire_at: Moment;
@@ -63,6 +65,7 @@ export type TalkTariff = {
   name: string;
   mobile: number; // mobile tariff
   wireline: number; // landline tariff
+  flag: string;
 };
 
 export interface TalkModelState {
@@ -76,58 +79,17 @@ export interface TalkModelState {
   tariff: Record<string, TalkTariff>;
 }
 
-const testTariff = {
-  kr: {
-    code: '82',
-    name: '대한민국',
-    mobile: 10,
-    wireline: 20,
-  },
-  us: {
-    code: '1',
-    name: '미국',
-    mobile: 100,
-    wireline: 200,
-  },
-  jp: {
-    code: '81',
-    name: '일본',
-    mobile: 150,
-    wireline: 250,
-  },
-  tw: {
-    code: '833',
-    name: '대만',
-    mobile: 120,
-    wireline: 220,
-  },
-  en: {
-    code: '33',
-    name: 'England',
-    mobile: 110,
-    wireline: 210,
-  },
-};
-
 const initialState: TalkModelState = {
   point: '0',
   recordIDSet: new Set(),
   contacts: [],
-  tariff: testTariff,
+  tariff: {},
 };
 
 const slice = createSlice({
   name: 'talk',
   initialState,
   reducers: {
-    // set last tab
-    // 2개 리스트를 유지한다.
-    // pushLastTab: (state, action) => {
-    //   const {lastTab} = state;
-    //   if (lastTab.first() !== action.payload) {
-    //     state.lastTab = lastTab.unshift(action.payload).setSize(2);
-    //   }
-    // },
     updateClickedNumber: (state, action) => {
       state.selectedNum = action.payload;
       return state;
@@ -197,6 +159,11 @@ const slice = createSlice({
       }
       return state;
     });
+    builder.addCase(getTariff.fulfilled, (state, action) => {
+      state.tariff = action.payload;
+
+      return state;
+    });
   },
 });
 
@@ -221,6 +188,7 @@ export const actions = {
   getContacts,
   getPointHistory,
   getExpPointInfo,
+  getTariff,
   // getTalkPoint,
 };
 

@@ -1,6 +1,7 @@
 import moment from 'moment';
-import {ExpPointLog, PointHistory} from '../modules/talk';
+import {ExpPointLog, PointHistory, TalkTariff} from '../modules/talk';
 import api from './api';
+import {utils} from '@/utils/utils';
 
 // get my coupons
 const getChannelInfo = ({mobile}: {mobile: string}) => {
@@ -46,6 +47,45 @@ const getExpPointInfo = ({iccid, token}: {iccid: string; token: string}) => {
     `${api.httpUrl(api.path.rokApi.rokebi.pointLog)}/${iccid}?exp=30&list`,
     (rsp) => rsp,
     api.withToken(token, 'json'),
+  );
+};
+
+/*
+[{
+  "cc": "jp", 
+  "code": "81", 
+  "flag": "/sites/default/files/2024-10/jp.png", 
+  "mobile": "150.00", 
+  "name": "일본", 
+  "wireline": "150.00"
+}]
+*/
+type JsonTariff = {
+  cc: string;
+  code: string;
+  name: string;
+  flag: string;
+  mobile: string;
+  wireline: string;
+};
+
+const getTariff = async () => {
+  const rsp = await api.callHttpGet(
+    `${api.httpUrl(api.path.tariff)}?_format=json`,
+  );
+
+  const a = rsp as unknown as JsonTariff[];
+  return Object.fromEntries(
+    a.map((t) => [
+      t.cc,
+      {
+        code: t.code,
+        name: t.name,
+        flag: t.flag,
+        mobile: utils.stringToNumber(t.mobile),
+        wireline: utils.stringToNumber(t.wireline),
+      } as TalkTariff,
+    ]),
   );
 };
 
@@ -96,4 +136,5 @@ export default {
   getExpPointInfo,
   patchTalkPoint,
   getPointHistory,
+  getTariff,
 };

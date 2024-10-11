@@ -93,6 +93,7 @@ const path = {
   rkbtalk: 'json/rkbtalk',
   profile: 'json/profile',
   extraCoupon: 'json/coupon/extra',
+  tariff: 'json/talk/tariff',
 
   gift: {
     content: 'rokebi/gift',

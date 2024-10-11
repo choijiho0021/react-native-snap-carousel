@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as Hangul from 'hangul-js';
 import React, {useCallback, useMemo} from 'react';
-import {SafeAreaView, SectionList, StyleSheet, View} from 'react-native';
+import {Image, SafeAreaView, SectionList, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import AppBackButton from '@/components/AppBackButton';
 import AppText from '@/components/AppText';
@@ -10,6 +10,7 @@ import {appStyles} from '@/constants/Styles';
 import {RootState} from '@/redux';
 import {TalkModelState, TalkTariff} from '@/redux/modules/talk';
 import i18n from '@/utils/i18n';
+import {API} from '@/redux/api';
 
 const styles = StyleSheet.create({
   container: {
@@ -56,7 +57,6 @@ const styles = StyleSheet.create({
   flag: {
     width: 32,
     height: 32,
-    backgroundColor: 'red',
     marginRight: 16,
   },
   tariff: {
@@ -110,10 +110,13 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({talk}) => {
     );
   }, [talk.tariff]);
 
-  const renderSectionItem = useCallback(
-    ({item}: {item: TalkTariff}) => (
+  const renderSectionItem = useCallback(({item}: {item: TalkTariff}) => {
+    return (
       <View style={styles.item}>
-        <View style={styles.flag} />
+        <Image
+          style={styles.flag}
+          source={{uri: API.default.httpImageUrl(item.flag)}}
+        />
         <AppText
           style={[
             appStyles.semiBold16Text,
@@ -128,9 +131,8 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({talk}) => {
           </AppText>
         </View>
       </View>
-    ),
-    [],
-  );
+    );
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
