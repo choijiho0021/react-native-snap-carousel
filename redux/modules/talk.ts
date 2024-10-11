@@ -8,10 +8,6 @@ import {API} from '@/redux/api';
 import {checkEng, checkKor} from '@/constants/CustomTypes';
 import {SectionData} from './account';
 
-// 10 items per page
-const PAGE_LIMIT = 10;
-const PAGE_UPDATE = 0;
-
 export const updateContacts = createAction('rkbTalk/updateContact');
 export const updateClickedNumber = createAction('rkbTalk/updateClickedNumber');
 export const updateRecordSet = createAction('rkbTalk/updateRecordSet');
@@ -43,7 +39,12 @@ export type ExpPointHistory = {
   point: string;
 };
 
-export const sortName = (a, b) => {
+type ContactName = {
+  familyName: string;
+  givenName: string;
+};
+
+export const sortName = (a: ContactName, b: ContactName) => {
   const nameA = a.familyName + a.givenName;
   const nameB = b.familyName + b.givenName;
 
@@ -56,20 +57,63 @@ export const sortName = (a, b) => {
   return priorityB;
 };
 
+export type TalkTariff = {
+  // country: string; // kr, jp, ...
+  code: string; // country code: 81, 82, etc
+  name: string;
+  mobile: number; // mobile tariff
+  wireline: number; // landline tariff
+};
+
 export interface TalkModelState {
   point: string;
   recordIDSet: Set<string>;
   contacts: any[];
-  pointHistory: SectionData[];
-  expList: ExpPointHistory[];
-  expPoint: string;
+  pointHistory?: SectionData[];
+  expList?: ExpPointHistory[];
+  expPoint?: string;
   selectedNum?: string;
+  tariff: Record<string, TalkTariff>;
 }
+
+const testTariff = {
+  kr: {
+    code: '82',
+    name: '대한민국',
+    mobile: 10,
+    wireline: 20,
+  },
+  us: {
+    code: '1',
+    name: '미국',
+    mobile: 100,
+    wireline: 200,
+  },
+  jp: {
+    code: '81',
+    name: '일본',
+    mobile: 150,
+    wireline: 250,
+  },
+  tw: {
+    code: '833',
+    name: '대만',
+    mobile: 120,
+    wireline: 220,
+  },
+  en: {
+    code: '33',
+    name: 'England',
+    mobile: 110,
+    wireline: 210,
+  },
+};
 
 const initialState: TalkModelState = {
   point: '0',
   recordIDSet: new Set(),
   contacts: [],
+  tariff: testTariff,
 };
 
 const slice = createSlice({

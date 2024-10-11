@@ -241,6 +241,17 @@ export const appStyles = StyleSheet.create({
     padding: 0,
     margin: 0,
   },
+  semiBold12Text: {
+    //        fontFamily: "AppleSDGothicNeo",
+    fontSize: 12,
+    fontWeight: '600',
+    fontStyle: 'normal',
+    lineHeight: 16,
+    letterSpacing: 0,
+    color: colors.black,
+    padding: 0,
+    margin: 0,
+  },
   semiBold13Text: {
     //        fontFamily: "AppleSDGothicNeo",
     fontSize: 13,
@@ -695,6 +706,15 @@ export const appStyles = StyleSheet.create({
   robotoMedium16Text: {
     fontFamily: 'Roboto',
     fontSize: 16,
+    fontWeight: '500',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'left',
+    color: colors.black,
+  },
+  robotoMedium14Text: {
+    fontFamily: 'Roboto',
+    fontSize: 14,
     fontWeight: '500',
     fontStyle: 'normal',
     letterSpacing: 0,

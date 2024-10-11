@@ -272,6 +272,7 @@ export type HomeStackParamList = {
   Talk: undefined;
   TalkContact: undefined;
   TalkPoint: undefined;
+  TalkTariff: undefined;
   EmergencyCall: undefined;
 };
 
