@@ -46,15 +46,15 @@ import RenderLoadingLottery from './component/RenderLoadingLottery';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppSnackBar from '@/components/AppSnackBar';
 import Env from '@/environment';
+import {
+  actions as toastActions,
+  Toast,
+  ToastAction,
+} from '@/redux/modules/toast';
 
 const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-    paddingHorizontal: 20,
-  },
   btnCnter: {
     width: 40,
     height: 40,
@@ -146,6 +146,7 @@ type LotteryProps = {
   action: {
     // order: OrderAction;
     account: AccountAction;
+    toast: ToastAction;
   };
 };
 
@@ -180,6 +181,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
   const [isGetResult, setIsGetResult] = useState(false); // 모달창 뜨고 쿠폰함 바로가기 보여주기용
   const [disableBtn, setDisableBtn] = useState(false); // 모달 결과 출력 전까지 버튼 금지
+  // const [pendingTimeout, setPendingTimeout] = useState(false);
 
   const {type} = route?.params;
 
@@ -235,8 +237,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           ? PERMISSIONS.IOS.PHOTO_LIBRARY
           : PERMISSIONS.ANDROID.READ_MEDIA_IMAGES;
       const result = await check(permission);
-
-      console.log('@@@@ result : ', result);
 
       checkNewPermission = result === RESULTS.GRANTED;
     }
@@ -360,10 +360,10 @@ const LotteryScreen: React.FC<LotteryProps> = ({
           count: couponObj?.cnt || 0,
         });
 
-        setIsLoading(false);
-
         // 뽑기 , 임시로 3초 타임아웃
         setTimeout(() => {
+          setIsLoading(false);
+
           action.account.checkLottery({iccid, token, prompt: 'check'});
           setIsGetResult(true);
           setShowCouponModal(true);
@@ -432,15 +432,34 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     );
   }, [renderTitleAndPhase, screenNum]);
 
+  // disableBtn로 중복방지 처리가 되어있음.
   const onClick = useCallback(() => {
-    // 2초 동안 Loading 표시해주기 코드
+    // 타임아웃과 별개로 쿠폰발급 API 실행
     setIsLoading(true);
 
-    // 뽑기 , 임시로 2초 타임아웃
+    console.log('@@@@ setIsLoading true');
+
+    lotteryCoupon();
+
+    // Loading false 는 중복 호출되도 상관없음
     setTimeout(() => {
-      lotteryCoupon();
+      setIsLoading(false);
     }, 2000);
-  }, [lotteryCoupon]);
+
+    // 30초 동안 로딩 상태면, goBack 실행
+    setTimeout(() => {
+      setIsLoading((currentLoading) => {
+        if (currentLoading) {
+          action.toast.push({
+            msg: 'esim:lottery:network',
+            toastIcon: 'bannerMarkToastError',
+          });
+          navigation.goBack();
+        }
+        return currentLoading;
+      });
+    }, 30000);
+  }, [lotteryCoupon, action.toast, navigation]);
 
   const renderShareButton = useCallback(
     (text: string, appIcon: string, onPress: any) => {
@@ -528,7 +547,8 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   ]);
 
   const renderBody = useCallback(() => {
-    if (isLoading) {
+    // isLoading false여도 쿠폰정보가 없으면 로딩화면이 출력되야함.
+    if (!isHistory && isLoading && coupon?.title !== '') {
       return <RenderLoadingLottery />;
     }
 
@@ -553,14 +573,15 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       />
     );
   }, [
-    fortune?.count,
     isHistory,
     isLoading,
-    onClick,
+    coupon?.title,
     phase?.text,
-    renderAfterLottery,
     type,
+    fortune?.count,
+    onClick,
     screenNum,
+    renderAfterLottery,
   ]);
 
   const renderHeader = useCallback(() => {
@@ -651,6 +672,7 @@ export default connect(
   (dispatch) => ({
     action: {
       account: bindActionCreators(accountActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch),
     },
   }),
 )(LotteryScreen);
