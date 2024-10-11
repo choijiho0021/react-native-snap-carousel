@@ -16,6 +16,7 @@ import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 import {colors} from '@/constants/Colors';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {RkbTalkNavigationProp} from '.';
+import KeyPadButton from './component/KeyPadButton';
 
 const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 console.log('@@@ buton size', buttonSize, windowWidth);
@@ -33,24 +34,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 12,
   },
-  keyText: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    fontStyle: 'normal',
-    lineHeight: 36,
-    letterSpacing: -0.6,
-    textAlign: 'center',
-    color: colors.black,
-  },
   textCallHist: {
     fontSize: 16,
     fontStyle: 'normal',
     lineHeight: 24,
     color: colors.black,
-  },
-  empty: {
-    width: buttonSize,
-    height: buttonSize,
   },
   call: {
     width: buttonSize,
@@ -89,13 +77,6 @@ const callKeys = [
   ['*', '0', '#'],
 ];
 
-const desc = [
-  ['', 'ABC', 'DEF'],
-  ['GHI', 'JKL', 'MNO'],
-  ['PQRS', 'TUV', 'WXYZ'],
-  ['', '+', ''],
-];
-
 export type KeypadRef = {
   getValue: () => string;
   setValue: (v: string) => void;
@@ -126,7 +107,6 @@ const Keypad: React.FC<KeypadProps> = ({
   const [dtmf, setDtmf] = useState('');
   const [showKeypad, setShowKeypad] = useState(true);
   const [pressed, setPressed] = useState<string>();
-  const [prsDigit, setPrsDigit] = useState<string>();
 
   useEffect(() => {
     onChange(showKeypad ? dtmf : dest);
@@ -137,7 +117,9 @@ const Keypad: React.FC<KeypadProps> = ({
       keypadRef.current = {
         getValue: () => dest,
         setValue: (v: string) => {
-          keypadRef.current.value = v;
+          if (keypadRef.current) {
+            keypadRef.current.value = v;
+          }
           setDest(v);
         },
       };
@@ -222,49 +204,29 @@ const Keypad: React.FC<KeypadProps> = ({
           <>
             {(showKeypad ? callKeys : keys).map((row, i) => (
               <View style={styles.row} key={i}>
-                {row.map((d) => {
-                  switch (d) {
-                    case 'keyNation':
-                      return <AppSvgIcon key={d} name={d} style={styles.key} />;
-                    case 'keyDel':
-                      return (
-                        <AppSvgIcon
-                          key={d}
-                          name={d}
-                          style={styles.key}
-                          onPress={() =>
-                            setDest((prev) =>
-                              prev.length > 0
-                                ? prev.substring(0, prev.length - 1)
-                                : prev,
-                            )
-                          }
-                          onLongPress={() => setDest('')}
-                        />
-                      );
-                    default:
-                      return (
-                        <Pressable
-                          style={[
-                            styles.key,
-                            d === prsDigit && {
-                              backgroundColor: colors.backGrey,
-                            },
-                          ]}
-                          key={d}
-                          onPressIn={() => setPrsDigit(d)}
-                          onPressOut={() => setPrsDigit('')}
-                          onPress={() => {
-                            if (showKeypad) {
-                              setDtmf((prev) => prev + d);
-                              onPress?.('keypad', d);
-                            } else setDest((prev) => prev + d);
-                          }}>
-                          <Text style={styles.keyText}>{d}</Text>
-                        </Pressable>
-                      );
-                  }
-                })}
+                {row.map((d) => (
+                  <KeyPadButton
+                    key={d}
+                    name={d}
+                    onLongPress={(v: string) => {
+                      if (v === 'keyDel') setDest('');
+                    }}
+                    onPress={(v: string) => {
+                      if (v === 'keyNation') {
+                        navigation.navigate('TalkTariff');
+                      } else if (v === 'keyDel') {
+                        setDest((prev) =>
+                          prev.length > 0
+                            ? prev.substring(0, prev.length - 1)
+                            : prev,
+                        );
+                      } else if (showKeypad) {
+                        setDtmf((prev) => prev + v);
+                        onPress?.('keypad', v);
+                      } else setDest((prev) => prev + v);
+                    }}
+                  />
+                ))}
               </View>
             ))}
             <View style={styles.row}>
@@ -378,7 +340,6 @@ const Keypad: React.FC<KeypadProps> = ({
       closeKeypad,
       navigation,
       onPress,
-      prsDigit,
       renderKeyButton,
       showKeypad,
       showWarning,
