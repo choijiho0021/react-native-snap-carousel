@@ -380,7 +380,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
 
   const limit = useCallback(
     (t: number) => {
-      if (t < 61) {
+      if (t < 60) {
         setTime(`00:${makeSeconds(t)}`);
       } else {
         const mins = Math.floor(t / 60);
@@ -622,7 +622,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           console.log('@@@ UA stopped', state);
         });
       };
-    }, []),
+    }, [testNumber]),
   );
 
   // talkpoint 가져오지 못할 경우 0 처리
@@ -881,7 +881,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           console.log('@@@ UA stopped', state);
         });
       };
-    }, []),
+    }, [testNumber]),
   );
 
   return (
