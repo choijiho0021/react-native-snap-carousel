@@ -46,6 +46,11 @@ import RenderLoadingLottery from './component/RenderLoadingLottery';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppSnackBar from '@/components/AppSnackBar';
 import Env from '@/environment';
+import {
+  actions as toastActions,
+  Toast,
+  ToastAction,
+} from '@/redux/modules/toast';
 
 const {isIOS} = Env.get();
 
@@ -141,6 +146,7 @@ type LotteryProps = {
   action: {
     // order: OrderAction;
     account: AccountAction;
+    toast: ToastAction;
   };
 };
 
@@ -175,6 +181,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
   const [isGetResult, setIsGetResult] = useState(false); // 모달창 뜨고 쿠폰함 바로가기 보여주기용
   const [disableBtn, setDisableBtn] = useState(false); // 모달 결과 출력 전까지 버튼 금지
+  // const [pendingTimeout, setPendingTimeout] = useState(false);
 
   const {type} = route?.params;
 
@@ -429,13 +436,30 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const onClick = useCallback(() => {
     // 타임아웃과 별개로 쿠폰발급 API 실행
     setIsLoading(true);
+
+    console.log('@@@@ setIsLoading true');
+
     lotteryCoupon();
 
     // Loading false 는 중복 호출되도 상관없음
     setTimeout(() => {
       setIsLoading(false);
     }, 2000);
-  }, [lotteryCoupon]);
+
+    // 30초 동안 로딩 상태면, goBack 실행
+    setTimeout(() => {
+      setIsLoading((currentLoading) => {
+        if (currentLoading) {
+          action.toast.push({
+            msg: 'esim:lottery:network',
+            toastIcon: 'bannerMarkToastError',
+          });
+          navigation.goBack();
+        }
+        return currentLoading;
+      });
+    }, 30000);
+  }, [lotteryCoupon, action.toast, navigation]);
 
   const renderShareButton = useCallback(
     (text: string, appIcon: string, onPress: any) => {
@@ -648,6 +672,7 @@ export default connect(
   (dispatch) => ({
     action: {
       account: bindActionCreators(accountActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch),
     },
   }),
 )(LotteryScreen);

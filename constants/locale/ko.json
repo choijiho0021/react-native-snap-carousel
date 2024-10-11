@@ -843,6 +843,8 @@
   "esim:lottery:eventSns": "sns_share_try",
   "esim:lottery:eventStory": "insta_share_try",
 
+  "esim:lottery:network": "운세 정보를 불러오는데 실패했습니다.",
+
   "esim:lottery:title:before": "랜덤 쿠폰까지!",
 
   "esim:time:usable": "상품 사용기간",
