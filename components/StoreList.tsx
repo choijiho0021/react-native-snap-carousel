@@ -163,6 +163,7 @@ type StoreListProps = {
   onPress: (p: RkbPriceInfo, prodTitle: string) => void;
   onScrollEndDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   onEndReached?: () => void;
+  onRefresh?: () => void;
   scrollEnabled?: boolean;
   width: number;
 };
@@ -173,6 +174,7 @@ const StoreList = ({
   onPress,
   onScrollEndDrag,
   onEndReached,
+  onRefresh,
   scrollEnabled = true,
   width,
 }: StoreListProps) => {
@@ -217,16 +219,17 @@ const StoreList = ({
     [data, isFolder],
   );
 
-  const onRefresh = useCallback(() => {
+  const onRefreshList = useCallback(() => {
     setRefreshing(true);
     dispatch(productActions.init(true))
       .then(() => {
+        if (onRefresh) onRefresh();
         setRefreshing(false);
       })
       .catch(() => {
         setRefreshing(false);
       });
-  }, [dispatch]);
+  }, [dispatch, onRefresh]);
 
   return (
     <View style={appStyles.container}>
@@ -235,6 +238,7 @@ const StoreList = ({
         onScrollEndDrag={onScrollEndDrag}
         renderItem={renderItem}
         onEndReached={onEndReached}
+        extraData={list}
         scrollEnabled={scrollEnabled}
         showsVerticalScrollIndicator={false}
         onScrollBeginDrag={() => {
@@ -244,7 +248,7 @@ const StoreList = ({
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={onRefresh}
+            onRefresh={onRefreshList}
             colors={[colors.clearBlue]} // android 전용
             tintColor={colors.clearBlue} // ios 전용
           />

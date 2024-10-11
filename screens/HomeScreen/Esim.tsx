@@ -433,6 +433,9 @@ const Esim: React.FC<EsimProps> = ({
         key={sceneRoute.key}
         data={product.priceInfoTab.get(sceneRoute.key, [] as RkbPriceInfo[][])}
         onPress={onPressItem}
+        onRefresh={() => {
+          action.product.updatePriceInfo();
+        }}
         localOpList={product.localOpList}
         width={dimensions.width}
         onScrollEndDrag={({nativeEvent}) => {
@@ -443,6 +446,7 @@ const Esim: React.FC<EsimProps> = ({
       />
     ),
     [
+      action.product,
       dimensions.width,
       onPressItem,
       product.localOpList,
@@ -679,25 +683,25 @@ const Esim: React.FC<EsimProps> = ({
     product.prodByCountry.length,
   ]);
 
-  useEffect(() => {
-    // check timestamp
-    const checkTimestamp = async () => {
-      const tm = await retrieveData(`${cachePrefix}cache.timestamp.prod`);
-      const reload =
-        !tm ||
-        moment(product.rule.timestamp_prod).utcOffset(9, true).isAfter(tm);
-      // console.log('@@@ reload all prod', reload, tm);
-      // reload data
-      action.product.getAllProduct(reload);
-      if (reload) {
-        storeData(
-          `${cachePrefix}cache.timestamp.prod`,
-          moment().utcOffset(9).format(),
-        );
-      }
-    };
-    checkTimestamp();
-  }, [action.product, product.rule.timestamp_prod]);
+  // useEffect(() => {
+  //   // check timestamp
+  //   const checkTimestamp = async () => {
+  //     const tm = await retrieveData(`${cachePrefix}cache.timestamp.prod`);
+  //     const reload =
+  //       !tm ||
+  //       moment(product.rule.timestamp_prod).utcOffset(9, true).isAfter(tm);
+  //     // console.log('@@@ reload all prod', reload, tm);
+  //     // reload data
+  //     action.product.getAllProduct(reload);
+  //     if (reload) {
+  //       storeData(
+  //         `${cachePrefix}cache.timestamp.prod`,
+  //         moment().utcOffset(9).format(),
+  //       );
+  //     }
+  //   };
+  //   checkTimestamp();
+  // }, [action.product, product.rule.timestamp_prod]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {

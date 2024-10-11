@@ -21,6 +21,7 @@ import Env from '@/environment';
 import {RkbOrderItem} from '../api/cartApi';
 import {PurchaseItem} from '../models/purchaseItem';
 import {OrderItemType} from '../api/orderApi';
+import VersionCheck from 'react-native-version-check';
 
 const {cachePrefix} = Env.get();
 
@@ -135,6 +136,7 @@ const init = createAsyncThunk(
   'product/init',
   async (reloadAll: boolean, {dispatch}) => {
     let reload = reloadAll || false;
+
     if (!reload) {
       const timestamp = await retrieveData(`${cachePrefix}cache.timestamp`);
       const mobile = await retrieveData(API.User.KEY_MOBILE, true);
@@ -155,24 +157,21 @@ const init = createAsyncThunk(
       }
     }
 
-    if (reload) {
-      storeData(
-        `${cachePrefix}cache.timestamp`,
-        moment().utcOffset(9).format(),
-      );
-    }
+    const results = await Promise.all([
+      dispatch(getLocalOp(reload)),
+      dispatch(getProdCountry(reload)),
+      dispatch(getProductByCountry(reload)),
+      dispatch(getProductCategory(reload)),
+      dispatch(getAllProduct(reload)),
+      dispatch(PromotionActions.getPromotion(reload)),
+      dispatch(PromotionActions.getGiftBgImages(reload)),
+      dispatch(PromotionActions.getEvent(reload)),
+      dispatch(PromotionActions.getPromotionStat()),
+    ]);
 
-    await dispatch(getLocalOp(reload));
-    await dispatch(getProdCountry(reload));
-    await dispatch(getProductByCountry(reload));
-    await dispatch(getProductCategory(reload));
+    const result = results.every((elm) => elm.payload?.result === 0);
 
-    await dispatch(getAllProduct(reload));
-
-    await dispatch(PromotionActions.getPromotion(reload));
-    await dispatch(PromotionActions.getGiftBgImages(reload));
-    await dispatch(PromotionActions.getEvent(reload));
-    await dispatch(PromotionActions.getPromotionStat());
+    return {reload, result};
   },
 );
 
@@ -442,7 +441,15 @@ const slice = createSlice({
       state.ready = false;
     });
 
-    builder.addCase(init.fulfilled, (state) => {
+    builder.addCase(init.fulfilled, (state, {payload}) => {
+      if (payload.reload && payload.result) {
+        storeData(
+          `${cachePrefix}cache.timestamp`,
+          moment().utcOffset(9).format(),
+        );
+        const ver = VersionCheck.getCurrentVersion();
+        storeData('AppVer', ver);
+      }
       state.ready =
         state.prodByCountry.length !== 0 && state.prodList?.size !== 0;
     });

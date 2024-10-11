@@ -24,13 +24,13 @@ export const appendLog = createAsyncThunk(
 );
 
 function trimLog(str: string) {
-  if (str.length > 100000) {
-    const slice = str.slice(-100000);
+  if (str.length > 300000) {
+    const slice = str.slice(-300000);
     const index = slice.indexOf('$$$');
     if (index !== -1) {
-      return slice.slice(index - 100000);
+      return slice.slice(index - 300000);
     }
-    return slice.slice(-100000);
+    return slice.slice(-300000);
   }
   return str;
 }

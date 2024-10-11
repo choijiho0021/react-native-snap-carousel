@@ -206,12 +206,7 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
     const oldVer = await retrieveData('AppVer');
     const ver = VersionCheck.getCurrentVersion();
 
-    const isVersionUpdate = oldVer !== ver;
-    if (isVersionUpdate) {
-      await storeData('AppVer', ver);
-    }
-
-    dispatch(productActions.init(isVersionUpdate));
+    dispatch(productActions.init(oldVer !== ver));
 
     if (!esimApp) {
       // 공지 사항 가져오기

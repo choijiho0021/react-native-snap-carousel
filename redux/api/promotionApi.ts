@@ -361,6 +361,8 @@ const buildShareLink = async ({
   counry: RkbProdByCountry;
   isShort?: boolean;
 }) => {
+  // 원래 Cuntry에서 해결했는데, product의 tid를 넣어서 처리하도록 변경해야한다.
+  // Redux store 값을 확인해야하나..
   const webLink = shareWebViewLink(uuid, country, false);
 
   const input = {

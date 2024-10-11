@@ -3,10 +3,8 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   findNodeHandle,
   InputAccessoryView,
-  KeyboardAvoidingView,
   Platform,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
