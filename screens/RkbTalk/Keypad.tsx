@@ -9,6 +9,8 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+import InCallManager from 'react-native-incall-manager';
+import SoundPlayer from 'react-native-sound-player';
 import {SessionState} from 'sip.js';
 import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
 import {colors} from '@/constants/Colors';
@@ -176,6 +178,27 @@ const Keypad: React.FC<KeypadProps> = ({
       closeKeypad();
     }, [closeKeypad]),
   );
+
+  // ringback
+  useEffect(() => {
+    if ([SessionState.Establishing].includes(state)) {
+      InCallManager.start({media: 'audio'});
+      try {
+        SoundPlayer.playSoundFile('ringback', 'mp3');
+        SoundPlayer.setNumberOfLoops(-1);
+      } catch (e) {
+        console.log(`cannot play the sound file`, e);
+      }
+    }
+    if ([SessionState.Terminated, SessionState.Established].includes(state)) {
+      InCallManager.stop();
+      try {
+        SoundPlayer.stop();
+      } catch (e) {
+        console.log('Error stopping sound', e);
+      }
+    }
+  }, [state]);
 
   const renderKey = useCallback(
     (st?: SessionState) => {
@@ -351,7 +374,15 @@ const Keypad: React.FC<KeypadProps> = ({
         </>
       );
     },
-    [closeKeypad, onPress, prsDigit, renderKeyButton, showKeypad, showWarning],
+    [
+      closeKeypad,
+      navigation,
+      onPress,
+      prsDigit,
+      renderKeyButton,
+      showKeypad,
+      showWarning,
+    ],
   );
 
   return (

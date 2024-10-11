@@ -16,6 +16,8 @@
 		0DB1EF1D288C05EC00B18BFF /* RCTNetworkInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DB1EF1C288C05EC00B18BFF /* RCTNetworkInfo.m */; };
 		0DCAD29E288D3727005FADA6 /* RCTNetworkInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DB1EF1C288C05EC00B18BFF /* RCTNetworkInfo.m */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
+		40341AC32CB8BDED00CBDA94 /* ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 40341AC22CB8BDED00CBDA94 /* ringback.mp3 */; };
+		40341AC42CB8BDED00CBDA94 /* ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 40341AC22CB8BDED00CBDA94 /* ringback.mp3 */; };
 		405C1E9524D945870016B43C /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 405C1E9424D945870016B43C /* AppCenter-Config.plist */; };
 		4060E90826DDAAD100E1C0AE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		4060E90926DDAAF100E1C0AE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -72,6 +74,7 @@
 		29A7EDBC81D1315CD93EEA18 /* libPods-RokebiGlobal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RokebiGlobal.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2EDE63E33A8F6D206BDB4CF1 /* libPods-RokebiUSIM.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RokebiUSIM.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3AF86707E322492FEFB46FB0 /* Pods-RokebiESIM.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.release.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.release.xcconfig"; sourceTree = "<group>"; };
+		40341AC22CB8BDED00CBDA94 /* ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = ringback.mp3; path = ../assets/ringback.mp3; sourceTree = "<group>"; };
 		405C1E9424D945870016B43C /* AppCenter-Config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "AppCenter-Config.plist"; path = "RokebiESIM/AppCenter-Config.plist"; sourceTree = "<group>"; };
 		40887A1327B2310100BFF44D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = RokebiESIM/en.lproj/GlobalLaunchScreen.strings; sourceTree = "<group>"; };
 		40887A1427B2310200BFF44D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -212,6 +215,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				40341AC22CB8BDED00CBDA94 /* ringback.mp3 */,
 				A31C8F2E282245F200CE16F6 /* Rokebi-Bridge.swift */,
 				A36F6F3026B8F0F100A69BF2 /* Configurations */,
 				0D75258D2393BEBB000D9C77 /* fonts */,
@@ -357,6 +361,7 @@
 				0D9C212F26D37D4D0082F077 /* fonts in Resources */,
 				0D9C213026D37D4D0082F077 /* AppCenter-Config.plist in Resources */,
 				40A621EA26E85C740037EE37 /* GlobalLaunchScreen.xib in Resources */,
+				40341AC42CB8BDED00CBDA94 /* ringback.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,6 +372,7 @@
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				408F45AA27B206A4007595B8 /* InfoPlist.strings in Resources */,
 				4060E90E26DDB1C300E1C0AE /* Images.xcassets in Resources */,
+				40341AC32CB8BDED00CBDA94 /* ringback.mp3 in Resources */,
 				0D75258E2393BEBB000D9C77 /* fonts in Resources */,
 				40A621E926E85C740037EE37 /* GlobalLaunchScreen.xib in Resources */,
 				405C1E9524D945870016B43C /* AppCenter-Config.plist in Resources */,
