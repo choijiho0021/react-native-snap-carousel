@@ -78,6 +78,7 @@ import AuthStack from './AuthStackNavigator';
 import BadgedIcon from './component/BadgedIcon';
 import {HomeStackParamList} from './navigation';
 import TalkTariffScreen from '@/screens/TalkTariffScreen';
+import CallHistoryScreen from '@/screens/CallHistoryScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -286,6 +287,7 @@ function TalkStackComponent() {
       <TalkStack.Screen name="TalkPoint" component={TalkPointScreen} />
       <TalkStack.Screen name="TalkTariff" component={TalkTariffScreen} />
       <TalkStack.Screen name="EmergencyCall" component={EmergencyCallScreen} />
+      <TalkStack.Screen name="CallHistory" component={CallHistoryScreen} />
     </TalkStack.Navigator>
   );
 }
