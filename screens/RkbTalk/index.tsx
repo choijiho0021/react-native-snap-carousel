@@ -240,7 +240,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [digit, setDigit] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [showCheckModal, setShowCheckModal] = useState<boolean>(true);
-  const testNumber = '07079190190';
+  const testNumber = realMobile;
+  // const testNumber = '07079190216';
 
   const min = useMemo(() => {
     const checkRemain = (maxTime || 0) - duration;
@@ -333,6 +334,31 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     });
   }, [action.talk]);
 
+  const releaseCall = useCallback(() => {
+    if (inviter) {
+      switch (inviter.state) {
+        case SessionState.Initial:
+        case SessionState.Establishing:
+          inviter.cancel();
+          break;
+        case SessionState.Established:
+          // An established session
+          inviter.bye();
+          break;
+        case SessionState.Terminating:
+        case SessionState.Terminated:
+          console.log(
+            '@@@ Cannot terminate a session that is already terminated',
+          );
+          break;
+        default:
+          console.log('unknown state');
+          break;
+      }
+      setSessionState(inviter.state);
+    }
+  }, [inviter]);
+
   const getMaxCallTime = useCallback(() => {
     // 07079190190, 07079190216
     API.TalkApi.getChannelInfo({mobile: testNumber}).then((rsp) => {
@@ -342,10 +368,11 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
 
         console.log('@@@ max call time', m);
         if (m?.length > 0) setMaxTime(Number(m[0]) / 1000);
+        else releaseCall();
       }
       // console.log('@@@ max call time', rsp);
     });
-  }, []);
+  }, [releaseCall, testNumber]);
 
   const makeSeconds = useCallback((num: number) => {
     return (num < 10 ? '0' : '') + num;
@@ -377,7 +404,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   );
 
   useEffect(() => {
-    if (inviter && maxTime && maxTime - duration < 0) {
+    if ((inviter && maxTime && maxTime - duration < 0) || !maxTime) {
       inviter?.bye();
       setSessionState(inviter?.state);
     }
@@ -493,31 +520,6 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       console.log('@@@ user agent not found');
     }
   }, [cleanupMedia, getMaxCallTime, setupRemoteMedia, userAgent]);
-
-  const releaseCall = useCallback(() => {
-    if (inviter) {
-      switch (inviter.state) {
-        case SessionState.Initial:
-        case SessionState.Establishing:
-          inviter.cancel();
-          break;
-        case SessionState.Established:
-          // An established session
-          inviter.bye();
-          break;
-        case SessionState.Terminating:
-        case SessionState.Terminated:
-          console.log(
-            '@@@ Cannot terminate a session that is already terminated',
-          );
-          break;
-        default:
-          console.log('unknown state');
-          break;
-      }
-      setSessionState(inviter.state);
-    }
-  }, [inviter]);
 
   const onPressKeypad = useCallback(
     (k: string, d?: string) => {
@@ -896,7 +898,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           styles.body,
           {backgroundColor: isSuccessAuth ? 'white' : 'rgba(0, 0, 0, 0.3)'},
         ]}>
-        <AppActivityIndicator visible={refreshing} />
+        <AppActivityIndicator visible={refreshing || false} />
         {renderBody}
       </SafeAreaView>
     </>
