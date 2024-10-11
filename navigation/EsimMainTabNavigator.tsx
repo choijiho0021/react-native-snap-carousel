@@ -77,6 +77,7 @@ import i18n from '@/utils/i18n';
 import AuthStack from './AuthStackNavigator';
 import BadgedIcon from './component/BadgedIcon';
 import {HomeStackParamList} from './navigation';
+import CallHistoryScreen from '@/screens/\bCallHistoryScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -284,6 +285,7 @@ function TalkStackComponent() {
       <TalkStack.Screen name="TalkContact" component={TalkContact} />
       <TalkStack.Screen name="TalkPoint" component={TalkPointScreen} />
       <TalkStack.Screen name="EmergencyCall" component={EmergencyCallScreen} />
+      <TalkStack.Screen name="CallHistory" component={CallHistoryScreen} />
     </TalkStack.Navigator>
   );
 }

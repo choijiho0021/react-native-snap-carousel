@@ -297,6 +297,7 @@ const Keypad: React.FC<KeypadProps> = ({
                 key="hist"
                 onPress={() => {
                   if (showKeypad) closeKeypad();
+                  else navigation.navigate('CallHistory');
                 }}>
                 <Text style={styles.textCallHist}>
                   {showKeypad ? i18n.t('close') : i18n.t('talk:callHistory')}
