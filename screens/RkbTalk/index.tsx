@@ -242,36 +242,24 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const testNumber = realMobile;
   // const testNumber = '07079190216';
 
-  const min = useMemo(() => {
+  const {top} = useSafeAreaInsets();
+  const [min, showWarning] = useMemo(() => {
     const checkRemain = (maxTime || 0) - duration;
-    return maxTime
+    const m = maxTime
       ? Math.floor((checkRemain <= 0 ? 0 : checkRemain) / 60)
       : undefined;
+    return [m, (m && m <= 2) || false];
   }, [duration, maxTime]);
 
-  const [isSuccessAuth, setIsSuccessAuth] = useState(false);
+  const isSuccessAuth = useMemo(() => (realMobile || '') !== '', [realMobile]);
 
-  useEffect(() => {
-    setIsSuccessAuth((realMobile || '') !== '');
-  }, [realMobile]);
-
-  const {top} = useSafeAreaInsets();
-  const showWarning = useMemo(() => {
-    return (min && min <= 2) || false;
-  }, [min]);
-
-  const initial = useMemo(
-    () =>
+  const [initial, calling, connected] = useMemo(
+    () => [
       !sessionState ||
-      [SessionState.Initial, SessionState.Terminated].includes(sessionState),
-    [sessionState],
-  );
-  const calling = useMemo(
-    () => [SessionState.Establishing].includes(sessionState),
-    [sessionState],
-  );
-  const connected = useMemo(
-    () => [SessionState.Established].includes(sessionState),
+        [SessionState.Initial, SessionState.Terminated].includes(sessionState),
+      SessionState.Establishing === sessionState,
+      SessionState.Established === sessionState,
+    ],
     [sessionState],
   );
   // const end = useMemo(
@@ -753,9 +741,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
                 showWarning && {color: colors.redError, marginLeft: 6},
               ]}>
               {maxTime && _.isNumber(min || 0)
-                ? i18n.t(`talk:remain`, {
-                    min,
-                  })
+                ? i18n.t(`talk:remain`, {min})
                 : ''}
             </AppText>
           </View>
@@ -802,10 +788,6 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       splitCC,
     ],
   );
-
-  const renderBody = useMemo(() => {
-    return isSuccessAuth ? renderRkbTalkMain : <PhoneCertBox />;
-  }, [isSuccessAuth, renderRkbTalkMain]);
 
   // Options for SimpleUser
   // TODO
@@ -904,7 +886,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           {backgroundColor: isSuccessAuth ? 'white' : 'rgba(0, 0, 0, 0.3)'},
         ]}>
         <AppActivityIndicator visible={refreshing || false} />
-        {renderBody}
+        {isSuccessAuth ? renderRkbTalkMain : <PhoneCertBox />}
       </SafeAreaView>
     </>
   );
