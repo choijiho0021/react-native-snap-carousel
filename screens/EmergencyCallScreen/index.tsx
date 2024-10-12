@@ -22,6 +22,11 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import {actions as talkActions, TalkAction} from '@/redux/modules/talk';
 import i18n from '@/utils/i18n';
 
+const emergencyCallNo: Record<string, string> = {
+  mofa: '82232100404',
+  '119': '82443200119',
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -259,10 +264,7 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
           <Pressable
             style={styles.callBtn}
             onPress={() => {
-              const number = i18n
-                .t(`talk:urgent:${type}:callNumber`)
-                .replace(/[+-]/g, '');
-              action.talk.updateCalledNumber(number);
+              action.talk.updateCalledPty(emergencyCallNo[type] || '');
               navigation.goBack();
             }}>
             <AppSvgIcon name="iconCall" />

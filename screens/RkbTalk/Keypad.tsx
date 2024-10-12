@@ -103,8 +103,10 @@ const Keypad: React.FC<KeypadProps> = ({
   const [showKeypad, setShowKeypad] = useState(true);
   const [pressed, setPressed] = useState<string>();
   const dispatch = useDispatch();
-  const {updateCalledNumber, appendCalledNumber, deleteCalledNumber} =
-    bindActionCreators(talkActions, dispatch);
+  const {updateCalledPty, appendCalledPty, delCalledPty} = bindActionCreators(
+    talkActions,
+    dispatch,
+  );
 
   // useEffect(() => {
   //   onChange?.(showKeypad ? dtmf : dest);
@@ -197,17 +199,17 @@ const Keypad: React.FC<KeypadProps> = ({
                     key={d}
                     name={d}
                     onLongPress={(v: string) => {
-                      if (v === 'keyDel') updateCalledNumber('');
+                      if (v === 'keyDel') updateCalledPty('');
                     }}
                     onPress={(v: string) => {
                       if (v === 'keyNation') {
                         navigation.navigate('TalkTariff');
                       } else if (v === 'keyDel') {
-                        deleteCalledNumber();
+                        delCalledPty();
                       } else if (showKeypad) {
                         setDtmf((prev) => prev + v);
                         onPress?.('keypad', v);
-                      } else appendCalledNumber(v);
+                      } else appendCalledPty(v);
                     }}
                   />
                 ))}
@@ -322,15 +324,15 @@ const Keypad: React.FC<KeypadProps> = ({
       );
     },
     [
-      appendCalledNumber,
+      appendCalledPty,
       closeKeypad,
-      deleteCalledNumber,
+      delCalledPty,
       navigation,
       onPress,
       renderKeyButton,
       showKeypad,
       showWarning,
-      updateCalledNumber,
+      updateCalledPty,
     ],
   );
 

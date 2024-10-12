@@ -9,8 +9,6 @@ import {checkEng, checkKor} from '@/constants/CustomTypes';
 import {SectionData} from './account';
 
 export const updateContacts = createAction('rkbTalk/updateContact');
-export const updateCalledNumber = createAction('rkbTalk/updateCalledNumber');
-export const appendCalledNumber = createAction('rkbTalk/appendCalledNumber');
 export const updateRecordSet = createAction('rkbTalk/updateRecordSet');
 const getExpPointInfo = createAsyncThunk(
   'rkbTalk/getExpPointInfo',
@@ -114,7 +112,7 @@ const slice = createSlice({
   name: 'talk',
   initialState,
   reducers: {
-    deleteCalledNumber: (state) => {
+    delCalledPty: (state) => {
       const len = state.called?.length || 0;
       if (len > 0) {
         state.called = state.called?.substring(0, len - 1);
@@ -122,14 +120,26 @@ const slice = createSlice({
       }
       return state;
     },
-    appendCalledNumber: (state, action) => {
+    appendCalledPty: (state, action) => {
       state.called = (state.called || '') + action.payload;
       state.ccode = findCcode(state);
       return state;
     },
-    updateCalledNumber: (state, action) => {
+    updateCalledPty: (state, action) => {
       state.called = action.payload;
       state.ccode = findCcode(state);
+      return state;
+    },
+    setCountryCode: (state, action) => {
+      if (state.ccode) {
+        // replace current calling code
+        state.called =
+          action.payload + (state.called || '').substring(state.ccode.length);
+      } else {
+        // add calling code
+        state.called = action.payload + (state.called || '');
+      }
+      state.ccode = action.payload;
       return state;
     },
     updateContact: (state, action) => {
