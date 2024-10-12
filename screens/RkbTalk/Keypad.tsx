@@ -83,7 +83,7 @@ export type KeypadRef = {
   setValue: (v: string) => void;
 };
 
-type KeyType = 'call' | 'hangup' | 'speaker' | 'keypad' | 'mute';
+export type KeyType = 'call' | 'hangup' | 'speaker' | 'keypad' | 'mute';
 
 type KeypadProps = {
   navigation: RkbTalkNavigationProp;
