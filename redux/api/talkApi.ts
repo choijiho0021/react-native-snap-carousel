@@ -1,4 +1,5 @@
 import moment from 'moment';
+import * as Hangul from 'hangul-js';
 import {ExpPointLog, PointHistory, TalkTariff} from '../modules/talk';
 import api from './api';
 import {utils} from '@/utils/utils';
@@ -77,11 +78,14 @@ const getTariff = async () => {
   const a = rsp as unknown as JsonTariff[];
   return Object.fromEntries(
     a.map((t) => [
-      t.cc,
+      t.code,
       {
         key: t.cc,
         code: t.code,
         name: t.name,
+        chosung: Hangul.d(t.name, true)
+          .map((c) => c[0])
+          .join(''),
         flag: t.flag,
         mobile: utils.stringToNumber(t.mobile),
         wireline: utils.stringToNumber(t.wireline),

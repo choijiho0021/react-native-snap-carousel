@@ -141,7 +141,9 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({talk}) => {
       return text
         ? data
             .map((d) => {
-              const filtered = d.data.filter((a) => a.name.includes(text));
+              const filtered = d.data.filter(
+                (a) => a.name.includes(text) || a.chosung.includes(text),
+              );
               return _.isEmpty(filtered)
                 ? undefined
                 : {title: d.title, data: filtered};

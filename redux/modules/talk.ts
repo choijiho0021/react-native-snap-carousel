@@ -63,6 +63,7 @@ export type TalkTariff = {
   // country: string; // kr, jp, ...
   code: string; // country code: 81, 82, etc
   name: string;
+  chosung: string;
   mobile: number; // mobile tariff
   wireline: number; // landline tariff
   flag: string;
