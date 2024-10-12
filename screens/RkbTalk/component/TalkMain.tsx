@@ -1,7 +1,9 @@
 import moment from 'moment';
-import React, {useCallback, useMemo} from 'react';
+import React, {memo, useCallback, useMemo} from 'react';
 import {Image, Pressable, StyleSheet, View} from 'react-native';
 import {SessionState} from 'sip.js';
+import {useSelector} from 'react-redux';
+import {RootState} from '@reduxjs/toolkit';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -9,10 +11,11 @@ import {isDeviceSize} from '@/constants/SliderEntry.style';
 import i18n from '@/utils/i18n';
 import CallToolTip from '../CallToolTip';
 import AppSvgIcon from '@/components/AppSvgIcon';
-import Keypad, {KeypadRef, KeyType} from '../Keypad';
+import Keypad, {KeyType} from '../Keypad';
 import AppPrice from '@/components/AppPrice';
 import {utils} from '@/utils/utils';
 import {RkbTalkNavigationProp} from '..';
+import {API} from '@/redux/api';
 
 const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 
@@ -21,7 +24,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   emergency: {
-    flex: 1,
     textAlign: 'right',
     fontSize: 16,
     fontWeight: '600',
@@ -94,32 +96,19 @@ const styles = StyleSheet.create({
   },
   topView: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
     marginTop: 8,
     height: 40,
     alignItems: 'center',
-  },
-  topRow: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
     marginHorizontal: 20,
+    justifyContent: 'flex-end',
   },
   flagIcon: {
-    flex: 1,
-    width: 9.4,
-    // backgroundColor: colors.darkBlue,
-    flexDirection: 'column',
-    alignContent: 'flex-end',
-    justifyContent: 'flex-end',
+    width: 32,
+    height: 32,
+    marginRight: 6,
   },
   nation: {
-    flex: 1,
-    // marginLeft: 6,
-    justifyContent: 'flex-start',
     color: colors.black,
-    textAlign: 'left',
   },
   connectedView: {
     flexDirection: 'row',
@@ -131,11 +120,9 @@ const styles = StyleSheet.create({
 type TalkMainProps = {
   navigation: RkbTalkNavigationProp;
   onPressKeypad?: (k: KeyType, d?: string) => void;
-  onChange: (d?: string) => void;
-  keypadRef?: React.MutableRefObject<KeypadRef | null>;
+  onChange?: (d?: string) => void;
   sessionState?: SessionState;
   showWarning: boolean;
-  digit: string;
   point: number;
   time: string;
   min: number | undefined;
@@ -144,15 +131,14 @@ type TalkMainProps = {
 const TalkMain: React.FC<TalkMainProps> = ({
   navigation,
   sessionState,
-  digit,
   point,
   time,
-  keypadRef,
   onPressKeypad,
   onChange,
   min,
   showWarning,
 }) => {
+  const {called, ccode, tariff} = useSelector((state: RootState) => state.talk);
   const [initial, calling, connected] = useMemo(
     () => [
       !sessionState ||
@@ -162,17 +148,10 @@ const TalkMain: React.FC<TalkMainProps> = ({
     ],
     [sessionState],
   );
-  const splitCC = useMemo(
-    () =>
-      ['82', '20'].includes(digit?.slice(0, 2))
-        ? [digit?.slice(0, 2), digit?.slice(2)]
-        : [],
-    [digit],
-  );
 
-  const printCCInfo = useMemo(
-    () => splitCC?.length > 0 && (initial || calling),
-    [calling, initial, splitCC?.length],
+  const ccInfo = useMemo(
+    () => (ccode && (initial || calling) ? tariff[ccode] : undefined),
+    [calling, ccode, initial, tariff],
   );
 
   // talkpoint 가져오지 못할 경우 0 처리
@@ -221,40 +200,35 @@ const TalkMain: React.FC<TalkMainProps> = ({
   return (
     <>
       <View style={styles.topView}>
-        <View style={styles.topRow}>
-          <View style={{flex: 1}} />
-          {/* <AppText  style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText> */}
-          {printCCInfo && (
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              {/* <Image
-                resizeMode="contain"
-                style={[styles.flagIcon, {flex: 1}]}
-                source={
-                  require(`../../assets/images/flag/34_ES.png`)
-                  // (focused || checked) && source.length > 1 ? source[1] : source[0]
-                }
-              /> */}
-              {/* <AppSvgIcon style={styles.flagIcon} name="KR" /> */}
-              <AppText style={[styles.emergency, styles.nation]}>
-                대한민국
-              </AppText>
-            </View>
-          )}
-          <AppButton
-            style={{backgroundColor: colors.white}}
-            titleStyle={styles.emergency}
-            title={initial ? i18n.t('talk:emergencyCall') : ''}
-            onPress={() => navigation.navigate('EmergencyCall')}
-          />
-        </View>
+        {/* <View style={{width: 10, height: 10, backgroundColor: 'red'}} /> */}
+        {/* <AppText  style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText> */}
+        {ccInfo && (
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginLeft: 55,
+            }}>
+            <Image
+              resizeMode="contain"
+              style={styles.flagIcon}
+              source={{uri: API.default.httpImageUrl(ccInfo.flag)}}
+            />
+            <AppText style={[styles.emergency, styles.nation]}>
+              {ccInfo.name}
+            </AppText>
+          </View>
+        )}
+        <AppButton
+          style={{backgroundColor: colors.white}}
+          titleStyle={styles.emergency}
+          title={initial ? i18n.t('talk:emergencyCall') : ''}
+          onPress={() => navigation.navigate('EmergencyCall')}
+        />
       </View>
-      {printCCInfo && (
+      {ccInfo && (
         <AppText style={{textAlign: 'center', color: colors.warmGrey}}>
           {i18n.t(`talk:localTime`, {
             time: moment().tz('Asia/Seoul').format('HH:mm'),
@@ -288,9 +262,9 @@ const TalkMain: React.FC<TalkMainProps> = ({
       <View style={[styles.input, {height: 44, marginTop: 16}]}>
         <AppText style={styles.dest} numberOfLines={1} ellipsizeMode="head">
           <AppText style={[styles.dest, {color: colors.clearBlue}]}>
-            {splitCC?.length > 0 ? splitCC[0] : ''}
+            {ccode || ''}
           </AppText>
-          {splitCC?.length > 0 ? splitCC[1] : digit}
+          {ccode ? called?.substring(ccode.length) : called}
         </AppText>
       </View>
       <View style={{flex: 1}}>{info()}</View>
@@ -298,7 +272,6 @@ const TalkMain: React.FC<TalkMainProps> = ({
         <Keypad
           navigation={navigation}
           style={styles.keypad}
-          keypadRef={keypadRef}
           onPress={onPressKeypad}
           onChange={onChange}
           state={sessionState}
@@ -310,4 +283,4 @@ const TalkMain: React.FC<TalkMainProps> = ({
   );
 };
 
-export default TalkMain;
+export default memo(TalkMain);

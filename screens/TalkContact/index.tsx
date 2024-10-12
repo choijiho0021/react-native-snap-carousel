@@ -398,7 +398,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
   const onPress = useCallback(
     (contactData: Contact) => {
       const number = contactData?.phoneNumbers[0]?.number?.replace(/[+-]/g, '');
-      action.talk.updateClickedNumber(number);
+      action.talk.updateCalledNumber(number);
       navigation.goBack();
     },
     [navigation],

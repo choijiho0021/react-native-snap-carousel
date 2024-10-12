@@ -1,6 +1,6 @@
 import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Platform,
   SafeAreaView,
@@ -40,7 +40,6 @@ import {
 } from '@/redux/modules/talk';
 import {useInterval} from '@/utils/useInterval';
 import PhoneCertBox from './component/PhoneCertBox';
-import {KeypadRef} from './Keypad';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
 import TalkMain from './component/TalkMain';
 
@@ -73,13 +72,12 @@ type RkbTalkProps = {
 
 const RkbTalk: React.FC<RkbTalkProps> = ({
   account: {mobile, realMobile, iccid, token},
-  talk: {selectedNum, tariff},
+  talk: {called, tariff},
   navigation,
   action,
 }) => {
   const [userAgent, setUserAgent] = useState<UserAgent | null>(null);
   const [inviter, setInviter] = useState<Inviter | null>(null);
-  const keypadRef = useRef<KeypadRef>(null);
   const [sessionState, setSessionState] = useState<SessionState>(
     SessionState.Initial,
   );
@@ -91,7 +89,6 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
   const [pntError, setPntError] = useState<boolean>(false);
-  const [digit, setDigit] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [showCheckModal, setShowCheckModal] = useState<boolean>(true);
   const testNumber = realMobile;
@@ -251,93 +248,95 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     setRefreshing(false);
   }, [getPoint]);
 
-  const makeCall = useCallback(() => {
-    const dest = keypadRef.current?.getValue();
-    if (userAgent && dest) {
-      userAgent
-        .start()
-        .then(async () => {
-          // try {
-          // const target = UserAgent.makeURI('sip:9000@talk.rokebi.com');
-          const target = UserAgent.makeURI(`sip:${dest}@talk.rokebi.com`);
-          console.log('@@@ target', dest, target);
+  const makeCall = useCallback(
+    (dest: string) => {
+      if (userAgent && dest) {
+        userAgent
+          .start()
+          .then(async () => {
+            // try {
+            // const target = UserAgent.makeURI('sip:9000@talk.rokebi.com');
+            const target = UserAgent.makeURI(`sip:${dest}@talk.rokebi.com`);
+            console.log('@@@ target', dest, target);
 
-          const inv = new Inviter(userAgent, target, {
-            sessionDescriptionHandlerOptions: {
-              constraints: {
-                audio: true,
-                video: false,
-              },
-            },
-          });
-
-          inv.stateChange.addListener((state: SessionState) => {
-            console.log(`@@@ inviter session state changed to ${state}`);
-
-            setSessionState(state);
-
-            switch (state) {
-              case SessionState.Initial:
-                break;
-              case SessionState.Establishing:
-                break;
-              case SessionState.Established:
-                setupRemoteMedia(inv);
-                break;
-              case SessionState.Terminating:
-              // fall through
-              case SessionState.Terminated:
-                cleanupMedia();
-                break;
-              default:
-                throw new Error('Unknown session state.');
-            }
-          });
-
-          inv.invite().then(() => {
-            const {sessionDescriptionHandler} = inv;
-
-            if (sessionDescriptionHandler) {
-              sessionDescriptionHandler.peerConnectionDelegate = {
-                onconnectionstatechange: (state) => {
-                  console.log('@@@ conn state changed', state, inv.state);
-                  if (inv.state === SessionState.Established) {
-                    switch (state) {
-                      case 'disconnected':
-                      case 'failed':
-                      case 'closed':
-                      case 'completed':
-                        cleanupMedia();
-                        inv.bye();
-                        break;
-                      case 'connecting':
-                        getMaxCallTime();
-                        break;
-                      default:
-                        break;
-                    }
-                  }
+            const inv = new Inviter(userAgent, target, {
+              sessionDescriptionHandlerOptions: {
+                constraints: {
+                  audio: true,
+                  video: false,
                 },
-              };
-            }
-            setInviter(inv);
+              },
+            });
+
+            inv.stateChange.addListener((state: SessionState) => {
+              console.log(`@@@ inviter session state changed to ${state}`);
+
+              setSessionState(state);
+
+              switch (state) {
+                case SessionState.Initial:
+                  break;
+                case SessionState.Establishing:
+                  break;
+                case SessionState.Established:
+                  setupRemoteMedia(inv);
+                  break;
+                case SessionState.Terminating:
+                // fall through
+                case SessionState.Terminated:
+                  cleanupMedia();
+                  break;
+                default:
+                  throw new Error('Unknown session state.');
+              }
+            });
+
+            inv.invite().then(() => {
+              const {sessionDescriptionHandler} = inv;
+
+              if (sessionDescriptionHandler) {
+                sessionDescriptionHandler.peerConnectionDelegate = {
+                  onconnectionstatechange: (state) => {
+                    console.log('@@@ conn state changed', state, inv.state);
+                    if (inv.state === SessionState.Established) {
+                      switch (state) {
+                        case 'disconnected':
+                        case 'failed':
+                        case 'closed':
+                        case 'completed':
+                          cleanupMedia();
+                          inv.bye();
+                          break;
+                        case 'connecting':
+                          getMaxCallTime();
+                          break;
+                        default:
+                          break;
+                      }
+                    }
+                  },
+                };
+              }
+              setInviter(inv);
+            });
+          })
+          .catch((err) => {
+            AppAlert.error(`Failed to make call:${err}`);
+            console.log('@@@', err);
           });
-        })
-        .catch((err) => {
-          AppAlert.error(`Failed to make call:${err}`);
-          console.log('@@@', err);
-        });
-    } else {
-      AppAlert.error('User agent not found', '');
-      console.log('@@@ user agent not found');
-    }
-  }, [cleanupMedia, getMaxCallTime, setupRemoteMedia, userAgent]);
+      } else {
+        AppAlert.error('User agent not found', '');
+        console.log('@@@ user agent not found');
+      }
+    },
+    [cleanupMedia, getMaxCallTime, setupRemoteMedia, userAgent],
+  );
 
   const onPressKeypad = useCallback(
     (k: string, d?: string) => {
       switch (k) {
         case 'call':
-          makeCall();
+          if (called) makeCall(called);
           break;
         case 'hangup':
           releaseCall();
@@ -370,7 +369,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           break;
       }
     },
-    [dtmfSession, makeCall, releaseCall],
+    [called, dtmfSession, makeCall, releaseCall],
   );
 
   // Options for SimpleUser
@@ -378,22 +377,6 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   // 1: register 상태 확인하기. register 실패한 경우 AOR이 여러개 생겨서 호가 안됨
   // register 실패하면 deactivate
   // AOR 개수 확인
-
-  useEffect(() => {
-    if (selectedNum) {
-      keypadRef.current?.setValue(selectedNum);
-    }
-  }, [selectedNum]);
-
-  const onChange = useCallback(
-    (d?: string) => {
-      setDigit((prev) => {
-        if (prev === selectedNum) action.talk.updateClickedNumber(undefined);
-        return d || '';
-      });
-    },
-    [action.talk, selectedNum],
-  );
 
   // Options for SimpleUser
   // TODO
@@ -498,14 +481,11 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           <TalkMain
             navigation={navigation}
             sessionState={sessionState}
-            digit={digit}
             min={min}
             time={time}
             point={point}
             showWarning={showWarning}
-            keypadRef={keypadRef}
             onPressKeypad={onPressKeypad}
-            onChange={onChange}
           />
         ) : (
           <PhoneCertBox />

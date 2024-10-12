@@ -19,13 +19,7 @@ import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
-import {RootState} from '@/redux';
-import {actions as modalActions} from '@/redux/modules/modal';
-import {
-  actions as talkActions,
-  TalkAction,
-  TalkModelState,
-} from '@/redux/modules/talk';
+import {actions as talkActions, TalkAction} from '@/redux/modules/talk';
 import i18n from '@/utils/i18n';
 
 const styles = StyleSheet.create({
@@ -163,8 +157,6 @@ type EmergencyCallScreenNavigationProp = StackNavigationProp<
 
 type EmergencyCallScreenProps = {
   navigation: EmergencyCallScreenNavigationProp;
-  talk: TalkModelState;
-  pending: boolean;
 
   action: {
     talk: TalkAction;
@@ -173,9 +165,7 @@ type EmergencyCallScreenProps = {
 
 const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
   navigation,
-  talk,
   action,
-  // pending,
 }) => {
   const insets = useSafeAreaInsets();
   const [headerColor, setHeaderColor] = useState(colors.aliceBlue);
@@ -272,7 +262,7 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
               const number = i18n
                 .t(`talk:urgent:${type}:callNumber`)
                 .replace(/[+-]/g, '');
-              action.talk.updateClickedNumber(number);
+              action.talk.updateCalledNumber(number);
               navigation.goBack();
             }}>
             <AppSvgIcon name="iconCall" />
@@ -366,14 +356,10 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
 };
 
 export default connect(
-  ({talk, status}: RootState) => ({
-    talk,
-    pending: false,
-  }),
+  () => ({}),
   (dispatch) => ({
     action: {
       talk: bindActionCreators(talkActions, dispatch),
-      modal: bindActionCreators(modalActions, dispatch),
     },
   }),
 )(EmergencyCallScreen);

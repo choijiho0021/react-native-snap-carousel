@@ -9,7 +9,8 @@ import {checkEng, checkKor} from '@/constants/CustomTypes';
 import {SectionData} from './account';
 
 export const updateContacts = createAction('rkbTalk/updateContact');
-export const updateClickedNumber = createAction('rkbTalk/updateClickedNumber');
+export const updateCalledNumber = createAction('rkbTalk/updateCalledNumber');
+export const appendCalledNumber = createAction('rkbTalk/appendCalledNumber');
 export const updateRecordSet = createAction('rkbTalk/updateRecordSet');
 const getExpPointInfo = createAsyncThunk(
   'rkbTalk/getExpPointInfo',
@@ -76,8 +77,10 @@ export interface TalkModelState {
   pointHistory?: SectionData[];
   expList?: ExpPointHistory[];
   expPoint?: string;
-  selectedNum?: string;
+  called?: string;
+  ccode?: string; // country code parsed from 'called number'
   tariff: Record<string, TalkTariff>;
+  maxCcodePrefix: number; // max length of country code
 }
 
 const initialState: TalkModelState = {
@@ -85,14 +88,48 @@ const initialState: TalkModelState = {
   recordIDSet: new Set(),
   contacts: [],
   tariff: {},
+  maxCcodePrefix: 0,
+};
+
+// find matching country coude
+const findCcode = (state: TalkModelState) => {
+  if (!state.called) {
+    return undefined;
+  }
+
+  if (!state.ccode || !state.called.startsWith(state.ccode)) {
+    for (let i = 1; i <= state.maxCcodePrefix; i++) {
+      const prefix = state.called.substring(0, i);
+      if (state.tariff.hasOwnProperty(prefix)) {
+        return prefix;
+      }
+    }
+    return undefined;
+  }
+
+  return state.ccode;
 };
 
 const slice = createSlice({
   name: 'talk',
   initialState,
   reducers: {
-    updateClickedNumber: (state, action) => {
-      state.selectedNum = action.payload;
+    deleteCalledNumber: (state) => {
+      const len = state.called?.length || 0;
+      if (len > 0) {
+        state.called = state.called?.substring(0, len - 1);
+        state.ccode = findCcode(state);
+      }
+      return state;
+    },
+    appendCalledNumber: (state, action) => {
+      state.called = (state.called || '') + action.payload;
+      state.ccode = findCcode(state);
+      return state;
+    },
+    updateCalledNumber: (state, action) => {
+      state.called = action.payload;
+      state.ccode = findCcode(state);
       return state;
     },
     updateContact: (state, action) => {
@@ -162,6 +199,10 @@ const slice = createSlice({
     });
     builder.addCase(getTariff.fulfilled, (state, action) => {
       state.tariff = action.payload;
+      state.maxCcodePrefix = Object.keys(state.tariff).reduce(
+        (acc, cur) => Math.max(acc, cur.length),
+        0,
+      );
 
       return state;
     });

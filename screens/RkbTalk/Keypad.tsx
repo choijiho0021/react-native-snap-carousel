@@ -1,4 +1,5 @@
 import {useFocusEffect} from '@react-navigation/native';
+import {bindActionCreators} from 'redux';
 import Lottie from 'lottie-react-native';
 import React, {memo, useCallback, useEffect, useState} from 'react';
 import {
@@ -12,15 +13,16 @@ import {
 import InCallManager from 'react-native-incall-manager';
 import SoundPlayer from 'react-native-sound-player';
 import {SessionState} from 'sip.js';
-import {isDeviceSize, windowWidth} from '@/constants/SliderEntry.style';
+import {useDispatch} from 'react-redux';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {colors} from '@/constants/Colors';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {RkbTalkNavigationProp} from '.';
 import KeyPadButton from './component/KeyPadButton';
 import i18n from '@/utils/i18n';
+import {actions as talkActions} from '@/redux/modules/talk';
 
 const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
-console.log('@@@ buton size', buttonSize, windowWidth);
 
 const styles = StyleSheet.create({
   row: {
@@ -78,54 +80,35 @@ const callKeys = [
   ['*', '0', '#'],
 ];
 
-export type KeypadRef = {
-  getValue: () => string;
-  setValue: (v: string) => void;
-};
-
 export type KeyType = 'call' | 'hangup' | 'speaker' | 'keypad' | 'mute';
 
 type KeypadProps = {
   navigation: RkbTalkNavigationProp;
   onPress?: (k: KeyType, d?: string) => void;
-  onChange: (d?: string) => void;
+  onChange?: (d?: string) => void;
   style: StyleProp<ViewStyle>;
-  keypadRef?: React.MutableRefObject<KeypadRef | null>;
   state?: SessionState;
   showWarning: boolean;
 };
 
 const Keypad: React.FC<KeypadProps> = ({
   navigation,
-  keypadRef,
   style,
   onPress,
   onChange,
   state,
   showWarning = false,
 }) => {
-  const [dest, setDest] = useState('');
   const [dtmf, setDtmf] = useState('');
   const [showKeypad, setShowKeypad] = useState(true);
   const [pressed, setPressed] = useState<string>();
+  const dispatch = useDispatch();
+  const {updateCalledNumber, appendCalledNumber, deleteCalledNumber} =
+    bindActionCreators(talkActions, dispatch);
 
-  useEffect(() => {
-    onChange(showKeypad ? dtmf : dest);
-  }, [dest, dtmf, onChange, showKeypad]);
-
-  useEffect(() => {
-    if (keypadRef) {
-      keypadRef.current = {
-        getValue: () => dest,
-        setValue: (v: string) => {
-          if (keypadRef.current) {
-            keypadRef.current.value = v;
-          }
-          setDest(v);
-        },
-      };
-    }
-  }, [dest, keypadRef]);
+  // useEffect(() => {
+  //   onChange?.(showKeypad ? dtmf : dest);
+  // }, [dest, dtmf, onChange, showKeypad]);
 
   const renderKeyButton = useCallback(
     (key: KeyType) => (
@@ -164,7 +147,7 @@ const Keypad: React.FC<KeypadProps> = ({
 
   // ringback
   useEffect(() => {
-    if ([SessionState.Establishing].includes(state)) {
+    if (SessionState.Establishing === state) {
       InCallManager.start({media: 'audio'});
       try {
         SoundPlayer.playSoundFile('ringback', 'mp3');
@@ -173,7 +156,10 @@ const Keypad: React.FC<KeypadProps> = ({
         console.log(`cannot play the sound file`, e);
       }
     }
-    if ([SessionState.Terminated, SessionState.Established].includes(state)) {
+    if (
+      state &&
+      [SessionState.Terminated, SessionState.Established].includes(state)
+    ) {
       InCallManager.stop();
       try {
         SoundPlayer.stop();
@@ -185,18 +171,19 @@ const Keypad: React.FC<KeypadProps> = ({
 
   const renderKey = useCallback(
     (st?: SessionState) => {
-      const calling = ![
-        SessionState.Initial,
-        SessionState.Established,
-        SessionState.Terminated,
-      ].includes(st);
+      const calling =
+        st &&
+        ![
+          SessionState.Initial,
+          SessionState.Established,
+          SessionState.Terminated,
+        ].includes(st);
 
-      const connected = [SessionState.Established].includes(st);
+      const connected = SessionState.Established === st;
 
       if (
         !st ||
-        st === SessionState.Initial ||
-        st === SessionState.Terminated ||
+        [SessionState.Initial, SessionState.Terminated].includes(st) ||
         (showKeypad &&
           [SessionState.Established, SessionState.Establishing].includes(st))
       ) {
@@ -210,21 +197,17 @@ const Keypad: React.FC<KeypadProps> = ({
                     key={d}
                     name={d}
                     onLongPress={(v: string) => {
-                      if (v === 'keyDel') setDest('');
+                      if (v === 'keyDel') updateCalledNumber('');
                     }}
                     onPress={(v: string) => {
                       if (v === 'keyNation') {
                         navigation.navigate('TalkTariff');
                       } else if (v === 'keyDel') {
-                        setDest((prev) =>
-                          prev.length > 0
-                            ? prev.substring(0, prev.length - 1)
-                            : prev,
-                        );
+                        deleteCalledNumber();
                       } else if (showKeypad) {
                         setDtmf((prev) => prev + v);
                         onPress?.('keypad', v);
-                      } else setDest((prev) => prev + v);
+                      } else appendCalledNumber(v);
                     }}
                   />
                 ))}
@@ -237,9 +220,7 @@ const Keypad: React.FC<KeypadProps> = ({
                 <Pressable
                   style={[styles.key, {marginBottom: 0}]}
                   key="contacts"
-                  onPress={() => {
-                    navigation.navigate('TalkContact');
-                  }}>
+                  onPress={() => navigation.navigate('TalkContact')}>
                   <Text style={styles.textCallHist}>
                     {i18n.t('talk:contact')}
                   </Text>
@@ -341,12 +322,15 @@ const Keypad: React.FC<KeypadProps> = ({
       );
     },
     [
+      appendCalledNumber,
       closeKeypad,
+      deleteCalledNumber,
       navigation,
       onPress,
       renderKeyButton,
       showKeypad,
       showWarning,
+      updateCalledNumber,
     ],
   );
 
