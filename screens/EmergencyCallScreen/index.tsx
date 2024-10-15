@@ -119,7 +119,6 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
           <AppBackButton title={i18n.t('talk:urgent:header')} />
         </View>
         <ScrollView onScroll={onScroll} scrollEventThrottle={16}>
-          {/* style={{backgroundColor: colors.aliceBlue}}> */}
           <TopInfo />
           <View
             style={styles.whiteView}
