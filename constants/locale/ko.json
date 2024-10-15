@@ -1006,12 +1006,6 @@
   "esim:editMode:confirm": "편집 완료",
   "esim:editMode:confirm:noList": "목록으로 돌아가기",
 
-  "esim:refreshTxt1": "당기면 데이터 뚝딱!",
-  "esim:refreshTxt2": "당기면 전세계 뚝딱!",
-  "esim:refreshTxt3": "당기면 언제든지 뚝딱!",
-  "esim:refreshTxt4": "당기면 로밍이 뚝딱!",
-  "esim:refreshTxt5": "당기면 간편하게 뚝딱!",
-
   "us:step1:title": "상품 사용 시작일을\n선택해주세요!",
   "us:date:placeHolder": "시작일 선택",
   "us:alert:selectDate": "상품 사용 시작일을 선택해주세요!",
