@@ -730,7 +730,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
                 appStyles.medium14,
                 {color: colors.black, marginRight: 8},
               ]}>
-              {i18n.t(`cashHistory:orderType:${orderType}`)}
+              {i18n.t(`cashHistory:orderType:modal:${orderType}`)}
             </AppText>
             <AppSvgIcon name="sortTriangle" style={{marginRight: 8}} />
           </Pressable>
@@ -755,11 +755,14 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           sectionData.length > 0 ? undefined : styles.contentContainerStyle
         }
         renderItem={renderSectionItem}
-        renderSectionHeader={({section: {title}}) => (
-          <AppText style={styles.sectionHeader}>
-            {i18n.t(`year`, {year: title})}
-          </AppText>
-        )}
+        renderSectionHeader={({section: {title}}) => {
+          if (moment.tz('Asia/Seoul').format('YYYY') === title) return null;
+          return (
+            <AppText style={styles.sectionHeader}>
+              {i18n.t(`year`, {year: title})}
+            </AppText>
+          );
+        }}
         stickySectionHeadersEnabled
         ListEmptyComponent={() => renderEmpty()}
         onScrollEndDrag={({
