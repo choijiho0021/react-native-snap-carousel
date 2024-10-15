@@ -9,7 +9,6 @@ import {
   Animated,
   PanResponder,
   Vibration,
-  Platform,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -302,8 +301,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const animationProgress = useRef(new Animated.Value(0));
   const pullDownPosition = useRef(new Animated.Value(0));
-  const [isTop, setIsTop] = useState(false);
-  const [scrollEnabled, setScrollEnabled] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
   const [lottie, setLottie] = useState(lottieList[0]);
   const [refreshing, setRefreshing] = useState(false);
@@ -348,8 +345,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         animationProgress.current.setValue(0);
         isAnimatingRef.current = false;
         setRefreshTxt(i18n.t(`esim:refreshTxt${getRandom(5)}`));
-        setLottie(lottieList[getRandom(3) - 1]);
-        setScrollEnabled(true);
+        setLottie(lottieList[getRandom(3)]);
       }
     });
 
@@ -833,33 +829,16 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const panResponder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: (evt, gestureState) => {
-        return false;
-      },
-      onStartShouldSetPanResponderCapture: (evt, gestureState) => {
-        return false;
-      },
-
       onMoveShouldSetPanResponder: (evt, gestureState) => {
-        // Listen for your events and show UI feedback here
-        return false;
-      },
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
-        return false;
-      },
-      onPanResponderGrant: (evt, gestureState) => {
-        return false;
+        // 아래로 당기는 동작일 때만 PanResponder 동작
+        return gestureState.dy > 0;
       },
       onPanResponderMove: (evt, gestureState) => {
-        console.log('aaaaa gestureState.dy', gestureState.dy);
         lottiePlayOnce(gestureState.dy);
 
         pullDownPosition.current.setValue(
           gestureState.dy > PULLHEIGHT ? PULLHEIGHT : gestureState.dy,
         );
-      },
-      onPanResponderTerminationRequest: (evt, gestureState) => {
-        return false;
       },
       onPanResponderRelease: () => {
         // 손을 떼면 다시 높이를 0으로 리셋
@@ -869,33 +848,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           useNativeDriver: false,
         }).start();
       },
-      onPanResponderTerminate: (evt, gestureState) => {
-        return false;
-      },
-      onShouldBlockNativeResponder: (evt, gestureState) => {
-        return false;
-      }, // onMoveShouldSetPanResponder: (evt, gestureState) => {
-      //   // console.log('aaaaa gestureState.dy', gestureState.dy);
-      //   if (gestureState.dy >= 0) return true;
-      //   setScrollEnabled(true);
-      //   return false;
-      // },
-      // onPanResponderMove: (evt, gestureState) => {
-      //   console.log('aaaaa gestureState.dy', gestureState.dy);
-      //   lottiePlayOnce(gestureState.dy);
-
-      //   pullDownPosition.current.setValue(
-      //     gestureState.dy > PULLHEIGHT ? PULLHEIGHT : gestureState.dy,
-      //   );
-      // },
-      // onPanResponderRelease: () => {
-      //   // 손을 떼면 다시 높이를 0으로 리셋
-      //   Animated.timing(pullDownPosition.current, {
-      //     toValue: 0,
-      //     duration: 300,
-      //     useNativeDriver: false,
-      //   }).start();
-      // },
     }),
   ).current;
 
@@ -925,14 +877,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     order?.subs?.length,
     order?.subsIsLast,
   ]);
-
-  const handleScroll = (event) => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    if (isTop !== offsetY <= 0) {
-      setIsTop(offsetY <= 0);
-      setScrollEnabled(offsetY > 0);
-    }
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -965,7 +909,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         ref={flatListRef}
         bounces={false}
         data={subsData}
-        scrollEnabled={scrollEnabled}
         keyExtractor={(item) => item.nid}
         ListHeaderComponent={() => (
           <>
@@ -975,7 +918,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         )}
         renderItem={renderSubs}
         initialNumToRender={30}
-        extraData={[isEditMode, subsData, selectedIdx, isTop, scrollEnabled]}
+        extraData={[isEditMode, subsData, selectedIdx]}
         scrollEventThrottle={16} // 스크롤 이벤트 빈도 설정
         contentContainerStyle={[
           {paddingBottom: 34},
@@ -989,10 +932,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         // 종종 중복 호출이 발생
         onEndReachedThreshold={0.4}
         onEndReached={onEndReached}
-        onScroll={handleScroll}
         // pull to refresh 스크롤 동작
-        {...(Platform.OS === 'android' ? panResponder.panHandlers : {})}
-        {...(isTop && Platform.OS === 'ios' ? panResponder.panHandlers : {})}
+        {...panResponder.panHandlers}
       />
 
       <EsimModal
