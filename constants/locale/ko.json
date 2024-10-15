@@ -1883,6 +1883,8 @@
   "talk:contact:search": "이름, 전화번호를 입력하세요",
 
   "talk:callHistory": "통화기록",
+  "talk:callHistory:title": "발신 내역",
+  "talk:callHistory:empty": "발신 내역이 없습니다",
 
   "talk:point:hold": "보유 톡포인트",
   "talk:point:expirePt": "소멸 예정 톡포인트",
