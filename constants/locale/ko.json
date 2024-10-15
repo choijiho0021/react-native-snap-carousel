@@ -1881,6 +1881,8 @@
   "talk:contact": "연락처",
   "talk:contact:search:empty": "검색 결과가 없습니다.",
   "talk:contact:search": "이름, 전화번호를 입력하세요",
+  "talk:contact:sync": "내 주소록을 동기화하여\n더 편리하게 사용해 보세요!",
+  "talk:contact:sync:btn": "연락처 동기화하기",
 
   "talk:callHistory": "통화기록",
   "talk:callHistory:title": "발신 내역",
