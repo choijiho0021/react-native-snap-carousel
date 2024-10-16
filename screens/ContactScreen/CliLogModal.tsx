@@ -46,10 +46,20 @@ const styles = StyleSheet.create({
   },
   cliLogMobile: {
     ...appStyles.medium16,
+    lineHeight: 0,
     paddingHorizontal: 12,
     paddingVertical: 13,
+    justifyContent: 'center',
     borderColor: colors.lightGrey,
     borderWidth: 1,
+  },
+  content: {
+    marginHorizontal: 0,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    width: '100%',
+    height: '100%',
+    backgroundColor: colors.white,
   },
 });
 
@@ -93,12 +103,13 @@ const CliLogModal: React.FC<CliLogModalProps> = ({
   }, [action.log, action.toast, log.log, mobile]);
 
   return (
-    <Modal visible={visible} animationType="slide">
-      <SafeAreaView style={{flex: 1}}>
-        <Pressable style={{flex: 1}} onPress={() => Keyboard.dismiss()}>
+    <Modal visible={visible} animationType="slide" transparent>
+      <SafeAreaView style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.5)'}}>
+        <Pressable style={styles.content} onPress={() => Keyboard.dismiss()}>
           <View style={styles.headerContainer}>
             <ScreenHeader
               title={i18n.t('cliLog:title')}
+              titleStyle={appStyles.bold20Text}
               showIcon={false}
               renderLeft={
                 <AppSvgIcon name="closeModal" onPress={() => onOkClose()} />
@@ -170,6 +181,7 @@ const CliLogModal: React.FC<CliLogModalProps> = ({
           />
         </Pressable>
       </SafeAreaView>
+      <SafeAreaView style={{backgroundColor: colors.white}} />
     </Modal>
   );
 };
