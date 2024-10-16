@@ -1,25 +1,31 @@
 /* eslint-disable no-param-reassign */
-import {createAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {
+  createAction,
+  createAsyncThunk,
+  createSlice,
+  RootState,
+} from '@reduxjs/toolkit';
 import Contacts from 'react-native-contacts';
 import {AnyAction} from 'redux';
 import {Reducer} from 'redux-actions';
 import moment, {Moment} from 'moment';
+import _ from 'underscore';
 import {API} from '@/redux/api';
 import {checkEng, checkKor} from '@/constants/CustomTypes';
 import {SectionData} from './account';
+import {parseJson, retrieveData, storeData} from '@/utils/utils';
 
-export const updateContacts = createAction('rkbTalk/updateContact');
-export const updateRecordSet = createAction('rkbTalk/updateRecordSet');
+export const updateContacts = createAction('talk/updateContact');
 const getExpPointInfo = createAsyncThunk(
-  'rkbTalk/getExpPointInfo',
+  'talk/getExpPointInfo',
   API.TalkApi.getExpPointInfo,
 );
 const getPointHistory = createAsyncThunk(
-  'rkbTalk/getPointHistory',
+  'talk/getPointHistory',
   API.TalkApi.getPointHistory,
 );
 
-const getTariff = createAsyncThunk('rkbTalk/getTariff', API.TalkApi.getTariff);
+const getTariff = createAsyncThunk('talk/getTariff', API.TalkApi.getTariff);
 
 export type PointHistory = {
   diff: string;
@@ -68,6 +74,15 @@ export type TalkTariff = {
   flag: string;
 };
 
+export type CallHistory = {
+  key: string; // callId
+  destination: string;
+  duration: number;
+  stime: string; // 년/월/일/통화시각
+  name?: string; // 연락처 발신ㅅ
+  year?: string;
+  ccode?: string; // 국가번
+};
 export interface TalkModelState {
   point: string;
   recordIDSet: Set<string>;
@@ -79,7 +94,67 @@ export interface TalkModelState {
   ccode?: string; // country code parsed from 'called number'
   tariff: Record<string, TalkTariff>;
   maxCcodePrefix: number; // max length of country code
+  callHistory: SectionData[];
+  clickedNum?: string;
+  clickedName?: string;
+  duration?: number;
 }
+
+const makeSectionData = (hist: CallHistory[]) => {
+  return hist?.reduce((acc, cur, idx, all) => {
+    const year = moment(cur.stime).format('YYYY');
+    const title = moment(cur.stime).format('M월 D일') + year;
+    const i = (acc || [{}]).findIndex((a) => a?.title === title);
+    if (i >= 0) {
+      const newData = acc[i]?.data.push(cur);
+      return acc.splice(i, 1, newData);
+    }
+    // 0부터 최신순
+    const y = acc[acc?.length - 1]?.title?.slice(-4);
+    const d =
+      y === year || moment().format('YYYY') === year ? [cur] : [{...cur, year}];
+    return acc.concat({
+      title,
+      data: d,
+    });
+  }, []);
+};
+
+const updateCalls = async (state: TalkModelState, payload: CallHistory) => {
+  const {key, destination, stime = moment()} = payload || {};
+
+  const cn = [state.clickedNum, state?.ccode + state?.clickedNum].includes(
+    destination,
+  )
+    ? state.clickedName
+    : undefined;
+
+  const json = await retrieveData('callHistory');
+  const hist = parseJson(json);
+
+  let newHistory: CallHistory[] = hist;
+  const idx = (hist || []).findIndex((v) => v.key === key);
+
+  if (idx < 0) {
+    newHistory = [
+      {
+        key,
+        destination,
+        duration: state.duration || 0,
+        stime,
+        ccode: state.ccode || '',
+        name: cn,
+      },
+    ].concat(hist || []);
+  } else {
+    // 기존 hist 값 변경
+    hist.splice(idx, 1, {...hist[idx], duration: state.duration});
+    newHistory = hist;
+  }
+
+  storeData('callHistory', JSON.stringify(newHistory));
+  return makeSectionData(newHistory);
+};
 
 const initialState: TalkModelState = {
   point: '0',
@@ -87,6 +162,8 @@ const initialState: TalkModelState = {
   contacts: [],
   tariff: {},
   maxCcodePrefix: 0,
+  callHistory: [],
+  duration: 0,
 };
 
 // find matching country coude
@@ -107,6 +184,14 @@ const findCcode = (state: TalkModelState) => {
 
   return state.ccode;
 };
+
+const loadHistory = async () => {
+  const callHist = await retrieveData('callHistory');
+  if (callHist) return makeSectionData(parseJson(callHist));
+  return [];
+};
+
+const trimName = (s?: string) => s?.trimEnd();
 
 const slice = createSlice({
   name: 'talk',
@@ -130,6 +215,16 @@ const slice = createSlice({
       state.ccode = findCcode(state);
       return state;
     },
+    updateClicked: (state, action) => {
+      state.clickedNum = action.payload?.num;
+      state.clickedName = trimName(action.payload?.name);
+      return state;
+    },
+    updateDuration: (state, action) => {
+      console.log('@@ action up du', action.payload);
+      state.duration = action.payload;
+      return state;
+    },
     setCountryCode: (state, action) => {
       if (state.ccode) {
         // replace current calling code
@@ -146,19 +241,11 @@ const slice = createSlice({
       state.contacts = action.payload;
       return state;
     },
-    updateRecordSet: (state, action) => {
-      // storeData('recordIDSet', action.payload || '');
-      if (action.payload) {
-        state.recordIDSet = new Set(action.payload.split(','));
-      } else {
-        state.recordIDSet = new Set();
-      }
+    updateHistory: (state, action) => {
+      state.callHistory = action.payload;
+      return state;
     },
-    // updateProdListCallTime: (state, action) => {
-    //   console.log('updateProdListCallTime : ', action.payload);
-    //   if (state.prodList[0]) {
-    //     state.prodList[0].callTime = action.payload;
-    //   }
+
     // },
     updateMode: (state, action) => {
       if (action.payload !== undefined) state.mode = action.payload;
@@ -235,12 +322,45 @@ export const getContacts = createAsyncThunk(
   },
 );
 
+export const readHistory = createAsyncThunk(
+  'talk/readHistory',
+  async (_, {dispatch}) => {
+    Promise.resolve(loadHistory()).then((h) =>
+      dispatch(slice.actions.updateHistory(h)),
+    );
+  },
+);
+
+export const callInitiated = createAsyncThunk(
+  'talk/callInitiated',
+  async (payload: CallHistory, {dispatch, getState}) => {
+    const {talk} = getState() as RootState;
+    Promise.resolve(updateCalls(talk, payload)).then((h) =>
+      dispatch(slice.actions.updateHistory(h)),
+    );
+  },
+);
+
+export const callChanged = createAsyncThunk(
+  'talk/callChanged',
+  async (payload: CallHistory, {dispatch, getState}) => {
+    const {talk} = getState() as RootState;
+    Promise.resolve(updateCalls(talk, payload)).then((h) => {
+      dispatch(slice.actions.updateHistory(h));
+      dispatch(slice.actions.updateDuration(0));
+    });
+  },
+);
+
 export const actions = {
   ...slice.actions,
   getContacts,
   getPointHistory,
   getExpPointInfo,
   getTariff,
+  readHistory,
+  callInitiated,
+  callChanged,
   // getTalkPoint,
 };
 
