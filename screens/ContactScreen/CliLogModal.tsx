@@ -178,6 +178,7 @@ const CliLogModal: React.FC<CliLogModalProps> = ({
             }}
             title={i18n.t('cliLog:btnTitle')}
             titleStyle={[styles.closeButtonTitle, {color: colors.white}]}
+            disabled={mobile.length < 11}
           />
         </Pressable>
       </SafeAreaView>
