@@ -1,5 +1,6 @@
 import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import moment from 'moment';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Platform,
@@ -22,26 +23,26 @@ import {
   UserAgentOptions,
 } from 'sip.js';
 import _ from 'underscore';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
-import AppAlert from '@/components/AppAlert';
-import {colors} from '@/constants/Colors';
-import {HomeStackParamList} from '@/navigation/navigation';
-import {RootState} from '@/redux';
-import {API} from '@/redux/api';
-import {
-  AccountAction,
-  AccountModelState,
-  actions as accountActions,
-} from '@/redux/modules/account';
+import {useInterval} from '@/utils/useInterval';
 import {
   actions as talkActions,
   TalkAction,
   TalkModelState,
 } from '@/redux/modules/talk';
-import {useInterval} from '@/utils/useInterval';
+import {
+  AccountAction,
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
+import {API} from '@/redux/api';
+import {RootState} from '@/redux';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {colors} from '@/constants/Colors';
+import AppAlert from '@/components/AppAlert';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
 import PhoneCertBox from './component/PhoneCertBox';
-import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
 import TalkMain from './component/TalkMain';
+import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
 
 const styles = StyleSheet.create({
   body: {
@@ -84,7 +85,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [speakerPhone, setSpeakerPhone] = useState(false);
   const [mute, setMute] = useState(false);
   const [dtmfSession, setDtmfSession] = useState<Session>();
-  const [duration, setDuration] = useState(1);
+  const [duration, setDuration] = useState(0);
   const [maxTime, setMaxTime] = useState<number>();
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
@@ -187,7 +188,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     return (num < 10 ? '0' : '') + num;
   }, []);
 
-  const limit = useCallback(
+  const renderTime = useCallback(
     (t: number) => {
       if (t < 60) {
         setTime(`00:${makeSeconds(t)}`);
@@ -204,8 +205,11 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   useInterval(
     () => {
       if (sessionState === SessionState.Established) {
-        setDuration((prev) => prev + 1);
-        limit(duration);
+        setDuration((prev) => {
+          action.talk.updateDuration(prev + 1);
+          return prev + 1;
+        });
+        renderTime(duration);
       }
     },
     sessionState === SessionState.Established ? 1000 : null,
@@ -213,7 +217,11 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   );
 
   useEffect(() => {
-    if ((inviter && maxTime && maxTime - duration < 0) || !maxTime) {
+    if (
+      inviter &&
+      ((maxTime && maxTime - duration < 0) ||
+        (inviter?.state === SessionState.Established && !maxTime))
+    ) {
       inviter?.bye();
       setSessionState(inviter?.state);
     }
@@ -238,15 +246,22 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
 
   const cleanupMedia = useCallback(() => {
     setRefreshing(true);
-    console.log('@@@ cleanup');
-    setDuration(1);
+
+    setInviter();
+
+    setDuration(0);
     setMaxTime();
     setTime('');
     setTimeout(() => {
       getPoint();
-    }, 3000);
+    }, 1000);
+
+    // 저장했던 번호 삭제
+    action.talk.updateCalledPty();
+    action.talk.updateClicked();
+
     setRefreshing(false);
-  }, [getPoint]);
+  }, [action.talk, getPoint]);
 
   const makeCall = useCallback(
     (dest: string) => {
@@ -277,6 +292,12 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
                 case SessionState.Initial:
                   break;
                 case SessionState.Establishing:
+                  action.talk.callInitiated({
+                    key: inv?.request?.callId,
+                    destination: dest,
+                    duration: 0,
+                    stime: moment().toString(),
+                  });
                   break;
                 case SessionState.Established:
                   setupRemoteMedia(inv);
@@ -284,6 +305,11 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
                 case SessionState.Terminating:
                 // fall through
                 case SessionState.Terminated:
+                  action.talk.callChanged({
+                    key: inv?.request?.callId,
+                    destination: dest,
+                  });
+
                   cleanupMedia();
                   break;
                 default:
@@ -329,7 +355,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         console.log('@@@ user agent not found');
       }
     },
-    [cleanupMedia, getMaxCallTime, setupRemoteMedia, userAgent],
+    [action.talk, cleanupMedia, getMaxCallTime, setupRemoteMedia, userAgent],
   );
 
   const onPressKeypad = useCallback(
@@ -371,12 +397,6 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     },
     [called, dtmfSession, makeCall, releaseCall],
   );
-
-  // Options for SimpleUser
-  // TODO
-  // 1: register 상태 확인하기. register 실패한 경우 AOR이 여러개 생겨서 호가 안됨
-  // register 실패하면 deactivate
-  // AOR 개수 확인
 
   // Options for SimpleUser
   // TODO
