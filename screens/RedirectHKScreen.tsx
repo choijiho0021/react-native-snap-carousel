@@ -391,7 +391,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
   }, [reCheckCount, params?.iccid, params?.imsi, updateTag]);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
       <ScreenHeader
         title={i18n.t('redirectHK')}
         renderRight={
