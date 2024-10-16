@@ -1,4 +1,4 @@
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import * as Hangul from 'hangul-js';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
@@ -150,27 +150,32 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
   const [scrollY, setScrollY] = useState(-1);
 
   // 권한없는 경우, 통화시에 권한확인 로직 필요
-  useEffect(() => {
-    const checkPermission = async () => {
-      const permission =
-        Platform.OS === 'ios'
-          ? PERMISSIONS.IOS.CONTACTS
-          : PERMISSIONS.ANDROID.READ_CONTACTS;
-      const result = await check(permission);
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkPermission = async () => {
+        const permission =
+          Platform.OS === 'ios'
+            ? PERMISSIONS.IOS.CONTACTS
+            : PERMISSIONS.ANDROID.READ_CONTACTS;
+        const result = await check(permission);
 
-      return result === RESULTS.GRANTED || result === RESULTS.UNAVAILABLE;
-    };
+        return result === RESULTS.GRANTED || result === RESULTS.UNAVAILABLE;
+      };
 
-    Promise.resolve(checkPermission()).then((r) => {
-      if (r) {
-        Promise.resolve(action.talk.getContacts()).then((a) => {
-          if (a?.type?.includes('rejected') || a?.payload?.message === 'denied')
-            setShowContacts(false);
-          else setShowContacts(true);
-        });
-      }
-    });
-  }, [action.talk]);
+      Promise.resolve(checkPermission()).then((r) => {
+        if (r) {
+          Promise.resolve(action.talk.getContacts()).then((a) => {
+            if (
+              a?.type?.includes('rejected') ||
+              a?.payload?.message === 'denied'
+            )
+              setShowContacts(false);
+            else setShowContacts(true);
+          });
+        }
+      });
+    }, [action.talk]),
+  );
 
   const beforeSync = useCallback(() => {
     return (
@@ -386,12 +391,11 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
 
   const onPress = useCallback(
     (contactData: Contact) => {
-      const number = contactData?.phoneNumbers[0]?.number?.replace(
-        /[+\- ]/g,
-        '',
-      );
+      const num = contactData?.phoneNumbers[0]?.number?.replace(/[+\- ]/g, '');
+      const name = `${contactData?.givenName} ${contactData?.familyName}`;
 
-      action.talk.updateCalledPty(number);
+      action.talk.updateClicked({num, name});
+      action.talk.updateCalledPty(num);
       navigation.goBack();
     },
     [action.talk, navigation],
