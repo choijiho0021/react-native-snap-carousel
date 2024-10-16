@@ -323,24 +323,11 @@ const inviteLink = (recommender: string, gift: string = '') => {
   }`;
 };
 
-export const shareWebViewLink = (
-  uuid: string,
-  country: RkbProdByCountry,
-  isPCLink = true,
-) => {
-  // ofl localhost 직접 입력 시 firebase 콘솔에 설정된 보안 규칙에 어긋나서 동작 안함
+export const shareWebViewLink = (uuid: string, country: RkbProdByCountry) => {
+  // 카카오, 안드로이드에서도 되는 지 확인하기
+  const param = `?uuid=${uuid}`;
 
-  const param = `?partnerId=${country.partner}&uuid=${uuid}`;
-
-  // ofl 값만 encode를 안합니다. 그래서 파라미터 uuid가 잘리는 현상이 발견됨 (Android 일때만).
-  // IOS는 WebLink에 한글 들어가면 동작 안함 -> 웹에서 search말고도 동작 되게 수정해야함
-  return `${webViewHost}/esim/${country.country}/${
-    Platform.OS === 'android' ? country.search?.split(',')[1] : 'page'
-  }${
-    Platform.OS === 'android' && isPCLink
-      ? encodeURIComponent(param)
-      : `${encodeURIComponent('?') + param}`
-  }`;
+  return `${webViewHost}/esim/${country.categoryItem}${param}`;
 };
 
 const shareLink = (uuid: string) => {
@@ -361,10 +348,6 @@ const buildShareLink = async ({
   counry: RkbProdByCountry;
   isShort?: boolean;
 }) => {
-  // 원래 Cuntry에서 해결했는데, product의 tid를 넣어서 처리하도록 변경해야한다.
-  // Redux store 값을 확인해야하나..
-  const webLink = shareWebViewLink(uuid, country, false);
-
   const input = {
     link: shareLink(uuid),
     domainUriPrefix: dynamicLink,
@@ -373,11 +356,11 @@ const buildShareLink = async ({
     },
     ios: {
       bundleId: Platform.OS === 'ios' ? bundleId : iosBundleId,
-      fallbackUrl: webLink,
+      fallbackUrl: shareWebViewLink(uuid, country),
     },
     android: {
       packageName: 'com.rokebiesim',
-      fallbackUrl: webLink,
+      fallbackUrl: shareWebViewLink(uuid, country),
     },
     social: {
       title: i18n.t('share:title'),
@@ -392,6 +375,8 @@ const buildShareLink = async ({
   const url = isShort
     ? await dynamicLinks().buildShortLink(input)
     : await dynamicLinks().buildLink(input);
+
+  console.log('@@@ url : ', url);
 
   return url;
 };
