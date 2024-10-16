@@ -756,7 +756,10 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         }
         renderItem={renderSectionItem}
         renderSectionHeader={({section: {title}}) => {
-          if (moment.tz('Asia/Seoul').format('YYYY') === title) return null;
+          const isFirst =
+            sectionData.length > 0 && sectionData[0]?.title === title;
+          if (isFirst && moment.tz('Asia/Seoul').format('YYYY') === title)
+            return null;
           return (
             <AppText style={styles.sectionHeader}>
               {i18n.t(`year`, {year: title})}
