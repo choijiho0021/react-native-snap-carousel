@@ -119,16 +119,25 @@ const CliLogModal: React.FC<CliLogModalProps> = ({
           <View style={{flex: 1, marginHorizontal: 20}}>
             <AppStyledText
               text={i18n.t('cliLog:txt')}
-              textStyle={appStyles.normal16Text}
+              textStyle={{
+                ...appStyles.normal16Text,
+                lineHeight: 24,
+                fontWeight: '400',
+              }}
               format={{
-                b: {...appStyles.semiBold16Text, color: colors.clearBlue},
+                b: {
+                  ...appStyles.semiBold16Text,
+                  color: colors.clearBlue,
+                  lineHeight: 24,
+                },
               }}
             />
             <AppText
               style={{
+                ...appStyles.semiBold14Text,
                 marginTop: 32,
                 marginBottom: 6,
-                ...appStyles.semiBold14Text,
+                lineHeight: 20,
               }}>
               {i18n.t('cliLog:mobile')}
             </AppText>
@@ -150,10 +159,6 @@ const CliLogModal: React.FC<CliLogModalProps> = ({
                   const str = pre?.replace(/-/g, '');
                   if (str && str?.length >= 11) {
                     return utils.toPhoneNumber(str);
-                    // return `${str.substring(0, 3)}-${str.substring(
-                    //   3,
-                    //   7,
-                    // )}-${str?.substring(7, 11)}`;
                   }
                   return pre;
                 })

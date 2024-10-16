@@ -411,7 +411,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
         }
       />
       <ScrollView style={styles.container}>
-        <View style={{margin: 20}}>
+        <View style={{marginHorizontal: 20, marginTop: 20, marginBottom: 32}}>
           <AppStyledText
             textStyle={styles.hkInfoText}
             text={i18n.t('redirectHK:info1')}
