@@ -123,11 +123,14 @@ const makeSectionData = (hist: CallHistory[]) => {
 const updateCalls = async (state: TalkModelState, payload: CallHistory) => {
   const {key, destination, stime = moment()} = payload || {};
 
-  const cn = [state.clickedNum, state?.ccode + state?.clickedNum].includes(
+  const name = [state.clickedNum, state?.ccode + state?.clickedNum].includes(
     destination,
   )
     ? state.clickedName
     : undefined;
+  const dest = state?.ccode
+    ? destination?.substring(state?.ccode.length)
+    : destination;
 
   const json = await retrieveData('callHistory');
   const hist = parseJson(json);
@@ -139,11 +142,11 @@ const updateCalls = async (state: TalkModelState, payload: CallHistory) => {
     newHistory = [
       {
         key,
-        destination,
+        destination: dest,
         duration: state.duration || 0,
         stime,
         ccode: state.ccode || '',
-        name: cn,
+        name,
       },
     ].concat(hist || []);
   } else {
@@ -245,8 +248,6 @@ const slice = createSlice({
       state.callHistory = action.payload;
       return state;
     },
-
-    // },
     updateMode: (state, action) => {
       if (action.payload !== undefined) state.mode = action.payload;
     },
