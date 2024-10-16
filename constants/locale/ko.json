@@ -729,7 +729,7 @@
   "esim:howToCall:moveToQr:txt:ios": "설정>셀룰러>eSIM 추가>QR 코드 사용 버튼 클릭!",
   "esim:howToCall:moveToQr:txt:android": "설정>연결>SIM 관리자>eSIM 추가>QR 코드 스캔 버튼 클릭!",
   "esim:howToCall:title:ais": "태국 로컬망 데이터 종량제 상품\n통신사:AIS",
-  "esim:howToCall:title:ais2": "태국 로컬망 데이터 종량제 상품\n통신사: AIS2",
+  "esim:howToCall:title:ais2": "태국 로컬망 데이터 종량제 상품\n통신사: AIS",
   "esim:howToCall:title:ustotal": "미국 로컬망 데이터 종량제 상품",
   "esim:howToCall:title:usdaily": "미국 로컬망 데이터 무제한 상품",
   "esim:howToCall:title:dtac": "태국 로컬망 데이터 종량제 상품\n통신사:DTAC",
