@@ -1,10 +1,19 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import * as Hangul from 'hangul-js';
-import React, {useCallback} from 'react';
-import {SafeAreaView, SectionList, StyleSheet, View} from 'react-native';
+import moment from 'moment';
+import React, {useCallback, useEffect} from 'react';
+import {
+  Pressable,
+  SafeAreaView,
+  SectionList,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators, RootState} from 'redux';
+import AppBackButton from '@/components/AppBackButton';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
@@ -13,13 +22,13 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
-import {actions as rkbtalkActions} from '@/redux/modules/rkbtalk';
+import {
+  actions as talkActions,
+  CallHistory,
+  TalkAction,
+  TalkModelState,
+} from '@/redux/modules/talk';
 import i18n from '@/utils/i18n';
-import HeaderTitle from './HeaderTitle';
-import AppBackButton from '@/components/AppBackButton';
-import {CallHistory, TalkModelState} from '@/redux/modules/talk';
-import AppText from '@/components/AppText';
-import AppSvgIcon from '@/components/AppSvgIcon';
 
 const styles = StyleSheet.create({
   container: {
@@ -40,11 +49,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sectionHeader: {
-    ...appStyles.bold18Text,
-    lineHeight: 30,
-    paddingHorizontal: 20,
+    ...appStyles.normal16Text,
+    lineHeight: 24,
     paddingBottom: 12,
-    backgroundColor: colors.white,
   },
   emptyView: {
     flex: 1,
@@ -56,79 +63,43 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.warmGrey,
   },
-  icon: {
-    height: 50,
-    width: 50,
-    borderRadius: 50,
-    marginRight: 20,
+  itemRowView: {
+    flexDirection: 'row',
+    paddingVertical: 12,
+  },
+  time: {
+    ...appStyles.normal14Text,
+    lineHeight: 20,
+    color: colors.warmGrey,
+    width: 76,
+    marginTop: 2,
+  },
+  rightRowView: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  nameView: {
+    flexDirection: 'column',
     justifyContent: 'center',
   },
-  editHeaderView: {
-    backgroundColor: colors.white,
-    marginHorizontal: 20,
-    marginVertical: 20,
-    alignItems: 'center',
-  },
-  buttonBox: {
-    flexDirection: 'row',
-  },
-  btnDelHistoryAll: {
-    width: '50%',
-    height: 52,
-    backgroundColor: colors.white,
-    borderColor: colors.lightGrey,
-    borderTopWidth: 1,
-  },
-  btnDelHistoryAllText: {
+  destination: {
     ...appStyles.normal18Text,
+    fontWeight: '600',
+    lineHeight: 26,
+  },
+  ccode: {
+    ...appStyles.roboto16Text,
+    lineHeight: 24,
+    color: colors.warmGrey,
+  },
+  duration: {
+    ...appStyles.normal14Text,
+    width: 60,
+    lineHeight: 20,
     textAlign: 'center',
-    color: colors.black,
-  },
-  btnDelHistoryText: {
-    ...appStyles.normal18Text,
-    textAlign: 'center',
-    color: colors.white,
-  },
-  btnDelHistory: {
-    width: '50%',
-    height: 52,
-    backgroundColor: colors.clearBlue,
-  },
-  logItemView: {
-    flex: 1,
-    height: 50,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingRight: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.whiteTwo,
-  },
-  touch: {
-    height: 50,
-    flexDirection: 'row',
-    marginHorizontal: 20,
-    marginVertical: 10,
-    alignItems: 'center',
-    backgroundColor: colors.white,
-  },
-  emptyContainer: {
-    height: 200,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  callText: {
-    ...appStyles.normal16Text,
-    color: colors.clearBlue,
-  },
-  name: {
-    ...appStyles.normal18Text,
-    paddingRight: 10,
-  },
-  stimeText: {
-    ...appStyles.normal12Text,
-    paddingLeft: 3,
+    color: colors.warmGrey,
   },
 });
 
@@ -149,6 +120,7 @@ type CallHistoryScreenProps = {
 
   action: {
     account: AccountAction;
+    talk: TalkAction;
   };
 };
 
@@ -161,121 +133,9 @@ const CallHistoryScreen: React.FC<CallHistoryScreenProps> = ({
   pending,
   action,
 }) => {
-  // const dispatch = useDispatch();
-  // const [searchWord, setSearchWord] = useState('');
-  // const [searching, setSearching] = useState(false);
-  // const [searchResult, setSearchResult] = useState<any[]>([]);
-  // const [mode, setMode] = useState<CallHistoryScreenMode>('normal');
-  // const [selectedSet, setSelectedSet] = useState(new Set());
-  // const [selectedCount, setSelectedCount] = useState(0);
-  // const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
-  // const [deleteHistoryType, setDeleteHistoryType] = useState('');
-
-  // async function loadHistory() {
-  //   const callHistory = await retrieveData('callHistory');
-  //   if (callHistory) {
-  //     store.dispatch(pjsipActions.updateHistory(JSON.parse(callHistory)));
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   const currentHistory = history.toArray();
-
-  //   // 자동로그인이 느리게 진행된 경우
-  //   if (!pending) {
-  //     // if (!account.loggedIn)
-  //     //   navigation.navigate('RegisterSim' as keyof HomeStackParamList);
-  //   }
-
-  //   if (currentHistory.length === 0 && account.loggedIn) {
-  //     loadHistory();
-  //   }
-
-  //   if (currentHistory.length) {
-  //     if (currentHistory.length === 0) {
-  //       action.pjsip.updateHistory(currentHistory);
-  //     } else {
-  //       // 저장된 연락처와 통화기록을 매칭하는 작업
-  //       Contacts.getContactsByPhoneNumber(currentHistory[0].destination).then(
-  //         (contacts) => {
-  //           const name =
-  //             contacts.length === 0
-  //               ? currentHistory[0].destination
-  //               : contacts[0].givenName + contacts[0].familyName;
-  //           const thumbnailPath =
-  //             contacts.length === 0 ? undefined : contacts[0].thumbnailPath;
-
-  //           const chosung = getChosung(
-  //             contacts.length === 0
-  //               ? currentHistory[0].destination
-  //               : contacts[0].givenName + contacts[0].familyName,
-  //           );
-
-  //           const changeHistory = history.map((elm, index) =>
-  //             index === 0
-  //               ? {
-  //                   ...elm,
-  //                   name,
-  //                   chosung,
-  //                   thumbnailPath,
-  //                 }
-  //               : elm,
-  //           );
-
-  //           // 무한 루프 방지
-  //           if (currentHistory[0].name !== changeHistory.toArray()[0].name) {
-  //             action.pjsip.updateHistory(changeHistory);
-  //           }
-  //         },
-  //       );
-  //     }
-  //   }
-  // }, [account.loggedIn, action.pjsip, history, navigation, pending]);
-
-  // const onChangeText = useCallback((value: string) => {
-  //   setSearchWord(value);
-  //   setSearching(false);
-  // }, []);
-
-  // const deleteHistory = useCallback(
-  //   (key: string) => () => {
-  //     const newHistory =
-  //       key === 'all'
-  //         ? []
-  //         : history.filter((elm, index) => !selectedSet.has(index));
-
-  //     action.pjsip.updateHistory(newHistory);
-  //     setConfirmDeleteModal(false);
-  //     setSelectedSet(new Set());
-  //     setSelectedCount(0);
-  //   },
-  //   [action.pjsip, history, selectedSet],
-  // );
-  // const logTouch = useCallback(
-  //   (index: number) => {
-  //     if (mode === 'edit') {
-  //       if (selectedSet.has(index)) selectedSet.delete(index);
-  //       else selectedSet.add(index);
-  //       setSelectedSet(selectedSet);
-  //       setSelectedCount(selectedSet.size);
-  //     }
-  //   },
-  //   [mode, selectedSet],
-  // );
-
-  // // RokebiTalk에서 RokebiSIm 호출
-  // const openRokebiSim = async () => {
-  //   if (Platform.OS === 'ios') {
-  //     const isRokebiInstalled = await Linking.canOpenURL(`Rokebi://`);
-  //     if (isRokebiInstalled) Linking.openURL(`Rokebi://`);
-  //     else Linking.openURL(`appstore url 추가 필요`);
-  //   } else {
-  //     // 앱 호출 실패 성공 확인 - 성공 : 앱 호출 & 실패 : 스토어페이지로 이동
-  //     const isRokebiInstalled = await Linking.canOpenURL(`rokebi://esim.com`);
-  //     if (isRokebiInstalled) Linking.openURL(`rokebi://esim.com`);
-  //     else Linking.openURL(`playstoreurl 추가 필요`);
-  //   }
-  // };
+  useEffect(() => {
+    action.talk.readHistory();
+  }, [action.talk]);
 
   // const makeCall = useCallback(
   //   (destination: string) => {
@@ -294,137 +154,89 @@ const CallHistoryScreen: React.FC<CallHistoryScreenProps> = ({
   //   [action.pjsip, dispatch],
   // );
 
-  // const search = useCallback(
-  //   (currentSearchWord: string) => {
-  //     const searcher = new Hangul.Searcher(searchWord);
-
-  //     // 필터순서 : 번호 검색 || 단어검색 || 초성검색
-  //     setSearchResult(
-  //       callHistory
-  //         .filter(
-  //           (elm) =>
-  //             elm.destination.match(searchWord) ||
-  //             searcher.search(elm.name) >= 0 ||
-  //             elm.chosung?.match(searchWord),
-  //         )
-  //         .toArray(),
-  //     );
-  //     setSearching(true);
-  //   },
-  //   [callHistory, searchWord],
-  // );
-
-  // const renderDelBtn = () => {
-  //   return (
-  //     <View style={styles.buttonBox}>
-  //       <AppButton
-  //         style={styles.btnDelHistoryAll}
-  //         title={i18n.t('call:deleteAll')}
-  //         titleStyle={styles.btnDelHistoryAllText}
-  //         disabled={history.size === 0}
-  //         disableBackgroundColor={colors.gray}
-  //         onPress={() => {
-  //           setConfirmDeleteModal(true);
-  //           setDeleteHistoryType('all');
-  //         }}
-  //       />
-  //       <AppButton
-  //         style={styles.btnDelHistory}
-  //         title={`${i18n.t('call:deleteItems')}(${selectedCount})`}
-  //         titleStyle={styles.btnDelHistoryText}
-  //         disabled={selectedCount === 0}
-  //         disableBackgroundColor={colors.gray}
-  //         onPress={() => {
-  //           setConfirmDeleteModal(true);
-  //           setDeleteHistoryType('select');
-  //         }}
-  //       />
-  //     </View>
-  //   );
-  // };
-
-  // const renderCallLog = ({item, index}: {item: CallHistory; index: number}) => {
-  //   return (
-  //     <Pressable onPress={() => logTouch(index)} style={styles.touch}>
-  //       {!_.isEmpty(item.thumbnailPath) ? (
-  //         <Image source={{uri: item.thumbnailPath}} style={styles.icon} />
-  //       ) : (
-  //         <AppIcon name="imgPeople" style={styles.icon} />
-  //       )}
-  //       <View style={styles.logItemView}>
-  //         <View>
-  //           <Text numberOfLines={1} ellipsizeMode="tail" style={styles.name}>
-  //             {item.name}
-  //           </Text>
-  //           <View style={{flexDirection: 'row'}}>
-  //             <AppIcon name={`iconCall${item.type}`} />
-  //             <Text style={styles.stimeText}>
-  //               {`${callTypeString(item.type)}, `}
-  //             </Text>
-  //             <Text style={styles.stimeText}>{toTimeString(item.stime)}</Text>
-  //           </View>
-  //         </View>
-  //         {mode === 'edit' ? (
-  //           <AppIcon name="btnCheck" checked={selectedSet.has(index)} />
-  //         ) : (
-  //           <Pressable onPress={() => makeCall(item.destination)}>
-  //             <Text style={styles.callText}>{i18n.t('call')}</Text>
-  //           </Pressable>
-  //         )}
-  //       </View>
-  //     </Pressable>
-  //   );
-  // };
-
-  // const callLog =
-  //   searching && searchWord !== '' ? searchResult : callHistory.toArray();
-  const renderSectionItem = useCallback(
-    ({
-      item,
-      index,
-    }: // section,
-    {
-      item: CallHistory;
-      index: number;
-      // section: SectionData;
-    }) => {
-      return <View />;
-    },
-    [],
-  );
-
   const renderEmpty = useCallback(() => {
     return (
       <View style={styles.emptyView}>
         <AppSvgIcon name="threeDotsBig" style={{marginBottom: 16}} />
         <AppText style={styles.emptyText}>
-          발신 내역이 없습니다
-          {/* {i18n.t(`talk:point:empty:${dataFilter}`)} */}
+          {i18n.t('talk:callHistory:empty')}
         </AppText>
       </View>
     );
   }, []);
 
+  const renderSectionHeader = useCallback(({section}) => {
+    return (
+      <View style={{backgroundColor: colors.white}}>
+        {section.data[0]?.year && (
+          <AppText style={{...appStyles.bold18Text, lineHeight: 30}}>
+            {section.data[0].year}
+          </AppText>
+        )}
+        <AppText style={styles.sectionHeader}>
+          {section.title.slice(0, -4)}
+        </AppText>
+      </View>
+    );
+  }, []);
+
+  const getTime = useCallback((d: number) => {
+    const m = Math.trunc(d / 60);
+    const s = d % 60;
+    return m > 0 ? `${m}분${s}초` : `${s}초`;
+  }, []);
+
+  const onPressItem = useCallback(
+    (item: CallHistory) => {
+      const num = item?.ccode + item?.destination;
+      const name = item?.name;
+      action.talk.updateClicked({num, name});
+      action.talk.updateCalledPty(num);
+      navigation.goBack();
+    },
+    [action.talk, navigation],
+  );
+
+  const renderSectionItem = useCallback(
+    ({item, index}: {item: CallHistory; index: number}) => {
+      const cc = item?.ccode ? `+${item?.ccode} ` : '';
+      return (
+        <Pressable onPress={() => onPressItem(item)} style={styles.itemRowView}>
+          <AppText style={styles.time}>
+            {moment(item?.stime).format('A h:mm')}
+          </AppText>
+          <View style={styles.rightRowView}>
+            <View style={styles.nameView}>
+              <AppText style={styles.destination}>
+                {item?.name || item?.destination}
+              </AppText>
+              <AppText style={styles.ccode}>
+                {`${cc}${item?.destination}`}
+              </AppText>
+            </View>
+            <AppText style={styles.duration}>{getTime(item?.duration)}</AppText>
+          </View>
+        </Pressable>
+      );
+    },
+    [getTime, onPressItem],
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <AppBackButton title="발신 내역" />
+        <AppBackButton title={i18n.t('talk:callHistory:title')} />
       </View>
+      <View style={{height: 16}} />
       <SectionList
         // ref={sectionRef}
-        // sections={sectionData}
+        keyExtractor={(item, index) => `${item?.key + index}`}
         sections={callHistory || []}
-        contentContainerStyle={
-          callHistory?.length > 0 ? undefined : styles.contentContainerStyle
-        }
+        contentContainerStyle={{flex: 1, marginHorizontal: 20}}
         renderItem={renderSectionItem}
-        renderSectionHeader={({section: {title}}) => (
-          <AppText style={styles.sectionHeader}>
-            {i18n.t(`year`, {year: title})}
-          </AppText>
-        )}
+        renderSectionHeader={renderSectionHeader}
         stickySectionHeadersEnabled
-        ListEmptyComponent={() => renderEmpty()}
+        ListEmptyComponent={renderEmpty}
         // onScrollEndDrag={({
         //   nativeEvent: {
         //     contentOffset: {y},
@@ -436,52 +248,6 @@ const CallHistoryScreen: React.FC<CallHistoryScreenProps> = ({
         overScrollMode="never"
         bounces={false}
       />
-      {/* <AppStatusBar barStyle="dark-content" translucent /> */}
-      {/* <HeaderTitle
-        changeMode={(m: CallHistoryScreenMode) => {
-          dispatch(rkbtalkActions.updateMode(m));
-          setMode(m);
-          setSelectedSet(new Set());
-        }}
-        selectedCount={selectedCount}
-        onChangeText={onChangeText}
-        search={search}
-      /> */}
-      {/* {
-        // flex: 5 말고 다른 방법 필요
-      }
-      <View style={{flex: 5}}>
-        {
-          // {call?.getState() !== Sip.callState.disconnected ? null : (
-        }
-        {!callHistory ? null : (
-          <FlatList
-            data={callLog}
-            ListHeaderComponent={
-              mode === 'edit' ? (
-                <View style={styles.editHeaderView}>
-                  <Text> {i18n.t('call:selectForDel')}</Text>
-                </View>
-              ) : null
-            }
-            ListEmptyComponent={
-              <View style={styles.emptyContainer}>
-                <Text> 통화 기록이 없습니다</Text>
-              </View>
-            }
-            renderItem={renderCallLog}
-            extraData={[searchWord, callLog]}
-          />
-        )}
-        {mode === 'edit' && renderDelBtn()}
-        <AppModal
-          key="reqComfirmDelete"
-          title={i18n.t('call:confirmToDelete')}
-          onOkClose={deleteHistory(deleteHistoryType)}
-          onCancelClose={() => setConfirmDeleteModal(false)}
-          visible={confirmDeleteModal}
-        />
-      </View> */}
     </SafeAreaView>
   );
 };
@@ -494,6 +260,7 @@ export default connect(
   }),
   (dispatch) => ({
     action: {
+      talk: bindActionCreators(talkActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
     },
   }),
