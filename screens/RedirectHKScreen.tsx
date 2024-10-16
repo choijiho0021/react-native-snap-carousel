@@ -81,6 +81,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteTwo,
     paddingHorizontal: 20,
     paddingVertical: 15,
+    borderRadius: 3,
+    borderWidth: 1,
+    borderColor: colors.whiteTwo,
   },
   textUnderLine: {
     alignSelf: 'flex-start',
@@ -191,7 +194,7 @@ const styles = StyleSheet.create({
   },
   hkInfoText: {
     ...appStyles.normal16Text,
-    lineHeight: 20,
+    lineHeight: 24,
     letterSpacing: 0,
   },
   hkCheckTextSmall: {
@@ -414,7 +417,8 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
             text={i18n.t('redirectHK:info1')}
             format={{b: {color: colors.blue}}}
           />
-          <AppText style={[appStyles.bold16Text, {marginTop: 20}]}>
+          <AppText
+            style={[appStyles.bold16Text, {marginTop: 20, lineHeight: 24}]}>
             {i18n.t('redirectHK:info3')}
           </AppText>
         </View>
@@ -434,7 +438,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
             itemWidth={sliderWidth}
             pagingEnabled
             enableMomentum={false}
-            decelerationRate={'fast'}
+            decelerationRate="fast"
           />
 
           <Pagination
@@ -448,7 +452,12 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
             containerStyle={{paddingTop: 16, paddingBottom: 0}}
           />
         </View>
-        <View style={{paddingHorizontal: 20, marginBottom: 32, marginTop: 24}}>
+        <View
+          style={{
+            paddingHorizontal: 20,
+            marginBottom: 32,
+            marginTop: 24,
+          }}>
           <View style={styles.copyBox}>
             <View style={{flex: 9}}>
               <AppText style={styles.keyTitle}>
