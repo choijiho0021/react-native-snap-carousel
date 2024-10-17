@@ -95,6 +95,7 @@ const CliLogModal: React.FC<CliLogModalProps> = ({
       mobile: mobile?.replace(/-/g, ''),
       log: log.log,
     });
+
     if (resp.result === 0) {
       action.toast.push({
         msg: Toast.SAVE_LOG_SUCCESS,

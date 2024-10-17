@@ -514,11 +514,12 @@ const resign = async (
   );
 };
 
-const saveClientLog = ({mobile, log}: {mobile?: string; log: string}) => {
+const saveClientLog = async ({mobile, log}: {mobile?: string; log: string}) => {
   if (!log) return api.reject(api.E_INVALID_ARGUMENT, 'missing argument: log');
 
   const MAX_LOG_LENGTH = 20000;
   let start = 0;
+  const promises = [];
 
   while (start < log.length) {
     let end = start + MAX_LOG_LENGTH;
@@ -531,7 +532,7 @@ const saveClientLog = ({mobile, log}: {mobile?: string; log: string}) => {
     }
     const sliceLog = log.slice(start, end);
 
-    api.callHttp(
+    const promise = api.callHttp(
       `${api.rokHttpUrl(api.path.rokApi.pv.saveLog)}`,
       {
         method: 'POST',
@@ -548,10 +549,18 @@ const saveClientLog = ({mobile, log}: {mobile?: string; log: string}) => {
       },
     );
 
+    promises.push(promise);
     start = end;
   }
 
-  return api.success([]);
+  try {
+    const results = await Promise.all(promises);
+    return results.every((result) => result.result === 0)
+      ? api.success([])
+      : api.failure(api.FAILED, 'One or more saveClientLog requests failed');
+  } catch (error) {
+    return api.failure(api.FAILED, 'saveClientLog API failure');
+  }
 };
 
 export default {
