@@ -28,6 +28,7 @@ import {
 } from '@/redux/modules/talk';
 import i18n from '@/utils/i18n';
 import EmptyResult from '../TalkContact/components/EmptyResult';
+import Footer from './Footer';
 
 const styles = StyleSheet.create({
   container: {
@@ -246,6 +247,7 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
         renderSectionHeader={({section: {title}}) => (
           <AppText style={styles.sectionHeader}>{title}</AppText>
         )}
+        ListFooterComponent={<Footer />}
         ListEmptyComponent={<EmptyResult />}
       />
     </SafeAreaView>
