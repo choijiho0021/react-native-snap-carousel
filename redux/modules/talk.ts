@@ -260,6 +260,15 @@ const slice = createSlice({
       state.callHistory = action.payload;
       return state;
     },
+    updateCcode: (state, action) => {
+      if (state.ccode && state.called) {
+        const origin = getOriginNumber(state.called, state.ccode);
+        state.called = action.payload + origin;
+      } else state.called = action.payload;
+
+      state.ccode = action.payload;
+      return state;
+    },
     updateMode: (state, action) => {
       if (action.payload !== undefined) state.mode = action.payload;
     },
