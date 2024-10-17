@@ -261,9 +261,11 @@ const slice = createSlice({
       return state;
     },
     updateCcode: (state, action) => {
-      if (state.ccode && state.called) {
-        const origin = getOriginNumber(state.called, state.ccode);
-        state.called = action.payload + origin;
+      if (state.called) {
+        if (state.ccode) {
+          const origin = getOriginNumber(state.called, state.ccode);
+          state.called = action.payload + origin;
+        } else state.called = action.payload + state.called;
       } else state.called = action.payload;
 
       state.ccode = action.payload;
