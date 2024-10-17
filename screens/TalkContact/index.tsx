@@ -1,28 +1,4 @@
-import AppButton from '@/components/AppButton';
-import AppIcon from '@/components/AppIcon';
-import AppSearch from '@/components/AppSearch';
-import AppText from '@/components/AppText';
-import {colors} from '@/constants/Colors';
-import {
-  checkEng,
-  checkKor,
-  checkSpecial,
-  doubleKor,
-  sectionKeys,
-} from '@/constants/CustomTypes';
-import Layout from '@/constants/Layout';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
-import {appStyles} from '@/constants/Styles';
-import {HomeStackParamList} from '@/navigation/navigation';
-import {RootState} from '@/redux';
-import {
-  actions as talkActions,
-  TalkAction,
-  TalkModelState,
-} from '@/redux/modules/talk';
-import i18n from '@/utils/i18n';
-import {utils} from '@/utils/utils';
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import * as Hangul from 'hangul-js';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
@@ -40,57 +16,92 @@ import {
   PERMISSIONS,
   RESULTS,
 } from 'react-native-permissions';
-import SectionListSidebar from './components/SectionListSidebar';
 import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import AppButton from '@/components/AppButton';
+import AppSearch from '@/components/AppSearch';
+import AppText from '@/components/AppText';
+import {colors} from '@/constants/Colors';
+import {
+  checkEng,
+  checkKor,
+  checkSpecial,
+  doubleKor,
+  sectionKeys,
+} from '@/constants/CustomTypes';
+import {appStyles} from '@/constants/Styles';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
+import {
+  actions as talkActions,
+  TalkAction,
+  TalkModelState,
+} from '@/redux/modules/talk';
+import i18n from '@/utils/i18n';
+import {utils} from '@/utils/utils';
+import EmptyResult from './components/EmptyResult';
+import SectionListSidebar from './components/SectionListSidebar';
 import ContactListItem from './ContactListItem';
 
 const styles = StyleSheet.create({
-  title: {
-    ...appStyles.bold18Text,
-    marginTop: 20,
-    marginBottom: isDeviceSize('small') ? 10 : 20,
-    marginHorizontal: 20,
-    color: colors.black,
-  },
-  btnHomeText: {
-    ...appStyles.normal18Text,
-    textAlign: 'center',
-    color: colors.white,
-  },
-  btnHome: {
-    width: '100%',
-    height: 52,
-    backgroundColor: colors.clearBlue,
-  },
-  scrollView: {
+  container: {
     flex: 1,
-    backgroundColor: colors.whiteTwo,
+    backgroundColor: colors.white,
+    alignItems: 'stretch',
+  },
+  sidebarContainer: {
+    flex: 1,
+    alignSelf: 'flex-end',
+    justifyContent: 'center',
+  },
+  sidebarItem: {
+    ...appStyles.normal12Text,
+    lineHeight: 13,
+    color: colors.clearBlue,
   },
   header: {
     flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-between',
     backgroundColor: colors.white,
     alignItems: 'center',
     height: 56,
   },
-  searchLine: {
+  syncView: {
     flex: 1,
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    width: Layout.window.width,
-    justifyContent: 'space-between',
-  },
-  searchBarBorder: {
-    borderColor: colors.lightGrey,
-    borderRadius: 3,
-    borderWidth: 1,
-    flex: 4.2,
-    paddingHorizontal: 20,
     justifyContent: 'center',
-    marginTop: 5,
+    alignItems: 'center',
+  },
+  syncText: {
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '500',
+    fontStyle: 'normal',
+    lineHeight: 24,
+    letterSpacing: -0.16,
+  },
+  syncBtn: {
+    alignSelf: 'center',
+    width: 150,
+    height: 50,
+    borderRadius: 3,
+    marginTop: 16,
+    paddingHorizontal: 18,
+    backgroundColor: colors.clearBlue,
+  },
+  syncBtnTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    fontStyle: 'normal',
+    lineHeight: 24,
+    letterSpacing: -0.16,
+    textAlign: 'left',
+    color: colors.white,
+  },
+  headerView: {
+    marginLeft: 20,
+    paddingTop: 24,
+    paddingBottom: 16,
+    backgroundColor: colors.white,
   },
   sectionHeader: {
     ...appStyles.normal16Text,
@@ -139,66 +150,44 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
   const [scrollY, setScrollY] = useState(-1);
 
   // 권한없는 경우, 통화시에 권한확인 로직 필요
-  useEffect(() => {
-    const checkPermission = async () => {
-      const permission =
-        Platform.OS === 'ios'
-          ? PERMISSIONS.IOS.CONTACTS
-          : PERMISSIONS.ANDROID.READ_CONTACTS;
-      const result = await check(permission);
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkPermission = async () => {
+        const permission =
+          Platform.OS === 'ios'
+            ? PERMISSIONS.IOS.CONTACTS
+            : PERMISSIONS.ANDROID.READ_CONTACTS;
+        const result = await check(permission);
 
-      return result === RESULTS.GRANTED || result === RESULTS.UNAVAILABLE;
-    };
+        return result === RESULTS.GRANTED || result === RESULTS.UNAVAILABLE;
+      };
 
-    Promise.resolve(checkPermission()).then((r) => {
-      if (r) {
-        Promise.resolve(action.talk.getContacts()).then((a) => {
-          if (a?.type?.includes('rejected') || a?.payload?.message === 'denied')
-            setShowContacts(false);
-          else setShowContacts(true);
-        });
-      }
-    });
-  }, [action.talk]);
+      Promise.resolve(checkPermission()).then((r) => {
+        if (r) {
+          Promise.resolve(action.talk.getContacts()).then((a) => {
+            if (
+              a?.type?.includes('rejected') ||
+              a?.payload?.message === 'denied'
+            )
+              setShowContacts(false);
+            else setShowContacts(true);
+          });
+        }
+      });
+    }, [action.talk]),
+  );
 
   const beforeSync = useCallback(() => {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
+      <View style={styles.syncView}>
         <View>
-          <AppText
-            style={{
-              textAlign: 'center',
-              fontSize: 16,
-              fontWeight: '500',
-              fontStyle: 'normal',
-              lineHeight: 24,
-              letterSpacing: -0.16,
-            }}>{`내 주소록을 동기화하여\n더 편리하게 사용해 보세요!`}</AppText>
+          <AppText style={styles.syncText}>
+            {i18n.t('talk:contact:sync')}
+          </AppText>
           <AppButton
-            style={{
-              alignSelf: 'center',
-              width: 150,
-              height: 50,
-              borderRadius: 3,
-              marginTop: 16,
-              paddingHorizontal: 18,
-              backgroundColor: colors.clearBlue,
-            }}
-            title="연락처 동기화하기"
-            titleStyle={{
-              fontSize: 16,
-              fontWeight: '600',
-              fontStyle: 'normal',
-              lineHeight: 24,
-              letterSpacing: -0.16,
-              textAlign: 'left',
-              color: colors.white,
-            }}
+            style={styles.syncBtn}
+            title={i18n.t('talk:contact:sync:btn')}
+            titleStyle={styles.syncBtnTitle}
             onPress={() => openSettings()}
           />
         </View>
@@ -274,7 +263,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
         });
       }
     },
-    [setKoSection, setOtherSection],
+    [mapContacts, setKoSection, setOtherSection],
   );
 
   const getFirstLetter = useCallback(
@@ -294,23 +283,26 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
   );
 
   // 초성검색한 항목 section key 생성
-  const makeSearchResult = useCallback((currentContacts?: any[]) => {
-    if (!_.isEmpty(currentContacts)) {
-      const res = currentContacts?.reduce((acc, cur, idx) => {
-        const key = getFirstLetter(cur);
-        const ai = acc?.findIndex((a) => a?.key === key);
+  const makeSearchResult = useCallback(
+    (currentContacts?: any[]) => {
+      if (!_.isEmpty(currentContacts)) {
+        const res = currentContacts?.reduce((acc, cur, idx) => {
+          const key = getFirstLetter(cur);
+          const ai = acc?.findIndex((a) => a?.key === key);
 
-        if (ai >= 0) (acc[ai]?.data || []).push(cur);
-        else (acc || [])?.push({key, title: key, data: [cur]});
-        return acc;
-      }, []);
+          if (ai >= 0) (acc[ai]?.data || []).push(cur);
+          else (acc || [])?.push({key, title: key, data: [cur]});
+          return acc;
+        }, []);
 
-      return res;
-    }
-  }, []);
+        return res;
+      }
+    },
+    [getFirstLetter],
+  );
 
   const onChangeText = useCallback(
-    (text) => {
+    (text: string) => {
       const currentMapContacts = mapContacts;
       const currentContacts = contacts;
 
@@ -394,14 +386,21 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
         setSearchResult(makeSearchResult(currentSearchResult) || []);
       }
     },
-    [contacts, mapContacts],
+    [contacts, highlight, makeSearchResult, mapContacts],
   );
 
   const onPress = useCallback(
     (contactData: Contact) => {
-      // navigation.navigate('ContactDetail', {contact: contactData});
+      const num = contactData?.phoneNumbers[0]?.number?.replace(
+        /[+\-() ]/g,
+        '',
+      );
+      const name = `${contactData?.givenName} ${contactData?.familyName}`;
+
+      action.talk.updateNumberClicked({num, name});
+      navigation.goBack();
     },
-    [navigation],
+    [action.talk, navigation],
   );
 
   const renderContactList = useCallback(
@@ -418,59 +417,12 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
         />
       );
     },
-    [searchText, onPress, highlight],
-  );
-
-  const toggleSearchBar = useCallback(
-    (val) => {
-      navigation.setParams({showSearchBar: val});
-      setShowSearchBar(val);
-      console.log('@@@@@ toggle!!! : ', val);
-      dispatch(talkActions.updateMode(val ? 'search' : 'normal'));
-
-      if (!val) {
-        setSearchResult([]);
-        setSearchText(undefined);
-      }
-    },
-    [dispatch, navigation],
+    [onPress, highlight],
   );
 
   useEffect(() => {
     setChosung(contacts);
   }, [setChosung, contacts]);
-
-  // useEffect(() => {
-  //   navigation.setOptions({
-  //     headerStyle: {
-  //       shadowColor: 'transparent',
-  //       elevation: 0,
-  //     },
-  //     title: null, // 왜 null?
-  //     headerLeft: () => {
-  //       return route?.params && route?.params?.showSearchBar ? (
-  //         searchBar()
-  //       ) : (
-  //         <AppText style={styles.title}>{i18n.t('contact:title')}</AppText>
-  //       );
-  //     },
-  //     headerRight: () => {
-  //       return (
-  //         !(route?.params || {}).showSearchBar && (
-  //           <AppButton
-  //             iconName="btnSearchTop"
-  //             style={{
-  //               backgroundColor: colors.white,
-  //               marginRight: 20,
-  //               marginTop: 15,
-  //             }}
-  //             onPress={() => toggleSearchBar(true)}
-  //           />
-  //         )
-  //       );
-  //     },
-  //   });
-  // }, [navigation, searchBar, toggleSearchBar]);
 
   useEffect(() => {
     setSections(sectionKeys.filter((item) => !_.isEmpty(item.data)));
@@ -486,18 +438,40 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
     setSearchText(undefined);
     setHighlight(new Map());
     setSearchResult([]);
-  }, []);
+  }, [onChangeText]);
+
+  const renderSectionHeader = useCallback(
+    ({section}) => (
+      <AppText style={styles.sectionHeader}>{section?.title}</AppText>
+    ),
+    [],
+  );
+
+  const renderSectionListHeader = useCallback(
+    ({section}) => (
+      <>
+        {section?.key === sections[0]?.key && scrollY <= 0 && (
+          <View style={styles.headerView}>
+            <AppText style={appStyles.bold18Text}>
+              {i18n.t('talk:contact')}
+            </AppText>
+          </View>
+        )}
+        <AppText style={styles.sectionHeader}>{section?.key}</AppText>
+      </>
+    ),
+    [scrollY, sections],
+  );
 
   return (
-    <SafeAreaView
-      style={{flex: 1, backgroundColor: colors.white, alignItems: 'stretch'}}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <AppSearch
-          title={i18n.t('acc:balance')}
-          style={{height: 55}}
           onChangeText={onChangeText}
           onCancel={onCancel}
           value={searchText || ''}
+          placeholder={i18n.t('talk:contact:search')}
+          focusColor={colors.clearBlue}
         />
       </View>
       {showContacts && !_.isEmpty(searchText) && <View style={{height: 24}} />}
@@ -511,36 +485,9 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
               itemHeight={30}
               sectionHeaderHeight={20}
               onScroll={onScroll}
-              renderSectionHeader={({section}) => {
-                return (
-                  <>
-                    {section?.key === sections[0]?.key && scrollY <= 0 && (
-                      <View
-                        style={{
-                          marginLeft: 20,
-                          paddingTop: 24,
-                          paddingBottom: 16,
-                          backgroundColor: colors.white,
-                        }}>
-                        <AppText style={appStyles.bold18Text}>연락처</AppText>
-                      </View>
-                    )}
-                    <AppText style={styles.sectionHeader}>
-                      {section?.key}
-                    </AppText>
-                  </>
-                );
-              }}
-              sidebarContainerStyle={{
-                flex: 1,
-                alignSelf: 'flex-end',
-                justifyContent: 'center',
-              }}
-              sidebarItemTextStyle={{
-                ...appStyles.normal12Text,
-                lineHeight: 13,
-                color: colors.clearBlue,
-              }}
+              renderSectionHeader={renderSectionListHeader}
+              sidebarContainerStyle={styles.sidebarContainer}
+              sidebarItemTextStyle={styles.sidebarItem}
               locale="kor"
             />
           )
@@ -549,23 +496,8 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
             contentContainerStyle={{flexGrow: 1}}
             sections={searchResult}
             renderItem={renderContactList}
-            renderSectionHeader={({section}) => {
-              return (
-                <AppText style={styles.sectionHeader}>{section?.title}</AppText>
-              );
-            }}
-            ListEmptyComponent={
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignSelf: 'center',
-                  alignItems: 'center',
-                }}>
-                <AppIcon style={{marginBottom: 16}} name="imgDot" />
-                <AppText>검색 결과가 없습니다.</AppText>
-              </View>
-            }
+            renderSectionHeader={renderSectionHeader}
+            ListEmptyComponent={<EmptyResult />}
           />
         )
       ) : (

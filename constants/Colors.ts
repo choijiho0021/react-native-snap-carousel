@@ -53,6 +53,7 @@ export const colors = {
   pinkishGrey: '#bcbcbc',
   purplyBlue: '#5b16ef',
   babyBlue: '#B7D8FF',
+  aliceBlue: '#e8f0ff',
   paleGreyTwo: '#F5F6F7',
   iceBlue: '#ECF5FF',
   veryLightPink: '#FFE3DD', // rgb 255 227 221
@@ -75,6 +76,8 @@ export const colors = {
   red: '#F1694F',
   violet500: '#5b16ef',
   violetbg: '#F3EDFF',
+  vividNavy: '#000aff',
+  vividYellow: '#fff500',
   pinkbg: '#ffedfc',
   pink500: '#ff00c8',
   darkNavy: '#263867',
@@ -90,4 +93,5 @@ export const colors = {
   green: '#00cc66',
   green500: '#00ad51',
   deepGreen: '#059a5e',
+  gray20: '#333333',
 };

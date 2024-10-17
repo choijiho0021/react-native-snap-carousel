@@ -33,6 +33,7 @@ import CouponScreen from '@/screens/CouponScreen';
 import DraftScreen from '@/screens/DraftScreen';
 import DraftResultScreen from '@/screens/DraftScreen/DraftResult';
 import DraftUsScreen from '@/screens/DraftUsScreen';
+import EmergencyCallScreen from '@/screens/EmergencyCallScreen';
 import EsimScreen from '@/screens/EsimScreen';
 import EventBoardScreen from '@/screens/EventBoardScreen';
 import ExtraCouponScreen from '@/screens/ExtraCouponScreen';
@@ -64,7 +65,7 @@ import SettingsScreen from '@/screens/SettingsScreen';
 import SimpleTextScreen from '@/screens/SimpleTextScreen';
 import StoreSearchScreen from '@/screens/StoreSearch';
 import TalkContact from '@/screens/TalkContact';
-import TalkPoint from '@/screens/TalkPoint';
+import TalkPointScreen from '@/screens/TalkPointScreen';
 import TutorialScreen from '@/screens/TutorialScreen';
 import UserGuideScreen from '@/screens/UserGuideScreen';
 import GlobalGuideScreen from '@/screens/UserGuideScreen/global/GlobalGuide';
@@ -77,6 +78,8 @@ import {HomeStackParamList} from './navigation';
 import AuthGatewayScreen from '@/screens/RkbTalk/component/AuthGatewayScreen';
 import TalkRewardScreen from '@/screens/RkbTalk/component/TalkRewardScreen';
 import TalkPermissionScreen from '@/screens/RkbTalk/component/TalkPermissionScreen';
+import TalkTariffScreen from '@/screens/TalkTariffScreen';
+import CallHistoryScreen from '@/screens/CallHistoryScreen';
 
 const {esimGlobal} = Env.get();
 
@@ -287,6 +290,10 @@ function TalkStackComponent() {
         component={TalkPermissionScreen}
       />
       <TalkStack.Screen name="TalkPoint" component={TalkPoint} />
+      <TalkStack.Screen name="TalkPoint" component={TalkPointScreen} />
+      <TalkStack.Screen name="TalkTariff" component={TalkTariffScreen} />
+      <TalkStack.Screen name="EmergencyCall" component={EmergencyCallScreen} />
+      <TalkStack.Screen name="CallHistory" component={CallHistoryScreen} />
     </TalkStack.Navigator>
   );
 }

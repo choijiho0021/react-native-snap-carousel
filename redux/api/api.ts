@@ -93,6 +93,7 @@ const path = {
   rkbtalk: 'json/rkbtalk',
   profile: 'json/profile',
   extraCoupon: 'json/coupon/extra',
+  tariff: 'json/talk/tariff',
 
   gift: {
     content: 'rokebi/gift',
@@ -142,6 +143,7 @@ const path = {
       noti: 'rokebi/noti',
       talk: 'rokebi/talk',
       point: 'rokebi/talk/point',
+      pointLog: 'rokebi/talk/point/log',
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage/quota',

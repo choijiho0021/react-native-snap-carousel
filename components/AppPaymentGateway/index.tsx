@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {Linking, StyleSheet, View} from 'react-native';
 import WebView from 'react-native-webview';
 import {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
@@ -219,10 +219,6 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
     }
   }, []);
 
-  useEffect(() => {
-    console.log('@@@ html : ', html);
-  }, [html]);
-
   return (
     <>
       <WebView
@@ -236,7 +232,7 @@ const AppPaymentGateway: React.FC<PaymentGatewayScreenProps> = ({
         javaScriptCanOpenWindowsAutomatically
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         onLoadEnd={onLoadEnd}
-        source={{html: html}}
+        source={{html}}
       />
       {loading ? <>{renderLoading()}</> : null}
     </>

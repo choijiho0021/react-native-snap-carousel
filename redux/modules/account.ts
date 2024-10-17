@@ -14,6 +14,7 @@ import messaging from '@react-native-firebase/messaging';
 import {Moment} from 'moment';
 import VersionCheck from 'react-native-version-check';
 import DeviceInfo from 'react-native-device-info';
+import CookieManager from '@react-native-cookies/cookies';
 import {API} from '@/redux/api';
 import {removeData, retrieveData, storeData, utils} from '@/utils/utils';
 import {RkbCoupon, RkbFile, RkbImage} from '@/redux/api/accountApi';
@@ -25,7 +26,7 @@ import {actions as notiActions} from './noti';
 import {actions as cartActions} from './cart';
 import Env from '@/environment';
 import userApi from '@/redux/api/userApi';
-import CookieManager from '@react-native-cookies/cookies';
+import {CallHistory, PointHistory} from './talk';
 
 const {cachePrefix, scheme, apiUrl} = Env.get();
 
@@ -141,7 +142,10 @@ const changePictureWithToast = reflectWithToast(
 // * - point_exp : 포인트 소멸
 
 export type Fortune = {text: string; num: number; count: number};
-export type SectionData = {title: string; data: CashHistory[]};
+export type SectionData = {
+  title: string;
+  data: CashHistory[] | PointHistory[] | CallHistory[];
+};
 export type CashHistory = {
   account_id: string;
   after: string;

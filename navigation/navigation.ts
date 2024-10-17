@@ -273,6 +273,9 @@ export type HomeStackParamList = {
   Talk: undefined;
   TalkContact: undefined;
   TalkPoint: undefined;
+  TalkTariff: undefined;
+  EmergencyCall: undefined;
+  CallHistory: undefined;
 };
 
 export const navigate = (

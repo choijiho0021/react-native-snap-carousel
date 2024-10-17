@@ -64,7 +64,11 @@ const AppPrice = ({
           <AppText
             key="balance"
             style={[textStyle, balanceStyle || styles.price]}>
-            {showPlus && price.value > 0 ? '+' : ''}
+            {showPlus && (
+              <AppText style={currencyStyle}>
+                {price.value > 0 ? '+' : ''}
+              </AppText>
+            )}
             {utils.currencyString(price.value)}
           </AppText>
 
