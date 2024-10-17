@@ -159,14 +159,15 @@ const TalkMain: React.FC<TalkMainProps> = ({
   useFocusEffect(
     React.useCallback(() => {
       const updateLocalTime = () => {
-        const lt = moment.tz('Asia/Seoul').format('HH:mm');
+        const lt = moment.tz(ccInfo?.tz ?? 'Asia/Seoul').format('HH:mm');
+        // moment.zone('+09:00').format('HH:mm');
         setLocalTime(lt);
       };
 
       const intervalId = setInterval(updateLocalTime, 1000);
 
       return () => clearInterval(intervalId);
-    }, []),
+    }, [ccInfo?.tz]),
   );
 
   // talkpoint 가져오지 못할 경우 0 처리
@@ -225,8 +226,6 @@ const TalkMain: React.FC<TalkMainProps> = ({
   return (
     <>
       <View style={styles.topView}>
-        {/* <View style={{width: 10, height: 10, backgroundColor: 'red'}} /> */}
-        {/* <AppText  style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText> */}
         {ccInfo && (
           <View
             style={{

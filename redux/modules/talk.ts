@@ -71,6 +71,7 @@ export type TalkTariff = {
   chosung: string;
   mobile: number; // mobile tariff
   wireline: number; // landline tariff
+  tz: string;
   flag: string;
 };
 

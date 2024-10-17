@@ -68,6 +68,7 @@ type JsonTariff = {
   flag: string;
   mobile: string;
   wireline: string;
+  tz: string;
 };
 
 const getTariff = async () => {
@@ -89,6 +90,7 @@ const getTariff = async () => {
         flag: t.flag,
         mobile: utils.stringToNumber(t.mobile),
         wireline: utils.stringToNumber(t.wireline),
+        tz: t.tz,
       } as TalkTariff,
     ]),
   );
