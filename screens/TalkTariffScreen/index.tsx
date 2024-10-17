@@ -62,8 +62,9 @@ const styles = StyleSheet.create({
     color: colors.warmGrey,
   },
   item: {
+    height: 56,
     flexDirection: 'row',
-    marginHorizontal: 20,
+    paddingHorizontal: 20,
     paddingVertical: 12,
     alignItems: 'center',
   },
@@ -102,6 +103,7 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
   navigation,
 }) => {
   const [searchText, setSearchText] = useState('');
+  const [colorChange, setColorChange] = useState<string>();
 
   const tariffData = useMemo(() => {
     const list = Object.values(talk.tariff).reduce((acc, cur) => {
@@ -139,7 +141,12 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
     ({item}: {item: TalkTariff}) => {
       return (
         <Pressable
-          style={styles.item}
+          style={[
+            styles.item,
+            item.code === colorChange && {backgroundColor: colors.backGrey},
+          ]}
+          onPressIn={() => setColorChange(item.code)}
+          onPressOut={() => setColorChange('')}
           onPress={() => {
             action.talk.updateCcode(item.code);
             navigation.goBack();
@@ -164,7 +171,7 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
         </Pressable>
       );
     },
-    [action.talk, navigation],
+    [action.talk, colorChange, navigation],
   );
 
   const search = useCallback(
@@ -232,7 +239,9 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
       ) : null}
 
       <SectionList
+        keyExtractor={(item) => item.code}
         sections={search(tariffData, searchText)}
+        contentContainerStyle={{flexGrow: 1}}
         renderItem={renderSectionItem}
         renderSectionHeader={({section: {title}}) => (
           <AppText style={styles.sectionHeader}>{title}</AppText>
