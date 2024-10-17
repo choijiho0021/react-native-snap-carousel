@@ -1,10 +1,10 @@
-import {useFocusEffect} from '@react-navigation/native';
-import {RootState} from '@reduxjs/toolkit';
 import moment from 'moment';
-import React, {memo, useCallback, useMemo, useState} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {Image, Pressable, StyleSheet, View} from 'react-native';
-import {useSelector} from 'react-redux';
 import {SessionState} from 'sip.js';
+import {useSelector} from 'react-redux';
+import {RootState} from '@reduxjs/toolkit';
+import {useFocusEffect} from '@react-navigation/native';
 import AppButton from '@/components/AppButton';
 import AppPrice from '@/components/AppPrice';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -17,6 +17,8 @@ import {utils} from '@/utils/utils';
 import {RkbTalkNavigationProp} from '..';
 import CallToolTip from '../CallToolTip';
 import Keypad, {KeyType} from '../Keypad';
+import {emergencyCallNo} from '@/screens/EmergencyCallScreen';
+import {appStyles} from '@/constants/Styles';
 
 const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 
@@ -53,6 +55,18 @@ const styles = StyleSheet.create({
     letterSpacing: -0.28,
     color: colors.black,
     textAlignVertical: 'bottom',
+  },
+  emergencyCallText: {
+    ...appStyles.bold30Text,
+    lineHeight: 44,
+    color: colors.redError,
+    marginLeft: 8,
+  },
+  emergencyView: {
+    flexDirection: 'row',
+    height: 44,
+    marginTop: 16,
+    justifyContent: 'center',
   },
   input: {
     alignItems: 'center',
@@ -223,6 +237,35 @@ const TalkMain: React.FC<TalkMainProps> = ({
     );
   }, [localtime]);
 
+  const renderDestination = useCallback(() => {
+    const emg =
+      Object.entries(emergencyCallNo).find(([k, v]) => v === called) || [];
+
+    if (emg?.length > 0 && called) {
+      return (
+        <View style={[styles.input, styles.emergencyView]}>
+          <AppSvgIcon name="sos" />
+          <AppText
+            style={styles.emergencyCallText}
+            numberOfLines={1}
+            ellipsizeMode="head">
+            {i18n.t(`talk:urgent:call:${emg[0]}`)}
+          </AppText>
+        </View>
+      );
+    }
+    return (
+      <View style={[styles.input, {height: 44, marginTop: 16}]}>
+        <AppText style={styles.dest} numberOfLines={1} ellipsizeMode="head">
+          <AppText style={[styles.dest, {color: colors.clearBlue}]}>
+            {ccode || ''}
+          </AppText>
+          {ccode ? called?.substring(ccode.length) : called}
+        </AppText>
+      </View>
+    );
+  }, [called, ccode]);
+
   return (
     <>
       <View style={styles.topView}>
@@ -277,14 +320,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
 
       {/* <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
     <AppText style={{marginLeft: 10}}>{time}</AppText> */}
-      <View style={[styles.input, {height: 44, marginTop: 16}]}>
-        <AppText style={styles.dest} numberOfLines={1} ellipsizeMode="head">
-          <AppText style={[styles.dest, {color: colors.clearBlue}]}>
-            {ccode || ''}
-          </AppText>
-          {ccode ? called?.substring(ccode.length) : called}
-        </AppText>
-      </View>
+      {renderDestination()}
       <View style={{flex: 1}}>{info()}</View>
       <View>
         <Keypad

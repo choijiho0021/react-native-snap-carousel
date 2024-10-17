@@ -1931,6 +1931,9 @@
   "talk:point:expireDate": "유효기간 : ",
   "talk:point:expireModalTitle": "30일 이내\n소멸 예정인 톡포인트가 있어요",
 
+  "talk:urgent:call:mofa": "외교부 영사콜센터",
+  "talk:urgent:call:119": "119 응급의료상담",
+
   "talk:urgent:header": "긴급 통화",
   "talk:urgent:title": "긴급 상황이 발생하면",
   "talk:urgent:titleBold": "로깨비톡으로 도움을\n요청하세요.",

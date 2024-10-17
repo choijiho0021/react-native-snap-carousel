@@ -49,6 +49,8 @@ const storeData = async (key: string, value: any, isEncrypt?: boolean) => {
   }
 };
 
+const getNumber = (num?: string) => num?.replace(/[+\-() ]/g, '');
+
 const retrieveData = async (key: string, isDecrypt?: boolean) => {
   if (!key) return undefined;
 
@@ -143,6 +145,7 @@ export {
   storeData,
   retrieveData,
   removeData,
+  getNumber,
   parseJson,
   hasAndroidPermission,
   captureScreen,

@@ -39,7 +39,7 @@ import {
   TalkModelState,
 } from '@/redux/modules/talk';
 import i18n from '@/utils/i18n';
-import {utils} from '@/utils/utils';
+import {getNumber, utils} from '@/utils/utils';
 import EmptyResult from './components/EmptyResult';
 import SectionListSidebar from './components/SectionListSidebar';
 import ContactListItem from './ContactListItem';
@@ -391,10 +391,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
 
   const onPress = useCallback(
     (contactData: Contact) => {
-      const num = contactData?.phoneNumbers[0]?.number?.replace(
-        /[+\-() ]/g,
-        '',
-      );
+      const num = getNumber(contactData?.phoneNumbers[0]?.number);
       const name = `${contactData?.givenName} ${contactData?.familyName}`;
 
       action.talk.updateNumberClicked({num, name});
