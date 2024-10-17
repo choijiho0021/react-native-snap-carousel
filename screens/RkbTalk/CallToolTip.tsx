@@ -3,13 +3,16 @@ import {Modal, Pressable, StyleSheet, View} from 'react-native';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+
+const small = isDeviceSize('medium') || isDeviceSize('small');
 
 const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flexDirection: 'column',
     position: 'absolute',
-    top: 100,
+    top: small ? 60 : 100,
     right: 20,
   },
   triangle: {
