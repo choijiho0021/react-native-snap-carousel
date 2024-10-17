@@ -91,7 +91,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [mute, setMute] = useState(false);
   const [dtmfSession, setDtmfSession] = useState<Session>();
   const [duration, setDuration] = useState(0);
-  const [maxTime, setMaxTime] = useState<number>();
+  const [maxTime, setMaxTime] = useState<number | null>(null);
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
   const [check, setCheck] = useState(false);
@@ -268,17 +268,17 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const cleanupMedia = useCallback(() => {
     setRefreshing(true);
 
-    setInviter();
+    setInviter(null);
 
     setDuration(0);
-    setMaxTime();
+    setMaxTime(null);
     setTime('');
     setTimeout(() => {
       getPoint();
     }, 1000);
 
     // 저장했던 번호 삭제
-    action.talk.updateNumberClicked();
+    action.talk.updateNumberClicked({});
 
     setRefreshing(false);
   }, [action.talk, getPoint]);

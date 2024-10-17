@@ -1,7 +1,7 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Pressable,
   SafeAreaView,
@@ -137,23 +137,6 @@ const CallHistoryScreen: React.FC<CallHistoryScreenProps> = ({
     action.talk.readHistory();
   }, [action.talk]);
 
-  // const makeCall = useCallback(
-  //   (destination: string) => {
-  //     if (destination !== '') {
-  //       action.pjsip.makeCall({destination}).then(
-  //         (call) => {
-  //           dispatch(onCallInitiated(call.payload));
-  //           console.log('@@@ call', call);
-  //         },
-  //         (err) => {
-  //           console.log('@@@ failed to make call', err);
-  //         },
-  //       );
-  //     }
-  //   },
-  //   [action.pjsip, dispatch],
-  // );
-
   const renderEmpty = useCallback(() => {
     return (
       <View style={styles.emptyView}>
@@ -188,10 +171,10 @@ const CallHistoryScreen: React.FC<CallHistoryScreenProps> = ({
 
   const onPressItem = useCallback(
     (item: CallHistory) => {
-      const num = item?.ccode + item?.destination;
+      const num = item?.destination;
       const name = item?.name;
 
-      action.talk.updateNumberClicked({num, name});
+      action.talk.updateNumberClicked({num, name, ccode: item?.ccode});
       navigation.goBack();
     },
     [action.talk, navigation],

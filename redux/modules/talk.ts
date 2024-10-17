@@ -146,7 +146,7 @@ const updateCalls = async (state: TalkModelState, payload: CallHistory) => {
     newHistory = [
       {
         key,
-        destination: dest, // 연락처 클릭인경우 클릭한 번호 그대로 사용
+        destination: origin, // ccode 제외 번호
         duration: state.duration || 0,
         stime,
         ccode: state.ccode || '',
@@ -228,12 +228,15 @@ const slice = createSlice({
 
       state.clickedIncCc = undefined;
       state.clickedName = trimName(action.payload?.name);
+
       if (state.clickedName) {
         if (!state.ccode) {
           state.ccode = '82';
           state.called = state.ccode + num;
           state.clickedIncCc = false;
-        } else state.clickedIncCc = true;
+        } else if (state.ccode + num === state.called)
+          state.clickedIncCc = false;
+        else state.clickedIncCc = true;
       }
 
       state.clickedNum = num;
@@ -385,9 +388,15 @@ export const callChanged = createAsyncThunk(
 
 export const updateNumberClicked = createAsyncThunk(
   'talk/updateNumberClicked',
-  async ({num, name}: {num: string; name: string}, {dispatch}) => {
-    dispatch(slice.actions.updateCalledPty(num));
-    dispatch(slice.actions.updateClicked({num, name}));
+  async (
+    {num, name, ccode}: {num?: string; name?: string; ccode?: string},
+    {dispatch},
+  ) => {
+    Promise.resolve(
+      dispatch(slice.actions.updateCalledPty(`${ccode || ''}${num || ''}`)),
+    ).then(() => {
+      dispatch(slice.actions.updateClicked({num, name}));
+    });
   },
 );
 
