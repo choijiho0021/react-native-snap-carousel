@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import AppText from '@/components/AppText';
 
@@ -19,6 +19,30 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     width: '100%',
   },
+  motionContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  overlayContainer: {
+    width: 248,
+    height: 248,
+    position: 'relative',
+  },
+
+  lottieView: {
+    width: '95%',
+    aspectRatio: 1,
+    position: 'absolute',
+    top: 4,
+    left: 4,
+  },
+  appIcon: {
+    width: 248,
+    height: 248,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
 });
 
 type TalkRewardModalProps = {
@@ -31,6 +55,29 @@ const TalkRewardModal: React.FC<TalkRewardModalProps> = ({
   onClick,
 }) => {
   const navigation = useNavigation();
+
+  // const loadingMotion = useCallback(() => {
+  //   return (
+  //     <View style={styles.motionContainer}>
+  //       <View style={styles.overlayContainer}>
+  //         <LottieView
+  //           hardwareAccelerationAndroid
+  //           autoPlay
+  //           loop
+  //           style={styles.lottieView}
+  //           source={require('@/assets/animation/lucky.json')}
+  //           resizeMode="cover"
+  //           renderMode="HARDWARE"
+  //         />
+  //         <AppIcon
+  //           imgStyle={styles.appIcon}
+  //           name="loadingLucky"
+  //           mode="contain"
+  //         />
+  //       </View>
+  //     </View>
+  //   );
+  // }, []);
 
   return (
     <AppModal

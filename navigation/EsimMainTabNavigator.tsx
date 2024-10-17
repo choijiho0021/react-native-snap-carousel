@@ -289,7 +289,6 @@ function TalkStackComponent() {
         name="TalkPermission"
         component={TalkPermissionScreen}
       />
-      <TalkStack.Screen name="TalkPoint" component={TalkPoint} />
       <TalkStack.Screen name="TalkPoint" component={TalkPointScreen} />
       <TalkStack.Screen name="TalkTariff" component={TalkTariffScreen} />
       <TalkStack.Screen name="EmergencyCall" component={EmergencyCallScreen} />

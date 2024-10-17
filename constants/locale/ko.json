@@ -1864,6 +1864,13 @@
   "talk:reward:info2": "• 리워드로 지급한 톡포인트의 유효기간은 발급일로부터 90일이에요.",
   "talk:reward:info3": "• 실제로 사용할 시점을 고려해서 톡포인트를 발급받으시는 것을 추천해요!",
 
+  "talk:reward:header": "로깨비톡 런칭 기념",
+  "talk:reward:body1": "발권 리워드 받고\n해외 <b>무료 통화</b>하세요!",
+  "talk:reward:reward": "발권 리워드",
+  "talk:reward:talkPoint": "톡포인트",
+  "talk:reward:free": "무료 통화 30분",
+  "talk:reward:korea": "한국 발신 기준",
+
   "talk:modal:title": "데이터만 있으면\n언제 어디서든 톡톡!",
   "talk:modal:body": "<b>휴대폰 본인인증</b>\n로깨비톡 이용을 위해 본인 인증이 필요해요.",
   "talk:modal:info": "로그아웃 시 인증 정보는 초기화됩니다.",
@@ -1874,8 +1881,8 @@
   "talk:reward:btn": "지금 바로 톡포인트 받기",
   "talk:reward:btn2": "다음에 받기",
 
-  "talk:reward:modal:body1": "로깨비톡 런칭 기념\n<b>0,000 톡포인트</b>가 도착했어요.",
-  "talk:reward:modal:body2": "해외 여행 중에도 <b>30분간 무료 통화</b>에요!\n(한국 발신 기준)",
+  "talk:reward:modal:body1": "<b>%v 톡포인트</b>가 도착했어요.",
+  "talk:reward:modal:body2": "발권 리워드 받고\n<b>30분 무료 통화</b>해요!",
   "talk:reward:modal:btn": "자세히 보기",
 
   "talk:permission:title": "데이터만 있으면 언제 어디서든 톡톡!",

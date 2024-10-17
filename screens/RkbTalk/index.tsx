@@ -48,7 +48,6 @@ import {
   actions as accountActions,
 } from '@/redux/modules/account';
 import {RootState} from '@/redux';
-import {bindActionCreators} from 'redux';
 import {colors} from '@/constants/Colors';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import PhoneCertBox from './component/PhoneCertBox';

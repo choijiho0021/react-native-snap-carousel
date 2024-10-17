@@ -546,6 +546,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   // 첫 리워드 조건 체크용
   useEffect(() => {
     if (isFocused && isReceivedReward !== undefined && isReceivedReward === 0) {
+      // localStorage로 기록해두면, 로깨비톡 히스토리 > 첫 발권 리워드 받기 배너 여는 기준을 정해줄 수 있다.
       setIsVisibleReward(true);
     }
   }, [action.account, mobile, isReceivedReward, isFocused]);
