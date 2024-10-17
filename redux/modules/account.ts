@@ -590,7 +590,7 @@ const slice = createSlice({
       const {result, objects} = action.payload;
 
       if (result === 0) {
-        state.isReceivedReward = objects?.firstReward;
+        state.isReceivedReward = objects?.fstrwd;
         state.tpnt = objects?.tpnt;
       }
     });

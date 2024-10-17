@@ -135,7 +135,10 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
           prompt: 'check',
         });
 
-        action.account.getTalkPoint({mobile});
+        action.account.getTalkPoint({
+          mobile: `00001111${mobile}`,
+          isReal: false,
+        });
         navigation.popToTop();
         if (draftOrder?.orderType === 'refundable') {
           // 바로 운세뽑기로 이동

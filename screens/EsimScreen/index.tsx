@@ -774,12 +774,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         )}
       </View>
 
-      <AppButton
-        onPress={() => {
-          console.log('@@@ test click');
-          action.account.getTalkPoint({mobile});
+      {/* <AppButton
+        onPress={() => { 
+          action.account.getTalkPoint({
+            mobile: `00001111${mobile}`,
+            isReal: false,
+          });
         }}
-      />
+      /> */}
 
       <FlatList
         ref={flatListRef}

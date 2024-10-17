@@ -188,7 +188,10 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
             hidden: false,
           });
 
-          action.account.getTalkPoint({mobile});
+          action.account.getTalkPoint({
+            mobile: `00001111${mobile}`,
+            isReal: false,
+          });
           await action.account.checkLottery({
             iccid,
             token,
