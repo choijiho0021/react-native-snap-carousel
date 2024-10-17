@@ -182,6 +182,23 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [isGetResult, setIsGetResult] = useState(false); // 모달창 뜨고 쿠폰함 바로가기 보여주기용
   const [disableBtn, setDisableBtn] = useState(false); // 모달 결과 출력 전까지 버튼 금지
   // const [pendingTimeout, setPendingTimeout] = useState(false);
+  const [showCloseBtn, setShowCloseBtn] = useState(false); // 로딩 10초 이후엔 X 표 출력
+
+  const isLoadingRef = useRef(true);
+
+  useEffect(() => {
+    isLoadingRef.current = isLoading;
+  }, [isLoading]);
+
+  const goBackEsim = useCallback(() => {
+    // 새로고침 필요함.
+    if (iccid && token)
+      action.account.checkLottery({iccid, token, prompt: 'check'});
+
+    // 다시 화면 진입 시 버그 방지
+    setIsLoading(false);
+    navigation.popToTop();
+  }, [action.account, iccid, navigation, token]);
 
   const {type} = route?.params;
 
@@ -213,7 +230,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     onBack: () => {
       if (isLoading) return true;
       setShowShareModal(false);
-      navigation.goBack();
+      goBackEsim();
       return true;
     },
   });
@@ -343,37 +360,37 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       token,
       prompt: 'lottery',
     }).then((resp) => {
-      setDisableBtn(true);
       const couponObj = resp.objects[0]?.coupon;
 
       if (resp.result === 0) {
+        setIsLoading(false);
         setCoupon({
           cnt: couponObj?.cnt || 0,
           title: couponObj?.display_name,
           desc: couponObj?.description,
           charm: resp.objects[0]?.charm,
         });
-
         setPhase({
           text: resp.objects[0]?.phrase,
           num: resp.objects[0]?.num,
           count: couponObj?.cnt || 0,
         });
-
         // 뽑기 , 임시로 3초 타임아웃
         setTimeout(() => {
-          setIsLoading(false);
-
           action.account.checkLottery({iccid, token, prompt: 'check'});
           setIsGetResult(true);
           setShowCouponModal(true);
           setDisableBtn(false);
         }, 2000);
       } else {
-        // 실패했을 땐 어떻게 해야할 지??
+        action.toast.push({
+          msg: 'esim:lottery:network',
+          toastIcon: 'bannerMarkToastError',
+        });
+        goBackEsim();
       }
     });
-  }, [action.account, iccid, token]);
+  }, [action.account, action.toast, goBackEsim, iccid, token]);
 
   const renderTitleAndPhase = useCallback(() => {
     return (
@@ -434,32 +451,31 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
   // disableBtn로 중복방지 처리가 되어있음.
   const onClick = useCallback(() => {
-    // 타임아웃과 별개로 쿠폰발급 API 실행
+    setDisableBtn(true);
     setIsLoading(true);
 
     console.log('@@@@ setIsLoading true');
 
     lotteryCoupon();
 
-    // Loading false 는 중복 호출되도 상관없음
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
     // 30초 동안 로딩 상태면, goBack 실행
     setTimeout(() => {
       setIsLoading((currentLoading) => {
-        if (currentLoading) {
+        if (isLoadingRef.current) {
           action.toast.push({
             msg: 'esim:lottery:network',
             toastIcon: 'bannerMarkToastError',
           });
-          navigation.goBack();
+          goBackEsim();
         }
         return currentLoading;
       });
     }, 30000);
-  }, [lotteryCoupon, action.toast, navigation]);
+
+    setTimeout(() => {
+      setShowCloseBtn(true);
+    }, 10000);
+  }, [action.toast, goBackEsim, lotteryCoupon]);
 
   const renderShareButton = useCallback(
     (text: string, appIcon: string, onPress: any) => {
@@ -548,7 +564,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
   const renderBody = useCallback(() => {
     // isLoading false여도 쿠폰정보가 없으면 로딩화면이 출력되야함.
-    if (!isHistory && isLoading && coupon?.title !== '') {
+    if (!isHistory && isLoading) {
       return <RenderLoadingLottery />;
     }
 
@@ -587,7 +603,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const renderHeader = useCallback(() => {
     return (
       <>
-        {!isLoading && (
+        {(!isLoading || showCloseBtn) && (
           <ScreenHeader
             // backHandler={backHandler}
             headerStyle={{backgroundColor: 'transparent', zIndex: 10}}
@@ -597,7 +613,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
                 name="closeModal"
                 style={styles.btnCnter}
                 onPress={() => {
-                  navigation.popToTop();
+                  goBackEsim();
                 }}
               />
             }
@@ -605,7 +621,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         )}
       </>
     );
-  }, [isLoading, navigation]);
+  }, [goBackEsim, isLoading, showCloseBtn]);
 
   const renderByType = useCallback(() => {
     if (type === 'draft') {
