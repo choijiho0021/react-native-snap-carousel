@@ -183,6 +183,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const [disableBtn, setDisableBtn] = useState(false); // 모달 결과 출력 전까지 버튼 금지
   // const [pendingTimeout, setPendingTimeout] = useState(false);
   const [showCloseBtn, setShowCloseBtn] = useState(false); // 로딩 10초 이후엔 X 표 출력
+  const [isSecLoading, setIsSecLoading] = useState(false);
 
   const isLoadingRef = useRef(true);
 
@@ -197,6 +198,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
     // 다시 화면 진입 시 버그 방지
     setIsLoading(false);
+    setIsSecLoading(false);
     navigation.popToTop();
   }, [action.account, iccid, navigation, token]);
 
@@ -453,6 +455,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const onClick = useCallback(() => {
     setDisableBtn(true);
     setIsLoading(true);
+    setIsSecLoading(true);
 
     console.log('@@@@ setIsLoading true');
 
@@ -471,6 +474,10 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         return currentLoading;
       });
     }, 30000);
+
+    setTimeout(() => {
+      setIsSecLoading(false);
+    }, 2000);
 
     setTimeout(() => {
       setShowCloseBtn(true);
@@ -564,7 +571,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
   const renderBody = useCallback(() => {
     // isLoading false여도 쿠폰정보가 없으면 로딩화면이 출력되야함.
-    if (!isHistory && isLoading) {
+    if (!isHistory && (isLoading || isSecLoading)) {
       return <RenderLoadingLottery />;
     }
 
@@ -591,7 +598,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   }, [
     isHistory,
     isLoading,
-    coupon?.title,
+    isSecLoading,
     phase?.text,
     type,
     fortune?.count,
