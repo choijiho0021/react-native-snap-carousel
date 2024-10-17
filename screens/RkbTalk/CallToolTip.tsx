@@ -1,4 +1,4 @@
-import React, {memo, useMemo, useState} from 'react';
+import React, {memo, useCallback, useMemo, useState} from 'react';
 import {Modal, Pressable, StyleSheet, View} from 'react-native';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
@@ -43,10 +43,12 @@ const CallToolTip = ({
   text,
   icon,
   arrowPos,
+  updateTooltip,
 }: {
   text: string;
   icon?: string;
   arrowPos?: string;
+  updateTooltip: (t: boolean) => void;
 }) => {
   const [visible, setVisible] = useState(true);
 
@@ -61,15 +63,20 @@ const CallToolTip = ({
     }
   }, [arrowPos]);
 
+  const onClose = useCallback(() => {
+    setVisible(false);
+    updateTooltip(false);
+  }, [updateTooltip]);
+
   return (
     <Modal
       visible={visible}
       transparent
       animationType="none"
-      onRequestClose={() => setVisible(false)}>
+      onRequestClose={onClose}>
       <Pressable
         style={{flex: 1}}
-        onPress={() => setVisible(false)} // Close modal when background is pressed
+        onPress={onClose} // Close modal when background is pressed
       >
         <View style={{...styles.container, alignItems: position}}>
           <View

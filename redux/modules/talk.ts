@@ -96,6 +96,7 @@ export interface TalkModelState {
   tariff: Record<string, TalkTariff>;
   maxCcodePrefix: number; // max length of country code
   callHistory: SectionData[];
+  tooltip: boolean;
   clickedNum?: string; // same with contact
   clickedName?: string;
   clickedIncCc?: boolean; // if clicked number has cccode
@@ -169,6 +170,7 @@ const initialState: TalkModelState = {
   tariff: {},
   maxCcodePrefix: 0,
   callHistory: [],
+  tooltip: false,
   duration: 0,
 };
 
@@ -278,6 +280,10 @@ const slice = createSlice({
     resetWithoutContacts: (state) => {
       // logout때, 통화기록은?
       return {...initialState, contacts: state.contacts};
+    },
+    updateTooltip: (state, action) => {
+      state.tooltip = action.payload;
+      return state;
     },
   },
   extraReducers: (builder) => {

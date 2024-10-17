@@ -141,6 +141,8 @@ type TalkMainProps = {
   point: number;
   time: string;
   min: number | undefined;
+  tooltip: boolean;
+  updateTooltip: (t: boolean) => void;
 };
 
 const TalkMain: React.FC<TalkMainProps> = ({
@@ -152,6 +154,8 @@ const TalkMain: React.FC<TalkMainProps> = ({
   onChange,
   min,
   showWarning,
+  tooltip,
+  updateTooltip,
 }) => {
   const {called, ccode, tariff} = useSelector((state: RootState) => state.talk);
   const [initial, calling, connected] = useMemo(
@@ -183,6 +187,14 @@ const TalkMain: React.FC<TalkMainProps> = ({
       return () => clearInterval(intervalId);
     }, [ccInfo?.tz]),
   );
+
+  useEffect(() => {
+    if (tooltip && navigation.isFocused()) {
+      setTimeout(() => {
+        updateTooltip(false);
+      }, 15000);
+    }
+  }, [navigation, tooltip, updateTooltip]);
 
   // talkpoint 가져오지 못할 경우 0 처리
   const talkPointBtn = useCallback(() => {
@@ -296,7 +308,13 @@ const TalkMain: React.FC<TalkMainProps> = ({
         />
       </View>
       {ccInfo && getLocalTime()}
-      <CallToolTip text={i18n.t('talk:emergencyText')} icon="bell" />
+      {tooltip && (
+        <CallToolTip
+          text={i18n.t('talk:emergencyText')}
+          icon="bell"
+          updateTooltip={updateTooltip}
+        />
+      )}
       {connected && (
         <View style={styles.connectedView}>
           {showWarning && (
