@@ -1,18 +1,34 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
+import {StackNavigationProp} from '@react-navigation/stack';
 import * as Hangul from 'hangul-js';
 import React, {useCallback, useMemo, useState} from 'react';
-import {Image, SafeAreaView, SectionList, StyleSheet, View} from 'react-native';
+import {
+  Image,
+  Pressable,
+  SafeAreaView,
+  SectionList,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import AppSearch from '@/components/AppSearch';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
+import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
-import {TalkModelState, TalkTariff} from '@/redux/modules/talk';
-import i18n from '@/utils/i18n';
 import {API} from '@/redux/api';
-import AppSearch from '@/components/AppSearch';
+import {
+  actions as talkActions,
+  TalkAction,
+  TalkModelState,
+  TalkTariff,
+} from '@/redux/modules/talk';
+import i18n from '@/utils/i18n';
 import EmptyResult from '../TalkContact/components/EmptyResult';
+import Footer from './Footer';
 
 const styles = StyleSheet.create({
   container: {
@@ -47,8 +63,9 @@ const styles = StyleSheet.create({
     color: colors.warmGrey,
   },
   item: {
+    height: 56,
     flexDirection: 'row',
-    marginHorizontal: 20,
+    paddingHorizontal: 20,
     paddingVertical: 12,
     alignItems: 'center',
   },
@@ -63,16 +80,31 @@ const styles = StyleSheet.create({
   },
 });
 
+export type TalkTariffNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'TalkTariff'
+>;
+
 type TalkTariffScreenProps = {
+  navigation: TalkTariffNavigationProp;
+
   talk: TalkModelState;
+  action: {
+    talk: TalkAction;
+  };
 };
 
 type TariffSectionData = Record<string, {title: string; data: TalkTariff[]}>;
 
 const favoriteCountry = ['kr', 'us', 'jp'];
 
-const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({talk}) => {
+const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
+  talk,
+  action,
+  navigation,
+}) => {
   const [searchText, setSearchText] = useState('');
+  const [colorChange, setColorChange] = useState<string>();
 
   const tariffData = useMemo(() => {
     const list = Object.values(talk.tariff).reduce((acc, cur) => {
@@ -106,29 +138,42 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({talk}) => {
     [talk.tariff],
   );
 
-  const renderSectionItem = useCallback(({item}: {item: TalkTariff}) => {
-    return (
-      <View style={styles.item}>
-        <Image
-          style={styles.flag}
-          source={{uri: API.default.httpImageUrl(item.flag)}}
-        />
-        <AppText
+  const renderSectionItem = useCallback(
+    ({item}: {item: TalkTariff}) => {
+      return (
+        <Pressable
           style={[
-            appStyles.semiBold16Text,
-            {flex: 1},
-          ]}>{`${item.name} (${item.code})`}</AppText>
-        <View style={styles.row2}>
-          <AppText key="wire" style={styles.tariff}>
-            {item.wireline + 'P'}
-          </AppText>
-          <AppText key="mobile" style={styles.tariff}>
-            {item.mobile + 'P'}
-          </AppText>
-        </View>
-      </View>
-    );
-  }, []);
+            styles.item,
+            item.code === colorChange && {backgroundColor: colors.backGrey},
+          ]}
+          onPressIn={() => setColorChange(item.code)}
+          onPressOut={() => setColorChange('')}
+          onPress={() => {
+            action.talk.updateCcode(item.code);
+            navigation.goBack();
+          }}>
+          <Image
+            style={styles.flag}
+            source={{uri: API.default.httpImageUrl(item.flag)}}
+          />
+          <AppText
+            style={[
+              appStyles.semiBold16Text,
+              {flex: 1},
+            ]}>{`${item.name} (${item.code})`}</AppText>
+          <View style={styles.row2}>
+            <AppText key="wire" style={styles.tariff}>
+              {`${item.wireline}P`}
+            </AppText>
+            <AppText key="mobile" style={styles.tariff}>
+              {`${item.mobile}P`}
+            </AppText>
+          </View>
+        </Pressable>
+      );
+    },
+    [action.talk, colorChange, navigation],
+  );
 
   const search = useCallback(
     (
@@ -195,17 +240,27 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({talk}) => {
       ) : null}
 
       <SectionList
+        keyExtractor={(item) => item.code}
         sections={search(tariffData, searchText)}
+        contentContainerStyle={{flexGrow: 1}}
         renderItem={renderSectionItem}
         renderSectionHeader={({section: {title}}) => (
           <AppText style={styles.sectionHeader}>{title}</AppText>
         )}
+        ListFooterComponent={<Footer />}
         ListEmptyComponent={<EmptyResult />}
       />
     </SafeAreaView>
   );
 };
 
-export default connect(({talk}: RootState) => ({
-  talk,
-}))(TalkTariffScreen);
+export default connect(
+  ({talk}: RootState) => ({
+    talk,
+  }),
+  (dispatch) => ({
+    action: {
+      talk: bindActionCreators(talkActions, dispatch),
+    },
+  }),
+)(TalkTariffScreen);

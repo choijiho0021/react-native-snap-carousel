@@ -195,7 +195,7 @@ type RkbTalkProps = {
 
 const RkbTalk: React.FC<RkbTalkProps> = ({
   account: {mobile, realMobile, iccid, token},
-  talk: {called, tariff},
+  talk: {called, tariff, ccode},
   navigation,
   action,
 }) => {
@@ -496,7 +496,9 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     (k: string, d?: string) => {
       switch (k) {
         case 'call':
-          if (called) makeCall(called);
+          if (!called || called === ccode || (called && !ccode))
+            navigation.navigate('TalkTariff');
+          else if (called) makeCall(called);
           break;
         case 'hangup':
           releaseCall();
@@ -529,7 +531,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           break;
       }
     },
-    [called, dtmfSession, makeCall, releaseCall],
+    [called, ccode, dtmfSession, makeCall, navigation, releaseCall],
   );
 
   // Options for SimpleUser

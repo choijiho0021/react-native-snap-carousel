@@ -71,6 +71,7 @@ export type TalkTariff = {
   chosung: string;
   mobile: number; // mobile tariff
   wireline: number; // landline tariff
+  tz: string;
   flag: string;
 };
 
@@ -258,6 +259,17 @@ const slice = createSlice({
     },
     updateHistory: (state, action) => {
       state.callHistory = action.payload;
+      return state;
+    },
+    updateCcode: (state, action) => {
+      if (state.called) {
+        if (state.ccode) {
+          const origin = getOriginNumber(state.called, state.ccode);
+          state.called = action.payload + origin;
+        } else state.called = action.payload + state.called;
+      } else state.called = action.payload;
+
+      state.ccode = action.payload;
       return state;
     },
     updateMode: (state, action) => {

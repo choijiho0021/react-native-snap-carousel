@@ -1,21 +1,22 @@
-import moment from 'moment';
-import React, {memo, useCallback, useMemo} from 'react';
-import {Image, Pressable, StyleSheet, View} from 'react-native';
-import {SessionState} from 'sip.js';
-import {useSelector} from 'react-redux';
+import {useFocusEffect} from '@react-navigation/native';
 import {RootState} from '@reduxjs/toolkit';
+import moment from 'moment';
+import React, {memo, useCallback, useMemo, useState} from 'react';
+import {Image, Pressable, StyleSheet, View} from 'react-native';
+import {useSelector} from 'react-redux';
+import {SessionState} from 'sip.js';
 import AppButton from '@/components/AppButton';
+import AppPrice from '@/components/AppPrice';
+import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
-import CallToolTip from '../CallToolTip';
-import AppSvgIcon from '@/components/AppSvgIcon';
-import Keypad, {KeyType} from '../Keypad';
-import AppPrice from '@/components/AppPrice';
 import {utils} from '@/utils/utils';
 import {RkbTalkNavigationProp} from '..';
-import {API} from '@/redux/api';
+import CallToolTip from '../CallToolTip';
+import Keypad, {KeyType} from '../Keypad';
 
 const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 
@@ -153,6 +154,21 @@ const TalkMain: React.FC<TalkMainProps> = ({
     () => (ccode && (initial || calling) ? tariff[ccode] : undefined),
     [calling, ccode, initial, tariff],
   );
+  const [localtime, setLocalTime] = useState<string>();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const updateLocalTime = () => {
+        const lt = moment.tz(ccInfo?.tz ?? 'Asia/Seoul').format('HH:mm');
+        // moment.zone('+09:00').format('HH:mm');
+        setLocalTime(lt);
+      };
+
+      const intervalId = setInterval(updateLocalTime, 1000);
+
+      return () => clearInterval(intervalId);
+    }, [ccInfo?.tz]),
+  );
 
   // talkpoint 가져오지 못할 경우 0 처리
   const talkPointBtn = useCallback(() => {
@@ -197,11 +213,19 @@ const TalkMain: React.FC<TalkMainProps> = ({
     );
   }, [connected, initial, talkPointBtn, time]);
 
+  const getLocalTime = useCallback(() => {
+    return (
+      <AppText style={{textAlign: 'center', color: colors.warmGrey}}>
+        {i18n.t(`talk:localTime`, {
+          time: localtime,
+        })}
+      </AppText>
+    );
+  }, [localtime]);
+
   return (
     <>
       <View style={styles.topView}>
-        {/* <View style={{width: 10, height: 10, backgroundColor: 'red'}} /> */}
-        {/* <AppText  style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText> */}
         {ccInfo && (
           <View
             style={{
@@ -228,13 +252,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
           onPress={() => navigation.navigate('EmergencyCall')}
         />
       </View>
-      {ccInfo && (
-        <AppText style={{textAlign: 'center', color: colors.warmGrey}}>
-          {i18n.t(`talk:localTime`, {
-            time: moment().tz('Asia/Seoul').format('HH:mm'),
-          })}
-        </AppText>
-      )}
+      {ccInfo && getLocalTime()}
       <CallToolTip text={i18n.t('talk:emergencyText')} icon="bell" />
       {connected && (
         <View style={styles.connectedView}>
