@@ -94,10 +94,10 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [maxTime, setMaxTime] = useState<number>();
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
+  const [check, setCheck] = useState(false);
   const [pntError, setPntError] = useState<boolean>(false);
   // const [digit, setDigit] = useState('');
   const [refreshing, setRefreshing] = useState(false);
-  const [showCheckModal, setShowCheckModal] = useState<boolean>(true);
   const testNumber = realMobile;
   // const testNumber = '07079190216';
 
@@ -125,10 +125,13 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         if (result == null) {
           navigation.navigate('TalkPermission');
           AsyncStorage.setItem('alreadyRkbLaunched', 'true');
-        } else action.talk.updateTooltip(true);
+        } else if (!check) {
+          action.talk.updateTooltip(true);
+          setCheck(true);
+        }
       });
     }
-  }, [action.talk, isFocused, navigation, realMobile]);
+  }, [action.talk, check, isFocused, navigation, realMobile]);
 
   const getPoint = useCallback(() => {
     if (realMobile) {
