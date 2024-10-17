@@ -134,7 +134,6 @@ const updateCalls = async (state: TalkModelState, payload: CallHistory) => {
     ? state?.clickedNum === state.called
     : state?.clickedNum === origin;
   const name = isSame ? state.clickedName : undefined;
-  const dest = isSame ? state.clickedNum : state.called;
 
   const json = await retrieveData('callHistory');
   const hist = parseJson(json);
