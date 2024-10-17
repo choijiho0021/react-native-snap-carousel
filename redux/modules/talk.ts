@@ -90,13 +90,14 @@ export interface TalkModelState {
   pointHistory?: SectionData[];
   expList?: ExpPointHistory[];
   expPoint?: string;
-  called?: string;
+  called?: string; // include ccode
   ccode?: string; // country code parsed from 'called number'
   tariff: Record<string, TalkTariff>;
   maxCcodePrefix: number; // max length of country code
   callHistory: SectionData[];
-  clickedNum?: string;
+  clickedNum?: string; // same with contact
   clickedName?: string;
+  clickedIncCc?: boolean; // if clicked number has cccode
   duration?: number;
 }
 
@@ -120,17 +121,18 @@ const makeSectionData = (hist: CallHistory[]) => {
   }, []);
 };
 
+const getOriginNumber = (number: string, ccode?: string) =>
+  ccode ? number?.substring(ccode.length) : number;
+
 const updateCalls = async (state: TalkModelState, payload: CallHistory) => {
   const {key, destination, stime = moment()} = payload || {};
 
-  const name = [state.clickedNum, state?.ccode + state?.clickedNum].includes(
-    destination,
-  )
-    ? state.clickedName
-    : undefined;
-  const dest = state?.ccode
-    ? destination?.substring(state?.ccode.length)
-    : destination;
+  const origin = getOriginNumber(state.called, state?.ccode);
+  const isSame = state.clickedIncCc
+    ? state?.clickedNum === state.called
+    : state?.clickedNum === origin;
+  const name = isSame ? state.clickedName : undefined;
+  const dest = isSame ? state.clickedNum : state.called;
 
   const json = await retrieveData('callHistory');
   const hist = parseJson(json);
@@ -142,7 +144,7 @@ const updateCalls = async (state: TalkModelState, payload: CallHistory) => {
     newHistory = [
       {
         key,
-        destination: dest,
+        destination: dest, // 연락처 클릭인경우 클릭한 번호 그대로 사용
         duration: state.duration || 0,
         stime,
         ccode: state.ccode || '',
@@ -219,12 +221,22 @@ const slice = createSlice({
       return state;
     },
     updateClicked: (state, action) => {
-      state.clickedNum = action.payload?.num;
+      const num = action.payload?.num;
+
+      state.clickedIncCc = undefined;
       state.clickedName = trimName(action.payload?.name);
+      if (state.clickedName) {
+        if (!state.ccode) {
+          state.ccode = '82';
+          state.called = state.ccode + num;
+          state.clickedIncCc = false;
+        } else state.clickedIncCc = true;
+      }
+
+      state.clickedNum = num;
       return state;
     },
     updateDuration: (state, action) => {
-      console.log('@@ action up du', action.payload);
       state.duration = action.payload;
       return state;
     },
@@ -353,6 +365,14 @@ export const callChanged = createAsyncThunk(
   },
 );
 
+export const updateNumberClicked = createAsyncThunk(
+  'talk/updateNumberClicked',
+  async ({num, name}: {num: string; name: string}, {dispatch}) => {
+    dispatch(slice.actions.updateCalledPty(num));
+    dispatch(slice.actions.updateClicked({num, name}));
+  },
+);
+
 export const actions = {
   ...slice.actions,
   getContacts,
@@ -362,6 +382,7 @@ export const actions = {
   readHistory,
   callInitiated,
   callChanged,
+  updateNumberClicked,
   // getTalkPoint,
 };
 

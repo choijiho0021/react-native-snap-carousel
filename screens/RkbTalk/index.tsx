@@ -257,8 +257,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     }, 1000);
 
     // 저장했던 번호 삭제
-    action.talk.updateCalledPty();
-    action.talk.updateClicked();
+    action.talk.updateNumberClicked();
 
     setRefreshing(false);
   }, [action.talk, getPoint]);

@@ -391,11 +391,13 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
 
   const onPress = useCallback(
     (contactData: Contact) => {
-      const num = contactData?.phoneNumbers[0]?.number?.replace(/[+\- ]/g, '');
+      const num = contactData?.phoneNumbers[0]?.number?.replace(
+        /[+\-() ]/g,
+        '',
+      );
       const name = `${contactData?.givenName} ${contactData?.familyName}`;
 
-      action.talk.updateClicked({num, name});
-      action.talk.updateCalledPty(num);
+      action.talk.updateNumberClicked({num, name});
       navigation.goBack();
     },
     [action.talk, navigation],

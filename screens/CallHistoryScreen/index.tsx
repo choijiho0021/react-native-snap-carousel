@@ -190,8 +190,8 @@ const CallHistoryScreen: React.FC<CallHistoryScreenProps> = ({
     (item: CallHistory) => {
       const num = item?.ccode + item?.destination;
       const name = item?.name;
-      action.talk.updateClicked({num, name});
-      action.talk.updateCalledPty(num);
+
+      action.talk.updateNumberClicked({num, name});
       navigation.goBack();
     },
     [action.talk, navigation],
@@ -232,7 +232,9 @@ const CallHistoryScreen: React.FC<CallHistoryScreenProps> = ({
         // ref={sectionRef}
         keyExtractor={(item, index) => `${item?.key + index}`}
         sections={callHistory || []}
-        contentContainerStyle={{flex: 1, marginHorizontal: 20}}
+        contentContainerStyle={
+          callHistory?.length > 0 ? {marginHorizontal: 20} : {flex: 1}
+        }
         renderItem={renderSectionItem}
         renderSectionHeader={renderSectionHeader}
         stickySectionHeadersEnabled
