@@ -148,6 +148,7 @@ const CliLogModal: React.FC<CliLogModalProps> = ({
                   backgroundColor: !account.loggedIn
                     ? colors.white
                     : colors.backGrey,
+                  color: colors.black,
                 },
               ]}
               returnKeyType="done"
