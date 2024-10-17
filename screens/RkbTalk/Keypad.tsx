@@ -181,6 +181,10 @@ const Keypad: React.FC<KeypadProps> = ({
           SessionState.Terminated,
         ].includes(st);
 
+      const motion = showWarning
+        ? require('@/assets/images/lottie/imminent_Red.json')
+        : require('@/assets/images/lottie/call_blue.json');
+
       const connected = SessionState.Established === st;
 
       if (
@@ -298,7 +302,7 @@ const Keypad: React.FC<KeypadProps> = ({
                   ]}
                   autoPlay
                   loop
-                  source={require('@/assets/images/lottie/call_blue.json')}
+                  source={motion}
                 />
                 {showWarning && <View />}
               </>
@@ -336,14 +340,7 @@ const Keypad: React.FC<KeypadProps> = ({
     ],
   );
 
-  return (
-    <View style={style}>
-      {/* <View style={styles.input}>
-        <Text style={styles.dest}>{showKeypad ? dtmf : dest}</Text>
-      </View> */}
-      {renderKey(state)}
-    </View>
-  );
+  return <View style={style}>{renderKey(state)}</View>;
 };
 
 export default memo(Keypad);
