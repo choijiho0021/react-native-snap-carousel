@@ -2,7 +2,6 @@ import {
   RouteProp,
   useFocusEffect,
   useIsFocused,
-  useNavigation,
 } from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
@@ -32,15 +31,11 @@ import Contacts from 'react-native-contacts';
 import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
 
 import AppAlert from '@/components/AppAlert';
-import AppSvgIcon from '@/components/AppSvgIcon';
-import AppText from '@/components/AppText';
-import {isDeviceSize, MAX_WIDTH} from '@/constants/SliderEntry.style';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {API} from '@/redux/api';
-import i18n from '@/utils/i18n';
 
 import _ from 'underscore';
-import {isNumber} from 'underscore';
 import {useInterval} from '@/utils/useInterval';
 import {
   actions as talkActions,
@@ -59,10 +54,6 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 import PhoneCertBox from './component/PhoneCertBox';
 import TalkMain from './component/TalkMain';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
-
-import AppModal from '@/components/AppModal';
-import {appStyles} from '@/constants/Styles';
-import AppButton from '@/components/AppButton';
 
 const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 
