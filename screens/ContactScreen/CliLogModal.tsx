@@ -31,6 +31,9 @@ import {
 import {AccountModelState} from '@/redux/modules/account';
 import {API} from '@/redux/api';
 import utils from '@/redux/api/utils';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   closeButtonTitle: {
@@ -46,7 +49,7 @@ const styles = StyleSheet.create({
   },
   cliLogMobile: {
     ...appStyles.medium16,
-    lineHeight: 0,
+    lineHeight: isIOS ? 0 : undefined,
     paddingHorizontal: 12,
     paddingVertical: 13,
     justifyContent: 'center',
