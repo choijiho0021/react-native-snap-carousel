@@ -20,7 +20,9 @@ import Keypad, {KeyType} from '../Keypad';
 import {emergencyCallNo} from '@/screens/EmergencyCallScreen';
 import {appStyles} from '@/constants/Styles';
 
-const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
+const small = isDeviceSize('medium') || isDeviceSize('small');
+const pointPos = small ? 25 : 0;
+const buttonSize = small ? 68 : 80;
 
 const styles = StyleSheet.create({
   keypad: {
@@ -335,11 +337,8 @@ const TalkMain: React.FC<TalkMainProps> = ({
           </AppText>
         </View>
       )}
-
-      {/* <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
-    <AppText style={{marginLeft: 10}}>{time}</AppText> */}
       {renderDestination()}
-      <View style={{flex: 1}}>{info()}</View>
+      <View style={{flex: 1, marginTop: pointPos}}>{info()}</View>
       <View>
         <Keypad
           navigation={navigation}
