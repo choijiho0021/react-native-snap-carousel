@@ -7,6 +7,7 @@ import {connect} from 'react-redux';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import Env from '@/environment';
 import {RootState} from '@/redux';
@@ -366,6 +367,7 @@ const TabNavigator = ({
   cart: CartModelState;
   modal: ModalModelState;
 }) => {
+  const smallDevice = isDeviceSize('medium') || isDeviceSize('small');
   return (
     <Tab.Navigator
       screenOptions={{tabBarAllowFontScaling: false}}
@@ -377,7 +379,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
-            height: 83,
+            height: smallDevice ? 50 : 83,
             display:
               (getFocusedRouteNameFromRoute(route) || 'Home') === 'Home'
                 ? 'flex'
@@ -400,7 +402,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
-            height: 83,
+            height: smallDevice ? 50 : 83,
             display:
               !!loggedIn &&
               cart?.cartItems?.length === 0 &&
@@ -426,7 +428,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
-            height: 83,
+            height: smallDevice ? 50 : 83,
             display:
               !!loggedIn &&
               modal.showTabbar &&
@@ -450,7 +452,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
-            height: 83,
+            height: smallDevice ? 50 : 83,
             display:
               !!loggedIn &&
               ['RkbTalk', 'TalkContact'].includes(
@@ -483,7 +485,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
-            height: 83,
+            height: smallDevice ? 50 : 83,
             display:
               !!loggedIn &&
               (getFocusedRouteNameFromRoute(route) || 'MyPage') === 'MyPage'
