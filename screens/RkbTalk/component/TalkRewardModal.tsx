@@ -11,6 +11,7 @@ import AppButton from '@/components/AppButton';
 import {useNavigation} from '@react-navigation/native';
 import AppModal from '@/components/AppModal';
 import AppIcon from '@/components/AppIcon';
+import LottieView from 'lottie-react-native';
 
 const styles = StyleSheet.create({
   modalButtonTitle: {
@@ -24,8 +25,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   overlayContainer: {
-    width: 248,
-    height: 248,
+    width: 245,
+    height: 245,
     position: 'relative',
   },
 
@@ -35,13 +36,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 4,
     left: 4,
-  },
-  appIcon: {
-    width: 248,
-    height: 248,
-    position: 'absolute',
-    top: 0,
-    left: 0,
   },
 });
 
@@ -56,35 +50,30 @@ const TalkRewardModal: React.FC<TalkRewardModalProps> = ({
 }) => {
   const navigation = useNavigation();
 
-  // const loadingMotion = useCallback(() => {
-  //   return (
-  //     <View style={styles.motionContainer}>
-  //       <View style={styles.overlayContainer}>
-  //         <LottieView
-  //           hardwareAccelerationAndroid
-  //           autoPlay
-  //           loop
-  //           style={styles.lottieView}
-  //           source={require('@/assets/animation/lucky.json')}
-  //           resizeMode="cover"
-  //           renderMode="HARDWARE"
-  //         />
-  //         <AppIcon
-  //           imgStyle={styles.appIcon}
-  //           name="loadingLucky"
-  //           mode="contain"
-  //         />
-  //       </View>
-  //     </View>
-  //   );
-  // }, []);
+  const loadingMotion = useCallback(() => {
+    return (
+      <View style={styles.motionContainer}>
+        <View style={styles.overlayContainer}>
+          <LottieView
+            hardwareAccelerationAndroid
+            autoPlay
+            loop
+            style={styles.lottieView}
+            source={require('@/assets/animation/RkbTalkGift.json')}
+            resizeMode="cover"
+            renderMode="HARDWARE"
+          />
+        </View>
+      </View>
+    );
+  }, []);
 
   return (
     <AppModal
       type={'division'}
       safeAreaColor="rgba(0,0,0,0.8)"
       topClose={
-        <View style={{width: '90%', marginBottom: 24}}>
+        <View style={{width: '90%', marginBottom: 60}}>
           <View
             style={{
               marginHorizontal: -10,
@@ -94,31 +83,26 @@ const TalkRewardModal: React.FC<TalkRewardModalProps> = ({
             <Pressable
               onPress={() => {
                 onClick();
-              }}
-              style={{
-                borderColor: colors.white,
-                borderWidth: 2,
-                borderRadius: 100,
               }}>
-              <AppIcon name="boldCancel" />
+              <AppIcon name="btnCancel26" />
             </Pressable>
           </View>
         </View>
       }
       contentStyle={{
-        // marginHorizontal: 20,
         width: '80%',
-        height: '100%',
+        height: '85%',
         backgroundColor: 'rgba(0, 0, 0, 0.0)',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingBottom: 120, // close btn area
       }}
       bottom={() => (
         <View
           style={{
+            position: 'absolute',
+            bottom: 0,
             height: 92,
-            marginTop: 50,
+            // marginTop: 50,
             width: '100%',
           }}>
           <AppButton
@@ -143,22 +127,33 @@ const TalkRewardModal: React.FC<TalkRewardModalProps> = ({
         console.log('@@@@@@');
       }}
       visible={visible}>
-      <View>
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
         <AppStyledText
-          text={i18n.t('talk:reward:modal:body1')}
-          textStyle={[appStyles.bold22Text, {color: colors.white}]}
-          format={{b: {color: colors.redBold}}}
+          text={i18n.t('talk:reward:modal:body1').replace('%v', '600')}
+          textStyle={[appStyles.semiBold24Text, {color: colors.white}]}
+          format={{b: {...appStyles.semiBold24Text, color: colors.gold}}}
         />
 
-        <View style={{marginTop: 30}}>
+        <View style={{marginTop: 16, flex: 1}}>
           <AppStyledText
             text={i18n.t('talk:reward:modal:body2')}
-            textStyle={[appStyles.normal16Text, {color: colors.white}]}
-            format={{b: [appStyles.bold16Text, {color: colors.redBold}]}}
+            textStyle={[
+              appStyles.normal16Text,
+              {color: colors.white, textAlign: 'center'},
+            ]}
+            format={{
+              b: [
+                appStyles.bold16Text,
+                {color: colors.white, textAlign: 'center'},
+              ],
+            }}
           />
-          <AppText style={{backgroundColor: 'red', marginTop: 30}}>
-            아이콘 위치
-          </AppText>
+
+          <View style={{marginTop: 36}}>{loadingMotion()}</View>
         </View>
       </View>
     </AppModal>

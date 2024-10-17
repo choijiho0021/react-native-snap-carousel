@@ -94,4 +94,5 @@ export const colors = {
   green500: '#00ad51',
   deepGreen: '#059a5e',
   gray20: '#333333',
+  gold: '#ffe540',
 };

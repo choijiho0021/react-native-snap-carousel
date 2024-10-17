@@ -2106,6 +2106,33 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  btnCancel26: [
+    <Svg
+      width="26"
+      height="26"
+      viewBox="0 0 26 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect
+        x="2"
+        y="3.572"
+        width="2"
+        height="29"
+        rx="1"
+        transform="rotate(-45 2 3.572)"
+        fill="#fff"
+      />
+      <Rect
+        x="22.429"
+        y="2"
+        width="2"
+        height="29"
+        rx="1"
+        transform="rotate(45 22.429 2)"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
   btnCancelWhite: [
     <Svg
       width="12"
