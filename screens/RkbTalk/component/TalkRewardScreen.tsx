@@ -1,5 +1,5 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {connect} from 'react-redux';
 import AppText from '@/components/AppText';
 
@@ -20,6 +20,8 @@ import {bindActionCreators, RootState} from 'redux';
 import AppBackButton from '@/components/AppBackButton';
 import {API} from '@/redux/api';
 import AppAlert from '@/components/AppAlert';
+import LinearGradient from 'react-native-linear-gradient';
+import Lottie from 'lottie-react-native';
 
 const styles = StyleSheet.create({
   modalButtonTitle: {
@@ -27,6 +29,22 @@ const styles = StyleSheet.create({
     color: colors.white,
     textAlign: 'center',
     width: '100%',
+  },
+
+  buttonContainer: {
+    flex: 1.0,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+    width: '95%',
+    margin: 2,
+    borderRadius: 20,
+  },
+  linearGradient: {
+    flex: 1,
+    paddingLeft: 15,
+    paddingRight: 15,
+    borderRadius: 5,
   },
 });
 
@@ -62,7 +80,7 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
           alignItems: 'center',
           backgroundColor: 'white',
         }}>
-        <AppBackButton title={i18n.t('talk:authGateway:title')} />
+        <AppBackButton />
       </View>
       <View style={{paddingHorizontal: 20, flex: 1}}>
         <View
@@ -70,30 +88,60 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
             height: 92,
             marginTop: 50,
             width: '100%',
+            // backgroundColor: 'red',
+            alignItems: 'center',
           }}>
-          <AppStyledText
+          <AppText style={[appStyles.semiBold16Text]}>
+            {i18n.t('talk:reward:header')}
+          </AppText>
+          {/* <LinearGradient
+            colors={['#00d1ff', '#00ed42']}
+            start={{x: 0.0, y: 1.0}}
+            end={{x: 1.0, y: 1.0}}
+            style={styles.grediant}>
+          </LinearGradient> */}
+
+          {/* <AppStyledText
             text={i18n.t('talk:reward:title')}
             textStyle={[appStyles.bold22Text, {color: colors.black}]}
             format={{b: {color: colors.redBold}}}
-          />
+          /> */}
 
-          <View style={{marginTop: 30}}>
+          <View style={{marginTop: 16}}>
             <AppStyledText
-              text={i18n.t('talk:reward:body')}
-              textStyle={[appStyles.normal16Text, {color: colors.black}]}
-              format={{b: [appStyles.bold16Text, {color: colors.redBold}]}}
+              text={i18n.t('talk:reward:body1')}
+              textStyle={[appStyles.bold30Text, {color: colors.black}]}
+              format={{b: [{color: colors.clearBlue}]}}
             />
           </View>
         </View>
 
-        <AppText
+        <View
           style={{
-            backgroundColor: 'red',
-            marginTop: 100,
-            alignContent: 'center',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: 64,
+            zIndex: 100,
           }}>
-          아이콘 위치
-        </AppText>
+          <Lottie
+            style={{
+              width: 180,
+              height: 160,
+            }}
+            autoPlay
+            loop
+            source={require('@/assets/animation/RkbCharacter.json')}
+          />
+        </View>
+
+        <View
+          style={{height: 242, marginHorizontal: -20, position: 'relative'}}>
+          <LinearGradient
+            colors={['#e5f1f6', '#ffffff']}
+            start={{x: 0.0, y: 0.0}}
+            end={{x: 0.0, y: 1.0}}
+            style={{flex: 1, zIndex: 1}}></LinearGradient>
+        </View>
       </View>
 
       <View style={{paddingHorizontal: 20, gap: 2}}>
