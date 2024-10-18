@@ -43,8 +43,8 @@ const styles = StyleSheet.create({
     letterSpacing: -0.16,
   },
   pointBold: {
-    marginLeft: 12,
-    marginRight: 8,
+    marginLeft: small ? 6 : 12,
+    marginRight: small ? 3 : 8,
     color: colors.clearBlue,
     fontWeight: 'bold',
   },
@@ -209,7 +209,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
             <AppSvgIcon
               key="talkPoint"
               name="talkPoint"
-              style={{marginRight: 6}}
+              style={[{marginRight: 6}, {marginLeft: 16}]}
             />
             <AppText style={styles.myPoint}>{i18n.t('talk:mypoint')}</AppText>
             <AppPrice
@@ -225,7 +225,11 @@ const TalkMain: React.FC<TalkMainProps> = ({
                 {marginLeft: 0},
               ]}
             />
-            <AppSvgIcon key="rightArrow10" name="rightArrow10" />
+            <AppSvgIcon
+              style={small && {marginRight: 16}}
+              key="rightArrow10"
+              name="rightArrow10"
+            />
           </View>
         </Pressable>
         <View style={{flex: 1}} />
