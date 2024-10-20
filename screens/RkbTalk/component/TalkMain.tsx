@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   emergency: {
+    width: 55,
     textAlign: 'right',
     fontSize: 16,
     fontWeight: '600',
@@ -319,12 +320,16 @@ const TalkMain: React.FC<TalkMainProps> = ({
             </AppText>
           </View>
         )}
-        <AppButton
-          style={{backgroundColor: colors.white}}
-          titleStyle={styles.emergency}
-          title={initial ? i18n.t('talk:emergencyCall') : ''}
-          onPress={() => navigation.navigate('EmergencyCall')}
-        />
+        {initial ? (
+          <AppButton
+            style={{backgroundColor: colors.white}}
+            titleStyle={styles.emergency}
+            title={initial ? i18n.t('talk:emergencyCall') : ''}
+            onPress={() => navigation.navigate('EmergencyCall')}
+          />
+        ) : (
+          <View style={{width: 55}} />
+        )}
       </View>
       {ccInfo && getLocalTime()}
       {tooltip && (
