@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   emergencyView: {
     flexDirection: 'row',
     height: 44,
-    marginTop: 16,
+    marginTop: small ? 5 : 16,
     justifyContent: 'center',
   },
   input: {
@@ -142,6 +142,7 @@ type TalkMainProps = {
   showWarning: boolean;
   point: number;
   time: string;
+  dtmf: string | undefined;
   min: number | undefined;
   tooltip: boolean;
   updateTooltip: (t: boolean) => void;
@@ -152,6 +153,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
   sessionState,
   point,
   time,
+  dtmf,
   onPressKeypad,
   onChange,
   min,
@@ -259,6 +261,15 @@ const TalkMain: React.FC<TalkMainProps> = ({
     const emg =
       Object.entries(emergencyCallNo).find(([k, v]) => v === called) || [];
 
+    if (dtmf) {
+      return (
+        <View style={[styles.input, {height: 44, marginTop: 16}]}>
+          <AppText style={styles.dest} numberOfLines={1} ellipsizeMode="head">
+            {dtmf}
+          </AppText>
+        </View>
+      );
+    }
     if (emg?.length > 0 && called) {
       return (
         <View style={[styles.input, styles.emergencyView]}>
@@ -282,7 +293,9 @@ const TalkMain: React.FC<TalkMainProps> = ({
         </AppText>
       </View>
     );
-  }, [called, ccode]);
+  }, [called, ccode, dtmf]);
+
+  const callTimePos = useMemo(() => (initial ? pointPos : -5), [initial]);
 
   return (
     <>
@@ -342,7 +355,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
         </View>
       )}
       {renderDestination()}
-      <View style={{flex: 1, marginTop: pointPos}}>{info()}</View>
+      <View style={{flex: 1, marginTop: callTimePos}}>{info()}</View>
       <View>
         <Keypad
           navigation={navigation}
