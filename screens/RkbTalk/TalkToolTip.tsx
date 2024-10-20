@@ -1,5 +1,12 @@
 import React, {memo, useCallback, useMemo, useState} from 'react';
-import {Modal, Pressable, StyleSheet, View} from 'react-native';
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  View,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -19,6 +26,13 @@ const styles = StyleSheet.create({
     borderLeftWidth: 6,
     borderRightWidth: 6,
     borderBottomWidth: 8,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+  },
+  triangleBottom: {
+    borderLeftWidth: 6,
+    borderRightWidth: 6,
+    borderTopWidth: 8,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
   },
@@ -42,12 +56,22 @@ const styles = StyleSheet.create({
   },
 });
 
-const CallToolTip = ({
+const TalkToolTip = ({
+  containerStyle,
+  iconStyle,
+  textStyle,
+  textFrame,
+  arrow = 'top',
   text,
   icon,
   arrowPos,
   updateTooltip,
 }: {
+  containerStyle?: ViewStyle;
+  iconStyle?: ViewStyle;
+  textStyle?: TextStyle;
+  textFrame?: ViewStyle;
+  arrow?: string;
   text: string;
   icon?: string;
   arrowPos?: string;
@@ -81,23 +105,39 @@ const CallToolTip = ({
         style={{flex: 1}}
         onPress={onClose} // Close modal when background is pressed
       >
-        <View style={{...styles.container, alignItems: position}}>
-          <View
-            style={{
-              ...styles.triangle,
-              marginLeft: position === 'flex-start' ? 20 : 0,
-              marginRight: position === 'flex-end' ? 20 : 0,
-            }}
-          />
-          <View style={styles.textFrame}>
+        <View
+          style={{
+            ...styles.container,
+            alignItems: position,
+            ...containerStyle,
+          }}>
+          {arrow === 'top' && (
+            <View
+              style={{
+                ...styles.triangle,
+                marginLeft: position === 'flex-start' ? 20 : 0,
+                marginRight: position === 'flex-end' ? 20 : 0,
+              }}
+            />
+          )}
+          <View style={[styles.textFrame, {...textFrame}]}>
             {icon && (
-              <AppSvgIcon key={icon} name={icon} style={{marginRight: 6}} />
+              <AppSvgIcon key={icon} name={icon} style={{...iconStyle}} />
             )}
-            <AppText style={styles.text}>{text}</AppText>
+            <AppText style={[styles.text, textStyle]}>{text}</AppText>
           </View>
+          {arrow === 'bottom' && (
+            <View
+              style={{
+                ...styles.triangleBottom,
+                marginLeft: position === 'flex-start' ? 40 : 0,
+                marginRight: position === 'flex-end' ? 40 : 0,
+              }}
+            />
+          )}
         </View>
       </Pressable>
     </Modal>
   );
 };
-export default memo(CallToolTip);
+export default memo(TalkToolTip);

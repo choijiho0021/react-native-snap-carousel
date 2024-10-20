@@ -1971,5 +1971,6 @@
   "talk:tariff:desc": "(1분당 차감 포인트)",
   "talk:tariff:search": "국가를 입력하세요.",
   "talk:tariff:footer": "더 다양한 국가의 통화 서비스가\n추가될 예정이니 기대해 주세요!",
+  "talk:tariff:tooltip": "국가별 유∙무선\n차감 포인트",
   "talk:search:none": "검색 결과가 없습니다."
 }

@@ -15,7 +15,7 @@ import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import {RkbTalkNavigationProp} from '..';
-import CallToolTip from '../CallToolTip';
+import TalkToolTip from '../TalkToolTip';
 import Keypad, {KeyType} from '../Keypad';
 import {emergencyCallNo} from '@/screens/EmergencyCallScreen';
 import {appStyles} from '@/constants/Styles';
@@ -328,9 +328,10 @@ const TalkMain: React.FC<TalkMainProps> = ({
       </View>
       {ccInfo && getLocalTime()}
       {tooltip && (
-        <CallToolTip
+        <TalkToolTip
           text={i18n.t('talk:emergencyText')}
           icon="bell"
+          iconStyle={{marginRight: 8}}
           updateTooltip={updateTooltip}
         />
       )}
