@@ -1,7 +1,7 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {
   Pressable,
   SafeAreaView,
@@ -43,15 +43,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 56,
   },
-  contentContainerStyle: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   sectionHeader: {
     ...appStyles.normal16Text,
     lineHeight: 24,
-    paddingBottom: 12,
   },
   emptyView: {
     flex: 1,
@@ -66,6 +60,7 @@ const styles = StyleSheet.create({
   itemRowView: {
     flexDirection: 'row',
     paddingVertical: 12,
+    height: 74,
   },
   time: {
     ...appStyles.normal14Text,
@@ -149,9 +144,16 @@ const CallHistoryScreen: React.FC<CallHistoryScreenProps> = ({
   }, []);
 
   const renderSectionHeader = useCallback(({section}) => {
+    const y = section.data[0]?.year;
     return (
-      <View style={{backgroundColor: colors.white}}>
-        {section.data[0]?.year && (
+      <View
+        style={{
+          paddingTop: 12,
+          backgroundColor: colors.white,
+          height: y ? 66 : 36,
+          justifyContent: 'center',
+        }}>
+        {y && (
           <AppText style={{...appStyles.bold18Text, lineHeight: 30}}>
             {section.data[0].year}
           </AppText>
@@ -210,7 +212,7 @@ const CallHistoryScreen: React.FC<CallHistoryScreenProps> = ({
       <View style={styles.header}>
         <AppBackButton title={i18n.t('talk:callHistory:title')} />
       </View>
-      <View style={{height: 16}} />
+      <View style={{height: 4}} />
       <SectionList
         // ref={sectionRef}
         keyExtractor={(item, index) => `${item?.key + index}`}
@@ -222,14 +224,6 @@ const CallHistoryScreen: React.FC<CallHistoryScreenProps> = ({
         renderSectionHeader={renderSectionHeader}
         stickySectionHeadersEnabled
         ListEmptyComponent={renderEmpty}
-        // onScrollEndDrag={({
-        //   nativeEvent: {
-        //     contentOffset: {y},
-        //   },
-        // }) => {
-        //   if (isTop.current && y > 178) runAnimation(false);
-        //   else if (!isTop.current && y <= 0) runAnimation(true);
-        // }}
         overScrollMode="never"
         bounces={false}
       />
