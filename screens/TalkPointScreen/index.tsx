@@ -325,6 +325,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   const animatedTextHeight = useRef(new Animated.Value(20)).current;
   const dividerAnimatedHeight = useRef(new Animated.Value(0)).current;
   const dividerAnimatedMargin = useRef(new Animated.Value(0)).current;
+  const year = moment().format('YYYY');
 
   const orderTypeList: OrderType[] = useMemo(() => ['desc', 'asc'], []);
   const filterList: string[] = useMemo(() => ['A', 'Y', 'N'], []);
@@ -837,11 +838,13 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
           sectionData.length > 0 ? undefined : styles.contentContainerStyle
         }
         renderItem={renderSectionItem}
-        renderSectionHeader={({section: {title}}) => (
-          <AppText style={styles.sectionHeader}>
-            {i18n.t(`year`, {year: title})}
-          </AppText>
-        )}
+        renderSectionHeader={({section: {title}}) => {
+          return year === title ? null : (
+            <AppText style={styles.sectionHeader}>
+              {i18n.t(`year`, {year: title})}
+            </AppText>
+          );
+        }}
         stickySectionHeadersEnabled
         ListEmptyComponent={() => renderEmpty()}
         onScrollEndDrag={({
