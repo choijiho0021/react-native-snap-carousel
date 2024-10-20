@@ -172,6 +172,18 @@ const TalkMain: React.FC<TalkMainProps> = ({
     ],
     [sessionState],
   );
+  const emgType = useMemo(
+    () => Object.entries(emergencyCallNo).find(([k, v]) => v === called)?.[0],
+    [called],
+  );
+
+  const minInfo = useMemo(() => {
+    if (emgType) {
+      return i18n.t(`talk:free`);
+    }
+    if (min) return i18n.t(`talk:remain`, {min});
+    return '';
+  }, [emgType, min]);
 
   const ccInfo = useMemo(
     () => (ccode && (initial || calling) ? tariff[ccode] : undefined),
@@ -259,9 +271,6 @@ const TalkMain: React.FC<TalkMainProps> = ({
   }, [localtime]);
 
   const renderDestination = useCallback(() => {
-    const emg =
-      Object.entries(emergencyCallNo).find(([k, v]) => v === called) || [];
-
     if (dtmf) {
       return (
         <View style={[styles.input, {height: 44, marginTop: 16}]}>
@@ -271,7 +280,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
         </View>
       );
     }
-    if (emg?.length > 0 && called) {
+    if (emgType?.length > 0 && called) {
       return (
         <View style={[styles.input, styles.emergencyView]}>
           <AppSvgIcon name="sos" />
@@ -279,7 +288,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
             style={styles.emergencyCallText}
             numberOfLines={1}
             ellipsizeMode="head">
-            {i18n.t(`talk:urgent:call:${emg[0]}`)}
+            {i18n.t(`talk:urgent:call:${emgType}`)}
           </AppText>
         </View>
       );
@@ -294,7 +303,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
         </AppText>
       </View>
     );
-  }, [called, ccode, dtmf]);
+  }, [called, ccode, dtmf, emgType]);
 
   const callTimePos = useMemo(() => (initial ? pointPos : -5), [initial]);
 
@@ -356,7 +365,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
               },
               showWarning && {color: colors.redError, marginLeft: 6},
             ]}>
-            {min ? i18n.t(`talk:remain`, {min}) : ''}
+            {minInfo}
           </AppText>
         </View>
       )}

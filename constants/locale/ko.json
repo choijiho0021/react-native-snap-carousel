@@ -1848,6 +1848,7 @@
   "qrInfo:tab:manual": "수동입력",
 
   "talk": "통화",
+  "talk:free": "무료통화",
   "talk:speaker": "스피커폰",
   "talk:keypad": "키패드",
   "talk:authGateway:title": "실명인증",
