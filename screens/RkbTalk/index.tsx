@@ -94,8 +94,9 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [maxTime, setMaxTime] = useState<number | null>(null);
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
-  const [check, setCheck] = useState(false);
+  const [checkFirst, setCheckFirst] = useState(false);
   const [pntError, setPntError] = useState<boolean>(false);
+  const [dtmf, setDtmf] = useState<string>();
   // const [digit, setDigit] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const testNumber = realMobile;
@@ -125,13 +126,13 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         if (result == null) {
           navigation.navigate('TalkPermission');
           AsyncStorage.setItem('alreadyRkbLaunched', 'true');
-        } else if (!check) {
+        } else if (!checkFirst) {
           action.talk.updateTooltip(true);
-          setCheck(true);
+          setCheckFirst(true);
         }
       });
     }
-  }, [action.talk, check, isFocused, navigation, realMobile]);
+  }, [action.talk, checkFirst, isFocused, navigation, realMobile]);
 
   const getPoint = useCallback(() => {
     if (realMobile) {
@@ -276,7 +277,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     setTimeout(() => {
       getPoint();
     }, 1000);
-
+    setDtmf('');
     // 저장했던 번호 삭제
     action.talk.updateNumberClicked({});
 
@@ -488,6 +489,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     [action.talk],
   );
 
+  const onChange = useCallback((d?: string) => setDtmf(d), []);
+
   return (
     <>
       <StatusBar
@@ -509,8 +512,10 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
             sessionState={sessionState}
             min={min}
             time={time}
+            dtmf={dtmf}
             point={point}
             showWarning={showWarning}
+            onChange={onChange}
             onPressKeypad={onPressKeypad}
             tooltip={tooltip}
             updateTooltip={updateTooltip}
