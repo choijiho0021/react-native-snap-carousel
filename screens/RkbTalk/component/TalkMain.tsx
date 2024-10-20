@@ -228,7 +228,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
               ]}
             />
             <AppSvgIcon
-              style={small && {marginRight: 16}}
+              style={{marginRight: 16}}
               key="rightArrow10"
               name="rightArrow10"
             />
