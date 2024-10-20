@@ -142,6 +142,7 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
     ({item}: {item: TalkTariff}) => {
       return (
         <Pressable
+          key={item.code}
           style={[
             styles.item,
             item.code === colorChange && {backgroundColor: colors.backGrey},
