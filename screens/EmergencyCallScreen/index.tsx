@@ -113,15 +113,15 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
   return (
     <View style={{flex: 1}}>
       <View style={{height: insets?.top, backgroundColor: headerColor}} />
-      <SafeAreaView style={[styles.container, {backgroundColor: headerColor}]}>
-        <StatusBar
-          backgroundColor={colors.aliceBlue}
-          // barStyle="dark-content" // default
-        />
+      <SafeAreaView style={styles.container}>
+        <StatusBar backgroundColor={colors.aliceBlue} />
         <View style={[styles.header, {backgroundColor: headerColor}]}>
           <AppBackButton title={i18n.t('talk:urgent:header')} />
         </View>
-        <ScrollView onScroll={onScroll} scrollEventThrottle={16}>
+        <ScrollView
+          style={{backgroundColor: headerColor}}
+          onScroll={onScroll}
+          scrollEventThrottle={16}>
           <TopInfo />
           <View
             style={styles.whiteView}
