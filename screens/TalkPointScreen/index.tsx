@@ -36,6 +36,7 @@ import {
 } from '@/redux/modules/talk';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   container: {
@@ -299,6 +300,8 @@ type TalkPointScreenProps = {
 };
 
 type OrderType = 'desc' | 'asc';
+const smallDevice = isDeviceSize('small') || isDeviceSize('medium');
+const up = 180;
 
 const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   navigation,
@@ -346,7 +349,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
     (v: boolean) => {
       isModalBeginDrag.current = v;
       Animated.timing(modalAnimatedValue, {
-        toValue: isModalBeginDrag.current ? 56 : 194, // 56는 헤더 높이값, 168은 캐시잔액 높이값
+        toValue: isModalBeginDrag.current ? 56 : up, // 56는 헤더 높이값, 168은 캐시잔액 높이값
         duration: 500,
         useNativeDriver: false,
       }).start();
@@ -360,7 +363,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
 
       Animated.parallel([
         Animated.timing(animatedValue, {
-          toValue: isTop.current ? 170 : 0,
+          toValue: isTop.current ? 170 : 23,
           duration: 500,
           useNativeDriver: false,
         }),
@@ -773,7 +776,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
             <AppText style={{fontWeight: 'bold'}}>
               {i18n.t('talk:point:banner2')}
             </AppText>
-            {i18n.t('talk:point:banner3')}
+            {smallDevice ? '!' : i18n.t('talk:point:banner3')}
           </AppText>
         </View>
         <AppSvgIcon name="rokebiBannerImg" />
@@ -792,7 +795,8 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
       {/* 30일 이내 소멸예정 캐시 모달  */}
       <Animated.View
         style={{
-          overflow: 'hidden', // height: animatedValue,
+          overflow: 'hidden',
+          height: animatedValue,
         }}>
         <View style={styles.divider} />
         {renderBanner()}
@@ -845,7 +849,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
             contentOffset: {y},
           },
         }) => {
-          if (isTop.current && y > 178) runAnimation(false);
+          if (isTop.current && y > up) runAnimation(false);
           else if (!isTop.current && y <= 0) runAnimation(true);
         }}
         overScrollMode="never"
