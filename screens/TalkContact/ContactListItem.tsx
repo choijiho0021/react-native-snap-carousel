@@ -12,16 +12,11 @@ const styles = StyleSheet.create({
     minHeight: 70,
     height: 74,
     flexDirection: 'row',
-    // borderWidth: 1,
   },
   mainTitleContainer: {
     justifyContent: 'center',
     flexDirection: 'column',
     marginLeft: 20,
-
-    // backgroundColor: colors.babyBlue,
-    // borderBottomWidth: 1,
-    // borderBottomColor: colors.whiteTwo,
   },
   icon: {
     height: 40,
