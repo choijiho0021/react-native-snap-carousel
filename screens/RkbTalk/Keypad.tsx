@@ -108,9 +108,9 @@ const Keypad: React.FC<KeypadProps> = ({
     dispatch,
   );
 
-  // useEffect(() => {
-  //   onChange?.(showKeypad ? dtmf : dest);
-  // }, [dest, dtmf, onChange, showKeypad]);
+  useEffect(() => {
+    onChange?.(showKeypad ? dtmf : '');
+  }, [dtmf, onChange, showKeypad]);
 
   const renderKeyButton = useCallback(
     (key: KeyType) => (
@@ -131,6 +131,8 @@ const Keypad: React.FC<KeypadProps> = ({
     [onPress, pressed],
   );
 
+  const initDtmf = useCallback(() => setDtmf(''), []);
+
   // dtmf는 keypad를 닫았다가 다시 열 경우에도 이전 이력 남아있어야 하는지 확인 필요
   const closeKeypad = useCallback(() => {
     setPressed('');
@@ -138,8 +140,11 @@ const Keypad: React.FC<KeypadProps> = ({
   }, []);
 
   useEffect(() => {
-    if (state === SessionState.Terminated) closeKeypad();
-  }, [closeKeypad, state]);
+    if (state === SessionState.Terminated) {
+      closeKeypad();
+      initDtmf();
+    }
+  }, [closeKeypad, initDtmf, state]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -252,30 +257,6 @@ const Keypad: React.FC<KeypadProps> = ({
                   {showKeypad ? i18n.t('close') : i18n.t('talk:callHistory')}
                 </Text>
               </Pressable>
-              {/* {showKeypad ? (
-                <Pressable
-                  style={[
-                    styles.empty,
-                    {alignItems: 'center', justifyContent: 'center'},
-                  ]}
-                  onPress={() => closeKeypad()}>
-                  <AppText style={appStyles.bold14Text}>가리기</AppText>
-                </Pressable>
-              ) : (
-                <AppSvgIcon
-                  key="del"
-                  name="keyDel"
-                  style={styles.empty}
-                  onPress={() =>
-                    setDest((prev) =>
-                      prev.length > 0
-                        ? prev.substring(0, prev.length - 1)
-                        : prev,
-                    )
-                  }
-                  onLongPress={() => setDest('')}
-                />
-              )} */}
             </View>
           </>
         );
