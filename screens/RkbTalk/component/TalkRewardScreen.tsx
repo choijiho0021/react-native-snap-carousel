@@ -226,8 +226,7 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
           <View style={styles.lottieView}>
             <Lottie
               style={{
-                width: 180,
-                height: 160,
+                width: '60%',
               }}
               autoPlay
               loop

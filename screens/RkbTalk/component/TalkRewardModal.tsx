@@ -7,6 +7,7 @@ import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
 import AppStyledText from '@/components/AppStyledText';
 
+import {windowWidth} from '@/constants/SliderEntry.style';
 import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import AppModal from '@/components/AppModal';
@@ -31,8 +32,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   overlayContainer: {
-    width: 245,
-    height: 245,
+    width: windowWidth * 0.7,
+    height: windowWidth * 0.7,
     position: 'relative',
   },
 
