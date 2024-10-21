@@ -483,6 +483,19 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     }, 10000);
   }, [action.toast, goBackEsim, lotteryCoupon]);
 
+  useEffect(() => {
+    // 화면 빠져나갈 시 timeout 초기화
+    return () => {
+      console.log('@@@@ timeout reset ');
+      if (goBackTimeoutId.current) {
+        clearTimeout(goBackTimeoutId.current);
+      }
+      if (loadingTimeoutId.current) {
+        clearTimeout(loadingTimeoutId.current);
+      }
+    };
+  }, []);
+
   const renderShareButton = useCallback(
     (text: string, appIcon: string, onPress: any) => {
       return (
@@ -570,7 +583,6 @@ const LotteryScreen: React.FC<LotteryProps> = ({
 
   const renderBody = useCallback(() => {
     // isLoading false여도 쿠폰정보가 없으면 로딩화면이 출력되야함.
-
     if (!isHistory && (isLoading || isSecLoading)) {
       return <RenderLoadingLottery />;
     }
