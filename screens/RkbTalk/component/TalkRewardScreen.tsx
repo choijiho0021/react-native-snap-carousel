@@ -163,12 +163,12 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
 }) => {
   const translateX = useRef(new Animated.Value(0)).current; // 시작 위치
   const images = [
-    require('@/assets/images/rkbtalk/rewardBg1.png'), // 80 x 198
-    require('@/assets/images/rkbtalk/rewardBg2.png'), // 230 x 138
-    require('@/assets/images/rkbtalk/rewardBg3.png'), // 39 x 213
-    require('@/assets/images/rkbtalk/rewardBg4.png'), // 355 x 197
-    require('@/assets/images/rkbtalk/rewardBg5.png'), // 106 x 256
-    require('@/assets/images/rkbtalk/rewardBg6.png'), // 162 x 125
+    require('@/assets/images/rkbtalk/rewardBg1.png'),
+    require('@/assets/images/rkbtalk/rewardBg2.png'),
+    require('@/assets/images/rkbtalk/rewardBg3.png'),
+    require('@/assets/images/rkbtalk/rewardBg4.png'),
+    require('@/assets/images/rkbtalk/rewardBg5.png'),
+    require('@/assets/images/rkbtalk/rewardBg6.png'),
   ];
 
   const isSetAnimated = useRef(false);
@@ -176,19 +176,17 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
   useEffect(() => {
     if (!isSetAnimated.current) {
       isSetAnimated.current = true;
-      // 너비가 측정된 후 애니메이션 시작
       const animate = () => {
-        translateX.setValue(-BG_WIDTH); // 시작 위치를 컴포넌트 너비의 음수로 설정
+        translateX.setValue(-BG_WIDTH);
         Animated.timing(translateX, {
-          toValue: 0, // 최종 위치
-          duration: 1000, // 애니메이션 지속 시간
+          toValue: 0,
+          duration: 16000,
           easing: Easing.linear,
           useNativeDriver: false,
         }).start(() => {
           // 다른 화면 이동 시 재귀호출 멈추도록 처리
           if (isSetAnimated.current) {
             animate();
-            console.log('@@@@@ 무한반복끝?');
           }
         });
       };
