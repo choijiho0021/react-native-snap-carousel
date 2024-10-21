@@ -76,10 +76,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   nameView: {
+    flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
   },
   destination: {
+    width: '100%',
     ...appStyles.normal18Text,
     fontWeight: '600',
     lineHeight: 26,
@@ -192,7 +194,10 @@ const CallHistoryScreen: React.FC<CallHistoryScreenProps> = ({
           </AppText>
           <View style={styles.rightRowView}>
             <View style={styles.nameView}>
-              <AppText style={styles.destination}>
+              <AppText
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={styles.destination}>
                 {item?.name || item?.destination}
               </AppText>
               <AppText style={styles.ccode}>

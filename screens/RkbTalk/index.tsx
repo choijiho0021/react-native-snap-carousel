@@ -94,7 +94,6 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [maxTime, setMaxTime] = useState<number | null>(null);
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
-  const [checkFirst, setCheckFirst] = useState(false);
   const [pntError, setPntError] = useState<boolean>(false);
   const [dtmf, setDtmf] = useState<string>();
   // const [digit, setDigit] = useState('');
@@ -126,13 +125,18 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         if (result == null) {
           navigation.navigate('TalkPermission');
           AsyncStorage.setItem('alreadyRkbLaunched', 'true');
-        } else if (!checkFirst) {
-          action.talk.updateTooltip(true);
-          setCheckFirst(true);
+        } else {
+          // 권한 확인 이후
+          AsyncStorage.getItem('talkTooltip').then((r) => {
+            if (r == null) {
+              action.talk.updateTooltip(true);
+              AsyncStorage.setItem('talkTooltip', 'true');
+            }
+          });
         }
       });
     }
-  }, [action.talk, checkFirst, isFocused, navigation, realMobile]);
+  }, [action.talk, isFocused, navigation, realMobile]);
 
   const getPoint = useCallback(() => {
     if (realMobile) {

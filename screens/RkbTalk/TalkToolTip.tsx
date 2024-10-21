@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
 });
 
 const TalkToolTip = ({
+  visible = false,
   containerStyle,
   iconStyle,
   textStyle,
@@ -67,6 +68,7 @@ const TalkToolTip = ({
   arrowPos,
   updateTooltip,
 }: {
+  visible: boolean;
   containerStyle?: ViewStyle;
   iconStyle?: ViewStyle;
   textStyle?: TextStyle;
@@ -77,8 +79,6 @@ const TalkToolTip = ({
   arrowPos?: string;
   updateTooltip: (t: boolean) => void;
 }) => {
-  const [visible, setVisible] = useState(true);
-
   const position = useMemo(() => {
     switch (arrowPos) {
       case 'start':
@@ -91,7 +91,6 @@ const TalkToolTip = ({
   }, [arrowPos]);
 
   const onClose = useCallback(() => {
-    setVisible(false);
     updateTooltip(false);
   }, [updateTooltip]);
 
