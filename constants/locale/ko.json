@@ -1875,7 +1875,6 @@
   "qrInfo:tab:qr": "QR코드",
   "qrInfo:tab:manual": "수동입력",
 
-<<<<<<< HEAD
   "talk": "통화",
   "talk:free": "무료통화",
   "talk:speaker": "스피커폰",
@@ -2002,12 +2001,10 @@
   "talk:tariff:search": "국가를 입력하세요.",
   "talk:tariff:footer": "더 다양한 국가의 통화 서비스가\n추가될 예정이니 기대해 주세요!",
   "talk:tariff:tooltip": "국가별 유∙무선\n차감 포인트",
-  "talk:search:none": "검색 결과가 없습니다."
-=======
+  "talk:search:none": "검색 결과가 없습니다.",
   "cliLog:title": "문제 전송",
   "cliLog:txt": "고객센터 상담 후 자세한 확인이 필요할 경우 사용하는 기능입니다.\n<b>문제 전송 전, 꼭 고객센터에 문의해 주세요!</b>",
   "cliLog:mobile": "회원 번호 (휴대폰 번호)",
   "cliLog:btnTitle": "문제 전송하기",
   "cliLog:save:success": "전송 완료되었습니다.\n문제 확인 후 고객센터를 통해 연락 드릴게요!"
->>>>>>> 1c0716248bf5a47b119d0b7538542fd921b92bee
 }
