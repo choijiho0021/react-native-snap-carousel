@@ -616,7 +616,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
             headerStyle={{backgroundColor: 'transparent', zIndex: 10}}
             isStackTop
             renderRight={
-              (!isLoading || showCloseBtn) && (
+              ((!isLoading && !isSecLoading) || showCloseBtn) && (
                 <AppSvgIcon
                   name="closeModal"
                   style={styles.btnCnter}
@@ -630,7 +630,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
         }
       </>
     );
-  }, [goBackEsim, isLoading, showCloseBtn]);
+  }, [goBackEsim, isLoading, isSecLoading, showCloseBtn]);
 
   const renderByType = useCallback(() => {
     if (type === 'draft') {
