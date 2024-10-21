@@ -1,7 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
+import AsyncStorage from '@react-native-community/async-storage';
+import {useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import * as Hangul from 'hangul-js';
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Image,
   Pressable,
@@ -30,6 +32,7 @@ import i18n from '@/utils/i18n';
 import TalkToolTip from '../RkbTalk/TalkToolTip';
 import EmptyResult from '../TalkContact/components/EmptyResult';
 import Footer from './Footer';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   container: {
@@ -79,16 +82,11 @@ const styles = StyleSheet.create({
     ...appStyles.robotoMedium14Text,
     color: colors.blue,
   },
-  iconStyle: {
-    marginRight: 0,
-    justifyContent: 'flex-end',
-    alignSelf: 'flex-start',
-  },
   textFrame: {
     height: 56,
-    flexDirection: 'row-reverse',
+    alignItems: 'center',
     paddingVertical: 8,
-    paddingLeft: 8,
+    paddingRight: 8,
   },
 });
 
@@ -106,6 +104,7 @@ type TalkTariffScreenProps = {
   };
 };
 
+const small = isDeviceSize('small') || isDeviceSize('medium');
 type TariffSectionData = Record<string, {title: string; data: TalkTariff[]}>;
 
 const favoriteCountry = ['kr', 'us', 'jp'];
@@ -117,6 +116,7 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
 }) => {
   const [searchText, setSearchText] = useState('');
   const [colorChange, setColorChange] = useState<string>();
+  const [visible, setVisible] = useState(false);
 
   const tariffData = useMemo(() => {
     const list = Object.values(talk.tariff).reduce((acc, cur) => {
@@ -220,6 +220,27 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
     setSearchText('');
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      AsyncStorage.getItem('tariffShown').then((result) => {
+        if (result == null) {
+          setTimeout(() => setVisible(true), 300);
+          AsyncStorage.setItem('tariffShown', 'true');
+        }
+      });
+
+      return () => {};
+    }, []),
+  );
+
+  useEffect(() => {
+    if (visible) {
+      setTimeout(() => {
+        setVisible(false);
+      }, 15000);
+    }
+  }, [navigation, visible]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -232,14 +253,13 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
         />
       </View>
       <TalkToolTip
+        visible={visible}
         text={i18n.t('talk:tariff:tooltip')}
-        icon="btnCancelWhite"
-        iconStyle={styles.iconStyle}
         arrow="bottom"
-        textStyle={{marginRight: 16}}
+        textStyle={{textAlign: 'left'}}
         textFrame={styles.textFrame}
-        containerStyle={{top: 200}}
-        updateTooltip={(t: boolean) => {}}
+        containerStyle={{top: small ? 160 : 200}}
+        updateTooltip={(t: boolean) => setVisible(t)}
       />
       {!searchText ? (
         <View style={styles.row}>
