@@ -12,16 +12,22 @@ const styles = StyleSheet.create({
     minHeight: 70,
     height: 74,
     flexDirection: 'row',
+    marginHorizontal: 20,
   },
   mainTitleContainer: {
+    flex: 1,
     justifyContent: 'center',
     flexDirection: 'column',
-    marginLeft: 20,
   },
   icon: {
     height: 40,
     width: 40,
     borderRadius: 40,
+  },
+  title: {
+    ...appStyles.normal18Text,
+    width: '100%',
+    flexWrap: 'wrap',
   },
 });
 
@@ -49,7 +55,10 @@ const ContactListItem: React.FC<ContactListItemProps> = ({
 }) => {
   const start = useCallback(() => {
     return (
-      <AppText style={[appStyles.bold18Text, {color: colors.clearBlue}]}>
+      <AppText
+        numberOfLines={1}
+        ellipsizeMode="tail"
+        style={[appStyles.bold18Text, {color: colors.clearBlue}]}>
         {title.substring(0, highlight[1] + 1)}
         <AppText style={appStyles.bold18Text}>
           {title.substring(highlight[1] + 1)}
@@ -60,7 +69,10 @@ const ContactListItem: React.FC<ContactListItemProps> = ({
 
   const center = useCallback(() => {
     return (
-      <AppText style={appStyles.bold18Text}>
+      <AppText
+        numberOfLines={1}
+        ellipsizeMode="tail"
+        style={appStyles.bold18Text}>
         {title.substring(0, highlight[0])}
         <AppText style={[appStyles.bold18Text, {color: colors.clearBlue}]}>
           {title.substring(highlight[0], highlight[1] + 1)}
@@ -72,7 +84,10 @@ const ContactListItem: React.FC<ContactListItemProps> = ({
 
   const end = useCallback(() => {
     return (
-      <AppText style={appStyles.bold18Text}>
+      <AppText
+        numberOfLines={1}
+        ellipsizeMode="tail"
+        style={appStyles.bold18Text}>
         {title.substring(0, highlight[0])}
         <AppText style={[appStyles.bold18Text, {color: colors.clearBlue}]}>
           {title.substring(highlight[0])}
@@ -103,7 +118,9 @@ const ContactListItem: React.FC<ContactListItemProps> = ({
 
     return (
       <View style={[styles.mainTitleContainer, {marginLeft: 16}]}>
-        <AppText style={appStyles.normal18Text}>{title}</AppText>
+        <AppText style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+          {title}
+        </AppText>
         <AppText
           style={[
             appStyles.roboto16Text,
@@ -117,7 +134,7 @@ const ContactListItem: React.FC<ContactListItemProps> = ({
 
   return data && title ? (
     <Pressable style={styles.itemContainer} onPress={() => onPress(data)}>
-      <View style={styles.mainTitleContainer}>
+      <View style={{justifyContent: 'center'}}>
         {!_.isEmpty(uri) ? (
           <Image source={{uri}} style={styles.icon} />
         ) : (
