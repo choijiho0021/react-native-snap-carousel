@@ -234,13 +234,21 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
   const getResetTime = useCallback(
     (tz: string) => {
+      const todayResetTime =
+        moment().tz('Asia/Seoul').format('YYYY-MM-DD') +
+        endTime?.substring(endTime.indexOf('T'));
+
+      const nextResetTime = moment(todayResetTime).isBefore(moment())
+        ? moment(todayResetTime).add(1, 'd')
+        : moment(todayResetTime);
+
       if (dataUsageOption?.ret)
         return moment(
           `${moment().format('YYYY-MM-DD')} ${dataUsageOption?.ret}+0900`,
         )
           .tz(tz)
           .format('HH:mm:ss');
-      if (endTime) return moment(endTime).tz(tz).format('HH:mm:ss');
+      if (endTime) return nextResetTime.tz(tz).format('HH:mm:ss');
       return i18n.t('contact:q');
     },
     [dataUsageOption?.ret, endTime],
