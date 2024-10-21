@@ -22,7 +22,7 @@ import {
   actions as accountActions,
 } from '@/redux/modules/account';
 import AppButton from '@/components/AppButton';
-import {RouteProp} from '@react-navigation/native';
+import {RouteProp, useIsFocused} from '@react-navigation/native';
 import {goBack, HomeStackParamList} from '@/navigation/navigation';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {bindActionCreators, RootState} from 'redux';
@@ -171,8 +171,6 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
     require('@/assets/images/rkbtalk/rewardBg6.png'), // 162 x 125
   ];
 
-  // 이미지 사이즈 972
-
   const isSetAnimated = useRef(false);
 
   useEffect(() => {
@@ -183,16 +181,27 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
         translateX.setValue(-BG_WIDTH); // 시작 위치를 컴포넌트 너비의 음수로 설정
         Animated.timing(translateX, {
           toValue: 0, // 최종 위치
-          duration: 16000, // 애니메이션 지속 시간
+          duration: 1000, // 애니메이션 지속 시간
           easing: Easing.linear,
           useNativeDriver: false,
         }).start(() => {
-          animate(); // 무한반복
+          // 다른 화면 이동 시 재귀호출 멈추도록 처리
+          if (isSetAnimated.current) {
+            animate();
+            console.log('@@@@@ 무한반복끝?');
+          }
         });
       };
 
       animate();
     }
+
+    return () => {
+      // 다른 화면 이동 시 재귀호출 멈추도록 처리
+      console.log('@@@ stop ');
+      translateX.stopAnimation();
+      isSetAnimated.current = false;
+    };
   }, [translateX]);
 
   return (
