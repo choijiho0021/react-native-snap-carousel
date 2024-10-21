@@ -27,6 +27,7 @@ import {
   TalkTariff,
 } from '@/redux/modules/talk';
 import i18n from '@/utils/i18n';
+import TalkToolTip from '../RkbTalk/TalkToolTip';
 import EmptyResult from '../TalkContact/components/EmptyResult';
 import Footer from './Footer';
 
@@ -77,6 +78,17 @@ const styles = StyleSheet.create({
   tariff: {
     ...appStyles.robotoMedium14Text,
     color: colors.blue,
+  },
+  iconStyle: {
+    marginRight: 0,
+    justifyContent: 'flex-end',
+    alignSelf: 'flex-start',
+  },
+  textFrame: {
+    height: 56,
+    flexDirection: 'row-reverse',
+    paddingVertical: 8,
+    paddingLeft: 8,
   },
 });
 
@@ -142,6 +154,7 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
     ({item}: {item: TalkTariff}) => {
       return (
         <Pressable
+          key={item.code}
           style={[
             styles.item,
             item.code === colorChange && {backgroundColor: colors.backGrey},
@@ -218,6 +231,16 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
           textStyle={{...appStyles.semiBold16Text}}
         />
       </View>
+      <TalkToolTip
+        text={i18n.t('talk:tariff:tooltip')}
+        icon="btnCancelWhite"
+        iconStyle={styles.iconStyle}
+        arrow="bottom"
+        textStyle={{marginRight: 16}}
+        textFrame={styles.textFrame}
+        containerStyle={{top: 200}}
+        updateTooltip={(t: boolean) => {}}
+      />
       {!searchText ? (
         <View style={styles.row}>
           <AppText style={appStyles.bold18Text}>
@@ -227,6 +250,7 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
             <View style={styles.row2}>
               {['wireline', 'mobile'].map((k) => (
                 <AppText
+                  key={k}
                   style={[appStyles.semiBold12Text, {color: colors.blue}]}>
                   {i18n.t(`talk:tariff:${k}`)}
                 </AppText>

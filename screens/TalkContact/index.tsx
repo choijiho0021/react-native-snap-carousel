@@ -39,10 +39,13 @@ import {
   TalkModelState,
 } from '@/redux/modules/talk';
 import i18n from '@/utils/i18n';
-import {utils} from '@/utils/utils';
+import {getNumber, utils} from '@/utils/utils';
 import EmptyResult from './components/EmptyResult';
 import SectionListSidebar from './components/SectionListSidebar';
 import ContactListItem from './ContactListItem';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
+
+const small = isDeviceSize('medium') || isDeviceSize('small');
 
 const styles = StyleSheet.create({
   container: {
@@ -391,10 +394,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
 
   const onPress = useCallback(
     (contactData: Contact) => {
-      const num = contactData?.phoneNumbers[0]?.number?.replace(
-        /[+\-() ]/g,
-        '',
-      );
+      const num = getNumber(contactData?.phoneNumbers[0]?.number);
       const name = `${contactData?.givenName} ${contactData?.familyName}`;
 
       action.talk.updateNumberClicked({num, name});
@@ -480,9 +480,12 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
           !_.isEmpty(sections) && (
             <SectionListSidebar
               ref={sectionListRef}
+              smallSidebar={small}
+              sideItemHeight={13}
+              sideHeight={small ? 350 : 520}
               data={sections}
               renderItem={renderContactList}
-              itemHeight={30}
+              itemHeight={74} // contact list item height
               sectionHeaderHeight={20}
               onScroll={onScroll}
               renderSectionHeader={renderSectionListHeader}

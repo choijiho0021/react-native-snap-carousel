@@ -1,16 +1,19 @@
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RootState} from '@reduxjs/toolkit';
 import React, {useCallback} from 'react';
 import {Platform, SafeAreaView, StyleSheet, View} from 'react-native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {RouteProp} from '@react-navigation/native';
+import {PERMISSIONS, requestMultiple} from 'react-native-permissions';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import AppButton from '@/components/AppButton';
+import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
-
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import i18n from '@/utils/i18n';
-import AppButton from '@/components/AppButton';
 import {HomeStackParamList} from '@/navigation/navigation';
-import AppIcon from '@/components/AppIcon';
-import {PERMISSIONS, requestMultiple} from 'react-native-permissions';
+import {actions as talkActions, TalkAction} from '@/redux/modules/talk';
+import i18n from '@/utils/i18n';
 
 const styles = StyleSheet.create({
   modalButtonTitle: {
@@ -34,10 +37,15 @@ type TalkPermissionScreenRouteProp = RouteProp<
 type TalkPermissionScreenProps = {
   navigation: TalkPermissionScreenNavigationProp;
   route: TalkPermissionScreenRouteProp;
+
+  action: {
+    talk: TalkAction;
+  };
 };
 
 const TalkPermissionScreen: React.FC<TalkPermissionScreenProps> = ({
   navigation,
+  action,
 }) => {
   const onClick = useCallback(async () => {
     const permissions =
@@ -53,7 +61,8 @@ const TalkPermissionScreen: React.FC<TalkPermissionScreenProps> = ({
     );
 
     navigation.goBack();
-  }, [navigation]);
+    action.talk.updateTooltip(true);
+  }, [action.talk, navigation]);
 
   return (
     <SafeAreaView
@@ -130,4 +139,14 @@ const TalkPermissionScreen: React.FC<TalkPermissionScreenProps> = ({
   );
 };
 
-export default TalkPermissionScreen;
+export default connect(
+  ({account, talk}: RootState) => ({
+    account,
+    talk,
+  }),
+  (dispatch) => ({
+    action: {
+      talk: bindActionCreators(talkActions, dispatch),
+    },
+  }),
+)(TalkPermissionScreen);

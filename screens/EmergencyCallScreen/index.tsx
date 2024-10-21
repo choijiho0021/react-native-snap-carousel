@@ -20,7 +20,7 @@ import AppBackButton from '@/components/AppBackButton';
 import CallService from './component/CallService';
 import TopInfo from './component/TopInfo';
 
-const emergencyCallNo: Record<string, string> = {
+export const emergencyCallNo: Record<string, string> = {
   mofa: '82232100404',
   '119': '82443200119',
 };
@@ -101,7 +101,10 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
 
   const onPressCall = useCallback(
     (type: string) => {
-      action.talk.updateCalledPty(emergencyCallNo[type] || '');
+      action.talk.updateNumberClicked({
+        num: emergencyCallNo[type] || '',
+        name: i18n.t(`talk:urgent:call:${type}`),
+      });
       navigation.goBack();
     },
     [action.talk, navigation],

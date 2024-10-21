@@ -1,10 +1,10 @@
-import {useFocusEffect} from '@react-navigation/native';
-import {RootState} from '@reduxjs/toolkit';
 import moment from 'moment';
-import React, {memo, useCallback, useMemo, useState} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {Image, Pressable, StyleSheet, View} from 'react-native';
-import {useSelector} from 'react-redux';
 import {SessionState} from 'sip.js';
+import {useSelector} from 'react-redux';
+import {RootState} from '@reduxjs/toolkit';
+import {useFocusEffect} from '@react-navigation/native';
 import AppButton from '@/components/AppButton';
 import AppPrice from '@/components/AppPrice';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -15,16 +15,21 @@ import {API} from '@/redux/api';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import {RkbTalkNavigationProp} from '..';
-import CallToolTip from '../CallToolTip';
+import TalkToolTip from '../TalkToolTip';
 import Keypad, {KeyType} from '../Keypad';
+import {emergencyCallNo} from '@/screens/EmergencyCallScreen';
+import {appStyles} from '@/constants/Styles';
 
-const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
+const small = isDeviceSize('medium') || isDeviceSize('small');
+const pointPos = small ? 25 : 0;
+const buttonSize = small ? 68 : 80;
 
 const styles = StyleSheet.create({
   keypad: {
     justifyContent: 'flex-start',
   },
   emergency: {
+    width: 55,
     textAlign: 'right',
     fontSize: 16,
     fontWeight: '600',
@@ -39,8 +44,8 @@ const styles = StyleSheet.create({
     letterSpacing: -0.16,
   },
   pointBold: {
-    marginLeft: 12,
-    marginRight: 8,
+    marginLeft: small ? 6 : 12,
+    marginRight: small ? 3 : 8,
     color: colors.clearBlue,
     fontWeight: 'bold',
   },
@@ -53,6 +58,18 @@ const styles = StyleSheet.create({
     letterSpacing: -0.28,
     color: colors.black,
     textAlignVertical: 'bottom',
+  },
+  emergencyCallText: {
+    ...appStyles.bold30Text,
+    lineHeight: 44,
+    color: colors.redError,
+    marginLeft: 8,
+  },
+  emergencyView: {
+    flexDirection: 'row',
+    height: 44,
+    marginTop: small ? 5 : 16,
+    justifyContent: 'center',
   },
   input: {
     alignItems: 'center',
@@ -126,7 +143,10 @@ type TalkMainProps = {
   showWarning: boolean;
   point: number;
   time: string;
+  dtmf: string | undefined;
   min: number | undefined;
+  tooltip: boolean;
+  updateTooltip: (t: boolean) => void;
 };
 
 const TalkMain: React.FC<TalkMainProps> = ({
@@ -134,10 +154,13 @@ const TalkMain: React.FC<TalkMainProps> = ({
   sessionState,
   point,
   time,
+  dtmf,
   onPressKeypad,
   onChange,
   min,
   showWarning,
+  tooltip,
+  updateTooltip,
 }) => {
   const {called, ccode, tariff} = useSelector((state: RootState) => state.talk);
   const [initial, calling, connected] = useMemo(
@@ -149,6 +172,18 @@ const TalkMain: React.FC<TalkMainProps> = ({
     ],
     [sessionState],
   );
+  const emgType = useMemo(
+    () => Object.entries(emergencyCallNo).find(([k, v]) => v === called)?.[0],
+    [called],
+  );
+
+  const minInfo = useMemo(() => {
+    if (emgType) {
+      return i18n.t(`talk:free`);
+    }
+    if (min) return i18n.t(`talk:remain`, {min});
+    return '';
+  }, [emgType, min]);
 
   const ccInfo = useMemo(
     () => (ccode && (initial || calling) ? tariff[ccode] : undefined),
@@ -170,6 +205,14 @@ const TalkMain: React.FC<TalkMainProps> = ({
     }, [ccInfo?.tz]),
   );
 
+  useEffect(() => {
+    if (tooltip && navigation.isFocused()) {
+      setTimeout(() => {
+        updateTooltip(false);
+      }, 15000);
+    }
+  }, [navigation, tooltip, updateTooltip]);
+
   // talkpoint 가져오지 못할 경우 0 처리
   const talkPointBtn = useCallback(() => {
     return (
@@ -181,7 +224,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
             <AppSvgIcon
               key="talkPoint"
               name="talkPoint"
-              style={{marginRight: 6}}
+              style={[{marginRight: 6}, {marginLeft: 16}]}
             />
             <AppText style={styles.myPoint}>{i18n.t('talk:mypoint')}</AppText>
             <AppPrice
@@ -197,7 +240,11 @@ const TalkMain: React.FC<TalkMainProps> = ({
                 {marginLeft: 0},
               ]}
             />
-            <AppSvgIcon key="rightArrow10" name="rightArrow10" />
+            <AppSvgIcon
+              style={{marginRight: 16}}
+              key="rightArrow10"
+              name="rightArrow10"
+            />
           </View>
         </Pressable>
         <View style={{flex: 1}} />
@@ -223,6 +270,43 @@ const TalkMain: React.FC<TalkMainProps> = ({
     );
   }, [localtime]);
 
+  const renderDestination = useCallback(() => {
+    if (dtmf) {
+      return (
+        <View style={[styles.input, {height: 44, marginTop: 16}]}>
+          <AppText style={styles.dest} numberOfLines={1} ellipsizeMode="head">
+            {dtmf}
+          </AppText>
+        </View>
+      );
+    }
+    if (emgType?.length > 0 && called) {
+      return (
+        <View style={[styles.input, styles.emergencyView]}>
+          <AppSvgIcon name="sos" />
+          <AppText
+            style={styles.emergencyCallText}
+            numberOfLines={1}
+            ellipsizeMode="head">
+            {i18n.t(`talk:urgent:call:${emgType}`)}
+          </AppText>
+        </View>
+      );
+    }
+    return (
+      <View style={[styles.input, {height: 44, marginTop: 16}]}>
+        <AppText style={styles.dest} numberOfLines={1} ellipsizeMode="head">
+          <AppText style={[styles.dest, {color: colors.clearBlue}]}>
+            {ccode || ''}
+          </AppText>
+          {ccode ? called?.substring(ccode.length) : called}
+        </AppText>
+      </View>
+    );
+  }, [called, ccode, dtmf, emgType]);
+
+  const callTimePos = useMemo(() => (initial ? pointPos : -5), [initial]);
+
   return (
     <>
       <View style={styles.topView}>
@@ -245,15 +329,26 @@ const TalkMain: React.FC<TalkMainProps> = ({
             </AppText>
           </View>
         )}
-        <AppButton
-          style={{backgroundColor: colors.white}}
-          titleStyle={styles.emergency}
-          title={initial ? i18n.t('talk:emergencyCall') : ''}
-          onPress={() => navigation.navigate('EmergencyCall')}
-        />
+        {initial ? (
+          <AppButton
+            style={{backgroundColor: colors.white}}
+            titleStyle={styles.emergency}
+            title={initial ? i18n.t('talk:emergencyCall') : ''}
+            onPress={() => navigation.navigate('EmergencyCall')}
+          />
+        ) : (
+          <View style={{width: 55}} />
+        )}
       </View>
       {ccInfo && getLocalTime()}
-      <CallToolTip text={i18n.t('talk:emergencyText')} icon="bell" />
+      {tooltip && (
+        <TalkToolTip
+          text={i18n.t('talk:emergencyText')}
+          icon="bell"
+          iconStyle={{marginRight: 8}}
+          updateTooltip={updateTooltip}
+        />
+      )}
       {connected && (
         <View style={styles.connectedView}>
           {showWarning && (
@@ -270,22 +365,12 @@ const TalkMain: React.FC<TalkMainProps> = ({
               },
               showWarning && {color: colors.redError, marginLeft: 6},
             ]}>
-            {min ? i18n.t(`talk:remain`, {min}) : ''}
+            {minInfo}
           </AppText>
         </View>
       )}
-
-      {/* <AppText style={{marginLeft: 10}}>{`Session: ${sessionState}`}</AppText>
-    <AppText style={{marginLeft: 10}}>{time}</AppText> */}
-      <View style={[styles.input, {height: 44, marginTop: 16}]}>
-        <AppText style={styles.dest} numberOfLines={1} ellipsizeMode="head">
-          <AppText style={[styles.dest, {color: colors.clearBlue}]}>
-            {ccode || ''}
-          </AppText>
-          {ccode ? called?.substring(ccode.length) : called}
-        </AppText>
-      </View>
-      <View style={{flex: 1}}>{info()}</View>
+      {renderDestination()}
+      <View style={{flex: 1, marginTop: callTimePos}}>{info()}</View>
       <View>
         <Keypad
           navigation={navigation}

@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import {
   RouteProp,
   useFocusEffect,
@@ -14,6 +15,7 @@ import {
   View,
 } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
+import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -25,16 +27,6 @@ import {
   UserAgent,
   UserAgentOptions,
 } from 'sip.js';
-import AsyncStorage from '@react-native-community/async-storage';
-
-import Contacts from 'react-native-contacts';
-import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
-
-import AppAlert from '@/components/AppAlert';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
-import {HomeStackParamList} from '@/navigation/navigation';
-import {API} from '@/redux/api';
-
 import _ from 'underscore';
 import {useInterval} from '@/utils/useInterval';
 import {
@@ -47,14 +39,15 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
+import {API} from '@/redux/api';
 import {RootState} from '@/redux';
+import {HomeStackParamList} from '@/navigation/navigation';
 import {colors} from '@/constants/Colors';
+import AppAlert from '@/components/AppAlert';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import PhoneCertBox from './component/PhoneCertBox';
 import TalkMain from './component/TalkMain';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
-
-const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 
 const styles = StyleSheet.create({
   body: {
@@ -62,116 +55,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-end',
     backgroundColor: 'white',
-  },
-
-  keypad: {
-    justifyContent: 'flex-start',
-  },
-  emergency: {
-    flex: 1,
-    textAlign: 'right',
-    fontSize: 16,
-    fontWeight: '600',
-    fontStyle: 'normal',
-    lineHeight: 24,
-    letterSpacing: -0.16,
-    color: colors.clearBlue,
-  },
-  myPoint: {
-    fontSize: 16,
-    lineHeight: 24,
-    letterSpacing: -0.16,
-  },
-  pointBold: {
-    marginLeft: 12,
-    marginRight: 8,
-    color: colors.clearBlue,
-    fontWeight: 'bold',
-  },
-  dest: {
-    height: buttonSize / 2,
-    fontSize: 36,
-    fontWeight: 'bold',
-    fontStyle: 'normal',
-    lineHeight: buttonSize / 2,
-    letterSpacing: -0.28,
-    color: colors.black,
-    textAlignVertical: 'bottom',
-  },
-  input: {
-    alignItems: 'center',
-    marginHorizontal: 20,
-  },
-  talkBtn: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-  },
-  talkBtnView: {
-    justifyContent: 'center',
-    height: 40,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    marginHorizontal: 92,
-    borderWidth: 1,
-    borderColor: colors.lightGrey,
-  },
-  timer: {
-    height: 22,
-    fontSize: 14,
-    fontWeight: '500',
-    fontStyle: 'normal',
-    lineHeight: 22,
-    letterSpacing: 0,
-    textAlign: 'center',
-    color: colors.clearBlue,
-    marginTop: 24,
-  },
-  connecting: {
-    color: colors.warmGrey,
-    fontSize: 16,
-    fontWeight: 'normal',
-    fontStyle: 'normal',
-    lineHeight: 40,
-    height: 40,
-    marginTop: 24,
-    letterSpacing: -0.16,
-    textAlign: 'center',
-  },
-  topView: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 8,
-    height: 40,
-    alignItems: 'center',
-  },
-  topRow: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    marginHorizontal: 20,
-  },
-  flagIcon: {
-    flex: 1,
-    width: 9.4,
-    // backgroundColor: colors.darkBlue,
-    flexDirection: 'column',
-    alignContent: 'flex-end',
-    justifyContent: 'flex-end',
-  },
-  nation: {
-    flex: 1,
-    // marginLeft: 6,
-    justifyContent: 'flex-start',
-    color: colors.black,
-    textAlign: 'left',
-  },
-  connectedView: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });
 
@@ -195,7 +78,7 @@ type RkbTalkProps = {
 
 const RkbTalk: React.FC<RkbTalkProps> = ({
   account: {mobile, realMobile, iccid, token},
-  talk: {called, tariff, ccode},
+  talk: {called, tariff, tooltip, ccode},
   navigation,
   action,
 }) => {
@@ -208,13 +91,14 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [mute, setMute] = useState(false);
   const [dtmfSession, setDtmfSession] = useState<Session>();
   const [duration, setDuration] = useState(0);
-  const [maxTime, setMaxTime] = useState<number>();
+  const [maxTime, setMaxTime] = useState<number | null>(null);
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
+  const [checkFirst, setCheckFirst] = useState(false);
   const [pntError, setPntError] = useState<boolean>(false);
+  const [dtmf, setDtmf] = useState<string>();
   // const [digit, setDigit] = useState('');
   const [refreshing, setRefreshing] = useState(false);
-  const [showCheckModal, setShowCheckModal] = useState<boolean>(true);
   const testNumber = realMobile;
   // const testNumber = '07079190216';
 
@@ -242,10 +126,13 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         if (result == null) {
           navigation.navigate('TalkPermission');
           AsyncStorage.setItem('alreadyRkbLaunched', 'true');
+        } else if (!checkFirst) {
+          action.talk.updateTooltip(true);
+          setCheckFirst(true);
         }
       });
     }
-  }, [isFocused, navigation, realMobile]);
+  }, [action.talk, checkFirst, isFocused, navigation, realMobile]);
 
   const getPoint = useCallback(() => {
     if (realMobile) {
@@ -382,17 +269,17 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const cleanupMedia = useCallback(() => {
     setRefreshing(true);
 
-    setInviter();
+    setInviter(null);
 
     setDuration(0);
-    setMaxTime();
+    setMaxTime(null);
     setTime('');
     setTimeout(() => {
       getPoint();
     }, 1000);
-
+    setDtmf('');
     // 저장했던 번호 삭제
-    action.talk.updateNumberClicked();
+    action.talk.updateNumberClicked({});
 
     setRefreshing(false);
   }, [action.talk, getPoint]);
@@ -597,6 +484,13 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     }, [getPoint, testNumber]),
   );
 
+  const updateTooltip = useCallback(
+    (t: boolean) => action.talk.updateTooltip(t),
+    [action.talk],
+  );
+
+  const onChange = useCallback((d?: string) => setDtmf(d), []);
+
   return (
     <>
       <StatusBar
@@ -618,9 +512,13 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
             sessionState={sessionState}
             min={min}
             time={time}
+            dtmf={dtmf}
             point={point}
             showWarning={showWarning}
+            onChange={onChange}
             onPressKeypad={onPressKeypad}
+            tooltip={tooltip}
+            updateTooltip={updateTooltip}
           />
         ) : (
           <PhoneCertBox />

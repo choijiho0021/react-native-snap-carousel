@@ -96,6 +96,7 @@ export interface TalkModelState {
   tariff: Record<string, TalkTariff>;
   maxCcodePrefix: number; // max length of country code
   callHistory: SectionData[];
+  tooltip: boolean;
   clickedNum?: string; // same with contact
   clickedName?: string;
   clickedIncCc?: boolean; // if clicked number has cccode
@@ -133,7 +134,6 @@ const updateCalls = async (state: TalkModelState, payload: CallHistory) => {
     ? state?.clickedNum === state.called
     : state?.clickedNum === origin;
   const name = isSame ? state.clickedName : undefined;
-  const dest = isSame ? state.clickedNum : state.called;
 
   const json = await retrieveData('callHistory');
   const hist = parseJson(json);
@@ -145,7 +145,7 @@ const updateCalls = async (state: TalkModelState, payload: CallHistory) => {
     newHistory = [
       {
         key,
-        destination: dest, // 연락처 클릭인경우 클릭한 번호 그대로 사용
+        destination: origin, // ccode 제외 번호
         duration: state.duration || 0,
         stime,
         ccode: state.ccode || '',
@@ -169,6 +169,7 @@ const initialState: TalkModelState = {
   tariff: {},
   maxCcodePrefix: 0,
   callHistory: [],
+  tooltip: false,
   duration: 0,
 };
 
@@ -226,12 +227,15 @@ const slice = createSlice({
 
       state.clickedIncCc = undefined;
       state.clickedName = trimName(action.payload?.name);
+
       if (state.clickedName) {
         if (!state.ccode) {
           state.ccode = '82';
           state.called = state.ccode + num;
           state.clickedIncCc = false;
-        } else state.clickedIncCc = true;
+        } else if (state.ccode + num === state.called)
+          state.clickedIncCc = false;
+        else state.clickedIncCc = true;
       }
 
       state.clickedNum = num;
@@ -278,6 +282,10 @@ const slice = createSlice({
     resetWithoutContacts: (state) => {
       // logout때, 통화기록은?
       return {...initialState, contacts: state.contacts};
+    },
+    updateTooltip: (state, action) => {
+      state.tooltip = action.payload;
+      return state;
     },
   },
   extraReducers: (builder) => {
@@ -379,9 +387,15 @@ export const callChanged = createAsyncThunk(
 
 export const updateNumberClicked = createAsyncThunk(
   'talk/updateNumberClicked',
-  async ({num, name}: {num: string; name: string}, {dispatch}) => {
-    dispatch(slice.actions.updateCalledPty(num));
-    dispatch(slice.actions.updateClicked({num, name}));
+  async (
+    {num, name, ccode}: {num?: string; name?: string; ccode?: string},
+    {dispatch},
+  ) => {
+    Promise.resolve(
+      dispatch(slice.actions.updateCalledPty(`${ccode || ''}${num || ''}`)),
+    ).then(() => {
+      dispatch(slice.actions.updateClicked({num, name}));
+    });
   },
 );
 
