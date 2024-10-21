@@ -72,7 +72,7 @@ const AppBackButton = ({
           style={[
             appStyles.subTitle,
             titleStyle,
-            {marginLeft: showIcon ? 16 : 0, fontSize: 20, flex: 1},
+            {marginLeft: showIcon ? 16 : 20, fontSize: 20, flex: 1},
           ]}
           numberOfLines={1}
           ellipsizeMode="tail"
