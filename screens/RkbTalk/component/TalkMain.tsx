@@ -5,6 +5,7 @@ import {SessionState} from 'sip.js';
 import {useSelector} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import {useFocusEffect} from '@react-navigation/native';
+import AsyncStorage from '@react-native-community/async-storage';
 import AppButton from '@/components/AppButton';
 import AppPrice from '@/components/AppPrice';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -341,14 +342,15 @@ const TalkMain: React.FC<TalkMainProps> = ({
         )}
       </View>
       {ccInfo && getLocalTime()}
-      {tooltip && (
-        <TalkToolTip
-          text={i18n.t('talk:emergencyText')}
-          icon="bell"
-          iconStyle={{marginRight: 8}}
-          updateTooltip={updateTooltip}
-        />
-      )}
+
+      <TalkToolTip
+        visible={tooltip}
+        text={i18n.t('talk:emergencyText')}
+        icon="bell"
+        iconStyle={{marginRight: 8}}
+        updateTooltip={updateTooltip}
+      />
+
       {connected && (
         <View style={styles.connectedView}>
           {showWarning && (
