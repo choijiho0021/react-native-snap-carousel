@@ -4,7 +4,6 @@ import React, {
   useRef,
   useState,
   useMemo,
-  Fragment,
   memo,
 } from 'react';
 import {StyleSheet, View, ViewStyle} from 'react-native';
@@ -180,6 +179,9 @@ const UsageItem: React.FC<UsageItemProps> = ({
   );
   const circularProgress = useRef();
 
+  const localTz = useMemo(() => RNLocalize.getTimeZone(), []);
+  const isTzDiff = useMemo(() => localTz !== 'Asia/Seoul', [localTz]);
+
   const isError = useMemo(() => {
     return dataStatusCd === 'E';
   }, [dataStatusCd]);
@@ -256,7 +258,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
   const renderResetTimeRow = useCallback(
     (key: string, rowStyle: ViewStyle = {}) => {
-      const tz = key === 'local' ? RNLocalize.getTimeZone() : 'Asia/Seoul';
+      const tz = key === 'local' ? localTz : 'Asia/Seoul';
       // const tz = key === 'local' ? 'America/New_York' : 'Asia/Seoul';
 
       return (
@@ -280,7 +282,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         </View>
       );
     },
-    [getResetTime],
+    [getResetTime, localTz],
   );
 
   const renderCaution = useCallback(() => {
@@ -345,10 +347,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
   );
 
   const renderTime = useCallback(() => {
-    const localTz = RNLocalize.getTimeZone();
-    const isTzDiff = localTz !== 'Asia/Seoul';
-    // const nowKr = moment().tz('America/New_York');
-
     return (
       <View style={styles.timeContainer}>
         {showEndTime && endTime && (
@@ -401,6 +399,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [
     canShowUsage,
     endTime,
+    isTzDiff,
     item.daily,
     item.partner,
     renderResetTimeRow,
@@ -470,13 +469,18 @@ const UsageItem: React.FC<UsageItemProps> = ({
             <View style={{flexDirection: 'row'}}>
               <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
               <AppText style={styles.warning}>
-                {i18n.t('esim:caution:time')}
+                {i18n.t(
+                  isTzDiff ? 'esim:caution:time2' : 'esim:caution:time1',
+                  {
+                    tz: moment().tz(RNLocalize.getTimeZone()).format('z'),
+                  },
+                )}
               </AppText>
             </View>
           </View>
         ) : null;
     }
-  }, [endTime, item?.partner, showEndTime]);
+  }, [endTime, isTzDiff, item?.partner, showEndTime]);
 
   const clMtdTxt = useCallback(() => {
     return ['ais', 'dtac', 'vndaily'].includes(item?.clMtd || '') ? (
