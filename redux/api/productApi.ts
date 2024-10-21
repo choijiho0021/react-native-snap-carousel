@@ -13,6 +13,7 @@ import {colors} from '@/constants/Colors';
 import Env from '@/environment';
 import {parseJson} from '@/utils/utils';
 import {EXCEED_CHARGE_QUADCELL_RSP} from '@/screens/ChargeTypeScreen';
+import {Country} from '.';
 
 const {specialCategories} = Env.get();
 
@@ -176,7 +177,6 @@ export type RkbProduct = {
   field_daily: string;
   volume: string;
   partnerId: string;
-  categoryId: string[];
   days: number;
   variationId: string;
   field_description: string;
@@ -242,7 +242,6 @@ const toProduct = (data: DrupalProduct[]): ApiResult<RkbProduct> => {
           field_daily: item.field_daily,
           volume: item.field_data_volume,
           partnerId: item.partner_id,
-          categoryId: item.field_product_categories,
           days: utils.stringToNumber(item.field_days) || 0,
           variationId: item.variations && item.variations[0],
           field_description: item.field_description,
@@ -278,8 +277,6 @@ type RkbAllProdJson = {
   dys: string;
   fup: string;
   pid: string;
-  ct: string;
-  ctl: string;
   var: string;
   dsc: string;
   desc: string;
@@ -307,7 +304,6 @@ const toAllProduct = (data: RkbAllProdJson[]): ApiResult<RkbProduct> => {
           field_daily: item.da,
           volume: item.vol,
           partnerId: item.pid,
-          categoryId: item.ct,
           days: utils.stringToNumber(item.dys) || 0,
           variationId: item.var,
           field_description: item.dsc,
@@ -445,29 +441,45 @@ const toProdCountry = (
   return api.failure(api.E_NOT_FOUND);
 };
 
+// title을 기준으로 합친 후 검색어 추가
+const toGroupByTitle = (v: RkbPriceInfo[], prodCountry: string[]) => {
+  return (
+    v
+      .reduce((acc, cur) => {
+        // grouping by country
+        const idx = acc.findIndex((a) => a.title === cur.title);
+        if (idx < 0) return acc.concat(cur);
+        if (cur.country && acc[idx].country)
+          acc[idx].country = [...Set([...acc[idx].country, ...cur?.country])];
+        if (cur.partner) acc[idx].partnerList.push(cur.partner);
+        acc[idx].minPrice.value = Math.min(
+          acc[idx].minPrice.value,
+          cur.minPrice.value,
+        );
+        return acc;
+      }, [] as RkbPriceInfo[])
+      // search 검색어 추가 elm.search는 홈화면에서 보이는 title
+      .map((elm) => ({
+        ...elm,
+        search: `${elm.search},${elm.country},${Country.getName(
+          elm.country,
+          'ko',
+          prodCountry,
+        )},${Country.getName(elm.country, 'en', prodCountry)}`,
+      }))
+      .sort((a, b) => a.weight - b.weight)
+  );
+};
+
+// 2단 list로 변환
 const toColumnList = (v: RkbPriceInfo[]) => {
-  return v
-    .reduce((acc, cur) => {
-      // grouping by country
-      const idx = acc.findIndex((a) => a.country === cur.country);
-      if (idx < 0) return acc.concat(cur);
-      acc[idx].weight = Math.max(acc[idx].weight, cur.weight);
-      acc[idx].partnerList.push(cur.partner);
-      acc[idx].minPrice.value = Math.min(
-        acc[idx].minPrice.value,
-        cur.minPrice.value,
-      );
-      return acc;
-    }, [] as RkbPriceInfo[])
-    .sort((a, b) => b.weight - a.weight)
-    .reduce((acc, cur) => {
-      // 2단 list로 변환
-      if (acc.length === 0) return [[cur]];
-      const last = acc[acc.length - 1];
-      return last.length <= 1
-        ? acc.slice(0, acc.length - 1).concat([last.concat(cur)])
-        : acc.concat([[cur]]);
-    }, [] as RkbPriceInfo[][]);
+  return v.reduce((acc, cur) => {
+    if (acc.length === 0) return [[cur]];
+    const last = acc[acc.length - 1];
+    return last.length <= 1
+      ? acc.slice(0, acc.length - 1).concat([last.concat(cur)])
+      : acc.concat([[cur]]);
+  }, [] as RkbPriceInfo[][]);
 };
 
 const toAddOnProd = (data: DrupalAddonProd[]): ApiResult<RkbAddOnProd> => {
@@ -568,7 +580,8 @@ const getAddOnProduct = (subsId: string) => {
 
 export type RkbProdByCountry = {
   category: string;
-  country: string;
+  categoryItem: string;
+  country: string[];
   price: string;
   partner: string;
   max_discount: string;
@@ -576,13 +589,28 @@ export type RkbProdByCountry = {
   tags?: string;
 };
 
+export type RkbProdCategory = {
+  name: string;
+  tid: string;
+  depth: string;
+  weight: string;
+};
+
 type RkbProdByCntryJson = {
   ct: string;
+  cti: string;
   pt: string;
   co: string;
   pr: string;
   dis: string;
   tgs: string;
+};
+
+type RkbProdCategoryJson = {
+  name: string;
+  tid: string;
+  depth: string;
+  weight: string;
 };
 
 const toProdByCntry = (
@@ -592,11 +620,29 @@ const toProdByCntry = (
     return api.success(
       data.map((item) => ({
         category: item.ct,
+        categoryItem: item.cti,
         country: item.co,
         partner: item.pt,
         price: item.pr,
         max_discount: item.dis,
         tags: item.tgs,
+      })),
+    );
+  }
+
+  return api.failure(api.E_NOT_FOUND);
+};
+
+const toProdCategory = (
+  data: RkbProdCategoryJson[],
+): ApiResult<RkbProdCategory> => {
+  if (_.isArray(data)) {
+    return api.success(
+      data.map((item) => ({
+        name: item.name,
+        tid: item.tid,
+        depth: item.depth,
+        weight: item.weight,
       })),
     );
   }
@@ -613,10 +659,18 @@ const productByCountry = () => {
   );
 };
 
+const productCategory = () => {
+  return api.callHttpGet<RkbProdCategory>(
+    api.httpUrl(`${api.path.prodCategory}?_format=json`),
+    toProdCategory,
+  );
+};
+
 export default {
   category,
   toPurchaseItem,
   toPurchaseAddOnItem,
+  toGroupByTitle,
   toColumnList,
   getTitle,
   getProduct,
@@ -627,6 +681,7 @@ export default {
   getLocalOp,
   getProdCountry,
   productByCountry,
+  productCategory,
   getProductByUuid,
   getAddOnProduct,
 };

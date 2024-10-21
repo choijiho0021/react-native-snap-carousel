@@ -177,7 +177,7 @@ type ChargeAgreementScreenProps = {
 const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
   navigation,
   route: {params},
-  account,
+  account: {balance},
   action,
 }) => {
   const contents = useMemo(() => params.contents, [params.contents]);
@@ -202,7 +202,6 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
 
   const onPurchase = useCallback(() => {
     if (isPressed) {
-      const {balance} = account;
       // 구매 품목을 갱신한다.
       action.cart.purchase({
         purchaseItems,
@@ -228,12 +227,13 @@ const ChargeAgreementScreen: React.FC<ChargeAgreementScreenProps> = ({
       ));
     }
   }, [
-    account,
     action.cart,
     action.modal,
+    balance,
     isPressed,
     navigation,
-    params.chargeableItem,
+    params.chargeableItem.nid,
+    params.chargeableItem.subsIccid,
     purchaseItems,
   ]);
 

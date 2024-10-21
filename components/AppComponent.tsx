@@ -16,6 +16,7 @@ import messaging from '@react-native-firebase/messaging';
 import codePush from 'react-native-code-push';
 import Config from 'react-native-config';
 import SystemSetting from 'react-native-system-setting';
+import VersionCheck from 'react-native-version-check';
 import {API} from '@/redux/api';
 import AppAlert from '@/components/AppAlert';
 import AppToast from '@/components/AppToast';
@@ -23,13 +24,14 @@ import Env from '@/environment';
 import AppNavigator from '@/navigation/AppNavigator';
 import {actions as accountActions} from '@/redux/modules/account';
 import {actions as infoActions} from '@/redux/modules/info';
+import {initLog, actions as logActions} from '@/redux/modules/log';
 import {
   actions as productActions,
   ProductModelState,
 } from '@/redux/modules/product';
 import {actions as syncActions} from '@/redux/modules/sync';
 import i18n from '@/utils/i18n';
-import {retrieveData} from '@/utils/utils';
+import {retrieveData, storeData} from '@/utils/utils';
 import store from '@/store';
 import {RootState} from '@/redux';
 import AppModal from './AppModal';
@@ -198,9 +200,13 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
   const loadResourcesAsync = useCallback(async () => {
     // clear caches
     dispatch(accountActions.clearCookies());
-
+    // customer log init
+    dispatch(initLog());
     // load product list
-    dispatch(productActions.init(false));
+    const oldVer = await retrieveData('AppVer');
+    const ver = VersionCheck.getCurrentVersion();
+
+    dispatch(productActions.init(oldVer !== ver));
 
     if (!esimApp) {
       // 공지 사항 가져오기

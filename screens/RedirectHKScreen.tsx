@@ -81,6 +81,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteTwo,
     paddingHorizontal: 20,
     paddingVertical: 15,
+    borderRadius: 3,
+    borderWidth: 1,
+    borderColor: colors.whiteTwo,
   },
   textUnderLine: {
     alignSelf: 'flex-start',
@@ -190,8 +193,8 @@ const styles = StyleSheet.create({
     marginBottom: 36,
   },
   hkInfoText: {
-    ...appStyles.normal14Text,
-    lineHeight: 20,
+    ...appStyles.normal16Text,
+    lineHeight: 24,
     letterSpacing: 0,
   },
   hkCheckTextSmall: {
@@ -272,7 +275,7 @@ type hkRegStatusType =
 const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
   navigation,
   route,
-  account,
+  account: {token},
   action,
 }) => {
   const [activeSlide, setActiveSlide] = useState(0);
@@ -284,7 +287,6 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
   const [showModal, setShowModal] = useState<boolean>(false);
   const [params, setParams] = useState<Object>(route?.params || {});
   const images = useMemo(() => Object.keys(guideImage), []);
-  // const params = useMemo(() => route?.params || {}, [route?.params]);
 
   useCallback(() => {
     return () => {
@@ -328,15 +330,13 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
 
   const updateTag = useCallback(
     (tag: string) => {
-      const {token} = account;
-
       action.order.updateSubsAndOrderTag({
         uuid: params?.uuid,
         tag,
         token: token || '',
       });
     },
-    [account, action.order, params?.uuid],
+    [action.order, params?.uuid, token],
   );
 
   const checkAndUpdateTag = useCallback(async () => {
@@ -394,7 +394,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
   }, [reCheckCount, params?.iccid, params?.imsi, updateTag]);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.white}}>
       <ScreenHeader
         title={i18n.t('redirectHK')}
         renderRight={
@@ -411,13 +411,14 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
         }
       />
       <ScrollView style={styles.container}>
-        <View style={{margin: 20}}>
+        <View style={{marginHorizontal: 20, marginTop: 20, marginBottom: 32}}>
           <AppStyledText
             textStyle={styles.hkInfoText}
             text={i18n.t('redirectHK:info1')}
             format={{b: {color: colors.blue}}}
           />
-          <AppText style={[appStyles.bold14Text, {marginTop: 20}]}>
+          <AppText
+            style={[appStyles.bold16Text, {marginTop: 20, lineHeight: 24}]}>
             {i18n.t('redirectHK:info3')}
           </AppText>
         </View>
@@ -437,7 +438,7 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
             itemWidth={sliderWidth}
             pagingEnabled
             enableMomentum={false}
-            decelerationRate={'fast'}
+            decelerationRate="fast"
           />
 
           <Pagination
@@ -451,7 +452,12 @@ const RedirectHKScreen: React.FC<RedirectHKScreenProps> = ({
             containerStyle={{paddingTop: 16, paddingBottom: 0}}
           />
         </View>
-        <View style={{paddingHorizontal: 20, marginBottom: 32, marginTop: 24}}>
+        <View
+          style={{
+            paddingHorizontal: 20,
+            marginBottom: 32,
+            marginTop: 24,
+          }}>
           <View style={styles.copyBox}>
             <View style={{flex: 9}}>
               <AppText style={styles.keyTitle}>

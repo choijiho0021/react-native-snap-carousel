@@ -76,10 +76,9 @@ type ChargeScreenProps = {
 const ChargeScreen: React.FC<ChargeScreenProps> = ({
   navigation,
   route: {params},
-  product,
+  product: {prodByLocalOp, prodList},
   action,
 }) => {
-  const {prodByLocalOp, prodList} = product;
   const {chargeableItem, chargeablePeriod} = params || {};
   const isTop = useRef(true);
   const blockAnimation = useRef(false);

@@ -1,15 +1,24 @@
 import React, {memo, useMemo, useState} from 'react';
-import {StyleSheet, View, Pressable, StyleProp, ViewStyle} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Pressable,
+  StyleProp,
+  ViewStyle,
+  Platform,
+} from 'react-native';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import i18n from '@/utils/i18n';
 import {appStyles} from '@/constants/Styles';
 import {colors} from '@/constants/Colors';
 import AppText from '@/components/AppText';
 import AppStyledText from '@/components/AppStyledText';
+import Env from '@/environment';
+
+const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   btn: {
-    padding: 30,
     borderWidth: 1,
     borderColor: colors.whiteFive,
     borderRadius: 3,
@@ -36,9 +45,22 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
   btnBody: {
-    ...appStyles.semiBold16Text,
+    ...appStyles.normal16Text,
+    fontWeight: undefined,
     lineHeight: 24,
     color: colors.warmGrey,
+  },
+  btnBody2: {
+    ...appStyles.medium14,
+    lineHeight: 22,
+    color: colors.warmGrey,
+    marginLeft: 4,
+  },
+  btnBody2Bold: {
+    ...appStyles.bold14Text,
+    lineHeight: 22,
+    color: colors.warmGrey,
+    marginLeft: 4,
   },
 });
 
@@ -61,7 +83,11 @@ const GuideButton = ({
       key={item}
       style={[
         styles.btn,
-        {backgroundColor: isPressed ? colors.backGrey : colors.white},
+        {
+          paddingVertical: item === 'esimDel' ? 24 : 30,
+          paddingHorizontal: 30,
+          backgroundColor: isPressed ? colors.backGrey : colors.white,
+        },
         style,
       ]}
       onPress={onPress}
@@ -101,6 +127,16 @@ const GuideButton = ({
             <AppText style={styles.btnBody}>
               {i18n.t(`userGuide:${item}:body`)}
             </AppText>
+            {item === 'checkSetting' && isIOS && (
+              <View style={{flexDirection: 'row', paddingRight: 20}}>
+                <AppSvgIcon name="greyWarning" style={{top: 4}} />
+                <AppStyledText
+                  text={i18n.t(`userGuide:${item}:body2`)}
+                  textStyle={styles.btnBody2}
+                  format={{b: styles.btnBody2Bold}}
+                />
+              </View>
+            )}
           </View>
         )}
       </View>

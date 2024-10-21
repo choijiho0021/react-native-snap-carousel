@@ -1,6 +1,13 @@
 import Analytics from 'appcenter-analytics';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {Pressable, StyleSheet, View, ScrollView, ViewStyle} from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  View,
+  ScrollView,
+  ViewStyle,
+  Modal,
+} from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'underscore';
 import {
@@ -10,6 +17,7 @@ import {
 } from '@react-navigation/native';
 import {ChannelIO} from 'react-native-channel-plugin';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {bindActionCreators} from 'redux';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppModal from '@/components/AppModal';
@@ -26,6 +34,19 @@ import AppSvgIcon from '@/components/AppSvgIcon';
 import ChatTalk from '@/components/ChatTalk';
 import ScreenHeader from '@/components/ScreenHeader';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
+import {AccountModelState} from '@/redux/modules/account';
+import {
+  LogAction,
+  LogModelState,
+  actions as logActions,
+} from '@/redux/modules/log';
+
+import {
+  actions as toastActions,
+  Toast,
+  ToastAction,
+} from '@/redux/modules/toast';
+import CliLogModal from './CliLogModal';
 
 const {esimGlobal} = Env.get();
 
@@ -176,12 +197,20 @@ type ContactScreenProps = {
   navigation: NavigationProp<any>;
   route: RouteProp<ParamListBase, string>;
 
+  account: AccountModelState;
+  log: LogModelState;
   noti: NotiModelState;
+
+  action: {
+    log: LogAction;
+    toast: ToastAction;
+  };
 };
 
 const ContactScreen: React.FC<ContactScreenProps> = (props) => {
-  const {navigation, route, noti} = props;
-  const [showModal, setShowModal] = useState(false);
+  const {navigation, route, noti, log, account, action} = props;
+  const [pressCnt, setPressCnt] = useState(0);
+  const [showModal, setShowModal] = useState<string>(''); // cliLog, alim
   const [chatTalkClicked, setChatTalkClicked] = useState(false);
 
   const data = useMemo(
@@ -203,11 +232,18 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
   );
 
   useEffect(() => {
+    if (pressCnt >= 5) {
+      setShowModal('cliLog');
+      setPressCnt(0);
+    }
+  }, [pressCnt]);
+
+  useEffect(() => {
     Analytics.trackEvent('Page_View_Count', {page: 'Service Center'});
   }, [navigation]);
 
   useEffect(() => {
-    if (noti.result) setShowModal(true);
+    if (noti.result) setShowModal('alim');
   }, [noti.result]);
 
   // TODO : AppHeader로 옮기기
@@ -279,7 +315,9 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
 
         <View style={styles.infoContainer}>
           <AppText style={styles.contactInfo}>{i18n.t('contact:info')}</AppText>
-          <AppIcon name="imgNotiDokebi" style={{marginRight: 12}} />
+          <Pressable onPress={() => setPressCnt((pre) => pre + 1)}>
+            <AppIcon name="imgNotiDokebi" style={{marginRight: 12}} />
+          </Pressable>
         </View>
 
         <View style={styles.absoluteView}>
@@ -315,15 +353,30 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
               : i18n.t('set:failedToSendAlimTalk')
           }
           type="info"
-          onOkClose={() => setShowModal(false)}
-          visible={showModal}
+          onOkClose={() => setShowModal('')}
+          visible={showModal === 'alim'}
         />
       </ScrollView>
+
+      <CliLogModal
+        onOkClose={() => setShowModal('')}
+        visible={showModal === 'cliLog'}
+      />
     </SafeAreaView>
   );
 };
 
-export default connect(({noti, status}: RootState) => ({
-  noti,
-  pending: status.pending[notiActions.sendAlimTalk.typePrefix] || false,
-}))(ContactScreen);
+export default connect(
+  ({account, noti, log, status}: RootState) => ({
+    account,
+    noti,
+    log,
+    pending: status.pending[notiActions.sendAlimTalk.typePrefix] || false,
+  }),
+  (dispatch) => ({
+    action: {
+      log: bindActionCreators(logActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch),
+    },
+  }),
+)(ContactScreen);

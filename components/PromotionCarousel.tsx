@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {memo, useCallback, useState, useMemo, useEffect} from 'react';
+import React, {memo, useCallback, useState} from 'react';
 import {
   Animated,
   Image,
@@ -14,6 +14,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import VersionCheck from 'react-native-version-check';
+import {StackNavigationProp} from '@react-navigation/stack';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -25,6 +26,7 @@ import i18n from '@/utils/i18n';
 import {actions as infoActions, InfoAction} from '@/redux/modules/info';
 import AppCarousel from '@/components/AppCarousel';
 import utils from '@/redux/api/utils';
+import {HomeStackParamList} from '@/navigation/navigation';
 
 export const DOT_MARGIN = 6;
 export const INACTIVE_DOT_WIDTH = 6;
@@ -96,6 +98,11 @@ const PromotionImage = memo(
   (prev, next) => prev.item.imageUrl === next.item.imageUrl,
 );
 
+type PromotionCarouselNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'PromotionCarousel'
+>;
+
 type PromotionCarouselProps = {
   promotion: RkbPromotion[];
   product: ProductModelState;
@@ -108,12 +115,12 @@ type PromotionCarouselProps = {
 
 const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
   promotion,
-  product,
+  product: {prodList},
   action,
   width,
   checkNeedUpdate,
 }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<PromotionCarouselNavigationProp>();
   const [activeSlide, setActiveSlide] = useState(promotion.length - 1);
 
   const onPress = useCallback(
@@ -128,7 +135,6 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
       ) {
         checkNeedUpdate();
       } else if (item.product_uuid) {
-        const {prodList} = product;
         const prod = prodList.get(item.product_uuid);
 
         if (prod) {
@@ -165,7 +171,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
         navigation.navigate('Faq');
       }
     },
-    [action.info, checkNeedUpdate, navigation, product],
+    [action.info, checkNeedUpdate, navigation, prodList],
   );
 
   const renderDots = useCallback(

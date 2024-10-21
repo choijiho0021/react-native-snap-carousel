@@ -219,18 +219,9 @@ type OrderType = 'latest' | 'old';
 const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   navigation,
   action,
-  account,
+  account: {iccid, token, balance, cashHistory = [], cashExpire, expirePt = 0},
   // pending,
 }) => {
-  const {
-    iccid,
-    token,
-    balance,
-    cashHistory = [],
-    cashExpire,
-    expirePt = 0,
-  } = account;
-
   const [orderType, setOrderType] = useState<OrderType>('latest');
   const [dataFilter, setDataFilter] = useState<string>('A');
   const [showSnackBar, setShowSnackbar] = useState(false);
@@ -473,7 +464,10 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             esimCurrency,
           )}
           balanceStyle={[appStyles.bold18Text, {color: colors.clearBlue}]}
-          currencyStyle={[appStyles.bold16Text, {color: colors.clearBlue}]}
+          currencyStyle={[
+            appStyles.bold16Text,
+            {color: colors.clearBlue, textAlignVertical: 'bottom'},
+          ]}
         />
       </View>
     );
@@ -549,7 +543,10 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               <AppPrice
                 price={utils.toCurrency(expirePt || 0, esimCurrency)}
                 balanceStyle={[appStyles.bold18Text, {color: colors.redError}]}
-                currencyStyle={[appStyles.bold16Text, {color: colors.redError}]}
+                currencyStyle={[
+                  appStyles.bold16Text,
+                  {color: colors.redError, textAlignVertical: 'bottom'},
+                ]}
               />
             </View>
 
@@ -663,7 +660,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 
           <Pressable
             style={styles.rechargeBox}
-            onPress={() => navigation.navigate('Recharge')}>
+            onPress={() => navigation.navigate('Recharge', {})}>
             <AppSvgIcon name="cashHistoryPlus" style={{marginRight: 4}} />
             <AppText style={styles.rechargeBoxText}>
               {i18n.t('acc:goRecharge')}
@@ -733,7 +730,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
                 appStyles.medium14,
                 {color: colors.black, marginRight: 8},
               ]}>
-              {i18n.t(`cashHistory:orderType:${orderType}`)}
+              {i18n.t(`cashHistory:orderType:modal:${orderType}`)}
             </AppText>
             <AppSvgIcon name="sortTriangle" style={{marginRight: 8}} />
           </Pressable>
@@ -758,11 +755,17 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           sectionData.length > 0 ? undefined : styles.contentContainerStyle
         }
         renderItem={renderSectionItem}
-        renderSectionHeader={({section: {title}}) => (
-          <AppText style={styles.sectionHeader}>
-            {i18n.t(`year`, {year: title})}
-          </AppText>
-        )}
+        renderSectionHeader={({section: {title}}) => {
+          const isFirst =
+            sectionData.length > 0 && sectionData[0]?.title === title;
+          if (isFirst && moment.tz('Asia/Seoul').format('YYYY') === title)
+            return null;
+          return (
+            <AppText style={styles.sectionHeader}>
+              {i18n.t(`year`, {year: title})}
+            </AppText>
+          );
+        }}
         stickySectionHeadersEnabled
         ListEmptyComponent={() => renderEmpty()}
         onScrollEndDrag={({

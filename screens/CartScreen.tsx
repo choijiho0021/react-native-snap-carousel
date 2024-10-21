@@ -76,8 +76,14 @@ type CartScreenProps = {
   };
 };
 
-const CartScreen: React.FC<CartScreenProps> = (props) => {
-  const {navigation, route, cart, account, product, action} = props;
+const CartScreen: React.FC<CartScreenProps> = ({
+  navigation,
+  route,
+  cart: {cartId, cartItems},
+  account: {loggedIn},
+  product: {prodList, localOpList},
+  action,
+}) => {
   const [list, setList] = useState<RkbOrderItem[]>([]);
   const [checked, setChecked] = useState(ImmutableMap<string, boolean>());
   const [qty, setQty] = useState(ImmutableMap<string, number>());
@@ -104,8 +110,6 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
   }, []);
 
   const onPurchase = useCallback(() => {
-    const {loggedIn} = account;
-
     if (!loggedIn) {
       navigation.navigate('Auth');
     } else {
@@ -126,7 +130,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         .dispatchPurchase({purchaseItems, isCart: true})
         .then(() => navigation.navigate('PymMethod', {mode: 'cart'}));
     }
-  }, [account, action.cart, checked, list, navigation, qty]);
+  }, [action.cart, checked, list, loggedIn, navigation, qty]);
 
   const onChangeQty = useCallback(
     (key: string, orderItemId: number, cnt: number) => {
@@ -134,9 +138,9 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         setQty((prev) => prev.set(key, cnt));
         setChecked((prev) => prev.set(key, true));
 
-        if (orderItemId && cart.cartId) {
+        if (orderItemId && cartId) {
           action.cart.cartUpdateQty({
-            orderId: cart.cartId,
+            orderId: cartId,
             orderItemId,
             qty: cnt,
             abortController: new AbortController(),
@@ -144,7 +148,7 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         }
       }
     },
-    [action.cart, cart.cartId],
+    [action.cart, cartId],
   );
 
   const empty = useCallback(
@@ -174,22 +178,21 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
       setChecked((prev) => prev.remove(key));
       setQty((prev) => prev.remove(key));
 
-      if (orderItemId && cart.cartId) {
+      if (orderItemId && cartId) {
         action.cart.cartRemove({
-          orderId: cart.cartId,
+          orderId: cartId,
           orderItemId,
         });
       }
     },
-    [action.cart, cart.cartId],
+    [action.cart, cartId],
   );
 
   const renderItem = useCallback(
     ({item}: {item: RkbOrderItem}) => {
-      const partnerId = product.prodList.get(item.key)?.partnerId;
+      const partnerId = prodList.get(item.key)?.partnerId;
 
-      const imageUrl =
-        partnerId && product.localOpList.get(partnerId)?.imageUrl;
+      const imageUrl = partnerId && localOpList.get(partnerId)?.imageUrl;
 
       return (
         <CartItem
@@ -204,27 +207,27 @@ const CartScreen: React.FC<CartScreenProps> = (props) => {
         />
       );
     },
-    [checked, onChangeQty, onChecked, product, qty, removeItem],
+    [checked, localOpList, onChangeQty, onChecked, prodList, qty, removeItem],
   );
 
   useEffect(() => {
-    setList(cart.cartItems);
+    setList(cartItems);
     setQty((prev) =>
-      cart.cartItems.reduce((acc, cur) => acc.set(cur.key, cur.qty), prev),
+      cartItems.reduce((acc, cur) => acc.set(cur.key, cur.qty), prev),
     );
 
     // checked 읽기
-    if (cart.cartItems && checked.size === 0) {
+    if (cartItems && checked.size === 0) {
       setChecked((prev) =>
-        cart.cartItems.reduce(
+        cartItems.reduce(
           (acc, cur) => acc.update(cur.key, (v: any) => cur.checked),
           prev,
         ),
       );
     }
 
-    checkAndLoadProdList(loading, cart.cartItems, product.prodList, dispatch);
-  }, [cart.cartItems, checked.size, dispatch, product.prodList]);
+    checkAndLoadProdList(loading, cartItems, prodList, dispatch);
+  }, [cartItems, checked.size, dispatch, prodList]);
 
   useFocusEffect(
     React.useCallback(() => {

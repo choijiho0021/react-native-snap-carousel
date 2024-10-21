@@ -3,6 +3,7 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {
   EventBoardAction,
   EventBoardModelState,
@@ -12,6 +13,8 @@ import BoardItemList from '@/screens/BoardScreen/BoardItemList';
 import i18n from '@/utils/i18n';
 import {RkbEventBoard} from '@/redux/api/eventBoardApi';
 import {PromotionModelState} from '@/redux/modules/promotion';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RkbBoard} from '@/redux/api/boardApi';
 
 type MyEventListProps = {
   promotion: PromotionModelState;
@@ -25,6 +28,11 @@ type MyEventListProps = {
   };
 };
 
+type MyEventListNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'MyEventList'
+>;
+
 const MyEventList: React.FC<MyEventListProps> = ({
   promotion,
   eventBoard,
@@ -32,7 +40,7 @@ const MyEventList: React.FC<MyEventListProps> = ({
   uid,
   action,
 }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<MyEventListNavigationProp>();
 
   useEffect(() => {
     action.eventBoard.getIssueList();
@@ -45,9 +53,9 @@ const MyEventList: React.FC<MyEventListProps> = ({
       onScrollEndDrag={() => action.eventBoard.getNextIssueList()}
       onRefresh={() => action.eventBoard.getIssueList()}
       refreshing={pending}
-      onPress={(issue: RkbEventBoard) =>
+      onPress={(issue: RkbEventBoard | RkbBoard) =>
         navigation.navigate('EventResult', {
-          issue,
+          issue: issue as RkbEventBoard,
           title: i18n.t('event:list'),
           showStatus: true,
           eventList: promotion.event,

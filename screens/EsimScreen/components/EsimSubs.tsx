@@ -863,6 +863,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
 
   const renderHkBtn = useCallback(() => {
     const isSuccess = mainSubs.tag?.includes('HA');
+
     if (
       !expired &&
       mainSubs.giftStatusCd !== 'S' &&
@@ -913,9 +914,16 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
   const renderHowToCall = useCallback(() => {
     const showHowModal =
       mainSubs?.clMtd &&
-      ['ustotal', 'usdaily', 'ais', 'dtac', 'mvtotal', 'vtdaily'].includes(
-        mainSubs?.clMtd,
-      );
+      [
+        'ustotal',
+        'usdaily',
+        'ais',
+        'ais2',
+        'dtac',
+        'mvtotal',
+        'vtdaily',
+        'latotal',
+      ].includes(mainSubs?.clMtd);
     if (showHowModal)
       return (
         <View>

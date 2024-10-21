@@ -112,15 +112,14 @@ const CountryItem0 = ({
     <View
       key={item[0]?.country}
       style={[styles.productList, {width: width - 40}]}>
-      {item.map((elm, idx) => {
+      {item?.map((elm, idx) => {
         // 1개인 경우 사이 간격을 맞추기 위해서 width를 image만큼 넣음
         const localOp = localOpList?.get(elm.partner);
-        const prodTitle = API.Product.getTitle(localOp);
         return (
           <View
             key={elm.country}
             style={{flex: 1, marginLeft: idx >= 1 ? 14 : 0}}>
-            <Pressable onPress={() => onPress?.(elm, prodTitle)}>
+            <Pressable onPress={() => onPress?.(elm, elm.title)}>
               <View style={styles.image}>
                 {(index <= 4 || showImage) && (
                   <ProductImg
@@ -135,7 +134,7 @@ const CountryItem0 = ({
               </View>
 
               <AppText key="cntry" style={styles.cntry}>
-                {prodTitle}
+                {elm.title}
               </AppText>
               {renderPrice(elm.minPrice)}
             </Pressable>
@@ -164,6 +163,7 @@ type StoreListProps = {
   onPress: (p: RkbPriceInfo, prodTitle: string) => void;
   onScrollEndDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   onEndReached?: () => void;
+  onRefresh?: () => void;
   scrollEnabled?: boolean;
   width: number;
 };
@@ -174,6 +174,7 @@ const StoreList = ({
   onPress,
   onScrollEndDrag,
   onEndReached,
+  onRefresh,
   scrollEnabled = true,
   width,
 }: StoreListProps) => {
@@ -218,16 +219,17 @@ const StoreList = ({
     [data, isFolder],
   );
 
-  const onRefresh = useCallback(() => {
+  const onRefreshList = useCallback(() => {
     setRefreshing(true);
     dispatch(productActions.init(true))
       .then(() => {
+        if (onRefresh) onRefresh();
         setRefreshing(false);
       })
       .catch(() => {
         setRefreshing(false);
       });
-  }, [dispatch]);
+  }, [dispatch, onRefresh]);
 
   return (
     <View style={appStyles.container}>
@@ -236,6 +238,7 @@ const StoreList = ({
         onScrollEndDrag={onScrollEndDrag}
         renderItem={renderItem}
         onEndReached={onEndReached}
+        extraData={list}
         scrollEnabled={scrollEnabled}
         showsVerticalScrollIndicator={false}
         onScrollBeginDrag={() => {
@@ -245,7 +248,7 @@ const StoreList = ({
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={onRefresh}
+            onRefresh={onRefreshList}
             colors={[colors.clearBlue]} // android 전용
             tintColor={colors.clearBlue} // ios 전용
           />

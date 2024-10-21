@@ -203,7 +203,7 @@ export type AccountModelState = {
   cashExpire?: CashExpire[];
   isNewUser?: boolean;
   expirePt?: number;
-  coupon: RkbCoupon[];
+  coupon?: RkbCoupon[];
   fortune?: Fortune;
   realMobile?: string;
   isReceivedReward?: number;

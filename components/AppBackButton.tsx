@@ -65,15 +65,13 @@ const AppBackButton = ({
           <View key="icon" style={{marginLeft: 20, ...imageStyle}}>
             <AppSvgIcon name="btnBack" />
           </View>
-        ) : (
-          <View key="empty" style={{marginLeft: 15}} />
-        )}
+        ) : null}
         <AppText
           key="label"
           style={[
             appStyles.subTitle,
             titleStyle,
-            {marginLeft: 16, fontSize: 20, flex: 1},
+            {marginLeft: showIcon ? 16 : 0, fontSize: 20, flex: 1},
           ]}
           numberOfLines={1}
           ellipsizeMode="tail"

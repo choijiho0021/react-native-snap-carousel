@@ -256,11 +256,11 @@ type NotiScreenProps = {
 };
 
 const NotiScreen: React.FC<NotiScreenProps> = ({
-  account,
-  info,
-  noti,
-  promotion,
-  eventBoard,
+  account: {mobile, loggedIn, token},
+  info: {infoMap},
+  noti: {notiList},
+  promotion: {event},
+  eventBoard: {list},
   navigation,
   route,
   action,
@@ -274,9 +274,9 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
   const isNotice = useMemo(() => mode === 'info', [mode]);
   const data = useMemo(() => {
     // clone the list to sort
-    const list = isNotice ? info.infoMap.get('info') : _.clone(noti.notiList);
-    return list?.sort((a, b) => -a.created.localeCompare(b.created));
-  }, [info.infoMap, isNotice, noti.notiList]);
+    const infoList = isNotice ? infoMap.get('info') : _.clone(notiList);
+    return infoList?.sort((a, b) => -a.created.localeCompare(b.created));
+  }, [infoMap, isNotice, notiList]);
 
   const readAllDisabled = useMemo(
     () =>
@@ -285,8 +285,8 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
   );
 
   const onRefresh = useCallback(() => {
-    action.noti.getNotiList({mobile: account.mobile});
-  }, [account.mobile, action.noti]);
+    action.noti.getNotiList({mobile});
+  }, [action.noti, mobile]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -297,19 +297,19 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
   }, [navigation, onRefresh, route.params?.mode]);
 
   useEffect(() => {
-    if (isNotice && !info.infoMap.has('info')) {
+    if (isNotice && !infoMap.has('info')) {
       action.info.getInfoList('info');
     }
 
     action.board.getIssueList();
-    if (account.loggedIn) action.eventBoard.getIssueList();
+    if (loggedIn) action.eventBoard.getIssueList();
   }, [
-    account.loggedIn,
     action.board,
     action.eventBoard,
     action.info,
-    info.infoMap,
+    infoMap,
     isNotice,
+    loggedIn,
   ]);
 
   useEffect(() => {
@@ -327,7 +327,6 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
       title,
       created,
     }: RkbNoti) => {
-      const {token} = account;
       const split = notiType?.split('/');
       const type = split[0];
       Analytics.trackEvent('Page_View_Count', {page: 'Noti Detail'});
@@ -411,10 +410,10 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
 
           case notiActions.NOTI_TYPE_EVENT:
             navigation.navigate('EventResult', {
-              issue: eventBoard.list.find((elm) => elm.key === split[1]),
+              issue: list.find((elm) => elm.key === split[1]),
               title: i18n.t('event:list'),
               showStatus: true,
-              eventList: promotion.event,
+              eventList: event,
             });
             break;
 
@@ -463,7 +462,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
         }
       }
     },
-    [account, action.noti, eventBoard.list, mode, navigation, promotion.event],
+    [action.noti, event, list, mode, navigation, token],
   );
 
   const renderItem = useCallback(
@@ -494,11 +493,9 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
               style={{justifyContent: 'flex-end'}}
               disabled={readAllDisabled}
               onPress={() => {
-                action.noti
-                  .readNoti({uuid: '0', token: account.token})
-                  .then(() => {
-                    onRefresh();
-                  });
+                action.noti.readNoti({uuid: '0', token}).then(() => {
+                  onRefresh();
+                });
               }}>
               <AppText
                 style={[

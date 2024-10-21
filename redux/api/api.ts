@@ -54,6 +54,7 @@ const path = {
   accountOfUser: 'json/account/ofuser',
   noti: 'json/noti/list',
   prodByCntry: 'json/product/ccode',
+  prodCategory: 'json/product/category',
   prodList: 'json/product/list',
   prodSku: 'json/product/sku',
   prodUuid: 'json/product/uuid',
@@ -378,6 +379,7 @@ const callHttp = async <T>(
         if (isJson) {
           if (response.status === 204) {
             // 204 -> no content
+            utils.log(`[No Content] ${url}}\n`);
             return callback(response);
           }
 
@@ -386,9 +388,12 @@ const callHttp = async <T>(
             // console.log('API response', url, response.status, js);
 
             // config에는 상품정보 등 큰 정보가 많아 제외 -- 추후 결과값을 성공 / 실패 로만 남기는 로그를 추가할 필요성이 있음
-            if (!url.includes('config')) {
-              utils.log(`${url} ${JSON.stringify(js)}\n`);
-            }
+            utils.log(
+              `${url} [${param?.method || ''}]${JSON.stringify(js).substring(
+                0,
+                1000,
+              )}\n`,
+            );
 
             return callback(js, response.headers.get('set-cookie'));
           } catch (ex) {
@@ -408,10 +413,20 @@ const callHttp = async <T>(
       response
         .json()
         .then((json) => {
+          utils.log(
+            `[Failed] error ${url} [${param?.method || ''}]${JSON.stringify(
+              json,
+            )}\n`,
+          );
           console.log('failed. error:', url, JSON.stringify(json));
           return callback(json);
         })
         .catch((err) => {
+          utils.log(
+            `[Failed] ${url} [${param?.method || ''}] Failed to decode json:${
+              err.message
+            }\n`,
+          );
           return failure(
             E_DECODING_FAILED,
             `Failed to decode json:${err.message}`,
@@ -422,6 +437,7 @@ const callHttp = async <T>(
 
     return failure(FAILED, response.statusText, response.status);
   } catch (err) {
+    utils.log(`[request failed]: ${err} [${param?.method || ''}]${url}\n`);
     console.log('@@@ request failed', err, url);
     if (!ignoreError)
       store.dispatch(

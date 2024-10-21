@@ -107,6 +107,8 @@ const getDetailList = (clMtd: string) => {
   switch (clMtd) {
     case 'usdaily':
     case 'mvtotal':
+    case 'latotal':
+    case 'ais2':
       return [1];
     case 'ustotal':
     case 'ais':

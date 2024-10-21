@@ -246,6 +246,7 @@ function EsimStackComponent() {
       <EsimStack.Screen name="ChargeHistory" component={ChargeHistoryScreen} />
       <EsimStack.Screen name="ChargeDetail" component={ChargeDetailScreen} />
       <EsimStack.Screen name="QrInfo" component={QrInfoScreen} />
+      <EsimStack.Screen name="Contact" component={ContactScreen} />
       <EsimStack.Group screenOptions={{animationEnabled: true}}>
         <EsimStack.Screen name="UserGuideStep" component={UserGuideScreen} />
         <EsimStack.Screen

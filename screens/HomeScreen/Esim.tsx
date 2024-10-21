@@ -190,30 +190,17 @@ const Esim: React.FC<EsimProps> = ({
   const [savedIndex, setSavedIndex] = useState(0);
   const routes = useMemo(
     () =>
-      [
-        {
-          key: API.Product.category.asia,
-          title: i18n.t('store:asia'),
-          category: '아시아',
-        },
-        {
-          key: API.Product.category.europe,
-          title: i18n.t('store:europe'),
-          category: '유럽',
-        },
-        {
-          key: API.Product.category.usaAu,
-          title: i18n.t('store:usa/au'),
-          category: '미주/호주',
-        },
-        {
-          key: API.Product.category.multi,
-          title: i18n.t('store:multi'),
-          category: '복수 국가',
-        },
-      ] as TabViewRoute[],
-    [],
+      product.prodCategory
+        .filter((item) => item.depth === '2')
+        .valueSeq()
+        .sortBy((item) => Number(item.weight))
+        .map((elm) => ({
+          key: elm.tid,
+          title: product.prodCategory.get(elm.tid)?.name,
+        })),
+    [product.prodCategory],
   );
+
   const [popUpVisible, setPopUpVisible] = useState<boolean>();
   const [isClosedPopUp, setIsClosedPopUp] = useState<boolean>(false);
   const [popupDisabled, setPopupDisabled] = useState(true);
@@ -444,8 +431,11 @@ const Esim: React.FC<EsimProps> = ({
     ({route: sceneRoute}: {route: TabViewRoute}) => (
       <StoreList
         key={sceneRoute.key}
-        data={product.priceInfo.get(sceneRoute.key, [] as RkbPriceInfo[][])}
+        data={product.priceInfoTab.get(sceneRoute.key, [] as RkbPriceInfo[][])}
         onPress={onPressItem}
+        onRefresh={() => {
+          action.product.updatePriceInfo();
+        }}
         localOpList={product.localOpList}
         width={dimensions.width}
         onScrollEndDrag={({nativeEvent}) => {
@@ -456,10 +446,11 @@ const Esim: React.FC<EsimProps> = ({
       />
     ),
     [
+      action.product,
       dimensions.width,
       onPressItem,
       product.localOpList,
-      product.priceInfo,
+      product.priceInfoTab,
       runAnimation,
     ],
   );
@@ -681,36 +672,36 @@ const Esim: React.FC<EsimProps> = ({
     if (
       product.localOpList.size > 0 &&
       product.prodByCountry.length > 0 &&
-      product.priceInfo.size === 0
+      product.priceInfo.length === 0
     ) {
       action.product.updatePriceInfo();
     }
   }, [
     action.product,
     product.localOpList.size,
-    product.priceInfo.size,
+    product.priceInfo.length,
     product.prodByCountry.length,
   ]);
 
-  useEffect(() => {
-    // check timestamp
-    const checkTimestamp = async () => {
-      const tm = await retrieveData(`${cachePrefix}cache.timestamp.prod`);
-      const reload =
-        !tm ||
-        moment(product.rule.timestamp_prod).utcOffset(9, true).isAfter(tm);
-      // console.log('@@@ reload all prod', reload, tm);
-      // reload data
-      action.product.getAllProduct(reload);
-      if (reload) {
-        storeData(
-          `${cachePrefix}cache.timestamp.prod`,
-          moment().utcOffset(9).format(),
-        );
-      }
-    };
-    checkTimestamp();
-  }, [action.product, product.rule.timestamp_prod]);
+  // useEffect(() => {
+  //   // check timestamp
+  //   const checkTimestamp = async () => {
+  //     const tm = await retrieveData(`${cachePrefix}cache.timestamp.prod`);
+  //     const reload =
+  //       !tm ||
+  //       moment(product.rule.timestamp_prod).utcOffset(9, true).isAfter(tm);
+  //     // console.log('@@@ reload all prod', reload, tm);
+  //     // reload data
+  //     action.product.getAllProduct(reload);
+  //     if (reload) {
+  //       storeData(
+  //         `${cachePrefix}cache.timestamp.prod`,
+  //         moment().utcOffset(9).format(),
+  //       );
+  //     }
+  //   };
+  //   checkTimestamp();
+  // }, [action.product, product.rule.timestamp_prod]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {

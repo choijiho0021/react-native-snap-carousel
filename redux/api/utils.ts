@@ -11,7 +11,7 @@ import {Currency, CurrencyCode} from './productApi';
 import {urlParamObj} from '@/redux/modules/link';
 import {parseJson} from '@/utils/utils';
 import store from '@/store';
-import {actions as LogActions} from '@/redux/modules/log';
+import {appendLog, actions as LogActions} from '@/redux/modules/log';
 
 const {esimCurrency} = Env.get();
 const dateTimeFmt = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})*$/;
@@ -207,13 +207,14 @@ const toDate = (str: string) => {
     // m[1] == undefined 이면 date 정보 (yyyy-mm-dd) 형식이고,
     // m[1]이 정의되면, timezone 정보가 없는 경우이므로 UTC timezone flag 'Z'를 추가해서 처리한다.
     const m = str.match(dateTimeFmt);
+    const tz = 'Asia/Seoul';
     if (m) {
       if (m[1]) {
-        return moment(`${str}Z`);
+        return moment(`${str}Z`).tz(tz);
       }
-      return moment(`${str}T00:00:00Z`);
+      return moment(`${str}T00:00:00Z`).tz(tz);
     }
-    return moment(str);
+    return moment(str).tz(tz);
   }
 
   return null;
@@ -390,9 +391,7 @@ const extractProdName = (str) => {
 
 export const log = (str: string) => {
   // store.dispatch(ToastActions.push(Toast.NOT_LOADED));
-  store.dispatch(
-    LogActions.append(`$$$${moment().tz('Asia/Seoul').format()} :${str}`),
-  );
+  store.dispatch(appendLog(`$$$${moment().tz('Asia/Seoul').format()} :${str}`));
 };
 
 export default {

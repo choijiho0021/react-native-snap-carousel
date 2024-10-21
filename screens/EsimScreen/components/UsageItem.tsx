@@ -234,7 +234,12 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
   const getResetTime = useCallback(
     (tz: string) => {
-      if (dataUsageOption?.ret) return dataUsageOption?.ret;
+      if (dataUsageOption?.ret)
+        return moment(
+          `${moment().format('YYYY-MM-DD')} ${dataUsageOption?.ret}+0900`,
+        )
+          .tz(tz)
+          .format('HH:mm:ss');
       if (endTime) return moment(endTime).tz(tz).format('HH:mm:ss');
       return i18n.t('contact:q');
     },
