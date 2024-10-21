@@ -1,6 +1,7 @@
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
-import AppText from '@/components/AppText';
+import LottieView from 'lottie-react-native';
+import {useNavigation} from '@react-navigation/native';
 
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -8,10 +9,8 @@ import AppStyledText from '@/components/AppStyledText';
 
 import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
-import {useNavigation} from '@react-navigation/native';
 import AppModal from '@/components/AppModal';
 import AppIcon from '@/components/AppIcon';
-import LottieView from 'lottie-react-native';
 
 const styles = StyleSheet.create({
   modalButtonTitle: {
@@ -25,7 +24,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    width: '80%',
+    width: '90%',
     height: '85%',
     backgroundColor: 'rgba(0, 0, 0, 0.0)',
     alignItems: 'center',
