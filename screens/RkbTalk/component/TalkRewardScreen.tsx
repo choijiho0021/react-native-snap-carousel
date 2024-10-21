@@ -1,5 +1,14 @@
-import React from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {
+  Animated,
+  Easing,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {connect} from 'react-redux';
 import AppText from '@/components/AppText';
 
@@ -22,29 +31,111 @@ import {API} from '@/redux/api';
 import AppAlert from '@/components/AppAlert';
 import LinearGradient from 'react-native-linear-gradient';
 import Lottie from 'lottie-react-native';
+import AppIcon from '@/components/AppIcon';
+
+const BG_WIDTH = 972 + 318; // 972 이미지 너비, 318 margin 총합
 
 const styles = StyleSheet.create({
   modalButtonTitle: {
-    ...appStyles.medium18,
+    ...appStyles.normal18Text,
     color: colors.white,
     textAlign: 'center',
     width: '100%',
+    lineHeight: 26,
   },
-
-  buttonContainer: {
-    flex: 1.0,
-    alignSelf: 'center',
+  modalSubButtonTitle: {
+    ...appStyles.semiBold16Text,
+    color: colors.black,
+    textAlign: 'center',
+    width: '100%',
+    lineHeight: 24,
+  },
+  lottieView: {
+    alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ffffff',
-    width: '95%',
-    margin: 2,
-    borderRadius: 20,
+    marginTop: 64,
+    zIndex: 100,
+  },
+  header: {
+    flexDirection: 'row',
+    height: 56,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'white',
   },
   linearGradient: {
+    width: '100%',
     flex: 1,
-    paddingLeft: 15,
-    paddingRight: 15,
-    borderRadius: 5,
+    height: 200,
+    zIndex: 1,
+  },
+
+  boxContainer: {
+    marginTop: 64,
+    backgroundColor: 'white',
+    height: 80,
+    marginHorizontal: 20,
+    padding: 16,
+    zIndex: 1000,
+    elevation: 12,
+    shadowColor: 'rgb(166, 168, 172)',
+    shadowRadius: 12,
+    shadowOpacity: 0.16,
+    shadowOffset: {
+      height: 4,
+      width: 0,
+    },
+  },
+  animatedView: {
+    marginHorizontal: -20,
+    bottom: 300,
+    position: 'relative',
+    width: BG_WIDTH,
+  },
+
+  titleContainer: {
+    height: 92,
+    marginTop: 50,
+    width: '100%',
+    zIndex: 1000,
+    alignItems: 'center',
+  },
+  smallBoxContainer: {
+    backgroundColor: 'white',
+    height: 58,
+    marginHorizontal: 20,
+    elevation: 12,
+    padding: 16,
+    shadowColor: 'rgb(166, 168, 172)',
+    shadowRadius: 12,
+    shadowOpacity: 0.16,
+    shadowOffset: {
+      height: 4,
+      width: 0,
+    },
+  },
+  gradientBg: {
+    height: 300,
+    bottom: 300,
+    marginHorizontal: -20,
+    position: 'relative',
+  },
+  boxContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  changeIcon: {
+    width: 34,
+    height: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  smallBoxContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 });
 
@@ -70,90 +161,168 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
   account: {iccid, token, mobile},
   route,
 }) => {
+  const translateX = useRef(new Animated.Value(0)).current; // 시작 위치
+  const images = [
+    require('@/assets/images/rkbtalk/rewardBg1.png'), // 80 x 198
+    require('@/assets/images/rkbtalk/rewardBg2.png'), // 230 x 138
+    require('@/assets/images/rkbtalk/rewardBg3.png'), // 39 x 213
+    require('@/assets/images/rkbtalk/rewardBg4.png'), // 355 x 197
+    require('@/assets/images/rkbtalk/rewardBg5.png'), // 106 x 256
+    require('@/assets/images/rkbtalk/rewardBg6.png'), // 162 x 125
+  ];
+
+  // 이미지 사이즈 972
+
+  const isSetAnimated = useRef(false);
+
+  useEffect(() => {
+    if (!isSetAnimated.current) {
+      isSetAnimated.current = true;
+      // 너비가 측정된 후 애니메이션 시작
+      const animate = () => {
+        translateX.setValue(-BG_WIDTH); // 시작 위치를 컴포넌트 너비의 음수로 설정
+        Animated.timing(translateX, {
+          toValue: 0, // 최종 위치
+          duration: 16000, // 애니메이션 지속 시간
+          easing: Easing.linear,
+          useNativeDriver: false,
+        }).start(() => {
+          animate(); // 무한반복
+        });
+      };
+
+      animate();
+    }
+  }, [translateX]);
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-      <View
-        style={{
-          flexDirection: 'row',
-          height: 56,
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          backgroundColor: 'white',
-        }}>
-        <AppBackButton />
-      </View>
-      <View style={{paddingHorizontal: 20, flex: 1}}>
-        <View
-          style={{
-            height: 92,
-            marginTop: 50,
-            width: '100%',
-            // backgroundColor: 'red',
-            alignItems: 'center',
-          }}>
-          <AppText style={[appStyles.semiBold16Text]}>
-            {i18n.t('talk:reward:header')}
-          </AppText>
-          {/* <LinearGradient
-            colors={['#00d1ff', '#00ed42']}
-            start={{x: 0.0, y: 1.0}}
-            end={{x: 1.0, y: 1.0}}
-            style={styles.grediant}>
-          </LinearGradient> */}
+      <ScrollView>
+        <View style={styles.header}>
+          <AppBackButton />
+        </View>
+        <View style={{paddingHorizontal: 20, flex: 1}}>
+          <View style={styles.titleContainer}>
+            <AppText style={[appStyles.semiBold16Text, {lineHeight: 24}]}>
+              {i18n.t('talk:reward:header')}
+            </AppText>
 
-          {/* <AppStyledText
-            text={i18n.t('talk:reward:title')}
-            textStyle={[appStyles.bold22Text, {color: colors.black}]}
-            format={{b: {color: colors.redBold}}}
-          /> */}
+            <View style={{marginTop: 16}}>
+              <AppStyledText
+                text={i18n.t('talk:reward:body1')}
+                textStyle={[appStyles.bold30Text, {color: colors.black}]}
+                format={{b: [{color: colors.clearBlue}]}}
+              />
+            </View>
+          </View>
 
-          <View style={{marginTop: 16}}>
-            <AppStyledText
-              text={i18n.t('talk:reward:body1')}
-              textStyle={[appStyles.bold30Text, {color: colors.black}]}
-              format={{b: [{color: colors.clearBlue}]}}
+          <View style={styles.lottieView}>
+            <Lottie
+              style={{
+                width: 180,
+                height: 160,
+              }}
+              autoPlay
+              loop
+              source={require('@/assets/animation/RkbCharacter.json')}
             />
+          </View>
+
+          <View style={{height: 160, marginBottom: 40}}>
+            <Animated.View
+              style={{
+                ...styles.animatedView,
+                transform: [{translateX}], // translateX 값을 숫자로 전달
+              }}>
+              <View style={{flexDirection: 'row', zIndex: -1}}>
+                {[...images, ...images].map((source, index) => (
+                  <Image
+                    key={index}
+                    style={{
+                      alignSelf: 'flex-end',
+                      marginRight: 53,
+                    }}
+                    source={source}
+                    resizeMode="contain"
+                  />
+                ))}
+              </View>
+            </Animated.View>
+
+            <View style={styles.gradientBg}>
+              <LinearGradient
+                colors={['#e5f1f6', '#ffffff']}
+                start={{x: 0.0, y: 0.0}}
+                end={{x: 0.0, y: 1.0}}
+                style={styles.linearGradient}>
+                <View style={styles.boxContainer}>
+                  <View>
+                    <AppText
+                      style={{...appStyles.bold14Text, color: colors.warmGrey}}>
+                      {i18n.t('talk:reward:reward')}
+                    </AppText>
+                    <View style={styles.boxContent}>
+                      <AppIcon
+                        name="talkPointCoin"
+                        style={{width: 20, height: 20}}
+                      />
+                      <AppText style={appStyles.robotoBold28Text}>
+                        {`600 ${i18n.t('talk:reward:talkPoint')}`}
+                      </AppText>
+                    </View>
+                  </View>
+                </View>
+
+                <View style={{alignItems: 'center', zIndex: 1000}}>
+                  <AppIcon name="talkPointChange" style={styles.changeIcon} />
+                </View>
+                <View style={styles.smallBoxContainer}>
+                  <View style={styles.smallBoxContent}>
+                    <AppIcon name="freeCallText" />
+
+                    <AppText
+                      style={[appStyles.semiBold14Text, {lineHeight: 20}]}>
+                      {i18n.t('talk:reward:korea')}
+                    </AppText>
+                  </View>
+                </View>
+              </LinearGradient>
+            </View>
           </View>
         </View>
 
-        <View
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: 64,
-            zIndex: 100,
-          }}>
-          <Lottie
-            style={{
-              width: 180,
-              height: 160,
-            }}
-            autoPlay
-            loop
-            source={require('@/assets/animation/RkbCharacter.json')}
-          />
+        <View style={{paddingHorizontal: 20, gap: 2}}>
+          {Array.from({length: 3}, (_, idx) => {
+            return (
+              <AppText
+                style={{
+                  ...appStyles.normal14Text,
+                  lineHeight: 22,
+                  color: colors.warmGrey,
+                }}>
+                {i18n.t(`talk:reward:info${idx + 1}`)}
+              </AppText>
+            );
+          })}
         </View>
-
-        <View
-          style={{height: 242, marginHorizontal: -20, position: 'relative'}}>
-          <LinearGradient
-            colors={['#e5f1f6', '#ffffff']}
-            start={{x: 0.0, y: 0.0}}
-            end={{x: 0.0, y: 1.0}}
-            style={{flex: 1, zIndex: 1}}></LinearGradient>
-        </View>
-      </View>
-
-      <View style={{paddingHorizontal: 20, gap: 2}}>
-        {Array.from({length: 3}, (_, idx) => {
-          return <AppText>{i18n.t(`talk:reward:info${idx + 1}`)}</AppText>;
-        })}
-      </View>
+      </ScrollView>
       <View style={{marginTop: 20}}>
         <AppButton
           style={{
             height: 52,
+            backgroundColor: colors.white,
+          }}
+          onPress={() => {
+            goBack(navigation, route);
+          }}
+          title={i18n.t('talk:reward:btn2')}
+          titleStyle={styles.modalSubButtonTitle}
+        />
+        <AppButton
+          style={{
+            height: 52,
             backgroundColor: colors.clearBlue,
+            marginHorizontal: 20,
           }}
           type="primary"
           onPress={() => {
@@ -169,23 +338,14 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
 
                 if (rsp?.result === 0) {
                   navigation.navigate('RkbTalk');
-                } else AppAlert.info(i18n.t('talk:reward:error'));
+                } else {
+                  AppAlert.info(i18n.t('talk:reward:error'));
+                }
               });
             }
           }}
           title={i18n.t('talk:reward:btn')}
           titleStyle={[styles.modalButtonTitle]}
-        />
-        <AppButton
-          style={{
-            height: 52,
-            backgroundColor: colors.white,
-          }}
-          onPress={() => {
-            goBack(navigation, route);
-          }}
-          title={i18n.t('talk:reward:btn2')}
-          titleStyle={[styles.modalButtonTitle, {color: colors.gray02}]}
         />
       </View>
     </SafeAreaView>

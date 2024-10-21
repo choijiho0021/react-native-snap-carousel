@@ -768,7 +768,12 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
 
   const renderBanner = useCallback(() => {
     return (
-      <Pressable style={styles.bannerBg}>
+      <Pressable
+        style={styles.bannerBg}
+        onPress={() => {
+          console.log('@@@@ click banner ');
+          navigation.navigate('TalkReward');
+        }}>
         <View style={styles.bannerTextView}>
           <AppText style={styles.bannerSmallText}>
             {i18n.t('talk:point:banner1')}

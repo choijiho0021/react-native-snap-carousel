@@ -24,18 +24,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  modalContent: {
+    width: '80%',
+    height: '85%',
+    backgroundColor: 'rgba(0, 0, 0, 0.0)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   overlayContainer: {
     width: 245,
     height: 245,
     position: 'relative',
   },
 
+  bottomContainer: {
+    position: 'absolute',
+    bottom: 0,
+    height: 92,
+    width: '100%',
+  },
   lottieView: {
     width: '95%',
     aspectRatio: 1,
     position: 'absolute',
     top: 4,
     left: 4,
+  },
+  modalText: {
+    color: colors.white,
+    textAlign: 'center',
+    lineHeight: 24,
+    letterSpacing: -0.16,
   },
 });
 
@@ -89,22 +108,9 @@ const TalkRewardModal: React.FC<TalkRewardModalProps> = ({
           </View>
         </View>
       }
-      contentStyle={{
-        width: '80%',
-        height: '85%',
-        backgroundColor: 'rgba(0, 0, 0, 0.0)',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
+      contentStyle={styles.modalContent}
       bottom={() => (
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            height: 92,
-            // marginTop: 50,
-            width: '100%',
-          }}>
+        <View style={styles.bottomContainer}>
           <AppButton
             style={{
               height: 52,
@@ -141,15 +147,9 @@ const TalkRewardModal: React.FC<TalkRewardModalProps> = ({
         <View style={{marginTop: 16, flex: 1}}>
           <AppStyledText
             text={i18n.t('talk:reward:modal:body2')}
-            textStyle={[
-              appStyles.normal16Text,
-              {color: colors.white, textAlign: 'center'},
-            ]}
+            textStyle={[appStyles.normal16Text, styles.modalText]}
             format={{
-              b: [
-                appStyles.bold16Text,
-                {color: colors.white, textAlign: 'center'},
-              ],
+              b: [appStyles.bold16Text, styles.modalText],
             }}
           />
 
