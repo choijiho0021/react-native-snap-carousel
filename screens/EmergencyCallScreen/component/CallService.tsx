@@ -110,7 +110,7 @@ const CallService = ({
   );
 
   return (
-    <>
+    <View style={{marginBottom: 44}}>
       <AppText style={{...appStyles.bold20Text, color: colors.clearBlue}}>
         {i18n.t(`talk:urgent:${type}:title`)}
       </AppText>
@@ -146,7 +146,7 @@ const CallService = ({
           {i18n.t(`talk:urgent:${type}:kakao`)}
         </AppText>
       </Pressable>
-    </>
+    </View>
   );
 };
 

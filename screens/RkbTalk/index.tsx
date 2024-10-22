@@ -78,7 +78,7 @@ type RkbTalkProps = {
 
 const RkbTalk: React.FC<RkbTalkProps> = ({
   account: {mobile, realMobile, iccid, token},
-  talk: {called, tariff, tooltip, ccode},
+  talk: {called, tariff, emg, tooltip, ccode},
   navigation,
   action,
 }) => {
@@ -100,6 +100,10 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [refreshing, setRefreshing] = useState(false);
   const testNumber = realMobile;
   // const testNumber = '07079190216';
+  const showEmg = useMemo(
+    () => Object.entries(emg || {})?.some(([k, v]) => v === '1'),
+    [emg],
+  );
 
   const {top} = useSafeAreaInsets();
   const [min, showWarning] = useMemo(() => {
@@ -117,6 +121,13 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       action.talk.getTariff();
     }
   }, [action.talk, tariff]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      action.talk.getEmgInfo();
+    }, [action.talk]),
+  );
+
   const isFocused = useIsFocused();
   useEffect(() => {
     // 앱 첫 실행 여부 확인
@@ -522,6 +533,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
             onChange={onChange}
             onPressKeypad={onPressKeypad}
             tooltip={tooltip}
+            showEmg={showEmg}
             updateTooltip={updateTooltip}
           />
         ) : (

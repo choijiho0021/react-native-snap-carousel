@@ -26,6 +26,7 @@ const getPointHistory = createAsyncThunk(
 );
 
 const getTariff = createAsyncThunk('talk/getTariff', API.TalkApi.getTariff);
+const getEmgInfo = createAsyncThunk('talk/getEmgInfo', API.TalkApi.getEmgInfo);
 
 export type PointHistory = {
   diff: string;
@@ -64,6 +65,9 @@ export const sortName = (a: ContactName, b: ContactName) => {
   return priorityB;
 };
 
+export const EMG_MOFA = '04';
+export const EMG_MEDICAL = '119';
+
 export type TalkTariff = {
   // country: string; // kr, jp, ...
   code: string; // country code: 81, 82, etc
@@ -94,6 +98,7 @@ export interface TalkModelState {
   called?: string; // include ccode
   ccode?: string; // country code parsed from 'called number'
   tariff: Record<string, TalkTariff>;
+  emg: Record<string, string>;
   maxCcodePrefix: number; // max length of country code
   callHistory: SectionData[];
   tooltip: boolean;
@@ -336,6 +341,10 @@ const slice = createSlice({
 
       return state;
     });
+    builder.addCase(getEmgInfo.fulfilled, (state, action) => {
+      state.emg = action.payload;
+      return state;
+    });
   },
 });
 
@@ -405,6 +414,7 @@ export const actions = {
   getPointHistory,
   getExpPointInfo,
   getTariff,
+  getEmgInfo,
   readHistory,
   callInitiated,
   callChanged,
