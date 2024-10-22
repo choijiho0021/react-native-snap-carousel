@@ -86,6 +86,7 @@ import com.reactnativepagerview.PagerViewPackage;
 
 import com.navercorp.ntracker.ntrackersdk.NTrackerExt;
 import com.navercorp.ntracker.ntrackersdk.NTrackerPhase;
+import com.zxcpoiu.incallmanager.InCallManagerPackage;
 
 import android.content.BroadcastReceiver;
 import android.content.Intent;
@@ -213,6 +214,7 @@ public class MainApplication extends Application implements ReactApplication {
                             new PagerViewPackage(),
                             new NetInfoPackage(),
                             new WebRTCModulePackage(),
+                            new InCallManagerPackage(),
                             new RNCPickerPackage(),
                             new ReactNativeFirebaseAnalyticsPackage(),
                             new CookieManagerPackage(),

@@ -331,6 +331,8 @@ dependencies {
     implementation project(':@react-native-camera-roll_camera-roll')
     implementation project(':@react-native-community_netinfo')
 
+    implementation project(':react-native-incall-manager')
+
      implementation project(':react-native-seoul-naver-login')
 
     implementation 'org.jetbrains:annotations:16.0.2'
