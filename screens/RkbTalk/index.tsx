@@ -15,7 +15,12 @@ import {
   View,
 } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
-import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import {
+  check,
+  openSettings,
+  PERMISSIONS,
+  RESULTS,
+} from 'react-native-permissions';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -29,6 +34,7 @@ import {
 } from 'sip.js';
 import _ from 'underscore';
 import {useInterval} from '@/utils/useInterval';
+import i18n from '@/utils/i18n';
 import {
   actions as talkActions,
   TalkAction,
@@ -164,22 +170,26 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     }
   }, [realMobile]);
 
-  // 권한없는 경우, 통화시에 권한확인 로직 필요
+  const checkPermission = useCallback(async (type: string) => {
+    const cont =
+      Platform.OS === 'ios'
+        ? PERMISSIONS.IOS.CONTACTS
+        : PERMISSIONS.ANDROID.READ_CONTACTS;
+    const mic =
+      Platform.OS === 'ios'
+        ? PERMISSIONS.IOS.MICROPHONE
+        : PERMISSIONS.ANDROID.RECORD_AUDIO;
+
+    const result = await check(type === 'cont' ? cont : mic);
+
+    return result === RESULTS.GRANTED || result === RESULTS.UNAVAILABLE;
+  }, []);
+
   useEffect(() => {
-    const checkPermission = async () => {
-      const permission =
-        Platform.OS === 'ios'
-          ? PERMISSIONS.IOS.CONTACTS
-          : PERMISSIONS.ANDROID.READ_CONTACTS;
-      const result = await check(permission);
-
-      return result === RESULTS.GRANTED || result === RESULTS.UNAVAILABLE;
-    };
-
-    Promise.resolve(checkPermission()).then((r) => {
+    Promise.resolve(checkPermission('cont')).then((r) => {
       if (r) action.talk.getContacts();
     });
-  }, [action.talk]);
+  }, [action.talk, checkPermission]);
 
   const releaseCall = useCallback(() => {
     if (inviter) {
@@ -299,6 +309,25 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     setRefreshing(false);
   }, [action.talk, getPoint]);
 
+  // 마이크 권한, 통화시에 권한확인
+  const checkMic = useCallback(() => {
+    Promise.resolve(checkPermission('mic')).then((r) => {
+      if (!r)
+        AppAlert.confirm(
+          i18n.t('talk:permission:home:mic:title'),
+          i18n.t('talk:permission:home:mic:cont'),
+          {
+            ok: () => {
+              openSettings();
+            },
+            cancel: () => {},
+          },
+          i18n.t('cancel'),
+          i18n.t('settings'),
+        );
+    });
+  }, [checkPermission]);
+
   const makeCall = useCallback(
     (dest: string) => {
       if (userAgent && dest) {
@@ -398,9 +427,11 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     (k: string, d?: string) => {
       switch (k) {
         case 'call':
-          if (!called || called === ccode || (called && !ccode))
-            navigation.navigate('TalkTariff');
-          else if (called) makeCall(called);
+          Promise.resolve(checkMic()).then(() => {
+            if (!called || called === ccode || (called && !ccode))
+              navigation.navigate('TalkTariff');
+            else if (called) makeCall(called);
+          });
           break;
         case 'hangup':
           releaseCall();
@@ -433,7 +464,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           break;
       }
     },
-    [called, ccode, dtmfSession, makeCall, navigation, releaseCall],
+    [called, ccode, checkMic, dtmfSession, makeCall, navigation, releaseCall],
   );
 
   // Options for SimpleUser

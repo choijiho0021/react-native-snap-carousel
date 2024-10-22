@@ -1924,6 +1924,9 @@
   "talk:permission:mic:body": "로밍도깨비 앱과 내 주소록을 동기화하여\n연락처를 검색하거나 통화를 걸기 위해 사용해요!",
   "talk:permission:btn": "확인",
 
+  "talk:permission:home:mic:title": "접근 허용 요청",
+  "talk:permission:home:mic:cont": "인터넷 음성 통화를 이용하기 위해\n마이크 권한을 허용해 주세요.",
+
   "talk:contact": "연락처",
   "talk:contact:search:empty": "검색 결과가 없습니다.",
   "talk:contact:search": "이름, 전화번호를 입력하세요",
