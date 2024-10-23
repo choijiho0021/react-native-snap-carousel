@@ -100,7 +100,6 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [maxTime, setMaxTime] = useState<number | null>(null);
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
-  const [pntError, setPntError] = useState<boolean>(false);
   const [dtmf, setDtmf] = useState<string>();
   const [refreshing, setRefreshing] = useState(false);
   // const testNumber = '07079190190';
@@ -162,11 +161,22 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           if (rsp?.result === 0) {
             setPoint(rsp?.objects?.tpnt);
           }
-          if (!_.isNumber(rsp?.objects?.tpnt)) setPntError(true);
+
+          if (!_.isNumber(rsp?.objects?.tpnt)) {
+            AppAlert.confirm(
+              i18n.t('talk:point:error:title'),
+              i18n.t('talk:point:error:cont'),
+              {
+                ok: () => getPoint(),
+                cancel: () =>
+                  navigation.navigate('HomeStack', {screen: 'Home'}),
+              },
+            );
+          }
         })
         .finally(() => setRefreshing(false));
     }
-  }, [realMobile]);
+  }, [navigation, realMobile]);
 
   const checkPermission = useCallback(async (type: string) => {
     const cont =
