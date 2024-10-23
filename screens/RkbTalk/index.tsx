@@ -102,10 +102,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [point, setPoint] = useState<number>(0);
   const [pntError, setPntError] = useState<boolean>(false);
   const [dtmf, setDtmf] = useState<string>();
-  // const [digit, setDigit] = useState('');
   const [refreshing, setRefreshing] = useState(false);
-  const testNumber = realMobile;
-  // const testNumber = '07079190216';
+  // const testNumber = '07079190190';
   const showEmg = useMemo(
     () => Object.entries(emg || {})?.some(([k, v]) => v === '1'),
     [emg],
@@ -218,7 +216,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
 
   const getMaxCallTime = useCallback(() => {
     // 07079190190, 07079190216
-    API.TalkApi.getChannelInfo({mobile: testNumber}).then((rsp) => {
+    API.TalkApi.getChannelInfo({mobile: realMobile}).then((rsp) => {
       if (rsp?.result === 0) {
         const m =
           rsp?.objects?.channel?.variable?.MAX_CALL_TIME?.match(/^[^:]+/);
@@ -229,7 +227,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       }
       // console.log('@@@ max call time', rsp);
     });
-  }, [releaseCall, testNumber]);
+  }, [releaseCall, realMobile]);
 
   const makeSeconds = useCallback((num: number) => {
     return (num < 10 ? '0' : '') + num;
@@ -478,10 +476,10 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       const transportOptions = {
         server: 'wss://talk.rokebi.com:8089/ws',
       };
-      const uri = UserAgent.makeURI(`sip:${testNumber}@talk.rokebi.com`);
+      const uri = UserAgent.makeURI(`sip:${realMobile}@talk.rokebi.com`);
       const userAgentOptions: UserAgentOptions = {
         authorizationPassword: '000000', // 000000
-        authorizationUsername: testNumber,
+        authorizationUsername: realMobile,
         transportOptions,
         uri,
         sessionDescriptionHandlerFactory: (session, options) => {
@@ -527,7 +525,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           console.log('@@@ UA stopped', state);
         });
       };
-    }, [getPoint, testNumber]),
+    }, [getPoint, realMobile]),
   );
 
   const updateTooltip = useCallback(
