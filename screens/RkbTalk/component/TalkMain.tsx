@@ -147,6 +147,7 @@ type TalkMainProps = {
   dtmf: string | undefined;
   min: number | undefined;
   tooltip: boolean;
+  showEmg: boolean;
   updateTooltip: (t: boolean) => void;
 };
 
@@ -161,6 +162,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
   min,
   showWarning,
   tooltip,
+  showEmg,
   updateTooltip,
 }) => {
   const {called, ccode, tariff} = useSelector((state: RootState) => state.talk);
@@ -330,7 +332,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
             </AppText>
           </View>
         )}
-        {initial ? (
+        {initial && showEmg ? (
           <AppButton
             style={{backgroundColor: colors.white}}
             titleStyle={styles.emergency}

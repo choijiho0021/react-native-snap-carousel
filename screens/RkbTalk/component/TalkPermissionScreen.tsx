@@ -50,8 +50,8 @@ const TalkPermissionScreen: React.FC<TalkPermissionScreenProps> = ({
   const onClick = useCallback(async () => {
     const permissions =
       Platform.OS === 'ios'
-        ? [PERMISSIONS.IOS.MICROPHONE, PERMISSIONS.IOS.CONTACTS]
-        : [PERMISSIONS.ANDROID.RECORD_AUDIO, PERMISSIONS.ANDROID.READ_CONTACTS];
+        ? [PERMISSIONS.IOS.CONTACTS, PERMISSIONS.IOS.MICROPHONE]
+        : [PERMISSIONS.ANDROID.READ_CONTACTS, PERMISSIONS.ANDROID.RECORD_AUDIO];
 
     const statuses = await requestMultiple(permissions);
 

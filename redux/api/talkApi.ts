@@ -105,6 +105,12 @@ const getTariff = async () => {
   );
 };
 
+const getEmgInfo = async () => {
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.rokApi.rokebi.config)}/talk?_format=json`,
+  );
+};
+
 export type HistType = 'add' | 'deduct' | 'all';
 
 const getPointHistory = ({
@@ -153,4 +159,5 @@ export default {
   patchTalkPoint,
   getPointHistory,
   getTariff,
+  getEmgInfo,
 };
