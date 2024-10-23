@@ -29,7 +29,7 @@ const getTalkPoint = ({
 export type TalkSign = 'add' | 'deduct' | 'refund' | 'charge' | 'reward';
 
 const patchTalkPoint = ({
-  mobile,
+  mobile, // 변수명 수정 필요?
   token,
   sign,
 }: {
