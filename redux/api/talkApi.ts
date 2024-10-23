@@ -38,7 +38,7 @@ const patchTalkPoint = ({
   sign: TalkSign;
 }) => {
   return api.callHttp(
-    `${api.httpUrl(api.path.rokApi.rokebi.point)}/${mobile}?_format=json`,
+    `${api.httpUrl(api.path.rokApi.rokebi.point)}/${mobile}?real`,
     {
       method: 'PATCH',
       headers: api.withToken(token, 'json'),
@@ -52,9 +52,11 @@ const patchTalkPoint = ({
   );
 };
 
-const getExpPointInfo = ({iccid, token}: {iccid: string; token: string}) => {
+const getExpPointInfo = ({mobile, token}: {mobile: string; token: string}) => {
   return api.callHttpGet<ExpPointLog>(
-    `${api.httpUrl(api.path.rokApi.rokebi.pointLog)}/${iccid}?exp=30&list`,
+    `${api.httpUrl(
+      api.path.rokApi.rokebi.pointLog,
+    )}/${mobile}?real&exp=30&list`,
     (rsp) => rsp,
     api.withToken(token, 'json'),
   );
@@ -105,6 +107,7 @@ const getTariff = async () => {
   );
 };
 
+// key: 04, 119
 const getEmgInfo = async () => {
   return api.callHttpGet(
     `${api.httpUrl(api.path.rokApi.rokebi.config)}/talk?_format=json`,
