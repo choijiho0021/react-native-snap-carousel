@@ -155,7 +155,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const getPoint = useCallback(() => {
     if (realMobile) {
       setRefreshing(true);
-      API.TalkApi.getTalkPoint({mobile: realMobile})
+      API.TalkApi.getTalkPoint({iccid: `00001111${mobile}`})
         .then((rsp) => {
           console.log('@@@ point', rsp, realMobile);
           if (rsp?.result === 0) {

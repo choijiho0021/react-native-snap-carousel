@@ -12,17 +12,9 @@ const getChannelInfo = ({mobile}: {mobile: string}) => {
 };
 
 // 함수 분리 필요?
-const getTalkPoint = ({
-  mobile,
-  isReal = true,
-}: {
-  mobile: string;
-  isReal?: boolean;
-}) => {
+const getTalkPoint = ({iccid}: {iccid: string}) => {
   return api.callHttpGet(
-    `${api.httpUrl(api.path.rokApi.rokebi.point)}/${mobile}${
-      isReal ? '?real' : ''
-    }`,
+    `${api.httpUrl(api.path.rokApi.rokebi.point)}/${iccid}`,
   );
 };
 
