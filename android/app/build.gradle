@@ -118,6 +118,11 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     //자동 버전 증가
 //    def versionPropsFile = file('version.properties')
 //    if (versionPropsFile.canRead()) {
@@ -325,6 +330,8 @@ dependencies {
 
     implementation project(':@react-native-camera-roll_camera-roll')
     implementation project(':@react-native-community_netinfo')
+
+    implementation project(':react-native-incall-manager')
 
      implementation project(':react-native-seoul-naver-login')
 

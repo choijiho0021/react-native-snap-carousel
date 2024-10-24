@@ -1,5 +1,5 @@
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   Animated,
   Linking,
@@ -11,9 +11,15 @@ import {
 import {ScrollView} from 'react-native-gesture-handler';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import {bindActionCreators, RootState} from 'redux';
 import i18n from '@/utils/i18n';
-import {actions as talkActions, TalkAction} from '@/redux/modules/talk';
+import {
+  actions as talkActions,
+  EMG_MEDICAL,
+  EMG_MOFA,
+  TalkAction,
+  TalkModelState,
+} from '@/redux/modules/talk';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {colors} from '@/constants/Colors';
 import AppBackButton from '@/components/AppBackButton';
@@ -54,6 +60,7 @@ type EmergencyCallScreenNavigationProp = StackNavigationProp<
 type EmergencyCallScreenProps = {
   navigation: EmergencyCallScreenNavigationProp;
 
+  talk: TalkModelState;
   action: {
     talk: TalkAction;
   };
@@ -61,6 +68,7 @@ type EmergencyCallScreenProps = {
 
 const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
   navigation,
+  talk: {emg},
   action,
 }) => {
   const insets = useSafeAreaInsets();
@@ -71,6 +79,9 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
     [{nativeEvent: {contentOffset: {y: scrollY}}}],
     {useNativeDriver: false},
   );
+  const [mofa, medical] = useMemo(() => {
+    return [emg[EMG_MOFA] === '1', emg[EMG_MEDICAL] === '1'];
+  }, [emg]);
 
   useEffect(() => {
     scrollY.addListener(({value}) => {
@@ -129,20 +140,23 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
               const {layout} = event.nativeEvent;
               setViewY(layout?.y);
             }}>
-            <CallService
-              type="mofa"
-              num={3}
-              onPressCall={onPressCall}
-              onPressKakao={openKakaoUrl}
-            />
-            <View style={{height: 36}} />
-            <CallService
-              type="119"
-              num={4}
-              needTitle
-              onPressCall={onPressCall}
-              onPressKakao={openKakaoUrl}
-            />
+            {mofa && (
+              <CallService
+                type="mofa"
+                num={3}
+                onPressCall={onPressCall}
+                onPressKakao={openKakaoUrl}
+              />
+            )}
+            {medical && (
+              <CallService
+                type="medical"
+                num={4}
+                needTitle
+                onPressCall={onPressCall}
+                onPressKakao={openKakaoUrl}
+              />
+            )}
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -151,7 +165,7 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
 };
 
 export default connect(
-  () => ({}),
+  ({talk}: RootState) => ({talk}),
   (dispatch) => ({
     action: {
       talk: bindActionCreators(talkActions, dispatch),

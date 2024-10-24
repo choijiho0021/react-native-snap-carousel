@@ -39,6 +39,7 @@ const patchTalkPoint = ({
 }) => {
   return api.callHttp(
     `${api.httpUrl(api.path.rokApi.rokebi.point)}/${iccid}?_format=json`,
+
     {
       method: 'PATCH',
       headers: api.withToken(token, 'json'),
@@ -105,29 +106,33 @@ const getTariff = async () => {
   );
 };
 
+// key: 04, 119
+const getEmgInfo = async () => {
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.rokApi.rokebi.config)}/talk?_format=json`,
+  );
+};
+
 export type HistType = 'add' | 'deduct' | 'all';
 
+// 전체 톡 포인트 조회 > iccid 기준으로 동작
 const getPointHistory = ({
   iccid,
-  mobile,
   token,
   sort,
   type,
 }: {
-  iccid?: string;
-  mobile?: string;
+  iccid: string;
   token?: string;
-  sort?: string;
-  type?: HistType;
+  sort?: string; // asc | desc
+  type?: HistType; // add | deduct (default: 조회)
 }) => {
   let cond = 'log';
   if (sort) cond += `&sort=${sort}`;
   if (type) cond += `&type=${type}`;
 
   return api.callHttpGet<PointHistory>(
-    iccid
-      ? `${api.httpUrl(api.path.rokApi.rokebi.pointLog)}/${iccid}?${cond}`
-      : `${api.httpUrl(api.path.rokApi.rokebi.pointLog)}/${mobile}?real`,
+    `${api.httpUrl(api.path.rokApi.rokebi.pointLog)}/${iccid}?${cond}`,
     (rsp) => {
       return rsp.result === 0
         ? api.success(
@@ -153,4 +158,5 @@ export default {
   patchTalkPoint,
   getPointHistory,
   getTariff,
+  getEmgInfo,
 };

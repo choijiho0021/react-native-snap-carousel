@@ -1876,6 +1876,7 @@
   "qrInfo:tab:manual": "수동입력",
 
   "talk": "통화",
+  "talk:call:minLength": "전화 번호를 다시 확인해 주세요.",
   "talk:free": "무료통화",
   "talk:speaker": "스피커폰",
   "talk:keypad": "키패드",
@@ -1924,6 +1925,9 @@
   "talk:permission:mic:body": "로밍도깨비 앱과 내 주소록을 동기화하여\n연락처를 검색하거나 통화를 걸기 위해 사용해요!",
   "talk:permission:btn": "확인",
 
+  "talk:permission:home:mic:title": "접근 허용 요청",
+  "talk:permission:home:mic:cont": "인터넷 음성 통화를 이용하기 위해\n마이크 권한을 허용해 주세요.",
+
   "talk:contact": "연락처",
   "talk:contact:search:empty": "검색 결과가 없습니다.",
   "talk:contact:search": "이름, 전화번호를 입력하세요",
@@ -1934,6 +1938,8 @@
   "talk:callHistory:title": "발신 내역",
   "talk:callHistory:empty": "발신 내역이 없습니다",
 
+  "talk:point:error:title": "톡포인트 정보를 불러오는 데 문제가 발생했어요.",
+  "talk:point:error:cont": "확인 버튼을 눌러 다시 시도해 보세요.",
   "talk:point:hold": "보유 톡포인트",
   "talk:point:expirePt": "소멸 예정 톡포인트",
   "talk:point:banner1": "로깨비톡 런칭 기념",
@@ -1983,15 +1989,15 @@
   "talk:urgent:mofa:call": "외교부 영사콜센터",
   "talk:urgent:mofa:kakao": "외교부 카카오톡 상담",
 
-  "talk:urgent:119:title": "119 재외국민 응급의료상담 서비스",
-  "talk:urgent:119:callNumber": "+82-44-320-0119",
-  "talk:urgent:119:usage:title": "해외 여행 중 질병이나 부상으로",
-  "talk:urgent:119:usage:1": "응급 처치 방법을 알고 싶을 때",
-  "talk:urgent:119:usage:2": "약품 구입 및 복용 방법이 궁금할 때",
-  "talk:urgent:119:usage:3": "현지 의료기관 이용 방법이 궁금할 때",
-  "talk:urgent:119:usage:4": "긴급하게 국내 이송이 필요할 때",
-  "talk:urgent:119:call": "119 응급의료상담 전화",
-  "talk:urgent:119:kakao": "119 응급의료상담 카카오톡",
+  "talk:urgent:medical:title": "119 재외국민 응급의료상담 서비스",
+  "talk:urgent:medical:callNumber": "+82-44-320-0119",
+  "talk:urgent:medical:usage:title": "해외 여행 중 질병이나 부상으로",
+  "talk:urgent:medical:usage:1": "응급 처치 방법을 알고 싶을 때",
+  "talk:urgent:medical:usage:2": "약품 구입 및 복용 방법이 궁금할 때",
+  "talk:urgent:medical:usage:3": "현지 의료기관 이용 방법이 궁금할 때",
+  "talk:urgent:medical:usage:4": "긴급하게 국내 이송이 필요할 때",
+  "talk:urgent:medical:call": "119 응급의료상담 전화",
+  "talk:urgent:medical:kakao": "119 응급의료상담 카카오톡",
 
   "talk:tariff:favorite": "자주 사용하는 국가",
   "talk:tariff:country": "통화 국가 선택",

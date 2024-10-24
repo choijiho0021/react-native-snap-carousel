@@ -403,12 +403,13 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
 
   const getHistory = useCallback(
     ({sort, type}: {sort?: string; type?: HistType}) => {
-      action.talk.getPointHistory({
-        iccid,
-        token,
-        sort,
-        type,
-      });
+      if (iccid)
+        action.talk.getPointHistory({
+          iccid,
+          token,
+          sort,
+          type,
+        });
     },
     [action.talk, iccid, token],
   );

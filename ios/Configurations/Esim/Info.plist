@@ -70,7 +70,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>16</string>
+	<string>2</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
@@ -187,6 +187,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>사진 또는 동영상을 촬영, 메세지로 전송하여 더욱 원활한 채팅 상담을 진행하기 위해 카메라에 접근하도록 허용합니다.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>앱과 내 주소록을 동기화하여 연락처를 검색하거나 통하를 걸기 위해 사용해요!</string>
 	<key>NSMainNibFile</key>
 	<string>LaunchScreen</string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -195,8 +197,6 @@
 	<string>프로필 등록 및 1:1 문의 게시판에 사진 업로드를 위해 사진 앨범 접근을 허용해 주세요.</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>고객님께 맞춤 상품 추천 및 혜택을 안내 드리기 위해 권한을 허용해주세요.</string>
-	<key>NSContactsUsageDescription</key>
-	<string>앱과 내 주소록을 동기화하여 연락처를 검색하거나 통하를 걸기 위해 사용해요!</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Ionicons.ttf</string>

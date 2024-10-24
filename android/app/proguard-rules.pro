@@ -31,3 +31,5 @@
 
 -keep class com.rt2zz.reactnativecontacts.** {*;}
 -keepclassmembers class com.rt2zz.reactnativecontacts.** {*;}
+
+-keep class org.webrtc.** { *; }

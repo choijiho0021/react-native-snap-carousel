@@ -14,6 +14,8 @@ import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactApplication;
+import com.oney.WebRTCModule.WebRTCModuleOptions;
+import com.oney.WebRTCModule.WebRTCModulePackage;
 import com.reactnativegooglesignin.RNGoogleSigninPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.lugg.RNCConfig.RNCConfigPackage;
@@ -84,6 +86,7 @@ import com.reactnativepagerview.PagerViewPackage;
 
 import com.navercorp.ntracker.ntrackersdk.NTrackerExt;
 import com.navercorp.ntracker.ntrackersdk.NTrackerPhase;
+import com.zxcpoiu.incallmanager.InCallManagerPackage;
 
 import android.content.BroadcastReceiver;
 import android.content.Intent;
@@ -210,6 +213,8 @@ public class MainApplication extends Application implements ReactApplication {
                             new FlipperPackage(),
                             new PagerViewPackage(),
                             new NetInfoPackage(),
+                            new WebRTCModulePackage(),
+                            new InCallManagerPackage(),
                             new RNCPickerPackage(),
                             new ReactNativeFirebaseAnalyticsPackage(),
                             new CookieManagerPackage(),
@@ -263,6 +268,10 @@ public class MainApplication extends Application implements ReactApplication {
         prefs = getSharedPreferences("Pref", MODE_PRIVATE);
 
         ChannelIO.initialize(this);
+
+        // Initialize the WebRTC module options.
+        WebRTCModuleOptions options = WebRTCModuleOptions.getInstance();
+        options.enableMediaProjectionService = true;
 
         if (BuildConfig.DEBUG || BuildConfig.NODE_ENV == "development") {
             NTrackerExt.enableDebugLog(true);
