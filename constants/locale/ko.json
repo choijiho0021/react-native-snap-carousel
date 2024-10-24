@@ -1876,6 +1876,7 @@
   "qrInfo:tab:manual": "수동입력",
 
   "talk": "통화",
+  "talk:call:minLength": "전화 번호를 다시 확인해 주세요.",
   "talk:free": "무료통화",
   "talk:speaker": "스피커폰",
   "talk:keypad": "키패드",
