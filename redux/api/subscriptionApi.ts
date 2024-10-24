@@ -235,6 +235,7 @@ const cmiGetSubsUsage = ({
     `${api.rokHttpUrl(api.path.rokApi.pv.cmiUsage)}&${api.queryString({
       iccid,
       imsi,
+      orderId,
       localOpId,
     })}`,
     (data) => data,
@@ -332,7 +333,7 @@ const checkCmiData = async (
       totalUsed: undefined,
     },
     usageOption: {
-      mode: ['stu', 'usa', 'end'],
+      mode: ['stu', 'usa', 'end', 'dat', 'ret'],
     },
   };
 };
