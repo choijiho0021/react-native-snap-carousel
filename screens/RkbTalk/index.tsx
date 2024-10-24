@@ -103,8 +103,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [dtmf, setDtmf] = useState<string>();
   const [refreshing, setRefreshing] = useState(false);
   // const testNumber = '07079190190';
-  const showEmg = useMemo(
-    () => Object.entries(emg || {})?.some(([k, v]) => v === '1'),
+  const emgOn = useMemo(
+    () => Object.entries(emg || {})?.filter(([k, v]) => v === '1'),
     [emg],
   );
 
@@ -575,7 +575,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
             onChange={onChange}
             onPressKeypad={onPressKeypad}
             tooltip={tooltip}
-            showEmg={showEmg}
+            emgOn={emgOn}
             updateTooltip={updateTooltip}
           />
         ) : (
