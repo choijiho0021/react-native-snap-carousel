@@ -80,3 +80,4 @@ android/app/.project
 .swn
 .swo
 .vscode/settings.json
+android/keystore.properties
