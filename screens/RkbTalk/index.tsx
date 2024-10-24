@@ -436,8 +436,10 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       switch (k) {
         case 'call':
           Promise.resolve(checkMic()).then(() => {
-            if (!called || called === ccode || (called && !ccode))
+            if (!called || (called && !ccode))
               navigation.navigate('TalkTariff');
+            else if (called?.length <= ccode?.length + 2 || called === ccode)
+              AppAlert.info(i18n.t('talk:call:minLength'));
             else if (called) makeCall(called);
           });
           break;
