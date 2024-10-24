@@ -29,16 +29,16 @@ const getTalkPoint = ({
 export type TalkSign = 'add' | 'deduct' | 'refund' | 'charge' | 'reward';
 
 const patchTalkPoint = ({
-  mobile, // 변수명 수정 필요?
+  iccid,
   token,
   sign,
 }: {
-  mobile: string;
+  iccid: string;
   token: string;
   sign: TalkSign;
 }) => {
   return api.callHttp(
-    `${api.httpUrl(api.path.rokApi.rokebi.point)}/${mobile}?_format=json`,
+    `${api.httpUrl(api.path.rokApi.rokebi.point)}/${iccid}?_format=json`,
     {
       method: 'PATCH',
       headers: api.withToken(token, 'json'),

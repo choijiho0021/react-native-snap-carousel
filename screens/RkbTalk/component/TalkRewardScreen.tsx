@@ -337,7 +337,7 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
 
             if (token && iccid) {
               API.TalkApi.patchTalkPoint({
-                mobile: iccid,
+                iccid,
                 token,
                 sign: 'reward',
               }).then((rsp) => {
