@@ -153,11 +153,11 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   }, [action.talk, isFocused, navigation, realMobile]);
 
   const getPoint = useCallback(() => {
-    if (realMobile) {
+    if (mobile) {
       setRefreshing(true);
       API.TalkApi.getTalkPoint({iccid: `00001111${mobile}`})
         .then((rsp) => {
-          console.log('@@@ point', rsp, realMobile);
+          console.log('@@@ point', rsp, mobile, realMobile);
           if (rsp?.result === 0) {
             setPoint(rsp?.objects?.tpnt);
           }
@@ -176,7 +176,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         })
         .finally(() => setRefreshing(false));
     }
-  }, [navigation, realMobile]);
+  }, [mobile, navigation, realMobile]);
 
   const checkPermission = useCallback(async (type: string) => {
     const cont =
