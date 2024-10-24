@@ -186,14 +186,17 @@ const UsageItem: React.FC<UsageItemProps> = ({
     return dataStatusCd === 'E';
   }, [dataStatusCd]);
 
-  const [showStatus, showUsage, showEndTime] = useMemo(
-    () => [
-      dataUsageOption?.mode?.includes('stu'),
-      dataUsageOption?.mode?.includes('usa'),
-      dataUsageOption?.mode?.includes('end'),
-    ],
-    [dataUsageOption?.mode],
-  );
+  const [showStatus, showUsage, showEndTime, showTotalData, showResetTime] =
+    useMemo(
+      () => [
+        dataUsageOption?.mode?.includes('stu'),
+        dataUsageOption?.mode?.includes('usa'),
+        dataUsageOption?.mode?.includes('end'),
+        dataUsageOption?.mode?.includes('dat'),
+        dataUsageOption?.mode?.includes('ret'),
+      ],
+      [dataUsageOption?.mode],
+    );
 
   const canShowUsage = useCallback(
     (partner: string) =>
@@ -373,27 +376,29 @@ const UsageItem: React.FC<UsageItemProps> = ({
           item.daily === 'daily' &&
           canShowUsage(item.partner!) && <View style={styles.timeDivider} />}
 
-        {item.daily === 'daily' && canShowUsage(item.partner!) && (
-          <View style={styles.timeItem}>
-            <AppText
-              style={{
-                ...appStyles.bold12Text,
-                color: colors.black,
-                marginBottom: 6,
-              }}>
-              {i18n.t('esim:time:dataReset')}
-            </AppText>
+        {showResetTime &&
+          item.daily === 'daily' &&
+          canShowUsage(item.partner!) && (
+            <View style={styles.timeItem}>
+              <AppText
+                style={{
+                  ...appStyles.bold12Text,
+                  color: colors.black,
+                  marginBottom: 6,
+                }}>
+                {i18n.t('esim:time:dataReset')}
+              </AppText>
 
-            {isTzDiff ? (
-              <View>
-                {renderResetTimeRow('korea', styles.rowBetween)}
-                {renderResetTimeRow('local', styles.rowBetween)}
-              </View>
-            ) : (
-              <View>{renderResetTimeRow('korea')}</View>
-            )}
-          </View>
-        )}
+              {isTzDiff ? (
+                <View>
+                  {renderResetTimeRow('korea', styles.rowBetween)}
+                  {renderResetTimeRow('local', styles.rowBetween)}
+                </View>
+              ) : (
+                <View>{renderResetTimeRow('korea')}</View>
+              )}
+            </View>
+          )}
       </View>
     );
   }, [
@@ -404,6 +409,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
     item.partner,
     renderResetTimeRow,
     showEndTime,
+    showResetTime,
   ]);
 
   const renderAnimatedCircularProgress = useCallback(() => {
@@ -550,7 +556,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
               <AppText key={item.key} style={styles.usageTitleBold}>
                 {item.prodName}
               </AppText>
-              {showStatus && (
+              {showTotalData && (
                 <AppText key={item.prodName} style={styles.bold14WarmGrey}>
                   {i18n.t('esim:quota', {
                     quota: utils.toDataVolumeString(quota || 0),
@@ -645,7 +651,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
       item.partner,
       item.prodName,
       quota,
-      showStatus,
+      showTotalData,
       usageRender,
     ],
   );

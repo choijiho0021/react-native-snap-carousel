@@ -178,11 +178,17 @@ const rokHttpUrl = (path0: string, port?: number) => {
   }`;
 };
 
-const queryString = (obj?: Record<string, string | number>) => {
+const queryString = (obj?: Record<string, string | number | undefined>) => {
   if (!obj) return '';
 
   return Object.keys(obj)
-    .map((k) => `${encodeURIComponent(k)}=${encodeURIComponent(obj[k])}`)
+    .filter((k) => obj[k] !== undefined) // undefined 값 필터링
+    .map(
+      (k) =>
+        `${encodeURIComponent(k)}=${encodeURIComponent(
+          obj[k] as string | number,
+        )}`,
+    )
     .join('&');
 };
 

@@ -219,9 +219,11 @@ const cmiGetSubsUsage = ({
   iccid,
   orderId,
   imsi,
+  localOpId,
 }: {
   iccid: string;
   orderId: string;
+  localOpId?: string;
   imsi?: string;
 }) => {
   if (!iccid)
@@ -230,9 +232,11 @@ const cmiGetSubsUsage = ({
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: orderId');
 
   return api.callHttpGet<Usage>(
-    `${api.rokHttpUrl(
-      api.path.rokApi.pv.cmiUsage,
-    )}&iccid=${iccid}&orderId=${orderId}&imsi=${imsi}`,
+    `${api.rokHttpUrl(api.path.rokApi.pv.cmiUsage)}&${api.queryString({
+      iccid,
+      imsi,
+      localOpId,
+    })}`,
     (data) => data,
     new Headers({'Content-Type': 'application/json'}),
   );
@@ -241,10 +245,12 @@ const cmiGetSubsUsage = ({
 const quadcellGetUsage = ({
   imsi,
   partner,
+  localOpId,
   usage = 'y',
 }: {
   imsi: string;
   partner: string;
+  localOpId?: string;
   usage?: string;
 }) => {
   if (!imsi)
@@ -256,7 +262,11 @@ const quadcellGetUsage = ({
       : api.path.rokApi.pv.quadcell;
 
   return api.callHttpGet<Usage>(
-    `${api.rokHttpUrl(`${path}/usage/quota`)}&imsi=${imsi}&usage=${usage}`,
+    `${api.rokHttpUrl(`${path}/usage/quota`)}&${api.queryString({
+      imsi,
+      usage,
+      localOpId,
+    })}`,
     (data) => data,
     new Headers({'Content-Type': 'application/json'}),
   );
@@ -284,7 +294,7 @@ const bcGetSubsUsage = ({
     )}&${api.queryString({
       iccid: subsIccid,
       orderId,
-      localOpId: localOpId || '0',
+      localOpId,
     })}`,
     (data) => {
       if (data?.result?.code === 0) {
@@ -307,12 +317,14 @@ const checkCmiData = async (
     const {result, objects} = await cmiGetSubsUsage({
       iccid: item?.subsIccid,
       imsi: item?.imsi,
+      localOpId: item.localOpId,
       orderId: item?.subsOrderNo || 'noOrderId',
     });
     if (result?.code === 0 && objects.length > 0) return objects[0];
   }
   return {
     status: {statusCd: 'E', endTime: undefined},
+
     usage: {
       quota: undefined,
       used: undefined,
@@ -329,6 +341,7 @@ const checkQuadcellData = async (item: RkbSubscription): Promise<Usage> => {
   if (item?.imsi) {
     const {result, objects} = await quadcellGetUsage({
       imsi: item.imsi,
+      localOpId: item.localOpId,
       partner: item.partner!,
     });
 
@@ -408,15 +421,18 @@ export const checkUsage = async (item: RkbSubscription) => {
         },
       };
       break;
+
     // mosaji, baycon 사용랴 조회 사용 불가 (기본값)
     default:
       result = {
         status: {
           statusCd: 'A',
+          endTime: undefined,
         },
         usage: {quota: 0, used: 0, remain: 0, totalUsed: 0},
         usageOption: {
           mode: [],
+          ret: undefined,
         },
       };
       break;
