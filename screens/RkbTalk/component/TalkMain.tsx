@@ -6,6 +6,7 @@ import {useSelector} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
 import {useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
+import _ from 'underscore';
 import AppButton from '@/components/AppButton';
 import AppPrice from '@/components/AppPrice';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -147,7 +148,7 @@ type TalkMainProps = {
   dtmf: string | undefined;
   min: number | undefined;
   tooltip: boolean;
-  showEmg: boolean;
+  emgOn: string[][];
   updateTooltip: (t: boolean) => void;
 };
 
@@ -162,7 +163,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
   min,
   showWarning,
   tooltip,
-  showEmg,
+  emgOn = [],
   updateTooltip,
 }) => {
   const {called, ccode, tariff} = useSelector((state: RootState) => state.talk);
@@ -175,10 +176,9 @@ const TalkMain: React.FC<TalkMainProps> = ({
     ],
     [sessionState],
   );
-  const emgType = useMemo(
-    () => Object.entries(emergencyCallNo).find(([k, v]) => v === called)?.[0],
-    [called],
-  );
+  const emgType = useMemo(() => {
+    return emgOn?.find((e) => emergencyCallNo[e[0]] === called)?.[0];
+  }, [called, emgOn]);
 
   const minInfo = useMemo(() => {
     if (emgType) {
@@ -328,7 +328,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
             </AppText>
           </View>
         )}
-        {initial && showEmg ? (
+        {initial && !_.isEmpty(emgOn) ? (
           <AppButton
             style={{backgroundColor: colors.white}}
             titleStyle={styles.emergency}
