@@ -489,7 +489,9 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [endTime, isTzDiff, item?.partner, showEndTime]);
 
   const clMtdTxt = useCallback(() => {
-    return ['ais', 'dtac', 'vndaily'].includes(item?.clMtd || '') ? (
+    return ['ais', 'ais2', 'dtac', 'vndaily', 'latotal'].includes(
+      item?.clMtd || '',
+    ) ? (
       <View style={{width: '100%'}}>
         <View style={{flexDirection: 'row'}}>
           <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
