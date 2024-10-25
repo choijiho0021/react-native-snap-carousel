@@ -342,7 +342,9 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
                 sign: 'reward',
               }).then((rsp) => {
                 if (rsp?.result === 0) {
-                  navigation.navigate('RkbTalk');
+                  navigation.navigate('TalkStack', {
+                    screen: 'RkbTalk',
+                  });
                 } else {
                   AppAlert.info(i18n.t('talk:reward:error'));
                 }
