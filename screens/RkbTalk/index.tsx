@@ -83,7 +83,7 @@ type RkbTalkProps = {
 };
 
 const RkbTalk: React.FC<RkbTalkProps> = ({
-  account: {mobile, realMobile, iccid, token},
+  account: {realMobile, iccid},
   talk: {called, tariff, emg, tooltip, ccode},
   navigation,
   action,
@@ -153,12 +153,11 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   }, [action.talk, isFocused, navigation, realMobile]);
 
   const getPoint = useCallback(() => {
-    if (mobile) {
+    if (iccid) {
       setRefreshing(true);
-
       API.TalkApi.getTalkPoint({iccid})
         .then((rsp) => {
-          console.log('@@@ point', rsp, mobile, realMobile);
+          console.log('@@@ point', rsp);
           if (rsp?.result === 0) {
             setPoint(rsp?.objects?.tpnt);
           }
@@ -177,7 +176,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         })
         .finally(() => setRefreshing(false));
     }
-  }, [mobile, navigation, realMobile]);
+  }, [iccid, navigation]);
 
   const checkPermission = useCallback(async (type: string) => {
     const cont =
@@ -312,6 +311,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       getPoint();
     }, 1000);
     setDtmf('');
+
     // 저장했던 번호 삭제
     action.talk.updateNumberClicked({});
 
