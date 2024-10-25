@@ -213,7 +213,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [disableBtn]);
 
   useEffect(() => {
-    if (showUsage && dataStatusCd === 'A') {
+    if ((showTotalData || showUsage) && dataStatusCd === 'A') {
       if (
         usage?.quota !== undefined &&
         usage?.remain !== undefined &&
@@ -551,7 +551,8 @@ const UsageItem: React.FC<UsageItemProps> = ({
 
   const statusBox = useCallback(
     (statusCd: string) => {
-      if (statusCd === 'A')
+      if (statusCd === 'A') {
+        console.log('aaaaa usage', usage?.quota);
         return (
           <View>
             <View>
@@ -569,6 +570,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
             {usageRender()}
           </View>
         );
+      }
 
       if (isError)
         return (
