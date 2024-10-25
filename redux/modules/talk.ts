@@ -118,14 +118,17 @@ export interface TalkModelState {
   };
 }
 
+const CALL_HIST_LIMIT = 100;
+
 const makeSectionData = (hist: CallHistory[]) => {
   return hist?.reduce((acc, cur, idx, all) => {
     const year = moment(cur.stime).format('YYYY');
     const title = moment(cur.stime).format('M월 D일') + year;
     const i = (acc || [{}]).findIndex((a) => a?.title === title);
     if (i >= 0) {
-      const newData = acc[i]?.data.push(cur);
-      return acc.splice(i, 1, newData);
+      const newData = acc[i]?.data.concat(cur);
+      acc.splice(i, 1, {title, data: newData});
+      return acc;
     }
     // 0부터 최신순
     const y = acc[acc?.length - 1]?.title?.slice(-4);
@@ -172,6 +175,7 @@ const updateCalls = async (state: TalkModelState, payload: CallHistory) => {
     hist.splice(idx, 1, {...hist[idx], duration: state.duration});
     newHistory = hist;
   }
+  if (newHistory?.length > CALL_HIST_LIMIT) newHistory.splice(CALL_HIST_LIMIT);
 
   storeData('callHistory', JSON.stringify(newHistory));
   return makeSectionData(newHistory);
