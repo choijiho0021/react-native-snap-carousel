@@ -334,14 +334,13 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
           onPress={() => {
             // 첫 리워드 API 호출
             // 특정 코드일 경우 alert 출력
-            if (token && mobile) {
+
+            if (token && iccid) {
               API.TalkApi.patchTalkPoint({
-                mobile,
+                iccid,
                 token,
                 sign: 'reward',
               }).then((rsp) => {
-                console.log('@@@ rsp : ', rsp);
-
                 if (rsp?.result === 0) {
                   navigation.navigate('RkbTalk');
                 } else {

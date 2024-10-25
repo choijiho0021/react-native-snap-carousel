@@ -136,8 +136,7 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
         });
 
         action.account.getTalkPoint({
-          mobile: `00001111${mobile}`,
-          isReal: false,
+          iccid: `00001111${mobile}`,
         });
         navigation.popToTop();
         if (draftOrder?.orderType === 'refundable') {

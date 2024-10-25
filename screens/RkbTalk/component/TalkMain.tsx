@@ -1,25 +1,25 @@
+import {useFocusEffect} from '@react-navigation/native';
+import {RootState} from '@reduxjs/toolkit';
 import moment from 'moment';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {Image, Pressable, StyleSheet, View} from 'react-native';
-import {SessionState} from 'sip.js';
 import {useSelector} from 'react-redux';
-import {RootState} from '@reduxjs/toolkit';
-import {useFocusEffect} from '@react-navigation/native';
-import AsyncStorage from '@react-native-community/async-storage';
+import {SessionState} from 'sip.js';
+import _ from 'underscore';
 import AppButton from '@/components/AppButton';
 import AppPrice from '@/components/AppPrice';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
+import {appStyles} from '@/constants/Styles';
 import {API} from '@/redux/api';
+import {emergencyCallNo} from '@/screens/EmergencyCallScreen';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import {RkbTalkNavigationProp} from '..';
-import TalkToolTip from '../TalkToolTip';
 import Keypad, {KeyType} from '../Keypad';
-import {emergencyCallNo} from '@/screens/EmergencyCallScreen';
-import {appStyles} from '@/constants/Styles';
+import TalkToolTip from '../TalkToolTip';
 
 const small = isDeviceSize('medium') || isDeviceSize('small');
 const pointPos = small ? 25 : 0;
@@ -30,7 +30,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   emergency: {
-    width: 55,
     textAlign: 'right',
     fontSize: 16,
     fontWeight: '600',
@@ -86,8 +85,8 @@ const styles = StyleSheet.create({
     height: 40,
     flexDirection: 'row',
     alignItems: 'center',
+    alignSelf: 'center',
     paddingHorizontal: 16,
-    marginHorizontal: 92,
     borderWidth: 1,
     borderColor: colors.lightGrey,
   },
@@ -119,7 +118,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     marginHorizontal: 20,
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
   },
   flagIcon: {
     width: 32,
@@ -127,6 +126,7 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   nation: {
+    textAlign: 'left',
     color: colors.black,
   },
   connectedView: {
@@ -147,7 +147,7 @@ type TalkMainProps = {
   dtmf: string | undefined;
   min: number | undefined;
   tooltip: boolean;
-  showEmg: boolean;
+  emgOn: string[][];
   updateTooltip: (t: boolean) => void;
 };
 
@@ -162,7 +162,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
   min,
   showWarning,
   tooltip,
-  showEmg,
+  emgOn = [],
   updateTooltip,
 }) => {
   const {called, ccode, tariff} = useSelector((state: RootState) => state.talk);
@@ -175,10 +175,9 @@ const TalkMain: React.FC<TalkMainProps> = ({
     ],
     [sessionState],
   );
-  const emgType = useMemo(
-    () => Object.entries(emergencyCallNo).find(([k, v]) => v === called)?.[0],
-    [called],
-  );
+  const emgType = useMemo(() => {
+    return emgOn?.find((e) => emergencyCallNo[e[0]] === called)?.[0];
+  }, [called, emgOn]);
 
   const minInfo = useMemo(() => {
     if (emgType) {
@@ -227,7 +226,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
             <AppSvgIcon
               key="talkPoint"
               name="talkPoint"
-              style={[{marginRight: 6}, {marginLeft: 16}]}
+              style={{marginRight: 6}}
             />
             <AppText style={styles.myPoint}>{i18n.t('talk:mypoint')}</AppText>
             <AppPrice
@@ -243,11 +242,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
                 {marginLeft: 0},
               ]}
             />
-            <AppSvgIcon
-              style={{marginRight: 16}}
-              key="rightArrow10"
-              name="rightArrow10"
-            />
+            <AppSvgIcon key="rightArrow10" name="rightArrow10" />
           </View>
         </Pressable>
         <View style={{flex: 1}} />
@@ -313,14 +308,14 @@ const TalkMain: React.FC<TalkMainProps> = ({
   return (
     <>
       <View style={styles.topView}>
+        <View style={{width: 55}} />
         {ccInfo && (
           <View
             style={{
-              flex: 1,
               flexDirection: 'row',
               justifyContent: 'center',
+              alignSelf: 'center',
               alignItems: 'center',
-              marginLeft: 55,
             }}>
             <Image
               resizeMode="contain"
@@ -332,7 +327,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
             </AppText>
           </View>
         )}
-        {initial && showEmg ? (
+        {initial && !_.isEmpty(emgOn) ? (
           <AppButton
             style={{backgroundColor: colors.white}}
             titleStyle={styles.emergency}

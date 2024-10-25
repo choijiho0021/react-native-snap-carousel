@@ -83,7 +83,7 @@ type RkbTalkProps = {
 };
 
 const RkbTalk: React.FC<RkbTalkProps> = ({
-  account: {mobile, realMobile, iccid, token},
+  account: {realMobile, iccid},
   talk: {called, tariff, emg, tooltip, ccode},
   navigation,
   action,
@@ -103,8 +103,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [dtmf, setDtmf] = useState<string>();
   const [refreshing, setRefreshing] = useState(false);
   // const testNumber = '07079190190';
-  const showEmg = useMemo(
-    () => Object.entries(emg || {})?.some(([k, v]) => v === '1'),
+  const emgOn = useMemo(
+    () => Object.entries(emg || {})?.filter(([k, v]) => v === '1'),
     [emg],
   );
 
@@ -153,11 +153,11 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   }, [action.talk, isFocused, navigation, realMobile]);
 
   const getPoint = useCallback(() => {
-    if (realMobile) {
+    if (iccid) {
       setRefreshing(true);
-      API.TalkApi.getTalkPoint({mobile: realMobile})
+      API.TalkApi.getTalkPoint({iccid})
         .then((rsp) => {
-          console.log('@@@ point', rsp, realMobile);
+          console.log('@@@ point', rsp);
           if (rsp?.result === 0) {
             setPoint(rsp?.objects?.tpnt);
           }
@@ -176,7 +176,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         })
         .finally(() => setRefreshing(false));
     }
-  }, [navigation, realMobile]);
+  }, [iccid, navigation]);
 
   const checkPermission = useCallback(async (type: string) => {
     const cont =
@@ -311,6 +311,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       getPoint();
     }, 1000);
     setDtmf('');
+
     // 저장했던 번호 삭제
     action.talk.updateNumberClicked({});
 
@@ -436,8 +437,10 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       switch (k) {
         case 'call':
           Promise.resolve(checkMic()).then(() => {
-            if (!called || called === ccode || (called && !ccode))
+            if (!called || (called && !ccode))
               navigation.navigate('TalkTariff');
+            else if (called?.length <= ccode?.length + 2 || called === ccode)
+              AppAlert.info(i18n.t('talk:call:minLength'));
             else if (called) makeCall(called);
           });
           break;
@@ -572,7 +575,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
             onChange={onChange}
             onPressKeypad={onPressKeypad}
             tooltip={tooltip}
-            showEmg={showEmg}
+            emgOn={emgOn}
             updateTooltip={updateTooltip}
           />
         ) : (
