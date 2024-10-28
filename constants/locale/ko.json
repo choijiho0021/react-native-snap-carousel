@@ -1929,7 +1929,7 @@
   "talk:permission:home:mic:cont": "인터넷 음성 통화를 이용하기 위해\n마이크 권한을 허용해 주세요.",
 
   "talk:contact": "연락처",
-  "talk:contact:search:empty": "검색 결과가 없습니다.",
+  "talk:contact:empty": "연락처가 없습니다.",
   "talk:contact:search": "이름, 전화번호를 입력하세요",
   "talk:contact:sync": "내 주소록을 동기화하여\n더 편리하게 사용해 보세요!",
   "talk:contact:sync:btn": "연락처 동기화하기",
