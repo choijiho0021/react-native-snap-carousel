@@ -356,7 +356,23 @@ export const getContacts = createAsyncThunk(
   'talk/getContact',
   (_, {dispatch}) => {
     return Contacts.getAll()
-      .then((contacts) => {
+      .then((c) => {
+        const contacts = c.reduce((acc, cur, idx) => {
+          if (cur?.phoneNumbers?.length <= 1) return acc.concat(cur);
+
+          // 저장된 번호 모두 하나의 row로 출력
+          return [
+            ...acc,
+            ...cur?.phoneNumbers?.map((p, i) => {
+              return {
+                ...cur,
+                recordID: `${cur.recordID}:${i}`,
+                phoneNumbers: [p],
+              };
+            }),
+          ];
+        }, []);
+
         const sortedContacts = (contacts || []).sort((a, b) => sortName(a, b));
         dispatch(slice.actions.updateContact(sortedContacts));
         return sortedContacts || [];
