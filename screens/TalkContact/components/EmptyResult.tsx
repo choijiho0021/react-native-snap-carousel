@@ -13,11 +13,11 @@ const styles = StyleSheet.create({
   },
 });
 
-const EmptyResult = () => {
+const EmptyResult = ({title}: {title?: string}) => {
   return (
     <View style={styles.container}>
       <AppIcon style={{marginBottom: 16}} name="imgDot" />
-      <AppText>{i18n.t('talk:search:none')}</AppText>
+      <AppText>{title || i18n.t('talk:search:none')}</AppText>
     </View>
   );
 };

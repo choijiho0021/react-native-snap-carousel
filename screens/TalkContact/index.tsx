@@ -474,6 +474,47 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
     [scrollY, sections],
   );
 
+  const contactsView = useCallback(() => {
+    if (contacts?.length === 0)
+      return <EmptyResult title={i18n.t('talk:contact:empty')} />;
+    return _.isEmpty(searchText) ? (
+      !_.isEmpty(sections) && (
+        <SectionListSidebar
+          ref={sectionListRef}
+          smallSidebar={small}
+          sideItemHeight={13}
+          sideHeight={small ? 350 : 520}
+          data={sections}
+          renderItem={renderContactList}
+          itemHeight={74} // contact list item height
+          sectionHeaderHeight={20}
+          onScroll={onScroll}
+          renderSectionHeader={renderSectionListHeader}
+          sidebarContainerStyle={styles.sidebarContainer}
+          sidebarItemTextStyle={styles.sidebarItem}
+          locale="kor"
+        />
+      )
+    ) : (
+      <SectionList
+        contentContainerStyle={{flexGrow: 1}}
+        sections={searchResult}
+        renderItem={renderContactList}
+        renderSectionHeader={renderSectionHeader}
+        ListEmptyComponent={<EmptyResult />}
+      />
+    );
+  }, [
+    contacts?.length,
+    onScroll,
+    renderContactList,
+    renderSectionHeader,
+    renderSectionListHeader,
+    searchResult,
+    searchText,
+    sections,
+  ]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -486,37 +527,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
         />
       </View>
       {showContacts && !_.isEmpty(searchText) && <View style={{height: 24}} />}
-      {showContacts ? (
-        _.isEmpty(searchText) ? (
-          !_.isEmpty(sections) && (
-            <SectionListSidebar
-              ref={sectionListRef}
-              smallSidebar={small}
-              sideItemHeight={13}
-              sideHeight={small ? 350 : 520}
-              data={sections}
-              renderItem={renderContactList}
-              itemHeight={74} // contact list item height
-              sectionHeaderHeight={20}
-              onScroll={onScroll}
-              renderSectionHeader={renderSectionListHeader}
-              sidebarContainerStyle={styles.sidebarContainer}
-              sidebarItemTextStyle={styles.sidebarItem}
-              locale="kor"
-            />
-          )
-        ) : (
-          <SectionList
-            contentContainerStyle={{flexGrow: 1}}
-            sections={searchResult}
-            renderItem={renderContactList}
-            renderSectionHeader={renderSectionHeader}
-            ListEmptyComponent={<EmptyResult />}
-          />
-        )
-      ) : (
-        beforeSync()
-      )}
+      {showContacts ? contactsView() : beforeSync()}
     </SafeAreaView>
   );
 };
