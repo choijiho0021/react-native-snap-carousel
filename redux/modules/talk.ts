@@ -28,6 +28,11 @@ const getPointHistory = createAsyncThunk(
 const getTariff = createAsyncThunk('talk/getTariff', API.TalkApi.getTariff);
 const getEmgInfo = createAsyncThunk('talk/getEmgInfo', API.TalkApi.getEmgInfo);
 
+const getCheckFirstReward = createAsyncThunk(
+  'account/getCheckFirstReward',
+  API.TalkApi.getCheckFirstReward,
+);
+
 export type PointHistory = {
   diff: string;
   expire_at: Moment;
@@ -106,6 +111,11 @@ export interface TalkModelState {
   clickedName?: string;
   clickedIncCc?: boolean; // if clicked number has cccode
   duration?: number;
+  reward?: {
+    isReceivedReward?: number;
+    rewardAmount?: number;
+    rewardStart?: Moment;
+  };
 }
 
 const makeSectionData = (hist: CallHistory[]) => {
@@ -292,6 +302,12 @@ const slice = createSlice({
       state.tooltip = action.payload;
       return state;
     },
+    resetFirstReward: (state) => ({
+      ...state,
+      reward: {
+        isReceivedReward: undefined,
+      },
+    }),
   },
   extraReducers: (builder) => {
     builder.addCase(getPointHistory.fulfilled, (state, action) => {
@@ -315,6 +331,21 @@ const slice = createSlice({
 
       return state;
     });
+
+    builder.addCase(getCheckFirstReward.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      if (result === 0) {
+        state.reward = {
+          isReceivedReward: objects?.fstrwd,
+          rewardAmount: objects?.rewardAmount,
+          rewardStart: objects?.rewardStart,
+        };
+      }
+
+      return state;
+    });
+
     builder.addCase(getExpPointInfo.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
@@ -419,6 +450,7 @@ export const actions = {
   callInitiated,
   callChanged,
   updateNumberClicked,
+  getCheckFirstReward,
   // getTalkPoint,
 };
 

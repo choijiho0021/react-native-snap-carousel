@@ -18,6 +18,12 @@ const getTalkPoint = ({iccid}: {iccid: string}) => {
   );
 };
 
+const getCheckFirstReward = ({iccid}: {iccid: string}) => {
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.rokApi.rokebi.point)}/${iccid}?reward`,
+  );
+};
+
 export type TalkSign = 'add' | 'deduct' | 'refund' | 'charge' | 'reward';
 
 const patchTalkPoint = ({
@@ -151,4 +157,5 @@ export default {
   getPointHistory,
   getTariff,
   getEmgInfo,
+  getCheckFirstReward,
 };

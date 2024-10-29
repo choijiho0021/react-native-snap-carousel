@@ -1890,14 +1890,14 @@
   "talk:emergencyCall": "긴급통화",
   "talk:localTime": "현지시간 {{time}}",
   "talk:remain": "남은 통화 {{min}}분",
-  "talk:reward:info1": "• yyyy.mm.dd 이후 발권한 경우에 드리는 리워드에요. 리워드는 계정당 한 번만 발급할 수 있어요.",
+  "talk:reward:info1": "• {{date}} 이후 발권한 경우에 드리는 리워드에요. 리워드는 계정당 한 번만 발급할 수 있어요.",
   "talk:reward:info2": "• 리워드로 지급한 톡포인트의 유효기간은 발급일로부터 90일이에요.",
   "talk:reward:info3": "• 실제로 사용할 시점을 고려해서 톡포인트를 발급받으시는 것을 추천해요!",
 
   "talk:reward:header": "로깨비톡 런칭 기념",
   "talk:reward:body1": "발권 리워드 받고\n해외 <b>무료 통화</b>하세요!",
   "talk:reward:reward": "발권리워드",
-  "talk:reward:talkPoint": "톡포인트",
+  "talk:reward:talkPoint": "{{amount}} 톡포인트",
   "talk:reward:free": "무료 통화 30분",
   "talk:reward:korea": "한국 발신 기준",
 
@@ -1910,6 +1910,8 @@
   "talk:reward:error": "리워드 지급 대상이 아닙니다.",
   "talk:reward:btn": "지금 바로 톡포인트 받기",
   "talk:reward:btn2": "다음에 받기",
+
+  "talk:reward:success": "발권 리워드가 지급되었습니다.",
 
   "talk:reward:modal:body1": "<b>%v 톡포인트</b>가 도착했어요.",
   "talk:reward:modal:body2": "발권 리워드 받고\n<b>30분 무료 통화</b>해요!",

@@ -80,11 +80,6 @@ const receiveGift = createAsyncThunk(
   API.User.receiveGift,
 );
 
-const getTalkPoint = createAsyncThunk(
-  'account/getTalkPoint',
-  API.TalkApi.getTalkPoint,
-);
-
 const receiveAndGetGift = createAsyncThunk(
   'account/receiveAndGetGift',
   ({sender, gift}: {sender: string; gift: string}, {dispatch, getState}) => {
@@ -206,7 +201,6 @@ export type AccountModelState = {
   coupon?: RkbCoupon[];
   fortune?: Fortune;
   realMobile?: string;
-  isReceivedReward?: number;
   tpnt?: number;
 };
 
@@ -466,10 +460,6 @@ const slice = createSlice({
       ...initialState,
       isSupportDev: state.isSupportDev,
     }),
-    resetFirstReward: (state) => ({
-      ...state,
-      isReceivedReward: undefined,
-    }),
     setCacheMode: (state, action: PayloadAction<AccountModelState>) => {
       const {iccid, mobile, pin, token} = action?.payload;
       return {...state, loggedIn: true, iccid, mobile, pin, token};
@@ -583,15 +573,6 @@ const slice = createSlice({
           text: objects[0]?.fortune,
           num: objects[0]?.num,
         } as Fortune;
-      }
-    });
-
-    builder.addCase(getTalkPoint.fulfilled, (state, action) => {
-      const {result, objects} = action.payload;
-
-      if (result === 0) {
-        state.isReceivedReward = objects?.fstrwd;
-        state.tpnt = objects?.tpnt;
       }
     });
 
@@ -752,7 +733,6 @@ export const actions = {
   registerMobile,
   getMyCoupon,
   checkLottery,
-  getTalkPoint,
 };
 export type AccountAction = typeof actions;
 

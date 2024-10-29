@@ -35,6 +35,7 @@ import UsDraftStep2, {UsDeviceInputType} from './component/UsDraftStep2';
 import UsDraftStep3 from './component/UsDraftStep3';
 import AppAlert from '@/components/AppAlert';
 import api from '@/redux/api/api';
+import {TalkAction, actions as talkActions} from '@/redux/modules/talk';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import ScreenHeader from '@/components/ScreenHeader';
 import AppModal from '@/components/AppModal';
@@ -93,6 +94,7 @@ type DraftUsScreenProps = {
     order: OrderAction;
     modal: ModalAction;
     account: AccountAction;
+    talk: TalkAction;
   };
 };
 
@@ -188,8 +190,8 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
             hidden: false,
           });
 
-          action.account.getTalkPoint({
-            iccid: `00001111${mobile}`,
+          action.talk.getCheckFirstReward({
+            iccid,
           });
           await action.account.checkLottery({
             iccid,
@@ -217,12 +219,12 @@ const DraftUsScreen: React.FC<DraftUsScreenProps> = ({
     actDate,
     action.account,
     action.order,
+    action.talk,
     deviceData.eid,
     deviceData.imei2,
     draftOrder?.orderId,
     draftOrder?.orderType,
     iccid,
-    mobile,
     navigation,
     token,
   ]);
@@ -364,6 +366,7 @@ export default connect(
       order: bindActionCreators(orderActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
       product: bindActionCreators(productActions, dispatch),
+      talk: bindActionCreators(talkActions, dispatch),
       modal: bindActionCreators(modalActions, dispatch),
     },
   }),

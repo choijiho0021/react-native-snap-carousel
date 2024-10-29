@@ -29,6 +29,7 @@ import {
   actions as productActions,
   ProductModelState,
 } from '@/redux/modules/product';
+import {TalkAction, actions as talkActions} from '@/redux/modules/talk';
 import i18n from '@/utils/i18n';
 import ProductDetailRender from '../CancelOrderScreen/component/ProductDetailRender';
 import GuideBox from '../CancelOrderScreen/component/GuideBox';
@@ -84,6 +85,7 @@ type DraftScreenProps = {
     order: OrderAction;
     modal: ModalAction;
     account: AccountAction;
+    talk: TalkAction;
   };
 };
 
@@ -135,8 +137,8 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
           prompt: 'check',
         });
 
-        action.account.getTalkPoint({
-          iccid: `00001111${mobile}`,
+        action.talk.getCheckFirstReward({
+          iccid,
         });
         navigation.popToTop();
         if (draftOrder?.orderType === 'refundable') {
@@ -155,11 +157,11 @@ const DraftScreen: React.FC<DraftScreenProps> = ({
   }, [
     action.order,
     action.account,
+    action.talk,
     draftOrder?.orderId,
     draftOrder?.orderType,
     token,
     iccid,
-    mobile,
     navigation,
   ]);
 
@@ -253,6 +255,7 @@ export default connect(
       order: bindActionCreators(orderActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
       product: bindActionCreators(productActions, dispatch),
+      talk: bindActionCreators(talkActions, dispatch),
       modal: bindActionCreators(modalActions, dispatch),
     },
   }),

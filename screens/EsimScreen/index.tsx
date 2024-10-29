@@ -45,6 +45,7 @@ import {
   PAGINATION_SUBS_COUNT,
 } from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
+import {TalkAction, actions as talkActions} from '@/redux/modules/talk';
 import EsimSubs from './components/EsimSubs';
 import EsimModal from './components/EsimModal';
 import GiftModal from './components/GiftModal';
@@ -221,6 +222,7 @@ type EsimScreenProps = {
     order: OrderAction;
     account: AccountAction;
     modal: ModalAction;
+    talk: TalkAction;
   };
 };
 
@@ -277,7 +279,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   navigation,
   route,
   action,
-  account: {iccid, mobile, token, fortune, isReceivedReward},
+  account: {iccid, mobile, token, fortune, reward},
   order,
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -545,12 +547,15 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   // 첫 리워드 조건 체크용
   useEffect(() => {
-    console.log('@@@@  isReceivedReward : ', isReceivedReward);
-    if (isFocused && isReceivedReward !== undefined && isReceivedReward === 0) {
+    if (
+      isFocused &&
+      !reward?.isReceivedReward &&
+      reward?.isReceivedReward === 0
+    ) {
       // localStorage로 기록해두면, 로깨비톡 히스토리 > 첫 발권 리워드 받기 배너 여는 기준을 정해줄 수 있다.
       setIsVisibleReward(true);
     }
-  }, [action.account, mobile, isReceivedReward, isFocused]);
+  }, [action.account, mobile, reward, isFocused]);
 
   useEffect(() => {
     const {subsId, actionStr} = route?.params || {};
@@ -771,14 +776,14 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         )}
       </View>
 
-      {/* <AppButton
-        onPress={() => { 
-          action.account.getTalkPoint({
-            mobile: `00001111${mobile}`,
-            isReal: false,
+      <AppButton
+        onPress={() => {
+          // test
+          action.talk.getCheckFirstReward({
+            iccid,
           });
         }}
-      /> */}
+      />
 
       <FlatList
         ref={flatListRef}
@@ -846,7 +851,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       <TalkRewardModal
         visible={isVisibleReward}
         onClick={() => {
-          action.account.resetFirstReward(); // 모달창 반복 출력 방지
+          action.talk.resetFirstReward(); // 모달창 반복 출력 방지
           setIsVisibleReward(false);
         }}
       />
@@ -890,6 +895,7 @@ export default connect(
       order: bindActionCreators(orderActions, dispatch),
       account: bindActionCreators(accountActions, dispatch),
       modal: bindActionCreators(modalActions, dispatch),
+      talk: bindActionCreators(talkActions, dispatch),
     },
   }),
 )(EsimScreen);

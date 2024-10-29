@@ -311,7 +311,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   pending,
 }) => {
   const {realMobile, iccid, token} = account;
-  const {pointHistory = []} = talk;
+  const {pointHistory = [], reward} = talk;
 
   const [orderType, setOrderType] = useState<OrderType>('desc');
   const [dataFilter, setDataFilter] = useState<string>('A');
@@ -339,11 +339,17 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
     }
   }, [action.talk, iccid, token]);
 
+  const checkFirstReward = useCallback(() => {
+    if (iccid) {
+      action.talk.getCheckFirstReward({iccid});
+    }
+  }, [action.talk, iccid]);
   useFocusEffect(
     React.useCallback(() => {
       getPoint();
+      checkFirstReward();
       return () => {};
-    }, [getPoint]),
+    }, [checkFirstReward, getPoint]),
   );
 
   const beginDragAnimation = useCallback(
@@ -768,28 +774,31 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   }, [showExpirePt, talk?.expPoint, talk?.point]);
 
   const renderBanner = useCallback(() => {
-    return (
-      <Pressable
-        style={styles.bannerBg}
-        onPress={() => {
-          console.log('@@@@ click banner ');
-          navigation.navigate('TalkReward');
-        }}>
-        <View style={styles.bannerTextView}>
-          <AppText style={styles.bannerSmallText}>
-            {i18n.t('talk:point:banner1')}
-          </AppText>
-          <AppText style={styles.bannerBigText}>
-            <AppText style={{fontWeight: 'bold'}}>
-              {i18n.t('talk:point:banner2')}
+    // 받은 적 없을 때만 출력
+    if (reward && !reward?.isReceivedReward)
+      return (
+        <Pressable
+          style={styles.bannerBg}
+          onPress={() => {
+            console.log('@@@@ click banner ');
+            navigation.navigate('TalkReward');
+          }}>
+          <View style={styles.bannerTextView}>
+            <AppText style={styles.bannerSmallText}>
+              {i18n.t('talk:point:banner1')}
             </AppText>
-            {smallDevice ? '!' : i18n.t('talk:point:banner3')}
-          </AppText>
-        </View>
-        <AppSvgIcon name="rokebiBannerImg" />
-      </Pressable>
-    );
-  }, []);
+            <AppText style={styles.bannerBigText}>
+              <AppText style={{fontWeight: 'bold'}}>
+                {i18n.t('talk:point:banner2')}
+              </AppText>
+              {smallDevice ? '!' : i18n.t('talk:point:banner3')}
+            </AppText>
+          </View>
+          <AppSvgIcon name="rokebiBannerImg" />
+        </Pressable>
+      );
+    return <></>;
+  }, [navigation, reward]);
 
   return (
     <SafeAreaView style={styles.container}>
