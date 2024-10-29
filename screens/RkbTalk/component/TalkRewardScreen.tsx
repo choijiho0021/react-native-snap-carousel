@@ -370,7 +370,9 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
                     screen: 'RkbTalk',
                   });
                 } else {
-                  AppAlert.info(i18n.t('talk:reward:error'));
+                  AppAlert.info(i18n.t('talk:reward:error'), '', () =>
+                    navigation.goBack(),
+                  );
                 }
               });
             }
