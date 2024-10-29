@@ -32,6 +32,13 @@ import AppAlert from '@/components/AppAlert';
 import LinearGradient from 'react-native-linear-gradient';
 import Lottie from 'lottie-react-native';
 import AppIcon from '@/components/AppIcon';
+import {
+  actions as toastActions,
+  Toast,
+  ToastAction,
+} from '@/redux/modules/toast';
+import {utils} from '@/utils/utils';
+import {TalkModelState} from '@/redux/modules/talk';
 
 const BG_WIDTH = 972 + 318; // 972 이미지 너비, 318 margin 총합
 
@@ -150,16 +157,20 @@ type TalkRewardScreenProps = {
   navigation: TalkRewardScreenNavigationProp;
   route: TalkRewardScreenRouteProp;
   account: AccountModelState;
+  talk: TalkModelState;
 
   actions: {
     account: AccountAction;
+    toast: ToastAction;
   };
 };
 
 const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
   navigation,
-  account: {iccid, token, mobile},
+  account: {iccid, token},
+  talk: {reward},
   route,
+  actions,
 }) => {
   const translateX = useRef(new Animated.Value(0)).current; // 시작 위치
   const images = [
@@ -273,7 +284,9 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
                         style={{width: 20, height: 20}}
                       />
                       <AppText style={appStyles.robotoBold28Text}>
-                        {`600 ${i18n.t('talk:reward:talkPoint')}`}
+                        {`${i18n.t('talk:reward:talkPoint', {
+                          amount: reward?.rewardAmount || '600',
+                        })}`}
                       </AppText>
                     </View>
                   </View>
@@ -306,7 +319,14 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
                   lineHeight: 22,
                   color: colors.warmGrey,
                 }}>
-                {i18n.t(`talk:reward:info${idx + 1}`)}
+                {idx === 0
+                  ? i18n.t(`talk:reward:info${idx + 1}`, {
+                      date: utils.toDateString(
+                        reward?.rewardStart,
+                        'YYYY.MM.DD',
+                      ),
+                    })
+                  : i18n.t(`talk:reward:info${idx + 1}`)}
               </AppText>
             );
           })}
@@ -342,6 +362,10 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
                 sign: 'reward',
               }).then((rsp) => {
                 if (rsp?.result === 0) {
+                  navigation.popToTop();
+                  actions.toast.push({
+                    msg: 'talk:reward:success',
+                  });
                   navigation.navigate('TalkStack', {
                     screen: 'RkbTalk',
                   });
@@ -362,10 +386,11 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
 // export default memo(TalkRewardScreen);
 
 export default connect(
-  ({account}: RootState) => ({account}),
+  ({account, talk}: RootState) => ({account, talk}),
   (dispatch) => ({
     actions: {
       account: bindActionCreators(accountActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch),
     },
   }),
 )(TalkRewardScreen);
