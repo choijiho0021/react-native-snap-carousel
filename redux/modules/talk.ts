@@ -302,12 +302,10 @@ const slice = createSlice({
       state.tooltip = action.payload;
       return state;
     },
-    resetFirstReward: (state) => ({
-      ...state,
-      reward: {
-        isReceivedReward: undefined,
-      },
-    }),
+    resetFirstReward: (state) => {
+      state.reward = {...state.reward, isReceivedReward: undefined};
+      return state;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getPointHistory.fulfilled, (state, action) => {

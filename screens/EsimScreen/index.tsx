@@ -45,7 +45,11 @@ import {
   PAGINATION_SUBS_COUNT,
 } from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import {TalkAction, actions as talkActions} from '@/redux/modules/talk';
+import {
+  TalkAction,
+  actions as talkActions,
+  TalkModelState,
+} from '@/redux/modules/talk';
 import EsimSubs from './components/EsimSubs';
 import EsimModal from './components/EsimModal';
 import GiftModal from './components/GiftModal';
@@ -217,6 +221,7 @@ type EsimScreenProps = {
   account: AccountModelState;
   modal: ModalModelState;
   order: OrderModelState;
+  talk: TalkModelState;
 
   action: {
     order: OrderAction;
@@ -279,7 +284,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   navigation,
   route,
   action,
-  account: {iccid, mobile, token, fortune, reward},
+  account: {iccid, mobile, token, fortune},
+  talk: {reward},
   order,
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -776,15 +782,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         )}
       </View>
 
-      <AppButton
-        onPress={() => {
-          // test
-          action.talk.getCheckFirstReward({
-            iccid,
-          });
-        }}
-      />
-
       <FlatList
         ref={flatListRef}
         data={subsData}
@@ -851,8 +848,8 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       <TalkRewardModal
         visible={isVisibleReward}
         onClick={() => {
-          action.talk.resetFirstReward(); // 모달창 반복 출력 방지
           setIsVisibleReward(false);
+          action.talk.resetFirstReward(); // 모달창 반복 출력 방지
         }}
       />
       {!esimGlobal && (
@@ -885,10 +882,11 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 };
 
 export default connect(
-  ({account, order, modal}: RootState) => ({
+  ({account, order, modal, talk}: RootState) => ({
     order,
     account,
     modal,
+    talk,
   }),
   (dispatch) => ({
     action: {

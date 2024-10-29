@@ -22,7 +22,7 @@ import {
   actions as accountActions,
 } from '@/redux/modules/account';
 import AppButton from '@/components/AppButton';
-import {RouteProp, useIsFocused} from '@react-navigation/native';
+import {RouteProp} from '@react-navigation/native';
 import {goBack, HomeStackParamList} from '@/navigation/navigation';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {bindActionCreators, RootState} from 'redux';
@@ -32,11 +32,7 @@ import AppAlert from '@/components/AppAlert';
 import LinearGradient from 'react-native-linear-gradient';
 import Lottie from 'lottie-react-native';
 import AppIcon from '@/components/AppIcon';
-import {
-  actions as toastActions,
-  Toast,
-  ToastAction,
-} from '@/redux/modules/toast';
+import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {utils} from '@/utils/utils';
 import {TalkModelState} from '@/redux/modules/talk';
 
@@ -101,7 +97,7 @@ const styles = StyleSheet.create({
   },
 
   titleContainer: {
-    height: 92,
+    height: 100,
     marginTop: 50,
     width: '100%',
     zIndex: 1000,
@@ -122,7 +118,7 @@ const styles = StyleSheet.create({
     },
   },
   gradientBg: {
-    height: 300,
+    height: 200,
     bottom: 300,
     marginHorizontal: -20,
     position: 'relative',
