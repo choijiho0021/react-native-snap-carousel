@@ -188,7 +188,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>사진 또는 동영상을 촬영, 메세지로 전송하여 더욱 원활한 채팅 상담을 진행하기 위해 카메라에 접근하도록 허용합니다.</string>
 	<key>NSContactsUsageDescription</key>
-	<string>앱과 내 주소록을 동기화하여 연락처를 검색하거나 통하를 걸기 위해 사용해요!</string>
+	<string>앱과 내 주소록을 동기화하여 연락처를 검색하거나 통화를 걸기 위해 사용해요!</string>
 	<key>NSMainNibFile</key>
 	<string>LaunchScreen</string>
 	<key>NSMicrophoneUsageDescription</key>
