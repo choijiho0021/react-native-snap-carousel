@@ -116,6 +116,7 @@ type Env = {
     inicis: Record<string, string>;
     hecto: Record<string, string>;
   };
+  auth: Record<string, string>;
   cachePrefix: string;
   naver: {
     consumerKey: string;
@@ -159,6 +160,14 @@ const env: Env = {
             AES256_KEY: 'pgSettle30y739r82jtd709yOfZ2yK5K',
           },
         },
+  auth:
+    (isProduction && secureData.auth) || true // true -> TB에 임시로 실 서비스 키 연결해서 테스트
+      ? secureData.auth
+      : {
+          AUTH_MID: 'INIiasTest',
+          AUTH_HASHKEY: 'TGdxb2l3enJDWFRTbTgvREU3MGYwUT09',
+        },
+
   specialCategories,
   cachePrefix: `${esimGlobal ? 'g.' : ''}${isProduction ? '' : 'd.'}`,
   naver: secureData.naver,

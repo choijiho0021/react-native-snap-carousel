@@ -2,7 +2,7 @@ import CryptoJS from 'crypto-js';
 import Env from '@/environment';
 import {PaymentParams} from '@/navigation/navigation';
 
-const {payment, isProduction, scheme, apiUrl, inicisAuthHost} = Env.get();
+const {payment, auth, isProduction, scheme, apiUrl, inicisAuthHost} = Env.get();
 
 export const debugScript = isProduction
   ? ''
@@ -93,31 +93,14 @@ export const inicisWebviewHtml = (info: PaymentParams) => {
 };
 
 export const inicisButton = (accountId: string) => {
-  const mid = 'INIiasTest'; // 테스트 MID 입니다. 계약한 상점 MID 로 변경 필요
-  const apiKey = 'TGdxb2l3enJDWFRTbTgvREU3MGYwUT09'; // 테스트 MID 에 대한 apiKey
+  const mid = auth.AUTH_MID;
+  const apiKey = auth.AUTH_HASHKEY;
   const timestamp = Date.now();
   const mTxId = `t_${timestamp}_00001111${accountId}`;
   const reservedMsg = 'isUseToken=Y'; // 결과조회 응답시 개인정보 SEED 암호화 처리 요청
 
   // 등록가맹점 확인
   const authHash_plainText = mid + mTxId + apiKey;
-
-  // 테스트용
-  // const flgFixedUser = 'Y'; // 특정 사용자 고정 사용, 미사용시 N
-  // const userName = '최지호'; // 사용자 이름
-  // const userPhone = '01021035030'; // 사용자 전화번호
-  // const userBirth = '19961115'; // 사용자 생년월일
-  // const reqSvcCd = '01'; // 요청구분코드 ["01":간편인증, "02":전자서명]
-
-  // const userHash = CryptoJS.SHA256(
-  //   userName + mid + userPhone + mTxId + userBirth + reqSvcCd,
-  // ).toString();
-
-  // <input type="hidden" type="text" name="flgFixedUser" value="${flgFixedUser}">
-  // <input type="hidden" type="text" name="userName" value="${userName}">
-  // <input type="hidden" type="text" name="userPhone" value="${userPhone}">
-  // <input type="hidden" type="text" name="userBirth" value="${userBirth}">
-  // <input type="hidden" type="text" name="userHash" value="${userHash}">
 
   const hash = CryptoJS.SHA256(authHash_plainText).toString();
 
@@ -180,5 +163,3 @@ export const inicisButton = (accountId: string) => {
 </body>
 </html>`;
 };
-
-// TB : 64.110.75.203 , 상용 : ? 환경변수나 secure.json에 넣기
