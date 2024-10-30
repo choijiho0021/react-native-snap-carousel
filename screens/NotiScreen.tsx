@@ -109,6 +109,11 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: colors.warmGrey,
   },
+  empty: {
+    flex: 1,
+    alignItems: 'center',
+    marginTop: '30%',
+  },
 });
 
 const areEqual = (
@@ -470,6 +475,22 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
     [onPress],
   );
 
+  const renderEmpty = useCallback(
+    () => (
+      <View style={styles.empty}>
+        <AppSvgIcon name="threeDots" />
+        <AppText
+          style={[
+            appStyles.normal16Text,
+            {color: colors.warmGrey, marginTop: 20},
+          ]}>
+          {i18n.t(mode === 'info' ? 'info:none' : 'noti:none')}
+        </AppText>
+      </View>
+    ),
+    [mode],
+  );
+
   const renderFooter = useCallback(() => {
     if (!isNotice && data && data.length > 0)
       return (
@@ -515,11 +536,10 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
       />
       {!pending && (
         <FlatList
-          data={data}
+          // data={data}
+          data={[]}
           renderItem={renderItem}
-          ListEmptyComponent={
-            <AppText style={styles.emptyPage}>{i18n.t('noti:empty')}</AppText>
-          }
+          ListEmptyComponent={renderEmpty}
           ListFooterComponent={renderFooter}
           refreshControl={
             <RefreshControl

@@ -316,8 +316,11 @@
   "mobile:timeLeft": "남은 시간 ",
   "mobile:email": "이메일",
   "mobile:signup": "회원 가입하기",
-  "signup:title": "회원 가입",
 
+  "info:none": "공지사항이 없습니다.",
+  "noti:none": "새로운 알림이 없습니다.",
+
+  "signup:title": "회원 가입",
   "signup:title:welcome": "환영해요!\n회원 정보를 확인하세요.",
   "signup:title:info": "상품 발송 시 사용하는 정보입니다.",
 
