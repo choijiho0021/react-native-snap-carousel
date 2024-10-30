@@ -536,8 +536,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
       />
       {!pending && (
         <FlatList
-          // data={data}
-          data={[]}
+          data={data}
           renderItem={renderItem}
           ListEmptyComponent={renderEmpty}
           ListFooterComponent={renderFooter}
