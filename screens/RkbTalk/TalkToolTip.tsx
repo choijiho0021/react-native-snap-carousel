@@ -1,26 +1,21 @@
-import React, {memo, useCallback, useMemo, useState} from 'react';
+import React, {memo, useCallback, useMemo} from 'react';
 import {
   Modal,
   Pressable,
   StyleSheet,
+  TextStyle,
   View,
   ViewStyle,
-  TextStyle,
 } from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
-
-const small = isDeviceSize('medium') || isDeviceSize('small');
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
     flexDirection: 'column',
-    position: 'absolute',
-    top: small ? 60 : 100,
-    right: 20,
+    marginRight: 20,
   },
   triangle: {
     borderLeftWidth: 6,
@@ -66,6 +61,7 @@ const TalkToolTip = ({
   text,
   icon,
   arrowPos,
+  top = 50,
   updateTooltip,
 }: {
   visible: boolean;
@@ -77,8 +73,11 @@ const TalkToolTip = ({
   text: string;
   icon?: string;
   arrowPos?: string;
+  top?: number;
   updateTooltip: (t: boolean) => void;
 }) => {
+  const insets = useSafeAreaInsets();
+
   const position = useMemo(() => {
     switch (arrowPos) {
       case 'start':
@@ -108,6 +107,7 @@ const TalkToolTip = ({
           style={{
             ...styles.container,
             alignItems: position,
+            marginTop: insets.top + top,
             ...containerStyle,
           }}>
           {arrow === 'top' && (

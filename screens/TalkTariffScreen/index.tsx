@@ -32,7 +32,6 @@ import i18n from '@/utils/i18n';
 import TalkToolTip from '../RkbTalk/TalkToolTip';
 import EmptyResult from '../TalkContact/components/EmptyResult';
 import Footer from './Footer';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const styles = StyleSheet.create({
   container: {
@@ -104,7 +103,6 @@ type TalkTariffScreenProps = {
   };
 };
 
-const small = isDeviceSize('small') || isDeviceSize('medium');
 type TariffSectionData = Record<string, {title: string; data: TalkTariff[]}>;
 
 const favoriteCountry = ['kr', 'us', 'jp'];
@@ -258,7 +256,7 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
         arrow="bottom"
         textStyle={{textAlign: 'left'}}
         textFrame={styles.textFrame}
-        containerStyle={{top: small ? 160 : 200}}
+        top={140}
         updateTooltip={(t: boolean) => setVisible(t)}
       />
       {!searchText ? (
