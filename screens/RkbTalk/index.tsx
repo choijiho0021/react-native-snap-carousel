@@ -311,6 +311,15 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     }, 1000);
     setDtmf('');
 
+    setMute(() => {
+      InCallManager.setMicrophoneMute(false);
+      return false;
+    });
+    setSpeakerPhone(() => {
+      InCallManager.setSpeakerphoneOn(false);
+      return false;
+    });
+
     // 저장했던 번호 삭제
     action.talk.updateNumberClicked({});
 
@@ -319,8 +328,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
 
   // 마이크 권한, 통화시에 권한확인
   const checkMic = useCallback(() => {
-    Promise.resolve(checkPermission('mic')).then((r) => {
-      if (!r)
+    return Promise.resolve(checkPermission('mic')).then((r) => {
+      if (!r) {
         AppAlert.confirm(
           i18n.t('talk:permission:home:mic:title'),
           i18n.t('talk:permission:home:mic:cont'),
@@ -333,6 +342,9 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           i18n.t('cancel'),
           i18n.t('settings'),
         );
+      }
+
+      return r;
     });
   }, [checkPermission]);
 
@@ -435,12 +447,14 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     (k: string, d?: string) => {
       switch (k) {
         case 'call':
-          Promise.resolve(checkMic()).then(() => {
-            if (!called || (called && !ccode))
-              navigation.navigate('TalkTariff');
-            else if (called?.length <= ccode?.length + 2 || called === ccode)
-              AppAlert.info(i18n.t('talk:call:minLength'));
-            else if (called) makeCall(called);
+          Promise.resolve(checkMic()).then((r) => {
+            if (r) {
+              if (!called || (called && !ccode))
+                navigation.navigate('TalkTariff');
+              else if (called?.length <= ccode?.length + 2 || called === ccode)
+                AppAlert.info(i18n.t('talk:call:minLength'));
+              else if (called) makeCall(called);
+            }
           });
           break;
         case 'hangup':
