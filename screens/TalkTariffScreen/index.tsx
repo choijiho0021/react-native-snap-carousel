@@ -291,7 +291,7 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
         renderSectionHeader={({section: {title}}) => (
           <AppText style={styles.sectionHeader}>{title}</AppText>
         )}
-        ListFooterComponent={<Footer />}
+        ListFooterComponent={!searchText ? <Footer /> : null}
         ListEmptyComponent={<EmptyResult />}
       />
     </SafeAreaView>
