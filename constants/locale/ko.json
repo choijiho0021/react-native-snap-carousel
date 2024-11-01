@@ -1938,6 +1938,7 @@
   "talk:callHistory:title": "발신 내역",
   "talk:callHistory:empty": "발신 내역이 없습니다",
 
+  "talk:point": "톡포인트",
   "talk:point:error:title": "톡포인트 정보를 불러오는 데 문제가 발생했어요.",
   "talk:point:error:cont": "확인 버튼을 눌러 다시 시도해 보세요.",
   "talk:point:hold": "보유 톡포인트",
