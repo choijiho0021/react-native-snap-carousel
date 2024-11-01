@@ -312,6 +312,15 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     }, 1000);
     setDtmf('');
 
+    setMute(() => {
+      InCallManager.setMicrophoneMute(false);
+      return false;
+    });
+    setSpeakerPhone(() => {
+      InCallManager.setSpeakerphoneOn(false);
+      return false;
+    });
+
     // 저장했던 번호 삭제
     action.talk.updateNumberClicked({});
 
