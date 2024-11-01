@@ -555,8 +555,14 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
               utils.stringToNumber(item?.point) || 0,
               'P',
             )}
-            balanceStyle={[appStyles.bold18Text, {color: colors.clearBlue}]}
-            currencyStyle={[appStyles.bold16Text, {color: colors.clearBlue}]}
+            balanceStyle={[
+              appStyles.bold18Text,
+              {lineHeight: 30, color: colors.clearBlue},
+            ]}
+            currencyStyle={[
+              appStyles.bold16Text,
+              {lineHeight: 30, color: colors.clearBlue},
+            ]}
           />
         </View>
       );
@@ -632,8 +638,14 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
               </AppText>
               <AppPrice
                 price={utils.toCurrency(talk?.expPoint || 0, 'P')}
-                balanceStyle={[appStyles.bold18Text, {color: colors.redError}]}
-                currencyStyle={[appStyles.bold16Text, {color: colors.redError}]}
+                balanceStyle={[
+                  appStyles.bold18Text,
+                  {lineHeight: 24, color: colors.redError},
+                ]}
+                currencyStyle={[
+                  appStyles.bold16Text,
+                  {lineHeight: 24, color: colors.redError},
+                ]}
               />
             </View>
 
