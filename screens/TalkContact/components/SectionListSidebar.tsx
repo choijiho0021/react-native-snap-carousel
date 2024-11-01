@@ -405,7 +405,8 @@ const SectionListSidebar = (
   return (
     <View style={[styles.container, containerStyle]} onLayout={onLayout}>
       <TextIndicator isShow={isShow} text={indicatorText} />
-      <View style={{flexDirection: rtl === true ? 'row-reverse' : 'row'}}>
+      <View
+        style={{flex: 1, flexDirection: rtl === true ? 'row-reverse' : 'row'}}>
         <SectionList
           keyExtractor={sectionKeyExtract}
           getItemLayout={getItemLayout}
