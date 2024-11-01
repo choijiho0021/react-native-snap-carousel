@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
-    backgroundColor: colors.white,
+    backgroundColor: colors.aliceBlue,
     alignItems: 'center',
     height: 56,
   },
@@ -815,7 +815,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <AppBackButton title="톡포인트" />
+        <AppBackButton title={i18n.t('talk:point')} />
       </View>
 
       {renderTop()}
