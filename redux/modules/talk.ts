@@ -118,14 +118,17 @@ export interface TalkModelState {
   };
 }
 
+const CALL_HIST_LIMIT = 100;
+
 const makeSectionData = (hist: CallHistory[]) => {
   return hist?.reduce((acc, cur, idx, all) => {
     const year = moment(cur.stime).format('YYYY');
     const title = moment(cur.stime).format('M월 D일') + year;
     const i = (acc || [{}]).findIndex((a) => a?.title === title);
     if (i >= 0) {
-      const newData = acc[i]?.data.push(cur);
-      return acc.splice(i, 1, newData);
+      const newData = acc[i]?.data.concat(cur);
+      acc.splice(i, 1, {title, data: newData});
+      return acc;
     }
     // 0부터 최신순
     const y = acc[acc?.length - 1]?.title?.slice(-4);
@@ -172,6 +175,7 @@ const updateCalls = async (state: TalkModelState, payload: CallHistory) => {
     hist.splice(idx, 1, {...hist[idx], duration: state.duration});
     newHistory = hist;
   }
+  if (newHistory?.length > CALL_HIST_LIMIT) newHistory.splice(CALL_HIST_LIMIT);
 
   storeData('callHistory', JSON.stringify(newHistory));
   return makeSectionData(newHistory);
@@ -381,7 +385,23 @@ export const getContacts = createAsyncThunk(
   'talk/getContact',
   (_, {dispatch}) => {
     return Contacts.getAll()
-      .then((contacts) => {
+      .then((c) => {
+        const contacts = c.reduce((acc, cur, idx) => {
+          if (cur?.phoneNumbers?.length <= 1) return acc.concat(cur);
+
+          // 저장된 번호 모두 하나의 row로 출력
+          return [
+            ...acc,
+            ...cur?.phoneNumbers?.map((p, i) => {
+              return {
+                ...cur,
+                recordID: `${cur.recordID}:${i}`,
+                phoneNumbers: [p],
+              };
+            }),
+          ];
+        }, []);
+
         const sortedContacts = (contacts || []).sort((a, b) => sortName(a, b));
         dispatch(slice.actions.updateContact(sortedContacts));
         return sortedContacts || [];

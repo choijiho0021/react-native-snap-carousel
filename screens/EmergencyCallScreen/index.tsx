@@ -27,7 +27,7 @@ import CallService from './component/CallService';
 import TopInfo from './component/TopInfo';
 
 export const emergencyCallNo: Record<string, string> = {
-  mofa: '82232100404',
+  '04': '82232100404',
   '119': '82443200119',
 };
 
@@ -92,7 +92,7 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
 
   const openKakaoUrl = useCallback(async (type: string) => {
     const url =
-      type === 'mofa'
+      type === EMG_MOFA
         ? 'https://pf.kakao.com/_sxjTxcT'
         : 'https://pf.kakao.com/_aHMYxb';
 
@@ -142,7 +142,7 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
             }}>
             {mofa && (
               <CallService
-                type="mofa"
+                type="04"
                 num={3}
                 onPressCall={onPressCall}
                 onPressKakao={openKakaoUrl}
@@ -150,7 +150,7 @@ const EmergencyCallScreen: React.FC<EmergencyCallScreenProps> = ({
             )}
             {medical && (
               <CallService
-                type="medical"
+                type="119"
                 num={4}
                 needTitle
                 onPressCall={onPressCall}

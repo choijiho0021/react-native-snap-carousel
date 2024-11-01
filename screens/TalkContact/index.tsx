@@ -16,7 +16,7 @@ import {
   PERMISSIONS,
   RESULTS,
 } from 'react-native-permissions';
-import {connect, useDispatch} from 'react-redux';
+import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import AppButton from '@/components/AppButton';
@@ -30,6 +30,7 @@ import {
   doubleKor,
   sectionKeys,
 } from '@/constants/CustomTypes';
+import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {appStyles} from '@/constants/Styles';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
@@ -43,7 +44,6 @@ import {getNumber, utils} from '@/utils/utils';
 import EmptyResult from './components/EmptyResult';
 import SectionListSidebar from './components/SectionListSidebar';
 import ContactListItem from './ContactListItem';
-import {isDeviceSize} from '@/constants/SliderEntry.style';
 
 const small = isDeviceSize('medium') || isDeviceSize('small');
 
@@ -143,13 +143,12 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
   const [showContacts, setShowContacts] = useState(false);
   const [searchResult, setSearchResult] = useState<any[]>([]);
   const [searchText, setSearchText] = useState<string | undefined>(undefined);
-  const [mapContacts, setMapContacts] = React.useState(new Map());
+  const [mapContacts, setMapContacts] = React.useState<Map<string, Contact[]>>(
+    new Map(),
+  );
   const [highlight, setHighlight] = React.useState(new Map());
-  const [loading, setLoading] = useState<boolean>(false);
-  const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [sections, setSections] = useState<any[]>([]);
   const sectionListRef = useRef();
-  const dispatch = useDispatch();
   const [scrollY, setScrollY] = useState(-1);
 
   // 권한없는 경우, 통화시에 권한확인 로직 필요
@@ -200,18 +199,17 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
 
   const removeDup = useCallback((findSection, item) => {
     const idx = findSection.data.findIndex((v) => v.recordID === item.recordID);
-    if (idx >= 0) {
-      findSection.data.splice(idx, 1, item);
-    } else {
+    if (idx < 0) {
       findSection.data.push(item);
     }
+    return findSection;
   }, []);
 
   const setOtherSection = useCallback(
     (name: string, item) => {
       let findSection = {};
       const currentSectionKeys = sectionKeys;
-      if (checkEng.test(name.substring(0, 1))) {
+      if (checkEng.test(name?.substring(0, 1))) {
         // 영어 section
         findSection = currentSectionKeys.find(
           (v) => v.key === name.toUpperCase().substring(0, 1),
@@ -221,8 +219,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
         findSection = currentSectionKeys.find((v) => checkSpecial.test(v.key));
       }
 
-      removeDup(findSection, item);
-      return findSection;
+      return removeDup(findSection, item);
     },
     [removeDup],
   );
@@ -237,8 +234,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
         );
 
         if (_.isEmpty(findSection)) return;
-        removeDup(findSection, item);
-        ko.push(findSection);
+        ko.push(removeDup(findSection, item));
       });
 
       return ko[0];
@@ -259,7 +255,19 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
 
             let cho = '';
             disassemble.forEach((item) => (cho += item[0]));
-            setMapContacts(mapContacts.set(cho, item));
+
+            if (!mapContacts.has(cho))
+              setMapContacts(mapContacts.set(cho, [item]));
+            else {
+              const list = mapContacts?.get(cho) || [];
+              const exist = list?.find(
+                (a) =>
+                  a?.phoneNumbers[0]?.number === item?.phoneNumbers[0]?.number,
+              );
+
+              if (exist) return;
+              setMapContacts(mapContacts.set(cho, list.concat(item)));
+            }
           } else {
             setOtherSection(name, item);
           }
@@ -323,17 +331,20 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
             .filter((item) => {
               // 초성 index
               const i = item.indexOf(text);
-              if (i >= 0)
-                setHighlight(
-                  highlight.set(currentMapContacts.get(item).recordID, [
-                    i,
-                    i + text.length - 1,
-                  ]),
-                );
 
+              if (i >= 0) {
+                currentMapContacts
+                  .get(item)
+                  ?.forEach((c) =>
+                    setHighlight(
+                      highlight.set(c.recordID, [i, i + text.length - 1]),
+                    ),
+                  );
+              }
               return item.includes(text);
             })
-            .forEach((item) => chosung.push(currentMapContacts.get(item)));
+            .forEach((item) => chosung.push(...currentMapContacts.get(item)));
+
           // 한글 초성검색
           currentSearchResult = chosung;
 
@@ -417,7 +428,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
         />
       );
     },
-    [onPress, highlight],
+    [highlight, onPress],
   );
 
   useEffect(() => {
@@ -463,6 +474,47 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
     [scrollY, sections],
   );
 
+  const contactsView = useCallback(() => {
+    if (contacts?.length === 0)
+      return <EmptyResult title={i18n.t('talk:contact:empty')} />;
+    return _.isEmpty(searchText) ? (
+      !_.isEmpty(sections) && (
+        <SectionListSidebar
+          ref={sectionListRef}
+          smallSidebar={small}
+          sideItemHeight={13}
+          sideHeight={small ? 350 : 520}
+          data={sections}
+          renderItem={renderContactList}
+          itemHeight={74} // contact list item height
+          sectionHeaderHeight={20}
+          onScroll={onScroll}
+          renderSectionHeader={renderSectionListHeader}
+          sidebarContainerStyle={styles.sidebarContainer}
+          sidebarItemTextStyle={styles.sidebarItem}
+          locale="kor"
+        />
+      )
+    ) : (
+      <SectionList
+        contentContainerStyle={{flexGrow: 1}}
+        sections={searchResult}
+        renderItem={renderContactList}
+        renderSectionHeader={renderSectionHeader}
+        ListEmptyComponent={<EmptyResult />}
+      />
+    );
+  }, [
+    contacts?.length,
+    onScroll,
+    renderContactList,
+    renderSectionHeader,
+    renderSectionListHeader,
+    searchResult,
+    searchText,
+    sections,
+  ]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -475,37 +527,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
         />
       </View>
       {showContacts && !_.isEmpty(searchText) && <View style={{height: 24}} />}
-      {showContacts ? (
-        _.isEmpty(searchText) ? (
-          !_.isEmpty(sections) && (
-            <SectionListSidebar
-              ref={sectionListRef}
-              smallSidebar={small}
-              sideItemHeight={13}
-              sideHeight={small ? 350 : 520}
-              data={sections}
-              renderItem={renderContactList}
-              itemHeight={74} // contact list item height
-              sectionHeaderHeight={20}
-              onScroll={onScroll}
-              renderSectionHeader={renderSectionListHeader}
-              sidebarContainerStyle={styles.sidebarContainer}
-              sidebarItemTextStyle={styles.sidebarItem}
-              locale="kor"
-            />
-          )
-        ) : (
-          <SectionList
-            contentContainerStyle={{flexGrow: 1}}
-            sections={searchResult}
-            renderItem={renderContactList}
-            renderSectionHeader={renderSectionHeader}
-            ListEmptyComponent={<EmptyResult />}
-          />
-        )
-      ) : (
-        beforeSync()
-      )}
+      {showContacts ? contactsView() : beforeSync()}
     </SafeAreaView>
   );
 };
