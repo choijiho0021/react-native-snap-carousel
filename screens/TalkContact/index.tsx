@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
     fontStyle: 'normal',
     lineHeight: 24,
     letterSpacing: -0.16,
+    color: colors.black,
   },
   syncBtn: {
     alignSelf: 'center',
