@@ -88,6 +88,7 @@ const AppSearch = ({
           onFocus={() => setFocus(true)}
           onBlur={() => setFocus(false)}
           onChangeText={onChangeText}
+          placeholderTextColor={colors.greyish}
           placeholder={placeholder}
           returnKeyType="done"
           enablesReturnKeyAutomatically
