@@ -77,8 +77,6 @@ const styles = StyleSheet.create({
   },
   talkBtn: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
   },
   talkBtnView: {
     justifyContent: 'center',
@@ -218,35 +216,24 @@ const TalkMain: React.FC<TalkMainProps> = ({
   // talkpoint 가져오지 못할 경우 0 처리
   const talkPointBtn = useCallback(() => {
     return (
-      <>
-        <Pressable
-          style={styles.talkBtn}
-          onPress={() => navigation.navigate('TalkPoint')}>
-          <View style={styles.talkBtnView}>
-            <AppSvgIcon
-              key="talkPoint"
-              name="talkPoint"
-              style={{marginRight: 6}}
-            />
-            <AppText style={styles.myPoint}>{i18n.t('talk:mypoint')}</AppText>
-            <AppPrice
-              price={utils.toCurrency(point || 0, 'P')}
-              balanceStyle={[
-                styles.myPoint,
-                styles.pointBold,
-                {marginRight: 0},
-              ]}
-              currencyStyle={[
-                styles.myPoint,
-                styles.pointBold,
-                {marginLeft: 0},
-              ]}
-            />
-            <AppSvgIcon key="rightArrow10" name="rightArrow10" />
-          </View>
-        </Pressable>
-        <View style={{flex: 1}} />
-      </>
+      <Pressable
+        style={styles.talkBtn}
+        onPress={() => navigation.navigate('TalkPoint')}>
+        <View style={styles.talkBtnView}>
+          <AppSvgIcon
+            key="talkPoint"
+            name="talkPoint"
+            style={{marginRight: 6}}
+          />
+          <AppText style={styles.myPoint}>{i18n.t('talk:mypoint')}</AppText>
+          <AppPrice
+            price={utils.toCurrency(point || 0, 'P')}
+            balanceStyle={[styles.myPoint, styles.pointBold, {marginRight: 0}]}
+            currencyStyle={[styles.myPoint, styles.pointBold, {marginLeft: 0}]}
+          />
+          <AppSvgIcon key="rightArrow10" name="rightArrow10" />
+        </View>
+      </Pressable>
     );
   }, [navigation, point]);
 
@@ -302,8 +289,6 @@ const TalkMain: React.FC<TalkMainProps> = ({
       </View>
     );
   }, [called, ccode, dtmf, emgType]);
-
-  const callTimePos = useMemo(() => (initial ? pointPos : -5), [initial]);
 
   return (
     <>
@@ -369,7 +354,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
         </View>
       )}
       {renderDestination()}
-      <View style={{flex: 1, marginTop: callTimePos}}>{info()}</View>
+      <View style={{flex: 1}}>{info()}</View>
       <View>
         <Keypad
           navigation={navigation}
