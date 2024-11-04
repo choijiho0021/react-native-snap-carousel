@@ -83,6 +83,7 @@ const AppSearch = ({
             marginBottom: 2,
             fontWeight: '600',
             lineHeight: 24,
+            color: colors.black,
             ...textStyle,
           }}
           onFocus={() => setFocus(true)}
