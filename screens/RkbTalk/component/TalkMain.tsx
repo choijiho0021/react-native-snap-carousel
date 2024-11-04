@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     letterSpacing: -0.16,
+    color: colors.black,
   },
   pointBold: {
     marginLeft: small ? 6 : 12,
