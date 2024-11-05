@@ -34,6 +34,7 @@ import AppPrice from '@/components/AppPrice';
 import Env from '@/environment';
 import AppButton from '@/components/AppButton';
 import {HomeStackParamList} from '@/navigation/navigation';
+import {windowHeight, windowWidth} from '@/constants/SliderEntry.style';
 
 const {esimCurrency} = Env.get();
 
@@ -446,7 +447,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   const renderExpireItem = useCallback((item: CashExpire) => {
     const dDay = item?.expire_dt?.diff(moment(), 'days');
     return (
-      <View key={item?.create_dt?.unix?.()} style={styles.expPtContainer}>
+      <View key={item?.create_dt?.unix()} style={styles.expPtContainer}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <AppText
             style={[
@@ -516,6 +517,9 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   const expirePtModalBody = useCallback(() => {
     console.log('@@@ modalAnimatedValue : ', modalAnimatedValue);
 
+    const modalMarginTop =
+      windowHeight - 300 - (cashExpire?.length || 0) * (54 + 8); // 300 : 버튼, 헤더 여백 높이 총합
+
     return (
       <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
         <SafeAreaView style={{backgroundColor: 'transparent'}} />
@@ -525,9 +529,8 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             onScrollBeginDrag={() => beginDragAnimation(true)}
             stickyHeaderIndices={[0]}
             style={{
-              flex: 1,
               backgroundColor: colors.white,
-              marginTop: modalAnimatedValue,
+              marginTop: modalMarginTop < 56 ? 56 : modalMarginTop, // animated value?
             }}>
             <LinearGradient
               colors={[colors.white, 'rgba(255, 255, 255, 0.1)']}
