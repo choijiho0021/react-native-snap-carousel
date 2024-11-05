@@ -51,6 +51,11 @@ const styles = StyleSheet.create({
     fontSize: isDeviceSize('small') ? 18 : 20,
     marginBottom: 6,
   },
+  usageErrorTitleBold: {
+    ...appStyles.bold20Text,
+    fontSize: isDeviceSize('small') ? 18 : 20,
+    marginBottom: 20,
+  },
   usageStatus: {
     ...appStyles.bold14Text,
     paddingHorizontal: 6,
@@ -553,7 +558,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
       if (isError)
         return (
           <View style={{justifyContent: 'center'}}>
-            <AppText key={item.key} style={styles.usageTitleBold}>
+            <AppText key={item.key} style={styles.usageErrorTitleBold}>
               {item.prodName}
             </AppText>
             <AppIcon
