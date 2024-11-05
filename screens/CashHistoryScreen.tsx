@@ -121,7 +121,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     marginHorizontal: 20,
     marginVertical: 4,
+    height: 54,
   },
+
   sectionItemContainer: {
     // flexDirection: 'row',
     marginHorizontal: 20,
@@ -442,9 +444,9 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   }, [dataFilter]);
 
   const renderExpireItem = useCallback((item: CashExpire) => {
-    const dDay = item.expire_dt?.diff(moment(), 'days');
+    const dDay = item?.expire_dt?.diff(moment(), 'days');
     return (
-      <View key={item.create_dt.unix()} style={styles.expPtContainer}>
+      <View key={item?.create_dt?.unix?.()} style={styles.expPtContainer}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <AppText
             style={[
@@ -458,15 +460,16 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           </AppText>
         </View>
 
+        {/* TODO : durlsp */}
         <AppPrice
           price={utils.toCurrency(
             utils.stringToNumber(item.point) || 0,
             esimCurrency,
           )}
-          balanceStyle={[appStyles.bold18Text, {color: colors.clearBlue}]}
+          balanceStyle={[appStyles.robotoBold18Text, {color: colors.clearBlue}]}
           currencyStyle={[
             appStyles.bold16Text,
-            {color: colors.clearBlue, textAlignVertical: 'bottom'},
+            {color: colors.clearBlue, lineHeight: 22},
           ]}
         />
       </View>
@@ -510,8 +513,10 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     [action.modal, orderType, orderTypeList],
   );
 
-  const expirePtModalBody = useCallback(
-    () => (
+  const expirePtModalBody = useCallback(() => {
+    console.log('@@@ modalAnimatedValue : ', modalAnimatedValue);
+
+    return (
       <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
         <SafeAreaView style={{backgroundColor: 'transparent'}} />
 
@@ -528,10 +533,17 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               colors={[colors.white, 'rgba(255, 255, 255, 0.1)']}
               style={styles.topGradient}
             />
+
+            {/* marginTop 28 -> 0 테스트, flex로 이미 30정도 여백이 있음. 다른 핸드폰은? */}
             <AppText
               style={[
                 appStyles.bold20Text,
-                {marginHorizontal: 20, marginTop: 28, marginBottom: 24},
+                {
+                  marginHorizontal: 20,
+                  marginTop: 2, // 기존 28?
+                  marginBottom: 24,
+                  backgroundColor: colors.white,
+                },
               ]}>
               {i18n.t('cashHistory:expireModalTitle')}
             </AppText>
@@ -542,10 +554,16 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               </AppText>
               <AppPrice
                 price={utils.toCurrency(expirePt || 0, esimCurrency)}
-                balanceStyle={[appStyles.bold18Text, {color: colors.redError}]}
+                balanceStyle={[
+                  appStyles.robotoBold18Text,
+                  {color: colors.redError},
+                ]}
                 currencyStyle={[
                   appStyles.bold16Text,
-                  {color: colors.redError, textAlignVertical: 'bottom'},
+                  {
+                    color: colors.redError,
+                    lineHeight: 22,
+                  },
                 ]}
               />
             </View>
@@ -573,16 +591,15 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         </View>
         <SafeAreaView style={{backgroundColor: colors.white}} />
       </View>
-    ),
-    [
-      modalAnimatedValue,
-      expirePt,
-      cashExpire,
-      beginDragAnimation,
-      renderExpireItem,
-      action.modal,
-    ],
-  );
+    );
+  }, [
+    modalAnimatedValue,
+    expirePt,
+    cashExpire,
+    beginDragAnimation,
+    renderExpireItem,
+    action.modal,
+  ]);
 
   const onPressFilter = useCallback(
     (key: string) => {
@@ -701,7 +718,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             <AppPrice
               price={utils.toCurrency(expirePt || 0, esimCurrency)}
               balanceStyle={[
-                appStyles.bold18Text,
+                appStyles.robotoBold18Text,
                 {color: colors.redError, lineHeight: 24},
               ]}
               currencyStyle={[
