@@ -968,6 +968,27 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  greyWarning: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#tztw0nimka)">
+        <Circle cx="8" cy="8" r="7.333" fill="#AAA" />
+        <Path
+          d="M8.667 10.667a.667.667 0 1 1-1.334 0 .667.667 0 0 1 1.334 0zM7.333 5.333a.667.667 0 0 1 1.334 0v3.333a.667.667 0 0 1-1.334 0V5.333z"
+          fill="#fff"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="tztw0nimka">
+          <Path fill="#fff" d="M0 0h16v16H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
   greyTriangle: [
     <Svg
       width="16"
@@ -4740,6 +4761,50 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         clipRule="evenodd"
         d="M15.909 9.247a1 1 0 0 1 .095 1.41l-3.82 4.377a1 1 0 0 1-1.467.043l-2.43-2.47a1 1 0 1 1 1.426-1.402l1.673 1.7 3.112-3.563a1 1 0 0 1 1.41-.095z"
         fill="#fff"
+      />
+    </Svg>,
+  ],
+  questionMark: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#vk40h2jt7a)">
+        <Circle cx="10" cy="9.999" r="9.167" fill="#2A7FF6" />
+        <Path
+          d="M9.333 13.333a.667.667 0 1 1 1.333 0 .667.667 0 0 1-1.333 0z"
+          fill="#fff"
+          stroke="#fff"
+          stroke-width="3"
+        />
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M10 6.667a.798.798 0 0 0-.651.359.851.851 0 0 0-.183.474c-.028.46-.373.862-.833.833-.46-.028-.856-.425-.828-.884.031-.51.203-.986.479-1.38A2.463 2.463 0 0 1 10 5c1.434 0 2.5 1.228 2.5 2.619 0 1.105-.672 2.106-1.667 2.472v.742a.833.833 0 1 1-1.667 0v-1.25c0-.46.374-.833.834-.833.407 0 .833-.55.833-1.131s-.426-.952-.833-.952z"
+          fill="#fff"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="vk40h2jt7a">
+          <Path fill="#fff" d="M0 0h20v20H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
+  question26: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M17.692 10a7.692 7.692 0 1 1-15.384 0 7.692 7.692 0 0 1 15.384 0zm1.539 0A9.23 9.23 0 1 1 .769 10a9.23 9.23 0 0 1 18.462 0zM10 6.154c-.85 0-1.54.689-1.54 1.539a.77.77 0 0 1-1.538 0 3.077 3.077 0 1 1 3.846 2.98v.866a.77.77 0 0 1-1.538 0V10a.77.77 0 0 1 .77-.769 1.538 1.538 0 0 0 0-3.077zm.768 8.462a.77.77 0 1 1-1.538 0 .77.77 0 0 1 1.538 0z"
+        fill="#2C2C2C"
       />
     </Svg>,
   ],
