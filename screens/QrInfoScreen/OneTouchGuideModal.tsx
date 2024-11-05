@@ -144,10 +144,13 @@ const OneTouchGuideModal: React.FC<OneTouchGuideModalProps> = ({
                 marginBottom: 16,
                 alignItems: 'center',
               }}>
-              <AppIcon name="question26" style={{marginRight: 8}} />
-              <AppText style={appStyles.bold14Text}>
-                {i18n.t('esim:oneTouch:guide:question:txt')}
-              </AppText>
+              {/* 이미지가 붙은 경우 자동 줄바꿈에 문제가 있는데 어떻게?  */}
+              <View style={{flexDirection: 'row', width: '95%'}}>
+                <AppIcon name="question26" style={{marginRight: 8}} />
+                <AppText style={appStyles.bold14Text}>
+                  {i18n.t('esim:oneTouch:guide:question:txt')}
+                </AppText>
+              </View>
             </View>
           </ScrollView>
         </View>
