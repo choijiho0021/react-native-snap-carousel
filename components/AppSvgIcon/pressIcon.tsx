@@ -968,6 +968,27 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  greyWarning: [
+    <Svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#tztw0nimka)">
+        <Circle cx="8" cy="8" r="7.333" fill="#AAA" />
+        <Path
+          d="M8.667 10.667a.667.667 0 1 1-1.334 0 .667.667 0 0 1 1.334 0zM7.333 5.333a.667.667 0 0 1 1.334 0v3.333a.667.667 0 0 1-1.334 0V5.333z"
+          fill="#fff"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="tztw0nimka">
+          <Path fill="#fff" d="M0 0h16v16H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
   greyTriangle: [
     <Svg
       width="16"
@@ -4989,6 +5010,21 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           <Path fill="#fff" d="M0 0h20v20H0z" />
         </ClipPath>
       </Defs>
+    </Svg>,
+  ],
+  question26: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M17.692 10a7.692 7.692 0 1 1-15.384 0 7.692 7.692 0 0 1 15.384 0zm1.539 0A9.23 9.23 0 1 1 .769 10a9.23 9.23 0 0 1 18.462 0zM10 6.154c-.85 0-1.54.689-1.54 1.539a.77.77 0 0 1-1.538 0 3.077 3.077 0 1 1 3.846 2.98v.866a.77.77 0 0 1-1.538 0V10a.77.77 0 0 1 .77-.769 1.538 1.538 0 0 0 0-3.077zm.768 8.462a.77.77 0 1 1-1.538 0 .77.77 0 0 1 1.538 0z"
+        fill="#2C2C2C"
+      />
     </Svg>,
   ],
   bluePlus: [
