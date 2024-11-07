@@ -287,7 +287,14 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
                 label={i18n.t(`rcpt:${k}`)}
                 labelStyle={styles.label}
                 value={v}
-                valueStyle={[styles.value, {fontWeight: '400'}]}
+                valueStyle={[
+                  styles.value,
+                  {
+                    fontWeight: '400',
+                    alignSelf: 'center',
+                    marginVertical: 3,
+                  },
+                ]}
               />
             ))}
           </View>
