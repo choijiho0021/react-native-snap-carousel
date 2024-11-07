@@ -18,7 +18,6 @@ import {bindActionCreators} from 'redux';
 import moment from 'moment';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useNavigation} from '@react-navigation/native';
-import {isPending} from '@reduxjs/toolkit';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -84,7 +83,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   infoCardTop: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 10,
   },
   infoRadiusBorderTop: {
@@ -99,7 +98,7 @@ const styles = StyleSheet.create({
   },
 
   infoCardBottom: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 10,
     paddingBottom: 8,
   },
