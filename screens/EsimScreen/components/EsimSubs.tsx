@@ -931,9 +931,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         'vtdaily',
         'latotal',
       ].includes(mainSubs?.clMtd);
-    if (showHowModal) { 
-      // 여백 삭제한 후 확인 결과 상단 28, 하단 24 제플린 디자인대로 되어있음.
-
+    if (showHowModal) {
       // 하단에 버튼이 없을 때 redirectHk 마진과 박스 기본 마진이 합쳐지는 것 방지
       const isMargin = sendable || isCharged || (!isBC && isChargeButton);
 

@@ -6,6 +6,7 @@ import {
   Pressable,
   SectionList,
   Animated,
+  Platform,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -517,8 +518,11 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   const expirePtModalBody = useCallback(() => {
     console.log('@@@ modalAnimatedValue : ', modalAnimatedValue);
 
+    // ios 는 50정도 더 높아야한다?? 여러 단말로 확인 필요?
     const modalMarginTop =
-      windowHeight - 300 - (cashExpire?.length || 0) * (54 + 8); // 300 : 버튼, 헤더 여백 높이 총합
+      windowHeight -
+      (Platform.OS === 'ios' ? 350 : 300) -
+      (cashExpire?.length || 0) * (54 + 8); // 300 : 버튼, 여백 높이 총합
 
     return (
       <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
