@@ -117,6 +117,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#ffffff',
   },
+
+  // TODO 확인 : 이미 소멸 캐시들 사이 간격 여백 8로 설정되어 있음
   expPtContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -162,7 +164,7 @@ const styles = StyleSheet.create({
   },
   topGradient: {
     width: '100%',
-    height: 30,
+    height: 32,
   },
   bottomGradient: {
     width: '100%',
@@ -536,18 +538,18 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               backgroundColor: colors.white,
               marginTop: modalMarginTop < 56 ? 56 : modalMarginTop, // animated value?
             }}>
+            {/* TODO : 확인 필요 Radius 미동작  */}
             <LinearGradient
               colors={[colors.white, 'rgba(255, 255, 255, 0.1)']}
               style={styles.topGradient}
             />
 
-            {/* marginTop 28 -> 0 테스트, flex로 이미 30정도 여백이 있음. 다른 핸드폰은? */}
             <AppText
               style={[
                 appStyles.bold20Text,
                 {
                   marginHorizontal: 20,
-                  marginTop: 2, // 기존 28?
+                  marginTop: 0, // LinearGadient가 상단 여백 처리중
                   marginBottom: 24,
                   backgroundColor: colors.white,
                 },
