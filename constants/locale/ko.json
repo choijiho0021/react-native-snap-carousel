@@ -551,8 +551,8 @@
   "board:agree": "수신 동의",
   "board:resp": "답변",
   "board:contact": "연락처",
-  "board:attach": "이미지",
-  "board:noti": " · 답변 등록 시 앱 알림과 이메일 주소로 알려드려요!",
+  "board:attach": "이미지 첨부",
+  "board:noti": " · 답변 등록 시 <b>앱 알림과 이메일</b>로 알려드려요!",
   "board:noti:notLogin": " · 문의 내역 탭에서 휴대폰 번호를 검색하면, 문의에 대한 답변을 확인할 수 있어요!",
   "board:pass": "비밀 번호",
   "board:inputPass": "비밀 번호를 입력하세요",
@@ -563,6 +563,9 @@
   "board:loading": "문의내역을 불러오고 있습니다.",
   "board:Closed": "답변 완료",
   "board:Open": "답변 대기",
+
+  "board:title:placeholder": "문의 제목을 입력하세요.",
+  "board:inputBox:placeholder": "문의 내용을 입력하세요.",
 
   "event:title": "이벤트 인증",
   "event:new": "인증 신청하기",

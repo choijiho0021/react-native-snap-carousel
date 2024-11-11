@@ -31,6 +31,7 @@ import AppText from './AppText';
 import AppTextInput from './AppTextInput';
 import AttachmentBox from '@/screens/BoardScreen/AttachmentBox';
 import Env from '@/environment';
+import AppStyledText from './AppStyledText';
 
 const {isIOS} = Env.get();
 
@@ -67,14 +68,14 @@ const styles = StyleSheet.create({
   inputBox: {
     ...appStyles.normal14Text,
     marginHorizontal: 20,
-    height: 50,
+    height: 54,
     borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: colors.lightGrey,
     color: colors.black,
-    paddingHorizontal: 10,
+    paddingHorizontal: 16,
   },
   notiView: {
     flexDirection: 'row',
@@ -85,7 +86,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   noti: {
-    ...appStyles.normal12Text,
+    ...appStyles.semiBold14Text,
+    color: colors.warmGrey,
+    lineHeight: 20,
     textAlign: 'left',
   },
   container: {
@@ -312,17 +315,21 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         {!account.loggedIn && renderContact()}
         <View style={{flex: 1}}>
           <View style={styles.notiView}>
-            <AppText style={styles.noti}>
-              {i18n.t(account.loggedIn ? 'board:noti' : 'board:noti:notLogin')}
-            </AppText>
+            <AppStyledText
+              text={i18n.t(
+                account.loggedIn ? 'board:noti' : 'board:noti:notLogin',
+              )}
+              textStyle={styles.noti}
+              format={{b: {fontWeight: 'bold', color: colors.black}}}
+            />
           </View>
           <AppTextInput
             style={[
               styles.inputBox,
               title ? {borderColor: colors.black} : undefined,
-              {marginBottom: 15},
+              {marginBottom: 8},
             ]}
-            placeholder={i18n.t('title')}
+            placeholder={i18n.t('board:title:placeholder')}
             placeholderTextColor={colors.greyish}
             returnKeyType="next"
             enablesReturnKeyAutomatically
@@ -344,14 +351,14 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
               styles.inputBox,
               {
                 height: 208,
-                paddingTop: 15,
-                paddingHorizontal: 15,
+                paddingTop: 16,
+                paddingHorizontal: 16,
                 textAlignVertical: 'top',
               },
               msg ? {borderColor: colors.black} : undefined,
             ]}
             ref={keybd}
-            placeholder={i18n.t('content')}
+            placeholder={i18n.t('board:inputBox:placeholder')}
             placeholderTextColor={colors.greyish}
             multiline
             numberOfLines={8}
@@ -380,6 +387,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
               attachment={attachment}
               setAttachment={setAttachment}
               imageQuality={0.5}
+              type="board"
             />
           ) : (
             renderPass()

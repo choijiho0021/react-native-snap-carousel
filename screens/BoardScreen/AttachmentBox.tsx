@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Image,
   Keyboard,
@@ -55,8 +55,6 @@ const styles = StyleSheet.create({
   },
   attach: {
     overflow: 'hidden',
-    width: attachmentSize + 2,
-    height: attachmentSize + 2,
     borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
@@ -70,8 +68,6 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   imgSize: {
-    width: attachmentSize,
-    height: attachmentSize,
     borderRadius: 2,
   },
   plusButton: {
@@ -88,6 +84,7 @@ type AttachmentBoxProps = {
   setAttachment: (v: List<CropImage>) => void;
   imageQuality?: number;
   onPress?: () => void;
+  type: 'board' | 'event';
 };
 
 const AttachmentBox: React.FC<AttachmentBoxProps> = ({
@@ -98,9 +95,14 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
   setAttachment,
   imageQuality,
   onPress,
+  type = 'event',
 }) => {
   const [hasPhotoPermission, setHasPhotoPermission] = useState(false);
   const dispatch = useDispatch();
+
+  const maxImageCnt = useMemo(() => {
+    return type === 'board' ? 5 : 3;
+  }, [type]);
 
   useEffect(() => {
     const checkPermission = async () => {
@@ -182,7 +184,14 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
             .filter((item) => !_.isEmpty(item))
             .map((image, i) => (
               <Pressable
-                style={[styles.attach, i < 2 ? {marginRight: 11.5} : undefined]}
+                style={[
+                  styles.attach,
+                  {
+                    width: attachmentSize(maxImageCnt) + 2,
+                    height: attachmentSize(maxImageCnt) + 2,
+                  },
+                  i < 2 ? {marginRight: 11.5} : undefined,
+                ]}
                 key={utils.generateKey(`${image.url}${i}`)}
                 onPress={() => renderModal({imgUrl: image.url})}>
                 <Pressable
@@ -196,6 +205,7 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
                   <AppIcon name="btnBoxCancel" />
                 </Pressable>
                 <ImgWithIndicator
+                  maxImageCnt={maxImageCnt}
                   uri={API.default.httpImageUrl(image.url).toString()}
                 />
               </Pressable>
@@ -203,10 +213,23 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
         {attachment.map((image, idx) => (
           <Pressable
             key={image.filename}
-            style={[styles.attach, idx < 2 ? {marginRight: 11.5} : undefined]}
+            style={[
+              styles.attach,
+              {
+                width: attachmentSize(maxImageCnt) + 2,
+                height: attachmentSize(maxImageCnt) + 2,
+              },
+              idx < 2 ? {marginRight: 11.5} : undefined,
+            ]}
             onPress={() => renderModal({att: image})}>
             <Image
-              style={styles.imgSize}
+              style={[
+                styles.imgSize,
+                {
+                  width: attachmentSize(maxImageCnt),
+                  height: attachmentSize(maxImageCnt),
+                },
+              ]}
               source={{uri: `data:${image.mime};base64,${image.data}`}}
             />
             <Pressable
@@ -219,7 +242,14 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
         {(paramImages ? paramImages.length : 0) + attachment.size < 3 && (
           <Pressable
             key="add"
-            style={[styles.attach, styles.plusButton]}
+            style={[
+              styles.attach,
+              {
+                width: attachmentSize(maxImageCnt) + 2,
+                height: attachmentSize(maxImageCnt) + 2,
+              },
+              styles.plusButton,
+            ]}
             onPress={addAttachment}>
             <AppIcon name="btnPhotoPlus" />
           </Pressable>
