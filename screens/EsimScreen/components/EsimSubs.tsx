@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   infoCardTop: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 16, // TODO : 국기 왼쪽 이미 여백 16으로 설정되어 있음
     paddingTop: 10,
   },
   infoRadiusBorderTop: {
@@ -136,11 +136,13 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-between',
   },
-  usageTitleNormal: {
-    ...appStyles.normal16Text,
-    fontSize: isDeviceSize('small') ? 18 : 20,
-    lineHeight: isDeviceSize('small') ? 26 : 28,
-    color: colors.warmGrey,
+
+  inactiveLastContainer: {
+    marginBottom: 0,
+    flexDirection: 'row',
+    // alignItems: 'center',
+    width: '100%',
+    justifyContent: 'space-between',
   },
 
   usageExpireTitleBold: {
@@ -696,7 +698,10 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
                 </AppText>
               </View>
             )}
-            <View style={styles.inactiveContainer}>
+            <View
+              style={
+                isBC ? styles.inactiveLastContainer : styles.inactiveContainer
+              }>
               <AppText style={{...styles.normal14Gray, fontWeight: '700'}}>
                 {i18n.t('imei2:esim')}
               </AppText>
@@ -704,7 +709,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
             </View>
 
             {!isBC && (
-              <View style={styles.inactiveContainer}>
+              <View style={styles.inactiveLastContainer}>
                 <AppText style={{...styles.normal14Gray, fontWeight: '700'}}>
                   {i18n.t('esim:activationDate')}
                 </AppText>
@@ -731,7 +736,12 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               </AppText>
             </View>
           )}
-          <View style={styles.inactiveContainer}>
+
+          {/* 마지막 항목은 marginBottom : 0 */}
+          <View
+            style={
+              isBC ? styles.inactiveLastContainer : styles.inactiveContainer
+            }>
             <AppText style={styles.normal14Gray}>
               {i18n.t('esim:usablePeriod')}
             </AppText>
@@ -745,7 +755,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           </View>
 
           {!isBC && (
-            <View style={styles.inactiveContainer}>
+            <View style={styles.inactiveLastContainer}>
               <AppText style={styles.normal14Gray}>
                 {i18n.t('esim:rechargeablePeriod')}
               </AppText>
@@ -966,7 +976,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
       );
     }
     return null;
-  }, [mainSubs?.clMtd, sendable]);
+  }, [isBC, isChargeButton, isCharged, mainSubs?.clMtd, sendable]);
 
   const renderMvHtQr = useCallback(() => {
     if (mainSubs.daily === 'daily' && mainSubs.partner === 'ht')
@@ -1140,7 +1150,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
                   </View>
                 </View>
               ) : (
-                <View style={{height: 30}} />
+                <View style={{height: 28}} />
               )}
 
               {renderHkBtn()}
