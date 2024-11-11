@@ -11,6 +11,7 @@ import AppButton from './AppButton';
 import AppModal, {AppModalProps} from './AppModal';
 import AppText from './AppText';
 import AppTextInput from './AppTextInput';
+import i18n from '@/utils/i18n';
 
 const styles = StyleSheet.create({
   cancelButton: {
@@ -22,15 +23,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginHorizontal: 30,
-    marginTop: 30,
-    borderBottomColor: colors.black,
-    borderBottomWidth: 1,
+    marginTop: 12,
+    borderColor: colors.lightGrey,
+    borderWidth: 1,
     alignItems: 'center',
   },
   textInput: {
     ...appStyles.normal16Text,
     flex: 1,
     paddingVertical: 12,
+    paddingHorizontal: 16,
   },
   label: {
     ...appStyles.normal14Text,
@@ -122,15 +124,12 @@ const AppModalForm: React.FC<AppModalFormProps> = ({
           style={styles.textInput}
           returnKeyType="done"
           enablesReturnKeyAutomatically
+          placeholder={i18n.t('board:noPass')}
+          placeholderTextColor={colors.greyish}
           onChangeText={onChangeText}
           maxLength={maxLength}
           keyboardType={keyboardType}
           value={value}
-        />
-        <AppButton
-          style={styles.cancelButton}
-          iconName="btnCancel"
-          onPress={() => setValue('')}
         />
       </View>
       {infoText && <AppText style={styles.label}>{infoText}</AppText>}

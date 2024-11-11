@@ -64,16 +64,23 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginHorizontal: 20,
   },
-  fixedHeader: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1,
-    backgroundColor: 'white',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.greyish,
+
+  cancelBtnView: {
+    backgroundColor: colors.gray4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 3,
+    height: 40,
+  },
+
+  okBtnView: {
+    marginLeft: 12,
+    height: 40,
+    paddingHorizontal: 16,
+    backgroundColor: colors.clearBlue,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 3,
   },
   inputMobile: {
     ...appStyles.normal16Text,
@@ -303,11 +310,21 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
         visible={showModal}
         title={i18n.t('board:inputPass')}
         maxLength={4}
+        titleViewStyle={{marginHorizontal: 30, marginTop: 14}}
+        titleStyle={[appStyles.bold16Text, {lineHeight: 24}]}
         // valueType="pin"
         keyboardType="numeric"
         onOkClose={onSubmitPin}
         onCancelClose={() => setShowModal(false)}
         validate={onValidate}
+        cancelButtonViewStyle={styles.cancelBtnView}
+        okButtonViewStyle={styles.okBtnView}
+        okButtonStyle={{
+          ...appStyles.semiBold16Text,
+          lineHeight: 24,
+          color: colors.white,
+        }}
+        buttonBackgroundColor={colors.clearBlue}
       />
     </SafeAreaView>
   );
