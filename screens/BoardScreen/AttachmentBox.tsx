@@ -1,12 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {
-  Image,
-  Keyboard,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {Image, Platform, Pressable, StyleSheet, View} from 'react-native';
 import {PERMISSIONS, RESULTS, check} from 'react-native-permissions';
 import ImagePicker, {Image as CropImage} from 'react-native-image-crop-picker';
 import _ from 'underscore';
@@ -42,6 +35,11 @@ const styles = StyleSheet.create({
   attachTitleText: {
     ...appStyles.semiBold14Text,
     lineHeight: 20,
+  },
+  attachImageNotiText: {
+    ...appStyles.bold12Text,
+    color: colors.warmGrey,
+    lineHeight: 16,
   },
   essentialText: {
     ...appStyles.bold12Text,
@@ -171,6 +169,11 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
         <AppText style={styles.attachTitleText}>
           {i18n.t('board:attach')}
         </AppText>
+        {type === 'board' && (
+          <AppText style={styles.attachImageNotiText}>
+            {i18n.t('board:attach:maxImageNoti')}
+          </AppText>
+        )}
         {selectedEvent?.rule?.image && (
           <AppText style={styles.essentialText}>
             {i18n.t('event:essential')}
