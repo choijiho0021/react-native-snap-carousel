@@ -42,24 +42,19 @@ const styles = StyleSheet.create({
     marginTop: 80,
   },
   mylist: {
-    ...appStyles.bold18Text,
     marginTop: 30,
-    marginBottom: 20,
-    marginHorizontal: 20,
-  },
-  divider: {
-    marginTop: 40,
-    height: 10,
-    backgroundColor: colors.whiteTwo,
   },
   button: {
-    width: 40,
+    width: 20,
     height: 40,
+    marginLeft: 4,
+    marginRight: 8,
   },
   label: {
-    ...appStyles.normal14Text,
+    ...appStyles.semiBold14Text,
+    lineHeight: 20,
     marginLeft: 20,
-    marginTop: 20,
+    marginTop: 16,
   },
   inputBox: {
     flexDirection: 'row',
@@ -68,6 +63,17 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     marginTop: 10,
     marginHorizontal: 20,
+  },
+  fixedHeader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
+    backgroundColor: 'white',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.greyish,
   },
   inputMobile: {
     ...appStyles.normal16Text,
@@ -93,8 +99,15 @@ const InputMobile0 = ({
     <View>
       {uid === 0 && (
         <View>
-          <AppText style={styles.label}>{i18n.t('board:contact')}</AppText>
+          <AppText style={styles.label}>
+            {i18n.t('board:notLoggin:search')}
+          </AppText>
           <View style={styles.inputBox}>
+            <AppButton
+              iconName="btnSearchOn"
+              onPress={() => onSubmit(value)}
+              style={styles.button}
+            />
             <AppTextInput
               style={styles.inputMobile}
               placeholder={i18n.t('board:noMobile')}
@@ -112,21 +125,11 @@ const InputMobile0 = ({
                 setValue(v);
               }}
             />
-
-            <AppButton
-              iconName="btnSearchOn"
-              onPress={() => onSubmit(value)}
-              style={styles.button}
-            />
           </View>
-
-          <View style={styles.divider} />
         </View>
       )}
 
-      <AppText style={styles.mylist}>
-        {uid === 0 ? i18n.t('board:list') : i18n.t('board:mylist')}
-      </AppText>
+      <View style={{marginTop: uid === 0 ? 24 : 6}} />
     </View>
   );
 };
@@ -275,9 +278,9 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <InputMobile uid={uid} onSubmit={onSubmit} />
       <FlatList
         data={data}
-        ListHeaderComponent={<InputMobile uid={uid} onSubmit={onSubmit} />}
         ListEmptyComponent={empty}
         // onScrollEndDrag={onEndReached} // 검색 시 onEndReached가 발생하는 버그가 Flatlist에 있어 끝까지 스크롤한 경우 list를 더 가져오도록 변경
         extraData={mobile}
