@@ -1,8 +1,8 @@
 import {useFocusEffect} from '@react-navigation/native';
-import {bindActionCreators} from 'redux';
 import Lottie from 'lottie-react-native';
 import React, {memo, useCallback, useEffect, useState} from 'react';
 import {
+  Platform,
   Pressable,
   StyleProp,
   StyleSheet,
@@ -12,15 +12,16 @@ import {
 } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
 import SoundPlayer from 'react-native-sound-player';
-import {SessionState} from 'sip.js';
 import {useDispatch} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {SessionState} from 'sip.js';
+import i18n from '@/utils/i18n';
+import {actions as talkActions} from '@/redux/modules/talk';
 import {isDeviceSize} from '@/constants/SliderEntry.style';
 import {colors} from '@/constants/Colors';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {RkbTalkNavigationProp} from '.';
 import KeyPadButton from './component/KeyPadButton';
-import i18n from '@/utils/i18n';
-import {actions as talkActions} from '@/redux/modules/talk';
 
 const buttonSize = isDeviceSize('medium', true) ? 68 : 80;
 
@@ -103,6 +104,7 @@ const Keypad: React.FC<KeypadProps> = ({
   const [showKeypad, setShowKeypad] = useState(true);
   const [pressed, setPressed] = useState<string>();
   const dispatch = useDispatch();
+  const [ringSpeaker, setRingSpeaker] = useState<boolean>(false);
   const {updateCalledPty, appendCalledPty, delCalledPty} = bindActionCreators(
     talkActions,
     dispatch,
@@ -123,12 +125,19 @@ const Keypad: React.FC<KeypadProps> = ({
           onPress={() => {
             setPressed((prev) => (prev === key ? undefined : key));
             if (key === 'keypad') setShowKeypad((prev) => !prev);
-            else onPress?.(key);
+            else if (key === 'speaker' && SessionState.Establishing === state) {
+              // ringback speaker 적용
+              setRingSpeaker((prev) => {
+                SoundPlayer.setSpeaker(!prev);
+                return !prev;
+              });
+              onPress?.(key);
+            } else onPress?.(key);
           }}
         />
       </View>
     ),
-    [onPress, pressed],
+    [onPress, pressed, state],
   );
 
   const initDtmf = useCallback(() => setDtmf(''), []);
@@ -137,6 +146,7 @@ const Keypad: React.FC<KeypadProps> = ({
   const closeKeypad = useCallback(() => {
     setPressed('');
     setShowKeypad(false);
+    setRingSpeaker(false);
   }, []);
 
   useEffect(() => {
@@ -152,29 +162,45 @@ const Keypad: React.FC<KeypadProps> = ({
     }, [closeKeypad]),
   );
 
+  const playSound = useCallback(() => {
+    try {
+      InCallManager.start({media: 'audio'});
+      SoundPlayer.playSoundFile('ringback', 'mp3');
+
+      // ringback 반복 재생
+      if (Platform.OS === 'android') {
+        // aos 재생 완료 이벤트로 반복 재생
+        SoundPlayer.addEventListener('FinishedPlaying', () => {
+          SoundPlayer.playSoundFile('ringback', 'mp3');
+        });
+      } else SoundPlayer.setNumberOfLoops(-1);
+    } catch (e) {
+      console.log('cannot play the sound file', e);
+    }
+  }, []);
+
+  const stopSound = useCallback(() => {
+    try {
+      InCallManager.stop();
+      SoundPlayer.stop();
+      SoundPlayer.unmount();
+    } catch (e) {
+      console.log('Error stopping sound', e);
+    }
+  }, []);
+
   // ringback
   useEffect(() => {
     if (SessionState.Establishing === state) {
-      InCallManager.start({media: 'audio'});
-      try {
-        SoundPlayer.playSoundFile('ringback', 'mp3');
-        SoundPlayer.setNumberOfLoops(-1);
-      } catch (e) {
-        console.log(`cannot play the sound file`, e);
-      }
+      playSound();
     }
     if (
       state &&
       [SessionState.Terminated, SessionState.Established].includes(state)
     ) {
-      InCallManager.stop();
-      try {
-        SoundPlayer.stop();
-      } catch (e) {
-        console.log('Error stopping sound', e);
-      }
+      stopSound();
     }
-  }, [state]);
+  }, [playSound, state, stopSound]);
 
   const renderKey = useCallback(
     (st?: SessionState) => {
