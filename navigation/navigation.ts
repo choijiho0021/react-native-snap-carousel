@@ -138,6 +138,7 @@ export type HomeStackParamList = {
     item?: RkbBoard;
     status?: BoardMsgStatus;
     isEvent?: boolean;
+    type?: 'board' | 'event';
   };
   BoardMsgList: undefined;
   PromotionCarousel: {};

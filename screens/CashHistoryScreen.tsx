@@ -6,6 +6,7 @@ import {
   Pressable,
   SectionList,
   Animated,
+  Platform,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -34,6 +35,7 @@ import AppPrice from '@/components/AppPrice';
 import Env from '@/environment';
 import AppButton from '@/components/AppButton';
 import {HomeStackParamList} from '@/navigation/navigation';
+import {windowHeight, windowWidth} from '@/constants/SliderEntry.style';
 
 const {esimCurrency} = Env.get();
 
@@ -115,13 +117,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#ffffff',
   },
+
+  // TODO 확인 : 이미 소멸 캐시들 사이 간격 여백 8로 설정되어 있음
   expPtContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 12,
     marginHorizontal: 20,
     marginVertical: 4,
+    height: 54,
   },
+
   sectionItemContainer: {
     // flexDirection: 'row',
     marginHorizontal: 20,
@@ -158,7 +164,7 @@ const styles = StyleSheet.create({
   },
   topGradient: {
     width: '100%',
-    height: 30,
+    height: 32,
   },
   bottomGradient: {
     width: '100%',
@@ -442,9 +448,9 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   }, [dataFilter]);
 
   const renderExpireItem = useCallback((item: CashExpire) => {
-    const dDay = item.expire_dt?.diff(moment(), 'days');
+    const dDay = item?.expire_dt?.diff(moment(), 'days');
     return (
-      <View key={item.create_dt.unix()} style={styles.expPtContainer}>
+      <View key={item?.create_dt?.unix()} style={styles.expPtContainer}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <AppText
             style={[
@@ -458,15 +464,16 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           </AppText>
         </View>
 
+        {/* TODO : durlsp */}
         <AppPrice
           price={utils.toCurrency(
             utils.stringToNumber(item.point) || 0,
             esimCurrency,
           )}
-          balanceStyle={[appStyles.bold18Text, {color: colors.clearBlue}]}
+          balanceStyle={[appStyles.robotoBold18Text, {color: colors.clearBlue}]}
           currencyStyle={[
             appStyles.bold16Text,
-            {color: colors.clearBlue, textAlignVertical: 'bottom'},
+            {color: colors.clearBlue, lineHeight: 22},
           ]}
         />
       </View>
@@ -510,8 +517,16 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     [action.modal, orderType, orderTypeList],
   );
 
-  const expirePtModalBody = useCallback(
-    () => (
+  const expirePtModalBody = useCallback(() => {
+    console.log('@@@ modalAnimatedValue : ', modalAnimatedValue);
+
+    // ios 는 50정도 더 높아야한다?? 여러 단말로 확인 필요?
+    const modalMarginTop =
+      windowHeight -
+      (Platform.OS === 'ios' ? 350 : 300) -
+      (cashExpire?.length || 0) * (54 + 8); // 300 : 버튼, 여백 높이 총합
+
+    return (
       <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
         <SafeAreaView style={{backgroundColor: 'transparent'}} />
 
@@ -520,18 +535,24 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             onScrollBeginDrag={() => beginDragAnimation(true)}
             stickyHeaderIndices={[0]}
             style={{
-              flex: 1,
               backgroundColor: colors.white,
-              marginTop: modalAnimatedValue,
+              marginTop: modalMarginTop < 56 ? 56 : modalMarginTop, // animated value?
             }}>
+            {/* TODO : 확인 필요 Radius 미동작  */}
             <LinearGradient
               colors={[colors.white, 'rgba(255, 255, 255, 0.1)']}
               style={styles.topGradient}
             />
+
             <AppText
               style={[
                 appStyles.bold20Text,
-                {marginHorizontal: 20, marginTop: 28, marginBottom: 24},
+                {
+                  marginHorizontal: 20,
+                  marginTop: 0, // LinearGadient가 상단 여백 처리중
+                  marginBottom: 24,
+                  backgroundColor: colors.white,
+                },
               ]}>
               {i18n.t('cashHistory:expireModalTitle')}
             </AppText>
@@ -542,10 +563,16 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
               </AppText>
               <AppPrice
                 price={utils.toCurrency(expirePt || 0, esimCurrency)}
-                balanceStyle={[appStyles.bold18Text, {color: colors.redError}]}
+                balanceStyle={[
+                  appStyles.robotoBold18Text,
+                  {color: colors.redError},
+                ]}
                 currencyStyle={[
                   appStyles.bold16Text,
-                  {color: colors.redError, textAlignVertical: 'bottom'},
+                  {
+                    color: colors.redError,
+                    lineHeight: 22,
+                  },
                 ]}
               />
             </View>
@@ -573,16 +600,15 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         </View>
         <SafeAreaView style={{backgroundColor: colors.white}} />
       </View>
-    ),
-    [
-      modalAnimatedValue,
-      expirePt,
-      cashExpire,
-      beginDragAnimation,
-      renderExpireItem,
-      action.modal,
-    ],
-  );
+    );
+  }, [
+    modalAnimatedValue,
+    expirePt,
+    cashExpire,
+    beginDragAnimation,
+    renderExpireItem,
+    action.modal,
+  ]);
 
   const onPressFilter = useCallback(
     (key: string) => {
@@ -701,7 +727,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             <AppPrice
               price={utils.toCurrency(expirePt || 0, esimCurrency)}
               balanceStyle={[
-                appStyles.bold18Text,
+                appStyles.robotoBold18Text,
                 {color: colors.redError, lineHeight: 24},
               ]}
               currencyStyle={[

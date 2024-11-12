@@ -5,23 +5,31 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 
 const styles = StyleSheet.create({
   attach: {
-    width: attachmentSize,
-    height: attachmentSize,
     borderRadius: 3,
   },
 });
 
 type ImgWithIndicatorProps = {
   uri: string;
+  maxImageCnt: number;
 };
 
-const ImgWithIndicator: React.FC<ImgWithIndicatorProps> = ({uri}) => {
+const ImgWithIndicator: React.FC<ImgWithIndicatorProps> = ({
+  uri,
+  maxImageCnt = 3,
+}) => {
   const [loading, setLoading] = useState(false);
   return (
     <View>
       <Image
         source={{uri}}
-        style={styles.attach}
+        style={[
+          styles.attach,
+          {
+            width: attachmentSize(maxImageCnt),
+            height: attachmentSize(maxImageCnt),
+          },
+        ]}
         onLoadStart={() => setLoading(true)}
         onLoadEnd={() => setLoading(false)}
       />

@@ -615,6 +615,7 @@ const ApplyEvent: React.FC<ApplyEventProps> = ({
               keybd.current?.blur();
               linkKeybd.current?.blur();
             }}
+            type="event"
           />
         </View>
       </KeyboardAwareScrollView>

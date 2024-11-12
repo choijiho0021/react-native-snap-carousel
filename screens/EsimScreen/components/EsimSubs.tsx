@@ -18,7 +18,6 @@ import {bindActionCreators} from 'redux';
 import moment from 'moment';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useNavigation} from '@react-navigation/native';
-import {isPending} from '@reduxjs/toolkit';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -84,7 +83,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   infoCardTop: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16, // TODO : 국기 왼쪽 이미 여백 16으로 설정되어 있음
     paddingTop: 10,
   },
   infoRadiusBorderTop: {
@@ -99,7 +98,7 @@ const styles = StyleSheet.create({
   },
 
   infoCardBottom: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 10,
     paddingBottom: 8,
   },
@@ -137,10 +136,20 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-between',
   },
-  usageTitleNormal: {
+
+  inactiveLastContainer: {
+    marginBottom: 0,
+    flexDirection: 'row',
+    // alignItems: 'center',
+    width: '100%',
+    justifyContent: 'space-between',
+  },
+
+  usageExpireTitleBold: {
     ...appStyles.normal16Text,
     fontSize: isDeviceSize('small') ? 18 : 20,
     lineHeight: isDeviceSize('small') ? 26 : 28,
+    fontWeight: 'bold',
     color: colors.warmGrey,
   },
   usageTitleBold: {
@@ -600,7 +609,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               )
                 ? styles.reservedSubsTitle
                 : expired || mainSubs.giftStatusCd === 'S'
-                ? styles.usageTitleNormal
+                ? styles.usageExpireTitleBold
                 : styles.usageTitleBold,
               {
                 alignSelf: 'center',
@@ -689,7 +698,10 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
                 </AppText>
               </View>
             )}
-            <View style={styles.inactiveContainer}>
+            <View
+              style={
+                isBC ? styles.inactiveLastContainer : styles.inactiveContainer
+              }>
               <AppText style={{...styles.normal14Gray, fontWeight: '700'}}>
                 {i18n.t('imei2:esim')}
               </AppText>
@@ -697,7 +709,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
             </View>
 
             {!isBC && (
-              <View style={styles.inactiveContainer}>
+              <View style={styles.inactiveLastContainer}>
                 <AppText style={{...styles.normal14Gray, fontWeight: '700'}}>
                   {i18n.t('esim:activationDate')}
                 </AppText>
@@ -724,7 +736,12 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               </AppText>
             </View>
           )}
-          <View style={styles.inactiveContainer}>
+
+          {/* 마지막 항목은 marginBottom : 0 */}
+          <View
+            style={
+              isBC ? styles.inactiveLastContainer : styles.inactiveContainer
+            }>
             <AppText style={styles.normal14Gray}>
               {i18n.t('esim:usablePeriod')}
             </AppText>
@@ -738,7 +755,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           </View>
 
           {!isBC && (
-            <View style={styles.inactiveContainer}>
+            <View style={styles.inactiveLastContainer}>
               <AppText style={styles.normal14Gray}>
                 {i18n.t('esim:rechargeablePeriod')}
               </AppText>
@@ -924,7 +941,10 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         'vtdaily',
         'latotal',
       ].includes(mainSubs?.clMtd);
-    if (showHowModal)
+    if (showHowModal) {
+      // 하단에 버튼이 없을 때 redirectHk 마진과 박스 기본 마진이 합쳐지는 것 방지
+      const isMargin = sendable || isCharged || (!isBC && isChargeButton);
+
       return (
         <View>
           <Pressable
@@ -933,6 +953,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
               {
                 backgroundColor: colors.white,
               },
+              !isMargin && {marginBottom: 0},
             ]}
             onPress={() => {
               if (mainSubs?.clMtd) setShowHtcModal(true);
@@ -953,8 +974,9 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
           </Pressable>
         </View>
       );
+    }
     return null;
-  }, [mainSubs?.clMtd]);
+  }, [isBC, isChargeButton, isCharged, mainSubs?.clMtd, sendable]);
 
   const renderMvHtQr = useCallback(() => {
     if (mainSubs.daily === 'daily' && mainSubs.partner === 'ht')
@@ -1128,7 +1150,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
                   </View>
                 </View>
               ) : (
-                <View style={{height: 30}} />
+                <View style={{height: 28}} />
               )}
 
               {renderHkBtn()}
