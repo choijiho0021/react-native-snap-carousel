@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   },
   attachBox: {
     flexDirection: 'row',
-    marginBottom: 16,
+    marginTop: 12,
     gap: 4,
   },
   reply: {
@@ -79,9 +79,11 @@ const styles = StyleSheet.create({
   },
   respContainer: {
     backgroundColor: colors.gray4,
+    marginTop: 32,
     marginBottom: 12,
   },
   respEmptyContainer: {
+    marginTop: 32,
     backgroundColor: colors.gray4,
     alignItems: 'center',
     justifyContent: 'center',
