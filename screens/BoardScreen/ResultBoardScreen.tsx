@@ -40,11 +40,17 @@ const styles = StyleSheet.create({
     ...appStyles.medium14,
     lineHeight: 20,
     color: colors.warmGrey,
+    marginTop: 16,
+  },
+  questionView: {
+    flex: 1,
+    paddingHorizontal: 20,
+    backgroundColor: colors.white,
   },
   attachBox: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: 12,
+    // marginTop: 12, TODO
     gap: 4,
   },
   reply: {
@@ -57,12 +63,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flex: 1,
     justifyContent: 'space-between',
-    paddingVertical: 16,
+    paddingBottom: 16,
   },
   replyTitle: {
     ...appStyles.bold16Text,
     textAlign: 'left',
-    marginBottom: 10,
     color: colors.clearBlue,
     lineHeight: 24,
   },
@@ -96,6 +101,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     justifyContent: 'flex-start',
   },
+  respReplyTitleView: {flexDirection: 'row', gap: 4, marginBottom: 16},
   msgText: {
     ...appStyles.normal16Text,
     lineHeight: 24,
@@ -114,6 +120,7 @@ const styles = StyleSheet.create({
   status: {
     ...appStyles.semiBold14Text,
     lineHeight: 20,
+    marginTop: 16,
   },
   buttonText: {
     ...appStyles.medium18,
@@ -136,6 +143,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     marginTop: 6,
+    marginBottom: 12,
   },
 });
 
@@ -255,16 +263,14 @@ const ResultBoardScreen: React.FC<ResultBoardScreenProps> = ({
     return (
       <View style={styles.respContainer}>
         <View style={styles.resp}>
-          <View style={{flexDirection: 'row', gap: 4}}>
+          <View style={styles.respReplyTitleView}>
             <AppIcon
               name="iconSupport"
               style={{justifyContent: 'flex-start'}}
             />
             <AppText style={styles.replyTitle}>{i18n.t('board:resp')}</AppText>
           </View>
-          <View>
-            <AppText style={styles.reply}>{resp}</AppText>
-          </View>
+          <AppText style={styles.reply}>{resp}</AppText>
           {renderImages(issue?.replyImages)}
           {renderTime(issue?.changed)}
         </View>
@@ -278,12 +284,7 @@ const ResultBoardScreen: React.FC<ResultBoardScreenProps> = ({
         <AppBackButton title={title} />
       </View>
       <ScrollView style={styles.container}>
-        <View
-          style={{
-            flex: 1,
-            paddingHorizontal: 20,
-            backgroundColor: colors.white,
-          }}>
+        <View style={styles.questionView}>
           {showStatus && issue?.statusCode && (
             <EventStatusBox
               statusCode={issue.statusCode}
