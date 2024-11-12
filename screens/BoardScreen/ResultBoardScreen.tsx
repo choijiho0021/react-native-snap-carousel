@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
   },
   attachBox: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     marginTop: 12,
     gap: 4,
   },
