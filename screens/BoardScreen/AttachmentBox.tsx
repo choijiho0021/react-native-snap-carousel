@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   attachImageNotiText: {
     ...appStyles.bold12Text,
     color: colors.warmGrey,
-    lineHeight: 16,
+    lineHeight: 20,
   },
   essentialText: {
     ...appStyles.bold12Text,
@@ -190,10 +190,10 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
                 style={[
                   styles.attach,
                   {
-                    width: attachmentSize(maxImageCnt) + 2,
-                    height: attachmentSize(maxImageCnt) + 2,
+                    width: attachmentSize(maxImageCnt),
+                    height: attachmentSize(maxImageCnt),
                   },
-                  i < 2 ? {marginRight: 11.5} : undefined,
+                  i < maxImageCnt - 1 ? {marginRight: 11.5} : undefined,
                 ]}
                 key={utils.generateKey(`${image.url}${i}`)}
                 onPress={() => renderModal({imgUrl: image.url})}>
@@ -219,17 +219,17 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
             style={[
               styles.attach,
               {
-                width: attachmentSize(maxImageCnt) + 2,
-                height: attachmentSize(maxImageCnt) + 2,
+                width: attachmentSize(maxImageCnt) - 2,
+                height: attachmentSize(maxImageCnt),
               },
-              idx < 2 ? {marginRight: 11.5} : undefined,
+              idx < maxImageCnt - 1 ? {marginRight: 11.5} : undefined,
             ]}
             onPress={() => renderModal({att: image})}>
             <Image
               style={[
                 styles.imgSize,
                 {
-                  width: attachmentSize(maxImageCnt),
+                  width: attachmentSize(maxImageCnt) - 2,
                   height: attachmentSize(maxImageCnt),
                 },
               ]}
@@ -242,14 +242,15 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
             </Pressable>
           </Pressable>
         ))}
-        {(paramImages ? paramImages.length : 0) + attachment.size < 3 && (
+        {(paramImages ? paramImages.length : 0) + attachment.size <
+          maxImageCnt && (
           <Pressable
             key="add"
             style={[
               styles.attach,
               {
-                width: attachmentSize(maxImageCnt) + 2,
-                height: attachmentSize(maxImageCnt) + 2,
+                width: attachmentSize(maxImageCnt),
+                height: attachmentSize(maxImageCnt),
               },
               styles.plusButton,
             ]}
