@@ -13,6 +13,7 @@ import {AccountModelState} from '@/redux/modules/account';
 import ResultScreen from './BoardScreen/ResultScreen';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {BoardMsgStatus, RkbBoard} from '@/redux/api/boardApi';
+import ResultBoardScreen from './BoardScreen/ResultBoardScreen';
 
 // type BoardMsgRespScreenNavigationProp = StackNavigationProp<
 //   HomeStackParamList,
@@ -28,7 +29,6 @@ type BoardMsgRespScreenProps = {
   board: BoardModelState;
   account: AccountModelState;
   pending: boolean;
-
   action: {
     board: BoardAction;
   };
@@ -43,6 +43,7 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
   const route = useRoute<BoardMsgRespScreenRouteProp>();
   const [issue, setIssue] = useState<RkbBoard | undefined>(route?.params?.item);
   const resp = useMemo(() => board?.comment?.[0] || {}, [board?.comment]);
+  const type = useMemo(() => route?.params?.type, [route?.params?.type]);
 
   const getComment = useCallback(
     (uuid: string, status?: BoardMsgStatus) => {
@@ -75,10 +76,17 @@ const BoardMsgRespScreen: React.FC<BoardMsgRespScreenProps> = ({
     if (issue && !issue?.replyMsg) getComment(issue.uuid, status);
   }, [getComment, issue, route?.params]);
 
-  return (
+  return type === 'board' ? (
+    <ResultBoardScreen
+      issue={issue}
+      title={i18n.t('board:resp:title')}
+      resp={issue?.replyMsg || resp?.body}
+      pending={pending}
+    />
+  ) : (
     <ResultScreen
       issue={issue}
-      title={i18n.t('board:title')}
+      title={i18n.t('board:resp:title')}
       resp={issue?.replyMsg || resp?.body}
       pending={pending}
     />

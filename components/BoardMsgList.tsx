@@ -196,11 +196,13 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
         navigation.navigate('BoardMsgResp', {
           item,
           status: st as BoardMsgStatus,
+          type: 'board',
         });
       } else {
         navigation.navigate('BoardMsgResp', {
           item,
           status: 'Open',
+          type: 'board',
         });
       }
     },
@@ -310,6 +312,7 @@ const BoardMsgList: React.FC<BoardMsgListProps> = ({
         visible={showModal}
         title={i18n.t('board:inputPass')}
         maxLength={4}
+        secure
         titleViewStyle={{marginHorizontal: 30, marginTop: 14}}
         titleStyle={[appStyles.bold16Text, {lineHeight: 24}]}
         // valueType="pin"

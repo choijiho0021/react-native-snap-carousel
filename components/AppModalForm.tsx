@@ -56,6 +56,7 @@ type AppModalFormProps = {
   valueType?: ValidationKey;
   validate?: (v: string) => ValidationResult;
   validateAsync?: (v: string) => Promise<ValidationResult>;
+  secure?: boolean;
 } & AppModalProps;
 
 const AppModalForm: React.FC<AppModalFormProps> = ({
@@ -66,6 +67,7 @@ const AppModalForm: React.FC<AppModalFormProps> = ({
   valueType,
   validate,
   validateAsync,
+  secure = false,
   onOkClose = () => {},
   onCancelClose = () => {},
   ...props
@@ -129,6 +131,7 @@ const AppModalForm: React.FC<AppModalFormProps> = ({
           onChangeText={onChangeText}
           maxLength={maxLength}
           keyboardType={keyboardType}
+          secureTextEntry={secure}
           value={value}
         />
       </View>

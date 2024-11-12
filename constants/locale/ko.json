@@ -538,6 +538,7 @@
   "faq:etc": "기타",
 
   "board:title": "1:1 문의",
+  "board:resp:title": "문의 내역",
   "board:new": "문의 하기",
   "board:open": "문의 접수",
   "board:closed": "답변 완료",
@@ -567,6 +568,8 @@
   "board:Open": "답변 대기",
   "board:notLoggin:info": "비회원 정보",
   "board:notLoggin:body": "문의 내용",
+  "board:more": "더보기",
+  "board:resp:empty": "고객님의 <b>문의를 확인</b>하고 있어요.\n조금만 기다려주세요!",
 
   "board:phone:placeholder": "휴대폰 번호",
   "board:password:placeholder": "비밀번호",

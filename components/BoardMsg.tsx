@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const statusCode2Color: Record<string, string> = {
+export const statusCode2Color: Record<string, string> = {
   f: colors.redError,
   s: colors.shamrock,
   Closed: colors.clearBlue,
