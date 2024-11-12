@@ -56,6 +56,7 @@ import com.ninty.system.setting.SystemSettingPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.dooboolab.naverlogin.RNNaverLoginPackage;
 import com.rt2zz.reactnativecontacts.ReactNativeContacts;
+import com.johnsonsu.rnsoundplayer.RNSoundPlayerPackage;
 
 
 import com.zoyi.channel.plugin.android.ChannelIO;
@@ -218,6 +219,7 @@ public class MainApplication extends Application implements ReactApplication {
                             new RNCPickerPackage(),
                             new ReactNativeFirebaseAnalyticsPackage(),
                             new CookieManagerPackage(),
+                            new RNSoundPlayerPackage(), // sound player
                             new ReactNativeContacts() // react native contacts
 
 
