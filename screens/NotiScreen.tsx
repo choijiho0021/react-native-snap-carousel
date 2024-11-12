@@ -350,8 +350,9 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             } else {
               navigation.navigate('SimpleText', {
                 key: 'noti',
-                title: i18n.t('set:noti'),
-                bodyTitle,
+                title: i18n.t('set:notiDetail'),
+                created: moment(created),
+                bodyTitle: bodyTitle || title,
                 text: body,
                 mode: 'html',
               });
@@ -456,12 +457,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
               bodyTitle: bodyTitle || title,
               text: body,
               notiType,
-              mode:
-                type === notiActions.NOTI_TYPE_URI
-                  ? 'uri'
-                  : type === notiActions.NOTI_TYPE_DONATION
-                  ? 'page'
-                  : 'html',
+              mode: type === notiActions.NOTI_TYPE_URI ? 'uri' : 'page',
             });
             break;
         }
