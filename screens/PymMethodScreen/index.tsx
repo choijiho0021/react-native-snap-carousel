@@ -323,9 +323,9 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       }
     },
     [
-      action.account,
       action.cart,
-      action.product,
+      cartId,
+      cartItems,
       clickable,
       email,
       iccid,
@@ -336,7 +336,6 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       navigation,
       pymPrice?.value,
       pymReq?.rkbcash,
-      refreshProductInfo,
       rule,
       selected,
       token,
