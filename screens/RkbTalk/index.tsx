@@ -54,6 +54,7 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 import PhoneCertBox from './component/PhoneCertBox';
 import TalkMain from './component/TalkMain';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
+import api from '@/redux/api/api';
 
 const styles = StyleSheet.create({
   body: {
@@ -454,7 +455,25 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
                 navigation.navigate('TalkTariff');
               else if (called?.length <= ccode?.length + 2 || called === ccode)
                 AppAlert.info(i18n.t('talk:call:minLength'));
-              else if (called) makeCall(called);
+              else if (called) {
+                API.TalkApi.getRatePerMinute({mobile: realMobile, called}).then(
+                  (rsp) => {
+                    const {rate, unit} = rsp?.tariff || {};
+
+                    if (rsp?.result?.code === 0) {
+                      // rate === 0 일 경우, 무료 통화 | 60초 통화 가능
+                      if (rate === 0 || (60 * unit) / rate <= point)
+                        makeCall(called);
+                      else AppAlert.info(i18n.t('talk:call:checkPoint')); // 톡포인트 부족시
+                    } else if (rsp?.result === api.E_INVALID_STATUS)
+                      // 로깨비톡 서비스 OFF
+                      AppAlert.info(rsp?.desc, '', () =>
+                        navigation.navigate('HomeStack', {screen: 'Home'}),
+                      );
+                    else AppAlert.info(i18n.t('talk:call:minLength')); // 지역코드가 요율에 정의도지 않은 경우
+                  },
+                );
+              }
             }
           });
           break;
@@ -489,7 +508,17 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           break;
       }
     },
-    [called, ccode, checkMic, dtmfSession, makeCall, navigation, releaseCall],
+    [
+      called,
+      ccode,
+      checkMic,
+      dtmfSession,
+      makeCall,
+      navigation,
+      point,
+      realMobile,
+      releaseCall,
+    ],
   );
 
   // Options for SimpleUser
