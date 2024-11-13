@@ -15,10 +15,9 @@ import {
   CartModelState,
 } from '@/redux/modules/cart';
 import {
-  alertPayment,
   ProductAction,
   actions as productActions,
-  refreshProductInfo,
+  handlePaymentError,
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {PaymentInfo} from '@/redux/api/cartApi';
@@ -210,8 +209,14 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
                 );
             }
           } else {
-            refreshProductInfo(resp, cartItems, cartId);
-            alertPayment(resp, navigation, token, iccid);
+            handlePaymentError(
+              resp,
+              navigation,
+              cartItems,
+              token,
+              iccid,
+              cartId,
+            );
           }
         })
         .catch(() => {

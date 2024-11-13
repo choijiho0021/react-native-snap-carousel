@@ -167,7 +167,7 @@ export type HomeStackParamList = {
     paymentParams?: {
       key: string;
       pg: string;
-      token: string;
+      token?: string;
     };
   };
   CodePush: undefined;

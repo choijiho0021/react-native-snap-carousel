@@ -43,8 +43,7 @@ import {
   actions as productActions,
   ProductAction,
   ProductModelState,
-  refreshProductInfo,
-  alertPayment,
+  handlePaymentError,
 } from '@/redux/modules/product';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import DiscountInfo from '@/components/AppPaymentGateway/DiscountInfo';
@@ -280,8 +279,14 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
             });
           } else {
             setClickable(true);
-            refreshProductInfo(resp, cartItems, cartId);
-            alertPayment(resp, navigation, token, iccid);
+            handlePaymentError(
+              resp,
+              navigation,
+              cartItems,
+              token,
+              iccid,
+              cartId,
+            );
           }
         });
       } else {
