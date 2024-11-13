@@ -4,7 +4,7 @@ import Analytics from 'appcenter-analytics';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppAlert from '@/components/AppAlert';
 import AppButton from '@/components/AppButton';
@@ -190,6 +190,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [showInstallmentMonths, setShowInstallmentMonths] = useState(false);
   const [installmentMonths, setInstallmentMonths] = useState('0');
   const pymMethodRef = useRef<PymMethodRef>(null);
+  const dispatch = useDispatch();
   const creditCardList = useMemo(() => {
     return (
       rule.ccard?.map(([k, v]) => ({
@@ -283,6 +284,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               resp,
               navigation,
               cartItems,
+              dispatch,
               token,
               iccid,
               cartId,
@@ -332,6 +334,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       cartId,
       cartItems,
       clickable,
+      dispatch,
       email,
       iccid,
       installmentMonths,

@@ -276,6 +276,7 @@ const initialState: ProductModelState = {
 export const refreshProductInfo = (
   resp: any,
   cartItems: RkbOrderItem[],
+  dispatch: any,
   cartId?: number,
 ) => {
   const skuList = resp?.message.split(',');
@@ -293,24 +294,28 @@ export const refreshProductInfo = (
       });
   }
 
-  getAllProduct(true);
+  dispatch(getAllProduct(true));
 };
 
-export const alertPayment = (
+export const handlePaymentError = (
   resp: any,
   navigation: any,
+  cartItems: RkbOrderItem[],
+  dispatch: any,
   token?: string,
   iccid?: string,
+  cartId?: number,
 ) => {
   let text = 'cart:systemError';
+  refreshProductInfo(resp, cartItems, dispatch, cartId);
 
   if (resp.result === api.E_RESOURCE_NOT_FOUND) {
     text = 'cart:soldOut';
+  } else if (resp?.status === api.API_STATUS_CONFLICT) {
+    text = 'cart:paymentNotMatch';
   } else if (resp.result === api.E_STATUS_EXPIRED) {
     text = 'cart:unpublishedError';
     // product status is changed.
-  } else if (resp?.status === api.API_STATUS_CONFLICT) {
-    text = 'cart:paymentNotMatch';
   } else if (iccid && token) {
     // 결제 실패 통합
     // 캐시 및 포인트 업데이트,

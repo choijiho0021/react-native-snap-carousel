@@ -2,7 +2,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators, RootState} from 'redux';
 import Video from 'react-native-video';
 import moment from 'moment';
@@ -15,9 +15,9 @@ import {
   CartModelState,
 } from '@/redux/modules/cart';
 import {
+  handlePaymentError,
   ProductAction,
   actions as productActions,
-  handlePaymentError,
 } from '@/redux/modules/product';
 import i18n from '@/utils/i18n';
 import {PaymentInfo} from '@/redux/api/cartApi';
@@ -104,6 +104,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
   cart: {cartId, cartItems},
 }) => {
   const [isOrderReady, setIsOrderReady] = useState(false);
+  const dispatch = useDispatch();
   const pymInfo = useMemo(
     () =>
       ({
@@ -213,6 +214,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
               resp,
               navigation,
               cartItems,
+              dispatch,
               token,
               iccid,
               cartId,
@@ -238,6 +240,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
     pymInfo,
     vbank,
     iccid,
+    dispatch,
   ]);
 
   const renderLoading = useCallback(() => {
