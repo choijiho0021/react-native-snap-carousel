@@ -2,7 +2,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators, RootState} from 'redux';
 import Video from 'react-native-video';
 import moment from 'moment';
@@ -15,6 +15,7 @@ import {
   CartModelState,
 } from '@/redux/modules/cart';
 import {
+  handlePaymentError,
   ProductAction,
   actions as productActions,
 } from '@/redux/modules/product';
@@ -98,11 +99,12 @@ const styles = StyleSheet.create({
 const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
   route: {params},
   navigation,
-  account,
+  account: {token, iccid},
   action,
-  cart,
+  cart: {cartId, cartItems},
 }) => {
   const [isOrderReady, setIsOrderReady] = useState(false);
+  const dispatch = useDispatch();
   const pymInfo = useMemo(
     () =>
       ({
@@ -124,7 +126,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
         const resp = await API.Payment.getRokebiPayment({
           key: pymInfo.merchant_uid,
           pg: params.paymentRule?.[params.card || params.pay_method] || '',
-          token: account.token,
+          token,
         });
 
         if (resp.result === 0 && resp.objects?.[0]?.status === '00')
@@ -150,7 +152,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
           paymentParams: {
             key: pymInfo.merchant_uid,
             pg: params.paymentRule?.[params.card || params.pay_method] || '',
-            token: account.token,
+            token,
           },
           pay_method: params.pay_method,
           installmentMonths: params?.installmentMonths || '0',
@@ -160,7 +162,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       }
     },
     [
-      account.token,
+      token,
       action.cart,
       navigation,
       params.card,
@@ -192,42 +194,7 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
       action.cart
         .makeOrderAndPurchase(pymInfo)
         .then(({payload: resp}) => {
-          // 카드결제 탭이랑 같은 응답처리, 함수로 따로 뺴기.
-          if (!resp || resp.result < 0) {
-            let text = 'cart:systemError';
-            if (resp?.result === api.E_RESOURCE_NOT_FOUND)
-              text = 'cart:soldOut';
-            else if (resp?.result === api.E_STATUS_EXPIRED) {
-              text = 'cart:unpublishedError';
-
-              // product status is changed.
-              const skuList = resp?.message.split(',');
-              if (skuList?.length > 0 && cart.cartId) {
-                cart?.cartItems
-                  .filter((elm) => skuList.includes(elm.prod.sku))
-                  .forEach((elm) => {
-                    // remove it from the cart
-                    if (elm.orderItemId) {
-                      action.cart.cartRemove({
-                        orderId: cart.cartId,
-                        orderItemId: elm.orderItemId,
-                      });
-                    }
-                  });
-              }
-
-              action.product.getAllProduct(true);
-            } else if (resp?.status === api.API_STATUS_CONFLICT) {
-              action.product.getAllProduct(true);
-              text = 'cart:paymentNotMatch';
-            }
-            // else if (resp?.status === api.API_STATUS_PREFAILED)
-            //   text = 'cart:paymentNotMatch';
-            AppAlert.info(i18n.t(text), '', () => navigation.popToTop());
-
-            // AppAlert.info(i18n.t(text));
-            // navigation.popToTop();
-          } else {
+          if (resp?.result === 0) {
             setIsOrderReady(true);
             if (params.pay_method.startsWith('vbank')) {
               API.Payment.reqRokebiPaymentVBank({
@@ -235,13 +202,23 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
                   ...params,
                   pg: 'hecto',
                 },
-                token: account.token,
+                token,
               })
                 .then(vbank)
                 .catch((ex) =>
                   vbank(api.failure(api.E_INVALID_STATUS, ex.message)),
                 );
             }
+          } else {
+            handlePaymentError(
+              resp,
+              navigation,
+              cartItems,
+              dispatch,
+              token,
+              iccid,
+              cartId,
+            );
           }
         })
         .catch(() => {
@@ -251,17 +228,19 @@ const PaymentGatewayScreen: React.FC<PaymentGatewayScreenProps> = ({
         });
     }
   }, [
-    account.token,
+    token,
     action.cart,
     action.product,
     callback,
-    cart.cartId,
-    cart?.cartItems,
+    cartId,
+    cartItems,
     navigation,
     params,
     params.isPaid,
     pymInfo,
     vbank,
+    iccid,
+    dispatch,
   ]);
 
   const renderLoading = useCallback(() => {

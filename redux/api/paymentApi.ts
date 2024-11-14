@@ -182,7 +182,7 @@ const getRokebiPayment = ({
 }: {
   key: string;
   pg?: string;
-  token: string;
+  token?: string;
 }) => {
   return api.callHttpPost(
     `${api.httpUrl(api.path.rokApi.rokebi.payment)}?_format=json`,
@@ -204,6 +204,9 @@ const reqRokebiPaymentVBank = ({
   params: PaymentParams;
   token?: string;
 }) => {
+  if (!token)
+    return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: token');
+
   return api.callHttpPost<RkbPaymentVBankResult>(
     `${api.httpUrl(api.path.rokApi.rokebi.vbank)}?_format=json`,
     JSON.stringify(params),

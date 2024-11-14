@@ -4,7 +4,7 @@ import Analytics from 'appcenter-analytics';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import AppAlert from '@/components/AppAlert';
 import AppButton from '@/components/AppButton';
@@ -43,6 +43,7 @@ import {
   actions as productActions,
   ProductAction,
   ProductModelState,
+  handlePaymentError,
 } from '@/redux/modules/product';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import DiscountInfo from '@/components/AppPaymentGateway/DiscountInfo';
@@ -174,7 +175,7 @@ const defaultCardList = [
 const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   navigation,
   route,
-  account: {mobile, email, token, isSupportDev},
+  account: {mobile, email, token, isSupportDev, iccid},
   cart: {cartId, cartItems, pymPrice, pymReq, purchaseItems},
   info: {infoMap},
   product: {rule},
@@ -189,6 +190,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   const [showInstallmentMonths, setShowInstallmentMonths] = useState(false);
   const [installmentMonths, setInstallmentMonths] = useState('0');
   const pymMethodRef = useRef<PymMethodRef>(null);
+  const dispatch = useDispatch();
   const creditCardList = useMemo(() => {
     return (
       rule.ccard?.map(([k, v]) => ({
@@ -277,34 +279,16 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
               mode,
             });
           } else {
-            let text = 'cart:systemError';
             setClickable(true);
-            if (resp.result === api.E_RESOURCE_NOT_FOUND) {
-              text = 'cart:soldOut';
-            } else if (resp.result === api.E_STATUS_EXPIRED) {
-              text = 'cart:unpublishedError';
-              // product status is changed.
-              const skuList = resp?.message.split(',');
-              if (skuList?.length > 0 && cartId) {
-                cartItems
-                  .filter((elm) => skuList.includes(elm.prod.sku))
-                  .forEach((elm) => {
-                    // remove it from the cart
-                    if (elm.orderItemId) {
-                      action.cart.cartRemove({
-                        orderId: cartId,
-                        orderItemId: elm.orderItemId,
-                      });
-                    }
-                  });
-              }
-
-              action.product.getAllProduct(true);
-            } else if (resp?.status === api.API_STATUS_CONFLICT) {
-              action.product.getAllProduct(true);
-              text = 'cart:paymentNotMatch';
-            }
-            AppAlert.info(i18n.t(text), '', () => navigation.popToTop());
+            handlePaymentError(
+              resp,
+              navigation,
+              cartItems,
+              dispatch,
+              token,
+              iccid,
+              cartId,
+            );
           }
         });
       } else {
@@ -347,11 +331,12 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
     },
     [
       action.cart,
-      action.product,
       cartId,
       cartItems,
       clickable,
+      dispatch,
       email,
+      iccid,
       installmentMonths,
       isSupportDev,
       mobile,
@@ -361,6 +346,7 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
       pymReq?.rkbcash,
       rule,
       selected,
+      token,
     ],
   );
 

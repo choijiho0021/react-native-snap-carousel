@@ -4,7 +4,7 @@ import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
 import moment from 'moment';
-import {API, Country} from '@/redux/api';
+import {API} from '@/redux/api';
 import {
   Currency,
   DescData,
@@ -16,12 +16,16 @@ import {
 import {actions as PromotionActions} from './promotion';
 import utils from '@/redux/api/utils';
 import {retrieveData, storeData} from '@/utils/utils';
-import {reloadOrCallApi} from '@/redux/api/api';
+import api, {reloadOrCallApi} from '@/redux/api/api';
 import Env from '@/environment';
 import {RkbOrderItem} from '../api/cartApi';
 import {PurchaseItem} from '../models/purchaseItem';
 import {OrderItemType} from '../api/orderApi';
 import VersionCheck from 'react-native-version-check';
+import {actions as CartActions} from './cart';
+import AppAlert from '@/components/AppAlert';
+import i18n from '@/utils/i18n';
+import {actions as AccountActions} from './account';
 
 const {cachePrefix} = Env.get();
 
@@ -100,6 +104,7 @@ const getAllProduct = createAsyncThunk(
   'product/getAllProduct',
   async (reload: boolean, thunkAPI) => {
     const params = await getParams();
+
     return reloadOrCallApi(
       'cache.allProd',
       params,
@@ -266,6 +271,57 @@ const initialState: ProductModelState = {
     },
   },
   devList: [],
+};
+
+export const refreshProductInfo = (
+  resp: any,
+  cartItems: RkbOrderItem[],
+  dispatch: any,
+  cartId?: number,
+) => {
+  const skuList = resp?.message.split(',');
+  if (skuList?.length > 0 && cartId) {
+    cartItems
+      .filter((elm) => skuList.includes(elm.prod.sku))
+      .forEach((elm) => {
+        // remove it from the cart
+        if (elm.orderItemId) {
+          CartActions.cartRemove({
+            orderId: cartId,
+            orderItemId: elm.orderItemId,
+          });
+        }
+      });
+  }
+
+  dispatch(getAllProduct(true));
+};
+
+export const handlePaymentError = (
+  resp: any,
+  navigation: any,
+  cartItems: RkbOrderItem[],
+  dispatch: any,
+  token?: string,
+  iccid?: string,
+  cartId?: number,
+) => {
+  let text = 'cart:systemError';
+  refreshProductInfo(resp, cartItems, dispatch, cartId);
+
+  if (resp.result === api.E_RESOURCE_NOT_FOUND) {
+    text = 'cart:soldOut';
+  } else if (resp?.status === api.API_STATUS_CONFLICT) {
+    text = 'cart:paymentNotMatch';
+  } else if (resp.result === api.E_STATUS_EXPIRED) {
+    text = 'cart:unpublishedError';
+    // product status is changed.
+  } else if (iccid && token) {
+    // 결제 실패 통합
+    // 캐시 및 포인트 업데이트,
+    AccountActions.getAccount({iccid, token});
+  }
+  AppAlert.info(i18n.t(text), '', () => navigation.popToTop());
 };
 
 const reduceProdByLocalOp = (state, action) => {
