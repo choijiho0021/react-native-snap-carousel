@@ -50,6 +50,8 @@ const styles = StyleSheet.create({
   attachBox: {
     marginHorizontal: 20,
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    rowGap: 10,
   },
   attach: {
     overflow: 'hidden',
@@ -84,6 +86,8 @@ type AttachmentBoxProps = {
   onPress?: () => void;
   type: 'board' | 'event';
 };
+
+const maxRowImage = 3;
 
 const AttachmentBox: React.FC<AttachmentBoxProps> = ({
   selectedEvent,
@@ -219,8 +223,8 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
             style={[
               styles.attach,
               {
-                width: attachmentSize(maxImageCnt) - 2,
-                height: attachmentSize(maxImageCnt),
+                width: attachmentSize(maxRowImage) - 2,
+                height: attachmentSize(maxRowImage),
               },
               idx < maxImageCnt - 1 ? {marginRight: 11.5} : undefined,
             ]}
@@ -229,8 +233,8 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
               style={[
                 styles.imgSize,
                 {
-                  width: attachmentSize(maxImageCnt) - 2,
-                  height: attachmentSize(maxImageCnt),
+                  width: attachmentSize(maxRowImage) - 2,
+                  height: attachmentSize(maxRowImage),
                 },
               ]}
               source={{uri: `data:${image.mime};base64,${image.data}`}}
@@ -249,8 +253,8 @@ const AttachmentBox: React.FC<AttachmentBoxProps> = ({
             style={[
               styles.attach,
               {
-                width: attachmentSize(maxImageCnt),
-                height: attachmentSize(maxImageCnt),
+                width: attachmentSize(maxRowImage),
+                height: attachmentSize(maxRowImage),
               },
               styles.plusButton,
             ]}
