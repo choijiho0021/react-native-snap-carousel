@@ -320,12 +320,16 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
       const currentMapContacts = mapContacts;
       const currentContacts = contacts;
 
-      const txtNumber = (utils.stringToNumber(text) || '').toString();
       const txt = text.toLowerCase();
       const searcher = new Hangul.Searcher(text);
       const chosung: string[] = [];
       setHighlight(new Map());
       let currentSearchResult = [];
+
+      const txtNumber = text
+        ?.split('')
+        ?.map((t) => `${utils.stringToNumber(t)}`)
+        .join('');
 
       if (text?.length > 0) {
         // 한글일 경우 초성검색 또는 한글 검색
@@ -381,6 +385,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
         }
       }
 
+      // 전체 숫자인지 확인
       if (!_.isEmpty(txtNumber) && text.length === txtNumber.length) {
         const phone = currentContacts.filter(
           (item) =>
