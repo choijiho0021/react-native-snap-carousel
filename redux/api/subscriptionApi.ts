@@ -136,8 +136,9 @@ export type UsageObj = {
 };
 
 export type UsageOptionObj = {
-  mode?: String[]; // stu: 상태값 출력, usa: 현재 사용량 보여줌, end : 상품 종료시간 보여줌
+  mode?: string[]; // stu: 상태값 출력, usa: 현재 사용량 보여줌, end : 상품 종료시간 보여줌
   ret?: string;
+  usaImg?: string;
 };
 
 export type Usage = {

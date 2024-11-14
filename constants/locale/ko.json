@@ -881,6 +881,7 @@
   "esim:caution:daily:exhausted": "데이터가 모두 소진되어\n<b>현재 저속구간입니다.</b>",
   "esim:caution:daily:reqCharge": "일 데이터가 얼마 남지 않았어요.\n<b>저속구간이 되기 전에 용량을 충전해 보세요!</b>",
   "esim:caution:notShow": "<b>본 상품은 사용량 조회를 제공하지 않습니다.</b>",
+  "esim:caution:allday": "<b>하루 종일 데이터 걱정 없는 올데이 무제한 상품을 사용하고 있어요!</b>",
   "esim:prodInfo": "상품 상세",
   "esim:notShowUsage": "본 상품은 사용량 조회를 제공하지 않습니다.",
   "esim:ErrorShowUsage1": "시스템 오류로 인해",
