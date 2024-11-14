@@ -556,12 +556,15 @@ const QrInfoScreen = () => {
           </View>
           <AppIcon name={`DeviceReg${cardState}`} style={{marginTop: 24}} />
         </View>
-        {/* 이미지가 붙은 경우 자동 줄바꿈에 문제가 있는데 어떻게?  */}
         {(['R', 'E', 'DE', 'D'].includes(cardState) || isFail) && (
-          <View style={[styles.cardCheckDesc, {width: '95%'}]}>
+          <View style={styles.cardCheckDesc}>
             <AppSvgIcon
               name={isFail || cardState === 'D' ? 'regCardWarn' : 'regCardInfo'}
-              style={{marginRight: 4, top: 2}}
+              style={{
+                marginRight: 4,
+                top: 1,
+                alignSelf: 'center',
+              }}
             />
             <AppStyledText
               textStyle={styles.cardCheckDescTxt}

@@ -520,7 +520,6 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   const expirePtModalBody = useCallback(() => {
     console.log('@@@ modalAnimatedValue : ', modalAnimatedValue);
 
-    // ios 는 50정도 더 높아야한다?? 여러 단말로 확인 필요?
     const modalMarginTop =
       windowHeight -
       (Platform.OS === 'ios' ? 350 : 300) -
@@ -536,12 +535,20 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             stickyHeaderIndices={[0]}
             style={{
               backgroundColor: colors.white,
-              marginTop: modalMarginTop < 56 ? 56 : modalMarginTop, // animated value?
+              marginTop: modalMarginTop < 56 ? 56 : modalMarginTop,
+              borderTopLeftRadius: 8,
+              borderTopRightRadius: 8,
             }}>
-            {/* TODO : 확인 필요 Radius 미동작  */}
             <LinearGradient
               colors={[colors.white, 'rgba(255, 255, 255, 0.1)']}
-              style={styles.topGradient}
+              style={[
+                styles.topGradient,
+                {
+                  borderTopLeftRadius: 8,
+                  borderTopRightRadius: 8,
+                  overflow: 'hidden',
+                },
+              ]}
             />
 
             <AppText
