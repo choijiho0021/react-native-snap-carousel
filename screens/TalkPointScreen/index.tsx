@@ -888,7 +888,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackbar(false)}
-        textMessage={i18n.t('cashHistory:snackbar')}
+        textMessage={i18n.t('talk:snackbar')}
       />
 
       <AppActivityIndicator visible={pending || false} />
