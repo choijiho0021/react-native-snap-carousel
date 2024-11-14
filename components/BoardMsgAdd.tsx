@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   inputBox: {
-    ...appStyles.normal14Text,
+    ...appStyles.medium16,
     marginHorizontal: 20,
     height: 54,
     borderRadius: 3,
@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
     color: colors.black,
     paddingHorizontal: 16,
+    lineHeight: 24,
   },
   notiView: {
     flexDirection: 'row',
@@ -358,7 +359,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
                 paddingHorizontal: 16,
                 textAlignVertical: 'top',
               },
-              msg ? {borderColor: colors.black} : undefined,
+              msg ? {borderColor: colors.clearBlue} : undefined,
             ]}
             ref={keybd}
             placeholder={i18n.t('board:inputBox:placeholder')}
