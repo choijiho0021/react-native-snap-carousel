@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
-    backgroundColor: colors.aliceBlue,
     alignItems: 'center',
     height: 56,
   },
@@ -549,7 +548,8 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
                 appStyles.medium16,
                 {color: colors.warmGrey, marginRight: 6},
               ]}>
-              {item?.expire_at?.format('YYYY.MM.DD') + i18n.t('sim:until')}
+              {moment.utc(item?.expire_at).format('YYYY.MM.DD') +
+                i18n.t('sim:until')}
             </AppText>
             <AppText style={[appStyles.bold14Text, {color: colors.redError}]}>
               {`D-${dDay}`}

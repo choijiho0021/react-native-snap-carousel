@@ -24,6 +24,20 @@ const getCheckFirstReward = ({iccid}: {iccid: string}) => {
   );
 };
 
+const getRatePerMinute = ({
+  mobile,
+  called,
+}: {
+  mobile: string;
+  called: string;
+}) => {
+  return api.callHttpGet(
+    `${api.httpUrl(
+      api.path.rokApi.rokebi.talk,
+    )}/${mobile}?_format=json&rate&called=${called}`,
+  );
+};
+
 export type TalkSign = 'add' | 'deduct' | 'refund' | 'charge' | 'reward';
 
 const patchTalkPoint = ({
@@ -158,4 +172,5 @@ export default {
   getTariff,
   getEmgInfo,
   getCheckFirstReward,
+  getRatePerMinute,
 };

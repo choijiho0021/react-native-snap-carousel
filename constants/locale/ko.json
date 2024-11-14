@@ -1877,6 +1877,7 @@
 
   "talk": "통화",
   "talk:call:minLength": "전화 번호를 다시 확인해 주세요.",
+  "talk:call:checkPoint": "톡포인트가 부족하여 통화 서비스를 이용할 수 없어요.\n상품을 구매 또는 발권해서 톡포인트를 적립해 보세요!",
   "talk:free": "무료통화",
   "talk:speaker": "스피커폰",
   "talk:keypad": "키패드",

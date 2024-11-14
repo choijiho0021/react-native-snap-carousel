@@ -130,6 +130,7 @@ type TalkContactScreenProps = {
   navigation: TalkContactScreenNavigationProp;
   route: TalkContactScreenRouteProp;
   talk: TalkModelState;
+  pending: boolean;
   action: {
     talk: TalkAction;
   };
@@ -139,6 +140,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
   navigation,
   route: {params},
   talk: {contacts},
+  pending,
   action,
 }) => {
   const [showContacts, setShowContacts] = useState(false);
@@ -502,12 +504,14 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
         sections={searchResult}
         renderItem={renderContactList}
         renderSectionHeader={renderSectionHeader}
+        refreshing={pending}
         ListEmptyComponent={<EmptyResult />}
       />
     );
   }, [
     contacts?.length,
     onScroll,
+    pending,
     renderContactList,
     renderSectionHeader,
     renderSectionListHeader,
@@ -528,14 +532,15 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
         />
       </View>
       {showContacts && !_.isEmpty(searchText) && <View style={{height: 24}} />}
-      {showContacts ? contactsView() : beforeSync()}
+      {!pending && (showContacts ? contactsView() : beforeSync())}
     </SafeAreaView>
   );
 };
 
 export default connect(
-  ({talk}: RootState) => ({
+  ({talk, status}: RootState) => ({
     talk,
+    pending: status.pending[talkActions.getContacts.typePrefix] || false,
   }),
   (dispatch) => ({
     action: {
