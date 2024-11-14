@@ -2112,6 +2112,29 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  btnBoxOpen: [
+    <Svg
+      width={20}
+      height={20}
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#qytxlszapa)">
+        <Path d="M0 0h20v20H0V0z" fill="#000" fillOpacity={0.4} />
+        <Path
+          d="M5.05 5.05h4m-4 0v4m0-4l9.9 9.9m0 0v-4m0 4h-4"
+          stroke="#fff"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="qytxlszapa">
+          <Path fill="#fff" d="M0 0h20v20H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
   btnBoxCancel: [
     <Svg
       width="20"
@@ -2132,13 +2155,21 @@ const pressIcons: Record<string, React.ReactElement[]> = {
   ],
   btnPhotoPlus: [
     <Svg
-      width="19"
-      height="19"
-      viewBox="0 0 19 19"
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
-      <Path fill="#2C2C2C" d="M0 9h19v1H0z" />
-      <Path fill="#2C2C2C" d="M10 0v19H9V0z" />
+      <Rect x="1" y="9" width="18" height="2" rx="1" fill="#2C2C2C" />
+      <Rect
+        x="11"
+        y="1"
+        width="18"
+        height="2"
+        rx="1"
+        transform="rotate(90 11 1)"
+        fill="#2C2C2C"
+      />
     </Svg>,
   ],
   btnReply: [
