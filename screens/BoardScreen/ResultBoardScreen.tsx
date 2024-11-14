@@ -25,7 +25,6 @@ import utils from '@/redux/api/utils';
 import {actions as boardActions} from '@/redux/modules/board';
 import {actions as eventBoardActions} from '@/redux/modules/eventBoard';
 import i18n from '@/utils/i18n';
-import ImgWithIndicator from './ImgWithIndicator';
 import EventStatusBox from './EventStatusBox';
 import {RkbBoardBase} from '@/redux/api/boardApi';
 import ImageListModal from './ImageListModal';
@@ -34,6 +33,7 @@ import AppSnackBar from '@/components/AppSnackBar';
 import {statusCode2Color} from '@/components/BoardMsg';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import AppStyledText from '@/components/AppStyledText';
+import ImgWithIndicator from './ImgWithIndicator';
 
 const styles = StyleSheet.create({
   date: {
@@ -46,16 +46,18 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     backgroundColor: colors.white,
+    paddingBottom: 32,
   },
   attachBox: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    // marginTop: 12, TODO
+    marginTop: 12,
     gap: 4,
   },
   reply: {
     ...appStyles.normal16Text,
     color: colors.black,
+    fontWeight: 'normal',
     lineHeight: 24,
     letterSpacing: -0.16,
   },
@@ -73,7 +75,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.gray4,
   },
   inputBox: {
     ...appStyles.medium16,
@@ -85,7 +87,6 @@ const styles = StyleSheet.create({
   },
   respContainer: {
     backgroundColor: colors.gray4,
-    marginTop: 32,
     marginBottom: 12,
   },
   respEmptyContainer: {
@@ -104,6 +105,7 @@ const styles = StyleSheet.create({
   respReplyTitleView: {flexDirection: 'row', gap: 4, marginBottom: 16},
   msgText: {
     ...appStyles.normal16Text,
+    fontWeight: 'normal',
     lineHeight: 24,
     letterSpacing: -0.16,
     marginTop: 12,
@@ -143,7 +145,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     marginTop: 6,
-    marginBottom: 12,
   },
 });
 
@@ -188,7 +189,7 @@ const ResultBoardScreen: React.FC<ResultBoardScreenProps> = ({
   }, [eventList, issue?.eventId]);
 
   const renderImages = useCallback(
-    (images?: string[]) => (
+    (images?: string[], showBtn?: boolean) => (
       <View>
         <View style={styles.attachBox}>
           {images &&
@@ -202,7 +203,8 @@ const ResultBoardScreen: React.FC<ResultBoardScreenProps> = ({
                     setImgIndex(i);
                   }}>
                   <ImgWithIndicator
-                    maxImageCnt={5}
+                    maxImageCnt={3}
+                    showBtn={showBtn}
                     uri={API.default.httpImageUrl(url).toString()}
                   />
                 </Pressable>
@@ -270,8 +272,8 @@ const ResultBoardScreen: React.FC<ResultBoardScreenProps> = ({
             />
             <AppText style={styles.replyTitle}>{i18n.t('board:resp')}</AppText>
           </View>
-          <AppText style={styles.reply}>{resp}</AppText>
-          {renderImages(issue?.replyImages)}
+          <AppText style={styles.reply}>{resp?.trimEnd()}</AppText>
+          {renderImages(issue?.replyImages, true)}
           {renderTime(issue?.changed)}
         </View>
       </View>
@@ -333,10 +335,9 @@ const ResultBoardScreen: React.FC<ResultBoardScreenProps> = ({
         </View>
 
         {resp ? renderResp() : renderRespEmpty()}
-
         <AppActivityIndicator visible={pending} />
+        <View style={{flex: 1, backgroundColor: colors.gray4}} />
       </ScrollView>
-
       <View style={{flexDirection: 'row'}}>
         <AppButton
           style={[
