@@ -292,7 +292,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
                   {
                     fontWeight: '400',
                     alignSelf: 'center',
-                    marginVertical: 3,
+                    marginVertical: 6,
                   },
                 ]}
               />
