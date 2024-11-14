@@ -451,6 +451,7 @@ const toGroupByTitle = (v: RkbPriceInfo[], prodCountry: string[]) => {
           acc[idx].minPrice.value,
           cur.minPrice.value,
         );
+        acc[idx].maxDiscount = Math.max(acc[idx].maxDiscount, cur.maxDiscount);
         return acc;
       }, [] as RkbPriceInfo[])
       // search 검색어 추가 elm.search는 홈화면에서 보이는 title
