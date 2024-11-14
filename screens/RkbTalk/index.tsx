@@ -45,6 +45,7 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
+import api from '@/redux/api/api';
 import {API} from '@/redux/api';
 import {RootState} from '@/redux';
 import {HomeStackParamList} from '@/navigation/navigation';
@@ -54,7 +55,6 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 import PhoneCertBox from './component/PhoneCertBox';
 import TalkMain from './component/TalkMain';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
-import api from '@/redux/api/api';
 
 const styles = StyleSheet.create({
   body: {
@@ -459,11 +459,11 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
                 API.TalkApi.getRatePerMinute({mobile: realMobile, called}).then(
                   (rsp) => {
                     const {rate, unit} = rsp?.tariff || {};
+                    const r = rate / 100;
 
                     if (rsp?.result?.code === 0) {
                       // rate === 0 일 경우, 무료 통화 | 60초 통화 가능
-                      if (rate === 0 || (60 * unit) / rate <= point)
-                        makeCall(called);
+                      if (r === 0 || (60 * r) / unit <= point) makeCall(called);
                       else AppAlert.info(i18n.t('talk:call:checkPoint')); // 톡포인트 부족시
                     } else if (rsp?.result === api.E_INVALID_STATUS)
                       // 로깨비톡 서비스 OFF
