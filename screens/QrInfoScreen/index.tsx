@@ -570,7 +570,13 @@ const QrInfoScreen = () => {
                   ? 'qrInfo:cardCheck:desc:fail'
                   : `qrInfo:cardCheck:desc:${cardState}`,
               )}
-              format={{b: {color: colors.redError}}}
+              format={{
+                b: {
+                  color: ['E', 'DE'].includes(cardState)
+                    ? colors.clearBlue
+                    : colors.redError,
+                },
+              }}
             />
           </View>
         )}

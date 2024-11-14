@@ -119,23 +119,6 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
     }
   }, [checkPhotoPermission, loggedIn, navigation]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      if (!loggedIn) {
-        navigation.navigate('RegisterMobile', {
-          goBack: () => navigation.goBack(),
-        });
-      } else {
-        action.order.getOrders({
-          user: mobile,
-          token,
-          page: 0,
-        });
-        flatListRef.current?.scrollToOffset({animated: false, offset: 0});
-      }
-    }, [loggedIn, navigation, action.order, mobile, token]),
-  );
-
   const onRefresh = useCallback(() => {
     setRefreshing(true);
 
@@ -151,6 +134,19 @@ const MyPageScreen: React.FC<MyPageScreenProps> = ({
       }
     });
   }, [action.account, action.order, iccid, mobile, token]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!loggedIn) {
+        navigation.navigate('RegisterMobile', {
+          goBack: () => navigation.goBack(),
+        });
+      } else {
+        onRefresh();
+        flatListRef.current?.scrollToOffset({animated: false, offset: 0});
+      }
+    }, [loggedIn, navigation, onRefresh]),
+  );
 
   const getNextOrder = useCallback(() => {
     if (orderList.length > 0) {

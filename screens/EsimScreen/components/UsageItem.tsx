@@ -515,7 +515,11 @@ const UsageItem: React.FC<UsageItemProps> = ({
           <View style={{flexDirection: 'row'}}>
             <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
             <AppText style={styles.warning}>
-              {i18n.t('esim:caution:usage')}
+              {i18n.t(
+                item.daily === 'daily'
+                  ? 'esim:caution:usage:daily'
+                  : 'esim:caution:usage:total',
+              )}
             </AppText>
           </View>
         )}
@@ -523,7 +527,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         {clMtdTxt()}
       </View>
     );
-  }, [clMtdTxt, showUsage, warningDotTxt]);
+  }, [clMtdTxt, item.daily, showUsage, warningDotTxt]);
 
   const usageRender = useCallback(() => {
     return (

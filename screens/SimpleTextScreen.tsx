@@ -460,11 +460,11 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
           showCloseModal={showCloseModal}
         />
       </View>
-      {mode === 'page' && renderContentTitle()}
+      {renderContentTitle()}
       {defineSource(mode)}
       <AppActivityIndicator visible={pending || loading} />
       {!rule?.sku?.startsWith('event-multi') &&
-        (mode === 'page' ? (
+        (notiType.startsWith('dona') ? (
           <View style={styles.buttonBox}>
             <AppButton
               style={styles.btnClose}
