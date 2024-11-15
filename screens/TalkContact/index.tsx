@@ -219,7 +219,15 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
           _.isEmpty(double) ? v.key === disassemble[0][0] : v.key === value[0],
         );
 
-        if (_.isEmpty(findSection)) return;
+        if (_.isEmpty(findSection)) {
+          // matching 안된 것들 중 첫 글자가 한글이 아닐 경우 > #에 추가
+          if (!checkKor.test(item.givenName[0])) {
+            const other = section?.find((a) => a.key === '#');
+            ko.push(removeDup(other, item));
+          }
+          // 이외의 경우는 pass
+          return;
+        }
         ko.push(removeDup(findSection, item));
       });
 
