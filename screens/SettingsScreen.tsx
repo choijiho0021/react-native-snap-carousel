@@ -286,41 +286,31 @@ const SettingsScreen: React.FC<SettingsScreenProps> = (props) => {
   );
 
   const logout = useCallback(() => {
-    API.Account.changeRealMobile({iccid, token, realMobile: ''}).then(() => {
-      Promise.all([
-        action.cart.reset(),
-        action.order.reset(),
-        action.noti.init({mobile: undefined}),
-        action.account.logout(),
-      ]).then(async () => {
-        navigation.navigate('HomeStack', {screen: 'Home'});
-        // TODO : check social login
-        if (Platform.OS === 'ios')
-          PushNotificationIOS.setApplicationIconBadgeNumber(0);
-        else {
-          ShortcutBadge.setCount(0);
-          // const isSignedin = await GoogleSignin.isSignedIn();
-          // if (isSignedin) {
-          //   try {
-          //     GoogleSignin.signOut();
-          //   } catch (e) {
-          //     console.error(e);
-          //   }
-          // }
-        }
+    Promise.all([
+      action.cart.reset(),
+      action.order.reset(),
+      action.noti.init({mobile: undefined}),
+      action.account.logout(),
+    ]).then(async () => {
+      navigation.navigate('HomeStack', {screen: 'Home'});
+      // TODO : check social login
+      if (Platform.OS === 'ios')
+        PushNotificationIOS.setApplicationIconBadgeNumber(0);
+      else {
+        ShortcutBadge.setCount(0);
+        // const isSignedin = await GoogleSignin.isSignedIn();
+        // if (isSignedin) {
+        //   try {
+        //     GoogleSignin.signOut();
+        //   } catch (e) {
+        //     console.error(e);
+        //   }
+        // }
+      }
 
-        setShowModal(false);
-      });
+      setShowModal(false);
     });
-  }, [
-    action.account,
-    action.cart,
-    action.noti,
-    action.order,
-    iccid,
-    navigation,
-    token,
-  ]);
+  }, [action.account, action.cart, action.noti, action.order, navigation]);
 
   const renderItem = useCallback(
     ({item}: {item: SettingsItem}) => (

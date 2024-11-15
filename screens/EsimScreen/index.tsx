@@ -67,10 +67,8 @@ import {
 import AppButton from '@/components/AppButton';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import LotteryButton from '../LotteryScreen/component/LotteryButton';
-import Triangle from '@/components/Triangle';
 import {windowWidth} from '@/constants/SliderEntry.style';
 import TalkRewardModal from '../RkbTalk/component/TalkRewardModal';
-import talkApi from '@/redux/api/talkApi';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -230,12 +228,6 @@ type EsimScreenProps = {
     talk: TalkAction;
   };
 };
-
-// export const USAGE_TIME_INTERVAL = {
-//   cmi: 9,
-//   quadcell: 1,
-//   billionconnect: 1,
-// };
 
 export const renderInfo = (navigation, isReserving, fortune?: Fortune) => {
   // 근데 발송중 말고 운세 다시보기로 바뀌면 출력 안해야 정상 아닌가? 질문 필요
@@ -405,7 +397,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
 
   const onRefresh = useCallback(
     // hidden : true (used 상태인 것들 모두) , false (pending, reserve 상태 포함 하여 hidden이 false 것들만)
-    (hidden: boolean, reset?: boolean, subsId?: string, actionStr?: string) => {
+    (hidden: boolean, reset?: boolean, subsId?: string) => {
       if (iccid) {
         setRefreshing(true);
 

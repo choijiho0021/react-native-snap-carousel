@@ -263,10 +263,12 @@ const logInAndGetAccount = createAsyncThunk(
       mobile,
       pin,
       iccid,
+      isAuto = true,
     }: {
       mobile?: string;
       pin?: string;
       iccid?: string;
+      isAuto?: boolean;
     },
     {dispatch, getState},
   ) => {
@@ -288,6 +290,8 @@ const logInAndGetAccount = createAsyncThunk(
           await storeData(API.User.KEY_MOBILE, obj.current_user.name, true);
           await storeData(API.User.KEY_PIN, pin, true);
 
+          const token = await userApi.getToken();
+
           // Account 정보를 가져온 후 Token 값이 다르면 Disconnect
           const getAccountWithDisconnect = (account: {
             iccid: string;
@@ -298,6 +302,14 @@ const logInAndGetAccount = createAsyncThunk(
                 account: {old_deviceToken},
               } = getState() as RootState;
 
+              // 수동로그인 시 realMobile 초기화
+              if (!isAuto) {
+                API.Account.changeRealMobile({
+                  iccid: account.iccid,
+                  token,
+                  realMobile: '',
+                });
+              }
               messaging()
                 .getToken()
                 .then((deviceToken) => {
@@ -312,8 +324,6 @@ const logInAndGetAccount = createAsyncThunk(
                 });
             });
           };
-
-          const token = await userApi.getToken();
 
           // get ICCID account info
           if (iccid) {
