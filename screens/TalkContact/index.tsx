@@ -1,8 +1,9 @@
-import {RouteProp, useFocusEffect} from '@react-navigation/native';
+import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import * as Hangul from 'hangul-js';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
+  AppState,
   Platform,
   SafeAreaView,
   SectionList,
@@ -39,6 +40,7 @@ import {
   TalkAction,
   TalkModelState,
 } from '@/redux/modules/talk';
+import appState from '@/utils/appState';
 import i18n from '@/utils/i18n';
 import {getNumber, utils} from '@/utils/utils';
 import EmptyResult from './components/EmptyResult';
@@ -150,37 +152,11 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
     new Map(),
   );
   const [highlight, setHighlight] = React.useState(new Map());
-  const [sections, setSections] = useState<any[]>([]);
+  const [sections, setSections] = useState<any[]>(
+    JSON.parse(JSON.stringify(sectionKeys)),
+  );
   const sectionListRef = useRef();
   const [scrollY, setScrollY] = useState(-1);
-
-  // 권한없는 경우, 통화시에 권한확인 로직 필요
-  useFocusEffect(
-    React.useCallback(() => {
-      const checkPermission = async () => {
-        const permission =
-          Platform.OS === 'ios'
-            ? PERMISSIONS.IOS.CONTACTS
-            : PERMISSIONS.ANDROID.READ_CONTACTS;
-        const result = await check(permission);
-
-        return result === RESULTS.GRANTED || result === RESULTS.UNAVAILABLE;
-      };
-
-      Promise.resolve(checkPermission()).then((r) => {
-        if (r) {
-          Promise.resolve(action.talk.getContacts()).then((a) => {
-            if (
-              a?.type?.includes('rejected') ||
-              a?.payload?.message === 'denied'
-            )
-              setShowContacts(false);
-            else setShowContacts(true);
-          });
-        }
-      });
-    }, [action.talk]),
-  );
 
   const beforeSync = useCallback(() => {
     return (
@@ -201,25 +177,32 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
   }, []);
 
   const removeDup = useCallback((findSection, item) => {
-    const idx = findSection.data.findIndex((v) => v.recordID === item.recordID);
+    const idx = findSection?.data?.findIndex(
+      (v) => v.recordID === item.recordID,
+    );
+
     if (idx < 0) {
       findSection.data.push(item);
     }
+    // else {
+    //   console.log('@@@ here?', item?.givenName, item?.phoneNumbers[0]);
+    //   findSection?.data?.splice(idx, 1, item);
+    // }
     return findSection;
   }, []);
 
   const setOtherSection = useCallback(
-    (name: string, item) => {
+    (name: string, item, section) => {
       let findSection = {};
-      const currentSectionKeys = sectionKeys;
+      const currentSectionKeys = section;
       if (checkEng.test(name?.substring(0, 1))) {
         // 영어 section
-        findSection = currentSectionKeys.find(
+        findSection = currentSectionKeys?.find(
           (v) => v.key === name.toUpperCase().substring(0, 1),
         );
       } else {
         // 특수문자 section
-        findSection = currentSectionKeys.find((v) => checkSpecial.test(v.key));
+        findSection = currentSectionKeys?.find((v) => checkSpecial.test(v.key));
       }
 
       return removeDup(findSection, item);
@@ -228,11 +211,11 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
   );
 
   const setKoSection = useCallback(
-    (item, disassemble) => {
+    (item, disassemble, section) => {
       const ko = [];
       doubleKor.forEach((value) => {
         const double = value.find((v) => v === disassemble[0][0]) || [];
-        const findSection = sectionKeys.find((v) =>
+        const findSection = section?.find((v) =>
           _.isEmpty(double) ? v.key === disassemble[0][0] : v.key === value[0],
         );
 
@@ -247,6 +230,9 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
 
   const setChosung = useCallback(
     (currentContacts?: any[]) => {
+      // setchosung시마다 연락처 새로 갱신
+      const sk = JSON.parse(JSON.stringify(sectionKeys));
+
       // 한글 이름 중에서 초성, contact map
       if (!_.isEmpty(currentContacts)) {
         currentContacts?.map((item) => {
@@ -254,7 +240,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
           // 한글일 경우
           if (checkKor.test(name)) {
             const disassemble = Hangul.disassemble(name, true);
-            setKoSection(item, disassemble);
+            setKoSection(item, disassemble, sk);
 
             let cho = '';
             disassemble.forEach((item) => (cho += item[0]));
@@ -272,9 +258,10 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
               setMapContacts(mapContacts.set(cho, list.concat(item)));
             }
           } else {
-            setOtherSection(name, item);
+            setOtherSection(name, item, sk);
           }
         });
+        setSections(sk.filter((item) => !_.isEmpty(item.data)));
       }
     },
     [mapContacts, setKoSection, setOtherSection],
@@ -389,14 +376,8 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
       if (!_.isEmpty(txtNumber) && text.length === txtNumber.length) {
         const phone = currentContacts.filter(
           (item) =>
-            !_.isEmpty(
-              item.phoneNumbers.filter((val) =>
-                utils
-                  .stringToNumber(val?.number)
-                  .toString()
-                  .includes(txtNumber),
-              ),
-            ) && !currentSearchResult.includes(item),
+            item?.phoneNumbers[0]?.number?.includes(txtNumber) &&
+            !currentSearchResult.includes(item),
         );
 
         setSearchText(text);
@@ -439,13 +420,53 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
     [highlight, onPress],
   );
 
-  useEffect(() => {
-    setChosung(contacts);
-  }, [setChosung, contacts]);
+  // 권한 확인 및 연락처 update
+  const contactsPermission = useCallback(() => {
+    const checkPermission = async () => {
+      const permission =
+        Platform.OS === 'ios'
+          ? PERMISSIONS.IOS.CONTACTS
+          : PERMISSIONS.ANDROID.READ_CONTACTS;
+      const result = await check(permission);
+
+      return result === RESULTS.GRANTED || result === RESULTS.UNAVAILABLE;
+    };
+
+    Promise.resolve(checkPermission()).then((r) => {
+      if (r) {
+        Promise.resolve(action.talk.getContacts()).then((a) => {
+          if (a?.type?.includes('rejected') || a?.payload?.message === 'denied')
+            setShowContacts(false);
+          else {
+            setChosung(a?.payload || []); // back > fore version
+            setShowContacts(true);
+          }
+        });
+      }
+    });
+  }, [action.talk, setChosung]);
 
   useEffect(() => {
-    setSections(sectionKeys.filter((item) => !_.isEmpty(item.data)));
-  }, []);
+    // 기본 연락처 갱신
+    contactsPermission();
+
+    // background > foreground 복귀시 연락처 갱신
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (
+        appState?.current?.match(/inactive|background/) &&
+        nextAppState === 'active' &&
+        navigation.isFocused()
+      ) {
+        contactsPermission();
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [contactsPermission, navigation]);
 
   const onScroll = useCallback((e) => {
     const yOffset = e.nativeEvent.contentOffset.y;
@@ -537,7 +558,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
         />
       </View>
       {showContacts && !_.isEmpty(searchText) && <View style={{height: 24}} />}
-      {!pending && (showContacts ? contactsView() : beforeSync())}
+      {showContacts ? contactsView() : beforeSync()}
     </SafeAreaView>
   );
 };
