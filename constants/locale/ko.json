@@ -821,7 +821,7 @@
   "esim:howToCall:etcInfo:subtitle1:ais2:txt": "*121*3# + 통화 누른 후 수신된 문자로 확인 가능",
   "esim:howToCall:etcInfo:subtitle1:dtac:txt": "*101*1*9# + 통화 눌러 확인 가능",
   "esim:howToCall:etcInfo:subtitle1:mvtotal:txt": "5555 번호로 “Balance” 문자 전송 후 수신된 문자로 확인 가능",
-  "esim:howToCall:etcInfo:subtitle1:vtdaily:txt": "900 번호로 ”TRACUU D159V” 문자 전송 후 수신된 문자로 확인 가능",
+  "esim:howToCall:etcInfo:subtitle1:vtdaily:txt": "900 번호로 “TRACUD159V” 또는 “ALOTS” 문자 전송 후 수신된 문자로 확인 가능",
   "esim:howToCall:etcInfo:subtitle1:latotal:txt": "*122# 통화 누른 후 수신된 문자로 확인 가능",
 
   "esim:howToCall:etcInfo:subtitle2:ais:title": "통화 잔액",
