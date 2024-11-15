@@ -27,6 +27,7 @@ const E_ABORTED = -1008;
 const E_DECODING_FAILED = -1009;
 const E_REFUNDED = -1010;
 const E_ALREADY_EXIST = -1011;
+const E_NETWORK_FAILED = -1012;
 const E_INVALID_PARAMETER = -1016;
 const API_STATUS_PREFAILED = 412;
 const API_STATUS_CONFLICT = 409;
@@ -301,7 +302,7 @@ export const cachedApi =
     const rsp = await apiToCall(param);
     if (rsp.result === 0) {
       storeData(cachePrefix + key, JSON.stringify(rsp));
-    } else if (rsp.result === E_REQUEST_FAILED) {
+    } else if ([E_REQUEST_FAILED, E_NETWORK_FAILED].includes(rsp.result)) {
       const cache = await retrieveData(cachePrefix + key);
       if (cache) return fulfillWithValue(parseJson(cache));
     }
@@ -446,7 +447,8 @@ const callHttp = async <T>(
           toastIcon: 'bannerMarkToastError',
         }),
       );
-    return failure(E_REQUEST_FAILED, 'API failed', 498);
+
+    return failure(E_NETWORK_FAILED, 'API failed', 498);
   }
 };
 
@@ -505,6 +507,7 @@ export default {
   E_DECODING_FAILED,
   E_REFUNDED,
   E_ALREADY_EXIST,
+  E_NETWORK_FAILED,
   API_STATUS_PREFAILED,
   API_STATUS_CONFLICT,
   API_STATUS_INIT,
