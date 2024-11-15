@@ -35,6 +35,7 @@ import AppIcon from '@/components/AppIcon';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {utils} from '@/utils/utils';
 import {TalkModelState} from '@/redux/modules/talk';
+import api from '@/redux/api/api';
 
 const BG_WIDTH = 972 + 318; // 972 이미지 너비, 318 margin 총합
 
@@ -365,6 +366,8 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
                   navigation.navigate('TalkStack', {
                     screen: 'RkbTalk',
                   });
+                } else if (rsp?.result === api.E_NETWORK_FAILED) {
+                  navigation.goBack();
                 } else {
                   AppAlert.info(i18n.t('talk:reward:error'), '', () =>
                     navigation.goBack(),
