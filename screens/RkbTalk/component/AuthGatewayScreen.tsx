@@ -75,6 +75,11 @@ const AuthGatewayScreen: React.FC<AuthGatewayScreenProps> = ({
   const callback = useCallback(
     async (status: PaymentResultCallbackParam, errorMsg?: AuthResponseType) => {
       if (status === 'cancel') {
+        // 고객의 취소
+        if (errorMsg?.resultCode === '8000') {
+          navigation.goBack();
+        }
+
         // 플래그 값 정리
         setCount((prev) => prev + 1);
         setIsResult(true);

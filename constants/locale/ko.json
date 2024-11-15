@@ -1881,7 +1881,7 @@
   "talk:free": "무료통화",
   "talk:speaker": "스피커폰",
   "talk:keypad": "키패드",
-  "talk:authGateway:title": "실명인증",
+  "talk:authGateway:title": "본인인증",
   "talk:auth:retry": "다시 시도하기",
   "talk:auth:fail": "인증 실패가 계속 반복된다면\n로밍도깨비 고객센터로 문의 부탁드립니다.",
   "talk:auth:fail:code": "에러 코드 : %",
