@@ -153,6 +153,8 @@ const Keypad: React.FC<KeypadProps> = ({
     if (state === SessionState.Terminated) {
       closeKeypad();
       initDtmf();
+      // ringback 종료시에 stop할 경우, ios 통화시 소리 낼 수 없음
+      InCallManager.stop();
     }
   }, [closeKeypad, initDtmf, state]);
 
@@ -181,9 +183,7 @@ const Keypad: React.FC<KeypadProps> = ({
 
   const stopSound = useCallback(() => {
     try {
-      InCallManager.stop();
       SoundPlayer.stop();
-      SoundPlayer.unmount();
     } catch (e) {
       console.log('Error stopping sound', e);
     }
@@ -191,9 +191,8 @@ const Keypad: React.FC<KeypadProps> = ({
 
   // ringback
   useEffect(() => {
-    if (SessionState.Establishing === state) {
-      playSound();
-    }
+    if (SessionState.Establishing === state) playSound();
+
     if (
       state &&
       [SessionState.Terminated, SessionState.Established].includes(state)
