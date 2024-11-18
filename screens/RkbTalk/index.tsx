@@ -8,6 +8,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
+  NativeModules,
   Platform,
   SafeAreaView,
   StatusBar,
@@ -119,6 +120,9 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   }, [duration, maxTime]);
 
   const isSuccessAuth = useMemo(() => (realMobile || '') !== '', [realMobile]);
+  const {AudioStreamModule} = NativeModules;
+  // android volume > 미디어 스트림 설정
+  AudioStreamModule?.setMediaStream();
 
   useEffect(() => {
     if (_.isEmpty(tariff)) {
@@ -193,12 +197,6 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
 
     return result === RESULTS.GRANTED || result === RESULTS.UNAVAILABLE;
   }, []);
-
-  useEffect(() => {
-    Promise.resolve(checkPermission('cont')).then((r) => {
-      if (r) action.talk.getContacts();
-    });
-  }, [action.talk, checkPermission]);
 
   const releaseCall = useCallback(() => {
     if (inviter) {
