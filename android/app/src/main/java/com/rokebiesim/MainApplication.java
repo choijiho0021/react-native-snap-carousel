@@ -94,6 +94,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import org.jetbrains.annotations.Nullable;
+import com.rokebiesim.AudioStreamPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -219,6 +220,7 @@ public class MainApplication extends Application implements ReactApplication {
                             new RNCPickerPackage(),
                             new ReactNativeFirebaseAnalyticsPackage(),
                             new CookieManagerPackage(),
+                            new AudioStreamPackage(), // android audio
                             new RNSoundPlayerPackage(), // sound player
                             new ReactNativeContacts() // react native contacts
 
