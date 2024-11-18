@@ -149,14 +149,19 @@ const Keypad: React.FC<KeypadProps> = ({
     setRingSpeaker(false);
   }, []);
 
+  const terminated = useCallback(() => {
+    closeKeypad();
+    initDtmf();
+    // ringback 종료시에 stop할 경우, ios 통화시 소리 낼 수 없음
+    SoundPlayer.stop();
+    InCallManager.stop();
+  }, [closeKeypad, initDtmf]);
+
   useEffect(() => {
     if (state === SessionState.Terminated) {
-      closeKeypad();
-      initDtmf();
-      // ringback 종료시에 stop할 경우, ios 통화시 소리 낼 수 없음
-      InCallManager.stop();
+      terminated();
     }
-  }, [closeKeypad, initDtmf, state]);
+  }, [state, terminated]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -199,7 +204,10 @@ const Keypad: React.FC<KeypadProps> = ({
     ) {
       stopSound();
     }
-  }, [playSound, state, stopSound]);
+    return () => {
+      terminated();
+    };
+  }, [playSound, state, stopSound, terminated]);
 
   const renderKey = useCallback(
     (st?: SessionState) => {
