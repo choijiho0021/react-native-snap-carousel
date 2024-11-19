@@ -47,16 +47,6 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     lineHeight: 24,
   },
-  emptyView: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    ...appStyles.normal16Text,
-    lineHeight: 24,
-    color: colors.warmGrey,
-  },
   itemRowView: {
     flexDirection: 'row',
     paddingVertical: 12,
