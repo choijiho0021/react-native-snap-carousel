@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     backgroundColor: colors.whiteTwo,
-    marginVertical: 24,
+    marginTop: 24,
     height: 10,
     width: '100%',
   },
@@ -240,12 +240,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingLeft: 16,
     marginHorizontal: 20,
+    marginTop: 24,
     backgroundColor: colors.vividNavy,
     height: 80,
     paddingRight: 3,
     borderRadius: 3,
   },
   bannerTextView: {
+    flex: 1,
     flexDirection: 'column',
     marginVertical: 18.5,
   },
@@ -318,9 +320,15 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   const isModalBeginDrag = useRef(false);
   const isTop = useRef(true);
   const sectionRef = useRef<SectionList>(null);
+  const showRewardBanner = useMemo(
+    () => reward && !reward?.isReceivedReward,
+    [reward],
+  );
 
   const modalAnimatedValue = useRef(new Animated.Value(56)).current;
-  const animatedValue = useRef(new Animated.Value(170)).current;
+  const animatedValue = useRef(
+    new Animated.Value(showRewardBanner ? 218 : 106),
+  ).current;
   const animatedTextHeight = useRef(new Animated.Value(20)).current;
   const dividerAnimatedHeight = useRef(new Animated.Value(0)).current;
   const dividerAnimatedMargin = useRef(new Animated.Value(0)).current;
@@ -369,7 +377,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
 
       Animated.parallel([
         Animated.timing(animatedValue, {
-          toValue: isTop.current ? 170 : 23,
+          toValue: isTop.current ? (showRewardBanner ? 218 : 106) : 23,
           duration: 500,
           useNativeDriver: false,
         }),
@@ -395,6 +403,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
       animatedValue,
       dividerAnimatedHeight,
       dividerAnimatedMargin,
+      showRewardBanner,
     ],
   );
 
@@ -787,7 +796,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
 
   const renderBanner = useCallback(() => {
     // 받은 적 없을 때만 출력
-    if (reward && !reward?.isReceivedReward)
+    if (showRewardBanner)
       return (
         <Pressable
           style={styles.bannerBg}
@@ -810,7 +819,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
         </Pressable>
       );
     return <></>;
-  }, [navigation, reward]);
+  }, [navigation, showRewardBanner]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -827,6 +836,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
           height: animatedValue,
         }}>
         <View style={styles.divider} />
+        {/* 사용내역 타이틀 */}
         {renderBanner()}
         <View key="header" style={styles.hisHeader}>
           <AppText style={styles.historyTitleText}>
@@ -849,7 +859,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
 
       <Animated.View
         style={{
-          backgroundColor: colors.whiteTwo,
+          backgroundColor: colors.lightGrey,
           height: dividerAnimatedHeight,
           marginHorizontal: dividerAnimatedMargin,
           marginBottom: dividerAnimatedMargin,
@@ -888,7 +898,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
       <AppSnackBar
         visible={showSnackBar}
         onClose={() => setShowSnackbar(false)}
-        textMessage={i18n.t('cashHistory:snackbar')}
+        textMessage={i18n.t('talk:snackbar')}
       />
 
       <AppActivityIndicator visible={pending || false} />

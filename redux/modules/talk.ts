@@ -75,6 +75,7 @@ export const EMG_MEDICAL = '119';
 
 export type TalkTariff = {
   // country: string; // kr, jp, ...
+  key?: string;
   code: string; // country code: 81, 82, etc
   name: string;
   chosung: string;

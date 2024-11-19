@@ -49,9 +49,9 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    marginHorizontal: 20,
     justifyContent: 'space-between',
-    marginBottom: 12,
+    paddingBottom: 24,
+    paddingHorizontal: 20,
   },
   row2: {
     flexDirection: 'row',
@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     ...appStyles.medium16,
+    backgroundColor: colors.white,
     paddingHorizontal: 20,
     paddingTop: 12,
     color: colors.warmGrey,
@@ -105,7 +106,7 @@ type TalkTariffScreenProps = {
 
 type TariffSectionData = Record<string, {title: string; data: TalkTariff[]}>;
 
-const favoriteCountry = ['kr', 'us', 'jp'];
+const favoriteCountry = ['82'];
 
 const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
   talk,
@@ -139,12 +140,10 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
   }, [talk.tariff]);
 
   const fav = useMemo(
-    () => [
-      {
-        title: i18n.t('talk:tariff:favorite'),
-        data: favoriteCountry.map((t) => talk.tariff[t]).filter((t) => !!t),
-      },
-    ],
+    () =>
+      favoriteCountry
+        .map((t) => ({...talk.tariff[t], key: `${talk.tariff[t].key}.f`}))
+        .filter((t) => !!t),
     [talk.tariff],
   );
 
@@ -152,12 +151,12 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
     ({item}: {item: TalkTariff}) => {
       return (
         <Pressable
-          key={item.code}
+          key={item?.key}
           style={[
             styles.item,
-            item.code === colorChange && {backgroundColor: colors.backGrey},
+            item?.key === colorChange && {backgroundColor: colors.backGrey},
           ]}
-          onPressIn={() => setColorChange(item.code)}
+          onPressIn={() => setColorChange(item?.key)}
           onPressOut={() => setColorChange('')}
           onPress={() => {
             action.talk.updateCcode(item.code);
@@ -205,9 +204,9 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
                 : {title: d.title, data: filtered};
             })
             .filter((d) => !!d)
-        : fav.concat(data);
+        : data;
     },
-    [fav],
+    [],
   );
 
   const onChangeText = useCallback((v: string) => {
@@ -239,6 +238,45 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
     }
   }, [navigation, visible]);
 
+  const renderFav = useCallback(() => {
+    const h = 56 * fav?.length + 85;
+    return (
+      !searchText && (
+        <View style={{flex: 1, height: h, backgroundColor: colors.white}}>
+          <View style={styles.row}>
+            <AppText
+              style={[appStyles.bold18Text, {lineHeight: 26, height: 26}]}>
+              {i18n.t('talk:tariff:country')}
+            </AppText>
+            <View>
+              <View style={styles.row2}>
+                {['wireline', 'mobile'].map((k) => (
+                  <AppText
+                    key={k}
+                    style={[appStyles.semiBold12Text, {color: colors.blue}]}>
+                    {i18n.t(`talk:tariff:${k}`)}
+                  </AppText>
+                ))}
+              </View>
+              <AppText style={[appStyles.bold12Text, {color: colors.gray2}]}>
+                {i18n.t('talk:tariff:desc')}
+              </AppText>
+            </View>
+          </View>
+
+          <AppText
+            style={[
+              appStyles.normal16Text,
+              {color: colors.warmGrey, marginHorizontal: 20, lineHeight: 24},
+            ]}>
+            {i18n.t('talk:tariff:favorite')}
+          </AppText>
+          {fav.map((item) => renderSectionItem({item}))}
+        </View>
+      )
+    );
+  }, [fav, renderSectionItem, searchText]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -256,39 +294,25 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
         arrow="bottom"
         textStyle={{textAlign: 'left'}}
         textFrame={styles.textFrame}
-        top={140}
+        top={116}
         updateTooltip={(t: boolean) => setVisible(t)}
       />
-      {!searchText ? (
-        <View style={styles.row}>
-          <AppText style={appStyles.bold18Text}>
-            {i18n.t('talk:tariff:country')}
-          </AppText>
-          <View>
-            <View style={styles.row2}>
-              {['wireline', 'mobile'].map((k) => (
-                <AppText
-                  key={k}
-                  style={[appStyles.semiBold12Text, {color: colors.blue}]}>
-                  {i18n.t(`talk:tariff:${k}`)}
-                </AppText>
-              ))}
-            </View>
-            <AppText style={[appStyles.bold12Text, {color: colors.gray2}]}>
-              {i18n.t('talk:tariff:desc')}
-            </AppText>
-          </View>
-        </View>
-      ) : null}
-
       <SectionList
         keyExtractor={(item) => item.code}
         sections={search(tariffData, searchText)}
         contentContainerStyle={{flexGrow: 1}}
         renderItem={renderSectionItem}
-        renderSectionHeader={({section: {title}}) => (
-          <AppText style={styles.sectionHeader}>{title}</AppText>
-        )}
+        renderSectionHeader={({section: {title}}) => {
+          if (title === tariffData[0]?.title) {
+            return (
+              <>
+                {renderFav()}
+                <AppText style={styles.sectionHeader}>{title}</AppText>
+              </>
+            );
+          }
+          return <AppText style={styles.sectionHeader}>{title}</AppText>;
+        }}
         ListFooterComponent={!searchText ? <Footer /> : null}
         ListEmptyComponent={<EmptyResult />}
       />
