@@ -154,7 +154,7 @@ const Keypad: React.FC<KeypadProps> = ({
     initDtmf();
     // ringback 종료시에 stop할 경우, ios 통화시 소리 낼 수 없음
     SoundPlayer.stop();
-    InCallManager.stop();
+    // InCallManager.stop();
   }, [closeKeypad, initDtmf]);
 
   useEffect(() => {
