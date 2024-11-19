@@ -7,6 +7,7 @@ import {
   ScrollView,
   ViewStyle,
   Modal,
+  BackHandler,
 } from 'react-native';
 import {connect} from 'react-redux';
 import _ from 'underscore';
@@ -293,6 +294,7 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
     <SafeAreaView style={styles.container}>
       <ScreenHeader
         title={i18n.t('contact:title')}
+        backHandler={() => navigation.goBack()}
         renderRight={
           <AppButton
             key="search"
