@@ -367,7 +367,7 @@ const TalkRewardScreen: React.FC<TalkRewardScreenProps> = ({
                     screen: 'RkbTalk',
                   });
                 } else if (rsp?.result === api.E_NETWORK_FAILED) {
-                  navigation.goBack();
+                  console.log('@@@ network error');
                 } else {
                   AppAlert.info(i18n.t('talk:reward:error'), '', () =>
                     navigation.goBack(),
