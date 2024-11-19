@@ -1584,8 +1584,7 @@
   "talk:contact:sync": "내 주소록을 동기화하여\n더 편리하게 사용해 보세요!",
   "talk:contact:sync:btn": "연락처 동기화하기",
 
-  "talk:callHistory": "발신내역",
-  "talk:callHistory:title": "발신 내역",
+  "talk:callHistory": "발신 내역",
   "talk:callHistory:empty": "발신 내역이 없습니다",
 
   "talk:point:error:title": "톡포인트 정보를 불러오는 데 문제가 발생했어요.",

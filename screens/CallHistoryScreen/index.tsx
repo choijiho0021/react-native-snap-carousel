@@ -215,7 +215,7 @@ const CallHistoryScreen: React.FC<CallHistoryScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <AppBackButton title={i18n.t('talk:callHistory:title')} />
+        <AppBackButton title={i18n.t('talk:callHistory')} />
       </View>
       <View style={{height: 4}} />
       <SectionList
