@@ -12,7 +12,6 @@ import {
 import {connect} from 'react-redux';
 import {bindActionCreators, RootState} from 'redux';
 import AppBackButton from '@/components/AppBackButton';
-import AppSvgIcon from '@/components/AppSvgIcon';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
@@ -29,6 +28,7 @@ import {
   TalkModelState,
 } from '@/redux/modules/talk';
 import i18n from '@/utils/i18n';
+import EmptyResult from '../TalkContact/components/EmptyResult';
 
 const styles = StyleSheet.create({
   container: {
@@ -135,14 +135,7 @@ const CallHistoryScreen: React.FC<CallHistoryScreenProps> = ({
   }, [action.talk]);
 
   const renderEmpty = useCallback(() => {
-    return (
-      <View style={styles.emptyView}>
-        <AppSvgIcon name="threeDotsBig" style={{marginBottom: 16}} />
-        <AppText style={styles.emptyText}>
-          {i18n.t('talk:callHistory:empty')}
-        </AppText>
-      </View>
-    );
+    return <EmptyResult title={i18n.t('talk:callHistory:empty')} />;
   }, []);
 
   const renderSectionHeader = useCallback(({section}) => {
