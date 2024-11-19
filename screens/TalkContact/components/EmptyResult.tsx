@@ -23,10 +23,14 @@ const styles = StyleSheet.create({
 const EmptyResult = ({title}: {title?: string}) => {
   return (
     <View style={styles.container}>
+      <View style={{flex: 3}} />
+
       <AppIcon style={{marginBottom: 16}} name="imgDot" />
       <AppText style={styles.title}>
         {title || i18n.t('talk:search:none')}
       </AppText>
+
+      <View style={{flex: 7}} />
     </View>
   );
 };
