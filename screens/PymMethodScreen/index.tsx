@@ -214,10 +214,29 @@ const PymMethodScreen: React.FC<PymMethodScreenProps> = ({
   );
 
   useEffect(() => {
-    action.account.getMyCoupon({token: token!}).then(() => {
-      action.cart.prepareOrder();
+    action.account.getMyCoupon({token: token!}).then(async () => {
+      const rsp = await action.cart.prepareOrder();
+
+      // 재고 부족, unpublish 일 때는 결제 진입 시 Alert
+      if (
+        [api.E_RESOURCE_NOT_FOUND, api.E_STATUS_EXPIRED].includes(
+          rsp?.payload?.result,
+        )
+      ) {
+        handlePaymentError(
+          {...rsp?.payload},
+          navigation,
+          cartItems,
+          dispatch,
+          token,
+          iccid,
+          cartId,
+        );
+      }
     });
-  }, [action.account, action.cart, token]);
+    // 불필요한 두번 호춟 방지
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [action.account, action.cart, dispatch, iccid, navigation, token]);
 
   useEffect(() => {
     if (!infoMap.has(infoKey)) {
