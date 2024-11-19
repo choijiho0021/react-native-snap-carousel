@@ -78,7 +78,7 @@ const AppSearch = ({
           style={{
             flex: 1,
             textAlignVertical: 'center',
-            // height: 55,
+            height: 55,
             fontSize: 16,
             marginBottom: 2,
             fontWeight: '600',
