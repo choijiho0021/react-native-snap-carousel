@@ -326,9 +326,14 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   );
 
   const modalAnimatedValue = useRef(new Animated.Value(56)).current;
-  const animatedValue = useRef(
-    new Animated.Value(showRewardBanner ? 218 : 106),
-  ).current;
+  const animatedValue = useRef(new Animated.Value(106)).current;
+  const animatedValueWithBanner = useRef(new Animated.Value(218)).current;
+
+  const animatedViewValue = useMemo(
+    () => (showRewardBanner ? animatedValueWithBanner : animatedValue),
+    [animatedValue, animatedValueWithBanner, showRewardBanner],
+  );
+
   const animatedTextHeight = useRef(new Animated.Value(20)).current;
   const dividerAnimatedHeight = useRef(new Animated.Value(0)).current;
   const dividerAnimatedMargin = useRef(new Animated.Value(0)).current;
@@ -351,6 +356,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
       action.talk.getCheckFirstReward({iccid});
     }
   }, [action.talk, iccid]);
+
   useFocusEffect(
     React.useCallback(() => {
       getPoint();
@@ -376,7 +382,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
       isTop.current = v;
 
       Animated.parallel([
-        Animated.timing(animatedValue, {
+        Animated.timing(animatedViewValue, {
           toValue: isTop.current ? (showRewardBanner ? 218 : 106) : 23,
           duration: 500,
           useNativeDriver: false,
@@ -400,7 +406,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
     },
     [
       animatedTextHeight,
-      animatedValue,
+      animatedViewValue,
       dividerAnimatedHeight,
       dividerAnimatedMargin,
       showRewardBanner,
@@ -833,7 +839,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
       <Animated.View
         style={{
           overflow: 'hidden',
-          height: animatedValue,
+          height: animatedViewValue,
         }}>
         <View style={styles.divider} />
         {/* 사용내역 타이틀 */}
