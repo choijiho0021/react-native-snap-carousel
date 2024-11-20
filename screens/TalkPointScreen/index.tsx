@@ -531,7 +531,8 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
               {i18n.t(`talk:point:empty:${dataFilter}:info5`)}
             </AppText>
           </View>
-          <View style={{alignItems: 'center'}}>
+          <View
+            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
             <AppSvgIcon name="threeDotsBig" style={{marginVertical: 16}} />
             <AppText
               style={{...appStyles.normal16Text, color: colors.warmGrey}}>
