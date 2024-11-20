@@ -942,10 +942,6 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         'vtdaily',
         'latotal',
       ].includes(mainSubs?.clMtd);
-<<<<<<< HEAD
-=======
-
->>>>>>> temp-update
     if (showHowModal) {
       // 하단에 버튼이 없을 때 redirectHk 마진과 박스 기본 마진이 합쳐지는 것 방지
       const isMargin = sendable || isCharged || (!isBC && isChargeButton);
