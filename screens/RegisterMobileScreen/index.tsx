@@ -287,9 +287,10 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
     mobileRef.current?.reset();
   }, []);
 
+  // 수동 로그인
   const signIn = useCallback(
     (auth: {mobile?: string; pin?: string}) =>
-      actions.account.logInAndGetAccount(auth),
+      actions.account.logInAndGetAccount({...auth, isAuto: false}),
     [actions.account],
   );
 

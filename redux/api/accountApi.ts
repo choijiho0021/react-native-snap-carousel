@@ -352,21 +352,13 @@ const registerMobile = ({
   );
 };
 
-const changeRealMobile = ({
-  iccid,
-  token,
-  realMobile,
-}: {
-  iccid?: string;
-  token?: string;
-  realMobile?: string;
-}) => {
+const resetRealMobile = ({iccid, token}: {iccid?: string; token?: string}) => {
   return api.callHttp(
     `${api.httpUrl(api.path.rokApi.rokebi.account)}/${iccid}?_format=json`,
     {
       method: 'PATCH',
       headers: api.withToken(token, 'json'),
-      body: JSON.stringify({data: {real_mobile: realMobile}}),
+      body: JSON.stringify({data: {real_mobile: ''}}),
     },
     (resp) => {
       return resp;
@@ -540,5 +532,5 @@ export default {
   lotteryCoupon,
   donateCash,
   uploadFortuneImage,
-  changeRealMobile,
+  resetRealMobile,
 };

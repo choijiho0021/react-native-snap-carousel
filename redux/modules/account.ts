@@ -79,6 +79,10 @@ const receiveGift = createAsyncThunk(
   'account/receiveGift',
   API.User.receiveGift,
 );
+const resetRealMobile = createAsyncThunk(
+  'account/receiveGift',
+  API.Account.resetRealMobile,
+);
 
 const receiveAndGetGift = createAsyncThunk(
   'account/receiveAndGetGift',
@@ -304,11 +308,12 @@ const logInAndGetAccount = createAsyncThunk(
 
               // 수동로그인 시 realMobile 초기화
               if (!isAuto) {
-                API.Account.changeRealMobile({
-                  iccid: account.iccid,
-                  token,
-                  realMobile: '',
-                });
+                dispatch(
+                  resetRealMobile({
+                    iccid: account.iccid,
+                    token,
+                  }),
+                );
               }
               messaging()
                 .getToken()
@@ -645,6 +650,14 @@ const slice = createSlice({
       const {result, objects} = action.payload;
       if (result === 0) {
         state.coupon = objects || ([] as RkbCoupon[]);
+      }
+    });
+
+    builder.addCase(resetRealMobile.fulfilled, (state, action) => {
+      const {result} = action.payload;
+
+      if (result === 0) {
+        state.realMobile = '';
       }
     });
   },
