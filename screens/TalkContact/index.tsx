@@ -384,8 +384,9 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
       if (!_.isEmpty(txtNumber) && text.length === txtNumber.length) {
         const phone = currentContacts.filter(
           (item) =>
-            item?.phoneNumbers[0]?.number?.includes(txtNumber) &&
-            !currentSearchResult.includes(item),
+            item?.phoneNumbers[0]?.number
+              ?.replace(/[^0-9]/g, '')
+              ?.includes(txtNumber) && !currentSearchResult.includes(item),
         );
 
         setSearchText(text);
