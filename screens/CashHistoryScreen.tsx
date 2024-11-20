@@ -536,12 +536,21 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
             stickyHeaderIndices={[0]}
             style={{
               backgroundColor: colors.white,
-              marginTop: modalMarginTop < 56 ? 56 : modalMarginTop, // animated value?
+              marginTop: modalMarginTop < 56 ? 56 : modalMarginTop,
+              borderTopLeftRadius: 8,
+              borderTopRightRadius: 8,
             }}>
             {/* TODO : 확인 필요 Radius 미동작  */}
             <LinearGradient
               colors={[colors.white, 'rgba(255, 255, 255, 0.1)']}
-              style={styles.topGradient}
+              style={[
+                styles.topGradient,
+                {
+                  borderTopLeftRadius: 8,
+                  borderTopRightRadius: 8,
+                  overflow: 'hidden',
+                },
+              ]}
             />
 
             <AppText

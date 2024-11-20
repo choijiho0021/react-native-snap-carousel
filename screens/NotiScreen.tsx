@@ -109,6 +109,11 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: colors.warmGrey,
   },
+  empty: {
+    flex: 1,
+    alignItems: 'center',
+    marginTop: '30%',
+  },
 });
 
 const areEqual = (
@@ -345,8 +350,9 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             } else {
               navigation.navigate('SimpleText', {
                 key: 'noti',
-                title: i18n.t('set:noti'),
-                bodyTitle,
+                title: i18n.t('set:notiDetail'),
+                created: moment(created),
+                bodyTitle: bodyTitle || title,
                 text: body,
                 mode: 'html',
               });
@@ -451,12 +457,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
               bodyTitle: bodyTitle || title,
               text: body,
               notiType,
-              mode:
-                type === notiActions.NOTI_TYPE_URI
-                  ? 'uri'
-                  : type === notiActions.NOTI_TYPE_DONATION
-                  ? 'page'
-                  : 'html',
+              mode: type === notiActions.NOTI_TYPE_URI ? 'uri' : 'page',
             });
             break;
         }
@@ -468,6 +469,22 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
   const renderItem = useCallback(
     ({item}: {item: RkbNoti}) => <NotiListItem item={item} onPress={onPress} />,
     [onPress],
+  );
+
+  const renderEmpty = useCallback(
+    () => (
+      <View style={styles.empty}>
+        <AppSvgIcon name="threeDots" />
+        <AppText
+          style={[
+            appStyles.normal16Text,
+            {color: colors.warmGrey, marginTop: 20},
+          ]}>
+          {i18n.t(mode === 'info' ? 'info:none' : 'noti:none')}
+        </AppText>
+      </View>
+    ),
+    [mode],
   );
 
   const renderFooter = useCallback(() => {
@@ -517,9 +534,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
         <FlatList
           data={data}
           renderItem={renderItem}
-          ListEmptyComponent={
-            <AppText style={styles.emptyPage}>{i18n.t('noti:empty')}</AppText>
-          }
+          ListEmptyComponent={renderEmpty}
           ListFooterComponent={renderFooter}
           refreshControl={
             <RefreshControl

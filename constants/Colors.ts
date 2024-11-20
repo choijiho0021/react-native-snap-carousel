@@ -60,7 +60,8 @@ export const colors = {
   shamrock: '#00AD50', // rgb 0 173 80
   lightYellow: '#fff4d5', // rgb 255 244 213
   yellowSecond: '#ff9900', // rgb 255 153 0
-  lightSage: '#D6F3E3', // rgb 214 243ㄴㄴ 227
+  lightSage: '#D6F3E3', // rgb 214 243 227
+  bgLightSage: '#00ad51',
   veryLightBlue: '#DAEEFF', // rgb 218 238 255
   greyishBrown: '#575757',
   redError: '#ee4423',

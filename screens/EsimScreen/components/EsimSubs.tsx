@@ -256,8 +256,8 @@ const styles = StyleSheet.create({
   moreInfoContent: {
     backgroundColor: 'white',
     paddingBottom: 24,
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingLeft: 16,
+    paddingRight: 16,
     borderTopWidth: 1,
     borderTopColor: '#eeeeee',
     borderBottomLeftRadius: 3,
@@ -475,6 +475,7 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
     () =>
       mainSubs.cautionList?.filter((c) => {
         const condition = c.includes(':') ? c.split(':')[0] : '';
+
         return (
           !condition.includes('web') &&
           (isIOS ? !condition.includes('android') : !condition.includes('ios'))
@@ -941,6 +942,10 @@ const EsimSubs: React.FC<EsimSubsProps> = ({
         'vtdaily',
         'latotal',
       ].includes(mainSubs?.clMtd);
+<<<<<<< HEAD
+=======
+
+>>>>>>> temp-update
     if (showHowModal) {
       // 하단에 버튼이 없을 때 redirectHk 마진과 박스 기본 마진이 합쳐지는 것 방지
       const isMargin = sendable || isCharged || (!isBC && isChargeButton);

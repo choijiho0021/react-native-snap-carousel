@@ -10,11 +10,10 @@ export type BoardMsgStatus = 'Open' | 'Closed' | 'Processing';
 const statusToString = (status: BoardMsgStatus) => {
   switch (status) {
     case 'Open':
+    case 'Processing':
       return i18n.t('board:open');
     case 'Closed':
       return i18n.t('board:closed');
-    case 'Processing':
-      return i18n.t('board:processing');
     default:
       return status;
   }

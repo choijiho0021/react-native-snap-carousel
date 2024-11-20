@@ -31,22 +31,27 @@ import AppText from './AppText';
 import AppTextInput from './AppTextInput';
 import AttachmentBox from '@/screens/BoardScreen/AttachmentBox';
 import Env from '@/environment';
+import AppStyledText from './AppStyledText';
 
 const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
-  passwordInput: {
-    borderBottomColor: colors.warmGrey,
-    borderBottomWidth: 1,
-    marginLeft: 15,
-    paddingBottom: 10,
-    color: colors.black,
-    flex: 1,
-  },
-  passwordBox: {
-    flexDirection: 'row',
-    marginVertical: 30,
+  titleInfo: {
+    marginBottom: 8,
     marginHorizontal: 20,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+  },
+  titleInfoText: {
+    ...appStyles.semiBold14Text,
+    lineHeight: 20,
+  },
+  essentialText: {
+    ...appStyles.bold12Text,
+    color: colors.redError,
+    lineHeight: 20,
+    marginLeft: 3,
   },
   inputAccessoryText: {
     ...appStyles.normal18Text,
@@ -65,16 +70,17 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   inputBox: {
-    ...appStyles.normal14Text,
+    ...appStyles.medium16,
     marginHorizontal: 20,
-    height: 50,
+    height: 54,
     borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: colors.lightGrey,
     color: colors.black,
-    paddingHorizontal: 10,
+    paddingHorizontal: 16,
+    lineHeight: 24,
   },
   notiView: {
     flexDirection: 'row',
@@ -84,33 +90,20 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     alignItems: 'center',
   },
+  notiNotLoginView: {
+    marginBottom: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    backgroundColor: colors.white,
+  },
   noti: {
-    ...appStyles.normal12Text,
+    ...appStyles.semiBold14Text,
+    color: colors.warmGrey,
+    lineHeight: 20,
     textAlign: 'left',
   },
   container: {
     flex: 1,
-  },
-  label: {
-    ...appStyles.normal14Text,
-    marginLeft: 20,
-    marginTop: 30,
-  },
-  button: {
-    ...appStyles.normal16Text,
-    height: 40,
-    paddingLeft: 20,
-    marginTop: 15,
-    marginBottom: 20,
-    marginHorizontal: 20,
-    color: colors.black,
-    borderBottomColor: colors.warmGrey,
-    borderBottomWidth: 1,
-  },
-
-  modalInner: {
-    justifyContent: 'space-between',
-    flexGrow: 1,
   },
 });
 
@@ -160,7 +153,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
   const [pin, setPin] = useState<string>();
   const [clickable, setClickable] = useState<boolean>(true);
   const [attachment, setAttachment] = useState(List<CropImage>());
-  const [extraHeight, setExtraHeight] = useState(0);
+  // const [extraHeight, setExtraHeight] = useState(0);
   const [value, setValue] = useState('');
   const scrollRef = useRef();
   const keybd = useRef();
@@ -228,23 +221,56 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
     [errors],
   );
 
-  const renderPass = useCallback(
+  const renderNotLoggin = useCallback(
     () => (
-      <View style={styles.passwordBox}>
-        <AppText
-          style={[
-            appStyles.normal14Text,
-            {color: colors.tomato, marginRight: 5, textAlignVertical: 'center'},
-          ]}>
-          *
-        </AppText>
-        <AppText
-          style={[appStyles.normal14Text, {textAlignVertical: 'center'}]}>
-          {i18n.t('board:pass')}
-        </AppText>
+      <View>
+        <View style={styles.notiNotLoginView}>
+          <AppStyledText
+            text={i18n.t('board:noti:notLogin')}
+            textStyle={styles.noti}
+            format={{b: {fontWeight: 'bold', color: colors.black}}}
+          />
+        </View>
+        <View style={styles.titleInfo}>
+          <AppText style={styles.titleInfoText}>
+            {i18n.t('board:notLoggin:info')}
+          </AppText>
+
+          <AppText style={styles.essentialText}>
+            {i18n.t('event:essential')}
+          </AppText>
+        </View>
+
         <AppTextInput
-          style={styles.passwordInput}
-          placeholder={i18n.t('board:inputPass')}
+          style={[
+            styles.inputBox,
+            title ? {borderColor: colors.black} : undefined,
+            {marginBottom: 8},
+          ]}
+          placeholder={i18n.t('board:phone:placeholder')}
+          placeholderTextColor={colors.greyish}
+          keyboardType="numeric"
+          returnKeyType="next"
+          enablesReturnKeyAutomatically
+          maxLength={Platform.OS === 'android' ? 13 : 11}
+          onChangeText={(v) => {
+            const mobileNo = utils.toPhoneNumber(v);
+            setValue(v);
+            validate('mobile', mobileNo);
+          }}
+          onFocus={() => setValue(value.replace(/-/g, ''))}
+          onBlur={() => setValue(utils.toPhoneNumber(value))}
+          error={error('title')}
+          value={value}
+        />
+
+        <AppTextInput
+          style={[
+            styles.inputBox,
+            title ? {borderColor: colors.black} : undefined,
+            {marginBottom: 8},
+          ]}
+          placeholder={i18n.t('board:password:placeholder')}
           placeholderTextColor={colors.greyish}
           keyboardType="numeric"
           returnKeyType="done"
@@ -256,41 +282,12 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
             validate('pin', v);
           }}
           value={pin}
-          onFocus={() => setExtraHeight(20)}
-        />
-      </View>
-    ),
-    [pin, validate],
-  );
-
-  const renderContact = useCallback(
-    () => (
-      <View>
-        <AppText style={styles.label}>{i18n.t('board:contact')}</AppText>
-        <AppTextInput
-          style={styles.button}
-          placeholder={i18n.t('board:noMobile')}
-          placeholderTextColor={colors.greyish}
-          onFocus={() => setValue(value.replace(/-/g, ''))}
-          onBlur={() => setValue(utils.toPhoneNumber(value))}
-          keyboardType="numeric"
-          returnKeyType="next"
-          enablesReturnKeyAutomatically
-          maxLength={Platform.OS === 'android' ? 13 : 11}
-          onChangeText={(v) => {
-            const mobileNo = utils.toPhoneNumber(v);
-            setValue(v);
-            validate('mobile', mobileNo);
-          }}
           // onFocus={() => setExtraHeight(20)}
-          error={error('mobile')}
-          value={value}
         />
       </View>
     ),
-    [error, validate, value],
+    [error, pin, title, validate, value],
   );
-
   // errors object의 모든 value 값들이 undefined인지 확인한다.
   const hasError = useMemo(
     () =>
@@ -309,20 +306,34 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
         enableOnAndroid
         showsVerticalScrollIndicator={false}
         extraScrollHeight={isIOS ? -100 : -300}>
-        {!account.loggedIn && renderContact()}
+        {!account.loggedIn && renderNotLoggin()}
         <View style={{flex: 1}}>
-          <View style={styles.notiView}>
-            <AppText style={styles.noti}>
-              {i18n.t(account.loggedIn ? 'board:noti' : 'board:noti:notLogin')}
-            </AppText>
-          </View>
+          {account.loggedIn ? (
+            <View style={styles.notiView}>
+              <AppStyledText
+                text={i18n.t('board:noti')}
+                textStyle={styles.noti}
+                format={{b: {fontWeight: 'bold', color: colors.black}}}
+              />
+            </View>
+          ) : (
+            <View style={[styles.titleInfo, {marginTop: 24}]}>
+              <AppText style={styles.titleInfoText}>
+                {i18n.t('board:notLoggin:body')}
+              </AppText>
+
+              <AppText style={styles.essentialText}>
+                {i18n.t('event:essential')}
+              </AppText>
+            </View>
+          )}
           <AppTextInput
             style={[
               styles.inputBox,
               title ? {borderColor: colors.black} : undefined,
-              {marginBottom: 15},
+              {marginBottom: 8},
             ]}
-            placeholder={i18n.t('title')}
+            placeholder={i18n.t('board:title:placeholder')}
             placeholderTextColor={colors.greyish}
             returnKeyType="next"
             enablesReturnKeyAutomatically
@@ -332,7 +343,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
               setTitle(v);
               validate('title', v);
             }}
-            onFocus={() => setExtraHeight(20)}
+            // onFocus={() => setExtraHeight(20)}
             error={error('title')}
             autoCapitalize="none"
             autoCorrect={false}
@@ -344,14 +355,14 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
               styles.inputBox,
               {
                 height: 208,
-                paddingTop: 15,
-                paddingHorizontal: 15,
+                paddingTop: 16,
+                paddingHorizontal: 16,
                 textAlignVertical: 'top',
               },
-              msg ? {borderColor: colors.black} : undefined,
+              msg ? {borderColor: colors.clearBlue} : undefined,
             ]}
             ref={keybd}
-            placeholder={i18n.t('content')}
+            placeholder={i18n.t('board:inputBox:placeholder')}
             placeholderTextColor={colors.greyish}
             multiline
             numberOfLines={8}
@@ -363,7 +374,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
               setMsg(v);
               validate('msg', v);
             }}
-            onFocus={() => setExtraHeight(80)}
+            // onFocus={() => setExtraHeight(80)}
             error={error('msg')}
             autoCapitalize="none"
             autoCorrect={false}
@@ -375,14 +386,13 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
             value={msg}
           />
 
-          {account.loggedIn ? (
+          {account.loggedIn && (
             <AttachmentBox
               attachment={attachment}
               setAttachment={setAttachment}
               imageQuality={0.5}
+              type="board"
             />
-          ) : (
-            renderPass()
           )}
         </View>
 

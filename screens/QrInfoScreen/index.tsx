@@ -561,7 +561,11 @@ const QrInfoScreen = () => {
           <View style={[styles.cardCheckDesc, {width: '95%'}]}>
             <AppSvgIcon
               name={isFail || cardState === 'D' ? 'regCardWarn' : 'regCardInfo'}
-              style={{marginRight: 4, top: 2}}
+              style={{
+                marginRight: 4,
+                top: 1,
+                alignSelf: 'center',
+              }}
             />
             <AppStyledText
               textStyle={styles.cardCheckDescTxt}
@@ -570,7 +574,13 @@ const QrInfoScreen = () => {
                   ? 'qrInfo:cardCheck:desc:fail'
                   : `qrInfo:cardCheck:desc:${cardState}`,
               )}
-              format={{b: {color: colors.redError}}}
+              format={{
+                b: {
+                  color: ['E', 'DE'].includes(cardState)
+                    ? colors.clearBlue
+                    : colors.redError,
+                },
+              }}
             />
           </View>
         )}

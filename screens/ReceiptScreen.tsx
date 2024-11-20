@@ -285,7 +285,7 @@ const ReceiptScreen: React.FC<ReceiptScreenProps> = ({
                 key={k}
                 style={{alignItems: 'flex-start'}}
                 label={i18n.t(`rcpt:${k}`)}
-                labelStyle={styles.label}
+                labelStyle={[styles.label, k === 'address' && {lineHeight: 32}]}
                 value={v}
                 valueStyle={[
                   styles.value,

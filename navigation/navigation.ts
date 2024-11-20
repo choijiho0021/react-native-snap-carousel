@@ -138,6 +138,7 @@ export type HomeStackParamList = {
     item?: RkbBoard;
     status?: BoardMsgStatus;
     isEvent?: boolean;
+    type?: 'board' | 'event';
   };
   BoardMsgList: undefined;
   PromotionCarousel: {};
@@ -166,7 +167,7 @@ export type HomeStackParamList = {
     paymentParams?: {
       key: string;
       pg: string;
-      token: string;
+      token?: string;
     };
   };
   TalkPermission: undefined;

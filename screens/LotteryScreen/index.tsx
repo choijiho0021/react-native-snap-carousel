@@ -46,11 +46,7 @@ import RenderLoadingLottery from './component/RenderLoadingLottery';
 import BackbuttonHandler from '@/components/BackbuttonHandler';
 import AppSnackBar from '@/components/AppSnackBar';
 import Env from '@/environment';
-import {
-  actions as toastActions,
-  Toast,
-  ToastAction,
-} from '@/redux/modules/toast';
+import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 
 const {isIOS} = Env.get();
 
@@ -184,6 +180,9 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   // const [pendingTimeout, setPendingTimeout] = useState(false);
   const [showCloseBtn, setShowCloseBtn] = useState(false); // 로딩 10초 이후엔 X 표 출력
   const [isSecLoading, setIsSecLoading] = useState(false);
+
+  const loadingTimeoutId = useRef<any>(null);
+  const goBackTimeoutId = useRef<any>(null);
 
   const isLoadingRef = useRef(true);
 
@@ -464,7 +463,7 @@ const LotteryScreen: React.FC<LotteryProps> = ({
     lotteryCoupon();
 
     // 30초 동안 로딩 상태면, goBack 실행
-    setTimeout(() => {
+    goBackTimeoutId.current = setTimeout(() => {
       setIsLoading((currentLoading) => {
         if (isLoadingRef.current) {
           action.toast.push({
@@ -481,10 +480,23 @@ const LotteryScreen: React.FC<LotteryProps> = ({
       setIsSecLoading(false);
     }, 2000);
 
-    setTimeout(() => {
+    loadingTimeoutId.current = setTimeout(() => {
       setShowCloseBtn(true);
     }, 10000);
   }, [action.toast, goBackEsim, lotteryCoupon]);
+
+  useEffect(() => {
+    // 화면 빠져나갈 시 timeout 초기화
+    return () => {
+      console.log('@@@@ timeout reset ');
+      if (goBackTimeoutId.current) {
+        clearTimeout(goBackTimeoutId.current);
+      }
+      if (loadingTimeoutId.current) {
+        clearTimeout(loadingTimeoutId.current);
+      }
+    };
+  }, []);
 
   const renderShareButton = useCallback(
     (text: string, appIcon: string, onPress: any) => {
@@ -612,25 +624,27 @@ const LotteryScreen: React.FC<LotteryProps> = ({
   const renderHeader = useCallback(() => {
     return (
       <>
-        {(!isLoading || showCloseBtn) && (
+        {
           <ScreenHeader
             // backHandler={backHandler}
             headerStyle={{backgroundColor: 'transparent', zIndex: 10}}
             isStackTop
             renderRight={
-              <AppSvgIcon
-                name="closeModal"
-                style={styles.btnCnter}
-                onPress={() => {
-                  goBackEsim();
-                }}
-              />
+              ((!isLoading && !isSecLoading) || showCloseBtn) && (
+                <AppSvgIcon
+                  name="closeModal"
+                  style={styles.btnCnter}
+                  onPress={() => {
+                    goBackEsim();
+                  }}
+                />
+              )
             }
           />
-        )}
+        }
       </>
     );
-  }, [goBackEsim, isLoading, showCloseBtn]);
+  }, [goBackEsim, isLoading, isSecLoading, showCloseBtn]);
 
   const renderByType = useCallback(() => {
     if (type === 'draft') {

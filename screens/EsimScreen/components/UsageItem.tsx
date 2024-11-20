@@ -4,10 +4,9 @@ import React, {
   useRef,
   useState,
   useMemo,
-  Fragment,
   memo,
 } from 'react';
-import {StyleSheet, View, ViewStyle} from 'react-native';
+import {Image, StyleSheet, View, ViewStyle} from 'react-native';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import Video from 'react-native-video';
 import Lottie from 'lottie-react-native';
@@ -100,7 +99,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     alignItems: 'center',
     flexDirection: 'row',
-    width: '100%',
+    // width: '100%',
   },
   timeContainer: {
     flexDirection: 'row',
@@ -185,17 +184,32 @@ const UsageItem: React.FC<UsageItemProps> = ({
   );
   const circularProgress = useRef();
 
+  const localTz = useMemo(() => RNLocalize.getTimeZone(), []);
+  const isTzDiff = useMemo(() => localTz !== 'Asia/Seoul', [localTz]);
+
   const isError = useMemo(() => {
     return dataStatusCd === 'E';
   }, [dataStatusCd]);
 
-  const [showStatus, showUsage, showEndTime] = useMemo(
+  const [
+    showStatus,
+    showUsage,
+    showEndTime,
+    showTotalData,
+    showResetTime,
+    resetTime,
+    usageImage,
+  ] = useMemo(
     () => [
       dataUsageOption?.mode?.includes('stu'),
       dataUsageOption?.mode?.includes('usa'),
       dataUsageOption?.mode?.includes('end'),
+      dataUsageOption?.mode?.includes('dat'),
+      dataUsageOption?.mode?.includes('ret'),
+      dataUsageOption?.ret,
+      dataUsageOption?.usaImg,
     ],
-    [dataUsageOption?.mode],
+    [dataUsageOption?.mode, dataUsageOption?.ret, dataUsageOption?.usaImg],
   );
 
   const canShowUsage = useCallback(
@@ -213,7 +227,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [disableBtn]);
 
   useEffect(() => {
-    if (showUsage && dataStatusCd === 'A') {
+    if ((showTotalData || showUsage) && dataStatusCd === 'A') {
       if (
         usage?.quota !== undefined &&
         usage?.remain !== undefined &&
@@ -235,25 +249,40 @@ const UsageItem: React.FC<UsageItemProps> = ({
       console.log('@@ show snackbar');
       showSnackbar();
     }
-  }, [dataStatusCd, quota, remain, showSnackbar, showUsage, usage, used]);
+  }, [
+    dataStatusCd,
+    quota,
+    remain,
+    showSnackbar,
+    showTotalData,
+    showUsage,
+    usage,
+    used,
+  ]);
 
   const getResetTime = useCallback(
     (tz: string) => {
-      if (dataUsageOption?.ret)
-        return moment(
-          `${moment().format('YYYY-MM-DD')} ${dataUsageOption?.ret}+0900`,
-        )
+      const todayResetTime =
+        moment().tz('Asia/Seoul').format('YYYY-MM-DD') +
+        endTime?.substring(endTime.indexOf('T'));
+
+      const nextResetTime = moment(todayResetTime).isBefore(moment())
+        ? moment(todayResetTime).add(1, 'd')
+        : moment(todayResetTime);
+
+      if (resetTime)
+        return moment(`${moment().format('YYYY-MM-DD')} ${resetTime}+0900`)
           .tz(tz)
           .format('HH:mm:ss');
-      if (endTime) return moment(endTime).tz(tz).format('HH:mm:ss');
+      if (endTime) return nextResetTime.tz(tz).format('HH:mm:ss');
       return i18n.t('contact:q');
     },
-    [dataUsageOption?.ret, endTime],
+    [resetTime, endTime],
   );
 
   const renderResetTimeRow = useCallback(
     (key: string, rowStyle: ViewStyle = {}) => {
-      const tz = key === 'local' ? RNLocalize.getTimeZone() : 'Asia/Seoul';
+      const tz = key === 'local' ? localTz : 'Asia/Seoul';
       // const tz = key === 'local' ? 'America/New_York' : 'Asia/Seoul';
 
       return (
@@ -277,13 +306,47 @@ const UsageItem: React.FC<UsageItemProps> = ({
         </View>
       );
     },
-    [getResetTime],
+    [getResetTime, localTz],
   );
+
+  const getCuationColor = useCallback((key: string) => {
+    switch (key) {
+      case 'notShow':
+        return {
+          bg: colors.backRed,
+          txt: colors.redError,
+          icon: 'cautionUsageIcon',
+        };
+      case 'allday':
+        return {
+          bg: colors.lightSage,
+          txt: colors.bgLightSage,
+          icon: 'checkUsageGreenIcon',
+        };
+      case 'total:exhausted':
+      case 'daily:exhausted':
+      case 'total:reCharge':
+      case 'daily:reCharge':
+        return {
+          bg: colors.violetbg,
+          txt: colors.violet500,
+          icon: 'checkUsageIcon',
+        };
+      default:
+        return {
+          bg: colors.violetbg,
+          txt: colors.violet500,
+          icon: 'checkUsageIcon',
+        };
+    }
+  }, []);
 
   const renderCaution = useCallback(() => {
     let key = '';
 
-    if (!showUsage) {
+    if (item.dataVolume === '1024000') {
+      key = `allday`;
+    } else if (!showUsage) {
       key = 'notShow';
     } else if (isExhausted) {
       key = `${item.daily}:exhausted`;
@@ -291,28 +354,26 @@ const UsageItem: React.FC<UsageItemProps> = ({
       key = `${item.daily}:reqCharge`;
     }
 
-    const isNotShow = key === 'notShow';
-
     return key !== '' ? (
       <View
         style={{
           ...styles.cautionContainer,
-          backgroundColor: isNotShow ? colors.backRed : colors.violetbg,
+          backgroundColor: getCuationColor(key).bg,
         }}>
         <AppSvgIcon
-          name={isNotShow ? 'cautionUsageIcon' : 'checkUsageIcon'}
+          name={getCuationColor(key).icon}
           style={{marginRight: 10}}
         />
         <AppStyledText
           text={i18n.t(`esim:caution:${key}`)}
           textStyle={{
             ...appStyles.normal14Text,
-            color: isNotShow ? colors.redError : colors.violet500,
+            color: getCuationColor(key).txt,
           }}
           format={{
             b: {
               ...appStyles.bold14Text,
-              color: isNotShow ? colors.redError : colors.violet500,
+              color: getCuationColor(key).txt,
             },
           }}
         />
@@ -320,7 +381,14 @@ const UsageItem: React.FC<UsageItemProps> = ({
     ) : (
       <View style={{height: 20}} />
     );
-  }, [isExhausted, isLowRemain, item.daily, showUsage]);
+  }, [
+    getCuationColor,
+    isExhausted,
+    isLowRemain,
+    item.daily,
+    item.dataVolume,
+    showUsage,
+  ]);
 
   const renderDailyUsage = useCallback(
     () => (
@@ -342,10 +410,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
   );
 
   const renderTime = useCallback(() => {
-    const localTz = RNLocalize.getTimeZone();
-    const isTzDiff = localTz !== 'Asia/Seoul';
-    // const nowKr = moment().tz('America/New_York');
-
     return (
       <View style={styles.timeContainer}>
         {showEndTime && endTime && (
@@ -372,36 +436,40 @@ const UsageItem: React.FC<UsageItemProps> = ({
           item.daily === 'daily' &&
           canShowUsage(item.partner!) && <View style={styles.timeDivider} />}
 
-        {item.daily === 'daily' && canShowUsage(item.partner!) && (
-          <View style={styles.timeItem}>
-            <AppText
-              style={{
-                ...appStyles.bold12Text,
-                color: colors.black,
-                marginBottom: 6,
-              }}>
-              {i18n.t('esim:time:dataReset')}
-            </AppText>
+        {showResetTime &&
+          item.daily === 'daily' &&
+          canShowUsage(item.partner!) && (
+            <View style={styles.timeItem}>
+              <AppText
+                style={{
+                  ...appStyles.bold12Text,
+                  color: colors.black,
+                  marginBottom: 6,
+                }}>
+                {i18n.t('esim:time:dataReset')}
+              </AppText>
 
-            {isTzDiff ? (
-              <View>
-                {renderResetTimeRow('korea', styles.rowBetween)}
-                {renderResetTimeRow('local', styles.rowBetween)}
-              </View>
-            ) : (
-              <View>{renderResetTimeRow('korea')}</View>
-            )}
-          </View>
-        )}
+              {isTzDiff ? (
+                <View>
+                  {renderResetTimeRow('korea', styles.rowBetween)}
+                  {renderResetTimeRow('local', styles.rowBetween)}
+                </View>
+              ) : (
+                <View>{renderResetTimeRow('korea')}</View>
+              )}
+            </View>
+          )}
       </View>
     );
   }, [
     canShowUsage,
     endTime,
+    isTzDiff,
     item.daily,
     item.partner,
     renderResetTimeRow,
     showEndTime,
+    showResetTime,
   ]);
 
   const renderAnimatedCircularProgress = useCallback(() => {
@@ -467,16 +535,23 @@ const UsageItem: React.FC<UsageItemProps> = ({
             <View style={{flexDirection: 'row'}}>
               <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
               <AppText style={styles.warning}>
-                {i18n.t('esim:caution:time')}
+                {i18n.t(
+                  isTzDiff ? 'esim:caution:time2' : 'esim:caution:time1',
+                  {
+                    tz: moment().tz(RNLocalize.getTimeZone()).format('z'),
+                  },
+                )}
               </AppText>
             </View>
           </View>
         ) : null;
     }
-  }, [endTime, item?.partner, showEndTime]);
+  }, [endTime, isTzDiff, item?.partner, showEndTime]);
 
   const clMtdTxt = useCallback(() => {
-    return ['ais', 'dtac', 'vndaily'].includes(item?.clMtd || '') ? (
+    return ['ais', 'ais2', 'dtac', 'vndaily', 'latotal'].includes(
+      item?.clMtd || '',
+    ) ? (
       <View style={{width: '100%'}}>
         <View style={{flexDirection: 'row'}}>
           <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
@@ -495,7 +570,11 @@ const UsageItem: React.FC<UsageItemProps> = ({
           <View style={{flexDirection: 'row'}}>
             <AppText style={styles.warningDot}>{i18n.t('centerDot')}</AppText>
             <AppText style={styles.warning}>
-              {i18n.t('esim:caution:usage')}
+              {i18n.t(
+                item.daily === 'daily'
+                  ? 'esim:caution:usage:daily'
+                  : 'esim:caution:usage:total',
+              )}
             </AppText>
           </View>
         )}
@@ -503,21 +582,24 @@ const UsageItem: React.FC<UsageItemProps> = ({
         {clMtdTxt()}
       </View>
     );
-  }, [clMtdTxt, showUsage, warningDotTxt]);
+  }, [clMtdTxt, item.daily, showUsage, warningDotTxt]);
+
+  const renderUsageImg = useCallback(() => {
+    console.log('aaaaa showUsage', showUsage);
+    if (showUsage) return renderAnimatedCircularProgress();
+
+    if (usageImage) {
+      return (
+        <Image source={{uri: usageImage}} style={{width: 148, height: 148}} />
+      );
+    }
+    return <AppSvgIcon style={{marginBottom: 20}} name="notShowEsimUsage" />;
+  }, [renderAnimatedCircularProgress, showUsage, usageImage]);
 
   const usageRender = useCallback(() => {
     return (
       <View style={styles.activeContainer}>
-        {showUsage ? (
-          renderAnimatedCircularProgress()
-        ) : (
-          <AppSvgIcon style={{marginBottom: 20}} name="notShowEsimUsage" />
-        )}
-
-        {/* {showUsage &&
-          isExhausted &&
-          item.daily === 'daily' &&
-          renderDailyUsage()} */}
+        {renderUsageImg()}
 
         {renderCaution()}
 
@@ -526,24 +608,18 @@ const UsageItem: React.FC<UsageItemProps> = ({
         {renderWarning()}
       </View>
     );
-  }, [
-    renderAnimatedCircularProgress,
-    renderCaution,
-    renderTime,
-    renderWarning,
-    showUsage,
-  ]);
+  }, [renderCaution, renderTime, renderUsageImg, renderWarning]);
 
   const statusBox = useCallback(
     (statusCd: string) => {
-      if (statusCd === 'A')
+      if (statusCd === 'A') {
         return (
           <View>
             <View>
               <AppText key={item.key} style={styles.usageTitleBold}>
                 {item.prodName}
               </AppText>
-              {showStatus && (
+              {showTotalData && (
                 <AppText key={item.prodName} style={styles.bold14WarmGrey}>
                   {i18n.t('esim:quota', {
                     quota: utils.toDataVolumeString(quota || 0),
@@ -554,6 +630,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
             {usageRender()}
           </View>
         );
+      }
 
       if (isError)
         return (
@@ -638,7 +715,8 @@ const UsageItem: React.FC<UsageItemProps> = ({
       item.partner,
       item.prodName,
       quota,
-      showStatus,
+      showTotalData,
+      usage?.quota,
       usageRender,
     ],
   );
