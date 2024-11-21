@@ -490,6 +490,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           break;
         case 'mute':
           setMute((prev) => {
+            inviter?.sessionDescriptionHandler?.setMute(!prev);
             InCallManager.setMicrophoneMute(!prev);
             return !prev;
           });
@@ -521,6 +522,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       ccode,
       checkMic,
       dtmfSession,
+      inviter?.sessionDescriptionHandler,
       makeCall,
       navigation,
       point,
