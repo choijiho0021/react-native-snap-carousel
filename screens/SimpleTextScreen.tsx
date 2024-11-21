@@ -48,6 +48,7 @@ import i18n from '@/utils/i18n';
 import AppAlert from '@/components/AppAlert';
 import {parseJson} from '@/utils/utils';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
+import BackbuttonHandler from '@/components/BackbuttonHandler';
 
 const {scheme, apiUrl} = Env.get();
 const {width} = Dimensions.get('window');
@@ -166,6 +167,14 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
   // const [mode, setMode] = useState<SimpleTextScreenMode>('html');
   const [promoResult, setPromoResult] = useState('');
   const [btnDisabled, setBtnDisabled] = useState(false);
+
+  BackbuttonHandler({
+    navigation,
+    onBack: () => {
+      navigation.goBack();
+      return true;
+    },
+  });
 
   useEffect(() => {
     if (infoMap) setBody(infoMap.get(infoMapKey, [])[0]?.body || '');

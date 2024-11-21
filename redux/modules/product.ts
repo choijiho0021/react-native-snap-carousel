@@ -286,10 +286,12 @@ export const refreshProductInfo = (
       .forEach((elm) => {
         // remove it from the cart
         if (elm.orderItemId) {
-          CartActions.cartRemove({
-            orderId: cartId,
-            orderItemId: elm.orderItemId,
-          });
+          dispatch(
+            CartActions.cartRemove({
+              orderId: cartId,
+              orderItemId: elm.orderItemId,
+            }),
+          );
         }
       });
   }
@@ -319,7 +321,7 @@ export const handlePaymentError = (
   } else if (iccid && token) {
     // 결제 실패 통합
     // 캐시 및 포인트 업데이트,
-    AccountActions.getAccount({iccid, token});
+    dispatch(AccountActions.getAccount({iccid, token}));
   }
   AppAlert.info(i18n.t(text), '', () => navigation.popToTop());
 };
