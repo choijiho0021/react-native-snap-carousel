@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'stretch',
     paddingTop: 40,
-    paddingHorizontal: 20,
+    marginHorizontal: 10,
   },
   scrollContainer: {
     flex: 1,
