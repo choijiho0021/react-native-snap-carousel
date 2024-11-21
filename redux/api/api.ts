@@ -145,6 +145,7 @@ const path = {
       noti: 'rokebi/noti',
       talk: 'rokebi/talk',
       point: 'rokebi/talk/point',
+      voucher: 'rokebi/voucher',
       pointLog: 'rokebi/talk/point/log',
     },
     pv: {

@@ -19,6 +19,7 @@ import Country from './country';
 import Utils from './utils';
 import AppVersion from './appVersionApi';
 import TalkApi from './talkApi';
+import VoucherApi from './voucherApi';
 
 const API = {
   get default() {
@@ -77,6 +78,9 @@ const API = {
   },
   get TalkApi() {
     return TalkApi;
+  },
+  get VoucherApi() {
+    return VoucherApi;
   },
 };
 

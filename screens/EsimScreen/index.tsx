@@ -13,7 +13,11 @@ import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import moment from 'moment';
 import AsyncStorage from '@react-native-community/async-storage';
-import {RouteProp, useIsFocused} from '@react-navigation/native';
+import {
+  RouteProp,
+  useFocusEffect,
+  useIsFocused,
+} from '@react-navigation/native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {isDefined} from 'validate.js';
@@ -554,6 +558,16 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
       setIsVisibleReward(true);
     }
   }, [action.account, mobile, reward, isFocused]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // account 리프레시
+      if (token && iccid) {
+        console.log('@@@@ GetVoucher?');
+        action.account.getVoucher({iccid});
+      }
+    }, [action.account, iccid, token]),
+  );
 
   useEffect(() => {
     const {subsId, actionStr} = route?.params || {};
