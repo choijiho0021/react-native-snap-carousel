@@ -5,6 +5,7 @@ import utils from '@/redux/api/utils';
 import api, {ApiResult, ApiToken, DrupalNode, DrupalNodeJsonApi} from './api';
 import {CashExpire, CashHistory, Fortune} from '@/redux/modules/account';
 import {Currency} from './productApi';
+import {TalkSign} from './talkApi';
 
 export type RkbAccount = {
   nid: number;
@@ -517,6 +518,40 @@ const lotteryCoupon = ({
   );
 };
 
+export type VoucherSign = 'add' | 'deduct' | 'refund' | 'charge' | 'reward';
+
+// 임시 테스트용
+const patchVoucherPoint = ({
+  iccid,
+  token,
+  sign,
+  point,
+  code,
+}: {
+  iccid: string;
+  token: string;
+  sign: VoucherSign;
+  point: number; // 이건 테스트용
+  code: string;
+}) => {
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.voucher)}/${iccid}?_format=json`,
+
+    {
+      method: 'PATCH',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({
+        sign,
+        point,
+        code,
+      }),
+    },
+    (resp) => {
+      return resp;
+    },
+  );
+};
+
 export default {
   toAccount,
   toFile,
@@ -533,4 +568,5 @@ export default {
   donateCash,
   uploadFortuneImage,
   resetRealMobile,
+  patchVoucherPoint,
 };

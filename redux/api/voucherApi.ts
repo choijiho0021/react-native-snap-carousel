@@ -31,9 +31,9 @@ const getRatePerMinute = ({
   );
 };
 
-export type TalkSign = 'add' | 'deduct' | 'refund' | 'charge' | 'reward';
+export type TalkSign = 'register' | 'add' | 'deduct' | 'refund' | 'reward';
 
-const patchTalkPoint = ({
+const patchVoucherPoint = ({
   iccid,
   token,
   sign,
@@ -43,7 +43,7 @@ const patchTalkPoint = ({
   sign: TalkSign;
 }) => {
   return api.callHttp(
-    `${api.httpUrl(api.path.rokApi.rokebi.point)}/${iccid}?_format=json`,
+    `${api.httpUrl(api.path.rokApi.rokebi.voucher)}/${iccid}?_format=json`,
 
     {
       method: 'PATCH',
@@ -159,7 +159,7 @@ const getPointHistory = ({
 export default {
   getVoucherPoint,
   getExpPointInfo,
-  patchTalkPoint,
+  patchVoucherPoint,
   getPointHistory,
   getTariff,
   getEmgInfo,

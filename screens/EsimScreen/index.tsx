@@ -73,6 +73,11 @@ import BackbuttonHandler from '@/components/BackbuttonHandler';
 import LotteryButton from '../LotteryScreen/component/LotteryButton';
 import {windowWidth} from '@/constants/SliderEntry.style';
 import TalkRewardModal from '../RkbTalk/component/TalkRewardModal';
+import {
+  decryptAES256,
+  encryptAES256WithIv,
+} from '@/components/AppPaymentGateway/crypt';
+import {API} from '@/redux/api';
 
 const {esimGlobal, isIOS} = Env.get();
 
@@ -787,6 +792,23 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
           </View>
         )}
       </View>
+
+      <AppButton
+        onPress={() => {
+          if (iccid && token) {
+            API.Account.patchVoucherPoint({
+              iccid,
+              token,
+              sign: 'add',
+              point: 500,
+              code: 'TESTCODE',
+            }).then((rsp) => {
+              console.log('@@@ rsp :', rsp);
+            });
+          }
+        }}
+        title={'test'}
+      />
 
       <FlatList
         ref={flatListRef}
