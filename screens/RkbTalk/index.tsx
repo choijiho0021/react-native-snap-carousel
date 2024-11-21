@@ -85,7 +85,7 @@ type RkbTalkProps = {
 };
 
 const RkbTalk: React.FC<RkbTalkProps> = ({
-  account: {realMobile, iccid},
+  account: {realMobile, iccid, token},
   talk: {called, tariff, emg, tooltip, ccode},
   navigation,
   action,
@@ -120,9 +120,19 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   }, [duration, maxTime]);
 
   const isSuccessAuth = useMemo(() => (realMobile || '') !== '', [realMobile]);
+
   const {AudioStreamModule} = NativeModules;
   // android volume > 미디어 스트림 설정
   AudioStreamModule?.setMediaStream();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // account 리프레시
+      if (token && iccid) {
+        action.account.getAccount({iccid, token});
+      }
+    }, [action.account, iccid, token]),
+  );
 
   useEffect(() => {
     if (_.isEmpty(tariff)) {

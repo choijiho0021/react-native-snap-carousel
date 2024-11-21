@@ -441,6 +441,13 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             });
             break;
 
+          case notiActions.NOTI_TYPE_REALNAME:
+            navigation.navigate('TalkStack', {
+              screen: 'RkbTalk',
+            });
+
+            break;
+
           default:
             // 아직 일반 Noti 알림은 없으므로 공지사항 용으로만 사용, 후에 일반 Noti 상세페이지(notitype = noti)가 사용될 수 있도록 함
             navigation.navigate('SimpleText', {

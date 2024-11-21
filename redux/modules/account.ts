@@ -434,7 +434,8 @@ const updateAccountState = (
   if (payload.old_deviceToken || payload.old_fcmToken)
     newState.old_deviceToken = payload.old_deviceToken || payload.old_fcmToken;
 
-  if (payload.realMobile) newState.realMobile = payload.realMobile;
+  if (payload.realMobile !== undefined)
+    newState.realMobile = payload.realMobile;
 
   if (payload.simCardName) newState.simCardName = payload.simCardName;
   if (payload.simCardImage) newState.simCardImage = payload.simCardImage;
