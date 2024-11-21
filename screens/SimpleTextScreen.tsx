@@ -77,8 +77,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'stretch',
-    paddingTop: 40,
-    marginHorizontal: 10,
+    marginTop: 24,
+    // marginHorizontal: 10,
   },
   scrollContainer: {
     flex: 1,
@@ -451,7 +451,11 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
             marginTop: 24,
           }}>
           <AppText style={appStyles.bold24Text}>{bodyTitle}</AppText>
-          <AppText style={[appStyles.semiBold14Text, {color: colors.warmGrey}]}>
+          <AppText
+            style={[
+              appStyles.semiBold14Text,
+              {color: colors.warmGrey, lineHeight: 22},
+            ]}>
             {created?.format('MM월 DD일')}
           </AppText>
         </View>
