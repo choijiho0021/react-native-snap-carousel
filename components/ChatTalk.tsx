@@ -37,9 +37,10 @@ const ChatTalk = ({
   const settings = useMemo(
     () => ({
       pluginKey: talkPluginKey,
+      memberId: account.uuid,
       profile: account.loggedIn
         ? {
-            id: account.userId,
+            // id: account.userId,
             language: esimGlobal ? 'en' : 'ko',
             name: `${appId} - ${account.mobile}`,
             mobileNumber: account.mobile,
@@ -53,7 +54,7 @@ const ChatTalk = ({
             appVersion: `${VersionCheck.getCurrentVersion()}/${DeviceInfo.getBuildNumber()}`,
           },
     }),
-    [account.email, account.loggedIn, account.mobile, account.userId],
+    [account.email, account.loggedIn, account.mobile, account.uuid],
   );
 
   const openChannelTalk = useCallback(async () => {
