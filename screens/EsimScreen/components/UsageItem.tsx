@@ -95,11 +95,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 20,
     paddingVertical: 16,
-    paddingHorizontal: 16,
+    paddingLeft: 16,
+    paddingRight: 36,
     borderRadius: 3,
     alignItems: 'center',
     flexDirection: 'row',
-    // width: '100%',
+    width: '100%',
   },
   timeContainer: {
     flexDirection: 'row',
@@ -198,7 +199,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
     showTotalData,
     showResetTime,
     resetTime,
-    usageImage,
   ] = useMemo(
     () => [
       dataUsageOption?.mode?.includes('stu'),
@@ -207,9 +207,8 @@ const UsageItem: React.FC<UsageItemProps> = ({
       dataUsageOption?.mode?.includes('dat'),
       dataUsageOption?.mode?.includes('ret'),
       dataUsageOption?.ret,
-      dataUsageOption?.usaImg,
     ],
-    [dataUsageOption?.mode, dataUsageOption?.ret, dataUsageOption?.usaImg],
+    [dataUsageOption?.mode, dataUsageOption?.ret],
   );
 
   const canShowUsage = useCallback(
@@ -585,16 +584,18 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [clMtdTxt, item.daily, showUsage, warningDotTxt]);
 
   const renderUsageImg = useCallback(() => {
-    console.log('aaaaa showUsage', showUsage);
     if (showUsage) return renderAnimatedCircularProgress();
 
-    if (usageImage) {
+    if (item.dataVolume === '1024000') {
       return (
-        <Image source={{uri: usageImage}} style={{width: 148, height: 148}} />
+        <Image
+          source={require('@/assets/images/esim/airplane.png')}
+          style={{width: 148, height: 148}}
+        />
       );
     }
     return <AppSvgIcon style={{marginBottom: 20}} name="notShowEsimUsage" />;
-  }, [renderAnimatedCircularProgress, showUsage, usageImage]);
+  }, [item.dataVolume, renderAnimatedCircularProgress, showUsage]);
 
   const usageRender = useCallback(() => {
     return (
