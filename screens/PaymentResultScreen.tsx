@@ -14,6 +14,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import moment from 'moment';
 import Svg, {Line} from 'react-native-svg';
+import {AppEventsLogger} from 'react-native-fbsdk-next';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {PaymentItem} from '@/components/PaymentItemInfo';
@@ -160,6 +161,15 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   const [oldCart, setOldCart] = useState<Partial<CartModelState>>();
   const isSuccess = useMemo(() => params?.pymResult || false, [params]);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
+
+  useEffect(() => {
+    // 페이스북 픽셀 구매 데이터 전송 - 테스트 게정 0101000200으로 시작하는 경우에는 제외
+    if (isSuccess && oldCart && mobile && !mobile.startsWith('0101000200')) {
+      AppEventsLogger.logPurchase(oldCart.pymReq?.subtotal?.value || 0, 'KWD', {
+        param: 'value',
+      });
+    }
+  }, [isSuccess, mobile, oldCart]);
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {

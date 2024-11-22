@@ -2167,10 +2167,10 @@
   resolved "https://registry.npmjs.org/@react-native-picker/picker/-/picker-2.7.7.tgz"
   integrity sha512-CTHthVmx8ujlH/u5AnxLQfsheh/DoEbo+Kbx0HGTlbKVLC1eZ4Kr9jXIIUcwB7JEgOXifdZIPQCsoTc/7GQ0ag==
 
-"@react-native-seoul/naver-login@^4.0.2":
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/@react-native-seoul/naver-login/-/naver-login-4.0.2.tgz#bfea9f789f0dd9cccd246483173f4163099a38b9"
-  integrity sha512-lGzQSDMaCuhlZkOthpVPnU+utOFQbWVZWr8SWW1PBwXPswAGbhKAZktB6yyz7nVC0HquoWw2GNmtNU5oA5n6Ng==
+"@react-native-seoul/naver-login@^4.0.4":
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/@react-native-seoul/naver-login/-/naver-login-4.0.4.tgz#e185631e7ce0492884945aabcdb1e5ba973b7c0c"
+  integrity sha512-85+HirUEydaNP02HtKFRskBklN+6SERPE9AdYOjsesq+8YgSYMHGD92NdCytmTOw9dyHeut/wvBhC9V/VR+ScQ==
   dependencies:
     dooboolab-welcome "^1.3.2"
 
@@ -10208,12 +10208,10 @@ react-native-exit-app@^1.1.0:
   resolved "https://registry.npmjs.org/react-native-exit-app/-/react-native-exit-app-1.1.0.tgz"
   integrity sha512-Spne19zfMfJvnUTX909EHUqWMk69rATtLJq9XMBGpNSHhx0M7v5yetx2Z87egBhLOqQm+CWfD/oxWzDG8rbIQA==
 
-react-native-fbsdk-next@^11.2.0:
-  version "11.3.0"
-  resolved "https://registry.npmjs.org/react-native-fbsdk-next/-/react-native-fbsdk-next-11.3.0.tgz"
-  integrity sha512-Mb08KqlHh9mIAiIProAvxY8paKEcP4FGR2Hiz9QPxzkM+AxDk8DLcPv3QZrB/nkMOuSNYi4gtwdpao92WNzeUw==
-  dependencies:
-    xml2js "^0.4.23"
+react-native-fbsdk-next@^13.1.4:
+  version "13.1.4"
+  resolved "https://registry.yarnpkg.com/react-native-fbsdk-next/-/react-native-fbsdk-next-13.1.4.tgz#80c56f4cb4e66caa6537ceb524413627ea3a90fc"
+  integrity sha512-cdCGxlvdXnGU9tG2QcriTULRKCSa83mLSHFQIlt+hG493ErMbY+QiRy0ipYTDsVC0/Xp6B9H+PAS9JZYq+B+nw==
 
 react-native-flipper@0.164.0:
   version "0.164.0"
@@ -11076,7 +11074,7 @@ sane@^4.0.3:
     minimist "^1.1.1"
     walker "~1.0.5"
 
-sax@>=0.6.0, sax@^1.2.4:
+sax@^1.2.4:
   version "1.4.1"
   resolved "https://registry.npmjs.org/sax/-/sax-1.4.1.tgz"
   integrity sha512-+aWOz7yVScEGoKNd4PA10LZ8sk0A/z5+nXQG5giUO5rprX9jgYsTdov9qCchZiPIZezbZH+jRut8nPodFAX4Jg==
@@ -12620,23 +12618,10 @@ xml-parser@^1.2.1:
   dependencies:
     debug "^2.2.0"
 
-xml2js@^0.4.23:
-  version "0.4.23"
-  resolved "https://registry.npmjs.org/xml2js/-/xml2js-0.4.23.tgz"
-  integrity sha512-ySPiMjM0+pLDftHgXY4By0uswI3SPKLDw/i3UXbnO8M/p28zqexCUoPmQFrYD+/1BzhGJSs2i1ERWKJAtiLrug==
-  dependencies:
-    sax ">=0.6.0"
-    xmlbuilder "~11.0.0"
-
 xmlbuilder@^15.1.1:
   version "15.1.1"
   resolved "https://registry.npmjs.org/xmlbuilder/-/xmlbuilder-15.1.1.tgz"
   integrity sha512-yMqGBqtXyeN1e3TGYvgNgDVZ3j84W4cwkOXQswghol6APgZWaff9lnbvN7MHYJOiXsvGPXtjTYJEiC9J2wv9Eg==
-
-xmlbuilder@~11.0.0:
-  version "11.0.1"
-  resolved "https://registry.npmjs.org/xmlbuilder/-/xmlbuilder-11.0.1.tgz"
-  integrity sha512-fDlsI/kFEx7gLvbecc0/ohLG50fugQp8ryHzMTuW9vSa1GJ0XYWKnhsUx7oie3G98+r56aTQIUB4kht42R3JvA==
 
 xmldoc@^1.1.2:
   version "1.3.0"
