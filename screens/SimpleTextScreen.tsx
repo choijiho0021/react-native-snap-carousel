@@ -78,7 +78,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'stretch',
     marginTop: 24,
-    // marginHorizontal: 10,
   },
   scrollContainer: {
     flex: 1,
