@@ -549,8 +549,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   // register 실패하면 deactivate
   // AOR 개수 확인
 
-  useFocusEffect(
-    React.useCallback(() => {
+  useEffect(() => {
+    if (realMobile) {
       const transportOptions = {
         server: 'wss://talk.rokebi.com:8089/ws',
       };
@@ -603,8 +603,10 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           console.log('@@@ UA stopped', state);
         });
       };
-    }, [getPoint, realMobile]),
-  );
+    }
+
+    return () => {};
+  }, [getPoint, realMobile]);
 
   const updateTooltip = useCallback(
     (t: boolean) => action.talk.updateTooltip(t),
