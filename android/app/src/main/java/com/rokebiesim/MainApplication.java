@@ -208,6 +208,7 @@ public class MainApplication extends Application implements ReactApplication {
                             new FlipperPackage(),
                             new PagerViewPackage(),
                             new NetInfoPackage(),
+                            new NTrackerPackage(),
                             new RNCPickerPackage(),
                             new ReactNativeFirebaseAnalyticsPackage(),
                             new CookieManagerPackage()

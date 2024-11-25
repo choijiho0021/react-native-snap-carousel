@@ -44,6 +44,10 @@ import AppIcon from '@/components/AppIcon';
 import {getItemsOrderType} from '@/redux/models/purchaseItem';
 import PromotionCarousel from '@/components/PromotionCarousel';
 import {RkbPromotion} from '@/redux/api/promotionApi';
+import {
+  NTrackerConversionItem,
+  trackPurchaseEvent,
+} from '@/components/NativeModule/NTracker';
 
 const {esimGlobal} = Env.get();
 const {width: viewportWidth} = Dimensions.get('window');
@@ -162,12 +166,36 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   const isSuccess = useMemo(() => params?.pymResult || false, [params]);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
 
+  // 페이스북 픽셀 구매 데이터 수집
   useEffect(() => {
     // 페이스북 픽셀 구매 데이터 전송 - 테스트 게정 0101000200으로 시작하는 경우에는 제외
     if (isSuccess && oldCart && mobile && !mobile.startsWith('0101000200')) {
       AppEventsLogger.logPurchase(oldCart.pymReq?.subtotal?.value || 0, 'KWD', {
         param: 'value',
       });
+    }
+  }, [isSuccess, mobile, oldCart]);
+
+  // google analytics 데이터 수집
+  useEffect(() => {
+    Analytics.trackEvent('Payment', {
+      payment: `${params?.mode} Payment${isSuccess ? ' Success' : ' Fail'}`,
+    });
+    if (pymPrice && pymPrice.value > 0 && isSuccess) {
+      analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_payment`);
+    }
+  }, [isSuccess, params?.mode, pymPrice]);
+
+  // Naver GFA 데이터 수집 test
+  useEffect(() => {
+    //  테스트 게정 0101000200으로 시작하는 경우에는 제외
+    if (isSuccess && oldCart && mobile && !mobile.startsWith('0101000200')) {
+      const amount = 1400;
+      const items: NTrackerConversionItem[] = [
+        {quantity: 1, payAmount: 1, id: '1', name: 'test', category: 'test'},
+      ];
+
+      trackPurchaseEvent(amount, items);
     }
   }, [isSuccess, mobile, oldCart]);
 
@@ -292,15 +320,6 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
       if (isSuccess) action.cart.makeEmpty();
     }
   }, [action.cart, isSuccess, orderId, purchaseItems, pymPrice, pymReq, token]);
-
-  useEffect(() => {
-    Analytics.trackEvent('Payment', {
-      payment: `${params?.mode} Payment${isSuccess ? ' Success' : ' Fail'}`,
-    });
-    if (pymPrice && pymPrice.value > 0 && isSuccess) {
-      analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_payment`);
-    }
-  }, [isSuccess, params?.mode, pymPrice]);
 
   const dotLine = useCallback(
     () => (
