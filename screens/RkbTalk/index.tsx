@@ -86,7 +86,7 @@ type RkbTalkProps = {
 
 const RkbTalk: React.FC<RkbTalkProps> = ({
   account: {realMobile, iccid, token},
-  talk: {called, tariff, emg, tooltip, ccode},
+  talk: {called, tariff, emg, tooltip, ccode, terminateCall},
   navigation,
   action,
 }) => {
@@ -124,6 +124,19 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const {AudioStreamModule} = NativeModules;
   // android volume > 미디어 스트림 설정
   AudioStreamModule?.setMediaStream();
+
+  useEffect(() => {
+    if (terminateCall) {
+      talkActions.setTerminateCall(false);
+
+      if (inviter && inviter.state === SessionState.Established) {
+        // 종료 로직 실행
+        inviter.bye();
+
+        // 모달창 띄우기
+      }
+    }
+  }, [inviter, terminateCall]);
 
   useFocusEffect(
     React.useCallback(() => {
