@@ -18,7 +18,7 @@ import {emergencyCallNo} from '@/screens/EmergencyCallScreen';
 import i18n from '@/utils/i18n';
 import {utils} from '@/utils/utils';
 import {RkbTalkNavigationProp} from '..';
-import Keypad, {KeyType} from '../Keypad';
+import Keypad, {KeyType, ToggleKeyType} from '../Keypad';
 import TalkToolTip from '../TalkToolTip';
 
 const small = isDeviceSize('medium') || isDeviceSize('small');
@@ -139,6 +139,7 @@ type TalkMainProps = {
   navigation: RkbTalkNavigationProp;
   onPressKeypad?: (k: KeyType, d?: string) => void;
   onChange?: (d?: string) => void;
+  setPress?: (k: ToggleKeyType) => void;
   sessionState?: SessionState;
   showWarning: boolean;
   point: number;
@@ -148,6 +149,7 @@ type TalkMainProps = {
   tooltip: boolean;
   emgOn: string[][];
   updateTooltip: (t: boolean) => void;
+  pressed: string | undefined;
 };
 
 const TalkMain: React.FC<TalkMainProps> = ({
@@ -158,11 +160,13 @@ const TalkMain: React.FC<TalkMainProps> = ({
   dtmf,
   onPressKeypad,
   onChange,
+  setPress,
   min,
   showWarning,
   tooltip,
   emgOn = [],
   updateTooltip,
+  pressed,
 }) => {
   const {called, ccode, tariff} = useSelector((state: RootState) => state.talk);
   const [initial, calling, connected] = useMemo(
@@ -361,6 +365,8 @@ const TalkMain: React.FC<TalkMainProps> = ({
           navigation={navigation}
           style={styles.keypad}
           onPress={onPressKeypad}
+          setPress={setPress}
+          pressed={pressed}
           onChange={onChange}
           state={sessionState}
           showWarning={showWarning}

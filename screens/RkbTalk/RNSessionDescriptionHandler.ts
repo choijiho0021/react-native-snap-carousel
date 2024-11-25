@@ -76,6 +76,7 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
   // private localMediaStreamConstraints: MediaStreamConstraints | undefined;
 
   private onDataChannel: ((dataChannel: RTCDataChannel) => void) | undefined;
+
   localMediaStreamConstraints: any;
 
   /**
@@ -623,6 +624,19 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
     return this.mediaStreamFactory(constraints, this, options).then(
       (mediaStream) => this.setLocalMediaStream(mediaStream),
     );
+  }
+
+  /**
+   * 음소거 상태를 설정
+   * @param mute - true로 설정하면 음소거, false로 설정하면 음소거 해제.
+   */
+  public setMute(mute: boolean): void {
+    this.logger.debug(`RNSessionDescriptionHandler.setMute: ${mute}`);
+
+    // 로컬 미디어 스트림의 오디오 트랙 가져오기
+    return this._localMediaStream.getAudioTracks().forEach((track) => {
+      track.enabled = !mute; // 음소거 시 false, 해제 시 true
+    });
   }
 
   /**

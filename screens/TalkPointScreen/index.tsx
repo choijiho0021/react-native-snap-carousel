@@ -883,7 +883,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
         }
         renderItem={renderSectionItem}
         renderSectionHeader={({section: {title}}) => {
-          return year === title ? null : (
+          return year === title && orderType === 'desc' ? null : (
             <AppText style={styles.sectionHeader}>
               {i18n.t(`year`, {year: title})}
             </AppText>

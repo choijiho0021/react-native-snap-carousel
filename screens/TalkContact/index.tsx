@@ -3,6 +3,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import * as Hangul from 'hangul-js';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
+  Animated,
   AppState,
   Platform,
   SafeAreaView,
@@ -107,6 +108,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     paddingTop: 24,
     paddingBottom: 16,
+    height: 66,
     backgroundColor: colors.white,
   },
   sectionHeader: {
@@ -137,6 +139,7 @@ type TalkContactScreenProps = {
     talk: TalkAction;
   };
 };
+const up = 50;
 
 const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
   navigation,
@@ -156,7 +159,8 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
     JSON.parse(JSON.stringify(sectionKeys)),
   );
   const sectionListRef = useRef();
-  const [scrollY, setScrollY] = useState(-1);
+  const animatedView = useRef(new Animated.Value(58)).current;
+  const isTop = useRef(true);
 
   const beforeSync = useCallback(() => {
     return (
@@ -477,11 +481,6 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
     };
   }, [contactsPermission, navigation]);
 
-  const onScroll = useCallback((e) => {
-    const yOffset = e.nativeEvent.contentOffset.y;
-    setScrollY(yOffset);
-  }, []);
-
   const onCancel = useCallback(() => {
     onChangeText('');
     setSearchText(undefined);
@@ -496,20 +495,41 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
     [],
   );
 
+  const runAnimation = useCallback(
+    (v: boolean) => {
+      isTop.current = v;
+
+      Animated.parallel([
+        Animated.timing(animatedView, {
+          toValue: isTop.current ? 58 : 0,
+          duration: 500,
+          useNativeDriver: false,
+        }),
+      ]).start();
+    },
+    [animatedView],
+  );
+
   const renderSectionListHeader = useCallback(
     ({section}) => (
-      <>
-        {section?.key === sections[0]?.key && scrollY <= 0 && (
-          <View style={styles.headerView}>
-            <AppText style={appStyles.bold18Text}>
-              {i18n.t('talk:contact')}
-            </AppText>
-          </View>
+      <View style={{backgroundColor: colors.white}}>
+        {section?.key === sections[0]?.key && (
+          <Animated.View
+            style={{
+              overflow: 'hidden',
+              height: animatedView,
+            }}>
+            <View style={styles.headerView}>
+              <AppText style={appStyles.bold18Text}>
+                {i18n.t('talk:contact')}
+              </AppText>
+            </View>
+          </Animated.View>
         )}
         <AppText style={styles.sectionHeader}>{section?.key}</AppText>
-      </>
+      </View>
     ),
-    [scrollY, sections],
+    [animatedView, sections],
   );
 
   const contactsView = useCallback(() => {
@@ -526,7 +546,14 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
           renderItem={renderContactList}
           itemHeight={74} // contact list item height
           sectionHeaderHeight={20}
-          onScroll={onScroll}
+          onScrollEndDrag={({
+            nativeEvent: {
+              contentOffset: {y},
+            },
+          }) => {
+            if (isTop.current && y > up) runAnimation(false);
+            else if (!isTop.current && y <= 0) runAnimation(true);
+          }}
           renderSectionHeader={renderSectionListHeader}
           sidebarContainerStyle={styles.sidebarContainer}
           sidebarItemTextStyle={styles.sidebarItem}
@@ -537,6 +564,14 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
       <SectionList
         contentContainerStyle={{flexGrow: 1}}
         sections={searchResult}
+        onScrollEndDrag={({
+          nativeEvent: {
+            contentOffset: {y},
+          },
+        }) => {
+          if (isTop.current && y > up) runAnimation(false);
+          else if (!isTop.current && y <= 0) runAnimation(true);
+        }}
         renderItem={renderContactList}
         renderSectionHeader={renderSectionHeader}
         refreshing={pending}
@@ -545,11 +580,11 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
     );
   }, [
     contacts?.length,
-    onScroll,
     pending,
     renderContactList,
     renderSectionHeader,
     renderSectionListHeader,
+    runAnimation,
     searchResult,
     searchText,
     sections,

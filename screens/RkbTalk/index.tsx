@@ -103,6 +103,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
   const [dtmf, setDtmf] = useState<string>();
+  const [pressed, setPressed] = useState<string>();
   const [refreshing, setRefreshing] = useState(false);
   // const testNumber = '07079190190';
   const emgOn = useMemo(
@@ -122,7 +123,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const isSuccessAuth = useMemo(() => (realMobile || '') !== '', [realMobile]);
 
   const {AudioStreamModule} = NativeModules;
-  // android volume > 미디어 스트림 설정
+  // android ringback volume > 미디어 스트림 설정
   AudioStreamModule?.setMediaStream();
 
   useEffect(() => {
@@ -334,16 +335,18 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       getPoint();
     }, 1000);
     setDtmf('');
-
+    setPressed('');
     setMute(() => {
       InCallManager.setMicrophoneMute(false);
       return false;
     });
     setSpeakerPhone(() => {
       InCallManager.setSpeakerphoneOn(false);
+      InCallManager.setForceSpeakerphoneOn(false);
       return false;
     });
 
+    InCallManager.stop();
     // 저장했던 번호 삭제
     action.talk.updateNumberClicked({});
 
@@ -467,6 +470,15 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     [action.talk, cleanupMedia, getMaxCallTime, setupRemoteMedia, userAgent],
   );
 
+  // ios speaker on인채로 통화연결시 통화 speaker 동작안되는 이슈 수정
+  useEffect(() => {
+    if (speakerPhone) {
+      if (sessionState === SessionState.Established) {
+        InCallManager.setSpeakerphoneOn(true);
+      }
+    }
+  }, [sessionState, speakerPhone]);
+
   const onPressKeypad = useCallback(
     (k: string, d?: string) => {
       switch (k) {
@@ -504,12 +516,13 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           break;
         case 'mute':
           setMute((prev) => {
-            InCallManager.setMicrophoneMute(!prev);
+            inviter?.sessionDescriptionHandler?.setMute(!prev);
             return !prev;
           });
           break;
         case 'speaker':
           setSpeakerPhone((prev) => {
+            // incallmanager speaker는 ringback일때도 켜져야함.
             InCallManager.setSpeakerphoneOn(!prev);
             return !prev;
           });
@@ -535,6 +548,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       ccode,
       checkMic,
       dtmfSession,
+      inviter?.sessionDescriptionHandler,
       makeCall,
       navigation,
       point,
@@ -549,8 +563,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   // register 실패하면 deactivate
   // AOR 개수 확인
 
-  useFocusEffect(
-    React.useCallback(() => {
+  useEffect(() => {
+    if (realMobile) {
       const transportOptions = {
         server: 'wss://talk.rokebi.com:8089/ws',
       };
@@ -603,8 +617,10 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           console.log('@@@ UA stopped', state);
         });
       };
-    }, [getPoint, realMobile]),
-  );
+    }
+
+    return () => {};
+  }, [getPoint, realMobile]);
 
   const updateTooltip = useCallback(
     (t: boolean) => action.talk.updateTooltip(t),
@@ -639,9 +655,11 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
             showWarning={showWarning}
             onChange={onChange}
             onPressKeypad={onPressKeypad}
+            setPress={(k) => setPressed((prev) => (prev === k ? undefined : k))}
             tooltip={tooltip}
             emgOn={emgOn}
             updateTooltip={updateTooltip}
+            pressed={pressed}
           />
         ) : (
           <PhoneCertBox />

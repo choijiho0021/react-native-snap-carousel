@@ -82,14 +82,17 @@ const callKeys = [
 ];
 
 export type KeyType = 'call' | 'hangup' | 'speaker' | 'keypad' | 'mute';
+export type ToggleKeyType = 'speaker' | 'keypad' | 'mute';
 
 type KeypadProps = {
   navigation: RkbTalkNavigationProp;
   onPress?: (k: KeyType, d?: string) => void;
   onChange?: (d?: string) => void;
+  setPress?: (k: ToggleKeyType) => void;
   style: StyleProp<ViewStyle>;
   state?: SessionState;
   showWarning: boolean;
+  pressed?: string;
 };
 
 const Keypad: React.FC<KeypadProps> = ({
@@ -97,12 +100,13 @@ const Keypad: React.FC<KeypadProps> = ({
   style,
   onPress,
   onChange,
+  setPress, // 통화연결시 리렌더링 제거 목적으로 props로 전달 (상태값 리셋 방지)
   state,
   showWarning = false,
+  pressed,
 }) => {
   const [dtmf, setDtmf] = useState('');
   const [showKeypad, setShowKeypad] = useState(true);
-  const [pressed, setPressed] = useState<string>();
   const dispatch = useDispatch();
   const [ringSpeaker, setRingSpeaker] = useState<boolean>(false);
   const {updateCalledPty, appendCalledPty, delCalledPty} = bindActionCreators(
@@ -115,7 +119,7 @@ const Keypad: React.FC<KeypadProps> = ({
   }, [dtmf, onChange, showKeypad]);
 
   const renderKeyButton = useCallback(
-    (key: KeyType) => (
+    (key: ToggleKeyType) => (
       <View style={styles.keyButton}>
         <AppSvgIcon
           key={key}
@@ -123,11 +127,12 @@ const Keypad: React.FC<KeypadProps> = ({
           focused={key === pressed}
           style={styles.key}
           onPress={() => {
-            setPressed((prev) => (prev === key ? undefined : key));
+            setPress?.(key);
             if (key === 'keypad') setShowKeypad((prev) => !prev);
             else if (key === 'speaker' && SessionState.Establishing === state) {
               // ringback speaker 적용
               setRingSpeaker((prev) => {
+                InCallManager.setForceSpeakerphoneOn(!prev); // ringback 에서 스피커 바로 동작 안해서 추가 적용
                 SoundPlayer.setSpeaker(!prev);
                 return !prev;
               });
@@ -137,14 +142,13 @@ const Keypad: React.FC<KeypadProps> = ({
         />
       </View>
     ),
-    [onPress, pressed, state],
+    [onPress, pressed, setPress, state],
   );
 
   const initDtmf = useCallback(() => setDtmf(''), []);
 
   // dtmf는 keypad를 닫았다가 다시 열 경우에도 이전 이력 남아있어야 하는지 확인 필요
   const closeKeypad = useCallback(() => {
-    setPressed('');
     setShowKeypad(false);
     setRingSpeaker(false);
   }, []);
@@ -157,12 +161,6 @@ const Keypad: React.FC<KeypadProps> = ({
     // InCallManager.stop();
   }, [closeKeypad, initDtmf]);
 
-  useEffect(() => {
-    if (state === SessionState.Terminated) {
-      terminated();
-    }
-  }, [state, terminated]);
-
   useFocusEffect(
     React.useCallback(() => {
       closeKeypad();
@@ -172,6 +170,8 @@ const Keypad: React.FC<KeypadProps> = ({
   const playSound = useCallback(() => {
     try {
       InCallManager.start({media: 'audio'});
+      InCallManager.setForceSpeakerphoneOn(false); // 최초 실행시 스피커 제거 목적
+
       SoundPlayer.playSoundFile('ringback', 'mp3');
 
       // ringback 반복 재생
@@ -204,6 +204,9 @@ const Keypad: React.FC<KeypadProps> = ({
     ) {
       stopSound();
     }
+
+    if (state === SessionState.Terminated) terminated();
+
     return () => {
       terminated();
     };
