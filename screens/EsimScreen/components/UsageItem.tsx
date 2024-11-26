@@ -585,7 +585,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
   }, [clMtdTxt, item.daily, showUsage, warningDotTxt]);
 
   const renderUsageImg = useCallback(() => {
-    console.log('aaaaa showUsage', showUsage);
     if (showUsage) return renderAnimatedCircularProgress();
 
     if (usageImage) {

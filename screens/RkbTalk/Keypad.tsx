@@ -11,7 +11,6 @@ import {
   ViewStyle,
 } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
-import SoundPlayer from 'react-native-sound-player';
 import {useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {SessionState} from 'sip.js';
@@ -133,9 +132,19 @@ const Keypad: React.FC<KeypadProps> = ({
               // ringback speaker 적용
               setRingSpeaker((prev) => {
                 InCallManager.setForceSpeakerphoneOn(!prev); // ringback 에서 스피커 바로 동작 안해서 추가 적용
-                SoundPlayer.setSpeaker(!prev);
+                setRingSpeaker(true);
                 return !prev;
               });
+
+              // if (ringSpeaker) {
+              //   InCallManager.setSpeakerphoneOn(false); // 스피커 끄기
+              //   setRingSpeaker(false);
+              // } else {
+              //   InCallManager.start({media: 'audio'}); // 오디오 세션 시작
+              //   InCallManager.setSpeakerphoneOn(true); // 스피커 켜기
+              //   setRingSpeaker(true);
+              // }
+
               onPress?.(key);
             } else onPress?.(key);
           }}
@@ -156,9 +165,7 @@ const Keypad: React.FC<KeypadProps> = ({
   const terminated = useCallback(() => {
     closeKeypad();
     initDtmf();
-    // ringback 종료시에 stop할 경우, ios 통화시 소리 낼 수 없음
-    SoundPlayer.stop();
-    // InCallManager.stop();
+    InCallManager.stop();
   }, [closeKeypad, initDtmf]);
 
   useFocusEffect(
@@ -167,50 +174,19 @@ const Keypad: React.FC<KeypadProps> = ({
     }, [closeKeypad]),
   );
 
-  const playSound = useCallback(() => {
-    try {
-      InCallManager.start({media: 'audio'});
-      InCallManager.setForceSpeakerphoneOn(false); // 최초 실행시 스피커 제거 목적
-
-      SoundPlayer.playSoundFile('ringback', 'mp3');
-
-      // ringback 반복 재생
-      if (Platform.OS === 'android') {
-        // aos 재생 완료 이벤트로 반복 재생
-        SoundPlayer.addEventListener('FinishedPlaying', () => {
-          SoundPlayer.playSoundFile('ringback', 'mp3');
-        });
-      } else SoundPlayer.setNumberOfLoops(-1);
-    } catch (e) {
-      console.log('cannot play the sound file', e);
-    }
-  }, []);
-
-  const stopSound = useCallback(() => {
-    try {
-      SoundPlayer.stop();
-    } catch (e) {
-      console.log('Error stopping sound', e);
-    }
-  }, []);
-
   // ringback
   useEffect(() => {
-    if (SessionState.Establishing === state) playSound();
+    if (SessionState.Establishing === state)
+      InCallManager.start({media: 'audio', ringback: '_BUNDLE_'});
 
-    if (
-      state &&
-      [SessionState.Terminated, SessionState.Established].includes(state)
-    ) {
-      stopSound();
-    }
+    if (SessionState.Established === state) InCallManager.stopRingback();
 
     if (state === SessionState.Terminated) terminated();
 
-    return () => {
-      terminated();
-    };
-  }, [playSound, state, stopSound, terminated]);
+    // return () => {
+    //   terminated();
+    // };
+  }, [state, terminated]);
 
   const renderKey = useCallback(
     (st?: SessionState) => {

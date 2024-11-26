@@ -19,7 +19,7 @@ public class MainActivity extends ReactActivity {
     super.onCreate(null);
 
     // 볼륨 버튼이 미디어 볼륨을 조절하도록 설정
-    setVolumeControlStream(AudioManager.STREAM_MUSIC);
+    setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
     
     handleIntent(getIntent());
     // Your Codes.
