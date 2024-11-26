@@ -126,7 +126,7 @@ const Keypad: React.FC<KeypadProps> = ({
           focused={key === pressed}
           style={styles.key}
           onPress={() => {
-            setPress?.(key);
+            if (key !== 'keypad') setPress?.(key);
             if (key === 'keypad') setShowKeypad((prev) => !prev);
             else if (key === 'speaker' && SessionState.Establishing === state) {
               // ringback speaker 적용
