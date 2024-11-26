@@ -388,7 +388,16 @@ export const getContacts = createAsyncThunk(
     return Contacts.getAll()
       .then((c) => {
         const contacts = c.reduce((acc, cur, idx) => {
-          if (cur?.phoneNumbers?.length <= 1) return acc.concat(cur);
+          if (cur?.phoneNumbers?.length <= 1)
+            return acc.concat({
+              ...cur,
+              phoneNumbers: [
+                {
+                  ...cur?.phoneNumbers[0],
+                  number: cur?.phoneNumbers[0]?.number?.replace(/[^0-9]/g, ''),
+                },
+              ],
+            });
 
           // 저장된 번호 모두 하나의 row로 출력
           return [
@@ -397,7 +406,9 @@ export const getContacts = createAsyncThunk(
               return {
                 ...cur,
                 recordID: `${cur.recordID}:${i}`,
-                phoneNumbers: [p],
+                phoneNumbers: [
+                  {...p, number: p?.number?.replace(/[^0-9]/g, '')},
+                ],
               };
             }),
           ];
