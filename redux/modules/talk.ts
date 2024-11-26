@@ -388,6 +388,16 @@ export const getContacts = createAsyncThunk(
     return Contacts.getAll()
       .then((c) => {
         const contacts = c.reduce((acc, cur, idx) => {
+          // 번호 중복 확인
+          const dup = acc?.filter(
+            (v) =>
+              v?.phoneNumbers[0]?.number ===
+                cur?.phoneNumbers[0]?.number?.replace(/[^0-9]/g, '') &&
+              `${v?.familyName} ${v.givenName}` ===
+                `${cur?.familyName} ${cur?.givenName}`,
+          );
+          if (dup?.length > 0) return acc;
+
           if (cur?.phoneNumbers?.length <= 1)
             return acc.concat({
               ...cur,
