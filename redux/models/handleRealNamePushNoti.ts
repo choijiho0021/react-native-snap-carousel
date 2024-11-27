@@ -1,4 +1,6 @@
 import HandlePushNoti from './handlePushNoti';
+import i18n from '@/utils/i18n';
+import AppAlert from '@/components/AppAlert';
 
 class HandleRealNamePushNoti extends HandlePushNoti {
   handleNoti() {
@@ -6,6 +8,8 @@ class HandleRealNamePushNoti extends HandlePushNoti {
       screen: 'RkbTalk',
     });
     this.terminatedCall(true);
+
+    AppAlert.info(i18n.t('talk:duplicate:realName'), '', () => {});
   }
 }
 

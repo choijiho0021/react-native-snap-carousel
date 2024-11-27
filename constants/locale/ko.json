@@ -1897,6 +1897,7 @@
   "qrInfo:tab:manual": "수동입력",
 
   "talk": "통화",
+  "talk:duplicate:realName": "다른 단말에서 고객님의 번호로 본인 인증이 발생하였습니다. 본인 인증 후 다시 사용해 주시길 바랍니다. ",
   "talk:call:minLength": "전화 번호를 다시 확인해 주세요.",
   "talk:call:checkPoint": "톡포인트가 부족하여 통화 서비스를 이용할 수 없어요.\n상품을 구매 또는 발권해서 톡포인트를 적립해 보세요!",
   "talk:free": "무료통화",
