@@ -1,6 +1,6 @@
 import {NativeModules} from 'react-native';
 
-const {NTracker} = NativeModules;
+const {NaverTracker} = NativeModules;
 
 export declare type NTrackerConversionItem = {
   quantity: number;
@@ -14,8 +14,10 @@ export const trackPurchaseEvent = async (
   amount: number,
   items: NTrackerConversionItem[],
 ) => {
+  console.log('aaaaa NaverTracker', NaverTracker);
+
   try {
-    const result = await NTracker.trackPurchaseEvent(amount, items);
+    const result = await NaverTracker.trackPurchaseEvent(amount, items);
     console.log('trackPurchaseEvent Success:', result);
   } catch (error) {
     console.error('trackPurchaseEvent Error:', error);

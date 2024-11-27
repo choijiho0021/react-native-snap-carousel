@@ -23,7 +23,7 @@ class NTrackerModule extends ReactContextBaseJavaModule {
     @NonNull
     @Override
     public String getName() {
-        return "NTracker";
+        return "NaverTracker";
     }
 
     @ReactMethod
