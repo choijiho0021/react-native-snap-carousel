@@ -564,16 +564,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
     }
   }, [action.account, mobile, reward, isFocused]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      // account 리프레시
-      if (token && iccid) {
-        console.log('@@@@ GetVoucher?');
-        action.account.getVoucher({iccid});
-      }
-    }, [action.account, iccid, token]),
-  );
-
   useEffect(() => {
     const {subsId, actionStr} = route?.params || {};
 

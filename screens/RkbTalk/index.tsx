@@ -125,7 +125,6 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     React.useCallback(() => {
       // account 리프레시
       if (token && iccid) {
-        action.account.getVoucher({iccid});
         action.account.getAccount({iccid, token});
       }
     }, [action.account, iccid, token]),
