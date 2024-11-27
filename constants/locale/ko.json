@@ -1423,6 +1423,16 @@
   "mypage:preparing": "서비스 준비중",
   "mypage:mailInfo": "* 구매하신 eSIM 상품은 본 이메일로 발송됩니다.",
   "mypage:coupon": "쿠폰함",
+
+  "mypage:cash:amount": "충전 후 잔액",
+  "mypage:charge:cash": "캐시 충전",
+  "mypage:charge:voucher": "상품권 등록",
+
+  "mypage:voucher:code": "상품권 코드",
+  "mypage:voucher:ocr": "교환권 이미지 불러오기",
+  "mypage:voucher:use": "상품권 사용하기",
+  "mypage:voucher:noti": "박스를 꾹 누르면 상품권 코드를 붙여넣기할 수 있어요.",
+
   "coupon:inputCode": "쿠폰 코드를 입력하세요",
   "coupon:reg": "쿠폰등록",
   "coupon:reg:succ": "쿠폰이 등록되었습니다.",

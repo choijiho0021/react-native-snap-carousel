@@ -518,22 +518,37 @@ const lotteryCoupon = ({
   );
 };
 
-export type VoucherSign = 'add' | 'deduct' | 'refund' | 'charge' | 'reward';
+export type VoucherSign =
+  | 'add'
+  | 'deduct'
+  | 'refund'
+  | 'charge'
+  | 'reward'
+  | 'register';
 
 // 임시 테스트용
 const patchVoucherPoint = ({
   iccid,
   token,
   sign,
-  point,
   code,
 }: {
   iccid: string;
   token: string;
   sign: VoucherSign;
-  point: number; // 이건 테스트용
   code: string;
 }) => {
+  console.log(
+    '@@ json : ',
+    JSON.stringify({
+      sign,
+      code,
+    }),
+  );
+  console.log(
+    "@@@ api.withToken(token, 'json') : ",
+    api.withToken(token, 'json'),
+  );
   return api.callHttp(
     `${api.httpUrl(api.path.rokApi.rokebi.voucher)}/${iccid}?_format=json`,
 
@@ -542,7 +557,6 @@ const patchVoucherPoint = ({
       headers: api.withToken(token, 'json'),
       body: JSON.stringify({
         sign,
-        point,
         code,
       }),
     },
