@@ -8,7 +8,6 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
-  NativeModules,
   Platform,
   SafeAreaView,
   StatusBar,
@@ -121,10 +120,6 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   }, [duration, maxTime]);
 
   const isSuccessAuth = useMemo(() => (realMobile || '') !== '', [realMobile]);
-
-  const {AudioStreamModule} = NativeModules;
-  // android ringback volume > 미디어 스트림 설정
-  AudioStreamModule?.setMediaStream();
 
   useFocusEffect(
     React.useCallback(() => {
@@ -333,7 +328,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       return false;
     });
 
-    InCallManager.stop();
+    // InCallManager.stop();
     // 저장했던 번호 삭제
     action.talk.updateNumberClicked({});
 
