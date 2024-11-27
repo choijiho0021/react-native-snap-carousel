@@ -32,6 +32,8 @@ import TabBar from '../CountryScreen/TabBar';
 import {API} from '@/redux/api';
 import AppTextInput from '@/components/AppTextInput';
 import AppAlert from '@/components/AppAlert';
+import VoucherBottomAlert from './VoucherBottomAlert';
+import RenderChargeAmount from './RenderChargeAmount';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -121,14 +123,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  chargeAmountView: {
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingVertical: 5,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.gray02,
-  },
 });
 
 type RechargeTabType = 'cash' | 'voucher';
@@ -164,6 +158,8 @@ const rechargeChoice =
         [25, 30],
         [40, 50],
       ];
+
+const TEST_OPTION = true;
 
 const RechargeScreen: React.FC<RechargeScreenProps> = ({
   navigation,
@@ -218,6 +214,13 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
               sign: 'register',
               code: voucherCode,
             }).then((rsp) => {
+              // test 용 그냥 alert 띄우기
+
+              if (TEST_OPTION) {
+                setShowAlert(true);
+                return;
+              }
+
               if (rsp?.result === 0) {
                 console.log('@@@@ ');
               } else {
@@ -303,7 +306,7 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
               {rechargeChoice.map(rechargeButton)}
             </View>
           </ScrollView>
-          {renderChargeAmount()}
+          <RenderChargeAmount amount={amount} balance={balance} />
           <AppButton
             title={i18n.t('rch:recharge')}
             titleStyle={[appStyles.medium18, {color: colors.white}]}
@@ -362,7 +365,7 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
         </>
       );
     },
-    [onSubmit, rechargeButton, renderChargeAmount, selected, voucherCode],
+    [amount, balance, onSubmit, rechargeButton, selected, voucherCode],
   );
   const renderSelectedPane = useCallback(() => {
     return (
@@ -393,6 +396,15 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
       </View>
 
       {renderSelectedPane()}
+      <VoucherBottomAlert
+        visible={showAlert}
+        onClickButton={() => {
+          console.log('상품권 등록하기??');
+          setShowAlert(false);
+        }}
+        setVisible={setShowAlert}
+        balance={balance}
+      />
     </SafeAreaView>
   );
 };
