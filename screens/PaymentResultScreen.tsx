@@ -181,19 +181,33 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     Analytics.trackEvent('Payment', {
       payment: `${params?.mode} Payment${isSuccess ? ' Success' : ' Fail'}`,
     });
-    if (pymPrice && pymPrice.value > 0 && isSuccess) {
+    if (
+      pymPrice &&
+      pymPrice.value > 0 &&
+      isSuccess &&
+      mobile &&
+      !mobile.startsWith('0101000200')
+    ) {
       analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_payment`);
     }
-  }, [isSuccess, params?.mode, pymPrice]);
+  }, [isSuccess, mobile, params?.mode, pymPrice]);
 
   // Naver GFA 데이터 수집 test
   useEffect(() => {
     //  테스트 게정 0101000200으로 시작하는 경우에는 제외
     if (isSuccess && oldCart && mobile && !mobile.startsWith('0101000200')) {
-      const amount = 1400;
-      const items: NTrackerConversionItem[] = [
-        {quantity: 1, payAmount: 1, id: '1', name: 'test', category: 'test'},
-      ];
+      const amount = oldCart.pymReq?.subtotal?.value || 0;
+      const items = oldCart.purchaseItems?.map((elm) => ({
+        quantity: elm.qty,
+        payAmount: elm.price.value * elm.qty,
+        id: elm.key,
+        name: elm.sku,
+        category: elm.type,
+      })) as NTrackerConversionItem[];
+
+      // const items: NTrackerConversionItem[] = [
+      //   {quantity: 1, payAmount: 1, id: '1', name: 'test', category: 'test'},
+      // ];
 
       trackPurchaseEvent(amount, items);
     }
