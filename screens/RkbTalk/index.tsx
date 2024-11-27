@@ -126,19 +126,6 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   // android ringback volume > 미디어 스트림 설정
   AudioStreamModule?.setMediaStream();
 
-  useEffect(() => {
-    if (terminateCall) {
-      talkActions.setTerminateCall(false);
-
-      if (inviter && inviter.state === SessionState.Established) {
-        // 종료 로직 실행
-        inviter.bye();
-
-        // 모달창 띄우기
-      }
-    }
-  }, [inviter, terminateCall]);
-
   useFocusEffect(
     React.useCallback(() => {
       // account 리프레시
@@ -353,6 +340,30 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     setRefreshing(false);
   }, [action.talk, getPoint]);
 
+  useEffect(() => {
+    console.log(
+      '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n',
+    );
+    console.log('@@@@ useEffect 호출 ', terminateCall);
+    if (terminateCall) {
+      talkActions.setTerminateCall(false);
+      console.log('@@@ 동작 체크');
+
+      console.log('@@@@ inviter : ', inviter);
+      if (inviter) {
+        // 종료 로직 실행
+        inviter.bye();
+        cleanupMedia();
+
+        action.account.getAccount({iccid, token});
+        // 모달창 띄우기
+      }
+
+      talkActions.setTerminateCall(false);
+      console.log('@@@@\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n');
+    }
+  }, [action.account, cleanupMedia, iccid, inviter, terminateCall, token]);
+
   // 마이크 권한, 통화시에 권한확인
   const checkMic = useCallback(() => {
     return Promise.resolve(checkPermission('mic')).then((r) => {
@@ -455,6 +466,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
                   },
                 };
               }
+              console.log('@@@@@@@@@@@@@@@@@@@@@@@@ setIniviter ');
               setInviter(inv);
             });
           })
@@ -646,6 +658,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         <AppActivityIndicator visible={refreshing || false} />
         {isSuccessAuth ? (
           <TalkMain
+            terminateCall={terminateCall}
             navigation={navigation}
             sessionState={sessionState}
             min={min}

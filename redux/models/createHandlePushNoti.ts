@@ -5,6 +5,7 @@ import HandleNormalPushNoti from './handleNormalPushNoti';
 import HandleProvisionPushNoti from './handleProvisionPushNoti';
 import HandleEventPushNoti from './handleEventPushNoti';
 import {HandlePushNotiOptions} from './handlePushNoti';
+import HandleRealNamePushNoti from './handleRealNamePushNoti';
 
 export default function createHandlePushNoti(
   navigation,
@@ -23,6 +24,10 @@ export default function createHandlePushNoti(
   }
   if (type === notiActions.NOTI_TYPE_EVENT) {
     return new HandleEventPushNoti(navigation, payload, options);
+  }
+
+  if (type === notiActions.NOTI_TYPE_REALNAME) {
+    return new HandleRealNamePushNoti(navigation, payload, options);
   }
   // else if (type == notiActions.NOTI_TYPE_REPLY) {
   //   return new HandleReplyPushNoti(navigation, payload, options);
