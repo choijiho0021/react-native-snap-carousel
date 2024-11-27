@@ -793,23 +793,6 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         )}
       </View>
 
-      <AppButton
-        onPress={() => {
-          if (iccid && token) {
-            API.Account.patchVoucherPoint({
-              iccid,
-              token,
-              sign: 'add',
-              point: 500,
-              code: 'TESTCODE',
-            }).then((rsp) => {
-              console.log('@@@ rsp :', rsp);
-            });
-          }
-        }}
-        title={'test'}
-      />
-
       <FlatList
         ref={flatListRef}
         data={subsData}

@@ -336,28 +336,31 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   }, [action.talk, getPoint]);
 
   useEffect(() => {
-    console.log(
-      '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n',
-    );
-    console.log('@@@@ useEffect 호출 ', terminateCall);
-    if (terminateCall) {
-      talkActions.setTerminateCall(false);
-      console.log('@@@ 동작 체크');
-
-      console.log('@@@@ inviter : ', inviter);
-      if (inviter) {
+    if (terminateCall && called) {
+      action.talk.setTerminateCall(false);
+      if (inviter && inviter.state === SessionState.Established) {
         // 종료 로직 실행
+        action.talk.callChanged({
+          key: inviter?.request?.callId,
+          destination: called,
+        });
         inviter.bye();
         cleanupMedia();
 
         action.account.getAccount({iccid, token});
         // 모달창 띄우기
       }
-
-      talkActions.setTerminateCall(false);
-      console.log('@@@@\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n');
     }
-  }, [action.account, cleanupMedia, iccid, inviter, terminateCall, token]);
+  }, [
+    action.account,
+    action.talk,
+    called,
+    cleanupMedia,
+    iccid,
+    inviter,
+    terminateCall,
+    token,
+  ]);
 
   // 마이크 권한, 통화시에 권한확인
   const checkMic = useCallback(() => {
