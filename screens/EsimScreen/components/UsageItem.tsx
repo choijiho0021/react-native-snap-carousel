@@ -92,15 +92,12 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   cautionContainer: {
-    marginHorizontal: 20,
+    marginHorizontal: 16,
     marginTop: 20,
     paddingVertical: 16,
-    paddingLeft: 16,
-    paddingRight: 36,
+    paddingHorizontal: 16,
     borderRadius: 3,
-    alignItems: 'center',
     flexDirection: 'row',
-    width: '100%',
   },
   timeContainer: {
     flexDirection: 'row',
@@ -114,7 +111,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     flex: 1,
-    height: 88,
+    // height: 88,
   },
   timeDivider: {
     marginHorizontal: 4,
@@ -358,6 +355,7 @@ const UsageItem: React.FC<UsageItemProps> = ({
         style={{
           ...styles.cautionContainer,
           backgroundColor: getCuationColor(key).bg,
+          width: key === 'notShow' ? '100%' : undefined,
         }}>
         <AppSvgIcon
           name={getCuationColor(key).icon}
@@ -586,15 +584,14 @@ const UsageItem: React.FC<UsageItemProps> = ({
   const renderUsageImg = useCallback(() => {
     if (showUsage) return renderAnimatedCircularProgress();
 
-    if (item.dataVolume === '1024000') {
-      return (
-        <Image
-          source={require('@/assets/images/esim/airplane.png')}
-          style={{width: 148, height: 148}}
-        />
-      );
-    }
-    return <AppSvgIcon style={{marginBottom: 20}} name="notShowEsimUsage" />;
+    return (
+      <AppSvgIcon
+        style={{marginBottom: 20}}
+        name={
+          item.dataVolume === '1024000' ? 'alldayUsaImg' : 'notShowEsimUsage'
+        }
+      />
+    );
   }, [item.dataVolume, renderAnimatedCircularProgress, showUsage]);
 
   const usageRender = useCallback(() => {
