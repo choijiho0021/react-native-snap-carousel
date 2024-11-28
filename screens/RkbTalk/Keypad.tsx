@@ -136,15 +136,6 @@ const Keypad: React.FC<KeypadProps> = ({
                 return !prev;
               });
 
-              // if (ringSpeaker) {
-              //   InCallManager.setSpeakerphoneOn(false); // 스피커 끄기
-              //   setRingSpeaker(false);
-              // } else {
-              //   InCallManager.start({media: 'audio'}); // 오디오 세션 시작
-              //   InCallManager.setSpeakerphoneOn(true); // 스피커 켜기
-              //   setRingSpeaker(true);
-              // }
-
               onPress?.(key);
             } else onPress?.(key);
           }}
