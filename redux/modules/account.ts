@@ -53,6 +53,11 @@ const getCashHistory = createAsyncThunk(
   API.Account.getCashHistory,
 );
 
+const getVoucher = createAsyncThunk(
+  'account/getVoucher',
+  API.VoucherApi.getVoucherPoint,
+);
+
 const getCashExpire = createAsyncThunk(
   'account/getCashExpire',
   API.Account.getCashExpire,
@@ -624,6 +629,12 @@ const slice = createSlice({
       return state;
     });
 
+    builder.addCase(getVoucher.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      console.log('@@@@ getVoucher result : ', result, ', objects : ', objects);
+    });
+
     builder.addCase(getCashExpire.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
@@ -751,6 +762,7 @@ export const actions = {
   getAccount,
   getCashHistory,
   getCashExpire,
+  getVoucher,
   getUserId,
   changePushNoti,
   uploadPicture,

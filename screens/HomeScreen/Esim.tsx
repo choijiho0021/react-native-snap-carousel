@@ -56,6 +56,7 @@ import {
 } from '@/redux/modules/account';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
+import {actions as talkActions, TalkAction} from '@/redux/modules/talk';
 import {
   actions as notiActions,
   NotiAction,
@@ -172,6 +173,7 @@ type EsimProps = {
     noti: NotiAction;
     cart: CartAction;
     modal: ModalAction;
+    talk: TalkAction;
   };
 };
 
@@ -573,6 +575,7 @@ const Esim: React.FC<EsimProps> = ({
         isRegister: type === 'register',
         updateAccount: action.account.updateAccount,
         getNotiSubs: action.order.getNotiSubs,
+        terminatedCall: action.talk.setTerminateCall,
         token: account?.token,
         clearCurrentAccount: () => {
           Promise.all([
@@ -596,6 +599,7 @@ const Esim: React.FC<EsimProps> = ({
       action.cart,
       action.noti,
       action.order,
+      action.talk.setTerminateCall,
       navigation,
     ],
   );
@@ -911,6 +915,7 @@ export default connect(
       order: bindActionCreators(orderActions, dispatch),
       cart: bindActionCreators(cartActions, dispatch),
       modal: bindActionCreators(modalActions, dispatch),
+      talk: bindActionCreators(talkActions, dispatch),
     },
   }),
 )(Esim);

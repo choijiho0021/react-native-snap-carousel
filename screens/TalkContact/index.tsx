@@ -139,7 +139,6 @@ type TalkContactScreenProps = {
     talk: TalkAction;
   };
 };
-const up = 50;
 
 const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
   navigation,
@@ -159,8 +158,6 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
     JSON.parse(JSON.stringify(sectionKeys)),
   );
   const sectionListRef = useRef();
-  const animatedView = useRef(new Animated.Value(58)).current;
-  const isTop = useRef(true);
 
   const beforeSync = useCallback(() => {
     return (
@@ -248,7 +245,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
       // 한글 이름 중에서 초성, contact map
       if (!_.isEmpty(currentContacts)) {
         currentContacts?.map((item) => {
-          const name = item.givenName + item.familyName;
+          const name = item.familyName + item.givenName;
           // 한글일 경우
           if (checkKor.test(name)) {
             const disassemble = Hangul.disassemble(name, true);
@@ -282,7 +279,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
   const getFirstLetter = useCallback(
     (item: any) => {
       // 한글 이름 중에서 초성, contact map
-      const name = item.givenName + item.familyName;
+      const name = item.familyName + item.givenName;
       let resSection = {};
       // 한글일 경우
       if (checkKor.test(name)) {
@@ -357,10 +354,10 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
           if (Hangul.isComplete(text)) {
             // 한글 글자검색
             currentSearchResult = currentContacts.filter((item) => {
-              const r = searcher.search(item.givenName + item.familyName) >= 0;
+              const r = searcher.search(item.familyName + item.givenName) >= 0;
 
               const h = Hangul.rangeSearch(
-                `${item.givenName} ${item.familyName}`,
+                `${item.familyName} ${item.givenName}`,
                 text,
               );
               if (r) setHighlight(highlight.set(item.recordID, h[0]));
@@ -370,7 +367,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
         } else {
           // 영어검색
           currentSearchResult = currentContacts.filter((item) => {
-            const r = `${item.givenName} ${item.familyName}`
+            const r = `${item.familyName} ${item.givenName}`
               .toLowerCase()
               .indexOf(txt);
             if (r >= 0) {
@@ -408,7 +405,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
   const onPress = useCallback(
     (contactData: Contact) => {
       const num = getNumber(contactData?.phoneNumbers[0]?.number);
-      const name = `${contactData?.givenName} ${contactData?.familyName}`;
+      const name = `${contactData?.familyName} ${contactData?.givenName}`;
 
       action.talk.updateNumberClicked({num, name});
       navigation.goBack();
@@ -422,7 +419,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
       return (
         <ContactListItem
           key={val.recordID}
-          title={`${val.givenName} ${val.familyName}`}
+          title={`${val.familyName} ${val.givenName}`}
           uri={val.thumbnailPath}
           data={val}
           onPress={onPress}
@@ -495,41 +492,11 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
     [],
   );
 
-  const runAnimation = useCallback(
-    (v: boolean) => {
-      isTop.current = v;
-
-      Animated.parallel([
-        Animated.timing(animatedView, {
-          toValue: isTop.current ? 58 : 0,
-          duration: 500,
-          useNativeDriver: false,
-        }),
-      ]).start();
-    },
-    [animatedView],
-  );
-
   const renderSectionListHeader = useCallback(
     ({section}) => (
-      <View style={{backgroundColor: colors.white}}>
-        {section?.key === sections[0]?.key && (
-          <Animated.View
-            style={{
-              overflow: 'hidden',
-              height: animatedView,
-            }}>
-            <View style={styles.headerView}>
-              <AppText style={appStyles.bold18Text}>
-                {i18n.t('talk:contact')}
-              </AppText>
-            </View>
-          </Animated.View>
-        )}
-        <AppText style={styles.sectionHeader}>{section?.key}</AppText>
-      </View>
+      <AppText style={styles.sectionHeader}>{section?.key}</AppText>
     ),
-    [animatedView, sections],
+    [],
   );
 
   const contactsView = useCallback(() => {
@@ -546,14 +513,6 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
           renderItem={renderContactList}
           itemHeight={74} // contact list item height
           sectionHeaderHeight={20}
-          onScrollEndDrag={({
-            nativeEvent: {
-              contentOffset: {y},
-            },
-          }) => {
-            if (isTop.current && y > up) runAnimation(false);
-            else if (!isTop.current && y <= 0) runAnimation(true);
-          }}
           renderSectionHeader={renderSectionListHeader}
           sidebarContainerStyle={styles.sidebarContainer}
           sidebarItemTextStyle={styles.sidebarItem}
@@ -564,14 +523,6 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
       <SectionList
         contentContainerStyle={{flexGrow: 1}}
         sections={searchResult}
-        onScrollEndDrag={({
-          nativeEvent: {
-            contentOffset: {y},
-          },
-        }) => {
-          if (isTop.current && y > up) runAnimation(false);
-          else if (!isTop.current && y <= 0) runAnimation(true);
-        }}
         renderItem={renderContactList}
         renderSectionHeader={renderSectionHeader}
         refreshing={pending}
@@ -584,7 +535,6 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
     renderContactList,
     renderSectionHeader,
     renderSectionListHeader,
-    runAnimation,
     searchResult,
     searchText,
     sections,
@@ -602,6 +552,9 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
         />
       </View>
       {showContacts && !_.isEmpty(searchText) && <View style={{height: 24}} />}
+      <View style={styles.headerView}>
+        <AppText style={appStyles.bold18Text}>{i18n.t('talk:contact')}</AppText>
+      </View>
       {showContacts ? contactsView() : beforeSync()}
     </SafeAreaView>
   );

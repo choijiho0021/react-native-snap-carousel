@@ -85,7 +85,7 @@ type RkbTalkProps = {
 
 const RkbTalk: React.FC<RkbTalkProps> = ({
   account: {realMobile, iccid, token},
-  talk: {called, tariff, emg, tooltip, ccode},
+  talk: {called, tariff, emg, tooltip, ccode, terminateCall},
   navigation,
   action,
 }) => {
@@ -334,6 +334,33 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     setRefreshing(false);
   }, [action.talk, getPoint]);
 
+  useEffect(() => {
+    if (terminateCall && called) {
+      action.talk.setTerminateCall(false);
+      if (inviter && inviter.state === SessionState.Established) {
+        // 종료 로직 실행
+        action.talk.callChanged({
+          key: inviter?.request?.callId,
+          destination: called,
+        });
+        inviter.bye();
+        cleanupMedia();
+
+        action.account.getAccount({iccid, token});
+        // 모달창 띄우기
+      }
+    }
+  }, [
+    action.account,
+    action.talk,
+    called,
+    cleanupMedia,
+    iccid,
+    inviter,
+    terminateCall,
+    token,
+  ]);
+
   // 마이크 권한, 통화시에 권한확인
   const checkMic = useCallback(() => {
     return Promise.resolve(checkPermission('mic')).then((r) => {
@@ -436,6 +463,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
                   },
                 };
               }
+              console.log('@@@@@@@@@@@@@@@@@@@@@@@@ setIniviter ');
               setInviter(inv);
             });
           })
@@ -514,7 +542,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
               body: {
                 contentDisposition: 'render',
                 contentType: 'application/dtmf-relay',
-                content: `Signal=${d}\r\nDuration=1000`,
+                content: `Signal=${d}\r\nDuration=100`,
               },
             },
           });
@@ -627,6 +655,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         <AppActivityIndicator visible={refreshing || false} />
         {isSuccessAuth ? (
           <TalkMain
+            terminateCall={terminateCall}
             navigation={navigation}
             sessionState={sessionState}
             min={min}

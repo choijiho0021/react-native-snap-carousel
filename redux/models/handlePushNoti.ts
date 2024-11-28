@@ -7,6 +7,7 @@ export type HandlePushNotiOptions = {
   mobile?: string;
   iccid?: string;
   clearCurrentAccount: () => void;
+  terminatedCall: any;
 };
 
 class HandlePushNoti {
@@ -32,6 +33,8 @@ class HandlePushNoti {
 
   protected iccid: any;
 
+  protected terminatedCall: any;
+
   constructor(
     navigation: any, // replace 'any' with the actual type of 'navigation'
     payload: any, // replace 'any' with the actual type of 'payload'
@@ -44,6 +47,7 @@ class HandlePushNoti {
       getNotiSubs,
       token,
       clearCurrentAccount,
+      terminatedCall,
     }: HandlePushNotiOptions,
   ) {
     this.navigation = navigation;
@@ -57,6 +61,7 @@ class HandlePushNoti {
     this.clearCurrentAccount = clearCurrentAccount;
     this.mobile = mobile;
     this.iccid = iccid;
+    this.terminatedCall = terminatedCall;
   }
 }
 export default HandlePushNoti;

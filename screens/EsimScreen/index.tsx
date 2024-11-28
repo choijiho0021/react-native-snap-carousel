@@ -13,7 +13,11 @@ import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import moment from 'moment';
 import AsyncStorage from '@react-native-community/async-storage';
-import {RouteProp, useIsFocused} from '@react-navigation/native';
+import {
+  RouteProp,
+  useFocusEffect,
+  useIsFocused,
+} from '@react-navigation/native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {isDefined} from 'validate.js';
@@ -69,6 +73,11 @@ import BackbuttonHandler from '@/components/BackbuttonHandler';
 import LotteryButton from '../LotteryScreen/component/LotteryButton';
 import {windowWidth} from '@/constants/SliderEntry.style';
 import TalkRewardModal from '../RkbTalk/component/TalkRewardModal';
+import {
+  decryptAES256,
+  encryptAES256WithIv,
+} from '@/components/AppPaymentGateway/crypt';
+import {API} from '@/redux/api';
 
 const {esimGlobal, isIOS} = Env.get();
 

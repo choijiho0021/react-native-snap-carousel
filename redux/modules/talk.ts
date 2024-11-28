@@ -117,6 +117,7 @@ export interface TalkModelState {
     rewardAmount?: number;
     rewardStart?: Moment;
   };
+  terminateCall?: boolean;
 }
 
 const CALL_HIST_LIMIT = 100;
@@ -232,6 +233,11 @@ const slice = createSlice({
       }
       return state;
     },
+    setTerminateCall: (state, action) => {
+      console.log('@@@ setTerminateCall action : ', action);
+      state.terminateCall = action.payload;
+    },
+
     appendCalledPty: (state, action) => {
       state.called = (state.called || '') + action.payload;
       state.ccode = findCcode(state);
