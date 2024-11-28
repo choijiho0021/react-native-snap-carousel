@@ -306,8 +306,10 @@ const uploadAttachment = ({
   )}/node/contact_board/field_images?_format=hal_json`;
 
   const posts = images.map((image) => {
+    const timestamp = Date.now();
+
     const headers = api.withToken(token, 'octet-stream', {
-      'Content-Disposition': `file;filename="${user}_contact.${image.mime.replace(
+      'Content-Disposition': `file;filename="${user}${timestamp}._contact.${image.mime.replace(
         'image/',
         '',
       )}"`,
