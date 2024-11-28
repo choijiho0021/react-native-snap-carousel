@@ -95,9 +95,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 20,
     paddingVertical: 16,
-    paddingHorizontal: 16,
+    paddingLeft: 16,
+    paddingRight: 56,
     borderRadius: 3,
+    alignItems: 'center',
     flexDirection: 'row',
+    width: '100%',
   },
   timeContainer: {
     flexDirection: 'row',
@@ -355,7 +358,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
         style={{
           ...styles.cautionContainer,
           backgroundColor: getCuationColor(key).bg,
-          width: key === 'notShow' ? '100%' : undefined,
         }}>
         <AppSvgIcon
           name={getCuationColor(key).icon}
@@ -386,25 +388,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
     item.dataVolume,
     showUsage,
   ]);
-
-  const renderDailyUsage = useCallback(
-    () => (
-      <View style={{flexDirection: 'row', marginTop: 8}}>
-        <AppText style={{...appStyles.bold14Text, textAlign: 'center'}}>
-          {i18n.t('esim:dailyUsageAmount')}
-        </AppText>
-        <AppText
-          style={{
-            ...appStyles.bold14Text,
-            textAlign: 'center',
-            color: colors.redError,
-          }}>
-          {utils.toDataVolumeString(totalUsed < quota ? quota : totalUsed)}
-        </AppText>
-      </View>
-    ),
-    [quota, totalUsed],
-  );
 
   const renderTime = useCallback(() => {
     return (
