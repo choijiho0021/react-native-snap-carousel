@@ -542,7 +542,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
               body: {
                 contentDisposition: 'render',
                 contentType: 'application/dtmf-relay',
-                content: `Signal=${d}\r\nDuration=1000`,
+                content: `Signal=${d}\r\nDuration=100`,
               },
             },
           });
