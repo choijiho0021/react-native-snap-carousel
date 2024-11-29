@@ -27,6 +27,7 @@ import {actions as infoActions, InfoAction} from '@/redux/modules/info';
 import AppCarousel from '@/components/AppCarousel';
 import utils from '@/redux/api/utils';
 import {HomeStackParamList} from '@/navigation/navigation';
+import moment from 'moment';
 
 export const DOT_MARGIN = 6;
 export const INACTIVE_DOT_WIDTH = 6;
@@ -162,6 +163,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
           title: i18n.t('set:notiDetail'),
           bodyTitle: item.notice.title,
           body: item.notice.body,
+          created: moment(item.notice.created),
           nid: item.notice.nid,
           rule: item.rule,
           image: item.notice.image,

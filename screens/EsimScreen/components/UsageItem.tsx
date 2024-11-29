@@ -697,7 +697,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
       item.prodName,
       quota,
       showTotalData,
-      usage?.quota,
       usageRender,
     ],
   );
