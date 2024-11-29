@@ -7121,8 +7121,8 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           x2="124"
           y2="148"
           gradientUnits="userSpaceOnUse">
-          <Stop offset=".351" stopColor="#2C81F8" />
-          <Stop offset=".799" stopColor="#5E90FF" />
+          <Stop offset="0.351" stopColor="#2C81F8" />
+          <Stop offset="0.799" stopColor="#5E90FF" />
         </LinearGradient>
         <LinearGradient
           id="agaoz7mw6e"
@@ -7131,9 +7131,9 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           x2="83.196"
           y2="102.377"
           gradientUnits="userSpaceOnUse">
-          <Stop offset=".036" stopColor="#488AFC" stop-opacity="0" />
-          <Stop offset=".5" stopColor="#488AFC" stop-opacity=".6" />
-          <Stop offset=".95" stopColor="#488AFC" stop-opacity="0" />
+          <Stop offset="0.036" stopColor="#488AFC" stop-opacity="0" />
+          <Stop offset="0.5" stopColor="#488AFC" stop-opacity=".6" />
+          <Stop offset="0.95" stopColor="#488AFC" stop-opacity="0" />
         </LinearGradient>
         <ClipPath id="ooakrpbq5a">
           <Path fill="#fff" transform="translate(.5)" d="M0 0h148v148H0z" />
