@@ -388,6 +388,7 @@ const Esim: React.FC<EsimProps> = ({
               title: i18n.t('set:noti'),
               bodyTitle: item.notice.title,
               body: item.notice.body,
+              created: moment(item.notice.created),
               rule: item.rule,
               nid: item.notice.nid,
               image: item.notice.image,
