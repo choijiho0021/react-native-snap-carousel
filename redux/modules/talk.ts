@@ -47,6 +47,22 @@ export type ExpPointLog = {
   tpnt: string;
 };
 
+// TODO : 값 체크 필요
+export type VoucherHistory = {
+  diff: string;
+  expire_at: Moment;
+  created: Moment;
+  reason: string;
+  ref_node: string;
+};
+
+// 5년 후?
+export type ExpVoucherLog = {
+  exp: string;
+  list: ExpPointHistory[];
+  tpnt: string;
+};
+
 export type ExpPointHistory = {
   expire_at: Moment;
   point: string;

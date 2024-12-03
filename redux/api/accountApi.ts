@@ -532,11 +532,13 @@ const patchVoucherPoint = ({
   token,
   sign,
   code,
+  point = 0,
 }: {
   iccid: string;
   token: string;
   sign: VoucherSign;
   code: string;
+  point?: number;
 }) => {
   console.log(
     '@@ json : ',
@@ -558,6 +560,7 @@ const patchVoucherPoint = ({
       body: JSON.stringify({
         sign,
         code,
+        point,
       }),
     },
     (resp) => {

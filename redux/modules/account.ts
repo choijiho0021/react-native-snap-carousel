@@ -205,6 +205,9 @@ export type AccountModelState = {
   isFirst?: boolean;
   cashHistory?: SectionData[];
   cashExpire?: CashExpire[];
+  voucherHistory?: SectionData[];
+  voucherExpire?: CashExpire[];
+
   isNewUser?: boolean;
   expirePt?: number;
   coupon?: RkbCoupon[];

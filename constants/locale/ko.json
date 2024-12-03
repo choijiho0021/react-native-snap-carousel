@@ -1832,6 +1832,8 @@
   "cashHistory:type:point_add": "캐시 적립",
   "cashHistory:type:point_exp": "캐시 소멸",
   "cashHistory:type:dona": "캐시 소멸",
+  "cashHistory:type:voucher_add": "상품권 머니 충전",
+  "cashHistory:type:voucher_deduct": "상품권 머니 사용",
   "cashHistory:recharge:failure": "충전 실패! 고객센터로 문의해 주세요.",
 
   "promo:join:open": "이벤트 참여",

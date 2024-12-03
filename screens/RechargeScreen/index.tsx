@@ -159,7 +159,7 @@ const rechargeChoice =
         [40, 50],
       ];
 
-const TEST_OPTION = true;
+const TEST_OPTION = false;
 
 const RechargeScreen: React.FC<RechargeScreenProps> = ({
   navigation,
@@ -222,7 +222,7 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
               }
 
               if (rsp?.result === 0) {
-                console.log('@@@@ ');
+                console.log('@@@@ toast ? 스낵바 띄워주기?');
               } else {
                 AppAlert.info(
                   '존재하지 않는 상품권입니다. 코드를 다시 확인해 주세요.',
@@ -233,6 +233,28 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
             });
           }
 
+          break;
+
+        // TODO : Test code
+        case 'voucher_deduct':
+          if (iccid && token) {
+            API.Account.patchVoucherPoint({
+              iccid,
+              token,
+              sign: 'deduct',
+              code: voucherCode,
+              point: 50,
+            }).then((rsp) => {
+              // test 용 그냥 alert 띄우기
+
+              if (TEST_OPTION) {
+                setShowAlert(true);
+                return;
+              }
+
+              console.log('테스트 차감 : ', rsp);
+            });
+          }
           break;
         default:
           console.log('@@@@ error');
@@ -293,8 +315,6 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
 
   const renderProdType = useCallback(
     (key: RechargeTabType) => () => {
-      console.log('@@@ 재렌더링 되는건가?');
-
       return key === 'cash' ? (
         <>
           <ScrollView>
@@ -353,7 +373,14 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
               <AppText>{i18n.t('mypage:voucher:noti')}</AppText>
             </View>
           </ScrollView>
-
+          <AppButton
+            title={'테스트용 버튼'}
+            titleStyle={[appStyles.medium18, {color: colors.white}]}
+            disabled={_.isEmpty(selected)}
+            onPress={() => onSubmit('voucher_deduct')}
+            style={styles.confirm}
+            type="primary"
+          />
           <AppButton
             title={i18n.t('mypage:voucher:use')}
             titleStyle={[appStyles.medium18, {color: colors.white}]}
