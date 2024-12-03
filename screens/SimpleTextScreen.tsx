@@ -149,6 +149,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
         btnStyle,
         notiType = 'noti',
         created,
+        showTitle = false,
       } = {},
     },
     info: {infoMap},
@@ -194,6 +195,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
                   title: i18n.t('set:noti'),
                   bodyTitle: item?.title,
                   body: item?.body,
+                  showTitle: true,
                   mode: 'html',
                 });
               } else {
@@ -463,6 +465,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     );
   }, [bodyTitle, created]);
 
+  console.log('aaaaa mode', mode);
   return (
     <SafeAreaView style={styles.screen}>
       <View style={appStyles.header}>
@@ -472,7 +475,7 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
           showCloseModal={showCloseModal}
         />
       </View>
-      {renderContentTitle()}
+      {showTitle && renderContentTitle()}
       {defineSource(mode)}
       <AppActivityIndicator visible={pending || loading} />
       {!rule?.sku?.startsWith('event-multi') &&

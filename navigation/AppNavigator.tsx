@@ -455,6 +455,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
               rule: popUp.rule,
               nid: popUp.notice.nid,
               image: popUp.notice.image,
+              showTitle: true,
               mode: 'noti',
             });
           } else {

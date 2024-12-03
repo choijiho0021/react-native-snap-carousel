@@ -167,6 +167,7 @@ const PromotionCarousel: React.FC<PromotionCarouselProps> = ({
           nid: item.notice.nid,
           rule: item.rule,
           image: item.notice.image,
+          showTitle: true,
           mode: 'noti',
         });
       } else {
