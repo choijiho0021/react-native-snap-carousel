@@ -363,6 +363,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
             navigation.navigate('BoardMsgResp', {
               uuid: split[1],
               status: 'Closed',
+              type: 'board',
             });
             break;
 
