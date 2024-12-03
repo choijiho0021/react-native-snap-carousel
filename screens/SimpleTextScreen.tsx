@@ -465,7 +465,6 @@ const SimpleTextScreen: React.FC<SimpleTextScreenProps> = (props) => {
     );
   }, [bodyTitle, created]);
 
-  console.log('aaaaa mode', mode);
   return (
     <SafeAreaView style={styles.screen}>
       <View style={appStyles.header}>
