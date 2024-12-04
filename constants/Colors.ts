@@ -89,4 +89,7 @@ export const colors = {
   naverGreen: '#03C731',
   black92: 'rgba(44, 44, 44, 0.92)',
   lightYellow2: '#FFD357',
+  giftbg1: '#ffd7b6',
+  giftbg2: '#baaaff',
+  giftbg3: '#ff8b5a',
 };
