@@ -325,7 +325,8 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
                 {
                   borderColor:
                     checked === v ? colors.clearBlue : colors.lightGrey,
-                  backgroundColor: checked === v ? '#2a7ff61A' : colors.white,
+                  backgroundColor:
+                    checked === v ? colors.clearBlue10 : colors.white,
                 },
               ]}
               onPress={() => setChecked(v)}>
