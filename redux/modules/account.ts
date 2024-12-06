@@ -28,6 +28,7 @@ import Env from '@/environment';
 import userApi from '@/redux/api/userApi';
 import {CallHistory, PointHistory} from './talk';
 import {VoucherHistory} from '../api/voucherApi';
+import moment from 'moment';
 
 const {cachePrefix, scheme, apiUrl} = Env.get();
 
@@ -52,11 +53,6 @@ const checkLottery = createAsyncThunk(
 const getCashHistory = createAsyncThunk(
   'account/getCashHistory',
   API.Account.getCashHistory,
-);
-
-const getVoucher = createAsyncThunk(
-  'account/getVoucher',
-  API.VoucherApi.getVoucherPoint,
 );
 
 const getVoucherHistory = createAsyncThunk(
@@ -141,6 +137,31 @@ const changePictureWithToast = reflectWithToast(
   Toast.NOT_UPDATED,
 );
 
+export const fetchCashAndVoucherHistory = createAsyncThunk(
+  'account/fetchCashAndVoucherHistory',
+  async ({iccid, token}: {iccid: string; token: string}, {dispatch}) => {
+    // 두 API 호출을 병렬로 실행
+    const [cashResponse, voucherResponse] = await Promise.all([
+      dispatch(getCashHistory({iccid, token})),
+      dispatch(getVoucherHistory({iccid, token})),
+    ]);
+    const {result: cashResult, objects: cashObjects} =
+      cashResponse.payload as ApiResult<CashHistory>;
+    const {result: voucherResult, objects: voucherObjects} =
+      voucherResponse.payload as ApiResult<VoucherHistory>;
+
+    let combinedObjects: (CashHistory | VoucherHistory)[] = [];
+
+    if (cashResult === 0 && voucherResult === 0) {
+      combinedObjects = [...cashObjects, ...voucherObjects];
+
+      return {objects: combinedObjects, result: cashResult};
+    }
+
+    return {result: cashResult !== 0 ? cashResult : voucherResult};
+  },
+);
+
 // * CashHistory type
 // * - cash_add : 프로모션으로 캐시 추가
 // * - cash_recharge : 충전 구매
@@ -220,6 +241,7 @@ export type AccountModelState = {
   realMobile?: string;
   tpnt?: number;
   voucherHistory?: SectionData[];
+  paymentHistory?: SectionData[];
 };
 
 export type AccountAuth = {
@@ -227,6 +249,21 @@ export type AccountAuth = {
   pass?: string;
   token?: string;
   realMobile?: string;
+};
+
+const parsePaymentType = (type: string) => {
+  switch (type) {
+    case 'voucher:deduct':
+      return 'point_deduct';
+
+    case 'voucher:refund':
+      return 'point_refund';
+
+    case 'voucher:payment':
+      return 'point_deduct';
+    default:
+      return type;
+  }
 };
 
 export const isFortuneHistory = (fortune: Fortune) => {
@@ -610,9 +647,6 @@ const slice = createSlice({
       const {result, objects} = action.payload;
 
       if (result === 0 && objects && objects.length > 0) {
-        // 성공하면 voucherHistory도 조회한 다음에.
-        // 둘이 objects를 합치고 작업하면 쉽게 되겠네.
-
         const group = objects.reduce((acc, cur) => {
           const year = cur.create_dt?.format('YYYY');
           const idx = acc.findIndex((elm) => elm.title === year);
@@ -663,10 +697,41 @@ const slice = createSlice({
       return state;
     });
 
-    builder.addCase(getVoucher.fulfilled, (state, action) => {
+    builder.addCase(fetchCashAndVoucherHistory.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
-      console.log('@@@@ getVoucher result : ', result, ', objects : ', objects);
+      if (result === 0 && objects && objects.length > 0) {
+        objects.sort((a, b) => {
+          return moment(a.create_dt).isAfter(b.create_dt) ? -1 : 1;
+        });
+
+        const group = objects.reduce((acc, cur) => {
+          const year = cur.create_dt?.format('YYYY');
+          const idx = acc.findIndex((elm) => elm.title === year);
+
+          if (idx <= -1) {
+            acc.push({title: year, data: [cur] as CashHistory[]});
+          } else {
+            const orderidx = acc[idx].data.findIndex(
+              (elm) =>
+                elm.order_id &&
+                elm.order_id !== '0' &&
+                elm.order_id === cur.order_id &&
+                parsePaymentType(elm.type) === parsePaymentType(cur.type),
+            );
+
+            if (orderidx >= 0) {
+              acc[idx].data[orderidx].diff += cur.diff;
+            } else {
+              acc[idx].data?.push(cur);
+            }
+          }
+          return acc;
+        }, [] as SectionData[]);
+
+        state.paymentHistory = group;
+      }
+      return state;
     });
 
     builder.addCase(getCashExpire.fulfilled, (state, action) => {
@@ -796,7 +861,6 @@ export const actions = {
   getAccount,
   getCashHistory,
   getCashExpire,
-  getVoucher,
   getVoucherHistory,
   getUserId,
   changePushNoti,
@@ -804,6 +868,7 @@ export const actions = {
   registerMobile,
   getMyCoupon,
   checkLottery,
+  fetchCashAndVoucherHistory,
 };
 export type AccountAction = typeof actions;
 

@@ -113,6 +113,7 @@ export type VoucherHistory = {
   reason: string;
   ref_node: string;
   order_id: number;
+  type: string;
 };
 
 // 전체 톡 포인트 조회 > iccid 기준으로 동작
@@ -141,6 +142,7 @@ const getVoucherHistory = ({
                 ({
                   ...o,
                   inc: o?.diff?.[0] !== '-' ? 'Y' : 'N',
+                  diff: utils.stringToNumber(o.diff) || 0,
                   type: `voucher:${o?.reason}`,
                   create_dt: o.created ? moment.unix(o.created) : undefined, // 이름을 cash,point와 동일하게 맞춰줌
                   expire_dt: o.expire_at ? moment.unix(o.expire_at) : undefined,

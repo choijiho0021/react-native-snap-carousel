@@ -37,7 +37,6 @@ import Env from '@/environment';
 import AppButton from '@/components/AppButton';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {windowHeight} from '@/constants/SliderEntry.style';
-import {HistType} from '@/redux/api/voucherApi';
 import {OrderModelState} from '@/redux/modules/order';
 
 const {esimCurrency} = Env.get();
@@ -238,6 +237,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     cashExpire,
     expirePt = 0,
     voucherHistory = [],
+    paymentHistory = [],
   },
 }) => {
   const [orderType, setOrderType] = useState<OrderType>('latest');
@@ -317,37 +317,14 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   const sectionData = useMemo(() => {
     const isAsc = orderType === 'old';
 
-    const mergedData = [...cashHistory, ...voucherHistory]
-      .map((elm) => ({
-        title: elm.title,
-        data: applyFilter(elm.data),
-      }))
-      .filter((elm) => elm.data.length > 0);
-
-    const groupedData = mergedData.reduce((acc, curr) => {
-      const existing = acc.find((item) => item.title === curr.title);
-      if (existing) {
-        existing.data = [...existing.data, ...curr.data];
-      } else {
-        acc.push(curr);
-      }
-      return acc;
-    }, []);
-
-    groupedData.forEach((item) => {
-      item.data.sort((a, b) =>
-        moment(a.create_dt).isBefore(b.create_dt) ? -1 : 1,
-      );
-    });
-
     return bReverse(
-      groupedData.map((elm) => ({
+      paymentHistory.map((elm) => ({
         title: elm.title,
-        data: bReverse(elm.data, !isAsc),
+        data: bReverse(applyFilter(elm.data), isAsc),
       })),
-      !isAsc,
-    ).filter((elm) => elm.data.length > 0);
-  }, [applyFilter, bReverse, cashHistory, orderType, voucherHistory]);
+      isAsc,
+    ).filter((elm: SectionData) => elm.data.length > 0);
+  }, [applyFilter, bReverse, orderType, paymentHistory]);
 
   const getType = useCallback((key?: string) => {
     if (key === 'Y') return 'add';
@@ -356,26 +333,11 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   }, []);
 
   const getHistory = useCallback(() => {
+    action.account.fetchCashAndVoucherHistory({iccid, token});
     action.account.getCashHistory({iccid, token});
+
     action.account.getCashExpire({iccid, token});
   }, [action.account, iccid, token]);
-
-  const getVoucherHistory = useCallback(
-    ({type}: {type?: HistType}) => {
-      if (iccid) {
-        action.account.getVoucherHistory({
-          iccid,
-          token,
-          type,
-        });
-      }
-    },
-    [action.account, iccid, token],
-  );
-
-  useEffect(() => {
-    getVoucherHistory({});
-  }, [getVoucherHistory]);
 
   useEffect(() => {
     getHistory();
@@ -395,16 +357,14 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           'voucher:voucher_add',
         ].includes(item?.type)
       ) {
-        // if (order_id || expire_dt || ['cash_refund', 'dona'].includes(item?.type)) {
-
         const orderTitle = item.order_title
           ? item.order_title
           : orders.get(Number(item.order_id))?.orderItems[0].title;
 
-        // order Title이 없구나...
         return (
           <View style={{marginLeft: 73}}>
-            {(item.order_id || item.type === 'dona') && (
+            {((item.order_id && item.order_id !== '0') ||
+              item.type === 'dona') && (
               <AppText style={styles.detailText}>{orderTitle || ''}</AppText>
             )}
             {item.expire_dt && (
@@ -586,7 +546,6 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
                 key={elm}
                 onPress={() => {
                   setOrderType(elm);
-                  getVoucherHistory({type: getType(dataFilter)});
                   action.modal.closeModal();
                 }}
                 style={styles.orderTypeItem}>
@@ -606,14 +565,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         <SafeAreaView style={{backgroundColor: colors.white}} />
       </Pressable>
     ),
-    [
-      action.modal,
-      dataFilter,
-      getType,
-      getVoucherHistory,
-      orderType,
-      orderTypeList,
-    ],
+    [action.modal, orderType, orderTypeList],
   );
 
   const expirePtModalBody = useCallback(() => {
@@ -707,7 +659,6 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
       </View>
     );
   }, [
-    modalAnimatedValue,
     expirePt,
     cashExpire,
     beginDragAnimation,
@@ -718,13 +669,12 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   const onPressFilter = useCallback(
     (key: string) => {
       setDataFilter(key);
-      getVoucherHistory({type: getType(key)});
 
       // 데이터 없을 때 호출하면 앱이 죽음
       if (sectionData?.length > 0)
         sectionRef.current?.scrollToLocation({itemIndex: 0, sectionIndex: 0});
     },
-    [getType, getVoucherHistory, sectionData?.length],
+    [getType, voucherHistory, sectionData?.length],
   );
 
   const renderFilter = useCallback(
