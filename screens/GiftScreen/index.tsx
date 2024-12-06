@@ -180,7 +180,10 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     return [KAKAO, MESSAGE];
   }, [deviceModel]);
   const bgImages = useMemo(
-    () => (promotion.gift.bg || []).filter((v) => v?.image),
+    () =>
+      (promotion.gift.bg || []).filter(
+        (v) => v?.image && v?.title.includes('Card'),
+      ),
     [promotion.gift.bg],
   );
 
