@@ -37,7 +37,7 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
-import {actions as linkActions, urlParamObj} from '@/redux/modules/link';
+import link, {actions as linkActions, urlParamObj} from '@/redux/modules/link';
 import AuthStackNavigator from './AuthStackNavigator';
 import EsimMainTabNavigator from './EsimMainTabNavigator';
 import {
@@ -350,10 +350,12 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
           };
       }
       if (canNavigate) {
+        // stack과 screen을 제외한 나머지를 naviParams에 넣음
+        const {stack, screen, ...otherParams} = params || {};
         return {
-          stack: `${params?.stack}Stack`,
-          screen: params?.screen,
-          naviParams: {},
+          stack: `${stack}Stack`,
+          screen,
+          naviParams: otherParams,
         };
       }
 
@@ -377,6 +379,7 @@ const CreateAppContainer: React.FC<RegisterMobileScreenProps> = ({
       });
 
       const {stack, screen, naviParams} = getNaviParams(linkUrl, params);
+
       if (isSupport || Platform.OS === 'ios') {
         if (isFirst) {
           refNavigate({
