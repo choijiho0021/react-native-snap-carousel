@@ -36,6 +36,11 @@ import _ from 'underscore';
 import {useInterval} from '@/utils/useInterval';
 import i18n from '@/utils/i18n';
 import {
+  actions as toastActions,
+  Toast,
+  ToastAction,
+} from '@/redux/modules/toast';
+import {
   actions as talkActions,
   TalkAction,
   TalkModelState,
@@ -80,6 +85,7 @@ type RkbTalkProps = {
   action: {
     account: AccountAction;
     talk: TalkAction;
+    toast: ToastAction;
   };
 };
 
@@ -513,7 +519,14 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
                       AppAlert.info(rsp?.desc, '', () =>
                         navigation.navigate('HomeStack', {screen: 'Home'}),
                       );
-                    else AppAlert.info(i18n.t('talk:call:minLength')); // 지역코드가 요율에 정의도지 않은 경우
+                    else if (rsp?.result?.code === api.E_INVALID_ARGUMENT)
+                      AppAlert.info(i18n.t('talk:call:minLength'));
+                    // 지역코드가 요율에 정의도지 않은 경우
+                    else
+                      action.toast.push({
+                        msg: Toast.FAIL_NETWORK,
+                        toastIcon: 'bannerMarkToastError',
+                      }); // 나머지 경우의 예외 케이스
                   },
                 );
               }
@@ -553,6 +566,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       }
     },
     [
+      action.toast,
       called,
       ccode,
       checkMic,
@@ -688,6 +702,7 @@ export default connect(
     action: {
       account: bindActionCreators(accountActions, dispatch),
       talk: bindActionCreators(talkActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch),
     },
   }),
 )(RkbTalk);

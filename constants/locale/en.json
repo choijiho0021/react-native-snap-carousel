@@ -1531,6 +1531,8 @@
 
   "talk": "통화",
   "talk:call:minLength": "전화 번호를 다시 확인해 주세요.",
+  "talk:call:error": "네트워크 문제로 요청이 처리되지 않았습니다.\n인터넷 연결 확인 후 다시 시도해 주세요.",
+  "talk:call:checkPoint": "톡포인트가 부족하여 통화 서비스를 이용할 수 없어요.\n상품을 구매 또는 발권해서 톡포인트를 적립해 보세요!",
   "talk:free": "무료통화",
   "talk:speaker": "스피커폰",
   "talk:keypad": "키패드",
