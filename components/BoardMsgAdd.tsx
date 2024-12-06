@@ -330,7 +330,7 @@ const BoardMsgAdd: React.FC<BoardMsgAddProps> = ({
           <AppTextInput
             style={[
               styles.inputBox,
-              title ? {borderColor: colors.black} : undefined,
+              title ? {borderColor: colors.clearBlue} : undefined,
               {marginBottom: 8},
             ]}
             placeholder={i18n.t('board:title:placeholder')}

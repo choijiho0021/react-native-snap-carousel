@@ -14,6 +14,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import moment from 'moment';
 import Svg, {Line} from 'react-native-svg';
+import {AppEventsLogger} from 'react-native-fbsdk-next';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {PaymentItem} from '@/components/PaymentItemInfo';
@@ -43,6 +44,10 @@ import AppIcon from '@/components/AppIcon';
 import {getItemsOrderType} from '@/redux/models/purchaseItem';
 import PromotionCarousel from '@/components/PromotionCarousel';
 import {RkbPromotion} from '@/redux/api/promotionApi';
+import {
+  NTrackerConversionItem,
+  trackPurchaseEvent,
+} from '@/components/NativeModule/NTracker';
 
 const {esimGlobal} = Env.get();
 const {width: viewportWidth} = Dimensions.get('window');
@@ -160,6 +165,53 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   const [oldCart, setOldCart] = useState<Partial<CartModelState>>();
   const isSuccess = useMemo(() => params?.pymResult || false, [params]);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
+
+  // 페이스북 픽셀 구매 데이터 수집
+  useEffect(() => {
+    // 페이스북 픽셀 구매 데이터 전송 - 테스트 게정 0101000200으로 시작하는 경우에는 제외
+    if (isSuccess && oldCart && mobile && !mobile.startsWith('0101000200')) {
+      AppEventsLogger.logPurchase(oldCart.pymReq?.subtotal?.value || 0, 'KWD', {
+        param: 'value',
+      });
+    }
+  }, [isSuccess, mobile, oldCart]);
+
+  // google analytics 데이터 수집
+  useEffect(() => {
+    Analytics.trackEvent('Payment', {
+      payment: `${params?.mode} Payment${isSuccess ? ' Success' : ' Fail'}`,
+    });
+    if (
+      pymPrice &&
+      pymPrice.value > 0 &&
+      isSuccess &&
+      mobile &&
+      !mobile.startsWith('0101000200')
+    ) {
+      analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_payment`);
+    }
+  }, [isSuccess, mobile, params?.mode, pymPrice]);
+
+  // Naver GFA 데이터 수집 test
+  useEffect(() => {
+    //  테스트 게정 0101000200으로 시작하는 경우에는 제외
+    if (isSuccess && oldCart && mobile && !mobile.startsWith('0101000200')) {
+      const amount = oldCart.pymReq?.subtotal?.value || 0;
+      const items = oldCart.purchaseItems?.map((elm) => ({
+        quantity: elm.qty,
+        payAmount: elm.price.value * elm.qty,
+        id: elm.key,
+        name: elm.sku,
+        category: elm.type,
+      })) as NTrackerConversionItem[];
+
+      // const items: NTrackerConversionItem[] = [
+      //   {quantity: 1, payAmount: 1, id: '1', name: 'test', category: 'test'},
+      // ];
+
+      trackPurchaseEvent(amount, items);
+    }
+  }, [isSuccess, mobile, oldCart]);
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({window}) => {
@@ -282,15 +334,6 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
       if (isSuccess) action.cart.makeEmpty();
     }
   }, [action.cart, isSuccess, orderId, purchaseItems, pymPrice, pymReq, token]);
-
-  useEffect(() => {
-    Analytics.trackEvent('Payment', {
-      payment: `${params?.mode} Payment${isSuccess ? ' Success' : ' Fail'}`,
-    });
-    if (pymPrice && pymPrice.value > 0 && isSuccess) {
-      analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_payment`);
-    }
-  }, [isSuccess, params?.mode, pymPrice]);
 
   const dotLine = useCallback(
     () => (
