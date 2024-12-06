@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment, {Moment} from 'moment';
 import * as Hangul from 'hangul-js';
 import {ExpPointLog, PointHistory, TalkTariff} from '../modules/talk';
 import api from './api';
@@ -14,20 +14,6 @@ const getVoucherPoint = ({iccid}: {iccid: string}) => {
 const getCheckFirstReward = ({iccid}: {iccid: string}) => {
   return api.callHttpGet(
     `${api.httpUrl(api.path.rokApi.rokebi.point)}/${iccid}?reward`,
-  );
-};
-
-const getRatePerMinute = ({
-  mobile,
-  called,
-}: {
-  mobile: string;
-  called: string;
-}) => {
-  return api.callHttpGet(
-    `${api.httpUrl(
-      api.path.rokApi.rokebi.talk,
-    )}/${mobile}?_format=json&rate&called=${called}`,
   );
 };
 
@@ -120,8 +106,17 @@ const getEmgInfo = async () => {
 
 export type HistType = 'add' | 'deduct' | 'all';
 
+export type VoucherHistory = {
+  diff: string;
+  expire_at: Moment;
+  create_dt: Moment;
+  reason: string;
+  ref_node: string;
+  order_id: number;
+};
+
 // 전체 톡 포인트 조회 > iccid 기준으로 동작
-const getPointHistory = ({
+const getVoucherHistory = ({
   iccid,
   token,
   sort,
@@ -136,8 +131,8 @@ const getPointHistory = ({
   if (sort) cond += `&sort=${sort}`;
   if (type) cond += `&type=${type}`;
 
-  return api.callHttpGet<PointHistory>(
-    `${api.httpUrl(api.path.rokApi.rokebi.pointLog)}/${iccid}?${cond}`,
+  return api.callHttpGet<VoucherHistory>(
+    `${api.httpUrl(api.path.rokApi.rokebi.voucherLog)}/${iccid}?${cond}`,
     (rsp) => {
       return rsp.result === 0
         ? api.success(
@@ -145,9 +140,11 @@ const getPointHistory = ({
               (o) =>
                 ({
                   ...o,
-                  created: o.created ? moment.unix(o.created) : undefined,
-                  expire_at: o.expire_at ? moment.unix(o.expire_at) : undefined,
-                } as PointHistory),
+                  inc: o?.diff?.[0] !== '-' ? 'Y' : 'N',
+                  type: `voucher:${o?.reason}`,
+                  create_dt: o.created ? moment.unix(o.created) : undefined, // 이름을 cash,point와 동일하게 맞춰줌
+                  expire_dt: o.expire_at ? moment.unix(o.expire_at) : undefined,
+                } as VoucherHistory),
             ),
           )
         : api.failure(rsp.result, rsp.error);
@@ -160,9 +157,8 @@ export default {
   getVoucherPoint,
   getExpPointInfo,
   patchVoucherPoint,
-  getPointHistory,
+  getVoucherHistory,
   getTariff,
   getEmgInfo,
   getCheckFirstReward,
-  getRatePerMinute,
 };

@@ -147,6 +147,8 @@ const path = {
       point: 'rokebi/talk/point',
       voucher: 'rokebi/voucher',
       pointLog: 'rokebi/talk/point/log',
+      voucherLog: 'rokebi/voucher/log',
+      ExpVoucherLog: 'rokebi/voucher/point/log',
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage/quota',

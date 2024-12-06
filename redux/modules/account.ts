@@ -27,6 +27,7 @@ import {actions as cartActions} from './cart';
 import Env from '@/environment';
 import userApi from '@/redux/api/userApi';
 import {CallHistory, PointHistory} from './talk';
+import {VoucherHistory} from '../api/voucherApi';
 
 const {cachePrefix, scheme, apiUrl} = Env.get();
 
@@ -56,6 +57,11 @@ const getCashHistory = createAsyncThunk(
 const getVoucher = createAsyncThunk(
   'account/getVoucher',
   API.VoucherApi.getVoucherPoint,
+);
+
+const getVoucherHistory = createAsyncThunk(
+  'account/getVoucherHistory',
+  API.VoucherApi.getVoucherHistory,
 );
 
 const getCashExpire = createAsyncThunk(
@@ -148,7 +154,7 @@ const changePictureWithToast = reflectWithToast(
 export type Fortune = {text: string; num: number; count: number};
 export type SectionData = {
   title: string;
-  data: CashHistory[] | PointHistory[] | CallHistory[];
+  data: CashHistory[] | PointHistory[] | CallHistory[] | VoucherHistory[];
 };
 export type CashHistory = {
   account_id: string;
@@ -205,7 +211,6 @@ export type AccountModelState = {
   isFirst?: boolean;
   cashHistory?: SectionData[];
   cashExpire?: CashExpire[];
-  voucherHistory?: SectionData[];
   voucherExpire?: CashExpire[];
 
   isNewUser?: boolean;
@@ -214,6 +219,7 @@ export type AccountModelState = {
   fortune?: Fortune;
   realMobile?: string;
   tpnt?: number;
+  voucherHistory?: SectionData[];
 };
 
 export type AccountAuth = {
@@ -604,6 +610,9 @@ const slice = createSlice({
       const {result, objects} = action.payload;
 
       if (result === 0 && objects && objects.length > 0) {
+        // 성공하면 voucherHistory도 조회한 다음에.
+        // 둘이 objects를 합치고 작업하면 쉽게 되겠네.
+
         const group = objects.reduce((acc, cur) => {
           const year = cur.create_dt?.format('YYYY');
           const idx = acc.findIndex((elm) => elm.title === year);
@@ -627,6 +636,28 @@ const slice = createSlice({
         }, [] as SectionData[]);
 
         state.cashHistory = group;
+      }
+
+      return state;
+    });
+
+    builder.addCase(getVoucherHistory.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      if (result === 0) {
+        const group = objects?.reduce((acc, cur) => {
+          const year = cur.create_dt.format('YYYY');
+
+          const idx = acc.findIndex((elm) => elm.title === year);
+
+          if (idx <= -1) {
+            acc.push({title: year, data: [cur] as PointHistory[]});
+          } else acc[idx].data?.push(cur);
+
+          return acc;
+        }, [] as SectionData[]);
+
+        state.voucherHistory = group;
       }
 
       return state;
@@ -766,6 +797,7 @@ export const actions = {
   getCashHistory,
   getCashExpire,
   getVoucher,
+  getVoucherHistory,
   getUserId,
   changePushNoti,
   uploadPicture,
