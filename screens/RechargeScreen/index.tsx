@@ -26,7 +26,6 @@ import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {RkbProduct} from '@/redux/api/productApi';
 import {useIsFocused} from '@react-navigation/native';
 import TabBar from '../CountryScreen/TabBar';
 import {API} from '@/redux/api';
@@ -50,12 +49,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-  },
-  divider: {
-    marginTop: 32,
-    marginBottom: 5,
-    height: 10,
-    backgroundColor: '#f5f5f5',
   },
   row: {
     flex: 1,
@@ -87,17 +80,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'right',
     color: colors.warmGrey,
-  },
-  balance: {
-    ...appStyles.robotoBold28Text,
-    color: colors.black,
-    lineHeight: 40,
-  },
-  currency: {
-    ...appStyles.bold26Text,
-    color: colors.black,
-    lineHeight: 40,
-    marginRight: 4,
   },
   buttonVoucherOcr: {
     marginTop: 20,
@@ -169,9 +151,10 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
   // recharge 상품의 SKU는 'rch-{amount}' 형식을 갖는다.
   const [selected, setSelected] = useState(`rch-${rechargeChoice[0][0]}`);
   const [amount, setAmount] = useState(rechargeChoice[0][0]);
-  const isFocused = useIsFocused();
+
   const [voucherCode, setVoucherCode] = useState('');
   const [showAlert, setShowAlert] = useState(false);
+  const [voucherType, setVoucherType] = useState({title: '', amount: 0});
 
   useEffect(() => {
     return () => {
@@ -180,6 +163,27 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
       }
     };
   }, [action.order, iccid, token]);
+
+  const registerVoucher = useCallback(() => {
+    API.Account.patchVoucherPoint({
+      iccid,
+      token,
+      sign: 'register',
+      code: voucherCode,
+    }).then((rsp) => {
+      console.log('@@@ 성공했나? Rsp : ', rsp);
+      if (rsp?.result === 0) {
+        console.log('@@@@ toast ? 스낵바 띄워주기?');
+        navigation.goBack();
+      } else {
+        AppAlert.info(
+          '존재하지 않는 상품권입니다. 코드를 다시 확인해 주세요.',
+          '',
+          () => console.log('@@@ alert 확인 동작'),
+        );
+      }
+    });
+  }, [iccid, navigation, token, voucherCode]);
 
   const onSubmit = useCallback(
     (type: RechargeTabType) => {
@@ -208,29 +212,22 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
           break;
         case 'voucher':
           if (iccid && token) {
-            API.Account.patchVoucherPoint({
-              iccid,
-              token,
-              sign: 'register',
-              code: voucherCode,
-            }).then((rsp) => {
-              // test 용 그냥 alert 띄우기
+            API.Account.getVoucherType({iccid, code: voucherCode}).then(
+              (rsp) => {
+                if (rsp?.result === 0) {
+                  const {title, amount} = rsp?.objects;
 
-              if (TEST_OPTION) {
-                setShowAlert(true);
-                return;
-              }
-
-              if (rsp?.result === 0) {
-                console.log('@@@@ toast ? 스낵바 띄워주기?');
-              } else {
-                AppAlert.info(
-                  '존재하지 않는 상품권입니다. 코드를 다시 확인해 주세요.',
-                  '',
-                  () => console.log('@@@ alert 확인 동작'),
-                );
-              }
-            });
+                  setShowAlert(true);
+                  setVoucherType({title, amount: parseInt(amount, 10)});
+                } else {
+                  AppAlert.info(
+                    '존재하지 않는 상품권입니다. 코드를 다시 확인해 주세요.',
+                    '',
+                    () => console.log('@@@ alert 확인 동작'),
+                  );
+                }
+              },
+            );
           }
 
           break;
@@ -296,23 +293,6 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
     [selected],
   );
 
-  const renderChargeAmount = useCallback(() => {
-    return (
-      <View style={styles.chargeAmountView}>
-        <AppText
-          key="label"
-          style={[appStyles.robotoBold22Text, {textAlign: 'left'}]}>
-          {i18n.t('mypage:cash:amount')}
-        </AppText>
-        <AppPrice
-          price={{value: (balance || 0) + amount, currency: esimCurrency}}
-          balanceStyle={styles.balance}
-          currencyStyle={styles.currency}
-        />
-      </View>
-    );
-  }, [amount, balance]);
-
   const renderProdType = useCallback(
     (key: RechargeTabType) => () => {
       return key === 'cash' ? (
@@ -368,23 +348,24 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
               }}
               clearTextOnFocus={false}
               value={voucherCode}
+              maxLength={16}
             />
             <View>
               <AppText>{i18n.t('mypage:voucher:noti')}</AppText>
             </View>
           </ScrollView>
-          <AppButton
+          {/* <AppButton
             title={'테스트용 버튼'}
             titleStyle={[appStyles.medium18, {color: colors.white}]}
             disabled={_.isEmpty(selected)}
             onPress={() => onSubmit('voucher_deduct')}
             style={styles.confirm}
             type="primary"
-          />
+          /> */}
           <AppButton
             title={i18n.t('mypage:voucher:use')}
             titleStyle={[appStyles.medium18, {color: colors.white}]}
-            disabled={_.isEmpty(selected)}
+            disabled={_.isEmpty(selected) || voucherCode.length !== 16}
             onPress={() => onSubmit('voucher')}
             style={styles.confirm}
             type="primary"
@@ -427,10 +408,13 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
         visible={showAlert}
         onClickButton={() => {
           console.log('상품권 등록하기??');
+
+          registerVoucher();
           setShowAlert(false);
         }}
         setVisible={setShowAlert}
         balance={balance}
+        voucherType={voucherType}
       />
     </SafeAreaView>
   );

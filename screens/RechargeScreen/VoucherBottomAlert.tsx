@@ -1,4 +1,4 @@
-import React, {memo, useMemo} from 'react';
+import React, {memo, useEffect, useMemo} from 'react';
 import {Image, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {RootState} from '@reduxjs/toolkit';
@@ -20,7 +20,7 @@ const {isIOS} = Env.get();
 const styles = StyleSheet.create({
   bodyBox: {
     position: 'absolute',
-    paddingTop: 20,
+    paddingTop: 10,
     paddingBottom: 40,
     backgroundColor: 'white',
     borderTopLeftRadius: 8,
@@ -55,10 +55,16 @@ const styles = StyleSheet.create({
   },
 });
 
+export type VoucherType = {
+  title: string;
+  amount: number;
+};
+
 type VoucherBottomAlertProps = {
   visible: boolean;
   setVisible: (val: boolean) => void;
-  onClickButton: (val) => void;
+  onClickButton: () => void;
+  voucherType: VoucherType;
   balance: number;
 };
 
@@ -66,6 +72,7 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
   setVisible,
   visible,
   onClickButton,
+  voucherType,
   balance,
 }) => {
   const navigation = useNavigation();
@@ -75,18 +82,17 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
         style={{
           height: 100,
         }}>
-        <AppText style={[appStyles.bold16Text, {lineHeight: 30}]}>
-          {`카카오 선물하기 상품권 10,000원권`}
+        <AppText style={[appStyles.bold18Text, {lineHeight: 30}]}>
+          {voucherType.title}
         </AppText>
         <AppText style={[appStyles.medium16, {lineHeight: 24}]}>
           {`유효기간: 상품권 등록일로부터 5년`}
         </AppText>
       </View>
     );
-  }, []);
+  }, [voucherType]);
 
-  const body = useMemo(() => {
-    console.log('bal:', balance);
+  const body = useMemo(() => { 
     return (
       <>
         <View style={{paddingHorizontal: 20, paddingBottom: 16}}>
@@ -102,24 +108,19 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
           </View>
         </View>
 
-        <RenderChargeAmount amount={5000} balance={balance} />
+        <RenderChargeAmount amount={voucherType?.amount} balance={balance} />
         <AppButton
-          // style={{
-          //   width: '100%',
-          //   alignItems: 'center',
-          //   height: 52,
-          //   backgroundColor: colors.blue,
-          // }}
           style={styles.confirm}
           title="인증하기"
           onPress={() => {
-            // onClickButton('test');
+            onClickButton();
             setVisible(false);
           }}
         />
       </>
     );
   }, []);
+
   return (
     <AppBottomModal
       visible={visible}

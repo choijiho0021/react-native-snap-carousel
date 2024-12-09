@@ -569,6 +569,21 @@ const patchVoucherPoint = ({
   );
 };
 
+const getVoucherType = ({
+  iccid,
+  code,
+}: {
+  iccid?: string;
+  token?: string;
+  code?: string;
+}) => {
+  const query = new URLSearchParams({code, type: 'true'}).toString();
+
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.rokApi.rokebi.voucher)}/${iccid}?${query}`,
+  );
+};
+
 export default {
   toAccount,
   toFile,
@@ -586,4 +601,5 @@ export default {
   uploadFortuneImage,
   resetRealMobile,
   patchVoucherPoint,
+  getVoucherType,
 };
