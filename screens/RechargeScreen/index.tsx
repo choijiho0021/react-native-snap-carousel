@@ -26,7 +26,6 @@ import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {useIsFocused} from '@react-navigation/native';
 import TabBar from '../CountryScreen/TabBar';
 import {API} from '@/redux/api';
 import AppTextInput from '@/components/AppTextInput';
@@ -171,7 +170,6 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
       sign: 'register',
       code: voucherCode,
     }).then((rsp) => {
-      console.log('@@@ 성공했나? Rsp : ', rsp);
       if (rsp?.result === 0) {
         console.log('@@@@ toast ? 스낵바 띄워주기?');
         navigation.goBack();
@@ -407,8 +405,6 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
       <VoucherBottomAlert
         visible={showAlert}
         onClickButton={() => {
-          console.log('상품권 등록하기??');
-
           registerVoucher();
           setShowAlert(false);
         }}

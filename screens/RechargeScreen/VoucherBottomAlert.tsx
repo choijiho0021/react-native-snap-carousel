@@ -1,7 +1,6 @@
-import React, {memo, useEffect, useMemo} from 'react';
-import {Image, StyleSheet, View} from 'react-native';
-import {connect} from 'react-redux';
-import {RootState} from '@reduxjs/toolkit';
+import React, {memo, useMemo} from 'react';
+import {StyleSheet, View} from 'react-native';
+
 import AppText from '@/components/AppText';
 
 import {colors} from '@/constants/Colors';
@@ -9,49 +8,17 @@ import {appStyles} from '@/constants/Styles';
 import AppBottomModal from '@/screens/DraftUsScreen/component/AppBottomModal';
 import AppStyledText from '@/components/AppStyledText';
 import i18n from '@/utils/i18n';
-
 import Env from '@/environment';
 import AppButton from '@/components/AppButton';
-import {useNavigation} from '@react-navigation/native';
 import RenderChargeAmount from './RenderChargeAmount';
 
 const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
-  bodyBox: {
-    position: 'absolute',
-    paddingTop: 10,
-    paddingBottom: 40,
-    backgroundColor: 'white',
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    borderColor: colors.line,
-    shadowColor: colors.black8,
-    height: 272,
-    bottom: 0,
-    width: '100%',
-  },
   confirm: {
     ...appStyles.confirm,
     bottom: 0,
     marginTop: 0,
-  },
-  modalClose: {
-    justifyContent: 'center',
-    // height: 56,
-    alignItems: 'flex-end',
-    width: 26,
-    height: 26,
-  },
-  head: {
-    height: 74,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignContent: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 28,
-    gap: 6,
   },
 });
 
@@ -75,7 +42,6 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
   voucherType,
   balance,
 }) => {
-  const navigation = useNavigation();
   const title = useMemo(() => {
     return (
       <View
@@ -92,7 +58,7 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
     );
   }, [voucherType]);
 
-  const body = useMemo(() => { 
+  const body = useMemo(() => {
     return (
       <>
         <View style={{paddingHorizontal: 20, paddingBottom: 16}}>
@@ -119,7 +85,7 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
         />
       </>
     );
-  }, []);
+  }, [balance, onClickButton, setVisible, voucherType?.amount]);
 
   return (
     <AppBottomModal
