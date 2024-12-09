@@ -679,25 +679,15 @@ const slice = createSlice({
       const {result, objects} = action.payload;
 
       if (result === 0) {
-        const group = objects.reduce((acc, cur) => {
-          const year = cur.create_dt?.format('YYYY');
+        const group = objects?.reduce((acc, cur) => {
+          const year = cur.create_dt.format('YYYY');
+
           const idx = acc.findIndex((elm) => elm.title === year);
 
           if (idx <= -1) {
-            acc.push({title: year, data: [cur] as CashHistory[]});
-          } else {
-            const orderidx = acc[idx].data.findIndex(
-              (elm) =>
-                elm.order_id &&
-                elm.order_id === cur.order_id &&
-                elm.type === cur.type,
-            );
-            if (orderidx >= 0) {
-              acc[idx].data[orderidx].diff += cur.diff;
-            } else {
-              acc[idx].data?.push(cur);
-            }
-          }
+            acc.push({title: year, data: [cur] as PointHistory[]});
+          } else acc[idx].data?.push(cur);
+
           return acc;
         }, [] as SectionData[]);
 
