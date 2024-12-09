@@ -52,7 +52,7 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
           {voucherType.title}
         </AppText>
         <AppText style={[appStyles.medium16, {lineHeight: 24}]}>
-          {`유효기간: 상품권 등록일로부터 5년`}
+          {i18n.t('cashHistory:type:voucher:regist:notice')}
         </AppText>
       </View>
     );
@@ -64,7 +64,7 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
         <View style={{paddingHorizontal: 20, paddingBottom: 16}}>
           <View style={{marginBottom: 48, gap: 8}}>
             <AppStyledText
-              text={`<b>충전 전 확인하세요!</b>\n• 로깨비캐시로 충전된 상품권은 로밍도깨비 앱에서 현금처럼 사용하실 수 있습니다.\n• [1만원 이하 상품권] 로깨비캐시로 충전 후 상품권 권면 금액의 60% 이상을 사용하고 남은 금액은 환급받을 수 있습니다.\n•[1만원 초과 상품권] 로깨비캐시로 충전 후 상품권 권면 금액의 80% 이상을 사용하고 남은 금액은 환급받을 수 있습니다.\n•단, 무상으로 제공받은 상품권은 환급되지 않습니다.`}
+              text={i18n.t('cashHistory:type:voucher:refund:notice:body')}
               textStyle={[
                 appStyles.medium16,
                 {color: colors.black, lineHeight: 24, letterSpacing: -0.16},
