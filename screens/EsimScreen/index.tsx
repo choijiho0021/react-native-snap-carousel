@@ -567,7 +567,7 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
         navigation.setParams({
           actionStr: undefined,
         });
-      else onRefresh(false, true, subsId, actionStr);
+      else onRefresh(false, true, subsId);
     }
   }, [route?.params, isFirstLoad, iccid, onRefresh, navigation]);
 
