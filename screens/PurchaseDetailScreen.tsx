@@ -180,7 +180,7 @@ type PurchaseDetailScreenProps = {
 };
 
 export const isRokebiCash = (pg: string) =>
-  ['rokebi_cash', 'rokebi_point'].includes(pg);
+  ['rokebi_cash', 'rokebi_point', 'rokebi_voucher'].includes(pg);
 
 const PurchaseDetailScreen: React.FC<PurchaseDetailScreenProps> = ({
   navigation,
