@@ -253,12 +253,6 @@ export type AccountAuth = {
 
 const parsePaymentType = (type: string) => {
   switch (type) {
-    case 'voucher:deduct':
-      return 'point_deduct';
-
-    case 'voucher:refund':
-      return 'point_refund';
-
     case 'voucher:payment':
       return 'point_deduct';
     default:
