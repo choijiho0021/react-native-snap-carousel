@@ -13,11 +13,7 @@ import {bindActionCreators} from 'redux';
 import _ from 'underscore';
 import moment from 'moment';
 import AsyncStorage from '@react-native-community/async-storage';
-import {
-  RouteProp,
-  useFocusEffect,
-  useIsFocused,
-} from '@react-navigation/native';
+import {RouteProp, useIsFocused} from '@react-navigation/native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {isDefined} from 'validate.js';
@@ -73,10 +69,7 @@ import BackbuttonHandler from '@/components/BackbuttonHandler';
 import LotteryButton from '../LotteryScreen/component/LotteryButton';
 import {windowWidth} from '@/constants/SliderEntry.style';
 import TalkRewardModal from '../RkbTalk/component/TalkRewardModal';
-import {
-  decryptAES256,
-  encryptAES256WithIv,
-} from '@/components/AppPaymentGateway/crypt';
+
 import {API} from '@/redux/api';
 
 const {esimGlobal, isIOS} = Env.get();
@@ -553,16 +546,17 @@ const EsimScreen: React.FC<EsimScreenProps> = ({
   );
 
   // 첫 리워드 조건 체크용
-  useEffect(() => {
-    if (
-      isFocused &&
-      !reward?.isReceivedReward &&
-      reward?.isReceivedReward === 0
-    ) {
-      // localStorage로 기록해두면, 로깨비톡 히스토리 > 첫 발권 리워드 받기 배너 여는 기준을 정해줄 수 있다.
-      setIsVisibleReward(true);
-    }
-  }, [action.account, mobile, reward, isFocused]);
+  // 첫 리워드 모달 비활성화
+  // useEffect(() => {
+  //   if (
+  //     isFocused &&
+  //     !reward?.isReceivedReward &&
+  //     reward?.isReceivedReward === 0
+  //   ) {
+  //     // localStorage로 기록해두면, 로깨비톡 히스토리 > 첫 발권 리워드 받기 배너 여는 기준을 정해줄 수 있다.
+  //     setIsVisibleReward(true);
+  //   }
+  // }, [action.account, mobile, reward, isFocused]);
 
   useEffect(() => {
     const {subsId, actionStr} = route?.params || {};
