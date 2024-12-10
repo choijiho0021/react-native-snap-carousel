@@ -388,46 +388,39 @@ const slice = createSlice({
   },
 });
 
+const isDup = (cur, c, acc) => {
+  // 번호 중복 확인
+  const dup = acc?.filter(
+    (v) =>
+      v?.phoneNumbers?.[0]?.number?.replace(/[^0-9]/g, '') ===
+        c?.number?.replace(/[^0-9]/g, '') &&
+      `${v?.familyName}${v.givenName}` ===
+        `${cur?.familyName}${cur?.givenName}`,
+  );
+  return dup?.length > 0 || false;
+};
+
 export const getContacts = createAsyncThunk(
   'talk/getContact',
   (_, {dispatch}) => {
     return Contacts.getAll()
       .then((c) => {
-        const contacts = c.reduce((acc, cur, idx) => {
-          // 번호 중복 확인
-          const dup = acc?.filter(
-            (v) =>
-              v?.phoneNumbers[0]?.number ===
-                cur?.phoneNumbers[0]?.number?.replace(/[^0-9]/g, '') &&
-              `${v?.familyName}${v.givenName}` ===
-                `${cur?.familyName}${cur?.givenName}`,
-          );
-          if (dup?.length > 0) return acc;
-
-          if (cur?.phoneNumbers?.length <= 1)
-            return acc.concat({
-              ...cur,
-              phoneNumbers: [
-                {
-                  ...cur?.phoneNumbers[0],
-                  number: cur?.phoneNumbers[0]?.number?.replace(/[^0-9]/g, ''),
-                },
-              ],
-            });
-
+        const contacts = c.reduce((acc, cur) => {
           // 저장된 번호 모두 하나의 row로 출력
-          return [
-            ...acc,
-            ...cur?.phoneNumbers?.map((p, i) => {
-              return {
+          return cur?.phoneNumbers?.reduce((pacc, pcur, i) => {
+            // 중복 제거
+            if (isDup(cur, pcur, pacc)) return pacc;
+            return [
+              ...pacc,
+              {
                 ...cur,
                 recordID: `${cur.recordID}:${i}`,
                 phoneNumbers: [
-                  {...p, number: p?.number?.replace(/[^0-9]/g, '')},
+                  {...pcur, number: pcur?.number?.replace(/[^0-9]/g, '')},
                 ],
-              };
-            }),
-          ];
+              },
+            ];
+          }, acc);
         }, []);
 
         const sortedContacts = (contacts || []).sort((a, b) => sortName(a, b));
