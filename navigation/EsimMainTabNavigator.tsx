@@ -2,7 +2,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import {Platform, StyleSheet} from 'react-native';
 import {connect} from 'react-redux';
 import AppIcon from '@/components/AppIcon';
 import AppText from '@/components/AppText';
@@ -369,6 +369,7 @@ const TabNavigator = ({
   modal: ModalModelState;
 }) => {
   const smallDevice = isDeviceSize('medium') || isDeviceSize('small');
+  const height = Platform.OS === 'android' ? 48.5 : smallDevice ? 50 : 83;
   return (
     <Tab.Navigator
       screenOptions={{tabBarAllowFontScaling: false}}
@@ -380,7 +381,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
-            height: smallDevice ? 50 : 83,
+            height,
             display:
               (getFocusedRouteNameFromRoute(route) || 'Home') === 'Home'
                 ? 'flex'
@@ -403,7 +404,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
-            height: smallDevice ? 50 : 83,
+            height,
             display:
               !!loggedIn &&
               cart?.cartItems?.length === 0 &&
@@ -429,7 +430,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
-            height: smallDevice ? 50 : 83,
+            height,
             display:
               !!loggedIn &&
               modal.showTabbar &&
@@ -453,7 +454,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
-            height: smallDevice ? 50 : 83,
+            height,
             display:
               !!loggedIn &&
               ['RkbTalk', 'TalkContact'].includes(
@@ -486,7 +487,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
-            height: smallDevice ? 50 : 83,
+            height,
             display:
               !!loggedIn &&
               (getFocusedRouteNameFromRoute(route) || 'MyPage') === 'MyPage'
