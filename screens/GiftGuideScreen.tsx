@@ -16,7 +16,6 @@ import {
   ViewStyle,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import AppBackButton from '@/components/AppBackButton';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import i18n from '@/utils/i18n';
@@ -41,7 +40,6 @@ const styles = StyleSheet.create({
   },
   whiteContainer: {
     backgroundColor: colors.white,
-    paddingBottom: 64,
   },
   step: {
     width: 76,
@@ -57,7 +55,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.white,
     opacity: 0.7,
-    // backgroundColor: colors.black,
   },
   text: {
     ...appStyles.semiBold18Text,
