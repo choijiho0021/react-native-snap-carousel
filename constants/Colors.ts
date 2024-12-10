@@ -25,6 +25,7 @@ export const colors = {
   black: '#2c2c2c',
   black92: 'rgba(44,44,44, 0.92)',
   clearBlue: '#2a7ff6',
+  clearBlue10: '2a7ff61A',
   dodgerBlue: '#4f99ff',
   warmGrey: '#777777',
   disabled: '#777777',
@@ -87,6 +88,9 @@ export const colors = {
   menuBorder: 'rgba(60, 60, 67, 0.36)',
   clearBlue8: 'rgba(42, 127, 246, 0.08)',
   naverGreen: '#03C731',
-  black92: 'rgba(44, 44, 44, 0.92)',
   lightYellow2: '#FFD357',
+  giftbg1: '#ffd7b6',
+  giftbg2: '#baaaff',
+  giftbg3: '#ff8b5a',
+  giftGuideBg: '#f2f8f9',
 };

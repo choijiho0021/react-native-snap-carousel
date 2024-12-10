@@ -392,6 +392,7 @@ const Esim: React.FC<EsimProps> = ({
               rule: item.rule,
               nid: item.notice.nid,
               image: item.notice.image,
+              showTitle: true,
               mode: 'noti',
             });
           }

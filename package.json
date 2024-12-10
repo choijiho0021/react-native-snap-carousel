@@ -48,7 +48,7 @@
     "@react-native-firebase/messaging": "^17.5.0",
     "@react-native-google-signin/google-signin": "^9.0.2",
     "@react-native-picker/picker": "^2.7.2",
-    "@react-native-seoul/naver-login": "4.0.2",
+    "@react-native-seoul/naver-login": "^4.0.4",
     "@react-native/normalize-color": "^2.0.0",
     "@react-navigation/bottom-tabs": "6.5.8",
     "@react-navigation/compat": "^5.3.20",

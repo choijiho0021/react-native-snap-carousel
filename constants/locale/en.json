@@ -1201,6 +1201,7 @@
   "gift:tip-6": "\u2022 Applies only when the receiver is newly registered user.",
   "gift:btn": "Go Purchase Gifts",
   "gift:alert": "It is already sent <b>as a gift</b>.\nPls, ask her or him to signup ROKEBI App to <b>register the gift</b>. Both the sender and receiver will get {cash} cash!",
+  "gift:info": "선물 전 확인하세요!",
 
   "noti:updateTitle": "New Version Available!",
   "noti:updateOpt": "We improved App for your better experience.\nPlease, enjoy the stable service after new version update.",

@@ -354,7 +354,8 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
                 created: moment(created),
                 bodyTitle: bodyTitle || title,
                 text: body,
-                mode: 'html',
+                showTitle: true,
+                mode: 'noti',
               });
             }
             break;
@@ -458,6 +459,7 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
               bodyTitle: bodyTitle || title,
               text: body,
               notiType,
+              showTitle: true,
               mode: type === notiActions.NOTI_TYPE_URI ? 'uri' : 'page',
             });
             break;

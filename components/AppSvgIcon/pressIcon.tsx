@@ -194,16 +194,16 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         y="1.197"
         width="1"
         height="14"
-        rx=".5"
+        rx="0.5"
         transform="rotate(45 10.596 1.197)"
         fill="#fff"
       />
       <Rect
-        x=".697"
+        x="0.697"
         y="1.904"
         width="1"
         height="14"
-        rx=".5"
+        rx="0.5"
         transform="rotate(-45 .697 1.904)"
         fill="#fff"
       />
@@ -218,19 +218,19 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       xmlns="http://www.w3.org/2000/svg">
       <Rect
         x="10.596"
-        y=".697"
+        y="0.697"
         width="1"
         height="14"
-        rx=".5"
+        rx="0.5"
         transform="rotate(45 10.596 .697)"
         fill="#979797"
       />
       <Rect
-        x=".697"
+        x="0.697"
         y="1.404"
         width="1"
         height="14"
-        rx=".5"
+        rx="0.5"
         transform="rotate(-45 .697 1.404)"
         fill="#979797"
       />
@@ -341,7 +341,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
-      <Rect x="8" y="11.5" width="8" height="1" rx=".5" fill="#2C2C2C" />
+      <Rect x="8" y="11.5" width="8" height="1" rx="0.5" fill="#2C2C2C" />
     </Svg>,
     null,
     <Svg
@@ -350,7 +350,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
-      <Rect x="8" y="11.5" width="8" height="1" rx=".5" fill="#D8D8D8" />
+      <Rect x="8" y="11.5" width="8" height="1" rx="0.5" fill="#D8D8D8" />
     </Svg>,
   ],
   boldCancel: [
@@ -390,7 +390,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       viewBox="0 0 88 19"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
-      <G opacity=".64" fill="#fff">
+      <G opacity="0.64" fill="#fff">
         <Path
           fillRule="evenodd"
           clipRule="evenodd"
@@ -408,7 +408,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       viewBox="0 0 78 17"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
-      <G opacity=".64" fill="#fff">
+      <G opacity="0.64" fill="#fff">
         <Path
           fillRule="evenodd"
           clipRule="evenodd"
@@ -1184,8 +1184,8 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       <Path
         d="M9.776 2.02a.25.25 0 0 1 .448 0l2.374 4.81a.75.75 0 0 0 .565.41l5.309.772a.25.25 0 0 1 .139.426l-3.842 3.745a.75.75 0 0 0-.216.663l.907 5.288a.25.25 0 0 1-.363.263l-4.748-2.496a.75.75 0 0 0-.698 0l-4.748 2.496a.25.25 0 0 1-.363-.263l.907-5.288a.75.75 0 0 0-.216-.663L1.389 8.438a.25.25 0 0 1 .139-.426l5.309-.772a.75.75 0 0 0 .565-.41l2.374-4.81z"
         stroke="#fff"
-        strokeOpacity=".16"
-        stroke-width=".5"
+        strokeOpacity="0.16"
+        stroke-width="0.5"
       />
       <Defs>
         <LinearGradient
@@ -1195,7 +1195,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           x2="5.714"
           y2="1.357"
           gradientUnits="userSpaceOnUse">
-          <Stop offset=".14" stopColor="#FFBC00" />
+          <Stop offset="0.14" stopColor="#FFBC00" />
           <Stop offset="1" stopColor="#FFE393" />
         </LinearGradient>
       </Defs>
@@ -1383,7 +1383,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         <LinearGradient
           id="21mb9errsl"
           x1="87.5"
-          y1=".5"
+          y1="0.5"
           x2="58.5"
           y2="27.5"
           gradientUnits="userSpaceOnUse">
@@ -2084,19 +2084,19 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       xmlns="http://www.w3.org/2000/svg">
       <Rect
         x="10.596"
-        y=".697"
+        y="0.697"
         width="1"
         height="14"
-        rx=".5"
+        rx="0.5"
         transform="rotate(45 10.596 .697)"
         fill="#2C2C2C"
       />
       <Rect
-        x=".697"
+        x="0.697"
         y="1.404"
         width="1"
         height="14"
-        rx=".5"
+        rx="0.5"
         transform="rotate(-45 .697 1.404)"
         fill="#2C2C2C"
       />
@@ -2111,19 +2111,19 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       xmlns="http://www.w3.org/2000/svg">
       <Rect
         x="10.596"
-        y=".697"
+        y="0.697"
         width="1"
         height="14"
-        rx=".5"
+        rx="0.5"
         transform="rotate(45 10.596 .697)"
         fill="#fff"
       />
       <Rect
-        x=".697"
+        x="0.697"
         y="1.404"
         width="1"
         height="14"
-        rx=".5"
+        rx="0.5"
         transform="rotate(-45 .697 1.404)"
         fill="#fff"
       />
@@ -2159,7 +2159,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
-      <Path d="M0 0h20v20H0V0z" fill="#000" fillOpacity=".4" />
+      <Path d="M0 0h20v20H0V0z" fill="#000" fillOpacity="0.4" />
       <Path
         d="M3.99 3.282 16.716 16.01l-.707.707L3.282 3.99l.708-.707z"
         fill="#fff"
@@ -2274,8 +2274,8 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           gradientUnits="userSpaceOnUse"
           gradientTransform="matrix(44 0 0 44 12.7 46)">
           <Stop stopColor="#09F" />
-          <Stop offset=".6" stopColor="#A033FF" />
-          <Stop offset=".9" stopColor="#FF5280" />
+          <Stop offset="0.6" stopColor="#A033FF" />
+          <Stop offset="0.9" stopColor="#FF5280" />
           <Stop offset="1" stopColor="#FF7061" />
         </RadialGradient>
       </Defs>
@@ -2623,7 +2623,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         <Path
           d="M25.898 42.068c-.843 1.458-3.142 2.226-5.67 1.919-3.065-.384-5.287-2.303-5.057-4.222"
           stroke="#000"
-          strokeWidth=".5"
+          strokeWidth="0.5"
           strokeMiterlimit="10"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -2635,7 +2635,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         <Path
           d="M52.178 42.068c.843 1.458 3.142 2.226 5.67 1.919 3.065-.384 5.287-2.303 5.057-4.222"
           stroke="#000"
-          strokeWidth=".5"
+          strokeWidth="0.5"
           strokeMiterlimit="10"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -2984,7 +2984,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           y2="141"
           gradientUnits="userSpaceOnUse">
           <Stop stopColor="#1D77F6" />
-          <Stop offset="1" stopColor="#fff" stopOpacity=".75" />
+          <Stop offset="1" stopColor="#fff" stopOpacity="0.75" />
         </LinearGradient>
         <LinearGradient
           id="qcn3d6f1kk"
@@ -2994,7 +2994,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           y2="155.5"
           gradientUnits="userSpaceOnUse">
           <Stop stopColor="#1D77F6" />
-          <Stop offset="1" stopColor="#fff" stopOpacity=".33" />
+          <Stop offset="1" stopColor="#fff" stopOpacity="0.33" />
         </LinearGradient>
         <LinearGradient
           id="h9j5vl6jbl"
@@ -3077,7 +3077,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         y="99"
         width="1.896"
         height="17.065"
-        rx=".948"
+        rx="0.948"
         transform="rotate(30 84.532 99)"
         fill="#1D77F6"
       />
@@ -3180,7 +3180,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           y2="139.5"
           gradientUnits="userSpaceOnUse">
           <Stop stopColor="#1D77F6" />
-          <Stop offset="1" stopColor="#fff" stopOpacity=".88" />
+          <Stop offset="1" stopColor="#fff" stopOpacity="0.88" />
         </LinearGradient>
       </Defs>
     </Svg>,
@@ -3569,7 +3569,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           y2="51.522"
           gradientUnits="userSpaceOnUse">
           <Stop stopColor="#BDD9FF" />
-          <Stop offset="1" stopColor="#C8DFFF" stopOpacity=".24" />
+          <Stop offset="1" stopColor="#C8DFFF" stopOpacity="0.24" />
         </LinearGradient>
       </Defs>
     </Svg>,
@@ -3606,7 +3606,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
             result="hardAlpha"
           />
           <feOffset dy="1" />
-          <feGaussianBlur stdDeviation=".5" />
+          <feGaussianBlur stdDeviation="0.5" />
           <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
           <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.08 0" />
           <feBlend in2="shape" result="effect1_innerShadow_6420_6717" />
@@ -3652,7 +3652,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           y2="58.324"
           gradientUnits="userSpaceOnUse">
           <Stop stopColor="#BDD9FF" />
-          <Stop offset="1" stopColor="#C8DFFF" stopOpacity=".24" />
+          <Stop offset="1" stopColor="#C8DFFF" stopOpacity="0.24" />
         </LinearGradient>
       </Defs>
     </Svg>,
@@ -4037,8 +4037,8 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       xmlns="http://www.w3.org/2000/svg">
       <G clipPath="url(#qw3fyn9bxa)">
         <Rect
-          x=".5"
-          y=".5"
+          x="0.5"
+          y="0.5"
           width="19"
           height="19"
           rx="2.5"
@@ -5324,7 +5324,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         d="m42 95 85 4v84l-82.314-8.716A3.002 3.002 0 0 1 42 171.298V95z"
         fill="#E8C48C"
       />
-      <G opacity=".32" fillule="evenodd" clipRule="evenodd" fill="#fff">
+      <G opacity="0.32" fillule="evenodd" clipRule="evenodd" fill="#fff">
         <Path d="M84.105 123.836a1.462 1.462 0 0 0-1.07-.042c-.526.185-10.472 3.867-15.922 18.359a10.948 10.948 0 0 1 2.632.97c.042.022.087.041.129.064 1.15.621 1.731.574 2.067.485.802-.214 1.696-1.164 2.658-2.823 2.767-4.782 7.728-4.672 8.492-4.622.75.009 5.72.282 8.11 5.263.83 1.729 1.649 2.745 2.433 3.02.326.114.9.206 2.097-.325.044-.019.089-.034.133-.053a10.904 10.904 0 0 1 2.7-.764c-4.316-14.87-13.949-19.308-14.459-19.532" />
         <Path d="M104.709 148.454c-1.337-1.778-3.432-2.293-5.374-2.068a7.734 7.734 0 0 0-2.215.597 9.97 9.97 0 0 1-.481.195c-1.525.587-2.879.665-4.124.229-1.677-.59-3.035-2.065-4.274-4.647-1.659-3.456-5.144-3.443-5.178-3.446l-.091.002-.091-.009c-.135-.005-3.538-.227-5.43 3.036-1.433 2.479-2.901 3.845-4.62 4.304-1.274.338-2.62.156-4.094-.546-.154-.074-.308-.147-.464-.232a7.514 7.514 0 0 0-2.163-.76 7.189 7.189 0 0 0-1.108-.14c-1.593-.062-3.217.428-4.409 1.781-1.068 1.214-2.433 5.154-.74 8.76 1.697 3.615 6.92 8.049 22.16 8.638 15.238.588 20.788-3.43 22.76-6.904 1.965-3.464.908-7.497-.064-8.79" />
       </G>
@@ -5373,7 +5373,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         <LinearGradient
           id="j6pb3bswia"
           x1="10.87"
-          y1=".979"
+          y1="0.979"
           x2="4.819"
           y2="16.08"
           gradientUnits="userSpaceOnUse">
@@ -6027,7 +6027,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Rect
-        x=".667"
+        x="0.667"
         y="1.334"
         width="14.667"
         height="13.333"
@@ -6396,7 +6396,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         d="M1 2a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H2a1 1 0 0 1-1-1z"
         fill="#2C2C2C"
       />
-      <Rect x="5" y="8" width="6" height="1.5" rx=".75" fill="#D6F3E3" />
+      <Rect x="5" y="8" width="6" height="1.5" rx="0.75" fill="#D6F3E3" />
     </Svg>,
   ],
   regCardInfo: [
@@ -6569,7 +6569,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           x2="5.061"
           y2="1.387"
           gradientUnits="userSpaceOnUse">
-          <Stop offset=".14" stopColor="#FFBC00" />
+          <Stop offset="0.14" stopColor="#FFBC00" />
           <Stop offset="1" stopColor="#FFE393" />
         </LinearGradient>
         <LinearGradient
@@ -6580,8 +6580,8 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           y2="10.705"
           gradientUnits="userSpaceOnUse">
           <Stop stopColor="#6658E9" />
-          <Stop offset=".265" stopColor="#867BED" />
-          <Stop offset=".855" stopColor="#211D6B" />
+          <Stop offset="0.265" stopColor="#867BED" />
+          <Stop offset="0.855" stopColor="#211D6B" />
         </LinearGradient>
         <LinearGradient
           id="e5cnzl3yzh"
@@ -6590,7 +6590,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           x2="12.79"
           y2="10.505"
           gradientUnits="userSpaceOnUse">
-          <Stop offset=".203" stopColor="#3D99FF" />
+          <Stop offset="0.203" stopColor="#3D99FF" />
           <Stop offset="1" stopColor="#2B5FAD" />
         </LinearGradient>
         <LinearGradient
@@ -6601,8 +6601,8 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           y2="11.277"
           gradientUnits="userSpaceOnUse">
           <Stop stopColor="#6658E9" />
-          <Stop offset=".293" stopColor="#867BED" />
-          <Stop offset=".86" stopColor="#211D6B" />
+          <Stop offset="0.293" stopColor="#867BED" />
+          <Stop offset="0.86" stopColor="#211D6B" />
         </LinearGradient>
         <filter
           id="8vef9bsyie"
@@ -6641,7 +6641,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           r="1"
           gradientUnits="userSpaceOnUse"
           gradientTransform="matrix(-1.02917 -8.82554 7.35958 -.85822 9.029 14.171)">
-          <Stop stopColor="#843F00" stopOpacity=".22" />
+          <Stop stopColor="#843F00" stopOpacity="0.22" />
           <Stop offset="1" stopColor="#843F00" stopOpacity="0" />
         </radialGradient>
         <clipPath id="anjql1isla">
@@ -6699,7 +6699,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           x2="10.001"
           y2="16"
           gradientUnits="userSpaceOnUse">
-          <Stop stopColor="#2C2C2C" stopOpacity=".5" />
+          <Stop stopColor="#2C2C2C" stopOpacity="0.5" />
           <Stop offset="1" stopColor="#2C2C2C" />
         </LinearGradient>
         <LinearGradient
@@ -6709,7 +6709,7 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           x2="10.001"
           y2="16"
           gradientUnits="userSpaceOnUse">
-          <Stop stopColor="#2C2C2C" stopOpacity=".5" />
+          <Stop stopColor="#2C2C2C" stopOpacity="0.5" />
           <Stop offset="1" stopColor="#2C2C2C" />
         </LinearGradient>
       </Defs>
@@ -7068,12 +7068,12 @@ const pressIcons: Record<string, React.ReactElement[]> = {
             clipRule="evenodd"
             d="M107.631 51.153c.536 2.28.482 4.713-.155 6.965-.636 2.25-1.839 4.264-3.502 5.71a1.907 1.907 0 0 1-2.696-.192 1.92 1.92 0 0 1 .188-2.704c1.034-.9 1.873-2.24 2.333-3.866.459-1.625.498-3.394.111-5.04a1.914 1.914 0 0 1 1.422-2.302 1.915 1.915 0 0 1 2.299 1.43zM115.404 47.736a21.064 21.064 0 0 1 .281 12.823 20.71 20.71 0 0 1-7.201 10.535 1.908 1.908 0 0 1-2.68-.354 1.919 1.919 0 0 1 .348-2.688 16.89 16.89 0 0 0 5.869-8.59 17.226 17.226 0 0 0-.23-10.481 1.915 1.915 0 0 1 1.182-2.435 1.914 1.914 0 0 1 2.431 1.19z"
             fill="#2C81F8"
-            fill-opacity=".72"
+            fill-opacity="0.72"
           />
           <Path
             d="M99.385 57.112a2.233 2.233 0 0 1-2.732-1.583 2.233 2.233 0 0 1 1.575-2.738 2.233 2.233 0 0 1 2.732 1.584 2.233 2.233 0 0 1-1.575 2.737z"
             fill="#2C81F8"
-            fill-opacity=".72"
+            fill-opacity="0.72"
           />
           <Path
             fillRule="evenodd"
@@ -7132,13 +7132,41 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           y2="102.377"
           gradientUnits="userSpaceOnUse">
           <Stop offset="0.036" stopColor="#488AFC" stop-opacity="0" />
-          <Stop offset="0.5" stopColor="#488AFC" stop-opacity=".6" />
+          <Stop offset="0.5" stopColor="#488AFC" stop-opacity="0.6" />
           <Stop offset="0.95" stopColor="#488AFC" stop-opacity="0" />
         </LinearGradient>
         <ClipPath id="ooakrpbq5a">
           <Path fill="#fff" transform="translate(.5)" d="M0 0h148v148H0z" />
         </ClipPath>
       </Defs>
+    </Svg>,
+  ],
+  warnGrey20: [
+    <Svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="10" cy="9.999" r="9.167" fill="#777" />
+      <Path
+        d="M10.833 13.333a.833.833 0 1 1-1.666 0 .833.833 0 0 1 1.666 0zM9.167 6.665a.833.833 0 0 1 1.666 0v4.167a.833.833 0 1 1-1.666 0V6.665z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
+  warnRed24: [
+    <Svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx="12" cy="12" r="11" fill="#ED4847" />
+      <Path
+        d="M13 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM11 8a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V8z"
+        fill="#fff"
+      />
     </Svg>,
   ],
 };
