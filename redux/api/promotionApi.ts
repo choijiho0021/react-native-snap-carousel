@@ -23,6 +23,7 @@ export type RkbPromotion = {
   notice?: {
     title?: string;
     body?: string;
+    created?: string;
     nid: number;
     image?: {
       success?: string;
@@ -98,6 +99,7 @@ const toPromotion = (data: DrupalNode[]): ApiResult<RkbPromotion> => {
                 nid: parseInt(item.nid, 10),
                 title: item.field_notice_title,
                 body: item.field_notice_body,
+                created: item.created,
                 image: {
                   success: item.field_successful_image,
                   failure: item.field_failure_image,

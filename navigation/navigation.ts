@@ -87,6 +87,7 @@ type SimpleTextParams = {
   showIcon?: boolean;
   showCloseModal?: boolean;
   notiType?: string;
+  showTitle?: boolean;
   image?: {
     success?: string;
     failure?: string;

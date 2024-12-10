@@ -14,8 +14,6 @@ export const trackPurchaseEvent = async (
   amount: number,
   items: NTrackerConversionItem[],
 ) => {
-  console.log('aaaaa NaverTracker', NaverTracker);
-
   try {
     const result = await NaverTracker.trackPurchaseEvent(amount, items);
     console.log('trackPurchaseEvent Success:', result);

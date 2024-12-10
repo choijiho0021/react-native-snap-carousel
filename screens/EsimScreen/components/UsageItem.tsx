@@ -92,11 +92,11 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   cautionContainer: {
-    marginHorizontal: 20,
+    marginHorizontal: 16,
     marginTop: 20,
     paddingVertical: 16,
     paddingLeft: 16,
-    paddingRight: 36,
+    paddingRight: 56,
     borderRadius: 3,
     alignItems: 'center',
     flexDirection: 'row',
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     flex: 1,
-    height: 88,
+    // height: 88,
   },
   timeDivider: {
     marginHorizontal: 4,
@@ -389,25 +389,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
     showUsage,
   ]);
 
-  const renderDailyUsage = useCallback(
-    () => (
-      <View style={{flexDirection: 'row', marginTop: 8}}>
-        <AppText style={{...appStyles.bold14Text, textAlign: 'center'}}>
-          {i18n.t('esim:dailyUsageAmount')}
-        </AppText>
-        <AppText
-          style={{
-            ...appStyles.bold14Text,
-            textAlign: 'center',
-            color: colors.redError,
-          }}>
-          {utils.toDataVolumeString(totalUsed < quota ? quota : totalUsed)}
-        </AppText>
-      </View>
-    ),
-    [quota, totalUsed],
-  );
-
   const renderTime = useCallback(() => {
     return (
       <View style={styles.timeContainer}>
@@ -586,15 +567,14 @@ const UsageItem: React.FC<UsageItemProps> = ({
   const renderUsageImg = useCallback(() => {
     if (showUsage) return renderAnimatedCircularProgress();
 
-    if (item.dataVolume === '1024000') {
-      return (
-        <Image
-          source={require('@/assets/images/esim/airplane.png')}
-          style={{width: 148, height: 148}}
-        />
-      );
-    }
-    return <AppSvgIcon style={{marginBottom: 20}} name="notShowEsimUsage" />;
+    return (
+      <AppSvgIcon
+        style={{marginBottom: 20}}
+        name={
+          item.dataVolume === '1024000' ? 'alldayUsaImg' : 'notShowEsimUsage'
+        }
+      />
+    );
   }, [item.dataVolume, renderAnimatedCircularProgress, showUsage]);
 
   const usageRender = useCallback(() => {
@@ -717,7 +697,6 @@ const UsageItem: React.FC<UsageItemProps> = ({
       item.prodName,
       quota,
       showTotalData,
-      usage?.quota,
       usageRender,
     ],
   );

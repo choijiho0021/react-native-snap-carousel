@@ -181,16 +181,22 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     Analytics.trackEvent('Payment', {
       payment: `${params?.mode} Payment${isSuccess ? ' Success' : ' Fail'}`,
     });
-    if (
-      pymPrice &&
-      pymPrice.value > 0 &&
-      isSuccess &&
-      mobile &&
-      !mobile.startsWith('0101000200')
-    ) {
-      analytics().logEvent(`${esimGlobal ? 'global' : 'esim'}_payment`);
+    if (isSuccess && mobile && oldCart && !mobile.startsWith('0101000200')) {
+      const items = oldCart?.purchaseItems?.map((elm) => ({
+        quantity: elm.qty,
+        price: elm.price.value * elm.qty,
+        item_id: elm.key,
+        item_name: elm.title,
+        item_brand: elm.type,
+      }));
+
+      analytics().logPurchase({
+        value: oldCart?.pymReq?.subtotal?.value || 0,
+        currency: 'KRW',
+        items,
+      });
     }
-  }, [isSuccess, mobile, params?.mode, pymPrice]);
+  }, [isSuccess, mobile, oldCart, params?.mode]);
 
   // Naver GFA 데이터 수집 test
   useEffect(() => {
@@ -204,10 +210,6 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
         name: elm.sku,
         category: elm.type,
       })) as NTrackerConversionItem[];
-
-      // const items: NTrackerConversionItem[] = [
-      //   {quantity: 1, payAmount: 1, id: '1', name: 'test', category: 'test'},
-      // ];
 
       trackPurchaseEvent(amount, items);
     }
