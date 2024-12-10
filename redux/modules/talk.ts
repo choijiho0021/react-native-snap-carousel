@@ -399,8 +399,8 @@ export const getContacts = createAsyncThunk(
             (v) =>
               v?.phoneNumbers[0]?.number ===
                 cur?.phoneNumbers[0]?.number?.replace(/[^0-9]/g, '') &&
-              `${v?.familyName} ${v.givenName}` ===
-                `${cur?.familyName} ${cur?.givenName}`,
+              `${v?.familyName}${v.givenName}` ===
+                `${cur?.familyName}${cur?.givenName}`,
           );
           if (dup?.length > 0) return acc;
 

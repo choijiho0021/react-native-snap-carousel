@@ -357,7 +357,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
               const r = searcher.search(item.familyName + item.givenName) >= 0;
 
               const h = Hangul.rangeSearch(
-                `${item.familyName} ${item.givenName}`,
+                `${item.familyName}${item.givenName}`,
                 text,
               );
               if (r) setHighlight(highlight.set(item.recordID, h[0]));
@@ -367,7 +367,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
         } else {
           // 영어검색
           currentSearchResult = currentContacts.filter((item) => {
-            const r = `${item.familyName} ${item.givenName}`
+            const r = `${item.familyName}${item.givenName}`
               .toLowerCase()
               .indexOf(txt);
             if (r >= 0) {
@@ -405,7 +405,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
   const onPress = useCallback(
     (contactData: Contact) => {
       const num = getNumber(contactData?.phoneNumbers[0]?.number);
-      const name = `${contactData?.familyName} ${contactData?.givenName}`;
+      const name = `${contactData?.familyName}${contactData?.givenName}`;
 
       action.talk.updateNumberClicked({num, name});
       navigation.goBack();
@@ -419,7 +419,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
       return (
         <ContactListItem
           key={val.recordID}
-          title={`${val.familyName} ${val.givenName}`}
+          title={`${val.familyName}${val.givenName}`}
           uri={val.thumbnailPath}
           data={val}
           onPress={onPress}
