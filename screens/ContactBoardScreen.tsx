@@ -3,8 +3,18 @@ import i18n from '@/utils/i18n';
 import BoardMsgAdd from '@/components/BoardMsgAdd';
 import BoardMsgList from '@/components/BoardMsgList';
 import BoardScreen from './BoardScreen';
+import {AccountModelState} from '@/redux/modules/account';
+import {connect} from 'react-redux';
+import {RootState} from '@/redux';
 
-const ContactBoardScreen = () => {
+type ContactBoardScreenProps = {
+  account: AccountModelState;
+};
+
+// account: {loggedIn},
+const ContactBoardScreen: React.FC<ContactBoardScreenProps> = ({
+  account: {loggedIn},
+}) => {
   return (
     <BoardScreen
       title={i18n.t('board:title')}
@@ -16,7 +26,7 @@ const ContactBoardScreen = () => {
         },
         {
           key: 'list',
-          title: i18n.t('board:list'),
+          title: i18n.t(loggedIn ? 'board:list:login' : 'board:list'),
           render: () => <BoardMsgList />,
         },
       ]}
@@ -24,4 +34,6 @@ const ContactBoardScreen = () => {
   );
 };
 
-export default ContactBoardScreen;
+export default connect(({account}: RootState) => ({
+  account,
+}))(ContactBoardScreen);

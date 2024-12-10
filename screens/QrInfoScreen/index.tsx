@@ -134,6 +134,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     flexDirection: 'row',
+    marginRight: 20,
   },
   cardCheckTxt: {
     flexDirection: 'row',
@@ -561,11 +562,7 @@ const QrInfoScreen = () => {
           <View style={[styles.cardCheckDesc, {width: '95%'}]}>
             <AppSvgIcon
               name={isFail || cardState === 'D' ? 'regCardWarn' : 'regCardInfo'}
-              style={{
-                marginRight: 4,
-                top: 1,
-                alignSelf: 'center',
-              }}
+              style={{marginRight: 4, marginTop: 2}}
             />
             <AppStyledText
               textStyle={styles.cardCheckDescTxt}

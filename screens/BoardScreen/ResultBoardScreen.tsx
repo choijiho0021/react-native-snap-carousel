@@ -73,6 +73,10 @@ const styles = StyleSheet.create({
     color: colors.clearBlue,
     lineHeight: 24,
   },
+  safeViewContainer: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
   container: {
     flex: 1,
     backgroundColor: colors.gray4,
@@ -281,7 +285,7 @@ const ResultBoardScreen: React.FC<ResultBoardScreenProps> = ({
   }, [issue?.changed, issue?.replyImages, renderImages, renderTime, resp]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.safeViewContainer}>
       <View style={appStyles.header}>
         <AppBackButton title={title} />
       </View>

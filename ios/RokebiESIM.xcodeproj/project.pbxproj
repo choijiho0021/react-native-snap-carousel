@@ -38,6 +38,8 @@
 		A3568E14289237B500986E9F /* AppTrackingTransparency.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3568E13289237B500986E9F /* AppTrackingTransparency.framework */; };
 		A35AE66E2CF56BA0001AFECA /* incallmanager_ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A35AE66D2CF56BA0001AFECA /* incallmanager_ringback.mp3 */; };
 		A35AE66F2CF56BA0001AFECA /* incallmanager_ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A35AE66D2CF56BA0001AFECA /* incallmanager_ringback.mp3 */; };
+		A35AE6782CF6DDD8001AFECA /* NaverTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = A35AE6772CF6DDD8001AFECA /* NaverTracker.m */; };
+		A35AE6792CF6DDD8001AFECA /* NaverTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = A35AE6772CF6DDD8001AFECA /* NaverTracker.m */; };
 		A36B9CA728C8366E00C346D1 /* ARNKakaoChannel.m in Sources */ = {isa = PBXBuildFile; fileRef = A36B9CA528C8366E00C346D1 /* ARNKakaoChannel.m */; };
 		A36B9CA828C8366E00C346D1 /* ARNKakaoChannel.m in Sources */ = {isa = PBXBuildFile; fileRef = A36B9CA528C8366E00C346D1 /* ARNKakaoChannel.m */; };
 		A36B9CAA28C83A7200C346D1 /* KakaoPlusFriend.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A36B9CA928C83A7200C346D1 /* KakaoPlusFriend.framework */; };
@@ -90,6 +92,7 @@
 		A3568E11289237A000986E9F /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		A3568E13289237B500986E9F /* AppTrackingTransparency.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppTrackingTransparency.framework; path = System/Library/Frameworks/AppTrackingTransparency.framework; sourceTree = SDKROOT; };
 		A35AE66D2CF56BA0001AFECA /* incallmanager_ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = incallmanager_ringback.mp3; sourceTree = "<group>"; };
+		A35AE6772CF6DDD8001AFECA /* NaverTracker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NaverTracker.m; sourceTree = "<group>"; };
 		A36B9CA528C8366E00C346D1 /* ARNKakaoChannel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARNKakaoChannel.m; sourceTree = "<group>"; };
 		A36B9CA628C8366E00C346D1 /* ARNKakaoChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARNKakaoChannel.h; sourceTree = "<group>"; };
 		A36B9CA928C83A7200C346D1 /* KakaoPlusFriend.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KakaoPlusFriend.framework; path = ExternalLibs/KakaoPlusFriend.framework; sourceTree = "<group>"; };
@@ -140,6 +143,7 @@
 			isa = PBXGroup;
 			children = (
 				A3748E3A2A0A208A00653DD1 /* NaverTracker.swift */,
+				A35AE6772CF6DDD8001AFECA /* NaverTracker.m */,
 				A3748E462A0B28A200653DD1 /* RNKakaoLogins.swift */,
 				A3748E4C2A0B65E700653DD1 /* RNKakaoLogins.h */,
 				A3748E4D2A0B65F100653DD1 /* RNKakaoLogins.m */,
@@ -771,6 +775,7 @@
 				A36B9CA828C8366E00C346D1 /* ARNKakaoChannel.m in Sources */,
 				A31C8F30282245F200CE16F6 /* Rokebi-Bridge.swift in Sources */,
 				0D63159028B496790069564C /* AppDelegate.mm in Sources */,
+				A35AE6792CF6DDD8001AFECA /* NaverTracker.m in Sources */,
 				A3748E482A0B28A200653DD1 /* RNKakaoLogins.swift in Sources */,
 				0DCAD29E288D3727005FADA6 /* RCTNetworkInfo.m in Sources */,
 				A3748E4F2A0B65F100653DD1 /* RNKakaoLogins.m in Sources */,
@@ -789,6 +794,7 @@
 				A36B9CA728C8366E00C346D1 /* ARNKakaoChannel.m in Sources */,
 				A31C8F2F282245F200CE16F6 /* Rokebi-Bridge.swift in Sources */,
 				0D63158F28B496790069564C /* AppDelegate.mm in Sources */,
+				A35AE6782CF6DDD8001AFECA /* NaverTracker.m in Sources */,
 				A3748E472A0B28A200653DD1 /* RNKakaoLogins.swift in Sources */,
 				4060E90926DDAAF100E1C0AE /* main.m in Sources */,
 				A3748E4E2A0B65F100653DD1 /* RNKakaoLogins.m in Sources */,

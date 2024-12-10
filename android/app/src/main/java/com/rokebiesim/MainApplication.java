@@ -216,6 +216,7 @@ public class MainApplication extends Application implements ReactApplication {
                             new NetInfoPackage(),
                             new WebRTCModulePackage(),
                             new InCallManagerPackage(),
+                            new NTrackerPackage(),
                             new RNCPickerPackage(),
                             new ReactNativeFirebaseAnalyticsPackage(),
                             new CookieManagerPackage(),

@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContainer: {
-    backgroundColor: colors.whiteTwo,
+    backgroundColor: colors.white,
     flex: 1,
   },
   bottomContainer: {
