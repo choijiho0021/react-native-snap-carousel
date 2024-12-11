@@ -1760,10 +1760,10 @@
     read-package-json-fast "^2.0.3"
     which "^2.0.2"
 
-"@react-native-camera-roll/camera-roll@5.6.1":
-  version "5.6.1"
-  resolved "https://registry.npmjs.org/@react-native-camera-roll/camera-roll/-/camera-roll-5.6.1.tgz"
-  integrity sha512-wr7E90Xoew4pwfS5tGYkx3d7e+pBubPPYMI2uHQIq9/6bNIItXADmgDf3ghbId/G/gdX4qH/tyjlyF1kAci/Rw==
+"@react-native-camera-roll/camera-roll@^7.8.3":
+  version "7.9.0"
+  resolved "https://registry.yarnpkg.com/@react-native-camera-roll/camera-roll/-/camera-roll-7.9.0.tgz#7b3d199b073e9f63d49852c44456c4fa0aa27e90"
+  integrity sha512-Ra0lB1G2H11MzL5aIH3bwlxU1zaHGSZeRs4lBXLBO64Ai1gUgZPR7TYgKDeeRPzNPtSbZKmzs+fuZ/7XoCf1SA==
 
 "@react-native-community/async-storage@^1.11.0":
   version "1.12.1"
@@ -3448,7 +3448,7 @@ base64-arraybuffer@^1.0.2:
   resolved "https://registry.npmjs.org/base64-arraybuffer/-/base64-arraybuffer-1.0.2.tgz"
   integrity sha512-I3yl4r9QB5ZRY3XuJVEPfc2XhZO6YweFPI+UovAzn+8/hb3oJ6lnysaFcjVpkCPfVWFUDvoZ8kmVDP7WyRtYtQ==
 
-base64-js@^1.1.2, base64-js@^1.3.1, base64-js@^1.5.1:
+base64-js@1.5.1, base64-js@^1.1.2, base64-js@^1.3.1, base64-js@^1.5.1:
   version "1.5.1"
   resolved "https://registry.npmjs.org/base64-js/-/base64-js-1.5.1.tgz"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
@@ -4394,6 +4394,13 @@ debug@4.1.1:
   dependencies:
     ms "^2.1.1"
 
+debug@4.3.4:
+  version "4.3.4"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.4.tgz#1319f6579357f2338d3337d2cdd4914bb5dcc865"
+  integrity sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==
+  dependencies:
+    ms "2.1.2"
+
 debug@^3.2.7:
   version "3.2.7"
   resolved "https://registry.npmjs.org/debug/-/debug-3.2.7.tgz"
@@ -5298,6 +5305,11 @@ etag@~1.8.1:
   resolved "https://registry.npmjs.org/etag/-/etag-1.8.1.tgz"
   integrity sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==
 
+event-target-shim@6.0.2:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/event-target-shim/-/event-target-shim-6.0.2.tgz#ea5348c3618ee8b62ff1d344f01908ee2b8a2b71"
+  integrity sha512-8q3LsZjRezbFZ2PN+uP+Q7pnHUMmAOziU2vA2OwoFaKIXxlxl38IylhSSgUorWu/rf4er67w0ikBqjBFk/pomA==
+
 event-target-shim@^5.0.0, event-target-shim@^5.0.1:
   version "5.0.1"
   resolved "https://registry.npmjs.org/event-target-shim/-/event-target-shim-5.0.1.tgz"
@@ -6090,6 +6102,11 @@ graphemer@^1.4.0:
   version "1.4.0"
   resolved "https://registry.npmjs.org/graphemer/-/graphemer-1.4.0.tgz"
   integrity sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==
+
+hangul-js@^0.2.6:
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/hangul-js/-/hangul-js-0.2.6.tgz#3e552e3a68c76498cf2c7993ca354af7bad4730d"
+  integrity sha512-48axU8LgjCD30FEs66Xc04/8knxMwCMQw0f67l67rlttW7VXT3qRJgQeHmhiuGwWXGvSbk6YM0fhQlcjE1JFQA==
 
 has-bigints@^1.0.1, has-bigints@^1.0.2:
   version "1.0.2"
@@ -10158,10 +10175,10 @@ react-native-calendars@1.1303.0:
   optionalDependencies:
     moment "^2.29.4"
 
-react-native-channel-plugin@0.7.12:
-  version "0.7.12"
-  resolved "https://registry.npmjs.org/react-native-channel-plugin/-/react-native-channel-plugin-0.7.12.tgz"
-  integrity sha512-1TNPZMBmtkS4/82rM8H7Dg5Ru/UPOqWuOjY/uxOUf8gYi6q3DmlP+CigexzrBgQ4mQqS6lHNuWSpxdjSwZRy8w==
+react-native-channel-plugin@^0.9.2:
+  version "0.9.3"
+  resolved "https://registry.yarnpkg.com/react-native-channel-plugin/-/react-native-channel-plugin-0.9.3.tgz#533ab7314a60b6aa2c90de0a9fca462d3a44fb53"
+  integrity sha512-aVXf01DLX9NtJiCsMKboiiklRcvK1e5Dqa2iSG/qqxmdgqbjzFJJUvVBBSFSN6TlB7UGNDsWWesr6EmP+Eq2cg==
 
 react-native-circular-progress@^1.3.7:
   version "1.4.0"
@@ -10197,6 +10214,11 @@ react-native-config@^1.5.0:
   version "1.5.3"
   resolved "https://registry.npmjs.org/react-native-config/-/react-native-config-1.5.3.tgz"
   integrity sha512-3D05Abgk5DfDw9w258EzXvX5AkU7eqj3u9H0H0L4gUga4nYg/zuupcrpGbpF4QeXBcJ84jjs6g8JaEP6VBT7Pg==
+
+react-native-contacts@^7.0.8:
+  version "7.0.8"
+  resolved "https://registry.yarnpkg.com/react-native-contacts/-/react-native-contacts-7.0.8.tgz#485ba7a77653b30205c76f96494808d07b8e57b9"
+  integrity sha512-Zfkdpw1uQVRb8v1m+ogknzjyfEs9k63o2sPAYvxZ8ZJff31D45G8+uZb6VcM4tIe3ELH9EDvh93nd515kFvRYQ==
 
 react-native-device-info@^10.2.1:
   version "10.14.0"
@@ -10240,10 +10262,15 @@ react-native-gradle-plugin@^0.71.19:
   resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.19.tgz#3379e28341fcd189bc1f4691cefc84c1a4d7d232"
   integrity sha512-1dVk9NwhoyKHCSxcrM6vY6cxmojeATsBobDicX0ZKr7DgUF2cBQRTKsimQFvzH8XhOVXyH8p4HyDSZNIFI8OlQ==
 
-react-native-image-crop-picker@^0.39.0:
-  version "0.39.0"
-  resolved "https://registry.npmjs.org/react-native-image-crop-picker/-/react-native-image-crop-picker-0.39.0.tgz"
-  integrity sha512-4aANbQMrmU6zN/4b0rVBA7SbaZ3aa5JESm3Xk751sINybZMt1yz/9h95LkO7U0pbslHDo3ofXjG75PmQRP6a/w==
+react-native-image-crop-picker@^0.41.2:
+  version "0.41.6"
+  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.41.6.tgz#de2c00102f4c934848fa11ff2335f29f5dc6b3e3"
+  integrity sha512-oyEVkiJX1cnjYJolQluOqXxz9xhLHrv+pyCs7+jA87yaa110/0jv1UCqxjVjxueKug7zk/UnjG7i9Ks1cGyLpA==
+
+react-native-incall-manager@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-incall-manager/-/react-native-incall-manager-4.2.0.tgz#1cc781591007c4c9fc21deea82a308d46dc4db6c"
+  integrity sha512-DC5XRQVAwNgNA6YZ3ILF6ttWXv/MUQ4omzmVDh/uHc0TW0v4f8QIdt6D9GHZhGKb3+qB7XKUxpXVBrLH+9zqfQ==
 
 react-native-iphone-x-helper@^1.0.3:
   version "1.3.1"
@@ -10280,10 +10307,10 @@ react-native-pagination@^1.5.5:
   dependencies:
     react-native-vector-icons "^4.3.0"
 
-react-native-permissions@3.6.0:
-  version "3.6.0"
-  resolved "https://registry.npmjs.org/react-native-permissions/-/react-native-permissions-3.6.0.tgz"
-  integrity sha512-aiancYU5eAC3lCtdAFNz/8OQAShAXSgFJAcNrsspXiMulL4zjClIa52uWMi5NTU4skU0KoWG5rCfqjxWAkJL8w==
+react-native-permissions@4.1.5:
+  version "4.1.5"
+  resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-4.1.5.tgz#db4d1ddbf076570043f4fd4168f54bb6020aec92"
+  integrity sha512-r6VMRacASmtRHS+GZ+5HQCp9p9kiE+UU9magHOZCXZLTJitdTuVHWZRrb4v4oqZGU+zAp3mZhTQftuMMv+WLUg==
 
 react-native-qrcode-svg@^6.0.6:
   version "6.3.1"
@@ -10313,15 +10340,20 @@ react-native-screens@^3.33.0:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
 
+react-native-section-list-get-item-layout@^2.2.3:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/react-native-section-list-get-item-layout/-/react-native-section-list-get-item-layout-2.2.3.tgz#152a8efdcb3847dbcbeb04cd2d0de4312d3d2fcb"
+  integrity sha512-fzCW5SiYP6qCZyDHebaElHonIFr8NFrZK9JDkxFLnpxMJih4d+HQ4rHyOs0Z4Gb/FjyCVbRH7RtEnjeQ0XffMg==
+
 react-native-share@^10.2.1:
   version "10.2.1"
   resolved "https://registry.npmjs.org/react-native-share/-/react-native-share-10.2.1.tgz"
   integrity sha512-Z2LWGYWH7raM4H6Oauttv1tEhaB43XSWJAN8iS6oaSG9CnyrUBeYFF4QpU1AH5RgNeylXQdN8CtbizCHHt6coQ==
 
-react-native-sim-cards-manager@^1.0.10:
-  version "1.0.22"
-  resolved "https://registry.npmjs.org/react-native-sim-cards-manager/-/react-native-sim-cards-manager-1.0.22.tgz"
-  integrity sha512-HhnHYadzoROm7zg9q4d7Fr3iEHFSIut/GUCw6nMqODCQDRP+HB1uMKGR/SXJFKIJjapwV4g43jzRedKbhOvBew==
+react-native-sim-cards-manager@^1.0.24:
+  version "1.0.24"
+  resolved "https://registry.yarnpkg.com/react-native-sim-cards-manager/-/react-native-sim-cards-manager-1.0.24.tgz#6e1194908e015ec8670d04239204b17cdc816acd"
+  integrity sha512-Rt84Tej/zrhc4gs5ICO4+DrsXsPmtSAvR7u2f0otdbyKpRXECCQKB7jo9L36ZUz1gww54GUmFZWEisKrL8ek5w==
 
 react-native-snackbar-component@^1.1.12:
   version "1.1.12"
@@ -10337,18 +10369,24 @@ react-native-snackbar-component@^1.1.12:
     prop-types "^15.6.1"
     react-addons-shallow-compare "15.6.2"
 
+react-native-sound-player@^0.14.3:
+  version "0.14.3"
+  resolved "https://registry.yarnpkg.com/react-native-sound-player/-/react-native-sound-player-0.14.3.tgz#cc45bc515531e06b3c4f931d5cb3a6afcc591c26"
+  integrity sha512-I5VeG8YuwTTMX6CPkZfNL6lWay6GmR3HzuxXjhhpUKHV5K2XWXKJ+YKJAz6dBnJoNshl4EQOo4ox8bQD6/+zPA==
+
 react-native-splash-screen@^3.2.0:
   version "3.3.0"
   resolved "https://registry.npmjs.org/react-native-splash-screen/-/react-native-splash-screen-3.3.0.tgz"
   integrity sha512-rGjt6HkoSXxMqH4SQUJ1gnPQlPJV8+J47+4yhgTIan4bVvAwJhEeJH7wWt9hXSdH4+VfwTS0GTaflj1Tw83IhA==
 
-react-native-svg@^13.2.0:
-  version "13.14.1"
-  resolved "https://registry.npmjs.org/react-native-svg/-/react-native-svg-13.14.1.tgz"
-  integrity sha512-0DSa0EOySzV0J9utmRFVE5Vr4mKRXA7GtH1Ga1B6fzR967HGFW1ytH6hmnOf36316hjYpXMMB7s4oVe1FqghlQ==
+react-native-svg@^15.8.0:
+  version "15.10.1"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-15.10.1.tgz#5df51fca80cb1912648d058b67903f05eac0b8a6"
+  integrity sha512-Hqz/doQciVFK/Df2v+wsW96oY5jxlta7rZ31KQYo78dlgvAHEaGr6paEOAMvlIruw7EHNQ0Vc1ZmJPJF2kfIPQ==
   dependencies:
     css-select "^5.1.0"
     css-tree "^1.1.3"
+    warn-once "0.1.1"
 
 react-native-swipe-gestures@^1.0.5:
   version "1.0.5"
@@ -10428,6 +10466,15 @@ react-native-web@^0.17.1:
     inline-style-prefixer "^6.0.0"
     normalize-css-color "^1.0.2"
     prop-types "^15.6.0"
+
+react-native-webrtc@^124.0.3:
+  version "124.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-webrtc/-/react-native-webrtc-124.0.4.tgz#6346e25451cb6f04432ace48b6b127499fc2d4ea"
+  integrity sha512-ZbhSz1f+kc1v5VE0B84+v6ujIWTHa2fIuocrYzGUIFab7E5izmct7PNHb9dzzs0xhBGqh4c2rUa49jbL+P/e2w==
+  dependencies:
+    base64-js "1.5.1"
+    debug "4.3.4"
+    event-target-shim "6.0.2"
 
 react-native-webview@^11.13.0:
   version "11.26.1"
@@ -11305,6 +11352,11 @@ simple-swizzle@^0.2.2:
   integrity sha512-JA//kQgZtbuY83m+xT+tXJkmJncGMTFT+C+g2h2R9uxkYIrE2yy9sgmcLhCnw57/WSD+Eh3J97FPEDFnbXnDUg==
   dependencies:
     is-arrayish "^0.3.1"
+
+sip.js@^0.21.2:
+  version "0.21.2"
+  resolved "https://registry.yarnpkg.com/sip.js/-/sip.js-0.21.2.tgz#621a2c996472042d5554db655ed1767bc7a865ea"
+  integrity sha512-tSqTcIgrOd2IhP/rd70JablvAp+fSfLSxO4hGNY6LkWRY1SKygTO7OtJEV/BQb8oIxtMRx0LE7nUF2MaqGbFzA==
 
 sisteransi@^1.0.5:
   version "1.0.5"
@@ -12387,7 +12439,7 @@ walker@^1.0.7, walker@^1.0.8, walker@~1.0.5:
   dependencies:
     makeerror "1.0.12"
 
-warn-once@^0.1.0:
+warn-once@0.1.1, warn-once@^0.1.0:
   version "0.1.1"
   resolved "https://registry.npmjs.org/warn-once/-/warn-once-0.1.1.tgz"
   integrity sha512-VkQZJbO8zVImzYFteBXvBOZEl1qL175WH8VmZcxF2fZAoudNhNDvHi+doCaAEdU2l2vtcIwa2zn0QK5+I1HQ3Q==
