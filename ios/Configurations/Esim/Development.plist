@@ -89,8 +89,6 @@
 	<true/>
 	<key>FacebookClientToken</key>
 	<string>a516d23081ee3fb8db8bb9c006431ae6</string>
-	<key>FacebookCodelessDebugLogEnabled</key>
-	<true/>
 	<key>FacebookDisplayName</key>
 	<string>로밍도깨비 eSIM</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>

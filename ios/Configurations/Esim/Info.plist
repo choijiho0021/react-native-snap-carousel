@@ -70,7 +70,6 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>5</string>
 	<string>11</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
