@@ -260,9 +260,10 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
 
       const webUrl = `${webViewHost}/gift/${giftId}`;
 
-      const body = `${i18n.t('gift:msgBody1')}${
-        item.prodName
-      }\n${webUrl}${i18n.t('gift:msgBody2')}  `;
+      const body = `${i18n.t('gift:msgBody', {
+        title: item.prodName,
+        link: webUrl,
+      })}`;
 
       try {
         let result = null;
