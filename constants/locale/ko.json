@@ -694,6 +694,11 @@
   "esim:rechargeablePeriod2": "<b>연장 가능 기간:</b> {chargeablePeriod}",
   "esim:recharge:cash": "얼마나 충전할까요?",
   "esim:recharge:cash:btn": "바로 구매하기",
+
+  "esim:recharge:voucher:btn": "상품권 등록하기",
+
+  "esim:recharge:voucher:notice:body": "{{expireLine}}• 로깨비캐시로 충전된 상품권은 로밍도깨비 앱에서 현금처럼 사용하실 수 있습니다.",
+
   "esim:draftTitle": "발권이 필요한 상품",
   "esim:until:KST": "{{time}}",
   "esim:expired": "기한만료",
@@ -1842,9 +1847,6 @@
   "cashHistory:type:voucher:payment": "상품 구매",
   "cashHistory:type:voucher:refund": "구매 취소",
   "cashHistory:recharge:failure": "충전 실패! 고객센터로 문의해 주세요.",
-
-  "cashHistory:type:voucher:regist:notice": "유효기간: 상품권 등록일로부터 5년",
-  "cashHistory:type:voucher:refund:notice:body": "{{expireLine}}• 로깨비캐시로 충전된 상품권은 로밍도깨비 앱에서 현금처럼 사용하실 수 있습니다.",
 
   "promo:join:open": "이벤트 참여",
   "promo:join:joined": "이벤트 참여 완료",

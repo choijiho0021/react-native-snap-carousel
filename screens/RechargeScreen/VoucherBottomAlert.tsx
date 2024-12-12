@@ -11,16 +11,43 @@ import i18n from '@/utils/i18n';
 import Env from '@/environment';
 import AppButton from '@/components/AppButton';
 import RenderChargeAmount from './RenderChargeAmount';
-import AppIcon from '@/components/AppIcon';
 import AppSvgIcon from '@/components/AppSvgIcon';
-
-const {isIOS} = Env.get();
 
 const styles = StyleSheet.create({
   confirm: {
     ...appStyles.confirm,
     bottom: 0,
     marginTop: 16,
+  },
+
+  titleContainer: {
+    alignItems: 'center',
+    width: '100%',
+  },
+  grabber: {
+    width: 46,
+    height: 10,
+    marginVertical: 10,
+  },
+  voucherTitleText: {
+    ...appStyles.bold18Text,
+    lineHeight: 26,
+    marginTop: 16,
+  },
+
+  bodyContainer: {paddingHorizontal: 20, marginTop: 18, marginBottom: 20},
+
+  bodyText: {
+    ...appStyles.medium14,
+    color: colors.warmGrey,
+    lineHeight: 20,
+    letterSpacing: 0,
+  },
+
+  amountContainer: {
+    borderTopWidth: 1,
+    paddingTop: 20,
+    borderColor: colors.whiteFive,
   },
 });
 
@@ -68,28 +95,14 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
 
   const title = useMemo(() => {
     return (
-      <View
-        style={{
-          alignItems: 'center',
-          width: '100%',
-        }}>
-        <AppSvgIcon
-          style={{
-            width: 46,
-            height: 10,
-            marginVertical: 10,
-          }}
-          name="grabber2"
-        />
+      <View style={styles.titleContainer}>
+        <AppSvgIcon style={styles.grabber} name="grabber2" />
         <Image
           style={{marginTop: 10}}
           source={getVoucherImage(voucherType?.amount)}
           resizeMode="stretch"
         />
-        <AppText
-          style={[appStyles.bold18Text, {lineHeight: 26, marginTop: 16}]}>
-          {voucherType.title}
-        </AppText>
+        <AppText style={styles.voucherTitleText}>{voucherType.title}</AppText>
       </View>
     );
   }, [getVoucherImage, voucherType.amount, voucherType.title]);
@@ -98,16 +111,13 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
     console.log('@@@ voucherType : ', voucherType);
     return (
       <>
-        <View style={{paddingHorizontal: 20, marginTop: 18, marginBottom: 20}}>
+        <View style={styles.bodyContainer}>
           <View style={{gap: 8}}>
             <AppStyledText
-              text={i18n.t('cashHistory:type:voucher:refund:notice:body', {
+              text={i18n.t('esim:recharge:voucher:notice:body', {
                 expireLine: `• 유효기간:${voucherType?.expireDesc}\n`,
               })}
-              textStyle={[
-                appStyles.medium14,
-                {color: colors.warmGrey, lineHeight: 20, letterSpacing: 0},
-              ]}
+              textStyle={styles.bodyText}
               format={{b: [appStyles.bold16Text, {color: colors.clearBlue}]}}
             />
           </View>
@@ -116,15 +126,11 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
         <RenderChargeAmount
           amount={voucherType?.amount}
           balance={balance}
-          containerStyle={{
-            borderTopWidth: 1,
-            paddingTop: 20,
-            borderColor: colors.whiteFive,
-          }}
+          containerStyle={styles.amountContainer}
         />
         <AppButton
           style={styles.confirm}
-          title="상품권 등록하기"
+          title={i18n.t('esim:recharge:voucher:btn')}
           onPress={() => {
             onClickButton();
             setVisible(false);
