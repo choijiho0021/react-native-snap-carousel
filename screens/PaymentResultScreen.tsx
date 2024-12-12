@@ -170,7 +170,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   useEffect(() => {
     // 페이스북 픽셀 구매 데이터 전송 - 테스트 게정 0101000200으로 시작하는 경우에는 제외
     if (isSuccess && oldCart && mobile && !mobile.startsWith('0101000200')) {
-      AppEventsLogger.logPurchase(oldCart.pymReq?.subtotal?.value || 0, 'KWD', {
+      AppEventsLogger.logPurchase(oldCart.pymReq?.subtotal?.value || 0, 'KRW', {
         param: 'value',
       });
     }
