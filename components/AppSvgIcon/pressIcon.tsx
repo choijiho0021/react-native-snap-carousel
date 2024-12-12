@@ -7987,6 +7987,23 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  grabber2: [
+    <Svg
+      width={46}
+      height={10}
+      viewBox="0 0 46 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G filter="url(#19w12w2ira)">
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M22.451 9.923a2 2 0 001.099 0l21-6A2 2 0 0043.451.077L23.001 5.92 2.55.077a2 2 0 00-1.099 3.846l21 6z"
+          fill="#EFF1F3"
+        />
+      </G>
+    </Svg>,
+  ],
   googleNew: [
     <Svg
       width="56"
@@ -8603,6 +8620,111 @@ const pressIcons: Record<string, React.ReactElement[]> = {
         d="M13 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM11 8a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V8z"
         fill="#fff"
       />
+    </Svg>,
+  ],
+
+  voucherIcon: [
+    <Svg
+      width={24}
+      height={24}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#cgsspzmiya)">
+        <Path
+          d="M0 3.6a1.2 1.2 0 011.2-1.2h21.6A1.2 1.2 0 0124 3.6v16.8a1.2 1.2 0 01-1.2 1.2H1.2A1.2 1.2 0 010 20.4V3.6z"
+          fill="#D6F3E3"
+        />
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M1.201 2.4a1.2 1.2 0 00-1.2 1.2v16.8a1.2 1.2 0 001.2 1.2h21.6a1.2 1.2 0 001.2-1.2V3.6a1.2 1.2 0 00-1.2-1.2h-21.6zm.598 2.4a.6.6 0 01.6-.6H21.6a.6.6 0 01.6.6l.001 14.4a.6.6 0 01-.6.6h-19.2a.6.6 0 01-.6-.6L1.798 4.8z"
+          fill="#00AD50"
+        />
+        <Circle cx={2.4} cy={4.8} fill="#00AD50" r={2.4} />
+        <Circle cx={2.4} cy={19.201} fill="#00AD50" r={2.4} />
+        <Circle cx={21.6} cy={4.8} fill="#00AD50" r={2.4} />
+        <Circle cx={21.6} cy={19.201} fill="#00AD50" r={2.4} />
+        <Path
+          d="M5.4 14.4l.075-1.57-1.29.873-.585-1.081L5.01 12l-1.41-.637.585-1.052 1.29.844L5.4 9.6h1.2l-.075 1.555 1.275-.844.6 1.052L6.99 12l1.41.622-.6 1.081-1.275-.874.075 1.57H5.4zm6 0l.075-1.57-1.29.873-.585-1.081L11.01 12l-1.41-.637.585-1.052 1.29.844L11.4 9.6h1.2l-.075 1.555 1.275-.844.6 1.052-1.41.637 1.41.622-.6 1.081-1.275-.874.075 1.57h-1.2zm6 0l.075-1.57-1.29.873-.585-1.081L17.01 12l-1.41-.637.585-1.052 1.29.844L17.4 9.6h1.2l-.075 1.555 1.275-.844.6 1.052-1.41.637 1.41.622-.6 1.081-1.275-.874.075 1.57h-1.2z"
+          fill="#00AD50"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="cgsspzmiya">
+          <Path fill="#fff" d="M0 0h24v24H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
+  lightningIcon: [
+    <Svg
+      width={20}
+      height={20}
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M11.666 8.333l.663-6.623c.05-.498-.582-.752-.891-.359l-7.47 9.507a.5.5 0 00.394.809h3.971l-.662 6.623c-.05.498.581.752.89.359l7.47-9.507a.5.5 0 00-.393-.809h-3.972z"
+        fill="#FFC82D"
+      />
+    </Svg>,
+  ],
+
+  lightningCashIcon: [
+    <Svg
+      width={24}
+      height={24}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#081kfy8g3a)">
+        <Circle cx={12} cy={12} r={12} fill="url(#kqwyyxzatb)" />
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M21.6 4.8a11.947 11.947 0 00-7.2-2.4c-6.627 0-12 5.373-12 12 0 2.702.893 5.195 2.4 7.2A11.982 11.982 0 010 12C0 5.373 5.373 0 12 0c3.926 0 7.411 1.885 9.6 4.8z"
+          fill="#FFA800"
+        />
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M19.201 2.4a11.947 11.947 0 012.4 7.2c0 6.627-5.373 12-12 12-2.702 0-5.195-.893-7.201-2.4A11.982 11.982 0 0012 24c6.628 0 12-5.373 12-12a11.98 11.98 0 00-4.799-9.6z"
+          fill="#EF7F00"
+          fillOpacity={0.48}
+        />
+        <Circle
+          cx={12}
+          cy={12}
+          r={11}
+          stroke="#FFCF48"
+          strokeWidth={2}
+          strokeLinejoin="round"
+        />
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M13.2 10.8l.395-3.95c.06-.596-.698-.902-1.069-.43l-4.563 5.808a.6.6 0 00.472.971H10.8l-.395 3.948c-.06.598.698.903 1.07.43l4.562-5.807a.6.6 0 00-.471-.97H13.2z"
+          fill="#EF7F00"
+        />
+      </G>
+      <Defs>
+        <LinearGradient
+          id="kqwyyxzatb"
+          x1={21.273}
+          y1={18.667}
+          x2={4.348}
+          y2={6.232}
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#FFA800" />
+          <Stop offset={1} stopColor="#FFC658" />
+        </LinearGradient>
+        <ClipPath id="081kfy8g3a">
+          <Path fill="#fff" d="M0 0h24v24H0z" />
+        </ClipPath>
+      </Defs>
     </Svg>,
   ],
 };

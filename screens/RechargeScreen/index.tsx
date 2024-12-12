@@ -1,5 +1,5 @@
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Pressable,
   SafeAreaView,
@@ -32,6 +32,7 @@ import AppTextInput from '@/components/AppTextInput';
 import AppAlert from '@/components/AppAlert';
 import VoucherBottomAlert from './VoucherBottomAlert';
 import RenderChargeAmount from './RenderChargeAmount';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -43,7 +44,6 @@ const styles = StyleSheet.create({
   },
   confirm: {
     ...appStyles.confirm,
-    marginTop: 0,
   },
   container: {
     flex: 1,
@@ -53,16 +53,29 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 20,
-    marginHorizontal: 12.5,
+    marginTop: 16,
+    marginHorizontal: 20,
+    gap: 12,
+  },
+  btnBox: {
+    paddingTop: 20,
+    elevation: 12,
+    shadowColor: 'rgba(166, 168, 172, 0.16)',
+    shadowOffset: {
+      width: 0,
+      height: -8,
+    },
+    shadowRadius: 16,
+    shadowOpacity: 1,
+    borderStyle: 'solid',
+    borderTopWidth: 1,
+    borderColor: colors.whiteFive,
+    gap: 4,
   },
   button: {
-    // iphon5s windowWidth == 320
-    // width: isDeviceSize('small') ? 130 : 150,
     flex: 1,
-    marginHorizontal: 7.5,
     height: 52,
-    borderRadius: 100,
+    borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
     borderWidth: 1,
@@ -70,39 +83,54 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: {
-    ...appStyles.price,
+    ...appStyles.robotoMedium20Text,
     textAlign: 'right',
+    lineHeight: 24,
     color: colors.warmGrey,
   },
   priceButtonText: {
-    ...appStyles.price,
-    fontSize: 20,
+    ...appStyles.medium18,
     textAlign: 'right',
+    lineHeight: 24,
     color: colors.warmGrey,
   },
-  buttonVoucherOcr: {
-    marginTop: 20,
-    flex: 1,
-    height: 52,
-    borderRadius: 20,
-    backgroundColor: colors.white,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: colors.warmGrey,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   textInput: {
+    ...appStyles.medium18,
+    letterSpacing: -0.1,
+    paddingVertical: 16,
+    lineHeight: 24,
     marginTop: 20,
     flex: 1,
-    height: 52,
-    borderRadius: 20,
+    borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: colors.line,
     justifyContent: 'center',
     alignItems: 'center',
+    textAlign: 'center',
+  },
+
+  textContainer: {
+    position: 'relative',
+    ...appStyles.medium18,
+    height: 52,
+    marginTop: 20,
+    borderRadius: 3,
+    backgroundColor: colors.white,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: colors.line,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholder: {
+    ...appStyles.roboto16Text,
+    letterSpacing: -0.16,
+  },
+  input: {
+    opacity: 0,
+    height: 0,
   },
 });
 
@@ -150,10 +178,14 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
   // recharge 상품의 SKU는 'rch-{amount}' 형식을 갖는다.
   const [selected, setSelected] = useState(`rch-${rechargeChoice[0][0]}`);
   const [amount, setAmount] = useState(rechargeChoice[0][0]);
-
+  const inputRef = useRef(null);
   const [voucherCode, setVoucherCode] = useState('');
   const [showAlert, setShowAlert] = useState(false);
-  const [voucherType, setVoucherType] = useState({title: '', amount: 0});
+  const [voucherType, setVoucherType] = useState({
+    title: '',
+    amount: 0,
+    expireDesc: '',
+  });
 
   useEffect(() => {
     return () => {
@@ -175,13 +207,21 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
         navigation.goBack();
       } else {
         AppAlert.info(
-          '존재하지 않는 상품권입니다. 코드를 다시 확인해 주세요.',
+          rsp?.result === 3205
+            ? '이미 등록 또는 사용된 상품권입니다.' // TODO ko.json으로 뺴기
+            : '존재하지 않는 상품권입니다. 코드를 다시 확인해 주세요.',
           '',
           () => console.log('@@@ alert 확인 동작'),
         );
       }
     });
   }, [iccid, navigation, token, voucherCode]);
+
+  const handleFocus = useCallback(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   const onSubmit = useCallback(
     (type: RechargeTabType) => {
@@ -213,10 +253,14 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
             API.Account.getVoucherType({iccid, code: voucherCode}).then(
               (rsp) => {
                 if (rsp?.result === 0) {
-                  const {title, amount} = rsp?.objects;
+                  const {title, amount, expire_desc} = rsp?.objects;
 
                   setShowAlert(true);
-                  setVoucherType({title, amount: parseInt(amount, 10)});
+                  setVoucherType({
+                    title,
+                    amount: parseInt(amount, 10),
+                    expireDesc: expire_desc,
+                  });
                 } else {
                   AppAlert.info(
                     '존재하지 않는 상품권입니다. 코드를 다시 확인해 주세요.',
@@ -257,6 +301,24 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
     },
     [action.cart, amount, iccid, navigation, selected, token, voucherCode],
   );
+  const getMaskedPlaceholder = useCallback(
+    (type: 'placeholder' | 'text') => {
+      const code = voucherCode + '●●●●●●●●●●●●●●●●'.slice(voucherCode.length);
+      const formattedCodeWithSpaces = code.replace(/.{4}/g, '$&  ');
+      const text = formattedCodeWithSpaces.replace(/●/g, '').trim();
+
+      if (type === 'placeholder') {
+        return formattedCodeWithSpaces.replace(/[0-9]/g, '').trim();
+      }
+
+      if ((text.length % 6) - 4 === 0) {
+        return `${text}  `;
+      }
+
+      return text;
+    },
+    [voucherCode],
+  );
 
   const rechargeButton = useCallback(
     (value: number[]) => (
@@ -264,7 +326,8 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
         {value.map((v) => {
           const key = `rch-${v}`;
           const checked = key === selected;
-          const color = checked ? colors.clearBlue : colors.warmGrey;
+          const fontColor = checked ? colors.white : colors.black;
+          const backgroundColor = checked ? colors.clearBlue : colors.white;
 
           return (
             <Pressable
@@ -275,12 +338,16 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
               }}
               style={[
                 styles.button,
-                {borderColor: checked ? colors.clearBlue : colors.lightGrey},
+                {
+                  borderColor: checked ? colors.clearBlue : colors.lightGrey,
+                  borderWidth: checked ? 0 : 1,
+                  backgroundColor,
+                },
               ]}>
               <AppPrice
                 style={styles.buttonBox}
-                balanceStyle={[styles.buttonText, {color}]}
-                currencyStyle={[styles.priceButtonText, {color}]}
+                balanceStyle={[styles.buttonText, {color: fontColor}]}
+                currencyStyle={[styles.priceButtonText, {color: fontColor}]}
                 price={utils.toCurrency(v, esimCurrency)}
               />
             </Pressable>
@@ -296,23 +363,34 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
       return key === 'cash' ? (
         <>
           <ScrollView>
-            <AppText
-              style={[appStyles.normal16Text, {marginTop: 30, marginLeft: 20}]}>
-              {i18n.t('rch:amount')}
-            </AppText>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginTop: 32,
+                marginLeft: 20,
+                gap: 6,
+              }}>
+              <AppSvgIcon style={{marginTop: 1}} name="lightningCashIcon" />
+              <AppText style={[appStyles.bold18Text, {lineHeight: 24}]}>
+                {i18n.t('esim:recharge:cash')}
+              </AppText>
+            </View>
             <View style={{marginBottom: 40}}>
               {rechargeChoice.map(rechargeButton)}
             </View>
           </ScrollView>
-          <RenderChargeAmount amount={amount} balance={balance} />
-          <AppButton
-            title={i18n.t('rch:recharge')}
-            titleStyle={[appStyles.medium18, {color: colors.white}]}
-            disabled={_.isEmpty(selected)}
-            onPress={() => onSubmit('cash')}
-            style={styles.confirm}
-            type="primary"
-          />
+          <View style={styles.btnBox}>
+            <RenderChargeAmount amount={amount} balance={balance} />
+            <AppButton
+              title={i18n.t('esim:recharge:cash:btn')}
+              titleStyle={[appStyles.medium18, {color: colors.white}]}
+              disabled={_.isEmpty(selected)}
+              onPress={() => onSubmit('cash')}
+              style={styles.confirm}
+              type="primary"
+            />
+          </View>
         </>
       ) : (
         <>
@@ -320,46 +398,59 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
             contentContainerStyle={{
               marginHorizontal: 20,
             }}>
-            <AppText
-              style={[appStyles.normal16Text, {marginTop: 30, marginLeft: 20}]}>
-              {i18n.t('mypage:voucher:code')}
-            </AppText>
-
-            <Pressable
-              key={key}
-              onPress={() => {
-                console.log('@@@ 구현 필요');
-              }}
-              style={[
-                styles.buttonVoucherOcr,
-                {borderColor: colors.lightGrey},
-              ]}>
-              <AppText>{i18n.t('mypage:voucher:ocr')}</AppText>
+            <View style={{flexDirection: 'row', marginTop: 32, gap: 6}}>
+              <AppSvgIcon name="voucherIcon" />
+              <AppText style={[appStyles.normal16Text]}>
+                {i18n.t('mypage:voucher:code')}
+              </AppText>
+            </View>
+            <Pressable onPress={handleFocus} style={styles.textContainer}>
+              <AppText style={styles.placeholder}>
+                <AppText style={{color: colors.black}}>
+                  {getMaskedPlaceholder('text')}
+                </AppText>
+                <AppText style={{color: colors.greyish}}>
+                  {getMaskedPlaceholder('placeholder')}
+                </AppText>
+              </AppText>
             </Pressable>
 
-            <AppTextInput
+            {/* <AppTextInput
               style={styles.textInput}
               enablesReturnKeyAutomatically
               keyboardType="numeric"
               onChangeText={(val: string) => {
+                console.log('@@@ test : ', val);
+
                 setVoucherCode(val);
               }}
+              placeholder="●●●●  ●●●●  ●●●●  ●●●●"
+              placeholderTextColor={colors.greyish}
               clearTextOnFocus={false}
               value={voucherCode}
               maxLength={16}
-            />
-            <View>
+            /> */}
+            <View style={{flexDirection: 'row', gap: 6, marginTop: 6}}>
+              <AppText
+                style={[
+                  appStyles.bold14Text,
+                  {lineHeight: 20, color: colors.clearBlue},
+                ]}>
+                TIP
+              </AppText>
               <AppText>{i18n.t('mypage:voucher:noti')}</AppText>
             </View>
+            <AppTextInput
+              ref={inputRef}
+              style={styles.input}
+              value={voucherCode}
+              onChangeText={(val: string) => {
+                setVoucherCode(val);
+              }}
+              keyboardType="numeric"
+              maxLength={16}
+            />
           </ScrollView>
-          {/* <AppButton
-            title={'테스트용 버튼'}
-            titleStyle={[appStyles.medium18, {color: colors.white}]}
-            disabled={_.isEmpty(selected)}
-            onPress={() => onSubmit('voucher_deduct')}
-            style={styles.confirm}
-            type="primary"
-          /> */}
           <AppButton
             title={i18n.t('mypage:voucher:use')}
             titleStyle={[appStyles.medium18, {color: colors.white}]}
@@ -371,7 +462,16 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
         </>
       );
     },
-    [amount, balance, onSubmit, rechargeButton, selected, voucherCode],
+    [
+      amount,
+      balance,
+      getMaskedPlaceholder,
+      handleFocus,
+      onSubmit,
+      rechargeButton,
+      selected,
+      voucherCode,
+    ],
   );
   const renderSelectedPane = useCallback(() => {
     return (

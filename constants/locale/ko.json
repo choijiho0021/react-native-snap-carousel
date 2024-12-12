@@ -271,7 +271,7 @@
 
   "resign:note": "탈퇴 전 꼭 읽어주세요",
 
-  "resign:confirm1": "계정을 탈퇴하시면 구매내역, 상품정보 등의 <b>사용내역</b> 및 보유하고 계시는 <b>로깨비 캐시와 쿠폰은 삭제 및 자동 소멸</b>하며, <b>재가입 시에도 복원되지 않습니다.</b>",
+  "resign:confirm1": "계정을 탈퇴하시면 구매내역, 상품정보 등의 <b>사용내역</b> 및 보유하고 계시는 <b>로깨비 캐시와 쿠폰, 상품권은 삭제 및 자동 소멸</b>하며, <b>재가입 시에도 복원되지 않습니다.</b>",
   "resign:confirm2": "계정 탈퇴 후 <b>재가입 시, 신규 가입 이벤트에 재참여하실 수 없습니다.</b>",
   "resign:confirm3": "계정 탈퇴 후 전자상거래법에 따라 보존해야 하는 정보는 해당 법률에 따른 기간 보관 후 폐기됩니다.",
   "resign:isConfirm": "유의사항을 확인하였으며 동의합니다.",
@@ -692,6 +692,8 @@
   "esim:rechargeExpired": "충전 만료",
   "esim:rechargeablePeriod": "충전 가능 기간",
   "esim:rechargeablePeriod2": "<b>연장 가능 기간:</b> {chargeablePeriod}",
+  "esim:recharge:cash": "얼마나 충전할까요?",
+  "esim:recharge:cash:btn": "바로 구매하기",
   "esim:draftTitle": "발권이 필요한 상품",
   "esim:until:KST": "{{time}}",
   "esim:expired": "기한만료",
@@ -1429,10 +1431,10 @@
   "mypage:charge:cash": "캐시 충전",
   "mypage:charge:voucher": "상품권 등록",
 
-  "mypage:voucher:code": "상품권 코드",
+  "mypage:voucher:code": "상품권 코드를 등록하세요!",
   "mypage:voucher:ocr": "교환권 이미지 불러오기",
   "mypage:voucher:use": "상품권 사용하기",
-  "mypage:voucher:noti": "박스를 꾹 누르면 상품권 코드를 붙여넣기할 수 있어요.",
+  "mypage:voucher:noti": "박스를 길게 누르면 상품권 코드를 붙여넣기할 수 있어요.",
 
   "coupon:inputCode": "쿠폰 코드를 입력하세요",
   "coupon:reg": "쿠폰등록",
@@ -1834,7 +1836,7 @@
   "cashHistory:type:point_add": "캐시 적립",
   "cashHistory:type:point_exp": "캐시 소멸",
   "cashHistory:type:dona": "캐시 소멸",
-  "cashHistory:type:voucher_add": "금액권 등록",
+  "cashHistory:type:voucher_add": "상품권 등록",
   "cashHistory:type:voucher:voucher_add": "금액권 등록",
   "cashHistory:type:voucher:deduct": "금액권 차감",
   "cashHistory:type:voucher:payment": "상품 구매",
@@ -1842,7 +1844,7 @@
   "cashHistory:recharge:failure": "충전 실패! 고객센터로 문의해 주세요.",
 
   "cashHistory:type:voucher:regist:notice": "유효기간: 상품권 등록일로부터 5년",
-  "cashHistory:type:voucher:refund:notice:body": "<b>충전 전 확인하세요!</b>\n• 로깨비캐시로 충전된 상품권은 로밍도깨비 앱에서 현금처럼 사용하실 수 있습니다.\n• [1만원 이하 상품권] 로깨비캐시로 충전 후 상품권 권면 금액의 60% 이상을 사용하고 남은 금액은 환급받을 수 있습니다.\n•[1만원 초과 상품권] 로깨비캐시로 충전 후 상품권 권면 금액의 80% 이상을 사용하고 남은 금액은 환급받을 수 있습니다.\n•단, 무상으로 제공받은 상품권은 환급되지 않습니다.",
+  "cashHistory:type:voucher:refund:notice:body": "{{expireLine}}• 로깨비캐시로 충전된 상품권은 로밍도깨비 앱에서 현금처럼 사용하실 수 있습니다.",
 
   "promo:join:open": "이벤트 참여",
   "promo:join:joined": "이벤트 참여 완료",

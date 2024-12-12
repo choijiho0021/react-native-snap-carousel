@@ -1,40 +1,38 @@
-import React, {memo, useMemo} from 'react';
-import {Image, StyleSheet, View} from 'react-native';
-import {connect} from 'react-redux';
-import {RootState} from '@reduxjs/toolkit';
+import React, {memo} from 'react';
+import {StyleSheet, View} from 'react-native';
 import AppText from '@/components/AppText';
 
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import AppBottomModal from '@/screens/DraftUsScreen/component/AppBottomModal';
-import AppStyledText from '@/components/AppStyledText';
 import i18n from '@/utils/i18n';
 
 import Env from '@/environment';
-import AppButton from '@/components/AppButton';
-import {useNavigation} from '@react-navigation/native';
 import AppPrice from '@/components/AppPrice';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const {esimCurrency} = Env.get();
 const styles = StyleSheet.create({
   chargeAmountView: {
     flexDirection: 'row',
     paddingHorizontal: 20,
-    paddingVertical: 5,
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.gray02,
+    backgroundColor: colors.white,
+  },
+  amountTitle: {
+    ...appStyles.medium16,
+    lineHeight: 20,
+    color: colors.black,
   },
   balance: {
-    ...appStyles.robotoBold28Text,
-    color: colors.black,
-    lineHeight: 40,
+    ...appStyles.robotoBold22Text,
+    color: colors.clearBlue,
+    lineHeight: 24,
   },
   currency: {
-    ...appStyles.bold26Text,
-    color: colors.black,
-    lineHeight: 40,
-    marginRight: 4,
+    ...appStyles.bold22Text,
+    color: colors.clearBlue,
+    lineHeight: 24,
   },
 });
 
@@ -48,13 +46,16 @@ const RenderCharegeAmount: React.FC<RenderCharegeAmountProps> = ({
   balance,
 }) => {
   return (
-    <View style={{marginHorizontal: 20}}>
+    <View>
       <View style={styles.chargeAmountView}>
-        <AppText
-          key="label"
-          style={[appStyles.robotoBold22Text, {textAlign: 'left'}]}>
-          {i18n.t('mypage:cash:amount')}
-        </AppText>
+        <View style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
+          <AppSvgIcon style={{marginTop: 1}} name="lightningIcon" />
+          <AppText
+            key="label"
+            style={[styles.amountTitle, {textAlign: 'left'}]}>
+            {i18n.t('mypage:cash:amount')}
+          </AppText>
+        </View>
         <AppPrice
           price={{value: (balance || 0) + amount, currency: esimCurrency}}
           balanceStyle={styles.balance}
