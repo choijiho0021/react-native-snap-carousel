@@ -155,6 +155,4 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
   );
 };
 
-// export default memo(VoucherBottomAlert);
-
 export default memo(VoucherBottomAlert);

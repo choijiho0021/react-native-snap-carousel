@@ -695,6 +695,8 @@
   "esim:recharge:cash": "얼마나 충전할까요?",
   "esim:recharge:cash:btn": "바로 구매하기",
 
+  "esim:recharge:voucher:regist:alreadyUsed": "이미 등록 또는 사용된 상품권입니다.",
+  "esim:recharge:voucher:regist:fail": "<b>존재하지 않는 상품권입니다.</b>\n코드를 다시 확인해 주세요.",
   "esim:recharge:voucher:btn": "상품권 등록하기",
 
   "esim:recharge:voucher:notice:body": "{{expireLine}}• 로깨비캐시로 충전된 상품권은 로밍도깨비 앱에서 현금처럼 사용하실 수 있습니다.",
@@ -1422,6 +1424,7 @@
   "toast:esim:notExist": "구매 eSIM 목록에 없는 상품입니다.",
   "toast:failedNetwork": "네트워크 문제로 요청이 처리되지 않았습니다.\n인터넷 연결 확인 후 다시 시도해 주세요.",
   "toast:failedToOpen": "카카오톡 채널에 연결할 수 없습니다.",
+  "toast:voucherSuccess": "상품권 등록이 완료되었습니다.",
 
   "mypage:idCheckTitle": "로깨비톡 ID 확인",
   "mypage:manualInput:body": "아래의 정보를 사용하여 <color:'#2a7ff6'>로깨비 톡</color>에 로그인할 수 있습니다",

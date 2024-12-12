@@ -33,6 +33,15 @@ import AppAlert from '@/components/AppAlert';
 import VoucherBottomAlert from './VoucherBottomAlert';
 import RenderChargeAmount from './RenderChargeAmount';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
+
+import {
+  actions as toastActions,
+  ToastAction,
+  Toast,
+} from '@/redux/modules/toast';
+import AppModalContent from '@/components/ModalContent/AppModalContent';
+import AppStyledText from '@/components/AppStyledText';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -111,6 +120,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
+  modalText: {
+    ...appStyles.normal16Text,
+    lineHeight: 26,
+    letterSpacing: -0.32,
+    color: colors.warmGrey,
+  },
+  modalBoldText: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 26,
+    letterSpacing: -0.32,
+    color: colors.black,
+  },
   textContainer: {
     position: 'relative',
     ...appStyles.medium18,
@@ -149,6 +170,8 @@ type RechargeScreenProps = {
   action: {
     order: OrderAction;
     cart: CartAction;
+    toast: ToastAction;
+    modal: ModalAction;
   };
 };
 
@@ -203,19 +226,39 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
       code: voucherCode,
     }).then((rsp) => {
       if (rsp?.result === 0) {
-        console.log('@@@@ toast ? 스낵바 띄워주기?');
+        action.toast.push({
+          msg: Toast.VOUCHER_REGISTER,
+          toastIcon: 'bannerMarkToastSuccess',
+        });
         navigation.goBack();
       } else {
-        AppAlert.info(
-          rsp?.result === 3205
-            ? '이미 등록 또는 사용된 상품권입니다.' // TODO ko.json으로 뺴기
-            : '존재하지 않는 상품권입니다. 코드를 다시 확인해 주세요.',
-          '',
-          () => console.log('@@@ alert 확인 동작'),
-        );
+        action.modal.renderModal(() => (
+          <AppModalContent
+            type="info2"
+            buttonBoxStyle={{
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            okButtonStyle={{marginBottom: 1}}
+            onOkClose={() => {
+              action.modal.closeModal();
+            }}>
+            <View style={{marginLeft: 30}}>
+              <AppStyledText
+                text={i18n.t(
+                  rsp?.result === 3205
+                    ? 'esim:recharge:voucher:regist:alreadyUsed'
+                    : `esim:recharge:voucher:regist:fail`,
+                )}
+                textStyle={styles.modalText}
+                format={{b: styles.modalBoldText}}
+              />
+            </View>
+          </AppModalContent>
+        ));
       }
     });
-  }, [iccid, navigation, token, voucherCode]);
+  }, [action.modal, action.toast, iccid, navigation, token, voucherCode]);
 
   const handleFocus = useCallback(() => {
     if (inputRef.current) {
@@ -262,44 +305,46 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
                     expireDesc: expire_desc,
                   });
                 } else {
-                  AppAlert.info(
-                    '존재하지 않는 상품권입니다. 코드를 다시 확인해 주세요.',
-                    '',
-                    () => console.log('@@@ alert 확인 동작'),
-                  );
+                  action.modal.renderModal(() => (
+                    <AppModalContent
+                      type="info2"
+                      buttonBoxStyle={{
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                      okButtonStyle={{marginBottom: 1}}
+                      onOkClose={() => {
+                        action.modal.closeModal();
+                      }}>
+                      <View style={{marginLeft: 30}}>
+                        <AppStyledText
+                          text={i18n.t(`esim:recharge:voucher:regist:fail`)}
+                          textStyle={styles.modalText}
+                          format={{b: styles.modalBoldText}}
+                        />
+                      </View>
+                    </AppModalContent>
+                  ));
                 }
               },
             );
           }
 
           break;
-
-        // TODO : Test code
-        case 'voucher_deduct':
-          if (iccid && token) {
-            API.Account.patchVoucherPoint({
-              iccid,
-              token,
-              sign: 'deduct',
-              code: voucherCode,
-              point: 50,
-            }).then((rsp) => {
-              // test 용 그냥 alert 띄우기
-
-              if (TEST_OPTION) {
-                setShowAlert(true);
-                return;
-              }
-
-              console.log('테스트 차감 : ', rsp);
-            });
-          }
-          break;
         default:
           console.log('@@@@ error');
       }
     },
-    [action.cart, amount, iccid, navigation, selected, token, voucherCode],
+    [
+      action.cart,
+      action.modal,
+      amount,
+      iccid,
+      navigation,
+      selected,
+      token,
+      voucherCode,
+    ],
   );
   const getMaskedPlaceholder = useCallback(
     (type: 'placeholder' | 'text') => {
@@ -528,6 +573,8 @@ export default connect(
     action: {
       cart: bindActionCreators(cartActions, dispatch),
       order: bindActionCreators(orderActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch),
+      modal: bindActionCreators(modalActions, dispatch),
     },
   }),
 )(RechargeScreen);
