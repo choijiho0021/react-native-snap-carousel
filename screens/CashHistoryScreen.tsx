@@ -38,6 +38,7 @@ import AppButton from '@/components/AppButton';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {windowHeight} from '@/constants/SliderEntry.style';
 import {OrderModelState} from '@/redux/modules/order';
+import {useFocusEffect} from '@react-navigation/native';
 
 const {esimCurrency} = Env.get();
 
@@ -339,9 +340,11 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     action.account.getCashExpire({iccid, token});
   }, [action.account, iccid, token]);
 
-  useEffect(() => {
-    getHistory();
-  }, [getHistory]);
+  useFocusEffect(
+    React.useCallback(() => {
+      getHistory();
+    }, [getHistory]),
+  );
 
   const showDetail = useCallback(
     (item: CashHistory) => {
