@@ -76,15 +76,15 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
 }) => {
   const getVoucherImage = useCallback((amount) => {
     switch (amount) {
-      case '5000':
+      case 5000:
         return require('@/assets/images/esim/voucher/voucher5000.jpg');
-      case '10000':
+      case 10000:
         return require('@/assets/images/esim/voucher/voucher10000.jpg');
-      case '20000':
+      case 20000:
         return require('@/assets/images/esim/voucher/voucher20000.jpg');
-      case '30000':
+      case 30000:
         return require('@/assets/images/esim/voucher/voucher30000.jpg');
-      case '50000':
+      case 50000:
         return require('@/assets/images/esim/voucher/voucher50000.jpg');
 
       // ?
@@ -108,7 +108,6 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
   }, [getVoucherImage, voucherType.amount, voucherType.title]);
 
   const body = useMemo(() => {
-    console.log('@@@ voucherType : ', voucherType);
     return (
       <>
         <View style={styles.bodyContainer}>
