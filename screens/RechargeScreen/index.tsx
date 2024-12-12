@@ -226,7 +226,15 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
         ));
       }
     });
-  }, [action.modal, action.toast, iccid, navigation, token, voucherCode]);
+  }, [
+    action.account,
+    action.modal,
+    action.toast,
+    iccid,
+    navigation,
+    token,
+    voucherCode,
+  ]);
 
   const onSubmit = useCallback(
     (type: RechargeTabType) => {

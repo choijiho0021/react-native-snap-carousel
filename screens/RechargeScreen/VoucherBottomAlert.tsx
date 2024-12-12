@@ -8,7 +8,6 @@ import {appStyles} from '@/constants/Styles';
 import AppBottomModal from '@/screens/DraftUsScreen/component/AppBottomModal';
 import AppStyledText from '@/components/AppStyledText';
 import i18n from '@/utils/i18n';
-import Env from '@/environment';
 import AppButton from '@/components/AppButton';
 import RenderChargeAmount from './RenderChargeAmount';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -55,7 +54,7 @@ export type VoucherType = {
   title: string;
   amount: number;
   expireDesc: string;
-  type: string;
+  type?: string; // TODO : 차후 type에 따른 상품권 사진이 달라질 수도 있음.
 };
 
 type VoucherBottomAlertProps = {
