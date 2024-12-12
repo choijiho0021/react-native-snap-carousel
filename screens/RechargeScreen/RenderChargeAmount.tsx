@@ -1,5 +1,5 @@
 import React, {memo} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleProp, StyleSheet, View, ViewStyle} from 'react-native';
 import AppText from '@/components/AppText';
 
 import {colors} from '@/constants/Colors';
@@ -39,15 +39,17 @@ const styles = StyleSheet.create({
 type RenderCharegeAmountProps = {
   amount: number;
   balance: number;
+  containerStyle?: StyleProp<ViewStyle>;
 };
 
 const RenderCharegeAmount: React.FC<RenderCharegeAmountProps> = ({
   amount,
   balance,
+  containerStyle,
 }) => {
   return (
     <View>
-      <View style={styles.chargeAmountView}>
+      <View style={[styles.chargeAmountView, containerStyle]}>
         <View style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
           <AppSvgIcon style={{marginTop: 1}} name="lightningIcon" />
           <AppText

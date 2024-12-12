@@ -438,7 +438,13 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
                 ]}>
                 TIP
               </AppText>
-              <AppText>{i18n.t('mypage:voucher:noti')}</AppText>
+              <AppText
+                style={[
+                  appStyles.medium14,
+                  {lineHeight: 20, color: colors.warmGrey},
+                ]}>
+                {i18n.t('mypage:voucher:noti')}
+              </AppText>
             </View>
             <AppTextInput
               ref={inputRef}

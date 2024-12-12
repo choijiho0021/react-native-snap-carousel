@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   confirm: {
     ...appStyles.confirm,
     bottom: 0,
-    marginTop: 0,
+    marginTop: 16,
   },
 });
 
@@ -86,7 +86,8 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
           source={getVoucherImage(voucherType?.amount)}
           resizeMode="stretch"
         />
-        <AppText style={[appStyles.bold18Text, {lineHeight: 30}]}>
+        <AppText
+          style={[appStyles.bold18Text, {lineHeight: 26, marginTop: 16}]}>
           {voucherType.title}
         </AppText>
       </View>
@@ -97,25 +98,33 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
     console.log('@@@ voucherType : ', voucherType);
     return (
       <>
-        <View style={{paddingHorizontal: 20, marginTop: 18, paddingBottom: 16}}>
-          <View style={{marginBottom: 48, gap: 8}}>
+        <View style={{paddingHorizontal: 20, marginTop: 18, marginBottom: 20}}>
+          <View style={{gap: 8}}>
             <AppStyledText
               text={i18n.t('cashHistory:type:voucher:refund:notice:body', {
                 expireLine: `• 유효기간:${voucherType?.expireDesc}\n`,
               })}
               textStyle={[
                 appStyles.medium14,
-                {color: colors.black, lineHeight: 20, letterSpacing: 0},
+                {color: colors.warmGrey, lineHeight: 20, letterSpacing: 0},
               ]}
               format={{b: [appStyles.bold16Text, {color: colors.clearBlue}]}}
             />
           </View>
         </View>
 
-        <RenderChargeAmount amount={voucherType?.amount} balance={balance} />
+        <RenderChargeAmount
+          amount={voucherType?.amount}
+          balance={balance}
+          containerStyle={{
+            borderTopWidth: 1,
+            paddingTop: 20,
+            borderColor: colors.whiteFive,
+          }}
+        />
         <AppButton
           style={styles.confirm}
-          title="인증하기"
+          title="상품권 등록하기"
           onPress={() => {
             onClickButton();
             setVisible(false);
@@ -135,7 +144,7 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
       title={title}
       titleType="component"
       body={body}
-      boxStyle={{paddingTop: 0}}
+      boxStyle={{paddingTop: 0, paddingBottom: 20}}
     />
   );
 };
