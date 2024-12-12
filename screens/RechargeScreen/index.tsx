@@ -32,6 +32,7 @@ import AppTextInput from '@/components/AppTextInput';
 import AppAlert from '@/components/AppAlert';
 import VoucherBottomAlert from './VoucherBottomAlert';
 import RenderChargeAmount from './RenderChargeAmount';
+import AppSvgIcon from '@/components/AppSvgIcon';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -43,7 +44,6 @@ const styles = StyleSheet.create({
   },
   confirm: {
     ...appStyles.confirm,
-    marginTop: 0,
   },
   container: {
     flex: 1,
@@ -53,16 +53,29 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 20,
-    marginHorizontal: 12.5,
+    marginTop: 16,
+    marginHorizontal: 20,
+    gap: 12,
+  },
+  btnBox: {
+    paddingTop: 20,
+    elevation: 12,
+    shadowColor: 'rgba(166, 168, 172, 0.16)',
+    shadowOffset: {
+      width: 0,
+      height: -8,
+    },
+    shadowRadius: 16,
+    shadowOpacity: 1,
+    borderStyle: 'solid',
+    borderTopWidth: 1,
+    borderColor: colors.whiteFive,
+    gap: 4,
   },
   button: {
-    // iphon5s windowWidth == 320
-    // width: isDeviceSize('small') ? 130 : 150,
     flex: 1,
-    marginHorizontal: 7.5,
     height: 52,
-    borderRadius: 100,
+    borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
     borderWidth: 1,
@@ -70,14 +83,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: {
-    ...appStyles.price,
+    ...appStyles.robotoMedium20Text,
     textAlign: 'right',
+    lineHeight: 24,
     color: colors.warmGrey,
   },
   priceButtonText: {
-    ...appStyles.price,
-    fontSize: 20,
+    ...appStyles.medium18,
     textAlign: 'right',
+    lineHeight: 24,
     color: colors.warmGrey,
   },
   buttonVoucherOcr: {
@@ -153,7 +167,11 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
 
   const [voucherCode, setVoucherCode] = useState('');
   const [showAlert, setShowAlert] = useState(false);
-  const [voucherType, setVoucherType] = useState({title: '', amount: 0});
+  const [voucherType, setVoucherType] = useState({
+    title: '',
+    amount: 0,
+    expireDesc: '',
+  });
 
   useEffect(() => {
     return () => {
@@ -175,7 +193,9 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
         navigation.goBack();
       } else {
         AppAlert.info(
-          '존재하지 않는 상품권입니다. 코드를 다시 확인해 주세요.',
+          rsp?.result === 3205
+            ? '이미 등록 또는 사용된 상품권입니다.' // TODO ko.json으로 뺴기
+            : '존재하지 않는 상품권입니다. 코드를 다시 확인해 주세요.',
           '',
           () => console.log('@@@ alert 확인 동작'),
         );
@@ -213,10 +233,14 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
             API.Account.getVoucherType({iccid, code: voucherCode}).then(
               (rsp) => {
                 if (rsp?.result === 0) {
-                  const {title, amount} = rsp?.objects;
+                  const {title, amount, expireDesc} = rsp?.objects;
 
                   setShowAlert(true);
-                  setVoucherType({title, amount: parseInt(amount, 10)});
+                  setVoucherType({
+                    title,
+                    amount: parseInt(amount, 10),
+                    expireDesc,
+                  });
                 } else {
                   AppAlert.info(
                     '존재하지 않는 상품권입니다. 코드를 다시 확인해 주세요.',
@@ -264,7 +288,8 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
         {value.map((v) => {
           const key = `rch-${v}`;
           const checked = key === selected;
-          const color = checked ? colors.clearBlue : colors.warmGrey;
+          const fontColor = checked ? colors.white : colors.black;
+          const backgroundColor = checked ? colors.clearBlue : colors.white;
 
           return (
             <Pressable
@@ -275,12 +300,16 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
               }}
               style={[
                 styles.button,
-                {borderColor: checked ? colors.clearBlue : colors.lightGrey},
+                {
+                  borderColor: checked ? colors.clearBlue : colors.lightGrey,
+                  borderWidth: checked ? 0 : 1,
+                  backgroundColor,
+                },
               ]}>
               <AppPrice
                 style={styles.buttonBox}
-                balanceStyle={[styles.buttonText, {color}]}
-                currencyStyle={[styles.priceButtonText, {color}]}
+                balanceStyle={[styles.buttonText, {color: fontColor}]}
+                currencyStyle={[styles.priceButtonText, {color: fontColor}]}
                 price={utils.toCurrency(v, esimCurrency)}
               />
             </Pressable>
@@ -296,23 +325,34 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
       return key === 'cash' ? (
         <>
           <ScrollView>
-            <AppText
-              style={[appStyles.normal16Text, {marginTop: 30, marginLeft: 20}]}>
-              {i18n.t('rch:amount')}
-            </AppText>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginTop: 32,
+                marginLeft: 20,
+                gap: 6,
+              }}>
+              <AppSvgIcon style={{marginTop: 1}} name="lightningCashIcon" />
+              <AppText style={[appStyles.bold18Text, {lineHeight: 24}]}>
+                {i18n.t('esim:recharge:cash')}
+              </AppText>
+            </View>
             <View style={{marginBottom: 40}}>
               {rechargeChoice.map(rechargeButton)}
             </View>
           </ScrollView>
-          <RenderChargeAmount amount={amount} balance={balance} />
-          <AppButton
-            title={i18n.t('rch:recharge')}
-            titleStyle={[appStyles.medium18, {color: colors.white}]}
-            disabled={_.isEmpty(selected)}
-            onPress={() => onSubmit('cash')}
-            style={styles.confirm}
-            type="primary"
-          />
+          <View style={styles.btnBox}>
+            <RenderChargeAmount amount={amount} balance={balance} />
+            <AppButton
+              title={i18n.t('esim:recharge:cash:btn')}
+              titleStyle={[appStyles.medium18, {color: colors.white}]}
+              disabled={_.isEmpty(selected)}
+              onPress={() => onSubmit('cash')}
+              style={styles.confirm}
+              type="primary"
+            />
+          </View>
         </>
       ) : (
         <>

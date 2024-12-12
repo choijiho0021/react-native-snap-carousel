@@ -25,6 +25,8 @@ const styles = StyleSheet.create({
 export type VoucherType = {
   title: string;
   amount: number;
+  expireDesc: string;
+  type: string;
 };
 
 type VoucherBottomAlertProps = {
@@ -33,6 +35,7 @@ type VoucherBottomAlertProps = {
   onClickButton: () => void;
   voucherType: VoucherType;
   balance: number;
+  expireDesc: string;
 };
 
 const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
