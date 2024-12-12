@@ -1,47 +1,24 @@
-import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import React, {useCallback, useEffect, useRef} from 'react';
+import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
-import AppPrice from '@/components/AppPrice';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
 import {appStyles} from '@/constants/Styles';
-import Env from '@/environment';
-import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
-import utils from '@/redux/api/utils';
-import {PurchaseItem} from '@/redux/models/purchaseItem';
 import {AccountModelState} from '@/redux/modules/account';
-import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import TabBar from '../CountryScreen/TabBar';
 import {API} from '@/redux/api';
 import AppTextInput from '@/components/AppTextInput';
-import AppAlert from '@/components/AppAlert';
-import VoucherBottomAlert from './VoucherBottomAlert';
-import RenderChargeAmount from './RenderChargeAmount';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
 
-import {
-  actions as toastActions,
-  ToastAction,
-  Toast,
-} from '@/redux/modules/toast';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
+import {VoucherType} from './VoucherBottomAlert';
 
 const styles = StyleSheet.create({
   confirm: {
@@ -83,58 +60,29 @@ const styles = StyleSheet.create({
   },
 });
 
-type RechargeTabType = 'cash' | 'voucher';
-
 type VoucherTabProps = {
   account: AccountModelState;
 
   amount: number;
   setShowAlert: (val: boolean) => void;
-  setVoucherType: (val: string) => void;
-
+  setVoucherType: (val: VoucherType) => void;
+  setVoucherCode: (val: string) => void;
+  voucherCode: string;
   action: {
     order: OrderAction;
-    cart: CartAction;
-    toast: ToastAction;
     modal: ModalAction;
   };
 };
 
-const {esimCurrency} = Env.get();
-const rechargeChoice =
-  esimCurrency === 'KRW'
-    ? [
-        [5000, 10000],
-        [15000, 20000],
-        [25000, 30000],
-        [50000, 100000],
-      ]
-    : [
-        [5, 10],
-        [15, 20],
-        [25, 30],
-        [40, 50],
-      ];
-
-const TEST_OPTION = false;
-
 const VoucherTab: React.FC<VoucherTabProps> = ({
-  navigation,
-  amount,
   account: {iccid, token, balance = 0},
   action,
   setShowAlert,
+  setVoucherType,
+  setVoucherCode,
+  voucherCode,
 }) => {
-  // recharge 상품의 SKU는 'rch-{amount}' 형식을 갖는다.
-  // const [amount, setAmount] = useState(rechargeChoice[0][0]);
   const inputRef = useRef(null);
-  const [voucherCode, setVoucherCode] = useState('');
-  const [showAlert, setShowAlert] = useState(false);
-  const [voucherType, setVoucherType] = useState({
-    title: '',
-    amount: 0,
-    expireDesc: '',
-  });
 
   useEffect(() => {
     return () => {
@@ -152,6 +100,7 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
 
   const onSubmit = useCallback(() => {
     if (iccid && token) {
+      console.log('@@@ voucherCode : ', voucherCode);
       API.Account.getVoucherType({iccid, code: voucherCode}).then((rsp) => {
         if (rsp?.result === 0) {
           const {title, amount, expire_desc} = rsp?.objects;
@@ -186,7 +135,7 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
         }
       });
     }
-  }, [action.modal, iccid, token, voucherCode]);
+  }, [action.modal, iccid, setShowAlert, setVoucherType, token, voucherCode]);
   const getMaskedPlaceholder = useCallback(
     (type: 'placeholder' | 'text') => {
       const code = voucherCode + '●●●●●●●●●●●●●●●●'.slice(voucherCode.length);
@@ -271,9 +220,7 @@ export default connect(
   ({account}: RootState) => ({account}),
   (dispatch) => ({
     action: {
-      cart: bindActionCreators(cartActions, dispatch),
       order: bindActionCreators(orderActions, dispatch),
-      toast: bindActionCreators(toastActions, dispatch),
       modal: bindActionCreators(modalActions, dispatch),
     },
   }),

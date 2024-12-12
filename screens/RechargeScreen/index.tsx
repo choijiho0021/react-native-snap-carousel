@@ -21,15 +21,18 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import utils from '@/redux/api/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
-import {AccountModelState} from '@/redux/modules/account';
+
+import {
+  AccountModelState,
+  AccountAction,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import TabBar from '../CountryScreen/TabBar';
 import {API} from '@/redux/api';
-import AppTextInput from '@/components/AppTextInput';
-import AppAlert from '@/components/AppAlert';
 import VoucherBottomAlert from './VoucherBottomAlert';
 import RenderChargeAmount from './RenderChargeAmount';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -42,6 +45,7 @@ import {
 } from '@/redux/modules/toast';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
+import VoucherTab from './VoucherTab';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -103,23 +107,6 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.warmGrey,
   },
-  textInput: {
-    ...appStyles.medium18,
-    letterSpacing: -0.1,
-    paddingVertical: 16,
-    lineHeight: 24,
-    marginTop: 20,
-    flex: 1,
-    borderRadius: 3,
-    backgroundColor: colors.white,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: colors.line,
-    justifyContent: 'center',
-    alignItems: 'center',
-    textAlign: 'center',
-  },
-
   modalText: {
     ...appStyles.normal16Text,
     lineHeight: 26,
@@ -131,27 +118,6 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     letterSpacing: -0.32,
     color: colors.black,
-  },
-  textContainer: {
-    position: 'relative',
-    ...appStyles.medium18,
-    height: 52,
-    marginTop: 20,
-    borderRadius: 3,
-    backgroundColor: colors.white,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: colors.line,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholder: {
-    ...appStyles.roboto16Text,
-    letterSpacing: -0.16,
-  },
-  input: {
-    opacity: 0,
-    height: 0,
   },
 });
 
@@ -168,6 +134,7 @@ type RechargeScreenProps = {
   account: AccountModelState;
 
   action: {
+    account: AccountAction;
     order: OrderAction;
     cart: CartAction;
     toast: ToastAction;
@@ -230,6 +197,7 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
           msg: Toast.VOUCHER_REGISTER,
           toastIcon: 'bannerMarkToastSuccess',
         });
+        action.account.getAccount({iccid, token});
         navigation.goBack();
       } else {
         action.modal.renderModal(() => (
@@ -259,12 +227,6 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
       }
     });
   }, [action.modal, action.toast, iccid, navigation, token, voucherCode]);
-
-  const handleFocus = useCallback(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
 
   const onSubmit = useCallback(
     (type: RechargeTabType) => {
@@ -346,24 +308,6 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
       voucherCode,
     ],
   );
-  const getMaskedPlaceholder = useCallback(
-    (type: 'placeholder' | 'text') => {
-      const code = voucherCode + '●●●●●●●●●●●●●●●●'.slice(voucherCode.length);
-      const formattedCodeWithSpaces = code.replace(/.{4}/g, '$&  ');
-      const text = formattedCodeWithSpaces.replace(/●/g, '').trim();
-
-      if (type === 'placeholder') {
-        return formattedCodeWithSpaces.replace(/[0-9]/g, '').trim();
-      }
-
-      if ((text.length % 6) - 4 === 0) {
-        return `${text}  `;
-      }
-
-      return text;
-    },
-    [voucherCode],
-  );
 
   const rechargeButton = useCallback(
     (value: number[]) => (
@@ -438,90 +382,23 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
           </View>
         </>
       ) : (
-        <>
-          <ScrollView
-            contentContainerStyle={{
-              marginHorizontal: 20,
-            }}>
-            <View style={{flexDirection: 'row', marginTop: 32, gap: 6}}>
-              <AppSvgIcon name="voucherIcon" />
-              <AppText style={[appStyles.normal16Text]}>
-                {i18n.t('mypage:voucher:code')}
-              </AppText>
-            </View>
-            <Pressable onPress={handleFocus} style={styles.textContainer}>
-              <AppText style={styles.placeholder}>
-                <AppText style={{color: colors.black}}>
-                  {getMaskedPlaceholder('text')}
-                </AppText>
-                <AppText style={{color: colors.greyish}}>
-                  {getMaskedPlaceholder('placeholder')}
-                </AppText>
-              </AppText>
-            </Pressable>
-
-            {/* <AppTextInput
-              style={styles.textInput}
-              enablesReturnKeyAutomatically
-              keyboardType="numeric"
-              onChangeText={(val: string) => {
-                console.log('@@@ test : ', val);
-
-                setVoucherCode(val);
-              }}
-              placeholder="●●●●  ●●●●  ●●●●  ●●●●"
-              placeholderTextColor={colors.greyish}
-              clearTextOnFocus={false}
-              value={voucherCode}
-              maxLength={16}
-            /> */}
-            <View style={{flexDirection: 'row', gap: 6, marginTop: 6}}>
-              <AppText
-                style={[
-                  appStyles.bold14Text,
-                  {lineHeight: 20, color: colors.clearBlue},
-                ]}>
-                TIP
-              </AppText>
-              <AppText
-                style={[
-                  appStyles.medium14,
-                  {lineHeight: 20, color: colors.warmGrey},
-                ]}>
-                {i18n.t('mypage:voucher:noti')}
-              </AppText>
-            </View>
-            <AppTextInput
-              ref={inputRef}
-              style={styles.input}
-              value={voucherCode}
-              onChangeText={(val: string) => {
-                setVoucherCode(val);
-              }}
-              keyboardType="numeric"
-              maxLength={16}
-            />
-          </ScrollView>
-          <AppButton
-            title={i18n.t('mypage:voucher:use')}
-            titleStyle={[appStyles.medium18, {color: colors.white}]}
-            disabled={_.isEmpty(selected) || voucherCode.length !== 16}
-            onPress={() => onSubmit('voucher')}
-            style={styles.confirm}
-            type="primary"
-          />
-        </>
+        <VoucherTab
+          setShowAlert={setShowAlert}
+          setVoucherType={setVoucherType}
+          amount={voucherType.amount}
+          voucherCode={voucherCode}
+          setVoucherCode={setVoucherCode}
+        />
       );
     },
     [
       amount,
       balance,
-      getMaskedPlaceholder,
-      handleFocus,
       onSubmit,
       rechargeButton,
       selected,
       voucherCode,
+      voucherType.amount,
     ],
   );
   const renderSelectedPane = useCallback(() => {
@@ -572,6 +449,7 @@ export default connect(
   (dispatch) => ({
     action: {
       cart: bindActionCreators(cartActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch),
       order: bindActionCreators(orderActions, dispatch),
       toast: bindActionCreators(toastActions, dispatch),
       modal: bindActionCreators(modalActions, dispatch),
