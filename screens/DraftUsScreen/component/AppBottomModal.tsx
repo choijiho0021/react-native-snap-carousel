@@ -60,6 +60,8 @@ type AppBottomModalProps = {
   isCloseTouch: boolean;
   containerStyle?: StyleProp<ViewStyle>;
   headerStyle?: StyleProp<ViewStyle>;
+  titleType: 'component' | 'text';
+  boxStyle?: StyleProp<ViewStyle>;
 };
 
 const AppBottomModal: React.FC<AppBottomModalProps> = ({
@@ -67,11 +69,13 @@ const AppBottomModal: React.FC<AppBottomModalProps> = ({
   isCloseBtn,
   onClose,
   title,
+  titleType = 'text',
   body,
   height,
   isCloseTouch = true,
   containerStyle,
   headerStyle,
+  boxStyle,
 }) => {
   return (
     <Modal
@@ -88,22 +92,25 @@ const AppBottomModal: React.FC<AppBottomModalProps> = ({
           containerStyle,
         ]}
         onPress={isCloseTouch ? onClose : () => {}}>
-        <SafeAreaView key="modal" style={[styles.storeBox, {height}]}>
+        <SafeAreaView key="modal" style={[styles.storeBox, boxStyle, {height}]}>
           <Pressable>
-            {title && (
-              <View style={[styles.head, headerStyle]}>
-                <AppText style={appStyles.bold18Text}>{title}</AppText>
-                {isCloseBtn && (
-                  <View style={styles.modalClose}>
-                    <AppSvgIcon
-                      name="closeModal"
-                      key="closeModal"
-                      onPress={onClose}
-                    />
-                  </View>
-                )}
-              </View>
-            )}
+            {title &&
+              (titleType === 'text' ? (
+                <View style={[styles.head, headerStyle]}>
+                  <AppText style={appStyles.bold18Text}>{title}</AppText>
+                  {isCloseBtn && (
+                    <View style={styles.modalClose}>
+                      <AppSvgIcon
+                        name="closeModal"
+                        key="closeModal"
+                        onPress={onClose}
+                      />
+                    </View>
+                  )}
+                </View>
+              ) : (
+                title
+              ))}
             {body}
           </Pressable>
         </SafeAreaView>

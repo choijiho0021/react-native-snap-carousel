@@ -7987,6 +7987,23 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  grabber2: [
+    <Svg
+      width={46}
+      height={10}
+      viewBox="0 0 46 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G filter="url(#19w12w2ira)">
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M22.451 9.923a2 2 0 001.099 0l21-6A2 2 0 0043.451.077L23.001 5.92 2.55.077a2 2 0 00-1.099 3.846l21 6z"
+          fill="#EFF1F3"
+        />
+      </G>
+    </Svg>,
+  ],
   googleNew: [
     <Svg
       width="56"
