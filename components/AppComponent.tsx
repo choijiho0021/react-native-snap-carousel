@@ -12,7 +12,6 @@ import {
 import Video from 'react-native-video';
 import {connect, DispatchProp} from 'react-redux';
 import RNExitApp from 'react-native-exit-app';
-import messaging from '@react-native-firebase/messaging';
 import codePush from 'react-native-code-push';
 import Config from 'react-native-config';
 import SystemSetting from 'react-native-system-setting';
@@ -37,6 +36,7 @@ import {RootState} from '@/redux';
 import AppModal from './AppModal';
 import {appStyles} from '@/constants/Styles';
 import CodePushScreen from '@/screens/CodePushScreen';
+import {login} from './NativeModule/KakaoSDK';
 
 const {width: viewportWidth, height: viewportHeight} = Dimensions.get('window');
 const windowHeight = viewportHeight;
@@ -126,18 +126,6 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
     }
   }, []);
 
-  const login = useCallback(async () => {
-    const iccid = await retrieveData(API.User.KEY_ICCID, true);
-    const mobile = await retrieveData(API.User.KEY_MOBILE, true);
-    const pin = await retrieveData(API.User.KEY_PIN, true);
-
-    if (mobile && pin) {
-      dispatch(accountActions.logInAndGetAccount({mobile, pin, iccid}));
-    } else {
-      dispatch(accountActions.getToken());
-    }
-  }, [dispatch]);
-
   useEffect(() => {
     if (loadingTextSec < 65)
       setTimeout(() => {
@@ -203,6 +191,18 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
     // customer log init
     dispatch(initLog());
     // load product list
+
+    // login
+    const iccid = await retrieveData(API.User.KEY_ICCID, true);
+    const mobile = await retrieveData(API.User.KEY_MOBILE, true);
+    const pin = await retrieveData(API.User.KEY_PIN, true);
+
+    if (mobile && pin) {
+      dispatch(accountActions.logInAndGetAccount({mobile, pin, iccid}));
+    } else {
+      dispatch(accountActions.getToken());
+    }
+
     const oldVer = await retrieveData('AppVer');
     const ver = VersionCheck.getCurrentVersion();
 
@@ -231,16 +231,14 @@ const AppComponent: React.FC<AppComponentProps & DispatchProp> = ({
     }
   }, [isLoadingComplete, skipLoadingScreen]);
 
-  // 로그인을 하거나 토큰을 가져오도록 한다
+  // 시간동안 다음화면으로 못 넘어가는 경우 로딩이미지 또는 네트워크 실패 모달을 띄운다
   useEffect(() => {
-    login();
     setTimeout(() => {
       setNetworkErr(true);
     }, 120000);
     setTimeout(() => {
       showLoadingTxt.current = true;
     }, 1500);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

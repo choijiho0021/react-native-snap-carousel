@@ -143,7 +143,6 @@ const CartScreen: React.FC<CartScreenProps> = ({
             orderId: cartId,
             orderItemId,
             qty: cnt,
-            abortController: new AbortController(),
           });
         }
       }

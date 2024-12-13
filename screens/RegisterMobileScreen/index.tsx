@@ -158,7 +158,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   const [recentNormal, setRecentNormal] = useState(false);
   const [credentials, setCredentials] = useState<Credential>();
   const loginCnt = useRef(0); // 자동로그인 시도 횟수
-  const controller = useRef(new AbortController());
   const mounted = useRef(false);
   const mobileRef = useRef<InputMobileRef>(null);
   const inputRef = useRef<InputPinRef>(null);
@@ -268,11 +267,8 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
   }, [isNewUser, link.url, loggedIn, navigation, route?.params]);
 
   useEffect(() => {
-    const {current} = controller;
-
     return () => {
       mounted.current = false;
-      current?.abort();
     };
   }, []);
 
@@ -311,7 +307,7 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
         setAuthorized(undefined);
         setTimeoutFlag(true);
 
-        API.User.sendSms({user: value, abortController: controller.current})
+        API.User.sendSms({user: value})
           .then((resp) => {
             if (resp.result === 0) {
               setAuthNoti(true);
@@ -343,7 +339,6 @@ const RegisterMobileScreen: React.FC<RegisterMobileScreenProps> = ({
       API.User.confirmSmsCode({
         user: mobile,
         pass: value,
-        abortController: controller.current,
       })
         .then((resp) => {
           if (mounted.current) {

@@ -340,10 +340,15 @@ const callHttp = async <T>(
     credentials: 'include',
     // mode: 'no-cors',
   };
-  const {timeout = 40000, ignoreError = false, isJson = true} = option;
+  const {
+    timeout = 40000,
+    ignoreError = false,
+    isJson = true,
+    abortController,
+  } = option;
 
   try {
-    const controller = new AbortController();
+    const controller = abortController || new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
 
     const response: Response = await fetch(url, {
@@ -352,7 +357,7 @@ const callHttp = async <T>(
     });
 
     clearTimeout(id);
-    if (option.abortController && option.abortController.signal.aborted) {
+    if (controller.signal.aborted) {
       console.log('@@@ aborted');
       return failure(E_ABORTED, 'cancelled', 499);
     }
