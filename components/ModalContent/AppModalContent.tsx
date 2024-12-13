@@ -175,6 +175,7 @@ const AppModalContent: React.FC<PropsWithChildren<AppModalContentProps>> = ({
           </View>
         );
 
+      // TODO : 새롭게 정의된 공통 Alert Modal 구현하기.
       case 'info2':
         return (
           // type == normal or info
@@ -235,6 +236,7 @@ const AppModalContent: React.FC<PropsWithChildren<AppModalContentProps>> = ({
     }
   }, [
     buttonBackgroundColor,
+    buttonBoxStyle,
     buttonStyle,
     buttonTitleColor,
     cancelButtonStyle,

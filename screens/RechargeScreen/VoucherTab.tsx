@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useRef} from 'react';
-import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {ScrollView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
@@ -37,11 +37,14 @@ const styles = StyleSheet.create({
     letterSpacing: -0.32,
     color: colors.black,
   },
-  textContainer: {
-    position: 'relative',
+
+  textInput: {
     ...appStyles.medium18,
-    height: 52,
+    letterSpacing: -0.1,
+    paddingVertical: 16,
+    lineHeight: 24,
     marginTop: 20,
+    flex: 1,
     borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
@@ -49,11 +52,9 @@ const styles = StyleSheet.create({
     borderColor: colors.line,
     justifyContent: 'center',
     alignItems: 'center',
+    textAlign: 'center',
   },
-  placeholder: {
-    ...appStyles.roboto16Text,
-    letterSpacing: -0.16,
-  },
+
   input: {
     opacity: 0,
     height: 0,
@@ -83,6 +84,7 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
   voucherCode,
 }) => {
   const inputRef = useRef(null);
+  const [text, setText] = useState('');
 
   useEffect(() => {
     return () => {
@@ -91,12 +93,6 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
       }
     };
   }, [action.order, iccid, token]);
-
-  const handleFocus = useCallback(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
 
   const onSubmit = useCallback(() => {
     if (iccid && token) {
@@ -136,24 +132,21 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
       });
     }
   }, [action.modal, iccid, setShowAlert, setVoucherType, token, voucherCode]);
-  const getMaskedPlaceholder = useCallback(
-    (type: 'placeholder' | 'text') => {
-      const code = voucherCode + '●●●●●●●●●●●●●●●●'.slice(voucherCode.length);
-      const formattedCodeWithSpaces = code.replace(/.{4}/g, '$&  ');
-      const text = formattedCodeWithSpaces.replace(/●/g, '').trim();
+  const getCodeWithSpace = useCallback((cur: string, prev: string) => {
+    const code = cur.trim();
+    const formattedCode = code.replace(/.{4}/g, '$&  ');
 
-      if (type === 'placeholder') {
-        return formattedCodeWithSpaces.replace(/[0-9]/g, '').trim();
-      }
+    // 공백 삭제 시 글자가 사라지도록 처리
+    if (cur.length <= prev.length && cur.length % 4 === 0) {
+      const formattedCodeWithTrim = formattedCode.trim();
 
-      if ((text.length % 6) - 4 === 0) {
-        return `${text}  `;
-      }
+      if (cur.length === prev.length) return formattedCodeWithTrim.slice(0, -1);
 
-      return text;
-    },
-    [voucherCode],
-  );
+      return formattedCodeWithTrim;
+    }
+
+    return formattedCode;
+  }, []);
 
   return (
     <>
@@ -167,16 +160,27 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
             {i18n.t('mypage:voucher:code')}
           </AppText>
         </View>
-        <Pressable onPress={handleFocus} style={styles.textContainer}>
-          <AppText style={styles.placeholder}>
-            <AppText style={{color: colors.black}}>
-              {getMaskedPlaceholder('text')}
-            </AppText>
-            <AppText style={{color: colors.greyish}}>
-              {getMaskedPlaceholder('placeholder')}
-            </AppText>
-          </AppText>
-        </Pressable>
+
+        <AppTextInput
+          style={styles.textInput}
+          enablesReturnKeyAutomatically
+          keyboardType="numeric"
+          onChangeText={(val: string) => {
+            const cur = val.replace(/\s+/g, '');
+            const prev = text.replace(/\s+/g, '');
+
+            setVoucherCode(cur);
+
+            // 화면에 공백 추가 표시
+            setText(getCodeWithSpace(cur, prev));
+          }}
+          placeholder="●●●●  ●●●●  ●●●●  ●●●●"
+          placeholderTextColor={colors.greyish}
+          clearTextOnFocus={false}
+          value={text}
+          maxLength={22}
+        />
+
         <View style={{flexDirection: 'row', gap: 6, marginTop: 6}}>
           <AppText
             style={[
