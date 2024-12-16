@@ -274,12 +274,17 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         } else {
           // kakao
           const resp = await KakaoSDK.KakaoShareLink.sendCustom({
-            // kakao template 상용: 67017, TB: 70053
-            templateId: isProduction ? 67017 : 70053,
+            // kakao template 상용: old : 67017, new : 115373, TB: 70053
+            templateId: isProduction ? 115373 : 70053,
+
             templateArgs: [
               {
                 key: 'gift',
                 value: giftId,
+              },
+              {
+                key: 'prod',
+                value: item.prodName,
               },
             ],
           });
