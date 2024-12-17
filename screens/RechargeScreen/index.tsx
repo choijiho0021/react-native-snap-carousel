@@ -72,14 +72,14 @@ const styles = StyleSheet.create({
   },
   btnBox: {
     paddingTop: 20,
-    elevation: 12,
-    shadowColor: 'rgba(166, 168, 172, 0.16)',
-    shadowOffset: {
-      width: 0,
-      height: -8,
-    },
-    shadowRadius: 16,
-    shadowOpacity: 1,
+    // 그림자..
+    // shadowColor: 'rgb(166, 168, 172)',
+    // shadowRadius: 12,
+    // shadowOpacity: 0.16,
+    // shadowOffset: {
+    //   height: 4,
+    //   width: 0,
+    // },
     borderStyle: 'solid',
     borderTopWidth: 1,
     borderColor: colors.whiteFive,
@@ -198,7 +198,10 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
           toastIcon: 'bannerMarkToastSuccess',
         });
         action.account.getAccount({iccid, token});
-        navigation.goBack();
+        navigation.navigate('MyPageStack', {
+          screen: 'CashHistory',
+          initial: false,
+        });
       } else {
         action.modal.renderModal(() => (
           <AppModalContent
