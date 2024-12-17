@@ -46,6 +46,7 @@ import {
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
 import VoucherTab from './VoucherTab';
+import api from '@/redux/api/api';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -73,18 +74,20 @@ const styles = StyleSheet.create({
   btnBox: {
     paddingTop: 20,
     // 그림자..
-    // shadowColor: 'rgb(166, 168, 172)',
-    // shadowRadius: 12,
-    // shadowOpacity: 0.16,
-    // shadowOffset: {
-    //   height: 4,
-    //   width: 0,
-    // },
+    shadowOpacity: 1,
+    backgroundColor: colors.white,
+    shadowColor: 'rgba(166, 168, 172, 0.16)',
+    shadowOffset: {
+      width: 0,
+      height: -8,
+    },
+    shadowRadius: 16,
     borderStyle: 'solid',
     borderTopWidth: 1,
     borderColor: colors.whiteFive,
     gap: 4,
   },
+
   button: {
     flex: 1,
     height: 52,
@@ -192,6 +195,10 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
       sign: 'register',
       code: voucherCode,
     }).then((rsp) => {
+      if (rsp?.result === api.E_NETWORK_FAILED) {
+        // 네트워크 오류 - 팝업 미출력
+        return;
+      }
       if (rsp?.result === 0) {
         action.toast.push({
           msg: Toast.VOUCHER_REGISTER,
@@ -239,86 +246,28 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
     voucherCode,
   ]);
 
-  const onSubmit = useCallback(
-    (type: RechargeTabType) => {
-      switch (type) {
-        case 'cash':
-          if (selected) {
-            const purchaseItems = [
-              {
-                key: 'rch',
-                type: 'rch',
-                title: `${utils.numberToCommaString(amount)} ${i18n.t(
-                  'sim:rechargeBalance',
-                )}`,
-                price: utils.toCurrency(amount, esimCurrency),
-                qty: 1,
-                sku: selected,
-              } as PurchaseItem,
-            ];
+  const onSubmit = useCallback(() => {
+    if (selected) {
+      const purchaseItems = [
+        {
+          key: 'rch',
+          type: 'rch',
+          title: `${utils.numberToCommaString(amount)} ${i18n.t(
+            'sim:rechargeBalance',
+          )}`,
+          price: utils.toCurrency(amount, esimCurrency),
+          qty: 1,
+          sku: selected,
+        } as PurchaseItem,
+      ];
 
-            action.cart.purchase({purchaseItems});
-            navigation.navigate('PymMethod', {
-              pymPrice: utils.stringToNumber(selected),
-              mode: 'recharge',
-            });
-          }
-          break;
-        case 'voucher':
-          if (iccid && token) {
-            API.Account.getVoucherType({iccid, code: voucherCode}).then(
-              (rsp) => {
-                if (rsp?.result === 0) {
-                  const {title, amount, expire_desc} = rsp?.objects;
-
-                  setShowAlert(true);
-                  setVoucherType({
-                    title,
-                    amount: parseInt(amount, 10),
-                    expireDesc: expire_desc,
-                  });
-                } else {
-                  action.modal.renderModal(() => (
-                    <AppModalContent
-                      type="info2"
-                      buttonBoxStyle={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                      okButtonStyle={{marginBottom: 1}}
-                      onOkClose={() => {
-                        action.modal.closeModal();
-                      }}>
-                      <View style={{marginLeft: 30}}>
-                        <AppStyledText
-                          text={i18n.t(`esim:recharge:voucher:regist:fail`)}
-                          textStyle={styles.modalText}
-                          format={{b: styles.modalBoldText}}
-                        />
-                      </View>
-                    </AppModalContent>
-                  ));
-                }
-              },
-            );
-          }
-
-          break;
-        default:
-          console.log('@@@@ error');
-      }
-    },
-    [
-      action.cart,
-      action.modal,
-      amount,
-      iccid,
-      navigation,
-      selected,
-      token,
-      voucherCode,
-    ],
-  );
+      action.cart.purchase({purchaseItems});
+      navigation.navigate('PymMethod', {
+        pymPrice: utils.stringToNumber(selected),
+        mode: 'recharge',
+      });
+    }
+  }, [action.cart, amount, navigation, selected]);
 
   const rechargeButton = useCallback(
     (value: number[]) => (
@@ -380,16 +329,18 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
               {rechargeChoice.map(rechargeButton)}
             </View>
           </ScrollView>
-          <View style={styles.btnBox}>
-            <RenderChargeAmount amount={amount} balance={balance} />
-            <AppButton
-              title={i18n.t('esim:recharge:cash:btn')}
-              titleStyle={[appStyles.medium18, {color: colors.white}]}
-              disabled={_.isEmpty(selected)}
-              onPress={() => onSubmit('cash')}
-              style={styles.confirm}
-              type="primary"
-            />
+          <View>
+            <View style={styles.btnBox}>
+              <RenderChargeAmount amount={amount} balance={balance} />
+              <AppButton
+                title={i18n.t('esim:recharge:cash:btn')}
+                titleStyle={[appStyles.medium18, {color: colors.white}]}
+                disabled={_.isEmpty(selected)}
+                onPress={() => onSubmit()}
+                style={styles.confirm}
+                type="primary"
+              />
+            </View>
           </View>
         </>
       ) : (
