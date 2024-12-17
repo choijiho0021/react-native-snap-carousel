@@ -586,10 +586,11 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   // register 실패하면 deactivate
   // AOR 개수 확인
 
-  useEffect(() => {
+  const register = useCallback(() => {
     if (realMobile) {
       const transportOptions = {
         server: 'wss://talk.rokebi.com:8089/ws',
+        keepAliveInterval: 30,
       };
       const uri = UserAgent.makeURI(`sip:${realMobile}@talk.rokebi.com`);
       const userAgentOptions: UserAgentOptions = {
@@ -644,6 +645,12 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
 
     return () => {};
   }, [getPoint, realMobile]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      register();
+    }, [register]),
+  );
 
   const updateTooltip = useCallback(
     (t: boolean) => action.talk.updateTooltip(t),
