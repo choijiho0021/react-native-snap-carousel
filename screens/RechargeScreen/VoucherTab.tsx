@@ -1,8 +1,9 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {KeyboardAvoidingView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -15,16 +16,18 @@ import {API} from '@/redux/api';
 import AppTextInput from '@/components/AppTextInput';
 import AppSvgIcon from '@/components/AppSvgIcon';
 import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
-
+import Env from '@/environment';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
 import {VoucherType} from './VoucherBottomAlert';
+import api from '@/redux/api/api';
+import {ScrollView} from 'react-native-gesture-handler';
 
+const {isIOS} = Env.get();
 const styles = StyleSheet.create({
   confirm: {
     ...appStyles.confirm,
   },
-
   modalText: {
     ...appStyles.normal16Text,
     lineHeight: 26,
@@ -109,6 +112,10 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
     if (iccid && token) {
       console.log('@@@ voucherCode : ', voucherCode);
       API.Account.getVoucherType({iccid, code: voucherCode}).then((rsp) => {
+        if (rsp?.result === api.E_NETWORK_FAILED) {
+          // 네트워크 오류 - 팝업 미출력
+          return;
+        }
         if (rsp?.result === 0) {
           const {title, amount, expire_desc} = rsp?.objects;
 
@@ -160,14 +167,17 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
   }, []);
 
   return (
-    <>
+    <KeyboardAvoidingView
+      style={{flex: 1}}
+      keyboardVerticalOffset={200}
+      behavior={isIOS ? 'padding' : undefined}>
       <ScrollView
         contentContainerStyle={{
           marginHorizontal: 20,
         }}>
         <View style={{flexDirection: 'row', marginTop: 32, gap: 6}}>
           <AppSvgIcon name="voucherIcon" />
-          <AppText style={[appStyles.normal16Text]}>
+          <AppText style={appStyles.normal16Text}>
             {i18n.t('mypage:voucher:code')}
           </AppText>
         </View>
@@ -193,7 +203,12 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
         />
 
         <View
-          style={{flexDirection: 'row', gap: 6, marginTop: 6, marginRight: 20}}>
+          style={{
+            flexDirection: 'row',
+            gap: 6,
+            marginTop: 6,
+            marginRight: 20,
+          }}>
           <AppStyledText
             text={i18n.t(`mypage:voucher:noti`)}
             textStyle={styles.voucherNoti}
@@ -219,7 +234,7 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
         style={styles.confirm}
         type="primary"
       />
-    </>
+    </KeyboardAvoidingView>
   );
 };
 
