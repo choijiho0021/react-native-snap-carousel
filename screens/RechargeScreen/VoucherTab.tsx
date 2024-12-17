@@ -59,6 +59,17 @@ const styles = StyleSheet.create({
     opacity: 0,
     height: 0,
   },
+
+  voucherNotiBold: {
+    ...appStyles.bold14Text,
+    lineHeight: 20,
+    color: colors.clearBlue,
+  },
+  voucherNoti: {
+    ...appStyles.medium14,
+    lineHeight: 20,
+    color: colors.warmGrey,
+  },
 });
 
 type VoucherTabProps = {
@@ -181,21 +192,13 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
           maxLength={22}
         />
 
-        <View style={{flexDirection: 'row', gap: 6, marginTop: 6}}>
-          <AppText
-            style={[
-              appStyles.bold14Text,
-              {lineHeight: 20, color: colors.clearBlue},
-            ]}>
-            TIP
-          </AppText>
-          <AppText
-            style={[
-              appStyles.medium14,
-              {lineHeight: 20, color: colors.warmGrey},
-            ]}>
-            {i18n.t('mypage:voucher:noti')}
-          </AppText>
+        <View
+          style={{flexDirection: 'row', gap: 6, marginTop: 6, marginRight: 20}}>
+          <AppStyledText
+            text={i18n.t(`mypage:voucher:noti`)}
+            textStyle={styles.voucherNoti}
+            format={{b: styles.voucherNotiBold}}
+          />
         </View>
         <AppTextInput
           ref={inputRef}

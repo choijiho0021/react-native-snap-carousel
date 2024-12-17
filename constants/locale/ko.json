@@ -1442,7 +1442,7 @@
   "mypage:voucher:code": "상품권 코드를 등록하세요!",
   "mypage:voucher:ocr": "교환권 이미지 불러오기",
   "mypage:voucher:use": "상품권 사용하기",
-  "mypage:voucher:noti": "박스를 길게 누르면 상품권 코드를 붙여넣기할 수 있어요.",
+  "mypage:voucher:noti": "<b>TIP</b> 박스를 길게 누르면 상품권 코드를 붙여넣기할 수 있어요.",
 
   "coupon:inputCode": "쿠폰 코드를 입력하세요",
   "coupon:reg": "쿠폰등록",
