@@ -177,7 +177,7 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
           enablesReturnKeyAutomatically
           keyboardType="numeric"
           onChangeText={(val: string) => {
-            const cur = val.replace(/\s+/g, '');
+            const cur = val.replace(/[^0-9]/g, '').replace(/\s+/g, '');
             const prev = text.replace(/\s+/g, '');
 
             setVoucherCode(cur);
@@ -188,7 +188,7 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
           placeholder="●●●●  ●●●●  ●●●●  ●●●●"
           placeholderTextColor={colors.greyish}
           clearTextOnFocus={false}
-          value={text}
+          value={text.trimEnd()}
           maxLength={22}
         />
 
