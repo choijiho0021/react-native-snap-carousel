@@ -1441,8 +1441,8 @@
 
   "mypage:voucher:code": "상품권 코드를 등록하세요!",
   "mypage:voucher:ocr": "교환권 이미지 불러오기",
-  "mypage:voucher:use": "상품권 사용하기",
-  "mypage:voucher:noti": "박스를 길게 누르면 상품권 코드를 붙여넣기할 수 있어요.",
+  "mypage:voucher:use": "상품권 조회하기",
+  "mypage:voucher:noti": "<b>TIP</b> 박스를 길게 누르면 상품권 코드를 붙여넣기할 수 있어요.",
 
   "coupon:inputCode": "쿠폰 코드를 입력하세요",
   "coupon:reg": "쿠폰등록",
@@ -1847,10 +1847,12 @@
   "cashHistory:type:point_exp": "캐시 소멸",
   "cashHistory:type:dona": "캐시 소멸",
   "cashHistory:type:voucher_add": "상품권 등록",
-  "cashHistory:type:voucher:voucher_add": "금액권 등록",
-  "cashHistory:type:voucher:deduct": "금액권 차감",
+  "cashHistory:type:voucher:voucher_add": "캐시 충전",
+  "cashHistory:type:voucher:deduct": "캐시 차감",
   "cashHistory:type:voucher:payment": "상품 구매",
+  "cashHistory:type:voucher:exp": "캐시 소멸",
   "cashHistory:type:voucher:refund": "구매 취소",
+  "cashHistory:type:voucher:full_refund": "캐시 환불",
   "cashHistory:recharge:failure": "충전 실패! 고객센터로 문의해 주세요.",
 
   "promo:join:open": "이벤트 참여",

@@ -53,7 +53,6 @@ const styles = StyleSheet.create({
 export type VoucherType = {
   title: string;
   amount: number;
-  expireDesc: string;
   type?: string; // TODO : 차후 type에 따른 상품권 사진이 달라질 수도 있음.
 };
 
@@ -63,7 +62,6 @@ type VoucherBottomAlertProps = {
   onClickButton: () => void;
   voucherType: VoucherType;
   balance: number;
-  expireDesc: string;
 };
 
 const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
