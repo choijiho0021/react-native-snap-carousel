@@ -380,7 +380,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
-            height: smallDevice ? 50 : 83,
+            // height: smallDevice ? 50 : 83,
             display:
               (getFocusedRouteNameFromRoute(route) || 'Home') === 'Home'
                 ? 'flex'
@@ -403,7 +403,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
-            height: smallDevice ? 50 : 83,
+            // height: smallDevice ? 50 : 83,
             display:
               !!loggedIn &&
               cart?.cartItems?.length === 0 &&
@@ -429,7 +429,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
-            height: smallDevice ? 50 : 83,
+            // height: smallDevice ? 50 : 83,
             display:
               !!loggedIn &&
               modal.showTabbar &&
@@ -486,7 +486,7 @@ const TabNavigator = ({
         options={({route}) => ({
           headerShown: false,
           tabBarStyle: {
-            height: smallDevice ? 50 : 83,
+            // height: smallDevice ? 50 : 83,
             display:
               !!loggedIn &&
               (getFocusedRouteNameFromRoute(route) || 'MyPage') === 'MyPage'
