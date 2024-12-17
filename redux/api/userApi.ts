@@ -275,13 +275,7 @@ const changePicture = ({
   );
 };
 
-const sendSms = ({
-  user,
-  abortController,
-}: {
-  user: string;
-  abortController: AbortController;
-}) => {
+const sendSms = ({user}: {user: string}) => {
   if (!user)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
 
@@ -299,7 +293,6 @@ const sendSms = ({
         ? api.success([])
         : api.failure(api.FAILED, rsp.result?.error);
     },
-    {abortController},
   );
 };
 
@@ -377,15 +370,7 @@ const receiveGift = ({
   );
 };
 
-const confirmSmsCode = ({
-  user,
-  pass,
-  abortController,
-}: {
-  user: string;
-  pass: string;
-  abortController: AbortController;
-}) => {
+const confirmSmsCode = ({user, pass}: {user: string; pass: string}) => {
   if (!user)
     return api.reject(api.E_INVALID_ARGUMENT, 'missing parameter: user');
   if (!pass)
@@ -406,7 +391,6 @@ const confirmSmsCode = ({
         ? api.success(rsp.id)
         : api.failure(api.FAILED, rsp.result?.error);
     },
-    {abortController},
   );
 };
 

@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingLeft: 16,
     flexDirection: 'row',
+    width: '100%',
   },
   info: {
     ...appStyles.normal14Text,
@@ -77,7 +78,6 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     textAlign: 'center',
     textAlignVertical: 'top',
-    height: 120,
     paddingTop: 0,
     paddingBottom: 0,
     padding: 0,
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
   },
   msgBox: {
     flex: 1,
-    height: 120,
+
     margin: 20,
     paddingTop: 16,
     paddingHorizontal: 40,
@@ -188,8 +188,9 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   );
 
   const {mainSubs} = route.params || {};
-  const [msg, setMsg] = useState(i18n.t('gift:default'));
+  const [msg, setMsg] = useState(i18n.t('gift:default0'));
   const [num, setNum] = useState(0);
+  const [cardHeight, setCardHeight] = useState(120);
   const msgRef = useRef();
   const [toastPending, setToastPending] = useState(false);
   const [showSnackBar, setShowSnackbar] = useState(false);
@@ -274,12 +275,17 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         } else {
           // kakao
           const resp = await KakaoSDK.KakaoShareLink.sendCustom({
-            // kakao template 상용: 67017, TB: 70053
-            templateId: isProduction ? 67017 : 70053,
+            // kakao template 상용: old : 67017, new : 115373, TB: 70053
+            templateId: isProduction ? 115373 : 70053,
+
             templateArgs: [
               {
                 key: 'gift',
                 value: giftId,
+              },
+              {
+                key: 'prod',
+                value: item.prodName,
               },
             ],
           });
@@ -354,13 +360,28 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         <View key="warn" style={styles.warn}>
           <AppSvgIcon name="warnGrey20" style={{marginRight: 8}} />
 
-          <AppText style={[appStyles.normal14Text, {lineHeight: 22}]}>
+          <AppText style={[appStyles.normal14Text, {lineHeight: 22, flex: 1}]}>
             {i18n.t(`gift:warn`)}
           </AppText>
         </View>
       </View>
     );
   }, [checked, methodList]);
+
+  const onPressCard = useCallback(
+    (key: number) => {
+      setNum(key);
+      if (
+        [
+          i18n.t('gift:default0'),
+          i18n.t('gift:default1'),
+          i18n.t('gift:default2'),
+        ].includes(msg)
+      )
+        setMsg(i18n.t(`gift:default${key}`));
+    },
+    [msg],
+  );
 
   const renderSelectDesign = useCallback(
     () => (
@@ -374,25 +395,33 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         <AppButton
           iconName="giftImage1"
           style={{}}
-          onPress={() => setNum(0)}
+          onPress={() => onPressCard(0)}
           checked={num === 0}
         />
         <AppButton
           iconName="giftImage2"
           style={{}}
-          onPress={() => setNum(1)}
+          onPress={() => onPressCard(1)}
           checked={num === 1}
         />
         <AppButton
           iconName="giftImage3"
           style={{}}
-          onPress={() => setNum(2)}
+          onPress={() => onPressCard(2)}
           checked={num === 2}
         />
       </View>
     ),
-    [num],
+    [num, onPressCard],
   );
+
+  const handleContentSizeChange = (contentSize: any) => {
+    const {height} = contentSize;
+
+    if (height <= 60) setCardHeight(120);
+    else if (height <= 90) setCardHeight(150);
+    else setCardHeight(180);
+  };
 
   const cardDesign = useCallback(
     () => (
@@ -406,19 +435,21 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
           }}
         />
         <View style={{flexDirection: 'row', backgroundColor: bgColor}}>
-          <View style={styles.msgBox}>
+          <View style={{...styles.msgBox, height: cardHeight}}>
             <AppTextInput
               multiline
               ref={msgRef}
               value={msg}
               onChangeText={(txt) => {
-                if (numberOfLines(txt) < 2) setMsg(txt);
+                setMsg(txt);
               }}
-              scrollEnabled={false}
+              scrollEnabled
               maxLength={80}
-              numberOfLines={2}
               defaultValue={msg}
               style={styles.msg}
+              onContentSizeChange={(e) =>
+                handleContentSizeChange(e.nativeEvent.contentSize)
+              }
             />
             <AppText style={styles.msgLength}>
               {`${msg.length} ${i18n.t('gift:maxLength')}`}
@@ -427,7 +458,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         </View>
       </View>
     ),
-    [bgColor, bgImages, msg, num],
+    [bgColor, bgImages, cardHeight, msg, num],
   );
 
   return (
