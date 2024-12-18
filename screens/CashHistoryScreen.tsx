@@ -350,6 +350,16 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     (item: CashHistory) => {
       const {order_id, expire_dt} = item;
 
+      if (item?.type === 'voucher:full_refund') {
+        return (
+          <View style={{marginLeft: 73}}>
+            <AppText style={styles.detailText}>
+              {i18n.t('cashHistory:type:voucher:full_refund:detail')}
+            </AppText>
+          </View>
+        );
+      }
+
       if (
         (order_id && order_id !== '0' && order_id !== 'null') ||
         expire_dt ||
@@ -360,9 +370,14 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
           'voucher:voucher_add',
         ].includes(item?.type)
       ) {
-        const orderTitle = item.order_title
-          ? item.order_title
-          : orders.get(Number(item.order_id))?.orderItems[0].title;
+        let orderTitle = item?.order_title;
+
+        if (!orderTitle) {
+          const orderItem = orders.get(Number(item.order_id))?.orderItems;
+          orderTitle = `${orderItem?.[0]?.title} ${
+            orderItem?.length > 1 ? `외 ${orderItem.length - 1}건` : ''
+          }`;
+        }
 
         return (
           <View style={{marginLeft: 73}}>
