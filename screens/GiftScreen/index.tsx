@@ -418,8 +418,8 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   const handleContentSizeChange = (contentSize: any) => {
     const {height} = contentSize;
 
-    if (height <= 60) setCardHeight(120);
-    else if (height <= 90) setCardHeight(150);
+    if (height <= 89) setCardHeight(120);
+    else if (height <= 119) setCardHeight(150);
     else setCardHeight(180);
   };
 
@@ -438,14 +438,14 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
           <View style={{...styles.msgBox, height: cardHeight}}>
             <AppTextInput
               multiline
-              ref={msgRef}
+              // ref={msgRef}
               value={msg}
               onChangeText={(txt) => {
                 setMsg(txt);
               }}
               scrollEnabled
               maxLength={80}
-              defaultValue={msg}
+              // defaultValue={msg}
               style={styles.msg}
               onContentSizeChange={(e) =>
                 handleContentSizeChange(e.nativeEvent.contentSize)
