@@ -179,43 +179,20 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
           ref={inputRef}
           enablesReturnKeyAutomatically
           keyboardType="numeric"
-          selection={select}
-          onSelectionChange={({
-            nativeEvent: {
-              selection: {start, end},
-            },
-          }) => {
-            // 커서 이동을 하는 경우
-            if (end === start) {
-              const positions = [5, 11, 17];
-              if (positions.includes(start) && text.length >= start) {
-                setSelect({start: start + 2, end: start + 2});
-                return;
-              }
-              if (positions.includes(start - 1)) {
-                setSelect({start: start - 2, end: start - 2});
-                return;
-              }
-            }
-            // 붙여넣기를 하는 경우
-            // if (start !== text.length) {
-            //   if (text.length % 6 === 0) {
-            //     setSelect({start: text.length - 2, end: text.length - 2});
-            //   } else {
-            //     setSelect({start: text.length, end: text.length});
-            //   }
-            //   return;
-            // }
-            setSelect({start, end});
-          }}
           onChangeText={(val: string) => {
             const cur = val.replace(/[^0-9]/g, '').replace(/\s+/g, '');
-            setVoucherCode(cur);
-            setText(getCodeWithSpace(cur));
+            setText(cur.slice(0, 16));
+            setVoucherCode(cur.slice(0, 16));
           }}
           placeholder="●●●●  ●●●●  ●●●●  ●●●●"
           placeholderTextColor={colors.greyish}
           clearTextOnFocus={false}
+          onFocus={() => {
+            setText(text.replace(/[^0-9]/g, '').replace(/\s+/g, ''));
+          }}
+          onBlur={() => {
+            setText(getCodeWithSpace(text));
+          }}
           value={text.trimEnd()}
           maxLength={22}
         />
