@@ -93,7 +93,11 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
   const title = useMemo(() => {
     return (
       <View style={styles.titleContainer}>
-        <AppSvgIcon style={styles.grabber} name="grabber2" />
+        <AppSvgIcon
+          style={styles.grabber}
+          onPress={() => setVisible(false)}
+          name="grabber2"
+        />
         <Image
           style={{marginTop: 10}}
           source={getVoucherImage(voucherType?.amount)}
@@ -102,7 +106,7 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
         <AppText style={styles.voucherTitleText}>{voucherType.title}</AppText>
       </View>
     );
-  }, [getVoucherImage, voucherType.amount, voucherType.title]);
+  }, [getVoucherImage, setVisible, voucherType?.amount, voucherType.title]);
 
   const body = useMemo(() => {
     return (
