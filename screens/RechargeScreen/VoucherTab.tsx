@@ -192,7 +192,7 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
                 setSelect({start: start + 2, end: start + 2});
                 return;
               }
-              if (positions.includes(start - 1) && start === text.length) {
+              if (positions.includes(start - 1)) {
                 setSelect({start: start - 2, end: start - 2});
                 return;
               }
