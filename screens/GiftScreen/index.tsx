@@ -179,13 +179,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     if (!isIOS && !deviceModel.startsWith('SM')) return [KAKAO];
     return [KAKAO, MESSAGE];
   }, [deviceModel]);
-  const bgImages = useMemo(
-    () =>
-      (promotion.gift.bg || []).filter(
-        (v) => v?.image && v?.title.includes('Card'),
-      ),
-    [promotion.gift.bg],
-  );
+  const bgImages = useMemo(() => promotion.gift.bg || [], [promotion.gift.bg]);
 
   const {mainSubs} = route.params || {};
   const [msg, setMsg] = useState(i18n.t('gift:default0'));
