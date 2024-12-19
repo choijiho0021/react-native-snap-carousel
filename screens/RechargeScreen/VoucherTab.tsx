@@ -197,14 +197,14 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
               }
             }
             // 붙여넣기를 하는 경우
-            if (start !== text.length) {
-              if (text.length % 6 === 0) {
-                setSelect({start: text.length - 2, end: text.length - 2});
-              } else {
-                setSelect({start: text.length, end: text.length});
-              }
-              return;
-            }
+            // if (start !== text.length) {
+            //   if (text.length % 6 === 0) {
+            //     setSelect({start: text.length - 2, end: text.length - 2});
+            //   } else {
+            //     setSelect({start: text.length, end: text.length});
+            //   }
+            //   return;
+            // }
             setSelect({start, end});
           }}
           onChangeText={(val: string) => {
