@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {KeyboardAvoidingView, StyleSheet, View} from 'react-native';
+import {Keyboard, KeyboardAvoidingView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
@@ -112,6 +112,7 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
   const onSubmit = useCallback(() => {
     if (iccid && token) {
       console.log('@@@ voucherCode : ', voucherCode);
+      Keyboard.dismiss();
       API.Account.getVoucherType({iccid, code: voucherCode}).then((rsp) => {
         console.log('@@@ rsp : ', rsp);
         if (rsp?.result === api.E_NETWORK_FAILED) {
