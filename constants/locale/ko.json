@@ -1853,6 +1853,7 @@
   "cashHistory:type:voucher:exp": "캐시 소멸",
   "cashHistory:type:voucher:refund": "구매 취소",
   "cashHistory:type:voucher:full_refund": "캐시 환불",
+  "cashHistory:type:voucher:full_refund:detail": "상품권 잔액 환불",
   "cashHistory:recharge:failure": "충전 실패! 고객센터로 문의해 주세요.",
 
   "promo:join:open": "이벤트 참여",

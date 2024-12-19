@@ -99,6 +99,7 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
 }) => {
   const inputRef = useRef(null);
   const [text, setText] = useState('');
+  const [cursor, setCursor] = useState(0);
 
   useEffect(() => {
     return () => {
@@ -112,6 +113,7 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
     if (iccid && token) {
       console.log('@@@ voucherCode : ', voucherCode);
       API.Account.getVoucherType({iccid, code: voucherCode}).then((rsp) => {
+        console.log('@@@ rsp : ', rsp);
         if (rsp?.result === api.E_NETWORK_FAILED) {
           // 네트워크 오류 - 팝업 미출력
           return;
@@ -153,7 +155,6 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
   const getCodeWithSpace = useCallback((cur: string, prev: string) => {
     const code = cur.trim();
     const formattedCode = code.replace(/.{4}/g, '$&  ');
-
     // 공백 삭제 시 글자가 사라지도록 처리
     if (cur.length <= prev.length && cur.length % 4 === 0) {
       const formattedCodeWithTrim = formattedCode.trim();
@@ -184,8 +185,32 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
 
         <AppTextInput
           style={styles.textInput}
+          ref={inputRef}
           enablesReturnKeyAutomatically
           keyboardType="numeric"
+          // selection={}
+          selection={{start: cursor}}
+          onSelectionChange={({
+            nativeEvent: {
+              selection: {start, end},
+            },
+          }) => {
+            console.log('@@@@ start : ', start);
+
+            let adjustedStart = start;
+            if (start === 5 || start === 6) {
+              adjustedStart = 4;
+            } else if (start === 11 || start === 12) {
+              adjustedStart = 10;
+            } else if (start === 17 || start === 18) {
+              adjustedStart = 16;
+            }
+
+            console.log('@@@ result cursor : ', adjustedStart);
+
+            // 상태 업데이트
+            setCursor(adjustedStart);
+          }}
           onChangeText={(val: string) => {
             const cur = val.replace(/[^0-9]/g, '').replace(/\s+/g, '');
             const prev = text.replace(/\s+/g, '');
@@ -215,16 +240,6 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
             format={{b: styles.voucherNotiBold}}
           />
         </View>
-        <AppTextInput
-          ref={inputRef}
-          style={styles.input}
-          value={voucherCode}
-          onChangeText={(val: string) => {
-            setVoucherCode(val);
-          }}
-          keyboardType="numeric"
-          maxLength={16}
-        />
       </ScrollView>
       <AppButton
         title={i18n.t('mypage:voucher:use')}

@@ -171,7 +171,6 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
   // recharge 상품의 SKU는 'rch-{amount}' 형식을 갖는다.
   const [selected, setSelected] = useState(`rch-${rechargeChoice[0][0]}`);
   const [amount, setAmount] = useState(rechargeChoice[0][0]);
-  const inputRef = useRef(null);
   const [voucherCode, setVoucherCode] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const [voucherType, setVoucherType] = useState({
