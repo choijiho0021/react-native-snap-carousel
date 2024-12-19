@@ -99,7 +99,7 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
 }) => {
   const inputRef = useRef(null);
   const [text, setText] = useState('');
-  const [cursor, setCursor] = useState(0);
+  const [select, setSelect] = useState({start: 0, end: 0});
 
   useEffect(() => {
     return () => {
@@ -152,19 +152,9 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
       });
     }
   }, [action.modal, iccid, setShowAlert, setVoucherType, token, voucherCode]);
-  const getCodeWithSpace = useCallback((cur: string, prev: string) => {
-    const code = cur.trim();
-    const formattedCode = code.replace(/.{4}/g, '$&  ');
-    // 공백 삭제 시 글자가 사라지도록 처리
-    if (cur.length <= prev.length && cur.length % 4 === 0) {
-      const formattedCodeWithTrim = formattedCode.trim();
 
-      if (cur.length === prev.length) return formattedCodeWithTrim.slice(0, -1);
-
-      return formattedCodeWithTrim;
-    }
-
-    return formattedCode;
+  const getCodeWithSpace = useCallback((cur: string) => {
+    return cur.trim().replace(/.{4}/g, '$&  ');
   }, []);
 
   return (
@@ -188,37 +178,40 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
           ref={inputRef}
           enablesReturnKeyAutomatically
           keyboardType="numeric"
-          // selection={}
-          selection={{start: cursor}}
+          selection={select}
           onSelectionChange={({
             nativeEvent: {
               selection: {start, end},
             },
           }) => {
-            console.log('@@@@ start : ', start);
-
-            let adjustedStart = start;
-            if (start === 5 || start === 6) {
-              adjustedStart = 4;
-            } else if (start === 11 || start === 12) {
-              adjustedStart = 10;
-            } else if (start === 17 || start === 18) {
-              adjustedStart = 16;
+            // 커서 이동을 하는 경우
+            if (end === start) {
+              const positions = [5, 11, 17];
+              if (positions.includes(start) && text.length >= start) {
+                setSelect({start: start + 2, end: start + 2});
+                return;
+              }
+              if (positions.includes(start - 1)) {
+                setSelect({start: start - 2, end: start - 2});
+                return;
+              }
             }
+            // 붙여넣기를 하는 경우
+            if (start !== text.length) {
+              if (text.length % 6 === 0) {
+                setSelect({start: text.length - 2, end: text.length - 2});
+              } else {
+                setSelect({start: text.length, end: text.length});
+              }
 
-            console.log('@@@ result cursor : ', adjustedStart);
-
-            // 상태 업데이트
-            setCursor(adjustedStart);
+              return;
+            }
+            setSelect({start, end});
           }}
           onChangeText={(val: string) => {
             const cur = val.replace(/[^0-9]/g, '').replace(/\s+/g, '');
-            const prev = text.replace(/\s+/g, '');
-
             setVoucherCode(cur);
-
-            // 화면에 공백 추가 표시
-            setText(getCodeWithSpace(cur, prev));
+            setText(getCodeWithSpace(cur));
           }}
           placeholder="●●●●  ●●●●  ●●●●  ●●●●"
           placeholderTextColor={colors.greyish}
