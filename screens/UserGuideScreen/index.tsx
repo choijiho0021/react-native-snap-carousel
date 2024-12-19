@@ -18,6 +18,7 @@ import {
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import {StackNavigationProp} from '@react-navigation/stack';
+import Lottie from 'lottie-react-native';
 import {colors} from '@/constants/Colors';
 import Env from '@/environment';
 import {
@@ -201,6 +202,10 @@ const styles = StyleSheet.create({
     color: '#4C64FF',
     alignSelf: 'center',
   },
+  lottiSize: {
+    width: 16,
+    height: 16,
+  },
 });
 
 const dynamicStyle = {
@@ -383,7 +388,12 @@ const UserGuideScreen = () => {
                 },
               ]}>
               <View style={styles.slideGuideBox}>
-                <AppSvgIcon key="threeArrows" name="threeArrows" />
+                <Lottie
+                  autoPlay
+                  loop
+                  source={require('@/assets/images/lottie/arrow.json')}
+                  style={styles.lottiSize}
+                />
                 <AppText style={styles.slideText}>
                   {i18n.t('userGuide:slideLeft')}
                 </AppText>
