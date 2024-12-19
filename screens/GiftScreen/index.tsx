@@ -130,6 +130,12 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     letterSpacing: -0.5,
   },
+  confirm: {
+    height: 52,
+    backgroundColor: colors.clearBlue,
+    marginBottom: 20,
+    marginTop: 16,
+  },
 });
 
 type GiftScreenNavigationProp = StackNavigationProp<HomeStackParamList, 'Gift'>;
@@ -185,7 +191,6 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   const [msg, setMsg] = useState(i18n.t('gift:default0'));
   const [num, setNum] = useState(0);
   const [cardHeight, setCardHeight] = useState(120);
-  const msgRef = useRef();
   const [toastPending, setToastPending] = useState(false);
   const [showSnackBar, setShowSnackbar] = useState(false);
   const [checked, setChecked] = useState(methodList[0]);
@@ -355,7 +360,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
           <AppSvgIcon name="warnGrey20" style={{marginRight: 8}} />
 
           <AppText style={[appStyles.normal14Text, {lineHeight: 22, flex: 1}]}>
-            {i18n.t(`gift:warn`)}
+            {i18n.t(`gift:warn:${checked}`)}
           </AppText>
         </View>
       </View>
@@ -385,6 +390,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
           justifyContent: 'center',
           gap: 8,
           marginTop: 16,
+          marginBottom: 24,
         }}>
         <AppButton
           iconName="giftImage1"
@@ -423,12 +429,17 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         <ImageBackground
           style={styles.bg}
           resizeMode="stretch"
-          imageStyle={{aspectRatio: 335 / 224}}
+          imageStyle={{aspectRatio: 335 / 224, marginHorizontal: 20}}
           source={{
             uri: API.default.httpImageUrl(bgImages[num]?.image).toString(),
           }}
         />
-        <View style={{flexDirection: 'row', backgroundColor: bgColor}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            backgroundColor: bgColor,
+            marginHorizontal: 20,
+          }}>
           <View style={{...styles.msgBox, height: cardHeight}}>
             <AppTextInput
               multiline
@@ -463,9 +474,17 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
       <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
         style={styles.container}>
+        <AppText
+          style={[
+            appStyles.bold18Text,
+            {marginHorizontal: 20, marginBottom: 16, marginTop: 24},
+          ]}>
+          {i18n.t('gift:subtitle')}
+        </AppText>
         {cardDesign()}
         {renderSelectDesign()}
-        <View style={{marginVertical: 30, marginHorizontal: 20}}>
+        <View style={styles.thickDivider} />
+        <View style={{marginVertical: 24, marginHorizontal: 20}}>
           <AppText style={appStyles.bold18Text}>
             {i18n.t('gift:giftInfo')}
           </AppText>
@@ -482,9 +501,15 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
               {i18n.t('gift:info')}
             </AppText>
           </View>
-          <View style={styles.divider} />
+          <View style={{height: 13, width: '100%'}} />
           {info()}
         </View>
+        <AppButton
+          style={styles.confirm}
+          title={i18n.t('esim:sendGift')}
+          disabled={methodList.length === 0}
+          onPress={() => sendLink(checked, mainSubs)}
+        />
         <AppActivityIndicator visible={toastPending || pending} />
       </KeyboardAwareScrollView>
       <AppSnackBar
@@ -493,12 +518,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         textMessage={i18n.t('toast:sendSuccess')}
         bottom={10}
       />
-      <AppButton
-        style={appStyles.confirm}
-        title={i18n.t('esim:sendGift')}
-        disabled={methodList.length === 0}
-        onPress={() => sendLink(checked, mainSubs)}
-      />
+
       <AppModal
         type="info"
         onOkClose={() => {
