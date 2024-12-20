@@ -181,6 +181,7 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
           keyboardType="numeric"
           onChangeText={(val: string) => {
             const cur = val.replace(/[^0-9]/g, '').replace(/\s+/g, '');
+            if (cur.length > 16) return;
             setText(cur.slice(0, 16));
             setVoucherCode(cur.slice(0, 16));
           }}
@@ -196,7 +197,6 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
           value={text.trimEnd()}
           maxLength={22}
         />
-
         <View
           style={{
             flexDirection: 'row',
