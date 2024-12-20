@@ -3,7 +3,7 @@ import {Keyboard, KeyboardAvoidingView, StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {ScrollView} from 'react-native-gesture-handler';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -21,7 +21,6 @@ import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
 import {VoucherType} from './VoucherBottomAlert';
 import api from '@/redux/api/api';
-import {ScrollView} from 'react-native-gesture-handler';
 
 const {isIOS} = Env.get();
 const styles = StyleSheet.create({
@@ -45,7 +44,6 @@ const styles = StyleSheet.create({
     ...appStyles.medium18,
     letterSpacing: -0.1,
     paddingVertical: 16,
-    lineHeight: 24,
     marginTop: 20,
     flex: 1,
     borderRadius: 3,
@@ -57,12 +55,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     textAlign: 'center',
   },
-
-  input: {
-    opacity: 0,
-    height: 0,
-  },
-
   voucherNotiBold: {
     ...appStyles.bold14Text,
     lineHeight: 20,
@@ -99,7 +91,6 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
 }) => {
   const inputRef = useRef(null);
   const [text, setText] = useState('');
-  const [select, setSelect] = useState({start: 0, end: 0});
 
   useEffect(() => {
     return () => {
