@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 20,
     paddingTop: 16,
-    paddingHorizontal: 40,
+    paddingHorizontal: 16,
     backgroundColor: colors.white,
     borderRadius: 3,
   },
