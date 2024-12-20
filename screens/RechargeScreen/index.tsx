@@ -204,6 +204,7 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
           toastIcon: 'bannerMarkToastSuccess',
         });
         action.account.getAccount({iccid, token});
+        navigation.popToTop();
         navigation.navigate('MyPageStack', {
           screen: 'CashHistory',
           initial: false,
