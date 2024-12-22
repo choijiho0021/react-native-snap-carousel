@@ -57,6 +57,7 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import {colors} from '@/constants/Colors';
 import AppAlert from '@/components/AppAlert';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
+import BetaModalBox from './component/BetaModalBox';
 import PhoneCertBox from './component/PhoneCertBox';
 import TalkMain from './component/TalkMain';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
@@ -110,6 +111,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [dtmf, setDtmf] = useState<string>();
   const [pressed, setPressed] = useState<string>();
   const [refreshing, setRefreshing] = useState(false);
+  const [applied, setApplied] = useState(false);
   // const testNumber = '07079190190';
   const emgOn = useMemo(
     () => Object.entries(emg || {})?.filter(([k, v]) => v === '1'),
@@ -692,8 +694,10 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
             updateTooltip={updateTooltip}
             pressed={pressed}
           />
-        ) : (
+        ) : applied ? (
           <PhoneCertBox />
+        ) : (
+          <BetaModalBox onPress={() => setApplied(true)} />
         )}
       </SafeAreaView>
     </>

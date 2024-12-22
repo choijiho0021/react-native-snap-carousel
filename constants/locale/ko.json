@@ -1898,6 +1898,17 @@
   "qrInfo:tab:manual": "수동입력",
 
   "talk": "통화",
+  "talk:beta:modal:title": "로깨비톡 베타 서비스 출시",
+  "talk:beta:modal:title1": "로깨비톡과 함께",
+  "talk:beta:modal:title2": "해외에서도 안심하고 무료 통화하세요!",
+  "talk:beta:modal:sub1": "베타 테스트에 참여하시면",
+  "talk:beta:modal:sub2": "톡포인트",
+  "talk:beta:modal:sub3": "를",
+  "talk:beta:modal:sub4": " 지급",
+  "talk:beta:modal:sub5": "해드려요!",
+  "talk:beta:modal:sub6": "• 베타 테스트란?",
+  "talk:beta:modal:sub7": " 정식 런칭 전 서비스의 사용성을 검토하고 지속적으로 모니터링하여 통화 품질을 점검하는 기간이에요.\n• 베타 버전 사용 중 버그가 발생하거나 건의 사항이 있으시면 언제든지 고객센터로 연락주세요! \n• 아래 버튼 클릭 시 베타 테스트 참여를 인지하고 이에 동의하는 것으로 간주됩니다.",
+
   "talk:duplicate:realName": "다른 단말에서 고객님의 번호로 본인 인증이 발생하였습니다. 본인 인증 후 다시 사용해 주시길 바랍니다. ",
   "talk:call:minLength": "전화 번호를 다시 확인해 주세요.",
   "talk:call:error": "네트워크 문제로 요청이 처리되지 않았습니다.\n인터넷 연결 확인 후 다시 시도해 주세요.",
