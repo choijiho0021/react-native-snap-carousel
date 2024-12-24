@@ -116,15 +116,13 @@ const CallReviewModal: React.FC<CallReviewModalProps> = ({
           numberOfLines={8}
           enablesReturnKeyAutomatically
           clearTextOnFocus={false}
-          maxLength={2000}
+          maxLength={500}
           onEndEditing={() => Keyboard.dismiss()}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           onChangeText={(v) => {
             setMsg(v);
-            // validate('msg', v);
           }}
-          // error={error('msg')}
           autoCapitalize="none"
           autoCorrect={false}
           value={msg}
