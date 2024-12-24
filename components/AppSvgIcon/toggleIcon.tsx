@@ -311,7 +311,7 @@ const toggleIcons: Record<string, React.ReactElement[]> = {
       viewBox="0 0 23 22"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
-      <G clip-path="url(#x0k97bxgfa)">
+      <G clipPath="url(#x0k97bxgfa)">
         <Path
           fillRule="evenodd"
           clipRule="evenodd"
@@ -547,6 +547,44 @@ const toggleIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  btnStar: [
+    <Svg
+      width="41"
+      height="38"
+      viewBox="0 0 41 38"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#hv85usvfga)">
+        <Path
+          d="M19.547.59a1.064 1.064 0 0 1 1.906 0l5.357 10.813c.155.313.454.53.8.58l11.98 1.733c.87.126 1.219 1.193.588 1.806l-8.668 8.417c-.25.243-.365.593-.306.936l2.047 11.885c.148.865-.763 1.524-1.542 1.116l-10.715-5.611a1.066 1.066 0 0 0-.988 0L9.29 37.876c-.78.408-1.69-.251-1.541-1.116l2.046-11.885a1.056 1.056 0 0 0-.306-.936L.822 15.522c-.63-.613-.283-1.68.589-1.806l11.979-1.734c.346-.05.645-.266.8-.579L19.547.59z"
+          fill="#FFC82D"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="hv85usvfga">
+          <Path fill="#fff" transform="translate(.5)" d="M0 0h40v38H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+    <Svg
+      width="41"
+      height="38"
+      viewBox="0 0 41 38"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#f9pigu8hsa)">
+        <Path
+          d="M19.547.59a1.064 1.064 0 0 1 1.906 0l5.357 10.813c.155.313.454.53.8.58l11.98 1.733c.87.126 1.219 1.193.588 1.806l-8.668 8.417c-.25.243-.365.593-.306.936l2.047 11.885c.148.865-.763 1.524-1.542 1.116l-10.715-5.611a1.066 1.066 0 0 0-.988 0L9.29 37.876c-.78.408-1.69-.251-1.541-1.116l2.046-11.885a1.056 1.056 0 0 0-.306-.936L.822 15.522c-.63-.613-.283-1.68.589-1.806l11.979-1.734c.346-.05.645-.266.8-.579L19.547.59z"
+          fill="#D8D8D8"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="f9pigu8hsa">
+          <Path fill="#fff" transform="translate(.5)" d="M0 0h40v38H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
   mute: [
     <Svg
       width="68"
@@ -581,7 +619,7 @@ const toggleIcons: Record<string, React.ReactElement[]> = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <Rect width="68" height="68" rx="34" fill="#fff" />
-      <G clip-path="url(#4nlph3n1ta)">
+      <G clipPath="url(#4nlph3n1ta)">
         <Path
           fillRule="evenodd"
           clipRule="evenodd"
