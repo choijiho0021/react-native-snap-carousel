@@ -1,5 +1,11 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Keyboard, KeyboardAvoidingView, StyleSheet, View} from 'react-native';
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
@@ -193,7 +199,6 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
             flexDirection: 'row',
             gap: 6,
             marginTop: 6,
-            marginRight: 20,
           }}>
           <AppStyledText
             text={i18n.t(`mypage:voucher:noti`)}
