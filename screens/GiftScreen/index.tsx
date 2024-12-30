@@ -361,7 +361,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
           {methodList.length <= 1 && <View style={{flex: 1, marginLeft: 30}} />}
         </View>
         <View key="warn" style={styles.warn}>
-          <AppSvgIcon name="warnGrey20" style={{marginRight: 8}} />
+          <AppSvgIcon name="warnGrey20" style={{marginRight: 8, top: 1}} />
 
           <AppText
             style={[
@@ -525,7 +525,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
           disabled={methodList.length === 0}
           onPress={() => sendLink(checked, mainSubs)}
         />
-        <AppActivityIndicator visible={toastPending || pending} />
+        {/* <AppActivityIndicator visible={toastPending || pending} /> */}
       </KeyboardAwareScrollView>
       <AppSnackBar
         visible={showSnackBar}
