@@ -54,6 +54,7 @@ export type VoucherType = {
   title: string;
   amount: number;
   type?: string; // TODO : 차후 type에 따른 상품권 사진이 달라질 수도 있음.
+  expireDxsesc?: string;
 };
 
 type VoucherBottomAlertProps = {
