@@ -234,10 +234,8 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     iccid,
     token,
     balance,
-    cashHistory = [],
     cashExpire,
     expirePt = 0,
-    voucherHistory = [],
     paymentHistory = [],
   },
 }) => {
@@ -326,12 +324,6 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
       isAsc,
     ).filter((elm: SectionData) => elm.data.length > 0);
   }, [applyFilter, bReverse, orderType, paymentHistory]);
-
-  const getType = useCallback((key?: string) => {
-    if (key === 'Y') return 'add';
-    if (key === 'N') return 'deduct';
-    return 'all';
-  }, []);
 
   const getHistory = useCallback(() => {
     action.account.fetchCashAndVoucherHistory({iccid, token});
@@ -692,7 +684,7 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
       if (sectionData?.length > 0)
         sectionRef.current?.scrollToLocation({itemIndex: 0, sectionIndex: 0});
     },
-    [getType, voucherHistory, sectionData?.length],
+    [sectionData?.length],
   );
 
   const renderFilter = useCallback(

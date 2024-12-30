@@ -255,6 +255,9 @@ const parsePaymentType = (type: string) => {
   switch (type) {
     case 'voucher:payment':
       return 'point_deduct';
+
+    case 'cash_deduct':
+      return 'point_deduct';
     default:
       return type;
   }
@@ -641,27 +644,30 @@ const slice = createSlice({
       const {result, objects} = action.payload;
 
       if (result === 0 && objects && objects.length > 0) {
-        const group = objects.reduce((acc, cur) => {
-          const year = cur.create_dt?.format('YYYY');
-          const idx = acc.findIndex((elm) => elm.title === year);
+        const groupMap = new Map<string, Map<string, CashHistory>>();
 
-          if (idx <= -1) {
-            acc.push({title: year, data: [cur] as CashHistory[]});
-          } else {
-            const orderidx = acc[idx].data.findIndex(
-              (elm) =>
-                elm.order_id &&
-                elm.order_id === cur.order_id &&
-                elm.type === cur.type,
-            );
-            if (orderidx >= 0) {
-              acc[idx].data[orderidx].diff += cur.diff;
-            } else {
-              acc[idx].data?.push(cur);
-            }
+        objects.forEach((cur) => {
+          const year = cur.create_dt?.format('YYYY');
+          if (!year) return;
+
+          if (!groupMap.has(year)) {
+            groupMap.set(year, new Map());
           }
-          return acc;
-        }, [] as SectionData[]);
+
+          const yearData = groupMap.get(year);
+          const uniqueKey = `${cur.order_id}-${cur.type}`;
+
+          if (yearData?.has(uniqueKey)) {
+            yearData.get(uniqueKey)!.diff += cur.diff;
+          } else {
+            yearData?.set(uniqueKey, {...cur});
+          }
+        });
+
+        const group = Array.from(groupMap.entries()).map(([year, dataMap]) => ({
+          title: year,
+          data: Array.from(dataMap.values()),
+        }));
 
         state.cashHistory = group;
       }
@@ -695,36 +701,36 @@ const slice = createSlice({
       const {result, objects} = action.payload;
 
       if (result === 0 && objects && objects.length > 0) {
-        objects.sort((a, b) => {
-          return moment(a.create_dt).isAfter(b.create_dt) ? -1 : 1;
+        objects.sort((a, b) => moment(b.create_dt).diff(moment(a.create_dt)));
+
+        const groupMap = new Map<string, Map<string, CashHistory>>();
+        objects.forEach((cur) => {
+          const year = cur.create_dt?.format('YYYY');
+          if (!year) return;
+
+          if (!groupMap.has(year)) {
+            groupMap.set(year, new Map());
+          }
+
+          const yearData = groupMap.get(year)!;
+          const orderBindKey = `${cur.order_id}-${parsePaymentType(cur.type)}`; // orderId, type
+
+          if (yearData.has(orderBindKey)) {
+            yearData.get(orderBindKey)!.diff += cur.diff;
+          } else {
+            yearData.set(orderBindKey, {...cur});
+          }
         });
 
-        const group = objects.reduce((acc, cur) => {
-          const year = cur.create_dt?.format('YYYY');
-          const idx = acc.findIndex((elm) => elm.title === year);
-
-          if (idx <= -1) {
-            acc.push({title: year, data: [cur] as CashHistory[]});
-          } else {
-            const orderidx = acc[idx].data.findIndex(
-              (elm) =>
-                elm.order_id &&
-                elm.order_id !== '0' &&
-                elm.order_id === cur.order_id &&
-                parsePaymentType(elm.type) === parsePaymentType(cur.type),
-            );
-
-            if (orderidx >= 0) {
-              acc[idx].data[orderidx].diff += cur.diff;
-            } else {
-              acc[idx].data?.push(cur);
-            }
-          }
-          return acc;
-        }, [] as SectionData[]);
+        // Map 데이터를 SectionData[]
+        const group = Array.from(groupMap.entries()).map(([year, dataMap]) => ({
+          title: year,
+          data: Array.from(dataMap.values()),
+        }));
 
         state.paymentHistory = group;
       }
+
       return state;
     });
 
