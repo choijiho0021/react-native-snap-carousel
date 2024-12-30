@@ -136,8 +136,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     left: 0,
     right: 0,
-    top: '50%',
+    top: 0,
     bottom: 0,
+    justifyContent: 'center',
   },
 });
 
@@ -492,7 +493,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       {(toastPending || pending) && (
-        <View pointerEvents="box-none" style={styles.indicator}>
+        <View style={styles.indicator}>
           <ActivityIndicator size="large" color={colors.clearBlue} animating />
         </View>
       )}
