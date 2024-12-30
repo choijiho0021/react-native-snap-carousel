@@ -1,11 +1,11 @@
 import {
   ImageBackground,
-  Platform,
   Pressable,
   SafeAreaView,
   Linking,
   StyleSheet,
   View,
+  ActivityIndicator,
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
@@ -14,7 +14,6 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import DeviceInfo from 'react-native-device-info';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppBackButton from '@/components/AppBackButton';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
@@ -130,6 +129,15 @@ const styles = StyleSheet.create({
     height: 52,
     backgroundColor: colors.clearBlue,
     marginBottom: 20,
+  },
+  indicator: {
+    position: 'absolute',
+    zIndex: 100,
+    alignSelf: 'center',
+    left: 0,
+    right: 0,
+    top: '50%',
+    bottom: 0,
   },
 });
 
@@ -483,6 +491,12 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      {(toastPending || pending) && (
+        <View pointerEvents="box-none" style={styles.indicator}>
+          <ActivityIndicator size="large" color={colors.clearBlue} animating />
+        </View>
+      )}
+
       <View style={appStyles.header}>
         <AppBackButton title={i18n.t('gift:title')} />
       </View>
@@ -525,7 +539,6 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
           disabled={methodList.length === 0}
           onPress={() => sendLink(checked, mainSubs)}
         />
-        {/* <AppActivityIndicator visible={toastPending || pending} /> */}
       </KeyboardAwareScrollView>
       <AppSnackBar
         visible={showSnackBar}
