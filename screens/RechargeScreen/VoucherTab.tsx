@@ -1,9 +1,15 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Keyboard, KeyboardAvoidingView, StyleSheet, View} from 'react-native';
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import _ from 'underscore';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {ScrollView} from 'react-native-gesture-handler';
 import AppButton from '@/components/AppButton';
 import AppText from '@/components/AppText';
 import {colors} from '@/constants/Colors';
@@ -21,7 +27,6 @@ import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
 import {VoucherType} from './VoucherBottomAlert';
 import api from '@/redux/api/api';
-import {ScrollView} from 'react-native-gesture-handler';
 
 const {isIOS} = Env.get();
 const styles = StyleSheet.create({
@@ -45,7 +50,6 @@ const styles = StyleSheet.create({
     ...appStyles.medium18,
     letterSpacing: -0.1,
     paddingVertical: 16,
-    lineHeight: 24,
     marginTop: 20,
     flex: 1,
     borderRadius: 3,
@@ -57,12 +61,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     textAlign: 'center',
   },
-
-  input: {
-    opacity: 0,
-    height: 0,
-  },
-
   voucherNotiBold: {
     ...appStyles.bold14Text,
     lineHeight: 20,
@@ -99,7 +97,6 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
 }) => {
   const inputRef = useRef(null);
   const [text, setText] = useState('');
-  const [select, setSelect] = useState({start: 0, end: 0});
 
   useEffect(() => {
     return () => {
@@ -179,53 +176,29 @@ const VoucherTab: React.FC<VoucherTabProps> = ({
           ref={inputRef}
           enablesReturnKeyAutomatically
           keyboardType="numeric"
-          selection={select}
-          onSelectionChange={({
-            nativeEvent: {
-              selection: {start, end},
-            },
-          }) => {
-            // 커서 이동을 하는 경우
-            if (end === start) {
-              const positions = [5, 11, 17];
-              if (positions.includes(start) && text.length >= start) {
-                setSelect({start: start + 2, end: start + 2});
-                return;
-              }
-              if (positions.includes(start - 1) && start === text.length) {
-                setSelect({start: start - 2, end: start - 2});
-                return;
-              }
-            }
-            // 붙여넣기를 하는 경우
-            // if (start !== text.length) {
-            //   if (text.length % 6 === 0) {
-            //     setSelect({start: text.length - 2, end: text.length - 2});
-            //   } else {
-            //     setSelect({start: text.length, end: text.length});
-            //   }
-            //   return;
-            // }
-            setSelect({start, end});
-          }}
           onChangeText={(val: string) => {
             const cur = val.replace(/[^0-9]/g, '').replace(/\s+/g, '');
-            setVoucherCode(cur);
-            setText(getCodeWithSpace(cur));
+            if (cur.length > 16) return;
+            setText(cur.slice(0, 16));
+            setVoucherCode(cur.slice(0, 16));
           }}
           placeholder="●●●●  ●●●●  ●●●●  ●●●●"
           placeholderTextColor={colors.greyish}
           clearTextOnFocus={false}
+          onFocus={() => {
+            setText(text.replace(/[^0-9]/g, '').replace(/\s+/g, ''));
+          }}
+          onBlur={() => {
+            setText(getCodeWithSpace(text));
+          }}
           value={text.trimEnd()}
           maxLength={22}
         />
-
         <View
           style={{
             flexDirection: 'row',
             gap: 6,
             marginTop: 6,
-            marginRight: 20,
           }}>
           <AppStyledText
             text={i18n.t(`mypage:voucher:noti`)}

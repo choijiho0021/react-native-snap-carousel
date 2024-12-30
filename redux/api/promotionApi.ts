@@ -233,7 +233,7 @@ const getStat = () => {
 
 const getGiftBgImages = () => {
   return api.callHttpGet<RkbGiftImages>(
-    `${api.httpUrl(api.path.gift.images)}?_format=hal_json`,
+    `${api.httpUrl(api.path.gift.images2)}?_format=hal_json`,
     toGiftBgImages,
   );
 };

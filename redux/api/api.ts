@@ -100,6 +100,7 @@ const path = {
   gift: {
     content: 'rokebi/gift',
     images: 'rokebi/gift/images',
+    images2: 'rokebi/gift/images/v2',
     web: 'gift',
   },
 

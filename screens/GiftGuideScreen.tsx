@@ -36,7 +36,7 @@ const SAMLL_BOX_WIDTH = 350;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.whiteTwo,
+    backgroundColor: colors.white,
   },
   whiteContainer: {
     backgroundColor: colors.white,
