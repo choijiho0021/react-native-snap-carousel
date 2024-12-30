@@ -327,8 +327,6 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 
   const getHistory = useCallback(() => {
     action.account.fetchCashAndVoucherHistory({iccid, token});
-    action.account.getCashHistory({iccid, token});
-
     action.account.getCashExpire({iccid, token});
   }, [action.account, iccid, token]);
 
