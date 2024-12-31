@@ -97,6 +97,7 @@ const CallReviewModal: React.FC<CallReviewModalProps> = ({
         <View style={styles.starRow}>
           {[1, 2, 3, 4, 5].map((s) => (
             <AppButton
+              key={s}
               checked={s <= star}
               style={{marginHorizontal: 6}}
               iconName="btnStar"
