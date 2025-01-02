@@ -87,7 +87,8 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <!-- web rtc에서 사용하는 권한으로 화면 캡처(Screen Capture) 또는 화면을 다른 곳으로 스트리밍하는 기능을 제공 -->
+    <!-- <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" /> -->
 
     <application
         android:name="com.rokebiesim.MainApplication"
