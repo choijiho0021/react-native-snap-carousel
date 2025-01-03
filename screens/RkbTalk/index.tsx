@@ -705,7 +705,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
             updateTooltip={updateTooltip}
             pressed={pressed}
           />
-        ) : beta?.isReceivedBeta == 1 ? (
+        ) : beta?.isReceivedBeta == 0 ? (
           <BetaModalBox
             amount={beta?.amount || 1000}
             onPress={() => {
