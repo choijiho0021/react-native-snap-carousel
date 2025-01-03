@@ -11,12 +11,6 @@ const getVoucherPoint = ({iccid}: {iccid: string}) => {
   );
 };
 
-const getCheckFirstReward = ({iccid}: {iccid: string}) => {
-  return api.callHttpGet(
-    `${api.httpUrl(api.path.rokApi.rokebi.point)}/${iccid}?reward`,
-  );
-};
-
 const getRatePerMinute = ({
   mobile,
   called,
@@ -163,6 +157,5 @@ export default {
   getPointHistory,
   getTariff,
   getEmgInfo,
-  getCheckFirstReward,
   getRatePerMinute,
 };

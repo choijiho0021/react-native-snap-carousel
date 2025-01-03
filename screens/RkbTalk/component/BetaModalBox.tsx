@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   storeBox: {
     position: 'absolute',
     paddingTop: 20,
-    paddingBottom: 40,
+    paddingBottom: 0,
     backgroundColor: colors.white,
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
@@ -106,9 +106,10 @@ const styles = StyleSheet.create({
 
 type BetaModalBoxProps = {
   onPress: () => void;
+  amount: number;
 };
 
-const BetaModalBox: React.FC<BetaModalBoxProps> = ({onPress}) => {
+const BetaModalBox: React.FC<BetaModalBoxProps> = ({onPress, amount}) => {
   const head = useCallback(() => {
     return (
       <View style={styles.headView}>
@@ -142,7 +143,7 @@ const BetaModalBox: React.FC<BetaModalBoxProps> = ({onPress}) => {
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <AppIcon name="iconPoint" />
           <AppText style={styles.pointGreenText}>
-            1000 {i18n.t('talk:beta:modal:sub2')}
+            {amount} {i18n.t('talk:beta:modal:sub2')}
             <AppText style={{color: colors.black, fontWeight: 'normal'}}>
               {i18n.t('talk:beta:modal:sub3')}
             </AppText>
@@ -154,7 +155,7 @@ const BetaModalBox: React.FC<BetaModalBoxProps> = ({onPress}) => {
         </View>
       </View>
     );
-  }, []);
+  }, [amount]);
 
   const content = useCallback(() => {
     return (

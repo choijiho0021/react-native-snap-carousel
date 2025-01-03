@@ -18,6 +18,12 @@ const getTalkPoint = ({iccid}: {iccid: string}) => {
   );
 };
 
+const getCheckBetaReward = ({iccid}: {iccid: string}) => {
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.rokApi.rokebi.point)}/${iccid}?beta`,
+  );
+};
+
 const getCheckFirstReward = ({iccid}: {iccid: string}) => {
   return api.callHttpGet(
     `${api.httpUrl(api.path.rokApi.rokebi.point)}/${iccid}?reward`,
@@ -38,7 +44,13 @@ const getRatePerMinute = ({
   );
 };
 
-export type TalkSign = 'add' | 'deduct' | 'refund' | 'charge' | 'reward';
+export type TalkSign =
+  | 'add'
+  | 'deduct'
+  | 'refund'
+  | 'charge'
+  | 'reward'
+  | 'beta';
 
 const patchTalkPoint = ({
   iccid,
@@ -172,5 +184,6 @@ export default {
   getTariff,
   getEmgInfo,
   getCheckFirstReward,
+  getCheckBetaReward,
   getRatePerMinute,
 };

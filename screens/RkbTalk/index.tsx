@@ -90,9 +90,14 @@ type RkbTalkProps = {
   };
 };
 
+type RkbTalkBetaType = {
+  isBeta: 0 | 1;
+  amount: number;
+};
+
 const RkbTalk: React.FC<RkbTalkProps> = ({
   account: {realMobile, iccid, token},
-  talk: {called, tariff, emg, tooltip, ccode, terminateCall},
+  talk: {called, tariff, emg, tooltip, ccode, terminateCall, beta},
   navigation,
   action,
 }) => {
@@ -110,8 +115,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [point, setPoint] = useState<number>(0);
   const [dtmf, setDtmf] = useState<string>();
   const [pressed, setPressed] = useState<string>();
+
   const [refreshing, setRefreshing] = useState(false);
-  const [applied, setApplied] = useState(false);
   // const testNumber = '07079190190';
   const emgOn = useMemo(
     () => Object.entries(emg || {})?.filter(([k, v]) => v === '1'),
@@ -661,6 +666,12 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
 
   const onChange = useCallback((d?: string) => setDtmf(d), []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      if (iccid) action.talk.getCheckBetaReward({iccid});
+    }, [action.talk, iccid]),
+  );
+
   return (
     <>
       <StatusBar
@@ -694,10 +705,25 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
             updateTooltip={updateTooltip}
             pressed={pressed}
           />
-        ) : applied ? (
-          <PhoneCertBox />
+        ) : beta?.isReceivedBeta == 1 ? (
+          <BetaModalBox
+            amount={beta?.amount || 1000}
+            onPress={() => {
+              if (token && iccid) {
+                API.TalkApi.patchTalkPoint({
+                  iccid,
+                  token,
+                  sign: 'beta',
+                }).then((rsp) => {
+                  if (rsp?.result === 0) {
+                    action.talk.getCheckBetaReward({iccid});
+                  }
+                });
+              }
+            }}
+          />
         ) : (
-          <BetaModalBox onPress={() => setApplied(true)} />
+          <PhoneCertBox />
         )}
       </SafeAreaView>
     </>

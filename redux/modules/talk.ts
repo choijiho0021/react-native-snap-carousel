@@ -33,6 +33,11 @@ const getCheckFirstReward = createAsyncThunk(
   API.TalkApi.getCheckFirstReward,
 );
 
+const getCheckBetaReward = createAsyncThunk(
+  'account/getCheckBetaReward',
+  API.TalkApi.getCheckBetaReward,
+);
+
 export type PointHistory = {
   diff: string;
   expire_at: Moment;
@@ -118,6 +123,10 @@ export interface TalkModelState {
     rewardStart?: Moment;
   };
   terminateCall?: boolean;
+  beta?: {
+    isReceivedBeta?: string;
+    isBetaAmount?: number;
+  };
 }
 
 const CALL_HIST_LIMIT = 100;
@@ -341,6 +350,19 @@ const slice = createSlice({
       return state;
     });
 
+    builder.addCase(getCheckBetaReward.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      if (result === 0) {
+        state.beta = {
+          isReceivedBeta: objects?.beta,
+          isBetaAmount: objects?.betaAmount,
+        };
+      }
+
+      return state;
+    });
+
     builder.addCase(getCheckFirstReward.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
@@ -490,7 +512,7 @@ export const actions = {
   callChanged,
   updateNumberClicked,
   getCheckFirstReward,
-  // getTalkPoint,
+  getCheckBetaReward,
 };
 
 export type TalkAction = typeof actions;
