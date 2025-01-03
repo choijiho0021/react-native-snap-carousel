@@ -109,9 +109,10 @@ export interface TalkModelState {
   called?: string; // include ccode
   ccode?: string; // country code parsed from 'called number'
   tariff: Record<string, TalkTariff>;
-  emg: Record<string, string>;
+  emg?: Record<string, string>;
   maxCcodePrefix: number; // max length of country code
   callHistory: SectionData[];
+  totalCall: number;
   tooltip: boolean;
   clickedNum?: string; // same with contact
   clickedName?: string;
@@ -189,7 +190,7 @@ const updateCalls = async (state: TalkModelState, payload: CallHistory) => {
   if (newHistory?.length > CALL_HIST_LIMIT) newHistory.splice(CALL_HIST_LIMIT);
 
   storeData('callHistory', JSON.stringify(newHistory));
-  return makeSectionData(newHistory);
+  return [makeSectionData(newHistory), newHistory?.length || 0];
 };
 
 const initialState: TalkModelState = {
@@ -199,6 +200,7 @@ const initialState: TalkModelState = {
   tariff: {},
   maxCcodePrefix: 0,
   callHistory: [],
+  totalCall: 0,
   tooltip: false,
   duration: 0,
 };
@@ -298,6 +300,10 @@ const slice = createSlice({
     },
     updateHistory: (state, action) => {
       state.callHistory = action.payload;
+      return state;
+    },
+    updateTotalCall: (state, action) => {
+      state.totalCall = action.payload;
       return state;
     },
     updateCcode: (state, action) => {
@@ -469,9 +475,10 @@ export const callInitiated = createAsyncThunk(
   'talk/callInitiated',
   async (payload: CallHistory, {dispatch, getState}) => {
     const {talk} = getState() as RootState;
-    Promise.resolve(updateCalls(talk, payload)).then((h) =>
-      dispatch(slice.actions.updateHistory(h)),
-    );
+    Promise.resolve(updateCalls(talk, payload)).then((h) => {
+      dispatch(slice.actions.updateTotalCall(h[1]));
+      dispatch(slice.actions.updateHistory(h[0]));
+    });
   },
 );
 
@@ -480,7 +487,8 @@ export const callChanged = createAsyncThunk(
   async (payload: CallHistory, {dispatch, getState}) => {
     const {talk} = getState() as RootState;
     Promise.resolve(updateCalls(talk, payload)).then((h) => {
-      dispatch(slice.actions.updateHistory(h));
+      dispatch(slice.actions.updateTotalCall(h[1]));
+      dispatch(slice.actions.updateHistory(h[0]));
       dispatch(slice.actions.updateDuration(0));
     });
   },
