@@ -4,6 +4,7 @@ import {createAsyncThunk, createSlice, RootState} from '@reduxjs/toolkit';
 import {AnyAction} from 'redux';
 import {Map as ImmutableMap} from 'immutable';
 import moment from 'moment';
+import VersionCheck from 'react-native-version-check';
 import {API} from '@/redux/api';
 import {
   Currency,
@@ -21,7 +22,6 @@ import Env from '@/environment';
 import {RkbOrderItem} from '../api/cartApi';
 import {PurchaseItem} from '../models/purchaseItem';
 import {OrderItemType} from '../api/orderApi';
-import VersionCheck from 'react-native-version-check';
 import {actions as CartActions} from './cart';
 import AppAlert from '@/components/AppAlert';
 import i18n from '@/utils/i18n';
@@ -229,6 +229,10 @@ export type PaymentRule = {
     message?: string;
   };
   ccard: [string, string][];
+  talk: {
+    beta: string;
+    point: string;
+  };
 } & Record<string, 'I' | 'T'>;
 
 export interface ProductModelState {
@@ -268,6 +272,10 @@ const initialState: ProductModelState = {
     inicis_enabled: '1',
     maintenance: {
       state: '0',
+    },
+    talk: {
+      beta: '',
+      point: '',
     },
   },
   devList: [],
