@@ -81,6 +81,7 @@ import TalkRewardScreen from '@/screens/RkbTalk/component/TalkRewardScreen';
 import TalkPermissionScreen from '@/screens/RkbTalk/component/TalkPermissionScreen';
 import TalkTariffScreen from '@/screens/TalkTariffScreen';
 import CallHistoryScreen from '@/screens/CallHistoryScreen';
+import BetaBadged from './component/BetaBadged';
 
 const {esimGlobal} = Env.get();
 
@@ -465,7 +466,7 @@ const TabNavigator = ({
           },
           tabBarLabel: ({focused}) => tabBarLabel(focused, 'talk'),
           tabBarIcon: ({focused}) => (
-            <AppIcon
+            <BetaBadged
               focused={focused}
               name="btnCall"
               style={styles.tabBarIcon}

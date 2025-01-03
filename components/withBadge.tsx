@@ -53,6 +53,7 @@ type WithBadgeOption = {
   left?: number;
   bottom?: number;
   hidden?: boolean;
+  icon?: boolean;
 };
 
 const withBadge =
@@ -64,7 +65,7 @@ const withBadge =
   (WrappedComponent: React.ReactNode) => {
     const badge = (props) => {
       const badgeValue = props[key];
-      const {hidden = !badgeValue} = options || {};
+      const {hidden = !badgeValue, icon = false} = options || {};
 
       return props.onPress ? (
         <Pressable onPress={props.onPress}>
@@ -74,6 +75,8 @@ const withBadge =
               <Badge
                 badgeStyle={styles.badge}
                 textStyle={styles.badgeText}
+                icon={icon}
+                iconName={key}
                 value={badgeValue}
                 onPress={props.onPress}
                 containerStyle={[
@@ -91,6 +94,8 @@ const withBadge =
             <Badge
               badgeStyle={styles.badge}
               textStyle={styles.badgeText}
+              icon={icon}
+              iconName={key}
               value={badgeValue}
               onPress={props.onPress}
               containerStyle={[
