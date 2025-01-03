@@ -33,30 +33,31 @@ import {
   UserAgentOptions,
 } from 'sip.js';
 import _ from 'underscore';
-import {useInterval} from '@/utils/useInterval';
-import i18n from '@/utils/i18n';
+import AppActivityIndicator from '@/components/AppActivityIndicator';
+import AppAlert from '@/components/AppAlert';
+import {colors} from '@/constants/Colors';
+import {HomeStackParamList} from '@/navigation/navigation';
+import {RootState} from '@/redux';
+import {API} from '@/redux/api';
+import api from '@/redux/api/api';
+import utils from '@/redux/api/utils';
 import {
-  actions as toastActions,
-  Toast,
-  ToastAction,
-} from '@/redux/modules/toast';
+  AccountAction,
+  AccountModelState,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import {
   actions as talkActions,
   TalkAction,
   TalkModelState,
 } from '@/redux/modules/talk';
 import {
-  AccountAction,
-  AccountModelState,
-  actions as accountActions,
-} from '@/redux/modules/account';
-import api from '@/redux/api/api';
-import {API} from '@/redux/api';
-import {RootState} from '@/redux';
-import {HomeStackParamList} from '@/navigation/navigation';
-import {colors} from '@/constants/Colors';
-import AppAlert from '@/components/AppAlert';
-import AppActivityIndicator from '@/components/AppActivityIndicator';
+  actions as toastActions,
+  Toast,
+  ToastAction,
+} from '@/redux/modules/toast';
+import i18n from '@/utils/i18n';
+import {useInterval} from '@/utils/useInterval';
 import BetaModalBox from './component/BetaModalBox';
 import PhoneCertBox from './component/PhoneCertBox';
 import TalkMain from './component/TalkMain';
@@ -110,7 +111,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [mute, setMute] = useState(false);
   const [dtmfSession, setDtmfSession] = useState<Session>();
   const [duration, setDuration] = useState(0);
-  const [maxTime, setMaxTime] = useState<number | null>(null);
+  const [maxTime, setMaxTime] = useState<number>(60);
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
   const [dtmf, setDtmf] = useState<string>();
@@ -124,13 +125,15 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   );
 
   const {top} = useSafeAreaInsets();
+  // showWarning이 전화연결되면 바로 나오는 이슈 있음.
   const [min, showWarning] = useMemo(() => {
     const checkRemain = (maxTime || 0) - duration;
-    const m = maxTime
-      ? Math.floor((checkRemain <= 0 ? 0 : checkRemain) / 60)
-      : undefined;
-    return [m, (m && m <= 2) || false];
-  }, [duration, maxTime]);
+    const m =
+      maxTime && sessionState === SessionState.Established
+        ? Math.floor((checkRemain <= 0 ? 0 : checkRemain) / 60)
+        : undefined;
+    return [m, (m && m <= 2 && duration > 3) || false];
+  }, [duration, maxTime, sessionState]);
 
   const isSuccessAuth = useMemo(() => (realMobile || '') !== '', [realMobile]);
 
@@ -323,7 +326,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     setInviter(null);
 
     setDuration(0);
-    setMaxTime(null);
+    setMaxTime(60);
     setTime('');
     setTimeout(() => {
       getPoint();
@@ -610,7 +613,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         },
         sessionDescriptionHandlerFactoryOptions: {
           iceServers: [{urls: 'stun:talk.rokebi.com:3478'}],
-          iceGatheringTimeout: 3,
+          iceGatheringTimeout: 30,
+          callTimeout: 60,
         },
       };
       const ua = new UserAgent(userAgentOptions);
