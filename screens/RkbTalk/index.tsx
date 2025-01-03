@@ -46,21 +46,17 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
+import {actions as logActions, LogModelState} from '@/redux/modules/log';
+import {
+  actions as productActions,
+  ProductModelState,
+} from '@/redux/modules/product';
 import {
   actions as talkActions,
   TalkAction,
   TalkModelState,
 } from '@/redux/modules/talk';
-import {
-  actions as productActions,
-  ProductAction,
-  ProductModelState,
-} from '@/redux/modules/product';
-import {
-  actions as logActions,
-  LogAction,
-  LogModelState,
-} from '@/redux/modules/log';
+
 import {
   actions as toastActions,
   Toast,
@@ -69,6 +65,7 @@ import {
 import i18n from '@/utils/i18n';
 import {useInterval} from '@/utils/useInterval';
 import BetaModalBox from './component/BetaModalBox';
+import CallReviewModal from './component/CallReviewModal';
 import PhoneCertBox from './component/PhoneCertBox';
 import TalkMain from './component/TalkMain';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
@@ -132,6 +129,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [pressed, setPressed] = useState<string>();
 
   const [refreshing, setRefreshing] = useState(false);
+  const [visible, setVisible] = useState(true);
   // const testNumber = '07079190190';
   const emgOn = useMemo(
     () => Object.entries(emg || {})?.filter(([k, v]) => v === '1'),
@@ -150,6 +148,17 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   }, [duration, maxTime, sessionState]);
 
   const isSuccessAuth = useMemo(() => (realMobile || '') !== '', [realMobile]);
+
+  // beta service on, 통화 종료시, 1/3 확률로 통화품질모달 출력
+  useEffect(() => {
+    if (
+      rule?.talk?.beta === '0' &&
+      sessionState === SessionState.Terminated &&
+      totalCall % 3 === 0
+    ) {
+      setVisible(true);
+    }
+  }, [rule?.talk?.beta, sessionState, totalCall]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -715,6 +724,27 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     }, [action.talk, iccid]),
   );
 
+  const reviewBtnPressed = useCallback(
+    ({k, star, cont}: {k: 'ok' | 'next'; star?: number; cont?: string}) => {
+      if (k === 'ok') {
+        if (token) {
+          Promise.resolve(
+            API.TalkApi.addTalkReview({
+              mobile: realMobile || '',
+              star,
+              cont: cont || '',
+              log: talkLog,
+              token,
+            }),
+          ).then((r) => {
+            setVisible(false);
+          });
+        }
+      } else setVisible(false);
+    },
+    [realMobile, talkLog, token],
+  );
+
   return (
     <>
       <StatusBar
@@ -730,6 +760,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           {backgroundColor: isSuccessAuth ? 'white' : 'rgba(0, 0, 0, 0.3)'},
         ]}>
         <AppActivityIndicator visible={refreshing || false} />
+        <CallReviewModal visible={visible} onPress={reviewBtnPressed} />
         {isSuccessAuth ? (
           <TalkMain
             terminateCall={terminateCall}
