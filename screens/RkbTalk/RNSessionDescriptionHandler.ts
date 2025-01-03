@@ -20,6 +20,7 @@ import {
   PeerConnectionDelegate,
   SessionDescriptionHandlerConfiguration,
 } from 'sip.js/lib/platform/web';
+import utils from '@/redux/api/utils';
 
 type ResolveFunction = () => void;
 type RejectFunction = (reason: Error) => void;
@@ -88,15 +89,18 @@ class RNSessionDescriptionHandler implements SessionDescriptionHandler {
   constructor(logger, options?: SessionDescriptionHandlerConfiguration) {
     console.debug = (message, ...optionalParams) => {
       console.log(`DEBUG: ${message}`, ...optionalParams);
+      utils.tlog(`DEBUG: ${message}, ${JSON.stringify(optionalParams)}`);
     };
 
     console.error = (message, ...optionalParams) => {
       console.log(`ERROR: ${message}`, ...optionalParams);
+      utils.tlog(`ERROR: ${message}, ${JSON.stringify(optionalParams)}`);
     };
 
     this.logger = console;
 
     console.log('@@@ RN Session Description Handler', options);
+    utils.tlog(`@@@ RN Session Description Handler ${JSON.stringify(options)}`);
     this.mediaStreamFactory = (constraints) => {
       return mediaDevices.getUserMedia(constraints);
     };
