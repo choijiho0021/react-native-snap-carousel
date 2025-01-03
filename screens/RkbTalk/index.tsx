@@ -62,6 +62,7 @@ import BetaModalBox from './component/BetaModalBox';
 import PhoneCertBox from './component/PhoneCertBox';
 import TalkMain from './component/TalkMain';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
+import {ProductModelState} from '@/redux/modules/product';
 
 const styles = StyleSheet.create({
   body: {
@@ -84,6 +85,7 @@ type RkbTalkProps = {
 
   account: AccountModelState;
   talk: TalkModelState;
+  product: ProductModelState;
   action: {
     account: AccountAction;
     talk: TalkAction;
@@ -91,14 +93,10 @@ type RkbTalkProps = {
   };
 };
 
-type RkbTalkBetaType = {
-  isBeta: 0 | 1;
-  amount: number;
-};
-
 const RkbTalk: React.FC<RkbTalkProps> = ({
   account: {realMobile, iccid, token},
-  talk: {called, tariff, emg, tooltip, ccode, terminateCall, beta},
+  talk: {called, tariff, emg, tooltip, ccode, terminateCall, isReceivedBeta},
+  product: {rule},
   navigation,
   action,
 }) => {
@@ -709,9 +707,9 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
             updateTooltip={updateTooltip}
             pressed={pressed}
           />
-        ) : beta?.isReceivedBeta == 0 ? (
+        ) : isReceivedBeta == 0 ? (
           <BetaModalBox
-            amount={beta?.amount || 1000}
+            amount={rule?.talk?.point || 1000}
             onPress={() => {
               if (token && iccid) {
                 API.TalkApi.patchTalkPoint({
@@ -735,9 +733,10 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
 };
 
 export default connect(
-  ({account, talk}: RootState) => ({
+  ({account, talk, product}: RootState) => ({
     account,
     talk,
+    product,
   }),
   (dispatch) => ({
     action: {

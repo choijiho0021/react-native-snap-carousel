@@ -123,10 +123,7 @@ export interface TalkModelState {
     rewardStart?: Moment;
   };
   terminateCall?: boolean;
-  beta?: {
-    isReceivedBeta?: string;
-    isBetaAmount?: number;
-  };
+  isReceivedBeta?: string;
 }
 
 const CALL_HIST_LIMIT = 100;
@@ -354,10 +351,7 @@ const slice = createSlice({
       const {result, objects} = action.payload;
 
       if (result === 0) {
-        state.beta = {
-          isReceivedBeta: objects?.beta,
-          isBetaAmount: objects?.betaAmount,
-        };
+        state.isReceivedBeta = objects?.beta;
       }
 
       return state;
