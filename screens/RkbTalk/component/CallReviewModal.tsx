@@ -61,17 +61,36 @@ const styles = StyleSheet.create({
 
 type CallReviewModalProps = {
   visible: boolean;
-  onPress: () => void;
+  onPress: ({
+    k,
+    star,
+    cont,
+  }: {
+    k: 'ok' | 'next';
+    star?: number;
+    cont?: string;
+  }) => void;
 };
 
 const CallReviewModal: React.FC<CallReviewModalProps> = ({
   visible = true,
   onPress,
 }) => {
-  const [star, setStar] = useState(0);
+  const [stars, setStars] = useState(0);
   const [focused, setFocused] = useState(false);
   const [msg, setMsg] = useState<string>();
   const keybd = useRef();
+
+  const closed = useCallback(
+    ({k, star, cont}: {k: 'ok' | 'next'; star?: number; cont?: string}) => {
+      Keyboard.dismiss();
+      onPress({k, star, cont});
+      setMsg(undefined);
+      setFocused(false);
+      setStars(0);
+    },
+    [onPress],
+  );
 
   const head = useCallback(() => {
     return (
@@ -82,6 +101,82 @@ const CallReviewModal: React.FC<CallReviewModalProps> = ({
       </View>
     );
   }, []);
+
+  const starRow = useCallback(
+    () => (
+      <View style={styles.starRow}>
+        {[1, 2, 3, 4, 5].map((s) => (
+          <AppButton
+            key={s}
+            checked={s <= stars}
+            style={{marginHorizontal: 6}}
+            iconName="btnStar"
+            onPress={() => setStars(s)}
+          />
+        ))}
+      </View>
+    ),
+    [stars],
+  );
+
+  const content = useCallback(
+    () => (
+      <AppTextInput
+        style={[
+          styles.inputBox,
+          msg ? {borderColor: colors.clearBlue} : undefined,
+        ]}
+        ref={keybd}
+        placeholder={i18n.t('talk:review:modal:placeholder')}
+        placeholderTextColor={colors.greyish}
+        multiline
+        numberOfLines={8}
+        enablesReturnKeyAutomatically
+        clearTextOnFocus={false}
+        maxLength={500}
+        onEndEditing={() => Keyboard.dismiss()}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        onChangeText={(v) => {
+          setMsg(v);
+        }}
+        autoCapitalize="none"
+        autoCorrect={false}
+        value={msg}
+      />
+    ),
+    [msg],
+  );
+
+  const buttons = useCallback(() => {
+    return (
+      <>
+        <AppButton
+          style={styles.okButton}
+          disabled={stars === 0}
+          disableColor={colors.greyish}
+          disableBackgroundColor={colors.lightGrey}
+          titleStyle={{
+            ...appStyles.normal18Text,
+            lineHeight: 26,
+            color: stars > 0 ? colors.white : colors.lightGrey,
+          }}
+          title={i18n.t('ok')}
+          onPress={() => closed({k: 'ok', star: stars, cont: msg})}
+        />
+        <AppButton
+          style={styles.nextButton}
+          titleStyle={{
+            ...appStyles.bold16Text,
+            lineHeight: 24,
+            color: colors.black,
+          }}
+          title={i18n.t('talk:review:modal:next')}
+          onPress={() => closed({k: 'next'})}
+        />
+      </>
+    );
+  }, [closed, msg, stars]);
 
   return (
     <AnimatedModal
@@ -94,65 +189,9 @@ const CallReviewModal: React.FC<CallReviewModalProps> = ({
       onClose={() => Keyboard.dismiss()}>
       <Pressable style={styles.modalMargin} onPress={() => Keyboard.dismiss()}>
         {head()}
-        <View style={styles.starRow}>
-          {[1, 2, 3, 4, 5].map((s) => (
-            <AppButton
-              key={s}
-              checked={s <= star}
-              style={{marginHorizontal: 6}}
-              iconName="btnStar"
-              onPress={() => setStar(s)}
-            />
-          ))}
-        </View>
-        <AppTextInput
-          style={[
-            styles.inputBox,
-            msg ? {borderColor: colors.clearBlue} : undefined,
-          ]}
-          ref={keybd}
-          placeholder={i18n.t('talk:review:modal:placeholder')}
-          placeholderTextColor={colors.greyish}
-          multiline
-          numberOfLines={8}
-          enablesReturnKeyAutomatically
-          clearTextOnFocus={false}
-          maxLength={500}
-          onEndEditing={() => Keyboard.dismiss()}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          onChangeText={(v) => {
-            setMsg(v);
-          }}
-          autoCapitalize="none"
-          autoCorrect={false}
-          value={msg}
-        />
-        <>
-          <AppButton
-            style={styles.okButton}
-            disabled={star === 0}
-            disableColor={colors.greyish}
-            disableBackgroundColor={colors.lightGrey}
-            titleStyle={{
-              ...appStyles.normal18Text,
-              lineHeight: 26,
-              color: star > 0 ? colors.white : colors.lightGrey,
-            }}
-            title={i18n.t('ok')}
-            onPress={onPress}
-          />
-          <AppButton
-            style={styles.nextButton}
-            titleStyle={{
-              ...appStyles.bold16Text,
-              lineHeight: 24,
-              color: colors.black,
-            }}
-            title={i18n.t('talk:review:modal:next')}
-            onPress={onPress}
-          />
-        </>
+        {starRow()}
+        {content()}
+        {buttons()}
       </Pressable>
     </AnimatedModal>
   );
