@@ -46,38 +46,33 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  // 여기부터
-  kakao: {
-    flex: 1,
-    height: 36,
+  box: {
+    borderWidth: 1,
+    padding: 16,
     flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
   },
   method: {
-    marginVertical: 20,
+    marginTop: 20,
+    marginBottom: 18,
     flexDirection: 'row',
+    gap: 8,
     flex: 1,
   },
-  methodInfo: {
-    ...appStyles.normal12Text,
-    textAlign: 'left',
-    color: colors.warmGrey,
-    lineHeight: 18,
-  },
   warn: {
-    height: 42,
-    backgroundColor: colors.whiteTwo,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    marginTop: 16,
-    paddingLeft: 12,
+    backgroundColor: colors.backGrey,
+    paddingVertical: 16,
+    paddingLeft: 16,
+    borderRadius: 3,
+    flexDirection: 'row',
+    width: '100%',
   },
   info: {
-    ...appStyles.normal12Text,
+    ...appStyles.normal14Text,
     textAlign: 'left',
     color: colors.warmGrey,
-    lineHeight: 18,
-    marginBottom: 3,
+    lineHeight: 22,
   },
   msg: {
     ...appStyles.normal16Text,
@@ -85,7 +80,6 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     textAlign: 'center',
     textAlignVertical: 'top',
-    height: 120,
     paddingTop: 0,
     paddingBottom: 0,
     padding: 0,
@@ -98,37 +92,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   bg: {
-    height: 420,
+    height: 224,
     flexDirection: 'row',
     alignItems: 'flex-end',
   },
   msgBox: {
     flex: 1,
-    height: 217,
     margin: 20,
-    paddingTop: 50,
-    paddingHorizontal: 40,
-  },
-  arrowLeft: {
-    position: 'absolute',
-    bottom: 116,
-    left: 30,
-  },
-  arrowRight: {
-    position: 'absolute',
-    bottom: 116,
-    right: 30,
+    paddingTop: 16,
+    paddingHorizontal: 16,
+    backgroundColor: colors.white,
+    borderRadius: 3,
   },
   infoBox: {
     paddingHorizontal: 20,
-    paddingTop: 30,
-    paddingBottom: 40,
-    backgroundColor: colors.whiteTwo,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: colors.black,
-    marginVertical: 20,
+    paddingVertical: 40,
+    backgroundColor: colors.backGrey,
   },
   thickDivider: {
     height: 10,
@@ -146,6 +125,11 @@ const styles = StyleSheet.create({
     ...appStyles.normal16Text,
     lineHeight: 26,
     letterSpacing: -0.5,
+  },
+  confirm: {
+    height: 52,
+    backgroundColor: colors.clearBlue,
+    marginBottom: 20,
   },
 });
 
@@ -196,20 +180,21 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
     if (!isIOS && !deviceModel.startsWith('SM')) return [KAKAO];
     return [KAKAO, MESSAGE];
   }, [deviceModel]);
-  const bgImages = useMemo(
-    () => (promotion.gift.bg || []).filter((v) => v?.image),
-    [promotion.gift.bg],
-  );
+  const bgImages = useMemo(() => promotion.gift.bg || [], [promotion.gift.bg]);
 
   const {mainSubs} = route.params || {};
-  const [msg, setMsg] = useState(i18n.t('gift:default'));
+  const [msg, setMsg] = useState(i18n.t('gift:default0'));
   const [num, setNum] = useState(0);
-  const msgRef = useRef();
+  const [cardHeight, setCardHeight] = useState(120);
   const [toastPending, setToastPending] = useState(false);
   const [showSnackBar, setShowSnackbar] = useState(false);
   const [checked, setChecked] = useState(methodList[0]);
   const [showModal, setShowModal] = useState(false);
   const [gift, setGift] = useState('');
+  const bgColor = useMemo(
+    () => [colors.giftbg1, colors.giftbg2, colors.giftbg3][num],
+    [num],
+  );
 
   useEffect(() => {
     API.Promotion.getStat().then((rsp) => {
@@ -270,9 +255,10 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
 
       const webUrl = `${webViewHost}/gift/${giftId}`;
 
-      const body = `${i18n.t('gift:msgBody1')}${
-        item.prodName
-      }\n${webUrl}${i18n.t('gift:msgBody2')}  `;
+      const body = `${i18n.t('gift:msgBody', {
+        title: item.prodName,
+        link: webUrl,
+      })}`;
 
       try {
         let result = null;
@@ -283,12 +269,17 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         } else {
           // kakao
           const resp = await KakaoSDK.KakaoShareLink.sendCustom({
-            // kakao template 상용: 67017, TB: 70053
-            templateId: isProduction ? 67017 : 70053,
+            // kakao template 상용: old : 67017, new : 115373, TB: 70053
+            templateId: isProduction ? 115373 : 70053,
+
             templateArgs: [
               {
                 key: 'gift',
                 value: giftId,
+              },
+              {
+                key: 'prod',
+                value: item.prodName,
               },
             ],
           });
@@ -309,11 +300,14 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
 
   const info = useCallback(
     () => (
-      <View>
+      <View style={{paddingRight: 20}}>
         {Array.from({length: 5}, (_, i) => i + 1).map((v) => (
-          <AppText key={`info${v}`} style={styles.info}>
-            {i18n.t(`gift:info${v}`)}
-          </AppText>
+          <View style={{flexDirection: 'row'}}>
+            <AppText style={styles.info}>{i18n.t('middleDot')}</AppText>
+            <AppText key={`info${v}`} style={styles.info}>
+              {i18n.t(`gift:info${v}`)}
+            </AppText>
+          </View>
         ))}
       </View>
     ),
@@ -327,81 +321,164 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
       <View>
         <AppText style={appStyles.bold18Text}>{i18n.t('gift:method')}</AppText>
         <View style={styles.method}>
-          {methodList.map((v, idx) => (
+          {methodList.map((v, idx, arr) => (
             <Pressable
               key={v}
-              style={[styles.kakao, {marginRight: idx === 0 ? 25 : 0}]}
+              style={[
+                styles.box,
+                {
+                  borderColor:
+                    checked === v ? colors.clearBlue : colors.lightGrey,
+                  backgroundColor:
+                    checked === v ? colors.clearBlue10 : colors.white,
+                  borderRadius: 3,
+                },
+              ]}
               onPress={() => setChecked(v)}>
-              <AppSvgIcon name="btnCheck" focused={checked === v} />
-              <AppText
-                style={[
-                  appStyles.bold16Text,
-                  {color: colors.warmGrey, marginLeft: 8},
-                ]}>
-                {i18n.t(`gift:${v}`)}
-              </AppText>
+              <AppSvgIcon
+                name="checkBox"
+                focused={checked === v}
+                style={{position: 'absolute', left: 16, top: 16}}
+              />
+              <View
+                style={{
+                  alignItems: 'center',
+                }}>
+                <AppSvgIcon
+                  name={v === KAKAO ? 'kakaoIcon' : 'smsIcon'}
+                  focused={checked === v}
+                />
+                <AppText
+                  style={[
+                    appStyles.normal16Text,
+                    {color: colors.black, marginTop: 8},
+                  ]}>
+                  {i18n.t(`gift:${v}`)}
+                </AppText>
+              </View>
             </Pressable>
           ))}
+          {methodList.length <= 1 && <View style={{flex: 1, marginLeft: 30}} />}
         </View>
-        <AppText key="info" style={styles.methodInfo}>
-          {i18n.t(`gift:${checked}Info`)}
-        </AppText>
         <View key="warn" style={styles.warn}>
-          <AppText style={appStyles.normal12Text}>
-            {i18n.t(`gift:warn`)}
+          <AppSvgIcon name="warnGrey20" style={{marginRight: 8, top: 1}} />
+
+          <AppText
+            style={[
+              appStyles.normal14Text,
+              {lineHeight: 22, flex: 1, paddingRight: 16},
+            ]}>
+            {i18n.t(`gift:warn:${checked}`)}
           </AppText>
         </View>
       </View>
     );
   }, [checked, methodList]);
 
+  const onPressCard = useCallback(
+    (key: number) => {
+      setNum(key);
+      if (
+        [
+          i18n.t('gift:default0'),
+          i18n.t('gift:default1'),
+          i18n.t('gift:default2'),
+        ].includes(msg)
+      )
+        setMsg(i18n.t(`gift:default${key}`));
+    },
+    [msg],
+  );
+
+  const renderSelectDesign = useCallback(
+    () => (
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          gap: 8,
+          marginTop: 16,
+          marginBottom: 24,
+        }}>
+        <AppButton
+          iconName="giftImage1"
+          style={{}}
+          onPress={() => onPressCard(0)}
+          checked={num === 0}
+        />
+        <AppButton
+          iconName="giftImage2"
+          style={{}}
+          onPress={() => onPressCard(1)}
+          checked={num === 1}
+        />
+        <AppButton
+          iconName="giftImage3"
+          style={{}}
+          onPress={() => onPressCard(2)}
+          checked={num === 2}
+        />
+      </View>
+    ),
+    [num, onPressCard],
+  );
+
+  const handleContentSizeChange = (contentSize: any) => {
+    const {height} = contentSize;
+
+    if (height <= 89) setCardHeight(120);
+    else if (height <= 119) setCardHeight(150);
+    else setCardHeight(180);
+  };
+
   const cardDesign = useCallback(
     () => (
-      <ImageBackground
-        style={styles.bg}
-        resizeMode="stretch"
-        imageStyle={{aspectRatio: 375 / 420}}
-        source={{
-          uri: API.default.httpImageUrl(bgImages[num]?.image).toString(),
-        }}>
-        <View style={{flexDirection: 'row'}}>
-          <View style={styles.msgBox}>
+      <View>
+        <ImageBackground
+          style={styles.bg}
+          resizeMode="stretch"
+          imageStyle={{
+            aspectRatio: 335 / 224,
+            marginHorizontal: 20,
+            borderTopLeftRadius: 3,
+            borderTopRightRadius: 3,
+          }}
+          source={{
+            uri: API.default.httpImageUrl(bgImages[num]?.image).toString(),
+          }}
+        />
+        <View
+          style={{
+            flexDirection: 'row',
+            backgroundColor: bgColor,
+            marginHorizontal: 20,
+            borderBottomRightRadius: 3,
+            borderBottomLeftRadius: 3,
+          }}>
+          <View style={{...styles.msgBox, height: cardHeight}}>
             <AppTextInput
               multiline
-              ref={msgRef}
+              // ref={msgRef}
               value={msg}
               onChangeText={(txt) => {
-                if (numberOfLines(txt) < 4) setMsg(txt);
+                setMsg(txt);
               }}
-              scrollEnabled={false}
+              scrollEnabled
               maxLength={80}
-              numberOfLines={4}
-              defaultValue={msg}
+              // defaultValue={msg}
               style={styles.msg}
+              onContentSizeChange={(e) =>
+                handleContentSizeChange(e.nativeEvent.contentSize)
+              }
             />
             <AppText style={styles.msgLength}>
               {`${msg.length} ${i18n.t('gift:maxLength')}`}
             </AppText>
           </View>
-
-          {num > 0 && (
-            <AppButton
-              style={styles.arrowLeft}
-              iconName="arrowLeft"
-              onPress={() => setNum(num - 1)}
-            />
-          )}
-          {num < bgImages.length - 1 && (
-            <AppButton
-              style={styles.arrowRight}
-              iconName="arrowRight24"
-              onPress={() => setNum(num + 1)}
-            />
-          )}
         </View>
-      </ImageBackground>
+      </View>
     ),
-    [bgImages, msg, num],
+    [bgColor, bgImages, cardHeight, msg, num],
   );
 
   return (
@@ -412,8 +489,17 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
       <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
         style={styles.container}>
+        <AppText
+          style={[
+            appStyles.bold18Text,
+            {marginHorizontal: 20, marginBottom: 16, marginTop: 24},
+          ]}>
+          {i18n.t('gift:subtitle')}
+        </AppText>
         {cardDesign()}
-        <View style={{marginVertical: 30, marginHorizontal: 20}}>
+        {renderSelectDesign()}
+        <View style={styles.thickDivider} />
+        <View style={{marginVertical: 24, marginHorizontal: 20}}>
           <AppText style={appStyles.bold18Text}>
             {i18n.t('gift:giftInfo')}
           </AppText>
@@ -422,13 +508,24 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
           </AppText>
         </View>
         <View style={styles.thickDivider} />
-        <View style={{margin: 20, marginBottom: 30}}>{method()}</View>
+        <View style={{margin: 20, marginBottom: 32}}>{method()}</View>
         <View style={styles.infoBox}>
-          <AppText style={appStyles.bold18Text}>{i18n.t('esim:info')}</AppText>
-          <View style={styles.divider} />
+          <View style={{flexDirection: 'row'}}>
+            <AppSvgIcon name="warnRed24" style={{marginRight: 8}} />
+            <AppText style={appStyles.bold18Text}>
+              {i18n.t('gift:info')}
+            </AppText>
+          </View>
+          <View style={{height: 13, width: '100%'}} />
           {info()}
         </View>
-        <AppActivityIndicator visible={toastPending || pending} />
+        <AppButton
+          style={styles.confirm}
+          title={i18n.t('esim:sendGift')}
+          disabled={methodList.length === 0}
+          onPress={() => sendLink(checked, mainSubs)}
+        />
+        {/* <AppActivityIndicator visible={toastPending || pending} /> */}
       </KeyboardAwareScrollView>
       <AppSnackBar
         visible={showSnackBar}
@@ -436,12 +533,7 @@ const GiftScreen: React.FC<GiftScreenProps> = ({
         textMessage={i18n.t('toast:sendSuccess')}
         bottom={10}
       />
-      <AppButton
-        style={appStyles.confirm}
-        title={i18n.t('esim:sendGift')}
-        disabled={methodList.length === 0}
-        onPress={() => sendLink(checked, mainSubs)}
-      />
+
       <AppModal
         type="info"
         onOkClose={() => {

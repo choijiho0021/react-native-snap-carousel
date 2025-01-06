@@ -11,6 +11,7 @@ export const Toast = {
   COPY_SUCCESS: 'toast:copySuccess',
   FAIL_NETWORK: 'toast:failedNetwork',
   NOT_OPENED: 'toast:failedToOpen',
+  VOUCHER_REGISTER: 'toast:voucherSuccess',
 
   SAVE_LOG_SUCCESS: 'cliLog:save:success',
 };

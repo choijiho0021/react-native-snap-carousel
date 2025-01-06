@@ -18,6 +18,7 @@ import {
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import {StackNavigationProp} from '@react-navigation/stack';
+import Lottie from 'lottie-react-native';
 import {colors} from '@/constants/Colors';
 import Env from '@/environment';
 import {
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     alignSelf: 'flex-start',
     paddingHorizontal: 20,
-    marginTop: isIOS ? 40 : 60,
+    // marginTop: isIOS ? 40 : 60,
     width: '100%',
   },
   checkInfoDel: {
@@ -114,9 +115,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     // letterSpacing: -0.5,
   },
-  headerLogo: {
-    marginVertical: isIOS ? 64 : 80,
-  },
   slideText: {
     ...appStyles.bold14Text,
     lineHeight: 20,
@@ -125,7 +123,6 @@ const styles = StyleSheet.create({
   },
   tailPageTitle: {
     alignItems: 'center',
-    marginTop: 20,
     marginBottom: 48,
   },
   tailNoticeText: {
@@ -205,8 +202,39 @@ const styles = StyleSheet.create({
     color: '#4C64FF',
     alignSelf: 'center',
   },
+  lottiSize: {
+    width: 16,
+    height: 16,
+  },
 });
 
+const dynamicStyle = {
+  // guideOption esimReg checkSetting esimDel
+  // region korea local us
+  headerLogo: (guideOption?: string, region?: string) => {
+    if (isIOS) {
+      if (guideOption === 'checkSetting')
+        return {
+          marginTop: 48,
+          marginBottom: 42,
+        };
+      return {
+        marginVertical: 64,
+      };
+    }
+    if (!isIOS) {
+      if (region === 'us' || guideOption === 'checkSetting')
+        return {
+          marginTop: 64,
+          marginBottom: 34,
+        };
+      return {
+        marginTop: 80,
+        marginBottom: 64,
+      };
+    }
+  },
+};
 type UserGuideScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
   'UserGuideStep'
@@ -287,17 +315,10 @@ const UserGuideScreen = () => {
           style={styles.container}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={[{alignItems: 'center'}, containStyle]}>
-          <View style={{alignItems: 'center', marginTop: 40}}>
+          <View style={{alignItems: 'center', marginTop: 20}}>
             {data?.title}
           </View>
-          <View
-            style={[
-              styles.headerLogo,
-              guideOption === 'checkSetting' && {
-                marginTop: isIOS ? 48 : 80,
-                marginBottom: isIOS ? 42 : 64,
-              },
-            ]}>
+          <View style={dynamicStyle.headerLogo(guideOption, region)}>
             <Image
               source={getImage(getImageList(guideOption, region), data.key)}
               resizeMode="contain"
@@ -351,7 +372,6 @@ const UserGuideScreen = () => {
 
             {data.isLocalBox && (
               <Pressable
-                style={{marginTop: 34}}
                 onPress={() => {
                   setIsCheckLocal(true);
                   carouselRef.current?.snapToNext();
@@ -368,7 +388,12 @@ const UserGuideScreen = () => {
                 },
               ]}>
               <View style={styles.slideGuideBox}>
-                <AppSvgIcon key="threeArrows" name="threeArrows" />
+                <Lottie
+                  autoPlay
+                  loop
+                  source={require('@/assets/images/lottie/arrow.json')}
+                  style={styles.lottiSize}
+                />
                 <AppText style={styles.slideText}>
                   {i18n.t('userGuide:slideLeft')}
                 </AppText>
@@ -559,7 +584,7 @@ const UserGuideScreen = () => {
               style={[
                 styles.row,
                 {
-                  marginTop: 56,
+                  marginTop: 24,
                   alignSelf: 'flex-start',
                   marginHorizontal: 20,
                   alignItems: 'center',
@@ -584,7 +609,7 @@ const UserGuideScreen = () => {
             })}
           </View>
         ) : (
-          <View style={isIOS ? {height: 180} : {height: 166}} />
+          <View style={isIOS ? {height: 180} : {height: 120}} />
         )}
         <View style={styles.contactFrame}>
           <AppText style={styles.contactTitle}>

@@ -449,7 +449,7 @@ const TabNavigator = ({
           ),
         })}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="TalkStack"
         component={loggedIn ? TalkStackComponent : AuthStack}
         options={({route}) => ({
@@ -473,7 +473,7 @@ const TabNavigator = ({
             />
           ),
         })}
-      />
+      /> */}
       <Tab.Screen
         name="MyPageStack"
         listeners={({navigation, route}) => ({

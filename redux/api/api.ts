@@ -100,6 +100,7 @@ const path = {
   gift: {
     content: 'rokebi/gift',
     images: 'rokebi/gift/images',
+    images2: 'rokebi/gift/images/v2',
     web: 'gift',
   },
 
@@ -148,6 +149,8 @@ const path = {
       point: 'rokebi/talk/point',
       voucher: 'rokebi/voucher',
       pointLog: 'rokebi/talk/point/log',
+      voucherLog: 'rokebi/voucher/log',
+      ExpVoucherLog: 'rokebi/voucher/point/log',
     },
     pv: {
       cmiUsage: 'api/v1/pvd/pv/cmi/v2/usage/quota',
@@ -339,10 +342,15 @@ const callHttp = async <T>(
     credentials: 'include',
     // mode: 'no-cors',
   };
-  const {timeout = 40000, ignoreError = false, isJson = true} = option;
+  const {
+    timeout = 40000,
+    ignoreError = false,
+    isJson = true,
+    abortController,
+  } = option;
 
   try {
-    const controller = new AbortController();
+    const controller = abortController || new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
 
     const response: Response = await fetch(url, {
@@ -351,7 +359,7 @@ const callHttp = async <T>(
     });
 
     clearTimeout(id);
-    if (option.abortController && option.abortController.signal.aborted) {
+    if (controller.signal.aborted) {
       console.log('@@@ aborted');
       return failure(E_ABORTED, 'cancelled', 499);
     }

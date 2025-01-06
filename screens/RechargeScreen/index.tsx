@@ -1,5 +1,5 @@
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Pressable,
   SafeAreaView,
@@ -21,10 +21,34 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import utils from '@/redux/api/utils';
 import {PurchaseItem} from '@/redux/models/purchaseItem';
-import {AccountModelState} from '@/redux/modules/account';
+
+import {
+  AccountModelState,
+  AccountAction,
+  actions as accountActions,
+} from '@/redux/modules/account';
 import {actions as cartActions, CartAction} from '@/redux/modules/cart';
 import {actions as orderActions, OrderAction} from '@/redux/modules/order';
 import i18n from '@/utils/i18n';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import TabBar from '../CountryScreen/TabBar';
+import {API} from '@/redux/api';
+import VoucherBottomAlert from './VoucherBottomAlert';
+import RenderChargeAmount from './RenderChargeAmount';
+import AppSvgIcon from '@/components/AppSvgIcon';
+import {actions as modalActions, ModalAction} from '@/redux/modules/modal';
+
+import {
+  actions as toastActions,
+  ToastAction,
+  Toast,
+} from '@/redux/modules/toast';
+import AppModalContent from '@/components/ModalContent/AppModalContent';
+import AppStyledText from '@/components/AppStyledText';
+import VoucherTab from './VoucherTab';
+import api from '@/redux/api/api';
+
+const Tab = createMaterialTopTabNavigator();
 
 const styles = StyleSheet.create({
   buttonBox: {
@@ -39,26 +63,35 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  divider: {
-    marginTop: 32,
-    marginBottom: 5,
-    height: 10,
-    backgroundColor: '#f5f5f5',
-  },
   row: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 20,
-    marginHorizontal: 12.5,
+    marginTop: 16,
+    marginHorizontal: 20,
+    gap: 12,
   },
+  btnBox: {
+    paddingTop: 20,
+    // 그림자..
+    shadowOpacity: 1,
+    backgroundColor: colors.white,
+    shadowColor: 'rgba(166, 168, 172, 0.16)',
+    shadowOffset: {
+      width: 0,
+      height: -8,
+    },
+    shadowRadius: 16,
+    borderStyle: 'solid',
+    borderTopWidth: 1,
+    borderColor: colors.whiteFive,
+    gap: 4,
+  },
+
   button: {
-    // iphon5s windowWidth == 320
-    // width: isDeviceSize('small') ? 130 : 150,
     flex: 1,
-    marginHorizontal: 7.5,
     height: 52,
-    borderRadius: 100,
+    borderRadius: 3,
     backgroundColor: colors.white,
     borderStyle: 'solid',
     borderWidth: 1,
@@ -66,34 +99,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: {
-    ...appStyles.price,
+    ...appStyles.robotoMedium20Text,
     textAlign: 'right',
+    lineHeight: 24,
     color: colors.warmGrey,
-  },
-  rechargeBox: {
-    marginTop: 24,
-    marginHorizontal: 20,
   },
   priceButtonText: {
-    ...appStyles.price,
-    fontSize: 20,
+    ...appStyles.medium18,
     textAlign: 'right',
+    lineHeight: 24,
     color: colors.warmGrey,
   },
-  balance: {
-    ...appStyles.robotoBold28Text,
-    marginTop: 4,
-    color: colors.black,
-    lineHeight: 40,
+  modalText: {
+    ...appStyles.normal16Text,
+    lineHeight: 26,
+    letterSpacing: -0.32,
+    color: colors.warmGrey,
   },
-  currency: {
-    ...appStyles.bold26Text,
+  modalBoldText: {
+    ...appStyles.semiBold16Text,
+    lineHeight: 26,
+    letterSpacing: -0.32,
     color: colors.black,
-    lineHeight: 40,
-    marginRight: 4,
-    marginTop: 4,
   },
 });
+
+type RechargeTabType = 'cash' | 'voucher';
 
 type RechargeScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
@@ -106,8 +137,11 @@ type RechargeScreenProps = {
   account: AccountModelState;
 
   action: {
+    account: AccountAction;
     order: OrderAction;
     cart: CartAction;
+    toast: ToastAction;
+    modal: ModalAction;
   };
 };
 
@@ -127,6 +161,8 @@ const rechargeChoice =
         [40, 50],
       ];
 
+const TEST_OPTION = false;
+
 const RechargeScreen: React.FC<RechargeScreenProps> = ({
   navigation,
   account: {iccid, token, balance = 0},
@@ -135,6 +171,13 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
   // recharge 상품의 SKU는 'rch-{amount}' 형식을 갖는다.
   const [selected, setSelected] = useState(`rch-${rechargeChoice[0][0]}`);
   const [amount, setAmount] = useState(rechargeChoice[0][0]);
+  const [voucherCode, setVoucherCode] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
+  const [voucherType, setVoucherType] = useState({
+    title: '',
+    amount: 0,
+    expireDesc: '',
+  });
 
   useEffect(() => {
     return () => {
@@ -143,6 +186,65 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
       }
     };
   }, [action.order, iccid, token]);
+
+  const registerVoucher = useCallback(() => {
+    API.Account.patchVoucherPoint({
+      iccid,
+      token,
+      sign: 'register',
+      code: voucherCode,
+    }).then((rsp) => {
+      if (rsp?.result === api.E_NETWORK_FAILED) {
+        // 네트워크 오류 - 팝업 미출력
+        return;
+      }
+      if (rsp?.result === 0) {
+        action.toast.push({
+          msg: Toast.VOUCHER_REGISTER,
+          toastIcon: 'bannerMarkToastSuccess',
+        });
+        action.account.getAccount({iccid, token});
+        navigation.popToTop();
+        navigation.navigate('MyPageStack', {
+          screen: 'CashHistory',
+          initial: false,
+        });
+      } else {
+        action.modal.renderModal(() => (
+          <AppModalContent
+            type="info2"
+            buttonBoxStyle={{
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            okButtonStyle={{marginBottom: 1}}
+            onOkClose={() => {
+              action.modal.closeModal();
+            }}>
+            <View style={{marginLeft: 30}}>
+              <AppStyledText
+                text={i18n.t(
+                  rsp?.result === 3205
+                    ? 'esim:recharge:voucher:regist:alreadyUsed'
+                    : `esim:recharge:voucher:regist:fail`,
+                )}
+                textStyle={styles.modalText}
+                format={{b: styles.modalBoldText}}
+              />
+            </View>
+          </AppModalContent>
+        ));
+      }
+    });
+  }, [
+    action.account,
+    action.modal,
+    action.toast,
+    iccid,
+    navigation,
+    token,
+    voucherCode,
+  ]);
 
   const onSubmit = useCallback(() => {
     if (selected) {
@@ -173,7 +275,8 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
         {value.map((v) => {
           const key = `rch-${v}`;
           const checked = key === selected;
-          const color = checked ? colors.clearBlue : colors.warmGrey;
+          const fontColor = checked ? colors.white : colors.black;
+          const backgroundColor = checked ? colors.clearBlue : colors.white;
 
           return (
             <Pressable
@@ -184,12 +287,16 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
               }}
               style={[
                 styles.button,
-                {borderColor: checked ? colors.clearBlue : colors.lightGrey},
+                {
+                  borderColor: checked ? colors.clearBlue : colors.lightGrey,
+                  borderWidth: checked ? 0 : 1,
+                  backgroundColor,
+                },
               ]}>
               <AppPrice
                 style={styles.buttonBox}
-                balanceStyle={[styles.buttonText, {color}]}
-                currencyStyle={[styles.priceButtonText, {color}]}
+                balanceStyle={[styles.buttonText, {color: fontColor}]}
+                currencyStyle={[styles.priceButtonText, {color: fontColor}]}
                 price={utils.toCurrency(v, esimCurrency)}
               />
             </Pressable>
@@ -200,42 +307,100 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
     [selected],
   );
 
+  const renderProdType = useCallback(
+    (key: RechargeTabType) => () => {
+      return key === 'cash' ? (
+        <>
+          <ScrollView>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginTop: 32,
+                marginLeft: 20,
+                gap: 6,
+              }}>
+              <AppSvgIcon style={{marginTop: 1}} name="lightningCashIcon" />
+              <AppText style={[appStyles.bold18Text, {lineHeight: 24}]}>
+                {i18n.t('esim:recharge:cash')}
+              </AppText>
+            </View>
+            <View style={{marginBottom: 40}}>
+              {rechargeChoice.map(rechargeButton)}
+            </View>
+          </ScrollView>
+          <View>
+            <View style={styles.btnBox}>
+              <RenderChargeAmount amount={amount} balance={balance} />
+              <AppButton
+                title={i18n.t('esim:recharge:cash:btn')}
+                titleStyle={[appStyles.medium18, {color: colors.white}]}
+                disabled={_.isEmpty(selected)}
+                onPress={() => onSubmit()}
+                style={styles.confirm}
+                type="primary"
+              />
+            </View>
+          </View>
+        </>
+      ) : (
+        <VoucherTab
+          setShowAlert={setShowAlert}
+          setVoucherType={setVoucherType}
+          amount={voucherType.amount}
+          voucherCode={voucherCode}
+          setVoucherCode={setVoucherCode}
+        />
+      );
+    },
+    [
+      amount,
+      balance,
+      onSubmit,
+      rechargeButton,
+      selected,
+      voucherCode,
+      voucherType.amount,
+    ],
+  );
+  const renderSelectedPane = useCallback(() => {
+    return (
+      <Tab.Navigator
+        initialRouteName="cash"
+        tabBar={(props) => <TabBar {...props} />}
+        sceneContainerStyle={{backgroundColor: colors.white}}>
+        {['cash', 'voucher'].map((k) => (
+          <Tab.Screen
+            key={k}
+            name={k}
+            options={{
+              lazy: true,
+              title: i18n.t(`mypage:charge:${k}`),
+              swipeEnabled: false,
+            }}>
+            {renderProdType(k)}
+          </Tab.Screen>
+        ))}
+      </Tab.Navigator>
+    );
+  }, [renderProdType]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={appStyles.header}>
         <AppBackButton title={i18n.t('recharge')} />
       </View>
-      <ScrollView>
-        <View style={styles.rechargeBox}>
-          <AppText
-            key="label"
-            style={[appStyles.normal14Text, {textAlign: 'left'}]}>
-            {i18n.t('cashHistory:myBalance')}
-          </AppText>
-          <AppPrice
-            price={{value: balance || 0, currency: esimCurrency}}
-            balanceStyle={styles.balance}
-            currencyStyle={styles.currency}
-          />
-        </View>
 
-        <View style={styles.divider} />
-        <View style={{flex: 1}} />
-        <AppText
-          style={[appStyles.normal16Text, {marginTop: 30, marginLeft: 20}]}>
-          {i18n.t('rch:amount')}
-        </AppText>
-        <View style={{marginBottom: 40}}>
-          {rechargeChoice.map(rechargeButton)}
-        </View>
-      </ScrollView>
-      <AppButton
-        title={i18n.t('rch:recharge')}
-        titleStyle={[appStyles.medium18, {color: colors.white}]}
-        disabled={_.isEmpty(selected)}
-        onPress={onSubmit}
-        style={styles.confirm}
-        type="primary"
+      {renderSelectedPane()}
+      <VoucherBottomAlert
+        visible={showAlert}
+        onClickButton={() => {
+          registerVoucher();
+          setShowAlert(false);
+        }}
+        setVisible={setShowAlert}
+        balance={balance}
+        voucherType={voucherType}
       />
     </SafeAreaView>
   );
@@ -246,7 +411,10 @@ export default connect(
   (dispatch) => ({
     action: {
       cart: bindActionCreators(cartActions, dispatch),
+      account: bindActionCreators(accountActions, dispatch),
       order: bindActionCreators(orderActions, dispatch),
+      toast: bindActionCreators(toastActions, dispatch),
+      modal: bindActionCreators(modalActions, dispatch),
     },
   }),
 )(RechargeScreen);

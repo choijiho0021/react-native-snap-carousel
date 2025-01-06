@@ -8,6 +8,7 @@ import {
   Animated,
   Platform,
 } from 'react-native';
+import {Map as ImmutableMap} from 'immutable';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import moment from 'moment';
@@ -35,7 +36,9 @@ import AppPrice from '@/components/AppPrice';
 import Env from '@/environment';
 import AppButton from '@/components/AppButton';
 import {HomeStackParamList} from '@/navigation/navigation';
-import {windowHeight, windowWidth} from '@/constants/SliderEntry.style';
+import {windowHeight} from '@/constants/SliderEntry.style';
+import {OrderModelState} from '@/redux/modules/order';
+import {useFocusEffect} from '@react-navigation/native';
 
 const {esimCurrency} = Env.get();
 
@@ -213,6 +216,7 @@ type CashHistoryScreenProps = {
   navigation: CashHistoryScreenNavigationProp;
   account: AccountModelState;
   pending: boolean;
+  orders: OrderModelState['orders'];
 
   action: {
     account: AccountAction;
@@ -225,8 +229,15 @@ type OrderType = 'latest' | 'old';
 const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   navigation,
   action,
-  account: {iccid, token, balance, cashHistory = [], cashExpire, expirePt = 0},
-  // pending,
+  orders,
+  account: {
+    iccid,
+    token,
+    balance,
+    cashExpire,
+    expirePt = 0,
+    paymentHistory = [],
+  },
 }) => {
   const [orderType, setOrderType] = useState<OrderType>('latest');
   const [dataFilter, setDataFilter] = useState<string>('A');
@@ -306,53 +317,90 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
     const isAsc = orderType === 'old';
 
     return bReverse(
-      cashHistory.map((elm) => ({
+      paymentHistory.map((elm) => ({
         title: elm.title,
         data: bReverse(applyFilter(elm.data), isAsc),
       })),
       isAsc,
     ).filter((elm: SectionData) => elm.data.length > 0);
-  }, [applyFilter, bReverse, cashHistory, orderType]);
+  }, [applyFilter, bReverse, orderType, paymentHistory]);
 
   const getHistory = useCallback(() => {
-    action.account.getCashHistory({iccid, token});
+    action.account.fetchCashAndVoucherHistory({iccid, token});
     action.account.getCashExpire({iccid, token});
   }, [action.account, iccid, token]);
 
-  useEffect(() => {
-    getHistory();
-  }, [getHistory]);
+  useFocusEffect(
+    React.useCallback(() => {
+      getHistory();
+    }, [getHistory]),
+  );
 
-  const showDetail = useCallback((item: CashHistory) => {
-    const {order_id, expire_dt} = item;
+  const showDetail = useCallback(
+    (item: CashHistory) => {
+      const {order_id, expire_dt} = item;
 
-    if (order_id || expire_dt || ['cash_refund', 'dona'].includes(item?.type)) {
-      return (
-        <View style={{marginLeft: 73}}>
-          {(item.order_id || item.type === 'dona') && (
+      if (item?.type === 'voucher:full_refund') {
+        return (
+          <View style={{marginLeft: 73}}>
             <AppText style={styles.detailText}>
-              {item.order_title || ''}
+              {i18n.t('cashHistory:type:voucher:full_refund:detail')}
             </AppText>
-          )}
-          {item.expire_dt && (
-            <AppText style={styles.detailText}>
-              {i18n.t(`cashHistory:detail:expDate`, {
-                date: item.expire_dt.format('YYYY.MM.DD'),
-              })}
-            </AppText>
-          )}
+          </View>
+        );
+      }
 
-          {item.type === 'cash_refund' && (
-            <AppText style={styles.detailText}>
-              {i18n.t('cashHistory:detail:refund')}
-            </AppText>
-          )}
-        </View>
-      );
-    }
+      if (
+        (order_id && order_id !== '0' && order_id !== 'null') ||
+        expire_dt ||
+        [
+          'cash_refund',
+          'dona',
+          'voucher:refund',
+          'voucher:voucher_add',
+        ].includes(item?.type)
+      ) {
+        let orderTitle = item?.order_title;
 
-    return null;
-  }, []);
+        if (!orderTitle) {
+          const orderItem = orders.get(Number(item.order_id))?.orderItems;
+          orderTitle = `${orderItem?.[0]?.title} ${
+            orderItem?.length > 1 ? `외 ${orderItem.length - 1}건` : ''
+          }`;
+        }
+
+        return (
+          <View style={{marginLeft: 73}}>
+            {((item.order_id && item.order_id !== '0') ||
+              item.type === 'dona') && (
+              <AppText style={styles.detailText}>{orderTitle || ''}</AppText>
+            )}
+            {item.expire_dt && (
+              <AppText style={styles.detailText}>
+                {i18n.t(
+                  item?.type.includes('voucher')
+                    ? 'cashHistory:detail:voucher:expDate'
+                    : 'cashHistory:detail:expDate',
+                  {
+                    date: item.expire_dt.format('YYYY.MM.DD'),
+                  },
+                )}
+              </AppText>
+            )}
+
+            {item.type === 'cash_refund' && (
+              <AppText style={styles.detailText}>
+                {i18n.t('cashHistory:detail:refund')}
+              </AppText>
+            )}
+          </View>
+        );
+      }
+
+      return null;
+    },
+    [orders],
+  );
 
   const renderSectionItem = useCallback(
     ({
@@ -365,8 +413,14 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
       section: SectionData;
     }) => {
       const predate =
-        index > 0 ? section.data[index - 1].create_dt.format('MM.DD') : '';
-      const date = item.create_dt.format('MM.DD');
+        index > 0 ? section.data[index - 1]?.create_dt?.format('MM.DD') : '';
+
+      const date = item?.create_dt
+        ? item.create_dt.format('MM.DD')
+        : moment().format('MM.DD');
+
+      const type = item?.type ? item.type : item?.reason;
+
       // 상품 구매, 캐시 충전, 구매 취소의 경우에만 터치 가능
       const pressable = [
         'cash_deduct',
@@ -374,7 +428,9 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
         'cash_recharge',
         'cash_refund',
         'point_refund',
-      ].includes(item.type);
+        'voucher:payment',
+        'voucher:refund',
+      ].includes(type);
 
       return (
         <Pressable
@@ -397,12 +453,15 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
                   color: colors.black,
                 },
               ]}>
+              {
+                // index 0보다 크면서 predate 있는 경우는 공백으로 처리한다.
+              }
               {index > 0 && predate === date ? '' : date}
             </AppText>
             <View style={{flex: 1}}>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <AppText style={[appStyles.bold16Text, {lineHeight: 30}]}>
-                  {i18n.t(`cashHistory:type:${item.type}`)}
+                  {i18n.t(`cashHistory:type:${type}`)}
                 </AppText>
                 {item.order_id && pressable && (
                   <AppSvgIcon name="rightArrow10" style={{marginLeft: 4}} />
@@ -518,9 +577,6 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
   );
 
   const expirePtModalBody = useCallback(() => {
-    console.log('@@@ modalAnimatedValue : ', modalAnimatedValue);
-
-    // ios 는 50정도 더 높아야한다?? 여러 단말로 확인 필요?
     const modalMarginTop =
       windowHeight -
       (Platform.OS === 'ios' ? 350 : 300) -
@@ -611,7 +667,6 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
       </View>
     );
   }, [
-    modalAnimatedValue,
     expirePt,
     cashExpire,
     beginDragAnimation,
@@ -824,8 +879,9 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 };
 
 export default connect(
-  ({account, status}: RootState) => ({
+  ({account, order, status}: RootState) => ({
     account,
+    orders: order.orders,
     pending:
       status.pending[accountActions.getCashHistory.typePrefix] ||
       status.pending[accountActions.getCashExpire.typePrefix] ||
