@@ -72,8 +72,11 @@ const slice = createSlice({
   name: 'log',
   initialState,
   reducers: {
-    clear: () => {
-      return initialState;
+    clear: (state, action) => {
+      if (action.payload === 'talkLog') state.talkLog = '';
+      else state.log = '';
+
+      return state;
     },
   },
   extraReducers: (builder) => {

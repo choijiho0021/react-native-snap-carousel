@@ -46,11 +46,12 @@ import {
   AccountModelState,
   actions as accountActions,
 } from '@/redux/modules/account';
-import {actions as logActions, LogModelState} from '@/redux/modules/log';
 import {
-  actions as productActions,
-  ProductModelState,
-} from '@/redux/modules/product';
+  actions as logActions,
+  LogAction,
+  LogModelState,
+} from '@/redux/modules/log';
+import {ProductModelState} from '@/redux/modules/product';
 import {
   actions as talkActions,
   TalkAction,
@@ -96,6 +97,7 @@ type RkbTalkProps = {
   action: {
     account: AccountAction;
     talk: TalkAction;
+    log: LogAction;
     toast: ToastAction;
   };
 };
@@ -736,12 +738,14 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
               token,
             }),
           ).then((r) => {
+            if (r?.result === 0) action.log.clear('talkLog');
+
             setVisible(false);
           });
         }
       } else setVisible(false);
     },
-    [realMobile, talkLog, token],
+    [action.log, realMobile, talkLog, token],
   );
 
   return (
@@ -814,7 +818,6 @@ export default connect(
     action: {
       account: bindActionCreators(accountActions, dispatch),
       talk: bindActionCreators(talkActions, dispatch),
-      product: bindActionCreators(productActions, dispatch),
       log: bindActionCreators(logActions, dispatch),
       toast: bindActionCreators(toastActions, dispatch),
     },
