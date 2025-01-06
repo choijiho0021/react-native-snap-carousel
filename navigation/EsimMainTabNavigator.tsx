@@ -239,6 +239,9 @@ function EsimStackComponent() {
 
       <EsimStack.Screen name="TalkReward" component={TalkRewardScreen} />
 
+      <EsimStack.Screen name="Noti" component={NotiScreen} />
+      <EsimStack.Screen name="SimpleText" component={SimpleTextScreen} />
+
       <EsimStack.Screen name="Faq" component={FaqScreen} />
       <EsimStack.Screen
         name="ChargeAgreement"
