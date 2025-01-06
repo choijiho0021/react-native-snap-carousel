@@ -129,8 +129,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [pressed, setPressed] = useState<string>();
 
   const [refreshing, setRefreshing] = useState(false);
-  const [visible, setVisible] = useState(true);
-  // const testNumber = '07079190190';
+  const [visible, setVisible] = useState(false);
   const emgOn = useMemo(
     () => Object.entries(emg || {})?.filter(([k, v]) => v === '1'),
     [emg],
