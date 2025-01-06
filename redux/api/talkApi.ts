@@ -175,14 +175,6 @@ const getPointHistory = ({
   );
 };
 
-const toReview = (res) => {
-  if (res) {
-    return api.success([{...res}]);
-  }
-
-  return api.failure(api.E_NOT_FOUND, 'failed');
-};
-
 const addTalkReview = ({
   mobile,
   star,
@@ -204,7 +196,9 @@ const addTalkReview = ({
       headers: api.withToken(token, 'json'),
       body: JSON.stringify({mobile, star, cont, log}),
     },
-    toReview,
+    (resp) => {
+      return resp;
+    },
   );
 };
 
