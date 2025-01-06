@@ -103,7 +103,7 @@ const CliLogModal: React.FC<CliLogModalProps> = ({
           resp.result === 0 ? 'bannerMarkToastSuccess' : 'bannerMarkToastError',
       });
     }
-    action.log.clear();
+    action.log.clear('log');
   }, [action.log, action.toast, log.log, mobile]);
 
   return (

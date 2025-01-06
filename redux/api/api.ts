@@ -144,6 +144,7 @@ const path = {
       config: 'rokebi/config',
       noti: 'rokebi/noti',
       talk: 'rokebi/talk',
+      review: 'rokebi/review/talk',
       point: 'rokebi/talk/point',
       voucher: 'rokebi/voucher',
       pointLog: 'rokebi/talk/point/log',

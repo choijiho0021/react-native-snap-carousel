@@ -47,10 +47,17 @@ import {
   actions as accountActions,
 } from '@/redux/modules/account';
 import {
+  actions as logActions,
+  LogAction,
+  LogModelState,
+} from '@/redux/modules/log';
+import {ProductModelState} from '@/redux/modules/product';
+import {
   actions as talkActions,
   TalkAction,
   TalkModelState,
 } from '@/redux/modules/talk';
+
 import {
   actions as toastActions,
   Toast,
@@ -59,6 +66,7 @@ import {
 import i18n from '@/utils/i18n';
 import {useInterval} from '@/utils/useInterval';
 import BetaModalBox from './component/BetaModalBox';
+import CallReviewModal from './component/CallReviewModal';
 import PhoneCertBox from './component/PhoneCertBox';
 import TalkMain from './component/TalkMain';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
@@ -86,17 +94,30 @@ type RkbTalkProps = {
   account: AccountModelState;
   talk: TalkModelState;
   product: ProductModelState;
+  log: LogModelState;
   action: {
     account: AccountAction;
     talk: TalkAction;
+    log: LogAction;
     toast: ToastAction;
   };
 };
 
 const RkbTalk: React.FC<RkbTalkProps> = ({
   account: {realMobile, iccid, token},
-  talk: {called, tariff, emg, tooltip, ccode, terminateCall, isReceivedBeta},
+  talk: {
+    called,
+    tariff,
+    emg,
+    tooltip,
+    ccode,
+    terminateCall,
+    isReceivedBeta,
+    beta,
+    totalCall,
+  },
   product: {rule},
+  log: {talkLog},
   navigation,
   action,
 }) => {
@@ -116,7 +137,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [pressed, setPressed] = useState<string>();
 
   const [refreshing, setRefreshing] = useState(false);
-  // const testNumber = '07079190190';
+  const [visible, setVisible] = useState(false);
   const emgOn = useMemo(
     () => Object.entries(emg || {})?.filter(([k, v]) => v === '1'),
     [emg],
@@ -134,6 +155,17 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   }, [duration, maxTime, sessionState]);
 
   const isSuccessAuth = useMemo(() => (realMobile || '') !== '', [realMobile]);
+
+  // beta service on, 통화 종료시, 1/3 확률로 통화품질모달 출력
+  useEffect(() => {
+    if (
+      rule?.talk?.beta === '0' &&
+      sessionState === SessionState.Terminated &&
+      totalCall % 3 === 0
+    ) {
+      setVisible(true);
+    }
+  }, [rule?.talk?.beta, sessionState, totalCall]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -183,6 +215,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       API.TalkApi.getTalkPoint({iccid})
         .then((rsp) => {
           console.log('@@@ point', rsp);
+          utils.tlog(`@@@ point, ${JSON.stringify(rsp)}`);
           if (rsp?.result === 0) {
             setPoint(rsp?.objects?.tpnt);
           }
@@ -227,6 +260,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           break;
         case SessionState.Established:
           // An established session
+          console.log('@@@ bye1');
+          utils.tlog(`@@@ bye1`);
           inviter.bye();
           break;
         case SessionState.Terminating:
@@ -234,9 +269,11 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           console.log(
             '@@@ Cannot terminate a session that is already terminated',
           );
+          utils.tlog(`@@@ Cannot terminate a session`);
           break;
         default:
           console.log('unknown state');
+          utils.tlog(`@@@ unknown state`);
           break;
       }
       setSessionState(inviter.state);
@@ -251,6 +288,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           rsp?.objects?.channel?.variable?.MAX_CALL_TIME?.match(/^[^:]+/);
 
         console.log('@@@ max call time', m);
+        utils.tlog(`@@@ max call time, ${JSON.stringify(m)}`);
         if (m?.length > 0) setMaxTime(Number(m[0]) / 1000);
         else releaseCall();
       }
@@ -290,12 +328,15 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     // maxTime - duration >= 0 ? 1000 : null,
   );
 
+  // 최초 기본값으로 60초를 넣어줘서 전화 기본적으로 연결되도록 적용
   useEffect(() => {
     if (
       inviter &&
       ((maxTime && maxTime - duration < 0) ||
         (inviter?.state === SessionState.Established && !maxTime))
     ) {
+      console.log('@@@ bye2', maxTime, duration);
+      utils.tlog(`@@@ bye2 ${maxTime}, ${duration}`);
       inviter?.bye();
       setSessionState(inviter?.state);
     }
@@ -314,8 +355,9 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       });
       */
 
+    console.log('@@@ setup', session);
+    utils.tlog(`@@@ setup`);
     setDtmfSession(session);
-    console.log('@@@ setup');
   }, []);
 
   const cleanupMedia = useCallback(() => {
@@ -340,6 +382,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       InCallManager.setForceSpeakerphoneOn(false);
       return false;
     });
+    // Terminated 될 때 callReview Modal 출력 목적
+    setSessionState(SessionState.Initial);
 
     // InCallManager.stop();
     // 저장했던 번호 삭제
@@ -357,6 +401,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           key: inviter?.request?.callId,
           destination: called,
         });
+        console.log('@@@ bye3');
+        utils.tlog(`@@@ bye3 ${called}`);
         inviter.bye();
         cleanupMedia();
 
@@ -407,6 +453,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
             // const target = UserAgent.makeURI('sip:9000@talk.rokebi.com');
             const target = UserAgent.makeURI(`sip:${dest}@talk.rokebi.com`);
             console.log('@@@ target', dest, target);
+            utils.tlog(`@@@ target, ${dest}, ${target}`);
 
             const inv = new Inviter(userAgent, target, {
               sessionDescriptionHandlerOptions: {
@@ -419,6 +466,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
 
             inv.stateChange.addListener((state: SessionState) => {
               console.log(`@@@ inviter session state changed to ${state}`);
+              utils.tlog(`@@@ inviter session state changed to, ${state}`);
 
               setSessionState(state);
 
@@ -458,6 +506,9 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
                 sessionDescriptionHandler.peerConnectionDelegate = {
                   onconnectionstatechange: (state) => {
                     console.log('@@@ conn state changed', state, inv.state);
+                    utils.tlog(
+                      `@@@ conn state changed, ${state}, ${inv.state}`,
+                    );
                     if (inv.state === SessionState.Established) {
                       switch (state) {
                         case 'disconnected':
@@ -465,6 +516,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
                         case 'closed':
                         case 'completed':
                           cleanupMedia();
+                          console.log('@@@ bye4');
+                          utils.tlog(`@@@ bye4, ${dest}`);
                           inv.bye();
                           break;
                         case 'connecting':
@@ -484,10 +537,12 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           .catch((err) => {
             AppAlert.error(`Failed to make call:${err}`);
             console.log('@@@', err);
+            utils.tlog(`Failed to make call:${err}`);
           });
       } else {
         AppAlert.error('User agent not found', '');
         console.log('@@@ user agent not found');
+        utils.tlog(`@@@ user agent not found`);
       }
     },
     [action.talk, cleanupMedia, getMaxCallTime, setupRemoteMedia, userAgent],
@@ -638,7 +693,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
 
       const registerer = new Registerer(ua);
       ua.start().then(() => {
-        console.log('@@@ register');
+        console.log('@@@ register 1');
+        utils.tlog(`@@@ register 1`);
         registerer.register();
       });
       setUserAgent(ua);
@@ -648,6 +704,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       return () => {
         ua.stop().then((state) => {
           console.log('@@@ UA stopped', state);
+          utils.tlog(`@@@ UA stopped`);
         });
       };
     }
@@ -674,6 +731,29 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     }, [action.talk, iccid]),
   );
 
+  const reviewBtnPressed = useCallback(
+    ({k, star, cont}: {k: 'ok' | 'next'; star?: number; cont?: string}) => {
+      if (k === 'ok') {
+        if (token) {
+          Promise.resolve(
+            API.TalkApi.addTalkReview({
+              mobile: realMobile || '',
+              star,
+              cont: cont || '',
+              log: talkLog,
+              token,
+            }),
+          ).then((r) => {
+            if (r?.result === 0) action.log.clear('talkLog');
+
+            setVisible(false);
+          });
+        }
+      } else setVisible(false);
+    },
+    [action.log, realMobile, talkLog, token],
+  );
+
   return (
     <>
       <StatusBar
@@ -689,6 +769,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           {backgroundColor: isSuccessAuth ? 'white' : 'rgba(0, 0, 0, 0.3)'},
         ]}>
         <AppActivityIndicator visible={refreshing || false} />
+        <CallReviewModal visible={visible} onPress={reviewBtnPressed} />
         {isSuccessAuth ? (
           <TalkMain
             terminateCall={terminateCall}
@@ -733,15 +814,17 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
 };
 
 export default connect(
-  ({account, talk, product}: RootState) => ({
+  ({account, talk, product, log}: RootState) => ({
     account,
     talk,
     product,
+    log,
   }),
   (dispatch) => ({
     action: {
       account: bindActionCreators(accountActions, dispatch),
       talk: bindActionCreators(talkActions, dispatch),
+      log: bindActionCreators(logActions, dispatch),
       toast: bindActionCreators(toastActions, dispatch),
     },
   }),

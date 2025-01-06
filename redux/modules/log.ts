@@ -6,11 +6,17 @@ import {retrieveData, storeData} from '@/utils/utils';
 
 export type LogModelState = {
   log: string;
+  talkLog: string;
 };
 
 export const initLog = createAsyncThunk('log/init', async () => {
   const data = await retrieveData('log');
   return trimLog(data);
+});
+
+export const initTalkLog = createAsyncThunk('log/talkInit', async () => {
+  const data = await retrieveData('talkLog');
+  return trimTalkLog(data);
 });
 
 export const appendLog = createAsyncThunk(
@@ -19,6 +25,16 @@ export const appendLog = createAsyncThunk(
     const {log} = getState() as RootState;
 
     await storeData('log', trimLog(log.log + payload));
+    return payload;
+  },
+);
+
+export const appendTalkLog = createAsyncThunk(
+  'log/appendTalkLog',
+  async (payload: string, {dispatch, getState}) => {
+    const {log} = getState() as RootState;
+
+    await storeData('talkLog', trimTalkLog(log.talkLog + payload));
     return payload;
   },
 );
@@ -35,16 +51,32 @@ function trimLog(str: string) {
   return str;
 }
 
+function trimTalkLog(str: string) {
+  if (str.length > 500000) {
+    const slice = str.slice(-500000);
+    const index = slice.indexOf('$$$');
+    if (index !== -1) {
+      return slice.slice(index - 500000);
+    }
+    return slice.slice(-500000);
+  }
+  return str;
+}
+
 const initialState: LogModelState = {
   log: '',
+  talkLog: '',
 };
 
 const slice = createSlice({
   name: 'log',
   initialState,
   reducers: {
-    clear: () => {
-      return initialState;
+    clear: (state, action) => {
+      if (action.payload === 'talkLog') state.talkLog = '';
+      else state.log = '';
+
+      return state;
     },
   },
   extraReducers: (builder) => {
@@ -53,6 +85,12 @@ const slice = createSlice({
     });
     builder.addCase(appendLog.fulfilled, (state, action) => {
       state.log = trimLog(state.log + action.payload);
+    });
+    builder.addCase(initTalkLog.fulfilled, (state, action) => {
+      state.talkLog = action.payload;
+    });
+    builder.addCase(appendTalkLog.fulfilled, (state, action) => {
+      state.talkLog = trimTalkLog(state.talkLog + action.payload);
     });
   },
 });

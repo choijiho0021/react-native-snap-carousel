@@ -11,7 +11,11 @@ import {Currency, CurrencyCode} from './productApi';
 import {urlParamObj} from '@/redux/modules/link';
 import {parseJson} from '@/utils/utils';
 import store from '@/store';
-import {appendLog, actions as LogActions} from '@/redux/modules/log';
+import {
+  appendLog,
+  actions as LogActions,
+  appendTalkLog,
+} from '@/redux/modules/log';
 
 const {esimCurrency} = Env.get();
 const dateTimeFmt = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})*$/;
@@ -394,6 +398,12 @@ export const log = (str: string) => {
   store.dispatch(appendLog(`$$$${moment().tz('Asia/Seoul').format()} :${str}`));
 };
 
+export const tlog = (str: string) => {
+  store.dispatch(
+    appendTalkLog(`$$$${moment().tz('Asia/Seoul').format()} :${str}`),
+  );
+};
+
 export default {
   fontScaling,
   numberToCommaString,
@@ -426,4 +436,5 @@ export default {
   cmpMomentAsc,
   cmpMomentDesc,
   log,
+  tlog,
 };

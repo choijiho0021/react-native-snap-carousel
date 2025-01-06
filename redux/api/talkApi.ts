@@ -147,7 +147,7 @@ const getPointHistory = ({
   type,
 }: {
   iccid: string;
-  token?: string;
+  token: string;
   sort?: string; // asc | desc
   type?: HistType; // add | deduct (default: 조회)
 }) => {
@@ -175,6 +175,33 @@ const getPointHistory = ({
   );
 };
 
+const addTalkReview = ({
+  mobile,
+  star,
+  cont,
+  log,
+  token,
+}: {
+  mobile?: string;
+  star?: number;
+  cont?: string;
+  log?: string;
+  token: string;
+}) => {
+  return api.callHttp(
+    `${api.httpUrl(api.path.rokApi.rokebi.review)}?_format=json`,
+
+    {
+      method: 'POST',
+      headers: api.withToken(token, 'json'),
+      body: JSON.stringify({mobile, star, cont, log}),
+    },
+    (resp) => {
+      return resp;
+    },
+  );
+};
+
 export default {
   getChannelInfo,
   getTalkPoint,
@@ -186,4 +213,5 @@ export default {
   getCheckFirstReward,
   getCheckBetaReward,
   getRatePerMinute,
+  addTalkReview,
 };
