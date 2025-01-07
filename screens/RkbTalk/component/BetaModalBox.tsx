@@ -195,7 +195,7 @@ const BetaModalBox: React.FC<BetaModalBoxProps> = ({onPress, amount}) => {
           {gradientView()}
           <AppButton
             style={styles.okButton}
-            title={i18n.t('ok')}
+            title={i18n.t('talk:beta:modal:join')}
             onPress={onPress}
           />
         </View>
