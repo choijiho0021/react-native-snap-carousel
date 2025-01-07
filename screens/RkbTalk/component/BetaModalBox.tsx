@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 8,
     borderColor: colors.line,
     shadowColor: colors.black8,
-    height: smallDevice ? 500 : 633, // 500
+    height: '100%',
     bottom: 0,
     width: '100%',
     alignItems: 'flex-end',
@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
   },
   modalIcon: {
     justifyContent: 'center',
+    alignItems: 'center',
     marginVertical: 20,
   },
   pointView: {
@@ -69,7 +70,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.backGrey,
-    marginBottom: 16,
   },
   pointGreenText: {
     ...appStyles.normal16Text,
@@ -77,6 +77,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     lineHeight: 24,
     marginLeft: 2,
+  },
+  iconBox: {
+    flex: 1,
+    justifyContent: 'center',
   },
   subBoldText: {
     ...appStyles.bold14Text,
@@ -87,6 +91,11 @@ const styles = StyleSheet.create({
     ...appStyles.normal14Text,
     color: colors.warmGrey,
     lineHeight: 20,
+  },
+  content: {
+    justifyContent: 'flex-end',
+    height: 130,
+    marginBottom: 15,
   },
   okButton: {
     alignItems: 'center',
@@ -159,7 +168,7 @@ const BetaModalBox: React.FC<BetaModalBoxProps> = ({onPress, amount}) => {
 
   const content = useCallback(() => {
     return (
-      <View style={{flex: 1, height: 140}}>
+      <View style={styles.content}>
         <AppText style={styles.subBoldText}>
           {i18n.t('talk:beta:modal:sub6')}
           <AppText style={styles.subText}>
@@ -174,30 +183,41 @@ const BetaModalBox: React.FC<BetaModalBoxProps> = ({onPress, amount}) => {
     return (
       <View style={styles.linear}>
         <LinearGradient
-          colors={[colors.white, 'rgba(255,255,255,0)']} // 위는 흰색, 아래는 투명
+          colors={['rgba(255, 255, 255, 0.5)', colors.white]}
           style={styles.gradient}
         />
       </View>
     );
   }, []);
 
+  const joinButton = useCallback(() => {
+    return (
+      <>
+        {smallDevice && gradientView()}
+        <View style={{height: 15, backgroundColor: colors.white}} />
+        <AppButton
+          style={styles.okButton}
+          title={i18n.t('talk:beta:modal:join')}
+          onPress={onPress}
+        />
+      </>
+    );
+  }, [gradientView, onPress]);
+
   return (
     <View style={{flex: 1}}>
       <SafeAreaView key="modal" style={styles.storeBox}>
         <View style={styles.modalMargin}>
           {head()}
-          <ScrollView style={smallDevice && {height: 333}}>
-            {title()}
-            <AppIcon style={styles.modalIcon} name="imgTalkModalS" />
-            {pointBox()}
+          <ScrollView contentContainerStyle={{flexGrow: 1}}>
+            <View style={styles.iconBox}>
+              {title()}
+              <AppIcon style={styles.modalIcon} name="imgTalkModalS" />
+              {pointBox()}
+            </View>
             {content()}
           </ScrollView>
-          {gradientView()}
-          <AppButton
-            style={styles.okButton}
-            title={i18n.t('talk:beta:modal:join')}
-            onPress={onPress}
-          />
+          {joinButton()}
         </View>
       </SafeAreaView>
     </View>
