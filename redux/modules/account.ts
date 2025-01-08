@@ -27,6 +27,8 @@ import {actions as cartActions} from './cart';
 import Env from '@/environment';
 import userApi from '@/redux/api/userApi';
 import {CallHistory, PointHistory} from './talk';
+import {VoucherHistory} from '../api/voucherApi';
+import moment from 'moment';
 
 const {cachePrefix, scheme, apiUrl} = Env.get();
 
@@ -53,9 +55,9 @@ const getCashHistory = createAsyncThunk(
   API.Account.getCashHistory,
 );
 
-const getVoucher = createAsyncThunk(
-  'account/getVoucher',
-  API.VoucherApi.getVoucherPoint,
+const getVoucherHistory = createAsyncThunk(
+  'account/getVoucherHistory',
+  API.VoucherApi.getVoucherHistory,
 );
 
 const getCashExpire = createAsyncThunk(
@@ -135,6 +137,31 @@ const changePictureWithToast = reflectWithToast(
   Toast.NOT_UPDATED,
 );
 
+export const fetchCashAndVoucherHistory = createAsyncThunk(
+  'account/fetchCashAndVoucherHistory',
+  async ({iccid, token}: {iccid: string; token: string}, {dispatch}) => {
+    // 두 API 호출을 병렬로 실행
+    const [cashResponse, voucherResponse] = await Promise.all([
+      dispatch(getCashHistory({iccid, token})),
+      dispatch(getVoucherHistory({iccid, token})),
+    ]);
+    const {result: cashResult, objects: cashObjects} =
+      cashResponse.payload as ApiResult<CashHistory>;
+    const {result: voucherResult, objects: voucherObjects} =
+      voucherResponse.payload as ApiResult<VoucherHistory>;
+
+    let combinedObjects: (CashHistory | VoucherHistory)[] = [];
+
+    if (cashResult === 0 && voucherResult === 0) {
+      combinedObjects = [...cashObjects, ...voucherObjects];
+
+      return {objects: combinedObjects, result: cashResult};
+    }
+
+    return {result: cashResult !== 0 ? cashResult : voucherResult};
+  },
+);
+
 // * CashHistory type
 // * - cash_add : 프로모션으로 캐시 추가
 // * - cash_recharge : 충전 구매
@@ -148,7 +175,7 @@ const changePictureWithToast = reflectWithToast(
 export type Fortune = {text: string; num: number; count: number};
 export type SectionData = {
   title: string;
-  data: CashHistory[] | PointHistory[] | CallHistory[];
+  data: CashHistory[] | PointHistory[] | CallHistory[] | VoucherHistory[];
 };
 export type CashHistory = {
   account_id: string;
@@ -205,12 +232,16 @@ export type AccountModelState = {
   isFirst?: boolean;
   cashHistory?: SectionData[];
   cashExpire?: CashExpire[];
+  voucherExpire?: CashExpire[];
+
   isNewUser?: boolean;
   expirePt?: number;
   coupon?: RkbCoupon[];
   fortune?: Fortune;
   realMobile?: string;
   tpnt?: number;
+  voucherHistory?: SectionData[];
+  paymentHistory?: SectionData[];
 };
 
 export type AccountAuth = {
@@ -218,6 +249,18 @@ export type AccountAuth = {
   pass?: string;
   token?: string;
   realMobile?: string;
+};
+
+const parsePaymentType = (type: string) => {
+  switch (type) {
+    case 'voucher:payment':
+      return 'point_deduct';
+
+    case 'cash_deduct':
+      return 'point_deduct';
+    default:
+      return type;
+  }
 };
 
 export const isFortuneHistory = (fortune: Fortune) => {
@@ -601,27 +644,30 @@ const slice = createSlice({
       const {result, objects} = action.payload;
 
       if (result === 0 && objects && objects.length > 0) {
-        const group = objects.reduce((acc, cur) => {
-          const year = cur.create_dt?.format('YYYY');
-          const idx = acc.findIndex((elm) => elm.title === year);
+        const groupMap = new Map<string, Map<string, CashHistory>>();
 
-          if (idx <= -1) {
-            acc.push({title: year, data: [cur] as CashHistory[]});
-          } else {
-            const orderidx = acc[idx].data.findIndex(
-              (elm) =>
-                elm.order_id &&
-                elm.order_id === cur.order_id &&
-                elm.type === cur.type,
-            );
-            if (orderidx >= 0) {
-              acc[idx].data[orderidx].diff += cur.diff;
-            } else {
-              acc[idx].data?.push(cur);
-            }
+        objects.forEach((cur) => {
+          const year = cur.create_dt?.format('YYYY');
+          if (!year) return;
+
+          if (!groupMap.has(year)) {
+            groupMap.set(year, new Map());
           }
-          return acc;
-        }, [] as SectionData[]);
+
+          const yearData = groupMap.get(year);
+          const uniqueKey = `${cur.order_id}-${cur.type}`;
+
+          if (yearData?.has(uniqueKey)) {
+            yearData.get(uniqueKey)!.diff += cur.diff;
+          } else {
+            yearData?.set(uniqueKey, {...cur});
+          }
+        });
+
+        const group = Array.from(groupMap.entries()).map(([year, dataMap]) => ({
+          title: year,
+          data: Array.from(dataMap.values()),
+        }));
 
         state.cashHistory = group;
       }
@@ -629,10 +675,63 @@ const slice = createSlice({
       return state;
     });
 
-    builder.addCase(getVoucher.fulfilled, (state, action) => {
+    builder.addCase(getVoucherHistory.fulfilled, (state, action) => {
       const {result, objects} = action.payload;
 
-      console.log('@@@@ getVoucher result : ', result, ', objects : ', objects);
+      if (result === 0) {
+        const group = objects?.reduce((acc, cur) => {
+          const year = cur.create_dt.format('YYYY');
+
+          const idx = acc.findIndex((elm) => elm.title === year);
+
+          if (idx <= -1) {
+            acc.push({title: year, data: [cur] as PointHistory[]});
+          } else acc[idx].data?.push(cur);
+
+          return acc;
+        }, [] as SectionData[]);
+
+        state.voucherHistory = group;
+      }
+
+      return state;
+    });
+
+    builder.addCase(fetchCashAndVoucherHistory.fulfilled, (state, action) => {
+      const {result, objects} = action.payload;
+
+      if (result === 0 && objects && objects.length > 0) {
+        objects.sort((a, b) => moment(b.create_dt).diff(moment(a.create_dt)));
+
+        const groupMap = new Map<string, Map<string, CashHistory>>();
+        objects.forEach((cur) => {
+          const year = cur.create_dt?.format('YYYY');
+          if (!year) return;
+
+          if (!groupMap.has(year)) {
+            groupMap.set(year, new Map());
+          }
+
+          const yearData = groupMap.get(year)!;
+          const orderBindKey = `${cur.order_id}-${parsePaymentType(cur.type)}`; // orderId, type
+
+          if (yearData.has(orderBindKey)) {
+            yearData.get(orderBindKey)!.diff += cur.diff;
+          } else {
+            yearData.set(orderBindKey, {...cur});
+          }
+        });
+
+        // Map 데이터를 SectionData[]
+        const group = Array.from(groupMap.entries()).map(([year, dataMap]) => ({
+          title: year,
+          data: Array.from(dataMap.values()),
+        }));
+
+        state.paymentHistory = group;
+      }
+
+      return state;
     });
 
     builder.addCase(getCashExpire.fulfilled, (state, action) => {
@@ -762,13 +861,14 @@ export const actions = {
   getAccount,
   getCashHistory,
   getCashExpire,
-  getVoucher,
+  getVoucherHistory,
   getUserId,
   changePushNoti,
   uploadPicture,
   registerMobile,
   getMyCoupon,
   checkLottery,
+  fetchCashAndVoucherHistory,
 };
 export type AccountAction = typeof actions;
 

@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
 });
 
 export interface AppModalContentProps {
-  type?: 'normal' | 'close' | 'info' | 'redirect';
+  type?: 'normal' | 'close' | 'info' | 'redirect' | 'info2';
   justifyContent?: 'center' | 'flex-end';
   title?: string;
   titleStyle?: TextStyle;
@@ -78,6 +78,7 @@ export interface AppModalContentProps {
   onOkClose?: (v?: string) => void;
   onCancelClose?: () => void;
   bottom?: () => React.ReactNode;
+  buttonBoxStyle?: ViewStyle;
 }
 
 const AppModalContent: React.FC<PropsWithChildren<AppModalContentProps>> = ({
@@ -100,6 +101,7 @@ const AppModalContent: React.FC<PropsWithChildren<AppModalContentProps>> = ({
   onOkClose = () => {},
   onCancelClose = () => {},
   bottom,
+  buttonBoxStyle = {},
 }) => {
   const getButtonType = useCallback(() => {
     switch (type) {
@@ -173,6 +175,35 @@ const AppModalContent: React.FC<PropsWithChildren<AppModalContentProps>> = ({
           </View>
         );
 
+      // TODO : 새롭게 정의된 공통 Alert Modal 구현하기.
+      case 'info2':
+        return (
+          // type == normal or info
+          <View style={[styles.row, buttonStyle]}>
+            <AppButton
+              style={[
+                styles.button,
+                {
+                  backgroundColor: colors.clearBlue,
+                },
+                buttonBoxStyle,
+              ]}
+              disabled={disableOkButton}
+              onPress={onOkClose}
+              title={okButtonTitle}
+              disableBackgroundColor={colors.white}
+              disableColor={colors.warmGrey}
+              titleStyle={[
+                {
+                  ...styles.normalBtnTitle,
+                  color: colors.white,
+                },
+                okButtonStyle,
+              ]}
+            />
+          </View>
+        );
+
       default:
         return (
           // type == normal or info
@@ -205,6 +236,7 @@ const AppModalContent: React.FC<PropsWithChildren<AppModalContentProps>> = ({
     }
   }, [
     buttonBackgroundColor,
+    buttonBoxStyle,
     buttonStyle,
     buttonTitleColor,
     cancelButtonStyle,

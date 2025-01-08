@@ -518,22 +518,39 @@ const lotteryCoupon = ({
   );
 };
 
-export type VoucherSign = 'add' | 'deduct' | 'refund' | 'charge' | 'reward';
+export type VoucherSign =
+  | 'add'
+  | 'deduct'
+  | 'refund'
+  | 'charge'
+  | 'reward'
+  | 'register';
 
 // 임시 테스트용
 const patchVoucherPoint = ({
   iccid,
   token,
   sign,
-  point,
   code,
+  point = 0,
 }: {
   iccid: string;
   token: string;
   sign: VoucherSign;
-  point: number; // 이건 테스트용
   code: string;
+  point?: number;
 }) => {
+  console.log(
+    '@@ json : ',
+    JSON.stringify({
+      sign,
+      code,
+    }),
+  );
+  console.log(
+    "@@@ api.withToken(token, 'json') : ",
+    api.withToken(token, 'json'),
+  );
   return api.callHttp(
     `${api.httpUrl(api.path.rokApi.rokebi.voucher)}/${iccid}?_format=json`,
 
@@ -542,13 +559,28 @@ const patchVoucherPoint = ({
       headers: api.withToken(token, 'json'),
       body: JSON.stringify({
         sign,
-        point,
         code,
+        point,
       }),
     },
     (resp) => {
       return resp;
     },
+  );
+};
+
+const getVoucherType = ({
+  iccid,
+  code,
+}: {
+  iccid?: string;
+  token?: string;
+  code?: string;
+}) => {
+  const query = new URLSearchParams({code, type: 'true'}).toString();
+
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.rokApi.rokebi.voucher)}/${iccid}?${query}`,
   );
 };
 
@@ -569,4 +601,5 @@ export default {
   uploadFortuneImage,
   resetRealMobile,
   patchVoucherPoint,
+  getVoucherType,
 };

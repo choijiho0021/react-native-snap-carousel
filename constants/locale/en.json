@@ -1201,6 +1201,7 @@
   "gift:tip-6": "\u2022 Applies only when the receiver is newly registered user.",
   "gift:btn": "Go Purchase Gifts",
   "gift:alert": "It is already sent <b>as a gift</b>.\nPls, ask her or him to signup ROKEBI App to <b>register the gift</b>. Both the sender and receiver will get {cash} cash!",
+  "gift:info": "선물 전 확인하세요!",
 
   "noti:updateTitle": "New Version Available!",
   "noti:updateOpt": "We improved App for your better experience.\nPlease, enjoy the stable service after new version update.",
@@ -1338,8 +1339,8 @@
   "userGuide:stepsTitle6:galaxy:checkSetting": "설정 > 연결 > SIM 관리자 화면\n하단의 <b>데이터 전환이 OFF</b>인지\n확인해주세요.",
   "userGuide:stepsTitle7:galaxy": "설정 > 연결 > 해외 로밍에서\n<b>데이터 로밍을 ON</b> 해주세요.",
   "userGuide:stepsTitle7:galaxy:localNet": "설정 > 연결 > 해외 로밍에서\n<b>데이터 로밍을 OFF</b> 해주세요.",
-  "userGuide:tipPage7:galaxy": "SKT 고객의 경우, 설정 > 연결 > T 로밍에서 <b>데이터 로밍을 ON</b> 해주세요.",
-  "userGuide:tipPage7:galaxy:localNet": "SKT 고객의 경우, 설정 > 연결 > T 로밍에서 <b>데이터 로밍을 OFF</b> 해주세요.",
+  "userGuide:tipPage7:galaxy": "SKT 고객의 경우, 설정 > T로밍에서 <b>데이터 로밍을 ON</b> 해주세요.",
+  "userGuide:tipPage7:galaxy:localNet": "SKT 고객의 경우, 설정 > T로밍에서 <b>데이터 로밍을 OFF</b> 해주세요.",
   "userGuide:stepsTitle7:galaxy:caution:title": "※미국(로컬) 무제한 상품의 경우!",
   "userGuide:stepsTitle7:galaxy:caution:body": "<b>캐나다·멕시코</b> 방문 예정이라면, 해당 국가 <b>도착 시 설정>연결>해외 로밍에서 데이터 로밍을 ON</b> 해주세요.",
   "userGuide:stepsTitle8:galaxy": "<b>2개의 통신사 수신호</b>가 \n잘 잡히는지 확인해주세요.",
@@ -1540,6 +1541,7 @@
   "talk:beta:modal:sub5": "해드려요!",
   "talk:beta:modal:sub6": "• 베타 테스트란?",
   "talk:beta:modal:sub7": " 정식 런칭 전 서비스의 사용성을 검토하고 지속적으로 모니터링하여 통화 품질을 점검하는 기간이에요.\n• 베타 버전 사용 중 버그가 발생하거나 건의 사항이 있으시면 언제든지 고객센터로 연락주세요! \n• 아래 버튼 클릭 시 베타 테스트 참여를 인지하고 이에 동의하는 것으로 간주됩니다.",
+  "talk:beta:modal:join": "베타 테스트 참여하기",
 
   "talk:review:modal:title": "방금 사용한 통화 품질은 어떠셨나요?",
   "talk:review:modal:placeholder": "의견을 남겨주시면 서비스 품질 개선에 도움이 돼요. (최대 500자 입력 가능)",

@@ -13,8 +13,9 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  ViewStyle,
 } from 'react-native';
-import AppBackButton from '@/components/AppBackButton';
+import LinearGradient from 'react-native-linear-gradient';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import i18n from '@/utils/i18n';
@@ -27,7 +28,6 @@ import AppTextJoin from '@/components/AppTextJoin';
 import {API} from '@/redux/api';
 import AppStyledText from '@/components/AppStyledText';
 import ScreenHeader from '@/components/ScreenHeader';
-import LinearGradient from 'react-native-linear-gradient';
 
 const {width} = Dimensions.get('window');
 
@@ -36,11 +36,10 @@ const SAMLL_BOX_WIDTH = 350;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.whiteTwo,
+    backgroundColor: colors.white,
   },
   whiteContainer: {
     backgroundColor: colors.white,
-    paddingBottom: 64,
   },
   step: {
     width: 76,
@@ -56,28 +55,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.white,
     opacity: 0.7,
-    // backgroundColor: colors.black,
   },
   text: {
-    ...appStyles.semiBold16Text,
+    ...appStyles.semiBold18Text,
     top: 10,
   },
 });
 
 type Step0Props = {
   step: string;
-  marginTop: number;
+  style?: ViewStyle;
 };
 const Step0: React.FC<PropsWithChildren<Step0Props>> = ({
   step,
-  marginTop,
   children,
+  style,
 }) => (
-  <View style={{alignItems: 'center'}}>
-    <View style={[styles.step, {marginTop}]}>
+  <View style={[{alignItems: 'center'}, style]}>
+    <View style={styles.step}>
       <AppText
         style={[
-          appStyles.bold16Text,
+          appStyles.normal16Text,
           {
             flex: 1,
             color: 'white',
@@ -122,7 +120,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
         textStyle={styles.text}
         data={formatText('b', {
           text: i18n.t(key),
-          textStyle: {...appStyles.bold16Text, color: colors.clearBlue},
+          textStyle: {...appStyles.bold18Text, color: colors.clearBlue},
         })}
       />
     ),
@@ -141,7 +139,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
         <View style={styles.whiteContainer}>
           <View key="top">
             <AppIcon name="giftGuideTop" size={[width, (width * 440) / 375]} />
-            <AppText
+            {/* <AppText
               style={{
                 ...appStyles.bold16Text,
                 color: 'white',
@@ -164,7 +162,7 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
                 textAlign: 'center',
               }}>
               {i18n.t('gift:guide1-1')}
-            </AppText>
+            </AppText> */}
           </View>
           <View style={{alignItems: 'center'}}>
             <AppText
@@ -175,18 +173,24 @@ const GiftGuideScreen: React.FC<GiftGuideProps> = ({navigation}) => {
               {i18n.t('gift:guide2-title')}
             </AppText>
           </View>
-          <Step key="1" step="1" marginTop={36}>
+          <Step key="1" step="1" style={{paddingVertical: 32}}>
             {renderText('gift:guide2-1')}
           </Step>
-          <Step key="2" step="2" marginTop={62}>
+          <Step
+            key="2"
+            step="2"
+            style={{backgroundColor: colors.giftGuideBg, paddingVertical: 32}}>
             {renderText('gift:guide2-2-1')}
             {renderText('gift:guide2-2-2')}
           </Step>
-          <Step key="3" step="3" marginTop={62}>
+          <Step key="3" step="3" style={{paddingVertical: 32}}>
             {renderText('gift:guide2-3-1')}
             {renderText('gift:guide2-3-2')}
           </Step>
-          <Step key="4" step="4" marginTop={62}>
+          <Step
+            key="4"
+            step="4"
+            style={{backgroundColor: colors.giftGuideBg, paddingVertical: 32}}>
             {renderText('gift:guide2-4-1')}
             {renderText('gift:guide2-4-2')}
           </Step>

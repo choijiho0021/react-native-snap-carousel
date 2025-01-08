@@ -181,12 +181,10 @@ const updateQty = ({
   orderId,
   orderItemId,
   qty,
-  abortController,
 }: {
   orderId: number;
   orderItemId: number;
   qty: number;
-  abortController: AbortController;
 }) => {
   const url = `${api.httpUrl(api.path.cart)}/${orderId}/items?_format=json`;
   const headers = api.headers('json');
@@ -202,7 +200,6 @@ const updateQty = ({
       body: JSON.stringify(body),
     },
     toCart,
-    {abortController},
   );
 };
 

@@ -135,6 +135,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   [AppCenterReactNativeAnalytics registerWithInitiallyEnabled:true];
   [AppCenterReactNativeCrashes registerWithAutomaticProcessing];
 
+  [FBSDKApplicationDelegate.sharedInstance initializeSDK];
+  
   [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
   
   // Define UNUserNotificationCenter

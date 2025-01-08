@@ -13,6 +13,7 @@ import {
   Platform,
 } from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import Lottie from 'lottie-react-native';
 import {colors} from '@/constants/Colors';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {
@@ -97,6 +98,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     textAlign: 'center',
     letterSpacing: -0.5,
+  },
+  lottiSize: {
+    width: 16,
+    height: 16,
   },
 });
 
@@ -205,7 +210,12 @@ const GlobalUserGuideScreen: React.FC<UserGuideScreenProps> = ({
           </View>
           <View style={styles.slideGuide}>
             <View style={styles.slideGuideBox}>
-              <AppSvgIcon key="leftArrow" name="leftArrow" />
+              <Lottie
+                autoPlay
+                loop
+                source={require('@/assets/images/lottie/arrow.json')}
+                style={styles.lottiSize}
+              />
               <AppText style={{marginLeft: 8}}>
                 {i18n.t('userGuide:slideLeft')}
               </AppText>

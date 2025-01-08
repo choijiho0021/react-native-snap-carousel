@@ -136,7 +136,9 @@ const toOrder = (
         .map((item) => {
           const deductBalance = item.pym
             .filter((value) =>
-              ['rokebi_cash', 'rokebi_point'].includes(value.pg),
+              ['rokebi_cash', 'rokebi_point', 'rokebi_voucher'].includes(
+                value.pg,
+              ),
             )
             .reduce(
               (acc, cur) => acc + (utils.stringToNumber(cur.amt) || 0),

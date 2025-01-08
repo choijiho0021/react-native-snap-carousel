@@ -25,6 +25,7 @@ export const colors = {
   black: '#2c2c2c',
   black92: 'rgba(44,44,44, 0.92)',
   clearBlue: '#2a7ff6',
+  clearBlue10: '2a7ff61A',
   dodgerBlue: '#4f99ff',
   warmGrey: '#777777',
   disabled: '#777777',
@@ -96,4 +97,8 @@ export const colors = {
   deepGreen: '#059a5e',
   gray20: '#333333',
   gold: '#ffe540',
+  giftbg1: '#ffd7b6',
+  giftbg2: '#baaaff',
+  giftbg3: '#ff8b5a',
+  giftGuideBg: '#f2f8f9',
 };

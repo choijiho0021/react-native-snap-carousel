@@ -23,8 +23,6 @@ class NaverTracker: NSObject {
       resolver: @escaping RCTPromiseResolveBlock,
       rejecter: @escaping RCTPromiseRejectBlock
   ) {
-      print("Amount: \(amount)")
-      print("Items: \(items)")
       
       do {
           // items를 [NTrackerConversionItem]로 변환
