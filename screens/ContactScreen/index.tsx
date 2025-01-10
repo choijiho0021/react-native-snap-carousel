@@ -19,6 +19,7 @@ import {
 import {ChannelIO} from 'react-native-channel-plugin';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {bindActionCreators} from 'redux';
+import Lottie from 'lottie-react-native';
 import AppButton from '@/components/AppButton';
 import AppIcon from '@/components/AppIcon';
 import AppModal from '@/components/AppModal';
@@ -146,6 +147,11 @@ const styles = StyleSheet.create({
     height: isDeviceSize('medium') ? 74 : 88,
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  lottiSize: {
+    width: isDeviceSize('small') ? 90 : 100,
+    height: isDeviceSize('small') ? 90 : 100,
+    bottom: 3,
   },
 });
 type MenuItem = {
@@ -318,7 +324,12 @@ const ContactScreen: React.FC<ContactScreenProps> = (props) => {
         <View style={styles.infoContainer}>
           <AppText style={styles.contactInfo}>{i18n.t('contact:info')}</AppText>
           <Pressable onPress={() => setPressCnt((pre) => pre + 1)}>
-            <AppIcon name="imgNotiDokebi" style={{marginRight: 12}} />
+            <Lottie
+              source={require('@/assets/images/lottie/callCenter.json')}
+              autoPlay
+              loop
+              style={styles.lottiSize}
+            />
           </Pressable>
         </View>
 
