@@ -326,8 +326,11 @@ const ProductDetailBody: React.FC<ProductDetailBodyProps> = ({
               <View style={styles.multiApn}>
                 <AppText style={styles.bodyTopBoxCountry}>
                   {prodName
-                    .split(' ')
-                    .filter((item) => !/(무제한|종량제|\d+일)/.test(item))
+                    .split(/ |\]/)
+                    .filter(
+                      (item) =>
+                        !/(무제한|종량제|올데이|\d+일|\[.*?)/.test(item),
+                    )
                     .join(' ')}
                 </AppText>
                 <View style={styles.apnButton}>
