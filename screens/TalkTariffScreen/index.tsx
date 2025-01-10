@@ -142,7 +142,10 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
   const fav = useMemo(
     () =>
       favoriteCountry
-        .map((t) => ({...talk.tariff[t], key: `${talk.tariff[t].key}.f`}))
+        ?.map((t) => ({
+          ...talk.tariff[t],
+          key: `${talk.tariff[t]?.key || ''}.f`,
+        }))
         .filter((t) => !!t),
     [talk.tariff],
   );
@@ -313,7 +316,9 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
           }
           return <AppText style={styles.sectionHeader}>{title}</AppText>;
         }}
-        ListFooterComponent={!searchText ? <Footer /> : null}
+        ListFooterComponent={
+          !searchText && tariffData?.length !== 0 ? <Footer /> : null
+        }
         ListEmptyComponent={<EmptyResult />}
       />
     </SafeAreaView>
