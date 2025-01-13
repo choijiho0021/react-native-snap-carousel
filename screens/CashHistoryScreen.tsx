@@ -364,14 +364,17 @@ const CashHistoryScreen: React.FC<CashHistoryScreenProps> = ({
 
         if (!orderTitle) {
           const orderItem = orders.get(Number(item.order_id))?.orderItems;
-          orderTitle = `${orderItem?.[0]?.title} ${
-            orderItem?.length > 1 ? `외 ${orderItem.length - 1}건` : ''
-          }`;
+
+          orderTitle = orderItem
+            ? `${orderItem?.[0]?.title} ${
+                orderItem?.length > 1 ? `외 ${orderItem.length - 1}건` : ''
+              }`
+            : '';
         }
 
         return (
           <View style={{marginLeft: 73}}>
-            {((item.order_id && item.order_id !== '0') ||
+            {((item.order_id && item.order_id !== '0' && orderTitle) ||
               item.type === 'dona') && (
               <AppText style={styles.detailText}>{orderTitle || ''}</AppText>
             )}
