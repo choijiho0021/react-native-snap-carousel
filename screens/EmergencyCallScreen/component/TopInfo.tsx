@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
   infoBox: {
     flexDirection: 'row',
     backgroundColor: colors.white,
+    borderRadius: 3,
     padding: 16,
     marginBottom: 16,
   },
@@ -45,6 +46,10 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     flex: 1,
     flexWrap: 'wrap',
+  },
+  point: {
+    color: colors.warmGrey,
+    marginHorizontal: 4,
   },
   detailText: {
     flex: 1,
@@ -89,18 +94,14 @@ const TopInfo = () => {
         </View>
 
         <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-          <AppText style={{marginHorizontal: 4}}>
-            {i18n.t('talk:urgent:point')}
-          </AppText>
+          <AppText style={styles.point}>{i18n.t('talk:urgent:point')}</AppText>
           <AppText style={styles.detailText}>
             {i18n.t('talk:urgent:detail1')}
           </AppText>
         </View>
 
         <View style={{flexDirection: 'row'}}>
-          <AppText style={{marginHorizontal: 4}}>
-            {i18n.t('talk:urgent:point')}
-          </AppText>
+          <AppText style={styles.point}>{i18n.t('talk:urgent:point')}</AppText>
           <AppText style={styles.detailText}>
             {i18n.t('talk:urgent:detail2')}
           </AppText>
