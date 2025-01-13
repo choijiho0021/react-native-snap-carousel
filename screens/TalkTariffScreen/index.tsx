@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
     width: 98,
     height: 20,
     justifyContent: 'space-evenly',
+    alignItems: 'center',
   },
   sectionHeader: {
     ...appStyles.medium16,
@@ -80,6 +81,9 @@ const styles = StyleSheet.create({
   },
   tariff: {
     ...appStyles.robotoMedium14Text,
+    width: 46,
+    textAlignVertical: 'center',
+    textAlign: 'center',
     color: colors.blue,
   },
   textFrame: {
