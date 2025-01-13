@@ -122,9 +122,10 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
   connectedView: {
+    height: small ? 69 : 58,
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
   minText: {
     ...appStyles.medium16,
@@ -305,6 +306,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
       <View style={{height: 56, marginTop: 8}}>
         <View style={styles.topView}>
           <View style={{width: 55}} />
+          {/* 연결 전 국가정보 */}
           {ccInfo && (
             <View style={styles.ccRow}>
               <Image
@@ -314,6 +316,24 @@ const TalkMain: React.FC<TalkMainProps> = ({
               />
               <AppText style={[styles.emergency, styles.nation]}>
                 {ccInfo.name}
+              </AppText>
+            </View>
+          )}
+          {/* 연결시 남은 통화 */}
+          {connected && (
+            <View style={styles.connectedView}>
+              {showWarning && (
+                <AppSvgIcon
+                  style={{justifyContent: 'center', alignItems: 'center'}}
+                  name="callWarning"
+                />
+              )}
+              <AppText
+                style={[
+                  styles.minText,
+                  showWarning && {color: colors.redError, marginLeft: 6},
+                ]}>
+                {minInfo}
               </AppText>
             </View>
           )}
@@ -329,23 +349,6 @@ const TalkMain: React.FC<TalkMainProps> = ({
           )}
         </View>
         {ccInfo && getLocalTime()}
-        {connected && (
-          <View style={styles.connectedView}>
-            {showWarning && (
-              <AppSvgIcon
-                style={{justifyContent: 'center', alignItems: 'center'}}
-                name="callWarning"
-              />
-            )}
-            <AppText
-              style={[
-                styles.minText,
-                showWarning && {color: colors.redError, marginLeft: 6},
-              ]}>
-              {minInfo}
-            </AppText>
-          </View>
-        )}
       </View>
       <TalkToolTip
         visible={tooltip}
