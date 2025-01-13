@@ -70,7 +70,6 @@ import CallReviewModal from './component/CallReviewModal';
 import PhoneCertBox from './component/PhoneCertBox';
 import TalkMain from './component/TalkMain';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
-import {ProductModelState} from '@/redux/modules/product';
 
 const styles = StyleSheet.create({
   body: {
