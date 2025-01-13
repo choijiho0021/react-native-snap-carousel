@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     height: 56,
     alignItems: 'center',
     paddingVertical: 8,
-    paddingRight: 8,
+    paddingHorizontal: 8,
   },
 });
 
