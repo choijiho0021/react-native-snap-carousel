@@ -274,6 +274,7 @@ const styles = StyleSheet.create({
     height: 76,
     backgroundColor: colors.backGrey,
     padding: 16,
+    borderRadius: 3,
   },
   emptyAllText: {
     ...appStyles.normal14Text,
@@ -311,7 +312,7 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   account,
   pending,
 }) => {
-  const {realMobile, iccid, token} = account;
+  const {iccid, token} = account;
   const {pointHistory = [], reward} = talk;
 
   const [orderType, setOrderType] = useState<OrderType>('desc');
