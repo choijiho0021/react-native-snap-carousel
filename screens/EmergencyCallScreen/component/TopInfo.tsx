@@ -1,3 +1,4 @@
+import Lottie from 'lottie-react-native';
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -25,7 +26,8 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   rokebiIcon: {
-    marginTop: 32,
+    width: 201,
+    height: 206,
   },
   blueView: {
     marginHorizontal: 20,
@@ -64,7 +66,13 @@ const TopInfo = () => {
         <AppText style={styles.titleBold}>
           {i18n.t('talk:urgent:titleBold')}
         </AppText>
-        <AppSvgIcon style={styles.rokebiIcon} name="rokebiEmergencyImg" />
+        <View style={{height: 32}} />
+        <Lottie
+          autoPlay
+          loop
+          style={styles.rokebiIcon}
+          source={require('@/assets/images/lottie/emg_flying.json')}
+        />
       </View>
 
       <View style={styles.blueView}>
