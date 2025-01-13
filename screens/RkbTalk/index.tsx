@@ -36,6 +36,7 @@ import _ from 'underscore';
 import AppActivityIndicator from '@/components/AppActivityIndicator';
 import AppAlert from '@/components/AppAlert';
 import {colors} from '@/constants/Colors';
+import Env from '@/environment';
 import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {API} from '@/redux/api';
@@ -57,7 +58,6 @@ import {
   TalkAction,
   TalkModelState,
 } from '@/redux/modules/talk';
-
 import {
   actions as toastActions,
   Toast,
@@ -70,6 +70,8 @@ import CallReviewModal from './component/CallReviewModal';
 import PhoneCertBox from './component/PhoneCertBox';
 import TalkMain from './component/TalkMain';
 import RNSessionDescriptionHandler from './RNSessionDescriptionHandler';
+
+const {talkServer, talkPort, turnServer} = Env.get();
 
 const styles = StyleSheet.create({
   body: {
@@ -445,7 +447,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           .then(async () => {
             // try {
             // const target = UserAgent.makeURI('sip:9000@talk.rokebi.com');
-            const target = UserAgent.makeURI(`sip:${dest}@talk.rokebi.com`);
+            const target = UserAgent.makeURI(`sip:${dest}@${talkServer}`);
             console.log('@@@ target', dest, target);
             utils.tlog(`@@@ target, ${dest}, ${target}`);
 
@@ -564,6 +566,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
               else if (called) {
                 API.TalkApi.getRatePerMinute({mobile: realMobile, called}).then(
                   (rsp) => {
+                    utils.tlog(`@@ rate ${rsp}`);
                     const {rate, unit} = rsp?.tariff || {};
                     const r = rate / 100;
 
@@ -646,10 +649,10 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const register = useCallback(() => {
     if (realMobile) {
       const transportOptions = {
-        server: 'wss://talk.rokebi.com:8089/ws',
+        server: `wss://${talkServer}:${talkPort}/ws`,
         keepAliveInterval: 30,
       };
-      const uri = UserAgent.makeURI(`sip:${realMobile}@talk.rokebi.com`);
+      const uri = UserAgent.makeURI(`sip:${realMobile}@${talkServer}`);
       const userAgentOptions: UserAgentOptions = {
         authorizationPassword: '000000', // 000000
         authorizationUsername: realMobile,
@@ -659,7 +662,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           return new RNSessionDescriptionHandler(session, options);
         },
         sessionDescriptionHandlerFactoryOptions: {
-          iceServers: [{urls: 'stun:talk.rokebi.com:3478'}],
+          iceServers: [{urls: `stun:${turnServer}`}],
           iceGatheringTimeout: 30,
           callTimeout: 60,
         },

@@ -103,6 +103,9 @@ type Env = {
     android: string;
   };
   inicisAuthHost: string;
+  talkServer: string;
+  talkPort: string;
+  turnServer: string;
 
   // secure.json 참조
   fbUser?: string;
@@ -197,6 +200,10 @@ function get() {
         : 'https://www.rokebi.com';
 
       env.inicisAuthHost = '140.238.7.177';
+      env.talkServer = 'talk.rokebi.com';
+      env.talkPort = '8089';
+      env.turnServer = 'talk.rokebi.com:3478';
+
       break;
     default:
       env.scheme = 'http';
@@ -206,6 +213,9 @@ function get() {
         ? 'http://tb.rokebi.com/us'
         : 'http://tb.rokebi.com';
       env.inicisAuthHost = '64.110.75.203';
+      env.talkServer = 'tb-talk.rokebi.com';
+      env.talkPort = '8089';
+      env.turnServer = 'tb-talk.rokebi.com:3478';
       break;
   }
   return env;
