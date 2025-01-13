@@ -704,7 +704,7 @@ const slice = createSlice({
         objects.sort((a, b) => moment(b.create_dt).diff(moment(a.create_dt)));
 
         const groupMap = new Map<string, Map<string, CashHistory>>();
-        objects.forEach((cur) => {
+        objects.forEach((cur, idx) => {
           const year = cur.create_dt?.format('YYYY');
           if (!year) return;
 
@@ -713,7 +713,9 @@ const slice = createSlice({
           }
 
           const yearData = groupMap.get(year)!;
-          const orderBindKey = `${cur.order_id}-${parsePaymentType(cur.type)}`; // orderId, type
+          const orderBindKey = `${
+            cur?.order_id ? cur?.order_id : idx
+          }-${parsePaymentType(cur.type)}`; // orderId, type
 
           if (yearData.has(orderBindKey)) {
             yearData.get(orderBindKey)!.diff += cur.diff;
