@@ -68,7 +68,7 @@ const AppSearch = ({
               focus && focusColor ? focusColor : colors.lightGrey,
           },
         ]}>
-        {!focus && (
+        {!focus && !value && (
           <AppSvgIcon
             style={{justifyContent: 'center', marginRight: 8}}
             name="btnSearchBold"
