@@ -385,6 +385,15 @@ const SectionListSidebar = (
       return (
         <View key={item + index}>
           <TouchableOpacity
+            onPress={() => {
+              const kList = data.map((i) => i.key);
+              const itemKey =
+                item === '•' ? defaultSidebarData[index]?.val[0] : item;
+              const tgList = setTargetIndexList(kList);
+              const idx = kList?.findIndex((a) => a === itemKey);
+
+              if (idx >= 0) jumpToSection(tgList[index], 0);
+            }}
             pressRetentionOffset={{bottom: 5, left: 5, right: 5, top: 5}}
             hitSlop={{bottom: 10, left: 10, right: 10, top: 10}}
             style={[styles.sidebarItemStyle, sidebarItemStyle]}>
@@ -402,7 +411,15 @@ const SectionListSidebar = (
         </View>
       );
     },
-    [sidebarItemStyle, sidebarItemTextStyle, sidebarItemHeight],
+    [
+      sidebarItemStyle,
+      sidebarItemTextStyle,
+      sidebarItemHeight,
+      data,
+      defaultSidebarData,
+      setTargetIndexList,
+      jumpToSection,
+    ],
   );
 
   return (
