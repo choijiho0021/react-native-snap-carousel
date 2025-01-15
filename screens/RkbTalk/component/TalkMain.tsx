@@ -244,7 +244,21 @@ const TalkMain: React.FC<TalkMainProps> = ({
   }, [navigation, point]);
 
   const info = useCallback(() => {
-    if (initial) return talkPointBtn();
+    if (initial)
+      return (
+        <>
+          <View style={{height: 12}} />
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: small ? 'flex-start' : 'flex-end',
+            }}>
+            {talkPointBtn()}
+          </View>
+          {!small && <View style={{flex: 1}} />}
+        </>
+      );
     if (connected)
       return (
         <AppText style={[styles.connecting, {color: colors.clearBlue}]}>
