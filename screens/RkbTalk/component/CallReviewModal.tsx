@@ -47,6 +47,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     textAlignVertical: 'top',
   },
+  inputText: {
+    ...appStyles.medium16,
+    lineHeight: 24,
+    letterSpacing: -0.16,
+  },
   okButton: {
     alignItems: 'center',
     height: 52,
@@ -122,10 +127,11 @@ const CallReviewModal: React.FC<CallReviewModalProps> = ({
   const content = useCallback(
     () => (
       <AppTextInput
-        style={[
-          styles.inputBox,
-          msg ? {borderColor: colors.clearBlue} : undefined,
-        ]}
+        containerStyle={{
+          ...styles.inputBox,
+          borderColor: msg ? colors.clearBlue : colors.lightGrey,
+        }}
+        style={styles.inputText}
         ref={keybd}
         placeholder={i18n.t('talk:review:modal:placeholder')}
         placeholderTextColor={colors.greyish}

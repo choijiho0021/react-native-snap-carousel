@@ -1,3 +1,4 @@
+import Lottie from 'lottie-react-native';
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import AppSvgIcon from '@/components/AppSvgIcon';
@@ -25,7 +26,8 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   rokebiIcon: {
-    marginTop: 32,
+    width: 201,
+    height: 206,
   },
   blueView: {
     marginHorizontal: 20,
@@ -35,6 +37,7 @@ const styles = StyleSheet.create({
   infoBox: {
     flexDirection: 'row',
     backgroundColor: colors.white,
+    borderRadius: 3,
     padding: 16,
     marginBottom: 16,
   },
@@ -43,6 +46,10 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     flex: 1,
     flexWrap: 'wrap',
+  },
+  point: {
+    color: colors.warmGrey,
+    marginHorizontal: 4,
   },
   detailText: {
     flex: 1,
@@ -64,7 +71,13 @@ const TopInfo = () => {
         <AppText style={styles.titleBold}>
           {i18n.t('talk:urgent:titleBold')}
         </AppText>
-        <AppSvgIcon style={styles.rokebiIcon} name="rokebiEmergencyImg" />
+        <View style={{height: 32}} />
+        <Lottie
+          autoPlay
+          loop
+          style={styles.rokebiIcon}
+          source={require('@/assets/images/lottie/emg_flying.json')}
+        />
       </View>
 
       <View style={styles.blueView}>
@@ -81,18 +94,14 @@ const TopInfo = () => {
         </View>
 
         <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-          <AppText style={{marginHorizontal: 4}}>
-            {i18n.t('talk:urgent:point')}
-          </AppText>
+          <AppText style={styles.point}>{i18n.t('talk:urgent:point')}</AppText>
           <AppText style={styles.detailText}>
             {i18n.t('talk:urgent:detail1')}
           </AppText>
         </View>
 
         <View style={{flexDirection: 'row'}}>
-          <AppText style={{marginHorizontal: 4}}>
-            {i18n.t('talk:urgent:point')}
-          </AppText>
+          <AppText style={styles.point}>{i18n.t('talk:urgent:point')}</AppText>
           <AppText style={styles.detailText}>
             {i18n.t('talk:urgent:detail2')}
           </AppText>

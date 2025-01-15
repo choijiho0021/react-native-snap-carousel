@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 12,
     paddingVertical: 16,
+    borderRadius: 3,
   },
   numberText: {
     ...appStyles.bold18Text,

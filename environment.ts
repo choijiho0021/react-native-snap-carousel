@@ -103,6 +103,9 @@ type Env = {
     android: string;
   };
   inicisAuthHost: string;
+  talkServer: string;
+  talkPort: string;
+  turnServer: string;
 
   // secure.json 참조
   fbUser?: string;
@@ -155,7 +158,7 @@ const env: Env = {
             HASHKEY: '3CB8183A4BE283555ACC8363C0360223',
           },
           hecto: {
-            PG_MID: 'nx_mid_il',
+            PG_MID: 'nxca_jt_il', // 가상 계좌 결제 시험용 : nx_mid_il
             LICENSE_KEY: 'ST1009281328226982205',
             AES256_KEY: 'pgSettle30y739r82jtd709yOfZ2yK5K',
           },
@@ -197,6 +200,10 @@ function get() {
         : 'https://www.rokebi.com';
 
       env.inicisAuthHost = '140.238.7.177';
+      env.talkServer = 'talk.rokebi.com';
+      env.talkPort = '8089';
+      env.turnServer = 'talk.rokebi.com:3478';
+
       break;
     default:
       env.scheme = 'http';
@@ -206,6 +213,9 @@ function get() {
         ? 'http://tb.rokebi.com/us'
         : 'http://tb.rokebi.com';
       env.inicisAuthHost = '64.110.75.203';
+      env.talkServer = 'tb-talk.rokebi.com';
+      env.talkPort = '8089';
+      env.turnServer = 'tb-talk.rokebi.com:3478';
       break;
   }
   return env;

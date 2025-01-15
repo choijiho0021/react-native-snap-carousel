@@ -3,7 +3,6 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import * as Hangul from 'hangul-js';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
-  Animated,
   AppState,
   Platform,
   SafeAreaView,
@@ -106,9 +105,7 @@ const styles = StyleSheet.create({
   },
   headerView: {
     marginLeft: 20,
-    paddingTop: 24,
-    paddingBottom: 16,
-    height: 66,
+    marginBottom: 16,
     backgroundColor: colors.white,
   },
   sectionHeader: {
@@ -280,13 +277,14 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
     (item: any) => {
       // 한글 이름 중에서 초성, contact map
       const name = item.familyName + item.givenName;
+      const sk = JSON.parse(JSON.stringify(sectionKeys));
+
       let resSection = {};
       // 한글일 경우
       if (checkKor.test(name)) {
         const disassemble = Hangul.disassemble(name, true);
-        resSection = setKoSection(item, disassemble);
-      } else resSection = setOtherSection(name, item);
-
+        resSection = setKoSection(item, disassemble, sk);
+      } else resSection = setOtherSection(name, item, sk);
       return resSection?.key;
     },
     [setKoSection, setOtherSection],
@@ -301,11 +299,11 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
           const ai = acc?.findIndex((a) => a?.key === key);
 
           if (ai >= 0) (acc[ai]?.data || []).push(cur);
-          else (acc || [])?.push({key, title: key, data: [cur]});
-          return acc;
-        }, []);
 
-        return res;
+          return acc;
+        }, JSON.parse(JSON.stringify(sectionKeys)));
+
+        return res?.filter((item) => !_.isEmpty(item.data));
       }
     },
     [getFirstLetter],
@@ -503,22 +501,29 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
     if (contacts?.length === 0)
       return <EmptyResult title={i18n.t('talk:contact:empty')} />;
     return _.isEmpty(searchText) ? (
-      !_.isEmpty(sections) && (
-        <SectionListSidebar
-          ref={sectionListRef}
-          smallSidebar={small}
-          sideItemHeight={13}
-          sideHeight={small ? 350 : 520}
-          data={sections}
-          renderItem={renderContactList}
-          itemHeight={74} // contact list item height
-          sectionHeaderHeight={20}
-          renderSectionHeader={renderSectionListHeader}
-          sidebarContainerStyle={styles.sidebarContainer}
-          sidebarItemTextStyle={styles.sidebarItem}
-          locale="kor"
-        />
-      )
+      <>
+        <View style={styles.headerView}>
+          <AppText style={appStyles.bold18Text}>
+            {i18n.t('talk:contact')}
+          </AppText>
+        </View>
+        {!_.isEmpty(sections) && (
+          <SectionListSidebar
+            ref={sectionListRef}
+            smallSidebar={small}
+            sideItemHeight={13}
+            sideHeight={small ? 350 : 520}
+            data={sections}
+            renderItem={renderContactList}
+            itemHeight={74} // contact list item height
+            sectionHeaderHeight={20}
+            renderSectionHeader={renderSectionListHeader}
+            sidebarContainerStyle={styles.sidebarContainer}
+            sidebarItemTextStyle={styles.sidebarItem}
+            locale="kor"
+          />
+        )}
+      </>
     ) : (
       <SectionList
         contentContainerStyle={{flexGrow: 1}}
@@ -551,10 +556,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
           focusColor={colors.clearBlue}
         />
       </View>
-      {showContacts && !_.isEmpty(searchText) && <View style={{height: 24}} />}
-      <View style={styles.headerView}>
-        <AppText style={appStyles.bold18Text}>{i18n.t('talk:contact')}</AppText>
-      </View>
+      {showContacts && <View style={{height: 24}} />}
       {showContacts ? contactsView() : beforeSync()}
     </SafeAreaView>
   );

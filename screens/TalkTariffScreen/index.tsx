@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
     width: 98,
     height: 20,
     justifyContent: 'space-evenly',
+    alignItems: 'center',
   },
   sectionHeader: {
     ...appStyles.medium16,
@@ -80,13 +81,16 @@ const styles = StyleSheet.create({
   },
   tariff: {
     ...appStyles.robotoMedium14Text,
+    width: 46,
+    textAlignVertical: 'center',
+    textAlign: 'center',
     color: colors.blue,
   },
   textFrame: {
     height: 56,
     alignItems: 'center',
     paddingVertical: 8,
-    paddingRight: 8,
+    paddingHorizontal: 8,
   },
 });
 
@@ -142,7 +146,10 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
   const fav = useMemo(
     () =>
       favoriteCountry
-        .map((t) => ({...talk.tariff[t], key: `${talk.tariff[t].key}.f`}))
+        ?.map((t) => ({
+          ...talk.tariff[t],
+          key: `${talk.tariff[t]?.key || ''}.f`,
+        }))
         .filter((t) => !!t),
     [talk.tariff],
   );
@@ -313,7 +320,9 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
           }
           return <AppText style={styles.sectionHeader}>{title}</AppText>;
         }}
-        ListFooterComponent={!searchText ? <Footer /> : null}
+        ListFooterComponent={
+          !searchText && tariffData?.length !== 0 ? <Footer /> : null
+        }
         ListEmptyComponent={<EmptyResult />}
       />
     </SafeAreaView>

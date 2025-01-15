@@ -51,14 +51,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   dest: {
-    height: buttonSize / 2,
+    ...appStyles.robotoMedium20Text,
     fontSize: 36,
-    fontWeight: 'bold',
-    fontStyle: 'normal',
-    lineHeight: buttonSize / 2,
-    letterSpacing: -0.28,
+    // height: buttonSize / 2,
+    // lineHeight: buttonSize / 2,
+    height: 44,
+    lineHeight: 44,
+    letterSpacing: -0.72,
     color: colors.black,
-    textAlignVertical: 'bottom',
   },
   emergencyCallText: {
     ...appStyles.bold30Text,
@@ -66,13 +66,11 @@ const styles = StyleSheet.create({
     color: colors.redError,
     marginLeft: 8,
   },
-  emergencyView: {
-    flexDirection: 'row',
-    height: 44,
-    marginTop: small ? 5 : 16,
-    justifyContent: 'center',
-  },
   input: {
+    marginTop: small ? 5 : 16,
+    height: 44,
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 20,
   },
@@ -87,18 +85,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     paddingHorizontal: 16,
     borderWidth: 1,
+    borderRadius: 3,
     borderColor: colors.lightGrey,
-  },
-  timer: {
-    height: 22,
-    fontSize: 14,
-    fontWeight: '500',
-    fontStyle: 'normal',
-    lineHeight: 22,
-    letterSpacing: 0,
-    textAlign: 'center',
-    color: colors.clearBlue,
-    marginTop: 24,
   },
   connecting: {
     color: colors.warmGrey,
@@ -113,11 +101,16 @@ const styles = StyleSheet.create({
   },
   topView: {
     flexDirection: 'row',
-    marginTop: 8,
     height: 40,
     alignItems: 'center',
     marginHorizontal: 20,
     justifyContent: 'space-between',
+  },
+  ccRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    alignItems: 'center',
   },
   flagIcon: {
     width: 32,
@@ -129,9 +122,17 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
   connectedView: {
+    height: small ? 69 : 58,
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-end',
+  },
+  minText: {
+    ...appStyles.medium16,
+    lineHeight: 24,
+    letterSpacing: -0.16,
+    textAlign: 'center',
+    color: colors.warmGrey,
   },
 });
 
@@ -243,8 +244,27 @@ const TalkMain: React.FC<TalkMainProps> = ({
   }, [navigation, point]);
 
   const info = useCallback(() => {
-    if (initial) return talkPointBtn();
-    if (connected) return <AppText style={styles.timer}>{time}</AppText>;
+    if (initial)
+      return (
+        <>
+          <View style={{height: 12}} />
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: small ? 'flex-start' : 'flex-end',
+            }}>
+            {talkPointBtn()}
+          </View>
+          {!small && <View style={{flex: 1}} />}
+        </>
+      );
+    if (connected)
+      return (
+        <AppText style={[styles.connecting, {color: colors.clearBlue}]}>
+          {time}
+        </AppText>
+      );
     return (
       <AppText style={styles.connecting}>{i18n.t('talk:connecting')}</AppText>
     );
@@ -263,7 +283,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
   const renderDestination = useCallback(() => {
     if (dtmf) {
       return (
-        <View style={[styles.input, {height: 44, marginTop: 16}]}>
+        <View style={styles.input}>
           <AppText style={styles.dest} numberOfLines={1} ellipsizeMode="head">
             {dtmf}
           </AppText>
@@ -272,7 +292,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
     }
     if (emgType?.length > 0 && called) {
       return (
-        <View style={[styles.input, styles.emergencyView]}>
+        <View style={styles.input}>
           <AppSvgIcon name="sos" />
           <AppText
             style={styles.emergencyCallText}
@@ -284,7 +304,7 @@ const TalkMain: React.FC<TalkMainProps> = ({
       );
     }
     return (
-      <View style={[styles.input, {height: 44, marginTop: 16}]}>
+      <View style={styles.input}>
         <AppText style={styles.dest} numberOfLines={1} ellipsizeMode="head">
           <AppText style={[styles.dest, {color: colors.clearBlue}]}>
             {ccode || ''}
@@ -297,39 +317,53 @@ const TalkMain: React.FC<TalkMainProps> = ({
 
   return (
     <>
-      <View style={styles.topView}>
-        <View style={{width: 55}} />
-        {ccInfo && (
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignSelf: 'center',
-              alignItems: 'center',
-            }}>
-            <Image
-              resizeMode="contain"
-              style={styles.flagIcon}
-              source={{uri: API.default.httpImageUrl(ccInfo.flag)}}
-            />
-            <AppText style={[styles.emergency, styles.nation]}>
-              {ccInfo.name}
-            </AppText>
-          </View>
-        )}
-        {initial && !_.isEmpty(emgOn) ? (
-          <AppButton
-            style={{backgroundColor: colors.white}}
-            titleStyle={styles.emergency}
-            title={initial ? i18n.t('talk:emergencyCall') : ''}
-            onPress={() => navigation.navigate('EmergencyCall')}
-          />
-        ) : (
+      <View style={{height: 56, marginTop: 8}}>
+        <View style={styles.topView}>
           <View style={{width: 55}} />
-        )}
+          {/* 연결 전 국가정보 */}
+          {ccInfo && (
+            <View style={styles.ccRow}>
+              <Image
+                resizeMode="contain"
+                style={styles.flagIcon}
+                source={{uri: API.default.httpImageUrl(ccInfo.flag)}}
+              />
+              <AppText style={[styles.emergency, styles.nation]}>
+                {ccInfo.name}
+              </AppText>
+            </View>
+          )}
+          {/* 연결시 남은 통화 */}
+          {connected && (
+            <View style={styles.connectedView}>
+              {showWarning && (
+                <AppSvgIcon
+                  style={{justifyContent: 'center', alignItems: 'center'}}
+                  name="callWarning"
+                />
+              )}
+              <AppText
+                style={[
+                  styles.minText,
+                  showWarning && {color: colors.redError, marginLeft: 6},
+                ]}>
+                {minInfo}
+              </AppText>
+            </View>
+          )}
+          {initial && !_.isEmpty(emgOn) ? (
+            <AppButton
+              style={{backgroundColor: colors.white}}
+              titleStyle={styles.emergency}
+              title={initial ? i18n.t('talk:emergencyCall') : ''}
+              onPress={() => navigation.navigate('EmergencyCall')}
+            />
+          ) : (
+            <View style={{width: 55}} />
+          )}
+        </View>
+        {ccInfo && getLocalTime()}
       </View>
-      {ccInfo && getLocalTime()}
-
       <TalkToolTip
         visible={tooltip}
         text={i18n.t('talk:emergencyText')}
@@ -337,27 +371,6 @@ const TalkMain: React.FC<TalkMainProps> = ({
         iconStyle={{marginRight: 8}}
         updateTooltip={updateTooltip}
       />
-
-      {connected && (
-        <View style={styles.connectedView}>
-          {showWarning && (
-            <AppSvgIcon
-              style={{justifyContent: 'center', alignItems: 'center'}}
-              name="callWarning"
-            />
-          )}
-          <AppText
-            style={[
-              {
-                textAlign: 'center',
-                color: colors.warmGrey,
-              },
-              showWarning && {color: colors.redError, marginLeft: 6},
-            ]}>
-            {minInfo}
-          </AppText>
-        </View>
-      )}
       {renderDestination()}
       <View style={{flex: 1}}>{info()}</View>
       <View>

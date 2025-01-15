@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 8,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
+    borderColor: colors.black92,
   },
   textFrame: {
     borderRadius: 3,

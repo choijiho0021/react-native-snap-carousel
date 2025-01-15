@@ -284,7 +284,7 @@ const Keypad: React.FC<KeypadProps> = ({
                 <View />
                 <Lottie
                   style={[
-                    {width: 100, height: 100},
+                    {width: 112, height: 112},
                     showWarning && {justifyContent: 'center'},
                   ]}
                   autoPlay

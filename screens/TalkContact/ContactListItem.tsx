@@ -25,7 +25,8 @@ const styles = StyleSheet.create({
     borderRadius: 40,
   },
   title: {
-    ...appStyles.normal18Text,
+    ...appStyles.semiBold18Text,
+    lineHeight: 26,
     width: '100%',
     flexWrap: 'wrap',
   },
