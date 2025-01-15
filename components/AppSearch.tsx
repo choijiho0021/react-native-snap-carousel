@@ -80,9 +80,7 @@ const AppSearch = ({
             textAlignVertical: 'center',
             height: 55,
             fontSize: 16,
-            marginBottom: 2,
             fontWeight: '600',
-            lineHeight: 24,
             color: colors.black,
             ...textStyle,
           }}
