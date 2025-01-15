@@ -14,12 +14,7 @@ import {RootState} from '@reduxjs/toolkit';
 import ViewShot from 'react-native-view-shot';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {
-  PERMISSIONS,
-  check,
-  RESULTS,
-  openSettings,
-} from 'react-native-permissions';
+import {PERMISSIONS, check, RESULTS} from 'react-native-permissions';
 import {colors} from '@/constants/Colors';
 import i18n from '@/utils/i18n';
 import {RkbOrder} from '@/redux/api/orderApi';
@@ -32,7 +27,6 @@ import AppButton from '@/components/AppButton';
 import {AccountModelState} from '@/redux/modules/account';
 import {actions as toastActions, ToastAction} from '@/redux/modules/toast';
 import {HomeStackParamList} from '@/navigation/navigation';
-import AppAlert from '@/components/AppAlert';
 import Env from '@/environment';
 import ScreenHeader from '@/components/ScreenHeader';
 import {checkPhotoPermissionAlert} from '@/utils/utils';
