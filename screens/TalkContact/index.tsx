@@ -37,7 +37,6 @@ import {HomeStackParamList} from '@/navigation/navigation';
 import {RootState} from '@/redux';
 import {
   actions as talkActions,
-  sortName,
   TalkAction,
   TalkModelState,
 } from '@/redux/modules/talk';
@@ -300,11 +299,11 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
           const ai = acc?.findIndex((a) => a?.key === key);
 
           if (ai >= 0) (acc[ai]?.data || []).push(cur);
-          else (acc || [])?.push({key, title: key, data: [cur]});
-          return acc;
-        }, []);
 
-        return res;
+          return acc;
+        }, JSON.parse(JSON.stringify(sectionKeys)));
+
+        return res?.filter((item) => !_.isEmpty(item.data));
       }
     },
     [getFirstLetter],
@@ -391,9 +390,7 @@ const TalkContactScreen: React.FC<TalkContactScreenProps> = ({
 
         setSearchText(text);
         setSearchResult(
-          makeSearchResult(
-            (currentSearchResult || [])?.concat(phone)?.sort(sortName),
-          ) || [],
+          makeSearchResult([...currentSearchResult, ...phone]) || [],
         );
       } else {
         setSearchText(text);
