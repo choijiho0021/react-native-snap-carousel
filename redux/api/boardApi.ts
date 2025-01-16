@@ -45,6 +45,7 @@ export type RkbBoard = RkbBoardBase & {
   pin: string;
   replyImages: string[];
   replyMsg?: string;
+  links?: string[];
 };
 
 const toBoard = (data: DrupalBoard[]): ApiResult<RkbBoard> => {
@@ -64,6 +65,9 @@ const toBoard = (data: DrupalBoard[]): ApiResult<RkbBoard> => {
         images: item.field_images.split(', ') || [],
         replyImages: item.field_reply_images.split(', ') || [],
         replyMsg: item.field_reply_body,
+        links: item.field_link_list
+          ? item.field_link_list.split(',')
+          : undefined,
       })),
     );
   }

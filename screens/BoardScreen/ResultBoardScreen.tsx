@@ -150,6 +150,17 @@ const styles = StyleSheet.create({
     gap: 6,
     marginTop: 6,
   },
+  linkBox: {
+    padding: 16,
+    borderWidth: 1,
+    borderColor: colors.lightGrey,
+    backgroundColor: colors.backGrey,
+    flexDirection: 'row',
+  },
+  link: {
+    marginRight: 8,
+    justifyContent: 'center',
+  },
 });
 
 type ResultBoardScreenProps = {
@@ -221,6 +232,32 @@ const ResultBoardScreen: React.FC<ResultBoardScreenProps> = ({
     [],
   );
 
+  const renderLinks = useCallback((links?: string[]) => {
+    console.log('aaaaa links', links);
+    return (
+      <View style={{marginTop: 16, gap: 6}}>
+        {links?.map((elm) => {
+          const [name, link = name] = elm.split('|');
+
+          return (
+            <Pressable
+              onPress={() => Linking.openURL(link.trim())}
+              style={styles.linkBox}>
+              <AppSvgIcon name="link" style={styles.link} />
+              <AppText
+                style={{...appStyles.normal16Text, flex: 1}}
+                numberOfLines={1}
+                ellipsizeMode="tail">
+                {name.trim()}
+              </AppText>
+              <AppSvgIcon name="linkRightArrow" style={{marginLeft: 10}} />
+            </Pressable>
+          );
+        })}
+      </View>
+    );
+  }, []);
+
   const renderTime = useCallback((time: Moment) => {
     const date = moment(time, moment.ISO_8601);
 
@@ -278,11 +315,20 @@ const ResultBoardScreen: React.FC<ResultBoardScreenProps> = ({
           </View>
           <AppText style={styles.reply}>{resp?.trimEnd()}</AppText>
           {renderImages(issue?.replyImages, true)}
+          {issue?.links && renderLinks(issue?.links)}
           {renderTime(issue?.changed)}
         </View>
       </View>
     );
-  }, [issue?.changed, issue?.replyImages, renderImages, renderTime, resp]);
+  }, [
+    issue?.changed,
+    issue?.links,
+    issue?.replyImages,
+    renderImages,
+    renderLinks,
+    renderTime,
+    resp,
+  ]);
 
   return (
     <SafeAreaView style={styles.safeViewContainer}>
