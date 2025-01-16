@@ -193,7 +193,7 @@ export type HomeStackParamList = {
   };
 
   MyPage: undefined;
-  Recharge: {mode?: string} | undefined;
+  Recharge: {mode?: string; type?: string} | undefined;
   Invite: undefined;
   InvitePromo: undefined;
   GiftGuide: undefined;

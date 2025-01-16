@@ -47,6 +47,7 @@ import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
 import VoucherTab from './VoucherTab';
 import api from '@/redux/api/api';
+import {RouteProp, useRoute} from '@react-navigation/native';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -136,6 +137,7 @@ type RechargeScreenProps = {
 
   account: AccountModelState;
 
+  route: RouteProp<HomeStackParamList, 'Recharge'>;
   action: {
     account: AccountAction;
     order: OrderAction;
@@ -167,6 +169,7 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
   navigation,
   account: {iccid, token, balance = 0},
   action,
+  route,
 }) => {
   // recharge 상품의 SKU는 'rch-{amount}' 형식을 갖는다.
   const [selected, setSelected] = useState(`rch-${rechargeChoice[0][0]}`);
@@ -366,7 +369,9 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
   const renderSelectedPane = useCallback(() => {
     return (
       <Tab.Navigator
-        initialRouteName="cash"
+        initialRouteName={
+          route?.params?.type === 'voucher' ? 'voucher' : 'cash'
+        }
         tabBar={(props) => <TabBar {...props} />}
         sceneContainerStyle={{backgroundColor: colors.white}}>
         {['cash', 'voucher'].map((k) => (
@@ -383,7 +388,7 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
         ))}
       </Tab.Navigator>
     );
-  }, [renderProdType]);
+  }, [renderProdType, route?.params?.type]);
 
   return (
     <SafeAreaView style={styles.container}>
