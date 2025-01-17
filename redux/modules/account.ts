@@ -714,8 +714,8 @@ const slice = createSlice({
 
           const yearData = groupMap.get(year)!;
           const orderBindKey = `${
-            cur?.order_id ? cur?.order_id : idx
-          }-${parsePaymentType(cur.type)}`; // orderId, type
+            cur?.order_id && cur?.order_id !== '0' ? cur.order_id : idx
+          }-${parsePaymentType(cur.type)}`;
 
           if (yearData.has(orderBindKey)) {
             yearData.get(orderBindKey)!.diff += cur.diff;
