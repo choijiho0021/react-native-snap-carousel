@@ -155,7 +155,7 @@ const env: Env = {
             HASHKEY: '3CB8183A4BE283555ACC8363C0360223',
           },
           hecto: {
-            PG_MID: 'nx_mid_il',
+            PG_MID: 'nxca_jt_il', // 가상 계좌 결제 시험용 : nx_mid_il
             LICENSE_KEY: 'ST1009281328226982205',
             AES256_KEY: 'pgSettle30y739r82jtd709yOfZ2yK5K',
           },
