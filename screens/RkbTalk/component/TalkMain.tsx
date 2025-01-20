@@ -67,7 +67,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   input: {
-    marginTop: small ? 5 : 16,
     height: 44,
     flexDirection: 'row',
     justifyContent: 'center',
@@ -122,16 +121,16 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
   connectedView: {
-    height: small ? 69 : 58,
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'flex-end',
   },
   minText: {
     ...appStyles.medium16,
-    lineHeight: 24,
     letterSpacing: -0.16,
     textAlign: 'center',
+    textAlignVertical: 'bottom',
     color: colors.warmGrey,
   },
 });
@@ -317,52 +316,56 @@ const TalkMain: React.FC<TalkMainProps> = ({
 
   return (
     <>
-      <View style={{height: 56, marginTop: 8}}>
-        <View style={styles.topView}>
-          <View style={{width: 55}} />
-          {/* 연결 전 국가정보 */}
-          {ccInfo && (
-            <View style={styles.ccRow}>
-              <Image
-                resizeMode="contain"
-                style={styles.flagIcon}
-                source={{uri: API.default.httpImageUrl(ccInfo.flag)}}
-              />
-              <AppText style={[styles.emergency, styles.nation]}>
-                {ccInfo.name}
-              </AppText>
-            </View>
-          )}
-          {/* 연결시 남은 통화 */}
-          {connected && (
-            <View style={styles.connectedView}>
-              {showWarning && (
-                <AppSvgIcon
-                  style={{justifyContent: 'center', alignItems: 'center'}}
-                  name="callWarning"
-                />
-              )}
-              <AppText
-                style={[
-                  styles.minText,
-                  showWarning && {color: colors.redError, marginLeft: 6},
-                ]}>
-                {minInfo}
-              </AppText>
-            </View>
-          )}
-          {initial && !_.isEmpty(emgOn) ? (
-            <AppButton
-              style={{backgroundColor: colors.white}}
-              titleStyle={styles.emergency}
-              title={initial ? i18n.t('talk:emergencyCall') : ''}
-              onPress={() => navigation.navigate('EmergencyCall')}
-            />
-          ) : (
+      <View style={{height: 56, marginTop: 8, marginBottom: small ? 10 : 16}}>
+        {!connected && (
+          <View style={styles.topView}>
             <View style={{width: 55}} />
-          )}
-        </View>
+            {/* 연결 전 국가정보 */}
+            {ccInfo && (
+              <View style={styles.ccRow}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.flagIcon}
+                  source={{uri: API.default.httpImageUrl(ccInfo.flag)}}
+                />
+                <AppText style={[styles.emergency, styles.nation]}>
+                  {ccInfo.name}
+                </AppText>
+              </View>
+            )}
+
+            {initial && !_.isEmpty(emgOn) ? (
+              <AppButton
+                style={{backgroundColor: colors.white}}
+                titleStyle={styles.emergency}
+                title={initial ? i18n.t('talk:emergencyCall') : ''}
+                onPress={() => navigation.navigate('EmergencyCall')}
+              />
+            ) : (
+              <View style={{width: 55}} />
+            )}
+          </View>
+        )}
         {ccInfo && getLocalTime()}
+
+        {/* 연결시 남은 통화 */}
+        {connected && (
+          <View style={styles.connectedView}>
+            {showWarning && (
+              <AppSvgIcon
+                style={{justifyContent: 'center', alignItems: 'center'}}
+                name="callWarning"
+              />
+            )}
+            <AppText
+              style={[
+                styles.minText,
+                showWarning && {color: colors.redError, marginLeft: 6},
+              ]}>
+              {minInfo}
+            </AppText>
+          </View>
+        )}
       </View>
       <TalkToolTip
         visible={tooltip}
