@@ -199,7 +199,7 @@ function get() {
         ? 'https://www.rokebi.com/us'
         : 'https://www.rokebi.com';
 
-      env.inicisAuthHost = '140.238.7.177';
+      env.inicisAuthHost = 'svcapp.rokebi.com';
       env.talkServer = 'talk.rokebi.com';
       env.talkPort = '8089';
       env.turnServer = 'talk.rokebi.com:3478';
@@ -212,7 +212,7 @@ function get() {
       env.webViewHost = esimGlobal
         ? 'http://tb.rokebi.com/us'
         : 'http://tb.rokebi.com';
-      env.inicisAuthHost = '64.110.75.203';
+      env.inicisAuthHost = 'tb-svcapp.rokebi.com';
       env.talkServer = 'tb-talk.rokebi.com';
       env.talkPort = '8089';
       env.turnServer = 'tb-talk.rokebi.com:3478';
