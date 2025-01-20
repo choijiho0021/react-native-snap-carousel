@@ -43,13 +43,14 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
     borderWidth: 1,
     marginBottom: 16,
-    paddingTop: 16,
     paddingHorizontal: 16,
-    textAlignVertical: 'top',
   },
   inputText: {
     ...appStyles.medium16,
+    textAlignVertical: 'bottom',
+    paddingTop: 0,
     lineHeight: 24,
+    marginTop: 11,
     letterSpacing: -0.16,
   },
   okButton: {
@@ -143,9 +144,7 @@ const CallReviewModal: React.FC<CallReviewModalProps> = ({
         onEndEditing={() => Keyboard.dismiss()}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        onChangeText={(v) => {
-          setMsg(v);
-        }}
+        onChangeText={(v) => setMsg(v)}
         autoCapitalize="none"
         autoCorrect={false}
         value={msg}

@@ -53,12 +53,30 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
     paddingHorizontal: 20,
   },
+  countryTitle: {
+    ...appStyles.bold18Text,
+    lineHeight: 26,
+    height: 26,
+  },
   row2: {
     flexDirection: 'row',
-    width: 98,
+    width: 98, // 46*2 + 6
     height: 20,
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  pointTitle: {
+    ...appStyles.semiBold12Text,
+    width: 46,
+    textAlignVertical: 'center',
+    textAlign: 'center',
+    color: colors.blue,
+  },
+  favTitle: {
+    ...appStyles.medium16,
+    color: colors.warmGrey,
+    marginHorizontal: 20,
+    lineHeight: 24,
   },
   sectionHeader: {
     ...appStyles.medium16,
@@ -251,16 +269,13 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
       !searchText && (
         <View style={{flex: 1, height: h, backgroundColor: colors.white}}>
           <View style={styles.row}>
-            <AppText
-              style={[appStyles.bold18Text, {lineHeight: 26, height: 26}]}>
+            <AppText style={styles.countryTitle}>
               {i18n.t('talk:tariff:country')}
             </AppText>
             <View>
               <View style={styles.row2}>
                 {['wireline', 'mobile'].map((k) => (
-                  <AppText
-                    key={k}
-                    style={[appStyles.semiBold12Text, {color: colors.blue}]}>
+                  <AppText key={k} style={styles.pointTitle}>
                     {i18n.t(`talk:tariff:${k}`)}
                   </AppText>
                 ))}
@@ -271,11 +286,7 @@ const TalkTariffScreen: React.FC<TalkTariffScreenProps> = ({
             </View>
           </View>
 
-          <AppText
-            style={[
-              appStyles.normal16Text,
-              {color: colors.warmGrey, marginHorizontal: 20, lineHeight: 24},
-            ]}>
+          <AppText style={styles.favTitle}>
             {i18n.t('talk:tariff:favorite')}
           </AppText>
           {fav.map((item) => renderSectionItem({item}))}

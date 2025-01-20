@@ -321,10 +321,11 @@ const TalkPointScreen: React.FC<TalkPointScreenProps> = ({
   const isModalBeginDrag = useRef(false);
   const isTop = useRef(true);
   const sectionRef = useRef<SectionList>(null);
-  const showRewardBanner = useMemo(
-    () => reward && !reward?.isReceivedReward,
-    [reward],
-  );
+  // const showRewardBanner = useMemo(
+  //   () => reward && !reward?.isReceivedReward,
+  //   [reward],
+  // );
+  const showRewardBanner = false;
 
   const modalAnimatedValue = useRef(new Animated.Value(56)).current;
   const animatedValue = useRef(new Animated.Value(106)).current;

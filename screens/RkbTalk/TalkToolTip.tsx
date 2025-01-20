@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 8,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
+    borderColor: colors.black92,
   },
   triangleBottom: {
     borderLeftWidth: 6,
