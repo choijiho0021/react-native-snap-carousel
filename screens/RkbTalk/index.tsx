@@ -8,6 +8,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
+  NativeModules,
   Platform,
   SafeAreaView,
   StatusBar,
@@ -362,6 +363,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   }, []);
 
   const cleanupMedia = useCallback(() => {
+    NativeModules?.CallKitModule?.endCalls();
     setRefreshing(true);
 
     setInviter(null);
@@ -595,6 +597,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
                   },
                 );
               }
+              NativeModules?.CallKitModule?.startCall(called);
             }
           });
           break;

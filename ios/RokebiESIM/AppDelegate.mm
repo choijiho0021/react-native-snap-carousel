@@ -2,6 +2,9 @@
 #if RCT_DEV
 #import <React/RCTDevLoadingView.h>
 #endif
+#import <AudioUnit/AudioUnit.h>
+#import <CallKit/CallKit.h>
+
 #import <AVFoundation/AVFoundation.h>
 
 #import <AppCenterReactNative.h>
@@ -27,7 +30,7 @@
 #import "RNSplashScreen.h"
 
 // NAVER Tracker
-#import "RokebiESIM-Swift.h"
+#import <RokebiESIM-Swift.h>
 
 // facebook SDK
 #import <AuthenticationServices/AuthenticationServices.h>
@@ -38,8 +41,16 @@
 #import <NaverThirdPartyLogin/NaverThirdPartyLoginConnection.h>
 
 #import "AppDelegate.h"
+#import <UIKit/UIKit.h>
 
 #import <React/RCTBundleURLProvider.h>
+
+
+@interface AppDelegate () <CXProviderDelegate>
+@property (nonatomic, strong) CXProvider *callKitProvider;
+@property (nonatomic, strong) CXCallController *callController;
+@end
+
 
 @implementation AppDelegate
  
@@ -128,7 +139,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 
   [ChannelIO initialize:application];
 
-  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
+  [self configureAudioSession];
+  [self setupCallKit];
+
   [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
 
   [AppCenterReactNative register];
@@ -153,6 +166,219 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   [RNSplashScreen show];
   
   return true;
+}
+
+// SceneDelegate 관련 메서드 연결
+// - (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
+//       NSLog(@"AppDelegate: Connecting SceneSession.");
+
+//     return [[UISceneConfiguration alloc] initWithName:@"Default Configuration" sessionRole:connectingSceneSession.role];
+// }
+
+// - (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
+//     // Scene 구성 반환
+//     return [[UISceneConfiguration alloc] initWithName:@"Default Configuration" sessionRole:connectingSceneSession.role];
+// }
+
+// - (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions {
+//     // 삭제된 씬 세션 처리
+//     NSLog(@"Scene sessions discarded");
+// }
+
+#pragma mark - CallKit 설정
+
+- (void)setupCallKit {
+    // CallKit configuration
+    CXProviderConfiguration *providerConfig = [[CXProviderConfiguration alloc] initWithLocalizedName:@"RokebiESIM"];
+    
+    // Configure options
+    providerConfig.supportsVideo = NO; // Disable video calls
+    providerConfig.maximumCallGroups = 1;
+    providerConfig.maximumCallsPerCallGroup = 1;
+    providerConfig.supportedHandleTypes = [NSSet setWithObject:@(CXHandleTypePhoneNumber)]; // Phone number handle type
+    
+    // Disable system UI by avoiding icon or ringtone
+    providerConfig.includesCallsInRecents = NO; // Don't show calls in recent calls log
+    providerConfig.ringtoneSound = nil;         // No default ringtone
+
+        if (!self.callKitProvider) {
+        CXProviderConfiguration *config = [[CXProviderConfiguration alloc] initWithLocalizedName:@"RokebiESIM"];
+        config.supportsVideo = NO;
+        self.callKitProvider = [[CXProvider alloc] initWithConfiguration:config];
+        [self.callKitProvider setDelegate:self queue:nil];
+    }
+
+    if (!self.callController) {
+        self.callController = [[CXCallController alloc] init];
+    }
+}
+
+// 발신통화
+// - (void)startCallWithId:(NSUUID *)callId handle:(NSString *)handle {
+//     // Create CXHandle with type .generic and the given handle value
+//     CXHandle *cxHandle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:handle];
+    
+//     // Create CXStartCallAction with call ID and CXHandle
+//     CXStartCallAction *startCallAction = [[CXStartCallAction alloc] initWithCallUUID:callId handle:cxHandle];
+
+//     // iOS 14 이상에서만 shouldSuppressInCallUI 설정
+// //    if (@available(iOS 14.0, *)) {
+// //        startCallAction.shouldSuppressInCallUI = YES;
+// //    } else {
+// //        NSLog(@"[Warning] shouldSuppressInCallUI is not supported on this iOS version.");
+// //    }
+    
+//     // Create a transaction with the start call action
+//     CXTransaction *transaction = [[CXTransaction alloc] initWithAction:startCallAction];
+    
+//     // Request the transaction via CXCallController
+//     CXCallController *callController = [[CXCallController alloc] init];
+//     [callController requestTransaction:transaction completion:^(NSError * _Nullable error) {
+//         if (error) {
+//             NSLog(@"Failed to start call: %@", error.localizedDescription);
+//         } else {
+//             NSLog(@"Start Call");
+//         }
+//     }];
+// }
+
+- (void)startCallWithId:(NSUUID *)callId handle:(NSString *)handle {
+    // Create CXHandle with type .generic and the given handle value
+    CXHandle *cxHandle = [[CXHandle alloc] initWithType:CXHandleTypePhoneNumber value:handle];
+    
+    // Create CXStartCallAction with call ID and CXHandle
+    CXStartCallAction *startCallAction = [[CXStartCallAction alloc] initWithCallUUID:callId handle:cxHandle];
+    
+    // Create a transaction with the start call action
+    CXTransaction *transaction = [[CXTransaction alloc] initWithAction:startCallAction];
+    
+    // Request the transaction via CXCallController
+    CXCallController *callController = [[CXCallController alloc] init];
+    [callController requestTransaction:transaction completion:^(NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"Failed to start call: %@", error.localizedDescription);
+        } else {
+            NSLog(@"Start Call");
+        }
+    }];
+}
+
+
+- (void)requestTransaction:(CXTransaction *)transaction
+{
+#ifdef DEBUG
+    NSLog(@"[appdelegate][requestTransaction] transaction = %@", transaction);
+#endif
+    if (self.callController == nil) {
+        self.callController = [[CXCallController alloc] init];
+    }
+    [self.callController requestTransaction:transaction completion:^(NSError * _Nullable error) {
+        if (error != nil) {
+            NSLog(@"[appdelegate][requestTransaction] Error requesting transaction (%@): (%@)", transaction.actions, error);
+        } else {
+            NSLog(@"[appdelegate][requestTransaction] Requested transaction successfully");
+
+            // CXStartCallAction
+            if ([[transaction.actions firstObject] isKindOfClass:[CXStartCallAction class]]) {
+                CXStartCallAction *startCallAction = [transaction.actions firstObject];
+                CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
+                callUpdate.remoteHandle = startCallAction.handle;
+                callUpdate.hasVideo = startCallAction.video;
+                callUpdate.localizedCallerName = startCallAction.contactIdentifier;
+                callUpdate.supportsDTMF = YES;
+                callUpdate.supportsHolding = YES;
+                callUpdate.supportsGrouping = YES;
+                callUpdate.supportsUngrouping = YES;
+                [self.callKitProvider reportCallWithUUID:startCallAction.callUUID updated:callUpdate];
+            }
+        }
+    }];
+}
+
+
+- (void)endCallWithUUID:(NSUUID *)callUUID {
+    // 통화 종료 액션 생성
+    CXEndCallAction *endCallAction = [[CXEndCallAction alloc] initWithCallUUID:callUUID];
+    
+    // CallKit 트랜잭션 생성 및 액션 추가
+    CXTransaction *transaction = [[CXTransaction alloc] initWithAction:endCallAction];
+    CXCallController *callController = [[CXCallController alloc] init];
+
+    [callController requestTransaction:transaction completion:^(NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"Failed to end call: %@", error.localizedDescription);
+        } else {
+            NSLog(@"Call ended successfully.");
+        }
+    }];
+}
+
+
+- (void)endAllCalls {
+#ifdef DEBUG
+    NSLog(@"[appdelegate][endAllCalls] calls = %@", self.callController.callObserver.calls);
+#endif
+
+    // 현재 활성화된 모든 통화를 순회하며 종료
+    for (CXCall *call in self.callController.callObserver.calls) {
+        // CXEndCallAction 생성
+        CXEndCallAction *endCallAction = [[CXEndCallAction alloc] initWithCallUUID:call.UUID];
+        
+        // CXTransaction 생성 및 액션 추가
+        CXTransaction *transaction = [[CXTransaction alloc] initWithAction:endCallAction];
+        
+        CXCallController *callController = [[CXCallController alloc] init];
+
+        [callController requestTransaction:transaction completion:^(NSError * _Nullable error) {
+            if (error) {
+                NSLog(@"Failed to end call: %@", error.localizedDescription);
+            } else {
+                NSLog(@"Call ended successfully.");
+            }
+        }];
+
+        // 트랜잭션 요청
+        // [self requestTransaction:transaction];
+    }
+}
+
+// CallKit delegate method - Start call
+#pragma mark - CXProviderDelegate
+
+- (void)provider:(CXProvider *)provider performStartCallAction:(CXStartCallAction *)action {
+    NSLog(@"Performing start call action for: %@", action.callUUID);
+
+    NSLog(@"Call started successfully.");
+
+    // 오디오 세션 설정
+    NSError *error = nil;
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord
+                                            mode:AVAudioSessionModeVoiceChat
+                                         options:AVAudioSessionCategoryOptionAllowBluetooth
+                                           error:&error];
+    if (error) {
+        NSLog(@"Error setting up audio session: %@", error.localizedDescription);
+    }
+
+    [[AVAudioSession sharedInstance] setActive:YES error:&error];
+    if (error) {
+        NSLog(@"Error activating audio session: %@", error.localizedDescription);
+    }
+
+    // CallKit에 통화 시작 보고
+    [action fulfill];
+}
+
+// CallKit delegate method - End call
+- (void)provider:(CXProvider *)provider performEndCallAction:(CXEndCallAction *)action {
+    NSLog(@"Performing end call action");
+    // [action fulfill]; // 통화종료
+    // Here you can end the actual SIP/WebRTC call
+}
+
+// CallKit delegate method - Handle call ended
+- (void)provider:(CXProvider *)provider didDeactivateAudioSession:(AVAudioSession *)audioSession {
+    NSLog(@"Audio session deactivated");
 }
 
 - (BOOL)application:(UIApplication *)application
@@ -206,5 +432,63 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 {
   return true;
 }
+
+- (void)configureAudioSession {
+    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+    AVAudioSessionCategoryOptions options = 
+        AVAudioSessionCategoryOptionAllowBluetooth | 
+        AVAudioSessionCategoryOptionDefaultToSpeaker | 
+        AVAudioSessionCategoryOptionMixWithOthers; 
+    NSError *error = nil;
+
+// 예를 들어, mVoIP에는 playAndRecord 카테고리를 사용해야 하며, 모드는 voiceChat이나 videoChat을 사용해야 합니다.
+// 
+
+    // 오디오 세션 설정
+    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord
+                 withOptions:options
+                       error:&error];
+
+    if (error) {
+        NSLog(@"[ERROR] AVAudioSession Category fail, %d", error.code);
+        NSLog(@"[ERROR] Failed to set AVAudioSession Category: %@, Error: %@", [audioSession category], error.localizedDescription);
+    }
+
+    // 통화 품질 향상을 위한 VoiceChat 모드 설정
+    [audioSession setMode:AVAudioSessionModeVoiceChat error:&error];
+    if (error) {
+        NSLog(@"[ERROR] AVAudioSession Mode fail, %d", error.code);
+        NSLog(@"[ERROR] Failed to set AVAudioSession Mode: %@, Error: %@", AVAudioSessionModeVoiceChat, error.localizedDescription);
+    }
+
+    // 오디오 세션 활성화
+    [audioSession setActive:YES error:&error];
+    if (error) {
+        NSLog(@"[ERROR] AVAudioSession activate fail, %d", error.code);
+        NSLog(@"[ERROR] Failed to activate AVAudioSession, Error: %@", error.localizedDescription);
+    }
+}
+
+// static BOOL isAppTerminated = NO; // 전역 플래그
+
+// // 이게 호출될 때 통화 종료시키면 됨
+// - (void)applicationWillTerminate:(UIApplication *)application {
+//     NSLog(@"App is being terminated");
+//     isAppTerminated = YES; // 종료 플래그 설정
+// }
+
+// - (BOOL)isAppTerminated {
+//     return isAppTerminated; // 종료 여부 반환
+// }
+
+
+//  - (BOOL)application:(UIApplication *)application
+//  continueUserActivity:(NSUserActivity *)userActivity
+//    restorationHandler:(void(^)(NSArray<id<UIUserActivityRestoring>> * __nullable restorableObjects))restorationHandler
+//  {
+//    return [RNCallKeep application:application
+//             continueUserActivity:userActivity
+//               restorationHandler:restorationHandler];
+//  }
 
 @end
