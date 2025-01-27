@@ -106,7 +106,7 @@ type RkbTalkProps = {
 };
 
 const RkbTalk: React.FC<RkbTalkProps> = ({
-  account: {iccid, token},
+  account: {realMobile, iccid, token},
   talk: {
     called,
     tariff,
@@ -156,8 +156,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     return [m, (m && m <= 2 && duration > 3) || false];
   }, [duration, maxTime, sessionState]);
 
-  const realMobile = '07079190216';
-  const isSuccessAuth = true; // useMemo(() => (realMobile || '') !== '', [realMobile]);
+  const isSuccessAuth = useMemo(() => (realMobile || '') !== '', [realMobile]);
 
   // beta service on, 통화 종료시, 1/3 확률로 통화품질모달 출력
   useEffect(() => {
@@ -672,8 +671,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         },
         sessionDescriptionHandlerFactoryOptions: {
           iceServers: [{urls: `stun:${turnServer}`}],
-          iceGatheringTimeout: 3,
-          // callTimeout: 60,
+          iceGatheringTimeout: 30,
+          callTimeout: 60,
         },
       };
       const ua = new UserAgent(userAgentOptions);
