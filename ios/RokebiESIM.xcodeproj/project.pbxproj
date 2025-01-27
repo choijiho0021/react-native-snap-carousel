@@ -1382,7 +1382,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				KAKAO_APP_KEY = f881469e3b4a140967dfaebe648ede8d;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.4;
+				MARKETING_VERSION = 1.8.6;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1506,7 +1506,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				KAKAO_APP_KEY = f881469e3b4a140967dfaebe648ede8d;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.4;
+				MARKETING_VERSION = 1.8.6;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1681,7 +1681,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				KAKAO_APP_KEY = f881469e3b4a140967dfaebe648ede8d;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.4;
+				MARKETING_VERSION = 1.8.6;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
