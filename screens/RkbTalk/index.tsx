@@ -6,8 +6,9 @@ import {
 } from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
+  NativeEventEmitter,
   NativeModules,
   Platform,
   SafeAreaView,
@@ -140,6 +141,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
 
   const [refreshing, setRefreshing] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [callUUID, setCallUUID] = useState();
   const emgOn = useMemo(
     () => Object.entries(emg || {})?.filter(([k, v]) => v === '1'),
     [emg],
@@ -156,6 +158,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     return [m, (m && m <= 2 && duration > 3) || false];
   }, [duration, maxTime, sessionState]);
 
+  const {CallKitModule} = NativeModules;
+  const callKitEmitter = new NativeEventEmitter(CallKitModule);
   const isSuccessAuth = useMemo(() => (realMobile || '') !== '', [realMobile]);
 
   // beta service on, 통화 종료시, 1/3 확률로 통화품질모달 출력
@@ -596,8 +600,11 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
                       }); // 나머지 경우의 예외 케이스
                   },
                 );
+                // 통화 연결시 uuid 저장
+                Promise.resolve(
+                  NativeModules?.CallKitModule?.startCall(called),
+                ).then((u) => setCallUUID(u));
               }
-              NativeModules?.CallKitModule?.startCall(called);
             }
           });
           break;
@@ -606,7 +613,9 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           break;
         case 'mute':
           setMute((prev) => {
-            inviter?.sessionDescriptionHandler?.setMute(!prev);
+            if (Platform.OS === 'ios')
+              NativeModules?.CallKitModule?.setMutedCall(callUUID, !prev);
+            else inviter?.sessionDescriptionHandler?.setMute(!prev);
             return !prev;
           });
           break;
@@ -635,6 +644,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     },
     [
       action.toast,
+      callUUID,
       called,
       ccode,
       checkMic,
@@ -646,6 +656,50 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       realMobile,
       releaseCall,
     ],
+  );
+
+  // ios만
+  useFocusEffect(
+    React.useCallback(() => {
+      const subscription = callKitEmitter.addListener(
+        'CallStatusUpdate',
+        (event) => {
+          console.log('[CallKitModule] Call Status:', event.status);
+          switch (event.status) {
+            case 'Muted':
+              setMute(true);
+              setPressed('mute');
+              break;
+            case 'Unmuted':
+              setMute(false);
+              setPressed('');
+              break;
+            case 'Ended':
+              releaseCall();
+              break;
+            default:
+              break;
+          }
+        },
+      );
+
+      return () => subscription.remove();
+    }, [callKitEmitter, releaseCall]),
+  );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const subscription = callKitEmitter.addListener(
+        'DTMFCallAction',
+        (event) => {
+          //         { digits: '0',
+          // callUUID: '7dfda9b8-7c40-4e06-bda3-6f79f1c59edc' }
+          onPressKeypad('keypad', event?.digits);
+        },
+      );
+
+      return () => subscription.remove();
+    }, [callKitEmitter, onPressKeypad]),
   );
 
   // Options for SimpleUser

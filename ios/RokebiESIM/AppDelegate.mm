@@ -4,6 +4,11 @@
 #endif
 #import <AudioUnit/AudioUnit.h>
 #import <CallKit/CallKit.h>
+#import "CallKitModule.h"
+#import <WebRTC/RTCAudioSession.h>
+#import <WebRTC/RTCAudioSessionConfiguration.h>
+#import <WebRTC/WebRTC.h>
+
 
 #import <AVFoundation/AVFoundation.h>
 
@@ -187,6 +192,35 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 
 #pragma mark - CallKit 설정
 
+- (void)setupCorrectAudioConfiguration {
+    RTCAudioSession *rtcAudioSession = [RTCAudioSession sharedInstance];
+    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+
+    [rtcAudioSession lockForConfiguration];
+
+    NSError *error = nil;
+
+    // AVAudioSession의 카테고리 및 모드 설정
+    BOOL success = [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord
+                                       mode:AVAudioSessionModeVoiceChat
+                                    options:AVAudioSessionCategoryOptionAllowBluetooth |
+                                            AVAudioSessionCategoryOptionDuckOthers |
+                                            AVAudioSessionCategoryOptionAllowBluetoothA2DP |
+                                            AVAudioSessionCategoryOptionMixWithOthers
+                                      error:&error];
+
+    if (!success || error) {
+        NSLog(@"[CallKitModule] Failed to configure AVAudioSession: %@", error.localizedDescription);
+    } else {
+        NSLog(@"[CallKitModule] AVAudioSession configured successfully");
+    }
+
+    // WebRTC 오디오 활성화
+    rtcAudioSession.isAudioEnabled = YES;
+
+    [rtcAudioSession unlockForConfiguration];
+}
+
 - (void)setupCallKit {
     // CallKit configuration
     CXProviderConfiguration *providerConfig = [[CXProviderConfiguration alloc] initWithLocalizedName:@"RokebiESIM"];
@@ -333,7 +367,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
             if (error) {
                 NSLog(@"Failed to end call: %@", error.localizedDescription);
             } else {
-                NSLog(@"Call ended successfully.");
+                NSLog(@"Call ended successfully. %@", call.UUID);
             }
         }];
 
@@ -341,6 +375,53 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
         // [self requestTransaction:transaction];
     }
 }
+
+- (void)muteCall:(NSString *)uuidString muted:(BOOL)muted {
+    #ifdef DEBUG
+        NSLog(@"[CallKitModule][setMutedCall] muted = %i", muted);
+    #endif  
+    NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
+    CXSetMutedCallAction *setMutedAction = [[CXSetMutedCallAction alloc] initWithCallUUID:uuid muted:muted];
+    CXTransaction *transaction = [[CXTransaction alloc] init];
+    [transaction addAction:setMutedAction];
+
+    [self requestTransaction:transaction];
+}
+
+- (void)reportCallStatus:(NSString *)status {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@"📢 [CallKitModule] reportCallStatus called with status: %@", status);
+
+        // React Native가 관리하는 모듈 인스턴스를 가져옴
+        CallKitModule *callKitInstance = [self.bridge moduleForClass:[CallKitModule class]];
+
+        if (callKitInstance && callKitInstance.bridge) {  // 🔵 self.bridge 대신 callKitInstance.bridge 사용
+            // NSLog(@"[CallKitModule] self.bridge is initialized: %@", callKitInstance.bridge);
+            [callKitInstance sendCallStatusEvent:status];
+            NSLog(@"✅ [CallKitModule] Event sent successfully from reportCallStatus!");
+        } else {
+            NSLog(@"⚠️ [CallKitModule] self.bridge is NULL, event not sent.");
+        }
+    });
+}
+
+- (void)reportEventWithName:(NSString *)name body:(id)body {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@"📢 [CallKitModule] reportEventWithName called with status: %@, %@", name, body);
+
+        // React Native가 관리하는 모듈 인스턴스를 가져옴
+        CallKitModule *callKitInstance = [self.bridge moduleForClass:[CallKitModule class]];
+
+        if (callKitInstance && callKitInstance.bridge) {  // 🔵 self.bridge 대신 callKitInstance.bridge 사용
+            // NSLog(@" [CallKitModule] self.bridge is initialized: %@", callKitInstance.bridge);
+            [callKitInstance sendEventWithNameWrapper:name body:body];
+            NSLog(@"✅ [CallKitModule] report Event sent successfully from reportEventWithName!");
+        } else {
+            NSLog(@"⚠️ [CallKitModule] self.bridge is NULL, event not sent.");
+        }
+    });
+}
+
 
 // CallKit delegate method - Start call
 #pragma mark - CXProviderDelegate
@@ -365,6 +446,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
         NSLog(@"Error activating audio session: %@", error.localizedDescription);
     }
 
+    [self reportCallStatus:@"Call Start"];
+
     // CallKit에 통화 시작 보고
     [action fulfill];
 }
@@ -372,13 +455,59 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 // CallKit delegate method - End call
 - (void)provider:(CXProvider *)provider performEndCallAction:(CXEndCallAction *)action {
     NSLog(@"Performing end call action");
-    // [action fulfill]; // 통화종료
+    [self reportCallStatus:@"Ended"];
+
+    [action fulfill]; // 통화종료
     // Here you can end the actual SIP/WebRTC call
+}
+
+// CXProviderDelegate 메서드 - 음소거 상태 변경 감지
+- (void)provider:(CXProvider *)provider performSetMutedCallAction:(CXSetMutedCallAction *)action {
+    NSLog(@"📢 [CallKitModule] performSetMutedCallAction called: Muted = %@", action.muted ? @"YES" : @"NO");
+
+    // React Native로 Mute 이벤트 전달
+    [self reportCallStatus:action.muted ? @"Muted" : @"Unmuted"];
+
+    // Action을 완료 처리 (필수)
+    [action fulfill];
+}
+
+- (void)provider:(CXProvider *)provider performPlayDTMFCallAction:(CXPlayDTMFCallAction *)action {
+    #ifdef DEBUG
+        NSLog(@"[CallKitModule][CXProviderDelegate][provider:performPlayDTMFCallAction], %@, %@", action.digits, action.callUUID.UUIDString);
+    #endif
+    [self reportEventWithName:@"DTMFCallAction" body:@{ @"digits": action.digits, @"callUUID": [action.callUUID.UUIDString lowercaseString] }];
+    [action fulfill];
 }
 
 // CallKit delegate method - Handle call ended
 - (void)provider:(CXProvider *)provider didDeactivateAudioSession:(AVAudioSession *)audioSession {
-    NSLog(@"Audio session deactivated");
+    // NSLog(@"[CallKitModule] Audio Session Deactivated");
+
+    // AVAudioSession을 기본 모드로 복구
+    NSError *error = nil;
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
+                                            mode:AVAudioSessionModeDefault
+                                         options:AVAudioSessionCategoryOptionMixWithOthers
+                                           error:&error];
+
+    if (error) {
+        NSLog(@"[CallKitModule] Failed to reset AVAudioSession: %@", error.localizedDescription);
+    } else {
+        NSLog(@"[CallKitModule] AVAudioSession reset to default");
+    }
+
+    // WebRTC 오디오 비활성화
+    RTCAudioSession *rtcAudioSession = [RTCAudioSession sharedInstance];
+    rtcAudioSession.isAudioEnabled = NO;
+}
+
+- (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession *)audioSession {
+    // NSLog(@"[CallKitModule] Audio Session Activated");
+
+    [self reportCallStatus:@"Call Unmute"];
+    // WebRTC 오디오 활성화
+    [self setupCorrectAudioConfiguration];
 }
 
 - (BOOL)application:(UIApplication *)application
