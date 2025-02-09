@@ -107,7 +107,6 @@ const Keypad: React.FC<KeypadProps> = ({
   const [dtmf, setDtmf] = useState('');
   const [showKeypad, setShowKeypad] = useState(true);
   const dispatch = useDispatch();
-  const [ringSpeaker, setRingSpeaker] = useState<boolean>(false);
   const {updateCalledPty, appendCalledPty, delCalledPty} = bindActionCreators(
     talkActions,
     dispatch,
@@ -128,21 +127,12 @@ const Keypad: React.FC<KeypadProps> = ({
           onPress={() => {
             if (key !== 'keypad') setPress?.(key);
             if (key === 'keypad') setShowKeypad((prev) => !prev);
-            else if (key === 'speaker' && SessionState.Establishing === state) {
-              // ringback speaker 적용
-              setRingSpeaker((prev) => {
-                InCallManager.setForceSpeakerphoneOn(!prev); // ringback 에서 스피커 바로 동작 안해서 추가 적용
-                setRingSpeaker(true);
-                return !prev;
-              });
-
-              onPress?.(key);
-            } else onPress?.(key);
+            else onPress?.(key);
           }}
         />
       </View>
     ),
-    [onPress, pressed, setPress, state],
+    [onPress, pressed, setPress],
   );
 
   const initDtmf = useCallback(() => setDtmf(''), []);
@@ -150,7 +140,6 @@ const Keypad: React.FC<KeypadProps> = ({
   // dtmf는 keypad를 닫았다가 다시 열 경우에도 이전 이력 남아있어야 하는지 확인 필요
   const closeKeypad = useCallback(() => {
     setShowKeypad(false);
-    setRingSpeaker(false);
   }, []);
 
   const terminated = useCallback(() => {
@@ -171,7 +160,7 @@ const Keypad: React.FC<KeypadProps> = ({
       InCallManager.start({media: 'audio', ringback: '_BUNDLE_'});
 
     if (SessionState.Established === state) {
-      InCallManager.stopProximitySensor();
+      InCallManager?.stopProximitySensor();
       InCallManager.stopRingback();
     }
 
