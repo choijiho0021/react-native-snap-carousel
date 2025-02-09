@@ -12,10 +12,10 @@
     NSMutableArray *eventQueue; // 이벤트를 저장하는 큐
     NSMutableArray *_delayedEvents;
     AVAudioSession *_audioSession;
+    CXCallObserver *_callObserver; // 일반 전화 감지를 위한 Call Observer
 }
 
 RCT_EXPORT_MODULE();
-
 
 + (BOOL)requiresMainQueueSetup
 {
@@ -96,24 +96,51 @@ RCT_EXPORT_METHOD(setMutedCall:(NSString *)uuidString :(BOOL)muted)
     });
 }
 
-
-
 - (instancetype)init {
     self = [super init];
     if (self) {
         _audioSession = [AVAudioSession sharedInstance];
+
+        // 오디오 라우트 변경 감지 (이어폰, 블루투스, 스피커 변경 등)
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                selector:@selector(handleAudioRouteChange:)
-                                                name:AVAudioSessionRouteChangeNotification
-                                                object:nil];
+                                                 selector:@selector(handleAudioRouteChange:)
+                                                     name:AVAudioSessionRouteChangeNotification
+                                                   object:nil];
+
+        // 일반 전화 감지
+        _callObserver = [[CXCallObserver alloc] init];
+        [_callObserver setDelegate:self queue:nil];
     }
     return self;
+}
+
+// 일반 전화 수신 및 종료 감지
+- (void)callObserver:(CXCallObserver *)callObserver callChanged:(CXCall *)call {
+    if (call.hasEnded) {
+        NSLog(@" 일반 전화 종료됨 - WebRTC 연결 복구 가능");
+        [self restartWebRTCConnection]; // WebRTC 연결 복구
+    } else if (call.isOutgoing || call.hasConnected) {
+        NSLog(@" 일반 전화 수신 감지됨 - VoIP 통화 유지 처리 필요");
+        [self pauseWebRTCStream]; // WebRTC 스트림 일시 정지
+    }
+}
+
+// WebRTC 세션 재연결
+// 재연결이 필요하다고 하나 현재 상태로도 동작되고 있음.
+- (void)restartWebRTCConnection {
+    NSLog(@"🔄 WebRTC 세션 복구 중...");
+    // WebRTC 연결 재설정 로직 (예: SIP 재등록, ICE 재시작 등)
+}
+
+// WebRTC 스트림 일시 정지 (일반 전화 수신 시)
+- (void)pauseWebRTCStream {
+    NSLog(@"⏸️ WebRTC 스트림 일시 정지...");
+    // 필요 시 WebRTC 오디오, 비디오 스트림을 일시 정지
 }
 
 - (void)handleAudioRouteChange:(NSNotification *)notification {
     NSDictionary *info = notification.userInfo;
     AVAudioSessionRouteChangeReason reason = [info[AVAudioSessionRouteChangeReasonKey] integerValue];
-
     NSString *reasonString;
     switch (reason) {
         case AVAudioSessionRouteChangeReasonNewDeviceAvailable:
@@ -135,63 +162,56 @@ RCT_EXPORT_METHOD(setMutedCall:(NSString *)uuidString :(BOOL)muted)
             reasonString = @"Unknown reason";
             break;
     }
-
-    // 현재 오디오 출력 장치 확인
-    // AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+    
     NSString *currentOutput = @"Unknown";
     if (_audioSession.currentRoute.outputs.count > 0) {
-      NSLog(@"[InCallManager] Audio Route Changed@@@: %@", _audioSession.currentRoute);
         currentOutput = _audioSession.currentRoute.outputs.firstObject.portType;
     }
-
     #ifdef DEBUG
-        NSLog(@"[InCallManager] Audio Route Changed: %@, Current Output: %@, info: %@", reasonString, currentOutput, notification.userInfo);
+        NSLog(@"[InCallManager] Audio Route Changed@@: %@, Current Output: %@, info: %@", reasonString, currentOutput, notification.userInfo);
     #endif
-
     // React Native로 이벤트 전달
     [self sendEventWithName:@"onAudioRouteChange" body:@{@"reason": reasonString, @"currentOutput": currentOutput}];
 }
 
-// void
-RCT_EXPORT_METHOD(toggleSpeaker:(NSString *)uuid 
-                    enabled:(BOOL)enabled
-                    resolver:(RCTPromiseResolveBlock)resolve
-                    rejecter:(RCTPromiseRejectBlock)reject) {
+// Incallmanager 참조
+RCT_EXPORT_METHOD(toggleSpeaker:(NSString *)uuid
+                  enabled:(BOOL)enabled
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSLog(@"@@ [Callkit] Speaker: %@", enabled ? @"On": @"Off");
+        NSLog(@"@@ [Callkit] toogle speaker %i", enabled);
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
-        // AppDelegate의 setSpeakerEnabled 호출
         if ([appDelegate respondsToSelector:@selector(setSpeakerEnabled:enabled:)]&& uuid.length > 0) {
-            [appDelegate setSpeakerEnabled:uuid enabled:enabled];
+           [appDelegate setSpeakerEnabled:uuid enabled:enabled];
         } else {
             NSLog(@"setSpeakerEnabled is not implemented in AppDelegate");
         }
-    //   resolve(@(enabled));
+        // resolve(@(enabled))
     });
 }
 
+// check speaker on/off
+AVAudioSessionPortDescription *previousInput = nil;
 - (BOOL)isSpeakerEnabled {
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     AVAudioSessionRouteDescription *currentRoute = audioSession.currentRoute;
-
     for (AVAudioSessionPortDescription *output in currentRoute.outputs) {
         if ([output.portType isEqualToString:AVAudioSessionPortBuiltInSpeaker]) {
-            return YES; // 스피커 ON 상태
+            return YES; // 스피커 ON
         }
     }
-    return NO; // 스피커 OFF (이어폰 또는 기본 수화기)
+    return NO; // 스피커 OFF
 }
 
 RCT_EXPORT_METHOD(getSpeakerStatus:(RCTPromiseResolveBlock)resolve
-                    rejecter:(RCTPromiseRejectBlock)reject) {
+                  rejecter:(RCTPromiseRejectBlock)reject) {
     dispatch_async(dispatch_get_main_queue(), ^{
-
     BOOL isSpeakerOn = [self isSpeakerEnabled];
-    resolve(@(isSpeakerOn)); // React Native로 반환
+    resolve(@(isSpeakerOn)); // 저장된 상태를 React Native로 반환
     });
 }
-
 
 // React Native 브릿지가 연결되었는지 확인
 - (void)setBridge:(RCTBridge *)bridge {
@@ -250,3 +270,4 @@ RCT_EXPORT_METHOD(sendEventWithNameWrapper:(NSString *)name body:(id)body) {
 }
 
 @end
+

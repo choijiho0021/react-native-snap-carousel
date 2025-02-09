@@ -192,35 +192,6 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 
 #pragma mark - CallKit 설정
 
-- (void)setupCorrectAudioConfiguration {
-    RTCAudioSession *rtcAudioSession = [RTCAudioSession sharedInstance];
-    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-
-    [rtcAudioSession lockForConfiguration];
-
-    NSError *error = nil;
-
-    // AVAudioSession의 카테고리 및 모드 설정
-    BOOL success = [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord
-                                       mode:AVAudioSessionModeVoiceChat
-                                    options:AVAudioSessionCategoryOptionAllowBluetooth |
-                                            AVAudioSessionCategoryOptionDuckOthers |
-                                            AVAudioSessionCategoryOptionAllowBluetoothA2DP |
-                                            AVAudioSessionCategoryOptionMixWithOthers
-                                      error:&error];
-
-    if (!success || error) {
-        NSLog(@"[CallKitModule] Failed to configure AVAudioSession: %@", error.localizedDescription);
-    } else {
-        NSLog(@"[CallKitModule] AVAudioSession configured successfully");
-    }
-
-    // WebRTC 오디오 활성화
-    rtcAudioSession.isAudioEnabled = YES;
-
-    [rtcAudioSession unlockForConfiguration];
-}
-
 - (void)setupCallKit {
     // CallKit configuration
     CXProviderConfiguration *providerConfig = [[CXProviderConfiguration alloc] initWithLocalizedName:@"RokebiESIM"];
@@ -248,34 +219,6 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 }
 
 // 발신통화
-// - (void)startCallWithId:(NSUUID *)callId handle:(NSString *)handle {
-//     // Create CXHandle with type .generic and the given handle value
-//     CXHandle *cxHandle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:handle];
-    
-//     // Create CXStartCallAction with call ID and CXHandle
-//     CXStartCallAction *startCallAction = [[CXStartCallAction alloc] initWithCallUUID:callId handle:cxHandle];
-
-//     // iOS 14 이상에서만 shouldSuppressInCallUI 설정
-// //    if (@available(iOS 14.0, *)) {
-// //        startCallAction.shouldSuppressInCallUI = YES;
-// //    } else {
-// //        NSLog(@"[Warning] shouldSuppressInCallUI is not supported on this iOS version.");
-// //    }
-    
-//     // Create a transaction with the start call action
-//     CXTransaction *transaction = [[CXTransaction alloc] initWithAction:startCallAction];
-    
-//     // Request the transaction via CXCallController
-//     CXCallController *callController = [[CXCallController alloc] init];
-//     [callController requestTransaction:transaction completion:^(NSError * _Nullable error) {
-//         if (error) {
-//             NSLog(@"Failed to start call: %@", error.localizedDescription);
-//         } else {
-//             NSLog(@"Start Call");
-//         }
-//     }];
-// }
-
 - (void)startCallWithId:(NSUUID *)callId handle:(NSString *)handle {
     // Create CXHandle with type .generic and the given handle value
     CXHandle *cxHandle = [[CXHandle alloc] initWithType:CXHandleTypePhoneNumber value:handle];
@@ -480,34 +423,64 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
     [action fulfill];
 }
 
-// CallKit delegate method - Handle call ended
-- (void)provider:(CXProvider *)provider didDeactivateAudioSession:(AVAudioSession *)audioSession {
-    // NSLog(@"[CallKitModule] Audio Session Deactivated");
-
-    // AVAudioSession을 기본 모드로 복구
+- (void)setSpeakerEnabled:(NSString *)uuid enabled:(BOOL)enabled {
     NSError *error = nil;
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
-                                            mode:AVAudioSessionModeDefault
-                                         options:AVAudioSessionCategoryOptionMixWithOthers
-                                           error:&error];
+    AVAudioSession *audioSession = [AVAudioSession sharedInstance]; // ✅ 싱글톤 인스턴스 사용
+    BOOL success;
+    
+    if (!enabled) {
+        NSLog(@"Routing audio via Earpiece");
+        @try {
+            // 🔹 오디오 세션 설정 (통화 모드, 수화기 모드)
+            success = [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord
+                                     withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP
+                                          error:&error];
+            if (!success) NSLog(@"Cannot set category due to error: %@", error);
+            
+            success = [audioSession setMode:AVAudioSessionModeVoiceChat error:&error];
+            if (!success) NSLog(@"Cannot set mode due to error: %@", error);
 
-    if (error) {
-        NSLog(@"[CallKitModule] Failed to reset AVAudioSession: %@", error.localizedDescription);
+            // 🔹 스피커 OFF (수화기로 전환)
+            success = [audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:&error];
+            if (!success) NSLog(@"Port override failed due to: %@", error);
+
+            success = [audioSession setActive:YES error:&error];
+            if (!success) NSLog(@"Audio session override failed: %@", error);
+            else NSLog(@"AudioSession override is successful %i", enabled);
+        } @catch (NSException *e) {
+            NSLog(@"Error occurred while routing audio via Earpiece: %@", e.reason);
+        }
     } else {
-        NSLog(@"[CallKitModule] AVAudioSession reset to default");
-    }
+        NSLog(@"Routing audio via Loudspeaker");
+        @try {
+            // 🔹 오디오 세션 설정 (통화 모드, 스피커 모드)
+            success = [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord
+                                     withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP
+                                          error:&error];
+            if (!success) NSLog(@"Cannot set category due to error: %@", error);
 
-    // WebRTC 오디오 비활성화
-    RTCAudioSession *rtcAudioSession = [RTCAudioSession sharedInstance];
-    rtcAudioSession.isAudioEnabled = NO;
+            success = [audioSession setMode:AVAudioSessionModeVoiceChat error:&error];
+            if (!success) NSLog(@"Cannot set mode due to error: %@", error);
+
+            // 🔹 스피커 ON
+            success = [audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&error];
+            if (!success) NSLog(@"Port override failed due to: %@", error);
+
+            success = [audioSession setActive:YES error:&error];
+            if (!success) NSLog(@"Audio session override failed: %@", error);
+            else NSLog(@"AudioSession override is successful %i", enabled);
+        } @catch (NSException *e) {
+            NSLog(@"Error occurred while routing audio via Loudspeaker: %@", e.reason);
+        }
+    }
 }
 
 - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession *)audioSession {
-    // NSLog(@"[CallKitModule] Audio Session Activated");
+#ifdef DEBUG
+    NSLog(@"[CallKit] Audio session activated");
+#endif
+    [self configureAudioSession]; // 오디오 세션을 설정
 
-    [self reportCallStatus:@"Call Unmute"];
-    // WebRTC 오디오 활성화
-    [self setupCorrectAudioConfiguration];
 }
 
 - (BOOL)application:(UIApplication *)application
@@ -565,9 +538,10 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 - (void)configureAudioSession {
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     AVAudioSessionCategoryOptions options = 
-        AVAudioSessionCategoryOptionAllowBluetooth | 
-        AVAudioSessionCategoryOptionDefaultToSpeaker | 
-        AVAudioSessionCategoryOptionMixWithOthers; 
+AVAudioSessionCategoryOptionAllowBluetooth |
+    AVAudioSessionCategoryOptionDuckOthers |
+    AVAudioSessionCategoryOptionMixWithOthers | 
+    AVAudioSessionCategoryOptionAllowBluetoothA2DP;
     NSError *error = nil;
 
 // 예를 들어, mVoIP에는 playAndRecord 카테고리를 사용해야 하며, 모드는 voiceChat이나 videoChat을 사용해야 합니다.
@@ -589,6 +563,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
         NSLog(@"[ERROR] AVAudioSession Mode fail, %d", error.code);
         NSLog(@"[ERROR] Failed to set AVAudioSession Mode: %@, Error: %@", AVAudioSessionModeVoiceChat, error.localizedDescription);
     }
+
+    // 기본적으로 스피커를 OFF로 설정
+    [audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:&error];
 
     // 오디오 세션 활성화
     [audioSession setActive:YES error:&error];
