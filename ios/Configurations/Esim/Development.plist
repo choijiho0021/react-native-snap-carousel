@@ -216,6 +216,10 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+    <array>
+        <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    </array>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>앱이 블루투스를 사용합니다.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
@@ -246,6 +250,7 @@
 	<array>
 		<string>audio</string>
 		<string>fetch</string>
+        <string>processing</string>
 		<string>remote-notification</string>
 		<string>voip</string>	</array>
 	<key>UILaunchStoryboardName</key>
