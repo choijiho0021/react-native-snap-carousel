@@ -56,15 +56,10 @@
 @property (nonatomic, strong) CXCallController *callController;
 @end
 
-
 @implementation AppDelegate
- 
-
 
 // 무슨 용도?
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
-
- 
 
 
 //---- IOS Notification ------
