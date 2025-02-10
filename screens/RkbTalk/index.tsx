@@ -105,6 +105,7 @@ type RkbTalkProps = {
 };
 
 const RkbTalk: React.FC<RkbTalkProps> = ({
+  route,
   account: {realMobile, iccid, token},
   talk: {
     called,
@@ -136,7 +137,6 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [point, setPoint] = useState<number>(0);
   const [dtmf, setDtmf] = useState<string>();
   const [pressed, setPressed] = useState<string>();
-
   const [refreshing, setRefreshing] = useState(false);
   const [visible, setVisible] = useState(false);
   const emgOn = useMemo(
@@ -156,6 +156,21 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   }, [duration, maxTime, sessionState]);
 
   const isSuccessAuth = useMemo(() => (realMobile || '') !== '', [realMobile]);
+
+  useEffect(() => {
+    console.log('@@@ actionStr: reload ');
+  }, []);
+
+  useEffect(() => {
+    const {actionStr} = route?.params || {};
+
+    if (actionStr === 'reload') {
+      navigation.setParams({
+        actionStr: undefined,
+      });
+      if (iccid && token) action.account.getAccount({iccid, token});
+    }
+  }, [action.account, iccid, navigation, route?.params, token]);
 
   // beta service on, 통화 종료시, 1/3 확률로 통화품질모달 출력
   useEffect(() => {

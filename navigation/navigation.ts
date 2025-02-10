@@ -278,7 +278,9 @@ export type HomeStackParamList = {
     profileImageUrl?: string;
   };
   SimpleTextForAuth: Record<string, string>;
-  Talk: undefined;
+  Talk: {
+    actionStr?: string;
+  };
   TalkContact: undefined;
   TalkPoint: undefined;
   TalkTariff: undefined;

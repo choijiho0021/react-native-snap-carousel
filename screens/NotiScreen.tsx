@@ -446,6 +446,9 @@ const NotiScreen: React.FC<NotiScreenProps> = ({
           case notiActions.NOTI_TYPE_REALNAME:
             navigation.navigate('TalkStack', {
               screen: 'RkbTalk',
+              params: {
+                actionStr: 'reload',
+              },
             });
 
             break;
