@@ -6,6 +6,9 @@ class HandleRealNamePushNoti extends HandlePushNoti {
   handleNoti() {
     this.navigation.navigate('TalkStack', {
       screen: 'RkbTalk',
+      params: {
+        actionStr: 'reload',
+      },
     });
     this.terminatedCall(true);
 

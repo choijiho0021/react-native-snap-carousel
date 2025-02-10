@@ -166,17 +166,18 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   useEffect(() => {
     console.log('@@@ actionStr: reload ');
   }, []);
-
-  useEffect(() => {
-    const {actionStr} = route?.params || {};
-
-    if (actionStr === 'reload') {
-      navigation.setParams({
-        actionStr: undefined,
-      });
-      if (iccid && token) action.account.getAccount({iccid, token});
-    }
-  }, [action.account, iccid, navigation, route?.params, token]);
+ 
+  useFocusEffect(
+    React.useCallback(() => {
+      const { actionStr } = route?.params || {};
+      if (actionStr === 'reload') {
+        navigation.setParams({
+          actionStr: undefined,
+        });
+        if (iccid && token) action.account.getAccount({ iccid, token });
+      }
+    }, [action.account, iccid, navigation, route, token])
+  );
 
   // beta service on, 통화 종료시, 1/3 확률로 통화품질모달 출력
   useEffect(() => {
