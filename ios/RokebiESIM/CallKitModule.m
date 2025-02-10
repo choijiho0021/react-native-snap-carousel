@@ -25,11 +25,11 @@ RCT_EXPORT_MODULE();
 // React Native에서 이벤트 리스너를 추가하면 호출됨
 - (void)startObserving {
     hasListeners = YES;
-    // NSLog(@"@ 📢 [CallKitModule] startObserving hasListeners: %d", hasListeners);
+    // NSLog(@"[CallKitModule] startObserving hasListeners: %d", hasListeners);
 
     // 저장된 이벤트가 있으면 모두 전송
     if (eventQueue.count > 0) {
-        NSLog(@"@ 📢 [CallKitModule] Sending queued events...");
+        NSLog(@"📢 [CallKitModule] Sending queued events...");
         for (NSDictionary *event in eventQueue) {
             [self sendEventWithName:event[@"name"] body:event[@"body"]];
         }
@@ -60,7 +60,7 @@ RCT_EXPORT_METHOD(startCall:(NSString *)handle resolver:(RCTPromiseResolveBlock)
         if ([appDelegate respondsToSelector:@selector(startCallWithId:handle:)]) {
             [appDelegate startCallWithId:callId handle:handle];
 
-            // ✅ React Native로 `NSString *` 반환
+            // React Native로 `NSString *` 반환
             NSString *result = [NSString stringWithFormat:@"%@", callId.UUIDString];
             resolve(result);
         } else {
@@ -168,7 +168,7 @@ RCT_EXPORT_METHOD(setMutedCall:(NSString *)uuidString :(BOOL)muted)
         currentOutput = _audioSession.currentRoute.outputs.firstObject.portType;
     }
     #ifdef DEBUG
-        NSLog(@"[InCallManager] Audio Route Changed@@: %@, Current Output: %@, info: %@", reasonString, currentOutput, notification.userInfo);
+        NSLog(@"[CallKitModule] Audio Route Changed@@: %@, Current Output: %@, info: %@", reasonString, currentOutput, notification.userInfo);
     #endif
     // React Native로 이벤트 전달
     [self sendEventWithName:@"onAudioRouteChange" body:@{@"reason": reasonString, @"currentOutput": currentOutput}];
@@ -180,13 +180,13 @@ RCT_EXPORT_METHOD(toggleSpeaker:(NSString *)uuid
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSLog(@"@@ [Callkit] toogle speaker %i", enabled);
+        NSLog(@"[CallKitModule] toogle speaker %i", enabled);
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
         if ([appDelegate respondsToSelector:@selector(setSpeakerEnabled:enabled:)]&& uuid.length > 0) {
            [appDelegate setSpeakerEnabled:uuid enabled:enabled];
         } else {
-            NSLog(@"setSpeakerEnabled is not implemented in AppDelegate");
+            NSLog(@"[CallKitModule] setSpeakerEnabled is not implemented in AppDelegate");
         }
         // resolve(@(enabled))
     });
@@ -227,20 +227,20 @@ RCT_EXPORT_METHOD(getSpeakerStatus:(RCTPromiseResolveBlock)resolve
 // react native에서 mute, unmute, endcall 처리 - CallStatusUpdate
 RCT_EXPORT_METHOD(sendCallStatusEvent:(NSString *)status) {
     dispatch_async(dispatch_get_main_queue(), ^{
-    NSLog(@"📢 [CallKitModule] sendCallStatusEvent called with status: %@", status);
+    NSLog(@"[CallKitModule] sendCallStatusEvent called with status: %@", status);
 
     if (!eventQueue) {
         eventQueue = [NSMutableArray new];
     }
 
-    // ✅ React Native가 초기화한 인스턴스를 가져옴
+    // React Native가 초기화한 인스턴스를 가져옴
     CallKitModule *callKitInstance = [self.bridge moduleForClass:[CallKitModule class]];
 
-    if (callKitInstance.bridge) {  // 🔵 self.bridge 대신 callKitInstance.bridge 사용
-        NSLog(@"✅ [CallKitModule] self.bridge is initialized: %@", callKitInstance.bridge);
+    if (callKitInstance.bridge) {  // self.bridge 대신 callKitInstance.bridge 사용
+        NSLog(@"[CallKitModule] self.bridge is initialized: %@", callKitInstance.bridge);
         if (hasListeners) {
             [callKitInstance sendEventWithName:@"CallStatusUpdate" body:@{@"status": status}];
-            NSLog(@"✅ [CallKitModule] Event sent successfully!");
+            NSLog(@"[CallKitModule] Event sent successfully!");
         } else {
             NSLog(@"⚠️ [CallKitModule] No listeners found, event not sent.");
         }
@@ -254,7 +254,7 @@ RCT_EXPORT_METHOD(sendCallStatusEvent:(NSString *)status) {
 // react native에서 dtmf call action - DTMFCallAction
 RCT_EXPORT_METHOD(sendEventWithNameWrapper:(NSString *)name body:(id)body) {
     dispatch_async(dispatch_get_main_queue(), ^{
-    NSLog(@"✅ [CallKitModule] sendEventWithNameWrapper: %@, hasListeners : %@", name, hasListeners ? @"YES": @"NO");
+    NSLog(@"[CallKitModule] sendEventWithNameWrapper: %@, hasListeners : %@", name, hasListeners ? @"YES": @"NO");
 
     if (hasListeners) {
         [self sendEventWithName:name body:body];
