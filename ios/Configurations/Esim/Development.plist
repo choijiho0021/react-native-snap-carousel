@@ -80,7 +80,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>40</string>
+	<string>3</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>FacebookAppID</key>
@@ -216,6 +216,10 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>앱이 블루투스를 사용합니다.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>이 앱은 블루투스 장치와 연결하여 오디오 출력을 지원합니다.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>사진 또는 동영상을 촬영, 메세지로 전송하여 더욱 원활한 채팅 상담을 진행하기 위해 카메라에 접근하도록 허용합니다.</string>
 	<key>NSContactsUsageDescription</key>
@@ -240,11 +244,10 @@
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string>fetch</string>
 		<string>audio</string>
-		<string>voip</string>
+		<string>fetch</string>
 		<string>remote-notification</string>
-	</array>
+		<string>voip</string>	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

@@ -6,8 +6,11 @@ import {
 } from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
+  AppState,
+  NativeEventEmitter,
+  NativeModules,
   Platform,
   SafeAreaView,
   StatusBar,
@@ -139,11 +142,12 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [pressed, setPressed] = useState<string>();
   const [refreshing, setRefreshing] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [callUUID, setCallUUID] = useState();
   const emgOn = useMemo(
     () => Object.entries(emg || {})?.filter(([k, v]) => v === '1'),
     [emg],
   );
-
+  const appState = useRef('unknown');
   const {top} = useSafeAreaInsets();
   // showWarning이 전화연결되면 바로 나오는 이슈 있음.
   const [min, showWarning] = useMemo(() => {
@@ -155,6 +159,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     return [m, (m && m <= 2 && duration > 3) || false];
   }, [duration, maxTime, sessionState]);
 
+  const {CallKitModule} = NativeModules;
+  const callKitEmitter = new NativeEventEmitter(CallKitModule);
   const isSuccessAuth = useMemo(() => (realMobile || '') !== '', [realMobile]);
 
   useEffect(() => {
@@ -377,6 +383,11 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   }, []);
 
   const cleanupMedia = useCallback(() => {
+    NativeModules?.CallKitModule?.toggleSpeaker(callUUID, false).then(() =>
+      setCallUUID(),
+    );
+    setSpeakerPhone(false);
+    NativeModules?.CallKitModule?.endCalls();
     setRefreshing(true);
 
     setInviter(null);
@@ -393,11 +404,6 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       InCallManager.setMicrophoneMute(false);
       return false;
     });
-    setSpeakerPhone(() => {
-      InCallManager.setSpeakerphoneOn(false);
-      InCallManager.setForceSpeakerphoneOn(false);
-      return false;
-    });
     // Terminated 될 때 callReview Modal 출력 목적
     setSessionState(SessionState.Initial);
 
@@ -406,7 +412,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     action.talk.updateNumberClicked({});
 
     setRefreshing(false);
-  }, [action.talk, getPoint]);
+  }, [action.talk, callUUID, getPoint]);
 
   useEffect(() => {
     if (terminateCall && called) {
@@ -564,14 +570,36 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     [action.talk, cleanupMedia, getMaxCallTime, setupRemoteMedia, userAgent],
   );
 
+  const checkAndChangeSpeaker = useCallback(() => {
+    Promise.resolve(NativeModules?.CallKitModule?.getSpeakerStatus()).then(
+      (r) => {
+        console.log(`@@ current speaker from ${r} to ${!r}`);
+        NativeModules?.CallKitModule?.toggleSpeaker(callUUID, !r);
+        setPressed((prev) => (!r ? 'speaker' : prev));
+        setSpeakerPhone(!r);
+      },
+    );
+  }, [callUUID]);
+
   // ios speaker on인채로 통화연결시 통화 speaker 동작안되는 이슈 수정
   useEffect(() => {
-    if (speakerPhone) {
-      if (sessionState === SessionState.Established) {
-        InCallManager.setSpeakerphoneOn(true);
-      }
+    if (sessionState === SessionState.Established) {
+      Promise.resolve(NativeModules?.CallKitModule?.getSpeakerStatus()).then(
+        (r) => {
+          if (r !== speakerPhone) {
+            console.log(
+              '@@ is speaker on1 different established',
+              r,
+              speakerPhone,
+            );
+            NativeModules?.CallKitModule?.toggleSpeaker(callUUID, speakerPhone);
+            setPressed((prev) => (speakerPhone ? 'speaker' : prev));
+            setSpeakerPhone(speakerPhone);
+          }
+        },
+      );
     }
-  }, [sessionState, speakerPhone]);
+  }, [callUUID, sessionState, speakerPhone]);
 
   const onPressKeypad = useCallback(
     (k: string, d?: string) => {
@@ -609,6 +637,14 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
                       }); // 나머지 경우의 예외 케이스
                   },
                 );
+                // 통화 연결시 uuid 저장
+                Promise.resolve(
+                  NativeModules?.CallKitModule?.startCall(called),
+                ).then((u) => {
+                  setCallUUID(u);
+                  // 초기 speaker off 적용
+                  NativeModules?.CallKitModule?.toggleSpeaker(u, false);
+                });
               }
             }
           });
@@ -618,16 +654,14 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
           break;
         case 'mute':
           setMute((prev) => {
-            inviter?.sessionDescriptionHandler?.setMute(!prev);
+            if (Platform.OS === 'ios')
+              NativeModules?.CallKitModule?.setMutedCall(callUUID, !prev);
+            else inviter?.sessionDescriptionHandler?.setMute(!prev);
             return !prev;
           });
           break;
         case 'speaker':
-          setSpeakerPhone((prev) => {
-            // incallmanager speaker는 ringback일때도 켜져야함.
-            InCallManager.setSpeakerphoneOn(!prev);
-            return !prev;
-          });
+          checkAndChangeSpeaker();
           break;
         case 'keypad':
           dtmfSession?.info({
@@ -647,8 +681,10 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     },
     [
       action.toast,
+      callUUID,
       called,
       ccode,
+      checkAndChangeSpeaker,
       checkMic,
       dtmfSession,
       inviter?.sessionDescriptionHandler,
@@ -658,6 +694,71 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
       realMobile,
       releaseCall,
     ],
+  );
+
+  // ios만
+  useFocusEffect(
+    React.useCallback(() => {
+      const subscription = callKitEmitter.addListener(
+        'CallStatusUpdate',
+        (event) => {
+          console.log('[CallKitModule] Call Status:', event.status);
+          switch (event.status) {
+            case 'Muted':
+              setMute(true);
+              setPressed('mute');
+              break;
+            case 'Unmuted':
+              setMute(false);
+              setPressed('');
+              break;
+            case 'Ended':
+              releaseCall();
+              break;
+            default:
+              break;
+          }
+        },
+      );
+
+      return () => subscription.remove();
+    }, [callKitEmitter, releaseCall]),
+  );
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        console.log('@@back to the active!', appState.current, nextAppState);
+        Promise.resolve(NativeModules?.CallKitModule?.getSpeakerStatus()).then(
+          (r) => {
+            setPressed(r ? 'speaker' : '');
+            setSpeakerPhone(r);
+          },
+        );
+      }
+      appState.current = nextAppState;
+    });
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const subscription = callKitEmitter.addListener(
+        'DTMFCallAction',
+        (event) => {
+          //         { digits: '0',
+          // callUUID: '7dfda9b8-7c40-4e06-bda3-6f79f1c59edc' }
+          onPressKeypad('keypad', event?.digits);
+        },
+      );
+
+      return () => subscription.remove();
+    }, [callKitEmitter, onPressKeypad]),
   );
 
   // Options for SimpleUser

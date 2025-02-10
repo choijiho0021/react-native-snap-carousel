@@ -26,6 +26,10 @@
 		40A621E926E85C740037EE37 /* GlobalLaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 40A621E726E85C740037EE37 /* GlobalLaunchScreen.xib */; };
 		40A621EA26E85C740037EE37 /* GlobalLaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 40A621E726E85C740037EE37 /* GlobalLaunchScreen.xib */; };
 		40B508C924B8102B00213190 /* AppDelegate+Iamport.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B508C824B8102B00213190 /* AppDelegate+Iamport.m */; };
+		40FAF00B2D43321000F55EB9 /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40FAF00A2D43321000F55EB9 /* CallKit.framework */; };
+		40FAF00D2D43321A00F55EB9 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40FAF00C2D43321A00F55EB9 /* Intents.framework */; };
+		40FAF0122D4333AF00F55EB9 /* CallKitModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 40FAF0102D4333AE00F55EB9 /* CallKitModule.m */; };
+		40FAF0132D4333BF00F55EB9 /* CallKitModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 40FAF0102D4333AE00F55EB9 /* CallKitModule.m */; };
 		7294A6A77BF4B077B8740018 /* libPods-RokebiGlobal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B470F35326E3891DECD5928 /* libPods-RokebiGlobal.a */; };
 		A31C8F2F282245F200CE16F6 /* Rokebi-Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31C8F2E282245F200CE16F6 /* Rokebi-Bridge.swift */; };
 		A31C8F30282245F200CE16F6 /* Rokebi-Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31C8F2E282245F200CE16F6 /* Rokebi-Bridge.swift */; };
@@ -79,6 +83,10 @@
 		40A621E826E85C740037EE37 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = RokebiESIM/Base.lproj/GlobalLaunchScreen.xib; sourceTree = "<group>"; };
 		40B508C724B80F9900213190 /* AppDelegate+Iamport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AppDelegate+Iamport.h"; sourceTree = "<group>"; };
 		40B508C824B8102B00213190 /* AppDelegate+Iamport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "AppDelegate+Iamport.m"; sourceTree = "<group>"; };
+		40FAF00A2D43321000F55EB9 /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
+		40FAF00C2D43321A00F55EB9 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
+		40FAF00E2D43333200F55EB9 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
+		40FAF0102D4333AE00F55EB9 /* CallKitModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CallKitModule.m; path = RokebiESIM/CallKitModule.m; sourceTree = "<group>"; };
 		41BBABD5C14FEEA63885CC3D /* Pods-RokebiESIM.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.debug.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.debug.xcconfig"; sourceTree = "<group>"; };
 		4A44DBD6C614B223F1A8950B /* Pods-RokebiESIM.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RokebiESIM.release.xcconfig"; path = "Target Support Files/Pods-RokebiESIM/Pods-RokebiESIM.release.xcconfig"; sourceTree = "<group>"; };
 		5543A05CF38841A0EE278580 /* libPods-RokebiESIM.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RokebiESIM.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -124,6 +132,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40FAF00D2D43321A00F55EB9 /* Intents.framework in Frameworks */,
+				40FAF00B2D43321000F55EB9 /* CallKit.framework in Frameworks */,
 				A36B9CAA28C83A7200C346D1 /* KakaoPlusFriend.framework in Frameworks */,
 				A3748E382A087BF700653DD1 /* SystemConfiguration.framework in Frameworks */,
 				A3568E12289237A000986E9F /* StoreKit.framework in Frameworks */,
@@ -160,6 +170,7 @@
 		13B07FAE1A68108700A75B9A /* RokebiESIM */ = {
 			isa = PBXGroup;
 			children = (
+				40FAF0102D4333AE00F55EB9 /* CallKitModule.m */,
 				A35AE66D2CF56BA0001AFECA /* incallmanager_ringback.mp3 */,
 				0D63158E28B496790069564C /* AppDelegate.mm */,
 				0DB1EF14288BE3E100B18BFF /* ExternalLibs */,
@@ -188,6 +199,9 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				40FAF00E2D43333200F55EB9 /* SafariServices.framework */,
+				40FAF00C2D43321A00F55EB9 /* Intents.framework */,
+				40FAF00A2D43321000F55EB9 /* CallKit.framework */,
 				A3748E372A087BF700653DD1 /* SystemConfiguration.framework */,
 				A3748E352A087B0E00653DD1 /* CoreTelephony.framework */,
 				A36B9CA928C83A7200C346D1 /* KakaoPlusFriend.framework */,
@@ -785,6 +799,7 @@
 				A3748E4F2A0B65F100653DD1 /* RNKakaoLogins.m in Sources */,
 				A3748E452A0B289700653DD1 /* KakaoShareLink.swift in Sources */,
 				4060E90826DDAAD100E1C0AE /* main.m in Sources */,
+				40FAF0122D4333AF00F55EB9 /* CallKitModule.m in Sources */,
 				0D9C212926D37D4D0082F077 /* AppDelegate+Iamport.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -793,6 +808,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40FAF0132D4333BF00F55EB9 /* CallKitModule.m in Sources */,
 				A3748E3B2A0A208A00653DD1 /* NaverTracker.swift in Sources */,
 				A3748E4A2A0B65DB00653DD1 /* KakaoShareLink.m in Sources */,
 				A36B9CA728C8366E00C346D1 /* ARNKakaoChannel.m in Sources */,
@@ -1366,7 +1382,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				KAKAO_APP_KEY = f881469e3b4a140967dfaebe648ede8d;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.4;
+				MARKETING_VERSION = 1.8.6;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1490,7 +1506,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				KAKAO_APP_KEY = f881469e3b4a140967dfaebe648ede8d;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.4;
+				MARKETING_VERSION = 1.8.6;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1665,7 +1681,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				KAKAO_APP_KEY = f881469e3b4a140967dfaebe648ede8d;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.4;
+				MARKETING_VERSION = 1.8.6;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"$(inherited)",

@@ -10,5 +10,11 @@
 
 @interface AppDelegate : RCTAppDelegate <UNUserNotificationCenterDelegate>
 
+
+// 발신 통화 메서드 선언
+- (void)startCallWithId:(NSUUID *)callId handle:(NSString *)handle;
+- (void)endAllCalls;
+- (void)muteCall:(NSString *)uuidString muted:(BOOL)muted;
+- (void)setSpeakerEnabled:(NSString *)uuid enabled:(BOOL)enabled;
 @end
 
