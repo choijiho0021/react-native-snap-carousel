@@ -761,7 +761,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
         console.log('@@back to the active!', appState.current, nextAppState);
         Promise.resolve(NativeModules?.CallKitModule?.getSpeakerStatus()).then(
           (r) => {
-            setPressed(r ? 'speaker' : '');
+            setPressed((prev) => (r ? 'speaker' : prev));
             setSpeakerPhone(r);
           },
         );
