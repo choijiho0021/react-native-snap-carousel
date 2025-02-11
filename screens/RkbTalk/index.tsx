@@ -755,7 +755,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (
         appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
+        nextAppState === 'active' &&
+        ![SessionState.Initial, SessionState.Terminated].includes(sessionState)
       ) {
         console.log('@@back to the active!', appState.current, nextAppState);
         Promise.resolve(NativeModules?.CallKitModule?.getSpeakerStatus()).then(
@@ -770,7 +771,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [sessionState]);
 
   useFocusEffect(
     React.useCallback(() => {
