@@ -419,7 +419,6 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     setInviter(null);
 
     setDuration(0);
-    setTimerId(null);
     setMaxTime(60);
     setTime('');
     setTimeout(() => {
