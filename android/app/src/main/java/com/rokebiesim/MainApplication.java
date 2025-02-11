@@ -57,7 +57,7 @@ import com.BV.LinearGradient.LinearGradientPackage;
 import com.dooboolab.naverlogin.RNNaverLoginPackage;
 import com.rt2zz.reactnativecontacts.ReactNativeContacts;
 import com.johnsonsu.rnsoundplayer.RNSoundPlayerPackage;
-
+import com.ocetnik.timer.BackgroundTimerPackage;
 
 import com.zoyi.channel.plugin.android.ChannelIO;
 import com.zoyi.channel.rn.RNChannelIOPackage;
@@ -221,8 +221,8 @@ public class MainApplication extends Application implements ReactApplication {
                             new ReactNativeFirebaseAnalyticsPackage(),
                             new CookieManagerPackage(),
                             new RNSoundPlayerPackage(), // sound player
-                            new ReactNativeContacts() // react native contacts
-
+                            new ReactNativeContacts(), // react native contacts
+                            new BackgroundTimerPackage() // background timer
 
                     );
                 }
