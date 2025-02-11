@@ -160,7 +160,6 @@ const Keypad: React.FC<KeypadProps> = ({
       InCallManager.start({media: 'audio', ringback: '_BUNDLE_'});
 
     if (SessionState.Established === state) {
-      InCallManager?.stopProximitySensor();
       InCallManager.stopRingback();
     }
 

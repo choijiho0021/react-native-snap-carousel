@@ -17,6 +17,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import BackgroundTimer from 'react-native-background-timer';
 import InCallManager from 'react-native-incall-manager';
 import {
   check,
@@ -67,7 +68,6 @@ import {
   ToastAction,
 } from '@/redux/modules/toast';
 import i18n from '@/utils/i18n';
-import {useInterval} from '@/utils/useInterval';
 import BetaModalBox from './component/BetaModalBox';
 import CallReviewModal from './component/CallReviewModal';
 import PhoneCertBox from './component/PhoneCertBox';
@@ -136,6 +136,8 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const [dtmfSession, setDtmfSession] = useState<Session>();
   const [duration, setDuration] = useState(0);
   const [maxTime, setMaxTime] = useState<number>(60);
+  const [timerId, setTimerId] = useState<number | null>(null);
+  const [isNear, setIsNear] = useState(false);
   const [time, setTime] = useState<string>('');
   const [point, setPoint] = useState<number>(0);
   const [dtmf, setDtmf] = useState<string>();
@@ -162,6 +164,13 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   const {CallKitModule} = NativeModules;
   const callKitEmitter = new NativeEventEmitter(CallKitModule);
   const isSuccessAuth = useMemo(() => (realMobile || '') !== '', [realMobile]);
+  const connecting = useMemo(
+    () =>
+      [SessionState.Establishing, SessionState.Established].includes(
+        sessionState,
+      ),
+    [sessionState],
+  );
 
   useEffect(() => {
     console.log('@@@ actionStr: reload ');
@@ -337,19 +346,51 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     [makeSeconds],
   );
 
-  useInterval(
-    () => {
-      if (sessionState === SessionState.Established) {
-        setDuration((prev) => {
-          action.talk.updateDuration(prev + 1);
-          return prev + 1;
-        });
-        renderTime(duration);
+  // 근접센서 탐지
+  useEffect(() => {
+    const eventEmitter = new NativeEventEmitter(NativeModules?.InCallManager);
+    const subs = eventEmitter.addListener('Proximity', (data) => {
+      console.log('Proximity sensor data:', data);
+      setIsNear(data.isNear);
+    });
+
+    return () => {
+      subs?.remove();
+    };
+  }, []);
+
+  // 백그라운드에서도 초가 흐르도록 BackgroundTimer 사용
+  useEffect(() => {
+    const startTimer = () => {
+      if (!timerId) {
+        const t = BackgroundTimer.setInterval(() => {
+          setDuration((prev) => {
+            action.talk.updateDuration(prev + 1);
+            // console.log('@@@ prev', prev + 1, timerId, isNear);
+            renderTime(prev + 1);
+            return prev + 1;
+          });
+        }, 1000);
+
+        setTimerId(t);
       }
-    },
-    sessionState === SessionState.Established ? 1000 : null,
-    // maxTime - duration >= 0 ? 1000 : null,
-  );
+    };
+
+    const stopTimer = () => {
+      if (timerId) {
+        BackgroundTimer.clearInterval(timerId);
+        BackgroundTimer.stop();
+        setTimerId(null);
+      } else BackgroundTimer.stop();
+    };
+
+    if (isNear && sessionState === SessionState.Established) startTimer();
+    if (!connecting) stopTimer();
+
+    return () => {
+      if (!connecting) stopTimer();
+    };
+  }, [action.talk, connecting, isNear, renderTime, sessionState, timerId]);
 
   // 최초 기본값으로 60초를 넣어줘서 전화 기본적으로 연결되도록 적용
   useEffect(() => {
@@ -384,6 +425,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
   }, []);
 
   const cleanupMedia = useCallback(() => {
+    BackgroundTimer.stop();
     NativeModules?.CallKitModule?.toggleSpeaker(callUUID, false).then(() =>
       setCallUUID(),
     );
@@ -730,12 +772,13 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (
         appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
+        nextAppState === 'active' &&
+        ![SessionState.Initial, SessionState.Terminated].includes(sessionState)
       ) {
         console.log('@@back to the active!', appState.current, nextAppState);
         Promise.resolve(NativeModules?.CallKitModule?.getSpeakerStatus()).then(
           (r) => {
-            setPressed(r ? 'speaker' : '');
+            setPressed((prev) => (r ? 'speaker' : prev));
             setSpeakerPhone(r);
           },
         );
@@ -745,7 +788,7 @@ const RkbTalk: React.FC<RkbTalkProps> = ({
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [sessionState]);
 
   useFocusEffect(
     React.useCallback(() => {
