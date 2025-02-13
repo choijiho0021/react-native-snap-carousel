@@ -4,13 +4,23 @@ import {ExpPointLog, PointHistory, TalkTariff} from '../modules/talk';
 import api from './api';
 import {utils} from '@/utils/utils';
 
-// 함수 분리 필요?
 const getVoucherPoint = ({iccid}: {iccid: string}) => {
   return api.callHttpGet(
     `${api.httpUrl(api.path.rokApi.rokebi.voucher)}/${iccid}`,
   );
 };
 
+export type VoucherRefundInfo = {
+  sum_diff: string;
+  total: string;
+  last_date: string;
+};
+
+const getVoucherRefundInfo = ({iccid}: {iccid: string}) => {
+  return api.callHttpGet(
+    `${api.httpUrl(api.path.rokApi.rokebi.voucher)}/${iccid}?refund`,
+  );
+};
 const getRatePerMinute = ({
   mobile,
   called,
@@ -178,4 +188,5 @@ export default {
   getEmgInfo,
   getRatePerMinute,
   getCheckFirstReward,
+  getVoucherRefundInfo,
 };
