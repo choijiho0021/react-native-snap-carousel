@@ -11,6 +11,7 @@ import i18n from '@/utils/i18n';
 import AppButton from '@/components/AppButton';
 import RenderChargeAmount from './RenderChargeAmount';
 import AppSvgIcon from '@/components/AppSvgIcon';
+import {VoucherModalType} from './VoucherTab';
 
 const styles = StyleSheet.create({
   confirm: {
@@ -59,7 +60,7 @@ export type VoucherType = {
 
 type VoucherBottomAlertProps = {
   visible: boolean;
-  setVisible: (val: boolean) => void;
+  setVisible: (val: VoucherModalType) => void;
   onClickButton: () => void;
   voucherType: VoucherType;
   balance: number;
@@ -96,7 +97,7 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
       <View style={styles.titleContainer}>
         <AppSvgIcon
           style={styles.grabber}
-          onPress={() => setVisible(false)}
+          onPress={() => setVisible('')}
           name="grabber2"
         />
         <Image
@@ -134,7 +135,7 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
           title={i18n.t('esim:recharge:voucher:btn')}
           onPress={() => {
             onClickButton();
-            setVisible(false);
+            setVisible('');
           }}
         />
       </>
@@ -146,7 +147,7 @@ const VoucherBottomAlert: React.FC<VoucherBottomAlertProps> = ({
       visible={visible}
       isCloseBtn={false}
       onClose={() => {
-        setVisible(false);
+        setVisible('');
       }}
       title={title}
       titleType="component"

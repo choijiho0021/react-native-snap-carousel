@@ -45,8 +45,11 @@ import {
 } from '@/redux/modules/toast';
 import AppModalContent from '@/components/ModalContent/AppModalContent';
 import AppStyledText from '@/components/AppStyledText';
-import VoucherTab from './VoucherTab';
+import VoucherTab, {VoucherModalType} from './VoucherTab';
 import api from '@/redux/api/api';
+import VoucherRefundModal from './VoucherRefundModal';
+import {VoucherRefundInfo} from '@/redux/api/voucherApi';
+import ChatTalk from '@/components/ChatTalk';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -172,12 +175,15 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
   const [selected, setSelected] = useState(`rch-${rechargeChoice[0][0]}`);
   const [amount, setAmount] = useState(rechargeChoice[0][0]);
   const [voucherCode, setVoucherCode] = useState('');
-  const [showAlert, setShowAlert] = useState(false);
+  const [showAlert, setShowAlert] = useState<VoucherModalType>('');
   const [voucherType, setVoucherType] = useState({
     title: '',
     amount: 0,
     expireDesc: '',
   });
+  const [refundInfo, setRefundInfo] = useState<VoucherRefundInfo>({});
+
+  const [chatTalkClicked, setChatTalkClicked] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -347,6 +353,8 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
         <VoucherTab
           setShowAlert={setShowAlert}
           setVoucherType={setVoucherType}
+          setRefundInfo={setRefundInfo}
+          refundInfo={refundInfo}
           amount={voucherType.amount}
           voucherCode={voucherCode}
           setVoucherCode={setVoucherCode}
@@ -358,11 +366,13 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
       balance,
       onSubmit,
       rechargeButton,
+      refundInfo,
       selected,
       voucherCode,
       voucherType.amount,
     ],
   );
+
   const renderSelectedPane = useCallback(() => {
     return (
       <Tab.Navigator
@@ -392,11 +402,30 @@ const RechargeScreen: React.FC<RechargeScreenProps> = ({
       </View>
 
       {renderSelectedPane()}
+
+      <ChatTalk
+        isClicked={chatTalkClicked}
+        setChatTalkClicked={setChatTalkClicked}
+      />
+
+      <VoucherRefundModal
+        visible={showAlert === 'refund'}
+        setVisible={setShowAlert}
+        onClickButton={() => {
+          // 타임아웃을 안 주면 모달이 닫힐 때 채널톡도 닫힘.
+          setTimeout(() => {
+            setChatTalkClicked(true);
+          }, 500);
+
+          setShowAlert('');
+        }}
+        refundInfo={refundInfo}
+      />
       <VoucherBottomAlert
-        visible={showAlert}
+        visible={showAlert === 'use'}
         onClickButton={() => {
           registerVoucher();
-          setShowAlert(false);
+          setShowAlert('');
         }}
         setVisible={setShowAlert}
         balance={balance}

@@ -1439,7 +1439,7 @@
   "mypage:charge:cash": "캐시 충전",
   "mypage:charge:voucher": "상품권 등록",
 
-  "mypage:voucher:code": "상품권 코드를 등록하세요!",
+  "mypage:voucher:code": "상품권을 등록하세요!",
   "mypage:voucher:ocr": "교환권 이미지 불러오기",
   "mypage:voucher:use": "상품권 조회하기",
   "mypage:voucher:noti": "<b>TIP</b> 박스를 길게 누르면 상품권 코드를 붙여넣기 할 수 있어요.",
