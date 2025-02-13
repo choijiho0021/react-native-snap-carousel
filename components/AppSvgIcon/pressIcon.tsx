@@ -1687,6 +1687,28 @@ const pressIcons: Record<string, React.ReactElement[]> = {
       />
     </Svg>,
   ],
+  rightArrowBlue10: [
+    <Svg
+      width={10}
+      height={10}
+      viewBox="0 0 10 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#64cefn02wa)">
+        <Path
+          d="M4.5.5L9 5 4.5 9.5"
+          stroke="#2A7FF6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="64cefn02wa">
+          <Path fill="#fff" d="M0 0h10v10H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
   rightArrow20: [
     <Svg
       width="20"
@@ -9246,6 +9268,126 @@ const pressIcons: Record<string, React.ReactElement[]> = {
           <Path fill="#fff" d="M0 0h24v24H0z" />
         </ClipPath>
       </Defs>
+    </Svg>,
+  ],
+  lightningCashIcon20: [
+    <Svg
+      width={20}
+      height={20}
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <G clipPath="url(#aceacvinra)">
+        <Circle cx={10} cy={10} r={10} fill="url(#29o4n3rqeb)" />
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M18 4a9.956 9.956 0 00-6-2C6.477 2 2 6.477 2 12c0 2.251.744 4.329 2 6a9.985 9.985 0 01-4-8C0 4.477 4.477 0 10 0a9.985 9.985 0 018 4z"
+          fill="#FFA800"
+        />
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M16 2a9.956 9.956 0 012 6c0 5.523-4.477 10-10 10a9.956 9.956 0 01-6-2 9.985 9.985 0 008 4c5.523 0 10-4.477 10-10a9.985 9.985 0 00-4-8z"
+          fill="#EF7F00"
+          fillOpacity={0.48}
+        />
+        <Circle
+          cx={10}
+          cy={10}
+          r={9}
+          stroke="#FFCF48"
+          strokeWidth={2}
+          strokeLinejoin="round"
+        />
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M11 9l.329-3.29c.05-.498-.582-.753-.891-.36l-3.803 4.84a.5.5 0 00.393.81H9l-.33 3.29c-.05.498.582.752.891.358l3.803-4.84A.5.5 0 0012.971 9h-1.972z"
+          fill="#EF7F00"
+        />
+      </G>
+      <Defs>
+        <LinearGradient
+          id="29o4n3rqeb"
+          x1={17.727}
+          y1={15.556}
+          x2={3.623}
+          y2={5.193}
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#FFA800" />
+          <Stop offset={1} stopColor="#FFC658" />
+        </LinearGradient>
+        <ClipPath id="aceacvinra">
+          <Path fill="#fff" d="M0 0h20v20H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>,
+  ],
+  cashIcon: [
+    <Svg
+      width={20}
+      height={20}
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Circle cx={10} cy={10} r={8.75} fill="#FFC82D" />
+      <Path
+        d="M15 8.398h-2.362c-.23-.933-1.051-1.611-2.413-1.611-1.701 0-2.712 1.18-2.712 3.187 0 2.042 1.02 3.23 2.712 3.23 1.292 0 2.152-.537 2.413-1.55H15C14.73 13.645 13.008 15 10.235 15 6.942 15 5 13.125 5 9.974 5 6.857 6.932 5 10.225 5 13.038 5 14.74 6.408 15 8.398z"
+        fill="#fff"
+      />
+    </Svg>,
+  ],
+  swapIcon: [
+    <Svg
+      width={34}
+      height={34}
+      viewBox="0 0 34 34"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Path
+        d="M17 0c9.389 0 17 7.611 17 17s-7.611 17-17 17S0 26.389 0 17 7.611 0 17 0z"
+        fill="#fff"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M33 17c0-8.837-7.163-16-16-16S1 8.163 1 17s7.163 16 16 16 16-7.163 16-16zm1 0c0-9.389-7.611-17-17-17S0 7.611 0 17s7.611 17 17 17 17-7.611 17-17z"
+        fill="#EEE"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M9 18.5a1 1 0 001 1h14a1 1 0 00.65-1.76l-3.5-3a1 1 0 10-1.3 1.52l1.447 1.24H10a1 1 0 00-1 1z"
+        fill="#D8D8D8"
+      />
+    </Svg>,
+  ],
+  cancelButton: [
+    <Svg
+      width={26}
+      height={26}
+      viewBox="0 0 26 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <Rect
+        x={2}
+        y={3.572}
+        width={2}
+        height={29}
+        rx={1}
+        transform="rotate(-45 2 3.572)"
+        fill="#2C2C2C"
+      />
+      <Rect
+        x={22.429}
+        y={2}
+        width={2}
+        height={29}
+        rx={1}
+        transform="rotate(45 22.429 2)"
+        fill="#2C2C2C"
+      />
     </Svg>,
   ],
 };
